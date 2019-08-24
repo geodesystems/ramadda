@@ -138,6 +138,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
+
             List<Integer> indices = getIndices(info);
             if (indices.size() == 0) {
                 return row;
@@ -150,6 +151,7 @@ public abstract class Converter extends Processor {
                 }
             }
 
+	    //	    System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
             return new Row(result);
         }
 
@@ -590,15 +592,13 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-
             rowCnt++;
             if (rowCnt > 2) {
                 return row;
             }
             if (firstRow == null) {
                 firstRow = row;
-
-                return null;
+		return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
                                       "true");

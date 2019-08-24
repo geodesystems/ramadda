@@ -50,6 +50,9 @@ import java.util.regex.*;
 
 public class Row {
 
+    static int x=0;
+    public int myx= x++;
+
     /** _more_ */
     private List values;
 

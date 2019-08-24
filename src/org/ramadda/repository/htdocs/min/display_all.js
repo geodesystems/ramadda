@@ -18309,7 +18309,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     var ID_MAP = "map";
     var ID_BOTTOM = "bottom";
     var ID_RUN = "maprun";
-    var ID_STEP = "mapstep";
+    var ID_NEXT = "mapnext";
+    var ID_PREV= "mapprev";
+    var ID_START= "mapstart";
+    var ID_END= "mapend";
     var ID_SLIDER = "slider";
     var ID_SHOWALL = "showall";
     var ID_COLORTABLE = "colortable";
@@ -18367,9 +18370,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             if (this.getProperty("doAnimation", false)) {
 
-                var buttons = HtmlUtils.div(["id", this.getDomId(ID_RUN), "xclass", "xramadda-button", "what", "run","title","Run/Stop"], HtmlUtils.getIconImage("fa-play")) + "&nbsp;" +
-		    HtmlUtils.div(["id", this.getDomId(ID_STEP), "xclass", "xramadda-button", "what", "run","title","Step"], HtmlUtils.getIconImage("fa-step-forward")) + "&nbsp;" +
-                    HtmlUtils.div(["id", this.getDomId(ID_SHOWALL), "class", "xramadda-button", "what", "run","title","Show all"], HtmlUtils.getIconImage("fa-sync")) + "&nbsp;" +
+                var buttons = 
+		    HtmlUtils.div(["id", this.getDomId(ID_START), "what", "run","title","Previous"], HtmlUtils.getIconImage("fa-fast-backward")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_PREV), "what", "run","title","Previous"], HtmlUtils.getIconImage("fa-step-backward")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_RUN),  "what", "run","title","Run/Stop"], HtmlUtils.getIconImage("fa-play")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_NEXT), "what", "run","title","Step"], HtmlUtils.getIconImage("fa-step-forward")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_END), "what", "run","title","Step"], HtmlUtils.getIconImage("fa-fast-forward")) + "&nbsp;" +
+                    HtmlUtils.div(["id", this.getDomId(ID_SHOWALL), "what", "run","title","Show all"], HtmlUtils.getIconImage("fa-sync")) + "&nbsp;" +
                     HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-map-animation-label"]) +"&nbsp;" +
 		    "";
 		//		    HtmlUtils.rangeInput("",this.getDomId(ID_SLIDER));
@@ -18377,13 +18384,44 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.jq(ID_TOP_LEFT).append(buttons);
 		HtmlUtils.rangeInputInit(this.getDomId(ID_SLIDER));
                 this.run = this.jq(ID_RUN);
-                this.step = this.jq(ID_STEP);
+                this.prev = this.jq(ID_PREV);
+                this.next = this.jq(ID_NEXT);
+                this.start = this.jq(ID_START);
+                this.end = this.jq(ID_END);
                 this.showAll = this.jq(ID_SHOWALL);
                 this.animation.label = this.jq(ID_ANIMATION_LABEL);
                 this.run.button().click(() => {
                     this.toggleAnimation();
                 });
-                this.step.button().click(() => {
+                this.start.button().click(() => {
+                    this.run.html(HtmlUtils.getIconImage("fa-play"));
+                    this.animation.running = false;
+		    this.animation.begin = this.animation.dateMin;
+		    if (this.animation.mode == "sliding") {
+			this.animation.end = new Date(this.animation.dateMin.getTime()+this.animation.window);
+		    } else {
+			this.animation.end =this.animation.begin;
+		    }
+		    this.applyAnimation();
+                });
+                this.end.button().click(() => {
+                    this.run.html(HtmlUtils.getIconImage("fa-play"));
+                    this.animation.running = false;
+		    this.animation.end = this.animation.dateMax;
+		    if (this.animation.mode == "sliding") {
+			this.animation.begin = new Date(this.animation.dateMax.getTime()-this.animation.window);
+		    } else {
+			this.animation.end =this.animation.dateMin;
+		    }
+		    this.applyAnimation();
+
+
+                });
+                this.prev.button().click(() => {
+                    if (!this.animation.running)
+                        this.startAnimation(true,true);
+                });
+                this.next.button().click(() => {
                     if (!this.animation.running)
                         this.startAnimation(true);
                 });
@@ -19269,7 +19307,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.animation.running)
                 this.startAnimation();
         },
-        startAnimation: function(justOneStep) {
+	startAnimation: function(justOneStep, back) {
             if (!this.points) {
                 return;
             }
@@ -19320,33 +19358,59 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 if (this.map.circles)
                     this.map.circles.redraw();
             }
-            this.stepAnimation();
+            this.stepAnimation(back);
         },
-        stepAnimation: function() {
+        stepAnimation: function(back) {
             if (!this.points) return;
             if (!this.animation.dateMax) return;
+            var oldBegin= this.animation.begin;
             var oldEnd = this.animation.end;
             var unit = this.animation.windowUnit;
-            var date = new Date(this.animation.end.getTime() + this.animation.window);
+	    //start - end
+	    //1903-1913
+            var date = back?new Date(this.animation.begin.getTime() - this.animation.window):
+		new Date(this.animation.end.getTime() + this.animation.window);
+	    var newDate;
             if (unit == "decade") {
 		//TODO
-                this.animation.end = new Date(date.getUTCFullYear(), 0);
+                newDate = new Date(date.getUTCFullYear(), 0);
             } else if (unit == "year") {
-                this.animation.end = new Date(date.getUTCFullYear(), 0);
+                newDate = new Date(date.getUTCFullYear(), 0);
             } else if (unit == "month") {
-                this.animation.end = new Date(date.getUTCFullYear(), date.getMonth());
+                newDate = new Date(date.getUTCFullYear(), date.getMonth());
             } else if (unit == "day") {
-                this.animation.end = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay());
+                newDate = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay());
             } else if (unit == "hour") {
-                this.animation.end = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours());
+                newDate = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours());
             } else if (unit == "minute") {
-                this.animation.end = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes());
+                newDate = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes());
             } else {
-                this.animation.end = new Date(this.animation.end.getTime() + this.animation.window);
+                newDate = new Date(this.animation.end.getTime() + this.animation.window);
             }
+	    //begin - end
             if (this.animation.mode == "sliding") {
-                this.animation.begin = oldEnd;
+		if(back)  {
+		    this.animation.begin= newDate;
+		    this.animation.end = oldBegin;
+		} else {
+		    this.animation.begin = oldEnd;
+		    this.animation.end = newDate;
+		}
+		if(this.animation.begin.getTime()<this.animation.dateMin.getTime()) {
+		    this.animation.begin = this.animation.dateMin;
+		    this.animation.end = new Date(this.animation.dateMin.getTime()+this.animation.window);
+		}
+		if(this.animation.begin.getTime()>this.animation.dateMax.getTime()) {
+		    this.animation.end = this.animation.dateMax;
+		    this.animation.begin = new Date(this.animation.dateMax.getTime()-this.animation.window);
+		}
+		if(this.animation.end.getTime()>this.animation.dateMax.getTime()) {
+		    //		    this.animation.end = this.animation.dateMax;
+		}
             }
+	    this.applyAnimation();
+        },
+		applyAnimation: function() {
             //                console.log("step:" + date  +" -  " + this.animation.end);
             var windowStart = this.animation.begin.getTime();
             var windowEnd = this.animation.end.getTime();
@@ -19385,20 +19449,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.circles.redraw();
             if (this.map.lines)
                 this.map.lines.redraw();
-            if (windowEnd < this.animation.dateMax.getTime()) {
-                this.animation.label.html(this.formatAnimationDate(this.animation.begin) + " - " + this.formatAnimationDate(this.animation.end));
+	    this.animation.label.html(this.formatAnimationDate(this.animation.begin) + " - " + this.formatAnimationDate(this.animation.end));
+            if (windowEnd <= this.animation.dateMax.getTime()) {
                 if (this.animation.running) {
-                    setTimeout(() => this.stepAnimation(), this.animation.speed);
+                    setTimeout(() => {
+			    if(!this.animation.running) return;
+			    this.stepAnimation()}, this.animation.speed);
                 }
             } else {
                 this.animation.running = false;
-                this.animation.label.html("");
+		//                this.animation.label.html("");
                 this.animation.inAnimation = false;
-                this.animation.label.html("");
                 this.run.html(HtmlUtils.getIconImage("fa-play"));
             }
             this.applyVectorMap(true);
-        },
+
+	    },
         formatAnimationDate: function(d) {
             if (this.animation.dateFormat == "yyyy") {
                 return Utils.formatDateYYYY(d);

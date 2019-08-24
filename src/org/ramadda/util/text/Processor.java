@@ -365,9 +365,7 @@ public abstract class Processor extends CsvOperator {
                 if (row == null) {
                     return null;
                 }
-
             }
-
             return row;
         }
 
@@ -402,12 +400,14 @@ public abstract class Processor extends CsvOperator {
             }
 
             for (Processor processor : firstProcessors) {
+		//		System.out.println("before: " + processor.getClass().getName().replace("org.ramadda.util.text.","") +" row:" + row.myx +" size:" + row.size());
+
                 row = processor.processRow(info, row, line);
                 if (row == null) {
                     return null;
                 }
+		//		System.out.println("after: " +" row:" + row.myx +" size:" + row.size());
             }
-
             return row;
         }
 
@@ -441,8 +441,8 @@ public abstract class Processor extends CsvOperator {
                         break;
                     }
                     if (textReader.getExtraRow() != null) {
-                        row = processRowInner(textReader,
-                                textReader.getExtraRow(), null);
+			row = processRowInner(textReader,
+					      textReader.getExtraRow(), null);
                         textReader.setExtraRow(null);
                     }
                     if ( !textReader.getOkToRun()) {
@@ -2261,10 +2261,11 @@ public abstract class Processor extends CsvOperator {
 		Row existing = map.get(key);
 		Object value = row.get(valueIndex);
 		if(existing==null) {
-		    existing = row;
+		    existing = new Row(row.getValues());
 		    map.put(key,existing);
 		    newRows.add(existing);
-		    existing.add(value);
+		    existing.add("X:" + value);
+		    System.out.println("splat:" + existing.myx);
 		} else {
 		    for(int i=0;i<row.size();i++) {
 			existing.set(i,row.get(i));
