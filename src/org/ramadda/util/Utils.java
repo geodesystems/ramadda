@@ -406,7 +406,7 @@ public class Utils {
      */
     public static List<String> tokenizeColumns(String line,
             String columnDelimiter) {
-        //        System.err.println("line:" + line);
+	//	System.err.println("line:" + line);
         //        System.err.println("line:" + line.replaceAll("\t","_TAB_"));
         List<String> toks      = new ArrayList<String>();
         StrTokenizer tokenizer = StrTokenizer.getCSVInstance(line);
@@ -421,7 +421,7 @@ public class Utils {
             if (tok == null) {
                 tok = "";
             }
-            //            System.err.println("tok:" + tok);
+	    //	    System.err.println("tok:" + tok);
             toks.add(tok);
         }
 

@@ -378,13 +378,13 @@ public class GeoUtils {
         }
     }
 
-    /** _more_          */
+    /** _more_ */
     private static Properties statesMap;
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable<String, Place> citiesMap;
 
-    /** _more_          */
+    /** _more_ */
     private static final String[] citySuffixes = new String[] { " city",
             " town", " cdp", " village" };
 
@@ -448,6 +448,12 @@ public class GeoUtils {
             }
             doZip = true;
         }
+        boolean doCounty = false;
+        if (address.toLowerCase().startsWith("county:")) {
+            address  = address.substring("county:".length()).trim();
+            doCounty = true;
+        }
+
         boolean doCity = false;
         if (address.toLowerCase().startsWith("city:")) {
             address = address.substring("city:".length()).trim();
@@ -472,6 +478,10 @@ public class GeoUtils {
 
         if (doZip) {
             resource = Place.getResource("zipcodes");
+        }
+
+        if (doCounty) {
+            resource = Place.getResource("counties");
         }
 
         if (resource != null) {

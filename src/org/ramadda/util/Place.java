@@ -58,10 +58,10 @@ public class Place {
     /** _more_ */
     public static final Resource[] RESOURCES = {
         //name,id,fips,lat,lon,opt state index,suffix
-        new Resource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 0, 0, 0,1,2
-                                                                      }, ""),
-        new Resource(RESOURCE_ROOT + "/countries.txt", new int[] { 3, 0,
-                -1, 1, 2, }, ""),
+        new Resource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 0, 0, 0,
+                1, 2 }, ""),
+        new Resource(RESOURCE_ROOT + "/countries.txt", new int[] { 3, 0, -1,
+                1, 2, }, ""),
         new Resource(RESOURCE_ROOT + "/states.txt", new int[] { 1, 0, 2, 3,
                 4, }, ""), new Resource(RESOURCE_ROOT + "/counties.txt",
                                         new int[] {
@@ -114,7 +114,8 @@ public class Place {
         /** _more_ */
         List<Place> places = new ArrayList<Place>();
 
-        Hashtable<String,Place> map = new Hashtable<String,Place>();
+        /** _more_          */
+        Hashtable<String, Place> map = new Hashtable<String, Place>();
 
         /**
          * _more_
@@ -131,8 +132,16 @@ public class Place {
             this.prefix  = prefix;
         }
 
+        /**
+         * _more_
+         *
+         * @param key _more_
+         *
+         * @return _more_
+         */
         public Place getPlace(String key) {
             key = key.toLowerCase();
+
             return this.map.get(key);
         }
 
@@ -162,19 +171,23 @@ public class Place {
     /** _more_ */
     private String from;
 
-    /** _more_          */
+    /** _more_ */
     private String label;
 
 
     /** _more_ */
     private String name;
+
+    /** _more_          */
     private String lcname;
 
-    /** _more_          */
+    /** _more_ */
     private String suffix;
-    private String lcsuffix;
 
     /** _more_          */
+    private String lcsuffix;
+
+    /** _more_ */
     private String _name;
 
     /** _more_ */
@@ -203,7 +216,7 @@ public class Place {
      * @param lon _more_
      */
     public Place(String name, double lat, double lon) {
-        this.id        = name;
+        this.id = name;
         setName(name);
         this.latitude  = lat;
         this.longitude = lon;
@@ -283,19 +296,39 @@ public class Place {
         return name;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getLowerCaseName() {
-        if(lcname ==null) lcname = name.toLowerCase();
+        if (lcname == null) {
+            lcname = name.toLowerCase();
+        }
+
         return lcname;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getSuffix() {
         return suffix;
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getLowerCaseSuffix() {
-        if(lcsuffix==null && suffix!=null)
+        if ((lcsuffix == null) && (suffix != null)) {
             lcsuffix = suffix.toLowerCase();
+        }
+
         return lcsuffix;
     }
 
@@ -378,12 +411,23 @@ public class Place {
 
 
 
-    public static Place findPlace(List<Place>places, String key) {
+    /**
+     * _more_
+     *
+     * @param places _more_
+     * @param key _more_
+     *
+     * @return _more_
+     */
+    public static Place findPlace(List<Place> places, String key) {
         //        if(true) return null;
         key = key.toLowerCase();
-        for(Place place: places) {
-            if(key.equals(place._name)) return place;
+        for (Place place : places) {
+            if (key.equals(place._name)) {
+                return place;
+            }
         }
+
         return null;
     }
 
@@ -418,6 +462,7 @@ public class Place {
      */
     public static Resource getResource(String id) throws Exception {
         getPlaces(id);
+
         return resourceMap.get(id);
     }
 
@@ -436,6 +481,7 @@ public class Place {
         if (resource == null) {
             return null;
         }
+
         return resource.places;
     }
 
@@ -471,7 +517,7 @@ public class Place {
                     for (int i = 0; i < RESOURCES.length; i++) {
                         Resource resource = RESOURCES[i];
                         //                        System.err.println("Reading:" + resource.file +" id:" + resource.id);
-                        if((resourceId != null)
+                        if ((resourceId != null)
                                 && !resource.id.equals(resourceId)) {
                             continue;
                         }
@@ -504,6 +550,7 @@ public class Place {
                             if ((indices.length >= 6) && (indices[5] >= 0)) {
                                 place.fips = place.fips.substring(indices[5]);
                             }
+                            resourceMap.put(place.getFips(), place);
                             for (String key :
                                     new String[] {
                                         resource.prefix + place.getFips() }) {
@@ -539,8 +586,10 @@ public class Place {
                                 placesMap.put(key.toUpperCase(), place);
                             }
                             resource.places.add(place);
-                            if(place._name!=null)
+                            resource.map.put(place.getFips(), place);
+                            if (place._name != null) {
                                 resource.map.put(place._name, place);
+                            }
                             tmp.add(place);
                         }
                     }
