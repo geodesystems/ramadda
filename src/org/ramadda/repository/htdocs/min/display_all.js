@@ -766,6 +766,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         handleEventPropertyChanged: function(source, prop) {
             if (prop.property == "filterValue") {
+		if(!this.getProperty("acceptFilterEvent",true)) return;
 		this.haveCalledUpdateUI = false;
 		var widgetId = "filterby_" + prop.fieldId;
 		if(prop.id.endsWith("_min")) widgetId+="_min";

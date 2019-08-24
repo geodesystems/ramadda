@@ -5984,7 +5984,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             wiki.append(
                 "{{display  xwidth=\"600\"  height=\"400\"   type=\""
                 + chartType
-                + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"0\"  }}");
+                + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"false\"  showTitle=\"false\"  row=\"0\"  column=\"0\"  }}");
             if (entry.isGeoreferenced()) {
                 String mapLayers = getMapManager().getMapLayers();
                 String layerVar  = "";
