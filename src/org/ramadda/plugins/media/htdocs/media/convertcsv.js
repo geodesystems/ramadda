@@ -37,7 +37,7 @@ function csvGetUrl(cmds,rawInput) {
 function csvMakeDbMenu(field,value,label) {
     if(!value) value = "null";
     else value = "'" + value +"'";
-    return HtmlUtil.tag("a",["class","ramadda-menuitem-link","onclick","csvInsertDb('" + field+"'," +value+");"],(label||field));
+    return HtmlUtil.tag("a",["style","text-decoration:underline;", "class","ramadda-menuitem-link","onclick","csvInsertDb('" + field+"'," +value+");"],(label||field));
 }
 
 function csvInsertDb(field,value) {
