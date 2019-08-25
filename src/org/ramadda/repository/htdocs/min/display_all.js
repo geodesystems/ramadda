@@ -1353,9 +1353,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
 		    if(filterValue == null || filterValue=="") continue;
+		    filterValue = ""+filterValue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
-			if(value!=filterValue) {
+			if((""+value)!==filterValue) {
 			    ok = false;
 			}
 		    } else if(filterField.isNumeric) {
