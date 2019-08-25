@@ -3338,6 +3338,16 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 tmp.push(obj);
             }
 
+	    var includeNaN = this.getProperty("includeNaN",false);
+	    if(!includeNaN) {
+		var tmp2 = [];
+		tmp.map(r=>{
+			var t = this.getDataValues(r);
+			var v = t[sortField.getIndex()];
+			if(!isNaN(v)) tmp2.push(r);
+		    });
+		tmp = tmp2;
+	    }
             var cnt = 0;
             tmp.sort((a, b) => {
                 var t1 = this.getDataValues(a);
@@ -3345,6 +3355,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 var v1 = t1[sortField.getIndex()];
                 var v2 = t2[sortField.getIndex()];
 		
+		if(cnt++<100) console.log("Sort:" + v1 +" " + v2);
                 if (v1 < v2) return this.sortAscending?-1:1;
                 if (v1 > v2) return this.sortAscending?1:-1;
                 return 0;
@@ -3358,8 +3369,12 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 if (stringField)
                     label = tuple[stringField.getIndex()];
                 value = tuple[sortField.getIndex()];
-                if (isNaN(value) || value === null) value = "NA";
-                html += "<tr valign=top class='display-ranking-row' what='" + obj.originalRow + "'><td> #" + (rowIdx + 1) + "</td><td>&nbsp;" + label + "</td><td align=right>&nbsp;" +
+                if (isNaN(value) || value === null) {
+		    if(!includeNaN) continue;
+		    value = "NA";
+		}
+		if(rowIdx<100)console.log(value);
+		html += "<tr valign=top class='display-ranking-row' what='" + obj.originalRow + "'><td> #" + (rowIdx + 1) + "</td><td>&nbsp;" + label + "</td><td align=right>&nbsp;" +
                     value + "</td></tr>";
             }
             html += HtmlUtils.closeTag("table");
