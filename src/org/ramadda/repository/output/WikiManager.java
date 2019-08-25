@@ -5043,9 +5043,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         tags.append(
             addWikiEditButton(
                 textAreaId, "button_section.png", "Frame",
-		"+frame background=#fff frameSize=0 shadow title=_title_", 
-		"-frame",
-                "Section", "mw-editbutton-bold"));
+                "+frame background=#fff frameSize=0 shadow title=_title_",
+                "-frame", "Section", "mw-editbutton-bold"));
 
 
 
@@ -5242,6 +5241,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                              "Entry link", true, "wikilink", entry, false,
                              buttonClass);
 
+        String fieldLink = OutputHandler.getSelect(request, textAreaId,
+                               "Field name", true, "fieldname", entry, false,
+                               buttonClass);
+
 
         HtmlUtils.open(buttons, "div",
                        HtmlUtils.cssClass("ramadda-menubar")
@@ -5253,6 +5256,11 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         buttons.append(tagsButton2);
         buttons.append(addEntry);
         buttons.append(addLink);
+        buttons.append(fieldLink);
+        entry.getTypeHandler().addToWikiToolbar(request, entry, buttons,
+                textAreaId);
+
+
         buttons.append(helpButton);
         HtmlUtils.close(buttons, "div");
 
@@ -5268,8 +5276,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
      * @param sb _more_
      * @param textAreaId _more_
      */
-    private void makeTagsMenu(boolean charts, StringBuilder sb,
-                              String textAreaId) {
+    public void makeTagsMenu(boolean charts, StringBuilder sb,
+                             String textAreaId) {
         String inset  = "&nbsp;&nbsp;";
         int    rowCnt = 0;
         sb.append("<table border=0><tr valign=top><td valign=top>\n");
@@ -6483,8 +6491,9 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                     }
                     if (Misc.equals(metadata.getAttr2(), "true")) {
                         Utils.add(propList, "displayAsMap", "true");
-			if(props.get("pruneFeatures")==null)
-			    Utils.add(propList,  "pruneFeatures", "true");
+                        if (props.get("pruneFeatures") == null) {
+                            Utils.add(propList, "pruneFeatures", "true");
+                        }
                     }
 
                     if (kmlIds != null) {

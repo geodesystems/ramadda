@@ -4675,6 +4675,34 @@ public class TypeHandler extends RepositoryManager {
      * @param request _more_
      * @param entry _more_
      * @param sb _more_
+     * @param type _more_
+     * @param target _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToSelectMenu(Request request, Entry entry,
+                                StringBuilder sb, String type, String target)
+            throws Exception {}
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param buttons _more_
+     * @param textAreaId _more_
+     */
+    public void addToWikiToolbar(Request request, Entry entry,
+                                 StringBuilder buttons, String textAreaId) {}
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
      * @param formInfo _more_
      * @param id _more_
      * @param text _more_

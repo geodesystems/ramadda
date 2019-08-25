@@ -465,6 +465,16 @@ public class HtmlOutputHandler extends OutputHandler {
             return outputTest(request, entry);
         }
 
+        if (outputType.equals(OUTPUT_SELECTXML)) {
+            StringBuilder sb     = new StringBuilder();
+            String        target = request.getString(ATTR_TARGET, "");
+            String        type   = request.getString(ARG_SELECTTYPE, "");
+            entry.getTypeHandler().addToSelectMenu(request, entry, sb, type,
+                    target);
+
+            return makeAjaxResult(request, sb.toString());
+        }
+
         if (outputType.equals(OUTPUT_LINKSXML)) {
             return getLinksXml(request, entry);
         }
@@ -994,7 +1004,6 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
 
         String        localeId = request.getString(ARG_LOCALEID, null);
-
         String        target   = request.getString(ATTR_TARGET, "");
         StringBuilder sb       = new StringBuilder();
         boolean       didExtra = false;
@@ -1010,6 +1019,11 @@ public class HtmlOutputHandler extends OutputHandler {
             addExtra = true;
             Entry localeEntry = getEntryManager().getEntry(request, localeId);
             if (localeEntry != null) {
+                if (target.endsWith("_fieldname")) {
+                    String type = request.getString(ATTR_TYPE, "");
+                    sb.append(getSelectLink(request, localeEntry, target));
+                    //              localeEntry.getTypeHandler().addToSelectMenu(request, localeEntry,sb, type, target);
+                }
                 if ( !localeEntry.isGroup()) {
                     localeEntry = getEntryManager().getParent(request,
                             localeEntry);
@@ -1034,18 +1048,13 @@ public class HtmlOutputHandler extends OutputHandler {
                     sb.append(sectionDivider);
                 }
             }
-
-
         }
-
-
 
         if (request.get("firstclick", false)) {
             addExtra = true;
         }
 
         if (addExtra) {
-
             List<Entry> recents =
                 getEntryManager().getSessionFolders(request);
             if (recents.size() > 0) {
@@ -1059,15 +1068,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
                 sb.append(HtmlUtils.close("div"));
                 sb.append(sectionDivider);
-
-
             }
-
-
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
-
-
             if (favoritesList.size() > 0) {
                 sb.append(
                     HtmlUtils.open(
@@ -1109,6 +1112,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             sb.append(getSelectLink(request, subGroup, target));
         }
+
 
         if (request.get(ARG_ALLENTRIES, false)) {
             String entryType = request.getString(ARG_ENTRYTYPE,
@@ -1917,6 +1921,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_SELECTXML)) {
             return getSelectXml(request, group, subGroups, entries);
         }
+
         if (outputType.equals(OUTPUT_METADATAXML)) {
             return getMetadataXml(request, group, true);
         }

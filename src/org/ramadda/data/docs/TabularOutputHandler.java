@@ -510,6 +510,7 @@ public class TabularOutputHandler extends OutputHandler {
                 for (Entry e : entries) {
                     lastResult = outputConvertProcessInner(request, e,
                             csvUtil, destDir, runDir, args, newFiles);
+		    System.err.println("R:" + lastResult);
                     if ( !csvUtil.getOkToRun()) {
                         break;
                     }
@@ -589,7 +590,7 @@ public class TabularOutputHandler extends OutputHandler {
 
                 return new Result(s, "application/json");
             }
-            String s = new String(Utils.encodeBase64(lastResult));
+            String s = new String(Utils.encodeBase64(lastResult==null?"":lastResult));
             s = Json.mapAndQuote("result", s);
 
             return new Result(s, "application/json");
@@ -632,7 +633,6 @@ public class TabularOutputHandler extends OutputHandler {
             OutputStream          os       = null;
             ByteArrayOutputStream bos      = null;
             File                  f        = null;
-
             boolean               download = request.get("download", false);
             if (download) {
                 f = getStorageManager().makeTmpFile(

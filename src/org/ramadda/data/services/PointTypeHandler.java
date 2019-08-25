@@ -19,6 +19,7 @@ package org.ramadda.data.services;
 
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.point.PointMetadataHarvester;
+import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordFileFactory;
 import org.ramadda.data.record.RecordVisitorGroup;
@@ -268,6 +269,52 @@ public class PointTypeHandler extends RecordTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param sb _more_
+     * @param type _more_
+     * @param target _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToSelectMenu(Request request, Entry entry,
+                                StringBuilder sb, String type, String target)
+            throws Exception {
+        PointOutputHandler poh =
+            (PointOutputHandler) getRecordOutputHandler();
+        PointEntry recordEntry = (PointEntry) poh.doMakeEntry(request, entry);
+        RecordFile recordFile  = recordEntry.getRecordFile();
+        if (recordFile == null) {
+            return;
+        }
+        List<RecordField> fields =
+            recordEntry.getRecordFile().getFields(true);
+
+        if (fields == null) {
+            return;
+        }
+
+        for (RecordField field : fields) {
+            sb.append("&nbsp;");
+            sb.append(
+                HtmlUtils.mouseClickHref(
+                    HtmlUtils.call(
+                        "selectClick",
+                        HtmlUtils.comma(
+                            HtmlUtils.squote(target),
+                            HtmlUtils.squote(entry.getId()),
+                            HtmlUtils.squote(field.getName()),
+                            HtmlUtils.squote(type))), field.getLabel()));
+            sb.append("<br>");
+        }
+    }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
      *
      * @return _more_
      *
@@ -346,7 +393,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                 ARG_ENTRYID,
         // Use this if you want to return the process directory
         //        processEntryId);
-           getStorageManager().getEncodedProcessDirEntryId(processId + "/" + imageFile.getName()));
+        getStorageManager().getEncodedProcessDirEntryId(processId + "/"
+            + imageFile.getName()));
 
         //        System.err.println("URL:" + entryUrl);
         return true;

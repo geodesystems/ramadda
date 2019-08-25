@@ -884,8 +884,11 @@ function selectClick(id, entryId, value) {
         selectCancel();
         return;
     }
+
     if (selector.selecttype == "wikilink") {
         insertAtCursor(selector.elementId, selector.textComp.obj, "[[" + entryId + "|" + value + "]]");
+    } else   if (selector.selecttype == "fieldname") {
+        insertAtCursor(selector.elementId, selector.textComp.obj,  value);
     } else if (selector.selecttype == "entryid") {
         //        insertTagsInner(selector.elementId, selector.textComp.obj, "" +entryId+"|"+value+" "," ","importtype");
         insertTagsInner(selector.elementId, selector.textComp.obj, entryId, " ", "importtype");

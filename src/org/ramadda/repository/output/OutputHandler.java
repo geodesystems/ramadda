@@ -1075,8 +1075,6 @@ public class OutputHandler extends RepositoryManager {
                            ? ((Entry) entry).getName()
                            : getEntryDisplayName(entry);
         value = value.replace("'", "\\'");
-
-
         sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("selectClick",
                 HtmlUtils.comma(HtmlUtils.squote(target),
                                 HtmlUtils.squote(entry.getId()),
