@@ -1767,7 +1767,7 @@ var HtmlUtils = {
                     item = item[0];
                 }
                 var extra = "";
-                if(selected == item) extra=" selected ";
+                if(selected === item) extra=" selected ";
                 select+="<option " + extra +" value='" + item +"'>" + label +"</option>";
             });
         select+=this.closeTag("select");
