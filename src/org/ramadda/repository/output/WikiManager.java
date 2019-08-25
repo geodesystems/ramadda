@@ -5257,8 +5257,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         buttons.append(addEntry);
         buttons.append(addLink);
         buttons.append(fieldLink);
-        entry.getTypeHandler().addToWikiToolbar(request, entry, buttons,
-                textAreaId);
+	if(entry!=null) {
+	    entry.getTypeHandler().addToWikiToolbar(request, entry, buttons,
+						    textAreaId);
+	}
 
 
         buttons.append(helpButton);
