@@ -2548,7 +2548,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    }
 				});
 			    enumValues.sort((a,b)  =>{
-				    return a[1].localeCompare(b[1]);
+				    return (""+a[1]).localeCompare(""+b[1]);
 				});
 			    for(var j=0;j<enumValues.length;j++)
 				enums.push(enumValues[j]);
