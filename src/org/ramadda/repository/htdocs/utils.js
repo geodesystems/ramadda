@@ -1385,8 +1385,9 @@ var HtmlUtils = {
 		    $("#" + id+"_textarea").css("display","none");
 		    $("#" + id+"_textarea").attr("name","dummyname");
 		    $("#" + id +"_wiki").css("display","block");
+		    $("#" + id +"_wiki").focus();
 		    var editor = HtmlUtils.getAceEditor(editorId);
-		    editor.setValue(val,7);
+		    editor.setValue(val+"\n",8);
 		}
 	    });
     },
