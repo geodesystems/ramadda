@@ -7345,7 +7345,6 @@ public class EntryManager extends RepositoryManager {
         Hashtable   seen          = new Hashtable();
         List<Entry> allEntries    = new ArrayList<Entry>();
 
-
         Statement statement = typeHandler.select(request,
                                   Tables.ENTRIES.COLUMNS, clauses,
                                   getQueryOrderAndLimit(request, false, null,

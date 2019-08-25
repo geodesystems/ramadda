@@ -5548,14 +5548,18 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
+
         if (request.defined(ARG_GROUP)) {
             String  groupId = (String) request.getString(ARG_GROUP,
                                   "").trim();
+
+	    System.err.println("g:" +groupId);
             boolean doNot   = groupId.startsWith("!");
             if (doNot) {
                 groupId = groupId.substring(1);
             }
             if (groupId.endsWith("%")) {
+		System.err.println("%%");
                 Entry group = getEntryManager().findGroup(request,
                                   groupId.substring(0, groupId.length() - 1));
                 if (group != null) {
@@ -5565,7 +5569,18 @@ public class TypeHandler extends RepositoryManager {
                 where.add(Clause.like(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                       groupId));
             } else {
-                Entry group = getEntryManager().findGroup(request);
+		List<String> toks = StringUtil.split(groupId,"|",true,true);
+		if(toks.size()>1) {
+		    List<Clause> ors = new ArrayList<Clause>();
+		    for(String tok: toks) {
+			ors.add(
+                            Clause.eq(
+                                Tables.ENTRIES.COL_PARENT_GROUP_ID,
+				tok));
+		    }
+		    where.add(Clause.or(ors));
+		} else {
+		Entry group = getEntryManager().findGroup(request);
                 if (group == null) {
                     throw new IllegalArgumentException(
                         msgLabel("Could not find folder") + groupId);
@@ -5606,6 +5621,7 @@ public class TypeHandler extends RepositoryManager {
                                 group.getId()));
                     }
                 }
+		}
             }
         }
 
