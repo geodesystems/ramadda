@@ -19062,6 +19062,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var center = circle.center;
 		var tmp = {index:-1,maxExtent: maxExtent};
                 var matchedFeature = this.findContainingFeature(features, center,tmp);
+		if(circle.hasColorByValue && isNaN(circle.colorByValue)) continue;
 		if(!matchedFeature) continue;
 		maxExtent = tmp.maxExtent;
 		if(!seen[matchedFeature.featureIndex]) {
@@ -19654,8 +19655,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     //                            console.log("percent:" + percent +  " radius: " + props.pointRadius +" Value: " + value  + " range: " + sizeBy.minValue +" " + sizeBy.maxValue);
                 }
 		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
+		var hasColorByValue = false;
+		var colorByValue;
+
                 if (colorBy.index >= 0) {
                     var value = pointRecord.getData()[colorBy.index];
+		    hasColorByValue  = true;
+		    colorByValue = value;
                     //                            console.log("value:" + value +" index:" + colorBy.index+" " + pointRecord.getData());
                     var percent = 0;
                     var msg = "";
@@ -19787,8 +19793,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(radius>0)
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
 		    }
+
                     var date = pointRecord.getDate();
 		    if(mapPoint) {
+			mapPoint.hasColorByValue = hasColorByValue;
+		 	mapPoint.colorByValue= colorByValue;
 			if (date) {
 			    mapPoint.date = date.getTime();
 			}

@@ -30,6 +30,7 @@ import java.io.*;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
@@ -379,7 +380,7 @@ public class GeoUtils {
     }
 
     /** _more_ */
-    private static Properties statesMap;
+    private static Hashtable statesMap;
 
     /** _more_ */
     private static Hashtable<String, Place> citiesMap;
@@ -401,6 +402,26 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     static int xcnt = 0;
+
+    public static Hashtable getStatesMap() throws Exception {
+	if (statesMap == null) {
+	    InputStream inputStream =
+		IOUtil.getInputStream(
+				      "/org/ramadda/util/states.properties",
+				      GeoUtils.class);
+	    String      s  = IOUtil.readContents(inputStream);
+	    Hashtable tmp = Utils.getProperties(s);
+	    Hashtable tmp2 = new Hashtable();
+	    IOUtil.close(inputStream);
+	    for (Enumeration keys = tmp.keys(); keys.hasMoreElements(); ) {
+		String key = (String) keys.nextElement();
+		tmp2.put(key.toLowerCase(),tmp.get(key));
+	    }
+	    tmp.putAll(tmp2);
+	    statesMap = tmp;
+	}
+	return statesMap;
+    }
 
     /**
      * _more_
@@ -455,7 +476,8 @@ public class GeoUtils {
         }
 
         boolean doCity = false;
-        if (address.toLowerCase().startsWith("city:")) {
+	String _address = address.toLowerCase();
+        if (_address.startsWith("city:")) {
             address = address.substring("city:".length()).trim();
             doCity  = true;
         }
@@ -480,8 +502,34 @@ public class GeoUtils {
             resource = Place.getResource("zipcodes");
         }
 
+
         if (doCounty) {
+	    //	    if(_address.indexOf("arundel")<0) return null;
             resource = Place.getResource("counties");
+	    int index = _address.indexOf(",");
+	    if(index>=0)  {
+		getStatesMap();
+                List<String> toks = StringUtil.splitUpTo(_address, ",", 2);
+		String county = toks.get(0);
+		String state  =toks.get(1);
+
+		place = resource.getPlace(county+"," + state);
+		//		System.out.println("try:" +county+"," + state +": place:" + place);
+		if(place==null) {
+		    //		    System.out.println("state before:" +county+":" + state+":");
+		    state = (String)statesMap.get(state);
+		    //		    System.out.println("state after:" +county+"," + state);
+		    if(state!=null) {
+			place = resource.getPlace(county+"," + state);
+			//			System.out.println("try 2:" +county+"," + state +" place:" + place);
+		    }
+		}
+		if(place ==null) {
+		    //		    System.err.println("No place:" + address);
+		    //		    System.exit(0);
+		}
+		return place;
+	    }
         }
 
         if (resource != null) {
@@ -496,16 +544,7 @@ public class GeoUtils {
         if (doCity) {
             xcnt++;
             //abbrev to name
-            if (statesMap == null) {
-                InputStream inputStream =
-                    IOUtil.getInputStream(
-                        "/org/ramadda/util/states.properties",
-                        GeoUtils.class);
-                Properties tmp = new Properties();
-                tmp.load(inputStream);
-                IOUtil.close(inputStream);
-                statesMap = tmp;
-            }
+	    getStatesMap();
             if (citiesMap == null) {
                 citiesMap = new Hashtable<String, Place>();
                 List<Place> places = Place.getPlaces("places");

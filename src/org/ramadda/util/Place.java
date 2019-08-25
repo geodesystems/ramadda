@@ -29,7 +29,7 @@ import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -142,6 +142,12 @@ public class Place {
         public Place getPlace(String key) {
             key = key.toLowerCase();
 
+	    /*
+	    for (Enumeration keys = this.map.keys(); keys.hasMoreElements(); ) {
+		String k = (String) keys.nextElement();
+		System.out.println("key:" + k+":");
+		}
+	    */
             return this.map.get(key);
         }
 
@@ -589,6 +595,9 @@ public class Place {
                             resource.map.put(place.getFips(), place);
                             if (place._name != null) {
                                 resource.map.put(place._name, place);
+				if(place.getSuffix()!=null) {
+				    resource.map.put(place._name+"," +place.getSuffix().toLowerCase(), place);
+				}
                             }
                             tmp.add(place);
                         }
