@@ -73,6 +73,10 @@ public class Place {
         new Resource(RESOURCE_ROOT + "/places.txt", new int[] {
             3, 1, 1, 12, 13, -1, 0
         }, ""),
+        //name,id,fips,lat,lon,opt state index,suffix
+        new Resource(RESOURCE_ROOT + "/cities.txt", new int[] {
+            1, 1, 0, 3, 4, 2, 2
+        }, ""),
         //#GEOID        NAME    UATYPE  POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
         //        new Resource(RESOURCE_ROOT + "/urbanareas.txt", new int[] { 1, 0, 0,
         //                9, 10 }, "urban:"),
@@ -114,8 +118,11 @@ public class Place {
         /** _more_ */
         List<Place> places = new ArrayList<Place>();
 
+
         /** _more_          */
         Hashtable<String, Place> map = new Hashtable<String, Place>();
+
+	private boolean loaded = false;
 
         /**
          * _more_
@@ -131,6 +138,88 @@ public class Place {
             this.indices = indices;
             this.prefix  = prefix;
         }
+
+	public void loadResource() throws Exception {
+	    if(this.loaded) return;
+	    Hashtable<String, Place> resourceMap =
+		new Hashtable<String, Place>();
+	    Place.resourceMap.put(this.id, this);
+	    resourcePlacesMap.put(this.id, resourceMap);
+	    BufferedReader br = new BufferedReader(
+						   new InputStreamReader(
+									 IOUtil.getInputStream(
+											       this.file,
+											       Place.class)));
+	    int    cnt     = 0;
+	    String line    = null;
+	    int[]  indices = this.indices;
+	    while ((line = br.readLine()) != null) {
+		cnt++;
+		if (line.startsWith("#")) {
+		    continue;
+		}
+		Place place = new Place();
+		place.from = this.id;
+		int suffix = (indices.length >= 7)
+		    ? indices[6]
+		    : -1;
+		place.processLine(StringUtil.split(line, "\t",
+						   false, false), indices[0], indices[1],
+				  indices[2], indices[3], indices[4],
+				  suffix);
+		if ((indices.length >= 6) && (indices[5] >= 0)) {
+		    place.fips = place.fips.substring(indices[5]);
+		}
+		resourceMap.put(place.getFips(), place);
+		for (String key :
+			 new String[] {
+			     this.prefix + place.getFips() }) {
+		    if (key == null) {
+			continue;
+		    }
+		    resourceMap.put(key, place);
+		    resourceMap.put(key.toLowerCase(), place);
+		    resourceMap.put(key.toUpperCase(), place);
+		    placesMap.put(key, place);
+		    placesMap.put(key.toLowerCase(), place);
+		    placesMap.put(key.toUpperCase(), place);
+		}
+		for (String key :
+			 new String[] {
+			     this.prefix + place.getId() }) {
+		    if (key == null) {
+			continue;
+		    }
+		    placesMap.put(key, place);
+		    placesMap.put(key.toLowerCase(), place);
+		    placesMap.put(key.toUpperCase(), place);
+		}
+		for (String key :
+			 new String[] {
+			     this.prefix + place.getName() }) {
+		    if (key == null) {
+			continue;
+		    }
+		    placesMap.put(key, place);
+		    placesMap.put(key.toLowerCase(), place);
+		    placesMap.put(key.toUpperCase(), place);
+		}
+		this.places.add(place);
+		this.map.put(place.getFips(), place);
+		if (place._name != null) {
+		    this.map.put(place._name, place);
+		    if(place.getSuffix()!=null) {
+			this.map.put(place._name+"," +place.getSuffix().toLowerCase(), place);
+		    }
+		}
+	    }
+	    this.loaded = true;
+	}
+
+
+	public List<Place> getPlaces() {
+	    return places;
+	}
 
         /**
          * _more_
@@ -151,12 +240,20 @@ public class Place {
             return this.map.get(key);
         }
 
+	public void debug() {
+	    for (Enumeration keys = this.map.keys(); keys.hasMoreElements(); ) {
+		String k = (String) keys.nextElement();
+		System.out.println("key:" + k+":");
+	    }
+	}
+
+
 
     }
 
 
     /** _more_ */
-    private static List<Place> places;
+    private static List<Place> allPlaces;
 
     /** _more_ */
     private static Hashtable<String, Place> placesMap = new Hashtable<String,
@@ -468,7 +565,6 @@ public class Place {
      */
     public static Resource getResource(String id) throws Exception {
         getPlaces(id);
-
         return resourceMap.get(id);
     }
 
@@ -516,99 +612,30 @@ public class Place {
      * @throws Exception _more_
      */
     public static List<Place> getPlaces(String resourceId) throws Exception {
-        if (places == null) {
-            synchronized (MUTEX) {
-                if (places == null) {
-                    List<Place> tmp = new ArrayList<Place>();
-                    for (int i = 0; i < RESOURCES.length; i++) {
-                        Resource resource = RESOURCES[i];
-                        //                        System.err.println("Reading:" + resource.file +" id:" + resource.id);
-                        if ((resourceId != null)
-                                && !resource.id.equals(resourceId)) {
-                            continue;
-                        }
-                        Hashtable<String, Place> resourceMap =
-                            new Hashtable<String, Place>();
-                        Place.resourceMap.put(resource.id, resource);
-                        resourcePlacesMap.put(resource.id, resourceMap);
-                        BufferedReader br = new BufferedReader(
-                                                new InputStreamReader(
-                                                    IOUtil.getInputStream(
-                                                        resource.file,
-                                                        Place.class)));
-                        int    cnt     = 0;
-                        String line    = null;
-                        int[]  indices = resource.indices;
-                        while ((line = br.readLine()) != null) {
-                            cnt++;
-                            if (line.startsWith("#")) {
-                                continue;
-                            }
-                            Place place = new Place();
-                            place.from = resource.id;
-                            int suffix = (indices.length >= 7)
-                                         ? indices[6]
-                                         : -1;
-                            place.processLine(StringUtil.split(line, "\t",
-                                    false, false), indices[0], indices[1],
-                                        indices[2], indices[3], indices[4],
-                                        suffix);
-                            if ((indices.length >= 6) && (indices[5] >= 0)) {
-                                place.fips = place.fips.substring(indices[5]);
-                            }
-                            resourceMap.put(place.getFips(), place);
-                            for (String key :
-                                    new String[] {
-                                        resource.prefix + place.getFips() }) {
-                                if (key == null) {
-                                    continue;
-                                }
-                                resourceMap.put(key, place);
-                                resourceMap.put(key.toLowerCase(), place);
-                                resourceMap.put(key.toUpperCase(), place);
-                                placesMap.put(key, place);
-                                placesMap.put(key.toLowerCase(), place);
-                                placesMap.put(key.toUpperCase(), place);
-                            }
-                            for (String key :
-                                    new String[] {
-                                        resource.prefix + place.getId() }) {
-                                if (key == null) {
-                                    continue;
-                                }
-                                placesMap.put(key, place);
-                                placesMap.put(key.toLowerCase(), place);
-                                placesMap.put(key.toUpperCase(), place);
-                            }
-
-                            for (String key :
-                                    new String[] {
-                                        resource.prefix + place.getName() }) {
-                                if (key == null) {
-                                    continue;
-                                }
-                                placesMap.put(key, place);
-                                placesMap.put(key.toLowerCase(), place);
-                                placesMap.put(key.toUpperCase(), place);
-                            }
-                            resource.places.add(place);
-                            resource.map.put(place.getFips(), place);
-                            if (place._name != null) {
-                                resource.map.put(place._name, place);
-				if(place.getSuffix()!=null) {
-				    resource.map.put(place._name+"," +place.getSuffix().toLowerCase(), place);
-				}
-                            }
-                            tmp.add(place);
-                        }
-                    }
-                    places = tmp;
-                }
-            }
-        }
-
-        return places;
+	synchronized (MUTEX) {
+	    if(resourceId!=null) {
+		Resource resource = Place.resourceMap.get(resourceId);
+		if(resource!=null) return resource.places;
+	    } else {
+		if(allPlaces!=null) return allPlaces;
+		allPlaces = new ArrayList<Place>();
+	    }
+	    for (int i = 0; i < RESOURCES.length; i++) {
+		Resource resource = RESOURCES[i];
+		if ((resourceId != null)
+		    && !resource.id.equals(resourceId)) {
+		    continue;
+		}
+		resource.loadResource();
+		if (resourceId != null) {
+		    return resource.places;
+		}
+		allPlaces.addAll(resource.places);
+	    }
+	}
+	return allPlaces;
     }
+
 
 
     /**
@@ -643,7 +670,7 @@ public class Place {
         List<Place> result = new ArrayList<Place>();
         s = s.toLowerCase();
 
-        for (Place place : places) {
+        for (Place place : allPlaces) {
             if (place._name == null) {
                 continue;
             }

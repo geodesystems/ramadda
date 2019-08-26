@@ -401,7 +401,7 @@ public class GeoUtils {
      *
      * @throws Exception _more_
      */
-    static int xcnt = 0;
+
 
     public static Hashtable getStatesMap() throws Exception {
 	if (statesMap == null) {
@@ -469,16 +469,18 @@ public class GeoUtils {
             }
             doZip = true;
         }
+	String _address = address.toLowerCase();
         boolean doCounty = false;
         if (address.toLowerCase().startsWith("county:")) {
             address  = address.substring("county:".length()).trim();
+            _address  = _address.substring("county:".length()).trim();
             doCounty = true;
         }
 
         boolean doCity = false;
-	String _address = address.toLowerCase();
         if (_address.startsWith("city:")) {
             address = address.substring("city:".length()).trim();
+            _address = _address.substring("city:".length()).trim();
             doCity  = true;
         }
         //        System.err.println ("address:" + address +" " + doZip);
@@ -503,34 +505,6 @@ public class GeoUtils {
         }
 
 
-        if (doCounty) {
-	    //	    if(_address.indexOf("arundel")<0) return null;
-            resource = Place.getResource("counties");
-	    int index = _address.indexOf(",");
-	    if(index>=0)  {
-		getStatesMap();
-                List<String> toks = StringUtil.splitUpTo(_address, ",", 2);
-		String county = toks.get(0);
-		String state  =toks.get(1);
-
-		place = resource.getPlace(county+"," + state);
-		//		System.out.println("try:" +county+"," + state +": place:" + place);
-		if(place==null) {
-		    //		    System.out.println("state before:" +county+":" + state+":");
-		    state = (String)statesMap.get(state);
-		    //		    System.out.println("state after:" +county+"," + state);
-		    if(state!=null) {
-			place = resource.getPlace(county+"," + state);
-			//			System.out.println("try 2:" +county+"," + state +" place:" + place);
-		    }
-		}
-		if(place ==null) {
-		    //		    System.err.println("No place:" + address);
-		    //		    System.exit(0);
-		}
-		return place;
-	    }
-        }
 
         if (resource != null) {
             place = resource.getPlace(address);
@@ -542,7 +516,6 @@ public class GeoUtils {
         }
 
         if (doCity) {
-            xcnt++;
             //abbrev to name
 	    getStatesMap();
             if (citiesMap == null) {
@@ -585,11 +558,55 @@ public class GeoUtils {
                             }
                         }
                     }
-                }
+		    if (state != null) {
+			resource = Place.getResource("cities");
+			place = resource.getPlace(city+"," + state);
+			if(place!=null) return place;
+		    }
+		}
+
             } catch (Exception exc) {
                 exc.printStackTrace();
             }
+
+
+
+	    //If the city fails then do the county
+	    doCounty = true;
         }
+
+        if (doCounty) {
+	    //	    if(_address.indexOf("arundel")<0) return null;
+            resource = Place.getResource("counties");
+	    int index = _address.indexOf(",");
+	    if(index>=0)  {
+		getStatesMap();
+                List<String> toks = StringUtil.splitUpTo(_address, ",", 2);
+		String county = toks.get(0);
+		String state  =toks.get(1);
+
+		//		System.out.println("address:" + _address);
+		place = resource.getPlace(county+"," + state);
+		//		resource.debug();
+		//		System.out.println("try:" +county+"," + state +": place:" + place);
+		if(place==null) {
+		    //		    System.out.println("state before:" +county+":" + state+":");
+		    state = (String)statesMap.get(state);
+		    //		    System.out.println("state after:" +county+"," + state);
+		    if(state!=null) {
+			place = resource.getPlace(county+"," + state);
+			//			System.out.println("try 2:" +county+"," + state +" place:" + place);
+		    }
+		}
+		if(place ==null) {
+		    //		    System.err.println("No place:" + address);
+		    //		    System.exit(0);
+		}
+		return place;
+	    }
+        }
+
+
 
         /*
         place = Place.getPlace(address);
