@@ -2667,7 +2667,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			enums.push([field.getId(),field.getLabel()]);
 		    });
 		header2 += HtmlUtils.span(["class","display-filterby"],
-					  "Color by: " + HtmlUtils.select("",["style","", "id",this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")));
+					  "Color by: " + HtmlUtils.select("",["style","", "id",this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+"&nbsp;";
 	    }
             if(filterBy.length>0) {
 		var searchBar = "";
