@@ -85,6 +85,9 @@ public class OutputType {
     /** The extra categorized menu */
     public static final int TYPE_OTHER = 1 << 4;
 
+    /** The extra categorized menu */
+    public static final int TYPE_CHILDREN = 1 << 5;
+
     /** _more_ */
     public static final int TYPE_CATEGORY = TYPE_OTHER;
 

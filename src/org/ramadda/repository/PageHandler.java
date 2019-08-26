@@ -2589,7 +2589,7 @@ public class PageHandler extends RepositoryManager {
         String links =
             getEntryManager().getEntryActionsTable(request, entry,
                 OutputType.TYPE_FILE | OutputType.TYPE_EDIT
-                | OutputType.TYPE_VIEW | OutputType.TYPE_OTHER, linkList,
+                | OutputType.TYPE_VIEW | OutputType.TYPE_OTHER| OutputType.TYPE_CHILDREN, linkList,
                     false, headerLabel);
 
 

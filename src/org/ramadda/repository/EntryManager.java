@@ -6845,6 +6845,26 @@ public class EntryManager extends RepositoryManager {
                                       + categorySB.toString()));
         }
 
+	if((typeMask & OutputType.TYPE_CHILDREN) != 0) {
+	    List<Entry> children = getChildren(request, entry);
+	    if(children.size()>0) {
+		StringBuilder childrenSB = new StringBuilder();
+		for(Entry child: children) {
+		    String url = getEntryUrl(request, child);
+		    String linkLabel = child.getName();
+                    linkLabel =
+                        HtmlUtils.img(getPageHandler().getIconUrl(request,
+                            child)) + HtmlUtils.space(1) + linkLabel;
+		    String href = HtmlUtils.href(url, linkLabel);
+		    childrenSB.append(href);
+		    childrenSB.append("<br>");
+		}
+		menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
+					  HtmlUtils.b(msg("Children")) + "<br>"
+					  + HtmlUtils.div(childrenSB.toString(),HtmlUtils.clazz("ramadda-menu-entries"))));
+	    }
+	}
+
         menu.append(HtmlUtils.close(HtmlUtils.TAG_TR));
         menu.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
 

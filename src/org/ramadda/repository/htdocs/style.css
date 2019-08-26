@@ -1022,6 +1022,14 @@ vertical-align:bottom;
    color: #000;
 }
 
+.ramadda-menu-entries {
+  max-width:300px;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-left:10px;
+}
+
 .ramadda-menu-block  {
    padding:0.75em;
    padding-top:1.0em;
