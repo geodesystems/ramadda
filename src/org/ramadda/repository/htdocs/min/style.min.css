@@ -90,6 +90,9 @@ a.ramadda-menubar-button:hover {
     color:#000;
 }
 
+.csv_db_field {
+    text-decoration: underline;
+}
 
 .ramadda-menubar-button:hover {
    text-decoration: underline;
