@@ -956,6 +956,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function() {
 		this.vectorMapApplied  = false;
 		this.updateUI();
+		if(this.getProperty("centerOnFilterChange",false)) {
+		    this.map.centerOnMarkers(null, false, false);
+		}
 	    },
         updateUI: function() {
             SUPER.updateUI.call(this);
