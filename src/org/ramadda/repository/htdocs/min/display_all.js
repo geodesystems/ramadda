@@ -1353,9 +1353,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
 		    if(filterValue == null || filterValue=="") continue;
-		    filterValue = ""+filterValue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
+			filterValue = ""+filterValue;
 			if((""+value)!==filterValue) {
 			    ok = false;
 			}
@@ -1372,6 +1372,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				ok = false;
 			}
 		    } else {
+			filterValue = ""+filterValue;
 			//TODO: add the prefix
 			value  = (""+value).toLowerCase();
 			if(value.indexOf(filterValue.toLowerCase())<0) {
@@ -4765,8 +4766,8 @@ function makePointData(json, derived, source) {
             elevationIdx = recordField.getIndex();
             //            console.log("Elevation idx:" + elevationIdx);
         } else if (recordField.isFieldDate()) {
-            dateIdx = recordField.getIndex();
-            dateIndexes.push(dateIdx);
+	    dateIdx = recordField.getIndex();
+	    dateIndexes.push(dateIdx);
         }
 
     }
@@ -4839,7 +4840,7 @@ function makePointData(json, derived, source) {
             else
                 tuple.elevation = NaN;
         }
-
+	
         for (var j = 0; j < dateIndexes.length; j++) {
             values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
         }
@@ -11666,7 +11667,6 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 var v1 = t1[sortField.getIndex()];
                 var v2 = t2[sortField.getIndex()];
 		
-		if(cnt++<100) console.log("Sort:" + v1 +" " + v2);
                 if (v1 < v2) return this.sortAscending?-1:1;
                 if (v1 > v2) return this.sortAscending?1:-1;
                 return 0;
@@ -11684,7 +11684,6 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		    if(!includeNaN) continue;
 		    value = "NA";
 		}
-		if(rowIdx<100)console.log(value);
 		html += "<tr valign=top class='display-ranking-row' what='" + obj.originalRow + "'><td> #" + (rowIdx + 1) + "</td><td>&nbsp;" + label + "</td><td align=right>&nbsp;" +
                     value + "</td></tr>";
             }
@@ -14068,6 +14067,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 
 
+		
 		if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
 		   select == "<=" || 	       select == "?>=" || select=="match") {
 		    var selectField = this.getProperty("selectField","");
@@ -14101,8 +14101,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				return;
 			    }
 			    if(isNaN(v)) return;
-
-
 			    if(select == "<") {
 				if(v < selectValueNum) {
 				    selected.push(r);
@@ -14172,7 +14170,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			continue;
 		
 		    }
-		    if(f.isString()) {
+		    if(s && f.isString()) {
 			headerTemplate = headerTemplate.replace("${" + f.getId() +"_uniques}",
 								s.uniqueCount);
 			footerTemplate = footerTemplate.replace("${" + f.getId() +"_uniques}",

@@ -760,6 +760,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 
 
+		
 		if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
 		   select == "<=" || 	       select == "?>=" || select=="match") {
 		    var selectField = this.getProperty("selectField","");
@@ -793,8 +794,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				return;
 			    }
 			    if(isNaN(v)) return;
-
-
 			    if(select == "<") {
 				if(v < selectValueNum) {
 				    selected.push(r);
@@ -864,7 +863,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			continue;
 		
 		    }
-		    if(f.isString()) {
+		    if(s && f.isString()) {
 			headerTemplate = headerTemplate.replace("${" + f.getId() +"_uniques}",
 								s.uniqueCount);
 			footerTemplate = footerTemplate.replace("${" + f.getId() +"_uniques}",

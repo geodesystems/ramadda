@@ -697,8 +697,8 @@ function makePointData(json, derived, source) {
             elevationIdx = recordField.getIndex();
             //            console.log("Elevation idx:" + elevationIdx);
         } else if (recordField.isFieldDate()) {
-            dateIdx = recordField.getIndex();
-            dateIndexes.push(dateIdx);
+	    dateIdx = recordField.getIndex();
+	    dateIndexes.push(dateIdx);
         }
 
     }
@@ -771,7 +771,7 @@ function makePointData(json, derived, source) {
             else
                 tuple.elevation = NaN;
         }
-
+	
         for (var j = 0; j < dateIndexes.length; j++) {
             values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
         }

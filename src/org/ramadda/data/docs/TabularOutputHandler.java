@@ -510,7 +510,6 @@ public class TabularOutputHandler extends OutputHandler {
                 for (Entry e : entries) {
                     lastResult = outputConvertProcessInner(request, e,
                             csvUtil, destDir, runDir, args, newFiles);
-		    System.err.println("R:" + lastResult);
                     if ( !csvUtil.getOkToRun()) {
                         break;
                     }

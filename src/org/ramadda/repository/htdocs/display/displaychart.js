@@ -3355,7 +3355,6 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 var v1 = t1[sortField.getIndex()];
                 var v2 = t2[sortField.getIndex()];
 		
-		if(cnt++<100) console.log("Sort:" + v1 +" " + v2);
                 if (v1 < v2) return this.sortAscending?-1:1;
                 if (v1 > v2) return this.sortAscending?1:-1;
                 return 0;
@@ -3373,7 +3372,6 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		    if(!includeNaN) continue;
 		    value = "NA";
 		}
-		if(rowIdx<100)console.log(value);
 		html += "<tr valign=top class='display-ranking-row' what='" + obj.originalRow + "'><td> #" + (rowIdx + 1) + "</td><td>&nbsp;" + label + "</td><td align=right>&nbsp;" +
                     value + "</td></tr>";
             }

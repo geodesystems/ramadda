@@ -1203,9 +1203,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
 		    if(filterValue == null || filterValue=="") continue;
-		    filterValue = ""+filterValue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
+			filterValue = ""+filterValue;
 			if((""+value)!==filterValue) {
 			    ok = false;
 			}
@@ -1222,6 +1222,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				ok = false;
 			}
 		    } else {
+			filterValue = ""+filterValue;
 			//TODO: add the prefix
 			value  = (""+value).toLowerCase();
 			if(value.indexOf(filterValue.toLowerCase())<0) {
