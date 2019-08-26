@@ -953,6 +953,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.applyVectorMap(true);
         },
 
+	colorByFieldChanged:function(field) {
+		this.haveCalledUpdateUI = false;
+		this.setProperty("colorBy", field);
+		this.vectorMapApplied  = false;
+		this.updateUI();
+	    },
 	dataFilterChanged: function() {
 		this.vectorMapApplied  = false;
 		this.updateUI();

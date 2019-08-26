@@ -292,6 +292,24 @@ public class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
+	StringBuilder all = new StringBuilder();
+
+        for (RecordField field : fields) {
+	    if(all.length()>0) all.append(",");
+	    all.append(field.getName());
+	}
+	sb.append("&nbsp;");
+	sb.append(
+		  HtmlUtils.mouseClickHref(
+					   HtmlUtils.call(
+							  "selectClick",
+							  HtmlUtils.comma(
+									  HtmlUtils.squote(target),
+									  HtmlUtils.squote(entry.getId()),
+									  HtmlUtils.squote(all.toString()),
+									  HtmlUtils.squote(type))), "All Fields"));
+	sb.append("<br>");
+
         for (RecordField field : fields) {
             sb.append("&nbsp;");
             sb.append(

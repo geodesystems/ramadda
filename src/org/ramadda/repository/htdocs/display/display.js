@@ -9,6 +9,7 @@ var ID_HEADER = "header";
 var ID_HEADER1 = "header1";
 var ID_HEADER2 = "header2";
 var ID_HEADER3 = "header3";
+var ID_FILTERBAR = "filterbar";
 var ID_TITLE = ATTR_TITLE;
 var ID_TITLE_EDIT = "title_edit";
 var ID_TOP_RIGHT = "topright";
@@ -2502,12 +2503,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var pointData = this.getData();
             if (pointData == null) return;
             this.filterFields = [];
+            this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
+
+	    
             var filterBy = this.getProperty("filterFields","",true).split(",");
             var fields= pointData.getRecordFields();
             var records = pointData.getRecords();
+	    var header2="";
+	    var searchBar  = "";
+	    if(this.colorByFields.length>0) {
+		var enums = [];
+		this.colorByFields.map(field=>{
+			enums.push([field.getId(),field.getLabel()]);
+		    });
+		header2 += HtmlUtils.span(["class","display-filterby"],
+					  "Color by: " + HtmlUtils.select("",["style","", "id",this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")));
+	    }
             if(filterBy.length>0) {
+		var searchBar = "";
 		var dateIds = [];
-                var searchBar  = "";
 		var hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 		var widgetStyle = "";
 		if(hideFilterWidget)
@@ -2593,14 +2607,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
 		var style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
-                this.jq(ID_HEADER2).html(HtmlUtils.div(["class","display-filterby","style",style],searchBar));
+		header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar);
+	    }
+
+	    this.jq(ID_HEADER2).html(header2);
+
+            if(filterBy.length>0) {
 		if(!hideFilterWidget) {
 		    for(var i=0;i<dateIds.length;i++) {
 			HtmlUtils.datePickerInit(dateIds[i]);
 		    }
 		}
 
-                this.jq(ID_HEADER2).find(".display-filter-range").mousedown(function(){
+                this.jq(ID_FILTERBAR).find(".display-filter-range").mousedown(function(){
 			var id = $(this).attr("id");
 			id = id.replace(/_min$/,"").replace(/_max$/,"");
 			var min = $("#" + id+"_min");
@@ -2640,7 +2659,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    });
 		    });
 
-                this.jq(ID_HEADER2).find("input, input:radio,select").change(function(){
+		let _this = this;
+                this.jq("colorbyselect").change(function(){
+			_this.colorByFieldChanged($(this).val());
+		    });
+
+                this.jq(ID_FILTERBAR).find("input, input:radio,select").change(function(){
                         var id = $(this).attr("id");
 			var value = $(this).val();
                         var fieldId = $(this).attr("fieldId");
@@ -2660,7 +2684,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     });
             }
         },
-		dataFilterChanged: function() {
+	colorByFieldChanged:function(field) {
+    },
+	dataFilterChanged: function() {
 		this.updateUI();
 	    },
         updateUI: function() {},

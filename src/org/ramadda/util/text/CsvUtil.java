@@ -1248,6 +1248,8 @@ public class CsvUtil {
                 "(parse the input as json)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
+        new Cmd("-split", "<columnl> <delimiter>",
+                "(split the column)"),
         new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",
                 "(create a new column from the values in the given column)"),
         new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
