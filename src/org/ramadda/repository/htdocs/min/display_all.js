@@ -19349,7 +19349,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
             var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
             var colorByAttr = this.getDisplayProp(source, "colorBy", null);
-            var colors = this.getColorTable(true);
+	    var colors;
+	    if(colorByAttr) {
+		//First get the ct from the field name
+		colors = this.getColorTable(true,colorByAttr +".colorTable");
+		if(!colors) {
+		    var c = this.getProperty(colorByAttr +".colors");
+		    if(c)
+			colors = c.split(",");
+		}
+		if(!colors)
+		    colors = this.getColorTable(true);
+	    }
+
             var sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
             var isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
