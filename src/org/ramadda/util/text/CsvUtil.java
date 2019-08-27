@@ -1283,6 +1283,8 @@ public class CsvUtil {
             "-unfurl",
             "<col to get new column header#> <value columns> <unique col>  <other columns>",
             "(make columns from data values)"),
+        new Cmd("-image",
+                "<col idx> suffix","(search for an image)"),
         new Cmd("-geocode",
                 "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
         new Cmd("-geocodeaddress",
@@ -2058,6 +2060,17 @@ public class CsvUtil {
 
                 continue;
             }
+
+            if (arg.equals("-image")) {
+                if ( !ensureArg(args, i, 2)) {
+                    return false;
+                }
+                List<String> cols = getCols(args.get(++i));
+                String suffix = args.get(++i);
+                info.getProcessor().addProcessor(new Converter.ImageSearch(cols,suffix));
+                continue;
+            }
+
 
 
             if (arg.equals("-geocode")) {

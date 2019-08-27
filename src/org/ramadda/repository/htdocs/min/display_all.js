@@ -13859,10 +13859,11 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 }
             }
 
-            function groupNode(id) {
+            function groupNode(id,field) {
                 $.extend(this,{
                         id: id,
-                        members:[],
+			    field:field,
+			    members:[],
                         isGroup:true,
                         getCount: function() {
                             if(this.members.length==0) return 0;
@@ -13971,7 +13972,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     }
                     var child = group.findGroup(value);
                     if(!child) {
-                        group.members.push(child = new groupNode(value));
+                        group.members.push(child = new groupNode(value,groupField));
                     }
                     group = child;
                 }
@@ -13998,9 +13999,12 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     html +="<table width=100% border=0><tr valign=top>";
                     for(var i=0;i<group.members.length;i++) {
                         var child = group.members[i];
+			var prefix="";
+			if(child.field)
+			    prefix = child.field.getLabel()+": ";
                         html+="<td width=" + width+"%>";
-                        html+=HtmlUtils.tag("div",["class","display-cards-header"],child.id +" (" + child.getCount()+")");
-                        html+= this.makeGroupHtml(child);
+			html+=HtmlUtils.tag("div",["class","display-cards-header"],prefix+child.id +" (" + child.getCount()+")");
+			html+= this.makeGroupHtml(child);
                         html+="</td>";
                     }
                     html +="</tr></table>";

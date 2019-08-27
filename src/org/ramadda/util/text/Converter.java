@@ -21,6 +21,7 @@ import org.ramadda.util.GeoUtils;
 import org.ramadda.util.Place;
 
 
+import org.json.*;
 import org.ramadda.util.Utils;
 
 
@@ -153,6 +154,79 @@ public abstract class Converter extends Processor {
 
 	    //	    System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
             return new Row(result);
+        }
+
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class ImageSearch extends Converter {
+	private String suffix;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         */
+        public ImageSearch(List<String> cols,String suffix) {
+            super(cols);
+	    this.suffix = suffix;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if (rowCnt++ == 0) {
+		row.add("image");
+		return row;
+	    }
+
+            List<Integer> indices = getIndices(info);
+	    String s="";
+            for (Integer idx : indices) {
+		s+= row.getString(idx)+" ";
+            }
+	    s+=suffix;
+	    //hack, hack
+	    String script = "/Users/jeffmc/bin/imagesearch.sh";
+	    try {
+		s = s.replace(" ","%s");
+		Process p = Runtime.getRuntime()
+		    .exec(new String[]{"sh", script,s});
+		String result = IOUtil.readContents(p.getInputStream()).trim();
+		System.err.println("image:" + s);
+		JSONObject obj      = new JSONObject(result);
+		JSONArray  values = obj.getJSONArray("value");
+		if(values.length()==0) {
+		    row.add("");
+		    return row;
+		}
+		JSONObject value = values.getJSONObject(0);
+		row.add(value.optString("contentUrl",""));
+		//		System.err.println(row);
+		//		System.exit(0);
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	    return row;
         }
 
     }
