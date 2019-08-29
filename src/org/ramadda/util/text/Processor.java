@@ -918,7 +918,8 @@ public abstract class Processor extends CsvOperator {
 
                 return row;
             }
-            handleRow(info.getWriter(), row);
+
+            handleRow(info, info.getWriter(), row);
 
             return row;
         }
@@ -967,7 +968,8 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        private void handleRow(PrintWriter writer, Row row) throws Exception {
+        private void handleRow(TextReader info, PrintWriter writer, Row row) throws Exception {
+	    boolean first = rowCnt++==0;
             String  theTemplate   = template;
             List    values        = row.getValues();
             boolean escapeColumns = true;
@@ -982,7 +984,7 @@ public abstract class Processor extends CsvOperator {
                         if (trim) {
                             sv = sv.trim();
                         }
-                        if ((colIdx == 0) && sv.startsWith("#")) {
+                        if ((first && sv.startsWith("#"))  ||  ((colIdx == 0) && info.getCommentChar()!=null  && sv.startsWith(info.getCommentChar()))) {
                             escapeColumns = false;
                         }
                         boolean addQuote = false;
@@ -1025,7 +1027,7 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
-        public void writeCsv(PrintWriter writer, List<Row> rows)
+        public void writeCsv(TextReader info, PrintWriter writer, List<Row> rows)
                 throws Exception {
             if (addPointHeader) {
                 Row header = rows.get(0);
@@ -1039,7 +1041,7 @@ public abstract class Processor extends CsvOperator {
 
             for (int i = 0; i < rows.size(); i++) {
                 Row row = rows.get(i);
-                handleRow(writer, row);
+                handleRow(info, writer, row);
 
             }
         }
@@ -1188,7 +1190,7 @@ public abstract class Processor extends CsvOperator {
                                          new FileOutputStream(
                                              info.getFilepath(filename)));
                 Processor.Printer p = new Processor.Printer(false);
-                p.writeCsv(writer, myRows);
+                p.writeCsv(info, writer, myRows);
                 writer.close();
             }
 

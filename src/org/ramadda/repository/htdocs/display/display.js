@@ -2502,11 +2502,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let _this = this;
             var pointData = this.getData();
             if (pointData == null) return;
-            this.filterFields = [];
+	    this.filterFields = [];
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
 
 	    
             var filterBy = this.getProperty("filterFields","",true).split(",");
+	    console.log("f:" + filterBy);
             var fields= pointData.getRecordFields();
             var records = pointData.getRecords();
 	    var header2="";

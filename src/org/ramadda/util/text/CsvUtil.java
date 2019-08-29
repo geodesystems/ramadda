@@ -343,6 +343,11 @@ public class CsvUtil {
                 continue;
             }
 
+	    if(arg.equals("-commentChar")) {
+		textReader.setCommentChar(args.get(++i));
+		continue;
+	    }
+
             if (arg.startsWith("-header")) {
                 textReader.setFirstRow(
                     new Row(StringUtil.split(args.get(++i), ",")));

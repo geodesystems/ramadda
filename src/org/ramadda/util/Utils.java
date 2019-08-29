@@ -418,10 +418,11 @@ public class Utils {
         //        tokenizer.setQuoteChar('"');
         while (tokenizer.hasNext()) {
             String tok = tokenizer.nextToken();
+	    
             if (tok == null) {
                 tok = "";
             }
-	    //	    System.err.println("tok:" + tok);
+	    //	    System.err.println("\ttok:" + tok);
             toks.add(tok);
         }
 

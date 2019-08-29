@@ -212,7 +212,7 @@ public abstract class Converter extends Processor {
 		Process p = Runtime.getRuntime()
 		    .exec(new String[]{"sh", script,s});
 		String result = IOUtil.readContents(p.getInputStream()).trim();
-		System.err.println("image:" + s);
+		System.err.println(rowCnt+" image:" + s);
 		JSONObject obj      = new JSONObject(result);
 		JSONArray  values = obj.getJSONArray("value");
 		if(values.length()==0) {
@@ -220,7 +220,7 @@ public abstract class Converter extends Processor {
 		    return row;
 		}
 		JSONObject value = values.getJSONObject(0);
-		row.add(value.optString("contentUrl",""));
+		row.add(value.optString("thumbnailUrl",""));
 		//		System.err.println(row);
 		//		System.exit(0);
 	    } catch(Exception exc) {

@@ -407,6 +407,16 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 function RamaddaCardsDisplay(displayManager, id, properties) {
     var ID_RESULTS = "results";
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CARDS, properties);
+    Utils.importJS(ramaddaBaseUrl + "/lib/color-thief.umd.js",
+		   () => {},
+		   (jqxhr, settings, exception) => {
+		       console.log("err");
+		   });
+
+
+
+
+    
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -414,6 +424,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             return "";
         },
         updateUI: function() {
+        	this.colorAnalysisEnabled = this.getProperty("doColorAnalysis");
             var pointData = this.getData();
             if (pointData == null) return;
             var allFields = pointData.getRecordFields();
@@ -451,12 +462,16 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 	    if(!this.groupByHtml) {
 		this.groupByHtml = "";
+		if(this.colorAnalysisEnabled)
+		    this.groupByHtml +=  HtmlUtils.span(["class","ramadda-button","id",this.getDomId("docolors")], "Do colors")+" " +
+			HtmlUtils.span(["class","ramadda-button","id",this.getDomId("docolorsreset")], "Reset");
 		if(this.groupByFields.length>0) {
 		    var options = [["","--"]];
 		    this.groupByFields.map(field=>{
 			    options.push([field.getId(),field.getLabel()]);
 			});
-		    this.groupByHtml =  HtmlUtils.span(["class","display-fitlerby-label"], " Group by: ");
+
+		    this.groupByHtml +=  HtmlUtils.span(["class","display-fitlerby-label"], " Group by: ");
 		    for(var i=0;i<this.groupByMenus;i++) {
 			var selected = "";
 			if(i<this.initGrouping.length) {
@@ -466,6 +481,14 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		    }
 		    this.groupByHtml+="&nbsp;";
 		    this.jq(ID_HEADER1).html(HtmlUtils.div(["class","display-filterby"],this.groupByHtml));
+		    this.jq("docolors").button().click(()=>{
+			    this.analyzeColors();
+			});
+		    this.jq("docolorsreset").button().click(()=>{
+			    this.updateUI();
+			});
+
+
 		}
 	    }
 
@@ -480,6 +503,39 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
             this.displaySearchResults(records,theFields);
          },
+	analyzeColors: function() {
+		if(!window["ColorThief"]) {
+		    setTimeout(()=>this.analyzeColors(),1000);
+		    return;
+		}
+		const colorThief = new ColorThief();
+		var cnt = 0;
+		while(true) {
+		    var img = document.querySelector('#' + this.getDomId("gallery")+"img" + cnt);
+		    var div = $('#' + this.getDomId("gallery")+"div" + cnt);
+		    cnt++;
+		    if(!img) {
+			return;
+			
+		    }
+		    img.crossOrigin = 'Anonymous';
+		    // Make sure image is finished loading
+		    //		    if (img.complete) {
+			var c = colorThief.getColor(img);
+			var p = colorThief.getPalette(img);
+			var width = img.width/p.length;
+			var html = "";
+			for(var i=0;i<p.length;i++) {
+			    var c = p[i];
+			    html+=HtmlUtils.div(["style","display:inline-block;width:" + width + "px;height:" + img.height +"px;background:rgb(" + c[0]+"," + c[1] +"," + c[2]+");"],"");
+			}
+			div.css("width",img.width);
+			div.css("height",img.height);
+			div.html(html);
+			//			div.css("background","rgb(" + c[0]+"," + c[1] +"," + c[2]);
+			img.style.display = "none";
+		}
+	    },
 	 displaySearchResults: function(records, fields) {
 		records= this.sortRecords(records);
             var fontSize = this.getProperty("fontSize",null);
@@ -552,6 +608,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             var topGroup = new groupNode("");
             var colorMap ={};
             var colorCnt = 0;
+	    var imgCnt = 0;
             for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
                 var contents = "";
@@ -589,7 +646,10 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 var  imgAttrs= ["class","display-cards-popup","data-fancybox",this.getDomId("gallery"),"data-caption",caption];
 		if(img) img = img.trim();
                 if(img!="") {
-                    img =  HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),imgAttrs)+label;
+		    if(this.colorAnalysisEnabled)
+			img = ramaddaBaseUrl+"/proxy?url=" + img;
+                    img =  HtmlUtils.href(img, HtmlUtils.div(["id",this.getDomId("gallery")+"div" + imgCnt], HtmlUtils.image(img,["width",width,"id",this.getDomId("gallery")+"img" + imgCnt])),imgAttrs)+label;
+							     imgCnt++;
                     html = HtmlUtils.div(["class","display-cards-item", "title", tooltip, "style","margin:" + margin+"px;"], img);
                 } else {
                     var style = "";
