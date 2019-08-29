@@ -1789,7 +1789,11 @@ var HtmlUtils = {
                     item = item[0];
                 }
                 var extra = "";
-                if(selected === item) extra=" selected ";
+		if(selected && Array.isArray(selected)) {
+		    if(selected.indexOf(item)>=0) extra=" selected ";
+		} else {
+		    if(selected === item) extra=" selected ";
+		}
                 select+="<option " + extra +" value='" + item +"'>" + label +"</option>";
             });
         select+=this.closeTag("select");

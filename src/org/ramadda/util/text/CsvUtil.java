@@ -1265,7 +1265,7 @@ public class CsvUtil {
             "(apply the operator to the given columns and create new one)"),
         new Cmd("-round", "<columns>", "round the values"),
         new Cmd("-sum", "<key columns> <value columns>",
-                "sum values keying on name column value"),
+                "sum values keying on name column value. If no value columns specified then do a count"),
         new Cmd(
             "-join",
             "<key columns> <value columns> <file> <key 2 columns> <value 2 columns>",
@@ -1295,7 +1295,8 @@ public class CsvUtil {
         new Cmd("-geocodeaddress",
                 "<col indices> Latitude Longitude <prefix> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
-        new Cmd("-gender", "<column>"), new Cmd("-count", "", "(show count)"),
+        new Cmd("-gender", "<column>"), 
+	new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
         new Cmd("-skipline", " <pattern>",
                 "(skip any line that matches the pattern)"),
@@ -1684,7 +1685,6 @@ public class CsvUtil {
                 List<String> values = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Summer(keys,
                         values));
-
                 continue;
             }
 
@@ -1701,7 +1701,6 @@ public class CsvUtil {
 
             if (arg.equals("-count")) {
                 info.getProcessor().addProcessor(new Processor.Counter());
-
                 continue;
             }
 

@@ -1180,7 +1180,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    continue;
 		}
 		var value = $("#" + this.getDomId("filterby_" + filterField.getId())).val();
-
 		if(filterField.getType()=="date"){
 		    var date1 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date1")).val();
 		    var date2 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date2")).val();
@@ -1192,8 +1191,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date2 =  Utils.parseDate(date2);
 		    else
 			date2=null;
-		    value = [date1,date2];
-		} 
+		    value = [date1,date2]; 
+		}  else {
+		    if(!Array.isArray(value)) value = [value];
+		}
 		values.push(value);
 	    }
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
@@ -1203,12 +1204,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!ok) break;
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
-		    if(filterValue == null || filterValue=="") continue;
+		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]=="")) continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
-			filterValue = ""+filterValue;
-			if((""+value)!==filterValue) {
-			    ok = false;
+			ok = false;
+			for(var j=0;j<filterValue.length;j++) {
+			    var v = ""+filterValue[j];
+			    if((""+value)==v) {
+				ok = true;
+				break;
+			    }
 			}
 		    } else if(filterField.isNumeric) {
 			if(!isNaN(filterValue[0]) && value<filterValue[0]) ok = false;
@@ -1223,11 +1228,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				ok = false;
 			}
 		    } else {
-			filterValue = ""+filterValue;
-			//TODO: add the prefix
-			value  = (""+value).toLowerCase();
-			if(value.indexOf(filterValue.toLowerCase())<0) {
-			    ok = false;
+			ok = false;
+			for(var j=0;j<filterValue.length;j++) {
+			    var v = ""+filterValue[j];
+			    //TODO: add the prefix
+			    value  = (""+value).toLowerCase();
+			    if(value.indexOf(v.toLowerCase())>=0) {
+				ok = true;
+				break;
+			    }
 			}
 		    }
 		}
@@ -2507,7 +2516,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    
             var filterBy = this.getProperty("filterFields","",true).split(",");
-	    console.log("f:" + filterBy);
             var fields= pointData.getRecordFields();
             var records = pointData.getRecords();
 	    var header2="";
@@ -2570,7 +2578,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    for(var j=0;j<enumValues.length;j++)
 				enums.push(enumValues[j]);
 			}
-                        widget = HtmlUtils.select("",["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()],enums,dfltValue);
+			var attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
+			if(this.getProperty(filterField.getId() +".filterMultiple",false)) {
+			    attrs.push("multiple");
+			    attrs.push("");
+			    attrs.push("size");
+			    attrs.push(this.getProperty(filterField.getId() +".filterMultipleSize","3"));
+			    dfltValue = dfltValue.split(",");
+			}
+                        widget = HtmlUtils.select("",attrs,enums,dfltValue);
 		    } else if(filterField.isNumeric) {
 			var min=0;
 			var max=0;

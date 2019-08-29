@@ -2542,8 +2542,24 @@ public abstract class Processor extends CsvOperator {
                 }
             }
 
+	    if(valueIndices.size()==0) {
+		newHeader.add("Count");
+	    }
             newRows.add(newHeader);
             for (String key : keys) {
+		if(valueIndices.size()==0) {
+		    //just count them
+		    List<Row> rowGroup = rowMap.get(key);
+		    Row row = rowGroup.get(0);
+		    Row newRow = new Row();
+		    newRows.add(newRow);
+		    for (int i : uniqueIndices) {
+			newRow.add(row.get(i));
+		    }
+		    newRow.add(rowGroup.size());
+		    continue;
+		}
+
                 for (int i = 0; i < array.length; i++) {
                     array[i] = null;
                 }
@@ -2577,6 +2593,8 @@ public abstract class Processor extends CsvOperator {
 
 
     }
+
+
 
 
     /**
