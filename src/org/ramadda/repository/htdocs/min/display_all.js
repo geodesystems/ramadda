@@ -13968,7 +13968,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         }
                     }
                 }
-                if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
+                if(this.labelField) label = row[this.labelField.getIndex()];
                 var html ="";
                 var img = null;
                 if(this.imageField) {

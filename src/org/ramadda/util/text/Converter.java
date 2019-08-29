@@ -743,7 +743,7 @@ public abstract class Converter extends Processor {
                 }
                 String unit = StringUtil.findPattern(col,
                                   ".*?\\(([^\\)]+)\\).*");
-                //                    System.err.println ("COL:" + col +" unit: " + unit);
+		System.err.println ("COL:" + col +" unit: " + unit);
                 StringBuffer attrs = new StringBuffer();
                 if (label != null) {
                     attrs.append("label=\"" + label + "\" ");
