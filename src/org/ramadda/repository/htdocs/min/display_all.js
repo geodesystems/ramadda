@@ -14301,7 +14301,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_min}",min);
 			    footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_max}",max);
 			} else {
-			    var value = $("#" + this.getDomId("filterby_" + f.getId())).val().trim();
+			    var widget =$("#" + this.getDomId("filterby_" + f.getId())); 
+			    if(!widget.val || widget.val()==null) continue;
+			    var value = widget.val().trim();
 			    //${filter_id template="sdsds"}
 			    if(value=="") {
 				var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
