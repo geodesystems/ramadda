@@ -14271,6 +14271,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		for(var i=0;i<fields.length;i++) {
 		    var f = fields[i];
 		    var s = summary[f.getId()];
+		    if(!s) continue;
 		    if(f.isDate) {
 			headerTemplate = headerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
 			footerTemplate = footerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
