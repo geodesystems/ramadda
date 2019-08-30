@@ -2542,8 +2542,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     this.filterFields.push(filterField);
                     var widget;
                     var widgetId = this.getDomId("filterby_" + filterField.getId());
-		    var dfltValue = this.getProperty(filterField.getId() +".filterValue","-all-");
                     if(filterField.getType() == "enumeration") {
+			var dfltValue = this.getProperty(filterField.getId() +".filterValue","-all-");
 			var filterValues = this.getProperty(filterField.getId()+".filterValues");
                         var enums = null;
 			if (filterValues) {
@@ -2617,6 +2617,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			dateIds.push(widgetId+"_date1");
 			dateIds.push(widgetId+"_date2");
                     } else {
+			var dfltValue = this.getProperty(filterField.getId() +".filterValue","");
                         widget =HtmlUtils.input("",dfltValue,["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()]);
                     }
 		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
