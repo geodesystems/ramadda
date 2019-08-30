@@ -525,46 +525,53 @@ public class GeoUtils {
                     String abbrev   = place2.getLowerCaseSuffix();
                     String longName = (String) statesMap.get(abbrev);
                     String cityName = place2.getLowerCaseName();
+		    //		    System.out.println("prop:" +cityName + "," + abbrev);
                     citiesMap.put(cityName + "," + abbrev, place2);
                     if (longName != null) {
                         citiesMap.put(cityName + ","
                                       + longName.toLowerCase(), place2);
                         //                      System.out.println(cityName+"," + longName.toLowerCase());
                     }
-                    //              System.out.println(cityName+"," + abbrev);
-
+		    //		    System.out.println("prop:" + cityName+"," + abbrev);
                 }
             }
 
             try {
                 List<String> toks = StringUtil.splitUpTo(address, ",", 2);
-                if (toks.size() > 1) {
-                    String city   = toks.get(0).toLowerCase().trim();
-                    String state  = ((toks.size() > 0)
-                                     ? toks.get(1)
-                                     : null);
-                    Place  place2 = null;
-                    if (state != null) {
-                        state  = state.toLowerCase();
-                        place2 = citiesMap.get(city + "," + state);
-                        if (place2 != null) {
-                            return place2;
-                        }
-                        for (String suffix : citySuffixes) {
-                            place2 = citiesMap.get(city + suffix + ","
-                                    + state);
-                            if (place2 != null) {
-                                return place2;
-                            }
-                        }
-                    }
-		    if (state != null) {
-			resource = Place.getResource("cities");
-			place = resource.getPlace(city+"," + state);
-			if(place!=null) return place;
+		String city   = toks.get(0).toLowerCase().trim();
+		String state  = ((toks.size() > 1)
+				 ? toks.get(1)
+				 : null);
+		//The resource file has certain cities with state=** for big cities
+		if(state==null) state="**";
+		Place  place2 = null;
+		if (state != null) {
+		    state  = state.toLowerCase();
+		    state = state.replaceAll("\\.","");
+		    String[]states = {state, (String) statesMap.get(state),"**"};
+		    for(String st: states) {
+			if(st==null) continue;
+			//			System.out.println(city + "," + st);
+			place2 = citiesMap.get(city + "," + st);
+			if (place2 != null) {
+			    return place2;
+			}
+			for (String suffix : citySuffixes) {
+			    //			    System.out.println(city + suffix+"," + st);
+			    place2 = citiesMap.get(city + suffix + ","
+						   + st);
+			    if (place2 != null) {
+				return place2;
+			    }
+			}
 		    }
 		}
 
+		if (state != null) {
+		    resource = Place.getResource("cities");
+		    place = resource.getPlace(city+"," + state);
+		    if(place!=null) return place;
+		}
             } catch (Exception exc) {
                 exc.printStackTrace();
             }
