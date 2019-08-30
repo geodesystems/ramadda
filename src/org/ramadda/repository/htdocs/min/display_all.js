@@ -1354,7 +1354,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!ok) break;
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
-		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]=="")) continue;
+
+		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]=="-all-")) continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
 			ok = false;
@@ -1411,7 +1412,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 dataList = list;
             }
-
 
 
 	    if(this.getProperty("binDate")) {
@@ -2691,7 +2691,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     this.filterFields.push(filterField);
                     var widget;
                     var widgetId = this.getDomId("filterby_" + filterField.getId());
-		    var dfltValue = this.getProperty(filterField.getId() +".filterValue","");
+		    var dfltValue = this.getProperty(filterField.getId() +".filterValue","-all-");
                     if(filterField.getType() == "enumeration") {
 			var filterValues = this.getProperty(filterField.getId()+".filterValues");
                         var enums = null;
@@ -2707,7 +2707,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 			if(enums == null) {
 			    var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
-			    enums = includeAll?[["","All"]]:[];
+			    enums = includeAll?[["-all-","All"]]:[];
 			    var enumValues = [];
 			    var seen = {};
 			    records.map(record=>{
@@ -2766,8 +2766,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         widget =HtmlUtils.input("",dfltValue,["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()]);
                     }
 		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
-		    if(!hideFilterWidget)
-			widget = HtmlUtils.div(["style","display:inline-block;"], HtmlUtils.span(["class","display-fitlerby-label"], label) + ": " + widget);
+		    if(!hideFilterWidget) {
+			var tt = label;
+			if(label.length>50) label = label.substring(0,49)+"...";
+			widget = HtmlUtils.div(["style","display:inline-block;"], HtmlUtils.span(["class","display-filterby-label","title",tt], label+": ") + widget);
+		    }
 		    //                    if(i==0) searchBar += "<br>Display: ";
 		    
                     searchBar+=widget +(hideFilterWidget?"":"&nbsp;&nbsp;");
@@ -14683,11 +14686,14 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			    values:[],
 			    min:value,
 			    max:value,
+			    total:0,
 			    values:[],
 			    numbers:[],
+			    field:f
 			}
 		    }
 		    var s = summary[f.getId()];
+		    if(!s) continue;
 		    if(f.isNumeric) {
 			s.numbers.push(value);
 			if(isNaN(s.max)) s.max = value;
@@ -14700,6 +14706,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			    s.counts[value] = tuple;
 			    s.values.push(tuple);
 			}
+			s.total++;
 			s.counts[value].count++;
 		    }
                 }
@@ -14746,10 +14753,12 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    }
 		}
 
-		html += HtmlUtils.openTag("div", ["class","display-frequency-table"]);
+		html += HtmlUtils.openTag("div", ["class","display-frequency-table","style",this.getProperty("floatTable",false)?"":"display:block;"]);
 		html += HtmlUtils.openTag("table", ["id",this.getDomId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), "class", "stripe row-border nowrap ramadda-table"]);
 		html += HtmlUtils.openTag("thead", []);
-		html += HtmlUtils.tr([], HtmlUtils.th([], f.getLabel()) + HtmlUtils.th(["align","right"], "Count"));
+		var label =  HtmlUtils.span(["title","Click to reset","class","display-frequency-label","data-field",s.field.getId()],f.getLabel());
+
+		html += HtmlUtils.tr([], HtmlUtils.th([], HtmlUtils.div(["style","max-width:300px;overflow-x:auto;"], label)) + HtmlUtils.th(["align","right","width","20%"], HtmlUtils.div(["style","text-align:right"],"Count"))+ HtmlUtils.th(["align","right","width","20%"],  HtmlUtils.div(["style","text-align:right"],"Percent")));
 		html += HtmlUtils.closeTag("thead");
 		html += HtmlUtils.openTag("tbody", []);
 		if(!f.isNumeric) {
@@ -14761,18 +14770,40 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		}
 		for(var i=0;i<s.values.length;i++) {
 		    var value = s.values[i].value;
+		    var label = value;
+		    if(label=="") label="&lt;blank&gt;";
 		    var count = s.values[i].count;
 		    if(count==0) continue;
+		    value = HtmlUtils.span(["title","Click to select","class","display-frequency-value","data-field",s.field.getId(),"data-value",value],label);
 		    html += HtmlUtils.tr([], 
-HtmlUtils.td([], value) +
-HtmlUtils.td(["align", "right"], count)
-);
+					 HtmlUtils.td([], value) +
+					 HtmlUtils.td(["align", "right"], count)+
+					 HtmlUtils.td(["align", "right"], s.total==0?"0":Math.round((count/s.total*100))+"%")
+					 );
 		}
 		html += HtmlUtils.closeTag("tbody");
 		html += HtmlUtils.closeTag("table");
 		html += HtmlUtils.closeTag("div");
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    let _this = this;
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-value").click(function(){
+		    _this.handleEventPropertyChanged(_this,{
+			    property: "filterValue",
+				id:"id",
+				fieldId: $(this).attr("data-field"),
+				value: $(this).attr("data-value")
+				    });
+		});
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-label").click(function(){
+		    _this.handleEventPropertyChanged(_this,{
+			    property: "filterValue",
+				id:"id",
+				fieldId: $(this).attr("data-field"),
+				value: "-all-"
+				    });
+		});
+
 	    for (var col = 0; col < fields.length; col++) {
 		HtmlUtils.formatTable("#" +this.getDomId("summary"+col),{});
 	    }

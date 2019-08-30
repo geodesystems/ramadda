@@ -40,8 +40,11 @@
   font-size:75% !important;
 }
 
-.display-fitlerby-label {
+.display-filterby-label {
     font-weight: bold;
+    max-width:300px;
+    overflow-x:auto;
+    xdisplay:block;
 }
 
 .display-correlation {
@@ -1502,5 +1505,13 @@ text-align:center;
 .display-frequency-table {
   margin:5px;
   vertical-align:top;
-   display:inline-block;
+  display:inline-block;
+}
+
+.display-frequency-label:hover {
+cursor:pointer;
+}
+
+.display-frequency-value:hover {
+cursor:pointer;
 }

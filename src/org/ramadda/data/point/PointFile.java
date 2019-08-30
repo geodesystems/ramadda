@@ -910,10 +910,13 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         //x[unit="m"],y[unit="m"],z[unit="m"],red[],green[],blue[],amplitude[]
         //        System.err.println ("fields:" + fieldString);
         String defaultMissing     = getProperty(ATTR_MISSING, (String) null);
-        String[]          toks    = fieldString.split(",");
+	List<String> toks = Utils.tokenizeColumns(fieldString,",");
+	//        String[]          toks    = fieldString.split(",");
         List<RecordField> fields  = new ArrayList<RecordField>();
         int               paramId = 1;
         for (String tok : toks) {
+	    tok =tok.replaceAll("%2C",",");
+	    System.err.println("TOK:" + tok);
             List<String> pair  = StringUtil.splitUpTo(tok, "[", 2);
             String       name  = pair.get(0).trim();
             String       attrs = ((pair.size() > 1)

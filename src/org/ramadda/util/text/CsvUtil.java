@@ -1253,6 +1253,7 @@ public class CsvUtil {
                 "(parse the input as json)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
+	//        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
         new Cmd("-split", "<columnl> <delimiter>",
                 "(split the column)"),
         new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",

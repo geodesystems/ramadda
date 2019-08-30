@@ -1204,7 +1204,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!ok) break;
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
-		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]=="")) continue;
+
+		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]=="-all-")) continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
 			ok = false;
@@ -1261,7 +1262,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 dataList = list;
             }
-
 
 
 	    if(this.getProperty("binDate")) {
@@ -2541,7 +2541,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     this.filterFields.push(filterField);
                     var widget;
                     var widgetId = this.getDomId("filterby_" + filterField.getId());
-		    var dfltValue = this.getProperty(filterField.getId() +".filterValue","");
+		    var dfltValue = this.getProperty(filterField.getId() +".filterValue","-all-");
                     if(filterField.getType() == "enumeration") {
 			var filterValues = this.getProperty(filterField.getId()+".filterValues");
                         var enums = null;
@@ -2557,7 +2557,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 			if(enums == null) {
 			    var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
-			    enums = includeAll?[["","All"]]:[];
+			    enums = includeAll?[["-all-","All"]]:[];
 			    var enumValues = [];
 			    var seen = {};
 			    records.map(record=>{
@@ -2616,8 +2616,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         widget =HtmlUtils.input("",dfltValue,["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()]);
                     }
 		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
-		    if(!hideFilterWidget)
-			widget = HtmlUtils.div(["style","display:inline-block;"], HtmlUtils.span(["class","display-fitlerby-label"], label) + ": " + widget);
+		    if(!hideFilterWidget) {
+			var tt = label;
+			if(label.length>50) label = label.substring(0,49)+"...";
+			widget = HtmlUtils.div(["style","display:inline-block;"], HtmlUtils.span(["class","display-filterby-label","title",tt], label+": ") + widget);
+		    }
 		    //                    if(i==0) searchBar += "<br>Display: ";
 		    
                     searchBar+=widget +(hideFilterWidget?"":"&nbsp;&nbsp;");

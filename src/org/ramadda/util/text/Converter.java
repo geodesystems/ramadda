@@ -719,7 +719,7 @@ public abstract class Converter extends Processor {
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
                                      "^3").replaceAll("\n", " ");
                 String id =
-                    col.replaceAll("\\([^\\)]+\\)", "").replaceAll("-",
+                    col.replaceAll("\\([^\\)]+\\)", "").replaceAll("\\?","").replaceAll("\\$","").replaceAll(",","_").replaceAll("-",
                                    "_").trim().toLowerCase().replaceAll(" ",
                                        "_").replaceAll(":", "_");
 
@@ -745,6 +745,8 @@ public abstract class Converter extends Processor {
                                   ".*?\\(([^\\)]+)\\).*");
                 StringBuffer attrs = new StringBuffer();
                 if (label != null) {
+		    label = label.replaceAll(",","%2C").replaceAll("<br>"," ").replaceAll("<p>"," ");
+		    label = label.replaceAll("  +"," ");
                     attrs.append("label=\"" + label + "\" ");
                 }
                 if (desc != null) {
