@@ -2806,8 +2806,12 @@ function initMapFunctions(theMap) {
                 }
                 for (var layer in this.getMap().layers) {
                     layer = this.getMap().layers[layer];
-                    if (!layer.getDataExtent) continue;
-                    if (layer.isBaseLayer || !layer.getVisibility()) continue;
+                    if (!layer.getDataExtent) {
+			continue;
+		    }
+                    if (layer.isBaseLayer || !layer.getVisibility()) {
+			continue;
+		    }
                     var dataBounds = layer.getDataExtent();
                     if (dataBounds) {
                         var latlon = this.transformProjBounds(dataBounds);

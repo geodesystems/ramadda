@@ -160,17 +160,43 @@ filterFields=&quot;elev,elev_gain,distance,class,range&quot;
  -row
 </pre>
 
-<p>
-You can specify an initial filter value for a field with &lt;field_name&gt;.filterValue=&quot;some value&quot; attribute. 
-<br>
+Filter attributes:
+
+<ul>
+<li> filterFields="field1,field2"<br>
+The fields to filter on
+
+<li> hideFilterWidget=true<br>
+Don't show the filter widgets. 
+
+<li> &lt;field_name&gt;.filterValue=&quot;some value&quot; <br>
+Specify an initial filter value
+
+
+<li> &lt;field_name&gt;.includeAll=&quot;false&quot;<br>
 For enumerated values a menu of items is shown. To not have the "All" value 
-add a  &lt;field_name&gt;.includeAll=&quot;false&quot; attribute. 
-<br>
-For numeric values the min and max from the data is used. To override this 
-add   &lt;field_name&gt;.filterValueMin=&quot;min value&quot and 
-&lt;field_name&gt;.filterValueMax=&quot;max value&quot attributes.
-<br>
-Specify an alternative label with a  &lt;field_name&gt;.filterLabel=&quot;some label&quot; attribute. 
+add a   attribute. 
+
+<li> &lt;field_name&gt;.filterMultiple=&quot;true&quot;<br>
+Support multiple values to filter on
+
+<li> &lt;field_name&gt;.filterMultipleSize=&quot;5&quot;<br>
+How big a selection menu to show
+
+<li> &lt;field_name&gt;.filterValues=&quot;value1,value2,..&quot;  <br>
+Specify values to use in the filter menu instead of the values in the data
+
+
+<li> &lt;field_name&gt;.filterValueMin=&quot;min value&quot, &lt;field_name&gt;.filterValueMax=&quot;max value&quot;<br>
+Use these to specify initial values for numeric fields.
+
+<li> &lt;field_name&gt;.filterLabel=&quot;some label&quot; <br>
+Specify an alternative label to display with the filter widget
+
+<li> &lt;field_name&gt;.filterPrefix=&quot;some prefix&quot;, &lt;field_name&gt;.filterSuffix=&quot;some suffix&quot;<br>
+Specify extra text to wrap the filter value 
+
+</ul>
 
 
 

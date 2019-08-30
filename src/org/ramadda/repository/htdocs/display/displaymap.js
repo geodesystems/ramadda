@@ -873,9 +873,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		*/
 	    }
-
-
-
             this.vectorLayer.redraw();
             if (maxExtent) {
                 this.map.map.zoomToExtent(maxExtent, true);
@@ -963,7 +960,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.vectorMapApplied  = false;
 		this.updateUI();
 		if(this.getProperty("centerOnFilterChange",false)) {
-		    this.map.centerOnMarkers(null, false, false);
+		    if (this.vectorLayer && this.points) {
+			//If we have  a map then don't do anything?
+		    } else {
+			this.map.centerOnMarkers(null, false, false);
+		    }
 		}
 	    },
         updateUI: function() {
