@@ -343,10 +343,11 @@ public class CsvUtil {
                 continue;
             }
 
-	    if(arg.equals("-commentChar")) {
-		textReader.setCommentChar(args.get(++i));
-		continue;
-	    }
+            if (arg.equals("-commentChar")) {
+                textReader.setCommentChar(args.get(++i));
+
+                continue;
+            }
 
             if (arg.startsWith("-header")) {
                 textReader.setFirstRow(
@@ -1237,7 +1238,9 @@ public class CsvUtil {
         new Cmd("-suffix", "<col #> <suffix>", "(add suffix to column)"),
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
         new Cmd("-changerow", "<row> <pattern> <substitution string>"),
-        new Cmd("-extract", "<col #> <pattern> <replace with> <New column name>","(extract text from column and make a new column)"),
+        new Cmd("-extract",
+                "<col #> <pattern> <replace with> <New column name>",
+                "(extract text from column and make a new column)"),
         new Cmd("-formatdate",
                 "<col #s> <intial date format> <target date format>"),
         new Cmd("-map", "<col #> <new columns name> <value newvalue ...>",
@@ -1253,9 +1256,8 @@ public class CsvUtil {
                 "(parse the input as json)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
-	//        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
-        new Cmd("-split", "<columnl> <delimiter>",
-                "(split the column)"),
+        //        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
+        new Cmd("-split", "<columnl> <delimiter>", "(split the column)"),
         new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",
                 "(create a new column from the values in the given column)"),
         new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
@@ -1265,8 +1267,9 @@ public class CsvUtil {
             "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
             "(apply the operator to the given columns and create new one)"),
         new Cmd("-round", "<columns>", "round the values"),
-        new Cmd("-sum", "<key columns> <value columns>",
-                "sum values keying on name column value. If no value columns specified then do a count"),
+        new Cmd(
+            "-sum", "<key columns> <value columns>",
+            "sum values keying on name column value. If no value columns specified then do a count"),
         new Cmd(
             "-join",
             "<key columns> <value columns> <file> <key 2 columns> <value 2 columns>",
@@ -1281,23 +1284,19 @@ public class CsvUtil {
             "(read the id,value from file and substitute the value in the dest file col idx)"),
         new Cmd("-explode", "<col #> ",
                 "(make separate files based on value of column)"),
-        new Cmd(
-            "-break",
-            "<label1> <label2> <columns",
-            "(break apart column values and make new rows)"),
+        new Cmd("-break", "<label1> <label2> <columns",
+                "(break apart column values and make new rows)"),
         new Cmd(
             "-unfurl",
             "<col to get new column header#> <value columns> <unique col>  <other columns>",
             "(make columns from data values)"),
-        new Cmd("-image",
-                "<col idx> suffix","(search for an image)"),
+        new Cmd("-image", "<col idx> suffix", "(search for an image)"),
         new Cmd("-geocode",
                 "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
         new Cmd("-geocodeaddress",
                 "<col indices> Latitude Longitude <prefix> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
-        new Cmd("-gender", "<column>"), 
-	new Cmd("-count", "", "(show count)"),
+        new Cmd("-gender", "<column>"), new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
         new Cmd("-skipline", " <pattern>",
                 "(skip any line that matches the pattern)"),
@@ -1644,8 +1643,8 @@ public class CsvUtil {
                 String       label1 = args.get(++i);
                 String       label2 = args.get(++i);
                 List<String> cols   = getCols(args.get(++i));
-                info.getProcessor().addProcessor(new Processor.Breaker(label1,
-                        label2, cols));
+                info.getProcessor().addProcessor(
+                    new Processor.Breaker(label1, label2, cols));
 
                 continue;
             }
@@ -1686,6 +1685,7 @@ public class CsvUtil {
                 List<String> values = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Summer(keys,
                         values));
+
                 continue;
             }
 
@@ -1702,6 +1702,7 @@ public class CsvUtil {
 
             if (arg.equals("-count")) {
                 info.getProcessor().addProcessor(new Processor.Counter());
+
                 continue;
             }
 
@@ -2070,9 +2071,11 @@ public class CsvUtil {
                 if ( !ensureArg(args, i, 2)) {
                     return false;
                 }
-                List<String> cols = getCols(args.get(++i));
-                String suffix = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.ImageSearch(cols,suffix));
+                List<String> cols   = getCols(args.get(++i));
+                String       suffix = args.get(++i);
+                info.getProcessor().addProcessor(
+                    new Converter.ImageSearch(cols, suffix));
+
                 continue;
             }
 
@@ -2148,6 +2151,7 @@ public class CsvUtil {
                                        "\\\\[").replaceAll("_rightbracket_",
                                            "\\\\]");
                 pattern = pattern.replaceAll("_dot_", "\\\\.");
+                pattern = pattern.replaceAll("_star_", "\\\\*");
                 //                pattern = pattern.replaceAll("_leftparen_","\\\\(").replaceAll("_rightparen_","\\\\)");
                 info.getProcessor().addProcessor(
                     new Converter.ColumnChanger(
@@ -2161,10 +2165,10 @@ public class CsvUtil {
                 if ( !ensureArg(args, i, 4)) {
                     return false;
                 }
-		int col = new Integer(args.get(++i));
-		String pattern = args.get(++i);
-		String replace = args.get(++i);
-		String name = args.get(++i);
+                int    col     = new Integer(args.get(++i));
+                String pattern = args.get(++i);
+                String replace = args.get(++i);
+                String name    = args.get(++i);
                 pattern =
                     pattern.replaceAll("_leftparen_",
                                        "\\\\(").replaceAll("_rightparen_",
@@ -2177,7 +2181,7 @@ public class CsvUtil {
                 pattern = pattern.replaceAll("_nl_", "\n");
                 info.getProcessor().addProcessor(
                     new Converter.ColumnExtracter(
-						  col, pattern, replace, name));
+                        col, pattern, replace, name));
 
                 continue;
             }
@@ -2371,12 +2375,12 @@ public class CsvUtil {
                 if ( !ensureArg(args, i, 4)) {
                     return false;
                 }
-		String key = args.get(++i);
-		String value =args.get(++i);
-		String delimiter=  args.get(++i);
-		String name=  args.get(++i);
-                info.getProcessor().addProcessor(
-						 new Processor.Splatter(key,value,delimiter,name));
+                String key       = args.get(++i);
+                String value     = args.get(++i);
+                String delimiter = args.get(++i);
+                String name      = args.get(++i);
+                info.getProcessor().addProcessor(new Processor.Splatter(key,
+                        value, delimiter, name));
 
                 continue;
             }

@@ -404,23 +404,23 @@ public class GeoUtils {
 
 
     public static Hashtable getStatesMap() throws Exception {
-	if (statesMap == null) {
-	    InputStream inputStream =
-		IOUtil.getInputStream(
-				      "/org/ramadda/util/states.properties",
-				      GeoUtils.class);
-	    String      s  = IOUtil.readContents(inputStream);
-	    Hashtable tmp = Utils.getProperties(s);
-	    Hashtable tmp2 = new Hashtable();
-	    IOUtil.close(inputStream);
-	    for (Enumeration keys = tmp.keys(); keys.hasMoreElements(); ) {
-		String key = (String) keys.nextElement();
-		tmp2.put(key.toLowerCase(),tmp.get(key));
-	    }
-	    tmp.putAll(tmp2);
-	    statesMap = tmp;
-	}
-	return statesMap;
+        if (statesMap == null) {
+            InputStream inputStream =
+                IOUtil.getInputStream("/org/ramadda/util/states.properties",
+                                      GeoUtils.class);
+            String    s    = IOUtil.readContents(inputStream);
+            Hashtable tmp  = Utils.getProperties(s);
+            Hashtable tmp2 = new Hashtable();
+            IOUtil.close(inputStream);
+            for (Enumeration keys = tmp.keys(); keys.hasMoreElements(); ) {
+                String key = (String) keys.nextElement();
+                tmp2.put(key.toLowerCase(), tmp.get(key));
+            }
+            tmp.putAll(tmp2);
+            statesMap = tmp;
+        }
+
+        return statesMap;
     }
 
     /**
@@ -469,19 +469,19 @@ public class GeoUtils {
             }
             doZip = true;
         }
-	String _address = address.toLowerCase();
+        String  _address = address.toLowerCase();
         boolean doCounty = false;
         if (address.toLowerCase().startsWith("county:")) {
             address  = address.substring("county:".length()).trim();
-            _address  = _address.substring("county:".length()).trim();
+            _address = _address.substring("county:".length()).trim();
             doCounty = true;
         }
 
         boolean doCity = false;
         if (_address.startsWith("city:")) {
-            address = address.substring("city:".length()).trim();
+            address  = address.substring("city:".length()).trim();
             _address = _address.substring("city:".length()).trim();
-            doCity  = true;
+            doCity   = true;
         }
         //        System.err.println ("address:" + address +" " + doZip);
 
@@ -517,7 +517,7 @@ public class GeoUtils {
 
         if (doCity) {
             //abbrev to name
-	    getStatesMap();
+            getStatesMap();
             if (citiesMap == null) {
                 citiesMap = new Hashtable<String, Place>();
                 List<Place> places = Place.getPlaces("places");
@@ -525,92 +525,109 @@ public class GeoUtils {
                     String abbrev   = place2.getLowerCaseSuffix();
                     String longName = (String) statesMap.get(abbrev);
                     String cityName = place2.getLowerCaseName();
-		    //		    System.out.println("prop:" +cityName + "," + abbrev);
+                    //              System.out.println("prop:" +cityName + "," + abbrev);
                     citiesMap.put(cityName + "," + abbrev, place2);
                     if (longName != null) {
                         citiesMap.put(cityName + ","
                                       + longName.toLowerCase(), place2);
                         //                      System.out.println(cityName+"," + longName.toLowerCase());
                     }
-		    //		    System.out.println("prop:" + cityName+"," + abbrev);
+                    //              System.out.println("prop:" + cityName+"," + abbrev);
                 }
             }
 
             try {
-                List<String> toks = StringUtil.splitUpTo(address, ",", 2);
-		String city   = toks.get(0).toLowerCase().trim();
-		String state  = ((toks.size() > 1)
-				 ? toks.get(1)
-				 : null);
-		//The resource file has certain cities with state=** for big cities
-		if(state==null) state="**";
-		Place  place2 = null;
-		if (state != null) {
-		    state  = state.toLowerCase();
-		    state = state.replaceAll("\\.","");
-		    String[]states = {state, (String) statesMap.get(state),"**"};
-		    for(String st: states) {
-			if(st==null) continue;
-			//			System.out.println(city + "," + st);
-			place2 = citiesMap.get(city + "," + st);
-			if (place2 != null) {
-			    return place2;
-			}
-			for (String suffix : citySuffixes) {
-			    //			    System.out.println(city + suffix+"," + st);
-			    place2 = citiesMap.get(city + suffix + ","
-						   + st);
-			    if (place2 != null) {
-				return place2;
-			    }
-			}
-		    }
-		}
+                List<String> toks  = StringUtil.splitUpTo(address, ",", 2);
+                String       city  = toks.get(0).toLowerCase().trim();
+                String       state = ((toks.size() > 1)
+                                      ? toks.get(1)
+                                      : null);
+                //The resource file has certain cities with state=** for big cities
+                if (state == null) {
+                    state = "**";
+                }
+                Place place2 = null;
+                if (state != null) {
+                    List<String> cityToks = StringUtil.split(city, "-", true,
+                                                true);
+                    cityToks.add(0, city);
+                    state = state.toLowerCase();
+                    //              state = state.replace("metropolitan division","");
+                    //              state = state.replace("metropolitan division","");
+                    state = state.replaceAll("\\.", "");
+                    List<String> tmp = StringUtil.split(state, "-", true,
+                                           true);
+                    //              state = tmp.get(0);
+                    tmp.add((String) statesMap.get(state));
+                    tmp.add("**");
+                    for (String st : tmp) {
+                        if (st == null) {
+                            continue;
+                        }
+                        for (String cityTok : cityToks) {
+                            place2 = citiesMap.get(cityTok + "," + st);
+                            if (place2 != null) {
+                                return place2;
+                            }
+                            for (String suffix : citySuffixes) {
+                                //                          System.out.println(city + suffix+"," + st);
+                                place2 = citiesMap.get(cityTok + suffix + ","
+                                        + st);
+                                if (place2 != null) {
+                                    return place2;
+                                }
+                            }
+                        }
+                    }
+                }
 
-		if (state != null) {
-		    resource = Place.getResource("cities");
-		    place = resource.getPlace(city+"," + state);
-		    if(place!=null) return place;
-		}
+                if (state != null) {
+                    resource = Place.getResource("cities");
+                    place    = resource.getPlace(city + "," + state);
+                    if (place != null) {
+                        return place;
+                    }
+                }
             } catch (Exception exc) {
                 exc.printStackTrace();
             }
 
 
 
-	    //If the city fails then do the county
-	    doCounty = true;
+            //If the city fails then do the county
+            doCounty = true;
         }
 
         if (doCounty) {
-	    //	    if(_address.indexOf("arundel")<0) return null;
+            //      if(_address.indexOf("arundel")<0) return null;
             resource = Place.getResource("counties");
-	    int index = _address.indexOf(",");
-	    if(index>=0)  {
-		getStatesMap();
-                List<String> toks = StringUtil.splitUpTo(_address, ",", 2);
-		String county = toks.get(0);
-		String state  =toks.get(1);
+            int index = _address.indexOf(",");
+            if (index >= 0) {
+                getStatesMap();
+                List<String> toks   = StringUtil.splitUpTo(_address, ",", 2);
+                String       county = toks.get(0);
+                String       state  = toks.get(1);
 
-		//		System.out.println("address:" + _address);
-		place = resource.getPlace(county+"," + state);
-		//		resource.debug();
-		//		System.out.println("try:" +county+"," + state +": place:" + place);
-		if(place==null) {
-		    //		    System.out.println("state before:" +county+":" + state+":");
-		    state = (String)statesMap.get(state);
-		    //		    System.out.println("state after:" +county+"," + state);
-		    if(state!=null) {
-			place = resource.getPlace(county+"," + state);
-			//			System.out.println("try 2:" +county+"," + state +" place:" + place);
-		    }
-		}
-		if(place ==null) {
-		    //		    System.err.println("No place:" + address);
-		    //		    System.exit(0);
-		}
-		return place;
-	    }
+                //              System.out.println("address:" + _address);
+                place = resource.getPlace(county + "," + state);
+                //              resource.debug();
+                //              System.out.println("try:" +county+"," + state +": place:" + place);
+                if (place == null) {
+                    //              System.out.println("state before:" +county+":" + state+":");
+                    state = (String) statesMap.get(state);
+                    //              System.out.println("state after:" +county+"," + state);
+                    if (state != null) {
+                        place = resource.getPlace(county + "," + state);
+                        //                      System.out.println("try 2:" +county+"," + state +" place:" + place);
+                    }
+                }
+                if (place == null) {
+                    //              System.err.println("No place:" + address);
+                    //              System.exit(0);
+                }
+
+                return place;
+            }
         }
 
 
