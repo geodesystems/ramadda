@@ -1195,6 +1195,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}  else {
 		    if(!Array.isArray(value)) value = [value];
 		}
+		//		console.log(filterField.getId() +" value:" + value);
 		values.push(value);
 	    }
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
@@ -2568,6 +2569,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					if(label.length>20) {
 					    label=  label.substring(0,19)+"...";
 					}
+					value = value.replace(/\'/g,"&apos;");
 					var tuple = [value, label];
 					enumValues.push(tuple);
 				    }
@@ -2575,8 +2577,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    enumValues.sort((a,b)  =>{
 				    return (""+a[1]).localeCompare(""+b[1]);
 				});
-			    for(var j=0;j<enumValues.length;j++)
-				enums.push(enumValues[j]);
+			    for(var j=0;j<enumValues.length;j++) {
+				var v = enumValues[j];
+				enums.push(v);
+			    }
 			}
 			var attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
 			if(this.getProperty(filterField.getId() +".filterMultiple",false)) {

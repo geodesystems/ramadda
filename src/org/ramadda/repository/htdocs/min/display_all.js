@@ -1345,6 +1345,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}  else {
 		    if(!Array.isArray(value)) value = [value];
 		}
+		//		console.log(filterField.getId() +" value:" + value);
 		values.push(value);
 	    }
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
@@ -2718,6 +2719,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					if(label.length>20) {
 					    label=  label.substring(0,19)+"...";
 					}
+					value = value.replace(/\'/g,"&apos;");
 					var tuple = [value, label];
 					enumValues.push(tuple);
 				    }
@@ -2725,8 +2727,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    enumValues.sort((a,b)  =>{
 				    return (""+a[1]).localeCompare(""+b[1]);
 				});
-			    for(var j=0;j<enumValues.length;j++)
-				enums.push(enumValues[j]);
+			    for(var j=0;j<enumValues.length;j++) {
+				var v = enumValues[j];
+				enums.push(v);
+			    }
 			}
 			var attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
 			if(this.getProperty(filterField.getId() +".filterMultiple",false)) {
@@ -14675,25 +14679,31 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
             if (fields.length == 0)
                 fields = allFields;
 	    var summary={};
+	    for (var col = 0; col < fields.length; col++) {
+		var f = fields[col];
+		if(!Utils.isDefined(summary[f.getId()])) {
+		    summary[f.getId()] = {
+			counts:{},
+			values:[],
+			min:value,
+			max:value,
+			total:0,
+			numbers:[],
+			field:f
+		    }
+		}
+	    }
+
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
                 for (var col = 0; col < fields.length; col++) {
                     var f = fields[col];
-                    var value =  row[f.getIndex()];
-		    if(!Utils.isDefined(summary[f.getId()])) {
-			summary[f.getId()] = {
-			    counts:{},
-			    values:[],
-			    min:value,
-			    max:value,
-			    total:0,
-			    values:[],
-			    numbers:[],
-			    field:f
-			}
-		    }
 		    var s = summary[f.getId()];
-		    if(!s) continue;
+                    var value =  row[f.getIndex()];
+		    if(!Utils.isDefined(s.min)) {
+			s.min=value;
+			s.max=value;
+		    }
 		    if(f.isNumeric) {
 			s.numbers.push(value);
 			if(isNaN(s.max)) s.max = value;
@@ -14758,7 +14768,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		html += HtmlUtils.openTag("thead", []);
 		var label =  HtmlUtils.span(["title","Click to reset","class","display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
-		html += HtmlUtils.tr([], HtmlUtils.th([], HtmlUtils.div(["style","max-width:300px;overflow-x:auto;"], label)) + HtmlUtils.th(["align","right","width","20%"], HtmlUtils.div(["style","text-align:right"],"Count"))+ HtmlUtils.th(["align","right","width","20%"],  HtmlUtils.div(["style","text-align:right"],"Percent")));
+		html += HtmlUtils.tr([], HtmlUtils.th(["width","60%"], HtmlUtils.div(["style","max-width:500px;overflow-x:auto;"], label)) + HtmlUtils.th(["align","right","width","20%"], HtmlUtils.div(["style","text-align:right"],"Count"))+ HtmlUtils.th(["align","right","width","20%"],  HtmlUtils.div(["style","text-align:right"],"Percent")));
 		html += HtmlUtils.closeTag("thead");
 		html += HtmlUtils.openTag("tbody", []);
 		if(!f.isNumeric) {
@@ -14774,6 +14784,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    if(label=="") label="&lt;blank&gt;";
 		    var count = s.values[i].count;
 		    if(count==0) continue;
+		    value = value.replace(/\'/g,"&apos;");
 		    value = HtmlUtils.span(["title","Click to select","class","display-frequency-value","data-field",s.field.getId(),"data-value",value],label);
 		    html += HtmlUtils.tr([], 
 					 HtmlUtils.td([], value) +
@@ -14788,6 +14799,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-value").click(function(){
+		    //		    $(this).css("color","red");
 		    _this.handleEventPropertyChanged(_this,{
 			    property: "filterValue",
 				id:"id",
@@ -14796,10 +14808,12 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 				    });
 		});
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-label").click(function(){
+		    var field = $(this).attr("data-field");
+		    //		    _this.jq(ID_DISPLAY_CONTENTS).find("[data-field=" + field+"]").css("color","black");
 		    _this.handleEventPropertyChanged(_this,{
 			    property: "filterValue",
 				id:"id",
-				fieldId: $(this).attr("data-field"),
+				fieldId: field,
 				value: "-all-"
 				    });
 		});
