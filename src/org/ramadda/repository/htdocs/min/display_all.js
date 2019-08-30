@@ -19278,7 +19278,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
             this.vectorLayer.redraw();
             if (maxExtent) {
-                this.map.map.zoomToExtent(maxExtent, true);
+		this.map.map.zoomToExtent(maxExtent, true);
 	    }
 
         },

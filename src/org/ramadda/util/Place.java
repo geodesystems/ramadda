@@ -170,7 +170,8 @@ public class Place {
 		if ((indices.length >= 6) && (indices[5] >= 0)) {
 		    place.fips = place.fips.substring(indices[5]);
 		}
-		resourceMap.put(place.getFips(), place);
+		if(place.getFips()!=null)
+		    resourceMap.put(place.getFips(), place);
 		for (String key :
 			 new String[] {
 			     this.prefix + place.getFips() }) {
@@ -205,7 +206,8 @@ public class Place {
 		    placesMap.put(key.toUpperCase(), place);
 		}
 		this.places.add(place);
-		this.map.put(place.getFips(), place);
+		if(place.getFips()!=null)
+		    this.map.put(place.getFips(), place);
 		if (place._name != null) {
 		    this.map.put(place._name, place);
 		    if(place.getSuffix()!=null) {
