@@ -1442,6 +1442,7 @@ var HtmlUtils = {
         return html;
     },
     formatTable: function(id, args) {
+	var table;
         $(id).each(function() {
             var options = {
                 paging: false,
@@ -1468,8 +1469,10 @@ var HtmlUtils = {
                 var sh = "" + options.scrollY;
                 if (!sh.endsWith("px")) options.scrollY += "px";
             }
-            $(this).DataTable(options);
+            table = $(this).DataTable(options);
         });
+
+	return table;
     },
     th: function(attrs, inner) {
         return this.tag("th", attrs, inner);

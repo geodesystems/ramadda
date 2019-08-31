@@ -14656,12 +14656,34 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 HtmlUtils.formatTable("#" + this.getDomId("table_counts"), {
                     scrollY: this.getProperty("tableCountsHeight", tableHeight)
                 });
-            if (this.getProperty("showFrequency", true))
-                HtmlUtils.formatTable("#" + this.getDomId("table_frequency"), {
-                    scrollY: this.getProperty("tableFrequenecyHeight", tableHeight),
-                    searching: this.getProperty("showSearch", true)
-                });
+            if (this.getProperty("showFrequency", true)) {
+                this.frequencyTable = HtmlUtils.formatTable("#" + this.getDomId("table_frequency"), {
+			scrollY: this.getProperty("tableFrequenecyHeight", tableHeight),
+			searching: this.getProperty("showSearch", true)
+		    });
+		this.frequencyTable.on( 'search.dt', ()=>{
+			if(this.settingSearch) return;
+			this.propagateEvent("handleEventPropertyChanged", {
+			    property: "searchValue",
+				value: this.frequencyTable.search()
+				    });
+
+		    } );
+	    }
+	    
         },
+        handleEventPropertyChanged: function(source, prop) {
+            if (prop.property == "searchValue") {
+		this.settingSearch=true;
+		this.setProperty("searchValue", prop.value);
+		this.frequencyTable.search(prop.value);
+		this.frequencyTable.draw();
+		this.settingSearch=false;
+		return;
+	    }
+            SUPER.handleEventPropertyChanged(source, prop);
+	    },
+
     });
 }
 
@@ -15012,11 +15034,25 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 if (event.which == 13) {
                     _this.setProperty("pattern", $(this).val());
                     _this.updateUI();
+		    _this.propagateEvent("handleEventPropertyChanged", {
+			    property: "pattern",
+				value: $(this).val()
+				    });
+
                 }
             });
             this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId(ID_TEXT)], ""));
             this.showText();
         },
+        handleEventPropertyChanged: function(source, prop) {
+            if (prop.property == "pattern") {
+		this.setProperty("pattern", prop.value);
+		this.updateUI();
+		return;
+	    }
+            SUPER.handleEventPropertyChanged(source, prop);
+	    },
+
         showText: function() {
             let records = this.filterData();
             if (!records) {
