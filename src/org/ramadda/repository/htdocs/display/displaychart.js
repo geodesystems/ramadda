@@ -930,7 +930,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var dataTable = new google.visualization.DataTable();
             var header = this.getDataValues(dataList[0]);
+
+
             var sample = this.getDataValues(dataList[1]);
+	    var fixedValueS = this.getProperty("fixedValue");
+	    var fixedValueN;
+	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
             for (var j = 0; j < header.length; j++) {
                 var value = sample[j];
                 if (j == 0 && props.includeIndex) {
@@ -942,6 +947,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         dataTable.addColumn((typeof value), header[j]);
                     }
                 } else {
+		    if(j>0 && fixedValueS) {
+			dataTable.addColumn('number', this.getProperty("fixedValueLabel","Count"));
+			break;
+		    }
                     //Assume all remaining fields are numbers
                     dataTable.addColumn('number', header[j]);
                     dataTable.addColumn({
@@ -993,6 +1002,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 newRow = [];
                 for (var j = 0; j < row.length; j++) {
                     var value = row[j];
+		    if(j>0 && fixedValueS) {
+			newRow.push(fixedValueN);
+			break;
+		    }
                     newRow.push(value);
                     if (j == 0 && props.includeIndex) {
                         //is the index so don't add a tooltip

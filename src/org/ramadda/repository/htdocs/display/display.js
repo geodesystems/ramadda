@@ -928,7 +928,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.selectedFields = fields;
             this.addFieldsCheckboxes(fields);
         },
+
         getSelectedFields: function(dfltList) {
+	    if(this.getProperty("binDate")) {
+		var binType = this.getProperty("binType","total");
+		var binCount = binType=="count";
+		if(binCount) {
+		    var fields = [];
+		    fields.push(new RecordField({
+				id:"count",
+				    label:this.getProperty("binCopuntLabel","Count"),
+				    type:"double",
+				    chartable:true
+				    }));		    
+		    return fields;
+		}
+	    }
+
+
             this.debugSelected = false;
             this.lastSelectedFields = this.getSelectedFieldsInner(dfltList);
             var fixedFields = this.getProperty(PROP_FIELDS);
@@ -1268,27 +1285,51 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("binDate")) {
 		var what = this.getProperty("binDate");
 		var binType = this.getProperty("binType","total");
+		var binCount = binType=="count";
 		var binned = [];
-		binned.push(dataList[0]);
+		var record = dataList[0];
+		/*
+		if(binCount) {
+		    var data = record.getData();
+		    data = [data[0],"Count"];
+		    var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
+						     record.getElevation(),record.getDate(),data);
+
+		    binned.push(newRecord);
+		} else {
+		    binned.push(record);
+		}
+		*/
 		var map ={};
-		for (var i = 1; i < dataList.length; i++) {
+		for (var i = 0; i < dataList.length; i++) {
 		    var record = dataList[i];
 		    var tuple = this.getDataValues(record);
 		    var key;
 		    if(what=="month") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1);
+		    } else if(what=="day") {
+			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1) +"-" + record.getDate().getUTCDate();
 		    } else {
 			key = record.getDate().getUTCFullYear()+"";
 		    }
 		    if(!Utils.isDefined(map[key])) {
 			var date = Utils.parseDate(key);
 			var data = Utils.cloneList(record.getData());
+			if(binCount) {
+			    for(k=0;k<data.length;k++) data[k]=0;
+			    //			    data =  [0];
+			}
 			var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
 							 record.getElevation(),date,data);
 			map[key] = data;
 			binned.push(newRecord);
 		    } else {
 			var tuple1 = map[key];
+			if(binCount) {
+			    for(k=0;k<tuple1.length;k++) tuple1[k]++;
+			    //			    tuple1[0]++; 
+			    continue;
+			}
 			var tuple2 = record.getData();
 			for(var j=0;j<tuple2.length;j++) {
 			    var v = tuple2[j];
@@ -3238,6 +3279,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //The first entry in the dataList is the array of names
             //The first field is the domain, e.g., time or index
             var fieldNames = [];
+
+	    if(this.getProperty("binDate")) {
+		var binType = this.getProperty("binType","total");
+		var binCount = binType=="count";
+		if(binCount) {
+		    var f = [];
+		    fields.map((field)=>{
+			    f.push(new RecordField({
+					index:0,
+					id:field.getId(),
+				    label:this.getProperty("binCountLabel","Count"),
+				    type:"double",
+				    chartable:true
+			    }));
+			});
+		    fields=f;
+		}
+	    }
+
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.isFieldNumeric() && field.isFieldDate()) {
@@ -3299,7 +3359,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (j = 0; j < records.length; j++) {
                 var record = records[j];
                 var date = record.getDate();
-                if (!this.dateInRange(date)) continue;
+                if (!this.dateInRange(date)) {
+		    continue;
+		}
                 rowCnt++;
                 var values = [];
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
@@ -3337,7 +3399,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         //                            continue;
                     }
                     var value = record.getValue(field.getIndex());
-                    //                        console.log(field.getId() +" = " + value);
+		    //		    if(j<10)
+		    //			console.log(field.getId() +" = " + value);
                     if (offset != 0) {
                         value += offset;
                     }
@@ -3356,10 +3419,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     values.push(value);
                 }
 
-
-
                 if (hasNumber && allZero && excludeZero) {
-                    //                        console.log(" skipping due to zero: " + values);
+		    //		    console.log(" skipping due to zero: " + values);
                     continue;
                 }
                 if (this.filters != null) {
@@ -3383,9 +3444,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (!allNull) {
                     nonNullRecords++;
                 }
-            }
+	    }
+
             if (nonNullRecords == 0) {
-                //                    console.log("Num non null:" + nonNullRecords);
+		//		console.log("Num non null:" + nonNullRecords);
                 return [];
             }
 
