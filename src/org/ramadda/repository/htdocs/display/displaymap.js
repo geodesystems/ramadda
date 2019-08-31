@@ -114,9 +114,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             }
 
-            if (this.getProperty("animationTakeStep", false)) {
-		this.animation.doNext();
-	    }
             if (!this.haveCalledUpdateUI) {
                 var callback = function() {
                     _this.updateUI();
@@ -1593,6 +1590,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		this.jq(ID_SHAPES).html("<center>" +shapes+"</center>");
 	    }
+
+	    if (this.getProperty("animationTakeStep", false)) {
+		this.animation.doNext();
+	    }
+
+
         },
         addLabels:function(records, fields, points) {
             var labelTemplate = this.getProperty("labelTemplate");
