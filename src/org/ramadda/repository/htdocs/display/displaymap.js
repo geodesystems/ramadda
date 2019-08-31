@@ -114,6 +114,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             }
 
+            if (this.getProperty("animationTakeStep", false)) {
+		this.animation.doNext();
+	    }
             if (!this.haveCalledUpdateUI) {
                 var callback = function() {
                     _this.updateUI();
@@ -1857,6 +1860,20 @@ function MapAnimation(display) {
 		    this.stopAnimation();
                 });
                 this.btnNext.button().click(() => {
+			this.doNext();
+                });
+                this.btnShowAll.button().click(() => {
+			this.begin = this.dateMin;
+			this.end = this.dateMin;
+			this.inAnimation = false;
+			this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
+			this.running = false;
+			this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+			this.display.showAllPoints();
+                });
+            },
+
+		doNext: function() {
 		    if (this.mode == "sliding") {
 			if(this.end.getTime()<this.dateMax.getTime()-this.window) {
 			    this.begin = this.end;
@@ -1870,17 +1887,7 @@ function MapAnimation(display) {
 			}
 		    }
 		    this.stopAnimation();
-                });
-                this.btnShowAll.button().click(() => {
-			this.begin = this.dateMin;
-			this.end = this.dateMin;
-			this.inAnimation = false;
-			this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
-			this.running = false;
-			this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
-			this.display.showAllPoints();
-                });
-            },
+	    },
 
 	startAnimation: function(justOneStep, back) {
 		if (!this.display.points) {
