@@ -779,7 +779,9 @@ public abstract class Converter extends Processor {
                     chartable = false;
                 } else {
                     try {
-                        if (_sample.equals("nan") || _sample.equals("na")) {
+			if(_sample.equals("true") || _sample.equals("false")) {
+			    type="enumeration";
+			} else if (_sample.equals("nan") || _sample.equals("na")) {
                             type = "double";
                         } else if (sample.matches("^(\\+|-)?\\d+$")) {
                             //                            System.out.println(label+" match int");
