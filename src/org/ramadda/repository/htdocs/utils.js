@@ -450,6 +450,7 @@ var Utils = {
             stopWords = this.stopWords;
         }
         var words = [];
+	s=s.replace(/https?:\/\/[^ ]+/g," ");
         var toks = s.split(/[ ,\(\)\.:\;\n\?\-!\*]/);
         for (var i = 0; i < toks.length; i++) {
             var word = toks[i].trim();
@@ -2046,3 +2047,13 @@ function Div(contents, clazz) {
         return pos;
     }
 })(jQuery);
+
+
+/*
+var s = "Make sure you're ready to vote: https://t.co/tTgeqxNqYm https://t.co/Q3Ymbb7UNy end"
+s=s.replace(/https?:\/\/[^ ]+/g," ");
+console.log(s);
+if(s.indexOf("https")>=0) {
+console.log("s:" + s);
+}
+*/

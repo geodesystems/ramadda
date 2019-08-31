@@ -159,11 +159,14 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
                     }
                     var values = [value];
                     if (tokenize) {
+			values[0] = values[0].replace(/\"/g," ");
                         values = Utils.tokenizeWords(values[0], stopWords, extraStopWords, removeArticles);
                     }
                     for (var valueIdx = 0; valueIdx < values.length; valueIdx++) {
-                        var value = values[valueIdx];
-                        var _value = value.toLowerCase();
+                        var value = values[valueIdx].trim();
+			if(value.length<=1) continue;
+			if(value.startsWith("&")) continue;  
+                      var _value = value.toLowerCase();
                         if (cnt) {
                             cnt.count++;
                             cnt.total += value.length;
@@ -1226,6 +1229,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Summary") + HtmlUtils.th([], "&nbsp;"));
                     html += HtmlUtils.closeTag("thead");
                     html += HtmlUtils.openTag("tbody", []);
+                    html += HtmlUtils.tr([], HtmlUtils.td(["align", "right"], "Total lines:") + HtmlUtils.td([], records.length));
                     html += HtmlUtils.tr([], HtmlUtils.td(["align", "right"], "Total words:") + HtmlUtils.td([], cnt.count));
                     html += HtmlUtils.tr([], HtmlUtils.td(["align", "right"], "Average word length:") + HtmlUtils.td([], Math.round(cnt.total / cnt.count)));
                     html += HtmlUtils.closeTag("tbody");
