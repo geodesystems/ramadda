@@ -511,7 +511,6 @@ public class GeoUtils {
             if (place == null) {
                 System.err.println("no place:" + address);
             }
-
             return place;
         }
 

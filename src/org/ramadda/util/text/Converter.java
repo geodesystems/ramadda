@@ -771,6 +771,8 @@ public abstract class Converter extends Processor {
                 } else if (id.equals("year")) {
                     type   = "date";
                     format = "yyyy";
+                } else if (id.equals("state")) {
+                    type   = "enumeration";
                 } else if (id.equals("latitude") || id.equals("longitude")) {
                     type      = "double";
                     isGeo     = true;
