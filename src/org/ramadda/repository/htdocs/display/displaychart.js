@@ -3075,7 +3075,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
 		    colValues.sort();
 		    rowValues.sort();
 		    if(cnt==1)
-			html+="<tr><td></td><td class=display-crosstab-header colspan=" + colValues.length+">" + col.getLabel()+"</td><td>&nbsp;</td></tr>";
+			html+="<tr><td></td><td align=center class=display-crosstab-header colspan=" + colValues.length+">" + col.getLabel()+"</td><td>&nbsp;</td></tr>";
 		    html+="<tr valign=bottom class=display-crosstab-header-row><td class=display-crosstab-header>" + row.getLabel() +"</td>";
 		    for(var j=0;j<colValues.length;j++) {
 			var colValue = colValues[j];
