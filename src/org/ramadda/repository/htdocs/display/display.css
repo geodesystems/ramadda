@@ -82,26 +82,21 @@
    overflow-y:auto;
 }
 
-
-
 .display-header1, .display-header2, .display-header3 {
   text-align:center;
 }
-
 
 .display-map-slider {
     margin-right:10px;
 }
 
-
 .display-map-slider .ui-slider-handle {
-  width:10px;
-   border: 1px solid #aaa;
-  border-radius: 0;
+ width:10px;
+ border: 1px solid #aaa;
+ border-radius: 0;
  margin-left:0px;
-
-height:14px;
-margin-top:5px;
+ height:14px;
+ margin-top:5px;
 }
 
 .display-map-animation-label {

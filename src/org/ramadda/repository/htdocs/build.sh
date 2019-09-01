@@ -24,5 +24,7 @@ ${minify} ${dir}/selectform.js > ${dest}/selectform.min.js
 ${minify} ${dir}/entry.js > ${dest}/entry.min.js
 cp  ${dir}/style.css  ${dest}/style.min.css
 ${minify} ${dir}/ramaddamap.css > ${dest}/ramaddamap.min.css
-${minify} ${dir}/display/display.css > ${dest}/display.min.css
+##don't minify the display.css as it screws up how jquery styles are overridden
+#${minify} ${dir}/display/display.css > ${dest}/display.min.css
+cp ${dir}/display/display.css  ${dest}/display.min.css
 
