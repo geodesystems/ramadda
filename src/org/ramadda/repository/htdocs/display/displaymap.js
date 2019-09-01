@@ -1785,13 +1785,13 @@ function MapAnimation(display) {
             dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
             mode: display.getProperty("animationMode", "cumulative"),
             speed: parseInt(display.getProperty("animationSpeed", 250)),
-		toggleAnimation: function() {
+            toggleAnimation: function() {
 		this.running = !this.running;
-            this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
-            if (this.running)
-                this.startAnimation();
-        },
-		getDomId: function(id) {
+		this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
+		if (this.running)
+		    this.startAnimation();
+	    },
+            getDomId: function(id) {
 		return this.display.getDomId(id);
 	    },
 		jq: function(id) {
@@ -1909,25 +1909,27 @@ function MapAnimation(display) {
 
 		doNext: function() {
 		    if (this.mode == "sliding") {
-			if(this.end.getTime()<this.dateMax.getTime()-this.window) {
-			    this.begin = this.end;
-			    this.end = new Date(this.end.getTime()+this.window);
-			} else {
+			this.begin = this.end;
+			this.end = new Date(this.end.getTime()+this.window);
+			if(this.end.getTime()>this.dateMax.getTime()) {
+			    this.end = this.dateMax;
+			    this.begin = new Date(this.end.getTime()-this.window);
+			    this.inAnimation = false;
 			    this.stopAnimation();
 			}
 		    } else {
-			if(this.end.getTime()<this.dateMax.getTime()-this.window) {
-			    this.end = new Date(this.end.getTime()+this.window);
-			} else {
+			this.end = new Date(this.end.getTime()+this.window);
+			if(this.end.getTime()>=this.dateMax.getTime()) {
+			    this.end = this.dateMax;
+			    this.inAnimation = false;
 			    this.stopAnimation();
-			    return;
 			}
 		    }
 		    this.applyAnimation();
 	    },
 
 	startAnimation: function() {
-		if (!this.display.points) {
+            if (!this.display.points) {
                 return;
             }
             if (!this.dateMax) return;
