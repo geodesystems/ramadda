@@ -1515,3 +1515,14 @@ cursor:pointer;
 .display-frequency-value:hover {
 cursor:pointer;
 }
+
+.display-crosstab td {
+  padding:5px;
+}
+.display-crosstab-header {
+font-weight:bold;
+}
+
+.display-crosstab-header-row {
+  background: #efefef;
+}

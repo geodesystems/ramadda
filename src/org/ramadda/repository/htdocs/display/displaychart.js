@@ -187,6 +187,13 @@ addGlobalDisplayType({
     category: CATEGORY_MISC
 });
 addGlobalDisplayType({
+    type: DISPLAY_CROSSTAB,
+    label: "Crosstab",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+addGlobalDisplayType({
     type: DISPLAY_TSNE,
     label: "TSNE",
     requiresData: true,
@@ -2984,12 +2991,10 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 
 function RamaddaCrosstabDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CROSSTAB, properties);
+    var ID_TABLE = "crosstab";
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
-    this.columns = this.getProperty("columns", "").split(",");
-    this.rows = this.getProperty("rows", "").split(",");
     RamaddaUtil.defineMembers(this, {
-        "map-display": false,
         needsData: function() {
             return true;
         },
@@ -3008,78 +3013,97 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
             SUPER.updateUI.call(this, pointData);
             if (!this.hasData()) {
                 this.setContents(this.getLoadingMessage());
-
                 return;
             }
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+	    var enums = [];
+	    allFields.map(field=>{
+		    var label = field.getLabel();
+		    if(label.length>30) label = label.substring(0,29);
+		    enums.push([field.getId(),label]);
+		});
+	    var select = HtmlUtils.span(["class","display-filterby"],
+					"Display: " + HtmlUtils.select("",["style","", "id",this.getDomId("crosstabselect")],enums,
+								       this.getProperty("column", "", true)));
+
+
+            this.setContents(select+HtmlUtils.div(["id",this.getDomId(ID_TABLE)]));
+	    let _this = this;
+	    this.jq("crosstabselect").change(function() {
+		    _this.setProperty("column", $(this).val());
+		    _this.makeTable();
+		});
+	    this.makeTable();
+		},
+	makeTable: function() {
             var dataList = this.getStandardData(null, {
                 includeIndex: false
             });
             var allFields = this.dataCollection.getList()[0].getRecordFields();
-            var fieldMap = {};
-            cols = [];
-            rows = [];
+	    var col =  this.getFieldById(null, this.getProperty("column", "", true));
+	    var rows =  this.getFieldsByIds(null, this.getProperty("rows", null, true));
+	    if(!col) col  = allFields[0];
+	    if(rows.length==0) rows  = allFields;
 
-            for (var j = 0; j < this.columns.length; j++) {
-                var name = this.columns[j];
-                for (var i = 0; i < allFields.length; i++) {
-                    field = allFields[i];
-                    if (name == field.getLabel() || name == ("#" + (i + 1))) {
-                        cols.push(allFields[i]);
-                        break;
-                    }
-                }
-            }
-            for (var j = 0; j < this.rows.length; j++) {
-                var name = this.rows[j];
-                for (var i = 0; i < allFields.length; i++) {
-                    if (name == allFields[i].getLabel() || name == ("#" + (i + 1))) {
-                        rows.push(allFields[i]);
-                        break;
-                    }
-                }
-            }
-            var html = HtmlUtils.openTag("table", ["border", "1px", "bordercolor", "#ccc", "class", "display-stats", "cellspacing", "1", "cellpadding", "5"]);
-            var uniques = {};
-            var seen = {};
-            for (var j = 0; j < cols.length; j++) {
-                var col = cols[j];
-                var key = col.getLabel();
-                for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-                    var tuple = this.getDataValues(dataList[rowIdx]);
-                    var colValue = tuple[col.getIndex()];
-                    if (!(key in uniques)) {
-                        uniques[key] = [];
-                    }
-                    var list = uniques[key];
-                    if (list.indexOf(colValue) < 0) {
-                        console.log(colValue);
-                        list.push(colValue);
-                    }
-                }
-            }
-
-            for (key in uniques) {
-                uniques[key].sort();
-                console.log(uniques[key]);
-            }
-
-
-            for (var j = 0; j < cols.length; j++) {
-                var col = cols[j];
-                for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-                    var tuple = this.getDataValues(dataList[rowIdx]);
-                    //                        var colValue = tuple;
-                    //html += HtmlUtils.tr([],HtmlUtils.tds(["class","display-stats-header","align","center"],["","Min","Max","Total","Average"]));
-                    for (var i = 0; i < rows.length; i++) {
-                        var row = rows[j];
-
-
-                    }
-                }
-            }
+            var html = HtmlUtils.openTag("table", ["border", "1px", "bordercolor", "#ccc", "class", "display-crosstab", "cellspacing", "1", "cellpadding", "2"]);
+	    var total = dataList.length-1;
+	    var cnt =0;
+	    rows.map((row)=>{
+		    if(row.getId()==col.getId()) return;
+		    cnt++;
+		    var colValues = [];
+		    var rowValues = [];
+		    var count ={};
+		    var rowcount ={};
+		    var colcount ={};
+		    for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+			var tuple = this.getDataValues(dataList[rowIdx]);
+			var colValue = (""+tuple[col.getIndex()]).trim();
+			var rowValue = (""+tuple[row.getIndex()]).trim();
+			var key = colValue+"--" + rowValue;
+			if(colValues.indexOf(colValue)<0) colValues.push(colValue);
+			if(rowValues.indexOf(rowValue)<0) rowValues.push(rowValue);
+			if (!(rowValue in rowcount)) {
+			    rowcount[rowValue] = 0;
+			}
+			rowcount[rowValue]++;
+			if (!(key in count)) {
+			    count[key] = 0;
+			}
+			count[key]++;
+		    }
+		    colValues.sort();
+		    rowValues.sort();
+		    if(cnt==1)
+			html+="<tr><td></td><td class=display-crosstab-header colspan=" + colValues.length+">" + col.getLabel()+"</td><td>&nbsp;</td></tr>";
+		    html+="<tr valign=bottom class=display-crosstab-header-row><td class=display-crosstab-header>" + row.getLabel() +"</td>";
+		    for(var j=0;j<colValues.length;j++) {
+			var colValue = colValues[j];
+			html+="<td>" + (colValue==""?"&lt;blank&gt;":colValue) +"</td>";
+		    }
+		    html+="<td><b>Total</b></td>";
+		    html+="</tr>";
+		    for(var i=0;i<rowValues.length;i++) {
+			var rowValue = rowValues[i];
+			html+="<tr>";
+			html+="<td>" + (rowValue==""?"&lt;blank&gt;":rowValue) +"</td>";
+			for(var j=0;j<colValues.length;j++) {
+			    var colValue = colValues[j];
+			    var key = colValue+"--" + rowValue;
+			    if(Utils.isDefined(count[key])) {
+				var perc = Math.round(count[key]/total*100) +"%";
+				html+="<td align=right>" + count[key] +"&nbsp;(" + perc+")</td>";
+			    } else {
+				html+="<td>&nbsp;</td>";
+			    }
+			}
+			var perc = Math.round(rowcount[rowValue]/total*100) +"%";
+			html+="<td align=right>" + rowcount[rowValue] +"&nbsp;(" + perc+")</td>";
+			html+="</tr>";
+		    }
+		});
             html += "</table>";
-            this.setContents(html);
-            this.initTooltip();
+	    this.jq(ID_TABLE).html(html);
         },
     });
 }

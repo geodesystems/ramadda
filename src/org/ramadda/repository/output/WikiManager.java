@@ -558,8 +558,13 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                               "#fields", "",
                                               ATTR_LAYOUTHERE, "true", 
                                               ATTR_SHOWMENU, "true", 
-                                              ATTR_SHOWTITLE, "true")
-
+					ATTR_SHOWTITLE, "true"),
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Cross Tabulation",
+                                        ATTR_TYPE, "crosstab", 
+					"#fields", "",
+					"#column","",
+					"#rows","")
                             ),
 
         new WikiTagCategory("Text Displays",
