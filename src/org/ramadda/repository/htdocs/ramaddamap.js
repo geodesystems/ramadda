@@ -2,9 +2,6 @@
  * Copyright (c) 2008-2019 Geode Systems LLC
  */
 
-
-// Map ids
-
 var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
 var map_esri_worldimagery = "esri.worldimagery";

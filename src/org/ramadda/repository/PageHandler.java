@@ -982,7 +982,6 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
-
         return mobileTemplate;
     }
 
@@ -1101,16 +1100,18 @@ public class PageHandler extends RepositoryManager {
                         theMobileTemplate = template;
                     }
                     if (defaultTemplate == null) {
-                        if (defaultId == null) {
+                       if (defaultId == null) {
                             defaultTemplate = template;
                         } else {
                             if (Misc.equals(defaultId, template.getId())) {
                                 defaultTemplate = template;
                             }
                         }
-                        if (template.getTemplateProperty("mobile", false)) {
-                                mobileTemplate = template;
-                        }
+                        if (mobileId == null) {
+			    if (template.getTemplateProperty("mobile", false)) {
+				mobileTemplate = template;
+			    }
+			}
                     }
                 } catch (Exception exc) {
                     getLogManager().logError("loading template" + path, exc);

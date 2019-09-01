@@ -205,7 +205,7 @@ var PROP_LAYOUT_HERE = "layoutHere";
 var PROP_HEIGHT = "height";
 var PROP_WIDTH = "width";
 
-
+var FILTER_ALL = "-all-";
 
 
 
@@ -1373,7 +1373,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
 
-		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]=="-all-")) continue;
+		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]==FILTER_ALL)) continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
 			ok = false;
@@ -2734,7 +2734,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var widget;
                     var widgetId = this.getDomId("filterby_" + filterField.getId());
                     if(filterField.getType() == "enumeration") {
-			var dfltValue = this.getProperty(filterField.getId() +".filterValue","-all-");
+			var dfltValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
 			var filterValues = this.getProperty(filterField.getId()+".filterValues");
                         var enums = null;
 			if (filterValues) {
@@ -2749,7 +2749,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 			if(enums == null) {
 			    var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
-			    enums = includeAll?[["-all-","All"]]:[];
+			    enums = includeAll?[[FILTER_ALL,"All"]]:[];
 			    var enumValues = [];
 			    var seen = {};
 			    records.map(record=>{
@@ -14416,7 +14416,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    if(!widget.val || widget.val()==null) continue;
 			    var value = widget.val().trim();
 			    //${filter_id template="sdsds"}
-			    if(value=="") {
+			    if(value==FILTER_ALL) {
 				var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
 				headerTemplate = headerTemplate.replace(regexp,"");
 				footerTemplate = footerTemplate.replace(regexp,"");
@@ -20405,6 +20405,7 @@ function MapAnimation(display) {
 			    _this.stopAnimation();
 			    _this.begin = new Date(ui.values[0]);
 			    _this.end = new Date(ui.values[1]);
+			    //			    _this.applyAnimation(true);
 			    _this.updateLabels();
 			},
 			    stop: function(event,ui) {

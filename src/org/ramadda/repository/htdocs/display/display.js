@@ -55,7 +55,7 @@ var PROP_LAYOUT_HERE = "layoutHere";
 var PROP_HEIGHT = "height";
 var PROP_WIDTH = "width";
 
-
+var FILTER_ALL = "-all-";
 
 
 
@@ -1223,7 +1223,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
 
-		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]=="-all-")) continue;
+		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]==FILTER_ALL)) continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
 			ok = false;
@@ -2584,7 +2584,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var widget;
                     var widgetId = this.getDomId("filterby_" + filterField.getId());
                     if(filterField.getType() == "enumeration") {
-			var dfltValue = this.getProperty(filterField.getId() +".filterValue","-all-");
+			var dfltValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
 			var filterValues = this.getProperty(filterField.getId()+".filterValues");
                         var enums = null;
 			if (filterValues) {
@@ -2599,7 +2599,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 			if(enums == null) {
 			    var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
-			    enums = includeAll?[["-all-","All"]]:[];
+			    enums = includeAll?[[FILTER_ALL,"All"]]:[];
 			    var enumValues = [];
 			    var seen = {};
 			    records.map(record=>{

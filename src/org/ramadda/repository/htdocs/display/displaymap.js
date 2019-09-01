@@ -1816,6 +1816,7 @@ function MapAnimation(display) {
 			    _this.stopAnimation();
 			    _this.begin = new Date(ui.values[0]);
 			    _this.end = new Date(ui.values[1]);
+			    //			    _this.applyAnimation(true);
 			    _this.updateLabels();
 			},
 			    stop: function(event,ui) {

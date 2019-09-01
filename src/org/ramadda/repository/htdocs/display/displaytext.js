@@ -959,7 +959,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    if(!widget.val || widget.val()==null) continue;
 			    var value = widget.val().trim();
 			    //${filter_id template="sdsds"}
-			    if(value=="") {
+			    if(value==FILTER_ALL) {
 				var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
 				headerTemplate = headerTemplate.replace(regexp,"");
 				footerTemplate = footerTemplate.replace(regexp,"");
