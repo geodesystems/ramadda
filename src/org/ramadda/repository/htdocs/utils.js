@@ -302,7 +302,11 @@ var Utils = {
         return v;
     },
     formatDateYYYYMMDD: function(date, options, args) {
-        return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
+	var m = (date.getUTCMonth() + 1);
+	if(m<10) m = "0" + m;
+	var d = date.getUTCDate();
+	if(d<10) d = "0" +d;
+        return date.getUTCFullYear() + "-" + m + "-" + d;
     },
     formatDateYYYY: function(date, options, args) {
         return date.getUTCFullYear();

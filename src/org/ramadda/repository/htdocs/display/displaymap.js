@@ -1758,10 +1758,12 @@ function MapAnimation(display) {
 	    this.window = 1000 * 60 * 60 * 24 * 366;
 	} else if (this.windowUnit == "month") {
 	    this.window = 1000 * 60 * 60 * 24 * 32;
+	} else if (this.windowUnit == "week") {
+	    this.window = 1000 * 60 * 60 * 24*7;
 	} else if (this.windowUnit == "day") {
-	    this.window = 1000 * 60 * 60 * 25;
+	    this.window = 1000 * 60 * 60 * 24;
 	} else if (this.windowUnit == "hour") {
-	    this.window = 1000 * 60 * 61;
+	    this.window = 1000 * 60 * 60;
 	} else if (this.windowUnit == "minute") {
 	    this.window = 1000 * 61;
 	} else {
@@ -1796,6 +1798,7 @@ function MapAnimation(display) {
 		return this.display.jq(id);
 	    },
 		init: function(dateMin, dateMax) {
+		let _this = this;
 		this.dateMin = dateMin;
 		this.dateMax = dateMax;
                 this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
@@ -1803,6 +1806,28 @@ function MapAnimation(display) {
 		this.end = this.dateMin;
 		if(this.label)
 		    this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
+		if(this.dateMin) {
+		this.jq(ID_SLIDER).slider({
+			range: true,
+			    min: this.dateMin.getTime(),
+			    max: this.dateMax.getTime(),
+			    values: [this.dateMin.getTime(),this.dateMax.getTime()],
+			    slide: function( event, ui ) {
+			    _this.stopAnimation();
+			    _this.begin = new Date(ui.values[0]);
+			    _this.end = new Date(ui.values[1]);
+			    _this.updateLabels();
+			},
+			    stop: function(event,ui) {
+			    _this.stopAnimation();
+			    _this.begin = new Date(ui.values[0]);
+			    _this.end = new Date(ui.values[1]);
+			    _this.applyAnimation(true);
+				}
+		    });
+
+		}
+
 	    },
 	makeControls:function() {
                 var buttons = 
@@ -1813,11 +1838,12 @@ function MapAnimation(display) {
 		    HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward")) + 
                     HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync")) + 
                     HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-map-animation-label"]);
-		//		    HtmlUtils.rangeInput("",this.getDomId(ID_SLIDER));
                 buttons = HtmlUtils.div([ "class","display-map-animation-buttons"], buttons);
-                this.jq(ID_TOP_LEFT).append(buttons);
-		HtmlUtils.rangeInputInit(this.getDomId(ID_SLIDER));
+		if(display.getProperty("animationShowSlider",true)) {
+		    buttons+=   HtmlUtils.div(["class","display-map-slider","id",this.getDomId(ID_SLIDER)]);
+		}
 
+                this.jq(ID_TOP_LEFT).append(buttons);
                 this.btnRun = this.jq(ID_RUN);
                 this.btnPrev = this.jq(ID_PREV);
                 this.btnNext = this.jq(ID_NEXT);
@@ -1837,6 +1863,7 @@ function MapAnimation(display) {
 			//			this.end =this.begin;
 		    }
 		    this.stopAnimation();
+		    this.applyAnimation();
                 });
                 this.btnEnd.button().click(() => {
 		    this.end = this.dateMax;
@@ -1846,6 +1873,7 @@ function MapAnimation(display) {
 			this.end =this.dateMax;
 		    }
 		    this.stopAnimation();
+		    this.applyAnimation();
                 });
                 this.btnPrev.button().click(() => {
 		    if (this.mode == "sliding") {
@@ -1861,18 +1889,21 @@ function MapAnimation(display) {
 			}
 		    }
 		    this.stopAnimation();
+		    this.applyAnimation();
                 });
                 this.btnNext.button().click(() => {
+			this.stopAnimation();
 			this.doNext();
                 });
                 this.btnShowAll.button().click(() => {
 			this.begin = this.dateMin;
-			this.end = this.dateMin;
+			this.end = this.dateMax;
 			this.inAnimation = false;
-			this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
 			this.running = false;
 			this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
-			this.display.showAllPoints();
+			this.applyAnimation();
+			//			this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
+			//			this.display.showAllPoints();
                 });
             },
 
@@ -1881,24 +1912,25 @@ function MapAnimation(display) {
 			if(this.end.getTime()<this.dateMax.getTime()-this.window) {
 			    this.begin = this.end;
 			    this.end = new Date(this.end.getTime()+this.window);
+			} else {
+			    this.stopAnimation();
 			}
 		    } else {
 			if(this.end.getTime()<this.dateMax.getTime()-this.window) {
 			    this.end = new Date(this.end.getTime()+this.window);
 			} else {
+			    this.stopAnimation();
 			    return;
 			}
 		    }
-		    this.stopAnimation();
+		    this.applyAnimation();
 	    },
 
-	startAnimation: function(justOneStep, back) {
+	startAnimation: function() {
 		if (!this.display.points) {
                 return;
             }
             if (!this.dateMax) return;
-            if (!justOneStep)
-                this.running = true;
             if (!this.inAnimation) {
                 this.inAnimation = true;
                 this.label.html("");
@@ -1931,62 +1963,18 @@ function MapAnimation(display) {
                 if (this.display.map.circles)
                     this.display.map.circles.redraw();
             }
-            this.stepAnimation(back);
+	    this.doNext();
         },
 	stopAnimation:function() {
                   this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
                   this.running = false;
-		  this.applyAnimation();
 	    },
-        stepAnimation: function(back) {
-            if (!this.display.points || !this.dateMax) return;
-            var oldBegin= this.begin;
-            var oldEnd = this.end;
-            var unit = this.windowUnit;
-            var date = back?new Date(this.begin.getTime() - this.window):
-		new Date(this.end.getTime() + this.window);
-	    var newDate;
-            if (unit == "decade") {
-                newDate = new Date(date.getUTCFullYear(), 0);
-            } else if (unit == "year") {
-                newDate = new Date(date.getUTCFullYear(), 0);
-            } else if (unit == "month") {
-                newDate = new Date(date.getUTCFullYear(), date.getMonth());
-            } else if (unit == "day") {
-                newDate = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay());
-            } else if (unit == "hour") {
-                newDate = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours());
-            } else if (unit == "minute") {
-                newDate = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes());
-            } else {
-                newDate = new Date(this.end.getTime() + this.window);
-            }
-	    //begin - end
-            if (this.mode == "sliding") {
-		if(back)  {
-		    this.begin= newDate;
-		    this.end = oldBegin;
-		} else {
-		    this.begin = oldEnd;
-		    this.end = newDate;
+	applyAnimation: function(skipSlider) {
+		if(!skipSlider) {
+		    this.jq(ID_SLIDER).slider('values',0,this.begin.getTime());
+		    this.jq(ID_SLIDER).slider('values',1,this.end.getTime());
 		}
-		if(this.begin.getTime()<this.dateMin.getTime()) {
-		    this.begin = this.dateMin;
-		    this.end = new Date(this.dateMin.getTime()+this.window);
-		}
-		if(this.begin.getTime()>this.dateMax.getTime()) {
-		    this.end = this.dateMax;
-		    this.begin = new Date(this.dateMax.getTime()-this.window);
-		}
-		if(this.end.getTime()>this.dateMax.getTime()) {
-		    //		    this.end = this.dateMax;
-		}
-	    } else {
-		this.end = newDate;
-	    }
-	    this.applyAnimation();
-        },
-	applyAnimation: function() {
+
             var windowStart = this.begin.getTime();
             var windowEnd = this.end.getTime();
             var atLoc = {};
@@ -2024,12 +2012,12 @@ function MapAnimation(display) {
                 this.display.map.circles.redraw();
             if (this.display.map.lines)
                 this.display.map.lines.redraw();
-	    this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
+	    this.updateLabels();
             if (windowEnd <= this.dateMax.getTime()) {
                 if (this.running) {
                     setTimeout(() => {
 			    if(!this.running) return;
-			    this.stepAnimation()}, this.speed);
+			    this.doNext()}, this.speed);
                 }
             } else {
                 this.running = false;
@@ -2038,6 +2026,9 @@ function MapAnimation(display) {
                 this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
             }
             this.display.applyVectorMap(true);
+	    },
+		updateLabels: function() {
+		this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
 	    },
         formatAnimationDate: function(d) {
             if (this.dateFormat == "yyyy") {
