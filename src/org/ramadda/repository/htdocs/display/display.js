@@ -2610,7 +2610,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					if(label.length>20) {
 					    label=  label.substring(0,19)+"...";
 					}
-					value = value.replace(/\'/g,"&apos;");
+					if(typeof value == "string")
+					    value = value.replace(/\'/g,"&apos;");
 					var tuple = [value, label];
 					enumValues.push(tuple);
 				    }
