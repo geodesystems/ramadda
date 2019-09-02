@@ -2709,14 +2709,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 			if(isNaN(minValue)) minValue = range.min;	
 			if(isNaN(maxValue)) maxValue = range.max;
+			var scale = 1;
+			if(range.min != Math.round(range.min)  || range.max != Math.round(range.max))
+			    scale  = 10000;
 			$( "#filterby-range" ).slider({
 				range: true,
-				    min: parseFloat(range.min*10000),
-				    max: parseFloat(range.max*10000),
-				    values: [ parseFloat(minValue*10000), parseFloat(maxValue*10000)],
+				    min: parseFloat(range.min*scale),
+				    max: parseFloat(range.max*scale),
+				    values: [ parseFloat(minValue*scale), parseFloat(maxValue*scale)],
 				    slide: function( event, ui ) {
-				    min.val(ui.values[0]/10000);
-				    max.val(ui.values[1]/10000);
+				    min.val(ui.values[0]/scale);
+				    max.val(ui.values[1]/scale);
 				},
 				    stop: function() {
 				    var popup = getTooltip();
@@ -4205,20 +4208,14 @@ function DisplayAnimation(display) {
 		    this.applyAnimation();
                 });
                 this.btnPrev.button().click(() => {
-		    if (this.mode == "sliding") {
-			if(this.begin.getTime()>this.dateMin.getTime()+this.window) {
-			    this.end = this.begin;
-			    this.begin = new Date(this.begin.getTime()-this.window);
+			this.begin = new Date(this.begin.getTime()-this.window);
+			if(this.begin.getTime()<this.dateMin.getTime())
+			    this.begin = this.dateMin;
+			if (this.mode == "sliding") {
+			    this.end = new Date(this.begin.getTime()+this.window);
 			}
-		    } else {
-			if(this.end.getTime()>this.begin.getTime()+this.window) {
-			    this.end = new Date(this.end.getTime()-this.window);
-			} else {
-			    return;
-			}
-		    }
-		    this.stopAnimation();
-		    this.applyAnimation();
+			this.stopAnimation();
+			this.applyAnimation();
                 });
                 this.btnNext.button().click(() => {
 			this.stopAnimation();
