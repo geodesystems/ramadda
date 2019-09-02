@@ -86,11 +86,20 @@
   text-align:center;
 }
 
-.display-map-slider {
+.display-animation-tick {
+   position:absolute;
+   display:inline-block;
+   height:100%;
+   border-left:1px solid #ccc;
+   margin-bottom:0.5em;
+}
+
+.display-animation-slider {
     margin-right:10px;
 }
 
-.display-map-slider .ui-slider-handle {
+.display-animation-slider .ui-slider-handle {
+position:absolute;
  width:10px;
  border: 1px solid #aaa;
  border-radius: 0;
@@ -99,17 +108,17 @@
  margin-top:5px;
 }
 
-.display-map-animation-label {
+.display-animation-label {
    font-family: Courier, monospace;
 }
 
-.display-map-animation-buttons span {
+.display-animation-buttons span {
    background:rgba(0,0,0,0)  !important;
    border: 0px solid white !important;
    padding: 2px !important;
 }
 
-.display-map-animation-buttons span:hover {
+.display-animation-buttons span:hover {
 }
 
 .display-map-toolbar .ramadda-button {
