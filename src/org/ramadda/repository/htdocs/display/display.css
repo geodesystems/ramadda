@@ -87,6 +87,8 @@
 }
 
 .display-animation-tick {
+   width:4px;
+   z-index:100;
    position:absolute;
    display:inline-block;
    height:100%;

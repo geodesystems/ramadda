@@ -4290,9 +4290,22 @@ function DisplayAnimation(display) {
 		    for(var i=0;i<dates.length;i++) {
 			var date = dates[i].getTime();
 			var perc = Math.round((date-min)/(max-min)*100);
-			ticks+=HtmlUtils.div(["class","display-animation-tick","style","left:" + perc+"%;","title","x"],"");
+			var tt = this.formatAnimationDate(dates[i]);
+			ticks+=HtmlUtils.div(["class","display-animation-tick","style","left:" + perc+"%;","title",tt],"");
 		    }
 		    this.jq(ID_SLIDER).append(ticks);
+		    this.jq(ID_SLIDER).find(".display-animation-tick").tooltip({
+			    content: function() {
+				return $(this).prop('title');
+			    },
+				position: {
+				my: "left top",
+				    at: "left bottom+2"
+				    },
+				classes: {
+				"ui-tooltip": "ramadda-popup"
+				    }
+			});
 		}
 	    },
 	makeControls:function() {
