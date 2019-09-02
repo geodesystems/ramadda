@@ -609,14 +609,14 @@ public class GeoUtils {
                 //              System.out.println("address:" + _address);
                 place = resource.getPlace(county + "," + state);
 		//		resource.debug();
-		System.out.println("try:" +county+"," + state +": place:" + place);
+		//		System.out.println("try:" +county+"," + state +": place:" + place);
                 if (place == null) {
-		    System.out.println("state before:" +county+":" + state+":");
+		    //		    System.out.println("state before:" +county+":" + state+":");
                     state = (String) statesMap.get(state);
-		    System.out.println("state after:" +county+"," + state);
+		    //		    System.out.println("state after:" +county+"," + state);
                     if (state != null) {
                         place = resource.getPlace(county + "," + state);
-			System.out.println("try 2:" +county+"," + state +" place:" + place);
+			//			System.out.println("try 2:" +county+"," + state +" place:" + place);
 			if(place==null) {
 			    place = resource.getPlace(county + " county," + state);
 			}
