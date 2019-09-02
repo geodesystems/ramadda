@@ -2136,7 +2136,7 @@ public abstract class Processor extends CsvOperator {
                 //                System.err.println(" -- " + i + " " + newColumns);
                 cnt++;
             }
-            String[] array = new String[newColumns.size()];
+            Object[] array = new Object[newColumns.size()];
 
 
             for (String u : uniques) {
@@ -2179,7 +2179,7 @@ public abstract class Processor extends CsvOperator {
                     cnt++;
                 }
                 for (int i : includes) {
-                    array[1 + includeCnt] = (String) firstRow.get(i);
+                    array[1 + includeCnt] = firstRow.get(i);
                     includeCnt++;
                 }
 
