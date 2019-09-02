@@ -2757,6 +2757,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.updateUI();
 	    },
         updateUI: function() {},
+		animationStart: function(animation) {
+
+	    },
+		animationApply: function(animation) {
+	    },
         getDoBs: function() {
             if (!(typeof this.dobs === 'undefined')) {
                 return dobs;
@@ -4043,34 +4048,6 @@ function DisplayAnimation(display) {
     var ID_SLIDER = "slider";
     var ID_SHOWALL = "showall";
     var ID_ANIMATION_LABEL = "animationlabel";
-
-
-    this.steps= parseFloat(display.getProperty("animationSteps", 60));
-    this.windowUnit = display.getProperty("animationWindow", "");
-    if (this.windowUnit != "") {
-	if (this.windowUnit == "decade") {
-	    this.window = 1000 * 60 * 60 * 24 * 365 * 10;// + 1000 * 60 * 60 * 24 * 365;
-	} else 	if (this.windowUnit == "halfdecade") {
-	    this.window = 1000 * 60 * 60 * 24 * 365 * 5;// + 1000 * 60 * 60 * 24 * 365;
-	} else if (this.windowUnit == "year") {
-	    this.window = 1000 * 60 * 60 * 24 * 366;
-	} else if (this.windowUnit == "month") {
-	    this.window = 1000 * 60 * 60 * 24 * 32;
-	} else if (this.windowUnit == "week") {
-	    this.window = 1000 * 60 * 60 * 24*7;
-	} else if (this.windowUnit == "day") {
-	    this.window = 1000 * 60 * 60 * 24;
-	} else if (this.windowUnit == "hour") {
-	    this.window = 1000 * 60 * 60;
-	} else if (this.windowUnit == "minute") {
-	    this.window = 1000 * 61;
-	} else {
-	    this.window = 1001;
-	}
-    } else if(this.steps>0){
-	this.window = this.dateRange / this.steps;
-    }
-
     this.display = display;
     $.extend(this,{
             running: false,
@@ -4099,12 +4076,42 @@ function DisplayAnimation(display) {
 		let _this = this;
 		this.dateMin = dateMin;
 		this.dateMax = dateMax;
-                this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 		this.begin = this.dateMin;
 		this.end = this.dateMin;
-		if(this.label)
-		    this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
 		if(!this.dateMin) return;
+
+                this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
+		this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
+		this.windowUnit = this.display.getProperty("animationWindow", "");
+
+		if (this.windowUnit != "") {
+		    if (this.windowUnit == "decade") {
+			this.window = 1000 * 60 * 60 * 24 * 365 * 10;// + 1000 * 60 * 60 * 24 * 365;
+		    } else 	if (this.windowUnit == "halfdecade") {
+			this.window = 1000 * 60 * 60 * 24 * 365 * 5;// + 1000 * 60 * 60 * 24 * 365;
+		    } else if (this.windowUnit == "year") {
+			this.window = 1000 * 60 * 60 * 24 * 366;
+		    } else if (this.windowUnit == "month") {
+			this.window = 1000 * 60 * 60 * 24 * 32;
+		    } else if (this.windowUnit == "week") {
+			this.window = 1000 * 60 * 60 * 24*7;
+		    } else if (this.windowUnit == "day") {
+			this.window = 1000 * 60 * 60 * 24;
+		    } else if (this.windowUnit == "hour") {
+			this.window = 1000 * 60 * 60;
+		    } else if (this.windowUnit == "minute") {
+			this.window = 1000 * 61;
+		    } else {
+			this.window = 1001;
+		    }
+		} else if(this.steps>0){
+		    this.window = this.dateRange / this.steps;
+		}
+
+
+		this.updateLabels();
+	
+
 		this.jq(ID_SLIDER).slider({
 			range: true,
 			    min: this.dateMin.getTime(),
@@ -4211,8 +4218,6 @@ function DisplayAnimation(display) {
 			this.running = false;
 			this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
 			this.applyAnimation();
-			//			this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
-			//			this.display.showAllPoints();
                 });
             },
 
@@ -4267,12 +4272,8 @@ function DisplayAnimation(display) {
                     }
                 } 
                 this.end = this.begin;
-                for (var i = 0; i < this.display.points.length; i++) {
-                    var point = this.display.points[i];
-                    point.style.display = 'none';
-                }
-                if (this.display.map.circles)
-                    this.display.map.circles.redraw();
+
+		this.display.animationStart();
             }
 	    this.doNext();
         },
@@ -4286,44 +4287,9 @@ function DisplayAnimation(display) {
 		    this.jq(ID_SLIDER).slider('values',1,this.end.getTime());
 		}
 
-            var windowStart = this.begin.getTime();
-            var windowEnd = this.end.getTime();
-            var atLoc = {};
-            for (var i = 0; i < this.display.lines.length; i++) {
-                var line = this.display.lines[i];
-                if (line.date < windowStart || line.date > windowEnd) {
-                    line.style.display = 'none';
-                    continue;
-                }
-                line.style.display = 'inline';
-	    }
-
-            for (var i = 0; i < this.display.points.length; i++) {
-                var point = this.display.points[i];
-                if (point.date < windowStart || point.date > windowEnd) {
-                    point.style.display = 'none';
-                    continue;
-                }
-                if (atLoc[point.location]) {
-                    var other = atLoc[point.location];
-                    if (other.date < point.date) {
-                        atLoc[point.location] = point;
-                        other.style.display = 'none';
-                        point.style.display = 'inline';
-                    } else {
-                        point.style.display = 'none';
-                    }
-                    continue;
-                }
-                atLoc[point.location] = point;
-                point.style.display = 'inline';
-            }
-
-            if (this.display.map.circles)
-                this.display.map.circles.redraw();
-            if (this.display.map.lines)
-                this.display.map.lines.redraw();
+		this.display.animationApply(this);
 	    this.updateLabels();
+            var windowEnd = this.end.getTime();
             if (windowEnd <= this.dateMax.getTime()) {
                 if (this.running) {
                     setTimeout(() => {
@@ -4336,10 +4302,10 @@ function DisplayAnimation(display) {
                 this.inAnimation = false;
                 this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
             }
-            this.display.applyVectorMap(true);
 	    },
 		updateLabels: function() {
-		this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
+		if(this.label)
+		    this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
 	    },
         formatAnimationDate: function(d) {
             if (this.dateFormat == "yyyy") {

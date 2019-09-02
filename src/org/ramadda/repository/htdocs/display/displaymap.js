@@ -931,6 +931,57 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             return true;
         },
 	animation: new DisplayAnimation(this),
+		animationStart:function(animation) {
+		if(this.points) {
+                for (var i = 0; i < this.points.length; i++) {
+                    var point = this.points[i];
+                    point.style.display = 'none';
+                }
+		}
+                if (this.map.circles)
+                    this.map.circles.redraw();
+
+	    },
+		animationApply: function(animation) {
+            var windowStart = animation.begin.getTime();
+            var windowEnd = animation.end.getTime();
+            var atLoc = {};
+            for (var i = 0; i < this.lines.length; i++) {
+                var line = this.lines[i];
+                if (line.date < windowStart || line.date > windowEnd) {
+                    line.style.display = 'none';
+                    continue;
+                }
+                line.style.display = 'inline';
+	    }
+
+            for (var i = 0; i < this.points.length; i++) {
+                var point = this.points[i];
+                if (point.date < windowStart || point.date > windowEnd) {
+                    point.style.display = 'none';
+                    continue;
+                }
+                if (atLoc[point.location]) {
+                    var other = atLoc[point.location];
+                    if (other.date < point.date) {
+                        atLoc[point.location] = point;
+                        other.style.display = 'none';
+                        point.style.display = 'inline';
+                    } else {
+                        point.style.display = 'none';
+                    }
+                    continue;
+                }
+                atLoc[point.location] = point;
+                point.style.display = 'inline';
+            }
+
+            if (this.map.circles)
+                this.map.circles.redraw();
+            if (this.map.lines)
+                this.map.lines.redraw();
+            this.applyVectorMap(true);
+	    },
         showAllPoints: function() {
 		if(this.lines) {
 		    for (var i = 0; i < this.lines.length; i++) {

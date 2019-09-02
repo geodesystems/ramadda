@@ -110,6 +110,7 @@ position:absolute;
 
 .display-animation-label {
    font-family: Courier, monospace;
+   font-size:90%;
 }
 
 .display-animation-buttons span {
