@@ -2861,12 +2861,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(isNaN(maxValue)) maxValue = range.max;
 			$( "#filterby-range" ).slider({
 				range: true,
-				    min: range.min,
-				    max: range.max,
-				    values: [ minValue, maxValue],
+				    min: parseFloat(range.min*10000),
+				    max: parseFloat(range.max*10000),
+				    values: [ parseFloat(minValue*10000), parseFloat(maxValue*10000)],
 				    slide: function( event, ui ) {
-				    min.val(ui.values[0]);
-				    max.val(ui.values[1]);
+				    min.val(ui.values[0]/10000);
+				    max.val(ui.values[1]/10000);
 				},
 				    stop: function() {
 				    var popup = getTooltip();
