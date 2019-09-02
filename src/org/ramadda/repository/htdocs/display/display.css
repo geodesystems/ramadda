@@ -86,13 +86,14 @@
   text-align:center;
 }
 
+
 .display-animation-tick {
    width:4px;
    z-index:100;
    position:absolute;
    display:inline-block;
    height:100%;
-   border-left:1px solid #ccc;
+   border-left:1px solid #ddd;
    margin-bottom:0.5em;
 }
 
@@ -100,14 +101,27 @@
     margin-right:10px;
 }
 
+.display-animation-slider .ui-slider-handle:hover {
+cursor:pointer;
+}
+
+.ui-corner-all {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+
 .display-animation-slider .ui-slider-handle {
+z-index:200;
+background:#ddd;
 position:absolute;
  width:10px;
- border: 1px solid #aaa;
+ border: 1px solid #cecece;
  border-radius: 0;
  margin-left:0px;
- height:14px;
- margin-top:5px;
+ height:13px;
+ margin-top:6px;
+ margin-bottom:0px;
 }
 
 .display-animation-label {
