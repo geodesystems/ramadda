@@ -93,7 +93,7 @@
    position:absolute;
    display:inline-block;
    height:100%;
-   border-left:1px solid #ddd;
+   border-left:1px solid #ccc;
    margin-bottom:0.5em;
 }
 
@@ -113,10 +113,10 @@ cursor:pointer;
 
 .display-animation-slider .ui-slider-handle {
 z-index:200;
-background:#ddd;
+background:#cacaca;
 position:absolute;
  width:10px;
- border: 1px solid #cecece;
+ border: 1px solid #bbb;
  border-radius: 0;
  margin-left:0px;
  height:13px;
