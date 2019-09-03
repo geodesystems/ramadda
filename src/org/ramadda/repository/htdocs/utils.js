@@ -1219,7 +1219,6 @@ var HtmlUtils = {
         return info.editor;
     },
     handleAceEditorSubmit: function() {
-	console.log("ace submit");
         if (!this.aceEditors) return;
         for (a in this.aceEditors) {
             var info = this.aceEditors[a];
@@ -1241,6 +1240,7 @@ var HtmlUtils = {
         }
         var info = {};
         this.aceEditors[id] = info;
+	info.id = id;
         info.editor = ace.edit(id);
         info.formId = formId;
         info.hidden = hidden;
@@ -1249,6 +1249,11 @@ var HtmlUtils = {
         info.editor.getSession().setUseWrapMode(true);
         info.editor.setOptions(options);
         info.editor.session.setMode("ace/mode/ramadda");
+	try {
+	    wikiInitEditor(info);
+        } catch (e) {
+	    console.log("error:" + e);
+	}
         return info.editor;
     },
     makeBreadcrumbs: function(id) {

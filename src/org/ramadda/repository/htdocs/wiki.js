@@ -5,6 +5,9 @@
 
 function insertText(id, value) {
     hidePopupObject();
+    var popup = getTooltip();
+    if(popup)
+	popup.hide();
     var handler = getHandler(id);
     if (handler) {
         handler.insertText(value);
@@ -149,5 +152,134 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
         else if (document.body)
             document.body.scrollTop = winScroll;
     }
+
+}
+
+
+var wikiAttributes = {
+    display: [
+	      "label:Display Attributes",
+	      "showMenu=\"true\"",	      
+	      "showTitle=\"true\"",
+	      "title=\"\"",
+	      "titleBackground=\"color\"",
+	      "textColor=\"color\"",
+	      "backgroundImage=\"\"",
+	      "background=\"color\"",
+
+
+	      "width=\"100%\"",
+	      "height=\"400\"",
+	      "filterFields=\"\"",
+	      "colorTable=\"\"",
+	      "colors=\"color1,...,colorN\"",
+	      "colorTableAlpha=\"0.5\"",
+	      "colorByMin=\"value\"",
+	      "colorByMax=\"value\"",
+	      "binDate=\"day|month|year\"",
+	      "colorByFields=\"&lt;field1,...,fieldN&gt;\"",
+      ],
+    display_map: [
+		  "label:Map Attributes",
+		  "defaultMapLayer =\"\"",
+		  "showLocationSearch=\"true\"",
+		  "strokeWidth=1",
+		  "strokeColor=\"#000\"",
+		  "fillColor=\"\"",
+		  "radius=\"5\"",
+		  "shape=\"triangle\"",
+		  "colorBy=\"&lt;field&gt;\"",
+		  "colorByLog=\"true\"",
+		  "colorByMap=\"value1:color1,...,valueN:colorN\"",
+		  "sizeBy=\"&lt;field&gt;\"",
+		  "sizeByLog=\"true\"",
+		  "sizeByMap=\"value1:color1,...,valueN:colorN\"",
+		  "doAnimation=\"true\"",
+		  "animationDateFormat=\"yyyy\"",
+		  "animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
+		  "animationMode=\"sliding\"",
+		  "animationShowSlider=\"true|false\"",
+		  "boundsAnimation=\"true\"",
+		  "centerOnFilterChange=\"true\"",
+		  "markerIcon=\"/icons/...\"",
+		  "showSegments=\"true\"",
+		  "=\"\"",
+		  "=\"\"",
+		  "=\"\"",
+		  ]
+}
+
+function wikiInitEditor(info) {
+    var editor = info.editor
+    editor.container.addEventListener("contextmenu", function(e) {
+		e.preventDefault();
+		var cursor = editor.getCursorPosition();
+		var t = editor.getValue();
+		var s = "";
+		var lines = t.split("\n");
+		for(i=0;i<lines.length;i++) {
+		    if(i==cursor.row) {
+			s+= lines[i].substring(0,cursor.column);
+			break;
+		    }
+		    s +=lines[i]+"\n";
+		}
+		var inBracket = false;
+		var i;
+		for(i=s.length-1;i>=0;i--) {
+		    var c = s[i];
+		    if(c=="}") return;
+		    if(c=="{") {
+			if(inBracket) {
+			    break;
+			} 
+			inBracket = true;
+			continue;
+		    }
+		    inBracket = false;
+		}
+		if(i<0) return;
+		var tag = s.substring(i+2);
+		var tmp = tag.match(/type *= *\"([^\"]+)\"?/); 
+		var type;
+                if(tmp && tmp.length>1) type=tmp[1];
+		var idx = tag.indexOf(" ");
+		if(idx<0) return;
+		tag = tag.substring(0,idx);
+		var tags = [];
+		if(wikiAttributes[tag]) {
+		    wikiAttributes[tag].map(a=>tags.push(a));
+		}
+		if(type && wikiAttributes[tag+"_" + type]) {
+		    wikiAttributes[tag+"_" + type].map(a=>tags.push(a));
+		}
+		if(tags.length==0) return;
+
+		var menu = "<div style=margin:5px;><table><tr valign=top>";
+		tags.map(tag=>{
+			if(tag.startsWith("label:")) {
+			    if(menu!="") menu += "</td>";
+			    menu+="<td><b> " + tag.substring(6)+ "</b><br>";
+			    return;
+			}
+			var t = " " + tag.replace(/\"/g,"&quot;")+" ";
+			menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",tag)+"<br>\n";
+		    });
+
+		menu += "</tr></table></div>";
+
+		//		editor.session.insert(editor.getCursorPosition(), "hello");
+		var popup = getTooltip();
+		//		editor.session.insert(editor.getCursorPosition(), text)
+		popup.html(menu);
+		popup.show();
+		popup.position({
+                        of: $(window),
+                        my: "left top",
+                        at: "left+" +e.x +" top+" + (e.y),
+                        collision: "fit fit"
+                    });
+		return false;
+	    }, false);
 
 }

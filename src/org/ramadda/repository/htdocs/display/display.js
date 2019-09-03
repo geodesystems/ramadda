@@ -959,7 +959,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var fields = [];
 		    fields.push(new RecordField({
 				id:"count",
-				    label:this.getProperty("binCopuntLabel","Count"),
+				    label:this.getProperty("binCountLabel","Count"),
 				    type:"double",
 				    chartable:true
 				    }));		    

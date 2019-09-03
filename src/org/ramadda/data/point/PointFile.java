@@ -916,7 +916,9 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         int               paramId = 1;
         for (String tok : toks) {
 	    tok =tok.replaceAll("%2C",",");
+	    System.err.println("TOK:" + tok);
             List<String> pair  = StringUtil.splitUpTo(tok, "[", 2);
+	    System.err.println("pair:" + pair);
             String       name  = pair.get(0).trim();
             String       attrs = ((pair.size() > 1)
                                   ? pair.get(1)
