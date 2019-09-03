@@ -606,6 +606,7 @@ public class CsvUtil {
                                   Hashtable<String, String> props)
             throws Exception {
 
+	int count = Utils.getProperty(props,"count",1);
         int    skip  = 0;
         String skips = props.get("skip");
         if (skips != null) {
@@ -663,7 +664,6 @@ public class CsvUtil {
             s = toks[1];
             if (skip > 0) {
                 skip--;
-
                 continue;
             }
             if (debug) {
@@ -680,19 +680,18 @@ public class CsvUtil {
                     System.out.println("\trow: " + tr);
                 }
                 Row row = new Row();
-                rows.add(row);
+		boolean checkHeader = true;
                 while (true) {
                     toks = Utils.tokenizeChunk(tr, "<td", "</td");
+                    if (checkHeader && toks == null) {
+			toks = Utils.tokenizeChunk(tr, "<th", "</th");
+		    }
                     if (toks == null) {
                         break;
                     }
-                    String td = toks[0];
+                    String td = toks[0].trim();
                     tr = toks[1];
                     int idx = td.indexOf(">");
-                    if (idx < 0) {
-                        //                        System.out.println("return-2");
-                        //                        return rows;
-                    }
                     if ((attrPattern != null) && (idx >= 0)) {
                         String attrs = td.substring(0, idx).toLowerCase();
                         if (attrPattern.matcher(attrs).find()) {
@@ -703,8 +702,13 @@ public class CsvUtil {
                         }
                         //                        System.out.println("not skipping:" +td );
                     }
-                    td = td.substring(idx + 1);
+		    //		    System.err.println("td:" + td);
+		    //                    td = td.substring(idx + 1);
+		    //		    System.err.println("after TD:" + td);
                     td = StringUtil.stripTags(td);
+		    td = td.replaceAll("\n"," ").replaceAll("  +","");
+		    td = HtmlUtils.unescapeHtml3(td);
+		    //		    System.err.println(td+"  stripped:" + td);
                     if (removeEntity) {
                         td = td.replaceAll("&[^;]+;", "");
                     } else {
@@ -726,9 +730,14 @@ public class CsvUtil {
                         System.out.println("\t\ttd:" + td);
                     }
                 }
+		checkHeader = false;
+		if(row.size()>0)
+		    rows.add(row);
+		//		if(rows.size()>2) break;
             }
-
-            break;
+	    if(--count<=0) {
+		break;
+	    }
         }
 
         return rows;
