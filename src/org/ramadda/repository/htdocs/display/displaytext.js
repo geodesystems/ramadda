@@ -416,13 +416,27 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		       console.log("err");
 		   });
 
-
-
-
     
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		var t = SUPER.getWikiEditorTags();
+		var myTags = [
+			      "label:Cards Attributes",
+			      "groupByFields=\"\"",
+			      "groupBy=\"\"",
+			      "tooltipFields=\"\"",
+			      "initGroupFields=\"\"",
+			      "captionTemplate=\"${name}\"",
+			      "sortFields=\"\"",
+			      "labelField=\"\"",
+			      ]
+		myTags.map(tag=>t.push(tag));
+		return t;
+	    },
+
+
         getContentsStyle: function() {
             return "";
         },

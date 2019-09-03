@@ -2896,6 +2896,39 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return toolbar;
         },
+	getWikiEditorTags: function() {
+	       return  [
+	      "label:Display Attributes",
+	      "showMenu=\"true\"",	      
+	      "showTitle=\"true\"",
+	      "layoutHere=\"true\"",
+	      "title=\"\"",
+	      "titleBackground=\"color\"",
+	      "textColor=\"color\"",
+	      "backgroundImage=\"\"",
+	      "background=\"color\"",
+
+
+	      "width=\"100%\"",
+	      "height=\"400\"",
+	      "filterFields=\"\"",
+	      "hideFilterWidget=true",
+	      "acceptFilterEvent=false",
+	      "&lt;field&gt;.filterValue=\"\"",
+	      "&lt;field&gt;.filterValues=\"\"",
+	      "&lt;field&gt;.filterMultiple=\"true\"",
+	      "&lt;field&gt;.filterMultipleSize=\"5\"",
+	      "&lt;field&gt;.filterByStyle=\"background:white;\"",
+	      "&lt;field&gt;.includeAll=\"true\"",
+	      "colorTable=\"\"",
+	      "colors=\"color1,...,colorN\"",
+	      "colorTableAlpha=\"0.5\"",
+	      "colorByMin=\"value\"",
+	      "colorByMax=\"value\"",
+	      "binDate=\"day|month|year\"",
+	      "colorByFields=\"\"",
+			];
+        },
         makeDialog: function() {
             var html = "";
             html += HtmlUtils.div([ATTR_ID, this.getDomId(ID_HEADER), ATTR_CLASS, "display-header"]);

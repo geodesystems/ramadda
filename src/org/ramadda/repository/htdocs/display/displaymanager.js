@@ -464,6 +464,7 @@ function DisplayManager(argId, argProperties) {
                 alert("Error: could not create display using:" + funcName);
                 return;
             }
+	    if(props.dummy) return display;
             this.addDisplay(display);
             return display;
         },

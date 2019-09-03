@@ -1650,6 +1650,37 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         },
+	getWikiEditorTags: function() {
+		var t = SUPER.getWikiEditorTags();
+		var myTags = [
+			    "label:Map Attributes",
+			    "defaultMapLayer =\"\"",
+			    "showLocationSearch=\"true\"",
+			    "strokeWidth=1",
+			    "strokeColor=\"#000\"",
+			    "fillColor=\"\"",
+			    "radius=\"5\"",
+			    "shape=\"triangle\"",
+			    "colorBy=\"\"",
+			    "colorByLog=\"true\"",
+			    "colorByMap=\"value1:color1,...,valueN:colorN\"",
+			    "sizeBy=\"\"",
+			    "sizeByLog=\"true\"",
+			    "sizeByMap=\"value1:color1,...,valueN:colorN\"",
+			    "doAnimation=\"true\"",
+			    "animationDateFormat=\"yyyy\"",
+			    "animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
+			    "animationMode=\"sliding\"",
+			    "animationShowSlider=\"true|false\"",
+			    "boundsAnimation=\"true\"",
+			    "centerOnFilterChange=\"true\"",
+			    "markerIcon=\"/icons/...\"",
+			    "showSegments=\"true\"",
+			    ];
+		myTags.map(tag=>t.push(tag));
+		return t;
+	    },
+
         addLabels:function(records, fields, points) {
             var labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;

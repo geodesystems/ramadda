@@ -1109,7 +1109,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var fields = [];
 		    fields.push(new RecordField({
 				id:"count",
-				    label:this.getProperty("binCopuntLabel","Count"),
+				    label:this.getProperty("binCountLabel","Count"),
 				    type:"double",
 				    chartable:true
 				    }));		    
@@ -3045,6 +3045,39 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 toolbar += HtmlUtils.onClick(calls[i], inner);
             }
             return toolbar;
+        },
+	getWikiEditorTags: function() {
+	       return  [
+	      "label:Display Attributes",
+	      "showMenu=\"true\"",	      
+	      "showTitle=\"true\"",
+	      "layoutHere=\"true\"",
+	      "title=\"\"",
+	      "titleBackground=\"color\"",
+	      "textColor=\"color\"",
+	      "backgroundImage=\"\"",
+	      "background=\"color\"",
+
+
+	      "width=\"100%\"",
+	      "height=\"400\"",
+	      "filterFields=\"\"",
+	      "hideFilterWidget=true",
+	      "acceptFilterEvent=false",
+	      "&lt;field&gt;.filterValue=\"\"",
+	      "&lt;field&gt;.filterValues=\"\"",
+	      "&lt;field&gt;.filterMultiple=\"true\"",
+	      "&lt;field&gt;.filterMultipleSize=\"5\"",
+	      "&lt;field&gt;.filterByStyle=\"background:white;\"",
+	      "&lt;field&gt;.includeAll=\"true\"",
+	      "colorTable=\"\"",
+	      "colors=\"color1,...,colorN\"",
+	      "colorTableAlpha=\"0.5\"",
+	      "colorByMin=\"value\"",
+	      "colorByMax=\"value\"",
+	      "binDate=\"day|month|year\"",
+	      "colorByFields=\"\"",
+			];
         },
         makeDialog: function() {
             var html = "";
@@ -8989,6 +9022,15 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         needsData: function() {
             return true;
         },
+	getWikiEditorTags: function() {
+		var t = SUPER.getWikiEditorTags();
+		var myTags = [
+			    "fields=\"\"",
+			    ];
+		myTags.map(tag=>t.push(tag));
+		return t;
+	    },
+
         handleEventMapClick: function(source, args) {
             if (!this.dataCollection) return;
             var pointData = this.dataCollection.getList();
@@ -10016,6 +10058,22 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		var t = SUPER.getWikiEditorTags();
+		var myTags = [
+			      "label:Chart Attributes",
+			      "vAxisMinValue=\"\"",
+			      "vAxisMValue=\"\"", 
+			      "chartHeight=\"\"",
+			      "chartHeight=\"\"",
+			      "chartWidth=\"\"",
+			      "chartLeft=\"\"",
+			      "chartRight=\"\"",
+			      ]
+		myTags.map(tag=>t.push(tag));
+		return t;
+	    },
+
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
 
@@ -14194,13 +14252,27 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		       console.log("err");
 		   });
 
-
-
-
     
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		var t = SUPER.getWikiEditorTags();
+		var myTags = [
+			      "label:Cards Attributes",
+			      "groupByFields=\"\"",
+			      "groupBy=\"\"",
+			      "tooltipFields=\"\"",
+			      "initGroupFields=\"\"",
+			      "captionTemplate=\"${name}\"",
+			      "sortFields=\"\"",
+			      "labelField=\"\"",
+			      ]
+		myTags.map(tag=>t.push(tag));
+		return t;
+	    },
+
+
         getContentsStyle: function() {
             return "";
         },
@@ -18705,6 +18777,7 @@ function DisplayManager(argId, argProperties) {
                 alert("Error: could not create display using:" + funcName);
                 return;
             }
+	    if(props.dummy) return display;
             this.addDisplay(display);
             return display;
         },
@@ -18909,7 +18982,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
         }
     });
 }/**
-Copyright 2008-2019 Geode Systems LLC
+bCopyright 2008-2019 Geode Systems LLC
 */
 
 var DISPLAY_MAP = "map";
@@ -20560,6 +20633,37 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         },
+	getWikiEditorTags: function() {
+		var t = SUPER.getWikiEditorTags();
+		var myTags = [
+			    "label:Map Attributes",
+			    "defaultMapLayer =\"\"",
+			    "showLocationSearch=\"true\"",
+			    "strokeWidth=1",
+			    "strokeColor=\"#000\"",
+			    "fillColor=\"\"",
+			    "radius=\"5\"",
+			    "shape=\"triangle\"",
+			    "colorBy=\"\"",
+			    "colorByLog=\"true\"",
+			    "colorByMap=\"value1:color1,...,valueN:colorN\"",
+			    "sizeBy=\"\"",
+			    "sizeByLog=\"true\"",
+			    "sizeByMap=\"value1:color1,...,valueN:colorN\"",
+			    "doAnimation=\"true\"",
+			    "animationDateFormat=\"yyyy\"",
+			    "animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
+			    "animationMode=\"sliding\"",
+			    "animationShowSlider=\"true|false\"",
+			    "boundsAnimation=\"true\"",
+			    "centerOnFilterChange=\"true\"",
+			    "markerIcon=\"/icons/...\"",
+			    "showSegments=\"true\"",
+			    ];
+		myTags.map(tag=>t.push(tag));
+		return t;
+	    },
+
         addLabels:function(records, fields, points) {
             var labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;

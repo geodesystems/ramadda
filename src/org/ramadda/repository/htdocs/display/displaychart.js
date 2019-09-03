@@ -243,6 +243,15 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         needsData: function() {
             return true;
         },
+	getWikiEditorTags: function() {
+		var t = SUPER.getWikiEditorTags();
+		var myTags = [
+			    "fields=\"\"",
+			    ];
+		myTags.map(tag=>t.push(tag));
+		return t;
+	    },
+
         handleEventMapClick: function(source, args) {
             if (!this.dataCollection) return;
             var pointData = this.dataCollection.getList();
@@ -1270,6 +1279,22 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		var t = SUPER.getWikiEditorTags();
+		var myTags = [
+			      "label:Chart Attributes",
+			      "vAxisMinValue=\"\"",
+			      "vAxisMValue=\"\"", 
+			      "chartHeight=\"\"",
+			      "chartHeight=\"\"",
+			      "chartWidth=\"\"",
+			      "chartLeft=\"\"",
+			      "chartRight=\"\"",
+			      ]
+		myTags.map(tag=>t.push(tag));
+		return t;
+	    },
+
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
 
