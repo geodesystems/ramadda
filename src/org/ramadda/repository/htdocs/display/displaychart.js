@@ -2958,6 +2958,12 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "maxHeight=\"\"",
+					 ]);
+	    },
         needsData: function() {
             return true;
         },
@@ -3325,6 +3331,16 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
 
     RamaddaUtil.defineMembers(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Chart Attributes",
+					 "sortField=\"\"",
+					 ]);
+
+	    },
+
+
         needsData: function() {
             return true;
         },

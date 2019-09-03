@@ -11737,6 +11737,12 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "maxHeight=\"\"",
+					 ]);
+	    },
         needsData: function() {
             return true;
         },
@@ -12104,6 +12110,16 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
 
     RamaddaUtil.defineMembers(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Chart Attributes",
+					 "sortField=\"\"",
+					 ]);
+
+	    },
+
+
         needsData: function() {
             return true;
         },
@@ -14619,6 +14635,19 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Template Attributes",
+					 "template=\"\"",
+					 "headerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
+					 "footerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
+					 "emptyMessage=\"\"",
+					 "select=\"max|min|<|>|=|<=|>=|contains\"",
+					 "selectField=\"\"",
+					 "selectValue=\"\""
+					 ]);
+	    },
 	    updateUI: function() {
 		var pointData = this.getData();
 		if (pointData == null) return;
@@ -20634,9 +20663,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         },
 	getWikiEditorTags: function() {
-		var t = SUPER.getWikiEditorTags();
-		var myTags = [
-			    "label:Map Attributes",
+		return Utils.mergeLists(SUPER.getWikiEditorTags(), [
+					"label:Map Attributes",
 			    "defaultMapLayer =\"\"",
 			    "showLocationSearch=\"true\"",
 			    "strokeWidth=1",
@@ -20659,9 +20687,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    "centerOnFilterChange=\"true\"",
 			    "markerIcon=\"/icons/...\"",
 			    "showSegments=\"true\"",
-			    ];
-		myTags.map(tag=>t.push(tag));
-		return t;
+					]);
 	    },
 
         addLabels:function(records, fields, points) {

@@ -783,6 +783,19 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Template Attributes",
+					 "template=\"\"",
+					 "headerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
+					 "footerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
+					 "emptyMessage=\"\"",
+					 "select=\"max|min|<|>|=|<=|>=|contains\"",
+					 "selectField=\"\"",
+					 "selectValue=\"\""
+					 ]);
+	    },
 	    updateUI: function() {
 		var pointData = this.getData();
 		if (pointData == null) return;

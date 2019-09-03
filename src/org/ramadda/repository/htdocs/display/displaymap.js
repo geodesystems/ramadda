@@ -1651,9 +1651,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         },
 	getWikiEditorTags: function() {
-		var t = SUPER.getWikiEditorTags();
-		var myTags = [
-			    "label:Map Attributes",
+		return Utils.mergeLists(SUPER.getWikiEditorTags(), [
+					"label:Map Attributes",
 			    "defaultMapLayer =\"\"",
 			    "showLocationSearch=\"true\"",
 			    "strokeWidth=1",
@@ -1676,9 +1675,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    "centerOnFilterChange=\"true\"",
 			    "markerIcon=\"/icons/...\"",
 			    "showSegments=\"true\"",
-			    ];
-		myTags.map(tag=>t.push(tag));
-		return t;
+					]);
 	    },
 
         addLabels:function(records, fields, points) {

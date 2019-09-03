@@ -157,7 +157,19 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 
 
 var wikiAttributes = {
-    test: [],
+    map: [
+	  "label:Map Attributes",
+	  "icon=\"#/icons/dots/green.png\"" ,
+ 	  "width=\"100%\"",
+	  "height=\"400\"",
+	  "listentries=\"true\"",
+	  "details=\"false\"",
+	  "showLocationSearch=\"true\"",
+	  "showCheckbox=\"true\"",
+	  "showSearch=\"false\"",
+	  "icon=\"#/icons/dots/green.png\"",
+	  "iconsonly=\"false\""],
+    
 }
 
 function wikiInitEditor(info) {
@@ -176,10 +188,17 @@ function wikiInitEditor(info) {
 		    s +=lines[i]+"\n";
 		}
 		var inBracket = false;
+		var inRightBracket = false;
 		var i;
 		for(i=s.length-1;i>=0;i--) {
 		    var c = s[i];
-		    if(c=="}") return;
+		    if(c=="}") {
+			if(inRightBracket)
+			    return;
+			inRightBracket  =true;
+			continue;
+		    }
+		    inRightBracket  =false;
 		    if(c=="{") {
 			if(inBracket) {
 			    break;

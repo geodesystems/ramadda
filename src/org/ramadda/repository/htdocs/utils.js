@@ -59,6 +59,15 @@ var Utils = {
         return ramaddaBaseUrl + "/icons/" + icon;
     },
     imports: {},
+    mergeLists: function(l1,l2,l3,l4,l5) {
+	var l = [];
+	if(l1) l1.map(e=>l.push(e));
+	if(l2) l2.map(e=>l.push(e));
+	if(l3) l3.map(e=>l.push(e));
+	if(l4) l4.map(e=>l.push(e));
+	if(l5) l5.map(e=>l.push(e));
+	return l;
+    },
     cloneList: function(l) {
         return l.slice(0);
     },
