@@ -4,6 +4,7 @@
 
 
 var popupObject;
+var tooltipObject;
 var popupTime;
 var popupId;
 
@@ -29,13 +30,19 @@ function hidePopupObject() {
 
 
 function mouseDown(event) {
-    if (popupObject) {
-        var thisId = popupObject.attr("id");
-        setTimeout(() => {
-            if (checkToHidePopup() && popupObject && thisId == popupObject.attr("id")) {
-                hidePopupObject()
-            }
-        }, 250);
+    if (popupObject || tooltipObject) {
+	setTimeout(() => {
+		if(tooltipObject) {
+		    tooltipObject.hide();
+		    tooltipObject = null;
+		}
+		if(popupObject) {
+		    var thisId = popupObject.attr("id");
+		    if (checkToHidePopup() && popupObject && thisId == popupObject.attr("id")) {
+			hidePopupObject();
+		    }
+		}
+	    }, 250);
     }
     mouseIsDown = 1;
     mouseMoveCnt = 0;

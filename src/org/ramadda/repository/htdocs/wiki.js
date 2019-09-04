@@ -172,69 +172,73 @@ var wikiAttributes = {
     
 }
 
+
 function wikiInitEditor(info) {
     var editor = info.editor
+    var toolbar = $("#" + info.id +"_toolbar");
     editor.container.addEventListener("contextmenu", function(e) {
-		e.preventDefault();
-		var cursor = editor.getCursorPosition();
-		var t = editor.getValue();
-		var s = "";
-		var lines = t.split("\n");
-		for(i=0;i<lines.length;i++) {
-		    if(i==cursor.row) {
-			s+= lines[i].substring(0,cursor.column);
+	    e.preventDefault();
+	    var cursor = editor.getCursorPosition();
+	    var menu = toolbar.html();
+	    menu = menu.replace(/(menulink_[0-9]+)/g,"$1_popup");
+	    menu = menu.replace(/(_entryid)/g,"popup_entryid");	
+	    menu = menu.replace(/(_wikilink)/g,"popup_wikilink");
+	    menu = menu.replace(/(_fieldname)/g,"popup_fieldname");
+	    var t = editor.getValue();
+	    var s = "";
+	    var lines = t.split("\n");
+	    for(i=0;i<lines.length;i++) {
+		if(i==cursor.row) {
+		    s+= lines[i].substring(0,cursor.column);
+		    break;
+		}
+		s +=lines[i]+"\n";
+	    }
+	    var inBracket = false;
+	    var inRightBracket = false;
+	    var i;
+	    for(i=s.length-1;i>=0;i--) {
+		var c = s[i];
+		if(c=="}") {
+		    if(inRightBracket)
 			break;
-		    }
-		    s +=lines[i]+"\n";
+		    inRightBracket  =true;
+		    continue;
 		}
-		var inBracket = false;
-		var inRightBracket = false;
-		var i;
-		for(i=s.length-1;i>=0;i--) {
-		    var c = s[i];
-		    if(c=="}") {
-			if(inRightBracket)
-			    return;
-			inRightBracket  =true;
-			continue;
-		    }
-		    inRightBracket  =false;
-		    if(c=="{") {
-			if(inBracket) {
-			    break;
-			} 
-			inBracket = true;
-			continue;
-		    }
-		    inBracket = false;
+		inRightBracket  =false;
+		if(c=="{") {
+		    if(inBracket) {
+			break;
+		    } 
+		    inBracket = true;
+		    continue;
 		}
-		if(i<0) return;
+		inBracket = false;
+	    }
+	    if(i>=0) {
 		var tag = s.substring(i+2);
 		var tmp = tag.match(/type *= *\"([^\"]+)\"?/); 
 		var type;
-                if(tmp && tmp.length>1) type=tmp[1];
+		if(tmp && tmp.length>1) type=tmp[1];
 		var idx = tag.indexOf(" ");
-		if(idx<0) return;
+		if(idx>=0) {
 		tag = tag.substring(0,idx);
 		var tags = [];
 		if(tag == "display" && type) {
 		    try {
-		    var display = 
-			(new DisplayManager()).createDisplay(type,{dummy:true});
-		    if(display) {
-			tags = display.getWikiEditorTags();
-		    }
+			var display = 
+			    (new DisplayManager()).createDisplay(type,{dummy:true});
+			if(display) {
+			    tags = display.getWikiEditorTags();
+			}
 		    } catch(e) {
 			console.log("Error getting tags for:" + type +" error:" + e);
 		    }
 		}
-
 		if(wikiAttributes[tag]) {
 		    wikiAttributes[tag].map(a=>tags.push(a));
 		}
-		if(tags.length==0) return;
-
-		var menu = "<div style=margin:5px;><table><tr valign=top><td><div>";
+		menu += "<div style='border-top:1px solid #ccc; margin:5px;'><table><tr valign=top><td><div>";
 		tags.map(tag=>{
 			if(tag.startsWith("label:")) {
 			    if(menu!="") menu += "</div></td>";
@@ -246,19 +250,17 @@ function wikiInitEditor(info) {
 		    });
 
 		menu += "</div></td></tr></table></div>";
-
-		//		editor.session.insert(editor.getCursorPosition(), "hello");
-		popupObject = getTooltip();
-		//		editor.session.insert(editor.getCursorPosition(), text)
-		popupObject.html(menu);
-		popupObject.show();
-		popupObject.position({
-                        of: $(window),
+	    }
+	    }
+	    tooltipObject = getTooltip();
+	    tooltipObject.html(menu);
+	    tooltipObject.show();
+	    tooltipObject.position({
+		    of: $(window),
                         my: "left top",
                         at: "left+" +e.x +" top+" + (e.y),
                         collision: "fit fit"
-                    });
-		return false;
-	    }, false);
+			});
 
+	});
 }
