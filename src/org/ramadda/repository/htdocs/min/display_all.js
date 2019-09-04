@@ -19272,10 +19272,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
                 .getDomId(ID_LATFIELD), null, this);
-            this.map.map.events.register("zoomend", "", function() {
+            this.map.getMap().events.register("zoomend", "", function() {
                 theDisplay.mapBoundsChanged();
             });
-            this.map.map.events.register("moveend", "", function() {
+            this.map.getMap().events.register("moveend", "", function() {
                 theDisplay.mapBoundsChanged();
             });
 
@@ -19426,7 +19426,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 clonedFeatures.push(feature);
             }
             layer.removeAllFeatures();
-            this.map.map.addLayer(layer);
+            this.map.getMap().addLayer(layer);
             layer.addFeatures(clonedFeatures);
             this.vectorLayer = layer;
             this.applyVectorMap();
@@ -19562,7 +19562,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addWMSLayer(entry.getName(), baseUrl, layer, false);
         },
         mapBoundsChanged: function() {
-            var bounds = this.map.map.calculateBounds();
+            var bounds = this.map.getMap().calculateBounds();
             bounds = bounds.transform(this.map.sourceProjection,
                 this.map.displayProjection);
             this.getDisplayManager().handleEventMapBoundsChanged(this, bounds);
@@ -19976,8 +19976,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		*/
 	    }
             this.vectorLayer.redraw();
-            if (maxExtent) {
-		this.map.map.zoomToExtent(maxExtent, true);
+            if (maxExtent && !this.getProperty("bounds")) {
+		this.map.getMap().zoomToExtent(maxExtent, true);
 	    }
 
         },
