@@ -4263,11 +4263,16 @@ function DisplayAnimation(display) {
 		    this.applyAnimation();
                 });
                 this.btnPrev.button().click(() => {
-			this.begin = new Date(this.begin.getTime()-this.window);
-			if(this.begin.getTime()<this.dateMin.getTime())
-			    this.begin = this.dateMin;
 			if (this.mode == "sliding") {
+			    this.begin = new Date(this.begin.getTime()-this.window);
+			    if(this.begin.getTime()<this.dateMin.getTime())
+				this.begin = this.dateMin;
 			    this.end = new Date(this.begin.getTime()+this.window);
+			} else {
+			    this.end = new Date(this.end.getTime()-this.window);
+			    if(this.end.getTime()<=this.begin.getTime()) {
+				this.end = new Date(this.begin.getTime()+this.window);
+			    }
 			}
 			this.stopAnimation();
 			this.applyAnimation();
