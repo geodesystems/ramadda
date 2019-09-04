@@ -678,7 +678,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             if (this.getProperty("colors")) {
                 var colors = this.getProperty("colors");
-                if ((typeof colors) == "object") return colors;
+                if ((typeof colors) == "object") return this.addAlpha(colors);
                 return this.addAlpha(colors.split(","));
             }
             return null;
