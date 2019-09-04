@@ -114,19 +114,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         new WikiTagCategory("Layout", 
                             new WikiTag(WIKI_TAG_MAP,
                                         null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "400"), 
-                            new WikiTag(WIKI_TAG_LINKS, null, "#" + ATTR_SHOWTITLE,"",
-					"#" + ATTR_TITLE,"",
-					"#"+ ATTR_INCLUDEICON,"true",
-					"#" + ATTR_INNERCLASS,"",
-					"#"+ ATTR_LINKRESOURCE, "true", 
-					"#"+ ATTR_SEPARATOR, " | ", 
-					"#"+ ATTR_TAGOPEN, "", 
-					"#"+ ATTR_TAGCLOSE, ""), 
+                            new WikiTag(WIKI_TAG_LINKS, null),
                             new WikiTag(WIKI_TAG_LIST), 
-                            new WikiTag(WIKI_TAG_TABS, null, 
-                                        attrs(ATTR_TAG, WIKI_TAG_HTML, 
-                                              "#tabsStyle","min|center|minarrow",
-					      ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
+                            new WikiTag(WIKI_TAG_TABS, null), 
                             new WikiTag(WIKI_TAG_GRID, null, 
                                         ATTR_TAG, WIKI_TAG_CARD, 
                                         "inner-height","100", 
@@ -193,7 +183,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_UPLOAD,null, ATTR_TITLE,"Upload file", ATTR_INCLUDEICON,"false"), 
                             new WikiTag(WIKI_TAG_ROOT)),
         new WikiTagCategory("Displays",
-                            new WikiTag(WIKI_TAG_GROUP, "Display group", "layoutType", "table",  "layoutColumns", "1"),
+                            new WikiTag(WIKI_TAG_GROUP, "Display group"),
                             new WikiTag(WIKI_TAG_DISPLAY, "Search form",
                                         ATTR_TYPE, "entrylist", 
 					ATTR_WIDTH, "800",
@@ -323,13 +313,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 					"#vAxisTitle",""),
                             new WikiTag(WIKI_TAG_DISPLAY,
                                         "Pie chart",
-                                        ATTR_TYPE, "piechart", "#pieHole","0.5",
-					"#is3D","true",
-					"#bins","bin count",
-					"#binMin","min",
-					"#groupBy","group by field",
-					"#binMax","max",
-					"#sliceVisibilityThreshold","0.01",
+                                        ATTR_TYPE, "piechart", 
 					"width","500",
 					"height","250"),
                             new WikiTag(WIKI_TAG_DISPLAY, "Density",
@@ -6560,11 +6544,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 StringBuilder sb  = new StringBuilder();
                 int           cnt = 0;
                 for (int i = 0; i < attrs.length; i += 2) {
-                    cnt++;
-                    if (cnt > 3) {
+                    if (cnt > 80) {
                         sb.append("_newline_");
                         cnt = 0;
                     }
+		    cnt+=attrs[i].length() +attrs[i+1].length();
                     attr(sb, attrs[i], attrs[i + 1]);
                 }
                 this.attrs = sb.toString();

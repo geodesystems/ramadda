@@ -169,7 +169,32 @@ var wikiAttributes = {
 	  "showSearch=\"false\"",
 	  "icon=\"#/icons/dots/green.png\"",
 	  "iconsonly=\"false\""],
-    
+    group: [
+	    'label:Group Attributes',
+	    "showMenu=\"true\"",	      
+	    "showTitle=\"true\"",
+	    'layoutType="table"',
+	    'layoutColumns="1"'
+	    ],
+    links: [
+	    'label:Links Attributes',
+	    'showTitle=""',
+	    'title=""',
+	    'includeicon="true"',
+	    'innerClass=""',
+	    'linkresource="true"',
+	    'separator=" | "',
+	    'tagopen=""',
+	    'tagclose=""'
+    ],
+    tabs:[
+	  'label:Tabs Attributes',
+	  'tag="html"',
+	  'tabsStyle="min|center|minarrow"',
+	  'showLink="false"', 
+	  'includeIcon="true"',
+	  'textposition="top|left|right|bottom"', 
+	  ]
 }
 
 
@@ -184,6 +209,7 @@ function wikiInitEditor(info) {
 	    menu = menu.replace(/(_entryid)/g,"popup_entryid");	
 	    menu = menu.replace(/(_wikilink)/g,"popup_wikilink");
 	    menu = menu.replace(/(_fieldname)/g,"popup_fieldname");
+	    menu = HtmlUtils.div(["class","wiki-editor-popup-toolbar"],menu);
 	    var t = editor.getValue();
 	    var s = "";
 	    var lines = t.split("\n");
@@ -238,14 +264,16 @@ function wikiInitEditor(info) {
 		if(wikiAttributes[tag]) {
 		    wikiAttributes[tag].map(a=>tags.push(a));
 		}
-		menu += "<div style='border-top:1px solid #ccc; margin:5px;'><table><tr valign=top><td><div>";
+		if(tags.length>0)
+		    menu = "<div style='margin:5px;'><table><tr valign=top><td><div>";
 		tags.map(tag=>{
 			if(tag.startsWith("label:")) {
 			    if(menu!="") menu += "</div></td>";
-			    menu+="<td><b> " + tag.substring(6)+ "</b><br><div style='margin-left:5px;max-width:400px;overflow-x:auto;max-height:400px;overflow-y:auto;'>";
+			    menu+="<td><div class=wiki-editor-popup-header> " + tag.substring(6)+ "</div><div class=wiki-editor-popup-items>";
 			    return;
 			}
 			var t = " " + tag.replace(/\"/g,"&quot;")+" ";
+			tag = tag.replace(/=.*$/,"");
 			menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",tag)+"<br>\n";
 		    });
 

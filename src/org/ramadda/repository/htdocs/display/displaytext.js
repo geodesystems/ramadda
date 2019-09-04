@@ -1367,6 +1367,17 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Frequency Attributes",
+					 'floatTable="true"',
+					 'tableHeight="300px"',
+					 ]);
+	    },
+
+
+
         updateUI: function() {
             let records = this.filterData();
 	    if(!records) return;

@@ -3792,7 +3792,24 @@ h1, h2, h3 {
 
 }
 
+.wiki-editor-popup-toolbar {
+  background:#F0F0F0;
+  padding:5px;
+}
 
+.wiki-editor-popup-header {
+  font-weight:bold;
+  margin-left:5px;
+  margin-right:5px;
+}
+
+.wiki-editor-popup-items {
+margin-left:5px;
+max-width:250px;
+overflow-x:auto;
+max-height:400px;
+overflow-y:auto;
+}
 
 .ace_attribute-name {
    font-style:italic;

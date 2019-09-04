@@ -1504,13 +1504,34 @@ function RamaddaTextChart(displayManager, id, chartType, properties) {
 
 
 function PiechartDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties));
+    let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
         canDoGroupBy: function() {
             return true;
         },
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Pie Chart Attributes",
+					 "pieHole=\"0.5\"",
+					 "is3D=\"true\"",
+					 "bins=\"\"",
+					 "binMin=\"\"",
+					 "binMax=\"max\"",
+					 "groupBy=\"field\""  ,
+					 "sliceVisibilityThreshold=\"0.01\"",
+					 ]);
+	    },
+
+
+
+
+
+
         getGroupBy: function() {
+
             if (!this.groupBy && this.groupBy != "") {
                 var stringField = this.getFieldOfType(this.allFields, "string");
                 if (stringField) {

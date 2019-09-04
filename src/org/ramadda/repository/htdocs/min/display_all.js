@@ -3052,15 +3052,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	      "showMenu=\"true\"",	      
 	      "showTitle=\"true\"",
 	      "layoutHere=\"true\"",
+	      "width=\"100%\"",
+	      "height=\"400\"",
 	      "title=\"\"",
 	      "titleBackground=\"color\"",
 	      "textColor=\"color\"",
 	      "backgroundImage=\"\"",
 	      "background=\"color\"",
-
-
-	      "width=\"100%\"",
-	      "height=\"400\"",
+	      "label:Filter Attributes",
 	      "filterFields=\"\"",
 	      "hideFilterWidget=true",
 	      "acceptFilterEvent=false",
@@ -3070,13 +3069,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	      "&lt;field&gt;.filterMultipleSize=\"5\"",
 	      "&lt;field&gt;.filterByStyle=\"background:white;\"",
 	      "&lt;field&gt;.includeAll=\"true\"",
+	      "binDate=\"day|month|year\"",
+	      "label:Color Attributes",
 	      "colorTable=\"\"",
 	      "colors=\"color1,...,colorN\"",
+	      "colorBy=\"\"",
+	      "colorByFields=\"\"",
 	      "colorTableAlpha=\"0.5\"",
 	      "colorByMin=\"value\"",
 	      "colorByMax=\"value\"",
-	      "binDate=\"day|month|year\"",
-	      "colorByFields=\"\"",
 			];
         },
         makeDialog: function() {
@@ -10288,13 +10289,34 @@ function RamaddaTextChart(displayManager, id, chartType, properties) {
 
 
 function PiechartDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties));
+    let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
         canDoGroupBy: function() {
             return true;
         },
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Pie Chart Attributes",
+					 "pieHole=\"0.5\"",
+					 "is3D=\"true\"",
+					 "bins=\"\"",
+					 "binMin=\"\"",
+					 "binMax=\"max\"",
+					 "groupBy=\"field\""  ,
+					 "sliceVisibilityThreshold=\"0.01\"",
+					 ]);
+	    },
+
+
+
+
+
+
         getGroupBy: function() {
+
             if (!this.groupBy && this.groupBy != "") {
                 var stringField = this.getFieldOfType(this.allFields, "string");
                 if (stringField) {
@@ -15224,6 +15246,17 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Frequency Attributes",
+					 'floatTable="true"',
+					 'tableHeight="300px"',
+					 ]);
+	    },
+
+
+
         updateUI: function() {
             let records = this.filterData();
 	    if(!records) return;
