@@ -555,7 +555,6 @@ function DisplayThing(argId, argProperties) {
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     RamaddaUtil.initMembers(this, {
-        orientation: "horizontal",
     });
 
     var SUPER;
@@ -2543,7 +2542,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return menu;
         },
         isLayoutHorizontal: function() {
-            return this.orientation == "horizontal";
+		return this.getProperty("orientation","")!= "horizontal";
         },
         loadInitialData: function() {
             if (!this.needsData() || this.properties.data == null) {
@@ -10180,9 +10179,15 @@ function LinechartDisplay(displayManager, id, properties) {
 
 
 function AreachartDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties));
+    let SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "isStacked=true"])},
+
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             if (this.isStacked)
                 chartOptions.isStacked = true;
@@ -10193,10 +10198,13 @@ function AreachartDisplay(displayManager, id, properties) {
 
 
 function RamaddaBaseBarchart(displayManager, id, type, properties) {
-    RamaddaUtil.inherit(this, new RamaddaSeriesChart(displayManager, id, type, properties));
+    let SUPER  = new RamaddaSeriesChart(displayManager, id, type, properties);
+    RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					["barWidth=\"10\""])},
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
-
             var chartType = this.getChartType();
             if (chartType == DISPLAY_BARSTACK) {
                 chartOptions.isStacked = true;
@@ -10228,9 +10236,21 @@ function BarstackDisplay(displayManager, id, properties) {
 
 
 function HistogramDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_HISTOGRAM, properties));
+    let SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_HISTOGRAM, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					["label:Histogram Attributes",
+					'legendPosition="none|top|right|left|bottom"',
+					'textPosition="out|in|none"',
+					'isStacked="false|true|percent|relative"',
+					'logScale="true|false"',
+					'scaleType="log|mirrorLog"',
+					'minValue=""',
+					'maxValue=""'])},
+
         okToHandleEventRecordSelection: function() {
             return false;
         },
@@ -10691,7 +10711,8 @@ function WordtreeDisplay(displayManager, id, properties) {
 
 
 function TableDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_TABLE, properties));
+    let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TABLE, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
         canDoGroupBy: function() {
@@ -10748,9 +10769,20 @@ function TableDisplay(displayManager, id, properties) {
 
 
 function BubbleDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_BUBBLE, properties));
+    let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_BUBBLE, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 'label:Bubble Chart Attibutes',
+					 'legendPosition="none|top|right|left|bottom"',
+					 'hAxisFormat="none|decimal|scientific|percent|short|long"',
+					 'vAxisFormat="none|decimal|scientific|percent|short|long"',
+					 'hAxisTitle=""',
+					 'vAxisTitle=""'])},
+
         makeDataTable: function(dataList, props, selectedFields) {
             return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
         },
@@ -10798,7 +10830,8 @@ function BubbleDisplay(displayManager, id, properties) {
 
 
 function BartableDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaSeriesChart(displayManager, id, DISPLAY_BARTABLE, properties));
+    let SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_BARTABLE, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
         xgetIncludeIndexIfDate: function() {
@@ -11431,6 +11464,26 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 
     RamaddaUtil.defineMembers(this, {
         "map-display": false,
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 'label:Summary Statistics',
+					 'showMin="true"',
+					 'showMax="true"',
+                                        'showAverage="true"',
+                                        'showStd="true"',
+                                        'showPercentile="true"',
+                                        'showCount="true"',
+                                        'showTotal="true"',
+                                        'showPercentile="true"',
+                                        'showMissing="true"',
+                                        'showUnique="true"',
+                                        'showType="true"',
+                                        'showText="true"'
+					 ])},
+
+
+
         needsData: function() {
             return true;
             //                return this.getProperty("loadData", false) || this.getCreatedInteractively();
@@ -11827,8 +11880,8 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 
 
 function RamaddaCrosstabDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CROSSTAB, properties);
     var ID_TABLE = "crosstab";
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CROSSTAB, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -14300,22 +14353,17 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		var t = SUPER.getWikiEditorTags();
-		var myTags = [
-			      "label:Cards Attributes",
-			      "groupByFields=\"\"",
-			      "groupBy=\"\"",
-			      "tooltipFields=\"\"",
-			      "initGroupFields=\"\"",
-			      "captionTemplate=\"${name}\"",
-			      "sortFields=\"\"",
-			      "labelField=\"\"",
-			      ]
-		myTags.map(tag=>t.push(tag));
-		return t;
-	    },
-
-
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Cards Attributes",
+					 "groupByFields=\"\"",
+					 "groupBy=\"\"",
+					 "tooltipFields=\"\"",
+					 "initGroupFields=\"\"",
+					 "captionTemplate=\"${name}\"",
+					 "sortFields=\"\"",
+					 "labelField=\"\"",
+					 ])},
         getContentsStyle: function() {
             return "";
         },
@@ -15250,7 +15298,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		return Utils.mergeLists(SUPER.getWikiEditorTags(),
 					[
 					 "label:Frequency Attributes",
-					 'floatTable="true"',
+					 'orientation="vertical"',
 					 'tableHeight="300px"',
 					 ]);
 	    },
@@ -15349,7 +15397,11 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    }
 		}
 
-		html += HtmlUtils.openTag("div", ["class","display-frequency-table","style",this.getProperty("floatTable",false)?"":"display:block;"]);
+		var hor = this.getProperty("orientation","") != "vertical";
+		if(this.getProperty("floatTable") !=null) {
+		    hor = this.getProperty("floatTable")==true;
+		}
+		html += HtmlUtils.openTag("div", ["class","display-frequency-table","style",hor?"":"display:block;"]);
 		html += HtmlUtils.openTag("table", ["id",this.getDomId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), "class", "stripe row-border nowrap ramadda-table"]);
 		html += HtmlUtils.openTag("thead", []);
 		var label =  HtmlUtils.span(["title","Click to reset","class","display-frequency-label","data-field",s.field.getId()],f.getLabel());

@@ -405,7 +405,6 @@ function DisplayThing(argId, argProperties) {
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     RamaddaUtil.initMembers(this, {
-        orientation: "horizontal",
     });
 
     var SUPER;
@@ -2393,7 +2392,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return menu;
         },
         isLayoutHorizontal: function() {
-            return this.orientation == "horizontal";
+		return this.getProperty("orientation","")!= "horizontal";
         },
         loadInitialData: function() {
             if (!this.needsData() || this.properties.data == null) {

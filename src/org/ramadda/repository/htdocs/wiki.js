@@ -213,72 +213,96 @@ function wikiInitEditor(info) {
 	    var t = editor.getValue();
 	    var s = "";
 	    var lines = t.split("\n");
+	    /*
+	      hello
+	      {{there ... |
+	      }} how are you
+	     */
+	    var inTag = false;
+	    var charCnt=0;
 	    for(i=0;i<lines.length;i++) {
-		if(i==cursor.row) {
-		    s+= lines[i].substring(0,cursor.column);
-		    break;
-		}
-		s +=lines[i]+"\n";
-	    }
-	    var inBracket = false;
-	    var inRightBracket = false;
-	    var i;
-	    for(i=s.length-1;i>=0;i--) {
-		var c = s[i];
-		if(c=="}") {
-		    if(inRightBracket)
-			break;
-		    inRightBracket  =true;
-		    continue;
-		}
-		inRightBracket  =false;
-		if(c=="{") {
-		    if(inBracket) {
-			break;
-		    } 
-		    inBracket = true;
-		    continue;
-		}
-		inBracket = false;
-	    }
-	    if(i>=0) {
-		var tag = s.substring(i+2);
-		var tmp = tag.match(/type *= *\"([^\"]+)\"?/); 
-		var type;
-		if(tmp && tmp.length>1) type=tmp[1];
-		var idx = tag.indexOf(" ");
-		if(idx>=0) {
-		tag = tag.substring(0,idx);
-		var tags = [];
-		if(tag == "display" && type) {
-		    try {
-			var display = 
-			    (new DisplayManager()).createDisplay(type,{dummy:true});
-			if(display) {
-			    tags = display.getWikiEditorTags();
-			}
-		    } catch(e) {
-			console.log("Error getting tags for:" + type +" error:" + e);
-		    }
-		}
-		if(wikiAttributes[tag]) {
-		    wikiAttributes[tag].map(a=>tags.push(a));
-		}
-		if(tags.length>0)
-		    menu = "<div style='margin:5px;'><table><tr valign=top><td><div>";
-		tags.map(tag=>{
-			if(tag.startsWith("label:")) {
-			    if(menu!="") menu += "</div></td>";
-			    menu+="<td><div class=wiki-editor-popup-header> " + tag.substring(6)+ "</div><div class=wiki-editor-popup-items>";
-			    return;
-			}
-			var t = " " + tag.replace(/\"/g,"&quot;")+" ";
-			tag = tag.replace(/=.*$/,"");
-			menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",tag)+"<br>\n";
-		    });
+		var line  = lines[i];
 
-		menu += "</div></td></tr></table></div>";
 	    }
+
+	    var index = editor.session.doc.positionToIndex(cursor);
+	    var text =editor.getValue();
+	    //	    console.log("cursor index:" + index +" text:" + text.substring(index-4,index));
+	    var tmp = index;
+	    var left = -1;
+	    var right = -1;
+	    var gotBracket=false;
+	    while(tmp>=0) {
+		if (text[tmp] == "{") {
+		    if(gotBracket) {
+			left = tmp;
+			break;
+		    }
+		    gotBracket = true;
+		    tmp--;
+		    continue;
+		}
+		gotBracket = false;
+		tmp--;
+	    }
+
+	    if(left>=0) {
+		gotBracket=false;
+		tmp = left;
+		while(tmp<text.length) {
+		    if (text[tmp] == "}") {
+			if(gotBracket) {
+			    right = tmp;
+			    break;
+			}
+			gotBracket = true;
+			tmp++;
+			continue;
+		    }
+		    tmp++;
+		    gotBracket = false;
+		}
+	    }
+
+	    if(index>=left && index<=right && left>=0 && right>=left) {
+		var chunk = text.substring(left,right+1);
+		var tag;
+		var tmp  = chunk.match(/\{\{ *([^ ]+)/);
+		if(tmp && tmp.length>1)  tag = tmp[1];
+		if(tag) {
+		    var type;
+		    tmp = chunk.match(/type *= *\"([^\"]+)\"?/); 
+		    if(tmp && tmp.length>1) type=tmp[1];
+		    var tags = [];
+		    if(tag == "display" && type) {
+			try {
+			    var display = 
+				(new DisplayManager()).createDisplay(type,{dummy:true});
+			    if(display) {
+				tags = display.getWikiEditorTags();
+			    }
+			} catch(e) {
+			    console.log("Error getting tags for:" + type +" error:" + e);
+			}
+		    }
+		    if(wikiAttributes[tag]) {
+			wikiAttributes[tag].map(a=>tags.push(a));
+		    }
+		    if(tags.length>0)
+			menu = "<div style='margin:5px;'><table><tr valign=top><td><div>";
+		    tags.map(tag=>{
+			    if(tag.startsWith("label:")) {
+				if(menu!="") menu += "</div></td>";
+				menu+="<td><div class=wiki-editor-popup-header> " + tag.substring(6)+ "</div><div class=wiki-editor-popup-items>";
+				return;
+			    }
+			    var t = " " + tag.replace(/\"/g,"&quot;")+" ";
+			    tag = tag.replace(/=.*$/,"");
+			    menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",tag)+"<br>\n";
+			});
+		    
+		    menu += "</div></td></tr></table></div>";
+		}
 	    }
 	    tooltipObject = getTooltip();
 	    tooltipObject.html(menu);
@@ -292,3 +316,4 @@ function wikiInitEditor(info) {
 
 	});
 }
+

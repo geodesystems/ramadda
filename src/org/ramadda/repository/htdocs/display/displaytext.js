@@ -421,22 +421,17 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		var t = SUPER.getWikiEditorTags();
-		var myTags = [
-			      "label:Cards Attributes",
-			      "groupByFields=\"\"",
-			      "groupBy=\"\"",
-			      "tooltipFields=\"\"",
-			      "initGroupFields=\"\"",
-			      "captionTemplate=\"${name}\"",
-			      "sortFields=\"\"",
-			      "labelField=\"\"",
-			      ]
-		myTags.map(tag=>t.push(tag));
-		return t;
-	    },
-
-
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Cards Attributes",
+					 "groupByFields=\"\"",
+					 "groupBy=\"\"",
+					 "tooltipFields=\"\"",
+					 "initGroupFields=\"\"",
+					 "captionTemplate=\"${name}\"",
+					 "sortFields=\"\"",
+					 "labelField=\"\"",
+					 ])},
         getContentsStyle: function() {
             return "";
         },
@@ -1371,7 +1366,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		return Utils.mergeLists(SUPER.getWikiEditorTags(),
 					[
 					 "label:Frequency Attributes",
-					 'floatTable="true"',
+					 'orientation="vertical"',
 					 'tableHeight="300px"',
 					 ]);
 	    },
@@ -1470,7 +1465,11 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    }
 		}
 
-		html += HtmlUtils.openTag("div", ["class","display-frequency-table","style",this.getProperty("floatTable",false)?"":"display:block;"]);
+		var hor = this.getProperty("orientation","") != "vertical";
+		if(this.getProperty("floatTable") !=null) {
+		    hor = this.getProperty("floatTable")==true;
+		}
+		html += HtmlUtils.openTag("div", ["class","display-frequency-table","style",hor?"":"display:block;"]);
 		html += HtmlUtils.openTag("table", ["id",this.getDomId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), "class", "stripe row-border nowrap ramadda-table"]);
 		html += HtmlUtils.openTag("thead", []);
 		var label =  HtmlUtils.span(["title","Click to reset","class","display-frequency-label","data-field",s.field.getId()],f.getLabel());
