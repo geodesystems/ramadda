@@ -1439,7 +1439,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(values[i].anyValues) {
 			    ok = false;
 			    for(var j=0;j<_values.length;j++) {
-				var fv = _values[i];
+				var fv = _values[j];
 				value  = (""+value).toLowerCase();
 				if(startsWith) {
 				    if(value.startsWith(fv)) {
