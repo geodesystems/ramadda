@@ -1349,7 +1349,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
         if (isEntryXml) {
-            templateEntry = getEntryManager().parseEntryXml(f, true);
+            templateEntry = getEntryManager().parseEntryXml(f, true).get(0);
         } else {
             templateEntry = getEntryManager().getTemplateEntry(f);
         }

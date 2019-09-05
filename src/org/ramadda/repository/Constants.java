@@ -256,7 +256,7 @@ public interface Constants {
     //    public static final String ICON_MINUS = "/icons/minus.gif";
     public static final String ICON_PLUS = "fa-plus-square";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_MINUS = "fa-minus-square";
 
 
@@ -288,8 +288,7 @@ public interface Constants {
     public static final String ICON_SEARCH = "/icons/find.png";
 
     /** _more_ */
-    public static final String ICON_SEARCH_SMALL =
-        "fa-search";
+    public static final String ICON_SEARCH_SMALL = "fa-search";
 
     /** _more_ */
     public static final String ICON_TEXT = "fa-align-left";
@@ -395,6 +394,12 @@ public interface Constants {
 
     /** _more_ */
     public static final String ATTR_DATATYPE = "datatype";
+
+    /** _more_          */
+    public static final String ATTR_DIRECTORY = "directory";
+
+    /** _more_          */
+    public static final String ATTR_FILE_PATTERN = "filePattern";
 
     /** _more_ */
     public static final String ATTR_DB_DESCRIPTION = "description";

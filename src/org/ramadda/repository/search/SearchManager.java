@@ -1995,12 +1995,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     for (int i = 0; i < children.getLength(); i++) {
                         Element node = (Element) children.item(i);
                         //                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
-                        Entry entry =
+                        List<Entry> entryList =
                             getEntryManager().createEntryFromXml(request,
                                 node, parentEntry, new Hashtable(), false,
                                 false);
 
-                        //                            entry.setName("remote:" + entry.getName());
+                        Entry entry = entryList.get(0);
+
                         entry.setResource(new Resource("remote:"
                                 + XmlUtil.getAttribute(node, ATTR_RESOURCE,
                                     ""), Resource.TYPE_REMOTE_FILE));

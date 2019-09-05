@@ -481,10 +481,11 @@ public abstract class SearchProvider extends GenericTypeHandler {
                 for (int i = 0; i < children.getLength(); i++) {
                     Element node = (Element) children.item(i);
                     //                    if (!node.getTagName().equals(TAG_ENTRY)) {continue;}
-                    Entry entry =
+                    List<Entry> entryList =
                         getEntryManager().createEntryFromXml(request, node,
                             parentEntry, new Hashtable(), false, false);
 
+                    Entry entry = entryList.get(0);
                     //                            entry.setName("remote:" + entry.getName());
                     entry.setResource(
                         new Resource(
