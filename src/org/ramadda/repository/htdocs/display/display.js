@@ -4166,6 +4166,8 @@ function DisplayAnimation(display) {
 		if (this.windowUnit != "") {
 		    if (this.windowUnit == "decade") {
 			this.window = 1000 * 60 * 60 * 24 * 365 * 10;// + 1000 * 60 * 60 * 24 * 365;
+		    } else 	if (this.windowUnit == "century") {
+			this.window = 1000 * 60 * 60 * 24 * 365 * 100;// + 1000 * 60 * 60 * 24 * 365;
 		    } else 	if (this.windowUnit == "halfdecade") {
 			this.window = 1000 * 60 * 60 * 24 * 365 * 5;// + 1000 * 60 * 60 * 24 * 365;
 		    } else if (this.windowUnit == "year") {
