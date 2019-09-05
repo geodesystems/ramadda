@@ -182,7 +182,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 overrideBounds = true;
                 var toks = this.getProperty("bounds", "").split(",");
                 if (toks.length == 4) {
-                    if (this.getProperty("showBounds", true)) {
+                    if (this.getProperty("showBounds", false)) {
                         var attrs = {};
                         if (this.getProperty("boundsColor")) {
                             attrs.strokeColor = this.getProperty("boundsColor", "");

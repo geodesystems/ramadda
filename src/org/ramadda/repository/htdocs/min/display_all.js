@@ -1362,14 +1362,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
 		if (prefix) pattern = prefix + value;
 		if (suffix) pattern = value + suffix;
-		if(filterField.isNumeric) {
-		    values.push([parseFloat($("#" + this.getDomId("filterby_" + filterField.getId()+"_min")).val().trim()),
-				 parseFloat($("#" + this.getDomId("filterby_" + filterField.getId()+"_max")).val().trim())]);
-		    continue;
-		}
-		var value = $("#" + this.getDomId("filterby_" + filterField.getId())).val();
+		var value;
 		var _values =[];
-		if(filterField.getType()=="date"){
+		if(filterField.isNumeric) {
+		    var minField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_min"));
+		    var maxField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_max"));
+		    var minValue = parseFloat(minField.val().trim());
+		    var maxValue = parseFloat(maxField.val().trim());
+		    var dfltMinValue = parseFloat(minField.attr("data-min"));
+		    var dfltMaxValue = parseFloat(maxField.attr("data-max"));
+		    if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
+			value = [minValue,maxValue];
+		    } else  {
+			value = [NaN,NaN];
+		    }
+ 		} else if(filterField.getType()=="date"){
 		    var date1 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date1")).val();
 		    var date2 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date2")).val();
 		    if(date1!=null && date1.trim()!="") 
@@ -1382,10 +1389,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date2=null;
 		    value = [date1,date2]; 
 		}  else {
+		    value = $("#" + this.getDomId("filterby_" + filterField.getId())).val();
 		    if(!Array.isArray(value)) value = [value];
 		    value.map(v=>_values.push((""+v).toLowerCase()));
 		}
-		//		console.log(filterField.getId() +" value:" + value);
 		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
 		values.push({value:value,_values:_values,startsWith:filterStartsWith});
 	    }
@@ -1408,8 +1415,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    }
 			}
 		    } else if(filterField.isNumeric) {
-			if(!isNaN(filterValue[0]) && value<filterValue[0]) ok = false;
-			else if(!isNaN(filterValue[1]) && value>filterValue[1]) ok = false;
+			if(isNaN(filterValue[0]) && isNaN(filterValue[0])) continue;
+			if(isNaN(value)) {
+			    ok = false;
+			}  else {
+			    if(!isNaN(filterValue[0]) && value<filterValue[0]) ok = false;
+			    else if(!isNaN(filterValue[1]) && value>filterValue[1]) ok = false;
+			}
 		    } else if(filterField.getType()=="date"){
 			if(value && typeof value == "object") {
 			    var date1 = filterValue[0];
@@ -2376,10 +2388,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return null;
             }
             var props = {
-                showMenu: true,
+                showMenu: false,
                 sourceEntry: entry,
                 entryId: entry.getId(),
-                showTitle: true,
+                showTitle: false,
                 showDetails: true,
                 title: entry.getName(),
 		layoutHere:false,
@@ -2616,7 +2628,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         getShowTitle: function() {
-            return this.getSelfProperty("showTitle", true);
+            return this.getSelfProperty("showTitle", false);
         },
         setDisplayProperty: function(key, value) {
             this.setProperty(key, value);
@@ -19293,7 +19305,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 overrideBounds = true;
                 var toks = this.getProperty("bounds", "").split(",");
                 if (toks.length == 4) {
-                    if (this.getProperty("showBounds", true)) {
+                    if (this.getProperty("showBounds", false)) {
                         var attrs = {};
                         if (this.getProperty("boundsColor")) {
                             attrs.strokeColor = this.getProperty("boundsColor", "");
