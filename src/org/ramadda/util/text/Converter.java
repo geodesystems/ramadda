@@ -782,8 +782,9 @@ public abstract class Converter extends Processor {
                 } else if (id.equals("year")) {
                     type   = "date";
                     format = "yyyy";
-                } else if (id.equals("state")) {
+                } else if (id.equals("state") || id.equals("country")) {
                     type = "enumeration";
+
                 } else if (id.equals("latitude") || id.equals("longitude")) {
                     type      = "double";
                     isGeo     = true;
@@ -1569,7 +1570,6 @@ public abstract class Converter extends Processor {
                 for (String name : names) {
                     row.insert(index + 1 + (cnt++), name);
                 }
-
                 return row;
             }
             if ((index < 0) || (index >= row.size())) {
@@ -1577,9 +1577,12 @@ public abstract class Converter extends Processor {
             }
             //            row.remove(index);
             int colOffset = 0;
-            for (String tok : StringUtil.split(row.get(index), delimiter)) {
+	    List<String> toks =StringUtil.split(row.get(index), delimiter);
+	    while(toks.size()<names.size()) toks.add("");
+            for (String tok : toks) {
                 row.insert(index + 1 + (colOffset++), tok);
             }
+
 
             return row;
         }
