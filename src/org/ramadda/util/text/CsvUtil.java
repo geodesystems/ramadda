@@ -606,7 +606,7 @@ public class CsvUtil {
                                   Hashtable<String, String> props)
             throws Exception {
 
-	int count = Utils.getProperty(props,"count",1);
+        int    count = Utils.getProperty(props, "count", 1);
         int    skip  = 0;
         String skips = props.get("skip");
         if (skips != null) {
@@ -664,6 +664,7 @@ public class CsvUtil {
             s = toks[1];
             if (skip > 0) {
                 skip--;
+
                 continue;
             }
             if (debug) {
@@ -679,13 +680,13 @@ public class CsvUtil {
                 if (debug) {
                     System.out.println("\trow: " + tr);
                 }
-                Row row = new Row();
-		boolean checkHeader = true;
+                Row     row         = new Row();
+                boolean checkHeader = true;
                 while (true) {
                     toks = Utils.tokenizeChunk(tr, "<td", "</td");
-                    if (checkHeader && toks == null) {
-			toks = Utils.tokenizeChunk(tr, "<th", "</th");
-		    }
+                    if (checkHeader && (toks == null)) {
+                        toks = Utils.tokenizeChunk(tr, "<th", "</th");
+                    }
                     if (toks == null) {
                         break;
                     }
@@ -702,13 +703,13 @@ public class CsvUtil {
                         }
                         //                        System.out.println("not skipping:" +td );
                     }
-		    //		    System.err.println("td:" + td);
-		    //                    td = td.substring(idx + 1);
-		    //		    System.err.println("after TD:" + td);
+                    //              System.err.println("td:" + td);
+                    //                    td = td.substring(idx + 1);
+                    //              System.err.println("after TD:" + td);
                     td = StringUtil.stripTags(td);
-		    td = td.replaceAll("\n"," ").replaceAll("  +","");
-		    td = HtmlUtils.unescapeHtml3(td);
-		    //		    System.err.println(td+"  stripped:" + td);
+                    td = td.replaceAll("\n", " ").replaceAll("  +", "");
+                    td = HtmlUtils.unescapeHtml3(td);
+                    //              System.err.println(td+"  stripped:" + td);
                     if (removeEntity) {
                         td = td.replaceAll("&[^;]+;", "");
                     } else {
@@ -730,14 +731,15 @@ public class CsvUtil {
                         System.out.println("\t\ttd:" + td);
                     }
                 }
-		checkHeader = false;
-		if(row.size()>0)
-		    rows.add(row);
-		//		if(rows.size()>2) break;
+                checkHeader = false;
+                if (row.size() > 0) {
+                    rows.add(row);
+                }
+                //              if(rows.size()>2) break;
             }
-	    if(--count<=0) {
-		break;
-	    }
+            if (--count <= 0) {
+                break;
+            }
         }
 
         return rows;
@@ -1266,7 +1268,9 @@ public class CsvUtil {
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
         //        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
-        new Cmd("-split", "<columnl> <delimiter>", "(split the column)"),
+        new Cmd("-split",
+                "<column> <delimiter> <comma separated new column names>",
+                "(split the column)"),
         new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",
                 "(create a new column from the values in the given column)"),
         new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
@@ -2276,12 +2280,13 @@ public class CsvUtil {
             }
 
             if (arg.equals("-split")) {
-                if ( !ensureArg(args, i, 2)) {
+                if ( !ensureArg(args, i, 3)) {
                     return false;
                 }
                 info.getProcessor().addProcessor(
                     new Converter.ColumnSplitter(
-                        args.get(++i), args.get(++i)));
+                        args.get(++i), args.get(++i),
+                        StringUtil.split(args.get(++i), ",")));
 
                 continue;
             }

@@ -17,11 +17,11 @@
 package org.ramadda.util.text;
 
 
+import org.json.*;
+
+
 import org.ramadda.util.GeoUtils;
 import org.ramadda.util.Place;
-
-
-import org.json.*;
 import org.ramadda.util.Utils;
 
 
@@ -152,7 +152,7 @@ public abstract class Converter extends Processor {
                 }
             }
 
-	    //	    System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
+            //      System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
             return new Row(result);
         }
 
@@ -169,16 +169,19 @@ public abstract class Converter extends Processor {
      * @author         Jeff McWhirter
      */
     public static class ImageSearch extends Converter {
-	private String suffix;
+
+        /** _more_          */
+        private String suffix;
 
         /**
          * _more_
          *
          * @param cols _more_
+         * @param suffix _more_
          */
-        public ImageSearch(List<String> cols,String suffix) {
+        public ImageSearch(List<String> cols, String suffix) {
             super(cols);
-	    this.suffix = suffix;
+            this.suffix = suffix;
         }
 
 
@@ -195,38 +198,42 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-		row.add("image");
-		return row;
-	    }
+                row.add("image");
+
+                return row;
+            }
 
             List<Integer> indices = getIndices(info);
-	    String s="";
+            String        s       = "";
             for (Integer idx : indices) {
-		s+= row.getString(idx)+" ";
+                s += row.getString(idx) + " ";
             }
-	    s+=suffix;
-	    //hack, hack
-	    String script = "/Users/jeffmc/bin/imagesearch.sh";
-	    try {
-		s = s.replace(" ","%s");
-		Process p = Runtime.getRuntime()
-		    .exec(new String[]{"sh", script,s});
-		String result = IOUtil.readContents(p.getInputStream()).trim();
-		System.err.println(rowCnt+" image:" + s);
-		JSONObject obj      = new JSONObject(result);
-		JSONArray  values = obj.getJSONArray("value");
-		if(values.length()==0) {
-		    row.add("");
-		    return row;
-		}
-		JSONObject value = values.getJSONObject(0);
-		row.add(value.optString("thumbnailUrl",""));
-		//		System.err.println(row);
-		//		System.exit(0);
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	    return row;
+            s += suffix;
+            //hack, hack
+            String script = "/Users/jeffmc/bin/imagesearch.sh";
+            try {
+                s = s.replace(" ", "%s");
+                Process p = Runtime.getRuntime().exec(new String[] { "sh",
+                        script, s });
+                String result =
+                    IOUtil.readContents(p.getInputStream()).trim();
+                System.err.println(rowCnt + " image:" + s);
+                JSONObject obj    = new JSONObject(result);
+                JSONArray  values = obj.getJSONArray("value");
+                if (values.length() == 0) {
+                    row.add("");
+
+                    return row;
+                }
+                JSONObject value = values.getJSONObject(0);
+                row.add(value.optString("thumbnailUrl", ""));
+                //              System.err.println(row);
+                //              System.exit(0);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+
+            return row;
         }
 
     }
@@ -666,13 +673,15 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
+
             rowCnt++;
             if (rowCnt > 2) {
                 return row;
             }
             if (firstRow == null) {
                 firstRow = row;
-		return null;
+
+                return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
                                       "true");
@@ -718,10 +727,11 @@ public abstract class Converter extends Processor {
                 String _sample = sample.toLowerCase();
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
                                      "^3").replaceAll("\n", " ");
-                String id =
-                    col.replaceAll("\\([^\\)]+\\)", "").replaceAll("\\?","").replaceAll("\\$","").replaceAll(",","_").replaceAll("-",
-                                   "_").trim().toLowerCase().replaceAll(" ",
-                                       "_").replaceAll(":", "_");
+                String id = col.replaceAll("\\([^\\)]+\\)", "").replaceAll(
+                                "\\?", "").replaceAll("\\$", "").replaceAll(
+                                ",", "_").replaceAll(
+                                "-", "_").trim().toLowerCase().replaceAll(
+                                " ", "_").replaceAll(":", "_");
 
                 id = id.replaceAll("<", "_").replaceAll(">", "_");
                 id = id.replaceAll("\\+", "_").replaceAll(
@@ -745,8 +755,9 @@ public abstract class Converter extends Processor {
                                   ".*?\\(([^\\)]+)\\).*");
                 StringBuffer attrs = new StringBuffer();
                 if (label != null) {
-		    label = label.replaceAll(",","%2C").replaceAll("<br>"," ").replaceAll("<p>"," ");
-		    label = label.replaceAll("  +"," ");
+                    label = label.replaceAll(",", "%2C").replaceAll("<br>",
+                                             " ").replaceAll("<p>", " ");
+                    label = label.replaceAll("  +", " ");
                     attrs.append("label=\"" + label + "\" ");
                 }
                 if (desc != null) {
@@ -772,16 +783,18 @@ public abstract class Converter extends Processor {
                     type   = "date";
                     format = "yyyy";
                 } else if (id.equals("state")) {
-                    type   = "enumeration";
+                    type = "enumeration";
                 } else if (id.equals("latitude") || id.equals("longitude")) {
                     type      = "double";
                     isGeo     = true;
                     chartable = false;
                 } else {
                     try {
-			if(_sample.equals("true") || _sample.equals("false")) {
-			    type="enumeration";
-			} else if (_sample.equals("nan") || _sample.equals("na")) {
+                        if (_sample.equals("true")
+                                || _sample.equals("false")) {
+                            type = "enumeration";
+                        } else if (_sample.equals("nan")
+                                   || _sample.equals("na")) {
                             type = "double";
                         } else if (sample.matches("^(\\+|-)?\\d+$")) {
                             //                            System.out.println(label+" match int");
@@ -848,6 +861,7 @@ public abstract class Converter extends Processor {
             }
 
             return tmp;
+
 
 
         }
@@ -1062,13 +1076,22 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Sep 5, '19
+     * @author         Enter your name here...    
+     */
     public static class ColumnExtracter extends Converter {
 
-	private int col;
+        /** _more_          */
+        private int col;
 
         /** _more_ */
         private String pattern;
 
+        /** _more_          */
         private String replace;
 
         /** _more_ */
@@ -1078,15 +1101,19 @@ public abstract class Converter extends Processor {
          * _more_
          *
          * @param cols _more_
+         *
+         * @param col _more_
          * @param pattern _more_
          * @param value _more_
+         * @param replace _more_
+         * @param name _more_
          */
-        public ColumnExtracter(int col,  String pattern, String replace,
-                             String name) {
-	    this.col = col;
-	    this.pattern = pattern;
-	    this.replace = replace;
-	    this.name = name;
+        public ColumnExtracter(int col, String pattern, String replace,
+                               String name) {
+            this.col     = col;
+            this.pattern = pattern;
+            this.replace = replace;
+            this.name    = name;
         }
 
         /**
@@ -1103,15 +1130,19 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-		row.add(name);
-		return row;
+                row.add(name);
+
+                return row;
             }
-	    String value = row.getString(col);
-	    String newValue  = StringUtil.findPattern(value,pattern);
-	    if(newValue == null) newValue = "";
-	    row.add(newValue);
-	    value = value.replaceAll(pattern,replace);
-	    row.set(col,value);
+            String value    = row.getString(col);
+            String newValue = StringUtil.findPattern(value, pattern);
+            if (newValue == null) {
+                newValue = "";
+            }
+            row.add(newValue);
+            value = value.replaceAll(pattern, replace);
+            row.set(col, value);
+
             return row;
         }
 
@@ -1502,6 +1533,8 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String delimiter;
 
+        /** _more_          */
+        private List<String> names;
 
         /**
          * _more_
@@ -1509,10 +1542,13 @@ public abstract class Converter extends Processor {
          *
          * @param col _more_
          * @param delimiter _more_
+         * @param names _more_
          */
-        public ColumnSplitter(String col, String delimiter) {
+        public ColumnSplitter(String col, String delimiter,
+                              List<String> names) {
             super(col);
             this.delimiter = delimiter;
+            this.names     = names;
         }
 
         /**
@@ -1528,13 +1564,21 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             int index = getIndex(info);
+            int cnt   = 0;
+            if (rowCnt++ == 0) {
+                for (String name : names) {
+                    row.insert(index + 1 + (cnt++), name);
+                }
+
+                return row;
+            }
             if ((index < 0) || (index >= row.size())) {
                 return row;
             }
-            row.remove(index);
+            //            row.remove(index);
             int colOffset = 0;
             for (String tok : StringUtil.split(row.get(index), delimiter)) {
-                row.insert(index + (colOffset++), tok);
+                row.insert(index + 1 + (colOffset++), tok);
             }
 
             return row;
