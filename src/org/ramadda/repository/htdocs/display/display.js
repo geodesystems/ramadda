@@ -1244,7 +1244,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    value.map(v=>_values.push((""+v).toLowerCase()));
 		}
 		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
-		values.push({value:value,_values:_values,startsWith:filterStartsWith});
+		var anyValues = false;
+		_values.map(v=>{if(v.length>0)anyValues = true});
+		values.push({value:value,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
 	    }
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
 		var row = this.getDataValues(dataList[rowIdx]);
@@ -1284,18 +1286,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    } else {
 			var startsWith = values[i].startsWith;
 			var _values = values[i]._values;
-			ok = false;
-			for(var j=0;j<_values.length;j++) {
-			    var fv = _values[i];
-			    value  = (""+value).toLowerCase();
-			    if(startsWith) {
-				if(value.startsWith(fv)) {
+			if(values[i].anyValues) {
+			    ok = false;
+			    for(var j=0;j<_values.length;j++) {
+				var fv = _values[i];
+				value  = (""+value).toLowerCase();
+				if(startsWith) {
+				    if(value.startsWith(fv)) {
+					ok = true;
+					break;
+				    }
+				} else  if(value.indexOf(fv)>=0) {
 				    ok = true;
 				    break;
 				}
-			    } else  if(value.indexOf(fv)>=0) {
-				ok = true;
-				break;
 			    }
 			}
 		    }
