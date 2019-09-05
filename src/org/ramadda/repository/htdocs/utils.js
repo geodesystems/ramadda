@@ -68,6 +68,11 @@ var Utils = {
 	if(l5) l5.map(e=>l.push(e));
 	return l;
     },
+    displayTimes: function(label,times) {
+	console.log(label);
+	for(var i=0;i<times.length-1;i++) 
+	    console.log("\tt" +  (i+1) +" " + (times[i+1].getTime()-times[i].getTime())/1000);
+    },
     cloneList: function(l) {
         return l.slice(0);
     },

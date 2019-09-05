@@ -1218,6 +1218,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    continue;
 		}
 		var value = $("#" + this.getDomId("filterby_" + filterField.getId())).val();
+		var _values =[];
 		if(filterField.getType()=="date"){
 		    var date1 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date1")).val();
 		    var date2 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date2")).val();
@@ -1232,9 +1233,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    value = [date1,date2]; 
 		}  else {
 		    if(!Array.isArray(value)) value = [value];
+		    value.map(v=>_values.push((""+v).toLowerCase()));
 		}
 		//		console.log(filterField.getId() +" value:" + value);
-		values.push(value);
+		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
+		values.push({value:value,_values:_values,startsWith:filterStartsWith});
 	    }
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
 		var row = this.getDataValues(dataList[rowIdx]);
@@ -1242,8 +1245,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		for(var i=0;i<this.filterFields.length;i++) {
 		    if(!ok) break;
 		    var filterField = this.filterFields[i];
-		    var filterValue = values[i];
-
+		    var filterValue = values[i].value;
 		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]==FILTER_ALL)) continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
@@ -1268,12 +1270,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				ok = false;
 			}
 		    } else {
+			var startsWith = values[i].startsWith;
+			var _values = values[i]._values;
 			ok = false;
-			for(var j=0;j<filterValue.length;j++) {
-			    var v = ""+filterValue[j];
-			    //TODO: add the prefix
+			for(var j=0;j<_values.length;j++) {
+			    var fv = _values[i];
 			    value  = (""+value).toLowerCase();
-			    if(value.indexOf(v.toLowerCase())>=0) {
+			    if(startsWith) {
+				if(value.startsWith(fv)) {
+				    ok = true;
+				    break;
+				}
+			    } else  if(value.indexOf(fv)>=0) {
 				ok = true;
 				break;
 			    }
@@ -2918,6 +2926,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	      "&lt;field&gt;.filterMultipleSize=\"5\"",
 	      "&lt;field&gt;.filterByStyle=\"background:white;\"",
 	      "&lt;field&gt;.includeAll=\"true\"",
+	      "&lt;field&gt;.filterStartsWith=\"true\"",
 	      "binDate=\"day|month|year\"",
 	      "label:Color Attributes",
 	      "colorTable=\"\"",
