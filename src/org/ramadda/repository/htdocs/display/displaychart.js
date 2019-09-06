@@ -3412,6 +3412,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 					[
 					 "label:Chart Attributes",
 					 "sortField=\"\"",
+					 'nameFields=""',
 					 ]);
 
 	    },
@@ -3457,9 +3458,15 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 return;
             }
 
-            var stringField = this.getFieldById(allFields, this.getProperty("nameField","",true));
-            if(!stringField)
-                stringField = this.getFieldOfType(allFields, "string");
+            var stringFields = this.getFieldsByIds(allFields, this.getProperty("nameFields","",true));
+            if(stringFields.length==0) {
+		var tmp = this.getFieldById(allFields, this.getProperty("nameField","",true));
+		if(tmp) stringFields.push(tmp);
+	    }
+            if(stringFields.length==0) {
+                var stringField = this.getFieldOfType(allFields, "string");
+		if(stringField) stringFields.push(stringField);
+	    }
             var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("sortfields") + "'>";
             for (var i = 0; i < numericFields.length; i++) {
                 var field = numericFields[i];
@@ -3519,9 +3526,12 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 var obj = tmp[rowIdx];
                 var tuple = this.getDataValues(obj);
                 var label = "";
-                if (stringField)
-                    label = tuple[stringField.getIndex()];
-                value = tuple[sortField.getIndex()];
+                stringFields.map(f=>{
+			label += tuple[f.getIndex()]+" ";
+		    });
+
+                label = label.trim();
+		value = tuple[sortField.getIndex()];
                 if (isNaN(value) || value === null) {
 		    if(!includeNaN) continue;
 		    value = "NA";

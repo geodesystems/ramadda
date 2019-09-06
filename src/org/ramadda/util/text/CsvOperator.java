@@ -306,6 +306,15 @@ public abstract class CsvOperator {
     }
 
 
+    public int getIndex(String idx) {
+        List<Integer> indices = new ArrayList<Integer>();
+	getColumnIndex(indices, idx);
+        return indices.get(0);
+    }
+
+
+
+
     /**
      * _more_
      *

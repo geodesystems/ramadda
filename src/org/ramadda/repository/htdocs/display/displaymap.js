@@ -1717,6 +1717,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    var features =  [];
             var seen = {};
+	    var colorBy = this.getProperty("colorBy");
+	    var sizeBy = this.getProperty("sizeBy");
             for (var i = 0; i < records.length; i++) {
                 var point = points[i];
                 if(seen[point]) continue;
@@ -1732,6 +1734,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
                     var field = fields[fieldIdx];
                     pointFeature.attributes[field.getId()] = field.getValue(tuple);
+		    if(colorBy && field.getId() == colorBy) {
+			pointFeature.attributes["colorBy"] = field.getValue(tuple);
+		    }
+		    if(sizeBy && field.getId() == sizeBy) {
+			pointFeature.attributes["sizeBy"] = field.getValue(tuple);
+		    }
                 }
                 features.push(pointFeature);
 	    }

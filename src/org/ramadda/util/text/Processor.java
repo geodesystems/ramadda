@@ -40,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -789,6 +790,65 @@ public abstract class Processor extends CsvOperator {
                 }
             }
 
+            return newRows;
+        }
+
+    }
+
+
+
+    public static class MaxValue extends RowCollector {
+	String key;
+	String value;
+
+        /**
+         * _more_
+         *
+         */
+        public MaxValue(String key, String value) {
+	    this.key =key;
+	    this.value  = value;
+	}
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+	    Hashtable<String,Row> map = new Hashtable<String,Row>();
+            int keyIdx  =getIndex(this.key);
+            int valueIdx  =getIndex(this.value);
+            List<Row> newRows = new ArrayList<Row>();
+	    int cnt =0;
+            for (Row row : getRows()) {
+		if(cnt++==0) {
+		    newRows.add(row);
+		    continue;
+		}
+                List values = row.getValues();
+		String v = (String) row.get(keyIdx);
+		Row maxRow = map.get(v);
+		if(maxRow == null) {
+		    map.put(v,row);
+		    continue;
+		}
+		String v1  = (String)maxRow.get(valueIdx);
+		String v2  = (String)row.get(valueIdx);
+		int compare = v1.compareTo(v2);
+		if(compare<0) map.put(v,row);
+            }
+            for (Enumeration keys = map.keys(); keys.hasMoreElements(); ) {
+                String key = (String) keys.nextElement();
+		newRows.add(map.get(key));
+	    }
             return newRows;
         }
 

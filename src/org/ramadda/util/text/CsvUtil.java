@@ -1220,6 +1220,7 @@ public class CsvUtil {
                 "(extract rows that match the pattern)"),
         new Cmd("-notpattern", "<col #> <regexp pattern>",
                 "(extract rows that don't match the pattern)"),
+        new Cmd("-maxvalue", "<key column> <value column>"),
         new Cmd("<column>=~<value>", "", "(same as -pattern)"),
         new Cmd("<-gt|-ge|-lt|-le>", "<col #> <value>",
                 "(extract rows that pass the expression)"),
@@ -2571,6 +2572,7 @@ public class CsvUtil {
                 continue;
             }
 
+
             if (arg.equals("-notpattern")) {
                 if ( !ensureArg(args, i, 2)) {
                     return false;
@@ -2630,6 +2632,19 @@ public class CsvUtil {
 
                 continue;
             }
+            if (arg.equals("-maxvalue")) {
+                if ( !ensureArg(args, i, 2)) {
+                    return false;
+                }
+                String key     = args.get(++i);
+                String value = args.get(++i);
+		info.getProcessor().addProcessor(new Processor.MaxValue(key,value));
+
+                continue;
+            }
+
+
+
             if (arg.equals("-quit")) {
                 String last = args.get(args.size() - 1);
                 if (last.equals("-print")) {
