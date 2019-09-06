@@ -3171,6 +3171,11 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    String tr = " <td rowspan=\"1\" colspan=\"1\">Anterior vertex</td><td rowspan=\"1\" colspan=\"1\">Skull</td><td rowspan=\"1\" colspan=\"1\">2.3</td><td rowspan=\"1\" colspan=\"1\">0.6</td>";
+	    Utils.tokenizeChunk(tr, "<td", "</td");
+	    return;
+	}
         if (true) {
             String s =
                 "hello\nPhone:asdsd\nhow\nare\nyou I am fine and you asdsad asd sd sd sd asd sadas\n\nasdsdsdas\n\nasdasdas ";
@@ -4038,8 +4043,8 @@ public class Utils {
             //            System.err.println("no 2");
             return null;
         }
-        String chunk = s.substring(idx1 + start.length() + 1, idx2);
-        //        System.err.println("chunk:"+ chunk);
+        String chunk = s.substring(idx1 + start.length(), idx2);
+	//	System.err.println(idx1 +" " + idx2 +" "  + start.length() +" " + chunk);
         s = s.substring(idx2 + start.length());
 
         return new String[] { chunk, s };

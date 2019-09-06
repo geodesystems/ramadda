@@ -682,6 +682,7 @@ public class CsvUtil {
                 }
                 Row     row         = new Row();
                 boolean checkHeader = true;
+		//		System.err.println("tr:" + tr);
                 while (true) {
                     toks = Utils.tokenizeChunk(tr, "<td", "</td");
                     if (checkHeader && (toks == null)) {
@@ -704,8 +705,8 @@ public class CsvUtil {
                         //                        System.out.println("not skipping:" +td );
                     }
                     //              System.err.println("td:" + td);
-                    //                    td = td.substring(idx + 1);
-                    //              System.err.println("after TD:" + td);
+		    td = td.substring(idx + 1);
+		    //		    System.err.println("after TD:" + td);
                     td = StringUtil.stripTags(td);
                     td = td.replaceAll("\n", " ").replaceAll("  +", "");
                     td = HtmlUtils.unescapeHtml3(td);
