@@ -14403,6 +14403,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 					 "captionTemplate=\"${name}\"",
 					 "sortFields=\"\"",
 					 "labelField=\"\"",
+					 'imageWidth="100"',
+					 'imageMargin="5"',
 					 ])},
         getContentsStyle: function() {
             return "";
@@ -14601,15 +14603,17 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         if(tooltip!="") tooltip+="&#10;";
                         tooltip+=field.getValue(row);
                     });
+		tooltip =tooltip.replace(/\"/g,"&quot;");
                 var label = "";
                 var caption="";
                 if(this.captionFields.length>0) {
                     if(this.captionTemplate) caption  = this.captionTemplate;
                     this.captionFields.map(field=>{
+			    var value = (""+field.getValue(row)).replace(/\"/g,"&quot;");
                             if(this.captionTemplate)
-                                caption = caption.replace("\${" + field.getId()+"}",field.getValue(row));
+                                caption = caption.replace("\${" + field.getId()+"}",value);
                             else
-                                caption+=field.getValue(row)+"<br>";
+                                caption+=value+"<br>";
                         });
                     if(this.urlField) {
                         var url = this.urlField.getValue(row);
