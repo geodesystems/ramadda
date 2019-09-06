@@ -14656,7 +14656,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     }
                 }
 		this.labelFields.map(f=>{
-			label += row[f.getIndex()];
+			label += row[f.getIndex()]+" ";
 		    });
 		label = label.trim();
                 var html ="";
