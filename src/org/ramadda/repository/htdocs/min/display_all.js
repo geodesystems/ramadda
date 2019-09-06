@@ -14454,7 +14454,13 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.imageField = this.getFieldOfType(fields, "image");
             this.urlField = this.getFieldOfType(fields, "url");
             this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true));
-            this.labelField = this.getFieldById(fields, this.getProperty("labelField", null, true));
+            this.labelFields = this.getFieldsByIds(fields, this.getProperty("labelFields", null, true));
+	    if(this.labelFields.length==0) {
+		var tmp = this.getFieldById(fields,this.getProperty("labelField", null, true));
+		if(tmp) {
+		    this.labelFields.push(tmp);
+		}
+	    }
             this.onlyShowImages =this.getProperty("onlyShowImages", false);
             this.altLabelField = this.getFieldById(fields, this.getProperty("altLabelField", null, true));
             this.captionFields = this.getFieldsByIds(fields, this.getProperty("captionFields", "", true));
@@ -14649,7 +14655,10 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         }
                     }
                 }
-                if(this.labelField) label = row[this.labelField.getIndex()];
+		this.labelFields.map(f=>{
+			label += row[f.getIndex()];
+		    });
+		label = label.trim();
                 var html ="";
                 var img = null;
                 if(this.imageField) {
