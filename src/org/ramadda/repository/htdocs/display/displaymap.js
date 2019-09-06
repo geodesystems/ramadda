@@ -1131,6 +1131,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var lineColor = this.getProperty("lineColor", "green");
 	    var pointIcon = this.getProperty("pointIcon");
 	    if(pointIcon) this.pointsAreMarkers = true;
+            var iconField = this.getFieldById(fields, this.getProperty("iconField"));
+            var iconSize = parseFloat(this.getProperty("iconSize",32));
+	    if(iconField)
+		this.pointsAreMarkers = true;
 	    var dfltShape = this.getProperty("defaultShape",null);
 	    var dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
 	    var dfltShapeIdx=0;
@@ -1268,8 +1272,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 }
                 var tuple = pointRecord.getData();
-
-
                 var v = tuple[colorBy.index];
                 if (colorBy.isString) {
                     if (!Utils.isDefined(colorByMap[v])) {
@@ -1372,6 +1374,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var seen = {};
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
+                var tuple = pointRecord.getData();
                 var point = points[i];
                 if(justOneMarker) {
                     if(this.justOneMarker)
@@ -1572,7 +1575,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
 
                     }
-                }
+		}
 
                 if (showPoints) {
                     //We do this because openlayers gets really slow when there are lots of features at one point
@@ -1580,7 +1583,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (seen[point] > 500) continue;
                     seen[point]++;
 		    var mapPoint=null;
-		    if(pointIcon) {
+		    if(iconField) {
+			var icon = tuple[iconField.getIndex()];
+			var size = iconSize;
+			if(sizeBy.index >= 0) {
+			    size = props.pointRadius * size;
+			}
+			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,html,null,size);
+		    } else  if(pointIcon) {
 			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,html);
 		    } else {
 			if(!props.graphicName)
