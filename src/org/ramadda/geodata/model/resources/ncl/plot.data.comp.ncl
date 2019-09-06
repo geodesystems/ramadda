@@ -696,16 +696,20 @@ begin
     vartitle = opts@variable
   end if
   anomString = " Anomaly"
-  if (isanom .and. (opts@anomtype .eq. "stdanom")) then
-      anomString = " Anomaly (Standardized)"
-  else 
-     if (isanom .and. (opts@anomtype .eq. "pctanom")) then
+  if (isanom) then
+      if (opts@anomtype .eq. "stdanom") then
+        anomString = " Anomaly (Standardized)"
+      end if
+     if (opts@anomtype .eq. "pctanom") then
        anomString = " Anomaly (Percent)"
      end if
   end if
   if (isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anomaly",-1))) then
     vartitle = vartitle + anomString
   end if 
+  if (opts@anomtype .eq. "timstd") then
+    vartitle = vartitle + " Standard Deviation"
+  end if
   if (.not. (opts@level .eq. "")) then
     vartitle = vartitle + " (" + level +" "+levelunit+ ")"
   end if
@@ -1390,6 +1394,7 @@ local tsdata, ncdata, rawdata, vals
 
 begin
   numfiles = dimsizes(files);
+  print("numfiles: " + numfiles)
   csvidx = 0
   pd = opts@product_dir
   do i = 0,numfiles-1
@@ -1440,11 +1445,16 @@ begin
     end if
   end do
   ncidx = 0;
-  if (numfiles .gt. 2) then
-     newtitles = new(numfiles,string)
-  else
-     newtitles = new(1,string)
+  numplots = numfiles-1;
+  if (numplots .gt. 1 .and. opts@ensavg) then
+     numplots = numplots+1
   end if
+  print("numplots = " +numplots)
+  ;;if (numplots .gt. 2) then
+     newtitles = new(numfiles,string)
+  ;;else
+  ;;   newtitles = new(1,string)
+  ;;end if
   firstnc = 1-csvidx
   if (opts@outtype .eq. "regression") then
      typeLabel = "Regression"
@@ -1487,11 +1497,11 @@ begin
     ;printMinMax(corr,True)
     if (.not. isdefined("cdata")) then
       shape = dimsizes(corr)
-      if (numfiles .eq. 2) then
-         cdata = new((/1,shape(0),shape(1)/),float)
-      else
-         cdata = new((/numfiles,shape(0),shape(1)/),float)
-      end if
+      ;;if (numfiles .eq. 2) then
+      ;;   cdata = new((/1,shape(0),shape(1)/),float)
+      ;;else
+         cdata = new((/numplots,shape(0),shape(1)/),float)
+      ;;end if
     end if
     ;; name the dimension to avoid warning message
     cdata!0 = "filenum"
@@ -1499,9 +1509,10 @@ begin
     ;printVarSummary(cdata)
     ncidx = ncidx + 1
   end do
-  if (numfiles .gt. 2) then
-    cdata(numfiles-1,:,:) = dim_avg_n_Wrap(cdata(0:numfiles-2,:,:),0)
-    newtitles(numfiles-1) = "Average "+typeLabel
+  ;;if (numfiles .gt. 2) then
+  if (numplots .ge. 2 .and. opts@ensavg) then
+    cdata(numplots-1,:,:) = dim_avg_n_Wrap(cdata(0:numplots-2,:,:),0)
+    newtitles(numplots-1) = "Average "+typeLabel
   end if
   level = opts@level
   if (isatt(opts,"levelunit")) then
@@ -1622,7 +1633,7 @@ begin
     end if
     rscript(linenum+2) = "title(main='"+opts@mainTitle+"',line=2., cex.main=1.3, font.main=1)"
     rscript(linenum+3) = "title(main='"+opts@regionTitle+"',line=1.2, cex.main=1.1, font.main=1)"
-    if (opts@isanom) then  ; add multiple titles
+    if (opts@isanom) then   ; add multiple titles
       climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
       rscript(linenum+4) = "title(main='"+climText+"',line=.4,cex.main=0.85, font.main=1)"
       linenum = linenum+4
@@ -1780,7 +1791,7 @@ begin
     amres@amOrthogonalPosF = -0.56  ; This is just below the previous title.
     annoid_mid = gsn_add_annotation(plot, txid_mid, amres)
   
-    if (opts@isanom) then
+    if (opts@isanom) then  
       res_text@txFontHeightF = 0.012                     ; change font size
       climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
       txid_bot = gsn_create_text(wks, climText, res_text)
@@ -1988,12 +1999,12 @@ begin
   xys = dimsizes(onetime)
   outtype = opts@outtype
   numdatas = numfiles
-  if (outtype .eq. "multicomp") then
+  if (numfiles .gt. 1 .and. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. opts@ensavg)) then
     numdatas = numfiles +1
   end if
   alldata = new((/numdatas,xys(0),xys(1)/),float)
   alldata(0,:,:) = onetime
-  if (numfiles .gt. 2 .or. outtype .eq. "multicomp") then
+  if (numfiles .gt. 1 .and. (outtype .eq. "multicomp" .or. outtype .eq. "enscomp")) then
      newtitles = new(numdatas,string)
       if (outtype .eq. "enscomp") then
         newtitles(0) = opts@ens(0)
@@ -2020,7 +2031,7 @@ begin
        tmpdata = atmpdata
     end if
     alldata(i,:,:) = tmpdata
-    if (numfiles .gt. 2 .or. outtype .eq. "multicomp") then
+    if (numfiles .gt. 1 .or. (outtype .eq. "multicomp" .or. outtype .eq. "enscomp")) then
       if (outtype .eq. "enscomp") then
         newtitles(i) = opts@ens(i)
       else
@@ -2036,10 +2047,13 @@ begin
     end if
     delete(tmpdata)
   end do
-;  if (outtype .eq. "multicomp" .and. numfiles .gt. 1) then
-  if (outtype .eq. "multicomp") then
+  if (numfiles .gt. 1 .and. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. opts@ensavg)) then
     alldata(numdatas-1,:,:) = dim_avg_n_Wrap(alldata(0:numfiles-1,:,:),0)
-    newtitles(numdatas-1) = "Multi-Model Mean"
+    if (outtype .eq. "multicomp") then
+      newtitles(numdatas-1) = "Multi-Model Mean"
+    else
+      newtitles(numdatas-1) = "Ensemble Average"
+    end if
   end if
   level = opts@level
   if (isatt(opts,"levelunit")) then
@@ -2052,7 +2066,7 @@ begin
     levelunit = "hPa"
   end if
   titleVarName = setvartitle(onetime, opts, False, level, levelunit)
-  if (numfiles .gt. 2) then
+  if (numfiles .gt. 1) then
     if (outtype .eq. "enscomp") then  ; ensemble comp
       panel_title = titleVarName + " " + opts@models(0) + " " + opts@exps(0) + " " + opts@dates(0)
     else ; model comp 
@@ -2313,6 +2327,13 @@ begin
     ymax=stringtofloat(temp)
   end if
 
+  temp =getenv("ensavg")
+  if (.not. ismissing(temp)) then
+    ensavg = temp .eq. "true"
+  else
+    ensavg = True
+  end if
+  
   temp =getenv("clines")
   if (.not. ismissing(temp)) then
     clines = temp .eq. "true"
@@ -2385,6 +2406,7 @@ begin
   options@meridian=meridian
   options@logo=logo
   options@cfill=cfill
+  options@ensavg=ensavg
   options@clines=clines
   options@clabels=clabels
   options@models=models

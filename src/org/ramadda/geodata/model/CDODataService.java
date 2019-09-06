@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -79,8 +79,16 @@ public abstract class CDODataService extends Service {
 
 
     /** localhost name */
-    public static final String CDO_SERVICE_LOCALHOSTNAME =
+    public static final String CDO_SERVICE_LOCALHOST_NAME =
         "service.cdo.localhostname";
+
+    /** localhost port */
+    public static final String CDO_SERVICE_LOCALHOST_PORT =
+        "service.cdo.localhostport";
+
+    /** localhost protocol */
+    public static final String CDO_SERVICE_LOCALHOST_PROTOCOL =
+        "service.cdo.localhostprotocol";
 
     /** climate dataset number */
     public static final String ARG_CLIMATE_DATASET_NUMBER =
@@ -258,12 +266,16 @@ public abstract class CDODataService extends Service {
                           + stat + "_" + startYear + "-" + endYear + ".nc";
         File statFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                 statName));
-        boolean isMonthly = getFrequency(request, mean).equals(CDOOutputHandler.FREQUENCY_MONTHLY);
+        boolean isMonthly =
+            getFrequency(request,
+                         mean).equals(CDOOutputHandler.FREQUENCY_MONTHLY);
         if ( !statFile.exists()) {  // make the file
             List<String> commands = initCDOService();
             boolean      spanYear = doMonthsSpanYearEnd(request, mean);
             if ( !spanYear) {
-                String statCmd = isMonthly ? "-ymonmean" : "-ydaymean";
+                String statCmd = isMonthly
+                                 ? "-ymonmean"
+                                 : "-ydaymean";
                 if (stat.equals("sprd") || stat.equals("smegma")) {
                     statCmd = "-yearmean";
                 }
@@ -340,9 +352,11 @@ public abstract class CDODataService extends Service {
             request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1);
         int requestEndMonth = request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
                                           1);
-        int requestStartDay =
-            request.get(CDOOutputHandler.ARG_CDO_STARTDAY, 1);
-        int requestEndDay = request.get(CDOOutputHandler.ARG_CDO_ENDDAY,  CDOOutputHandler.DAYS_PER_MONTH[requestEndMonth - 1]);  // endday
+        int requestStartDay = request.get(CDOOutputHandler.ARG_CDO_STARTDAY,
+                                          1);
+        int requestEndDay =
+            request.get(CDOOutputHandler.ARG_CDO_ENDDAY,
+                        CDOOutputHandler.DAYS_PER_MONTH[requestEndMonth - 1]);  // endday
         CdmDataOutputHandler dataOutputHandler =
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
@@ -383,12 +397,12 @@ public abstract class CDODataService extends Service {
         yearString.append(StringUtil.padZero(requestStartDay, 2));  // startmonth
         yearString.append("T00:00:00");  // starttime
         yearString.append(",");
-        yearString.append(end);  //endyear
+        yearString.append(end);                                   //endyear
         yearString.append("-");
         yearString.append(StringUtil.padZero(requestEndMonth, 2));  // endmonth
         yearString.append("-");
         yearString.append(StringUtil.padZero(requestEndDay, 2));  // endmonth
-        yearString.append("T23:59:59");  // endtime
+        yearString.append("T23:59:59");                           // endtime
 
         return yearString.toString();
     }
@@ -697,6 +711,11 @@ public abstract class CDODataService extends Service {
                     stats.add(new TwoFacedObject("Percent of Normal",
                             CDOOutputHandler.STAT_PCTANOM));
                 }
+                if ( !type.equals(
+                        ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES)) {
+                    stats.add(new TwoFacedObject("Standard Deviation",
+                            CDOOutputHandler.STAT_STD));
+                }
             }
 
             StringBuilder statForm = new StringBuilder();
@@ -764,8 +783,10 @@ public abstract class CDODataService extends Service {
                 statForm.append(HtmlUtils.script("$('select[name=\""
                         + CDOOutputHandler.ARG_CDO_STAT
                         + "\"]').on('change', function() {\n"
-                        + "$('.ref-years').toggle($(this).val() != \""
-                        + CDOOutputHandler.STAT_MEAN + "\");\n"
+                        + "$('.ref-years').toggle(!($(this).val() == \""
+                        + CDOOutputHandler.STAT_MEAN
+                        + "\" || $(this).val() == \""
+                        + CDOOutputHandler.STAT_STD + "\"));\n"
                         + "}).change();\n"));
             }
             sb.append(HtmlUtils.formEntry(Repository.msgLabel("Statistic"),
@@ -841,12 +862,13 @@ public abstract class CDODataService extends Service {
             throws Exception {
         return doMonthsSpanYearEnd(request, oneOfThem, 0);
     }
-    
+
     /**
      * Do the months span the year end (e.g. DJF)
      *
      * @param request    the request
      * @param oneOfThem  a sample file
+     * @param opNum      operand number
      *
      * @return  true if they do
      *
@@ -856,10 +878,9 @@ public abstract class CDODataService extends Service {
             Entry oneOfThem, int opNum)
             throws Exception {
         String opStr = getOpArgString(opNum);
-        if (request.defined(CDOOutputHandler.ARG_CDO_MONTHS+opStr)
-                && request.getString(
-                    CDOOutputHandler.ARG_CDO_MONTHS+opStr).equalsIgnoreCase(
-                    "all")) {
+        if (request.defined(CDOOutputHandler.ARG_CDO_MONTHS + opStr)
+                && request.getString(CDOOutputHandler.ARG_CDO_MONTHS
+                                     + opStr).equalsIgnoreCase("all")) {
             return false;
         }
         // Can't handle years requests yet.
@@ -869,14 +890,18 @@ public abstract class CDODataService extends Service {
         //}
         if (request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH)
                 || request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH)
-                || request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH+opStr)
-                || request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH+opStr)) {
+                || request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH
+                                   + opStr)
+                || request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH
+                                   + opStr)) {
             int startMonth =
-                request.get(CDOOutputHandler.ARG_CDO_STARTMONTH+opStr, 
-                        request.get(CDOOutputHandler.ARG_CDO_STARTMONTH,1));
-            int endMonth = 
-                request.get(CDOOutputHandler.ARG_CDO_ENDMONTH+opStr,
-                        request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,startMonth));
+                request.get(CDOOutputHandler.ARG_CDO_STARTMONTH + opStr,
+                            request.get(CDOOutputHandler.ARG_CDO_STARTMONTH,
+                                        1));
+            int endMonth =
+                request.get(CDOOutputHandler.ARG_CDO_ENDMONTH + opStr,
+                            request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
+                                        startMonth));
             // if they requested all months, no need to do a select on month
             if ((startMonth == 1) && (endMonth == 12)) {
                 return false;
@@ -928,15 +953,20 @@ public abstract class CDODataService extends Service {
      * @return  the complete URL pointing to localhost
      */
     public String getLocalhostUrl(Request r, String url) {
-        int    port     = r.getServerPort();
-        String protocol = "http";
-        String localhost = repository.getProperty(CDO_SERVICE_LOCALHOSTNAME,
-                               "localhost");
+        int    rport     = r.getServerPort();
+        String rprotocol = "http";
+        int port = repository.getProperty(CDO_SERVICE_LOCALHOST_PORT, rport);
+        /*
         HttpServletRequest httpServletRequest = r.getHttpServletRequest();
         if (httpServletRequest != null) {
-            protocol = StringUtil.split(httpServletRequest.getScheme(), "/",
+            rprotocol = StringUtil.split(httpServletRequest.getScheme(), "/",
                                         true, true).get(0);
         }
+        */
+        String protocol =
+            repository.getProperty(CDO_SERVICE_LOCALHOST_PROTOCOL, rprotocol);
+        String localhost = repository.getProperty(CDO_SERVICE_LOCALHOST_NAME,
+                               "localhost");
         //        System.err.println("Request.getAbsoluteUrl:" + protocol +" port:" + port);
         if (port == 80) {
             return protocol + "://" + localhost + url;
@@ -964,11 +994,13 @@ public abstract class CDODataService extends Service {
      *
      * @param request  the request
      * @param input the old input
+     * @param adjustDaily adjust the daily
      * @return a new input or the old
      *
      * @throws Exception problem adjusting the input
      */
-    protected ServiceInput adjustInput(Request request, ServiceInput input, boolean adjustDaily)
+    protected ServiceInput adjustInput(Request request, ServiceInput input,
+                                       boolean adjustDaily)
             throws Exception {
         ServiceInput newInput = new ServiceInput(input.getProcessDir());
         List<ServiceOperand> newOps =
@@ -991,11 +1023,12 @@ public abstract class CDODataService extends Service {
                                      oneOfThem).equals(
                                          CDOOutputHandler.FREQUENCY_DAILY)) {
                         if (adjustDaily) {
-                            aggEntries = extractDailyEntries(request, opEntries,
-                                opNum);
+                            aggEntries = extractDailyEntries(request,
+                                    opEntries, opNum);
                             id += "_" + opNum;
                         } else {
                             newOps.add(so);
+
                             break;
                         }
                     }
@@ -1023,11 +1056,11 @@ public abstract class CDODataService extends Service {
     }
 
     /**
-     * _more_
+     * Get the operand argument as a string
      *
-     * @param opNum _more_
+     * @param opNum  the operand number 
      *
-     * @return _more_
+     * @return the appropriate string for the operand number
      */
     protected static String getOpArgString(int opNum) {
         String opStr = (opNum == 0)
@@ -1044,7 +1077,7 @@ public abstract class CDODataService extends Service {
      * @param opNum  which op number
      * @return
      *
-     * @throws Exception _more_
+     * @throws Exception problems, problems, problems
      */
     private List<Entry> extractDailyEntries(Request request,
                                             List<Entry> opEntries, int opNum)
@@ -1159,12 +1192,12 @@ public abstract class CDODataService extends Service {
     }
 
     /**
-     * _more_
+     * Get the time frequency for this entry
      *
-     * @param request _more_
-     * @param sample _more_
+     * @param request  the request
+     * @param sample   the sample Entry
      *
-     * @return _more_
+     * @return  the time frequency (e.g. monthly, daily, etc)
      */
     public static String getFrequency(Request request, Entry sample) {
         Entry collection = GranuleTypeHandler.getCollectionEntry(request,
@@ -1269,18 +1302,20 @@ public abstract class CDODataService extends Service {
             int threadNum = 0;
             for (final ServiceOperand op : ops) {
                 Entry oneOfThem = op.getEntries().get(0);
+
                 /**
-                Entry collection =
-                    GranuleTypeHandler.getCollectionEntry(request, oneOfThem);
-                String frequency = "Monthly";
-                if (collection != null) {
-                    //frequency = collection.getValues()[0].toString();
-                    frequency = collection.getValue(0).toString();
-                }
-                boolean isMonthly = frequency.toLowerCase().indexOf("mon")
-                                    >= 0;
-                **/
-                boolean isMonthly = getFrequency(request, oneOfThem).equals(CDOOutputHandler.FREQUENCY_MONTHLY);
+                 * Entry collection =
+                 *   GranuleTypeHandler.getCollectionEntry(request, oneOfThem);
+                 * String frequency = "Monthly";
+                 * if (collection != null) {
+                 *   //frequency = collection.getValues()[0].toString();
+                 *   frequency = collection.getValue(0).toString();
+                 * }
+                 * boolean isMonthly = frequency.toLowerCase().indexOf("mon")
+                 *                   >= 0;
+                 */
+                boolean isMonthly = getFrequency(request, oneOfThem).equals(
+                                        CDOOutputHandler.FREQUENCY_MONTHLY);
                 if ( !useThreads || ((threadNum == 0) && needAnom)) {
                     if (isMonthly) {
                         outputEntries.add(evaluateMonthlyRequest(request,
@@ -1423,10 +1458,10 @@ public abstract class CDODataService extends Service {
      *
      * @param request  the request
      * @param dpi      the ServiceInput
-     * @param op _more_
-     * @param opNum _more_
-     * @param type _more_
-     * @param climSample _more_
+     * @param op       the ServiceOperand
+     * @param opNum    the operand number
+     * @param type     request type
+     * @param climSample sample for making climatology
      *
      * @return  some output
      *
@@ -1445,7 +1480,7 @@ public abstract class CDODataService extends Service {
      * @param oneOfThem  a sample from the input
      * @param climstartYear  starting year for climatology
      * @param climendYear    ending year for climatology
-     * @param climType _more_
+     * @param climType       type of climatology
      *
      * @return  the entry or null
      *
@@ -1568,10 +1603,33 @@ public abstract class CDODataService extends Service {
                                    Entry sample, String climstartYear,
                                    String climendYear)
             throws Exception {
+        return getSpreadEntry(request, dpi, sample, climstartYear,
+                              climendYear, "ens01");
+    }
+
+    /**
+     * Get the spread (smegma) entry for the climatology
+     *
+     * @param request  the request
+     * @param dpi      the input
+     * @param sample   a sample grid
+     * @param climstartYear  starting year for climatology
+     * @param climendYear    ending year for climatology
+     * @param ensName _more_
+     *
+     * @return  an entry or null
+     *
+     * @throws Exception  problems
+     */
+    protected Entry getSpreadEntry(Request request, ServiceInput dpi,
+                                   Entry sample, String climstartYear,
+                                   String climendYear, String ensName)
+            throws Exception {
         Entry sprdEntry = null;
         //System.err.println("Creating spread");
         //String statName = "mean";
-        String statName = "ens01";  // per Marty hoerling - just use the spread of one member
+        //String statName = "ens01";  // per Marty hoerling - just use the spread of one member
+        String statName = ensName;
         // Find the mean
         List<Entry> mean = findStatisticEntry(request, sample, statName);
         if ((mean == null) || mean.isEmpty()) {
@@ -1601,7 +1659,7 @@ public abstract class CDODataService extends Service {
      * Handle a named time period request
      *
      * @param request  the request
-     * @param opStr the operator
+     * @param opStr the operand
      *
      * @return the answer
      */

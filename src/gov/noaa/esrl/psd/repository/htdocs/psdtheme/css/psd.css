@@ -491,6 +491,14 @@ h1, h2, h3, h4, h5, h6 a:link { text-decoration: none;}
 	font-weight: 400;
 }
 
+
+.panel-aqua >.panel-heading {
+	color: #fff;
+    background-color: #008CBA;
+    border-bottom: 1px solid #008CBA;
+}
+
+
 /** WELL OVERRIDES **/
 .well {
     min-height: 20px;
@@ -797,6 +805,16 @@ table.staff {
     bottom: -14px;
     border: 7px solid transparent;
     border-top: 7px solid #41474d;/* green:#679b6c;  #775ba3;*/
+}
+
+.tab .nav-tabs li a:hover{
+  background: #d4d4d4;
+}
+
+@media(min-width:768px) {
+  .tab .nav-tabs li.active a:hover{
+    background: #41474d;
+  }
 }
 .tab .tab-content{
  	clear: both;

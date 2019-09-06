@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -76,6 +76,9 @@ public class NCLModelPlotDataService extends NCLDataService {
     private final static String ARG_LATLONLINES = ARG_NCL_PREFIX
                                                   + "latlonlines";
 
+    /** argument for plotting means on PDFs */
+    private final static String ARG_ENSAVG = ARG_NCL_PREFIX + "ensavg";
+
     /**
      * Create a new map process
      *
@@ -103,9 +106,9 @@ public class NCLModelPlotDataService extends NCLDataService {
     }
 
     /**
-     * _more_
+     * get the help for this service
      *
-     * @return _more_
+     * @return the help
      */
     @Override
     public String getHelp() {
@@ -316,18 +319,33 @@ public class NCLModelPlotDataService extends NCLDataService {
         sb.append(HtmlUtils.hidden(ARG_NCL_IMAGEFORMAT, "gif"));
 
         addDataMaskWidget(request, sb);
-        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Overlays"),
-                                      HtmlUtils.labeledCheckbox(
-                                          ARG_LATLONLINES,
-                                          "true",
-                                          request.get(ARG_LATLONLINES,
-                                                  false),
-                                          "Lat/Lon Lines")));
-
         sb.append(HtmlUtils.formTableClose());
 
         StringBuilder plotOpts = new StringBuilder();
         plotOpts.append(HtmlUtils.formTable());
+        plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Overlays"),
+                                            HtmlUtils.labeledCheckbox(
+                                            ARG_LATLONLINES,
+                                            "true",
+                                            request.get(ARG_LATLONLINES,
+                                                    false),
+                                            "Lat/Lon Lines")));
+        if (handleMultiple) {
+            String ensavgLabel = "Ensemble Mean";
+            if (type.equals(
+                    ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE)) {
+                ensavgLabel = "Multi-Model Mean";
+            } else if (type.equals(
+                    ClimateModelApiHandler.ARG_ACTION_CORRELATION)) {
+                ensavgLabel = "Average";
+            }
+            plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Other"),
+                    HtmlUtils.labeledCheckbox(ARG_ENSAVG,
+                            "true",
+                            request.get(ARG_ENSAVG, false),
+                            "Create " + ensavgLabel + " Plot")));
+        }
+
         // TODO:  For now, don't get value from request.  May not
         // be valid if variable changes.
         // Contour options
@@ -814,13 +832,15 @@ public class NCLModelPlotDataService extends NCLDataService {
             envMap.put("ymax", String.valueOf(ymax));
 
 
-            boolean haveAnom = fileList.toString().indexOf("anom") >= 0;
+            boolean haveAnom = (fileList.toString().indexOf("anom") >= 0);
 
             String  anomType = "anom";
             if (fileList.toString().indexOf("pctanom") >= 0) {
                 anomType = "pctanom";
             } else if (fileList.toString().indexOf("stdanom") >= 0) {
                 anomType = "stdanom";
+            } else if (fileList.toString().indexOf("timstd") >= 0) {
+                anomType = "timstd";
             }
             envMap.put("anomtype", anomType);
 
@@ -884,6 +904,8 @@ public class NCLModelPlotDataService extends NCLDataService {
             envMap.put("latlonlines",
                        Boolean.toString(request.get(ARG_LATLONLINES,
                                false)));
+            envMap.put("ensavg", Boolean.toString(request.get(ARG_ENSAVG,
+                    false)));
             envMap.put("anom", Boolean.toString(haveAnom || isCorrelation));
             envMap.put(
                 "annotation",
@@ -1121,13 +1143,15 @@ public class NCLModelPlotDataService extends NCLDataService {
         envMap.put("ymax", String.valueOf(ymax));
 
 
-        boolean haveAnom = fileList.toString().indexOf("anom") >= 0;
+        boolean haveAnom = (fileList.toString().indexOf("anom") >= 0);
 
         String  anomType = "anom";
         if (fileList.toString().indexOf("pctanom") >= 0) {
             anomType = "pctanom";
         } else if (fileList.toString().indexOf("stdanom") >= 0) {
             anomType = "stdanom";
+        } else if (fileList.toString().indexOf("timstd") >= 0) {
+            anomType = "timstd";
         }
         envMap.put("anomtype", anomType);
 

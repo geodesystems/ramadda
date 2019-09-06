@@ -57,9 +57,9 @@
 +section # title="{{name}}"
  ----
 
-{{display type="linechart" showTitle="false" layoutHere="false" vAxisMinValue="0" vAxisMaxValue="100"  dateFormat="yyyy" width="800" height="200" vAxis="Percent of Stations" hAxis="Year" showMenu="true" useMultipleAxes="false" showLabels="true" fields="jan_feb"}}
+{{display type="linechart" showTitle="false" layoutHere="false" vAxisMinValue="0" vAxisMaxValue="100"  dateFormat="yyyy" width="800" vAxis="Percent of Stations" hAxis="Year" showMenu="true" useMultipleAxes="false" showLabels="true" fields="jan_feb"}}
 
-{{display type="barstack" showTitle="false" layoutHere="false" vAxisMinValue="0" vAxisMaxValue="100"  dateFormat="yyyy" width="800" height="200" vAxis="Percent of Stations" hAxis="Year" showMenu="false" useMultipleAxes="false" showLabels="true" fields="jan_feb,mar_apr,may_jun,jul_aug,sep_oct,nov_dec"}}
+{{display type="barstack" showTitle="false" layoutHere="false" vAxisMinValue="0" vAxisMaxValue="100"  dateFormat="yyyy" width="800" vAxis="Percent of Stations" hAxis="Year" showMenu="false" useMultipleAxes="false" showLabels="true" fields="jan_feb,mar_apr,may_jun,jul_aug,sep_oct,nov_dec"}}
 
 {{display type="table" showTitle="false" showMenu="false" dateFormat="yyyy"  layoutHere="false" width="800" }}
 

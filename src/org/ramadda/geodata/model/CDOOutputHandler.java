@@ -1860,7 +1860,6 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      * Create a list of tfos from the given int ids and names
      *
      * @param ids ids
-     * @param names names
      *
      * @return list of tfos
      */
@@ -1871,6 +1870,17 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         }
 
         return l;
+    }
+
+    /**
+     * Add the grid remap request services
+     * @param request  the Request
+     * @param si  ServiceInput
+     * @param commands  the CDO command buffer
+     */
+    public void addGridRemapServices(Request request, ServiceInput si,
+                                     List<String> commands) {
+        commands.add("-remapbil,r360x180");
     }
 
 }

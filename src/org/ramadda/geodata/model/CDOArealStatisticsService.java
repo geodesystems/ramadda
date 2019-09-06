@@ -85,9 +85,9 @@ public class CDOArealStatisticsService extends CDODataService {
     }
 
     /**
-     * _more_
+     * Get the help for this service
      *
-     * @return _more_
+     * @return the help page
      */
     @Override
     public String getHelp() {
@@ -466,7 +466,8 @@ public class CDOArealStatisticsService extends CDODataService {
                 */
                 getOutputHandler().addAreaSelectServices(timeRequest,
                         climEntry, commands);
-                commands.add("-remapbil,r360x180");
+                getOutputHandler().addGridRemapServices(timeRequest, dpi,
+                        commands);
                 commands.add("-selname," + varname);
                 getOutputHandler().addMonthSelectServices(timeRequest,
                         climEntry, commands);
@@ -529,7 +530,8 @@ public class CDOArealStatisticsService extends CDODataService {
                 commands.add("-timstd");
                 getOutputHandler().addAreaSelectServices(timeRequest,
                         sprdEntry, commands);
-                commands.add("-remapbil,r360x180");
+                getOutputHandler().addGridRemapServices(timeRequest, dpi,
+                        commands);
                 commands.add("-selname," + varname);
                 /*
                 getOutputHandler().addMonthSelectServices(timeRequest,
@@ -768,6 +770,7 @@ public class CDOArealStatisticsService extends CDODataService {
                 && (stat.equals(CDOOutputHandler.STAT_ANOM)
                     || stat.equals(CDOOutputHandler.STAT_STDANOM)
                     || stat.equals(CDOOutputHandler.STAT_PCTANOM))) {
+
             climEntry = getClimatologyEntry(timeRequest, dpi, climSample,
                                             climstartYear, climendYear,
                                             period);
@@ -778,8 +781,50 @@ public class CDOArealStatisticsService extends CDODataService {
             }
         }
 
-        makeMonthlyDataFile(timeRequest, dpi, sample, outFile, dataset,
-                            varname, opNum);
+        if ( !stat.equals(CDOOutputHandler.STAT_STD)) {
+
+            makeMonthlyDataFile(timeRequest, dpi, sample, outFile, dataset,
+                                varname, opNum);
+        } else {  // standard deviation
+
+            String sprdstartYear =
+                timeRequest.getString(
+                    CDOOutputHandler.ARG_CDO_STARTYEAR + opStr,
+                    timeRequest.getString(
+                        CDOOutputHandler.ARG_CDO_STARTYEAR));
+            String sprdendYear = timeRequest.getString(
+                                     CDOOutputHandler.ARG_CDO_ENDYEAR
+                                     + opStr, timeRequest.getString(
+                                         CDOOutputHandler.ARG_CDO_ENDYEAR));
+            String ensName = climSample.getValues()[3].toString();
+            //if ( !type.equals(
+            //        ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)) {
+            //if ( ensName.equals("mean")) {
+            //    ensName = "ens01";  // use ens01 per Marty Hoerling
+            //}
+            sprdEntry = getSpreadEntry(timeRequest, dpi, climSample,
+                                       sprdstartYear, sprdendYear, ensName);
+            Request sprdRequest = timeRequest.cloneMe();
+
+            String sprdName = IOUtil.stripExtension(tail) + "_" + id
+                              + "_timstd.nc";
+            File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
+                                                    sprdName));
+            commands = initCDOService();
+            commands.add("-timstd");
+            getOutputHandler().addAreaSelectServices(sprdRequest, sprdEntry,
+                    commands);
+            getOutputHandler().addGridRemapServices(sprdRequest, dpi,
+                    commands);
+            commands.add("-selname," + varname);
+            getOutputHandler().addLevelSelectServices(sprdRequest, sprdEntry,
+                    commands, CdmDataOutputHandler.ARG_LEVEL);
+            commands.add(getPath(sprdRequest, sprdEntry));
+            commands.add(sprdFile.toString());
+            runCommands(commands, dpi.getProcessDir(), sprdFile);
+            outFile = sprdFile;
+        }
+
         if (dataset != null) {
             dataset.close();
         }
@@ -810,7 +855,8 @@ public class CDOArealStatisticsService extends CDODataService {
                         commands);
                 getOutputHandler().addAreaSelectServices(timeRequest,
                         climEntry, commands);
-                commands.add("-remapbil,r360x180");
+                getOutputHandler().addGridRemapServices(timeRequest, dpi,
+                        commands);
                 commands.add("-selname," + varname);
                 getOutputHandler().addMonthSelectServices(timeRequest,
                         climEntry, commands);
@@ -873,7 +919,8 @@ public class CDOArealStatisticsService extends CDODataService {
                 commands.add("-timstd");
                 getOutputHandler().addAreaSelectServices(timeRequest,
                         sprdEntry, commands);
-                commands.add("-remapbil,r360x180");
+                getOutputHandler().addGridRemapServices(timeRequest, dpi,
+                        commands);
                 commands.add("-selname," + varname);
                 /*
                 getOutputHandler().addMonthSelectServices(timeRequest,
@@ -1026,7 +1073,7 @@ public class CDOArealStatisticsService extends CDODataService {
      * @param outFile output file
      * @param dataset gridded dataset
      * @param varname variable name
-     * @param opNum   operator number
+     * @param opNum   operand number
      *
      * @throws Exception problems
      */
@@ -1072,7 +1119,7 @@ public class CDOArealStatisticsService extends CDODataService {
         getOutputHandler().addStatServices(request, sample, commands);
         //}
         getOutputHandler().addAreaSelectServices(request, sample, commands);
-        commands.add("-remapbil,r360x180");
+        getOutputHandler().addGridRemapServices(request, dpi, commands);
         //getOutputHandler().addLevelSelectServices(request, sample,
         //        commands, CdmDataOutputHandler.ARG_LEVEL);
         commands.add("-selname," + varname);
@@ -1270,9 +1317,9 @@ public class CDOArealStatisticsService extends CDODataService {
             runCommands(timecommands, dpi.getProcessDir(), timeFile);
             // now create the mean of the times
             //commands = initCDOService();
-            //if (collapseTimes) {
-            getOutputHandler().addStatServices(request, sample, commands);
-            //}
+            if (collapseTimes) {
+                getOutputHandler().addStatServices(request, sample, commands);
+            }
             // month average
             //commands.add("-timselmean," + numMonths);
             commands.add(timeFile.toString());
@@ -1390,7 +1437,7 @@ public class CDOArealStatisticsService extends CDODataService {
      * @param outFile output file
      * @param dataset gridded dataset
      * @param varname variable name
-     * @param opNum   operator number
+     * @param opNum   operand number
      *
      * @throws Exception problems
      */
@@ -1436,7 +1483,7 @@ public class CDOArealStatisticsService extends CDODataService {
             getOutputHandler().addStatServices(request, sample, commands);
         }
         getOutputHandler().addAreaSelectServices(request, sample, commands);
-        commands.add("-remapbil,r360x180");
+        getOutputHandler().addGridRemapServices(request, dpi, commands);
         //getOutputHandler().addLevelSelectServices(request, sample,
         //        commands, CdmDataOutputHandler.ARG_LEVEL);
         commands.add("-selname," + varname);

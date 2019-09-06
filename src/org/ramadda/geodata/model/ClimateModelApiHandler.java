@@ -255,8 +255,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         String template =
             getStorageManager().readSystemResource(
                 "/org/ramadda/geodata/model/resources/plot_template.xml");
-        template = template.replace("${name}",
-                                    "Climate model comparison output");
+        template = template.replace("${name}", "Model comparison output");
         StringBuilder dpiDesc = new StringBuilder();
         if (dpi.getOperands().size() > 1) {
             dpiDesc.append("Comparison of ");
@@ -755,10 +754,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         List<Entry> collections = getCollections(request);
         if (collections.size() == 0) {
             return new Result(
-                "Climate Model Comparison",
+                "Model Comparison",
                 new StringBuilder(
                     getPageHandler().showDialogWarning(
-                        msg("No climate collections found"))));
+                        msg("No collections found"))));
         }
 
         String formId = "selectform" + HtmlUtils.blockCnt++;
@@ -772,7 +771,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         getWikiManager().addDisplayImports(request, sb);
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
-        tfos.add(new TwoFacedObject("Select Climate Collection", ""));
+        tfos.add(new TwoFacedObject("Select Model Collection", ""));
         for (Entry collection : collections) {
             tfos.add(new TwoFacedObject(collection.getLabel(),
                                         collection.getId()));
@@ -837,36 +836,35 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
 
-        String title = "Climate Model Comparison";
+        String title = "Model Comparison";
         String desc  = "";
         if (type.equals(ARG_ACTION_COMPARE)) {
             if (request.defined(ARG_EVENT_GROUP)) {
                 String groupName = request.getString(ARG_EVENT_GROUP);
                 //groupName = groupName.replaceAll("[+_]"," ");
                 title += " for " + groupName;
-                desc = "Plot monthly maps from different climate model datasets as well as differences between datasets for "
+                desc = "Plot monthly maps from different model datasets as well as differences between datasets for "
                        + groupName;
             } else {
-                title = "Climate Model Comparison";
-                desc = "Plot monthly maps from different climate model datasets as well as differences between datasets.";
+                title = "Model Comparison";
+                desc = "Plot monthly maps from different model datasets as well as differences between datasets.";
             }
 
         } else if (type.equals(ARG_ACTION_TIMESERIES)) {
-            title = "Climate Model Time Series";
-            desc = "Plot monthly time series from different climate model datasets.";
+            title = "Model Time Series";
+            desc  = "Plot monthly time series from different model datasets.";
         } else if (type.equals(ARG_ACTION_MULTI_TIMESERIES)) {
-            title = "Climate Model Ensemble Time Series";
-            desc = "Plot monthly time series from different climate model ensemble members.";
+            title = "Model Ensemble Time Series";
+            desc = "Plot monthly time series from different model ensemble members.";
         } else if (type.equals(ARG_ACTION_ENS_COMPARE)) {
-            title = "Climate Model Ensemble Plot";
-            desc  = "Compare monthly climate model ensemble members.";
+            title = "Model Ensemble Plot";
+            desc  = "Compare monthly model ensemble members.";
         } else if (type.equals(ARG_ACTION_CORRELATION)) {
-            title = "Climate Model Correlation";
+            title = "Model Correlation";
             desc = "Plot correlations between model output and climate index time series";
         } else {
-            title = "Climate Model Comparison";
-            desc  =
-                "Plot monthly maps from different climate model datasets.";
+            title = "Model Comparison";
+            desc  = "Plot monthly maps from different model datasets.";
         }
 
 
@@ -1216,7 +1214,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         StringBuffer sb2 = new StringBuffer();
         sb2.append(getWikiManager().wikify(request, sb.toString()));
 
-        return new Result("Climate Model Comparison", sb2);
+        return new Result("Model Comparison", sb2);
 
     }
 
