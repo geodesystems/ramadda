@@ -106,8 +106,6 @@ cursor:pointer;
 }
 
 .ui-corner-all {
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
 }
 
 
@@ -1565,4 +1563,9 @@ font-weight:bold;
 
 .display-crosstab-header-row {
   background: #efefef;
+}
+
+.display-images-block {
+display: inline-block;
+margin:10px;
 }

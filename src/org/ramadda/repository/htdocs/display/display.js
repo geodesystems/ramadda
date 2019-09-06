@@ -301,6 +301,10 @@ function DisplayThing(argId, argProperties) {
                             value = number_format(value, decimals, '.', '');
                         }
                     } 
+		    if(field.getType() == "image" && value!="") {
+			value = HtmlUtils.image(value,["width","200"]);
+		    }
+
 		    if(field.getType() == "url") {
 			value = HtmlUtils.href(value,value);
 		    }

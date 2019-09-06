@@ -451,6 +451,10 @@ function DisplayThing(argId, argProperties) {
                             value = number_format(value, decimals, '.', '');
                         }
                     } 
+		    if(field.getType() == "image" && value!="") {
+			value = HtmlUtils.image(value,["width","200"]);
+		    }
+
 		    if(field.getType() == "url") {
 			value = HtmlUtils.href(value,value);
 		    }
@@ -13971,6 +13975,7 @@ var DISPLAY_TEXT = "text";
 var DISPLAY_CARDS = "cards";
 var DISPLAY_BLOCKS = "blocks";
 var DISPLAY_TEMPLATE = "template";
+var DISPLAY_IMAGES = "images";
 var DISPLAY_BLANK = "blank";
 
 
@@ -13991,6 +13996,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_MISC
 });
+addGlobalDisplayType({
+    type: DISPLAY_IMAGES,
+    label: "Images",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+	    });
+
 addGlobalDisplayType({
     type: DISPLAY_TEMPLATE,
     label: "Template",
@@ -14713,6 +14726,102 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             }
     });
 }
+
+
+
+
+function RamaddaImagesDisplay(displayManager, id, properties) {
+    var ID_GALLERY = "gallery";
+    var ID_NEXT = "next";
+    var ID_PREV = "prev";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
+    
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	    startIndex:0,
+	getWikiEditorTags: function() {
+		return Utils.mergeLists(SUPER.getWikiEditorTags(),
+					[
+					 "label:Gallery Attributes",
+					 'labelFields=""',
+					 'tooltipFields=""',
+					 "numberOfImages=\"100\"",
+					 "imageWidth=\"150\"",
+					 ])},
+	dataFilterChanged: function() {
+		this.startIndex=0;
+		this.updateUI();
+	    },
+        updateUI: function() {
+            var pointData = this.getData();
+            if (pointData == null) return;
+            var records = this.filterData();
+            if(!records) return;
+            var fields = pointData.getRecordFields();
+	    var imageField = this.getFieldOfType(fields,"image");
+            var labelFields = this.getFieldsByIds(fields, this.getProperty("labelFields", null, true));
+            var tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields", null, true));
+	    if(!imageField) {
+		this.setContents(this.getMessage("No image field in data"));
+		return;
+	    }
+	    var number = parseFloat(this.getProperty("numberOfImages",100));
+	    var width = parseFloat(this.getProperty("imageWidth",150));
+	    var contents = "";
+	    var cnt = 1;
+	    if(this.startIndex<0) this.startIndex=0;
+	    if(this.startIndex>records.length) this.startIndex=records.length-number;
+            for (var rowIdx = this.startIndex; rowIdx < records.length; rowIdx++) {
+		if(cnt>number) break;
+		cnt++;
+                var row = this.getDataValues(records[rowIdx]);
+		var image = row[imageField.getIndex()];
+		if(image=="") {
+		    continue;
+		}
+		var label = "";
+		var tt = "";
+		if(labelFields.length>0) {
+		    labelFields.map(l=>{label += " " + row[l.getIndex()]});
+		    label = HtmlUtils.div(["class","display-images-label"], label.trim());
+		}
+		if(tooltipFields.length>0) {
+		    tooltipFields.map(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
+		}
+		tt = tt.trim();
+		contents += HtmlUtils.div(["class", "display-images-block","title",tt],
+					  HtmlUtils.image(image,["width",width])+
+					  label);
+
+	    }
+	    var header = "";
+	    if(this.startIndex>0) {
+		header += HtmlUtils.span(["id",this.getDomId(ID_PREV)],"Previous")+" ";
+	    }
+	    if(this.startIndex+number<records.length) {
+		header += HtmlUtils.span(["id",this.getDomId(ID_NEXT)],"Next") +" ";
+	    }
+	    cnt--;
+	    header += "Showing images " + (this.startIndex+1) +" - " +(this.startIndex+cnt);
+	    if(number<records.length)
+		header += " of " + records.length + " total images";
+
+	    if(header!="") header  = header +"<br>";
+
+            this.writeHtml(ID_DISPLAY_CONTENTS, header + contents);
+	    this.jq(ID_PREV).button().click(()=>{
+		    this.startIndex-=number;
+		    this.updateUI();
+		});
+	    this.jq(ID_NEXT).button().click(()=>{
+		    this.startIndex+=number;
+		    this.updateUI();
+		});
+	    }
+	})
+	}
+
 
 
 function RamaddaBlankDisplay(displayManager, id, properties) {
