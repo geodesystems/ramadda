@@ -794,7 +794,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
         boolean spanYears = doMonthsSpanYearEnd(request, sample);
         addStatServices(request, sample, commands);
         getOutputHandler().addAreaSelectServices(request, sample, commands);
-        commands.add("-remapbil,r360x180");
+        getOutputHandler().addGridRemapServices(request, dpi, commands);
+
         //getOutputHandler().addLevelSelectServices(request, oneOfThem,
         //        commands, CdmDataOutputHandler.ARG_LEVEL);
         commands.add("-selname," + varname);

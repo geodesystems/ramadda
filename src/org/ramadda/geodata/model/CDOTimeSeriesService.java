@@ -344,7 +344,7 @@ public class CDOTimeSeriesService extends CDODataService {
         getOutputHandler().addAreaSelectServices(request, sample, commands);
         // If we want to use full resolution without mask, then uncomment here
         //if (!maskType.equals("none")) {
-        commands.add("-remapbil,r360x180");
+        getOutputHandler().addGridRemapServices(request, dpi, commands);
         //}
         String  opStr       = getOpArgString(opNum);
         Request timeRequest = request;
@@ -470,7 +470,7 @@ public class CDOTimeSeriesService extends CDODataService {
                 getOutputHandler().addAreaSelectServices(request, climEntry,
                         commands);
                 //if (!maskType.equals("none")) {
-                commands.add("-remapbil,r360x180");
+                getOutputHandler().addGridRemapServices(request, dpi, commands);
                 //}
                 getOutputHandler().addMonthSelectServices(request, climEntry,
                         commands);
@@ -535,7 +535,7 @@ public class CDOTimeSeriesService extends CDODataService {
                 commands.add("-timstd");
                 getOutputHandler().addAreaSelectServices(timeRequest,
                         sprdEntry, commands);
-                commands.add("-remapbil,r360x180");
+                getOutputHandler().addGridRemapServices(timeRequest, dpi, commands);
                 commands.add("-selname," + varname);
                 /*
                 getOutputHandler().addMonthSelectServices(timeRequest,
