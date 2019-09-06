@@ -781,9 +781,13 @@ public class HtmlUtils {
     public static Appendable tag(Appendable sb, String tag, String attrs,
                                  String inner) {
         try {
-            open(sb, tag, attrs);
-            sb.append(inner);
-            close(sb, tag);
+	    if(inner!=null) {
+		open(sb, tag, attrs);
+		sb.append(inner);
+		close(sb, tag);
+	    } else {
+		tag(sb,tag,attrs);
+	    }
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -1288,6 +1292,10 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String img(String path, String title, String extra) {
+	return image(path, title, extra,null);
+    }
+
+    public static String image(String path, String title, String extra,String inner) {
         if (Utils.stringDefined(title)) {
             if (path.startsWith("fa-")) {
                 return faIconWithAttr(path,
@@ -1303,7 +1311,7 @@ public class HtmlUtils {
         }
         String img = tag(TAG_IMG,
                          attrs(ATTR_BORDER, "0", ATTR_SRC, path) + " "
-                         + extra);
+                         + extra,inner);
 
         return img;
     }

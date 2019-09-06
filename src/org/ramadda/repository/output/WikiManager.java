@@ -849,6 +849,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (imageWidth > 0) {
             url = url + "&" + ARG_IMAGEWIDTH + "=" + imageWidth;
         }
+	String id = getRepository().getGUID().replaceAll("-","_");
+	String js = getProperty(wikiUtil,props,"jsCall",(String) null);
+	String map = getProperty(wikiUtil,props,"map",(String) null);
+	String mapId = 	  getRepository().getGUID().replaceAll("-","_");
+	HtmlUtils.attr(extra, "id",id);
         if (width != null) {
             HtmlUtils.attr(extra, HtmlUtils.ATTR_WIDTH, width);
         }
@@ -898,7 +903,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String caption = getProperty(wikiUtil, props, "caption",
                                      (String) null);
+	if(map!=null) {
+	    map = map.replaceAll("_newline_","&#013;");
+	    extra.append(" usemap='#" + mapId+"' ");
+	}
         String  img  = HtmlUtils.img(url, alt, extra.toString());
+
+	
 
         boolean link = getProperty(wikiUtil, props, ATTR_LINK, false);
         String  iurl = getProperty(wikiUtil, props, "url", (String) null);
@@ -945,12 +956,25 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     : "") + " display:inline-block;text-align:center");
         }
         sb.append(img);
+	if(map!=null) {
+	    sb.append("\n<map name='" + mapId +"'>" + map +"</map>\n");
+	    sb.append(
+		      HtmlUtils.importJS(
+					 getRepository().getHtdocsUrl(
+								      "/lib/jquery.maphilight.js")));
+	    sb.append(HtmlUtils.script("$('#" + id +"').maphilight();"));
+	}
+	
+
         if (caption != null) {
             sb.append(HtmlUtils.br());
             HtmlUtils.span(sb, caption,
                            HtmlUtils.cssClass("wiki-image-caption"));
         }
         HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
+	if(js!=null) {
+	    HtmlUtils.script(sb, "var imageId = '" + id +"';\n" + js);
+	}
 
         return sb.toString();
 
@@ -1441,7 +1465,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             getMetadataManager().addMetadata(
                 entry,
                 new Metadata(
-                    getRepository().getGUID(), entry.getId(),
+			     getRepository().getGUID(), entry.getId(),
                     "wiki_notebook", false, notebookId, theFile, "", "", ""));
             getEntryManager().updateEntry(null, entry);
 

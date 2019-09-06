@@ -450,7 +450,9 @@ function DisplayManager(argId, argProperties) {
                 alert("Error: could not find display function:" + type + " msg: " + msg);
                 return;
             }
-            var displayId = this.getUniqueId("display");
+            var displayId = props.displayId;
+	    if(!displayId) 
+		displayId = this.getUniqueId("display");
             if (props.data == null && this.dataList.length > 0) {
                 props.data = this.dataList[0];
             }

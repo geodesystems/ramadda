@@ -9362,10 +9362,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (source == this) {
                 return;
             }
-            if (!this.okToHandleEventRecordSelection())
+            if (!this.okToHandleEventRecordSelection()) {
                 return;
+	    }
             var data = this.dataCollection.getList()[0];
-            if (data != args.data) {
+            if (args.data && data != args.data) {
                 return;
             }
             this.setChartSelection(args.index);
@@ -19022,7 +19023,9 @@ function DisplayManager(argId, argProperties) {
                 alert("Error: could not find display function:" + type + " msg: " + msg);
                 return;
             }
-            var displayId = this.getUniqueId("display");
+            var displayId = props.displayId;
+	    if(!displayId) 
+		displayId = this.getUniqueId("display");
             if (props.data == null && this.dataList.length > 0) {
                 props.data = this.dataList[0];
             }
