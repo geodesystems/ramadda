@@ -2604,6 +2604,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (pointData == null) return;
 	    this.filterFields = [];
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
+            this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
 
 	    
             var filterBy = this.getProperty("filterFields","",true).split(",");
@@ -2617,8 +2618,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			enums.push([field.getId(),field.getLabel()]);
 		    });
 		header2 += HtmlUtils.span(["class","display-filterby"],
-					  "Color by: " + HtmlUtils.select("",["style","", "id",this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+"&nbsp;";
+					  HtmlUtils.span(["class","display-filterby-label"], "Color by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+"&nbsp;";
 	    }
+	    if(this.sizeByFields.length>0) {
+		var enums = [];
+		this.sizeByFields.map(field=>{
+			enums.push([field.getId(),field.getLabel()]);
+		    });
+		header2 += HtmlUtils.span(["class","display-filterby"],
+					  HtmlUtils.span(["class","display-filterby-label"],"Size by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
+	    }
+
             if(filterBy.length>0) {
 		var searchBar = "";
 		var dateIds = [];
@@ -2782,6 +2792,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jq("colorbyselect").change(function(){
 			_this.colorByFieldChanged($(this).val());
 		    });
+                this.jq("sizebyselect").change(function(){
+			_this.sizeByFieldChanged($(this).val());
+		    });
 
                 this.jq(ID_FILTERBAR).find("input, input:radio,select").change(function(){
                         var id = $(this).attr("id");
@@ -2804,6 +2817,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
 	colorByFieldChanged:function(field) {
+    },
+
+		sizeByFieldChanged:function(field) {
     },
 	dataFilterChanged: function() {
 		this.updateUI();

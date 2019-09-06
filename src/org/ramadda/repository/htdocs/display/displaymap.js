@@ -1007,6 +1007,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.vectorMapApplied  = false;
 		this.updateUI();
 	    },
+		sizeByFieldChanged:function(field) {
+		this.haveCalledUpdateUI = false;
+		this.setProperty("sizeBy", field);
+		this.vectorMapApplied  = false;
+		this.updateUI();
+	    },
 	dataFilterChanged: function() {
 		this.vectorMapApplied  = false;
 		this.updateUI();
