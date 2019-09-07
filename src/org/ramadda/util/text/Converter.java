@@ -211,28 +211,33 @@ public abstract class Converter extends Processor {
             s += suffix;
             //hack, hack
             String script = "/Users/jeffmc/bin/imagesearch.sh";
-            try {
-                s = s.replace(" ", "%s");
-                Process p = Runtime.getRuntime().exec(new String[] { "sh",
-                        script, s });
-                String result =
-                    IOUtil.readContents(p.getInputStream()).trim();
-                System.err.println(rowCnt + " image:" + s);
-                JSONObject obj    = new JSONObject(result);
-                JSONArray  values = obj.getJSONArray("value");
-                if (values.length() == 0) {
-                    row.add("");
-
-                    return row;
-                }
-                JSONObject value = values.getJSONObject(0);
-                row.add(value.optString("thumbnailUrl", ""));
-                //              System.err.println(row);
-                //              System.exit(0);
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-
+	    for(int attempt=0;attempt<3;attempt++) {
+		try {
+		    s = s.replace(" ", "%s");
+		    Process p = Runtime.getRuntime().exec(new String[] { "sh",
+									 script, s });
+		    String result =
+			IOUtil.readContents(p.getInputStream()).trim();
+		    JSONObject obj    = new JSONObject(result);
+		    JSONArray  values = obj.getJSONArray("value");
+		    if (values.length() == 0) {
+			System.err.println(s+ " failed. sleeping");
+			if(attempt == 0) {
+			    System.err.println("response:" + result);
+			}
+			Misc.sleepSeconds(1+attempt);
+			continue;
+		    }
+		    JSONObject value = values.getJSONObject(0);
+		    String image = value.optString("thumbnailUrl", "");
+		    System.err.println(s +" image:" + image);
+		    row.add(image);
+		    return row;
+		} catch (Exception exc) {
+		    throw new RuntimeException(exc);
+		}
+	    }
+	    row.add("");
             return row;
         }
 

@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 var CATEGORY_CHARTS = "Charts";
@@ -244,13 +244,13 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             return true;
         },
 	getWikiEditorTags: function() {
-		var t = SUPER.getWikiEditorTags();
-		var myTags = [
-			    "fields=\"\"",
-			    ];
-		myTags.map(tag=>t.push(tag));
-		return t;
-	    },
+	    var t = SUPER.getWikiEditorTags();
+	    var myTags = [
+		"fields=\"\"",
+	    ];
+	    myTags.map(tag=>t.push(tag));
+	    return t;
+	},
 
         handleEventMapClick: function(source, args) {
             if (!this.dataCollection) return;
@@ -337,10 +337,10 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 
 
 /*
-Create a chart
-id - the id of this chart. Has to correspond to a div tag id 
-pointData - A PointData object (see below)
- */
+  Create a chart
+  id - the id of this chart. Has to correspond to a div tag id 
+  pointData - A PointData object (see below)
+*/
 function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     var ID_TRENDS_CBX = "trends_cbx";
     var ID_PERCENT_CBX = "percent_cbx";
@@ -457,13 +457,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var tmp = HtmlUtils.formTable();
             tmp += HtmlUtils.formEntry("Axis Range:", HtmlUtils.input("", min, ["size", "7", ATTR_ID, this.getDomId("vaxismin")]) + " - " +
-                HtmlUtils.input("", max, ["size", "7", ATTR_ID, this.getDomId("vaxismax")]));
+				       HtmlUtils.input("", max, ["size", "7", ATTR_ID, this.getDomId("vaxismax")]));
             tmp += HtmlUtils.formEntry("Date Range:", HtmlUtils.input("", this.minDate, ["size", "10", ATTR_ID, this.getDomId("mindate")]) + " - " +
-                HtmlUtils.input("", this.maxDate, ["size", "10", ATTR_ID, this.getDomId("maxdate")]));
+				       HtmlUtils.input("", this.maxDate, ["size", "10", ATTR_ID, this.getDomId("maxdate")]));
 
 
             tmp += HtmlUtils.formEntry("Colors:",
-                HtmlUtils.input("", this.colorList.join(","), ["size", "35", ATTR_ID, this.getDomId(ID_COLORS)]));
+				       HtmlUtils.input("", this.colorList.join(","), ["size", "35", ATTR_ID, this.getDomId(ID_COLORS)]));
             tmp += "</table>";
             menuItems.push(tmp);
 
@@ -526,12 +526,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 html += HtmlUtils.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
                 html += HtmlUtils.checkbox(this.getDomId(ID_TRENDS_CBX),
-                    [],
-                    this.getProperty("showTrendLines", false)) + "  " + "Show trend line";
+					   [],
+					   this.getProperty("showTrendLines", false)) + "  " + "Show trend line";
                 html += " ";
                 html += HtmlUtils.checkbox(this.getDomId(ID_PERCENT_CBX),
-                    [],
-                    this.showPercent) + "  " + "Show percent of displayed total" + "<br>";
+					   [],
+					   this.showPercent) + "  " + "Show percent of displayed total" + "<br>";
                 html += "<br>";
             }
 
@@ -606,7 +606,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
-                "Building display..."));
+					   "Building display..."));
 
 
             this.allFields = this.dataCollection.getList()[0].getRecordFields();
@@ -759,7 +759,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (dataList.length == 0) {
                 this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
-                    "No data available"));
+					       "No data available"));
                 return;
             }
 
@@ -877,7 +877,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         tableHeaderMouseover: function(i, tooltip) {},
         makeDataTable: function(dataList, props, selectedFields) {
-		//            dataList = this.filterData(dataList, selectedFields,false,true);
+	    //            dataList = this.filterData(dataList, selectedFields,false,true);
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -892,26 +892,26 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		var dateToValue =  {};
 		var dates = [];
 		dataList.map(record=>{
-			if(cnt++==0) return;
-			var values = this.getDataValues(record);
-			var value = values[groupField.getIndex()];
-			if(!seen[value]) {
-			    seen[value]  = true;
-			    groupValues.push(value);
-			}
-			var newValues =dateToValue[record.getDate()];
-			if(!newValues) {
-			    dates.push(record.getDate());
-			    newValues = {};
-			    dateToValue[record.getDate()] = newValues;
-			}
-			newValues[value] = values[selectedFields[0].getIndex()];
-			/*
-			  Alabama,Southeast,South,0.356,2015
-			  Alabama,Southeast,South,0.335,2014
-			  Alabama,Southeast,South,0.324,2013
-			*/
-		    });
+		    if(cnt++==0) return;
+		    var values = this.getDataValues(record);
+		    var value = values[groupField.getIndex()];
+		    if(!seen[value]) {
+			seen[value]  = true;
+			groupValues.push(value);
+		    }
+		    var newValues =dateToValue[record.getDate()];
+		    if(!newValues) {
+			dates.push(record.getDate());
+			newValues = {};
+			dateToValue[record.getDate()] = newValues;
+		    }
+		    newValues[value] = values[selectedFields[0].getIndex()];
+		    /*
+		      Alabama,Southeast,South,0.356,2015
+		      Alabama,Southeast,South,0.335,2014
+		      Alabama,Southeast,South,0.324,2013
+		    */
+		});
 		//		var header = this.getDataValues(dataList[0]);
 		//		console.log(groupValues);
 		//		console.log(dates);
@@ -919,19 +919,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		var dataTable = new google.visualization.DataTable();
 		dataTable.addColumn("date", "Date");
 		groupValues.map(group=>{
-			dataTable.addColumn("number",group);
-		    });
+		    dataTable.addColumn("number",group);
+		});
 		dates.map(date=>{
-			var tuple=[date];
-			data.push(tuple);
-			var valueMap = dateToValue[date];
-			groupValues.map(group=>{
-				var value = valueMap[group];
-				tuple.push(value);
-			    });
+		    var tuple=[date];
+		    data.push(tuple);
+		    var valueMap = dateToValue[date];
+		    groupValues.map(group=>{
+			var value = valueMap[group];
+			tuple.push(value);
 		    });
-		    dataTable.addRows(data);
-		    return dataTable;
+		});
+		dataTable.addRows(data);
+		return dataTable;
 	    }
 
             var justData = [];
@@ -1205,11 +1205,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			easing:this.getProperty("animationEasing","linear",true)
 		    };
 		    HtmlUtils.callWhenScrolled(this.getDomId(ID_CHART),()=>{
-			    if(!this.animationCalled) {
-				this.animationCalled = true;
-				this.chart.draw(dataTable, this.chartOptions);
-			    }
-			});
+			if(!this.animationCalled) {
+			    this.animationCalled = true;
+			    this.chart.draw(dataTable, this.chartOptions);
+			}
+		    });
 		} else {
 		    this.chart.draw(dataTable, this.chartOptions);
 		}
@@ -1247,18 +1247,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 });
                 //always propagate the event when loaded
                 theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
-                    theDisplay.dataCollection.getList()[0], {
-                        index: 0
-                    });
+									theDisplay.dataCollection.getList()[0], {
+									    index: 0
+									});
                 google.visualization.events.addListener(this.chart, 'select', function(event) {
                     if (theDisplay.chart.getSelection) {
                         var selected = theDisplay.chart.getSelection();
                         if (selected && selected.length > 0) {
                             var index = selected[0].row;
                             theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
-                                theDisplay.dataCollection.getList()[0], {
-                                    index: index
-                                });
+										    theDisplay.dataCollection.getList()[0], {
+											index: index
+										    });
                         }
                     }
                 });
@@ -1281,20 +1281,20 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		var t = SUPER.getWikiEditorTags();
-		var myTags = [
-			      "label:Chart Attributes",
-			      "vAxisMinValue=\"\"",
-			      "vAxisMValue=\"\"", 
-			      "chartHeight=\"\"",
-			      "chartHeight=\"\"",
-			      "chartWidth=\"\"",
-			      "chartLeft=\"\"",
-			      "chartRight=\"\"",
-			      ]
-		myTags.map(tag=>t.push(tag));
-		return t;
-	    },
+	    var t = SUPER.getWikiEditorTags();
+	    var myTags = [
+		"label:Chart Attributes",
+		"vAxisMinValue=\"\"",
+		"vAxisMValue=\"\"", 
+		"chartHeight=\"\"",
+		"chartHeight=\"\"",
+		"chartWidth=\"\"",
+		"chartLeft=\"\"",
+		"chartRight=\"\"",
+	    ]
+	    myTags.map(tag=>t.push(tag));
+	    return t;
+	},
 
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
@@ -1312,11 +1312,11 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 chartOptions.chartArea = {};
             }
             /*
-            chartOptions.chartArea={};
-            chartOptions.chartArea.backgroundColor =  {
-                'fill': '#ccc',
-                'opacity': 1
-            }
+              chartOptions.chartArea={};
+              chartOptions.chartArea.backgroundColor =  {
+              'fill': '#ccc',
+              'opacity': 1
+              }
             */
             //            chartOptions.chartArea.backgroundColor =  "green";
             $.extend(chartOptions.chartArea, {
@@ -1401,9 +1401,9 @@ function AreachartDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "isStacked=true"])},
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"isStacked=true"])},
 
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             if (this.isStacked)
@@ -1419,8 +1419,8 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					["barWidth=\"10\""])},
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    ["barWidth=\"10\""])},
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var chartType = this.getChartType();
             if (chartType == DISPLAY_BARSTACK) {
@@ -1458,15 +1458,15 @@ function HistogramDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					["label:Histogram Attributes",
-					'legendPosition="none|top|right|left|bottom"',
-					'textPosition="out|in|none"',
-					'isStacked="false|true|percent|relative"',
-					'logScale="true|false"',
-					'scaleType="log|mirrorLog"',
-					'minValue=""',
-					'maxValue=""'])},
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    ["label:Histogram Attributes",
+				     'legendPosition="none|top|right|left|bottom"',
+				     'textPosition="out|in|none"',
+				     'isStacked="false|true|percent|relative"',
+				     'logScale="true|false"',
+				     'scaleType="log|mirrorLog"',
+				     'minValue=""',
+				     'maxValue=""'])},
 
         okToHandleEventRecordSelection: function() {
             return false;
@@ -1534,18 +1534,18 @@ function PiechartDisplay(displayManager, id, properties) {
             return true;
         },
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "label:Pie Chart Attributes",
-					 "pieHole=\"0.5\"",
-					 "is3D=\"true\"",
-					 "bins=\"\"",
-					 "binMin=\"\"",
-					 "binMax=\"max\"",
-					 "groupBy=\"field\""  ,
-					 "sliceVisibilityThreshold=\"0.01\"",
-					 ]);
-	    },
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Pie Chart Attributes",
+					"pieHole=\"0.5\"",
+					"is3D=\"true\"",
+					"bins=\"\"",
+					"binMin=\"\"",
+					"binMax=\"max\"",
+					"groupBy=\"field\""  ,
+					"sliceVisibilityThreshold=\"0.01\"",
+				    ]);
+	},
 
 
 
@@ -1682,8 +1682,8 @@ function PiechartDisplay(displayManager, id, properties) {
                 for (var binIdx = 0; binIdx < bins; binIdx++) {
                     var bin = binList[binIdx];
                     list.push(["Bin:" + this.formatNumber(bin.min) + "-" + this.formatNumber(bin.max),
-                        bin.values.length
-                    ]);
+                               bin.values.length
+			      ]);
                 }
             } else {
                 for (var i = 1; i < dataList.length; i++) {
@@ -1728,7 +1728,7 @@ function SankeyDisplay(displayManager, id, properties) {
             return true;
         },
         makeDataTable: function(dataList, props, selectedFields) {
-		//		dataList = this.filterData(dataList, selectedFields,false,true);
+	    //		dataList = this.filterData(dataList, selectedFields,false,true);
             if (!this.getProperty("doCategories", false)) {
                 var values = this.makeDataArray(dataList);
                 return google.visualization.arrayToDataTable(values);
@@ -1965,7 +1965,7 @@ function TableDisplay(displayManager, id, properties) {
             return new google.visualization.Table(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
-		//		dataList = this.filterData(dataList, selectedFields,false,true);
+	    //		dataList = this.filterData(dataList, selectedFields,false,true);
             var rows = this.makeDataArray(dataList);
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
@@ -1991,14 +1991,14 @@ function BubbleDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 'label:Bubble Chart Attibutes',
-					 'legendPosition="none|top|right|left|bottom"',
-					 'hAxisFormat="none|decimal|scientific|percent|short|long"',
-					 'vAxisFormat="none|decimal|scientific|percent|short|long"',
-					 'hAxisTitle=""',
-					 'vAxisTitle=""'])},
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					'label:Bubble Chart Attibutes',
+					'legendPosition="none|top|right|left|bottom"',
+					'hAxisFormat="none|decimal|scientific|percent|short|long"',
+					'vAxisFormat="none|decimal|scientific|percent|short|long"',
+					'hAxisTitle=""',
+					'vAxisTitle=""'])},
 
         makeDataTable: function(dataList, props, selectedFields) {
             return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
@@ -2194,7 +2194,7 @@ function TreemapDisplay(displayManager, id, properties) {
             });
         },
         makeDataTable: function(dataList, props, selectedFields) {
-        	var records = this.filterData(null,null,false,true);
+            var records = this.filterData(null,null,false,true);
             if (!records) {
                 return null;
             }
@@ -2295,7 +2295,7 @@ function TimelinechartDisplay(displayManager, id, properties) {
             return new google.visualization.Timeline(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
-		var records = this.filterData(null,null,false,true);
+	    var records = this.filterData(null,null,false,true);
             var strings = [];
             var stringField = this.getFieldOfType(selectedFields, "string");
             if (!stringField)
@@ -2588,16 +2588,16 @@ function ScatterplotDisplay(displayManager, id, properties) {
 		chartOptions.vAxis.logScale = true;
 
 	    /*
-		chartOptions.trendlines =  {
-		0: {
-		    type: 'linear',
-			color: 'green',
-			lineWidth: 3,
-			opacity: 0.3,
-			showR2: true,
-			visibleInLegend: true
-			}
-		};		
+	      chartOptions.trendlines =  {
+	      0: {
+	      type: 'linear',
+	      color: 'green',
+	      lineWidth: 3,
+	      opacity: 0.3,
+	      showR2: true,
+	      visibleInLegend: true
+	      }
+	      };		
 	    */
 
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
@@ -2682,11 +2682,11 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
     RamaddaUtil.defineMembers(this, {
         "map-display": false,
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 'label:Summary Statistics',
-					 'showMin="true"',
-					 'showMax="true"',
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					'label:Summary Statistics',
+					'showMin="true"',
+					'showMax="true"',
                                         'showAverage="true"',
                                         'showStd="true"',
                                         'showPercentile="true"',
@@ -2697,7 +2697,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                                         'showUnique="true"',
                                         'showType="true"',
                                         'showText="true"'
-					 ])},
+				    ])},
 
 
 
@@ -3004,7 +3004,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     label += ":";
                 }
                 label = label.replace(/ /g, "&nbsp;")
-                 var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], field.getTypeLabel() +"&nbsp;<b>" + HtmlUtils.span(["title", tooltip], label) + "</b>") + right);
+                var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], field.getTypeLabel() +"&nbsp;<b>" + HtmlUtils.span(["title", tooltip], label) + "</b>") + right);
                 if (justOne) {
                     html += row;
                 } else {
@@ -3016,9 +3016,9 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             this.initTooltip();
             //always propagate the event when loaded
             this.displayManager.propagateEventRecordSelection(this,
-                this.dataCollection.getList()[0], {
-                    index: 0
-                });
+							      this.dataCollection.getList()[0], {
+								  index: 0
+							      });
         },
         handleEventRecordSelection: function(source, args) {
             //                this.lastHtml = args.html;
@@ -3035,11 +3035,11 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "maxHeight=\"\"",
-					 ]);
-	    },
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"maxHeight=\"\"",
+				    ]);
+	},
         needsData: function() {
             return true;
         },
@@ -3125,10 +3125,10 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
             var allFields = this.dataCollection.getList()[0].getRecordFields();
 	    var enums = [];
 	    allFields.map(field=>{
-		    var label = field.getLabel();
-		    if(label.length>30) label = label.substring(0,29);
-		    enums.push([field.getId(),label]);
-		});
+		var label = field.getLabel();
+		if(label.length>30) label = label.substring(0,29);
+		enums.push([field.getId(),label]);
+	    });
 	    var select = HtmlUtils.span(["class","display-filterby"],
 					"Display: " + HtmlUtils.select("",["style","", "id",this.getDomId("crosstabselect")],enums,
 								       this.getProperty("column", "", true)));
@@ -3137,11 +3137,11 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
             this.setContents(select+HtmlUtils.div(["id",this.getDomId(ID_TABLE)]));
 	    let _this = this;
 	    this.jq("crosstabselect").change(function() {
-		    _this.setProperty("column", $(this).val());
-		    _this.makeTable();
-		});
+		_this.setProperty("column", $(this).val());
+		_this.makeTable();
+	    });
 	    this.makeTable();
-		},
+	},
 	makeTable: function() {
             var dataList = this.getStandardData(null, {
                 includeIndex: false
@@ -3156,59 +3156,59 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
 	    var total = dataList.length-1;
 	    var cnt =0;
 	    rows.map((row)=>{
-		    if(row.getId()==col.getId()) return;
-		    cnt++;
-		    var colValues = [];
-		    var rowValues = [];
-		    var count ={};
-		    var rowcount ={};
-		    var colcount ={};
-		    for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-			var tuple = this.getDataValues(dataList[rowIdx]);
-			var colValue = (""+tuple[col.getIndex()]).trim();
-			var rowValue = (""+tuple[row.getIndex()]).trim();
-			var key = colValue+"--" + rowValue;
-			if(colValues.indexOf(colValue)<0) colValues.push(colValue);
-			if(rowValues.indexOf(rowValue)<0) rowValues.push(rowValue);
-			if (!(rowValue in rowcount)) {
-			    rowcount[rowValue] = 0;
-			}
-			rowcount[rowValue]++;
-			if (!(key in count)) {
-			    count[key] = 0;
-			}
-			count[key]++;
+		if(row.getId()==col.getId()) return;
+		cnt++;
+		var colValues = [];
+		var rowValues = [];
+		var count ={};
+		var rowcount ={};
+		var colcount ={};
+		for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+		    var tuple = this.getDataValues(dataList[rowIdx]);
+		    var colValue = (""+tuple[col.getIndex()]).trim();
+		    var rowValue = (""+tuple[row.getIndex()]).trim();
+		    var key = colValue+"--" + rowValue;
+		    if(colValues.indexOf(colValue)<0) colValues.push(colValue);
+		    if(rowValues.indexOf(rowValue)<0) rowValues.push(rowValue);
+		    if (!(rowValue in rowcount)) {
+			rowcount[rowValue] = 0;
 		    }
-		    colValues.sort();
-		    rowValues.sort();
-		    if(cnt==1)
-			html+="<tr><td></td><td align=center class=display-crosstab-header colspan=" + colValues.length+">" + col.getLabel()+"</td><td>&nbsp;</td></tr>";
-		    html+="<tr valign=bottom class=display-crosstab-header-row><td class=display-crosstab-header>" + row.getLabel() +"</td>";
+		    rowcount[rowValue]++;
+		    if (!(key in count)) {
+			count[key] = 0;
+		    }
+		    count[key]++;
+		}
+		colValues.sort();
+		rowValues.sort();
+		if(cnt==1)
+		    html+="<tr><td></td><td align=center class=display-crosstab-header colspan=" + colValues.length+">" + col.getLabel()+"</td><td>&nbsp;</td></tr>";
+		html+="<tr valign=bottom class=display-crosstab-header-row><td class=display-crosstab-header>" + row.getLabel() +"</td>";
+		for(var j=0;j<colValues.length;j++) {
+		    var colValue = colValues[j];
+		    html+="<td>" + (colValue==""?"&lt;blank&gt;":colValue) +"</td>";
+		}
+		html+="<td><b>Total</b></td>";
+		html+="</tr>";
+		for(var i=0;i<rowValues.length;i++) {
+		    var rowValue = rowValues[i];
+		    html+="<tr>";
+		    html+="<td>" + (rowValue==""?"&lt;blank&gt;":rowValue) +"</td>";
 		    for(var j=0;j<colValues.length;j++) {
 			var colValue = colValues[j];
-			html+="<td>" + (colValue==""?"&lt;blank&gt;":colValue) +"</td>";
-		    }
-		    html+="<td><b>Total</b></td>";
-		    html+="</tr>";
-		    for(var i=0;i<rowValues.length;i++) {
-			var rowValue = rowValues[i];
-			html+="<tr>";
-			html+="<td>" + (rowValue==""?"&lt;blank&gt;":rowValue) +"</td>";
-			for(var j=0;j<colValues.length;j++) {
-			    var colValue = colValues[j];
-			    var key = colValue+"--" + rowValue;
-			    if(Utils.isDefined(count[key])) {
-				var perc = Math.round(count[key]/total*100) +"%";
-				html+="<td align=right>" + count[key] +"&nbsp;(" + perc+")</td>";
-			    } else {
-				html+="<td>&nbsp;</td>";
-			    }
+			var key = colValue+"--" + rowValue;
+			if(Utils.isDefined(count[key])) {
+			    var perc = Math.round(count[key]/total*100) +"%";
+			    html+="<td align=right>" + count[key] +"&nbsp;(" + perc+")</td>";
+			} else {
+			    html+="<td>&nbsp;</td>";
 			}
-			var perc = Math.round(rowcount[rowValue]/total*100) +"%";
-			html+="<td align=right>" + rowcount[rowValue] +"&nbsp;(" + perc+")</td>";
-			html+="</tr>";
 		    }
-		});
+		    var perc = Math.round(rowcount[rowValue]/total*100) +"%";
+		    html+="<td align=right>" + rowcount[rowValue] +"&nbsp;(" + perc+")</td>";
+		    html+="</tr>";
+		}
+	    });
             html += "</table>";
 	    this.jq(ID_TABLE).html(html);
         },
@@ -3252,7 +3252,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             tmp += HtmlUtils.formEntry("Color Bar:", ct);
 
             tmp += HtmlUtils.formEntry("Color By Range:", HtmlUtils.input("", this.colorByMin, ["size", "7", ATTR_ID, this.getDomId("colorbymin")]) + " - " +
-                HtmlUtils.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
+				       HtmlUtils.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
             tmp += "</table>";
             menuItems.push(tmp);
         },
@@ -3385,9 +3385,9 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);
             this.initTooltip();
             this.displayManager.propagateEventRecordSelection(this,
-                this.dataCollection.getList()[0], {
-                    index: 0
-                });
+							      this.dataCollection.getList()[0], {
+								  index: 0
+							      });
 
         },
     });
@@ -3398,7 +3398,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 function RamaddaRankingDisplay(displayManager, id, properties) {
     var ID_TABLE = "table";
     $.extend(this, {
-	    height: "500px;",
+	height: "500px;",
         sortAscending:false,
     });
     if(properties.sortAscending) this.sortAscending = "true" == properties.sortAscending;
@@ -3408,14 +3408,14 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 
     RamaddaUtil.defineMembers(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "label:Chart Attributes",
-					 "sortField=\"\"",
-					 'nameFields=""',
-					 ]);
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Chart Attributes",
+					"sortField=\"\"",
+					'nameFields=""',
+				    ]);
 
-	    },
+	},
 
 
         needsData: function() {
@@ -3482,13 +3482,13 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             }
 	    this.jq(ID_TOP_LEFT).html(top);
 	    this.jq("sort").click(()=>{
-		    this.sortAscending= !this.sortAscending;
-		    if(this.sortAscending) 
-			this.jq("sort").html(HtmlUtils.getIconImage("fa-sort-up", ["style","cursor:pointer;"]));
-		    else
-			this.jq("sort").html(HtmlUtils.getIconImage("fa-sort-down", ["style","cursor:pointer;"]));
-		    this.updateUI();
-		});
+		this.sortAscending= !this.sortAscending;
+		if(this.sortAscending) 
+		    this.jq("sort").html(HtmlUtils.getIconImage("fa-sort-up", ["style","cursor:pointer;"]));
+		else
+		    this.jq("sort").html(HtmlUtils.getIconImage("fa-sort-down", ["style","cursor:pointer;"]));
+		this.updateUI();
+	    });
             var html = "";
             html += HtmlUtils.openTag("div", ["style", "max-height:100%;overflow-y:auto;"]);
             html += HtmlUtils.openTag("table", ["id", this.getDomId(ID_TABLE)]);
@@ -3503,10 +3503,10 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 	    if(!includeNaN) {
 		var tmp2 = [];
 		tmp.map(r=>{
-			var t = this.getDataValues(r);
-			var v = t[sortField.getIndex()];
-			if(!isNaN(v)) tmp2.push(r);
-		    });
+		    var t = this.getDataValues(r);
+		    var v = t[sortField.getIndex()];
+		    if(!isNaN(v)) tmp2.push(r);
+		});
 		tmp = tmp2;
 	    }
             var cnt = 0;
@@ -3527,8 +3527,8 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 var tuple = this.getDataValues(obj);
                 var label = "";
                 stringFields.map(f=>{
-			label += tuple[f.getIndex()]+" ";
-		    });
+		    label += tuple[f.getIndex()]+" ";
+		});
 
                 label = label.trim();
 		value = tuple[sortField.getIndex()];
@@ -3782,7 +3782,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
             tmp += HtmlUtils.formEntry("Color Table:", ct);
 
             tmp += HtmlUtils.formEntry("Color By Range:", HtmlUtils.input("", this.colorByMin, ["size", "7", ATTR_ID, this.getDomId("colorbymin")]) + " - " +
-                HtmlUtils.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
+				       HtmlUtils.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
             tmp += "</table>";
             menuItems.push(tmp);
         },

@@ -44,6 +44,7 @@ OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
 OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
 
 
+var debugBounds = false;
 function createLonLat(lon, lat) {
     lon = parseFloat(lon);
     lat = parseFloat(lat);
@@ -136,7 +137,6 @@ function ramaddaMapShareState(source, state) {
     var bounds = source.getBounds();
     var baseLayer = source.map.baseLayer;
     var zoom = source.map.getZoom();
-    //    console.log("changed:" + source.mapId +" " + bounds.left +" " +  source.map.getZoom() +" " +source.map.getScale());
     for(var i=0;i<window.globalMapList.length;i++) {
 	var map = window.globalMapList[i];
 	if(map.stateIsBeingSet || (!map.linked && !map.linkGroup)) continue;
@@ -145,7 +145,6 @@ function ramaddaMapShareState(source, state) {
 	map.stateIsBeingSet = true;
 	map.setViewToBounds(bounds);
 	map.map.zoomTo(source.map.getZoom());
-	//	console.log("\tafter:" + map.mapId +" " +map.getBounds().left+ " " + map.map.getZoom() +" " +map.map.getScale());
 	map.stateIsBeingSet = false;
     }
 }
@@ -310,11 +309,9 @@ function initMapFunctions(theMap) {
                     _this.baseLayerChanged();
                 });
                 _this.map.events.register("zoomend", "", function() {
-			//			console.log(_this.mapId +" zoomend");
                     _this.locationChanged();
                 });
                 _this.map.events.register("moveend", "", function() {
-			//			console.log(_this.mapId +" moveend");
                     _this.locationChanged();
                 });
             };
@@ -482,6 +479,8 @@ function initMapFunctions(theMap) {
                 if (geometry) {
                     var bounds = geometry.getBounds();
                     if (bounds) {
+			if(debugBounds)
+			    console.log("zoom1");
                         this.getMap().zoomToExtent(bounds);
                         this.getMap().setCenter(bounds.getCenterLonLat());
                     }
@@ -988,6 +987,8 @@ function initMapFunctions(theMap) {
             }
             layer.redraw();
             if (bounds) {
+		if(debugBounds)
+		    console.log("zoom2");
                 this.getMap().zoomToExtent(bounds);
                 this.getMap().setCenter(bounds.getCenterLonLat());
             } else {
@@ -1404,7 +1405,9 @@ function initMapFunctions(theMap) {
                 if (zoomToExtent) {
                     var dataBounds = layer.getDataExtent();
                     if (dataBounds) {
-                        _this.map.zoomToExtent(dataBounds, true);
+			if(debugBounds)
+			    console.log("zoom3");
+                        _this.getMap().zoomToExtent(dataBounds, true);
                     }
                 } else {
                     if (_this.centerOnMarkersCalled) {
@@ -1422,6 +1425,8 @@ function initMapFunctions(theMap) {
                 _this.initDates(layer);
             }
         });
+	image.layerName = "map vector layer";
+
         this.addLayer(layer);
         this.addSelectCallback(layer, canSelect, selectCallback, unselectCallback);
     }
@@ -1890,8 +1895,10 @@ function initMapFunctions(theMap) {
         if (this.defaultBounds) {
             var llPoint = this.defaultBounds.getCenterLonLat();
             var projPoint = this.transformLLPoint(llPoint);
-            this.map.setCenter(projPoint);
-            this.map.zoomToExtent(this.transformLLBounds(this.defaultBounds));
+            this.getMap().setCenter(projPoint);
+	    if(debugBounds)
+		console.log("zoom4:" + this.defaultBounds);
+            this.getMap().zoomToExtent(this.transformLLBounds(this.defaultBounds));
             this.defaultBounds = null;
         } else {
             this.map.zoomToMaxExtent();
@@ -1952,7 +1959,9 @@ function initMapFunctions(theMap) {
             south = i == 0 ? result.latitude : Math.min(south, result.latitude);
         }
         var bounds = this.transformLLBounds(createBounds(west, south, east, north));
-        this.map.zoomToExtent(bounds);
+	if(debugBounds)
+	    console.log("zoom5");
+        this.getMap().zoomToExtent(bounds);
     }
 
     theMap.initLocationSearch = function() {
@@ -2042,7 +2051,9 @@ function initMapFunctions(theMap) {
                     //Only zoom  if its a zoom in
                     var b = _this.transformProjBounds(_this.map.getExtent());
                     if (Math.abs(b.top - b.bottom) > offset) {
-                        _this.map.zoomToExtent(bounds);
+			if(debugBounds)
+			    console.log("zoom6");
+                        _this.getMap().zoomToExtent(bounds);
                     } else {
                         _this.setCenter(createLonLat(lon, lat));
                     }
@@ -2217,7 +2228,9 @@ function initMapFunctions(theMap) {
                 var boxBounds = this.selectorBox.bounds
                 this.map.setCenter(boxBounds.getCenterLonLat());
                 if (zoom) {
-                    this.map.zoomToExtent(boxBounds);
+		    if(debugBounds)
+			console.log("zoom7");
+                    this.getMap().zoomToExtent(boxBounds);
                 }
             }
         }
@@ -2257,6 +2270,8 @@ function initMapFunctions(theMap) {
             // this.selectorBox.bounds = bounds;
         }
         if (centerView) {
+	    if(debugBounds)
+		console.log("calling setViewToBounds-1");
             this.setViewToBounds(bounds)
         }
 
@@ -2334,7 +2349,9 @@ function initMapFunctions(theMap) {
             if (offset) {
                 var bounds = this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
 
-                this.map.zoomToExtent(bounds);
+		if(debugBounds)
+		    console.log("zoom8");
+                this.getMap().zoomToExtent(bounds);
             }
         }
     }
@@ -2723,6 +2740,8 @@ function initMapFunctions(theMap) {
         var latLonBounds = mymarker.latLonBounds;
         if (latLonBounds) {
             var projBounds = this.transformLLBounds(latLonBounds);
+	    if(debugBounds)
+		console.log("zoom9");
             this.getMap().zoomToExtent(projBounds);
         } else {
             this.map.setCenter(mymarker.lonlat);
@@ -2771,12 +2790,12 @@ function initMapFunctions(theMap) {
 
     //bounds are in lat/lon
     theMap.centerOnMarkers = function(dfltBounds, force, justMarkerLayer) {
+	if(debugBounds)
+	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds);
         this.centerOnMarkersCalled = true;
         this.centerOnMarkersForce = force;
         now = Date.now();
-        //        console.log("center on markers:" + ((now-this.startTime)/1000));
         var bounds = null;
-        // bounds = this.boxes.getDataExtent();
         if (dfltBounds) {
             if (dfltBounds.left < -180 || dfltBounds.left > 180 ||
                 dfltBounds.right < -180 || dfltBounds.right > 180 ||
@@ -2790,6 +2809,8 @@ function initMapFunctions(theMap) {
             if (this.markers) {
                 // markers are in projection coordinates
                 var dataBounds = this.markers.getDataExtent();
+		if(debugBounds)
+		    console.log("centerOnMarkers using markers.getDataExtent");
                 bounds = this.transformProjBounds(dataBounds);
             }
             if (!justMarkerLayer) {
@@ -2800,6 +2821,8 @@ function initMapFunctions(theMap) {
                         bounds.extend(fromLine);
                     else
                         bounds = fromLine;
+		    if(debugBounds)
+			console.log("centerOnMarkers using lines.getDataExtent");
                 }
                 for (var layer in this.getMap().layers) {
                     layer = this.getMap().layers[layer];
@@ -2816,6 +2839,8 @@ function initMapFunctions(theMap) {
                             bounds.extend(latlon);
                         else
                             bounds = latlon;
+			if(debugBounds)
+			    console.log("centerOnMarkers using layer.getDataExtent: " + latlon +" layer=" + layer.name +" " + layer.ramaddaId);
                     }
                 }
             }
@@ -2823,20 +2848,30 @@ function initMapFunctions(theMap) {
 
 
         if (!bounds) {
+	    if(debugBounds)
+		console.log("centerOnMarkers using dfltBounds");
             bounds = dfltBounds;
         }
         if (!bounds) {
+	    if(debugBounds)
+		console.log("centerOnMarkers: no bounds");
             return;
         }
 
         if (!this.getMap()) {
             this.defaultBounds = bounds;
+	    if(debugBounds)
+		console.log("centerOnMarkers: no map");
             return;
         }
         if (bounds.getHeight() > 160) {
             bounds.top = 80;
             bounds.bottom = -80;
+	    if(debugBounds)
+		console.log("centerOnMarkers resetting height");
         }
+	if(debugBounds)
+	    console.log("calling setViewToBounds: " + bounds);
         this.setViewToBounds(bounds);
     }
 
@@ -2844,10 +2879,6 @@ function initMapFunctions(theMap) {
 	if(!Utils.isDefined(steps)) steps = 1;
 	if(!ob)
 	    ob = this.transformProjBounds(this.map.getExtent());
-	//	console.log("dest:" + JSON.stringify(bounds,null, 2));
-	//	console.log("ob:" + JSON.stringify(ob,null, 2));
-	//	this.setViewToBounds(bounds);
-	//	return
 	var numSteps = 10;
 	if(steps>numSteps) {
 	    this.setViewToBounds(bounds);
@@ -2869,6 +2900,8 @@ function initMapFunctions(theMap) {
         if (projBounds.getWidth() == 0) {
             this.getMap().zoomTo(this.initialZoom);
         } else {
+	    if(debugBounds)
+		console.log("zoom10:" + bounds);
             this.getMap().zoomToExtent(projBounds);
         }
 	//        this.getMap().setCenter(projBounds.getCenterLonLat());
@@ -2886,6 +2919,8 @@ function initMapFunctions(theMap) {
         bounds = this.markers.getDataExtent();
         if (bounds == null) return;
         this.getMap().setCenter(bounds.getCenterLonLat());
+	if(debugBounds)
+	    console.log("zoom11");
         this.getMap().zoomToExtent(bounds);
     }
 
@@ -3215,6 +3250,7 @@ function initMapFunctions(theMap) {
             if (!notReally) {
                 if (this.circles == null) {
                     this.circles = new OpenLayers.Layer.Vector("Circles Layer");
+		    this.circles.layerName = "circles";
                     //                    this.circles.setZIndex(1);
                     /*
                       this.circles.events.on({

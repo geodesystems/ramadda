@@ -1,7 +1,9 @@
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
+
+var displayDebug = false;
 
 //Ids of DOM components
 var ID_FIELDS = "fields";
@@ -21,13 +23,9 @@ var ID_DISPLAY_BOTTOM = "bottom";
 var ID_GROUP_CONTENTS = "group_contents";
 var ID_DETAILS_MAIN = "detailsmain";
 var ID_GROUPBY_FIELDS= "groupdbyfields";
-
 var ID_TOOLBAR = "toolbar";
 var ID_TOOLBAR_INNER = "toolbarinner";
 var ID_LIST = "list";
-
-
-
 var ID_DIALOG = "dialog";
 var ID_DIALOG_TABS = "dialog_tabs";
 var ID_DIALOG_BUTTON = "dialog_button";
@@ -37,28 +35,16 @@ var ID_FOOTER_RIGHT = "footer_right";
 var ID_MENU_BUTTON = "menu_button";
 var ID_MENU_OUTER = "menu_outer";
 var ID_MENU_INNER = "menu_inner";
-
-
-
 var ID_REPOSITORY = "repository";
-
-var displayDebug = false;
-
 
 var PROP_DISPLAY_FILTER = "displayFilter";
 var PROP_EXCLUDE_ZERO = "excludeZero";
-
-
 var PROP_DIVID = "divid";
 var PROP_FIELDS = "fields";
 var PROP_LAYOUT_HERE = "layoutHere";
 var PROP_HEIGHT = "height";
 var PROP_WIDTH = "width";
-
 var FILTER_ALL = "-all-";
-
-
-
 
 
 function initRamaddaDisplays() {
@@ -381,7 +367,7 @@ function DisplayThing(argId, argProperties) {
             }
         },
         getProperty: function(key, dflt,skipThis) {
-           if(!skipThis && this[key]) {
+            if(!skipThis && this[key]) {
                 return this[key];
             }
             var value = this.properties[key];
@@ -399,7 +385,7 @@ function DisplayThing(argId, argProperties) {
 		return value;
 	    }
             return dflt;
-            },
+        },
     });
 }
 
@@ -437,13 +423,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         }
     } else {
         /*
-        this.derived = [
-                        {"name":"temp_f",
-                         "label":"Temp F", 
-                         "function":"temp_c*9/5+32",
-                         "decimals":2},
-                        //                        {"name":"sum","function":"$2+$1"}
-                        ]
+          this.derived = [
+          {"name":"temp_f",
+          "label":"Temp F", 
+          "function":"temp_c*9/5+32",
+          "decimals":2},
+          //                        {"name":"sum","function":"$2+$1"}
+          ]
         */
     }
 
@@ -463,6 +449,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
+	getAnimation: function() {
+	    if(!this.animation) {
+		this.animation = new DisplayAnimation(this);
+	    }
+	    return this.animation;
+	},
+
         propagateEvent: function(func, data) {
             var dm = this.getDisplayManager();
             dm[func](this, data);
@@ -496,24 +489,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return ct;
         },
 	addAlpha: function(colors) {
-		var alpha = this.getProperty("colorTableAlpha");
-		if(!alpha) return colors;
-		colors=  Utils.cloneList(colors);
-		var ac = [];
-		colors.map((c)=>{
-			if(c.indexOf("#")==0) {
-			    var rgb = Utils.hexToRgb(c);
-			    if(rgb) {
-				c = "rgba(" + rgb.r+"," + rgb.g +"," + rgb.b+"," + alpha+")";
-			    }
-			    ac.push(c);
-			    return;
-			}
-			c = c.replace(/rgb *\((.*),(.*),(.*)\)/,"rgba($1,$2,$3,_alpha_)");
-			c = c.replace("_alpha_",alpha);
-			ac.push(c);
-		    });
-		return ac;
+	    var alpha = this.getProperty("colorTableAlpha");
+	    if(!alpha) return colors;
+	    colors=  Utils.cloneList(colors);
+	    var ac = [];
+	    colors.map((c)=>{
+		if(c.indexOf("#")==0) {
+		    var rgb = Utils.hexToRgb(c);
+		    if(rgb) {
+			c = "rgba(" + rgb.r+"," + rgb.g +"," + rgb.b+"," + alpha+")";
+		    }
+		    ac.push(c);
+		    return;
+		}
+		c = c.replace(/rgb *\((.*),(.*),(.*)\)/,"rgba($1,$2,$3,_alpha_)");
+		c = c.replace("_alpha_",alpha);
+		ac.push(c);
+	    });
+	    return ac;
         },
 
         getColorTable: function(justColors, name, dflt) {
@@ -640,14 +633,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setProperty("patternFilterField", args.field.getId());
             this.updateUI();
         },
+        handleDateRangeChanged: function(source, prop) {
+	    this.minDateObj = prop.minDate;
+	    this.maxDateObj = prop.maxDate;
+	    this.getAnimation().setDateRange(prop.minDate, prop.maxDate);
+	    this.haveCalledUpdateUI = false;
+	    this.dataFilterChanged();
+	},
         handleEventPropertyChanged: function(source, prop) {
-            if (prop.property == "filterValue") {
+	    if(prop.property == "dateRange") {
+		if(this.getProperty("acceptDateRangeChange")) {
+		    this.handleDateRangeChanged(source, prop);
+		}
+		return;
+	    }
+
+	    if (prop.property == "filterValue") {
 		if(!this.getProperty("acceptFilterEvent",true)) return;
 		this.haveCalledUpdateUI = false;
 		var widgetId = "filterby_" + prop.fieldId;
 		if(prop.id.endsWith("_min")) widgetId+="_min";
 		if(prop.id.endsWith("_max")) widgetId+="_max";
-
 		this.settingFilterValue = true;
 		this.jq(widgetId).val(prop.value);
 		this.settingFilterValue = false;
@@ -729,8 +735,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getFooter: function() {
             return HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER), ATTR_CLASS, "display-footer"],
-                HtmlUtils.leftRight(HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER_LEFT), ATTR_CLASS, "display-footer-left"], ""),
-                    HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER_RIGHT), ATTR_CLASS, "display-footer-right"], "")));
+				 HtmlUtils.leftRight(HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER_LEFT), ATTR_CLASS, "display-footer-left"], ""),
+						     HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER_RIGHT), ATTR_CLASS, "display-footer-right"], "")));
         },
         shouldSkipField: function(field) {
             if (this.skipFields && !this.skipFieldsList) {
@@ -779,32 +785,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var badFields = {};
             var flags = null;
             /*
-            var tuples = this.getStandardData(null, {
-                includeIndex: false
-            });
-            for (var rowIdx = 1; rowIdx < tuples.length; rowIdx++) {
-                var tuple = this.getDataValues(tuples[rowIdx]);
-                if (flags == null) {
-                    flags = [];
-                    for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-                        flags.push(false);
-                    }
-                }
+              var tuples = this.getStandardData(null, {
+              includeIndex: false
+              });
+              for (var rowIdx = 1; rowIdx < tuples.length; rowIdx++) {
+              var tuple = this.getDataValues(tuples[rowIdx]);
+              if (flags == null) {
+              flags = [];
+              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
+              flags.push(false);
+              }
+              }
 
-                for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-                    if (!flags[tupleIdx]) {
-                        if (tuple[tupleIdx] != null) {
-                            flags[tupleIdx] = true;
-                            //                                console.log("Flag[" + tupleIdx+"] value:" + tuple[tupleIdx]);
-                        }
-                    }
-                }
+              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
+              if (!flags[tupleIdx]) {
+              if (tuple[tupleIdx] != null) {
+              flags[tupleIdx] = true;
+              //                                console.log("Flag[" + tupleIdx+"] value:" + tuple[tupleIdx]);
+              }
+              }
+              }
 
-            }
+              }
 
-            for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-                //                    console.log("#" + tupleIdx + " " + (tupleIdx<allFields.length?allFields[tupleIdx].getId():"") +" ok:" + flags[tupleIdx] );
-            }
+              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
+              //                    console.log("#" + tupleIdx + " " + (tupleIdx<allFields.length?allFields[tupleIdx].getId():"") +" ok:" + flags[tupleIdx] );
+              }
             */
 
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
@@ -821,15 +827,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             html += HtmlUtils.openTag(TAG_DIV, [ATTR_CLASS, "display-fields"]);
                             var on = this.groupBy == null || this.groupBy == "";
                             html += HtmlUtils.tag(TAG_DIV, [ATTR_TITLE, "none"],
-                                HtmlUtils.radio("none", this.getDomId("groupby"), groupByClass, "none", !on) + " None");
+						  HtmlUtils.radio("none", this.getDomId("groupby"), groupByClass, "none", !on) + " None");
                         }
                         cnt++;
                         var on = this.groupBy == field.getId();
                         var idBase = "groupby_" + collectionIdx + "_" + i;
                         field.radioId = this.getDomId(idBase);
                         html += HtmlUtils.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-                            HtmlUtils.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) + " " + field.getUnitLabel() + " (" + field.getId() + ")"
-                        );
+					      HtmlUtils.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) + " " + field.getUnitLabel() + " (" + field.getId() + ")"
+					     );
                     }
                     if (cnt > 0) {
                         html += HtmlUtils.closeTag(TAG_DIV);
@@ -907,8 +913,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             }
 
                             html += HtmlUtils.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-                                widget + " " + label
-                            );
+						  widget + " " + label
+						 );
                         }
                         //                        html+= "<br>";
                     }
@@ -961,11 +967,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(binCount) {
 		    var fields = [];
 		    fields.push(new RecordField({
-				id:"count",
-				    label:this.getProperty("binCountLabel","Count"),
-				    type:"double",
-				    chartable:true
-				    }));		    
+			id:"count",
+			label:this.getProperty("binCountLabel","Count"),
+			type:"double",
+			chartable:true
+		    }));		    
 		    return fields;
 		}
 	    }
@@ -1086,31 +1092,31 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (field.isNumeric && !field.isFieldGeo()) return [field];
             }
             return [];
-	    },
+	},
 	sortRecords: function(records, sortFields) {
-		if(!sortFields) {
-		    sortFields = this.getFieldsByIds(null, this.getProperty("sortFields", "", true));
+	    if(!sortFields) {
+		sortFields = this.getFieldsByIds(null, this.getProperty("sortFields", "", true));
+	    }
+	    if(sortFields.length==0) return records;
+	    records = Utils.cloneList(records);
+	    var sortAscending = this.getProperty("sortAscending",true);
+	    records.sort((a,b)=>{
+		var row1 = this.getDataValues(a);
+		var row2 = this.getDataValues(b);
+		var result = 0;
+		for(var i=0;i<sortFields.length;i++) {
+		    var sortField = sortFields[i];
+		    var v1 = row1[sortField.getIndex()];
+		    var v2 = row2[sortField.getIndex()];
+		    if(v1<v2) result = sortAscending?-1:1;
+		    else if(v1>v2) result = sortAscending?1:-1;
+		    else result = 0;
+		    if(result!=0) break;
 		}
-		if(sortFields.length==0) return records;
-		records = Utils.cloneList(records);
-		var sortAscending = this.getProperty("sortAscending",true);
-		records.sort((a,b)=>{
-			var row1 = this.getDataValues(a);
-			var row2 = this.getDataValues(b);
-			var result = 0;
-			for(var i=0;i<sortFields.length;i++) {
-			    var sortField = sortFields[i];
-			    var v1 = row1[sortField.getIndex()];
-			    var v2 = row2[sortField.getIndex()];
-			    if(v1<v2) result = sortAscending?-1:1;
-			    else if(v1>v2) result = sortAscending?1:-1;
-			    else result = 0;
-			    if(result!=0) break;
-			}
-			return result;
-		    });
-		return records;
-	    },
+		return result;
+	    });
+	    return records;
+	},
         getFieldById: function(fields, id) {
             if (!id) return null;
             if (!fields) {
@@ -1193,8 +1199,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
         },
         requiresGrouping:  function() {
-                return false;
-         },
+            return false;
+        },
 	filterData: function(dataList, fields, doGroup, skipFirst) {
             var pointData = this.getData();
             if (!dataList) {
@@ -1252,8 +1258,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		_values.map(v=>{if(v.length>0)anyValues = true});
 		values.push({value:value,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
 	    }
+	    //this.minDateObj
+	    //	    console.log("filterData:" + this.type +" " + this.minDateObj +" " + this.maxDateObj);
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
-		var row = this.getDataValues(dataList[rowIdx]);
+		var record = dataList[rowIdx];
+                var date = record.getDate();
+                if (!this.dateInRange(date)) {
+		    continue;
+		}
+		var row = this.getDataValues(record);
 		var ok = true;
 		for(var i=0;i<this.filterFields.length;i++) {
 		    if(!ok) break;
@@ -1338,16 +1351,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var binned = [];
 		var record = dataList[0];
 		/*
-		if(binCount) {
-		    var data = record.getData();
-		    data = [data[0],"Count"];
-		    var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
-						     record.getElevation(),record.getDate(),data);
+		  if(binCount) {
+		  var data = record.getData();
+		  data = [data[0],"Count"];
+		  var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
+		  record.getElevation(),record.getDate(),data);
 
-		    binned.push(newRecord);
-		} else {
-		    binned.push(record);
-		}
+		  binned.push(newRecord);
+		  } else {
+		  binned.push(record);
+		  }
 		*/
 		var map ={};
 		for (var i = 0; i < dataList.length; i++) {
@@ -1529,10 +1542,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getWikiText: function() {
             var attrs = ["layoutHere", "false",
-                "type", this.type,
-                "column", this.getColumn(),
-                "row", this.getRow()
-            ];
+			 "type", this.type,
+			 "column", this.getColumn(),
+			 "row", this.getRow()
+			];
             this.getWikiAttributes(attrs);
             var entryId = null;
             if (this.getEntries) {
@@ -1623,8 +1636,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var metadata = entry.getMetadata();
             if (entry.isImage()) {
                 var img = HtmlUtils.tag(TAG_IMG, ["src", entry.getResourceUrl(), /*ATTR_WIDTH,"100%",*/
-                    ATTR_CLASS, "display-entry-image"
-                ]);
+						  ATTR_CLASS, "display-entry-image"
+						 ]);
 
                 html += HtmlUtils.href(entry.getResourceUrl(), img) + "<br>";
             } else {
@@ -1666,8 +1679,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (entry.getFilesize() > 0) {
                 html += HtmlUtils.formEntry("File:", entry.getFilename() + " " +
-                    HtmlUtils.href(entry.getResourceUrl(), HtmlUtils.image(ramaddaBaseUrl + "/icons/download.png")) + " " +
-                    entry.getFormattedFilesize());
+					    HtmlUtils.href(entry.getResourceUrl(), HtmlUtils.image(ramaddaBaseUrl + "/icons/download.png")) + " " +
+					    entry.getFormattedFilesize());
             }
             for (var colIdx = 0; colIdx < columns.length; colIdx++) {
                 var column = columns[colIdx];
@@ -1767,10 +1780,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var entryIdForDom = entry.getIdForDom() + domIdSuffix;
                 var entryId = entry.getId();
                 var arrow = HtmlUtils.image(icon_tree_closed, [ATTR_BORDER, "0",
-                    "tree-open", "false",
-                    ATTR_ID,
-                    this.getDomId(ID_TREE_LINK + entryIdForDom)
-                ]);
+							       "tree-open", "false",
+							       ATTR_ID,
+							       this.getDomId(ID_TREE_LINK + entryIdForDom)
+							      ]);
                 var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId + "');";
                 var toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
                 var open = HtmlUtils.onClick(toggleCall, arrow);
@@ -1800,9 +1813,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var line = HtmlUtils.div(["class", (even ? "ramadda-row-even" : "ramadda-row-odd"), ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
 
                 html += HtmlUtils.tag(TAG_DIV, [ATTR_ID,
-                    this.getDomId("entry_" + entryIdForDom),
-                    ATTR_ENTRYID, entryId, ATTR_CLASS, "display-entrylist-entry" + rowClass
-                ], line);
+						this.getDomId("entry_" + entryIdForDom),
+						ATTR_ENTRYID, entryId, ATTR_CLASS, "display-entrylist-entry" + rowClass
+					       ], line);
                 html += "\n";
             }
             return html;
@@ -1990,12 +2003,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //                                                HtmlUtils.image(ramaddaBaseUrl +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
                 toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HtmlUtils.sqt(entry.getId()) + ");"],
-                    HtmlUtils.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+						HtmlUtils.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
             if (entry.getType().getId() == "geo_shapefile" || entry.getType().getId() == "geo_geojson") {
                 toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HtmlUtils.sqt(entry.getId()) + ");"],
-                    HtmlUtils.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+						HtmlUtils.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
 
@@ -2003,33 +2016,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (jsonUrl != null) {
                 jsonUrl = jsonUrl.replace(/\'/g, "_");
                 toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
-                        HtmlUtils.sqt("table") + "," + HtmlUtils.sqt(jsonUrl) + ");"
-                    ],
-                    HtmlUtils.getIconImage("fa-table", [ATTR_TITLE, "Create Tabular Display"])));
+							HtmlUtils.sqt("table") + "," + HtmlUtils.sqt(jsonUrl) + ");"
+						       ],
+						HtmlUtils.getIconImage("fa-table", [ATTR_TITLE, "Create Tabular Display"])));
 
                 var x;
                 toolbarItems.push(x = HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
-                        HtmlUtils.sqt("linechart") + "," + HtmlUtils.sqt(jsonUrl) + ");"
-                    ],
-                    HtmlUtils.getIconImage("fa-chart-line", [ATTR_TITLE, "Create Chart"])));
+							    HtmlUtils.sqt("linechart") + "," + HtmlUtils.sqt(jsonUrl) + ");"
+							   ],
+						    HtmlUtils.getIconImage("fa-chart-line", [ATTR_TITLE, "Create Chart"])));
             }
             toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
-                    HtmlUtils.sqt("entrydisplay") + "," + HtmlUtils.sqt(jsonUrl) + ");"
-                ],
-                HtmlUtils.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
+						    HtmlUtils.sqt("entrydisplay") + "," + HtmlUtils.sqt(jsonUrl) + ");"
+						   ],
+					    HtmlUtils.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
 
             if (entry.getFilesize() > 0) {
                 toolbarItems.push(HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl()],
-                    HtmlUtils.image(ramaddaBaseUrl + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
+						HtmlUtils.image(ramaddaBaseUrl + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
 
             }
 
 
             var entryMenuButton = this.getEntryMenuButton(entry);
             /*
-            entryMenuButton =  HtmlUtils.onClick(this.getGet()+".showEntryDetails(event, '" + entry.getId() +"');", 
-                                          HtmlUtils.image(ramaddaBaseUrl+"/icons/downdart.png", 
-                                                         [ATTR_CLASS, "display-dialog-button", ATTR_ID,  this.getDomId(ID_MENU_BUTTON + entry.getId())]));
+              entryMenuButton =  HtmlUtils.onClick(this.getGet()+".showEntryDetails(event, '" + entry.getId() +"');", 
+              HtmlUtils.image(ramaddaBaseUrl+"/icons/downdart.png", 
+              [ATTR_CLASS, "display-dialog-button", ATTR_ID,  this.getDomId(ID_MENU_BUTTON + entry.getId())]));
 
             */
             //            toolbarItems.push(entryMenuButton);
@@ -2047,9 +2060,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             toolbarItems = tmp;
             return HtmlUtils.div([ATTR_CLASS, "display-entry-toolbar", ATTR_ID,
-                    this.getEntryToolbarId(entry.getIdForDom())
-                ],
-                HtmlUtils.join(toolbarItems, ""));
+				  this.getEntryToolbarId(entry.getIdForDom())
+				 ],
+				 HtmlUtils.join(toolbarItems, ""));
         },
         getEntryToolbarId: function(entryId) {
             var id = entryId.replace(/:/g, "_");
@@ -2182,8 +2195,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntryMenuButton: function(entry) {
             var menuButton = HtmlUtils.onClick(this.getGet() + ".showEntryMenu(event, '" + entry.getId() + "');",
-                HtmlUtils.image(ramaddaBaseUrl + "/icons/menu.png",
-                    [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
+					       HtmlUtils.image(ramaddaBaseUrl + "/icons/menu.png",
+							       [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
             return menuButton;
         },
         setRamadda: function(e) {
@@ -2309,7 +2322,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (this.jsonUrl != null) {
                 fileMenuItems.push(HtmlUtils.tag(TAG_LI, [], "Data: " + HtmlUtils.onClick(get + ".fetchUrl('json');", "JSON") +
-                    HtmlUtils.onClick(get + ".fetchUrl('csv');", "CSV")));
+						 HtmlUtils.onClick(get + ".fetchUrl('csv');", "CSV")));
             }
 
             var newMenu = "<a>New</a><ul>";
@@ -2361,7 +2374,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             var menu = HtmlUtils.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER + entry.getIdForDom()), ATTR_CLASS, "sf-menu"],
-                topMenus);
+				     topMenus);
             callback(menu);
         },
         showEntryMenu: async function(event, entryId) {
@@ -2420,7 +2433,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return menu;
         },
         isLayoutHorizontal: function() {
-		return this.getProperty("orientation","")!= "horizontal";
+	    return this.getProperty("orientation","")!= "horizontal";
         },
         loadInitialData: function() {
             if (!this.needsData() || this.properties.data == null) {
@@ -2577,13 +2590,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         checkLayout: function() {},
         displayData: function() {},
         createUI: function() {
-                var divid = this.getProperty(PROP_DIVID);
-                if (divid != null) {
-                    var html = this.getHtml();
-                    $("#" + divid).html(html);
-                } else {
-                    console.log("error: no div defined for display:" + this.getType());
-                }
+            var divid = this.getProperty(PROP_DIVID);
+            if (divid != null) {
+                var html = this.getHtml();
+                $("#" + divid).html(html);
+            } else {
+                console.log("error: no div defined for display:" + this.getType());
+            }
         },
         setDisplayReady: function() {
             this.displayReady = true;
@@ -2596,6 +2609,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         initDisplay: function() {
             this.createUI();
+            if (this.getProperty("doAnimation", false)) {
+		this.getAnimation().makeControls();
+            }
             this.checkSearchBar();
         },
         checkSearchBar: function() {
@@ -2610,21 +2626,47 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var filterBy = this.getProperty("filterFields","",true).split(",");
             var fields= pointData.getRecordFields();
             var records = pointData.getRecords();
+
+	    var dateMin = null;
+	    var dateMax = null;
+	    var dates = [];
+	    records.map(record=>{
+		if (dateMin == null) {
+		    dateMin = record.getDate();
+		    dateMax = record.getDate();
+		} else {
+		    var date = record.getDate();
+		    if (date) {
+			dates.push(date);
+			if (date.getTime() < dateMin.getTime())
+			    dateMin = date;
+			if (date.getTime() > dateMax.getTime())
+			    dateMax = date;
+		    }
+		}
+	    });
+
+            if (dateMax) {
+		this.getAnimation().init(dateMin, dateMax,dates);
+            }
+
+
+
 	    var header2="";
 	    var searchBar  = "";
 	    if(this.colorByFields.length>0) {
 		var enums = [];
 		this.colorByFields.map(field=>{
-			enums.push([field.getId(),field.getLabel()]);
-		    });
+		    enums.push([field.getId(),field.getLabel()]);
+		});
 		header2 += HtmlUtils.span(["class","display-filterby"],
 					  HtmlUtils.span(["class","display-filterby-label"], "Color by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+"&nbsp;";
 	    }
 	    if(this.sizeByFields.length>0) {
 		var enums = [];
 		this.sizeByFields.map(field=>{
-			enums.push([field.getId(),field.getLabel()]);
-		    });
+		    enums.push([field.getId(),field.getLabel()]);
+		});
 		header2 += HtmlUtils.span(["class","display-filterby"],
 					  HtmlUtils.span(["class","display-filterby-label"],"Size by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
@@ -2662,22 +2704,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var enumValues = [];
 			    var seen = {};
 			    records.map(record=>{
-				    var value = this.getDataValues(record)[filterField.getIndex()];
-				    if(!seen[value]) {
-					seen[value]  = true;
-					var label = value;
-					if(label.length>20) {
-					    label=  label.substring(0,19)+"...";
-					}
-					if(typeof value == "string")
-					    value = value.replace(/\'/g,"&apos;");
-					var tuple = [value, label];
-					enumValues.push(tuple);
+				var value = this.getDataValues(record)[filterField.getIndex()];
+				if(!seen[value]) {
+				    seen[value]  = true;
+				    var label = value;
+				    if(label.length>20) {
+					label=  label.substring(0,19)+"...";
 				    }
-				});
+				    if(typeof value == "string")
+					value = value.replace(/\'/g,"&apos;");
+				    var tuple = [value, label];
+				    enumValues.push(tuple);
+				}
+			    });
 			    enumValues.sort((a,b)  =>{
-				    return (""+a[1]).localeCompare(""+b[1]);
-				});
+				return (""+a[1]).localeCompare(""+b[1]);
+			    });
 			    for(var j=0;j<enumValues.length;j++) {
 				var v = enumValues[j];
 				enums.push(v);
@@ -2697,15 +2739,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var max=0;
 			var cnt=0;
 			records.map(record=>{
-				var value = this.getDataValues(record)[filterField.getIndex()];
-				if(isNaN(value))return;
-				if(cnt==0) {min=value;max=value;}
-				else {
-				    min = Math.min(min, value);
-				    max = Math.max(max, value);
-				}
-				cnt++;
-			    });
+			    var value = this.getDataValues(record)[filterField.getIndex()];
+			    if(isNaN(value))return;
+			    if(cnt==0) {min=value;max=value;}
+			    else {
+				min = Math.min(min, value);
+				max = Math.max(max, value);
+			    }
+			    cnt++;
+			});
 			var dfltValueMin = this.getProperty(filterField.getId() +".filterValueMin",min);
 			var dfltValueMax = this.getProperty(filterField.getId() +".filterValueMax",max);
 
@@ -2746,90 +2788,101 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
                 this.jq(ID_FILTERBAR).find(".display-filter-range").mousedown(function(){
-			var id = $(this).attr("id");
-			id = id.replace(/_min$/,"").replace(/_max$/,"");
-			var min = $("#" + id+"_min");
-			var max = $("#" + id+"_max");
-			range = {min: parseFloat(min.attr("data-min")),
-				 max: parseFloat(max.attr("data-max"))};
-			var minValue = parseFloat(min.val());
-			var maxValue = parseFloat(max.val());
-			var html = HtmlUtils.div(["id","filterby-range","style","width:200px;"],"");
-			var popup = getTooltip();
-			popup.html(html);
-			popup.show();
-			popup.position({
-				of: min,
-				    my: "left top",
-				    at: "left bottom+2",
-				    collision: "fit fit"
+		    var id = $(this).attr("id");
+		    id = id.replace(/_min$/,"").replace(/_max$/,"");
+		    var min = $("#" + id+"_min");
+		    var max = $("#" + id+"_max");
+		    range = {min: parseFloat(min.attr("data-min")),
+			     max: parseFloat(max.attr("data-max"))};
+		    var minValue = parseFloat(min.val());
+		    var maxValue = parseFloat(max.val());
+		    var html = HtmlUtils.div(["id","filterby-range","style","width:200px;"],"");
+		    var popup = getTooltip();
+		    popup.html(html);
+		    popup.show();
+		    popup.position({
+			of: min,
+			my: "left top",
+			at: "left bottom+2",
+			collision: "fit fit"
                     });
-			let _this = this;
+		    let _this = this;
 
-			if(isNaN(minValue)) minValue = range.min;	
-			if(isNaN(maxValue)) maxValue = range.max;
-			var scale = 1;
-			if(range.min != Math.round(range.min)  || range.max != Math.round(range.max))
-			    scale  = 10000;
-			$( "#filterby-range" ).slider({
-				range: true,
-				    min: parseFloat(range.min*scale),
-				    max: parseFloat(range.max*scale),
-				    values: [ parseFloat(minValue*scale), parseFloat(maxValue*scale)],
-				    slide: function( event, ui ) {
-				    min.val(ui.values[0]/scale);
-				    max.val(ui.values[1]/scale);
-				},
-				    stop: function() {
-				    var popup = getTooltip();
-				    popup.hide();
-				    min.trigger("change");
-				}
-			    });
+		    if(isNaN(minValue)) minValue = range.min;	
+		    if(isNaN(maxValue)) maxValue = range.max;
+		    var scale = 1;
+		    if(range.min != Math.round(range.min)  || range.max != Math.round(range.max))
+			scale  = 10000;
+		    $( "#filterby-range" ).slider({
+			range: true,
+			min: parseFloat(range.min*scale),
+			max: parseFloat(range.max*scale),
+			values: [ parseFloat(minValue*scale), parseFloat(maxValue*scale)],
+			slide: function( event, ui ) {
+			    min.val(ui.values[0]/scale);
+			    max.val(ui.values[1]/scale);
+			},
+			stop: function() {
+			    var popup = getTooltip();
+			    popup.hide();
+			    min.trigger("change");
+			}
 		    });
+		});
 
 		let _this = this;
                 this.jq("colorbyselect").change(function(){
-			_this.colorByFieldChanged($(this).val());
-		    });
+		    _this.colorByFieldChanged($(this).val());
+		});
                 this.jq("sizebyselect").change(function(){
-			_this.sizeByFieldChanged($(this).val());
-		    });
+		    _this.sizeByFieldChanged($(this).val());
+		});
 
                 this.jq(ID_FILTERBAR).find("input, input:radio,select").change(function(){
-                        var id = $(this).attr("id");
-			var value = $(this).val();
-                        var fieldId = $(this).attr("fieldId");
-			_this.haveCalledUpdateUI = false;
-			if(_this.settingFilterValue) {
-			    return;
-			}
-			_this.settingFilterValue = true;
-			_this.dataFilterChanged();
-			_this.propagateEvent("handleEventPropertyChanged", {
-				property: "filterValue",
-				    id:id,
-				    fieldId: fieldId,
-				    value: value
-				    });
-			_this.settingFilterValue = false;
-                    });
+                    var id = $(this).attr("id");
+		    var value = $(this).val();
+                    var fieldId = $(this).attr("fieldId");
+		    _this.haveCalledUpdateUI = false;
+		    if(_this.settingFilterValue) {
+			return;
+		    }
+		    _this.settingFilterValue = true;
+		    _this.dataFilterChanged();
+		    _this.propagateEvent("handleEventPropertyChanged", {
+			property: "filterValue",
+			id:id,
+			fieldId: fieldId,
+			value: value
+		    });
+		    _this.settingFilterValue = false;
+                });
             }
         },
 	colorByFieldChanged:function(field) {
-    },
+	},
 
-		sizeByFieldChanged:function(field) {
-    },
+	sizeByFieldChanged:function(field) {
+	},
 	dataFilterChanged: function() {
-		this.updateUI();
-	    },
+	    this.updateUI();
+	},
         updateUI: function() {},
-		animationStart: function(animation) {
-
-	    },
-		animationApply: function(animation) {
-	    },
+	animationStart: function(animation) {
+	    
+	},
+	animationApply: function(animation, skipUpdateUI) {
+	    this.minDateObj = animation.begin;
+	    this.maxDateObj = animation.end;
+	    if(!skipUpdateUI) {
+		this.haveCalledUpdateUI = false;
+		this.dataFilterChanged();
+	    }
+	    this.propagateEvent("handleEventPropertyChanged", {
+		property: "dateRange",
+		minDate: animation.begin,
+		maxDate: animation.end
+	    });
+	},
         getDoBs: function() {
             if (!(typeof this.dobs === 'undefined')) {
                 return dobs;
@@ -2874,8 +2927,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var button = "";
             if (this.getShowMenu()) {
                 button = HtmlUtils.onClick(get + ".showDialog();",
-                    HtmlUtils.image(ramaddaBaseUrl + "/icons/downdart.png",
-                        [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_DIALOG_BUTTON)]));
+					   HtmlUtils.image(ramaddaBaseUrl + "/icons/downdart.png",
+							   [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_DIALOG_BUTTON)]));
             }
             var title = "";
             if (this.getShowTitle()) {
@@ -2940,39 +2993,47 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return toolbar;
         },
 	getWikiEditorTags: function() {
-	       return  [
-	      "label:Display Attributes",
-	      "showMenu=\"true\"",	      
-	      "showTitle=\"true\"",
-	      "layoutHere=\"true\"",
-	      "width=\"100%\"",
-	      "height=\"400\"",
-	      "title=\"\"",
-	      "titleBackground=\"color\"",
-	      "textColor=\"color\"",
-	      "backgroundImage=\"\"",
-	      "background=\"color\"",
-	      "label:Filter Attributes",
-	      "filterFields=\"\"",
-	      "hideFilterWidget=true",
-	      "acceptFilterEvent=false",
-	      "&lt;field&gt;.filterValue=\"\"",
-	      "&lt;field&gt;.filterValues=\"\"",
-	      "&lt;field&gt;.filterMultiple=\"true\"",
-	      "&lt;field&gt;.filterMultipleSize=\"5\"",
-	      "&lt;field&gt;.filterByStyle=\"background:white;\"",
-	      "&lt;field&gt;.includeAll=\"true\"",
-	      "&lt;field&gt;.filterStartsWith=\"true\"",
-	      "binDate=\"day|month|year\"",
-	      "label:Color Attributes",
-	      "colorTable=\"\"",
-	      "colors=\"color1,...,colorN\"",
-	      "colorBy=\"\"",
-	      "colorByFields=\"\"",
-	      "colorTableAlpha=\"0.5\"",
-	      "colorByMin=\"value\"",
-	      "colorByMax=\"value\"",
-			];
+	    return  [
+		"label:Display Attributes",
+		"showMenu=\"true\"",	      
+		"showTitle=\"true\"",
+		"layoutHere=\"true\"",
+		"width=\"100%\"",
+		"height=\"400\"",
+		"title=\"\"",
+		"titleBackground=\"color\"",
+		"textColor=\"color\"",
+		"backgroundImage=\"\"",
+		"background=\"color\"",
+		"label:Filter Attributes",
+		"filterFields=\"\"",
+		"hideFilterWidget=true",
+		"acceptFilterEvent=false",
+		"&lt;field&gt;.filterValue=\"\"",
+		"&lt;field&gt;.filterValues=\"\"",
+		"&lt;field&gt;.filterMultiple=\"true\"",
+		"&lt;field&gt;.filterMultipleSize=\"5\"",
+		"&lt;field&gt;.filterByStyle=\"background:white;\"",
+		"&lt;field&gt;.includeAll=\"true\"",
+		"&lt;field&gt;.filterStartsWith=\"true\"",
+		"binDate=\"day|month|year\"",
+		"label:Color Attributes",
+		"colorTable=\"\"",
+		"colors=\"color1,...,colorN\"",
+		"colorBy=\"\"",
+		"colorByFields=\"\"",
+		"colorTableAlpha=\"0.5\"",
+		"colorByMin=\"value\"",
+		"colorByMax=\"value\"",
+		"label:Animation Attributes",
+		"doAnimation=true",
+		"acceptDateRangeChange=true",
+		"animationDateFormat=\"yyyy\"",
+		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
+		"animationMode=\"sliding\"",
+		"animationShowSlider=\"true|false\","
+
+	    ];
         },
         makeDialog: function() {
             var html = "";
@@ -2995,7 +3056,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (var i = 0; i < tabTitles.length; i++) {
                 var id = this.getDomId("tabs") + i;
                 tabLinks += HtmlUtils.tag("li", [], HtmlUtils.tag("a", ["href", "#" + id],
-                    tabTitles[i]));
+								  tabTitles[i]));
                 tabLinks += "\n";
                 var contents = HtmlUtils.div([ATTR_CLASS, "display-dialog-tab"], tabContents[i]);
                 tabs += HtmlUtils.div(["id", id], contents);
@@ -3261,11 +3322,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             /**
                This makes the date error in makeDataTable. not sure why
-            var records = pointData.getRecords();
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
-            if (fields.length == 0)
-                fields = allFields;
+               var records = pointData.getRecords();
+               var allFields = this.getData().getRecordFields();
+               var fields = this.getSelectedFields(allFields);
+               if (fields.length == 0)
+               fields = allFields;
             **/
 
             if (!this.getDisplayReady()) {
@@ -3395,14 +3456,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(binCount) {
 		    var f = [];
 		    fields.map((field)=>{
-			    f.push(new RecordField({
-					index:0,
-					id:field.getId(),
-				    label:this.getProperty("binCountLabel","Count"),
-				    type:"double",
-				    chartable:true
-			    }));
-			});
+			f.push(new RecordField({
+			    index:0,
+			    id:field.getId(),
+			    label:this.getProperty("binCountLabel","Count"),
+			    type:"double",
+			    chartable:true
+			}));
+		    });
 		    fields=f;
 		}
 	    }
@@ -3436,8 +3497,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //These are Record objects 
 
 
-            this.minDateObj = Utils.parseDate(this.minDate, false);
-            this.maxDateObj = Utils.parseDate(this.maxDate, true, this.minDateObj);
+	    if(!this.minDateObj)
+		this.minDateObj = Utils.parseDate(this.minDate, false);
+	    if(!this.minDateObj)
+		this.maxDateObj = Utils.parseDate(this.maxDate, true, this.minDateObj);
 
             if (this.minDateObj == null && this.maxDateObj != null) {
                 this.minDateObj = Utils.parseDate(this.minDate, false, this.maxDateObj);
@@ -3745,13 +3808,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         getWikiText: function() {
             var attrs = ["layoutType", this.layout,
-                "layoutColumns",
-                this.columns,
-                "showMenu",
-                "false",
-                "divid",
-                "$entryid_maindiv"
-            ];
+			 "layoutColumns",
+			 this.columns,
+			 "showMenu",
+			 "false",
+			 "divid",
+			 "$entryid_maindiv"
+			];
             var wiki = "";
             wiki += "<div id=\"{{entryid}}_maindiv\"></div>\n\n";
             wiki += "{{group " + HtmlUtils.attrs(attrs) + "}}\n\n"
@@ -3850,7 +3913,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.doLayout();
         },
         doLayout: function() {
-		var html = "";
+	    var html = "";
             var colCnt = 100;
             var displaysToLayout = this.getDisplaysToLayout();
             var displaysToPrepare = this.displays;
@@ -4153,216 +4216,219 @@ function DisplayAnimation(display) {
     var ID_ANIMATION_LABEL = "animationlabel";
     this.display = display;
     $.extend(this,{
-            running: false,
-            inAnimation: false,
-            begin: null,
-            end: null,
-            dateMin: null,
-            dateMax: null,
-            dateRange: 0,
-            dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
-            mode: display.getProperty("animationMode", "cumulative"),
-            speed: parseInt(display.getProperty("animationSpeed", 250)),
-            toggleAnimation: function() {
-		this.running = !this.running;
-		this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
-		if (this.running)
-		    this.startAnimation();
-	    },
-            getDomId: function(id) {
-		return this.display.getDomId(id);
-	    },
-		jq: function(id) {
-		return this.display.jq(id);
-	    },
-		init: function(dateMin, dateMax, dates) {
-		let _this = this;
-		this.dateMin = dateMin;
-		this.dateMax = dateMax;
-		this.begin = this.dateMin;
-		this.end = this.dateMin;
-		if(!this.dateMin) return;
+        running: false,
+        inAnimation: false,
+        begin: null,
+        end: null,
+        dateMin: null,
+        dateMax: null,
+        dateRange: 0,
+        dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
+        mode: display.getProperty("animationMode", "cumulative"),
+        speed: parseInt(display.getProperty("animationSpeed", 250)),
+        toggleAnimation: function() {
+	    this.running = !this.running;
+	    this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
+	    if (this.running)
+		this.startAnimation();
+	},
+        getDomId: function(id) {
+	    return this.display.getDomId(id);
+	},
+	jq: function(id) {
+	    return this.display.jq(id);
+	},
+	init: function(dateMin, dateMax, dates) {
+	    let _this = this;
+	    this.dateMin = dateMin;
+	    this.dateMax = dateMax;
+	    this.begin = this.dateMin;
+	    this.end = this.dateMin;
+	    if(!this.dateMin) return;
 
-                this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
-		this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
-		this.windowUnit = this.display.getProperty("animationWindow", "");
+            this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
+	    this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
+	    this.windowUnit = this.display.getProperty("animationWindow", "");
 
-		if (this.windowUnit != "") {
-		    if (this.windowUnit == "decade") {
-			this.window = 1000 * 60 * 60 * 24 * 365 * 10;// + 1000 * 60 * 60 * 24 * 365;
-		    } else 	if (this.windowUnit == "century") {
-			this.window = 1000 * 60 * 60 * 24 * 365 * 100;// + 1000 * 60 * 60 * 24 * 365;
-		    } else 	if (this.windowUnit == "halfdecade") {
-			this.window = 1000 * 60 * 60 * 24 * 365 * 5;// + 1000 * 60 * 60 * 24 * 365;
-		    } else if (this.windowUnit == "year") {
-			this.window = 1000 * 60 * 60 * 24 * 366;
-		    } else if (this.windowUnit == "month") {
-			this.window = 1000 * 60 * 60 * 24 * 32;
-		    } else if (this.windowUnit == "week") {
-			this.window = 1000 * 60 * 60 * 24*7;
-		    } else if (this.windowUnit == "day") {
-			this.window = 1000 * 60 * 60 * 24;
-		    } else if (this.windowUnit == "hour") {
-			this.window = 1000 * 60 * 60;
-		    } else if (this.windowUnit == "minute") {
-			this.window = 1000 * 61;
-		    } else {
-			this.window = 1001;
-		    }
-		} else if(this.steps>0){
-		    this.window = this.dateRange / this.steps;
+	    if (this.windowUnit != "") {
+		if (this.windowUnit == "decade") {
+		    this.window = 1000 * 60 * 60 * 24 * 365 * 10;// + 1000 * 60 * 60 * 24 * 365;
+		} else 	if (this.windowUnit == "century") {
+		    this.window = 1000 * 60 * 60 * 24 * 365 * 100;// + 1000 * 60 * 60 * 24 * 365;
+		} else 	if (this.windowUnit == "halfdecade") {
+		    this.window = 1000 * 60 * 60 * 24 * 365 * 5;// + 1000 * 60 * 60 * 24 * 365;
+		} else if (this.windowUnit == "year") {
+		    this.window = 1000 * 60 * 60 * 24 * 366;
+		} else if (this.windowUnit == "month") {
+		    this.window = 1000 * 60 * 60 * 24 * 32;
+		} else if (this.windowUnit == "week") {
+		    this.window = 1000 * 60 * 60 * 24*7;
+		} else if (this.windowUnit == "day") {
+		    this.window = 1000 * 60 * 60 * 24;
+		} else if (this.windowUnit == "hour") {
+		    this.window = 1000 * 60 * 60;
+		} else if (this.windowUnit == "minute") {
+		    this.window = 1000 * 61;
+		} else {
+		    this.window = 1001;
 		}
+	    } else if(this.steps>0){
+		this.window = this.dateRange / this.steps;
+	    }
 
 
-		this.updateLabels();
-	
+	    this.updateLabels();
+	    
 
-		this.jq(ID_SLIDER).slider({
-			range: true,
-			    min: this.dateMin.getTime(),
-			    max: this.dateMax.getTime(),
-			    values: [this.dateMin.getTime(),this.dateMax.getTime()],
-			    slide: function( event, ui ) {
-			    _this.stopAnimation();
-			    _this.begin = new Date(ui.values[0]);
-			    _this.end = new Date(ui.values[1]);
-			    //			    _this.applyAnimation(true);
-			    _this.updateLabels();
-			},
-			    stop: function(event,ui) {
-			    _this.stopAnimation();
-			    _this.begin = new Date(ui.values[0]);
-			    _this.end = new Date(ui.values[1]);
-			    _this.applyAnimation(true);
-				}
-		    });
-
-		if(dates && display.getProperty("animationShowTicks",true)) {
-		    var ticks = "";
-		    var min = this.dateMin.getTime();
-		    var max = this.dateMax.getTime();
-		    var p = 0;
-		    for(var i=0;i<dates.length;i++) {
-			var date = dates[i].getTime();
-			var perc = Math.round((date-min)/(max-min)*100);
-			var tt = this.formatAnimationDate(dates[i]);
-			ticks+=HtmlUtils.div(["class","display-animation-tick","style","left:" + perc+"%;","title",tt],"");
-		    }
-		    this.jq(ID_SLIDER).append(ticks);
-		    this.jq(ID_SLIDER).find(".display-animation-tick").tooltip({
-			    content: function() {
-				return $(this).prop('title');
-			    },
-				position: {
-				my: "left top",
-				    at: "left bottom+2"
-				    },
-				classes: {
-				"ui-tooltip": "ramadda-popup"
-				    }
-			});
+	    this.jq(ID_SLIDER).slider({
+		range: true,
+		min: this.dateMin.getTime(),
+		max: this.dateMax.getTime(),
+		values: [this.dateMin.getTime(),this.dateMax.getTime()],
+		slide: function( event, ui ) {
+		    _this.stopAnimation();
+		    _this.begin = new Date(ui.values[0]);
+		    _this.end = new Date(ui.values[1]);
+		    //			    _this.applyAnimation(true);
+		    _this.updateLabels();
+		},
+		stop: function(event,ui) {
+		    _this.stopAnimation();
+		    _this.begin = new Date(ui.values[0]);
+		    _this.end = new Date(ui.values[1]);
+		    _this.applyAnimation(true);
 		}
-	    },
+	    });
+
+	    if(dates && display.getProperty("animationShowTicks",true)) {
+		var ticks = "";
+		var min = this.dateMin.getTime();
+		var max = this.dateMax.getTime();
+		var p = 0;
+		for(var i=0;i<dates.length;i++) {
+		    var date = dates[i].getTime();
+		    var perc = Math.round((date-min)/(max-min)*100);
+		    var tt = this.formatAnimationDate(dates[i]);
+		    ticks+=HtmlUtils.div(["class","display-animation-tick","style","left:" + perc+"%;","title",tt],"");
+		}
+		this.jq(ID_SLIDER).append(ticks);
+		this.jq(ID_SLIDER).find(".display-animation-tick").tooltip({
+		    content: function() {
+			return $(this).prop('title');
+		    },
+		    position: {
+			my: "left top",
+			at: "left bottom+2"
+		    },
+		    classes: {
+			"ui-tooltip": "ramadda-popup"
+		    }
+		});
+	    }
+	},
 	makeControls:function() {
-                var buttons = 
+            var buttons =  "";
+	    if(this.display.getProperty("animationShowButtons",true)) {
+		buttons +=
 		    HtmlUtils.span(["id", this.getDomId(ID_BEGIN),"title","Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")) + 
 		    HtmlUtils.span(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")) + 
 		    HtmlUtils.span(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")) + 
 		    HtmlUtils.span(["id", this.getDomId(ID_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-step-forward")) +
 		    HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward")) + 
-                    HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync")) + 
-                    HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-animation-label"]);
-                buttons = HtmlUtils.div([ "class","display-animation-buttons"], buttons);
-		if(display.getProperty("animationShowSlider",true)) {
-		    buttons+=   HtmlUtils.div(["class","display-animation-slider","id",this.getDomId(ID_SLIDER)]);
+		    HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync"));
+	    }
+	    buttons+=HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-animation-label"]);
+            buttons = HtmlUtils.div([ "class","display-animation-buttons"], buttons);
+	    if(display.getProperty("animationShowSlider",true)) {
+		buttons+=   HtmlUtils.div(["class","display-animation-slider","id",this.getDomId(ID_SLIDER)]);
+	    }
+
+            this.jq(ID_TOP_LEFT).append(buttons);
+            this.btnRun = this.jq(ID_RUN);
+            this.btnPrev = this.jq(ID_PREV);
+            this.btnNext = this.jq(ID_NEXT);
+            this.btnBegin = this.jq(ID_BEGIN);
+            this.btnEnd = this.jq(ID_END);
+            this.btnShowAll = this.jq(ID_SHOWALL);
+            this.label = this.jq(ID_ANIMATION_LABEL);
+            this.btnRun.button().click(() => {
+                this.toggleAnimation();
+            });
+            this.btnBegin.button().click(() => {
+		this.begin = this.dateMin;
+		if (this.mode == "sliding") {
+		    this.end = new Date(this.dateMin.getTime()+this.window);
+		} else {
+		    this.end = new Date(this.dateMin.getTime()+this.window);
+		    //			this.end =this.begin;
 		}
-
-                this.jq(ID_TOP_LEFT).append(buttons);
-                this.btnRun = this.jq(ID_RUN);
-                this.btnPrev = this.jq(ID_PREV);
-                this.btnNext = this.jq(ID_NEXT);
-                this.btnBegin = this.jq(ID_BEGIN);
-                this.btnEnd = this.jq(ID_END);
-                this.btnShowAll = this.jq(ID_SHOWALL);
-                this.label = this.jq(ID_ANIMATION_LABEL);
-                this.btnRun.button().click(() => {
-                    this.toggleAnimation();
-                });
-                this.btnBegin.button().click(() => {
-		    this.begin = this.dateMin;
-		    if (this.mode == "sliding") {
-			this.end = new Date(this.dateMin.getTime()+this.window);
-		    } else {
-			this.end = new Date(this.dateMin.getTime()+this.window);
-			//			this.end =this.begin;
-		    }
-		    this.stopAnimation();
-		    this.applyAnimation();
-                });
-                this.btnEnd.button().click(() => {
-		    this.end = this.dateMax;
-		    if (this.mode == "sliding") {
-			this.begin = new Date(this.dateMax.getTime()-this.window);
-		    } else {
-			this.end =this.dateMax;
-		    }
-		    this.stopAnimation();
-		    this.applyAnimation();
-                });
-                this.btnPrev.button().click(() => {
-			if (this.mode == "sliding") {
-			    this.begin = new Date(this.begin.getTime()-this.window);
-			    if(this.begin.getTime()<this.dateMin.getTime())
-				this.begin = this.dateMin;
-			    this.end = new Date(this.begin.getTime()+this.window);
-			} else {
-			    this.end = new Date(this.end.getTime()-this.window);
-			    if(this.end.getTime()<=this.begin.getTime()) {
-				this.end = new Date(this.begin.getTime()+this.window);
-			    }
-			}
-			this.stopAnimation();
-			this.applyAnimation();
-                });
-                this.btnNext.button().click(() => {
-			this.stopAnimation();
-			this.doNext();
-                });
-                this.btnShowAll.button().click(() => {
+		this.stopAnimation();
+		this.applyAnimation();
+            });
+            this.btnEnd.button().click(() => {
+		this.end = this.dateMax;
+		if (this.mode == "sliding") {
+		    this.begin = new Date(this.dateMax.getTime()-this.window);
+		} else {
+		    this.end =this.dateMax;
+		}
+		this.stopAnimation();
+		this.applyAnimation();
+            });
+            this.btnPrev.button().click(() => {
+		if (this.mode == "sliding") {
+		    this.begin = new Date(this.begin.getTime()-this.window);
+		    if(this.begin.getTime()<this.dateMin.getTime())
 			this.begin = this.dateMin;
-			this.end = this.dateMax;
-			this.inAnimation = false;
-			this.running = false;
-			this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
-			this.applyAnimation();
-                });
-            },
-
-		doNext: function() {
-		    if (this.mode == "sliding") {
-			this.begin = this.end;
-			this.end = new Date(this.end.getTime()+this.window);
-			if(this.end.getTime()>this.dateMax.getTime()) {
-			    this.end = this.dateMax;
-			    this.begin = new Date(this.end.getTime()-this.window);
-			    this.inAnimation = false;
-			    this.stopAnimation();
-			}
-		    } else {
-			this.end = new Date(this.end.getTime()+this.window);
-			if(this.end.getTime()>=this.dateMax.getTime()) {
-			    this.end = this.dateMax;
-			    this.inAnimation = false;
-			    this.stopAnimation();
-			}
+		    this.end = new Date(this.begin.getTime()+this.window);
+		} else {
+		    this.end = new Date(this.end.getTime()-this.window);
+		    if(this.end.getTime()<=this.begin.getTime()) {
+			this.end = new Date(this.begin.getTime()+this.window);
 		    }
-		    this.applyAnimation();
-	    },
+		}
+		this.stopAnimation();
+		this.applyAnimation();
+            });
+            this.btnNext.button().click(() => {
+		this.stopAnimation();
+		this.doNext();
+            });
+            this.btnShowAll.button().click(() => {
+		this.begin = this.dateMin;
+		this.end = this.dateMax;
+		this.inAnimation = false;
+		this.running = false;
+		this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+		this.applyAnimation();
+            });
+        },
+
+	doNext: function() {
+	    if (this.mode == "sliding") {
+		this.begin = this.end;
+		this.end = new Date(this.end.getTime()+this.window);
+		if(this.end.getTime()>this.dateMax.getTime()) {
+		    this.end = this.dateMax;
+		    this.begin = new Date(this.end.getTime()-this.window);
+		    this.inAnimation = false;
+		    this.stopAnimation();
+		}
+	    } else {
+		this.end = new Date(this.end.getTime()+this.window);
+		if(this.end.getTime()>=this.dateMax.getTime()) {
+		    this.end = this.dateMax;
+		    this.inAnimation = false;
+		    this.stopAnimation();
+		}
+	    }
+	    this.applyAnimation();
+	},
 
 	startAnimation: function() {
-            if (!this.display.points) {
-                return;
-            }
+	    //		if (!this.display.points) {
+	    //		    return;
+	    //		}
             if (!this.dateMax) return;
             if (!this.inAnimation) {
                 this.inAnimation = true;
@@ -4395,35 +4461,43 @@ function DisplayAnimation(display) {
 	    this.doNext();
         },
 	stopAnimation:function() {
-                  this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
-                  this.running = false;
-	    },
+            this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+            this.running = false;
+	},
+	setDateRange: function(begin,end) {
+	    this.begin = begin;
+	    this.end = end;
+	    this.stopAnimation();
+	    this.updateUI();
+	},
 	applyAnimation: function(skipSlider) {
-		if(!skipSlider) {
-		    this.jq(ID_SLIDER).slider('values',0,this.begin.getTime());
-		    this.jq(ID_SLIDER).slider('values',1,this.end.getTime());
-		}
-
-		this.display.animationApply(this);
+	    this.display.animationApply(this);
+	    this.updateUI();
+	},
+	updateUI: function(skipSlider) {
+	    if(!skipSlider) {
+		this.jq(ID_SLIDER).slider('values',0,this.begin.getTime());
+		this.jq(ID_SLIDER).slider('values',1,this.end.getTime());
+	    }
 	    this.updateLabels();
             var windowEnd = this.end.getTime();
             if (windowEnd <= this.dateMax.getTime()) {
                 if (this.running) {
                     setTimeout(() => {
-			    if(!this.running) return;
-			    this.doNext()}, this.speed);
+			if(!this.running) return;
+			this.doNext()}, this.speed);
                 }
             } else {
                 this.running = false;
-		//                this.label.html("");
                 this.inAnimation = false;
                 this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
             }
-	    },
-		updateLabels: function() {
-		if(this.label)
-		    this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
-	    },
+	},
+
+	updateLabels: function() {
+	    if(this.label)
+		this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
+	},
         formatAnimationDate: function(d) {
             if (this.dateFormat == "yyyy") {
                 return Utils.formatDateYYYY(d);
@@ -4434,5 +4508,5 @@ function DisplayAnimation(display) {
             }
         },
 
-		});
+    });
 }
