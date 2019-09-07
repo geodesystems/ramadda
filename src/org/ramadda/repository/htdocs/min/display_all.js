@@ -9849,6 +9849,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueS = this.getProperty("fixedValue");
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
+
+
+
             for (var j = 0; j < header.length; j++) {
                 var value = sample[j];
                 if (j == 0 && props.includeIndex) {
@@ -9876,8 +9879,27 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
-	    var annotationsMap = {};
+	    var annotationLabelField = this.getFieldById(null,this.getProperty("annotationLabelField"));
+	    var annotationFields = this.getFieldsByIds(null,this.getProperty("annotationFields"));
 	    var annotations = this.getProperty("annotations");
+	    if(annotations) annotationFields = [];
+	    if(annotationFields.length>0) {
+                dataTable.addColumn({
+                    type: 'string',
+                    role: 'annotation',
+                    'p': {
+                        'html': true
+                    }
+                });
+		dataTable.addColumn({
+                    type: 'string',
+                    role: 'annotationText',
+                    'p': {
+                        'html': true
+                    }
+                });
+	    }
+	    var annotationsMap = {};
 	    if(annotations) {
                 dataTable.addColumn({
                     type: 'string',
@@ -9915,6 +9937,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 
+	    var annotationCnt=0;
 
             for (var i = 1; i < dataList.length; i++) {
                 var row = this.getDataValues(dataList[i]);
@@ -9925,9 +9948,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         label += "<b>" + tooltipFields[j].getLabel() + "</b>: " +
                             dataList[i].record.getValue(tooltipFields[j].getIndex()) + "<br>";
                     }
-                }
+		}
 
-                var tooltip = "<div style='padding:8px;'>";
+		var tooltip = "<div style='padding:8px;'>";
                 tooltip += label;
                 for (var j = 0; j < row.length; j++) {
                     if (j > 0)
@@ -9964,6 +9987,34 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 }
                 //                    newRow.push("annotation");
+	    
+		if(annotationFields.length>0) {
+                    if (dataList[i].record) {
+			var desc = "";
+			annotationFields.map(f=>{
+			    var d = ""+dataList[i].record.getValue(f.getIndex());
+			    if(d!="")
+				desc+= (d+"<br>");
+			});
+			desc = desc.trim();
+			desc = desc.replace(/ /g,"&nbsp;");
+			annotationCnt++;
+			var label = null; 
+			if(desc.trim().length>0) {
+			    label =""+( annotationLabelField?dataList[i].record.getValue(annotationLabelField.getIndex()):(annotationCnt))
+			    if(label.trim().length==0) label = ""+annotationCnt;
+			}
+
+
+			newRow.push(label);
+			newRow.push(desc);
+		    } else {
+			if(i<2)
+			    console.log("No records for annotation");
+		    }
+
+		}
+
 		if(annotations) {
 		    var index = newRow[0];
 		    if(index.v) index=  index.v;
@@ -10240,6 +10291,10 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		"chartWidth=\"\"",
 		"chartLeft=\"\"",
 		"chartRight=\"\"",
+		'tooltipFields=""',
+		'annotations=""',
+		'annotationFields=""',	
+		'annotationLabelField=""',
 	    ]
 	    myTags.map(tag=>t.push(tag));
 	    return t;

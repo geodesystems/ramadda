@@ -461,8 +461,16 @@ vAxis.gridlines.color="color"
 </pre>
 
 
+<a name="annotations"></a>
 <b>Annotating Charts</b><br>
-You can add extra annotations to a chart by specifying an annotations attribute:
+Annotations for a chart can be specified in two ways. 
+The first is to specify one or more data fields to create the annotation from:
+<pre>
+  annotationFields="field1,field2,..."
+  annotationLabelField="field" //optional for the label
+</pre>
+
+The second way is to specify the annotations using an <i>annotations</i> attribute:
 <pre>
 annotations="
 &lt;index1&gt;label1;description1,
