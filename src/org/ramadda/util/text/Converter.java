@@ -787,6 +787,9 @@ public abstract class Converter extends Processor {
                 } else if (id.equals("year")) {
                     type   = "date";
                     format = "yyyy";
+		} else if (id.equals("url")) {
+                    type   = "url";
+    
                 } else if (id.equals("state") || id.equals("country")) {
                     type = "enumeration";
 
@@ -1142,6 +1145,10 @@ public abstract class Converter extends Processor {
             }
             String value    = row.getString(col);
             String newValue = StringUtil.findPattern(value, pattern);
+	    System.err.println("value:" + value);
+	    System.err.println("pattern:" + pattern);
+	    System.err.println("NV:" + newValue);
+	    System.exit(0);
             if (newValue == null) {
                 newValue = "";
             }

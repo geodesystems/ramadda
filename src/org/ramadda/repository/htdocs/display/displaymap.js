@@ -1453,6 +1453,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         if (sizeBy.radiusMax >= 0 && sizeBy.radiusMin >= 0) {
                             props.pointRadius = Math.round(sizeBy.radiusMin + percent * (sizeBy.radiusMax - sizeBy.radiusMin));
                         } else {
+			    //xxxxx
                             props.pointRadius = 6 + parseInt(15 * percent);
                         }
                         if (sizeEndPoints) {
@@ -1539,7 +1540,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var html = this.getRecordHtml(pointRecord, fields);
 
 		if(polygonField) {
-		    var toks  = values[polygonField.getIndex()].split(";");
+		    var s = values[polygonField.getIndex()];
+		    var delimiter;
+		    [";",","].map(d=>{
+			if(s.indexOf(d)>=0) delimiter = d;
+		    });
+		    var toks  = s.split(delimiter);
 		    var p = [];
 		    for(var pIdx=0;pIdx<toks.length;pIdx+=2) {
 			var lat = parseFloat(toks[pIdx]);
@@ -1689,10 +1695,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"sizeBy=\"\"",
 		"sizeByLog=\"true\"",
 		"sizeByMap=\"value1:color1,...,valueN:colorN\"",
+		'sizeByRadiusMin="2"',
+		'sizeByRadiusMin="20"',
 		"boundsAnimation=\"true\"",
 		"centerOnFilterChange=\"true\"",
 		"markerIcon=\"/icons/...\"",
 		"showSegments=\"true\"",
+		'showRecordSelection=false',
 	    ]);
 	},
 
