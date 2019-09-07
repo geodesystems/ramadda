@@ -3014,7 +3014,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterMultiple=\"true\"",
 		"&lt;field&gt;.filterMultipleSize=\"5\"",
 		"&lt;field&gt;.filterByStyle=\"background:white;\"",
-		"&lt;field&gt;.includeAll=\"true\"",
+		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"binDate=\"day|month|year\"",
 		"label:Color Attributes",

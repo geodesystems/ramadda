@@ -1999,13 +1999,11 @@ public class WikiUtil {
             int idx1 = s.indexOf(TAG_PREFIX, baseIdx);
             if (idx1 < 0) {
                 sb.append(s.substring(baseIdx));
-
                 break;
             }
             int idx2 = s.indexOf(TAG_SUFFIX, idx1);
             if (idx2 <= idx1) {
                 sb.append(s.substring(baseIdx));
-
                 break;
             }
             sb.append(s.substring(baseIdx, idx1));

@@ -906,15 +906,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			dateToValue[record.getDate()] = newValues;
 		    }
 		    newValues[value] = values[selectedFields[0].getIndex()];
-		    /*
-		      Alabama,Southeast,South,0.356,2015
-		      Alabama,Southeast,South,0.335,2014
-		      Alabama,Southeast,South,0.324,2013
-		    */
 		});
-		//		var header = this.getDataValues(dataList[0]);
-		//		console.log(groupValues);
-		//		console.log(dates);
+
 		var data = [];
 		var dataTable = new google.visualization.DataTable();
 		dataTable.addColumn("date", "Date");
@@ -947,8 +940,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var dataTable = new google.visualization.DataTable();
             var header = this.getDataValues(dataList[0]);
-
-
             var sample = this.getDataValues(dataList[1]);
 	    var fixedValueS = this.getProperty("fixedValue");
 	    var fixedValueN;
@@ -980,6 +971,43 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
+	    var annotationsMap = {};
+	    var annotations = this.getProperty("annotations");
+	    if(annotations) {
+                dataTable.addColumn({
+                    type: 'string',
+                    role: 'annotation',
+                    'p': {
+                        'html': true
+                    }
+                });
+		dataTable.addColumn({
+                    type: 'string',
+                    role: 'annotationText',
+                    'p': {
+                        'html': true
+                    }
+                });
+		var toks = annotations.split(",");
+		for(var i=0;i<toks.length;i++) {
+		    var toks2 = toks[i].split(";");
+		    //index,label,description
+		    if(toks2.length!=3) continue;
+		    var index = toks2[0].trim();
+		    var label = toks2[1];
+		    var desc = toks2[2];
+		    if(index.match(/^[0-9]+$/)) {
+			index = parseFloat(index);
+		    } else {
+			index = Utils.parseDate(index,false);
+		    }
+//		    console.log("annotation:" + index +" l:" + label);
+		    annotationsMap[index] = {
+			label: label,
+			description: desc
+		    }
+		}
+	    }
 
 
 
@@ -1031,6 +1059,22 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 }
                 //                    newRow.push("annotation");
+		if(annotations) {
+		    var index = newRow[0];
+		    if(index.v) index=  index.v;
+		    var annotation = annotationsMap[index];
+		    if(!annotation) {
+			annotation = annotationsMap[i];
+		    }
+		    if(annotation) {
+			newRow.push(annotation.label);
+			newRow.push(annotation.description);
+//			console.log("index:" + index +" label:" + annotation.label +" " + annotation.description);
+		    } else {
+			newRow.push(null);
+			newRow.push(null);
+		    }
+		}
                 justData.push(newRow);
             }
             dataTable.addRows(justData);
