@@ -4759,7 +4759,7 @@ public class TypeHandler extends RepositoryManager {
                               String hiddenId, String text, String label,
                               boolean readOnly, int length)
             throws Exception {
-	if(text.startsWith("<wiki>")) text = text.substring(6);
+	if(text.startsWith("<wiki>")) text = text.substring(6).trim();
         String sidebar = "";
         if ( !readOnly) {
             sidebar = getWikiEditorSidebar(request, entry);
