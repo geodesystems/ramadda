@@ -2780,6 +2780,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    this.jq(ID_HEADER2).html(header2);
 
+	    var theDisplay = this;
+
             if(filterBy.length>0) {
 		if(!hideFilterWidget) {
 		    for(var i=0;i<dateIds.length;i++) {
@@ -2806,7 +2808,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			at: "left bottom+2",
 			collision: "fit fit"
                     });
-		    let _this = this;
 
 		    if(isNaN(minValue)) minValue = range.min;	
 		    if(isNaN(maxValue)) maxValue = range.max;
@@ -2826,11 +2827,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var popup = getTooltip();
 			    popup.hide();
 			    min.trigger("change");
+			    theDisplay.checkFilterField(max);
 			}
 		    });
 		});
 
-		let _this = this;
                 this.jq("colorbyselect").change(function(){
 		    _this.colorByFieldChanged($(this).val());
 		});
@@ -2842,6 +2843,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var id = $(this).attr("id");
 		    var value = $(this).val();
                     var fieldId = $(this).attr("fieldId");
+		    _this.checkFilterField($(this));
 		    _this.haveCalledUpdateUI = false;
 		    if(_this.settingFilterValue) {
 			return;
@@ -2858,6 +2860,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 });
             }
         },
+	checkFilterField: function(f) {
+	    var min = f.attr("data-min");
+	    var max = f.attr("data-max");
+	    var value = f.val();
+	    if(Utils.isDefined(min)) {
+		if(value != min) {
+		    f.css("background","yellow");
+		} else {
+		    f.css("background","white");
+		}
+	    } else if(Utils.isDefined(max)) {
+		if(value != max) {
+		    f.css("background","yellow");
+		} else {
+		    f.css("background","white");
+		}
+	    }
+
+	},
 	colorByFieldChanged:function(field) {
 	},
 
