@@ -1430,20 +1430,26 @@ var HtmlUtils = {
         }
         return "col-md-1";
     },
-    initWikiEditor(id,editorId) {
-	id = id.trim();
-	console.log($("#" + id+"_textarea").length);
-	$("#" + id+"_textarea").keyup(function() {
-		var val = $(this).val().trim();
-		if(val.match("^<wiki>")) {
-		    $("#" + id+"_textarea").css("display","none");
-		    $("#" + id+"_textarea").attr("name","dummyname");
-		    $("#" + id +"_wiki").css("display","block");
-		    $("#" + id +"_wiki").focus();
-		    var editor = HtmlUtils.getAceEditor(editorId);
-		    editor.setValue(val+"\n",8);
-		}
-	    });
+    initWikiEditor(wikiId, textId,cbxId) {
+	var textBlock = textId +"_block";
+	var wikiBlock = wikiId +"_block";
+	$("#" + cbxId).click(() => {
+	    var editor = HtmlUtils.getAceEditor(wikiId);
+	    var on  = $("#" + cbxId).is(':checked');
+	    if(on) {
+		$("#" + textBlock).css("display","none");
+		$("#" + wikiBlock).css("display","block");
+		var val = $("#" + textId).val();
+		editor.setValue(val,8);
+		$("#" + wikiId).focus();
+	    } else {
+		var val = editor.getValue();
+		$("#" + textId).val(val);
+		$("#" + textBlock).css("display","block");
+		$("#" + wikiBlock).css("display","none");
+		$("#" + textId).focus();
+	    }
+	})
     },
     pre: function(attrs, inner) {
         return this.tag("pre", attrs, inner);

@@ -2641,10 +2641,9 @@ public class EntryManager extends RepositoryManager {
                         getRepository().URL_ENTRY_SHOW, parentEntry));
             }
 
-            String description =
-                request.getAnonymousEncodedString(ARG_DESCRIPTION, BLANK);
+            String description = getEntryDescription(request);
 
-            Date createDate = new Date();
+            Date   createDate  = new Date();
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
                                    createDate);
 
@@ -2785,7 +2784,6 @@ public class EntryManager extends RepositoryManager {
                 }
 
 
-
                 entry.initEntry(name, description, parent, request.getUser(),
                                 new Resource(theResource, resourceType),
                                 category, createDate.getTime(),
@@ -2860,11 +2858,7 @@ public class EntryManager extends RepositoryManager {
             String newName = request.getString(ARG_NAME, entry.getLabel());
 
             entry.setName(newName);
-            String tmp = request.getString(ARG_DESCRIPTION,
-                                           entry.getDescription());
-
-            entry.setDescription(request.getString(ARG_DESCRIPTION,
-                    entry.getDescription()));
+            entry.setDescription(getEntryDescription(request));
 
             if (isAnonymousUpload(entry)) {
                 if (request.get(ARG_PUBLISH, false)) {
@@ -2962,6 +2956,34 @@ public class EntryManager extends RepositoryManager {
                               new StringBuilder(msg("No entries created")));
         }
 
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private String getEntryDescription(Request request) throws Exception {
+        boolean isWiki      = request.get(ARG_ISWIKI, false);
+        String  description = request.getAnonymousEncodedString(isWiki
+                ? ARG_WIKITEXT
+                : ARG_DESCRIPTION, BLANK).trim();
+        if (request.get(ARG_ISWIKI, false)) {
+            if ( !description.startsWith("<wiki>")) {
+                description = "<wiki>\n" + description;
+            }
+        } else {
+            if (description.startsWith("<wiki>")) {
+                description = description.substring(6).trim();
+            }
+        }
+
+        return description;
     }
 
 

@@ -2421,7 +2421,8 @@ public class Column implements DataTypes, Constants {
                     if (isWiki) {
                         StringBuilder tmp = new StringBuilder();
                         typeHandler.addWikiEditor(request, entry, tmp,
-                                formInfo, urlArg, value, null, false, size);
+                                formInfo, urlArg + "_editor", urlArg, value,
+                                null, false, size);
                         widget = tmp.toString();
                     } else {
                         int areaRows = rows;

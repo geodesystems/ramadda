@@ -781,13 +781,13 @@ public class HtmlUtils {
     public static Appendable tag(Appendable sb, String tag, String attrs,
                                  String inner) {
         try {
-	    if(inner!=null) {
-		open(sb, tag, attrs);
-		sb.append(inner);
-		close(sb, tag);
-	    } else {
-		tag(sb,tag,attrs);
-	    }
+            if (inner != null) {
+                open(sb, tag, attrs);
+                sb.append(inner);
+                close(sb, tag);
+            } else {
+                tag(sb, tag, attrs);
+            }
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -1292,10 +1292,21 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String img(String path, String title, String extra) {
-	return image(path, title, extra,null);
+        return image(path, title, extra, null);
     }
 
-    public static String image(String path, String title, String extra,String inner) {
+    /**
+     * _more_
+     *
+     * @param path _more_
+     * @param title _more_
+     * @param extra _more_
+     * @param inner _more_
+     *
+     * @return _more_
+     */
+    public static String image(String path, String title, String extra,
+                               String inner) {
         if (Utils.stringDefined(title)) {
             if (path.startsWith("fa-")) {
                 return faIconWithAttr(path,
@@ -1311,7 +1322,7 @@ public class HtmlUtils {
         }
         String img = tag(TAG_IMG,
                          attrs(ATTR_BORDER, "0", ATTR_SRC, path) + " "
-                         + extra,inner);
+                         + extra, inner);
 
         return img;
     }
@@ -2919,7 +2930,7 @@ public class HtmlUtils {
      *
      * @return _more_
      */
-    public String getIconImage(String url, String... args) {
+    public static String getIconImage(String url, String... args) {
         if (url.startsWith("fa-")) {
             return HtmlUtils.faIcon(url, args);
         } else {
@@ -4635,7 +4646,7 @@ public class HtmlUtils {
      * @param sb _more_
      * @param url _more_
      *
-     * @throws Exception _more_
+     * @throws IOException _more_
      */
     public static void cssLink(Appendable sb, String url) throws IOException {
         tag(sb, TAG_LINK,
@@ -5396,8 +5407,7 @@ public class HtmlUtils {
             sb.append(HtmlUtils.div(content));
         }
         sb.append("</div>");
-        String args =
-            "{collapsible: true";
+        String args = "{collapsible: true";
         if (collapse) {
             args += ", active: false}";
         } else {

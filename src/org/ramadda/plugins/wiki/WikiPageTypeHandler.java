@@ -394,8 +394,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         super.addToInformationTabs(request, entry, tabTitles, tabContents);
         try {
             StringBuilder sb = new StringBuilder();
-            addWikiEditor(request, entry, sb, null, "dummy",
-                          entry.getValue(0, ""), null, false, 256000);
+            addReadOnlyWikiEditor(request, entry, sb, entry.getValue(0, ""));
             //       sb.append(HtmlUtils.textArea("dummy", entry.getValue(0, ""), 10,   120));
             tabTitles.add("Wiki Text");
             tabContents.add(sb.toString());
@@ -487,7 +486,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         help.append("<i>{{&lt;output identifier&gt;}}</i><br>");
 
 
-        addWikiEditor(request, entry, sb, formInfo, ARG_WIKI_TEXTAREA,
+        addWikiEditor(request, entry, sb, formInfo, ARG_WIKI_TEXTAREA+"_editor",  ARG_WIKI_TEXTAREA,
                       wikiText, "Wiki Text", false, 256000);
 
 

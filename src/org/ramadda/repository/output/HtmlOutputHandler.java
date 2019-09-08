@@ -1170,11 +1170,8 @@ public class HtmlOutputHandler extends OutputHandler {
         if (isWiki) {
             getPageHandler().entrySectionOpen(request, entry, suffix,
                     "Wiki Text", true);
-
-
-            entry.getTypeHandler().addWikiEditor(request, entry, suffix,
-                    null, "", desc, null, true, 0);
-
+            entry.getTypeHandler().addReadOnlyWikiEditor(request, entry,
+                    suffix, desc);
             getPageHandler().entrySectionClose(request, entry, suffix);
         }
 

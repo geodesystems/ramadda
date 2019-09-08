@@ -4296,8 +4296,7 @@ public class TypeHandler extends RepositoryManager {
 
             if (what.equals(ARG_DESCRIPTION)) {
                 if (okToShowInForm(entry, ARG_DESCRIPTION)) {
-                    String desc    = "";
-                    String buttons = "";
+                    String desc = "";
                     int rows = getProperty(
                                    entry, "form.description.rows",
                                    getRepository().getProperty(
@@ -4305,41 +4304,64 @@ public class TypeHandler extends RepositoryManager {
                     boolean isWiki = getProperty(entry,
                                          "form.description.iswiki", false);
 
-                    boolean makeWidget = true;
                     if (entry != null) {
                         desc = entry.getDescription();
-                        if (desc.length() > 100) {
-                            rows = rows * 2;
-                        }
-                        if (isWiki || isWikiText(desc)) {
-                            makeWidget = false;
-                            if ( !isWiki) {
-                                rows = 50;
-                            }
-                            addWikiEditor(
-                                request, entry, sb, formInfo,
-                                ARG_DESCRIPTION, desc, "Description", false,
-                                EntryManager.MAX_DESCRIPTION_LENGTH);
-                        }
                     }
+                    if (desc.length() > 100) {
+                        rows = rows * 2;
+                    }
+                    if (isWiki) {
+                        addWikiEditor(request, entry, sb, formInfo,
+                                      ARG_DESCRIPTION + "_editor",
+                                      ARG_DESCRIPTION, desc, "Description",
+                                      false,
+                                      EntryManager.MAX_DESCRIPTION_LENGTH);
+                    } else {
+                        desc = desc.trim();
+                        boolean isTextWiki = isWikiText(desc);
+                        if (desc.startsWith("<wiki>")) {
+                            desc = desc.substring(6).trim();
+                        }
+                        String        cbxId  = "iswiki";
+                        String        textId = ARG_DESCRIPTION;
+                        String        wikiId = ARG_WIKITEXT + "_editor";
+                        StringBuilder tmpSB  = new StringBuilder();
+                        String cbx = HtmlUtils.checkbox(
+                                         ARG_ISWIKI, "true", isTextWiki,
+                                         HtmlUtils.id(cbxId)
+                                         + HtmlUtils.title(
+                                             "Wikify text")) + HtmlUtils.getIconImage(
+                                                 getRepository().getIconUrl(
+                                                     ICON_WIKI), "title",
+                                                         "Wikify text");
 
-                    if (makeWidget) {
-                        String editId       =
-                            HtmlUtils.getUniqueId("editor_");
-                        StringBuilder tmpSB = new StringBuilder();
+                        HtmlUtils.open(tmpSB, "div",
+                                       HtmlUtils.attrs("style", isTextWiki
+                                ? ""
+                                : "display:none;", "id", wikiId + "_block"));
+
                         addWikiEditor(request, entry, tmpSB, formInfo,
-                                      ARG_DESCRIPTION, desc, null, false,
-                                      EntryManager.MAX_DESCRIPTION_LENGTH,
-                                      editId);
+                                      wikiId, ARG_WIKITEXT, desc, null,
+                                      false,
+                                      EntryManager.MAX_DESCRIPTION_LENGTH);
+                        HtmlUtils.close(tmpSB, "div");
+                        HtmlUtils.open(tmpSB, "div",
+                                       HtmlUtils.attrs("style", !isTextWiki
+                                ? ""
+                                : "display:none;", "id", textId + "_block"));
+                        tmpSB.append(HtmlUtils.textArea(ARG_DESCRIPTION,
+                                desc, rows, HtmlUtils.id(textId)));
+                        HtmlUtils.script(tmpSB,
+                                         "HtmlUtils.initWikiEditor("
+                                         + HtmlUtils.squote(wikiId) + ","
+                                         + HtmlUtils.squote(textId) + ","
+                                         + HtmlUtils.squote(cbxId) + ");");
 
-                        sb.append(
-                            formEntryTop(
-                                request, msgLabel(
-                                    getFormLabel(
-                                        entry, ARG_DESCRIPTION, "Description")), buttons
-                                            + HtmlUtils.textArea(
-                                                ARG_DESCRIPTION, desc, rows, HtmlUtils.id(
-                                                    editId + "_textarea")) + tmpSB));
+                        HtmlUtils.close(tmpSB, "div");
+                        sb.append(formEntryTop(request,
+                                getFormLabel(entry, ARG_DESCRIPTION,
+                                             "Description:<br>"
+                                             + cbx), tmpSB.toString()));
                     }
                 }
 
@@ -4697,28 +4719,22 @@ public class TypeHandler extends RepositoryManager {
     public void addToWikiToolbar(Request request, Entry entry,
                                  StringBuilder buttons, String textAreaId) {}
 
+
+
     /**
      * _more_
      *
      * @param request _more_
      * @param entry _more_
      * @param sb _more_
-     * @param formInfo _more_
-     * @param id _more_
      * @param text _more_
-     * @param label _more_
-     * @param readOnly _more_
-     * @param length _more_
      *
      * @throws Exception _more_
      */
-    public void addWikiEditor(Request request, Entry entry, Appendable sb,
-                              FormInfo formInfo, String id, String text,
-                              String label, boolean readOnly, int length)
+    public void addReadOnlyWikiEditor(Request request, Entry entry,
+                                      Appendable sb, String text)
             throws Exception {
-
-        addWikiEditor(request, entry, sb, formInfo, id, text, label,
-                      readOnly, length, null);
+        addWikiEditor(request, entry, sb, null, "", "", text, null, true, 0);
     }
 
 
@@ -4729,53 +4745,43 @@ public class TypeHandler extends RepositoryManager {
      * @param entry _more_
      * @param sb _more_
      * @param formInfo _more_
-     * @param id _more_
+     * @param editorId _more_
+     * @param hiddenId _more_
      * @param text _more_
      * @param label _more_
      * @param readOnly _more_
      * @param length _more_
-     * @param editId _more_
      *
      * @throws Exception _more_
      */
     public void addWikiEditor(Request request, Entry entry, Appendable sb,
-                              FormInfo formInfo, String id, String text,
-                              String label, boolean readOnly, int length,
-                              String editId)
+                              FormInfo formInfo, String editorId,
+                              String hiddenId, String text, String label,
+                              boolean readOnly, int length)
             throws Exception {
-        String editorId = id + "_editor";
-        String sidebar  = "";
-        if (editId != null) {
-            HtmlUtils.open(sb, "div",
-                           HtmlUtils.attrs("style", "display:none;", "id",
-                                           editId + "_wiki"));
-        }
+        String sidebar = "";
         if ( !readOnly) {
             sidebar = getWikiEditorSidebar(request, entry);
             String buttons =
                 getRepository().getWikiManager().makeWikiEditBar(request,
                     entry, editorId);
-            if (editId == null) {
-                if (label != null) {
-                    sb.append("<tr><td colspan=2>");
-                    sb.append(HtmlUtils.b(msgLabel(label)));
-                    sb.append(HtmlUtils.br());
-                }
+            if (label != null) {
+                sb.append("<tr><td colspan=2>");
+                sb.append(HtmlUtils.b(msgLabel(label)));
+                sb.append(HtmlUtils.br());
             }
             sb.append(buttons);
-            //      sb.append(HtmlUtils.script("HtmlUtils.initStickyToolbar('"  +editorId+"_toolbar');"));
-
         }
         if ((length > 0) && (formInfo != null)) {
-            formInfo.addMaxSizeValidation(label, id, length);
+            formInfo.addMaxSizeValidation(label, hiddenId, length);
         }
         text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         String textWidget = HtmlUtils.div(text,
-                                          HtmlUtils.id(id + "_editor")
+                                          HtmlUtils.id(editorId)
                                           + HtmlUtils.style("height:500px;")
                                           + HtmlUtils.attr("class",
                                               "ace_editor"));
-        sb.append(HtmlUtils.hidden(id, "", HtmlUtils.id(id)));
+        sb.append(HtmlUtils.hidden(hiddenId, "", HtmlUtils.id(hiddenId)));
         if (Utils.stringDefined(sidebar)) {
             sb.append(
                 HtmlUtils.table(
@@ -4800,13 +4806,7 @@ public class TypeHandler extends RepositoryManager {
                                    + ((formInfo == null)
                                       ? "null"
                                       : formInfo.getId()) + "','" + editorId
-                                      + "','" + id + "');"));
-        if ( !readOnly && (editId != null)) {
-            HtmlUtils.close(sb, "div");
-            sb.append(HtmlUtils.script("HtmlUtils.initWikiEditor('" + editId
-                                       + "','" + editorId + "');"));
-        }
-
+                                      + "','" + hiddenId + "');"));
         if (label != null) {
             sb.append("</td></tr>");
         }
@@ -5550,16 +5550,15 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (request.defined(ARG_GROUP)) {
-            String  groupId = (String) request.getString(ARG_GROUP,
-                                  "").trim();
+            String groupId = (String) request.getString(ARG_GROUP, "").trim();
 
-	    System.err.println("g:" +groupId);
-            boolean doNot   = groupId.startsWith("!");
+            System.err.println("g:" + groupId);
+            boolean doNot = groupId.startsWith("!");
             if (doNot) {
                 groupId = groupId.substring(1);
             }
             if (groupId.endsWith("%")) {
-		System.err.println("%%");
+                System.err.println("%%");
                 Entry group = getEntryManager().findGroup(request,
                                   groupId.substring(0, groupId.length() - 1));
                 if (group != null) {
@@ -5569,59 +5568,61 @@ public class TypeHandler extends RepositoryManager {
                 where.add(Clause.like(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                       groupId));
             } else {
-		List<String> toks = StringUtil.split(groupId,"|",true,true);
-		if(toks.size()>1) {
-		    List<Clause> ors = new ArrayList<Clause>();
-		    for(String tok: toks) {
-			ors.add(
-                            Clause.eq(
-                                Tables.ENTRIES.COL_PARENT_GROUP_ID,
-				tok));
-		    }
-		    where.add(Clause.or(ors));
-		} else {
-		Entry group = getEntryManager().findGroup(request);
-                if (group == null) {
-                    throw new IllegalArgumentException(
-                        msgLabel("Could not find folder") + groupId);
-                }
-                addCriteria(request, searchCriteria, "Folder" + (doNot
-                        ? "!="
-                        : "="), group.getName());
-                String searchChildren =
-                    (String) request.getString(ARG_GROUP_CHILDREN,
-                        (String) null);
-                if (Misc.equals(searchChildren, "true")) {
-                    Clause sub = (doNot
-                                  ? Clause.notLike(
-                                      Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                      group.getId() + Entry.IDDELIMITER + "%")
-                                  : Clause.like(
-                                      Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                      group.getId() + Entry.IDDELIMITER
-                                      + "%"));
-                    Clause equals = (doNot
-                                     ? Clause.neq(
-                                         Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                         group.getId())
-                                     : Clause.eq(
-                                         Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                         group.getId()));
-                    where.add(Clause.or(sub, equals));
+                List<String> toks = StringUtil.split(groupId, "|", true,
+                                        true);
+                if (toks.size() > 1) {
+                    List<Clause> ors = new ArrayList<Clause>();
+                    for (String tok : toks) {
+                        ors.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
+                                          tok));
+                    }
+                    where.add(Clause.or(ors));
                 } else {
-                    if (doNot) {
-                        where.add(
-                            Clause.neq(
-                                Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                group.getId()));
+                    Entry group = getEntryManager().findGroup(request);
+                    if (group == null) {
+                        throw new IllegalArgumentException(
+                            msgLabel("Could not find folder") + groupId);
+                    }
+                    addCriteria(request, searchCriteria, "Folder" + (doNot
+                            ? "!="
+                            : "="), group.getName());
+                    String searchChildren =
+                        (String) request.getString(ARG_GROUP_CHILDREN,
+                            (String) null);
+                    if (Misc.equals(searchChildren, "true")) {
+                        Clause sub = (doNot
+                                      ? Clause.notLike(
+                                          Tables.ENTRIES.COL_PARENT_GROUP_ID,
+                                          group.getId() + Entry.IDDELIMITER
+                                          + "%")
+                                      : Clause.like(
+                                          Tables.ENTRIES.COL_PARENT_GROUP_ID,
+                                          group.getId() + Entry.IDDELIMITER
+                                          + "%"));
+                        Clause equals = (doNot
+                                         ? Clause
+                                             .neq(Tables.ENTRIES
+                                                 .COL_PARENT_GROUP_ID, group
+                                                 .getId())
+                                         : Clause
+                                             .eq(Tables.ENTRIES
+                                                 .COL_PARENT_GROUP_ID, group
+                                                 .getId()));
+                        where.add(Clause.or(sub, equals));
                     } else {
-                        where.add(
-                            Clause.eq(
-                                Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                group.getId()));
+                        if (doNot) {
+                            where.add(
+                                Clause.neq(
+                                    Tables.ENTRIES.COL_PARENT_GROUP_ID,
+                                    group.getId()));
+                        } else {
+                            where.add(
+                                Clause.eq(
+                                    Tables.ENTRIES.COL_PARENT_GROUP_ID,
+                                    group.getId()));
+                        }
                     }
                 }
-		}
             }
         }
 

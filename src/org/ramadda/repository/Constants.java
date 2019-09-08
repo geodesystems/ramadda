@@ -395,10 +395,10 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_DATATYPE = "datatype";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_DIRECTORY = "directory";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_FILE_PATTERN = "filePattern";
 
     /** _more_ */
@@ -779,6 +779,12 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_DESCRIPTION = "description";
+
+    /** _more_          */
+    public static final String ARG_ISWIKI = "iswiki";
+
+    /** _more_          */
+    public static final String ARG_WIKITEXT = "wikitext";
 
     /** _more_ */
     public static final String ARG_EAST = "east";
