@@ -1089,7 +1089,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
         addPoints: function(records, fields, points) {
+	    var cidx=0
 	    var polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
+	    var polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
+	    var latlon = this.getProperty("latlon",true);
             var source = this;
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
@@ -1546,17 +1549,42 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(s.indexOf(d)>=0) delimiter = d;
 		    });
 		    var toks  = s.split(delimiter);
-		    var p = [];
-		    for(var pIdx=0;pIdx<toks.length;pIdx+=2) {
-			var lat = parseFloat(toks[pIdx]);
-			var lon = parseFloat(toks[pIdx+1]);
-			p.push(new OpenLayers.Geometry.Point(lon,lat));
+		    
+
+		    var polygonProps ={};
+		    $.extend(polygonProps,props);
+		    if(polygonProps.strokeWidth==0)
+			polygonProps.strokeWidth=1;
+		    if(polygonColorTable) {
+			if(cidx>=polygonColorTable.length) cidx=0;
+			polygonProps.strokeColor=polygonColorTable[cidx++];
 		    }
-		    var poly = this.map.addPolygon("polygon" + pIdx, "",p,props,html);
-		    if (date) {
-			poly.date = date.getTime();
+		    for(var pIdx=2;pIdx<toks.length;pIdx+=2) {
+			var p = [];
+			var lat1 = parseFloat(toks[pIdx-2]);
+			var lon1 = parseFloat(toks[pIdx-1]);
+			var lat2 = parseFloat(toks[pIdx]);
+			var lon2 = parseFloat(toks[pIdx+1]);
+			if(!latlon) {
+			    var tmp =lat1;
+			    lat1=lon1;
+			    lon1=tmp;
+			    var tmp =lat2;
+			    lat2=lon2;
+			    lon2=tmp;
+			}
+			p.push(new OpenLayers.Geometry.Point(lon1,lat1));
+			p.push(new OpenLayers.Geometry.Point(lon2,lat2));
+			var poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps,html);
+			if (date) {
+			    poly.date = date.getTime();
+			}
+			this.lines.push(poly);
 		    }
-		    this.lines.push(poly);
+
+
+
+
 		}
 
 
