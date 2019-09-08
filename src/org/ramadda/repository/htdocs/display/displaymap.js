@@ -1716,7 +1716,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"strokeColor=\"#000\"",
 		"fillColor=\"\"",
 		"radius=\"5\"",
-		"shape=\"triangle\"",
+		"shape=\"star|cross|x|square|triangle|circle|lightning|church\"",
 		"colorBy=\"\"",
 		"colorByLog=\"true\"",
 		"colorByMap=\"value1:color1,...,valueN:colorN\"",

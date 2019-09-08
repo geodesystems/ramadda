@@ -89,14 +89,14 @@ var Utils = {
         var dummy = $('<div ' + v+'></div>')
         var attrs = {};
         dummy.each(function() {
-                $.each(this.attributes,function() {
+            $.each(this.attributes,function() {
                 var name = this.name;
                 var value = this.value;
                 //                console.log(name +"=" +value);
                 if(value=="true") value=true;
                 else if(value=="false") value = false;
                 attrs[name]=value;
-                    })});
+            })});
         return attrs;
     },
     replaceRoot: function(s) {
@@ -176,13 +176,13 @@ var Utils = {
             if(!what) what = "text";
             await $.ajax({
                 url: path,
-                    xhrFields:{
-                        responseType: what
-                    },
+                xhrFields:{
+                    responseType: what
+                },
                 success: function(data) {
                     Utils.call(callback, data);
                 }
-                }).fail(err);
+            }).fail(err);
         } catch (e) {
             Utils.call(err, e);
         }
@@ -579,26 +579,26 @@ var Utils = {
         snippets.each(function() {
             let snippet = $(this);
             snippet.parent().hover(function() {
-                    var parent = $(this);
-                    var offset = parent.height();
-                    //Check for max-height on element
-                    if (offset > parent.parent().height()) {
-                        offset = parent.parent().height();
-                    }
-                    var popup = getTooltip();
-                    popup.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], snippet.html()));
-                    popup.show();
-                    popup.position({
-                        of: parent,
-                        my: "left top",
-                        at: "left top+" + (offset + 1),
-                        collision: "fit fit"
-                    });
-                },
-                function() {
-                    getTooltip().hide();
+                var parent = $(this);
+                var offset = parent.height();
+                //Check for max-height on element
+                if (offset > parent.parent().height()) {
+                    offset = parent.parent().height();
                 }
-            )
+                var popup = getTooltip();
+                popup.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], snippet.html()));
+                popup.show();
+                popup.position({
+                    of: parent,
+                    my: "left top",
+                    at: "left top+" + (offset + 1),
+                    collision: "fit fit"
+                });
+            },
+				   function() {
+				       getTooltip().hide();
+				   }
+				  )
         });
 
         //Buttonize
@@ -606,7 +606,7 @@ var Utils = {
         $(parent + '.ramadda-button').button().click(function(event) {});
         //menuize
         /*
-        $(".ramadda-pulldown").selectBoxIt({});
+          $(".ramadda-pulldown").selectBoxIt({});
         */
         /* for select menus with icons */
         $(parent + ".ramadda-pulldown-with-icons").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
@@ -628,8 +628,8 @@ var Utils = {
                 var start = this.selectionStart;
                 var end = this.selectionEnd;
                 $(this).val($(this).val().substring(0, start) +
-                    "\t" +
-                    $(this).val().substring(end));
+			    "\t" +
+			    $(this).val().substring(end));
                 this.selectionStart = this.selectionEnd = start + 1;
             }
         });
@@ -645,9 +645,9 @@ var Utils = {
 
         var code = "";
         /*
-        new ColorTable("GRAYSCALE", "Gray Scale", new int[][] {
-            { 0, 0, 0 }, { 1, 1, 1 }, { 2, 2, 2 }, { 3, 3, 3 }, { 4, 4, 4 },
-            });*/
+          new ColorTable("GRAYSCALE", "Gray Scale", new int[][] {
+          { 0, 0, 0 }, { 1, 1, 1 }, { 2, 2, 2 }, { 3, 3, 3 }, { 4, 4, 4 },
+          });*/
 
         for (a in this.ColorTables) {
             code +="new ColorTable(\"" + a +"\",\"" + a +"\", new String[]{\n";
@@ -675,6 +675,10 @@ var Utils = {
 
     displayColorTable: function(ct, domId, min, max, args) {
         if (!ct) return;
+        $("#" + domId).html(this.getColorTableDisplay(ct,min,max,args));
+    },
+    getColorTableDisplay: function(ct,  min, max, args) {
+        if (!ct) return null;
         if (ct.colors) ct = ct.colors;
         var options = {
             height: "15px",
@@ -714,16 +718,18 @@ var Utils = {
             html += "</tr></table>"
         }
         html += HtmlUtils.closeTag("div");
-
-        $("#" + domId).html(html);
+	return html;
     },
+
+
+
     hexToRgb:function(hex) {
 	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result ? {
 	    r: parseInt(result[1], 16),
-		g: parseInt(result[2], 16),
-		b: parseInt(result[3], 16)
-		} : null;
+	    g: parseInt(result[2], 16),
+	    b: parseInt(result[3], 16)
+	} : null;
     },
     ColorTables: {
         blues: {
@@ -954,8 +960,8 @@ var GuiUtils = {
     },
     loadHtml: async function(url, callback) {
         await $.get(url, function(data) {
-                callback(data);
-            })
+            callback(data);
+        })
             .done(function() {})
             .fail(function() {
                 console.log("Failed to load url: " + url);
@@ -1179,36 +1185,36 @@ var HtmlUtils = {
     initOdometer: function(id,value, pause, immediate) {
 	if(!Utils.isDefined(pause)) pause = 0;
 	$(document).ready(function(){
-		if(immediate) {
-		    $('#' + id).html(value);
-		    return;
-		}
-		setTimeout(function(){
+	    if(immediate) {
+		$('#' + id).html(value);
+		return;
+	    }
+	    setTimeout(function(){
 		if(HtmlUtils.elementScrolled('#' + id)) {
 		    setTimeout(function() {$('#' + id).html(value);},pause);
 		} else {
 		    $(window).scroll(function(){
-			    if(HtmlUtils.elementScrolled('#' + id)) {
-				setTimeout(function() {$('#' + id).html(value);},pause);
-			    }});
+			if(HtmlUtils.elementScrolled('#' + id)) {
+			    setTimeout(function() {$('#' + id).html(value);},pause);
+			}});
 		}},1000);
-	    });
+	});
     },
     callWhenScrolled: function(id,func,pause) {
 	if(!Utils.isDefined(pause)) pause = 0;
 	$(document).ready(function(){
-		setTimeout(function(){
+	    setTimeout(function(){
+		if(HtmlUtils.elementScrolled('#' + id)) {
+		    console.log("callWhenScrolled-1");
+		    setTimeout(func, pause);
+		} else {
+		    $(window).scroll(function(){
 			if(HtmlUtils.elementScrolled('#' + id)) {
-			    console.log("callWhenScrolled-1");
+			    console.log("callWhenScrolled-2");
 			    setTimeout(func, pause);
-			} else {
-			    $(window).scroll(function(){
-				    if(HtmlUtils.elementScrolled('#' + id)) {
-					console.log("callWhenScrolled-2");
-					setTimeout(func, pause);
-				    }});
-			}},1000);
-	    });
+			}});
+		}},1000);
+	});
     },
 
     getIconImage: function(url,attrs) {
@@ -1285,10 +1291,10 @@ var HtmlUtils = {
             //                draggable: true,
             minWidth: 650,
             /* use the default
-            show: {
-                effect: "blind",
-                duration: 250
-            },
+               show: {
+               effect: "blind",
+               duration: 250
+               },
             */
             hide: {
                 effect: "blind",
@@ -1376,14 +1382,14 @@ var HtmlUtils = {
         row += HtmlUtils.join(arguments, "</td><td>");
         row += "</td></tr>";
         return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
-            row);
+			row);
     },
     leftRight: function(left, right, leftWeight, rightWeight) {
         if (leftWeight == null) leftWeight = "6";
         if (rightWeight == null) rightWeight = "6";
         return this.div(["class", "row"],
-            this.div(["class", "col-md-" + leftWeight], left) +
-            this.div(["class", "col-md-" + rightWeight, "style", "text-align:right;"], right));
+			this.div(["class", "col-md-" + leftWeight], left) +
+			this.div(["class", "col-md-" + rightWeight, "style", "text-align:right;"], right));
     },
     leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs) {
         if (!attrs) attrs = {};
@@ -1393,10 +1399,10 @@ var HtmlUtils = {
         if (rightWidth == null) rightWidth = "33%";
 
         return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
-            this.tr(["valign", attrs.valign],
-                this.td(["align", "left", "width", leftWidth], left) +
-                this.td(["align", "center", "width", centerWidth], center) +
-                this.td(["align", "right", "width", rightWidth], right)));
+			this.tr(["valign", attrs.valign],
+				this.td(["align", "left", "width", leftWidth], left) +
+				this.td(["align", "center", "width", centerWidth], center) +
+				this.td(["align", "right", "width", rightWidth], right)));
     },
 
     leftRightTable: function(left, right, leftWidth, rightWidth, attrs) {
@@ -1413,9 +1419,9 @@ var HtmlUtils = {
             rightAttrs.push(rightWidth);
         }
         return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
-            this.tr(["valign", attrs.valign],
-                this.td(leftAttrs, left) +
-                this.td(rightAttrs, right)));
+			this.tr(["valign", attrs.valign],
+				this.td(leftAttrs, left) +
+				this.td(rightAttrs, right)));
     },
 
     heading: function(html) {
@@ -1529,18 +1535,18 @@ var HtmlUtils = {
     },
     formEntryTop: function(label, value) {
         return this.tag("tr", ["valign", "top"],
-            this.tag("td", ["class", "formlabel", "align", "right"],
-                label) +
-            this.tag("td", [],
-                value));
+			this.tag("td", ["class", "formlabel", "align", "right"],
+				 label) +
+			this.tag("td", [],
+				 value));
 
     },
     formEntry: function(label, value) {
         return this.tag("tr", [],
-            this.tag("td", ["class", "formlabel", "align", "right"],
-                label) +
-            this.tag("td", [],
-                value));
+			this.tag("td", ["class", "formlabel", "align", "right"],
+				 label) +
+			this.tag("td", [],
+				 value));
 
     },
     appendArg: function(url, arg, value) {
@@ -1824,19 +1830,19 @@ var HtmlUtils = {
     select: function(name, attrs,list, selected,maxWidth) {
         var select = this.openTag("select", attrs);
         list.map(item=>{
-                var label = item;
-                if(Array.isArray(item)) {
-		    label=item[1];
-                    item = item[0];
-                }
-                var extra = "";
-		if(selected && Array.isArray(selected)) {
-		    if(selected.indexOf(item)>=0) extra=" selected ";
-		} else {
-		    if(selected === item) extra=" selected ";
-		}
-                select+="<option " + extra +" value='" + item +"'>" + label +"</option>";
-            });
+            var label = item;
+            if(Array.isArray(item)) {
+		label=item[1];
+                item = item[0];
+            }
+            var extra = "";
+	    if(selected && Array.isArray(selected)) {
+		if(selected.indexOf(item)>=0) extra=" selected ";
+	    } else {
+		if(selected === item) extra=" selected ";
+	    }
+            select+="<option " + extra +" value='" + item +"'>" + label +"</option>";
+        });
         select+=this.closeTag("select");
         return select;
     },
@@ -1856,20 +1862,20 @@ var HtmlUtils = {
     },
     rangeInputInit: function(id) {
 	$("#" + id ).slider({
-		min: 0,
-		max: 100,
-		step: 1,
-		values: [10, 90],
-		slide: function(event, ui) {
-		    for (var i = 0; i < ui.values.length; ++i) {
-			$("input.sliderValue[data-index=" + i + "]").val(ui.values[i]);
-		    }
+	    min: 0,
+	    max: 100,
+	    step: 1,
+	    values: [10, 90],
+	    slide: function(event, ui) {
+		for (var i = 0; i < ui.values.length; ++i) {
+		    $("input.sliderValue[data-index=" + i + "]").val(ui.values[i]);
 		}
-	    });
+	    }
+	});
 	$("input.sliderValue").change(function() {
-		var $this = $(this);
-		$("#slider").slider("values", $this.data("index"), $this.val());
-	    });
+	    var $this = $(this);
+	    $("#slider").slider("values", $this.data("index"), $this.val());
+	});
     },
     input: function(name, value, attrs) {
         return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
@@ -1901,11 +1907,11 @@ var HtmlUtils = {
         var click = "toggleBlockVisibility(" + args + ");";
 
         var header = HtmlUtils.div(["class", "entry-toggleblock-label", "onClick", click],
-            HtmlUtils.image((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
-            " " + label);
+				   HtmlUtils.image((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
+				   " " + label);
         var style = (visible ? "display:block;visibility:visible" : "display:none;");
         var body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
-            contents);
+				 contents);
         return header + body;
     }
 }
@@ -1990,10 +1996,10 @@ var RamaddaUtil = {
 
 //Set a flag so we know not to show error dialogs above
 /*
-$(window).on('beforeunload', function(){
-        GuiUtils.pageUnloading = true;
-        return null;
-    });
+  $(window).on('beforeunload', function(){
+  GuiUtils.pageUnloading = true;
+  return null;
+  });
 */
 
 
@@ -2086,11 +2092,3 @@ function Div(contents, clazz) {
 })(jQuery);
 
 
-/*
-var s = "Make sure you're ready to vote: https://t.co/tTgeqxNqYm https://t.co/Q3Ymbb7UNy end"
-s=s.replace(/https?:\/\/[^ ]+/g," ");
-console.log(s);
-if(s.indexOf("https")>=0) {
-console.log("s:" + s);
-}
-*/

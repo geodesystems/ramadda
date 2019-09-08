@@ -3792,6 +3792,12 @@ h1, h2, h3 {
 
 }
 
+
+.wiki-editor-popup {
+    font-size:80%;
+    margin:5px;
+}
+
 .wiki-editor-popup-toolbar {
   background:#F0F0F0;
   padding:5px;
@@ -3805,9 +3811,9 @@ h1, h2, h3 {
 
 .wiki-editor-popup-items {
 margin-left:5px;
-max-width:250px;
+max-width:200px;
 overflow-x:auto;
-max-height:400px;
+max-height:300px;
 overflow-y:auto;
 }
 

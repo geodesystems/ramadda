@@ -3046,7 +3046,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"colorTableAlpha=\"0.5\"",
 		"colorByMin=\"value\"",
 		"colorByMax=\"value\"",
-		"label:Animation Attributes",
+		"inlinelabel:Animation Attributes",
 		"doAnimation=true",
 		"acceptDateRangeChange=true",
 		"animationDateFormat=\"yyyy\"",

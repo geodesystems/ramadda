@@ -274,6 +274,7 @@ function wikiInitEditor(info) {
 		    tmp = chunk.match(/type *= *\"([^\"]+)\"?/); 
 		    if(tmp && tmp.length>1) type=tmp[1];
 		    var tags = [];
+		    var extra;
 		    if(tag == "display" && type) {
 			try {
 			    var display = 
@@ -284,16 +285,33 @@ function wikiInitEditor(info) {
 			} catch(e) {
 			    console.log("Error getting tags for:" + type +" error:" + e);
 			}
+			extra = "<td><div class=wiki-editor-popup-header>Color Table</div><div class=wiki-editor-popup-items>"
+			for (a in Utils.ColorTables) {
+			    var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
+				showRange: false,
+				height: "20px"
+			    });
+			    ct = HtmlUtils.div(["style","width:150px;","title",a],ct);
+			    var call = "insertText(" + HtmlUtils.squote(info.id) +","+HtmlUtils.squote("colorTable=" + a)+")";
+			    extra+=HtmlUtils.onClick(call,ct);
+			}
+			extra+="</div></div></td>";
 		    }
 		    if(wikiAttributes[tag]) {
 			wikiAttributes[tag].map(a=>tags.push(a));
 		    }
+
+
 		    if(tags.length>0)
-			menu = "<div style='margin:5px;'><table><tr valign=top><td><div>";
+			menu = "<div class=wiki-editor-popup><table><tr valign=top><td><div>";
 		    tags.map(tag=>{
-			    if(tag.startsWith("label:")) {
-				if(menu!="") menu += "</div></td>";
-				menu+="<td><div class=wiki-editor-popup-header> " + tag.substring(6)+ "</div><div class=wiki-editor-popup-items>";
+			if(tag.startsWith("inlinelabel:")) {
+			    menu+="<b>" + tag.substring("inlinelabel:".length)+"</b><br>";
+			    return;
+			}
+			if(tag.startsWith("label:")) {
+			    if(menu!="") menu += "</div></td>";
+			    menu+="<td><div class=wiki-editor-popup-header> " + tag.substring(6)+ "</div><div class=wiki-editor-popup-items>";
 				return;
 			    }
 			    var t = " " + tag.replace(/\"/g,"&quot;")+" ";
@@ -301,7 +319,11 @@ function wikiInitEditor(info) {
 			    menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",tag)+"<br>\n";
 			});
 		    
-		    menu += "</div></td></tr></table></div>";
+		    menu+="</div></td>";
+		    if(extra) {
+			menu+=extra;
+		    }
+		    menu += "</tr></table></div>";
 		}
 	    }
 	    tooltipObject = getTooltip();
