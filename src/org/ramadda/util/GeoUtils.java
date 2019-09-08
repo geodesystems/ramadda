@@ -601,12 +601,17 @@ public class GeoUtils {
             //      if(_address.indexOf("arundel")<0) return null;
             resource = Place.getResource("counties");
             int index = _address.indexOf(",");
+            if (index < 0) {
+		return resource.getPlace(_address);
+	    }
             if (index >= 0) {
                 getStatesMap();
                 List<String> toks   = StringUtil.splitUpTo(_address, ",", 2);
                 String       county = toks.get(0);
                 String       state  = toks.get(1);
                 //              System.out.println("address:" + _address);
+		if(place!=null) return place;
+
                 place = resource.getPlace(county + "," + state);
 		//		resource.debug();
 		//		System.out.println("try:" +county+"," + state +": place:" + place);

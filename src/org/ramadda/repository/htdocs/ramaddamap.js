@@ -1425,7 +1425,6 @@ function initMapFunctions(theMap) {
                 _this.initDates(layer);
             }
         });
-	image.layerName = "map vector layer";
 
         this.addLayer(layer);
         this.addSelectCallback(layer, canSelect, selectCallback, unselectCallback);
