@@ -3957,6 +3957,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else if (sort.equals(SORT_CHANGEDATE)) {
                 entries = getEntryUtil().sortEntriesOnChangeDate(entries,
                         !ascending);
+	    } else if (sort.equals(SORT_CREATEDATE)) {
+                entries = getEntryUtil().sortEntriesOnCreateDate(entries,
+								 !ascending);
             } else if (sort.equals(SORT_NAME)) {
                 entries = getEntryUtil().sortEntriesOnName(entries,
                         !ascending);

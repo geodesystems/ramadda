@@ -200,6 +200,9 @@ public interface WikiConstants {
     /** change date attribute */
     public static final String SORT_CHANGEDATE = "changedate";
 
+    /** change date attribute */
+    public static final String SORT_CREATEDATE = "createdate";
+
     /** sort name attribute */
     public static final String SORT_NAME = "name";
 
