@@ -820,6 +820,7 @@ public abstract class Converter extends Processor {
 
                 type   = CsvUtil.getDbProp(props, id, "type", type);
                 format = CsvUtil.getDbProp(props, id, "format", format);
+		if(format!=null) format = format.replaceAll("_space_"," ");
 
                 attrs.append(" type=\"" + type + "\"");
                 if (format != null) {
