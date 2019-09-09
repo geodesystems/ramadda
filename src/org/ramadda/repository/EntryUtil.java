@@ -271,7 +271,7 @@ public class EntryUtil extends RepositoryManager {
                             ? 1
                             : -1);
                 }
-                if (e1.getStartDate() > e2.getStartDate()) {
+                if (e1.getCreateDate() > e2.getCreateDate()) {
                     return (descending
                             ? -1
                             : 1);
