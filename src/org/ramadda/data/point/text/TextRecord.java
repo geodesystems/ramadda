@@ -505,6 +505,11 @@ public class TextRecord extends DataRecord {
         if (tok.equals("") || tok.equals("null")) {
             return null;
         }
+	String sfmt = field.getSDateFormat ();
+	if(sfmt!=null && sfmt.equals("SSS")) {
+	    return new Date(new Long(tok));
+	}
+
         Date date   = null;
         int  offset = field.getUtcOffset();
         try {

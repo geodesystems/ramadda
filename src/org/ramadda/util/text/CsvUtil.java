@@ -764,10 +764,27 @@ public class CsvUtil {
             throws Exception {
         List<Row>    rows  = new ArrayList<Row>();
         String       s     = IOUtil.readContents(file);
-        JSONArray    array = new JSONArray(s);
+	
+        JSONArray    array = null;
+	String arrayPath = props.get("arrayPath");
+	String objectPath = props.get("objectPath");
+	try {
+	    JSONObject obj      = new JSONObject(s);
+	    if(arrayPath!=null) {
+		array = Json.readArray(obj,arrayPath);
+	    }
+	} catch(Exception exc) {
+	}
+	if(array==null)
+	    array= new JSONArray(s);
+
+
         List<String> names = null;
         for (int i = 0; i < array.length(); i++) {
             JSONObject jrow = array.getJSONObject(i);
+	    if(objectPath!=null)
+		jrow = Json.readObject(jrow,objectPath);
+
             if (names == null) {
                 String[] tmp = JSONObject.getNames(jrow);
                 Row      row = new Row();
@@ -2167,6 +2184,7 @@ public class CsvUtil {
                                            "\\\\]");
                 pattern = pattern.replaceAll("_dot_", "\\\\.");
                 pattern = pattern.replaceAll("_star_", "\\\\*");
+		pattern = pattern.replaceAll("_plus_", "\\\\+");
                 //                pattern = pattern.replaceAll("_leftparen_","\\\\(").replaceAll("_rightparen_","\\\\)");
                 info.getProcessor().addProcessor(
                     new Converter.ColumnChanger(

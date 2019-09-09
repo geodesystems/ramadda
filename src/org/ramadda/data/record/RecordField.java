@@ -133,6 +133,7 @@ public class RecordField {
 
     /** _more_ */
     private SimpleDateFormat dateFormat;
+    private String sDateFormat;
 
     /** _more_ */
     private int utcOffset = 0;
@@ -1090,6 +1091,32 @@ public boolean getIsGroup () {
     public void setDateFormat(SimpleDateFormat value) {
         dateFormat = value;
     }
+
+    public void setDateFormat(SimpleDateFormat value, String fmt) {
+        dateFormat = value;
+	sDateFormat = fmt;
+    }
+
+/**
+Set the SDateFormat property.
+
+@param value The new value for SDateFormat
+**/
+public void setSDateFormat (String value) {
+	sDateFormat = value;
+}
+
+/**
+Get the SDateFormat property.
+
+@return The SDateFormat
+**/
+public String getSDateFormat () {
+	return sDateFormat;
+}
+
+
+
 
     /**
      *  Get the DateFormat property.

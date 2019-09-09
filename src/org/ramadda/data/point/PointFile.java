@@ -1013,7 +1013,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                 SimpleDateFormat sdf = new SimpleDateFormat();
                 sdf.setTimeZone(TimeZone.getTimeZone(timezone));
                 sdf.applyPattern(fmt);
-                field.setDateFormat(sdf);
+                field.setDateFormat(sdf,fmt);
             }
 
             String type = getProperty(field, properties, ATTR_TYPE,

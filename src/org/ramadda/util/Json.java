@@ -1094,12 +1094,10 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	/*
         geojsonToCsv(args[0], System.out, (args.length > 1)
                                    ? args[1]
                                    : null);
         if(true) return;
-	*/
 
 
         String  file = args[0];

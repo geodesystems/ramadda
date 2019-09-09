@@ -36,9 +36,16 @@
   -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
 
-.display-fitlerby textarea, .display-fitlerby input, .display-fitlerby select, .display-filterby {
-  font-size:75% !important;
+.display-filterby textarea, .display-filterby input, .display-filterby select, .display-filterby {
+  font-size:90% !important;
 }
+
+.display-filterby-popup-item {
+  font-size:90% !important;
+  cursor:pointer;
+}
+
+
 
 .display-filterby-label {
     font-weight: bold;
@@ -134,6 +141,10 @@ position:absolute;
 }
 
 .display-animation-buttons span:hover {
+}
+
+.display-map-inner {
+    color:#000;
 }
 
 .display-map-toolbar .ramadda-button {

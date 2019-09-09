@@ -906,7 +906,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					 "emptyMessage=\"\"",
 					 "select=\"max|min|<|>|=|<=|>=|contains\"",
 					 "selectField=\"\"",
-					 "selectValue=\"\""
+					    "selectValue=\"\"",
+					    '${&lt;field&gt;_total}',
+					    '${&lt;field&gt;_max}',
+					    '${&lt;field&gt;_min}',
+					    '${&lt;field&gt;_average}',
 					 ]);
 	    },
 	    updateUI: function() {
@@ -948,6 +952,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				if(v.getTime()>s.max.getTime()) s.max = v;
 			    }  else if(!isNaN(v)) {
 				s.total+=v;
+				if(f.getLabel()=="Dead" && v>1000) console.log(f.getLabel() +" v:" +  v +" t:" + s.total);
 				s.min = Math.min(s.min,v);
 				s.max = Math.max(s.max,v);
 				s.count++;

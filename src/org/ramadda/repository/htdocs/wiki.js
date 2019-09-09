@@ -326,7 +326,7 @@ function wikiInitEditor(info) {
 		    menu += "</tr></table></div>";
 		}
 	    }
-	    tooltipObject = getTooltip();
+	     tooltipObject = getTooltip();
 	    tooltipObject.html(menu);
 	    tooltipObject.show();
 	    tooltipObject.position({
