@@ -988,6 +988,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.circles.redraw();
             if (this.map.lines)
                 this.map.lines.redraw();
+
+	    if (this.map.lines)
+                this.map.lines.redraw();
+	    if (this.map.markers)
+                this.map.markers.redraw();
             this.applyVectorMap(true);
 	},
         showAllPoints: function() {
@@ -1152,6 +1157,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var iconSize = parseFloat(this.getProperty("iconSize",32));
 	    if(iconField)
 		this.pointsAreMarkers = true;
+
+	    var iconMap;
+	    var iconMapProp = this.getProperty("iconMap");
+	    if (iconMapProp) {
+                var toks = iconMapProp.split(",");
+		iconMap = {};
+                for (var i = 0; i < toks.length; i++) {
+		    var toks2 = toks[i].split(":");
+		    if (toks2.length > 1) {
+                        iconMap[toks2[0]] = toks2[1];
+		    }
+		}
+            }
+
+
+
+
 	    var dfltShape = this.getProperty("defaultShape",null);
 	    var dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
 	    var dfltShapeIdx=0;
@@ -1326,6 +1348,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 sizeBy.maxValue = sizeByFunc(sizeBy.maxValue + sizeByOffset);
             }
             sizeBy.range = sizeBy.maxValue - sizeBy.minValue;
+
+//	    console.log(JSON.stringify(sizeBy,null,2));
+
 
             if (dateMax) {
 		this.getAnimation().init(dateMin, dateMax,dates);
@@ -1624,9 +1649,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    var mapPoint=null;
 		    if(iconField) {
 			var icon = tuple[iconField.getIndex()];
+			if(iconMap) {
+			    icon = iconMap[icon];
+			    if(!icon) icon = this.getMarkerIcon();
+			}
 			var size = iconSize;
 			if(sizeBy.index >= 0) {
-			    size = props.pointRadius * size;
+			    size = props.pointRadius;
 			}
 			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,html,null,size);
 		    } else  if(pointIcon) {
@@ -1714,7 +1743,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"colorByMap=\"value1:color1,...,valueN:colorN\"",
 		"sizeBy=\"\"",
 		"sizeByLog=\"true\"",
-		"sizeByMap=\"value1:color1,...,valueN:colorN\"",
+		"sizeByMap=\"value1:size,...,valueN:size\"",
 		'sizeByRadiusMin="2"',
 		'sizeByRadiusMin="20"',
 		"boundsAnimation=\"true\"",
