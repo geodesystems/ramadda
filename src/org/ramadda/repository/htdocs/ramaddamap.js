@@ -2897,7 +2897,7 @@ function initMapFunctions(theMap) {
     theMap.setViewToBounds = function(bounds) {
         projBounds = this.transformLLBounds(bounds);
         if (projBounds.getWidth() == 0) {
-            this.getMap().zoomTo(this.initialZoom);
+	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
 	    if(debugBounds)
 		console.log("zoom10:" + bounds);
