@@ -1007,6 +1007,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             }
 
             if (fmt != null) {
+		fmt = fmt.replaceAll("_comma_",",");
                 String timezone = getProperty(field, properties, "timezone",
                                       "UTC");
                 field.setType(field.TYPE_DATE);
