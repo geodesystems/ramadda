@@ -5553,7 +5553,6 @@ public class TypeHandler extends RepositoryManager {
         if (request.defined(ARG_GROUP)) {
             String groupId = (String) request.getString(ARG_GROUP, "").trim();
 
-            System.err.println("g:" + groupId);
             boolean doNot = groupId.startsWith("!");
             if (doNot) {
                 groupId = groupId.substring(1);
