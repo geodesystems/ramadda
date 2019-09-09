@@ -1,4 +1,3 @@
-
 .display {
 }
 
@@ -1194,7 +1193,7 @@ height:100%;
   font-size:10px;
   max-width:100%;
   overflow-x:auto;
-  border:1px #efefef solid;
+  /*border:1px #efefef solid;*/
   border-top:0px #efefef solid;
 }
 

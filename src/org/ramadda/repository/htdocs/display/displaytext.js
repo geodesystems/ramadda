@@ -1130,6 +1130,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents+= headerTemplate;
 		}
 		if(template!= "") {
+		    var colorBy = this.getProperty("colorBy");
+		    var colorByMap = this.getColorByMap();
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 			if(max!=-1 && rowIdx>=max) break;
@@ -1163,6 +1165,17 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    }
 			    if(typeof value == "number") {
 				value = Utils.formatNumber(value);
+			    }
+			    var color;
+			    if(colorByMap) {
+				if(colorBy && colorBy == f.getId()) {
+				    color = colorByMap[value];
+				} else {
+				    color = colorByMap[f.getId()+"."+value];				    
+				}
+			    }
+			    if(color) {
+				value = HtmlUtils.span(["style","color:" + color],value);
 			    }
 			    s = s.replace("${" + f.getId() +"}", value);
 			}

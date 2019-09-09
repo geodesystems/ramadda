@@ -712,6 +712,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 max: max
             };
         },
+	    getColorByMap: function() {
+		var colorByMapProp = this.getProperty("colorByMap");
+		if (colorByMapProp) {
+                    var toks = colorByMapProp.split(",");
+		    var stringMap = {};
+                    for (var i = 0; i < toks.length; i++) {
+			var toks2 = toks[i].split(":");
+			if (toks2.length > 1) {
+                            stringMap[toks2[0]] = toks2[1];
+			}
+                    }
+		    return stringMap;
+		}
+		return null;
+            },
         toString: function() {
             return "RamaddaDisplay:" + this.type + " - " + this.getId();
         },
@@ -15403,6 +15418,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents+= headerTemplate;
 		}
 		if(template!= "") {
+		    var colorBy = this.getProperty("colorBy");
+		    var colorByMap = this.getColorByMap();
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 			if(max!=-1 && rowIdx>=max) break;
@@ -15436,6 +15453,17 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    }
 			    if(typeof value == "number") {
 				value = Utils.formatNumber(value);
+			    }
+			    var color;
+			    if(colorByMap) {
+				if(colorBy && colorBy == f.getId()) {
+				    color = colorByMap[value];
+				} else {
+				    color = colorByMap[f.getId()+"."+value];				    
+				}
+			    }
+			    if(color) {
+				value = HtmlUtils.span(["style","color:" + color],value);
 			    }
 			    s = s.replace("${" + f.getId() +"}", value);
 			}
@@ -20822,17 +20850,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    var dateMin = null;
 	    var dateMax = null;
 
-	    var colorByMapProp = this.getProperty("colorByMap");
-            if (colorByMapProp) {
-                var toks = colorByMapProp.split(",");
-		colorBy.stringMap = {};
-                for (var i = 0; i < toks.length; i++) {
-                    var toks2 = toks[i].split(":");
-                    if (toks2.length > 1) {
-                        colorBy.stringMap[toks2[0]] = toks2[1];
-                    }
-                }
-            }
+
+	    colorBy.stringMap = this.getColorByMap();
+
 
             var colorByMap = {};
             var colorByValues = [];

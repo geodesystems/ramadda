@@ -562,6 +562,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 max: max
             };
         },
+	    getColorByMap: function() {
+		var colorByMapProp = this.getProperty("colorByMap");
+		if (colorByMapProp) {
+                    var toks = colorByMapProp.split(",");
+		    var stringMap = {};
+                    for (var i = 0; i < toks.length; i++) {
+			var toks2 = toks[i].split(":");
+			if (toks2.length > 1) {
+                            stringMap[toks2[0]] = toks2[1];
+			}
+                    }
+		    return stringMap;
+		}
+		return null;
+            },
         toString: function() {
             return "RamaddaDisplay:" + this.type + " - " + this.getId();
         },

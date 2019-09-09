@@ -1253,17 +1253,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    var dateMin = null;
 	    var dateMax = null;
 
-	    var colorByMapProp = this.getProperty("colorByMap");
-            if (colorByMapProp) {
-                var toks = colorByMapProp.split(",");
-		colorBy.stringMap = {};
-                for (var i = 0; i < toks.length; i++) {
-                    var toks2 = toks[i].split(":");
-                    if (toks2.length > 1) {
-                        colorBy.stringMap[toks2[0]] = toks2[1];
-                    }
-                }
-            }
+
+	    colorBy.stringMap = this.getColorByMap();
+
 
             var colorByMap = {};
             var colorByValues = [];
