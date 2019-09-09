@@ -4395,7 +4395,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (randomCnt > 0) {
             List<Entry> rtmp = new ArrayList<Entry>();
             while ((randomCnt-- > 0) && (entries.size() > 0)) {
-                int   idx = (int) Math.random() * entries.size();
+                int   idx = (int) (Math.random() * entries.size());
+		if(idx<0) idx=0;
+		else if(idx>=entries.size()) idx=entries.size()-1;
                 Entry e   = entries.get(idx);
                 rtmp.add(e);
                 entries.remove(idx);
