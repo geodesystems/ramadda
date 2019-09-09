@@ -2938,8 +2938,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			stop: function() {
 			    var popup = getTooltip();
 			    popup.hide();
-			    inputFunc(min);
 			    theDisplay.checkFilterField(max);
+			    setTimeout(()=>{inputFunc(min)},1);
 			}
 		    });
 		});

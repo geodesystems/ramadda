@@ -3088,8 +3088,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			stop: function() {
 			    var popup = getTooltip();
 			    popup.hide();
-			    inputFunc(min);
 			    theDisplay.checkFilterField(max);
+			    setTimeout(()=>{inputFunc(min)},1);
 			}
 		    });
 		});
@@ -15448,6 +15448,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				    s = s.replace("${" + f.getId() +"}", value);
 				    s = s.replace("${" + f.getId() +"_yyyy}", Utils.formatDateYYYY(value));
 				    s = s.replace("${" + f.getId() +"_yyyymmdd}", Utils.formatDateYYYYMMDD(value));
+				    s = s.replace("${" + f.getId() +"_monthdayyear}", Utils.formatDateMonthDayYear(value));
+				    s = s.replace("${" + f.getId() +"_mdy}", Utils.formatDateMDY(value));
 				}
 				continue;
 			    }

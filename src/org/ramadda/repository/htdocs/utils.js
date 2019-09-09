@@ -315,6 +315,20 @@ var Utils = {
             return "Alabama,Alaska,Arizona,Arkansas,California,Colorado,Connecticut,Delaware,District of Columbia,Florida,Georgia,Hawaii,Idaho,Illinois,Indiana,Iowa,Kansas,Kentucky,Louisiana,Maine,Maryland,Massachusetts,Michigan,Minnesota,Mississippi,Missouri,Montana,Nebraska,Nevada,New Hampshire,New Jersey,New Mexico,New York,North Carolina,North Dakota,Ohio,Oklahoma,Oregon,Origin State,Pennsylvania,Rhode Island,South Carolina,South Dakota,Tennessee,Texas,Utah,Vermont,Virginia,Washington,West Virginia,Wisconsin,Wyoming";
         return v;
     },
+    monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],
+    monthNamesShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    formatDateMonthDayYear: function(date, options, args) {
+	var m = this.monthNames[date.getUTCMonth()];
+	var d = date.getUTCDate();
+	if(d<10) d = "0" +d;
+        return m +" " + d +", " + date.getUTCFullYear();
+    },
+    formatDateMDY: function(date, options, args) {
+	var m = this.monthNamesShort[date.getUTCMonth()];
+	var d = date.getUTCDate();
+	if(d<10) d = "0" +d;
+        return m +" " + d +", " + date.getUTCFullYear();
+    },
     formatDateYYYYMMDD: function(date, options, args) {
 	var m = (date.getUTCMonth() + 1);
 	if(m<10) m = "0" + m;

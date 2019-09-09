@@ -1160,6 +1160,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				    s = s.replace("${" + f.getId() +"}", value);
 				    s = s.replace("${" + f.getId() +"_yyyy}", Utils.formatDateYYYY(value));
 				    s = s.replace("${" + f.getId() +"_yyyymmdd}", Utils.formatDateYYYYMMDD(value));
+				    s = s.replace("${" + f.getId() +"_monthdayyear}", Utils.formatDateMonthDayYear(value));
+				    s = s.replace("${" + f.getId() +"_mdy}", Utils.formatDateMDY(value));
 				}
 				continue;
 			    }
