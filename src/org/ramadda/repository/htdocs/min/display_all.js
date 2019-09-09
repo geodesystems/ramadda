@@ -3073,7 +3073,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			stop: function() {
 			    var popup = getTooltip();
 			    popup.hide();
-			    min.trigger("change");
+			    inputFunc(min);
 			    theDisplay.checkFilterField(max);
 			}
 		    });

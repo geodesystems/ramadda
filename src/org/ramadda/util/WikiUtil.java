@@ -1378,7 +1378,7 @@ public class WikiUtil {
 
                 String  label       = (String) props.get("label");
                 String  heading     = (String) props.get("heading");
-                String  title       = (String) props.get("title");
+		String  title       = (String) props.get("title");
                 String  classArg    = (String) props.get("class");
                 String  style       = (String) props.get("style");
                 String  titleStyle  = (String) props.get("titleStyle");
