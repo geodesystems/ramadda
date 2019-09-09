@@ -2846,6 +2846,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var fieldMap = {};
                 for(var i=0;i<filterBy.length;i++) {
                     var filterField  = this.getFieldById(fields,filterBy[i]);
+		    if(!filterField) continue;
 		    fieldMap[filterField.getId()] = {
 			field: filterField,
 			values:[],
