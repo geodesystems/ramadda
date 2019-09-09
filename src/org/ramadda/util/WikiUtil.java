@@ -1379,9 +1379,11 @@ public class WikiUtil {
                 String  label       = (String) props.get("label");
                 String  heading     = (String) props.get("heading");
 		String  title       = (String) props.get("title");
+		String  subTitle       = (String) props.get("subTitle");
                 String  classArg    = (String) props.get("class");
                 String  style       = (String) props.get("style");
                 String  titleStyle  = (String) props.get("titleStyle");
+		String  headerStyle  = (String) props.get("headerStyle");
                 boolean doBorderTop = tline.indexOf("----") >= 0;
                 boolean doEvenOdd   = tline.indexOf("#") >= 0;
                 String  extraClass  = "";
@@ -1439,8 +1441,13 @@ public class WikiUtil {
                     buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
                 }
                 if (title != null) {
-                    buff.append(HtmlUtils.div(getTitle(title, titleStyle),
-                            HtmlUtils.cssClass("ramadda-page-title")));
+		    String sub = "";
+		    if(subTitle!=null) {
+			sub = HtmlUtils.div(subTitle,HtmlUtils.clazz("ramadda-page-subtitle"));
+		    }
+                    buff.append(HtmlUtils.div(getTitle(title, titleStyle)+sub,
+					      HtmlUtils.cssClass("ramadda-page-title") +
+					      (headerStyle==null?"":HtmlUtils.style(headerStyle))));
                 }
 
                 continue;

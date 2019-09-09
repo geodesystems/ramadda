@@ -1130,6 +1130,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents+= headerTemplate;
 		}
 		if(template!= "") {
+		    var iconField = this.getFieldById(fields, this.getProperty("iconField"));
+		    var iconSize = parseFloat(this.getProperty("iconSize",16));
+		    var iconMap = this.getIconMap();
+
 		    var colorBy = this.getProperty("colorBy");
 		    var colorByMap = this.getColorByMap();
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
@@ -1139,9 +1143,23 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			var s = template;
 			s = s.replace("${selectCount}",selected.length);
 			s = s.replace("${totalCount}",records.length);
+			if(iconMap && iconField) {
+			    var value = row[iconField.getIndex()];
+			    var icon = iconMap[value];
+			    if(icon) {
+				s = s.replace("${" + iconField.getId() +"_icon}", HtmlUtils.image(icon,["width",iconSize]));
+			    }
+			}
+
 			for (var col = 0; col < fields.length; col++) {
 			    var f = fields[col];
 			    var value = row[f.getIndex()];
+			    if(iconMap) {
+				var icon = iconMap[f.getId()+"."+value];
+				if(icon) {
+				    s = s.replace("${" + f.getId() +"_icon}", HtmlUtils.image(icon,["size",iconSize]));
+				}
+			    }
 			    if(f.getType()=="image") {
 				if(value && value.trim().length>1) {
 				    var attrs = [];

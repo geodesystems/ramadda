@@ -562,7 +562,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 max: max
             };
         },
-	    getColorByMap: function() {
+	getIconMap: function() {
+	    var iconMap;
+	    var iconMapProp = this.getProperty("iconMap");
+	    if (iconMapProp) {
+                var toks = iconMapProp.split(",");
+		iconMap = {};
+                for (var i = 0; i < toks.length; i++) {
+		    var toks2 = toks[i].split(":");
+		    if (toks2.length > 1) {
+                        iconMap[toks2[0]] = toks2[1];
+		    }
+		}
+            }
+	    return iconMap;
+	},
+	getColorByMap: function() {
 		var colorByMapProp = this.getProperty("colorByMap");
 		if (colorByMapProp) {
                     var toks = colorByMapProp.split(",");
@@ -4353,7 +4368,8 @@ function DisplayAnimation(display) {
         speed: parseInt(display.getProperty("animationSpeed", 250)),
         toggleAnimation: function() {
 	    this.running = !this.running;
-	    this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
+	    if(this.btnRun)
+		this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
 	    if (this.running)
 		this.startAnimation();
 	},
@@ -4524,7 +4540,8 @@ function DisplayAnimation(display) {
 		this.end = this.dateMax;
 		this.inAnimation = false;
 		this.running = false;
-		this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+		if(this.btnRun)
+		    this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
 		this.applyAnimation();
             });
         },
@@ -4586,7 +4603,8 @@ function DisplayAnimation(display) {
 	    this.doNext();
         },
 	stopAnimation:function() {
-            this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+	    if(this.btnRun)
+		this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
             this.running = false;
 	},
 	setDateRange: function(begin,end) {
@@ -4615,7 +4633,8 @@ function DisplayAnimation(display) {
             } else {
                 this.running = false;
                 this.inAnimation = false;
-                this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+		if(this.btnRun)
+                    this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
             }
 	},
 
@@ -4628,6 +4647,10 @@ function DisplayAnimation(display) {
                 return Utils.formatDateYYYY(d);
             } else if (this.dateFormat == "yyyyMMdd") {
                 return Utils.formatDateYYYYMMDD(d);
+	    } else if (this.dateFormat == "monthdayyear") {
+                return Utils.formatDateMonthDayYear(d);
+	    } else if (this.dateFormat == "mdy") {
+                return Utils.formatDateMDY(d);
             } else {
                 return Utils.formatDate(d);
             }

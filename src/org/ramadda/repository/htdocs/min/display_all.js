@@ -712,7 +712,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 max: max
             };
         },
-	    getColorByMap: function() {
+	getIconMap: function() {
+	    var iconMap;
+	    var iconMapProp = this.getProperty("iconMap");
+	    if (iconMapProp) {
+                var toks = iconMapProp.split(",");
+		iconMap = {};
+                for (var i = 0; i < toks.length; i++) {
+		    var toks2 = toks[i].split(":");
+		    if (toks2.length > 1) {
+                        iconMap[toks2[0]] = toks2[1];
+		    }
+		}
+            }
+	    return iconMap;
+	},
+	getColorByMap: function() {
 		var colorByMapProp = this.getProperty("colorByMap");
 		if (colorByMapProp) {
                     var toks = colorByMapProp.split(",");
@@ -4503,7 +4518,8 @@ function DisplayAnimation(display) {
         speed: parseInt(display.getProperty("animationSpeed", 250)),
         toggleAnimation: function() {
 	    this.running = !this.running;
-	    this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
+	    if(this.btnRun)
+		this.btnRun.html(HtmlUtils.getIconImage(this.running ? "fa-stop" : "fa-play"));
 	    if (this.running)
 		this.startAnimation();
 	},
@@ -4674,7 +4690,8 @@ function DisplayAnimation(display) {
 		this.end = this.dateMax;
 		this.inAnimation = false;
 		this.running = false;
-		this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+		if(this.btnRun)
+		    this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
 		this.applyAnimation();
             });
         },
@@ -4736,7 +4753,8 @@ function DisplayAnimation(display) {
 	    this.doNext();
         },
 	stopAnimation:function() {
-            this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+	    if(this.btnRun)
+		this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
             this.running = false;
 	},
 	setDateRange: function(begin,end) {
@@ -4765,7 +4783,8 @@ function DisplayAnimation(display) {
             } else {
                 this.running = false;
                 this.inAnimation = false;
-                this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
+		if(this.btnRun)
+                    this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
             }
 	},
 
@@ -4778,6 +4797,10 @@ function DisplayAnimation(display) {
                 return Utils.formatDateYYYY(d);
             } else if (this.dateFormat == "yyyyMMdd") {
                 return Utils.formatDateYYYYMMDD(d);
+	    } else if (this.dateFormat == "monthdayyear") {
+                return Utils.formatDateMonthDayYear(d);
+	    } else if (this.dateFormat == "mdy") {
+                return Utils.formatDateMDY(d);
             } else {
                 return Utils.formatDate(d);
             }
@@ -15419,6 +15442,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents+= headerTemplate;
 		}
 		if(template!= "") {
+		    var iconField = this.getFieldById(fields, this.getProperty("iconField"));
+		    var iconSize = parseFloat(this.getProperty("iconSize",16));
+		    var iconMap = this.getIconMap();
+
 		    var colorBy = this.getProperty("colorBy");
 		    var colorByMap = this.getColorByMap();
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
@@ -15428,9 +15455,23 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			var s = template;
 			s = s.replace("${selectCount}",selected.length);
 			s = s.replace("${totalCount}",records.length);
+			if(iconMap && iconField) {
+			    var value = row[iconField.getIndex()];
+			    var icon = iconMap[value];
+			    if(icon) {
+				s = s.replace("${" + iconField.getId() +"_icon}", HtmlUtils.image(icon,["width",iconSize]));
+			    }
+			}
+
 			for (var col = 0; col < fields.length; col++) {
 			    var f = fields[col];
 			    var value = row[f.getIndex()];
+			    if(iconMap) {
+				var icon = iconMap[f.getId()+"."+value];
+				if(icon) {
+				    s = s.replace("${" + f.getId() +"_icon}", HtmlUtils.image(icon,["size",iconSize]));
+				}
+			    }
 			    if(f.getType()=="image") {
 				if(value && value.trim().length>1) {
 				    var attrs = [];
@@ -20757,23 +20798,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var iconSize = parseFloat(this.getProperty("iconSize",32));
 	    if(iconField)
 		this.pointsAreMarkers = true;
-
-	    var iconMap;
-	    var iconMapProp = this.getProperty("iconMap");
-	    if (iconMapProp) {
-                var toks = iconMapProp.split(",");
-		iconMap = {};
-                for (var i = 0; i < toks.length; i++) {
-		    var toks2 = toks[i].split(":");
-		    if (toks2.length > 1) {
-                        iconMap[toks2[0]] = toks2[1];
-		    }
-		}
-            }
-
-
-
-
+	    var iconMap = this.getIconMap();
 	    var dfltShape = this.getProperty("defaultShape",null);
 	    var dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
 	    var dfltShapeIdx=0;
@@ -21304,6 +21329,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		}
             }
+
+	    if(iconField&& iconMap) {
+		var html = "";
+		for(a in iconMap) {
+		    html+=HtmlUtils.image(iconMap[a],["width","32"]) +" " + a+" ";
+		}
+		this.jq(ID_SHAPES).html("<center>" +html+ "</center>");
+	    }
 
 	    if(shapeBy.field) {
 		var shapes = shapeBy.field.getLabel()+": ";

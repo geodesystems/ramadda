@@ -1157,23 +1157,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var iconSize = parseFloat(this.getProperty("iconSize",32));
 	    if(iconField)
 		this.pointsAreMarkers = true;
-
-	    var iconMap;
-	    var iconMapProp = this.getProperty("iconMap");
-	    if (iconMapProp) {
-                var toks = iconMapProp.split(",");
-		iconMap = {};
-                for (var i = 0; i < toks.length; i++) {
-		    var toks2 = toks[i].split(":");
-		    if (toks2.length > 1) {
-                        iconMap[toks2[0]] = toks2[1];
-		    }
-		}
-            }
-
-
-
-
+	    var iconMap = this.getIconMap();
 	    var dfltShape = this.getProperty("defaultShape",null);
 	    var dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
 	    var dfltShapeIdx=0;
@@ -1704,6 +1688,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		}
             }
+
+	    if(iconField&& iconMap) {
+		var html = "";
+		for(a in iconMap) {
+		    html+=HtmlUtils.image(iconMap[a],["width","32"]) +" " + a+" ";
+		}
+		this.jq(ID_SHAPES).html("<center>" +html+ "</center>");
+	    }
 
 	    if(shapeBy.field) {
 		var shapes = shapeBy.field.getLabel()+": ";
