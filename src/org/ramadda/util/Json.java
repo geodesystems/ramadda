@@ -1010,6 +1010,18 @@ public class Json {
         while (toks.size() > 0) {
             String tok = toks.get(0);
             toks.remove(0);
+	    int idx1 = tok.indexOf("[");
+	    //is an array
+	    if(idx1>=0) {
+		int idx2 = tok.indexOf("]");		
+		String arrayName = tok.substring(0,idx1);
+		int aidx = Integer.parseInt(tok.substring(idx1+1,idx2));
+		JSONArray a = obj.getJSONArray(arrayName);
+		obj = a.getJSONObject(aidx);
+		continue;
+	    }
+
+
             obj = obj.getJSONObject(tok);
             if (obj == null) {
                 return null;

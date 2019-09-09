@@ -774,6 +774,7 @@ public class CsvUtil {
 		array = Json.readArray(obj,arrayPath);
 	    }
 	} catch(Exception exc) {
+	    System.err.println("exc:" + exc);
 	}
 	if(array==null)
 	    array= new JSONArray(s);
