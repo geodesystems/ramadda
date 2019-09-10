@@ -3180,7 +3180,12 @@ function initMapFunctions(theMap) {
         this.hideFeatureText(feature);
     }
 
+    theMap.addFeatureHighlightHandler = function( callback) {
+	theMap.featureHighlightHandler = callback;
+    }
     theMap.showFeatureText = function(feature) {
+	if(this.featureHighlightHandler)
+	    this.featureHighlightHandler(feature,true);
             var _this = this;
             if (feature.text && this.displayDiv) {
                 this.textFeature = feature;
@@ -3198,6 +3203,8 @@ function initMapFunctions(theMap) {
         }
 
     theMap.hideFeatureText = function(feature) {
+	if(this.featureHighlightHandler)
+	    this.featureHighlightHandler(feature,false);
             if (!feature || this.textFeature == feature) {
                 this.showText("");
             }

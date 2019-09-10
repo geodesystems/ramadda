@@ -1148,14 +1148,23 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-entry"), selected);
 	    },
+	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
+	    let myCount = ++this.highlightCount;
 	    var element = $("#" + this.getId()+"-"+args.record.getId());
-	    if(args.highlight)
-		element.addClass("display-template-record-highlight");
-	    else
+	    var container = this.jq(ID_DISPLAY_CONTENTS);
+	    if(args.highlight) {
+		setTimeout(() =>{
+		    if(myCount == this.highlightCount) {
+			element.addClass("display-template-record-highlight");
+			container.scrollTop(element.offset().top - container.offset().top + container.scrollTop())
+		    }
+		},500);
+	    } else {
 		element.removeClass("display-template-record-highlight");
-	},
-		})}
+	    }
+	}
+    })}
 
 
 

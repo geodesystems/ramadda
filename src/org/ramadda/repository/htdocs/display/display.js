@@ -3126,7 +3126,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		},
 		close: function(event,ui) {
 		    var record = records[parseFloat($(this).attr('recordIndex'))];
-		    if(callback) callback(true), record;
+		    if(callback) callback(true, record);
 		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
 		},
 		position: {
@@ -4599,6 +4599,7 @@ function DisplayAnimation(display) {
 	},
         handleEventRecordHighlight: function(source, args) {
 	    var element = $("#" + this.display.getId()+"-"+args.record.getId());
+//	    console.log(args.highlight +" " + element.length);
 	    if(args.highlight) {
 		element.addClass("display-animation-tick-highlight");
 	    } else {

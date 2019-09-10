@@ -3276,7 +3276,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		},
 		close: function(event,ui) {
 		    var record = records[parseFloat($(this).attr('recordIndex'))];
-		    if(callback) callback(true), record;
+		    if(callback) callback(true, record);
 		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
 		},
 		position: {
@@ -4749,6 +4749,7 @@ function DisplayAnimation(display) {
 	},
         handleEventRecordHighlight: function(source, args) {
 	    var element = $("#" + this.display.getId()+"-"+args.record.getId());
+//	    console.log(args.highlight +" " + element.length);
 	    if(args.highlight) {
 		element.addClass("display-animation-tick-highlight");
 	    } else {
@@ -15605,14 +15606,23 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-entry"), selected);
 	    },
+	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
+	    let myCount = ++this.highlightCount;
 	    var element = $("#" + this.getId()+"-"+args.record.getId());
-	    if(args.highlight)
-		element.addClass("display-template-record-highlight");
-	    else
+	    var container = this.jq(ID_DISPLAY_CONTENTS);
+	    if(args.highlight) {
+		setTimeout(() =>{
+		    if(myCount == this.highlightCount) {
+			element.addClass("display-template-record-highlight");
+			container.scrollTop(element.offset().top - container.offset().top + container.scrollTop())
+		    }
+		},500);
+	    } else {
 		element.removeClass("display-template-record-highlight");
-	},
-		})}
+	    }
+	}
+    })}
 
 
 
@@ -19904,6 +19914,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addRegionSelectorControl(function(bounds) {
                 theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
+            this.map.addFeatureHighlightHandler((feature, highlight)=>{
+		if(feature.record) {
+		    if(this.lastHighlightedRecord) {
+			var args = {highlight:false,record: this.lastHighlightedRecord};
+			this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
+			if (this.getProperty("doAnimation", false)) {
+			    this.getAnimation().handleEventRecordHighlight(this, args);
+			}
+			this.lastHighlightedRecord = null;
+		    }
+		    if(highlight) {
+			this.lastHighlightedRecord = feature.record;
+		    }
+		    var args = {highlight:highlight,record: feature.record};
+		    this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
+		    if (this.getProperty("doAnimation", false)) {
+			this.getAnimation().handleEventRecordHighlight(this, args);
+		    }
+		}
+	    });
+
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
@@ -20843,6 +20874,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if (this.map == null) {
 		return;
 	    }
+	    if(this.highlightMarker) {
+		this.map.removePoint(this.highlightMarker);
+		this.highlightMarker = null;
+	    }
 	    this.map.clearSeenMarkers();
 
             if (points.length == 0) {
@@ -21416,6 +21451,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     var date = pointRecord.getDate();
 		    if(mapPoint) {
+			mapPoint.record = pointRecord;
 			mapPoint.hasColorByValue = hasColorByValue;
 		 	mapPoint.colorByValue= colorByValue;
 			if (date) {

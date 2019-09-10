@@ -168,6 +168,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addRegionSelectorControl(function(bounds) {
                 theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
+            this.map.addFeatureHighlightHandler((feature, highlight)=>{
+		if(feature.record) {
+		    if(this.lastHighlightedRecord) {
+			var args = {highlight:false,record: this.lastHighlightedRecord};
+			this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
+			if (this.getProperty("doAnimation", false)) {
+			    this.getAnimation().handleEventRecordHighlight(this, args);
+			}
+			this.lastHighlightedRecord = null;
+		    }
+		    if(highlight) {
+			this.lastHighlightedRecord = feature.record;
+		    }
+		    var args = {highlight:highlight,record: feature.record};
+		    this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
+		    if (this.getProperty("doAnimation", false)) {
+			this.getAnimation().handleEventRecordHighlight(this, args);
+		    }
+		}
+	    });
+
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
@@ -1107,6 +1128,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if (this.map == null) {
 		return;
 	    }
+	    if(this.highlightMarker) {
+		this.map.removePoint(this.highlightMarker);
+		this.highlightMarker = null;
+	    }
 	    this.map.clearSeenMarkers();
 
             if (points.length == 0) {
@@ -1680,6 +1705,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     var date = pointRecord.getDate();
 		    if(mapPoint) {
+			mapPoint.record = pointRecord;
 			mapPoint.hasColorByValue = hasColorByValue;
 		 	mapPoint.colorByValue= colorByValue;
 			if (date) {
