@@ -703,6 +703,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DISPLAY_CONTENTS).html(html);
         },
         notifyEvent: function(func, source, data) {
+//	    console.log(this.type +".notifyEvent:" + func);
             if (this[func] == null) {
                 return;
             }
@@ -934,7 +935,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.updateUI();
         },
         handleEventRecordHighlight: function(source, args) {
-            if (this.getProperty("doAnimation", false)) {
+            if (this.getProperty("doAnimation", false) && !args.skipAnimation) {
 		this.getAnimation().handleEventRecordHighlight(source, args);
 	    }
 	},
@@ -3262,18 +3263,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         updateUI: function() {},
 
-	makeTooltips: function(selector, records) {
+	makeTooltips: function(selector, records, callback) {
 	    var tooltip = this.getProperty("tooltip");
 	    if(!tooltip) return;
 	    let _this = this;
 	    selector.tooltip({
 		content: function() {
 		    var record = records[parseFloat($(this).attr('recordIndex'))];
+		    if(callback) callback(true, record);
 		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
 		    return _this.getRecordHtml(record,null,tooltip);
 		},
 		close: function(event,ui) {
 		    var record = records[parseFloat($(this).attr('recordIndex'))];
+		    if(callback) callback(true), record;
 		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
 		},
 		position: {
@@ -4738,7 +4741,9 @@ function DisplayAnimation(display) {
 		    ticks+=HtmlUtils.div(["id",this.display.getId()+"-"+record.getId(), "class","display-animation-tick","style","left:" + perc+"%;","title",tt,"recordIndex",i],"");
 		}
 		this.jq(ID_SLIDER).append(ticks);
-		this.display.makeTooltips(this.jq(ID_SLIDER).find(".display-animation-tick"), records);
+		this.display.makeTooltips(this.jq(ID_SLIDER).find(".display-animation-tick"), records,(open,record) =>{
+		    this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
+		});
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
@@ -20211,6 +20216,31 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				  this.getDomId(ID_DISPLAY_CONTENTS)
 				 ], "");
         },
+	highlightMarker:null,
+        handleEventRecordHighlight: function(source, args) {
+	    SUPER.handleEventRecordHighlight.call(this,source,args);
+	    if(this.highlightMarker) {
+		this.map.removePoint(this.highlightMarker);
+		this.highlightMarker = null;
+	    }
+	    if(args.highlight) {
+		var point = new OpenLayers.LonLat(args.record.getLongitude(), args.record.getLatitude());
+                var attrs = {
+                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", 30)),
+                    stroke: true,
+                    strokeColor: this.getProperty("recordHighlightStrokeColor", "#000"),
+                    strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 1)),
+		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
+		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.75)),
+                };
+		console.log("pr:" + point);
+		this.highlightMarker =  this.map.addPoint(args.record.getId(), point, attrs);
+	    }
+
+
+	},
+
+
         handleEventEntryMouseover: function(source, args) {
             if (!this.map) {
                 return;

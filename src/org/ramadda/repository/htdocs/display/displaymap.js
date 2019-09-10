@@ -483,6 +483,31 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				  this.getDomId(ID_DISPLAY_CONTENTS)
 				 ], "");
         },
+	highlightMarker:null,
+        handleEventRecordHighlight: function(source, args) {
+	    SUPER.handleEventRecordHighlight.call(this,source,args);
+	    if(this.highlightMarker) {
+		this.map.removePoint(this.highlightMarker);
+		this.highlightMarker = null;
+	    }
+	    if(args.highlight) {
+		var point = new OpenLayers.LonLat(args.record.getLongitude(), args.record.getLatitude());
+                var attrs = {
+                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", 30)),
+                    stroke: true,
+                    strokeColor: this.getProperty("recordHighlightStrokeColor", "#000"),
+                    strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 1)),
+		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
+		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.75)),
+                };
+		console.log("pr:" + point);
+		this.highlightMarker =  this.map.addPoint(args.record.getId(), point, attrs);
+	    }
+
+
+	},
+
+
         handleEventEntryMouseover: function(source, args) {
             if (!this.map) {
                 return;
