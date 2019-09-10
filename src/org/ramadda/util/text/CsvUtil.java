@@ -1283,7 +1283,7 @@ public class CsvUtil {
         new Cmd(
             "-html", "\"name value properties\"",
             "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
-        new Cmd("-json", "\"name value properties\"",
+        new Cmd("-json", "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
                 "(parse the input as json)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),

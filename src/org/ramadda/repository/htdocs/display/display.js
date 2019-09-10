@@ -252,11 +252,86 @@ function DisplayThing(argId, argProperties) {
         writeHtml: function(idSuffix, html) {
             $("#" + this.getDomId(idSuffix)).html(html);
         },
+	getTemplateProps: function(fields) {
+	    return {
+		iconField: this.getFieldById(fields, this.getProperty("iconField")),
+		iconSize: parseFloat(this.getProperty("iconSize",16)),
+		iconMap: this.getIconMap(),
+		colorBy:this.getProperty("colorBy"),
+		colorByMap: this.getColorByMap()
+	    }
+	},
+	getRecordTemplate: function(row, fields, s, props) {
+	    if(!props) {
+		props = this.getTemplateProps(fields);
+	    }
+	    if(props.iconMap && props.iconField) {
+		var value = row[props.iconField.getIndex()];
+		var icon = props.iconMap[value];
+		if(icon) {
+		    s = s.replace("${" + props.iconField.getId() +"_icon}", HtmlUtils.image(icon,["width",props.iconSize]));
+		}
+	    }
+	    for (var col = 0; col < fields.length; col++) {
+		var f = fields[col];
+		var value = row[f.getIndex()];
+		if(props.iconMap) {
+		    var icon = props.iconMap[f.getId()+"."+value];
+		    if(icon) {
+			s = s.replace("${" + f.getId() +"_icon}", HtmlUtils.image(icon,["size",props.iconSize]));
+		    }
+		}
+		if(f.getType()=="image") {
+		    if(value && value.trim().length>1) {
+			var attrs = [];
+			if(this.getProperty("imageWidth","")!="") {
+			    attrs.push("width");
+			    attrs.push(this.getProperty("imageWidth","")) ;
+			}
+			value = HtmlUtils.image(value, attrs);
+		    }
+		} else if(f.getType()=="url") {
+		    if(value && value.trim().length>1) {
+			value = HtmlUtils.href(value,value);
+		    }
+		} else if(f.isDate) {
+		    if(value) {
+			s = s.replace("${" + f.getId() +"}", value);
+			s = s.replace("${" + f.getId() +"_yyyy}", Utils.formatDateYYYY(value));
+			s = s.replace("${" + f.getId() +"_yyyymmdd}", Utils.formatDateYYYYMMDD(value));
+			s = s.replace("${" + f.getId() +"_monthdayyear}", Utils.formatDateMonthDayYear(value));
+			s = s.replace("${" + f.getId() +"_mdy}", Utils.formatDateMDY(value));
+		    }
+		    continue;
+		}
+		if(typeof value == "number") {
+		    value = Utils.formatNumber(value);
+		}
+		var color;
+		if(props.colorByMap) {
+		    if(props.colorBy && props.colorBy == f.getId()) {
+			color = props.colorByMap[value];
+		    } else {
+			color = props.colorByMap[f.getId()+"."+value];				    
+		    }
+		}
+		if(color) {
+		    value = HtmlUtils.span(["style","color:" + color],value);
+		}
+		s = s.replace("${" + f.getId() +"}", value);
+	    }
+	    return s;
+	},
         getRecordHtml: function(record, fields) {
             var showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
+	    var template = this.getProperty("recordTemplate");
+	    if(template) {
+		var row = this.getDataValues(record);
+		return this.getRecordTemplate(row, fields, template);
+	    }
             var values = "<table class=formtable>";
             if (false && record.hasLocation()) {
                 var latitude = record.getLatitude();
@@ -658,6 +733,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return titleToShow;
         },
+        handleEventMapBoundsChanged: function(source, args) {
+	    if(this.getProperty("acceptBoundsChange")) {
+		this.filterBounds  = args.bounds;
+		this.updateUI();
+            }
+        },
+
         handleEventFieldValueSelected: function(source, args) {
             this.setProperty("filterPattern", args.value);
             this.setProperty("patternFilterField", args.field.getId());
@@ -1296,6 +1378,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (!this.dateInRange(date)) {
 		    continue;
 		}
+		if(this.filterBounds && record.hasLocation()) {
+		    var b = this.filterBounds;
+		    var lat = record.getLatitude();
+		    var lon = record.getLongitude();
+		    if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
+			continue;
+		}
+
+
 		var row = this.getDataValues(record);
 		var ok = true;
 		for(var i=0;i<this.filterFields.length;i++) {

@@ -1130,12 +1130,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents+= headerTemplate;
 		}
 		if(template!= "") {
-		    var iconField = this.getFieldById(fields, this.getProperty("iconField"));
-		    var iconSize = parseFloat(this.getProperty("iconSize",16));
-		    var iconMap = this.getIconMap();
-
-		    var colorBy = this.getProperty("colorBy");
-		    var colorByMap = this.getColorByMap();
+		    var props = this.getTemplateProps(fields);
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 			if(max!=-1 && rowIdx>=max) break;
@@ -1143,62 +1138,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			var s = template;
 			s = s.replace("${selectCount}",selected.length);
 			s = s.replace("${totalCount}",records.length);
-			if(iconMap && iconField) {
-			    var value = row[iconField.getIndex()];
-			    var icon = iconMap[value];
-			    if(icon) {
-				s = s.replace("${" + iconField.getId() +"_icon}", HtmlUtils.image(icon,["width",iconSize]));
-			    }
-			}
-
-			for (var col = 0; col < fields.length; col++) {
-			    var f = fields[col];
-			    var value = row[f.getIndex()];
-			    if(iconMap) {
-				var icon = iconMap[f.getId()+"."+value];
-				if(icon) {
-				    s = s.replace("${" + f.getId() +"_icon}", HtmlUtils.image(icon,["size",iconSize]));
-				}
-			    }
-			    if(f.getType()=="image") {
-				if(value && value.trim().length>1) {
-				    var attrs = [];
-				    if(this.getProperty("imageWidth","")!="") {
-					attrs.push("width");
-					attrs.push(this.getProperty("imageWidth","")) ;
-				    }
-				    value = HtmlUtils.image(value, attrs);
-				}
-			    } else if(f.getType()=="url") {
-				if(value && value.trim().length>1) {
-				    value = HtmlUtils.href(value,value);
-				}
-			    } else if(f.isDate) {
-				if(value) {
-				    s = s.replace("${" + f.getId() +"}", value);
-				    s = s.replace("${" + f.getId() +"_yyyy}", Utils.formatDateYYYY(value));
-				    s = s.replace("${" + f.getId() +"_yyyymmdd}", Utils.formatDateYYYYMMDD(value));
-				    s = s.replace("${" + f.getId() +"_monthdayyear}", Utils.formatDateMonthDayYear(value));
-				    s = s.replace("${" + f.getId() +"_mdy}", Utils.formatDateMDY(value));
-				}
-				continue;
-			    }
-			    if(typeof value == "number") {
-				value = Utils.formatNumber(value);
-			    }
-			    var color;
-			    if(colorByMap) {
-				if(colorBy && colorBy == f.getId()) {
-				    color = colorByMap[value];
-				} else {
-				    color = colorByMap[f.getId()+"."+value];				    
-				}
-			    }
-			    if(color) {
-				value = HtmlUtils.span(["style","color:" + color],value);
-			    }
-			    s = s.replace("${" + f.getId() +"}", value);
-			}
+			s= this.getRecordTemplate(row,fields,s,props);
 			contents+=s;
 		    }
 		}

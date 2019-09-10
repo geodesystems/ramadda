@@ -3467,6 +3467,8 @@ function initMapFunctions(theMap) {
 
         var projPoint = this.transformLLPoint(location);
         popup = new OpenLayers.Popup.FramedCloud("popup", projPoint,
+//        popup = new OpenLayers.Popup.Framed("popup", projPoint,
+
             null, markertext, null, true,
             function() {
                 theMap.onPopupClose()
