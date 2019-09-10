@@ -588,9 +588,13 @@ function PointRecord(lat, lon, elevation, time, data) {
         elevation: elevation,
         recordTime: time,
         data: data,
+	id: HtmlUtils.getUniqueId(),
 	toString: function() {
-	return "data:"  + data;
-	    },
+	    return "data:"  + data;
+	},
+	getId: function() {
+	    return this.id;
+	},
         getData: function() {
             return this.data;
         },

@@ -322,7 +322,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return s;
 	},
-        getRecordHtml: function(record, fields) {
+        getRecordHtml: function(record, fields, template) {
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) return null;
@@ -332,10 +332,13 @@ function DisplayThing(argId, argProperties) {
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
-	    var template = this.getProperty("recordTemplate");
+	    if(!template)
+		template = this.getProperty("recordTemplate");
 	    if(template) {
-		var row = this.getDataValues(record);
-		return this.getRecordTemplate(row, fields, template);
+		if(template!="${default}") {
+		    var row = this.getDataValues(record);
+		    return this.getRecordTemplate(row, fields, template);
+		}
 	    }
             var values = "<table class=formtable>";
             if (false && record.hasLocation()) {
@@ -780,6 +783,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setProperty(prop.property, prop.value);
             this.updateUI();
         },
+        handleEventRecordHighlight: function(source, args) {
+            if (this.getProperty("doAnimation", false)) {
+		this.getAnimation().handleEventRecordHighlight(source, args);
+	    }
+	},
         handleEventRecordSelection: function(source, args) {
             if (!source.getEntries) {
                 return;
@@ -3103,6 +3111,36 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.updateUI();
 	},
         updateUI: function() {},
+
+	makeTooltips: function(selector, records) {
+	    var tooltip = this.getProperty("tooltip");
+	    if(!tooltip) return;
+	    let _this = this;
+	    selector.tooltip({
+		content: function() {
+		    var record = records[parseFloat($(this).attr('recordIndex'))];
+		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
+		    return _this.getRecordHtml(record,null,tooltip);
+		},
+		close: function(event,ui) {
+		    var record = records[parseFloat($(this).attr('recordIndex'))];
+		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
+		},
+		position: {
+		    my: "left top",
+		    at: "left bottom+2",
+		    collision: _this.getProperty("tooltipCollision", "none none")
+		},
+		show: {
+		    delay: parseFloat(_this.getProperty("tooltipDelay",1000)),
+		    duration: parseFloat(_this.getProperty("tooltipDuration",500)),
+		    
+		},
+		classes: {
+		    "ui-tooltip": _this.getProperty("tooltipClass", "ramadda-tooltip-wide")
+		}
+	    });
+	},
 	animationStart: function(animation) {
 	    
 	},
@@ -4537,32 +4575,28 @@ function DisplayAnimation(display) {
 		}
 	    });
 
-	    if(records && display.getProperty("animationShowTicks",true)) {
+	    if(records && this.display.getProperty("animationShowTicks",true)) {
 		var ticks = "";
 		var min = this.dateMin.getTime();
 		var max = this.dateMax.getTime();
 		var p = 0;
 		for(var i=0;i<records.length;i++) {
-		    var date = records[i].getDate().getTime();
+		    var record = records[i];
+		    var date = record.getDate().getTime();
 		    var perc = Math.round((date-min)/(max-min)*100);
-		    var tt = this.formatAnimationDate(records[i].getDate());
-		    ticks+=HtmlUtils.div(["class","display-animation-tick","style","left:" + perc+"%;","title",tt,"index",i],"");
+		    var tt = this.formatAnimationDate(record.getDate());
+		    ticks+=HtmlUtils.div(["id",this.display.getId()+"-"+record.getId(), "class","display-animation-tick","style","left:" + perc+"%;","title",tt,"recordIndex",i],"");
 		}
 		this.jq(ID_SLIDER).append(ticks);
-		this.jq(ID_SLIDER).find(".display-animation-tick").tooltip({
-		    content: function() {
-			var record = records[parseFloat($(this).attr('index'))];
-			return _this.display.getRecordHtml(record);
-			return $(this).prop('title');
-		    },
-		    position: {
-			my: "left top",
-			at: "left bottom+2"
-		    },
-		    classes: {
-			"ui-tooltip": "ramadda-popup"
-		    }
-		});
+		this.display.makeTooltips(this.jq(ID_SLIDER).find(".display-animation-tick"), records);
+	    }
+	},
+        handleEventRecordHighlight: function(source, args) {
+	    var element = $("#" + this.display.getId()+"-"+args.record.getId());
+	    if(args.highlight) {
+		element.addClass("display-animation-tick-highlight");
+	    } else {
+		element.removeClass("display-animation-tick-highlight");
 	    }
 	},
 	makeControls:function() {

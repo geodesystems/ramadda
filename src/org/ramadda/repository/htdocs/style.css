@@ -1640,13 +1640,17 @@ a.btn-primary:link, a.btn-primary  {
    padding:0px;
    padding-left:5px;
    padding-right:5px;
-   border: 2px solid red;
    box-shadow: 0 0 1px black;
    font-size: 10pt;
 }
 
 .ramadda-select-inner {
    padding-right:10px;
+}
+
+
+.ramadda-tooltip-wide {
+    max-width:600px;
 }
 
 

@@ -103,6 +103,11 @@
    margin-bottom:0.5em;
 }
 
+.display-animation-tick-highlight {
+    width:4px;
+    background:red;
+}
+    
 .display-animation-slider {
     margin-right:10px;
 }
@@ -273,6 +278,11 @@ position:absolute;
     border: 1px #888 solid;
     font-size:8pt;
     color:#ccc;
+}
+
+
+.display-template-record-highlight {
+    background: #efefef;
 }
 
 

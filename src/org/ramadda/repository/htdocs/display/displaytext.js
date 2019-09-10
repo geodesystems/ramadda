@@ -1134,18 +1134,27 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 			if(max!=-1 && rowIdx>=max) break;
-			var row = this.getDataValues(selected[rowIdx]);
+			var record = selected[rowIdx];
+			var row = this.getDataValues(record);
 			var s = template;
 			s = s.replace("${selectCount}",selected.length);
 			s = s.replace("${totalCount}",records.length);
 			s= this.getRecordTemplate(row,fields,s,props);
-			contents+=s;
+			contents+=HtmlUtils.div(["id", this.getId() +"-" + record.getId(), "title","","class","display-template-entry","recordIndex",rowIdx], s);
 		    }
 		}
 		if(selected.length>0) 
 		    contents+= footerTemplate;
 		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-entry"), selected);
 	    },
+        handleEventRecordHighlight: function(source, args) {
+	    var element = $("#" + this.getId()+"-"+args.record.getId());
+	    if(args.highlight)
+		element.addClass("display-template-record-highlight");
+	    else
+		element.removeClass("display-template-record-highlight");
+	},
 		})}
 
 
