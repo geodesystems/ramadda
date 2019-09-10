@@ -4639,6 +4639,7 @@ function DisplayAnimation(display) {
     var ID_BEGIN= "animbegin";
     var ID_END= "animend";
     var ID_SLIDER = "slider";
+    var ID_TICKS = "ticks";
     var ID_SHOWALL = "showall";
     var ID_ANIMATION_LABEL = "animationlabel";
     this.display = display;
@@ -4740,8 +4741,8 @@ function DisplayAnimation(display) {
 		    var tt = this.formatAnimationDate(record.getDate());
 		    ticks+=HtmlUtils.div(["id",this.display.getId()+"-"+record.getId(), "class","display-animation-tick","style","left:" + perc+"%;","title",tt,"recordIndex",i],"");
 		}
-		this.jq(ID_SLIDER).append(ticks);
-		this.display.makeTooltips(this.jq(ID_SLIDER).find(".display-animation-tick"), records,(open,record) =>{
+		this.jq(ID_TICKS).html(ticks);
+		this.display.makeTooltips(this.jq(ID_TICKS).find(".display-animation-tick"), records,(open,record) =>{
 		    this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
 		});
 	    }
@@ -4768,8 +4769,10 @@ function DisplayAnimation(display) {
 	    buttons+=HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-animation-label"]);
             buttons = HtmlUtils.div([ "class","display-animation-buttons"], buttons);
 	    if(display.getProperty("animationShowSlider",true)) {
-		buttons+=   HtmlUtils.div(["class","display-animation-slider","id",this.getDomId(ID_SLIDER)]);
+		buttons+=   HtmlUtils.div(["class","display-animation-slider","id",this.getDomId(ID_SLIDER)],
+					  HtmlUtils.div(["class","display-animation-ticks","id",this.getDomId(ID_TICKS)]));
 	    }
+	    
 
             this.jq(ID_TOP_LEFT).append(buttons);
             this.btnRun = this.jq(ID_RUN);
@@ -20233,7 +20236,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
 		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.75)),
                 };
-		console.log("pr:" + point);
 		this.highlightMarker =  this.map.addPoint(args.record.getId(), point, attrs);
 	    }
 

@@ -500,7 +500,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
 		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.75)),
                 };
-		console.log("pr:" + point);
 		this.highlightMarker =  this.map.addPoint(args.record.getId(), point, attrs);
 	    }
 
