@@ -1083,6 +1083,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if (this.map == null) {
 		return;
 	    }
+	    this.map.clearSeenMarkers();
+
             if (points.length == 0) {
                 //console.log("points.length==0");
 		//                return;
@@ -1155,9 +1157,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(pointIcon) this.pointsAreMarkers = true;
             var iconField = this.getFieldById(fields, this.getProperty("iconField"));
             var iconSize = parseFloat(this.getProperty("iconSize",32));
-	    if(iconField)
-		this.pointsAreMarkers = true;
 	    var iconMap = this.getIconMap();
+	    if(iconField || iconMap)
+		this.pointsAreMarkers = true;
 	    var dfltShape = this.getProperty("defaultShape",null);
 	    var dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
 	    var dfltShapeIdx=0;
@@ -1337,7 +1339,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
             if (dateMax) {
-		this.getAnimation().init(dateMin, dateMax,dates);
+		this.getAnimation().init(dateMin, dateMax,records);
             }
 
 
@@ -1542,6 +1544,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
                 var html = this.getRecordHtml(pointRecord, fields);
+
 
 		if(polygonField) {
 		    var s = values[polygonField.getIndex()];
@@ -1863,6 +1866,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     icon = this.getMarkerIcon();
                     displayMapMarkerIcons[source] = icon;
                 }
+		if(html.indexOf("Glorieta")>=0)
+		    console.log("Add");
                 this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html, null, 24);
             }
         }

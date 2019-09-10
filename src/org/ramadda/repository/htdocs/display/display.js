@@ -323,6 +323,11 @@ function DisplayThing(argId, argProperties) {
 	    return s;
 	},
         getRecordHtml: function(record, fields) {
+            if (!fields) {
+                var pointData = this.getData();
+                if (pointData == null) return null;
+                fields = pointData.getRecordFields();
+            }
             var showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
@@ -2768,7 +2773,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
             if (dateMax) {
-		this.getAnimation().init(dateMin, dateMax,dates);
+		this.getAnimation().init(dateMin, dateMax,records);
             }
 
 
@@ -4470,7 +4475,7 @@ function DisplayAnimation(display) {
 	jq: function(id) {
 	    return this.display.jq(id);
 	},
-	init: function(dateMin, dateMax, dates) {
+	init: function(dateMin, dateMax, records) {
 	    let _this = this;
 	    this.dateMin = dateMin;
 	    this.dateMax = dateMax;
@@ -4532,20 +4537,22 @@ function DisplayAnimation(display) {
 		}
 	    });
 
-	    if(dates && display.getProperty("animationShowTicks",true)) {
+	    if(records && display.getProperty("animationShowTicks",true)) {
 		var ticks = "";
 		var min = this.dateMin.getTime();
 		var max = this.dateMax.getTime();
 		var p = 0;
-		for(var i=0;i<dates.length;i++) {
-		    var date = dates[i].getTime();
+		for(var i=0;i<records.length;i++) {
+		    var date = records[i].getDate().getTime();
 		    var perc = Math.round((date-min)/(max-min)*100);
-		    var tt = this.formatAnimationDate(dates[i]);
-		    ticks+=HtmlUtils.div(["class","display-animation-tick","style","left:" + perc+"%;","title",tt],"");
+		    var tt = this.formatAnimationDate(records[i].getDate());
+		    ticks+=HtmlUtils.div(["class","display-animation-tick","style","left:" + perc+"%;","title",tt,"index",i],"");
 		}
 		this.jq(ID_SLIDER).append(ticks);
 		this.jq(ID_SLIDER).find(".display-animation-tick").tooltip({
 		    content: function() {
+			var record = records[parseFloat($(this).attr('index'))];
+			return _this.display.getRecordHtml(record);
 			return $(this).prop('title');
 		    },
 		    position: {

@@ -1062,11 +1062,14 @@ function initMapFunctions(theMap) {
                 this.map.removePopup(this.currentPopup);
                 this.currentPopup.destroy();
             }
+
+
             var popup = new OpenLayers.Popup.FramedCloud("popup", feature.geometry.getBounds().getCenterLonLat(),
                 null, out, null, true,
                 function() {
                     theMap.onPopupClose()
                 });
+
             feature.popup = popup;
             popup.feature = feature;
 
@@ -2953,6 +2956,9 @@ function initMapFunctions(theMap) {
         return text;
     }
 
+    theMap.clearSeenMarkers = function() {
+	theMap.seenMarkers = {};
+    }
     theMap.seenMarkers = {};
 
     theMap.addEntryMarker = function(id, location, iconUrl, markerName, text, type) {
@@ -3466,13 +3472,13 @@ function initMapFunctions(theMap) {
 
 
         var projPoint = this.transformLLPoint(location);
-        popup = new OpenLayers.Popup.FramedCloud("popup", projPoint,
-//        popup = new OpenLayers.Popup.Framed("popup", projPoint,
 
+        popup = new OpenLayers.Popup.FramedCloud("popup", projPoint,
             null, markertext, null, true,
             function() {
                 theMap.onPopupClose()
             });
+
 
         if (marker.inputProps && marker.inputProps.minSizeX) {
             popup.minSize = new OpenLayers.Size(marker.inputProps.minSizeX, marker.inputProps.minSizeY);
