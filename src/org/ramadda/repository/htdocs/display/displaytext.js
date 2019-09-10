@@ -1132,21 +1132,44 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(template!= "") {
 		    var props = this.getTemplateProps(fields);
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
+		    var cols = parseFloat(this.getProperty("templateColumns",-1));
+		    var colTag;
+		    if(cols>0) {
+			colTag = "col-md-" +Math.round(12/cols);
+			contents += '<div class="row wiki-row">';
+		    }
+		    var colCnt = 0;
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 			if(max!=-1 && rowIdx>=max) break;
+
+			if(cols>0) {
+			    if(colCnt>=cols) {
+				colCnt=0;
+				contents += '</div>';
+				contents += '<div class="row wiki-row">';
+			    }
+			    contents+='<div  class="' + colTag+'">\n';
+			    colCnt++;
+			}
 			var record = selected[rowIdx];
 			var row = this.getDataValues(record);
 			var s = template;
 			s = s.replace("${selectCount}",selected.length);
 			s = s.replace("${totalCount}",records.length);
 			s= this.getRecordTemplate(row,fields,s,props);
-			contents+=HtmlUtils.div(["id", this.getId() +"-" + record.getId(), "title","","class","display-template-entry","recordIndex",rowIdx], s);
+			contents += HtmlUtils.div(["style","", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx], s);
+			if(cols>0) {
+			    contents+='</div>\n';
+			}
+		    }
+		    if(cols>0) {
+			contents += '</div>';
 		    }
 		}
 		if(selected.length>0) 
 		    contents+= footerTemplate;
 		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
-		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-entry"), selected);
+		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record"), selected);
 	    },
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
@@ -1156,12 +1179,24 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(args.highlight) {
 		setTimeout(() =>{
 		    if(myCount == this.highlightCount) {
-			element.addClass("display-template-record-highlight");
+			var css = this.getProperty("highlightOnCss","").split(",");
+			if(css.length) {
+			    for(var i=0;i<css.length;i++)
+				element.css(css[i],css[i+1]);
+			} else {
+			    element.addClass("display-template-record-highlight");
+			}
 			container.scrollTop(element.offset().top - container.offset().top + container.scrollTop())
 		    }
 		},500);
 	    } else {
-		element.removeClass("display-template-record-highlight");
+		var css = this.getProperty("highlightOffCss","").split(",");
+		if(css.length) {
+		    for(var i=0;i<css.length;i++)
+			element.css(css[i],css[i+1]);
+		} else {
+		    element.removeClass("display-template-record-highlight");
+		}
 	    }
 	}
     })}

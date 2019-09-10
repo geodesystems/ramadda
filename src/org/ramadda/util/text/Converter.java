@@ -2531,6 +2531,63 @@ public abstract class Converter extends Processor {
 
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class Mercator extends Converter {
+
+
+        /**
+         * _more_
+         *
+         * @param op _more_
+         *
+         * @param indices _more_
+         * @param name _more_
+         */
+        public Mercator(List<String> indices) {
+            super(indices);
+
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if (rowCnt++ == 0) {
+                row.getValues().add("Latitude");
+		row.getValues().add("Longitude");
+                return row;
+            }
+            List<Integer> indices = getIndices(info);
+	    double x = new Double(row.getValues().get(indices.get(0)).toString());
+	    double y = new Double(row.getValues().get(indices.get(1)).toString());
+	    double rMajor = 6378137; //Equatorial Radius, WGS84
+	    double shift  = Math.PI * rMajor;
+	    double lon    = x / shift * 180.0;
+	    double lat    = y / shift * 180.0;
+	    lat = 180 / Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180.0)) - Math.PI / 2.0);
+
+            row.getValues().add(lat); 
+	    row.getValues().add(lon);
+            return row;
+        }
+
+    }
+
+
 
 
     /**

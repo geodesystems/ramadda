@@ -2072,7 +2072,7 @@ function initMapFunctions(theMap) {
             this.vectorLayers.push(layer);
             var _this = this;
             if (!this.map.featureSelect) {
-                this.map.featureSelect = new OpenLayers.Control.SelectFeature(layer, {
+                this.map.featureSelect = new OpenLayers.Control.SelectFeature([layer], {
                     multiple: false,
                     hover: this.selectOnHover,
                     onSelect: function(feature) {
@@ -2095,7 +2095,8 @@ function initMapFunctions(theMap) {
                 //this.map.addControl(this.map.featureSelect);
                 //                this.map.featureSelect.activate();
             } else {
-                this.map.featureSelect.setLayer(this.vectorLayers);
+		this.map.featureSelect.layers.push(layer);
+//		this.map.featureSelect.layers = Utils.mergeLists(tmp,this.map.featureSelect.layers);
                 /*
                   if(this.map.highlightSelect) {
                     this.map.highlightSelect.setLayer(this.vectorLayers);

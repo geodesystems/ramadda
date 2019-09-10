@@ -438,7 +438,12 @@ function DisplayThing(argId, argProperties) {
 			    attrs.push("width");
 			    attrs.push(this.getProperty("imageWidth","")) ;
 			}
-			value = HtmlUtils.image(value, attrs);
+			var img =  HtmlUtils.image(value, attrs);
+			s = s.replace("${" + f.getId() +"_image}", img);
+			s = s.replace("${" + f.getId() +"_url}", value);
+		    } else {
+			s = s.replace("${" + f.getId() +"_url}", ramaddaBaseUrl+"/icons/blank.gif");
+			s = s.replace("${" + f.getId() +"_image}", "");
 		    }
 		} else if(f.getType()=="url") {
 		    if(value && value.trim().length>1) {
@@ -466,7 +471,8 @@ function DisplayThing(argId, argProperties) {
 		    }
 		}
 		if(color) {
-		    value = HtmlUtils.span(["style","color:" + color],value);
+		    s = s.replace("${" + f.getId()+"_color}", color);
+//		    value = HtmlUtils.span(["style","color:" + color],value);
 		}
 		s = s.replace("${" + f.getId() +"}", value);
 	    }
@@ -819,7 +825,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     for (var i = 0; i < toks.length; i++) {
 			var toks2 = toks[i].split(":");
 			if (toks2.length > 1) {
-                            stringMap[toks2[0]] = toks2[1];
+                            stringMap[toks2[0].trim()] = toks2[1].trim();
 			}
                     }
 		    return stringMap;
@@ -927,6 +933,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(prop.id.endsWith("_max")) widgetId+="_max";
 		this.settingFilterValue = true;
 		this.jq(widgetId).val(prop.value);
+		this.jq(widgetId).attr("value",prop.value);
 		this.settingFilterValue = false;
 		this.dataFilterChanged();
 		return;
@@ -1525,7 +1532,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date2=null;
 		    value = [date1,date2]; 
 		}  else {
-		    value = $("#" + this.getDomId("filterby_" + filterField.getId())).val();
+		    var element =$("#" + this.getDomId("filterby_" + filterField.getId()));
+		    value = element.attr("value");
+		    if(!value)
+			value = element.val();
 		    if(!Array.isArray(value)) value = [value];
 		    value.map(v=>_values.push((""+v).toLowerCase()));
 		}
@@ -2988,10 +2998,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    } else {
 				toks = filterValues;
 			    }
+			    enums = toks;
 			}
 
+			var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
 			if(enums == null) {
-			    var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
 			    var allName = this.getProperty(filterField.getId() +".allName","All");
 			    enums = includeAll?[[FILTER_ALL,allName]]:[];
 			    var enumValues = [];
@@ -3026,7 +3037,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    attrs.push(this.getProperty(filterField.getId() +".filterMultipleSize","3"));
 			    dfltValue = dfltValue.split(",");
 			}
-                        widget = HtmlUtils.select("",attrs,enums,dfltValue);
+			if(this.getProperty(filterField.getId() +".filterShowButtons")) {
+			    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0];
+			    var buttons = "";
+			    for(var j=0;j<enums.length;j++) {
+				var extra = "";
+				if(enums[j] == dfltValue) extra = " display-filterby-button-selected ";
+				buttons+=HtmlUtils.div(["class","display-filterby-button" + extra,"value",enums[j]],enums[j]);
+			    }
+			    widget = HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"fieldId",filterField.getId()], buttons);
+			} else {
+                            widget = HtmlUtils.select("",attrs,enums,dfltValue);
+			}
 		    } else if(filterField.isNumeric) {
 			var min=0;
 			var max=0;
@@ -3106,7 +3128,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		var inputFunc = function(input){
                     var id = input.attr("id");
-		    var value = input.val();
+		    var value = input.attr("value");
+		    if(!value)
+			value = input.val();
                     var fieldId = input.attr("fieldId");
 		    _this.checkFilterField(input);
 		    _this.haveCalledUpdateUI = false;
@@ -3123,6 +3147,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		    _this.settingFilterValue = false;
                 };
+
+		this.jq(ID_FILTERBAR).find(".display-filterby-buttons").each(function(){
+		    let parent = $(this);
+		    $(this).find(".display-filterby-button").click(function(){
+			parent.find(".display-filterby-button").removeClass("display-filterby-button-selected");
+			$(this).addClass("display-filterby-button-selected");
+			var value =  $(this).attr("value");
+			parent.attr("value",value);
+			inputFunc(parent);
+		    });
+
+		});
+
+
 
 
 		this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
@@ -3280,8 +3318,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
 		},
 		position: {
-		    my: "left top",
-		    at: "left bottom+2",
+		    my: _this.getProperty("tooltipPositionMy", "left top"),
+		    at: _this.getProperty("tooltipPositionAt", "left bottom+2"),
 		    collision: _this.getProperty("tooltipCollision", "none none")
 		},
 		show: {
@@ -15590,21 +15628,44 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(template!= "") {
 		    var props = this.getTemplateProps(fields);
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
+		    var cols = parseFloat(this.getProperty("templateColumns",-1));
+		    var colTag;
+		    if(cols>0) {
+			colTag = "col-md-" +Math.round(12/cols);
+			contents += '<div class="row wiki-row">';
+		    }
+		    var colCnt = 0;
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 			if(max!=-1 && rowIdx>=max) break;
+
+			if(cols>0) {
+			    if(colCnt>=cols) {
+				colCnt=0;
+				contents += '</div>';
+				contents += '<div class="row wiki-row">';
+			    }
+			    contents+='<div  class="' + colTag+'">\n';
+			    colCnt++;
+			}
 			var record = selected[rowIdx];
 			var row = this.getDataValues(record);
 			var s = template;
 			s = s.replace("${selectCount}",selected.length);
 			s = s.replace("${totalCount}",records.length);
 			s= this.getRecordTemplate(row,fields,s,props);
-			contents+=HtmlUtils.div(["id", this.getId() +"-" + record.getId(), "title","","class","display-template-entry","recordIndex",rowIdx], s);
+			contents += HtmlUtils.div(["style","", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx], s);
+			if(cols>0) {
+			    contents+='</div>\n';
+			}
+		    }
+		    if(cols>0) {
+			contents += '</div>';
 		    }
 		}
 		if(selected.length>0) 
 		    contents+= footerTemplate;
 		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
-		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-entry"), selected);
+		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record"), selected);
 	    },
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
@@ -15614,12 +15675,24 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(args.highlight) {
 		setTimeout(() =>{
 		    if(myCount == this.highlightCount) {
-			element.addClass("display-template-record-highlight");
+			var css = this.getProperty("highlightOnCss","").split(",");
+			if(css.length) {
+			    for(var i=0;i<css.length;i++)
+				element.css(css[i],css[i+1]);
+			} else {
+			    element.addClass("display-template-record-highlight");
+			}
 			container.scrollTop(element.offset().top - container.offset().top + container.scrollTop())
 		    }
 		},500);
 	    } else {
-		element.removeClass("display-template-record-highlight");
+		var css = this.getProperty("highlightOffCss","").split(",");
+		if(css.length) {
+		    for(var i=0;i<css.length;i++)
+			element.css(css[i],css[i+1]);
+		} else {
+		    element.removeClass("display-template-record-highlight");
+		}
 	    }
 	}
     })}
@@ -20899,7 +20972,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
             var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
-            var colorByAttr = this.getDisplayProp(source, "colorBy", null);
+            var colorByAttr = this.getProperty("colorBy", null);
 	    var colors;
 	    if(colorByAttr) {
 		//First get the ct from the field name
@@ -21003,6 +21076,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
 
+
             for (var i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.getId() == colorBy.id || ("#" + (i + 1)) == colorBy.id) {
@@ -21050,6 +21124,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
             sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
+
             colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
             shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
@@ -21058,7 +21133,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    colorBy.stringMap = this.getColorByMap();
-
 
             var colorByMap = {};
             var colorByValues = [];
@@ -21271,6 +21345,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		var hasColorByValue = false;
 		var colorByValue;
 
+
                 if (colorBy.index >= 0) {
                     var value = pointRecord.getData()[colorBy.index];
 		    hasColorByValue  = true;
@@ -21333,9 +21408,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } else {
 			props.fillColor = colors[index];
 		    }
-                    props.fillOpacity = 0.8;
+                    props.fillOpacity = parseFloat(this.getProperty("fillOpacity",0.8));
                     didColorBy = true;
                 }
+
 
 
                 var html = this.getRecordHtml(pointRecord, fields);
@@ -21549,8 +21625,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;
             labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
-	    if(!this.labelLayer) {
-		this.labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+	    if(!this.map.labelLayer) {
+		this.map.labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
                     styleMap: new OpenLayers.StyleMap({'default':{
                         label : labelTemplate,
                         fontColor: this.getProperty("labelFontColor","#000"),
@@ -21564,7 +21640,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
                     }}),
                 });
-		this.map.addVectorLayer(this.labelLayer, true);
+		this.map.addVectorLayer(this.map.labelLayer, true);
 	    }
 	    var features =  [];
             var seen = {};
@@ -21595,10 +21671,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 features.push(pointFeature);
 	    }
 	    if(this.labelFeatures)
-		this.labelLayer.removeFeatures(this.labelFeatures);
-            this.labelLayer.addFeatures(features);
+		this.map.labelLayer.removeFeatures(this.labelFeatures);
+            this.map.labelLayer.addFeatures(features);
 	    this.labelFeatures = features;
-            $("#" + this.labelLayer.id).css("z-index",1000);
+//            $("#" + this.map.labelLayer.id).css("z-index",1000);
         },
 
 
@@ -21662,8 +21738,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     icon = this.getMarkerIcon();
                     displayMapMarkerIcons[source] = icon;
                 }
-		if(html.indexOf("Glorieta")>=0)
-		    console.log("Add");
                 this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html, null, 24);
             }
         }

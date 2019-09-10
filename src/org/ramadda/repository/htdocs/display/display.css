@@ -44,6 +44,25 @@
   cursor:pointer;
 }
 
+.display-filterby-buttons {
+}
+
+.display-filterby-button {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;  
+    display:inline-block;
+    background:white;
+    margin-left:4px;
+    padding:4px;
+    padding-left:8px;
+    padding-right:8px;
+    cursor:pointer;  
+}
+
+.display-filterby-button-selected {
+    background: #E5E5E5;
+    background: #ddd;
+}
 
 
 .display-filterby-label {
@@ -280,6 +299,10 @@ position:absolute;
     color:#ccc;
 }
 
+
+.display-template-record {
+    display:inline-block;
+}
 
 .display-template-record-highlight {
     background: #efefef;

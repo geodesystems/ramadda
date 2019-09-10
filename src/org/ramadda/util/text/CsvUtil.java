@@ -761,7 +761,7 @@ public class CsvUtil {
      */
     public List<Row> tokenizeJson(String file,
                                   Hashtable<String, String> props)
-            throws Exception {
+	throws Exception {
         List<Row>    rows  = new ArrayList<Row>();
         String       s     = IOUtil.readContents(file);
 	
@@ -780,42 +780,55 @@ public class CsvUtil {
 	    array= new JSONArray(s);
 
 
-        List<String> names = null;
+        List<List<String>> names = null;
         for (int i = 0; i < array.length(); i++) {
+	    List<JSONObject> jrows = new ArrayList<JSONObject>();
             JSONObject jrow = array.getJSONObject(i);
-	    if(objectPath!=null)
-		jrow = Json.readObject(jrow,objectPath);
+	    if(objectPath!=null) {
+		for(String tok: StringUtil.split(objectPath,",",true,true)) {
+		    jrows.add(Json.readObject(jrow,tok));
+		}
+	    }   else {
+		jrows.add(jrow);
+	    }
 
-            if (names == null) {
-                String[] tmp = JSONObject.getNames(jrow);
-                Row      row = new Row();
-                rows.add(row);
-                names = new ArrayList<String>();
-                for (String name : tmp) {
-                    Object obj = jrow.opt(name);
-                    if (obj != null) {
-                        if ((obj instanceof JSONObject)
+	    if (names == null) {
+		names = new ArrayList<List<String>>();
+		Row      row = new Row();
+		rows.add(row);
+		for(JSONObject jobj: jrows) {
+		    List<String> objNames=new ArrayList<String>();
+		    names.add(objNames);
+		    String[] tmp = JSONObject.getNames(jobj);
+		    for (String name : tmp) {
+			Object obj = jobj.opt(name);
+			if (obj != null) {
+			    if ((obj instanceof JSONObject)
                                 || (obj instanceof JSONArray)) {
-                            continue;
-                        }
-                    }
-                    names.add(name);
-                    row.add(name);
-                }
-            }
-            Row row = new Row();
-            rows.add(row);
-            for (String name : names) {
-                Object obj = jrow.opt(name);
-                if (obj == null) {
-                    obj = "";
-                } else if ((obj instanceof JSONObject)
-                           || (obj instanceof JSONArray)) {
-                    continue;
-                }
-                row.add(obj.toString());
-            }
-
+				continue;
+			    }
+			}
+			objNames.add(name);
+			row.add(name);
+		    }
+		}
+	    } 
+	    Row row = new Row();
+	    rows.add(row);
+	    for(int j=0;j<jrows.size();j++) {
+		JSONObject jobj =  jrows.get(j);
+		List<String> objNames=names.get(j);
+		for (String name : objNames) {
+		    Object obj =jobj.opt(name);
+		    if (obj == null) {
+			obj = "";
+		    } else if ((obj instanceof JSONObject)
+			       || (obj instanceof JSONArray)) {
+			continue;
+		    }
+		    row.add(obj.toString());
+		}
+	    }
         }
 
         return rows;
@@ -1299,6 +1312,7 @@ public class CsvUtil {
         new Cmd(
             "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
             "(apply the operator to the given columns and create new one)"),
+	new Cmd("-mercator","<col #s>","(convert x/y to lon/lat)"),
         new Cmd("-round", "<columns>", "round the values"),
         new Cmd(
             "-sum", "<key columns> <value columns>",
@@ -2432,6 +2446,20 @@ public class CsvUtil {
 
                 continue;
             }
+
+
+	    if (arg.equals("-mercator")) {
+                if ( !ensureArg(args, i, 1)) {
+                    return false;
+                }
+                List<String> idxs = getCols(args.get(++i));
+                info.getProcessor().addProcessor(
+                    new Converter.Mercator(idxs));
+
+                continue;
+            }
+
+
 
             if (arg.equals("-round")) {
                 if ( !ensureArg(args, i, 1)) {

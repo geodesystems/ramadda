@@ -1153,7 +1153,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
             var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
-            var colorByAttr = this.getDisplayProp(source, "colorBy", null);
+            var colorByAttr = this.getProperty("colorBy", null);
 	    var colors;
 	    if(colorByAttr) {
 		//First get the ct from the field name
@@ -1257,6 +1257,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
 
+
             for (var i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.getId() == colorBy.id || ("#" + (i + 1)) == colorBy.id) {
@@ -1304,6 +1305,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
             sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
+
             colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
             shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
@@ -1312,7 +1314,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 	    colorBy.stringMap = this.getColorByMap();
-
 
             var colorByMap = {};
             var colorByValues = [];
@@ -1525,6 +1526,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		var hasColorByValue = false;
 		var colorByValue;
 
+
                 if (colorBy.index >= 0) {
                     var value = pointRecord.getData()[colorBy.index];
 		    hasColorByValue  = true;
@@ -1587,9 +1589,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } else {
 			props.fillColor = colors[index];
 		    }
-                    props.fillOpacity = 0.8;
+                    props.fillOpacity = parseFloat(this.getProperty("fillOpacity",0.8));
                     didColorBy = true;
                 }
+
 
 
                 var html = this.getRecordHtml(pointRecord, fields);
@@ -1803,8 +1806,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;
             labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
-	    if(!this.labelLayer) {
-		this.labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+	    if(!this.map.labelLayer) {
+		this.map.labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
                     styleMap: new OpenLayers.StyleMap({'default':{
                         label : labelTemplate,
                         fontColor: this.getProperty("labelFontColor","#000"),
@@ -1818,7 +1821,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
                     }}),
                 });
-		this.map.addVectorLayer(this.labelLayer, true);
+		this.map.addVectorLayer(this.map.labelLayer, true);
 	    }
 	    var features =  [];
             var seen = {};
@@ -1849,10 +1852,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 features.push(pointFeature);
 	    }
 	    if(this.labelFeatures)
-		this.labelLayer.removeFeatures(this.labelFeatures);
-            this.labelLayer.addFeatures(features);
+		this.map.labelLayer.removeFeatures(this.labelFeatures);
+            this.map.labelLayer.addFeatures(features);
 	    this.labelFeatures = features;
-            $("#" + this.labelLayer.id).css("z-index",1000);
+//            $("#" + this.map.labelLayer.id).css("z-index",1000);
         },
 
 
@@ -1916,8 +1919,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     icon = this.getMarkerIcon();
                     displayMapMarkerIcons[source] = icon;
                 }
-		if(html.indexOf("Glorieta")>=0)
-		    console.log("Add");
                 this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html, null, 24);
             }
         }
