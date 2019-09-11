@@ -1595,7 +1595,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
-                var html = this.getRecordHtml(pointRecord, fields);
+		var tooltip = this.getProperty("tooltip");
+                var html = this.getRecordHtml(pointRecord, fields,tooltip);
 
 
 		if(polygonField) {

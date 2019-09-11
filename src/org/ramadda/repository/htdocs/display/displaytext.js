@@ -1191,7 +1191,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			try {
 			    var eo = element.offset();
 			    if(eo==null) return;
-			    var etop = (eo==null?0:eo.top);
+			    var etop = eo.top;
 			    var ctop = container.offset().top;
 			    var scrollTop = container.scrollTop();
 			    container.scrollTop(etop- ctop + scrollTop)

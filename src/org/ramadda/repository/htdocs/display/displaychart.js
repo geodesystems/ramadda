@@ -3647,6 +3647,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                     index: parseInt($(this).attr("what")) - 1
                 });
             });
+	    HtmlUtils.initSelect(this.jq("sortfields"));
             this.jq("sortfields").change(function() {
                 _this.setProperty("sortField", $(this).val());
                 _this.updateUI();

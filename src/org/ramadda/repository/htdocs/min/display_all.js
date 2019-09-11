@@ -3254,6 +3254,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		});
 
+		HtmlUtils.initSelect(this.jq("colorbyselect"));
+		HtmlUtils.initSelect(this.jq("sizebyselect"));
                 this.jq("colorbyselect").change(function(){
 		    _this.colorByFieldChanged($(this).val());
 		});
@@ -3268,6 +3270,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			inputFunc($(this));
 		    }
 		});
+		HtmlUtils.initSelect(this.jq(ID_FILTERBAR).find("select"));
 		this.jq(ID_FILTERBAR).find("input:radio,select").change(function() {
 		    inputFunc($(this));
 		});
@@ -12885,6 +12888,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                     index: parseInt($(this).attr("what")) - 1
                 });
             });
+	    HtmlUtils.initSelect(this.jq("sortfields"));
             this.jq("sortfields").change(function() {
                 _this.setProperty("sortField", $(this).val());
                 _this.updateUI();
@@ -15688,7 +15692,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			try {
 			    var eo = element.offset();
 			    if(eo==null) return;
-			    var etop = (eo==null?0:eo.top);
+			    var etop = eo.top;
 			    var ctop = container.offset().top;
 			    var scrollTop = container.scrollTop();
 			    container.scrollTop(etop- ctop + scrollTop)
@@ -21427,7 +21431,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
-                var html = this.getRecordHtml(pointRecord, fields);
+		var tooltip = this.getProperty("tooltip");
+                var html = this.getRecordHtml(pointRecord, fields,tooltip);
 
 
 		if(polygonField) {

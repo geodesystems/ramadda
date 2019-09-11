@@ -3104,6 +3104,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		});
 
+		HtmlUtils.initSelect(this.jq("colorbyselect"));
+		HtmlUtils.initSelect(this.jq("sizebyselect"));
                 this.jq("colorbyselect").change(function(){
 		    _this.colorByFieldChanged($(this).val());
 		});
@@ -3118,6 +3120,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			inputFunc($(this));
 		    }
 		});
+		HtmlUtils.initSelect(this.jq(ID_FILTERBAR).find("select"));
 		this.jq(ID_FILTERBAR).find("input:radio,select").change(function() {
 		    inputFunc($(this));
 		});
