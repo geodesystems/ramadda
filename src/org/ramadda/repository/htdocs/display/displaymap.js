@@ -1113,6 +1113,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
+
 	    if(records.length!=0) {
 		if (isNaN(bounds.north)) {
 		    console.log("no bounds:" + bounds);
@@ -1441,6 +1442,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var dontAddPoint = this.doDisplayMap();
             var didColorBy = false;
             var seen = {};
+	    var lastPoint;
+
+
+	    var pathAttrs ={
+		strokeColor: this.getProperty("pathColor",lineColor),
+		strokeWidth: this.getProperty("pathWidth",1)
+	    };
+
+
+
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
                 var tuple = pointRecord.getData();
@@ -1645,6 +1656,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 
+		var isPath = this.getProperty("isPath", false);
 
 
 		var showSegments = this.getProperty("showSegments", false);
@@ -1706,6 +1718,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(radius>0)
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
 		    }
+
+
+
+		    if(isPath && lastPoint) {
+			this.lines.push(this.map.addLine("line-" + i, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs));
+		    }
+		    lastPoint = point;
+
 
                     var date = pointRecord.getDate();
 		    if(mapPoint) {
