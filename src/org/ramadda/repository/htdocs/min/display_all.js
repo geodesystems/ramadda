@@ -2968,6 +2968,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if(filterBy.length>0) {
 		var searchBar = "";
+		var bottom = "";
 		var dateIds = [];
 		var hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 		var widgetStyle = "";
@@ -3045,7 +3046,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				if(enums[j] == dfltValue) extra = " display-filterby-button-selected ";
 				buttons+=HtmlUtils.div(["class","display-filterby-button" + extra,"value",enums[j]],enums[j]);
 			    }
-			    widget = HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"fieldId",filterField.getId()], buttons);
+			    bottom+= HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"fieldId",
+						    filterField.getId()], buttons);
+			    continue;
 			} else {
                             widget = HtmlUtils.select("",attrs,enums,dfltValue);
 			}
@@ -3092,8 +3095,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				values.push(value);
 			    }
 			});
-
-
                     }
 		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
 		    if(!hideFilterWidget) {
@@ -3112,7 +3113,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
 		var style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
-		header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar);
+		header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
 	    }
 
 	    this.jq(ID_HEADER2).html(header2);
