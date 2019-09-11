@@ -929,11 +929,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!this.getProperty("acceptFilterEvent",true)) return;
 		this.haveCalledUpdateUI = false;
 		var widgetId = "filterby_" + prop.fieldId;
-		if(prop.id.endsWith("_min")) widgetId+="_min";
-		if(prop.id.endsWith("_max")) widgetId+="_max";
 		this.settingFilterValue = true;
-		this.jq(widgetId).val(prop.value);
-		this.jq(widgetId).attr("value",prop.value);
+		if(Utils.isDefined(prop.value2)) {
+		    this.jq(widgetId+"_min").val(prop.value);
+		    this.jq(widgetId+"_min").attr("value", prop.value);
+		    this.jq(widgetId+"_max").val(prop.value2);
+		    this.jq(widgetId+"_max").attr("value", prop.value2);
+		} else {
+		    this.jq(widgetId).val(prop.value);
+		    this.jq(widgetId).attr("value",prop.value);
+
+		}
 		this.settingFilterValue = false;
 		this.dataFilterChanged();
 		return;
@@ -3127,11 +3133,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 
-		var inputFunc = function(input){
+		var inputFunc = function(input, input2){
                     var id = input.attr("id");
-		    var value = input.attr("value");
-		    if(!value)
-			value = input.val();
+		    if(!input2) {
+			if(id.endsWith("_min")) {
+			    input2 = $("#" + id.replace(/_min$/,"_max"));
+			} else if(id.endsWith("_max")) {
+			    var tmp = input;
+			    input =$("#" + id.replace(/_max$/,"_min"));
+			    input2 = tmp;
+			}
+		    }
+		    var value = input.val();
+		    if(!value || value=="")
+			value = input.attr("value");
+		    if(!value)value = input.val();
+
                     var fieldId = input.attr("fieldId");
 		    _this.checkFilterField(input);
 		    _this.haveCalledUpdateUI = false;
@@ -3140,12 +3157,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    _this.settingFilterValue = true;
 		    _this.dataFilterChanged();
-		    _this.propagateEvent("handleEventPropertyChanged", {
+		    var args = {
 			property: "filterValue",
 			id:id,
 			fieldId: fieldId,
 			value: value
-		    });
+		    };
+		    if(input2) {
+			args.value2 = input2.val();
+		    }
+		    _this.propagateEvent("handleEventPropertyChanged", args);
 		    _this.settingFilterValue = false;
                 };
 
@@ -3244,15 +3265,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			slide: function( event, ui ) {
 			    min.val(ui.values[0]/scale);
 			    max.val(ui.values[1]/scale);
+			    min.attr("value",min.val());
+			    max.attr("value",max.val());
 			},
 			stop: function() {
 			    var popup = getTooltip();
 			    popup.hide();
 			    theDisplay.checkFilterField(max);
-			    setTimeout(()=>{inputFunc(min)},1);
+			    inputFunc(min,max);
 			}
 		    });
 		});
+
 
 		HtmlUtils.initSelect(this.jq("colorbyselect"));
 		HtmlUtils.initSelect(this.jq("sizebyselect"));
