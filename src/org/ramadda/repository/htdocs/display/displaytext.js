@@ -1180,19 +1180,19 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		setTimeout(() =>{
 		    if(myCount == this.highlightCount) {
 			var css = this.getProperty("highlightOnCss","").split(",");
-			if(css.length) {
-			    for(var i=0;i<css.length;i++)
+			if(css.length>1) {
+			    for(var i=0;i<css.length;i+=2)
 				element.css(css[i],css[i+1]);
 			} else {
-			    element.addClass("display-template-record-highlight");
+			    console.log("addClass")
 			}
 			container.scrollTop(element.offset().top - container.offset().top + container.scrollTop())
 		    }
 		},500);
 	    } else {
 		var css = this.getProperty("highlightOffCss","").split(",");
-		if(css.length) {
-		    for(var i=0;i<css.length;i++)
+		if(css.length>1) {
+		    for(var i=0;i<css.length;i+=2)
 			element.css(css[i],css[i+1]);
 		} else {
 		    element.removeClass("display-template-record-highlight");
