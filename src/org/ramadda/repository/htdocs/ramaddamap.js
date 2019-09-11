@@ -435,7 +435,8 @@ function initMapFunctions(theMap) {
             }
             this.dateFeatureOut(feature);
             if (!skipText && this.displayedFeature == feature && !this.fixedText) {
-                this.showText("");
+		if(!this.displayDivSticky) 
+                    this.showText("");
             }
         },
         getLayerCanSelect: function(layer) {
@@ -976,7 +977,8 @@ function initMapFunctions(theMap) {
 
                 } else {
                     this.clearDateFeature();
-                    this.showText("");
+		    if(!this.displayDivSticky) 
+			this.showText("");
                 }
             }
             if (this.searchMsg) {
@@ -3199,15 +3201,16 @@ function initMapFunctions(theMap) {
             }
         },
 
-        theMap.showText = function(text) {
-            $("#" + this.displayDiv).html(text);
-        }
+    theMap.showText = function(text) {
+        $("#" + this.displayDiv).html(text);
+    }
 
     theMap.hideFeatureText = function(feature) {
 	if(this.featureHighlightHandler)
 	    this.featureHighlightHandler(feature,false);
             if (!feature || this.textFeature == feature) {
-                this.showText("");
+		if(!this.displayDivSticky) 
+                    this.showText("");
             }
         },
 

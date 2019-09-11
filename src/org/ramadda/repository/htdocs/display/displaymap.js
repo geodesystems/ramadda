@@ -142,6 +142,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var displayDiv = this.getProperty("displayDiv", null);
             if (displayDiv) {
                 params.displayDiv = displayDiv;
+		params.displayDivSticky = this.getProperty("displayDivSticky", false);
             }
             if (!this.getProperty("showLocationSearch", true)) {
                 params.showLocationSearch = false;
