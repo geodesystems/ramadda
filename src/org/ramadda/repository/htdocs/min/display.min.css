@@ -12,6 +12,11 @@
 //   font-weight: normal;
 }
 
+.display-tooltip {
+    max-width:600px;
+    border:1px solid #999 !important;
+}
+
 .display-dialog {
    font-size: 11pt;
    display: none;

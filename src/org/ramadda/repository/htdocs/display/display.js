@@ -3179,7 +3179,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    
 		},
 		classes: {
-		    "ui-tooltip": _this.getProperty("tooltipClass", "ramadda-tooltip-wide")
+		    "ui-tooltip": _this.getProperty("tooltipClass", "display-tooltip")
 		}
 	    });
 	},

@@ -1174,23 +1174,35 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
 	    let myCount = ++this.highlightCount;
-	    var element = $("#" + this.getId()+"-"+args.record.getId());
+	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var container = this.jq(ID_DISPLAY_CONTENTS);
 	    if(args.highlight) {
 		setTimeout(() =>{
 		    if(myCount == this.highlightCount) {
+			var element = $(id);
 			var css = this.getProperty("highlightOnCss","").split(",");
 			if(css.length>1) {
 			    for(var i=0;i<css.length;i+=2)
 				element.css(css[i],css[i+1]);
 			} else {
-			    console.log("addClass")
+			    element.addClass("display-template-record-highlight");
 			}
-			container.scrollTop(element.offset().top - container.offset().top + container.scrollTop())
+
+			try {
+			    var eo = element.offset();
+			    if(eo==null) return;
+			    var etop = (eo==null?0:eo.top);
+			    var ctop = container.offset().top;
+			    var scrollTop = container.scrollTop();
+			    container.scrollTop(etop- ctop + scrollTop)
+			} catch(err) {
+			    console.log("Error:" + err);
+			}
 		    }
 		},500);
 	    } else {
 		var css = this.getProperty("highlightOffCss","").split(",");
+		var element = $(id);
 		if(css.length>1) {
 		    for(var i=0;i<css.length;i+=2)
 			element.css(css[i],css[i+1]);
