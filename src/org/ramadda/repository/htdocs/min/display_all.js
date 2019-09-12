@@ -15711,12 +15711,18 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents+= footerTemplate;
 		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record"), selected);
+		let _this = this;
+		this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
+		    var record = selected[$(this).attr("recordIndex")];
+		    _this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+		});
 	    },
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
+//	    console.log(this.type+ ".recordHighlight");
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
-	    var container = this.jq(ID_DISPLAY_CONTENTS);
 	    if(this.highlightedElement) {
 		var css = this.getProperty("highlightOffCss","").split(",");
 		if(css.length>1) {
@@ -15727,36 +15733,15 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 	    if(args.highlight) {
-		setTimeout(() =>{
-		    if(myCount == this.highlightCount) {
-			var element = $(id);
-			this.highlightedElement = element;
-			var css = this.getProperty("highlightOnCss","").split(",");
-			if(css.length>1) {
-			    for(var i=0;i<css.length;i+=2)
-				element.css(css[i],css[i+1]);
-			} else {
-			    element.addClass("display-template-record-highlight");
+		if(args.immediate) {
+		    this.highlightElement(args);
+		} else {
+		    setTimeout(() =>{
+			if(myCount == this.highlightCount) {
+			    this.highlightElement(args);
 			}
-
-			try {
-			    var eo = element.offset();
-			    if(eo==null) return;
-			    if(this.getProperty("orientation","vertical")== "vertical") {
-				var c = container.offset().top;
-				var s = container.scrollTop();
-				container.scrollTop(eo.top- c + s)
-			    } else {
-				var c = container.offset().left;
-				var s = container.scrollLeft();
-				container.scrollLeft(eo.left- c + s)
-			    }
-
-			} catch(err) {
-			    console.log("Error:" + err);
-			}
-		    }
-		},500);
+		    },500);
+		}
 	    } else {
 		var css = this.getProperty("highlightOffCss","").split(",");
 		var element = $(id);
@@ -15767,6 +15752,39 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    element.removeClass("display-template-record-highlight");
 		}
 	    }
+	},
+	highlightElement: function(args) {
+	    var id = "#" + this.getId()+"-"+args.record.getId();
+	    var element = $(id);
+	    this.highlightedElement = element;
+	    var css = this.getProperty("highlightOnCss","").split(",");
+	    if(css.length>1) {
+		for(var i=0;i<css.length;i+=2)
+		    element.css(css[i],css[i+1]);
+	    } else {
+		element.addClass("display-template-record-highlight");
+	    }
+
+	    try {
+		if(!args.skipScroll) {
+		    var eo = element.offset();
+		    if(eo==null) return;
+		    var container = this.jq(ID_DISPLAY_CONTENTS);
+		    if(this.getProperty("orientation","vertical")== "vertical") {
+			var c = container.offset().top;
+			var s = container.scrollTop();
+			container.scrollTop(eo.top- c + s)
+		    } else {
+			var c = container.offset().left;
+			var s = container.scrollLeft();
+			container.scrollLeft(eo.left- c + s)
+		    }
+		}
+
+	    } catch(err) {
+		console.log("Error:" + err);
+	    }
+
 	}
     })}
 
@@ -15789,6 +15807,22 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 					 "template=\"\"",
 					 ]);
 	    },
+        handleEventRecordSelection: function(source, args) {
+//	    console.log(this.type+ ".recordSelection");
+	    if(!this.records) return;
+	    var index =-1;
+	    for(var i=0;i<this.records.length;i++) {
+		if(this.records[i].getId() == args.record.getId()) {
+		    index = i;
+		    break;
+		}
+	    }
+	    if(index>=0) {
+		this.slideIndex=index;
+		this.displaySlide();
+	    }
+	    
+	},
 	updateUI: function() {
 	    var pointData = this.getData();
 	    if (pointData == null) return;
@@ -15808,17 +15842,17 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.jq(ID_PREV).click(() =>{
 		this.slideIndex--;
-		this.writeSlide();
+		this.displaySlide();
 	    });
 	    this.jq(ID_NEXT).click(() =>{
 		this.slideIndex++;
-		this.writeSlide();
+		this.displaySlide();
 	    });
 	    setTimeout(()=>{
-		this.writeSlide();},200);
+		this.displaySlide();},200);
 
 	},
-	writeSlide: function() {
+	displaySlide: function() {
 	    if(this.slideIndex<0) this.slideIndex=0;
 	    if(this.slideIndex>=this.records.length) this.slideIndex=this.records.length-1;
 	    if(this.slideIndex==0)
@@ -20133,6 +20167,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
+//		console.log(this.type+ ".featureHighlight");
 		if(feature.record) {
 		    if(this.lastHighlightedRecord) {
 			var args = {highlight:false,record: this.lastHighlightedRecord};
@@ -20153,6 +20188,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 	    });
+	    this.map.doPopup = this.getProperty("doPopup",true);
+	    if(!this.map.doPopup)
+		this.map.doSelect = false;
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
@@ -21898,10 +21936,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             return ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
         },
         handleEventRecordSelection: function(source, args) {
-            if (!this.getProperty("showRecordSelection", true)) return;
             if (!this.map) {
                 return;
             }
+	    args.highlight = true;
+	    this.handleEventRecordHighlight(source,args);
+	    return;
+            if (!this.getProperty("showRecordSelection", true)) return;
             var record = args.record;
             if (record.hasLocation()) {
                 var latitude = record.getLatitude();

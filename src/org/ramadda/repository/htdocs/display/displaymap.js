@@ -170,6 +170,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
+//		console.log(this.type+ ".featureHighlight");
 		if(feature.record) {
 		    if(this.lastHighlightedRecord) {
 			var args = {highlight:false,record: this.lastHighlightedRecord};
@@ -190,6 +191,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 	    });
+	    this.map.doPopup = this.getProperty("doPopup",true);
+	    if(!this.map.doPopup)
+		this.map.doSelect = false;
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
@@ -1935,10 +1939,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             return ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
         },
         handleEventRecordSelection: function(source, args) {
-            if (!this.getProperty("showRecordSelection", true)) return;
             if (!this.map) {
                 return;
             }
+	    args.highlight = true;
+	    this.handleEventRecordHighlight(source,args);
+	    return;
+            if (!this.getProperty("showRecordSelection", true)) return;
             var record = args.record;
             if (record.hasLocation()) {
                 var latitude = record.getLatitude();

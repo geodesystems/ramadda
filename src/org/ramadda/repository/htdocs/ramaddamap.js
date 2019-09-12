@@ -179,6 +179,8 @@ function RepositoryMap(mapId, params) {
         markers: null,
         vectors: null,
         loadedLayers: [],
+	doPopup:true,
+	doSelect:true,
         boxes: null,
         kmlLayer: null,
         kmlLayerName: null,
@@ -458,6 +460,8 @@ function initMapFunctions(theMap) {
             if (layer.selectedFeature) {
                 this.unselectFeature(layer.selectedFeature);
             }
+	    if(!this.doSelect) return;
+
             this.selectedFeature = feature;
             layer.selectedFeature = feature;
             layer.selectedFeature.isSelected = true;
@@ -3190,6 +3194,9 @@ function initMapFunctions(theMap) {
     theMap.addFeatureHighlightHandler = function( callback) {
 	theMap.featureHighlightHandler = callback;
     }
+    theMap.addFeatureSelectHandler = function( callback) {
+	    theMap.featureSelectlightHandler= callback;
+    }
     theMap.showFeatureText = function(feature) {
 	if(this.featureHighlightHandler)
 	    this.featureHighlightHandler(feature,true);
@@ -3429,6 +3436,12 @@ function initMapFunctions(theMap) {
             this.currentPopup.destroy();
         }
 
+	if(this.featureSelectlightHandler) {
+	    if(this.featureSelectHandler(feature)) {
+		return;
+	    }
+	}
+	if(!this.doPopup) return;
 
         var id = marker.ramaddaId;
         if (!id)
@@ -3440,10 +3453,6 @@ function initMapFunctions(theMap) {
         }
 
         var markertext = marker.text;
-
-
-
-
         if (fromClick && marker.locationKey != null) {
             markers = this.seenMarkers[marker.locationKey];
             if (markers.length > 1) {
@@ -3460,6 +3469,8 @@ function initMapFunctions(theMap) {
                 }
             }
         }
+
+
         // set marker text as the location
         var location = marker.location;
         if (!location) return;
@@ -3473,7 +3484,6 @@ function initMapFunctions(theMap) {
             }
         }
 
-
         if (marker.entryType) {
             var type = marker.entryType;
             if (type == "geo_kml" || type == "geo_json" || type == "geo_shapefile") {
@@ -3483,8 +3493,6 @@ function initMapFunctions(theMap) {
                 markertext = "<center>" + HtmlUtils.onClick(call, label) + "</center>" + markertext;
             }
         }
-
-
 
         var projPoint = this.transformLLPoint(location);
 
