@@ -15842,17 +15842,17 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.jq(ID_PREV).click(() =>{
 		this.slideIndex--;
-		this.displaySlide();
+		this.displaySlide(true);
 	    });
 	    this.jq(ID_NEXT).click(() =>{
 		this.slideIndex++;
-		this.displaySlide();
+		this.displaySlide(true);
 	    });
 	    setTimeout(()=>{
 		this.displaySlide();},200);
 
 	},
-	displaySlide: function() {
+	displaySlide: function(propagateEvent) {
 	    if(this.slideIndex<0) this.slideIndex=0;
 	    if(this.slideIndex>=this.records.length) this.slideIndex=this.records.length-1;
 	    if(this.slideIndex==0)
@@ -15869,7 +15869,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    html = html.replace(/\${recordIndex}/g,(this.slideIndex+1));
 	    this.jq(ID_SLIDE).html(html);
 	    var args = {highlight:true,record: record};
-	    this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
+	    if(propagateEvent)
+		this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
 	},
         handleEventRecordHighlight: function(source, args) {
 	}
