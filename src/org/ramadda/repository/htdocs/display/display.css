@@ -306,7 +306,8 @@ position:absolute;
 
 
 .display-template-record {
-    display:inline-block;
+//    display:inline-block;
+cursor:pointer;
 }
 
 .display-template-record-highlight {

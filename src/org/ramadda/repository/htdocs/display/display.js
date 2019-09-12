@@ -305,6 +305,7 @@ function DisplayThing(argId, argProperties) {
 			s = s.replace("${" + f.getId() +"_yyyy}", Utils.formatDateYYYY(value));
 			s = s.replace("${" + f.getId() +"_yyyymmdd}", Utils.formatDateYYYYMMDD(value));
 			s = s.replace("${" + f.getId() +"_monthdayyear}", Utils.formatDateMonthDayYear(value));
+			s = s.replace("${" + f.getId() +"_monthday}", Utils.formatDateMonthDay(value));
 			s = s.replace("${" + f.getId() +"_mdy}", Utils.formatDateMDY(value));
 		    }
 		    continue;

@@ -1721,7 +1721,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,html,null,size);
 		    } else  if(pointIcon) {
-			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,html);
+			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,html,null,props.pointRadius);
 		    } else {
 			if(!props.graphicName)
 			    props.graphicName = this.getProperty("shape","circle");
@@ -1824,7 +1824,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"sizeByLog=\"true\"",
 		"sizeByMap=\"value1:size,...,valueN:size\"",
 		'sizeByRadiusMin="2"',
-		'sizeByRadiusMin="20"',
+		'sizeByRadiusMax="20"',
 		"boundsAnimation=\"true\"",
 		"centerOnFilterChange=\"true\"",
 		"markerIcon=\"/icons/...\"",

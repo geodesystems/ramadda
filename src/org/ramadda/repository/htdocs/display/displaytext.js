@@ -1167,9 +1167,13 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			s= this.getRecordTemplate(row,fields,s,props);
 			s = s.replace(/\${recordIndex}/g,(rowIdx+1));
 			var tag = HtmlUtils.openTag("div",["style","", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
-			if(s.startsWith("<td>")) {
-			    s = s.replace("<td>","<td>"+tag);
+			if(s.startsWith("<td")) {
+			    s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			    s = s.replace(/<\/td>$/,"</div></td>");
+			    contents += s;
+			} else if(s.startsWith("<tr")) {
+			    s = s.replace(/<td([^>]*)>/g,"<td $1>"+tag);
+			    s = s.replace(/<\/td>/g,"</div></td>");
 			    contents += s;
 			}  else {
 			    contents += tag +s +"</div>"
