@@ -114,11 +114,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             }
 
-/*
-	    var div  = HtmlUtils.div(["style","z-index:750;position: absolute; right: 10px;top:60px;"],HtmlUtils.image("https://lh3.googleusercontent.com/-_BpozUKPd8I/VeYEN2jrrzI/AAAAAAAAa0Q/LuT3enXhB0g/s1600/DSC02537.JPG",["width","400"]));
-	    this.jq(ID_MAP).append(div);
-*/
-
             if (!this.haveCalledUpdateUI) {
                 var callback = function() {
                     _this.updateUI();
@@ -174,9 +169,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addRegionSelectorControl(function(bounds) {
                 theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
-            var labelTemplate = this.getProperty("labelTemplate");
-
-
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
 		if(feature.record) {
 		    if(this.lastHighlightedRecord) {
@@ -198,7 +190,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 	    });
-
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
@@ -1154,8 +1145,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		//                return;
             }
 
-            this.addLabels(records,fields,points);
             this.addPoints(records,fields,points);
+            this.addLabels(records,fields,points);
             this.applyVectorMap();
 	},
 
@@ -1400,7 +1391,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             sizeBy.range = sizeBy.maxValue - sizeBy.minValue;
 
-//	    console.log(JSON.stringify(sizeBy,null,2));
+	    //	    console.log(JSON.stringify(sizeBy,null,2));
 
 
             if (dateMax) {
@@ -1843,23 +1834,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if(!labelTemplate) return;
 	    if(labelTemplate) {
 		labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
-		this.map.labelLayer = new OpenLayers.Layer.Vector("Labels", {
-                    styleMap: new OpenLayers.StyleMap({'default':{
-                        label : labelTemplate,
-                        fontColor: this.getProperty("labelFontColor","#000"),
-                        fontSize: this.getProperty("labelFontSize","12px"),
-                        fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
-                        fontWeight: this.getProperty("labelFontWeight","plain"),
-                        labelAlign: this.getProperty("labelAlign","lb"),
-                        labelXOffset: this.getProperty("labelXOffset","0"),
-                        labelYOffset: this.getProperty("labelYOffset","0"),
-                        labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-                        labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-			labelSelect:true,
-                    }}),
-                });
-		this.map.addVectorLayer(this.map.labelLayer, true);
-                this.map.labelLayer.setZIndex(100);
+		if(!this.map.labelLayer) {
+		    this.map.labelLayer = new OpenLayers.Layer.Vector("Labels", {
+			styleMap: new OpenLayers.StyleMap({'default':{
+                            label : labelTemplate,
+                            fontColor: this.getProperty("labelFontColor","#000"),
+                            fontSize: this.getProperty("labelFontSize","12px"),
+                            fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
+                            fontWeight: this.getProperty("labelFontWeight","plain"),
+                            labelAlign: this.getProperty("labelAlign","lb"),
+                            labelXOffset: this.getProperty("labelXOffset","0"),
+                            labelYOffset: this.getProperty("labelYOffset","0"),
+                            labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+                            labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+			    labelSelect:true,
+			}}),
+                    });
+		    this.map.addVectorLayer(this.map.labelLayer, true);
+                    this.map.labelLayer.setZIndex(100);
+		}
 	    }
 
 
@@ -1897,7 +1890,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
             this.map.labelLayer.addFeatures(features);
 	    this.labelFeatures = features;
-//            $("#" + this.map.labelLayer.id).css("z-index",1000);
+	    $("#" + this.map.labelLayer.id).css("z-index",1000);
         },
 
 
