@@ -1531,7 +1531,8 @@ public class WikiUtil {
                         ? toks.get(1)
                         : "");
                 String outerClazz = "ramadda-frame-outer";
-                String innerStyle = "";
+                String innerStyle = (String) props.get("innerStyle");
+		if(innerStyle==null) innerStyle="";
                 String frameStyle = "";
                 if (props.get("shadow") != null) {
                     outerClazz += " ramadda-frame-shadow ";

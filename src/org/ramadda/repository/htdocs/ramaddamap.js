@@ -544,6 +544,17 @@ function initMapFunctions(theMap) {
         },
         checkLayerOrder: function() {
             if (this.circles) {
+                this.map.setLayerIndex(this.circles, 0);
+	    }
+	    if (this.markers) {
+                this.map.setLayerIndex(this.markers, 1);
+	    }
+	    if (this.labelLayer) {
+		this.map.setLayerIndex(this.labelLayer, 2);
+	    }
+
+	    return;
+            if (this.circles) {
                 this.map.setLayerIndex(this.circles, this.map.layers.length - 1);
                 this.map.raiseLayer(this.circles, this.map.layers.length - 1);
                 this.circles.redraw();
@@ -2106,6 +2117,7 @@ function initMapFunctions(theMap) {
                 */
             }
         }
+        this.checkLayerOrder();
     }
 
     theMap.isLayerVisible = function(id, parentId) {
@@ -3265,9 +3277,9 @@ function initMapFunctions(theMap) {
             this.features[id] = feature;
             if (!notReally) {
                 if (this.circles == null) {
-                    this.circles = new OpenLayers.Layer.Vector("Circles Layer");
+                    this.circles = new OpenLayers.Layer.Vector("Shapes");
 		    this.circles.layerName = "circles";
-                    //                    this.circles.setZIndex(1);
+                    this.circles.setZIndex(1);
                     /*
                       this.circles.events.on({
                       'featureselected': function(feature) {

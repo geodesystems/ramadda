@@ -114,6 +114,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             }
 
+/*
+	    var div  = HtmlUtils.div(["style","z-index:750;position: absolute; right: 10px;top:60px;"],HtmlUtils.image("https://lh3.googleusercontent.com/-_BpozUKPd8I/VeYEN2jrrzI/AAAAAAAAa0Q/LuT3enXhB0g/s1600/DSC02537.JPG",["width","400"]));
+	    this.jq(ID_MAP).append(div);
+*/
+
             if (!this.haveCalledUpdateUI) {
                 var callback = function() {
                     _this.updateUI();
@@ -169,6 +174,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addRegionSelectorControl(function(bounds) {
                 theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
+            var labelTemplate = this.getProperty("labelTemplate");
+
+
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
 		if(feature.record) {
 		    if(this.lastHighlightedRecord) {
@@ -188,6 +196,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.getAnimation().handleEventRecordHighlight(this, args);
 		    }
 		}
+
 	    });
 
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
@@ -508,6 +517,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	highlightMarker:null,
         handleEventRecordHighlight: function(source, args) {
 	    SUPER.handleEventRecordHighlight.call(this,source,args);
+	    if(!this.map) return;
 	    if(this.highlightMarker) {
 		this.map.removePoint(this.highlightMarker);
 		this.highlightMarker = null;
@@ -523,6 +533,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.75)),
                 };
 		this.highlightMarker =  this.map.addPoint(args.record.getId(), point, attrs);
+		if(this.getProperty("centerOnHighlight",false)) {
+		    this.map.setCenter(point);
+		}
 	    }
 
 
@@ -1141,8 +1154,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		//                return;
             }
 
-            this.addPoints(records,fields,points);
             this.addLabels(records,fields,points);
+            this.addPoints(records,fields,points);
             this.applyVectorMap();
 	},
 
@@ -1475,7 +1488,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
                     strokeColor: strokeColor,
-		    fillColor: this.getProperty("fillColor")
+		    fillColor: this.getProperty("fillColor"),
+		    fillOpacity: this.getProperty("fillOpacity",0.75)
                 };
 
 		if(shapeBy.field) {
@@ -1827,9 +1841,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addLabels:function(records, fields, points) {
             var labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;
-            labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
-	    if(!this.map.labelLayer) {
-		this.map.labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+	    if(labelTemplate) {
+		labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
+		this.map.labelLayer = new OpenLayers.Layer.Vector("Labels", {
                     styleMap: new OpenLayers.StyleMap({'default':{
                         label : labelTemplate,
                         fontColor: this.getProperty("labelFontColor","#000"),
@@ -1841,10 +1855,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         labelYOffset: this.getProperty("labelYOffset","0"),
                         labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
                         labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+			labelSelect:true,
                     }}),
                 });
 		this.map.addVectorLayer(this.map.labelLayer, true);
+                this.map.labelLayer.setZIndex(100);
 	    }
+
+
+
 	    var features =  [];
             var seen = {};
 	    var colorBy = this.getProperty("colorBy");
@@ -1861,6 +1880,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 pointFeature.noSelect = true;
                 pointFeature.attributes = {
                 };
+                pointFeature.attributes["recordIndex"] = (i+1);
                 for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
                     var field = fields[fieldIdx];
                     pointFeature.attributes[field.getId()] = field.getValue(tuple);
