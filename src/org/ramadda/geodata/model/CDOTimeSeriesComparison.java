@@ -1129,6 +1129,10 @@ public class CDOTimeSeriesComparison extends CDODataService {
                 tsEndYear--;
                 modelStartYear++;
             }
+            if (tsStartMonth >= modelStartMonth && tsEndMonth <= modelEndMonth) {
+            	tsEndYear--;
+            	modelStartYear++;
+            }
         } else if (leadlag.equals("lag")) {
             if (((tsStartMonth == modelStartMonth)
                     && (tsEndMonth == modelEndMonth))
@@ -1143,6 +1147,10 @@ public class CDOTimeSeriesComparison extends CDODataService {
                 modelEndYear--;
                 tsStartYear++;
             } else if (tsStartMonth > modelEndMonth) {
+                tsStartYear++;
+            }
+            if (tsStartMonth >= modelStartMonth && tsEndMonth <= modelEndMonth) {
+                modelEndYear--;
                 tsStartYear++;
             }
         }
