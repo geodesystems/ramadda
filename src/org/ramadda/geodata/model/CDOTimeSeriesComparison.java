@@ -209,6 +209,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
             throws Exception {
 
         StringBuilder leadlagOpts = new StringBuilder();
+        leadlagOpts.append(msg("Time Series:"));
+        leadlagOpts.append(HtmlUtils.space(1));
         leadlagOpts.append(HtmlUtils.radio(CDOOutputHandler.ARG_CDO_LEADLAG,
                                            "none",
                                            RepositoryManager.getShouldButtonBeSelected(
@@ -239,7 +241,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         leadlagOpts.append(HtmlUtils.space(1));
         leadlagOpts.append(msg("Lag"));
         leadlagOpts.append(HtmlUtils.br());
-        leadlagOpts.append(msgLabel("Time Series Months"));
+        leadlagOpts.append(msgLabel("Months of Time Series Lead/Lag"));
         leadlagOpts.append(HtmlUtils.br());
         List<TwoFacedObject> TSMONTHS =
             new ArrayList<TwoFacedObject>(CDOOutputHandler.MONTHS);
@@ -1073,13 +1075,13 @@ public class CDOTimeSeriesComparison extends CDODataService {
             if (modelStartYear <= firstDataYear) {
                 modelStartYear = firstDataYear + 1;
             }
-            if (modelEndYear > lastDataYear) {
-                modelEndYear = lastDataYear;
-            }
-            if ((modelEndYear == lastDataYear)
-                    && (modelEndMonth > lastDataMonth)) {
-                modelEndYear = lastDataYear - 1;
-            }
+        }
+        if (modelEndYear > lastDataYear) {
+            modelEndYear = lastDataYear;
+        }
+        if ((modelEndYear == lastDataYear)
+                && (modelEndMonth > lastDataMonth)) {
+            modelEndYear = lastDataYear - 1;
         }
 
         if (tsSpanYear) {
@@ -1087,13 +1089,20 @@ public class CDOTimeSeriesComparison extends CDODataService {
             if (tsStartYear <= firstDataYear) {
                 tsStartYear = firstDataYear + 1;
             }
-            if (tsEndYear > lastDataYear) {
-                tsEndYear = lastDataYear;
-            }
-            if ((tsEndYear == lastDataYear) && (tsEndMonth > lastDataMonth)) {
-                tsEndYear = lastDataYear - 1;
-            }
         }
+        if (tsEndYear > lastDataYear) {
+            tsEndYear = lastDataYear;
+        }
+        if ((tsEndYear == lastDataYear) && (tsEndMonth > lastDataMonth)) {
+            tsEndYear = lastDataYear - 1;
+        }
+
+        /*
+        System.out.println("Before adjustment "+opNum);
+        System.out.println("Model years: " + modelStartYear + "/"
+                           + modelEndYear);
+        System.out.println("TS years: " + tsStartYear + "/" + tsEndYear);
+        */
 
         if (leadlag.equals("none")) {
             if ((tsStartMonth == modelStartMonth)
@@ -1104,7 +1113,9 @@ public class CDOTimeSeriesComparison extends CDODataService {
                 tsEndYear--;
             }
         } else if (leadlag.equals("lead")) {
-            if (modelSpanYear && tsSpanYear) {
+            if (((tsStartMonth == modelStartMonth)
+                    && (tsEndMonth == modelEndMonth))
+                    || (modelSpanYear && tsSpanYear)) {
                 tsEndYear--;
                 modelStartYear++;
             } else if (modelSpanYear
@@ -1116,17 +1127,23 @@ public class CDOTimeSeriesComparison extends CDODataService {
             }
             if (modelSpanYear && (tsEndYear == modelEndYear)) {
                 tsEndYear--;
+                modelStartYear++;
             }
         } else if (leadlag.equals("lag")) {
-            if (modelSpanYear && tsSpanYear) {
+            if (((tsStartMonth == modelStartMonth)
+                    && (tsEndMonth == modelEndMonth))
+                    || (modelSpanYear && tsSpanYear)) {
                 modelEndYear--;
                 tsStartYear++;
-            } else if (tsSpanYear || (modelEndMonth > tsStartMonth)) {
-                modelStartYear--;
+            } else if (tsSpanYear) {
+                //modelStartYear--;
                 modelEndYear--;
+                tsStartYear++;
+            } else if (modelEndMonth > tsStartMonth) {
+                modelEndYear--;
+                tsStartYear++;
             } else if (tsStartMonth > modelEndMonth) {
                 tsStartYear++;
-                modelEndYear--;
             }
         }
 
@@ -1151,15 +1168,20 @@ public class CDOTimeSeriesComparison extends CDODataService {
             modelEndYear--;
         }
         /*
+        System.out.println("After adjustment "+opNum);
         System.out.println("Model years: " + modelStartYear + "/"
                            + modelEndYear);
         System.out.println("TS years: " + tsStartYear + "/" + tsEndYear);
         */
-        int numModelYears = (modelEndYear - modelStartYear) + 1;
-        int numTSYears    = (tsEndYear - tsStartYear) + 1;
+        int    numModelYears = (modelEndYear - modelStartYear) + 1;
+        int    numTSYears    = (tsEndYear - tsStartYear) + 1;
+        String tsYears       = tsStartYear + "/" + tsEndYear;
+        String modelYears    = modelStartYear + "/" + modelEndYear;
         if (numModelYears != numTSYears) {
             System.err.println("Differing number of years, model: "
-                               + numModelYears + " vs. ts: " + numTSYears);
+                               + modelYears + " (" + numModelYears
+                               + ") vs. ts: " + tsYears + " (" + numTSYears
+                               + ")");
         }
 
         Date[] newDates = new Date[2];
