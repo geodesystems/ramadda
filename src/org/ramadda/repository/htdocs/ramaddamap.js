@@ -543,27 +543,19 @@ function initMapFunctions(theMap) {
             }
         },
         checkLayerOrder: function() {
+	    if (this.lines) {
+                this.map.setLayerIndex(this.lines, 0);
+	    }
             if (this.circles) {
-                this.map.setLayerIndex(this.circles, 0);
+                this.map.setLayerIndex(this.circles, 1);
 	    }
 	    if (this.markers) {
-                this.map.setLayerIndex(this.markers, 1);
+                this.map.setLayerIndex(this.markers, 2);
 	    }
 	    if (this.labelLayer) {
-		this.map.setLayerIndex(this.labelLayer, 2);
+		this.map.setLayerIndex(this.labelLayer, 3);
 	    }
-
-	    return;
-            if (this.circles) {
-                this.map.setLayerIndex(this.circles, this.map.layers.length - 1);
-                this.map.raiseLayer(this.circles, this.map.layers.length - 1);
-                this.circles.redraw();
-            }
-            if (this.markers) {
-                this.map.setLayerIndex(this.markers, this.map.layers.length - 1);
-                this.map.raiseLayer(this.markers, this.map.layers.length - 1);
-            }
-            this.map.resetLayersZIndex();
+//            this.map.resetLayersZIndex();
         },
         addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
             var _this = this;
