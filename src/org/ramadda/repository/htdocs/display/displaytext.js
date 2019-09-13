@@ -2015,7 +2015,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
-            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.span(["id",this.getDomId(ID_LABEL)]," ") + " " + HtmlUtils.input("pattern", (pattern ? pattern : ""), ["placeholder", "Search text", "id", this.getDomId(ID_SEARCH)]));
+	    var input = "";
+	    if(!this.filterFields || this.filterFields.length==0) 
+		input = " " + HtmlUtils.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", "id", this.getDomId(ID_SEARCH)]);
+            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.span(["id",this.getDomId(ID_LABEL)]," ") + input);
             let _this = this;
             this.jq(ID_SEARCH).keypress(function(event) {
                 if (event.which == 13) {
@@ -2076,11 +2079,15 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
             var lineCnt = 0;
             var displayedLineCnt = 0;
-            var re;
+            var regexp;
             if (pattern) {
-                re = new RegExp("(" + pattern + ")");
+                regexp = new RegExp("(" + pattern + ")","i");
             }
-
+	    var regexpMap = {};
+	    var filterFieldMap = {};
+	    if(this.filterFields) {
+		this.filterFields.map(f=>{if(f.isString)filterFieldMap[f.getId()]=true;});
+	    }
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
 		var record = records[rowIdx];
 		this.indexToRecord[rowIdx] = record;
@@ -2090,15 +2097,29 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 var line = "";
                 for (var col = 0; col < fields.length; col++) {
                     var f = fields[col];
+		    if(rowIdx==0) {
+			if(filterFieldMap[f.getId()]) {
+			    var value = this.getFilterFieldValue(f);
+			    if(value && value.length>0) {
+				try {
+				    regexpMap[f.getId()] =  new RegExp("(" + value + ")","i");
+				} catch(e) {}
+			    }
+			}
+		    }
                     line += " ";
-                    line += row[f.getIndex()];
+		    var value = ""+row[f.getIndex()];
+                    value = value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+		    if(regexpMap[f.getId()]) {
+			value = value.replace(regexpMap[f.getId()], "<span style=background:yellow;>$1</span>");
+		    }
+                    line += value;
                 }
                 line = line.trim();
                 if (!includeEmptyLines && line.length == 0) continue;
-                line = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 lineCnt++;
-                if (re) {
-                    if (!line.toLowerCase().match(re)) continue;
+                if (regexp) {
+                    if (!line.toLowerCase().match(regexp)) continue;
                     line = line.replace(re, "<span style=background:yellow;>$1</span>");
                 }
                 displayedLineCnt++;

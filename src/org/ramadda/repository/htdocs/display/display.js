@@ -1342,6 +1342,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         requiresGrouping:  function() {
             return false;
         },
+	getFilterFieldValue:function(field) {
+	    var value;
+	    var element =$("#" + this.getDomId("filterby_" + field.getId()));
+	    value = element.attr("value");
+	    if(!value)
+		value = element.val();
+	    return value;
+
+	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
             var pointData = this.getData();
             if (!dataList) {
@@ -1365,6 +1374,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if (suffix) pattern = value + suffix;
 		var value;
 		var _values =[];
+		var regexps =[];
 		if(filterField.isNumeric) {
 		    var minField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_min"));
 		    var maxField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_max"));
@@ -1390,17 +1400,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date2=null;
 		    value = [date1,date2]; 
 		}  else {
-		    var element =$("#" + this.getDomId("filterby_" + filterField.getId()));
-		    value = element.attr("value");
-		    if(!value)
-			value = element.val();
+		    value = this.getFilterFieldValue(filterField);
 		    if(!Array.isArray(value)) value = [value];
-		    value.map(v=>_values.push((""+v).toLowerCase()));
+		    value.map(v=>{
+			_values.push((""+v).toLowerCase());
+			try {
+			    regexps.push(new RegExp(v,"i"));
+			} catch(skipIt){}
+		    });
+		    
 		}
 		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
 		var anyValues = false;
 		_values.map(v=>{if(v.length>0)anyValues = true});
-		values.push({value:value,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
+
+		values.push({value:value,regexps:regexps,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
 	    }
 	    //this.minDateObj
 	    //	    console.log("filterData:" + this.type +" " + this.minDateObj +" " + this.maxDateObj);
@@ -1458,9 +1472,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var _values = values[i]._values;
 			if(values[i].anyValues) {
 			    ok = false;
+			    value  = (""+value).toLowerCase();
 			    for(var j=0;j<_values.length;j++) {
 				var fv = _values[j];
-				value  = (""+value).toLowerCase();
 				if(startsWith) {
 				    if(value.startsWith(fv)) {
 					ok = true;
@@ -1469,6 +1483,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				} else  if(value.indexOf(fv)>=0) {
 				    ok = true;
 				    break;
+				} else {
+				    for(ri=0;ri<values[i].regexps.length;ri++) {
+					if(value.match(values[i].regexps[ri])) {
+					    ok = true;
+					    break;
+					}
+				    }
 				}
 			    }
 			}
@@ -3058,26 +3079,31 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    if(items.length>0) {
 			var html = "";
+			var itemCnt = 0;
 			items.map(item=>{
 			    var match = item[0];
 			    item =  item[1];
+			    if(item.length>50) return;
 			    var label = item.replace(regexp,"<span style='background:yellow;'>" + match +"</span>");
 			    item = item.replace(/\'/g,"\'");
 			    html+=HtmlUtils.div(["class","display-filterby-popup-item","item",item],label)+"\n";
-			});
-			popupObject = getTooltip();
-			popupObject.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], html));
-			popupObject.show();
-			popupObject.position({
-			    of: $(this),
-			    my: "left top",
-			    at: "left bottom",
-			});
-			$(".display-filterby-popup-item").click(function(){
-			    hidePopupObject();
-			    input.val($(this).attr("item"));
-			    inputFunc(input);
-			});
+			    itemCnt++;
+			});	
+			if(itemCnt>0) {
+			    popupObject = getTooltip();
+			    popupObject.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], html));
+			    popupObject.show();
+			    popupObject.position({
+				of: $(this),
+				my: "left top",
+				at: "left bottom",
+			    });
+			    $(".display-filterby-popup-item").click(function(){
+				hidePopupObject();
+				input.val($(this).attr("item"));
+				inputFunc(input);
+			    });
+			}
 		    }
 
 		});

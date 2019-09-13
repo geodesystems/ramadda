@@ -553,10 +553,9 @@ function RecordField(props) {
         setLabel: function(l) {
             this.label = l;
         },
-		isString: function() {
-		return this.type == "string" || this.type=="enumeration";
-
-	    },
+	isString: function() {
+	    return this.type == "string" || this.type=="enumeration";
+	},
         getType: function() {
             return this.type;
         },

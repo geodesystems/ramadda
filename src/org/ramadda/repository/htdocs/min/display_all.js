@@ -1492,6 +1492,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         requiresGrouping:  function() {
             return false;
         },
+	getFilterFieldValue:function(field) {
+	    var value;
+	    var element =$("#" + this.getDomId("filterby_" + field.getId()));
+	    value = element.attr("value");
+	    if(!value)
+		value = element.val();
+	    return value;
+
+	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
             var pointData = this.getData();
             if (!dataList) {
@@ -1515,6 +1524,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if (suffix) pattern = value + suffix;
 		var value;
 		var _values =[];
+		var regexps =[];
 		if(filterField.isNumeric) {
 		    var minField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_min"));
 		    var maxField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_max"));
@@ -1540,17 +1550,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date2=null;
 		    value = [date1,date2]; 
 		}  else {
-		    var element =$("#" + this.getDomId("filterby_" + filterField.getId()));
-		    value = element.attr("value");
-		    if(!value)
-			value = element.val();
+		    value = this.getFilterFieldValue(filterField);
 		    if(!Array.isArray(value)) value = [value];
-		    value.map(v=>_values.push((""+v).toLowerCase()));
+		    value.map(v=>{
+			_values.push((""+v).toLowerCase());
+			try {
+			    regexps.push(new RegExp(v,"i"));
+			} catch(skipIt){}
+		    });
+		    
 		}
 		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
 		var anyValues = false;
 		_values.map(v=>{if(v.length>0)anyValues = true});
-		values.push({value:value,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
+
+		values.push({value:value,regexps:regexps,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
 	    }
 	    //this.minDateObj
 	    //	    console.log("filterData:" + this.type +" " + this.minDateObj +" " + this.maxDateObj);
@@ -1608,9 +1622,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var _values = values[i]._values;
 			if(values[i].anyValues) {
 			    ok = false;
+			    value  = (""+value).toLowerCase();
 			    for(var j=0;j<_values.length;j++) {
 				var fv = _values[j];
-				value  = (""+value).toLowerCase();
 				if(startsWith) {
 				    if(value.startsWith(fv)) {
 					ok = true;
@@ -1619,6 +1633,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				} else  if(value.indexOf(fv)>=0) {
 				    ok = true;
 				    break;
+				} else {
+				    for(ri=0;ri<values[i].regexps.length;ri++) {
+					if(value.match(values[i].regexps[ri])) {
+					    ok = true;
+					    break;
+					}
+				    }
 				}
 			    }
 			}
@@ -3208,26 +3229,31 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    if(items.length>0) {
 			var html = "";
+			var itemCnt = 0;
 			items.map(item=>{
 			    var match = item[0];
 			    item =  item[1];
+			    if(item.length>50) return;
 			    var label = item.replace(regexp,"<span style='background:yellow;'>" + match +"</span>");
 			    item = item.replace(/\'/g,"\'");
 			    html+=HtmlUtils.div(["class","display-filterby-popup-item","item",item],label)+"\n";
-			});
-			popupObject = getTooltip();
-			popupObject.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], html));
-			popupObject.show();
-			popupObject.position({
-			    of: $(this),
-			    my: "left top",
-			    at: "left bottom",
-			});
-			$(".display-filterby-popup-item").click(function(){
-			    hidePopupObject();
-			    input.val($(this).attr("item"));
-			    inputFunc(input);
-			});
+			    itemCnt++;
+			});	
+			if(itemCnt>0) {
+			    popupObject = getTooltip();
+			    popupObject.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], html));
+			    popupObject.show();
+			    popupObject.position({
+				of: $(this),
+				my: "left top",
+				at: "left bottom",
+			    });
+			    $(".display-filterby-popup-item").click(function(){
+				hidePopupObject();
+				input.val($(this).attr("item"));
+				inputFunc(input);
+			    });
+			}
 		    }
 
 		});
@@ -5579,10 +5605,9 @@ function RecordField(props) {
         setLabel: function(l) {
             this.label = l;
         },
-		isString: function() {
-		return this.type == "string" || this.type=="enumeration";
-
-	    },
+	isString: function() {
+	    return this.type == "string" || this.type=="enumeration";
+	},
         getType: function() {
             return this.type;
         },
@@ -16558,7 +16583,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
-            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.span(["id",this.getDomId(ID_LABEL)]," ") + " " + HtmlUtils.input("pattern", (pattern ? pattern : ""), ["placeholder", "Search text", "id", this.getDomId(ID_SEARCH)]));
+	    var input = "";
+	    if(!this.filterFields || this.filterFields.length==0) 
+		input = " " + HtmlUtils.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", "id", this.getDomId(ID_SEARCH)]);
+            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.span(["id",this.getDomId(ID_LABEL)]," ") + input);
             let _this = this;
             this.jq(ID_SEARCH).keypress(function(event) {
                 if (event.which == 13) {
@@ -16619,11 +16647,15 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
             var lineCnt = 0;
             var displayedLineCnt = 0;
-            var re;
+            var regexp;
             if (pattern) {
-                re = new RegExp("(" + pattern + ")");
+                regexp = new RegExp("(" + pattern + ")","i");
             }
-
+	    var regexpMap = {};
+	    var filterFieldMap = {};
+	    if(this.filterFields) {
+		this.filterFields.map(f=>{if(f.isString)filterFieldMap[f.getId()]=true;});
+	    }
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
 		var record = records[rowIdx];
 		this.indexToRecord[rowIdx] = record;
@@ -16633,15 +16665,29 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 var line = "";
                 for (var col = 0; col < fields.length; col++) {
                     var f = fields[col];
+		    if(rowIdx==0) {
+			if(filterFieldMap[f.getId()]) {
+			    var value = this.getFilterFieldValue(f);
+			    if(value && value.length>0) {
+				try {
+				    regexpMap[f.getId()] =  new RegExp("(" + value + ")","i");
+				} catch(e) {}
+			    }
+			}
+		    }
                     line += " ";
-                    line += row[f.getIndex()];
+		    var value = ""+row[f.getIndex()];
+                    value = value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+		    if(regexpMap[f.getId()]) {
+			value = value.replace(regexpMap[f.getId()], "<span style=background:yellow;>$1</span>");
+		    }
+                    line += value;
                 }
                 line = line.trim();
                 if (!includeEmptyLines && line.length == 0) continue;
-                line = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 lineCnt++;
-                if (re) {
-                    if (!line.toLowerCase().match(re)) continue;
+                if (regexp) {
+                    if (!line.toLowerCase().match(regexp)) continue;
                     line = line.replace(re, "<span style=background:yellow;>$1</span>");
                 }
                 displayedLineCnt++;
