@@ -1849,6 +1849,14 @@ public class WikiUtil {
             if (tline.startsWith(":comment")) {
 		continue;
 	    }
+
+	    if (tline.startsWith(":pad")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		String height = "100px";
+		if(toks.size()>1) height = toks.get(1);
+		HtmlUtils.div(buff,"",HtmlUtils.style("height:" + height));
+		continue;
+	    }
             if (tline.startsWith(":col-")) {
                 RowState rowState = null;
                 if (rowStates.size() == 0) {
