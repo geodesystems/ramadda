@@ -15180,8 +15180,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                                 var numBins = +this.getProperty(field.getId() +".binCount",10); 
                                 field.binSize = (max-min)/numBins;
                                 for(var bin=0;bin<numBins;bin++) {
-                                    field.bins.push([min+field.binSize*bin,min+field.binSize*(bin+1)]);
-                                }
+				    field.bins.push([min+field.binSize*bin,min+field.binSize*(bin+1)]);
+				}
                             }
                         }
                     }
@@ -16309,21 +16309,48 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    var tuple = {value:label,count:0}
 		    s.counts[label] = tuple;
 		    s.values.push(tuple);
-		    for(var i=0;i<numBins;i++) {
-			var label = (Utils.formatNumber(s.min+binWidth*i)) +" - " + Utils.formatNumber(s.min+binWidth*(i+1));
-			s.bins.push(label);
-			var tuple = {value:label,count:0}
-			s.counts[label] = tuple;
-			s.values.push(tuple);
+                    var binsProp = this.getProperty(f.getId() +".bins");
+		    var hasBins = Utils.stringDefined(binsProp);
+		    var binValues;
+                    if(hasBins) {
+                        var l  = binsProp.split(",");
+			binValues = [];
+			l.map(v=>binValues.push(+v));
+                        for(var i=0;i<l.length-1;i++) {
+			    var v1 = +l[i];
+			    var v2 = +l[i+1];
+			    var label = v1 +" - " + v2;
+			    s.bins.push(label);
+			    var tuple = {value:label,count:0}
+			    s.counts[label] = tuple;
+			    s.values.push(tuple);
+                        }
+		    } else {
+			for(var i=0;i<numBins;i++) {
+			    var label = (Utils.formatNumber(s.min+binWidth*i)) +" - " + Utils.formatNumber(s.min+binWidth*(i+1));
+			    s.bins.push(label);
+			    var tuple = {value:label,count:0}
+			    s.counts[label] = tuple;
+			    s.values.push(tuple);
+			}
 		    }
 		    for(var i=0;i<s.numbers.length;i++) {
 			var value = s.numbers[i];
 			var bin=0;
 			if(!isNaN(value)) {
-			    if(binWidth!=0) {
-				var perc = (value-s.min)/range;
-				bin = Math.round(perc/(1/numBins))+1;
-				if(bin>numBins) bin = numBins;
+			    if(binValues) {
+				for(var j=0;j<binValues.length-1;j++) {
+				    if(value>=binValues[j] && value< binValues[j+1]) {
+					bin = j;
+					break;
+				    }
+				}
+			    } else {
+				if(binWidth!=0) {
+				    var perc = (value-s.min)/range;
+				    bin = Math.round(perc/(1/numBins))+1;
+				    if(bin>numBins) bin = numBins;
+				}
 			    }
 			}
 			var label = s.bins[bin]; 
@@ -16332,6 +16359,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			    s.counts[label] = tuple;
 			    s.values.push(tuple);
 			}
+			s.total++;
 			s.counts[label].count++;
 		    }
 		}
@@ -16349,7 +16377,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		html += HtmlUtils.closeTag("thead");
 		html += HtmlUtils.openTag("tbody", []);
 		if(!f.isNumeric) {
-		s.values.sort((a,b)=>{
+		    s.values.sort((a,b)=>{
 			if(a.count<b.count) return 1;
 			if(a.count>b.count) return -1;
 			return 0;
