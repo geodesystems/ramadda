@@ -2000,6 +2000,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
 function RamaddaTextrawDisplay(displayManager, id, properties) {
     var ID_TEXT = "text";
     var ID_LABEL = "label";
+    var ID_SEARCH = "search";
     let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
@@ -2014,17 +2015,16 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
-            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.span(["id",this.getDomId(ID_LABEL)]," ") + " " + HtmlUtils.input("pattern", (pattern ? pattern : ""), ["placeholder", "Search text", "id", this.getDomId("search")]));
+            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.span(["id",this.getDomId(ID_LABEL)]," ") + " " + HtmlUtils.input("pattern", (pattern ? pattern : ""), ["placeholder", "Search text", "id", this.getDomId(ID_SEARCH)]));
             let _this = this;
-            this.jq("search").keypress(function(event) {
+            this.jq(ID_SEARCH).keypress(function(event) {
                 if (event.which == 13) {
                     _this.setProperty("pattern", $(this).val());
-                    _this.updateUI();
 		    _this.propagateEvent("handleEventPropertyChanged", {
 			    property: "pattern",
-				value: $(this).val()
-				    });
-
+			value: $(this).val()
+		    });
+                    _this.updateUI();
                 }
             });
             var height = this.getProperty("height", "600");
@@ -2132,7 +2132,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 corpus = HtmlUtils.tag("pre", [], corpus);
             this.writeHtml(ID_TEXT, corpus);
 	    this.jq(ID_LABEL).html(displayedLineCnt +" lines");
-
+	    this.jq(ID_SEARCH).focus();
 	    var lines =this.jq(ID_TEXT).find(".display-raw-line");
 	    lines.click(function() {
 		var idx = $(this).attr("recordIndex");
