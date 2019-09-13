@@ -1652,7 +1652,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
 		this.settingSearch=false;
 		return;
 	    }
-            SUPER.handleEventPropertyChanged(source, prop);
+            SUPER.handleEventPropertyChanged.call(this,source, prop);
 	    },
 
     });
@@ -2011,7 +2011,6 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (!records) {
                 return null;
             }
-
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
             this.writeHtml(ID_TOP_RIGHT, HtmlUtils.input("pattern", (pattern ? pattern : ""), ["placeholder", "Search text", "id", this.getDomId("search")]));
@@ -2027,7 +2026,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
                 }
             });
-            this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId(ID_TEXT)], ""));
+            var height = this.getProperty("height", "600");
+            var html = HtmlUtils.div(["id", this.getDomId(ID_TEXT), "style", "padding:4px;border:1px #ccc solid;border-top:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;"]);
+            this.writeHtml(ID_DISPLAY_CONTENTS, html);
             this.showText();
         },
         handleEventPropertyChanged: function(source, prop) {
@@ -2036,14 +2037,18 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		this.updateUI();
 		return;
 	    }
-            SUPER.handleEventPropertyChanged(source, prop);
-	    },
+            SUPER.handleEventPropertyChanged.call(this,source, prop);
+	},
 
         showText: function() {
+	    let _this  = this;
             let records = this.filterData();
             if (!records) {
                 return null;
             }
+	    this.records = records;
+ 	    this.recordToIndex = {};
+	    this.indexToRecord = {};
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
             var asHtml = this.getProperty("asHtml", true);
@@ -2076,7 +2081,11 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
 
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var row = this.getDataValues(records[rowIdx]);
+		var record = records[rowIdx];
+		this.indexToRecord[rowIdx] = record;
+		this.recordToIndex[record.getId()] = rowIdx;
+		
+                var row = this.getDataValues(record);
                 var line = "";
                 for (var col = 0; col < fields.length; col++) {
                     var f = fields[col];
@@ -2094,11 +2103,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 displayedLineCnt++;
 
                 if (displayedLineCnt > maxLines) break;
+		line = HtmlUtils.div(["title"," ","class", "display-raw-line","recordIndex",rowIdx],line);
 
                 if (addLineNumbers) {
                     corpus += HtmlUtils.tr(["valign", "top"], HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
                             "<a href=#line_" + lineCnt + ">#" + lineCnt + "</a>&nbsp;  ") +
-                        HtmlUtils.td([], line));
+					   HtmlUtils.td([], line));
                 } else {
                     corpus += line;
                     if (asHtml) {
@@ -2116,12 +2126,35 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (addLineNumbers) {
                 corpus += "</table>";
             }
-            var height = this.getProperty("height", "600");
+
             if (!asHtml)
                 corpus = HtmlUtils.tag("pre", [], corpus);
-            var html = HtmlUtils.div(["style", "padding:4px;border:1px #ccc solid;border-top:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;"], corpus);
-            this.writeHtml(ID_TEXT, html);
+            this.writeHtml(ID_TEXT, corpus);
+
+	    var lines =this.jq(ID_TEXT).find(".display-raw-line");
+	    lines.click(function() {
+		var idx = $(this).attr("recordIndex");
+		var record = _this.indexToRecord[idx];
+		if(record)
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
+	    });
+	    this.makeTooltips(lines,records);
         },
+        handleEventRecordSelection: function(source, args) {
+	    if(!args.record) return;
+	    var index = this.recordToIndex[args.record.getId()];
+	    if(!Utils.isDefined(index)) return;
+	    var container = this.jq(ID_TEXT);
+	    container.find(".display-raw-line").removeClass("display-raw-line-selected");
+	    var sel = "[recordIndex='" + index+"']";
+	    var element =  container.find(sel);
+	    element.addClass("display-raw-line-selected");
+	    var c = container.offset().top;
+	    var s = container.scrollTop();
+	    var eo = element.offset();
+	    var diff = eo.top- c + s;
+	    container.scrollTop(diff)
+	},
     });
 }
 

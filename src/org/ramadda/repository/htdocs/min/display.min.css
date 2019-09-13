@@ -1630,3 +1630,11 @@ margin:10px;
     padding-left:5px;
     padding-right:5px;
 }
+
+.display-raw-line  {
+    cursor:pointer;
+}
+
+.display-raw-line-selected  {
+    background:#fffeec;
+}

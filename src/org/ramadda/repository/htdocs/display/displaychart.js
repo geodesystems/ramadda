@@ -550,11 +550,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.okToHandleEventRecordSelection()) {
                 return;
 	    }
-            var data = this.dataCollection.getList()[0];
-            if (args.data && data != args.data) {
-                return;
-            }
-            this.setChartSelection(args.index);
+	    if(!args.record) return;
+	    var index = this.recordToIndex[args.record.getId()];
+	    if(Utils.isDefined(index)) {
+		this.setChartSelection(index);
+	    }
         },
         getFieldsToSelect: function(pointData) {
             return pointData.getChartableFields();
@@ -865,12 +865,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.chart.clearChart();
             }
         },
+
         setChartSelection: function(index) {
             if (this.chart != null) {
                 if (this.chart.setSelection) {
                     this.chart.setSelection([{
                         row: index,
-                        column: null
+			column:null
                     }]);
                 }
             }
@@ -928,16 +929,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
             var justData = [];
-            var tooltipFields = [];
-            var toks = this.getProperty("tooltipFields", "").split(",");
-            for (var i = 0; i < toks.length; i++) {
-                var tooltipField = this.getFieldById(null, toks[i]);
-                if (tooltipField)
-                    tooltipFields.push(tooltipField);
-            }
-
-
-
+            var tooltipFields = this.getFieldsByIds(this.getProperty("tooltipFields", ""));
             var dataTable = new google.visualization.DataTable();
             var header = this.getDataValues(dataList[0]);
             var sample = this.getDataValues(dataList[1]);
@@ -1034,39 +1026,47 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    var annotationCnt=0;
 
+
             for (var i = 1; i < dataList.length; i++) {
-                var row = this.getDataValues(dataList[i]);
+		var record =dataList[i];
+		var theRecord = dataList[i].record;
+                var row = this.getDataValues(record);
                 row = row.slice(0);
                 var label = "";
                 if (dataList[i].record) {
                     for (var j = 0; j < tooltipFields.length; j++) {
                         label += "<b>" + tooltipFields[j].getLabel() + "</b>: " +
-                            dataList[i].record.getValue(tooltipFields[j].getIndex()) + "<br>";
+                            theRecord.getValue(tooltipFields[j].getIndex()) + "<br>";
                     }
 		}
-
-		var tooltip = "<div style='padding:8px;'>";
+		var tooltip = "";
                 tooltip += label;
                 for (var j = 0; j < row.length; j++) {
-                    if (j > 0)
+		    if (j > 0)
                         tooltip += "<br>";
-                    label = header[j].replace(/ /g, "&nbsp;");
-                    value = row[j];
-                    if (!value) value = "NA";
-                    if (value && (typeof value) == "object") {
+		    label = header[j].replace(/ /g, "&nbsp;");
+		    value = row[j];
+		    if (!value) value = "NA";
+		    if (value && (typeof value) == "object") {
                         if (value.f) {
-                            value = value.f;
+			    value = value.f;
                         }
-                    }
-                    if (Utils.isNumber(value)) {
+		    }
+		    if (Utils.isNumber(value)) {
                         value = this.formatNumber(value);
-                    }
-                    value = "" + value;
-                    value = value.replace(/ /g, "&nbsp;");
-                    tooltip += "<b>" + label + "</b>:&nbsp;" + value;
+		    }
+		    value = "" + value;
+		    value = value.replace(/ /g, "&nbsp;");
+		    tooltip += "<b>" + label + "</b>:&nbsp;" + value;
                 }
-                tooltip += "</div>";
 
+		var tt = this.getProperty("tooltip");
+		if(tt) {
+		    tt  = this.getRecordHtml(theRecord,null,tt);
+		    tt = tt.replace("${default}",tooltip);
+		    tooltip = tt;
+		}
+		tooltip = "<div style='padding:8px;'>" + tooltip + "</div>";
                 newRow = [];
                 for (var j = 0; j < row.length; j++) {
                     var value = row[j];
@@ -1341,19 +1341,28 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 });
                 //always propagate the event when loaded
+		/*
                 theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
 									theDisplay.dataCollection.getList()[0], {
 									    index: 0
 									});
+		*/
                 google.visualization.events.addListener(this.chart, 'select', function(event) {
                     if (theDisplay.chart.getSelection) {
                         var selected = theDisplay.chart.getSelection();
                         if (selected && selected.length > 0) {
                             var index = selected[0].row;
-                            theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
-										    theDisplay.dataCollection.getList()[0], {
-											index: index
-										    });
+			    var record = theDisplay.indexToRecord[index];
+			    if(record) {
+//				console.log(index+" r:"+ record);
+				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {record: record});
+				/*
+				theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
+											theDisplay.dataCollection.getList()[0], {
+											    index: index
+											});
+				*/
+			    }
                         }
                     }
                 });

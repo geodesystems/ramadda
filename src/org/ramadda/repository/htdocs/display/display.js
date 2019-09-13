@@ -335,6 +335,7 @@ function DisplayThing(argId, argProperties) {
                 if (pointData == null) return null;
                 fields = pointData.getRecordFields();
             }
+	    
             var showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
@@ -3178,7 +3179,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	dataFilterChanged: function() {
 	    this.updateUI();
 	},
-        updateUI: function() {},
+        updateUI: function() {
+	    console.log(this.type +" updateUI");
+	},
 
 	makeTooltips: function(selector, records, callback) {
 	    var tooltip = this.getProperty("tooltip");
@@ -3738,9 +3741,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             else if (obj.getData) return obj.getData();
             return obj;
         },
+	indexToRecord: {},
+	recordToIndex: {},
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
-
 
             var data = [];
             if (dataList[0].getData) {
@@ -3768,6 +3772,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 console.log("   " + fields[a].getId());
         },
         getStandardData: function(fields, args) {
+	    this.recordToIndex = {};
+	    this.indexToRecord = {};
             var pointData = this.getPointData();
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
             if (fields == null) {
@@ -3879,6 +3885,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    continue;
 		}
                 rowCnt++;
+		this.recordToIndex[record.getId()] = rowCnt;
+		this.indexToRecord[rowCnt] = record;
                 var values = [];
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
