@@ -16542,6 +16542,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
 
 function RamaddaTextrawDisplay(displayManager, id, properties) {
     var ID_TEXT = "text";
+    var ID_LABEL = "label";
     let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
@@ -16556,7 +16557,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
-            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.input("pattern", (pattern ? pattern : ""), ["placeholder", "Search text", "id", this.getDomId("search")]));
+            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.span(["id",this.getDomId(ID_LABEL)]," ") + " " + HtmlUtils.input("pattern", (pattern ? pattern : ""), ["placeholder", "Search text", "id", this.getDomId("search")]));
             let _this = this;
             this.jq("search").keypress(function(event) {
                 if (event.which == 13) {
@@ -16673,6 +16674,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (!asHtml)
                 corpus = HtmlUtils.tag("pre", [], corpus);
             this.writeHtml(ID_TEXT, corpus);
+	    this.jq(ID_LABEL).html(displayedLineCnt +" lines");
 
 	    var lines =this.jq(ID_TEXT).find(".display-raw-line");
 	    lines.click(function() {
