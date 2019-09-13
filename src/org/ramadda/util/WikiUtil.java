@@ -1846,6 +1846,9 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith(":comment")) {
+		continue;
+	    }
             if (tline.startsWith(":col-")) {
                 RowState rowState = null;
                 if (rowStates.size() == 0) {
