@@ -1068,6 +1068,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		contents = this.getProperty("emptyMessage","Nothing found");
 	    }
 
+            var colorBy = this.getColorByInfo(selected);
+
 	    var headerTemplate = this.getProperty("headerTemplate","");
 	    var footerTemplate = this.getProperty("footerTemplate","");
 	    headerTemplate = headerTemplate.replace("${selectedCount}",selected.length);
@@ -1160,13 +1162,22 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			colCnt++;
 		    }
 		    var record = selected[rowIdx];
+		    var color = null;
+                    if (colorBy.index >= 0) {
+			var value = record.getData()[colorBy.index];
+			hasColorByValue  = true;
+			colorByValue = value;
+			didColorBy = true;
+			color =  colorBy.getColor(value, record);
+                    }
+
 		    var row = this.getDataValues(record);
 		    var s = template;
 		    s = s.replace("${selectCount}",selected.length);
 		    s = s.replace("${totalCount}",records.length);
 		    s= this.getRecordTemplate(row,fields,s,props);
 		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
-		    var tag = HtmlUtils.openTag("div",["style","", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
+		    var tag = HtmlUtils.openTag("div",["style",color?"background: " + color:"", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");

@@ -871,7 +871,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
 			    stringValues: this.colorByValues});
 		    } else {
-			_this.displayColorTable(this.colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			var colors = this.colors;
+			if(_this.getProperty("clipColorTable") && this.colorByValues.length) {
+			    var tmp = [];
+			    for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
+				tmp.push(this.colors[i]);
+			    colors = tmp;
+			}
+			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
 			    stringValues: this.colorByValues
 			});
 		    }
@@ -900,6 +907,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         var v = value;
                         if (this.isString) {
                             v = this.colorByMap[v];
+			    if(v) return v;
                         }
                         v += this.colorByOffset;
                         if (this.colorByLog) {
@@ -960,29 +968,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
             colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
 	    colorBy.stringMap = this.getColorByMap();
-
-
-
 	    if(colorBy.index>=0) {
 		records.map(record=>{
                     var tuple = record.getData();
                     var v = tuple[colorBy.index];
                     if (colorBy.isString) {
 			if (!Utils.isDefined(colorBy.colorByMap[v])) {
+			    var index = colorBy.colorByValues.length;
                             colorBy.colorByValues.push(v);
-                            colorBy.colorByMap[v] = colorBy.colorByValues.length;
+                            colorBy.colorByMap[v] = index>=colorBy.colors.length?colorBy.colors[colorBy.colors.length-1]:colorBy.colors[index];
                             colorBy.minValue = 1;
                             colorBy.maxValue = colorBy.colorByValues.length;
 			}
+			return;
                     }
                     if (excludeZero && v === 0) {
 			return;
                     }
-                    if (!colorBy.isString) {
-			if (!isNaN(v) && !(v === null)) {
-			    if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
-			    if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
-			}
+		    if (!isNaN(v) && !(v === null)) {
+			if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
+			if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
 		    }
 		});
 	    }
@@ -3254,13 +3259,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
 			if(enums == null) {
 			    var allName = this.getProperty(filterField.getId() +".allName","All");
-			    enums = includeAll?[[FILTER_ALL,allName]]:[];
+			    enums = [];
 			    var enumValues = [];
 			    var seen = {};
+			    var valuesAreNumbers = true;
 			    records.map(record=>{
 				var value = this.getDataValues(record)[filterField.getIndex()];
 				if(!seen[value]) {
 				    seen[value]  = true;
+				    if((+value+"") != value) valuesAreNumbers = false;
 				    var label = value;
 				    if(label.length>20) {
 					label=  label.substring(0,19)+"...";
@@ -3271,9 +3278,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    enumValues.push(tuple);
 				}
 			    });
+
 			    enumValues.sort((a,b)  =>{
+				if(valuesAreNumbers) {
+				    return +a - +b;
+				}
+				    
 				return (""+a[1]).localeCompare(""+b[1]);
 			    });
+			    if(includeAll) {
+				enums = Utils.mergeLists([[FILTER_ALL,allName]],enums);
+			    }
+
 			    for(var j=0;j<enumValues.length;j++) {
 				var v = enumValues[j];
 				enums.push(v);
@@ -15913,6 +15929,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		contents = this.getProperty("emptyMessage","Nothing found");
 	    }
 
+            var colorBy = this.getColorByInfo(selected);
+
 	    var headerTemplate = this.getProperty("headerTemplate","");
 	    var footerTemplate = this.getProperty("footerTemplate","");
 	    headerTemplate = headerTemplate.replace("${selectedCount}",selected.length);
@@ -16005,13 +16023,22 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			colCnt++;
 		    }
 		    var record = selected[rowIdx];
+		    var color = null;
+                    if (colorBy.index >= 0) {
+			var value = record.getData()[colorBy.index];
+			hasColorByValue  = true;
+			colorByValue = value;
+			didColorBy = true;
+			color =  colorBy.getColor(value, record);
+                    }
+
 		    var row = this.getDataValues(record);
 		    var s = template;
 		    s = s.replace("${selectCount}",selected.length);
 		    s = s.replace("${totalCount}",records.length);
 		    s= this.getRecordTemplate(row,fields,s,props);
 		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
-		    var tag = HtmlUtils.openTag("div",["style","", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
+		    var tag = HtmlUtils.openTag("div",["style",color?"background: " + color:"", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
