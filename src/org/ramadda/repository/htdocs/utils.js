@@ -744,7 +744,8 @@ var Utils = {
 
     displayColorTable: function(ct, domId, min, max, args) {
         if (!ct) return;
-        $("#" + domId).html(this.getColorTableDisplay(ct,min,max,args));
+	var html = this.getColorTableDisplay(ct,min,max,args);
+        $("#" + domId).html(html);
     },
     getColorTableDisplay: function(ct,  min, max, args) {
         if (!ct) return null;
@@ -851,6 +852,12 @@ var Utils = {
         },
         nice8: {
             colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f"]
+        },
+	nice9: {
+            colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f","#1B1B1B"]
+        },
+	nice10: {
+            colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f","#A0CBE8","#4B0082"]
         },
 
         blues: {

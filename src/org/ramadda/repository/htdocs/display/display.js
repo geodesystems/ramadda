@@ -6,6 +6,8 @@
 var displayDebug = false;
 
 //Ids of DOM components
+var ID_BOTTOM = "bottom";
+var ID_COLORTABLE = "colortable";
 var ID_FIELDS = "fields";
 var ID_HEADER = "header";
 var ID_HEADER1 = "header1";
@@ -458,6 +460,20 @@ function DisplayThing(argId, argProperties) {
                 object[objectProperty] = prop;
             }
         },
+        getDisplayProp: function(source, prop, dflt) {
+            if (Utils.isDefined(this[prop])) {
+                return this[prop];
+            }
+            prop = "map-" + prop;
+            if (Utils.isDefined(source[prop])) {
+                return source[prop];
+            }
+	    if(source.getProperty)
+		return source.getProperty(prop, dflt);
+	    return null;
+        },
+
+
         getProperty: function(key, dflt,skipThis) {
             if(!skipThis && this[key]) {
                 return this[key];
@@ -486,6 +502,7 @@ function DisplayThing(argId, argProperties) {
 
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
+
     RamaddaUtil.initMembers(this, {
     });
 
@@ -670,6 +687,180 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    return iconMap;
 	},
+	getColorByInfo: function(records) {
+            var pointData = this.getData();
+            if (pointData == null) return null;
+            var fields = pointData.getRecordFields();
+            var colorByAttr = this.getProperty("colorBy", null);
+            var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
+	    var _this = this;
+
+	    var colorBy = {
+                id: colorByAttr,
+		fields:fields,
+                minValue: 0,
+                maxValue: 0,
+                field: null,
+                index: -1,
+                isString: false,
+                stringMap: null,
+		colorByMap: {},
+		colorByValues:[],
+		colorByMinPerc: this.getDisplayProp(this, "colorByMinPercentile", -1),
+		colorByMaxPerc: this.getDisplayProp(this, "colorByMaxPercentile", -1),
+		colorByOffset: 0,
+                pctFields:null,
+		displayColorTable: function() {
+		    if(this.stringMap) {
+			var colors = [];
+			this.colorByValues= [];
+			for (var i in this.stringMap) {
+			    this.colorByValues.push(i);
+			    colors.push(this.stringMap[i]);
+			}
+			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			    stringValues: this.colorByValues});
+		    } else {
+			_this.displayColorTable(this.colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			    stringValues: this.colorByValues
+			});
+		    }
+		},
+
+		getColor: function(value, pointRecord) {
+		    var percent = 0;
+                    if (this.showPercent) {
+                        var total = 0;
+                        var data = pointRecord.getData();
+                        for (var j = 0; j < data.length; j++) {
+                            var ok = this.fields[j].isNumeric && !this.fields[j].isFieldGeo();
+                            if (ok && this.pctFields != null) {
+                                ok = this.pctFields.indexOf(this.fields[j].getId()) >= 0 ||
+                                    this.pctFields.indexOf("#" + (j + 1)) >= 0;
+                            }
+                            if (ok) {
+                                total += data[j];
+                            }
+                        }
+                        if (total != 0) {
+                            percent = percent = value / total * 100;
+                            percent = (percent - this.minValue) / (this.maxValue - this.minValue);
+                        }
+                    } else {
+                        var v = value;
+                        if (this.isString) {
+                            v = this.colorByMap[v];
+                        }
+                        v += this.colorByOffset;
+                        if (this.colorByLog) {
+                            v = this.colorByFunc(v);
+                        }
+                        percent = (v - this.minValue) / this.range;
+                    }
+
+                    var index = parseInt(percent * this.colors.length);
+                    if (index >= this.colors.length) index = this.colors.length - 1;
+                    else if (index < 0) index = 0;
+		    if(this.stringMap) {
+			var color = this.stringMap[value];
+			if(!Utils.isDefined(color)) {
+			    return this.stringMap["default"];
+			}
+			return color;
+		    } else {
+			return this.colors[index];
+		    }
+		    return null;
+		}
+            };
+
+            if (this.percentFields != null) {
+                colorBy.pctFields = this.percentFields.split(",");
+            }
+	    var colors = this.getColorTable(true,colorByAttr +".colorTable");
+	    if(!colors) {
+		var c = this.getProperty(colorByAttr +".colors");
+		if(c)
+		    colors = c.split(",");
+	    }
+	    if(!colors)
+		colors = this.getColorTable(true);
+	    colorBy.colors = colors;
+
+	    if (!colorBy.colors && this.colors && this.colors.length > 0) {
+                colorBy.colors = source.colors;
+                if (colorBy.colors.length == 1 && Utils.ColorTables[colorBy.colors[0]]) {
+                    colorBy.colors = Utils.ColorTables[colorBy.colors[0]].colors;
+                }
+            }
+
+            if (colorBy.colors == null) {
+                colorBy.colors = Utils.ColorTables.grayscale.colors;
+            }
+
+
+
+
+	    for (var i = 0; i < fields.length; i++) {
+                var field = fields[i];
+                if (field.getId() == colorBy.id || ("#" + (i + 1)) == colorBy.id) {
+                    colorBy.field = field;
+		    if (field.isString()) colorBy.isString = true;
+                }
+	    }
+            colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
+	    colorBy.stringMap = this.getColorByMap();
+
+
+
+	    if(colorBy.index>=0) {
+		records.map(record=>{
+                    var tuple = record.getData();
+                    var v = tuple[colorBy.index];
+                    if (colorBy.isString) {
+			if (!Utils.isDefined(colorBy.colorByMap[v])) {
+                            colorBy.colorByValues.push(v);
+                            colorBy.colorByMap[v] = colorBy.colorByValues.length;
+                            colorBy.minValue = 1;
+                            colorBy.maxValue = colorBy.colorByValues.length;
+			}
+                    }
+                    if (excludeZero && v === 0) {
+			return;
+                    }
+                    if (!colorBy.isString) {
+			if (!isNaN(v) && !(v === null)) {
+			    if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
+			    if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
+			}
+		    }
+		});
+	    }
+
+            if (this.showPercent) {
+                colorBy.minValue = 0;
+                colorBy.maxValue = 100;
+            }
+            colorBy.minValue = this.getDisplayProp(this, "colorByMin", colorBy.minValue);
+            colorBy.maxValue = this.getDisplayProp(this, "colorByMax", colorBy.maxValue);
+            colorBy.origMinValue = colorBy.minValue;
+            colorBy.origMaxValue = colorBy.maxValue;
+
+            var colorByLog = this.getProperty("colorByLog", false);
+            colorBy.colorByFunc = Math.log;
+            if (colorByLog) {
+                if (colorBy.minValue < 1) {
+                    colorBy.colorByOffset = 1 - colorBy.minValue;
+                }
+                colorBy.minValue = colorBy.colorByFunc(colorBy.minValue + colorBy.colorByOffset);
+                colorBy.maxValue = colorBy.colorByFunc(colorBy.maxValue + colorBy.colorByOffset);
+            }
+            colorBy.range = colorBy.maxValue - colorBy.minValue;
+
+
+
+	    return colorBy;
+	},
 	getColorByMap: function() {
 		var colorByMapProp = this.getProperty("colorByMap");
 		if (colorByMapProp) {
@@ -781,7 +972,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if (prop.property == "filterValue") {
 		if(!this.getProperty("acceptFilterEvent",true)) return;
 		this.haveCalledUpdateUI = false;
-		var widgetId = "filterby_" + prop.fieldId;
+		var widgetId = this.getFilterId(prop.fieldId);
 		this.settingFilterValue = true;
 		if(Utils.isDefined(prop.value2)) {
 		    this.jq(widgetId+"_min").val(prop.value);
@@ -789,8 +980,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.jq(widgetId+"_max").val(prop.value2);
 		    this.jq(widgetId+"_max").attr("value", prop.value2);
 		} else {
-		    this.jq(widgetId).val(prop.value);
-		    this.jq(widgetId).attr("value",prop.value);
+		    $("#"+widgetId).val(prop.value);
+		    $("#" + widgetId).attr("value",prop.value);
 
 		}
 		this.settingFilterValue = false;
@@ -2799,6 +2990,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this.checkSearchBar();
         },
+	getFilterId: function(id) {
+	    return  this.getDomId("filterby_" + id);
+	},
         checkSearchBar: function() {
             let _this = this;
             var pointData = this.getData();
@@ -2891,7 +3085,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     if(!filterField) continue;
                     this.filterFields.push(filterField);
                     var widget;
-                    var widgetId = this.getDomId("filterby_" + filterField.getId());
+		    var widgetId = this.getFilterId(filterField.getId());
                     if(filterField.getType() == "enumeration") {
 			var dfltValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
 			var filterValues = this.getProperty(filterField.getId()+".filterValues");
@@ -3212,7 +3406,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			inputFunc($(this));
 		    }
 		});
-		HtmlUtils.initSelect(this.jq(ID_FILTERBAR).find("select"));
+//		HtmlUtils.initSelect(this.jq(ID_FILTERBAR).find("select"));
 		this.jq(ID_FILTERBAR).find("input:radio,select").change(function() {
 		    inputFunc($(this));
 		});
@@ -3374,6 +3568,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (dobs) {
                 html += HtmlUtils.closeTag(TAG_DIV);
             }
+            html += HtmlUtils.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)],
+				  HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)]));
+
+
+
             return html;
         },
         makeToolbar: function(props) {
@@ -3938,7 +4137,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             var nonNullRecords = 0;
-            var indexField = this.indexField;
             var records = this.filterData();
             var allFields = pointData.getRecordFields();
 
@@ -3946,6 +4144,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.hasDate = this.getHasDate(records);
             var date_formatter = this.getDateFormatter();
             var rowCnt = -1;
+            var indexField = this.getFieldById(null,this.getProperty("indexField"));
             for (j = 0; j < records.length; j++) {
                 var record = records[j];
                 var date = record.getDate();
@@ -3958,10 +4157,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var values = [];
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
-                    if (indexField >= 0) {
-                        var field = allFields[indexField];
-                        values.push(record.getValue(indexField) + offset);
-                        indexName = field.getLabel();
+                    if (indexField) {
+                        values.push(record.getValue(indexField.getIndex()) + offset);
+                        indexName = indexField.getLabel();
                     } else {
                         if (this.hasDate) {
                             //                                console.log(this.getDateValue(date, date_formatter));

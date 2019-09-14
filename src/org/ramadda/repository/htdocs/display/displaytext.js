@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -40,7 +40,7 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
-	    });
+});
 
 addGlobalDisplayType({
     type: DISPLAY_TEMPLATE,
@@ -184,7 +184,7 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
                         var value = values[valueIdx].trim();
 			if(value.length<=1) continue;
 			if(value.startsWith("&")) continue;  
-                      var _value = value.toLowerCase();
+			var _value = value.toLowerCase();
                         if (cnt) {
                             cnt.count++;
                             cnt.total += value.length;
@@ -327,7 +327,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             var colors = this.getColorTable(true);
             if (colors) {
                 options.colors = colors,
-                    options.classPattern = null;
+                options.classPattern = null;
                 options.fontSize = {
                     from: 0.1,
                     to: 0.02
@@ -439,24 +439,24 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "label:Cards Attributes",
-					 "groupByFields=\"\"",
-					 "groupBy=\"\"",
-					 "tooltipFields=\"\"",
-					 "initGroupFields=\"\"",
-					 "captionTemplate=\"${name}\"",
-					 "sortFields=\"\"",
-					 "labelField=\"\"",
-					 'imageWidth="100"',
-					 'imageMargin="5"',
-					 ])},
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Cards Attributes",
+					"groupByFields=\"\"",
+					"groupBy=\"\"",
+					"tooltipFields=\"\"",
+					"initGroupFields=\"\"",
+					"captionTemplate=\"${name}\"",
+					"sortFields=\"\"",
+					"labelField=\"\"",
+					'imageWidth="100"',
+					'imageMargin="5"',
+				    ])},
         getContentsStyle: function() {
             return "";
         },
         updateUI: function() {
-        	this.colorAnalysisEnabled = this.getProperty("doColorAnalysis");
+            this.colorAnalysisEnabled = this.getProperty("doColorAnalysis");
             var pointData = this.getData();
             if (pointData == null) return;
             var allFields = pointData.getRecordFields();
@@ -502,12 +502,12 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		this.groupByHtml = "";
 		if(this.colorAnalysisEnabled)
 		    this.groupByHtml +=  HtmlUtils.span(["class","ramadda-button","id",this.getDomId("docolors")], "Do colors")+" " +
-			HtmlUtils.span(["class","ramadda-button","id",this.getDomId("docolorsreset")], "Reset");
+		    HtmlUtils.span(["class","ramadda-button","id",this.getDomId("docolorsreset")], "Reset");
 		if(this.groupByFields.length>0) {
 		    var options = [["","--"]];
 		    this.groupByFields.map(field=>{
-			    options.push([field.getId(),field.getLabel()]);
-			});
+			options.push([field.getId(),field.getLabel()]);
+		    });
 
 		    this.groupByHtml +=  HtmlUtils.span(["class","display-fitlerby-label"], " Group by: ");
 		    for(var i=0;i<this.groupByMenus;i++) {
@@ -520,11 +520,11 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		    this.groupByHtml+="&nbsp;";
 		    this.jq(ID_HEADER1).html(HtmlUtils.div(["class","display-filterby"],this.groupByHtml));
 		    this.jq("docolors").button().click(()=>{
-			    this.analyzeColors();
-			});
+			this.analyzeColors();
+		    });
 		    this.jq("docolorsreset").button().click(()=>{
-			    this.updateUI();
-			});
+			this.updateUI();
+		    });
 
 
 		}
@@ -536,46 +536,46 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
             let _this = this;
             this.jq(ID_HEADER1).find("input, input:radio,select").change(function(){
-                    _this.updateUI();
-                });
+                _this.updateUI();
+            });
 
             this.displaySearchResults(records,theFields);
-         },
+        },
 	analyzeColors: function() {
-		if(!window["ColorThief"]) {
-		    setTimeout(()=>this.analyzeColors(),1000);
+	    if(!window["ColorThief"]) {
+		setTimeout(()=>this.analyzeColors(),1000);
+		return;
+	    }
+	    const colorThief = new ColorThief();
+	    var cnt = 0;
+	    while(true) {
+		var img = document.querySelector('#' + this.getDomId("gallery")+"img" + cnt);
+		var div = $('#' + this.getDomId("gallery")+"div" + cnt);
+		cnt++;
+		if(!img) {
 		    return;
+		    
 		}
-		const colorThief = new ColorThief();
-		var cnt = 0;
-		while(true) {
-		    var img = document.querySelector('#' + this.getDomId("gallery")+"img" + cnt);
-		    var div = $('#' + this.getDomId("gallery")+"div" + cnt);
-		    cnt++;
-		    if(!img) {
-			return;
-			
-		    }
-		    img.crossOrigin = 'Anonymous';
-		    // Make sure image is finished loading
-		    //		    if (img.complete) {
-			var c = colorThief.getColor(img);
-			var p = colorThief.getPalette(img);
-			var width = img.width/p.length;
-			var html = "";
-			for(var i=0;i<p.length;i++) {
-			    var c = p[i];
-			    html+=HtmlUtils.div(["style","display:inline-block;width:" + width + "px;height:" + img.height +"px;background:rgb(" + c[0]+"," + c[1] +"," + c[2]+");"],"");
-			}
-			div.css("width",img.width);
-			div.css("height",img.height);
-			div.html(html);
-			//			div.css("background","rgb(" + c[0]+"," + c[1] +"," + c[2]);
-			img.style.display = "none";
+		img.crossOrigin = 'Anonymous';
+		// Make sure image is finished loading
+		//		    if (img.complete) {
+		var c = colorThief.getColor(img);
+		var p = colorThief.getPalette(img);
+		var width = img.width/p.length;
+		var html = "";
+		for(var i=0;i<p.length;i++) {
+		    var c = p[i];
+		    html+=HtmlUtils.div(["style","display:inline-block;width:" + width + "px;height:" + img.height +"px;background:rgb(" + c[0]+"," + c[1] +"," + c[2]+");"],"");
 		}
-	    },
-	 displaySearchResults: function(records, fields) {
-		records= this.sortRecords(records);
+		div.css("width",img.width);
+		div.css("height",img.height);
+		div.html(html);
+		//			div.css("background","rgb(" + c[0]+"," + c[1] +"," + c[2]);
+		img.style.display = "none";
+	    }
+	},
+	displaySearchResults: function(records, fields) {
+	    records= this.sortRecords(records);
             var fontSize = this.getProperty("fontSize",null);
             var cardStyle = this.getProperty("cardStyle",null);
 
@@ -594,12 +594,12 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                             var min = Number.MAX_VALUE;
                             var max = Number.MIN_VALUE;
                             records.map(r=>{
-                                        r  =  this.getDataValues(r);
-                                        var v =field.getValue(r);
-                                        if(isNaN(v)) return;
-                                        if(v<min) min  = v;
-                                        if(v > max) max =v;
-                                });
+                                r  =  this.getDataValues(r);
+                                var v =field.getValue(r);
+                                if(isNaN(v)) return;
+                                if(v<min) min  = v;
+                                if(v > max) max =v;
+                            });
                             field.range = [min,max];
                             var binsProp = this.getProperty(field.getId() +".bins");
                             field.bins = [];
@@ -622,26 +622,26 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
             function groupNode(id,field) {
                 $.extend(this,{
-                        id: id,
-			    field:field,
-			    members:[],
-                        isGroup:true,
-                        getCount: function() {
-                            if(this.members.length==0) return 0;
-                            if(this.members[0].isGroup) {
-                                var cnt = 0;
-                                this.members.map(node=>cnt+= node.getCount());
-                                return cnt;
-                            }
-                            return this.members.length;
-                        },
-                        findGroup: function(v) {
-                            for(var i=0;i<this.members.length;i++) {
-                                if(this.members[i].isGroup && this.members[i].id == v) return this.members[i];
-                            }
-                            return null;
-                        },
-                    });
+                    id: id,
+		    field:field,
+		    members:[],
+                    isGroup:true,
+                    getCount: function() {
+                        if(this.members.length==0) return 0;
+                        if(this.members[0].isGroup) {
+                            var cnt = 0;
+                            this.members.map(node=>cnt+= node.getCount());
+                            return cnt;
+                        }
+                        return this.members.length;
+                    },
+                    findGroup: function(v) {
+                        for(var i=0;i<this.members.length;i++) {
+                            if(this.members[i].isGroup && this.members[i].id == v) return this.members[i];
+                        }
+                        return null;
+                    },
+                });
             }
             var topGroup = new groupNode("");
             var colorMap ={};
@@ -652,21 +652,21 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 var contents = "";
                 var tooltip = "";
                 this.tooltipFields.map(field=>{
-                        if(tooltip!="") tooltip+="&#10;";
-                        tooltip+=field.getValue(row);
-                    });
+                    if(tooltip!="") tooltip+="&#10;";
+                    tooltip+=field.getValue(row);
+                });
 		tooltip =tooltip.replace(/\"/g,"&quot;");
                 var label = "";
                 var caption="";
                 if(this.captionFields.length>0) {
                     if(this.captionTemplate) caption  = this.captionTemplate;
                     this.captionFields.map(field=>{
-			    var value = (""+field.getValue(row)).replace(/\"/g,"&quot;");
-                            if(this.captionTemplate)
-                                caption = caption.replace("\${" + field.getId()+"}",value);
-                            else
-                                caption+=value+"<br>";
-                        });
+			var value = (""+field.getValue(row)).replace(/\"/g,"&quot;");
+                        if(this.captionTemplate)
+                            caption = caption.replace("\${" + field.getId()+"}",value);
+                        else
+                            caption+=value+"<br>";
+                    });
                     if(this.urlField) {
                         var url = this.urlField.getValue(row);
                         if(url && url!="") {
@@ -675,8 +675,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     }
                 }
 		this.labelFields.map(f=>{
-			label += row[f.getIndex()]+" ";
-		    });
+		    label += row[f.getIndex()]+" ";
+		});
 		label = label.trim();
                 var html ="";
                 var img = null;
@@ -692,7 +692,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		    if(this.colorAnalysisEnabled)
 			img = ramaddaBaseUrl+"/proxy?url=" + img;
                     img =  HtmlUtils.href(img, HtmlUtils.div(["id",this.getDomId("gallery")+"div" + imgCnt], HtmlUtils.image(img,["width",width,"id",this.getDomId("gallery")+"img" + imgCnt])),imgAttrs)+label;
-							     imgCnt++;
+		    imgCnt++;
                     html = HtmlUtils.div(["class","display-cards-item", "title", tooltip, "style","margin:" + margin+"px;"], img);
                 } else {
                     var style = "";
@@ -752,37 +752,37 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             html+=this.makeGroupHtml(topGroup);
             this.writeHtml(ID_RESULTS, html);
             this.jq(ID_RESULTS).find("a.display-cards-popup").fancybox({
-                    caption : function( instance, item ) {
-                        return  $(this).data('caption') || '';
-                    }});
-            },
-            makeGroupHtml: function(group) {
-                if(group.members.length==0) return "";
-                var html="";
-                if(group.members[0].isGroup) {
-                    group.members.sort((a,b)=>{
-                            if(a.id<b.id) return -1;
-                            if(a.id>b.id) return 1;
-                            return 0;
-                        });
-                    var width = group.members.length==0?"100%":100/group.members.length;
-                    html +="<table width=100% border=0><tr valign=top>";
-                    for(var i=0;i<group.members.length;i++) {
-                        var child = group.members[i];
-			var prefix="";
-			if(child.field)
-			    prefix = child.field.getLabel()+": ";
-                        html+="<td width=" + width+"%>";
-			html+=HtmlUtils.tag("div",["class","display-cards-header"],prefix+child.id +" (" + child.getCount()+")");
-			html+= this.makeGroupHtml(child);
-                        html+="</td>";
-                    }
-                    html +="</tr></table>";
-                } else {
-                    html+=Utils.join(group.members,"");
+                caption : function( instance, item ) {
+                    return  $(this).data('caption') || '';
+                }});
+        },
+        makeGroupHtml: function(group) {
+            if(group.members.length==0) return "";
+            var html="";
+            if(group.members[0].isGroup) {
+                group.members.sort((a,b)=>{
+                    if(a.id<b.id) return -1;
+                    if(a.id>b.id) return 1;
+                    return 0;
+                });
+                var width = group.members.length==0?"100%":100/group.members.length;
+                html +="<table width=100% border=0><tr valign=top>";
+                for(var i=0;i<group.members.length;i++) {
+                    var child = group.members[i];
+		    var prefix="";
+		    if(child.field)
+			prefix = child.field.getLabel()+": ";
+                    html+="<td width=" + width+"%>";
+		    html+=HtmlUtils.tag("div",["class","display-cards-header"],prefix+child.id +" (" + child.getCount()+")");
+		    html+= this.makeGroupHtml(child);
+                    html+="</td>";
                 }
-                return html;
+                html +="</tr></table>";
+            } else {
+                html+=Utils.join(group.members,"");
             }
+            return html;
+        }
     });
 }
 
@@ -798,20 +798,20 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
-	    startIndex:0,
+	startIndex:0,
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "label:Gallery Attributes",
-					 'labelFields=""',
-					 'tooltipFields=""',
-					 "numberOfImages=\"100\"",
-					 "imageWidth=\"150\"",
-					 ])},
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Gallery Attributes",
+					'labelFields=""',
+					'tooltipFields=""',
+					"numberOfImages=\"100\"",
+					"imageWidth=\"150\"",
+				    ])},
 	dataFilterChanged: function() {
-		this.startIndex=0;
-		this.updateUI();
-	    },
+	    this.startIndex=0;
+	    this.updateUI();
+	},
         updateUI: function() {
             var pointData = this.getData();
             if (pointData == null) return;
@@ -870,16 +870,16 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
             this.writeHtml(ID_DISPLAY_CONTENTS, header + contents);
 	    this.jq(ID_PREV).button().click(()=>{
-		    this.startIndex-=number;
-		    this.updateUI();
-		});
+		this.startIndex-=number;
+		this.updateUI();
+	    });
 	    this.jq(ID_NEXT).button().click(()=>{
-		    this.startIndex+=number;
-		    this.updateUI();
-		});
-	    }
-	})
+		this.startIndex+=number;
+		this.updateUI();
+	    });
 	}
+    })
+}
 
 
 
@@ -890,9 +890,9 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
-	    updateUI: function() {
-		this.writeHtml(ID_DISPLAY_CONTENTS, "");
-	    }});
+	updateUI: function() {
+	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
+	}});
 }
 
 
@@ -906,300 +906,300 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "label:Template Attributes",
-					 "template=\"\"",
-					 "headerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
-					 "footerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
-					 "emptyMessage=\"\"",
-					 "select=\"max|min|<|>|=|<=|>=|contains\"",
-					 "selectField=\"\"",
-					    "selectValue=\"\"",
-					    '${&lt;field&gt;_total}',
-					    '${&lt;field&gt;_max}',
-					    '${&lt;field&gt;_min}',
-					    '${&lt;field&gt;_average}',
-					 ]);
-	    },
-	    updateUI: function() {
-		var pointData = this.getData();
-		if (pointData == null) return;
-		var records = this.filterData();
-		if(!records) return;
-		records= this.sortRecords(records);
-		var fields = pointData.getRecordFields();
-		var template = this.getProperty("template","");
-		var select = this.getProperty("select","all");
-		var selected = [];
-		var summary = {};
-		records.map(r=>{
-			r  =  this.getDataValues(r);
-			for(var i=0;i<fields.length;i++) {
-			    var f = fields[i];
-			    var v =f.getValue(r);
-			    if(!summary[f.getId()]) {
-				summary[f.getId()] = {
-				    total: 0,
-				    min: v,
-				    max:v,
-				    count:0,
-				    uniques:{},
-				    uniqueCount:0
-				}
-			    }
-			    var s = summary[f.getId()];
-			    if(f.isString()) {
-				if(!s.uniques[v]) {
-				    s.uniqueCount++;
-				    s.uniques[v] = true;
-				}
-				continue;
-			    } 
-			    if(f.isDate&& v.getTime) {
-				if(v.getTime()<s.min.getTime()) s.min = v;
-				if(v.getTime()>s.max.getTime()) s.max = v;
-			    }  else if(!isNaN(v)) {
-				s.total+=v;
-				if(f.getLabel()=="Dead" && v>1000) console.log(f.getLabel() +" v:" +  v +" t:" + s.total);
-				s.min = Math.min(s.min,v);
-				s.max = Math.max(s.max,v);
-				s.count++;
-			    }
-			}
-		    });
-
-
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Template Attributes",
+					"template=\"\"",
+					"headerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
+					"footerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
+					"emptyMessage=\"\"",
+					"select=\"max|min|<|>|=|<=|>=|contains\"",
+					"selectField=\"\"",
+					"selectValue=\"\"",
+					'${&lt;field&gt;_total}',
+					'${&lt;field&gt;_max}',
+					'${&lt;field&gt;_min}',
+					'${&lt;field&gt;_average}',
+				    ]);
+	},
+	updateUI: function() {
+	    var pointData = this.getData();
+	    if (pointData == null) return;
+	    var records = this.filterData();
+	    if(!records) return;
+	    records= this.sortRecords(records);
+	    var fields = pointData.getRecordFields();
+	    var template = this.getProperty("template","");
+	    var select = this.getProperty("select","all");
+	    var selected = [];
+	    var summary = {};
+	    records.map(r=>{
+		r  =  this.getDataValues(r);
 		for(var i=0;i<fields.length;i++) {
 		    var f = fields[i];
-		    if(!f.isNumeric) continue;
+		    var v =f.getValue(r);
+		    if(!summary[f.getId()]) {
+			summary[f.getId()] = {
+			    total: 0,
+			    min: v,
+			    max:v,
+			    count:0,
+			    uniques:{},
+			    uniqueCount:0
+			}
+		    }
 		    var s = summary[f.getId()];
-		    if(s && s.count) {
-			s.average =  Utils.formatNumber(s.total/s.count);
+		    if(f.isString()) {
+			if(!s.uniques[v]) {
+			    s.uniqueCount++;
+			    s.uniques[v] = true;
+			}
+			continue;
+		    } 
+		    if(f.isDate&& v.getTime) {
+			if(v.getTime()<s.min.getTime()) s.min = v;
+			if(v.getTime()>s.max.getTime()) s.max = v;
+		    }  else if(!isNaN(v)) {
+			s.total+=v;
+			if(f.getLabel()=="Dead" && v>1000) console.log(f.getLabel() +" v:" +  v +" t:" + s.total);
+			s.min = Math.min(s.min,v);
+			s.max = Math.max(s.max,v);
+			s.count++;
 		    }
 		}
+	    });
+
+
+	    for(var i=0;i<fields.length;i++) {
+		var f = fields[i];
+		if(!f.isNumeric) continue;
+		var s = summary[f.getId()];
+		if(s && s.count) {
+		    s.average =  Utils.formatNumber(s.total/s.count);
+		}
+	    }
 
 
 
-		
-		if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
-		   select == "<=" || 	       select == "?>=" || select=="match") {
-		    var selectField = this.getProperty("selectField","");
+	    
+	    if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
+	       select == "<=" || 	       select == "?>=" || select=="match") {
+		var selectField = this.getProperty("selectField","");
 
-		    if(selectField)selectField  =this.getFieldById(fields, selectField);
-		    if(!selectField) {
-			this.writeHtml(ID_DISPLAY_CONTENTS, "No selectField specified");
+		if(selectField)selectField  =this.getFieldById(fields, selectField);
+		if(!selectField) {
+		    this.writeHtml(ID_DISPLAY_CONTENTS, "No selectField specified");
+		    return;
+		}
+		var selectValue = this.getProperty("selectValue","XXX");
+		var selectValueNum = parseFloat(selectValue);
+		var max =0; 
+		var min = 0;
+		var cnt = 0;
+		var maxRow;
+		var minRow;
+		var equalsRow;
+		records.map(r=>{
+		    r  =  this.getDataValues(r);
+		    var v =selectField.getValue(r);
+		    if(select == "match") {
+			if(v.match(selectValue)) {
+			    selected.push(r);
+			}
 			return;
 		    }
-		    var selectValue = this.getProperty("selectValue","XXX");
-		    var selectValueNum = parseFloat(selectValue);
-		    var max =0; 
-		    var min = 0;
-		    var cnt = 0;
-		    var maxRow;
-		    var minRow;
-		    var equalsRow;
-		    records.map(r=>{
-			    r  =  this.getDataValues(r);
-			    var v =selectField.getValue(r);
-			    if(select == "match") {
-				if(v.match(selectValue)) {
-				    selected.push(r);
-				}
-				return;
-			    }
-			    if(select == "=") {
-				if(v == selectValue) {
-				    selected.push(r);
-				}
-				return;
-			    }
-			    if(isNaN(v)) return;
-			    if(select == "<") {
-				if(v < selectValueNum) {
-				    selected.push(r);
-				}
-				return;
-			    }
-			    if(select == ">") {
-				if(v > selectValueNum) {
-				    selected.push(r);
-				}
-				return;
-			    }
-			    if(select == ">=") {
-				if(v >= selectValueNum) {
-				    selected.push(r);
-				}
-				return;
-			    }
-			    if(select == "<=") {
-				if(v <= selectValueNum) {
-				    selected.push(r);
-				}
-				return;
-			    }
-			    if(cnt++ == 0) {
-				min  = v;
-				max = v;
-				minRow = r;
-				maxRow = r;
-				return;
-			    }
-			    if(v<min) {
-				min  = v;
-				minRow = r;
-			    }
-			    if(v > max) {
-				max =v;
-				maxRow = r;
-			    }
-			});
-		    if(select == "min") {
-			selected.push(minRow);
-		    } else 	if(select == "max") {
-			selected.push(maxRow);
-		    }
-		} else {
-		    selected = records;
-		}
-		var contents = "";
-		if(selected.length==0) {
-		    contents = this.getProperty("emptyMessage","Nothing found");
-		}
-
-		var headerTemplate = this.getProperty("headerTemplate","");
-		var footerTemplate = this.getProperty("footerTemplate","");
-		headerTemplate = headerTemplate.replace("${selectedCount}",selected.length);
-		headerTemplate = headerTemplate.replace("${totalCount}",records.length);
-		footerTemplate = footerTemplate.replace("${selectedCount}",selected.length);
-		footerTemplate = footerTemplate.replace("${totalCount}",records.length);
-
-		for(var i=0;i<fields.length;i++) {
-		    var f = fields[i];
-		    var s = summary[f.getId()];
-		    if(!s) continue;
-		    if(f.isDate) {
-			headerTemplate = headerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
-			footerTemplate = footerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
-			continue;
-		
-		    }
-		    if(s && f.isString()) {
-			headerTemplate = headerTemplate.replace("${" + f.getId() +"_uniques}",
-								s.uniqueCount);
-			footerTemplate = footerTemplate.replace("${" + f.getId() +"_uniques}",
-								s.uniqueCount);
-			continue;
-		    }
-		    if(!f.isNumeric) continue;
-		    if(s) {
-			headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
-			footerTemplate = footerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
-		    }
-		}
-		if(this.filterFields) {
-		    for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
-			var f = this.filterFields[filterIdx];
-			if(f.isNumeric) {
-			    var min = $("#" + this.getDomId("filterby_" + f.getId()+"_min")).val().trim();
-			    var max = $("#" + this.getDomId("filterby_" + f.getId()+"_max")).val().trim();
-			    headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_min}",min);
-			    headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_max}",max);
-			    footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_min}",min);
-			    footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_max}",max);
-			} else {
-			    var widget =$("#" + this.getDomId("filterby_" + f.getId())); 
-			    if(!widget.val || widget.val()==null) continue;
-			    var value = widget.val().trim();
-			    //${filter_id template="sdsds"}
-			    if(value==FILTER_ALL) {
-				var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
-				headerTemplate = headerTemplate.replace(regexp,"");
-				footerTemplate = footerTemplate.replace(regexp,"");
-			    } else {
-				var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
-				headerTemplate = headerTemplate.replace(regexp,"$1" + value +"$2");
-				footerTemplate = footerTemplate.replace(regexp,"$1" + value +"$2");
-				var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
-				headerTemplate = headerTemplate.replace(regexp,"$1" + value);
-				footerTemplate = footerTemplate.replace(regexp,"$1" + value);
-				var regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
-				headerTemplate = headerTemplate.replace(regexp,value +"$1");
-				footerTemplate = footerTemplate.replace(regexp,value +"$1");
-				var regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
-				headerTemplate = headerTemplate.replace(regexp,value);
-				footerTemplate = footerTemplate.replace(regexp,value);
-			    }
+		    if(select == "=") {
+			if(v == selectValue) {
+			    selected.push(r);
 			}
+			return;
 		    }
-		}
-
-		if(selected.length>0) {
-		    contents+= headerTemplate;
-		}
-		if(template!= "") {
-		    var props = this.getTemplateProps(fields);
-		    var max = parseFloat(this.getProperty("maxNumber",-1));
-		    var cols = parseFloat(this.getProperty("templateColumns",-1));
-		    var colTag;
-		    if(cols>0) {
-			colTag = "col-md-" +Math.round(12/cols);
-			contents += '<div class="row wiki-row">';
-		    }
-		    var colCnt = 0;
-		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
-			if(max!=-1 && rowIdx>=max) break;
-			if(cols>0) {
-			    if(colCnt>=cols) {
-				colCnt=0;
-				contents += '</div>';
-				contents += '<div class="row wiki-row">';
-			    }
-			    contents+='<div  class="' + colTag+'">\n';
-			    colCnt++;
+		    if(isNaN(v)) return;
+		    if(select == "<") {
+			if(v < selectValueNum) {
+			    selected.push(r);
 			}
-			var record = selected[rowIdx];
-			var row = this.getDataValues(record);
-			var s = template;
-			s = s.replace("${selectCount}",selected.length);
-			s = s.replace("${totalCount}",records.length);
-			s= this.getRecordTemplate(row,fields,s,props);
-			s = s.replace(/\${recordIndex}/g,(rowIdx+1));
-			var tag = HtmlUtils.openTag("div",["style","", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
-			if(s.startsWith("<td")) {
-			    s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
-			    s = s.replace(/<\/td>$/,"</div></td>");
-			    contents += s;
-			} else if(s.startsWith("<tr")) {
-			    s = s.replace(/<td([^>]*)>/g,"<td $1>"+tag);
-			    s = s.replace(/<\/td>/g,"</div></td>");
-			    contents += s;
-			}  else {
-			    contents += tag +s +"</div>"
-			}
-			if(cols>0) {
-			    contents+='</div>\n';
-			}
+			return;
 		    }
-		    if(cols>0) {
-			contents += '</div>';
+		    if(select == ">") {
+			if(v > selectValueNum) {
+			    selected.push(r);
+			}
+			return;
 		    }
-		}
-		if(selected.length>0) 
-		    contents+= footerTemplate;
-		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
-		this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record"), selected);
-		let _this = this;
-		this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
-		    var record = selected[$(this).attr("recordIndex")];
-		    _this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
-		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+		    if(select == ">=") {
+			if(v >= selectValueNum) {
+			    selected.push(r);
+			}
+			return;
+		    }
+		    if(select == "<=") {
+			if(v <= selectValueNum) {
+			    selected.push(r);
+			}
+			return;
+		    }
+		    if(cnt++ == 0) {
+			min  = v;
+			max = v;
+			minRow = r;
+			maxRow = r;
+			return;
+		    }
+		    if(v<min) {
+			min  = v;
+			minRow = r;
+		    }
+		    if(v > max) {
+			max =v;
+			maxRow = r;
+		    }
 		});
-	    },
+		if(select == "min") {
+		    selected.push(minRow);
+		} else 	if(select == "max") {
+		    selected.push(maxRow);
+		}
+	    } else {
+		selected = records;
+	    }
+	    var contents = "";
+	    if(selected.length==0) {
+		contents = this.getProperty("emptyMessage","Nothing found");
+	    }
+
+	    var headerTemplate = this.getProperty("headerTemplate","");
+	    var footerTemplate = this.getProperty("footerTemplate","");
+	    headerTemplate = headerTemplate.replace("${selectedCount}",selected.length);
+	    headerTemplate = headerTemplate.replace("${totalCount}",records.length);
+	    footerTemplate = footerTemplate.replace("${selectedCount}",selected.length);
+	    footerTemplate = footerTemplate.replace("${totalCount}",records.length);
+
+	    for(var i=0;i<fields.length;i++) {
+		var f = fields[i];
+		var s = summary[f.getId()];
+		if(!s) continue;
+		if(f.isDate) {
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
+		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
+		    continue;
+		    
+		}
+		if(s && f.isString()) {
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_uniques}",
+							    s.uniqueCount);
+		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_uniques}",
+							    s.uniqueCount);
+		    continue;
+		}
+		if(!f.isNumeric) continue;
+		if(s) {
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		}
+	    }
+	    if(this.filterFields) {
+		for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
+		    var f = this.filterFields[filterIdx];
+		    if(f.isNumeric) {
+			var min = $("#" + this.getDomId("filterby_" + f.getId()+"_min")).val().trim();
+			var max = $("#" + this.getDomId("filterby_" + f.getId()+"_max")).val().trim();
+			headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_min}",min);
+			headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_max}",max);
+			footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_min}",min);
+			footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_max}",max);
+		    } else {
+			var widget =$("#" + this.getDomId("filterby_" + f.getId())); 
+			if(!widget.val || widget.val()==null) continue;
+			var value = widget.val().trim();
+			//${filter_id template="sdsds"}
+			if(value==FILTER_ALL) {
+			    var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
+			    headerTemplate = headerTemplate.replace(regexp,"");
+			    footerTemplate = footerTemplate.replace(regexp,"");
+			} else {
+			    var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
+			    headerTemplate = headerTemplate.replace(regexp,"$1" + value +"$2");
+			    footerTemplate = footerTemplate.replace(regexp,"$1" + value +"$2");
+			    var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
+			    headerTemplate = headerTemplate.replace(regexp,"$1" + value);
+			    footerTemplate = footerTemplate.replace(regexp,"$1" + value);
+			    var regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
+			    headerTemplate = headerTemplate.replace(regexp,value +"$1");
+			    footerTemplate = footerTemplate.replace(regexp,value +"$1");
+			    var regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
+			    headerTemplate = headerTemplate.replace(regexp,value);
+			    footerTemplate = footerTemplate.replace(regexp,value);
+			}
+		    }
+		}
+	    }
+
+	    if(selected.length>0) {
+		contents+= headerTemplate;
+	    }
+	    if(template!= "") {
+		var props = this.getTemplateProps(fields);
+		var max = parseFloat(this.getProperty("maxNumber",-1));
+		var cols = parseFloat(this.getProperty("templateColumns",-1));
+		var colTag;
+		if(cols>0) {
+		    colTag = "col-md-" +Math.round(12/cols);
+		    contents += '<div class="row wiki-row">';
+		}
+		var colCnt = 0;
+		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
+		    if(max!=-1 && rowIdx>=max) break;
+		    if(cols>0) {
+			if(colCnt>=cols) {
+			    colCnt=0;
+			    contents += '</div>';
+			    contents += '<div class="row wiki-row">';
+			}
+			contents+='<div  class="' + colTag+'">\n';
+			colCnt++;
+		    }
+		    var record = selected[rowIdx];
+		    var row = this.getDataValues(record);
+		    var s = template;
+		    s = s.replace("${selectCount}",selected.length);
+		    s = s.replace("${totalCount}",records.length);
+		    s= this.getRecordTemplate(row,fields,s,props);
+		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
+		    var tag = HtmlUtils.openTag("div",["style","", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
+		    if(s.startsWith("<td")) {
+			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
+			s = s.replace(/<\/td>$/,"</div></td>");
+			contents += s;
+		    } else if(s.startsWith("<tr")) {
+			s = s.replace(/<td([^>]*)>/g,"<td $1>"+tag);
+			s = s.replace(/<\/td>/g,"</div></td>");
+			contents += s;
+		    }  else {
+			contents += tag +s +"</div>"
+		    }
+		    if(cols>0) {
+			contents+='</div>\n';
+		    }
+		}
+		if(cols>0) {
+		    contents += '</div>';
+		}
+	    }
+	    if(selected.length>0) 
+		contents+= footerTemplate;
+	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record"), selected);
+	    let _this = this;
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
+		var record = selected[$(this).attr("recordIndex")];
+		_this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
+		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+	    });
+	},
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
-//	    console.log(this.type+ ".recordHighlight");
+	    //	    console.log(this.type+ ".recordHighlight");
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    if(this.highlightedElement) {
@@ -1280,14 +1280,14 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     $.extend(this, {
 	slideIndex:0,
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "label:Slides Attributes",
-					 "template=\"\"",
-					 ]);
-	    },
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Slides Attributes",
+					"template=\"\"",
+				    ]);
+	},
         handleEventRecordSelection: function(source, args) {
-//	    console.log(this.type+ ".recordSelection");
+	    //	    console.log(this.type+ ".recordSelection");
 	    if(!this.records) return;
 	    var index =-1;
 	    for(var i=0;i<this.records.length;i++) {
@@ -1331,7 +1331,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 	    var navStyle = "padding-top:20px;";
 	    var contents = HtmlUtils.div(["style","position:relative;"], "<table width=100%><tr valign=top><td width=20>" + HtmlUtils.div(["style",navStyle], left) + "</td><td>" +
-		slide + "</td>" +
+					 slide + "</td>" +
 					 "<td width=20>" + HtmlUtils.div(["style",navStyle],right) + "</td></tr></table>");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.jq(ID_PREV).click(() =>{
@@ -1385,89 +1385,89 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
             return "";
         },
         updateUI: function() {
-		this.counts = [];
-		this.counts2 = [];
-		var counts = this.getProperty("counts","100",true).split(";");
-		for(var i=0;i<counts.length;i++) 
-		    this.counts.push(parseFloat(counts[i]));
-		var doSum = this.getProperty("doSum","true") == "true";
-		if(doSum) {
-		    this.counts2 = this.counts;
-		} else {
-		    var total = 0;
-		    for(var i=0;i<this.counts.length;i++) {
-			var tmp = this.counts[i];
-			this.counts2.push(this.counts[i]-total);
-			total+= tmp;
-		    }
-		}
-
-		this.footers = this.getProperty("footers","",true).split(";");
-		this.headers = this.getProperty("headers","",true).split(";");
-		while(this.footers.length< this.counts.length)
-		    this.footers.push("");
-		while(this.headers.length< this.counts.length)
-		    this.headers.push("");
-		this.showBlocks(true);
-		this.writeHtml(ID_DISPLAY_CONTENTS, 
-			       HtmlUtils.div(["class","display-blocks-header","style", this.getProperty("headerStyle","", true),"id",this.getDomId(ID_BLOCKS_HEADER)]) +
-			       HtmlUtils.div(["class","display-blocks-blocks","id",this.getDomId(ID_BLOCKS)])+
-			       HtmlUtils.div(["class","display-blocks-footer", "style", this.getProperty("footerStyle","", true), "id",this.getDomId(ID_BLOCKS_FOOTER)]));
-		//Show the outline
-		this.showBlocks(true);
-		HtmlUtils.callWhenScrolled(this.getDomId(ID_DISPLAY_CONTENTS),()=>{
-			if(!this.displayedBlocks) {
-			    this.displayedBlocks = true;
-			    setTimeout(()=>{this.showBlocks(false)},animStep);
-			}
-		    },500);
-
-	    },
-	    showBlocks: function(initial, step) {
-		if(!Utils.isDefined(step)) {
-		    if(initial)step = this.counts.length;
-		    else step = 0;
-		}
-		var contents = "";
-		contents += HtmlUtils.openDiv(["class","display-blocks"]);
-		var tmp =this.getProperty("colors","red,blue,gray,green",true); 
-		var ct = (typeof tmp) =="string"?tmp.split(","):tmp;
-		var footer ="";
-		while(ct.length<this.counts.length) {
-		    ct.push(ct[ct.length-1]);
-		}
-		var multiplier = parseFloat(this.getProperty("multiplier","1",true));
-		var dim=this.getProperty("blockDimensions","8",true);
-		var labelStyle = this.getProperty("labelStyle","", true);
-		var blockCnt = 0;
-		for(var i=0;i<this.counts2.length;i++) {
-		    var label = this.footers[i].replace("${count}",multiplier*this.counts[i]) ;
-		    var style =  "width:" + dim+"px;height:" + dim+"px;";
-		    if(!initial) {
-			if(i<step) {
-			    style += "background:" + ct[i]+";" ;
-			    footer += HtmlUtils.div(["class","display-block","style",style],"") +" " + HtmlUtils.span(["style",labelStyle], label)+"&nbsp;&nbsp;";
-			} else {
-			    footer += "&nbsp;&nbsp;";
-			}
-		    }
-		    var cnt = this.counts2[i];
-		    for(var j=0;j<this.counts2[i];j++) {
-			contents += HtmlUtils.div(["class","display-block","style",style,"title",label],"");
-		    }
-		    blockCnt++;
-		}
-		contents += HtmlUtils.closeDiv();
-		this.jq(ID_BLOCKS_HEADER).html(this.getProperty("header",""));
-		this.jq(ID_BLOCKS).html(contents);
-		this.jq(ID_BLOCKS_FOOTER).html(footer);
-		if(step < this.counts.length) {
-		    setTimeout(()=>{this.showBlocks(false, step+1)},animStep);
+	    this.counts = [];
+	    this.counts2 = [];
+	    var counts = this.getProperty("counts","100",true).split(";");
+	    for(var i=0;i<counts.length;i++) 
+		this.counts.push(parseFloat(counts[i]));
+	    var doSum = this.getProperty("doSum","true") == "true";
+	    if(doSum) {
+		this.counts2 = this.counts;
+	    } else {
+		var total = 0;
+		for(var i=0;i<this.counts.length;i++) {
+		    var tmp = this.counts[i];
+		    this.counts2.push(this.counts[i]-total);
+		    total+= tmp;
 		}
 	    }
+
+	    this.footers = this.getProperty("footers","",true).split(";");
+	    this.headers = this.getProperty("headers","",true).split(";");
+	    while(this.footers.length< this.counts.length)
+		this.footers.push("");
+	    while(this.headers.length< this.counts.length)
+		this.headers.push("");
+	    this.showBlocks(true);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, 
+			   HtmlUtils.div(["class","display-blocks-header","style", this.getProperty("headerStyle","", true),"id",this.getDomId(ID_BLOCKS_HEADER)]) +
+			   HtmlUtils.div(["class","display-blocks-blocks","id",this.getDomId(ID_BLOCKS)])+
+			   HtmlUtils.div(["class","display-blocks-footer", "style", this.getProperty("footerStyle","", true), "id",this.getDomId(ID_BLOCKS_FOOTER)]));
+	    //Show the outline
+	    this.showBlocks(true);
+	    HtmlUtils.callWhenScrolled(this.getDomId(ID_DISPLAY_CONTENTS),()=>{
+		if(!this.displayedBlocks) {
+		    this.displayedBlocks = true;
+		    setTimeout(()=>{this.showBlocks(false)},animStep);
+		}
+	    },500);
+
+	},
+	showBlocks: function(initial, step) {
+	    if(!Utils.isDefined(step)) {
+		if(initial)step = this.counts.length;
+		else step = 0;
+	    }
+	    var contents = "";
+	    contents += HtmlUtils.openDiv(["class","display-blocks"]);
+	    var tmp =this.getProperty("colors","red,blue,gray,green",true); 
+	    var ct = (typeof tmp) =="string"?tmp.split(","):tmp;
+	    var footer ="";
+	    while(ct.length<this.counts.length) {
+		ct.push(ct[ct.length-1]);
+	    }
+	    var multiplier = parseFloat(this.getProperty("multiplier","1",true));
+	    var dim=this.getProperty("blockDimensions","8",true);
+	    var labelStyle = this.getProperty("labelStyle","", true);
+	    var blockCnt = 0;
+	    for(var i=0;i<this.counts2.length;i++) {
+		var label = this.footers[i].replace("${count}",multiplier*this.counts[i]) ;
+		var style =  "width:" + dim+"px;height:" + dim+"px;";
+		if(!initial) {
+		    if(i<step) {
+			style += "background:" + ct[i]+";" ;
+			footer += HtmlUtils.div(["class","display-block","style",style],"") +" " + HtmlUtils.span(["style",labelStyle], label)+"&nbsp;&nbsp;";
+		    } else {
+			footer += "&nbsp;&nbsp;";
+		    }
+		}
+		var cnt = this.counts2[i];
+		for(var j=0;j<this.counts2[i];j++) {
+		    contents += HtmlUtils.div(["class","display-block","style",style,"title",label],"");
+		}
+		blockCnt++;
+	    }
+	    contents += HtmlUtils.closeDiv();
+	    this.jq(ID_BLOCKS_HEADER).html(this.getProperty("header",""));
+	    this.jq(ID_BLOCKS).html(contents);
+	    this.jq(ID_BLOCKS_FOOTER).html(footer);
+	    if(step < this.counts.length) {
+		setTimeout(()=>{this.showBlocks(false, step+1)},animStep);
+	    }
 	}
-	)
-	}
+    }
+	    )
+}
 
 
 
@@ -1644,17 +1644,17 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 });
             if (this.getProperty("showFrequency", true)) {
                 this.frequencyTable = HtmlUtils.formatTable("#" + this.getDomId("table_frequency"), {
-			scrollY: this.getProperty("tableFrequenecyHeight", tableHeight),
-			searching: this.getProperty("showSearch", true)
-		    });
+		    scrollY: this.getProperty("tableFrequenecyHeight", tableHeight),
+		    searching: this.getProperty("showSearch", true)
+		});
 		this.frequencyTable.on( 'search.dt', ()=>{
-			if(this.settingSearch) return;
-			this.propagateEvent("handleEventPropertyChanged", {
-			    property: "searchValue",
-				value: this.frequencyTable.search()
-				    });
+		    if(this.settingSearch) return;
+		    this.propagateEvent("handleEventPropertyChanged", {
+			property: "searchValue",
+			value: this.frequencyTable.search()
+		    });
 
-		    } );
+		} );
 	    }
 	    
         },
@@ -1668,7 +1668,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
 		return;
 	    }
             SUPER.handleEventPropertyChanged.call(this,source, prop);
-	    },
+	},
 
     });
 }
@@ -1681,15 +1681,15 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
-		return Utils.mergeLists(SUPER.getWikiEditorTags(),
-					[
-					 "label:Frequency Attributes",
-					 'orientation="vertical"',
-					    'tableHeight="300px"',
-					    'showBars=true',
-					    'barWidth=200'
-					 ]);
-	    },
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Frequency Attributes",
+					'orientation="vertical"',
+					'tableHeight="300px"',
+					'showBars=true',
+					'barWidth=200'
+				    ]);
+	},
 
 
 
@@ -1837,6 +1837,20 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    html += HtmlUtils.closeTag("thead");
 		}
 		html += HtmlUtils.openTag("tbody", []);
+
+		var colors = this.getColorTable(true);
+		var dfltColor = this.getProperty("barColor","blue");
+		if(colors) {
+		    for(var i=0;i<s.values.length;i++) {
+			var value = s.values[i].value;
+			if(i<colors.length)
+			    s.values[i].color = colors[i];
+			else
+			    s.values[i].color = colors[colors.length-1];
+		    }
+		}
+
+
 		if(!f.isNumeric) {
 		    s.values.sort((a,b)=>{
 			if(a.count<b.count) return 1;
@@ -1844,8 +1858,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			return 0;
 		    });
 		}
-		var colors = this.getColorTable(true);
-		var dfltColor = this.getProperty("barColor","blue");
+
 		var maxPercent = 0;
 		for(var i=0;i<s.values.length;i++) {
 		    var count = s.values[i].count;
@@ -1866,13 +1879,9 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    var tdc =  (showCount?HtmlUtils.td(["align", "right"], count):"");
 		    var perc = count/s.total;
 		    var tdp =  showPercent?HtmlUtils.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
-		    var color = dfltColor;
-		    if(colors) {
-			if(i<colors.length)
-			    color = colors[i];
-			else
-			    color = colors[colors.length-1];
-		    }
+		    var color = s.values[i].color;
+		    if(!color) color = dfltColor;
+
 		    var bw = perc/maxPercent;
 		    var tdb = showBars?HtmlUtils.td(["valign","center","width",barWidth], HtmlUtils.div(["title",Math.round(perc*100)+"%","style","background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
 		    html += HtmlUtils.tr([], 
@@ -1887,32 +1896,42 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-value").click(function(){
-		    //		    $(this).css("color","red");
+		var click = _this.getProperty("clickFunction")
+		var value = $(this).attr("data-value");
+		var fieldId = $(this).attr("data-field");
+		if(!click || click =="select") {
 		    _this.handleEventPropertyChanged(_this,{
-			    property: "filterValue",
-				id:"id",
-				fieldId: $(this).attr("data-field"),
-				value: $(this).attr("data-value")
-				    });
-		});
+			property: "pattern",
+			fieldId: fieldId,
+			value: value
+		    });
+		} else if(click == "selectother") {
+		    _this.propagateEvent("handleEventPropertyChanged", {
+			property: "filterValue",
+			value: value,
+			id:_this.getFilterId(fieldId),
+			fieldId: fieldId,
+		    });
+		}
+	    });
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-label").click(function(){
-		    var field = $(this).attr("data-field");
-		    //		    _this.jq(ID_DISPLAY_CONTENTS).find("[data-field=" + field+"]").css("color","black");
-		    _this.handleEventPropertyChanged(_this,{
-			    property: "filterValue",
-				id:"id",
-				fieldId: field,
-				value: "-all-"
-				    });
+		var field = $(this).attr("data-field");
+		//		    _this.jq(ID_DISPLAY_CONTENTS).find("[data-field=" + field+"]").css("color","black");
+		_this.handleEventPropertyChanged(_this,{
+		    property: "filterValue",
+		    id:"id",
+		    fieldId: field,
+		    value: "-all-"
 		});
+	    });
 
 	    if(this.getProperty("showHeader",true)) {
 		for (var col = 0; col < fields.length; col++) {
 		    HtmlUtils.formatTable("#" +this.getDomId("summary"+col),{});
 		}
 	    }
-	    }
-	});
+	}
+    });
 }
 
 function RamaddaTextanalysisDisplay(displayManager, id, properties) {
@@ -2105,7 +2124,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 if (event.which == 13) {
                     _this.setProperty("pattern", $(this).val());
 		    _this.propagateEvent("handleEventPropertyChanged", {
-			    property: "pattern",
+			property: "pattern",
 			value: $(this).val()
 		    });
                     _this.updateUI();
@@ -2210,7 +2229,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
                 if (addLineNumbers) {
                     corpus += HtmlUtils.tr(["valign", "top"], HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
-                            "<a href=#line_" + lineCnt + ">#" + lineCnt + "</a>&nbsp;  ") +
+									   "<a href=#line_" + lineCnt + ">#" + lineCnt + "</a>&nbsp;  ") +
 					   HtmlUtils.td([], line));
                 } else {
                     corpus += line;

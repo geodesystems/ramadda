@@ -695,7 +695,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 var newList = [];
                 var fieldNames = null;
                 var rowCnt = -1;
-                var indexField = this.indexField;
+                var indexField = this.getFieldById(null,this.getProperty("indexField"));
+//		console.log("index:" + indexField);
+		
                 for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                     var record = records[rowIdx];
                     var row = record.getData();
@@ -704,10 +706,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     rowCnt++;
                     var values = [];
                     var indexName = null;
-                    if (indexField >= 0) {
-                        var field = allFields[indexField];
-                        values.push(record.getValue(indexField) + offset);
-                        indexName = field.getLabel();
+                    if (indexField) {
+                        values.push(record.getValue(indexField.getIndex()) + offset);
+                        indexName = indexField.getLabel();
                     } else {
                         if (this.hasDate) {
                             values.push(this.getDateValue(date, date_formatter));
@@ -935,7 +936,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
             var justData = [];
-            var tooltipFields = this.getFieldsByIds(this.getProperty("tooltipFields", ""));
+            var tooltipFields = this.getFieldsByIds(null,this.getProperty("tooltipFields", ""));
             var dataTable = new google.visualization.DataTable();
             var header = this.getDataValues(dataList[0]);
             var sample = this.getDataValues(dataList[1]);
@@ -958,10 +959,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 } else {
 		    if(j>0 && fixedValueS) {
 			dataTable.addColumn('number', this.getProperty("fixedValueLabel","Count"));
-			break;
+		    } else {
+			dataTable.addColumn('number', header[j]);
 		    }
-                    //Assume all remaining fields are numbers
-                    dataTable.addColumn('number', header[j]);
+		    dataTable.addColumn({ type: 'string', role: 'style' });
                     dataTable.addColumn({
                         type: 'string',
                         role: 'tooltip',
@@ -969,6 +970,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             'html': true
                         }
                     });
+		    if(j>0 && fixedValueS) {
+			break;
+		    }
                 }
             }
 
@@ -1032,11 +1036,28 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    var annotationCnt=0;
 
+	    var records = [];
+            for (var i = 1; i < dataList.length; i++) {
+		records.push(dataList[i].record);
+	    }
+	    var colors =  this.getColorTable(true);
+            var colorBy = this.getColorByInfo(records);
 
             for (var i = 1; i < dataList.length; i++) {
 		var record =dataList[i];
 		var theRecord = dataList[i].record;
                 var row = this.getDataValues(record);
+		var color = "";
+                if (colorBy.index >= 0) {
+                    var value = theRecord.getData()[colorBy.index];
+		    hasColorByValue  = true;
+		    colorByValue = value;
+                    didColorBy = true;
+		    color =  colorBy.getColor(value, theRecord);
+                }
+
+
+
                 row = row.slice(0);
                 var label = "";
                 if (dataList[i].record) {
@@ -1078,14 +1099,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     var value = row[j];
 		    if(j>0 && fixedValueS) {
 			newRow.push(fixedValueN);
-			break;
+		    } else {
+			newRow.push(value);
 		    }
-                    newRow.push(value);
                     if (j == 0 && props.includeIndex) {
                         //is the index so don't add a tooltip
                     } else {
+                        newRow.push(color);
                         newRow.push(tooltip);
                     }
+		    if(j>0 && fixedValueS) {
+			break;
+		    }
                 }
                 //                    newRow.push("annotation");
 	    
@@ -1135,6 +1160,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 justData.push(newRow);
             }
             dataTable.addRows(justData);
+            if (didColorBy) {
+		colorBy.displayColorTable();
+            }
+
             return dataTable;
         },
 
@@ -1180,7 +1209,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
             this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color", null));
             this.setPropertyOn(chartOptions.vAxis.gridlines, "vAxis.gridlines.color", "color", this.getProperty("gridlines.color", null));
-
             var textColor = this.getProperty("textColor", "#000");
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
@@ -1288,7 +1316,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
 	    this.chartOptions.bar = {groupWidth:"95%"}
 
-	    //	    console.log(JSON.stringify(this.chartOptions,null,2));
+//	    console.log(JSON.stringify(this.chartOptions,null,2));
 	    
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
@@ -1439,6 +1467,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 left: this.getProperty("chartLeft", this.chartDimensions.left),
                 right: this.getProperty("chartRight", this.chartDimensions.right),
                 top: this.getProperty("chartTop", "10"),
+		bottom: this.getProperty("chartBottom"),
                 height: this.getProperty("chartHeight", "70%"),
                 width: this.getProperty("chartWidth", this.chartDimensions.width),
             });
@@ -1454,25 +1483,22 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 });
             }
 
+	    if (!chartOptions.hAxis) {
+		chartOptions.hAxis = {};
+	    }
+	    if (!chartOptions.vAxis) {
+		chartOptions.vAxis = {};
+	    }
+	    chartOptions.hAxis.textPosition = this.getProperty("hAxisTextPosition");
+	    chartOptions.vAxis.textPosition = this.getProperty("vAxisTextPosition");
 
+//	    console.log(JSON.stringify(chartOptions,null, 2));
 
             if (this.hAxis) {
-                if (chartOptions.hAxis) {
-                    chartOptions.hAxis.title = this.hAxis;
-                } else {
-                    chartOptions.hAxis = {
-                        title: this.hAxis
-                    }
-                }
+                chartOptions.hAxis.title = this.hAxis;
             }
             if (this.vAxis) {
-                if (chartOptions.vAxis) {
-                    chartOptions.vAxis.title = this.vAxis;
-                } else {
-                    chartOptions.vAxis = {
-                        title: this.vAxis
-                    }
-                }
+                chartOptions.vAxis.title = this.vAxis;
             }
             if (Utils.isDefined(this.chartHeight)) {
                 chartOptions.height = this.chartHeight;
@@ -1610,6 +1636,7 @@ function HistogramDisplay(displayManager, id, properties) {
             if (this.textPosition) {
                 chartOptions.vAxis.textPosition = this.textPosition;
             }
+
 
             if (Utils.isDefined(this.minValue)) {
                 chartOptions.vAxis.viewWindow.min = parseFloat(this.minValue);
