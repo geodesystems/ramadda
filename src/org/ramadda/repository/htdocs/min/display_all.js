@@ -411,6 +411,7 @@ function DisplayThing(argId, argProperties) {
 		colorByMap: this.getColorByMap()
 	    }
 	},
+	xcnt:0,	
 	getRecordTemplate: function(row, fields, s, props) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
@@ -3395,7 +3396,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.updateUI();
 	},
         updateUI: function() {
-	    console.log(this.type +" updateUI");
 	},
 
 	makeTooltips: function(selector, records, callback) {
@@ -3669,7 +3669,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getHeightForStyle: function(dflt) {
             var height = this.getProperty("height", -1);
             if (height == -1) return dflt;
-            if (!height.endsWith("px") && !height.endsWith("%"))
+            if (height.match("^[0-9]+$"))
                 height = height + "px";
             return height;
         },
@@ -3704,7 +3704,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
 
-            var contents =  top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
+            var contents =  top + "\n" +HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + "\n" +bottom;
             return contents;
         },
 
@@ -9886,6 +9886,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         okToHandleEventRecordSelection: function() {
             return true;
         },
+        handleEventRecordHighlight: function(source, args) {
+	    this.handleEventRecordSelection(source, args);
+	},
         handleEventRecordSelection: function(source, args) {
             //TODO: don't do this in index space, do it in time or space space
             if (source == this) {
@@ -10484,9 +10487,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             };
 
             $.extend(chartOptions, {
-                lineWidth: 1,
+                lineWidth: this.getProperty("lineWidth",1),
                 colors: this.colorList,
                 curveType: this.curveType,
+		pointShape:this.getProperty("pointShape"),
+		pointSize: this.getProperty("pointSize"),
                 vAxis: {}
             });
 
@@ -10779,6 +10784,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 width: this.getProperty("chartWidth", this.chartDimensions.width),
             });
 
+	    
             if (useMultipleAxes) {
                 $.extend(chartOptions, {
                     series: [{
@@ -10788,6 +10794,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                     }]
                 });
             }
+
 
 
             if (this.hAxis) {
@@ -15915,6 +15922,19 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    }
 	    
 	},
+        getContentsStyle: function() {
+            var style = "";
+            var height = this.getHeightForStyle();
+            if (height) {
+		style += " height:" + height + ";";
+            }
+            var width = this.getWidthForStyle();
+            if (width) {
+                style += " width:" + width + ";";
+            }
+            return style;
+        },
+
 	updateUI: function() {
 	    var pointData = this.getData();
 	    if (pointData == null) return;
@@ -15924,13 +15944,15 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.records= this.sortRecords(this.records);
 	    var template = this.getProperty("template","");
 	    var slideWidth = this.getProperty("slideWidth","100%");
-	    var height = this.getProperty("height","400");
+            var height = this.getHeightForStyle("400");
 	    var left = HtmlUtils.div(["id", this.getDomId(ID_PREV), "style","font-size:200%;","class","display-slides-arrow-left fas fa-angle-left"]);
 	    var right = HtmlUtils.div(["id", this.getDomId(ID_NEXT), "style","font-size:200%;", "class","display-slides-arrow-right fas fa-angle-right"]);
-	    var slide = HtmlUtils.div(["style","height:" + height+"px;", "id", this.getDomId(ID_SLIDE), "class","display-slides-slide"]);
-	    var contents = "<table width=100%><tr><td valign=center width=20>" + left + "</td><td>" +
-		slide + "</td><td>" +
-		"<td valign=center width=20>" + right + "</td></tr></table>";
+	    var slide = HtmlUtils.div(["style","overflow-y:auto;max-height:" + height+";", "id", this.getDomId(ID_SLIDE), "class","display-slides-slide"]);
+
+	    var navStyle = "padding-top:20px;";
+	    var contents = HtmlUtils.div(["style","position:relative;"], "<table width=100%><tr valign=top><td width=20>" + HtmlUtils.div(["style",navStyle], left) + "</td><td>" +
+		slide + "</td>" +
+					 "<td width=20>" + HtmlUtils.div(["style",navStyle],right) + "</td></tr></table>");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.jq(ID_PREV).click(() =>{
 		this.slideIndex--;

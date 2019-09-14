@@ -545,6 +545,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         okToHandleEventRecordSelection: function() {
             return true;
         },
+        handleEventRecordHighlight: function(source, args) {
+	    this.handleEventRecordSelection(source, args);
+	},
         handleEventRecordSelection: function(source, args) {
             //TODO: don't do this in index space, do it in time or space space
             if (source == this) {
@@ -1143,9 +1146,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             };
 
             $.extend(chartOptions, {
-                lineWidth: 1,
+                lineWidth: this.getProperty("lineWidth",1),
                 colors: this.colorList,
                 curveType: this.curveType,
+		pointShape:this.getProperty("pointShape"),
+		pointSize: this.getProperty("pointSize"),
                 vAxis: {}
             });
 
@@ -1438,6 +1443,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 width: this.getProperty("chartWidth", this.chartDimensions.width),
             });
 
+	    
             if (useMultipleAxes) {
                 $.extend(chartOptions, {
                     series: [{
@@ -1447,6 +1453,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                     }]
                 });
             }
+
 
 
             if (this.hAxis) {

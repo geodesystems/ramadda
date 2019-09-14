@@ -261,6 +261,7 @@ function DisplayThing(argId, argProperties) {
 		colorByMap: this.getColorByMap()
 	    }
 	},
+	xcnt:0,	
 	getRecordTemplate: function(row, fields, s, props) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
@@ -3245,7 +3246,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.updateUI();
 	},
         updateUI: function() {
-	    console.log(this.type +" updateUI");
 	},
 
 	makeTooltips: function(selector, records, callback) {
@@ -3519,7 +3519,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getHeightForStyle: function(dflt) {
             var height = this.getProperty("height", -1);
             if (height == -1) return dflt;
-            if (!height.endsWith("px") && !height.endsWith("%"))
+            if (height.match("^[0-9]+$"))
                 height = height + "px";
             return height;
         },
@@ -3554,7 +3554,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
 
-            var contents =  top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
+            var contents =  top + "\n" +HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + "\n" +bottom;
             return contents;
         },
 
