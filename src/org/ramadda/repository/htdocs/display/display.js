@@ -1303,6 +1303,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var isString = (type == "string");
             for (a in fields) {
                 var field = fields[a];
+		if(field.getId() == "recordDate") continue;
                 if (type == null) return field;
                 if (numeric) {
                     if (field.isFieldNumeric()) {
@@ -1319,6 +1320,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return list;
         },
+	getDateValues: function(records) {
+	    var dates = [];
+	    records.map(r=>{
+		dates.push(r.getDate());
+	    });
+	    return dates;
+	},
         getColumnValues: function(records, field) {
             var values = [];
             var min = Number.MAX_VALUE;
@@ -1352,6 +1360,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
+	    var t1=  new Date();
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -1416,8 +1425,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		values.push({value:value,regexps:regexps,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
 	    }
-	    //this.minDateObj
-	    //	    console.log("filterData:" + this.type +" " + this.minDateObj +" " + this.maxDateObj);
+
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
 		var record = dataList[rowIdx];
                 var date = record.getDate();
@@ -1578,6 +1586,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		dataList = binned;
 	    }
+//	    var t2=  new Date();
+//	    Utils.displayTimes("filterData",[t1,t2]);
 	    dataList = this.sortRecords(dataList);
             return dataList;
         },
@@ -2792,6 +2802,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let _this = this;
             var pointData = this.getData();
             if (pointData == null) return;
+
 	    this.filterFields = [];
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
@@ -2828,6 +2839,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    var header2="";
 	    var searchBar  = "";
+
+	    if(this.getProperty("showChartFieldsMenu")) {
+		var chartFields =  pointData.getChartableFields();
+		if(chartFields.length) {
+		    var enums = [];
+		    chartFields.map(field=>{
+			enums.push([field.getId(),field.getLabel()]);
+		    });
+		    header2 += HtmlUtils.span(["class","display-filterby"],
+					      HtmlUtils.span(["class","display-filterby-label"], "Display: ") + HtmlUtils.select("",["style","", "id",this.getDomId("chartfields")],enums,this.getProperty("fields","")))+"&nbsp;";
+		}
+	    }
+
+
 	    if(this.colorByFields.length>0) {
 		var enums = [];
 		this.colorByFields.map(field=>{
@@ -2922,8 +2947,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var buttons = "";
 			    for(var j=0;j<enums.length;j++) {
 				var extra = "";
-				if(enums[j] == dfltValue) extra = " display-filterby-button-selected ";
-				buttons+=HtmlUtils.div(["class","display-filterby-button" + extra,"value",enums[j]],enums[j]);
+				var v = enums[j];
+				var label;
+				if(Array.isArray(v)) {
+				    label = v[1];
+				    v = v[0];
+				} else {
+				    label = v;
+				}
+				if(v == dfltValue) extra = " display-filterby-button-selected ";
+				buttons+=HtmlUtils.div(["class","display-filterby-button" + extra,"value",v],label);
 			    }
 			    bottom+= HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"fieldId",
 						    filterField.getId()], buttons);
@@ -3158,6 +3191,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		HtmlUtils.initSelect(this.jq("colorbyselect"));
 		HtmlUtils.initSelect(this.jq("sizebyselect"));
+		HtmlUtils.initSelect(this.jq("chartfields"));
+
+                this.jq("chartfields").change(function(){
+		    _this.setProperty("fields",$(this).val());
+		    _this.updateUI();
+		});
                 this.jq("colorbyselect").change(function(){
 		    _this.colorByFieldChanged($(this).val());
 		});
@@ -3248,7 +3287,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.maxDateObj = animation.end;
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
+//		var t1 = new Date();
 		this.dataFilterChanged();
+//		var t2 = new Date();
+//		Utils.displayTimes("timeChanged",[t1,t2]);
 	    }
 	    this.propagateEvent("handleEventPropertyChanged", {
 		property: "dateRange",
@@ -4726,7 +4768,7 @@ function DisplayAnimation(display) {
 	    }
 	    
 
-            this.jq(ID_TOP_LEFT).append(buttons);
+            this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["style",this.display.getProperty("animationStyle")], buttons));
             this.btnRun = this.jq(ID_RUN);
             this.btnPrev = this.jq(ID_PREV);
             this.btnNext = this.jq(ID_NEXT);

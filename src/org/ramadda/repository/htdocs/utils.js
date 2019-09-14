@@ -331,6 +331,13 @@ var Utils = {
 	if(d<10) d = "0" +d;
         return m +" " + d;
     },
+    formatDateMonDay: function(date, options, args) {
+	if(isNaN(date.getUTCMonth())) return "NA";
+	var m = this.monthNamesShort[date.getUTCMonth()];
+	var d = date.getUTCDate();
+	if(d<10) d = "0" +d;
+        return m +"-" + d;
+    },
 
     formatDateMDY: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
@@ -347,9 +354,46 @@ var Utils = {
 	if(d<10) d = "0" +d;
         return date.getUTCFullYear() + "-" + m + "-" + d;
     },
+    formatDateMMDD: function(date, delimiter) {
+	if(isNaN(date.getUTCMonth())) return "Unknown";
+	var m = (date.getUTCMonth() + 1);
+	if(m<10) m = "0" + m;
+	var d = date.getUTCDate();
+	if(d<10) d = "0" +d;
+        return  m + (delimiter?delimiter:"-") + d;
+    },
     formatDateYYYY: function(date, options, args) {
         return date.getUTCFullYear();
     },
+    formatDateWeek: function(date) {
+	var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+	return   Math.ceil(( ( (date - yearStart) / 86400000) + 1)/7);
+    },
+    formatDateFromProperty: function(fmt,d) {
+        if (fmt == "yyyy") {
+            return Utils.formatDateYYYY(d);
+        } else if (fmt == "yyyyMMdd") {
+            return Utils.formatDateYYYYMMDD(d);
+        } else if (fmt == "week") {
+            return Utils.formatDateWeek(d);
+	} else if (fmt == "monthdayyear") {
+            return Utils.formatDateMonthDayYear(d);
+	} else if (fmt == "monthday") {
+            return Utils.formatDateMonthDay(d);
+	} else if (fmt == "mon-day") {
+            return Utils.formatDateMonDay(d);
+	} else if (fmt == "mmdd") {
+            return Utils.formatDateMMDD(d);
+	} else if (fmt == "mm.dd") {
+            return Utils.formatDateMMDD(d,".");
+	} else if (fmt == "mdy") {
+            return Utils.formatDateMDY(d);
+        } else {
+            return Utils.formatDate(d);
+        }
+    },
+
+
     formatDate: function(date, options, args) {
         if (!args) args = {};
         if (!options) {

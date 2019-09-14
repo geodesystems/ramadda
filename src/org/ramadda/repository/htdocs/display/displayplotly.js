@@ -124,9 +124,9 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         makePlot: function(data, layout) {
             this.clearHtml();
             //For some reason plotly won't display repeated times in the DISPLAY div
-            this.jq(ID_DISPLAY_CONTENTS).html(HtmlUtils.div(["id", this.getDomId("tmp"), "style", this.getDisplayStyle()], ""));
+	    this.jq(ID_DISPLAY_CONTENTS).html(HtmlUtils.div(["id", this.getDomId("tmp"), "style", this.getDisplayStyle()], ""));
             //               Plotly.plot(this.getDomId(ID_DISPLAY_CONTENTS), data, layout)
-            var plot = Plotly.plot(this.getDomId("tmp"), data, layout);
+            var plot = Plotly.plot(this.getDomId("tmp"), data, layout,{displayModeBar: false});
             var myPlot = document.getElementById(this.getDomId("tmp"));
             this.addEvents(plot, myPlot);
         },
@@ -153,17 +153,27 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
                 return;
             }
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var stringField = this.getFieldOfType(fields, "string");
-            if (!stringField) {
-                this.displayError("No string field specified");
-                return;
-            }
-            var numericFields = this.getFieldsOfType(fields, "numeric");
+	    var numericFields = this.getFieldsOfType(fields, "numeric");
             if (numericFields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
             }
-            var theta = this.getColumnValues(records, stringField).values;
+	    var theta;
+	    var thetaType;
+	    if(this.getProperty("useDates")) {
+		var tmp = this.getDateValues(records);
+		theta=[];
+		var dateFormat = this.getProperty("dateFormat", "yyyyMMdd");
+		thetaType = "category";
+		tmp.map(d=>{
+		    theta.push(Utils.formatDateFromProperty(dateFormat,d));
+		});
+	    } else {
+		var thetaField = this.getFieldById(this.getProperty("thetaField"));
+		if (thetaField) {
+		    theta = this.getColumnValues(records, thetaField).values;
+		}
+	    }
             var values = [];
             var min = Number.MAX_VALUE;
             var max = Number.MIN_VALUE;
@@ -171,25 +181,41 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
             for (var i = 0; i < numericFields.length; i++) {
                 var field = numericFields[i];
                 var column = this.getColumnValues(records, field);
+		if(!theta) {
+		    theta = [];
+		    var cnt = 0;
+		    for(var cnt=0;cnt<column.values.length;cnt++)
+			theta.push(cnt*360/column.values.length);
+		}
                 min = Math.min(min, column.min);
                 max = Math.max(max, column.max);
+		var values = column.values;
                 plotData.push({
                     type: this.getPlotType(),
-                    r: column.values,
+                    r: values,
                     theta: theta,
                     fill: 'toself',
-                    name: field.getLabel()
+                    name: field.getLabel(),
                 });
             }
 
             layout = {
                 polar: {
+                    angularaxis: {
+			type:"category"
+		    },
                     radialaxis: {
                         visible: true,
                         range: [min, max]
                     }
                 },
             }
+	    if(thetaType) {
+		layout.polar.angularaxis  ={
+		    type:thetaType
+		};
+	    }
+
             this.setDimensions(layout, 2);
             this.makePlot(plotData, layout);
         },

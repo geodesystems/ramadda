@@ -374,7 +374,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.getDisplayReady()) {
                 return;
             }
+//	    var t1= new Date();
             this.displayData();
+//	    var t2= new Date();
+//	    Utils.displayTimes("chart.displayData",[t1,t2]);
         },
         getWikiAttributes: function(attrs) {
             this.defineWikiAttributes(["vAxisMinValue", "vAxisMaxValue"]);

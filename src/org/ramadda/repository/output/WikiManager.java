@@ -6200,9 +6200,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "3dmesh") || displayType.equals(
                 "density")) && (request.getExtraProperty(
                 "added plotly") == null)) {
-            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
-            HtmlUtils.importJS(
-                sb, getHtdocsUrl("https://cdn.plot.ly/plotly-latest.min.js"));
+            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
+	    //            HtmlUtils.importJS(sb, "https://cdn.plot.ly/plotly-latest.min.js");
             /*
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(sb,
