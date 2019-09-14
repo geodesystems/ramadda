@@ -16493,7 +16493,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			    color = colors[colors.length-1];
 		    }
 		    var bw = perc/maxPercent;
-		    var tdb = showBars?HtmlUtils.td(["valign","center","width",barWidth], HtmlUtils.div(["style","background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
+		    var tdb = showBars?HtmlUtils.td(["valign","center","width",barWidth], HtmlUtils.div(["title",Math.round(perc*100)+"%","style","background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
 		    html += HtmlUtils.tr([], 
 					 tdv + tdc + tdp+tdb
 					);
