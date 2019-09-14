@@ -786,7 +786,11 @@ public class CsvUtil {
             JSONObject jrow = array.getJSONObject(i);
 	    if(objectPath!=null) {
 		for(String tok: StringUtil.split(objectPath,",",true,true)) {
-		    jrows.add(Json.readObject(jrow,tok));
+		    if(tok.equals("*")) {
+			jrows.add(jrow);
+		    } else {
+			jrows.add(Json.readObject(jrow,tok));
+		    }
 		}
 	    }   else {
 		jrows.add(jrow);

@@ -10733,7 +10733,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	    var myTags = [
 		"label:Chart Attributes",
 		"vAxisMinValue=\"\"",
-		"vAxisMValue=\"\"", 
+		"vAxisMaxValue=\"\"", 
 		"chartHeight=\"\"",
 		"chartHeight=\"\"",
 		"chartWidth=\"\"",
