@@ -1717,6 +1717,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    }
 
 	    var showCount = this.getProperty("showCount",true);
+	    var showPercent = this.getProperty("showPercent",true);
 	    var showBars = this.getProperty("showBars",false);
 	    var barWidth = +this.getProperty("barWidth",200);
 
@@ -1830,7 +1831,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    
 		    label = HtmlUtils.div(["style","max-width:500px;overflow-x:auto;"], label);
 		    var count = showCount? HtmlUtils.th(["align","right","width","20%"],HtmlUtils.div(["style","text-align:right"],"Count")):"";
-		    var percent  = HtmlUtils.th(["align","right","width","20%"],  HtmlUtils.div(["style","text-align:right"],"Percent"));
+		    var percent  = showPercent?HtmlUtils.th(["align","right","width","20%"],  HtmlUtils.div(["style","text-align:right"],"Percent")):"";
 		    var bars = showBars? HtmlUtils.th(["align","right","width",barWidth],HtmlUtils.div(["style","text-align:right"],"&nbsp;")):"";
 		    html += HtmlUtils.tr([], HtmlUtils.th(["xxwidth","60%"],  label+ count+ percent+bars));
 		    html += HtmlUtils.closeTag("thead");
@@ -1864,7 +1865,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    var tdv = HtmlUtils.td([], value);
 		    var tdc =  (showCount?HtmlUtils.td(["align", "right"], count):"");
 		    var perc = count/s.total;
-		    var tdp =  HtmlUtils.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%");
+		    var tdp =  showPercent?HtmlUtils.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
 		    var color = dfltColor;
 		    if(colors) {
 			if(i<colors.length)
