@@ -5121,14 +5121,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (cat.category.equals("Displays")
                         || cat.category.equals("Misc Charts")
                         || cat.category.equals("Charts")
-                        || cat.category.equals("Text Displays")) {
+                        || cat.category.equals("Text and Images")) {
                     continue;
                 }
             } else {
                 if ( !(cat.category.equals("Displays")
                         || cat.category.equals("Charts")
                         || cat.category.equals("Misc Charts")
-                        || cat.category.equals("Text Displays"))) {
+                        || cat.category.equals("Text and Images"))) {
                     continue;
                 }
             }

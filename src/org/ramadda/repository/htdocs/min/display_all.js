@@ -16305,7 +16305,9 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 					[
 					 "label:Frequency Attributes",
 					 'orientation="vertical"',
-					 'tableHeight="300px"',
+					    'tableHeight="300px"',
+					    'showBars=true',
+					    'barWidth=200'
 					 ]);
 	    },
 
@@ -16333,6 +16335,10 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    }
 		}
 	    }
+
+	    var showCount = this.getProperty("showCount",true);
+	    var showBars = this.getProperty("showBars",false);
+	    var barWidth = +this.getProperty("barWidth",200);
 
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
@@ -16436,12 +16442,19 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    hor = this.getProperty("floatTable")==true;
 		}
 		html += HtmlUtils.openTag("div", ["class","display-frequency-table","style",hor?"":"display:block;"]);
-		html += HtmlUtils.openTag("table", ["id",this.getDomId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), "class", "stripe row-border nowrap ramadda-table"]);
-		html += HtmlUtils.openTag("thead", []);
-		var label =  HtmlUtils.span(["title","Click to reset","class","display-frequency-label","data-field",s.field.getId()],f.getLabel());
+		html += HtmlUtils.openTag("table", ["cellpadding","3","id",this.getDomId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), "class", "stripe row-border nowrap ramadda-table"]);
+		if(this.getProperty("showHeader",true)) {
+		    html += HtmlUtils.openTag("thead", []);
+		    var label =  HtmlUtils.span(["title","Click to reset","class","display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
-		html += HtmlUtils.tr([], HtmlUtils.th(["width","60%"], HtmlUtils.div(["style","max-width:500px;overflow-x:auto;"], label)) + HtmlUtils.th(["align","right","width","20%"], HtmlUtils.div(["style","text-align:right"],"Count"))+ HtmlUtils.th(["align","right","width","20%"],  HtmlUtils.div(["style","text-align:right"],"Percent")));
-		html += HtmlUtils.closeTag("thead");
+		    
+		    label = HtmlUtils.div(["style","max-width:500px;overflow-x:auto;"], label);
+		    var count = showCount? HtmlUtils.th(["align","right","width","20%"],HtmlUtils.div(["style","text-align:right"],"Count")):"";
+		    var percent  = HtmlUtils.th(["align","right","width","20%"],  HtmlUtils.div(["style","text-align:right"],"Percent"));
+		    var bars = showBars? HtmlUtils.th(["align","right","width",barWidth],HtmlUtils.div(["style","text-align:right"],"&nbsp;")):"";
+		    html += HtmlUtils.tr([], HtmlUtils.th(["width","60%"],  label+ count+ percent+bars));
+		    html += HtmlUtils.closeTag("thead");
+		}
 		html += HtmlUtils.openTag("tbody", []);
 		if(!f.isNumeric) {
 		    s.values.sort((a,b)=>{
@@ -16450,6 +16463,16 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			return 0;
 		    });
 		}
+		var colors = this.getColorTable(true);
+		var dfltColor = this.getProperty("barColor","blue");
+		var maxPercent = 0;
+		for(var i=0;i<s.values.length;i++) {
+		    var count = s.values[i].count;
+		    if(count==0) continue;
+		    var perc = count/s.total;
+		    maxPercent = Math.max(maxPercent, perc);
+		}
+
 		for(var i=0;i<s.values.length;i++) {
 		    var value = s.values[i].value;
 		    var label = value;
@@ -16458,16 +16481,28 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    if(count==0) continue;
 		    value = value.replace(/\'/g,"&apos;");
 		    value = HtmlUtils.span(["title","Click to select","class","display-frequency-value","data-field",s.field.getId(),"data-value",value],label);
+		    var tdv = HtmlUtils.td([], value);
+		    var tdc =  (showCount?HtmlUtils.td(["align", "right"], count):"");
+		    var perc = count/s.total;
+		    var tdp =  HtmlUtils.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%");
+		    var color = dfltColor;
+		    if(colors) {
+			if(i<colors.length)
+			    color = colors[i];
+			else
+			    color = colors[colors.length-1];
+		    }
+		    var bw = perc/maxPercent;
+		    var tdb = showBars?HtmlUtils.td(["valign","center","width",barWidth], HtmlUtils.div(["style","background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
 		    html += HtmlUtils.tr([], 
-					 HtmlUtils.td([], value) +
-					 HtmlUtils.td(["align", "right"], count)+
-					 HtmlUtils.td(["align", "right"], s.total==0?"0":Math.round((count/s.total*100))+"%")
-					 );
+					 tdv + tdc + tdp+tdb
+					);
 		}
 		html += HtmlUtils.closeTag("tbody");
 		html += HtmlUtils.closeTag("table");
 		html += HtmlUtils.closeTag("div");
 	    }
+
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-value").click(function(){
@@ -16490,8 +16525,10 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 				    });
 		});
 
-	    for (var col = 0; col < fields.length; col++) {
-		HtmlUtils.formatTable("#" +this.getDomId("summary"+col),{});
+	    if(this.getProperty("showHeader",true)) {
+		for (var col = 0; col < fields.length; col++) {
+		    HtmlUtils.formatTable("#" +this.getDomId("summary"+col),{});
+		}
 	    }
 	    }
 	});
