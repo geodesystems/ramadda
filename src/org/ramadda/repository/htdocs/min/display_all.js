@@ -16452,7 +16452,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    var count = showCount? HtmlUtils.th(["align","right","width","20%"],HtmlUtils.div(["style","text-align:right"],"Count")):"";
 		    var percent  = HtmlUtils.th(["align","right","width","20%"],  HtmlUtils.div(["style","text-align:right"],"Percent"));
 		    var bars = showBars? HtmlUtils.th(["align","right","width",barWidth],HtmlUtils.div(["style","text-align:right"],"&nbsp;")):"";
-		    html += HtmlUtils.tr([], HtmlUtils.th(["width","60%"],  label+ count+ percent+bars));
+		    html += HtmlUtils.tr([], HtmlUtils.th(["xxwidth","60%"],  label+ count+ percent+bars));
 		    html += HtmlUtils.closeTag("thead");
 		}
 		html += HtmlUtils.openTag("tbody", []);
