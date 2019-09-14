@@ -169,7 +169,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
 		    theta.push(Utils.formatDateFromProperty(dateFormat,d));
 		});
 	    } else {
-		var thetaField = this.getFieldById(this.getProperty("thetaField"));
+		var thetaField = this.getFieldById(null, this.getProperty("thetaField"));
 		if (thetaField) {
 		    theta = this.getColumnValues(records, thetaField).values;
 		}
