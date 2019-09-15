@@ -68,6 +68,20 @@ var Utils = {
 	if(l5) l5.map(e=>l.push(e));
 	return l;
     },
+    getNameValue: function(s, skipBlank) {
+	//splits name:value,name:value
+	if(!s) return null;
+	var map = {};
+        var toks = s.split(",");
+        for (var i = 0; i < toks.length; i++) {
+	    var toks2 = toks[i].split(":");
+	    var v = toks2[1].trim();
+	    if(skipBlank && v == "") continue;
+	    v = v.replace(/_colon_/g,":");
+            map[toks2[0].trim()] = v;
+        }
+	return map;
+    },
     displayTimes: function(label,times) {
 	console.log(label);
 	for(var i=0;i<times.length-1;i++) 
@@ -361,6 +375,13 @@ var Utils = {
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
         return  m + (delimiter?delimiter:"-") + d;
+    },
+    formatDateHHMM: function(date, delimiter) {
+	var h = date.getHours()+1;
+	if(h<10) h = "0" + h;
+	var m = date.getMinutes();
+	if(m<10) m = "0" + m;
+        return  h+":" +m;
     },
     formatDateYYYY: function(date, options, args) {
         return date.getUTCFullYear();
@@ -2135,7 +2156,6 @@ function Div(contents, clazz) {
     this.msg = function(msg) {
         return this.set(HtmlUtils.div([ATTR_CLASS, "display-message"], msg));
     }
-
 }
 
 

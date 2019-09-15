@@ -3172,9 +3172,11 @@ public class Utils {
      */
     public static void main(String[] args) throws Exception {
 	if(true) {
-	    String tr = " <td rowspan=\"1\" colspan=\"1\">Anterior vertex</td><td rowspan=\"1\" colspan=\"1\">Skull</td><td rowspan=\"1\" colspan=\"1\">2.3</td><td rowspan=\"1\" colspan=\"1\">0.6</td>";
-	    Utils.tokenizeChunk(tr, "<td", "</td");
-	    return;
+	    SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/YYYY HH:mm:ss a");
+	    String date = "11/8/2016 7:00:00 PM";
+	    System.err.println(fmt.parse(date));
+	    if(true) return;
+
 	}
         if (true) {
             String s =

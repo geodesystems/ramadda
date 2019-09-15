@@ -759,9 +759,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                     } else {
                         var v = value;
+			if(this.stringMap) {
+			    var color = this.stringMap[value];
+			    if(!Utils.isDefined(color)) {
+				return this.stringMap["default"];
+			    }
+			    return color;
+			}
                         if (this.isString) {
-                            v = this.colorByMap[v];
-			    if(v) return v;
+                            color = this.colorByMap[v];
+			    if(color) return color;
                         }
                         v += this.colorByOffset;
                         if (this.colorByLog) {
@@ -3193,6 +3200,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var buttons = "";
 			    var useImage = this.getProperty(filterField.getId() +".filterUseImage");
 			    var imageAttrs = [];
+			    var imageMap = Utils.getNameValue(this.getProperty(filterField.getId() +".filterImages"));
 			    if(useImage) {
 				var w = this.getProperty(filterField.getId() +".filterImageWidth");
 				var h = this.getProperty(filterField.getId() +".filterImageHeight");
@@ -3224,11 +3232,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				}
 				if(v == dfltValue) extra = " display-filterby-button-selected ";
 				if(useImage) {
-				    var image = enums[j].image;
+				    var image;
+				    if(imageMap) image = imageMap[v];
+				    if(!image || image=="") image = enums[j].image;
 			    
 				    if(image) {
 					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],
-							       HtmlUtils.image(enums[j].image,imageAttrs));
+							       HtmlUtils.image(image,imageAttrs));
 				    } else {
 					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],label);
 				    }
@@ -3365,7 +3375,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			$(this).addClass("display-filterby-button-selected");
 			var value =  $(this).attr("value");
 			parent.attr("value",value);
-			$("#"+parent.attr("id") +"_label").html(value==FILTER_ALL?"":value);
+			$("#"+parent.attr("id") +"_label").html(value==FILTER_ALL?"&nbsp;":value);
 			inputFunc(parent);
 		    });
 
@@ -5221,6 +5231,8 @@ function DisplayAnimation(display) {
                 return Utils.formatDateMonthDayYear(d);
 	    } else if (this.dateFormat == "mdy") {
                 return Utils.formatDateMDY(d);
+	    } else if (this.dateFormat == "hhmm") {
+                return Utils.formatDateHHMM(d);
             } else {
                 return Utils.formatDate(d);
             }
