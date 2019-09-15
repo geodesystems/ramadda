@@ -161,6 +161,8 @@ public abstract class Converter extends Processor {
 
 
 
+    private static Hashtable<String,String>imageMap  = new Hashtable<String,String>();
+
     /**
      * Class description
      *
@@ -214,23 +216,27 @@ public abstract class Converter extends Processor {
 	    for(int attempt=0;attempt<3;attempt++) {
 		try {
 		    s = s.replace(" ", "%s");
-		    Process p = Runtime.getRuntime().exec(new String[] { "sh",
-									 script, s });
-		    String result =
-			IOUtil.readContents(p.getInputStream()).trim();
-		    JSONObject obj    = new JSONObject(result);
-		    JSONArray  values = obj.getJSONArray("value");
-		    if (values.length() == 0) {
-			System.err.println(s+ " failed. sleeping");
-			if(attempt == 0) {
-			    System.err.println("response:" + result);
+		    String image = imageMap.get(s);
+		    if(image==null) {
+			Process p = Runtime.getRuntime().exec(new String[] { "sh",
+									     script, s });
+			String result =
+			    IOUtil.readContents(p.getInputStream()).trim();
+			JSONObject obj    = new JSONObject(result);
+			JSONArray  values = obj.getJSONArray("value");
+			if (values.length() == 0) {
+			    System.err.println(s+ " failed. sleeping");
+			    if(attempt == 0) {
+				System.err.println("response:" + result);
+			    }
+			    Misc.sleepSeconds(1+attempt);
+			    continue;
 			}
-			Misc.sleepSeconds(1+attempt);
-			continue;
+			JSONObject value = values.getJSONObject(0);
+			image = value.optString("thumbnailUrl", "");
+			System.err.println("found image:" + s +" image:" + image);
+			imageMap.put(s,image);
 		    }
-		    JSONObject value = values.getJSONObject(0);
-		    String image = value.optString("thumbnailUrl", "");
-		    System.err.println(s +" image:" + image);
 		    row.add(image);
 		    return row;
 		} catch (Exception exc) {

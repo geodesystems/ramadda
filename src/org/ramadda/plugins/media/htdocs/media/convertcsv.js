@@ -56,6 +56,7 @@ function csvCall(cmds,args) {
     if (!args)  {
         args = {};
     }
+
     stop = 
         HtmlUtil.onClick("csvStop()","Stop",[]);
     csvOutput(HtmlUtil.tag("pre",[],"Processing..."));
@@ -89,7 +90,10 @@ function csvCall(cmds,args) {
         args.csvoutput = "-print";
 
     var showHtml = args.csvoutput == ("-table");
+    var printHeader = args.csvoutput == ("-printheader");
+
     var url = csvGetUrl(cmds,rawInput);
+
     if(args.download)
         url += "&download=true";
     if($("#csvsave").is(':checked')) {
@@ -136,11 +140,20 @@ function csvCall(cmds,args) {
             if(Utils.isDefined(data.result)) {
                 var result = window.atob(data.result);
                 if(showHtml) {
+		    result = result.replace(/(<th>.*?)(#[0-9]+)/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$2</a>");
                     $("#convertcsv_output").html(result);
+                    $("#convertcsv_output .csv_header_field").click(function(event) {
+			$(this).attr("style","color:black;");
+			var index = $(this).attr("index").replace("#","").trim();
+			csvInsertText(index+",");
+		    });
                     HtmlUtils.formatTable(".ramadda-table");
                 } else {
                     var isDb = result.startsWith("<tables");
-                    if(isDb) {
+		    if(printHeader) {
+			result = result.replace(/(#[0-9]+) /g,"<a href='#' index='$1' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$1</a> ");
+			console.log("result:" + result);
+		    } else if(isDb) {
                         result = result.replace("<tables>","Database:");
                         result = result.replace(/<property[^>]+>/g,"");
                         result = result.replace(/> *<\/column>/g,"/>");
@@ -165,6 +178,15 @@ function csvCall(cmds,args) {
                         html+="<div class=\"ramadda-popup\" xstyle=\"display: none;position:absolute;\" id=csv_db_popup></div>" ;
                     }
                     $("#convertcsv_output").html(html);
+		    if(printHeader) {
+                        $("#convertcsv_output .csv_header_field").click(function(event) {
+			    $(this).attr("style","color:black;");
+			    var index = $(this).attr("index").replace("#","").trim();
+			    csvInsertText(index+",");
+			    
+			});
+		    }			
+			
                     if(isDb){
                         $("#convertcsv_output .csv_db_field").click(function(event) {
                                 var space = "&nbsp;"
@@ -243,16 +265,20 @@ function csvInsertCommand(cmds) {
     if(!cmds) return;
     cmds = cmds.replace(/_quote_/g,"\"");
     cmds = " " + cmds +" ";
+    csvInsertText(cmds);
+}
+
+function csvInsertText(text) {
     var input = $('#convertcsv_input');
     var start = input.prop('selectionStart');
     var end = input.prop('selectionEnd');
     input.val(input.val().substring(0, start)
-              +cmds 
+              +text 
               + input.val().substring(end));
     setTimeout(function() {
             input.focus();},0);
-    input[0].selectionStart = start+cmds.length;
-    input[0].selectionEnd = start+cmds.length;
+    input[0].selectionStart = start+text.length;
+    input[0].selectionEnd = start+text.length;
 }
 
 function csvOutput(html) {
@@ -322,7 +348,7 @@ html += "<form>";
 html += form;
 html +="<p>";
 var left = "";
-left+=HtmlUtil.href("javascript:csvCall('-printheader')","Header",["class","convert_button"])+" ";
+left+=HtmlUtil.href("javascript:csvDisplay('-printheader',null,true)","Header",["class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('-table',null,true)","Table",["class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('-record')","Records",["class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('-print')","CSV",["class","convert_button"])+" ";

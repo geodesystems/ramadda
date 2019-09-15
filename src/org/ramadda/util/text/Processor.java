@@ -1997,7 +1997,7 @@ public abstract class Processor extends CsvOperator {
                     } else {
                         info.getWriter().print("#" + cnt);
                     }
-                    info.getWriter().print("</div'>");
+                    info.getWriter().print("</div>");
                     info.getWriter().print(close);
                 }
                 info.getWriter().print(open);

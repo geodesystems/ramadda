@@ -89,8 +89,16 @@ a.ramadda-menubar-button:hover {
     color:#000;
 }
 
+.csv_header_field {
+    color:blue;
+    cursor:pointer;
+    text-decoration: underline !important;
+}
+
 .csv_db_field {
-    text-decoration: underline;
+    text-decoration: underline !important;
+    color:blue !important;
+    cursor:pointer !important;
 }
 
 .ramadda-menubar-button:hover {
