@@ -83,11 +83,13 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         },
         pointDataLoaded: function(pointData, url, reload) {
             SUPER.pointDataLoaded.call(this, pointData, url, reload);
+	    /*
             if (this.dataCollection)
                 this.displayManager.propagateEventRecordSelection(this,
                     this.dataCollection.getList()[0], {
                         index: 0
                     });
+	    */
 
         },
         displayData: function() {
