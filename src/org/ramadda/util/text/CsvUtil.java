@@ -1273,6 +1273,8 @@ public class CsvUtil {
             "<pattern> <template> <column label> (Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header)"),
         new Cmd("-set", "<col #s> <row #s> <value>",
                 "(write the value into the cells)"),
+	new Cmd("-setcol", "<match col #> <pattern> <write col #> <value>",
+                "(write the value into the write col for rows that match the pattern)"),
         new Cmd("-case", "<lower|upper|camel> <col #>",
                 "(change case of column)"),
         new Cmd("-width", "<columns>  <size>",
@@ -1327,6 +1329,7 @@ public class CsvUtil {
             "Join the 2 files together"),
         new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
         new Cmd("-unique", "<columns>", "(pass through unique values)"),
+	new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
         new Cmd("-percent", "<columns to add>"),
         new Cmd("-sort", "<column sort>"),
         new Cmd(
@@ -1748,6 +1751,15 @@ public class CsvUtil {
                 List<String> toks = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Filter.Unique(toks));
 
+                continue;
+            }
+
+	    if (arg.equals("-dups")) {
+                if ( !ensureArg(args, i, 1)) {
+                    return false;
+                }
+                List<String> toks = getCols(args.get(++i));
+                info.getProcessor().addProcessor(new Processor.Dups(toks));
                 continue;
             }
 
@@ -2525,6 +2537,20 @@ public class CsvUtil {
 
                 continue;
             }
+
+            if (arg.equals("-setcol")) {
+                if ( !ensureArg(args, i, 4)) {
+                    return false;
+                }
+                int col1 = Integer.parseInt(args.get(++i));
+		String pattern = args.get(++i);
+                int col2 = Integer.parseInt(args.get(++i));
+		String what = args.get(++i);
+                info.getProcessor().addProcessor(
+						 new Converter.ColumnPatternSetter(col1, pattern, col2, what));
+
+                continue;
+            }	    
 
             if (arg.equals("-width")) {
                 if ( !ensureArg(args, i, 2)) {

@@ -1043,6 +1043,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var colors =  this.getColorTable(true);
             var colorBy = this.getColorByInfo(records);
 
+	    var didColorBy = false;
             for (var i = 1; i < dataList.length; i++) {
 		var record =dataList[i];
 		var theRecord = dataList[i].record;
@@ -1318,9 +1319,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 //	    console.log(JSON.stringify(this.chartOptions,null,2));
 	    
+
+
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
-                var dataTable = this.makeDataTable(dataList, props, selectedFields);
+               var dataTable = this.makeDataTable(dataList, props, selectedFields);
                 if (!dataTable) {
                     this.setContents(this.getMessage("No data available"));
                     return;
@@ -1389,15 +1392,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         if (selected && selected.length > 0) {
                             var index = selected[0].row;
 			    var record = theDisplay.indexToRecord[index];
+//			    console.log(index +" " + record.getData()[0]);
 			    if(record) {
-//				console.log(index+" r:"+ record);
-				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {record: record});
-				/*
-				theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
-											theDisplay.dataCollection.getList()[0], {
-											    index: index
-											});
-				*/
+				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {xxx:"XXX",record: record});
 			    }
                         }
                     }
@@ -1440,6 +1437,20 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	    return t;
 	},
 
+	setChartArea: function(chartOptions) {
+            if (!chartOptions.chartArea) {
+                chartOptions.chartArea = {};
+            }
+	    $.extend(chartOptions.chartArea, {
+                left: this.getProperty("chartLeft", this.chartDimensions.left),
+                right: this.getProperty("chartRight", this.chartDimensions.right),
+                top: this.getProperty("chartTop", "10"),
+		bottom: this.getProperty("chartBottom"),
+                height: this.getProperty("chartHeight", "70%"),
+                width: this.getProperty("chartWidth", this.chartDimensions.width),
+            });
+	},
+
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
 
@@ -1452,9 +1463,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 position: this.getProperty("legendPosition", 'bottom')
             });
 
-            if (!chartOptions.chartArea) {
-                chartOptions.chartArea = {};
-            }
+
             /*
               chartOptions.chartArea={};
               chartOptions.chartArea.backgroundColor =  {
@@ -1463,15 +1472,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
               }
             */
             //            chartOptions.chartArea.backgroundColor =  "green";
-            $.extend(chartOptions.chartArea, {
-                left: this.getProperty("chartLeft", this.chartDimensions.left),
-                right: this.getProperty("chartRight", this.chartDimensions.right),
-                top: this.getProperty("chartTop", "10"),
-		bottom: this.getProperty("chartBottom"),
-                height: this.getProperty("chartHeight", "70%"),
-                width: this.getProperty("chartWidth", this.chartDimensions.width),
-            });
-
+	    this.setChartArea(chartOptions);
 	    
             if (useMultipleAxes) {
                 $.extend(chartOptions, {
@@ -2146,7 +2147,20 @@ function BubbleDisplay(displayManager, id, properties) {
 					'vAxisTitle=""'])},
 
         makeDataTable: function(dataList, props, selectedFields) {
-            return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
+	    var tmp =[];
+	    var a = this.makeDataArray(dataList);
+	    tmp.push(a[0]);
+	    //Remove nans
+	    for(var i=1;i<a.length;i++) {
+		var tuple = a[i];
+		var ok = true;
+		for(j=1;j<tuple.length && ok;j++) {
+		    if(isNaN(tuple[j])) ok = false;
+		}
+		if(ok)
+		    tmp.push(tuple);
+	    }
+            return google.visualization.arrayToDataTable(tmp);
         },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var ct = this.getColorTable(true);
@@ -2159,17 +2173,26 @@ function BubbleDisplay(displayManager, id, properties) {
                 chartOptions.colors = Utils.getColorTable("rainbow", true);
             }
 
-            chartOptions.chartArea = {
-                left: 100,
-                top: 10,
+	    $.extend(chartOptions.chartArea, {
+                left: this.getProperty("chartLeft", this.chartDimensions.left),
+                right: this.getProperty("chartRight", this.chartDimensions.right),
+                top: this.getProperty("chartTop", "10"),
+		bottom: this.getProperty("chartBottom"),
                 width: '98%',
                 height: '90%'
-            }
+            });
+            chartOptions.sizeAxis = {
+
+	    }
+
             chartOptions.colorAxis = {
                 legend: {
-                    position: "in"
+                    position: this.getProperty("legendPosition", "in")
                 }
             }
+	    var colorTable = this.getColorTable(true);
+	    if(colorTable)
+		chartOptions.colorAxis.colors = colorTable;
 
             chartOptions.bubble = {
                 textStyle: {
@@ -2184,6 +2207,8 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.vAxis.format = this.getProperty("vAxisFormat", null);
             chartOptions.hAxis.title = this.getProperty("hAxisTitle", header.length > 1 ? header[1] : null);
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
+
+
             return new google.visualization.BubbleChart(document.getElementById(this.getChartId()));
         }
 

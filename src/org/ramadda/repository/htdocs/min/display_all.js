@@ -414,7 +414,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	},
 	xcnt:0,	
-	getRecordTemplate: function(row, fields, s, props) {
+	applyRecordTemplate: function(row, fields, s, props) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
@@ -478,7 +478,11 @@ function DisplayThing(argId, argProperties) {
 		    s = s.replace("${" + f.getId()+"_color}", color);
 //		    value = HtmlUtils.span(["style","color:" + color],value);
 		}
-		s = s.replace("${" + f.getId() +"}", value);
+		
+		s = s.replace(new RegExp("\\${" + f.getId() +"}","g"), value);
+		if(f.isNumeric) {
+		    s = s.replace(new RegExp("\\${" + f.getId() +"_format}","g"),Utils.formatNumberComma(value));
+		}
 	    }
 	    return s;
 	},
@@ -498,7 +502,7 @@ function DisplayThing(argId, argProperties) {
 	    if(template) {
 		if(template!="${default}") {
 		    var row = this.getDataValues(record);
-		    return this.getRecordTemplate(row, fields, template);
+		    return this.applyRecordTemplate(row, fields, template);
 		}
 	    }
             var values = "<table class=formtable>";
@@ -1722,10 +1726,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    var newData = [];
 	    var values = [];
+	    var allIsUsed = false;
+	    
+	    for(var i=0;i<this.filterFields.length;i++) {
+		var filterField = this.filterFields[i];
+		if(filterField.isString()) {
+		    var value = this.getFilterFieldValue(filterField);
+		    if(value == FILTER_ALL) {
+			allIsUsed = true;
+			break;
+		    }
+		}
+	    }
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
 		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
+		var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
+ 		if(allIsUsed && !useIfAll) {
+		    values.push(null);
+		    continue;
+		}
 		if (prefix) pattern = prefix + value;
 		if (suffix) pattern = value + suffix;
 		var value;
@@ -1769,7 +1790,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
 		var anyValues = false;
 		_values.map(v=>{if(v.length>0)anyValues = true});
-
 		values.push({value:value,regexps:regexps,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
 	    }
 
@@ -1792,8 +1812,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var ok = true;
 		for(var i=0;i<this.filterFields.length;i++) {
 		    if(!ok) break;
-		    var filterField = this.filterFields[i];
+		    if(values[i]==null) continue;
 		    var filterValue = values[i].value;
+		    var filterField = this.filterFields[i];
 		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]==FILTER_ALL)) continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
@@ -3253,7 +3274,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    } else {
 				toks = filterValues;
 			    }
-			    enums = toks;
+			    enums=[];
+			    toks.map(tok=>{
+				var tmp = tok.split(":");
+				if(tmp.length>1) {
+				    tok = [tmp[0],tmp[1]];
+				}
+				enums.push({value:tok});
+			    })
 			}
 
 			var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
@@ -3261,12 +3289,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var allName = this.getProperty(filterField.getId() +".allName","All");
 			    enums = [];
 			    var enumValues = [];
+			    var imageField=this.getFieldOfType(null, "image");
 			    var seen = {};
 			    var valuesAreNumbers = true;
 			    records.map(record=>{
 				var value = this.getDataValues(record)[filterField.getIndex()];
 				if(!seen[value]) {
 				    seen[value]  = true;
+				    var obj = {};
+				    if(imageField)
+					obj.image = this.getDataValues(record)[imageField.getIndex()];
 				    if((+value+"") != value) valuesAreNumbers = false;
 				    var label = value;
 				    if(label.length>20) {
@@ -3275,11 +3307,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    if(typeof value == "string")
 					value = value.replace(/\'/g,"&apos;");
 				    var tuple = [value, label];
-				    enumValues.push(tuple);
+				    obj.value = tuple;
+				    enumValues.push(obj);
 				}
 			    });
 
 			    enumValues.sort((a,b)  =>{
+				a= a.value;
+				b = b.value;
 				if(valuesAreNumbers) {
 				    return +a - +b;
 				}
@@ -3287,7 +3322,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				return (""+a[1]).localeCompare(""+b[1]);
 			    });
 			    if(includeAll) {
-				enums = Utils.mergeLists([[FILTER_ALL,allName]],enums);
+				enums.push({value:[FILTER_ALL,allName]});
 			    }
 
 			    for(var j=0;j<enumValues.length;j++) {
@@ -3304,11 +3339,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    dfltValue = dfltValue.split(",");
 			}
 			if(this.getProperty(filterField.getId() +".filterShowButtons")) {
-			    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0];
+			    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 			    var buttons = "";
+			    var useImage = this.getProperty(filterField.getId() +".filterUseImage");
+			    var imageAttrs = [];
+			    if(useImage) {
+				var w = this.getProperty(filterField.getId() +".filterImageWidth");
+				var h = this.getProperty(filterField.getId() +".filterImageHeight");
+				if(h) {
+				    imageAttrs.push("height");
+				    imageAttrs.push(h);
+				}
+				if(w) {
+				    imageAttrs.push("width");
+				    imageAttrs.push(w);
+				}
+				if(!h && !w) {
+				    imageAttrs.push("width");
+				    imageAttrs.push("50");
+				}
+
+				imageAttrs.push("style");
+				imageAttrs.push(this.getProperty(filterField.getId() +".filterImageStyle","border-radius:50%;"));
+			    }
 			    for(var j=0;j<enums.length;j++) {
 				var extra = "";
-				var v = enums[j];
+				var v = enums[j].value;
 				var label;
 				if(Array.isArray(v)) {
 				    label = v[1];
@@ -3317,13 +3373,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    label = v;
 				}
 				if(v == dfltValue) extra = " display-filterby-button-selected ";
-				buttons+=HtmlUtils.div(["class","display-filterby-button" + extra,"value",v],label);
+				if(useImage) {
+				    var image = enums[j].image;
+			    
+				    if(image) {
+					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],
+							       HtmlUtils.image(enums[j].image,imageAttrs));
+				    } else {
+					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],label);
+				    }
+				} else {
+				    buttons+=HtmlUtils.div(["class","display-filterby-button  display-filterby-button-image" + extra,"value",v],label);
+				}
 			    }
+
+			    buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
 			    bottom+= HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"fieldId",
 						    filterField.getId()], buttons);
 			    continue;
 			} else {
-                            widget = HtmlUtils.select("",attrs,enums,dfltValue);
+			    var tmp = [];
+			    enums.map(e=>tmp.push(e.value));
+                            widget = HtmlUtils.select("",attrs,tmp,dfltValue);
 			}
 		    } else if(filterField.isNumeric) {
 			var min=0;
@@ -3444,6 +3515,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			$(this).addClass("display-filterby-button-selected");
 			var value =  $(this).attr("value");
 			parent.attr("value",value);
+			$("#"+parent.attr("id") +"_label").html(value==FILTER_ALL?"":value);
 			inputFunc(parent);
 		    });
 
@@ -10598,6 +10670,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var colors =  this.getColorTable(true);
             var colorBy = this.getColorByInfo(records);
 
+	    var didColorBy = false;
             for (var i = 1; i < dataList.length; i++) {
 		var record =dataList[i];
 		var theRecord = dataList[i].record;
@@ -10873,9 +10946,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 //	    console.log(JSON.stringify(this.chartOptions,null,2));
 	    
+
+
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
-                var dataTable = this.makeDataTable(dataList, props, selectedFields);
+               var dataTable = this.makeDataTable(dataList, props, selectedFields);
                 if (!dataTable) {
                     this.setContents(this.getMessage("No data available"));
                     return;
@@ -10944,15 +11019,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         if (selected && selected.length > 0) {
                             var index = selected[0].row;
 			    var record = theDisplay.indexToRecord[index];
+//			    console.log(index +" " + record.getData()[0]);
 			    if(record) {
-//				console.log(index+" r:"+ record);
-				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {record: record});
-				/*
-				theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
-											theDisplay.dataCollection.getList()[0], {
-											    index: index
-											});
-				*/
+				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {xxx:"XXX",record: record});
 			    }
                         }
                     }
@@ -10995,6 +11064,20 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	    return t;
 	},
 
+	setChartArea: function(chartOptions) {
+            if (!chartOptions.chartArea) {
+                chartOptions.chartArea = {};
+            }
+	    $.extend(chartOptions.chartArea, {
+                left: this.getProperty("chartLeft", this.chartDimensions.left),
+                right: this.getProperty("chartRight", this.chartDimensions.right),
+                top: this.getProperty("chartTop", "10"),
+		bottom: this.getProperty("chartBottom"),
+                height: this.getProperty("chartHeight", "70%"),
+                width: this.getProperty("chartWidth", this.chartDimensions.width),
+            });
+	},
+
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
 
@@ -11007,9 +11090,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 position: this.getProperty("legendPosition", 'bottom')
             });
 
-            if (!chartOptions.chartArea) {
-                chartOptions.chartArea = {};
-            }
+
             /*
               chartOptions.chartArea={};
               chartOptions.chartArea.backgroundColor =  {
@@ -11018,15 +11099,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
               }
             */
             //            chartOptions.chartArea.backgroundColor =  "green";
-            $.extend(chartOptions.chartArea, {
-                left: this.getProperty("chartLeft", this.chartDimensions.left),
-                right: this.getProperty("chartRight", this.chartDimensions.right),
-                top: this.getProperty("chartTop", "10"),
-		bottom: this.getProperty("chartBottom"),
-                height: this.getProperty("chartHeight", "70%"),
-                width: this.getProperty("chartWidth", this.chartDimensions.width),
-            });
-
+	    this.setChartArea(chartOptions);
 	    
             if (useMultipleAxes) {
                 $.extend(chartOptions, {
@@ -11701,7 +11774,20 @@ function BubbleDisplay(displayManager, id, properties) {
 					'vAxisTitle=""'])},
 
         makeDataTable: function(dataList, props, selectedFields) {
-            return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
+	    var tmp =[];
+	    var a = this.makeDataArray(dataList);
+	    tmp.push(a[0]);
+	    //Remove nans
+	    for(var i=1;i<a.length;i++) {
+		var tuple = a[i];
+		var ok = true;
+		for(j=1;j<tuple.length && ok;j++) {
+		    if(isNaN(tuple[j])) ok = false;
+		}
+		if(ok)
+		    tmp.push(tuple);
+	    }
+            return google.visualization.arrayToDataTable(tmp);
         },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var ct = this.getColorTable(true);
@@ -11714,17 +11800,26 @@ function BubbleDisplay(displayManager, id, properties) {
                 chartOptions.colors = Utils.getColorTable("rainbow", true);
             }
 
-            chartOptions.chartArea = {
-                left: 100,
-                top: 10,
+	    $.extend(chartOptions.chartArea, {
+                left: this.getProperty("chartLeft", this.chartDimensions.left),
+                right: this.getProperty("chartRight", this.chartDimensions.right),
+                top: this.getProperty("chartTop", "10"),
+		bottom: this.getProperty("chartBottom"),
                 width: '98%',
                 height: '90%'
-            }
+            });
+            chartOptions.sizeAxis = {
+
+	    }
+
             chartOptions.colorAxis = {
                 legend: {
-                    position: "in"
+                    position: this.getProperty("legendPosition", "in")
                 }
             }
+	    var colorTable = this.getColorTable(true);
+	    if(colorTable)
+		chartOptions.colorAxis.colors = colorTable;
 
             chartOptions.bubble = {
                 textStyle: {
@@ -11739,6 +11834,8 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.vAxis.format = this.getProperty("vAxisFormat", null);
             chartOptions.hAxis.title = this.getProperty("hAxisTitle", header.length > 1 ? header[1] : null);
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
+
+
             return new google.visualization.BubbleChart(document.getElementById(this.getChartId()));
         }
 
@@ -15783,19 +15880,54 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'${&lt;field&gt;_average}',
 				    ]);
 	},
+        handleEventRecordSelection: function(source, args) {
+	    this.selectedRecord = args.record;
+	    if(this.getProperty("onlyShowSelected")) {
+		this.updateUI();
+	    }
+	},
+	dataFilterChanged: function() {
+	    if(this.getProperty("onlyShowSelected")&& this.selectedRecord ) {
+		this.selectedRecord = null;
+		this.writeHtml(ID_DISPLAY_CONTENTS, "");
+	    }
+	    SUPER.updateUI.call(this);
+	},
 	updateUI: function() {
 	    var pointData = this.getData();
 	    if (pointData == null) return;
 	    var records = this.filterData();
 	    if(!records) return;
+	    if(this.getProperty("onlyShowSelected")) {
+		if(!this.selectedRecord) {
+		    this.writeHtml(ID_DISPLAY_CONTENTS, "");
+		    return;
+		}
+		records = [this.selectedRecord];
+	    }
 	    records= this.sortRecords(records);
 	    var fields = pointData.getRecordFields();
+	    var uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
+	    var uniqueMap ={};
 	    var template = this.getProperty("template","");
 	    var select = this.getProperty("select","all");
 	    var selected = [];
 	    var summary = {};
-	    records.map(r=>{
-		r  =  this.getDataValues(r);
+	    var goodRecords = [];
+	    records.map(record=>{
+		r  =  this.getDataValues(record);
+		if(uniqueFields.length>0) {
+		    var key= "";
+		    uniqueFields.map(uf=>{
+			key += "__" +uf.getValue(r);
+		    });
+		    if(Utils.isDefined(uniqueMap[key])) {
+			return;
+		    }
+		    uniqueMap[key] = true;
+		}
+
+		goodRecords.push(record);
 		for(var i=0;i<fields.length;i++) {
 		    var f = fields[i];
 		    var v =f.getValue(r);
@@ -15822,7 +15954,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			if(v.getTime()>s.max.getTime()) s.max = v;
 		    }  else if(!isNaN(v)) {
 			s.total+=v;
-			if(f.getLabel()=="Dead" && v>1000) console.log(f.getLabel() +" v:" +  v +" t:" + s.total);
 			s.min = Math.min(s.min,v);
 			s.max = Math.max(s.max,v);
 			s.count++;
@@ -15830,6 +15961,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    });
 
+	    records=goodRecords;
 
 	    for(var i=0;i<fields.length;i++) {
 		var f = fields[i];
@@ -15839,9 +15971,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    s.average =  Utils.formatNumber(s.total/s.count);
 		}
 	    }
-
-
-
 	    
 	    if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
 	       select == "<=" || 	       select == "?>=" || select=="match") {
@@ -15958,7 +16087,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(!f.isNumeric) continue;
 		if(s) {
 		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
+
 		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
+		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
 		}
 	    }
 	    if(this.filterFields) {
@@ -16036,7 +16170,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var s = template;
 		    s = s.replace("${selectCount}",selected.length);
 		    s = s.replace("${totalCount}",records.length);
-		    s= this.getRecordTemplate(row,fields,s,props);
+		    s= this.applyRecordTemplate(row,fields,s,props);
 		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
 		    var tag = HtmlUtils.openTag("div",["style",color?"background: " + color:"", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
 		    if(s.startsWith("<td")) {
@@ -16231,7 +16365,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.jq(ID_NEXT).show();
 	    var record = this.records[this.slideIndex];
 	    var row = this.getDataValues(record);
-	    var html = this.getRecordTemplate(row,this.fields,this.getProperty("template",""));
+	    var html = this.applyRecordTemplate(row,this.fields,this.getProperty("template",""));
 	    html = html.replace(/\${recordIndex}/g,(this.slideIndex+1));
 	    this.jq(ID_SLIDE).html(html);
 	    var args = {highlight:true,record: record};

@@ -264,7 +264,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	},
 	xcnt:0,	
-	getRecordTemplate: function(row, fields, s, props) {
+	applyRecordTemplate: function(row, fields, s, props) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
@@ -328,7 +328,11 @@ function DisplayThing(argId, argProperties) {
 		    s = s.replace("${" + f.getId()+"_color}", color);
 //		    value = HtmlUtils.span(["style","color:" + color],value);
 		}
-		s = s.replace("${" + f.getId() +"}", value);
+		
+		s = s.replace(new RegExp("\\${" + f.getId() +"}","g"), value);
+		if(f.isNumeric) {
+		    s = s.replace(new RegExp("\\${" + f.getId() +"_format}","g"),Utils.formatNumberComma(value));
+		}
 	    }
 	    return s;
 	},
@@ -348,7 +352,7 @@ function DisplayThing(argId, argProperties) {
 	    if(template) {
 		if(template!="${default}") {
 		    var row = this.getDataValues(record);
-		    return this.getRecordTemplate(row, fields, template);
+		    return this.applyRecordTemplate(row, fields, template);
 		}
 	    }
             var values = "<table class=formtable>";
@@ -1572,10 +1576,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    var newData = [];
 	    var values = [];
+	    var allIsUsed = false;
+	    
+	    for(var i=0;i<this.filterFields.length;i++) {
+		var filterField = this.filterFields[i];
+		if(filterField.isString()) {
+		    var value = this.getFilterFieldValue(filterField);
+		    if(value == FILTER_ALL) {
+			allIsUsed = true;
+			break;
+		    }
+		}
+	    }
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
 		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
+		var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
+ 		if(allIsUsed && !useIfAll) {
+		    values.push(null);
+		    continue;
+		}
 		if (prefix) pattern = prefix + value;
 		if (suffix) pattern = value + suffix;
 		var value;
@@ -1619,7 +1640,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
 		var anyValues = false;
 		_values.map(v=>{if(v.length>0)anyValues = true});
-
 		values.push({value:value,regexps:regexps,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
 	    }
 
@@ -1642,8 +1662,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var ok = true;
 		for(var i=0;i<this.filterFields.length;i++) {
 		    if(!ok) break;
-		    var filterField = this.filterFields[i];
+		    if(values[i]==null) continue;
 		    var filterValue = values[i].value;
+		    var filterField = this.filterFields[i];
 		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]==FILTER_ALL)) continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
@@ -3103,7 +3124,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    } else {
 				toks = filterValues;
 			    }
-			    enums = toks;
+			    enums=[];
+			    toks.map(tok=>{
+				var tmp = tok.split(":");
+				if(tmp.length>1) {
+				    tok = [tmp[0],tmp[1]];
+				}
+				enums.push({value:tok});
+			    })
 			}
 
 			var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
@@ -3111,12 +3139,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var allName = this.getProperty(filterField.getId() +".allName","All");
 			    enums = [];
 			    var enumValues = [];
+			    var imageField=this.getFieldOfType(null, "image");
 			    var seen = {};
 			    var valuesAreNumbers = true;
 			    records.map(record=>{
 				var value = this.getDataValues(record)[filterField.getIndex()];
 				if(!seen[value]) {
 				    seen[value]  = true;
+				    var obj = {};
+				    if(imageField)
+					obj.image = this.getDataValues(record)[imageField.getIndex()];
 				    if((+value+"") != value) valuesAreNumbers = false;
 				    var label = value;
 				    if(label.length>20) {
@@ -3125,11 +3157,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    if(typeof value == "string")
 					value = value.replace(/\'/g,"&apos;");
 				    var tuple = [value, label];
-				    enumValues.push(tuple);
+				    obj.value = tuple;
+				    enumValues.push(obj);
 				}
 			    });
 
 			    enumValues.sort((a,b)  =>{
+				a= a.value;
+				b = b.value;
 				if(valuesAreNumbers) {
 				    return +a - +b;
 				}
@@ -3137,7 +3172,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				return (""+a[1]).localeCompare(""+b[1]);
 			    });
 			    if(includeAll) {
-				enums = Utils.mergeLists([[FILTER_ALL,allName]],enums);
+				enums.push({value:[FILTER_ALL,allName]});
 			    }
 
 			    for(var j=0;j<enumValues.length;j++) {
@@ -3154,11 +3189,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    dfltValue = dfltValue.split(",");
 			}
 			if(this.getProperty(filterField.getId() +".filterShowButtons")) {
-			    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0];
+			    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 			    var buttons = "";
+			    var useImage = this.getProperty(filterField.getId() +".filterUseImage");
+			    var imageAttrs = [];
+			    if(useImage) {
+				var w = this.getProperty(filterField.getId() +".filterImageWidth");
+				var h = this.getProperty(filterField.getId() +".filterImageHeight");
+				if(h) {
+				    imageAttrs.push("height");
+				    imageAttrs.push(h);
+				}
+				if(w) {
+				    imageAttrs.push("width");
+				    imageAttrs.push(w);
+				}
+				if(!h && !w) {
+				    imageAttrs.push("width");
+				    imageAttrs.push("50");
+				}
+
+				imageAttrs.push("style");
+				imageAttrs.push(this.getProperty(filterField.getId() +".filterImageStyle","border-radius:50%;"));
+			    }
 			    for(var j=0;j<enums.length;j++) {
 				var extra = "";
-				var v = enums[j];
+				var v = enums[j].value;
 				var label;
 				if(Array.isArray(v)) {
 				    label = v[1];
@@ -3167,13 +3223,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    label = v;
 				}
 				if(v == dfltValue) extra = " display-filterby-button-selected ";
-				buttons+=HtmlUtils.div(["class","display-filterby-button" + extra,"value",v],label);
+				if(useImage) {
+				    var image = enums[j].image;
+			    
+				    if(image) {
+					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],
+							       HtmlUtils.image(enums[j].image,imageAttrs));
+				    } else {
+					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],label);
+				    }
+				} else {
+				    buttons+=HtmlUtils.div(["class","display-filterby-button  display-filterby-button-image" + extra,"value",v],label);
+				}
 			    }
+
+			    buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
 			    bottom+= HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"fieldId",
 						    filterField.getId()], buttons);
 			    continue;
 			} else {
-                            widget = HtmlUtils.select("",attrs,enums,dfltValue);
+			    var tmp = [];
+			    enums.map(e=>tmp.push(e.value));
+                            widget = HtmlUtils.select("",attrs,tmp,dfltValue);
 			}
 		    } else if(filterField.isNumeric) {
 			var min=0;
@@ -3294,6 +3365,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			$(this).addClass("display-filterby-button-selected");
 			var value =  $(this).attr("value");
 			parent.attr("value",value);
+			$("#"+parent.attr("id") +"_label").html(value==FILTER_ALL?"":value);
 			inputFunc(parent);
 		    });
 

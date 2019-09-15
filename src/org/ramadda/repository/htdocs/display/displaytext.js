@@ -922,19 +922,54 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'${&lt;field&gt;_average}',
 				    ]);
 	},
+        handleEventRecordSelection: function(source, args) {
+	    this.selectedRecord = args.record;
+	    if(this.getProperty("onlyShowSelected")) {
+		this.updateUI();
+	    }
+	},
+	dataFilterChanged: function() {
+	    if(this.getProperty("onlyShowSelected")&& this.selectedRecord ) {
+		this.selectedRecord = null;
+		this.writeHtml(ID_DISPLAY_CONTENTS, "");
+	    }
+	    SUPER.updateUI.call(this);
+	},
 	updateUI: function() {
 	    var pointData = this.getData();
 	    if (pointData == null) return;
 	    var records = this.filterData();
 	    if(!records) return;
+	    if(this.getProperty("onlyShowSelected")) {
+		if(!this.selectedRecord) {
+		    this.writeHtml(ID_DISPLAY_CONTENTS, "");
+		    return;
+		}
+		records = [this.selectedRecord];
+	    }
 	    records= this.sortRecords(records);
 	    var fields = pointData.getRecordFields();
+	    var uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
+	    var uniqueMap ={};
 	    var template = this.getProperty("template","");
 	    var select = this.getProperty("select","all");
 	    var selected = [];
 	    var summary = {};
-	    records.map(r=>{
-		r  =  this.getDataValues(r);
+	    var goodRecords = [];
+	    records.map(record=>{
+		r  =  this.getDataValues(record);
+		if(uniqueFields.length>0) {
+		    var key= "";
+		    uniqueFields.map(uf=>{
+			key += "__" +uf.getValue(r);
+		    });
+		    if(Utils.isDefined(uniqueMap[key])) {
+			return;
+		    }
+		    uniqueMap[key] = true;
+		}
+
+		goodRecords.push(record);
 		for(var i=0;i<fields.length;i++) {
 		    var f = fields[i];
 		    var v =f.getValue(r);
@@ -961,7 +996,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			if(v.getTime()>s.max.getTime()) s.max = v;
 		    }  else if(!isNaN(v)) {
 			s.total+=v;
-			if(f.getLabel()=="Dead" && v>1000) console.log(f.getLabel() +" v:" +  v +" t:" + s.total);
 			s.min = Math.min(s.min,v);
 			s.max = Math.max(s.max,v);
 			s.count++;
@@ -969,6 +1003,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    });
 
+	    records=goodRecords;
 
 	    for(var i=0;i<fields.length;i++) {
 		var f = fields[i];
@@ -978,9 +1013,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    s.average =  Utils.formatNumber(s.total/s.count);
 		}
 	    }
-
-
-
 	    
 	    if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
 	       select == "<=" || 	       select == "?>=" || select=="match") {
@@ -1097,7 +1129,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(!f.isNumeric) continue;
 		if(s) {
 		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
+
 		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
+		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
 		}
 	    }
 	    if(this.filterFields) {
@@ -1175,7 +1212,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var s = template;
 		    s = s.replace("${selectCount}",selected.length);
 		    s = s.replace("${totalCount}",records.length);
-		    s= this.getRecordTemplate(row,fields,s,props);
+		    s= this.applyRecordTemplate(row,fields,s,props);
 		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
 		    var tag = HtmlUtils.openTag("div",["style",color?"background: " + color:"", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
 		    if(s.startsWith("<td")) {
@@ -1370,7 +1407,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		this.jq(ID_NEXT).show();
 	    var record = this.records[this.slideIndex];
 	    var row = this.getDataValues(record);
-	    var html = this.getRecordTemplate(row,this.fields,this.getProperty("template",""));
+	    var html = this.applyRecordTemplate(row,this.fields,this.getProperty("template",""));
 	    html = html.replace(/\${recordIndex}/g,(this.slideIndex+1));
 	    this.jq(ID_SLIDE).html(html);
 	    var args = {highlight:true,record: record};

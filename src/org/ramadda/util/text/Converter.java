@@ -3044,6 +3044,65 @@ public abstract class Converter extends Processor {
 
     }
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Dec 2, '15
+     * @author         Enter your name here...
+     */
+    public static class ColumnPatternSetter extends Converter {
+
+        /** _more_ */
+        private int patternCol;
+
+        /** _more_ */
+        private String pattern;
+
+	private int writeCol;
+
+        /** _more_ */
+        private String what;
+
+
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param rows _more_
+         *
+         * @param value _more_
+         */
+        public ColumnPatternSetter(int col1,String pattern, int col2, String what) {
+	    this.patternCol = col1;
+	    this.pattern  = pattern;
+	    this.writeCol = col2;
+	    this.what = what;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if(rowCnt++==0) return row;
+	    String v = row.get(patternCol).toString();
+	    if(v.matches(pattern) || v.indexOf(pattern)>=0) row.set(writeCol, what);
+            return row;
+
+        }
+
+    }
+
     /**
      * _more_
      *

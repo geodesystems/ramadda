@@ -556,6 +556,11 @@ var Utils = {
         if (v == null || v == "") return false;
         return true;
     },
+    formatNumberComma: function(number) {
+	if(!Utils.isDefined(number)) return "NA";
+	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
     formatNumber: function(number, toFloat) {
         var s = this.formatNumberInner(number);
         if (toFloat) return parseFloat(s);

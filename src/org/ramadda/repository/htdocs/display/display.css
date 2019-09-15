@@ -64,6 +64,21 @@
     cursor:pointer;  
 }
 
+.display-filterby-button-image {
+    border:1px solid rgba(0,0,0,0);
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    padding-left:4px;
+    padding-right:4px;
+}
+
+.display-filterby-button-image:hover {
+    border:1px solid #ccc;
+}
+
+.display-filterby-button-label {
+    font-weight:bold;
+}
 .display-filterby-button-selected {
     background: #E5E5E5;
     background: #ddd;

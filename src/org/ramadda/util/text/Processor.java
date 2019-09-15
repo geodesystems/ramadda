@@ -2260,6 +2260,81 @@ public abstract class Processor extends CsvOperator {
     }
 
 
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class Dups extends RowCollector {
+
+	private List<String> toks;
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param unfurlIndex _more_
+         * @param valueCols _more_
+         * @param uniqueIndex _more_
+         * @param extraCols _more_
+         */
+        public Dups(List<String> toks) {
+	    this.toks = toks;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+	    List<Row> newRows = new ArrayList<Row>();
+            List<Row> allRows   = getRows();
+	    List<Integer> cols = Utils.toInt(toks);
+	    newRows.add(allRows.get(0));
+            Hashtable<String,Row>     seen    = new Hashtable<String,Row>();
+	    HashSet   seenKeys    = new HashSet();
+	    
+            for (int i=1;i<allRows.size();i++) {
+		Row row = allRows.get(i);
+		String key ="";
+		for(int idx:cols)
+		    key+=row.get(idx)+"__";
+		if(seenKeys.contains(key)) {
+		    newRows.add(row);
+		    continue;
+		}
+		Row seenRow = seen.get(key);
+		if(seenRow==null) {
+		    seen.put(key, row);
+		    continue;
+		}
+		newRows.add(seenRow);
+		newRows.add(row);
+		seenKeys.add(key);
+	    }
+            return newRows;
+        }
+    }
+
+
+
     /**
      * Class description
      *

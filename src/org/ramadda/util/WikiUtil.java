@@ -1828,9 +1828,13 @@ public class WikiUtil {
             }
 
 
-            if (tline.equals("+row")) {
-                rowStates.add(new RowState(buff));
-
+            if (tline.startsWith("+row")) {
+                List<String>  toks      = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
+                                      > 1)
+                        ? toks.get(1)
+                        : "");
+                rowStates.add(new RowState(buff,props));
                 continue;
             }
             if (tline.equals("-row")) {
@@ -1861,7 +1865,7 @@ public class WikiUtil {
                 RowState rowState = null;
                 if (rowStates.size() == 0) {
                     //Add a row if we're not in one
-                    rowStates.add(rowState = new RowState(buff));
+                    rowStates.add(rowState = new RowState(buff,null));
                 } else {
                     rowState = rowStates.get(rowStates.size() - 1);
                 }
@@ -1888,7 +1892,7 @@ public class WikiUtil {
                 RowState rowState = null;
                 if (rowStates.size() == 0) {
                     //Add a row if we're not in one
-                    rowStates.add(rowState = new RowState(buff));
+                    rowStates.add(rowState = new RowState(buff, null));
                 } else {
                     rowState = rowStates.get(rowStates.size() - 1);
                 }
@@ -2598,15 +2602,23 @@ public class WikiUtil {
         /** _more_ */
         int colCnt = 0;
 
-
+	Hashtable props;
+	
         /**
          * _more_
          *
          * @param buff _more_
          */
-        public RowState(Appendable buff) {
+        public RowState(Appendable buff, Hashtable props) {
             try {
-                buff.append("<div class=\"row wiki-row\">");
+		String clazz = "row wiki-row";
+		if(props!=null) {
+		    String c = (String)props.get("tight");
+		    if(c!=null) {
+			clazz+=" row-tight ";
+		    }
+		}
+		HtmlUtils.open(buff, "div",HtmlUtils.clazz(clazz));
             } catch (Exception exc) {
                 throw new IllegalArgumentException(exc);
             }
