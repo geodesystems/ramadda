@@ -330,7 +330,7 @@ function DisplayThing(argId, argProperties) {
 		}
 		
 		s = s.replace(new RegExp("\\${" + f.getId() +"}","g"), value);
-		if(f.isNumeric) {
+		if(f.isNumeric()) {
 		    s = s.replace(new RegExp("\\${" + f.getId() +"_format}","g"),Utils.formatNumberComma(value));
 		}
 	    }
@@ -744,7 +744,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         var total = 0;
                         var data = pointRecord.getData();
                         for (var j = 0; j < data.length; j++) {
-                            var ok = this.fields[j].isNumeric && !this.fields[j].isFieldGeo();
+                            var ok = this.fields[j].isNumeric() && !this.fields[j].isFieldGeo();
                             if (ok && this.pctFields != null) {
                                 ok = this.pctFields.indexOf(this.fields[j].getId()) >= 0 ||
                                     this.pctFields.indexOf("#" + (j + 1)) >= 0;
@@ -817,9 +817,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 colorBy.colors = Utils.ColorTables.grayscale.colors;
             }
 
-
-
-
 	    for (var i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.getId() == colorBy.id || ("#" + (i + 1)) == colorBy.id) {
@@ -837,7 +834,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if (!Utils.isDefined(colorBy.colorByMap[v])) {
 			    var index = colorBy.colorByValues.length;
                             colorBy.colorByValues.push(v);
-                            colorBy.colorByMap[v] = index>=colorBy.colors.length?colorBy.colors[colorBy.colors.length-1]:colorBy.colors[index];
+                            var color  = index>=colorBy.colors.length?colorBy.colors[colorBy.colors.length-1]:colorBy.colors[index];
+			    colorBy.colorByMap[v] = color;
                             colorBy.minValue = 1;
                             colorBy.maxValue = colorBy.colorByValues.length;
 			}
@@ -1391,7 +1389,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 fieldsToSelect = this.getFieldsToSelect(pointData);
                 for (i = 0; i < fieldsToSelect.length; i++) {
                     var field = fieldsToSelect[i];
-                    if (firstField == null && field.isNumeric) firstField = field;
+                    if (firstField == null && field.isNumeric()) firstField = field;
                     var idBase = "cbx_" + collectionIdx + "_" + i;
                     var cbxId = this.getDomId(idBase);
                     var cbx = $("#" + cbxId);
@@ -1438,7 +1436,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
-                if (field.isNumeric && !field.isFieldGeo()) return [field];
+                if (field.isNumeric() && !field.isFieldGeo()) return [field];
             }
             return [];
 	},
@@ -1609,7 +1607,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var value;
 		var _values =[];
 		var regexps =[];
-		if(filterField.isNumeric) {
+		if(filterField.isNumeric()) {
 		    var minField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_min"));
 		    var maxField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_max"));
 		    var minValue = parseFloat(minField.val().trim());
@@ -1683,7 +1681,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				break;
 			    }
 			}
-		    } else if(filterField.isNumeric) {
+		    } else if(filterField.isNumeric()) {
 			if(isNaN(filterValue[0]) && isNaN(filterValue[0])) continue;
 			if(isNaN(value)) {
 			    ok = false;
@@ -3232,10 +3230,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				}
 				if(v == dfltValue) extra = " display-filterby-button-selected ";
 				if(useImage) {
-				    var image;
+				    var image=null;
 				    if(imageMap) image = imageMap[v];
 				    if(!image || image=="") image = enums[j].image;
-			    
 				    if(image) {
 					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],
 							       HtmlUtils.image(image,imageAttrs));
@@ -3256,7 +3253,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    enums.map(e=>tmp.push(e.value));
                             widget = HtmlUtils.select("",attrs,tmp,dfltValue);
 			}
-		    } else if(filterField.isNumeric) {
+		    } else if(filterField.isNumeric()) {
 			var min=0;
 			var max=0;
 			var cnt=0;
@@ -4961,7 +4958,7 @@ function DisplayAnimation(display) {
 	    this.dateMin = dateMin;
 	    this.dateMax = dateMax;
 	    this.begin = this.dateMin;
-	    this.end = this.dateMin;
+	    this.end = this.dateMax;
 	    if(!this.dateMin) return;
 
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
@@ -5177,7 +5174,6 @@ function DisplayAnimation(display) {
                     }
                 } 
                 this.end = this.begin;
-
 		this.display.animationStart();
             }
 	    this.doNext();

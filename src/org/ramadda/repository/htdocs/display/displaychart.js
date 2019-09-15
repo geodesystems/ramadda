@@ -563,7 +563,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
         },
         getFieldsToSelect: function(pointData) {
-            return pointData.getChartableFields();
+            //STRING return pointData.getChartableFields();
+	    return pointData.getRecordFields();
         },
         canDoGroupBy: function() {
             return false;
@@ -944,9 +945,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 
-
-
             for (var j = 0; j < header.length; j++) {
+		var field = selectedFields[j];
                 var value = sample[j];
                 if (j == 0 && props.includeIndex) {
                     //This might be a number or a date
@@ -960,7 +960,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(j>0 && fixedValueS) {
 			dataTable.addColumn('number', this.getProperty("fixedValueLabel","Count"));
 		    } else {
-			dataTable.addColumn('number', header[j]);
+			if(field.isString()) {
+			    dataTable.addColumn('string', header[j]);
+			} else if(field.isFieldDate()) {
+			    dataTable.addColumn('date', header[j]);
+			} else {
+			    dataTable.addColumn('number', header[j]);
+			}
 		    }
 		    dataTable.addColumn({ type: 'string', role: 'style' });
                     dataTable.addColumn({
@@ -1056,8 +1062,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     didColorBy = true;
 		    color =  colorBy.getColor(value, theRecord);
                 }
-
-
 
                 row = row.slice(0);
                 var label = "";
@@ -2278,14 +2282,14 @@ function BartableDisplay(displayManager, id, properties) {
             var f = [];
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
-                if (!field.isNumeric) {
+                if (!field.isNumeric()) {
                     f.push(field);
                     break;
                 }
             }
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
-                if (field.isNumeric) {
+                if (field.isNumeric()) {
                     f.push(field);
                     break;
                 }
@@ -2810,7 +2814,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
             var f = [];
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
-                if (field.isNumeric) {
+                if (field.isNumeric()) {
                     f.push(field);
                     if (f.length >= 2)
                         break;
@@ -2896,7 +2900,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             var l = [];
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
-                if (!justOne && (!this.showText && !field.isNumeric)) continue;
+                if (!justOne && (!this.showText && !field.isNumeric())) continue;
                 var lbl = field.getLabel().toLowerCase();
                 if (lbl.indexOf("latitude") >= 0 || lbl.indexOf("longitude") >= 0) {
                     continue;
@@ -2964,7 +2968,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                             stats[col].uniqueMap[v]++;
                         }
                     }
-                    stats[col].isNumber = field.isNumeric;
+                    stats[col].isNumber = field.isNumeric();
                     stats[col].count++;
                     if (v == null) {
                         stats[col].numMissing++;
@@ -3835,7 +3839,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                 var tuple = this.getDataValues(this.dataList[rowIdx]);
                 var nums = [];
                 for (var i = 0; i < this.fields.length; i++) {
-                    if (this.fields[i].isNumeric){
+                    if (this.fields[i].isNumeric()){
                         var v = tuple[this.fields[i].getIndex()];
                         if(isNaN(v)) v = 0;
                         nums.push(v);

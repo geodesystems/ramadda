@@ -590,7 +590,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     var field= this.getFieldById(fields, id);
                     if(field) {
                         groupFields.push(field);
-                        if(field.isNumeric && !field.range) {
+                        if(field.isNumeric() && !field.range) {
                             var min = Number.MAX_VALUE;
                             var max = Number.MIN_VALUE;
                             records.map(r=>{
@@ -731,7 +731,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 for(var groupIdx=0;groupIdx<groupFields.length;groupIdx++) {
                     var groupField  = groupFields[groupIdx];
                     var value = row[groupField.getIndex()];
-                    if(groupField.isNumeric) {
+                    if(groupField.isNumeric()) {
                         for(var binIdx=0;binIdx<groupField.bins.length;binIdx++) {
                             var bin= groupField.bins[binIdx];
                             if(value<=bin[1] || binIdx == groupField.bins.length-1) {
@@ -1007,7 +1007,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	    for(var i=0;i<fields.length;i++) {
 		var f = fields[i];
-		if(!f.isNumeric) continue;
+		if(!f.isNumeric()) continue;
 		var s = summary[f.getId()];
 		if(s && s.count) {
 		    s.average =  Utils.formatNumber(s.total/s.count);
@@ -1126,7 +1126,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 							    s.uniqueCount);
 		    continue;
 		}
-		if(!f.isNumeric) continue;
+		if(!f.isNumeric()) continue;
 		if(s) {
 		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
 		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
@@ -1140,7 +1140,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(this.filterFields) {
 		for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
 		    var f = this.filterFields[filterIdx];
-		    if(f.isNumeric) {
+		    if(f.isNumeric()) {
 			var min = $("#" + this.getDomId("filterby_" + f.getId()+"_min")).val().trim();
 			var max = $("#" + this.getDomId("filterby_" + f.getId()+"_max")).val().trim();
 			headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_min}",min);
@@ -1779,7 +1779,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			s.min=value;
 			s.max=value;
 		    }
-		    if(f.isNumeric) {
+		    if(f.isNumeric()) {
 			s.numbers.push(value);
 			if(isNaN(s.max)) s.max = value;
 			else if(!isNaN(value))s.max = Math.max(value,s.max);
@@ -1801,7 +1801,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		var f = fields[col];
 		var s = summary[f.getId()];
 		//		if(col>0) html+="<br>";
-		if(f.isNumeric) {
+		if(f.isNumeric()) {
 		    var numBins = parseFloat(this.getProperty("numBins",10,true));
 		    s.bins = [];
 		    var range = s.max-s.min;
@@ -1899,7 +1899,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		}
 
 
-		if(!f.isNumeric) {
+		if(!f.isNumeric()) {
 		    s.values.sort((a,b)=>{
 			if(a.count<b.count) return 1;
 			if(a.count>b.count) return -1;

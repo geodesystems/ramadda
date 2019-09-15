@@ -95,7 +95,7 @@ function BasePointData(name, properties) {
             var numericFields = [];
             for (var i = 0; i < recordFields.length; i++) {
                 var field = recordFields[i];
-                if (field.isNumeric) numericFields.push(field);
+                if (field.isNumeric()) numericFields.push(field);
             }
             return numericFields;
         },
@@ -106,7 +106,7 @@ function BasePointData(name, properties) {
             var skip = /(xxxnoskip)/g;
             for (var i = 0; i < recordFields.length; i++) {
                 var field = recordFields[i];
-                if (!field.isNumeric || !field.isChartable()) {
+                if (!field.isNumeric() || !field.isChartable()) {
                     continue;
                 }
                 var ID = field.getId().toUpperCase();
@@ -470,14 +470,13 @@ function RecordField(props) {
     });
     $.extend(this, props);
     $.extend(this, {
-        isNumeric: props.type == "double" || props.type == "integer",
         isGroup:props.group,
         properties: props
     });
 
     RamaddaUtil.defineMembers(this, {
 	    toString: function() {
-		return "Field:" + this.getId() +" type:" + this.getType()+" " + this.isNumeric;
+		return "Field:" + this.getId() +" type:" + this.getType()+" " + this.isNumeric();
 	    },
         getIndex: function() {
             return this.index;
@@ -501,7 +500,7 @@ function RecordField(props) {
             return this.isElevation || this.id.toLowerCase() == "elevation" || this.id.toLowerCase() == "altitude";
         },
         isFieldNumeric: function() {
-            return this.isNumeric;
+            return this.isNumeric();
         },
         isFieldString: function() {
                 return this.type == "string" || this.type == "enumeration";
@@ -553,6 +552,9 @@ function RecordField(props) {
         setLabel: function(l) {
             this.label = l;
         },
+        isNumeric: function() {
+	    return this.type == "double" || this.type == "integer";
+	},
 	isString: function() {
 	    return this.type == "string" || this.type=="enumeration";
 	},

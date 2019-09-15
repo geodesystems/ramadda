@@ -624,13 +624,16 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
-            var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var stringField = this.getFieldOfType(fields, "string");
+            var allFields = this.getSelectedFields(this.getData().getRecordFields());
+            var stringField = this.getFieldOfType(allFields, "string");
             if (!stringField) {
-                stringField = fields[0];
+                stringField = allFields[0];
             }
 
-            var fields = this.getFieldsOfType(fields, "numeric");
+            var fields = this.getFieldsOfType(allFields, "numeric");
+            if (fields.length == 0) {
+		fields = this.getFieldsOfType(allFields, "date");
+	    }
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -646,17 +649,26 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             if (!colors)
                 colors = ['rgba(156, 165, 196, 0.95)', 'rgba(204,204,204,0.95)', 'rgba(255,255,255,0.85)', 'rgba(150,150,150,0.95)']
             var plotData = [];
+            var colorBy = this.getColorByInfo(records);
+	    var  didColorBy = false;
             for (i in fields) {
                 var color = i >= colors.length ? colors[0] : colors[i];
                 var field = fields[i];
                 var values = this.getColumnValues(records, field).values;
+                if (colorBy.index >= 0) {
+		    color = [];
+		    records.map(record=>{
+			var value = record.getData()[colorBy.index];
+			didColorBy = true;
+			color.push(colorBy.getColor(value, record));
+                    })
+		}
                 if (!labels) {
                     labels = [];
                     for (var j = 0; j < values.length; j++) {
                         labels.push("Point " + (j + 1));
                     }
                 }
-
                 plotData.push({
                     type: 'scatter',
                     x: values,
@@ -722,6 +734,10 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             };
             this.setDimensions(layout, 2);
             this.makePlot(plotData, layout);
+	    if(didColorBy) {
+		colorBy.displayColorTable();
+	    }
+
         },
     });
 }

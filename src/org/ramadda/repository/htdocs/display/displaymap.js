@@ -816,14 +816,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    var seen = {};
 	    var maxCnt = -1;
 	    var minCnt = -1;
+
             for (var i = 0; i < circles.length; i++) {
                 var circle = circles[i];
                 if (circle.style && circle.style.display == "none") continue;
                 var center = circle.center;
 		var tmp = {index:-1,maxExtent: maxExtent};
                 var matchedFeature = this.findContainingFeature(features, center,tmp);
-		if(circle.hasColorByValue && isNaN(circle.colorByValue)) continue;
 		if(!matchedFeature) continue;
+		if(!circle.colorByColor && circle.hasColorByValue && isNaN(circle.colorByValue)) {
+		    continue;
+		}
 		maxExtent = tmp.maxExtent;
 		if(!seen[matchedFeature.featureIndex]) {
 		    seen[matchedFeature.featureIndex] = true;
@@ -1239,7 +1242,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("colorByMenu") + "'>";
                 for (var i = 0; i < fields.length; i++) {
                     var field = fields[i];
-                    if (!field.isNumeric || field.isFieldGeo()) continue;
+                    if (!field.isNumeric() || field.isFieldGeo()) continue;
                     var extra = "";
                     if (colorBy.field.getId() == field.getId()) extra = "selected ";
                     menu += "<option value='" + field.getId() + "' " + extra + ">" + field.getLabel() + "</option>\n";
@@ -1434,12 +1437,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
 		var hasColorByValue = false;
 		var colorByValue;
+		var colorByColor;
                 if (colorBy.index >= 0) {
                     var value = pointRecord.getData()[colorBy.index];
 		    hasColorByValue  = true;
 		    colorByValue = value;
                     didColorBy = true;
-		    props.fillColor = colorBy.getColor(value, pointRecord);
+		    colorByColor = props.fillColor = colorBy.getColor(value, pointRecord);
                 }
 
 		var tooltip = this.getProperty("tooltip");
@@ -1566,6 +1570,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			mapPoint.record = pointRecord;
 			mapPoint.hasColorByValue = hasColorByValue;
 		 	mapPoint.colorByValue= colorByValue;
+			mapPoint.colorByColor = colorByColor;
 			if (date) {
 			    mapPoint.date = date.getTime();
 			}
