@@ -604,7 +604,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             property = property.replaceAll("(?m)^\\s*//.*?$", "");
-            //            property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
+	    property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
             //            property = property.replaceAll("\\n", " ");
             //            property = property.replaceAll("\r", "");
 
