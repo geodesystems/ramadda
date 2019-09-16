@@ -944,9 +944,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueS = this.getProperty("fixedValue");
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
-
+	    var fIdx = 0;
             for (var j = 0; j < header.length; j++) {
-		var field = selectedFields[j];
+		var field;
+		if(j>0 || !props.includeIndex) {
+		    field = selectedFields[fIdx++];
+		}
                 var value = sample[j];
                 if (j == 0 && props.includeIndex) {
                     //This might be a number or a date
