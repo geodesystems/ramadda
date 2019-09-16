@@ -1144,9 +1144,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.jq(widgetId+"_max").val(prop.value2);
 		    this.jq(widgetId+"_max").attr("value", prop.value2);
 		} else {
-		    $("#"+widgetId).val(prop.value);
-		    $("#" + widgetId).attr("value",prop.value);
-
+		    var widget = $("#"+widgetId);
+		    widget.val(prop.value);
+		    widget.attr("value",prop.value);
+		    if(widget.attr("isButton")) {
+			widget.find(".display-filterby-button").removeClass("display-filterby-button-selected");
+			widget.find("[value='" + prop.value +"']").addClass("display-filterby-button-selected");
+		    }
 		}
 		this.settingFilterValue = false;
 		this.dataFilterChanged();
@@ -1709,9 +1713,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterFieldValue:function(field) {
 	    var value;
 	    var element =$("#" + this.getDomId("filterby_" + field.getId()));
-	    value = element.attr("value");
+	    value = element.val();
 	    if(!value)
-		value = element.val();
+		value = element.attr("value");
 	    return value;
 
 	},
@@ -3395,7 +3399,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    }
 
 			    buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
-			    bottom+= HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"fieldId",
+			    bottom+= HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"isButton","true", "fieldId",
 						    filterField.getId()], buttons);
 			    continue;
 			} else {
@@ -3478,7 +3482,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 
-		var inputFunc = function(input, input2){
+		var inputFunc = function(input, input2, value){
                     var id = input.attr("id");
 		    if(!input2) {
 			if(id.endsWith("_min")) {
@@ -3489,7 +3493,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    input2 = tmp;
 			}
 		    }
-		    var value = input.val();
+		    if(!value)
+			value = input.val();
 		    if(!value || value=="")
 			value = input.attr("value");
 		    if(!value)value = input.val();
@@ -3523,7 +3528,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var value =  $(this).attr("value");
 			parent.attr("value",value);
 			$("#"+parent.attr("id") +"_label").html(value==FILTER_ALL?"&nbsp;":value);
-			inputFunc(parent);
+//			console.log(_this.type +" button clicked:" + value);
+			inputFunc(parent,null, value);
 		    });
 
 		});
