@@ -595,10 +595,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        String[] notTags) {
 
         try {
-
-
-
-
             Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request = (Request) wikiUtil.getProperty(ATTR_REQUEST);
             //Check for infinite loop
@@ -608,17 +604,25 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             property = property.replaceAll("(?m)^\\s*//.*?$", "");
-	    //            property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
-	    //            property = property.replaceAll("\\n", " ");
-	    //            property = property.replaceAll("\r", "");
+            //            property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
+            //            property = property.replaceAll("\\n", " ");
+            //            property = property.replaceAll("\r", "");
 
 
-	    //	    System.err.println("P:" + property);
-            List<String> toks  = StringUtil.splitUpTo(property, " ", 2);
-	    if(toks.size()<=1) {
-		toks  = StringUtil.splitUpTo(property, "\n", 2);
-	    }
-            String       stoks = toks.toString();
+            //      System.err.println("P:" + property);
+            List<String> toks;
+            int          i1 = property.indexOf(" ");
+            int          i2 = property.indexOf("\n");
+            if (i1 < i2) {
+                toks = StringUtil.splitUpTo(property, " ", 2);
+            } else if (i2 >= 0) {
+                toks = StringUtil.splitUpTo(property, "\n", 2);
+            } else {
+                toks = StringUtil.splitUpTo(property, " ", 2);
+            }
+
+
+            String stoks = toks.toString();
             if (toks.size() == 0) {
                 return "<b>Incorrect import specification:" + property
                        + "</b>";
@@ -661,21 +665,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                 }
             }
-	    remainder = remainder.replaceAll("\\\\\"","_XQUOTE_");
-	    //	    System.err.println("PROPERTY:");
-	    //	    System.err.println("TAG:" + tag);
-	    //	    System.err.println("REMAINDER:" + remainder);
+            remainder = remainder.replaceAll("\\\\\"", "_XQUOTE_");
+            //      System.err.println("PROPERTY:");
+            //      System.err.println("TAG:" + tag);
+            //      System.err.println("REMAINDER:" + remainder);
             Hashtable tmpProps = HtmlUtils.parseHtmlProperties(remainder);
             Hashtable props    = new Hashtable();
             for (Enumeration keys =
-		     tmpProps.keys(); keys.hasMoreElements(); ) {
-                String key = (String)keys.nextElement();
+                    tmpProps.keys(); keys.hasMoreElements(); ) {
+                String key = (String) keys.nextElement();
                 if (key.startsWith("#")) {
                     continue;
                 }
-                String value = (String)tmpProps.get(key);
-		value  = value.replaceAll("_XQUOTE_","\"");
-		//		System.err.println("\tKEY:" + key +"=" +value);
+                String value = (String) tmpProps.get(key);
+                value = value.replaceAll("_XQUOTE_", "\"");
+                //              System.err.println("\tKEY:" + key +"=" +value);
                 props.put(key, value);
                 if (key instanceof String) {
                     String lowerCaseKey = ((String) key).toLowerCase();
@@ -2231,62 +2235,71 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MULTI)) {
-	    //	    System.err.println("Mutli");
-	    Hashtable props2 = new Hashtable();
-	    Hashtable<String, List<String>> multiAttrs = new Hashtable<String, List<String>>();
-	    StringBuilder buff = new StringBuilder();
-	    //	    {{multi _foo="1,2,3" _bar="1,2,3" a="hello""}}	    
-	    //	    {{multi _template=":heading 1,2,3" _bar="1,2,3" a="hello""}}
-	    String tag = null;
-	    int max = 0;
-	    String template = null;
-	    for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
-		String key = (String)keys.nextElement();
-		String value = (String) props.get(key);
-		//		System.err.println("\tk:" + key+"=" + value);
-		if(key.equals("_tag")) {
-		    tag = value;
-		} else if(key.equals("template")) {
-		    template = value;
-		} else if(key.startsWith("_")) {
-		    key = key.substring(1);
-		    List<String> toks = StringUtil.split(value,",");
-		    max  = Math.max(max, toks.size());
-		    multiAttrs.put(key, toks);
-		} else {
-		    props2.put(key,value);
-		}
-	    }
-            int multiCount = getProperty(wikiUtil, props, "multiCount",-1);
-	    if(multiCount>0) max = multiCount;
-	    if(template!=null)
-		template = template.replaceAll("\\\\\\{","{").replaceAll("\\\\\\}","}");
-	    for(int i=0;i<max;i++) {
-		Hashtable _props = new Hashtable();
-		_props.putAll(props2);
-		String s = template;
-		for (Enumeration keys = multiAttrs.keys(); keys.hasMoreElements(); ) {
-		    String key = (String)keys.nextElement();
-		    List<String>values = multiAttrs.get(key);
-		    if(i<values.size()) {
-			String value =values.get(i); 
-			value  = value.replaceAll("_comma_",",");
-			_props.put(key,value);
-			if(s!=null) {
-			    s = s.replaceAll("\\$\\{" + key +"\\}",value).replaceAll("\\$\\{" + "multiIndex" +"\\}",(i+1)+"");
-			}
-		    }
-		}
-		if(s!=null) {
-		    buff.append(wikifyEntry(request, entry, s));
-		} else {
-		    buff.append(getWikiIncludeInner(wikiUtil, request,
-						    originalEntry, entry,
-						    tag, _props));
-		}
+            //      System.err.println("Mutli");
+            Hashtable props2 = new Hashtable();
+            Hashtable<String, List<String>> multiAttrs =
+                new Hashtable<String, List<String>>();
+            StringBuilder buff = new StringBuilder();
+            //      {{multi _foo="1,2,3" _bar="1,2,3" a="hello""}}          
+            //      {{multi _template=":heading 1,2,3" _bar="1,2,3" a="hello""}}
+            String tag      = null;
+            int    max      = 0;
+            String template = null;
+            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+                String key   = (String) keys.nextElement();
+                String value = (String) props.get(key);
+                //              System.err.println("\tk:" + key+"=" + value);
+                if (key.equals("_tag")) {
+                    tag = value;
+                } else if (key.equals("template")) {
+                    template = value;
+                } else if (key.startsWith("_")) {
+                    key = key.substring(1);
+                    List<String> toks = StringUtil.split(value, ",");
+                    max = Math.max(max, toks.size());
+                    multiAttrs.put(key, toks);
+                } else {
+                    props2.put(key, value);
+                }
+            }
+            int multiCount = getProperty(wikiUtil, props, "multiCount", -1);
+            if (multiCount > 0) {
+                max = multiCount;
+            }
+            if (template != null) {
+                template = template.replaceAll("\\\\\\{",
+                        "{").replaceAll("\\\\\\}", "}");
+            }
+            for (int i = 0; i < max; i++) {
+                Hashtable _props = new Hashtable();
+                _props.putAll(props2);
+                String s = template;
+                for (Enumeration keys = multiAttrs.keys();
+                        keys.hasMoreElements(); ) {
+                    String       key    = (String) keys.nextElement();
+                    List<String> values = multiAttrs.get(key);
+                    if (i < values.size()) {
+                        String value = values.get(i);
+                        value = value.replaceAll("_comma_", ",");
+                        _props.put(key, value);
+                        if (s != null) {
+                            s = s.replaceAll(
+                                "\\$\\{" + key + "\\}", value).replaceAll(
+                                "\\$\\{" + "multiIndex" + "\\}",
+                                (i + 1) + "");
+                        }
+                    }
+                }
+                if (s != null) {
+                    buff.append(wikifyEntry(request, entry, s));
+                } else {
+                    buff.append(getWikiIncludeInner(wikiUtil, request,
+                            originalEntry, entry, tag, _props));
+                }
 
-	    }
-	    return buff.toString();
+            }
+
+            return buff.toString();
         } else if (theTag.equals(WIKI_TAG_APPLY)) {
             StringBuilder style = new StringBuilder(getProperty(wikiUtil,
                                       props, APPLY_PREFIX + ATTR_STYLE, ""));
@@ -4045,9 +4058,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else if (sort.equals(SORT_CHANGEDATE)) {
                 entries = getEntryUtil().sortEntriesOnChangeDate(entries,
                         !ascending);
-	    } else if (sort.equals(SORT_CREATEDATE)) {
+            } else if (sort.equals(SORT_CREATEDATE)) {
                 entries = getEntryUtil().sortEntriesOnCreateDate(entries,
-								 !ascending);
+                        !ascending);
             } else if (sort.equals(SORT_NAME)) {
                 entries = getEntryUtil().sortEntriesOnName(entries,
                         !ascending);
@@ -4486,10 +4499,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (randomCnt > 0) {
             List<Entry> rtmp = new ArrayList<Entry>();
             while ((randomCnt-- > 0) && (entries.size() > 0)) {
-                int   idx = (int) (Math.random() * entries.size());
-		if(idx<0) idx=0;
-		else if(idx>=entries.size()) idx=entries.size()-1;
-                Entry e   = entries.get(idx);
+                int idx = (int) (Math.random() * entries.size());
+                if (idx < 0) {
+                    idx = 0;
+                } else if (idx >= entries.size()) {
+                    idx = entries.size() - 1;
+                }
+                Entry e = entries.get(idx);
                 rtmp.add(e);
                 entries.remove(idx);
             }
@@ -6275,8 +6291,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "3dmesh") || displayType.equals(
                 "density")) && (request.getExtraProperty(
                 "added plotly") == null)) {
-            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
-	    //            HtmlUtils.importJS(sb, "https://cdn.plot.ly/plotly-latest.min.js");
+            HtmlUtils.importJS(
+                sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
+            //            HtmlUtils.importJS(sb, "https://cdn.plot.ly/plotly-latest.min.js");
             /*
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(sb,
