@@ -613,8 +613,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	    //            property = property.replaceAll("\r", "");
 
 
-
+	    //	    System.err.println("P:" + property);
             List<String> toks  = StringUtil.splitUpTo(property, " ", 2);
+	    if(toks.size()<=1) {
+		toks  = StringUtil.splitUpTo(property, "\n", 2);
+	    }
             String       stoks = toks.toString();
             if (toks.size() == 0) {
                 return "<b>Incorrect import specification:" + property
@@ -1526,6 +1529,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        Entry originalEntry, Entry entry,
                                        String theTag, Hashtable props)
             throws Exception {
+
+
 
 
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);

@@ -2055,6 +2055,8 @@ public class WikiUtil {
             }
             sb.append(s.substring(baseIdx, idx1));
             String property = s.substring(idx1 + 2, idx2);
+
+
             //If there were new lines in the property tag they got replaced with <P>
             //Unreplace them
             property = property.replaceAll("\n<p>\n", " ");
