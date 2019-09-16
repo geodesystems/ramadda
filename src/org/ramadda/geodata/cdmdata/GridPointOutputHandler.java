@@ -635,7 +635,10 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
                 SupportedFormat.XML_STREAM.getResponseContentType())) {
             suffix = SUFFIX_XML;
         }
-
+	if(doingJson) {
+	    suffix = "json";
+	}
+	
         String baseName = IOUtil.stripExtension(entry.getName());
         if (format.equalsIgnoreCase(FORMAT_TIMESERIES_CHART)) {
             request.put(CdmConstants.ARG_FORMAT, FORMAT_JSON);
@@ -763,7 +766,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             result = outputTimeSeriesImage(request, entry, f);
         } else {
             result = new Result(getStorageManager().getFileInputStream(f),
-                                pdrb.getAccept());
+                                doingJson?Json.MIMETYPE:pdrb.getAccept());
             //Set return filename sets the Content-Disposition http header so the browser saves the file
             //with the correct name and suffix
             result.setReturnFilename(baseName + "_pointsubset" + suffix);
