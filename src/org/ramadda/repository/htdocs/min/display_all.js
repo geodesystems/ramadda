@@ -4862,11 +4862,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 } else {
                     var percent = Math.round((100 / this.columns))+"%";
                     var i = 0;
-		    html+="<table width=100%><tr valign=top>\n";
-		    var colCnt = 0;
+		    html+="<table width=100%>\n";
+		    var colCnt = 100;
                     for (var i =0;i < displaysToLayout.length; i++) {
                         colCnt++;
-                        if (colCnt > this.columns) {
+                        if (colCnt >= this.columns) {
                             if (i > 0) {
                                 html += HtmlUtils.closeTag(TAG_TR);
                             }
@@ -4880,7 +4880,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     if (i > 0) {
                         html += HtmlUtils.closeTag("tr");
                     }
-
                 }
             } else if (this.layout == LAYOUT_TABS) {
                 var tabId = HtmlUtils.getUniqueId("tabs_");
