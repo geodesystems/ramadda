@@ -1966,6 +1966,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //	    var t2=  new Date();
 //	    Utils.displayTimes("filterData",[t1,t2]);
 	    dataList = this.sortRecords(dataList);
+
+	    this.recordToIndex = {};
+	    this.indexToRecord = {};
+	    for(var i=0;i<dataList.length;i++) {
+		var record = dataList[i];
+		this.recordToIndex[record.getId()] = i;
+		this.indexToRecord[i] = record;
+	    }
             return dataList;
         },
 
@@ -3819,10 +3827,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (dobs) {
                 html += HtmlUtils.closeTag(TAG_DIV);
             }
-            html += HtmlUtils.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)],
+	    html += HtmlUtils.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)],
 				  HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)]));
-
-
 
             return html;
         },
@@ -23252,7 +23258,20 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             var myPlot = document.getElementById(this.getDomId("tmp"));
             this.addEvents(plot, myPlot);
         },
-        addEvents: function(plot, myPlot) {}
+        addEvents: function(plot, myPlot) {
+	    var _this = this;
+            myPlot.on('plotly_click', function(data) {
+		if(data.points && data.points.length>0) {
+		    var index = data.points[0].pointIndex;
+		    var record = _this.indexToRecord[index];
+		    console.log("R:" + JSON.stringify(_this.indexToRecord,null,2));
+		    if(record) {
+			_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		    }
+		}
+            });
+
+	}
     });
 }
 

@@ -132,7 +132,20 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             var myPlot = document.getElementById(this.getDomId("tmp"));
             this.addEvents(plot, myPlot);
         },
-        addEvents: function(plot, myPlot) {}
+        addEvents: function(plot, myPlot) {
+	    var _this = this;
+            myPlot.on('plotly_click', function(data) {
+		if(data.points && data.points.length>0) {
+		    var index = data.points[0].pointIndex;
+		    var record = _this.indexToRecord[index];
+		    console.log("R:" + JSON.stringify(_this.indexToRecord,null,2));
+		    if(record) {
+			_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		    }
+		}
+            });
+
+	}
     });
 }
 
