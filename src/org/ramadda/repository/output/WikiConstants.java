@@ -435,6 +435,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_APPLY = "apply";
 
+    public static final String WIKI_TAG_MULTI = "multi";
+
     /** _more_ */
     public static final String APPLY_PREFIX = "apply.";
 

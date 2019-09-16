@@ -4660,7 +4660,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 function DisplayGroup(argDisplayManager, argId, argProperties, type) {
-    var LAYOUT_TABLE = TAG_TABLE;
+    var LAYOUT_TABLE = "table";
+    var LAYOUT_FLEXTABLE = "flextable";
     var LAYOUT_TABS = "tabs";
     var LAYOUT_COLUMNS = "columns";
     var LAYOUT_ROWS = "rows";
@@ -4813,7 +4814,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 displaysToLayout[i].setProperty(PROP_DIVID,divId);
                 displaysToLayout[i].layoutDiv=div;
             }
-            if (this.layout == LAYOUT_TABLE) {
+            if (this.layout == LAYOUT_FLEXTABLE) {
                 if  (displaysToLayout.length== 1) {
                     html += displaysToLayout[0].layoutDiv;
                 } else {
@@ -4831,7 +4832,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 
                     i = 0;
                     for (; i < displaysToLayout.length; i++) {
-
                         colCnt++;
                         if (colCnt >= this.columns) {
                             if (i > 0) {
@@ -4849,13 +4849,39 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                             weightIdx++;
                         }
                         html += HtmlUtils.div(["class", "col-md-" + weightToUse + " display-wrapper display-cell"], displaysToLayout[i].layoutDiv);
-                    }
+			html+="\n";
+		    }
 
                     if (i > 0) {
                         html += HtmlUtils.closeTag(TAG_DIV);
                     }
                 }
-                //                    console.log("HTML " + html);
+	    } else if (this.layout == LAYOUT_TABLE) {
+                if  (displaysToLayout.length== 1) {
+                    html += displaysToLayout[0].layoutDiv;
+                } else {
+                    var percent = Math.round((100 / this.columns))+"%";
+                    var i = 0;
+		    html+="<table width=100%><tr valign=top>\n";
+		    var colCnt = 0;
+                    for (var i =0;i < displaysToLayout.length; i++) {
+                        colCnt++;
+                        if (colCnt > this.columns) {
+                            if (i > 0) {
+                                html += HtmlUtils.closeTag(TAG_TR);
+                            }
+                            html += HtmlUtils.openTag("tr", ["valign", "top"]);
+			    html+="\n";
+                            colCnt = 0; 
+                        }
+                        html += HtmlUtils.td(["width",percent], displaysToLayout[i].layoutDiv);
+			html+="\n";
+		    }
+                    if (i > 0) {
+                        html += HtmlUtils.closeTag("tr");
+                    }
+
+                }
             } else if (this.layout == LAYOUT_TABS) {
                 var tabId = HtmlUtils.getUniqueId("tabs_");
                 html += HtmlUtils.openTag(TAG_DIV, ["id", tabId, "class", "ui-tabs"]);

@@ -1529,6 +1529,9 @@ public class HtmlUtils {
     }
 
 
+    private static boolean   debug1      = false;
+    private static boolean   debug2      = false;
+
     /**
      * _more_
      *
@@ -1538,9 +1541,8 @@ public class HtmlUtils {
      */
     public static Hashtable parseHtmlProperties(String s) {
 
-        boolean   debug      = false;
         Hashtable properties = new Hashtable();
-        if (debug) {
+        if (debug1) {
             System.err.println("Source:" + s);
         }
         // single title=foo full --- name=bar
@@ -1565,31 +1567,27 @@ public class HtmlUtils {
                 }
                 if (c == '=') {
                     mode = MODE_VALUE;
-
                     continue;
                 }
                 nb.append(c);
-                if (debug) {
+                if (debug2) {
                     System.err.println("start:" + nb);
                 }
                 mode = MODE_NAME;
-
                 continue;
             }
 
             if (mode == MODE_NAME) {
                 if (c == ' ') {
                     mode = MODE_EQUALS;
-
                     continue;
                 }
                 if (c == '=') {
                     mode = MODE_VALUE;
-
                     continue;
                 }
                 nb.append(c);
-                if (debug) {
+                if (debug2) {
                     System.err.println("name:" + nb);
                 }
 
@@ -1603,11 +1601,12 @@ public class HtmlUtils {
                 }
                 String name = nb.toString().trim();
                 if (name.length() > 0) {
+		    if (debug1) System.err.println("PROP:" + name +"=" + ";");
                     properties.put(name, "");
                 }
                 nb = new StringBuilder();
                 nb.append(c);
-                if (debug) {
+                if (debug2) {
                     System.err.println("=:" + nb);
                 }
                 mode = MODE_START;
@@ -1620,12 +1619,10 @@ public class HtmlUtils {
                 }
                 if (c == '"') {
                     mode = MODE_VALUE_QUOTE;
-
                     continue;
                 }
                 mode = MODE_VALUE_NOQUOTE;
                 vb.append(c);
-
                 continue;
             }
             if (mode == MODE_VALUE_QUOTE) {
@@ -1633,15 +1630,15 @@ public class HtmlUtils {
                     mode = MODE_START;
                     String name = nb.toString().trim();
                     if (name.length() > 0) {
-                        properties.put(name, vb.toString());
+			if (debug1) System.err.println("PROP:" + name +"=" + vb+";");
+                        properties.put(name.trim(), vb.toString());
                     }
                     nb = new StringBuilder();
                     vb = new StringBuilder();
-
                     continue;
                 }
                 vb.append(c);
-                if (debug) {
+                if (debug2) {
                     System.err.println("quote:" + vb);
                 }
 
@@ -1649,11 +1646,12 @@ public class HtmlUtils {
             }
 
             if (mode == MODE_VALUE_NOQUOTE) {
-                if (c == ' ') {
+                if (c == ' ' || c == '\n') {
                     mode = MODE_START;
                     String name = nb.toString();
                     if (name.length() > 0) {
-                        properties.put(name, vb.toString());
+			if (debug1) System.err.println("PROP:" + name +"=" + vb+";");
+                        properties.put(name.trim(), vb.toString());
                     }
                     nb = new StringBuilder();
                     vb = new StringBuilder();
@@ -1661,7 +1659,7 @@ public class HtmlUtils {
                     continue;
                 }
                 vb.append(c);
-                if (debug) {
+                if (debug2) {
                     System.err.println("no quote:" + vb);
                 }
 
@@ -1672,10 +1670,11 @@ public class HtmlUtils {
         }
         String name = nb.toString();
         if (name.length() > 0) {
-            properties.put(name, vb.toString());
+	    if (debug1) System.err.println("PROP:" + name +"=" + vb+";");
+            properties.put(name.trim(), vb.toString());
         }
-        if (debug) {
-            System.err.println("props:" + properties);
+        if (debug1) {
+	    //            System.err.println("props:" + properties);
         }
 
 
@@ -5217,8 +5216,8 @@ public class HtmlUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        System.err.println(decodeColor("rgb(1,2,3)", null));
-        System.err.println(decodeColor("#000", null));
+	debug1 = true;
+	parseHtmlProperties("multi=2  \n   z= \"1\" template=\"x\ny\"");
 
         if (true) {
             return;

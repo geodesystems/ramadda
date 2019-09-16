@@ -602,9 +602,6 @@ public class WikiUtil {
         }
 
 
-
-
-
         List headings = new ArrayList();
         pattern = Pattern.compile("(?m)^\\s*(==+)([^=]+)(==+)\\s*$");
         matcher = pattern.matcher(s);
@@ -631,13 +628,12 @@ public class WikiUtil {
             matcher = pattern.matcher(s);
         }
 
+	//	s = parseProperties(s, handler, notTags);
+
         boolean              closeTheTag     = false;
-
-
         int                  ulCnt           = 0;
         int                  olCnt           = 0;
         StringBuffer         buff            = new StringBuffer();
-
         StringBuilder        js              = new StringBuilder("\n");
         List<TabState>       allTabStates    = new ArrayList<TabState>();
         List<TabState>       tabStates       = new ArrayList<TabState>();
@@ -654,6 +650,9 @@ public class WikiUtil {
 	String afterId = null;
 	String afterPause = null;
 	String afterFade = null;
+	boolean inPropertyTag = false;
+	//	System.err.println("S:"+ s+":");
+	s = s.replaceAll("\r", "");
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             if ((line.indexOf("${") >= 0)
@@ -679,6 +678,31 @@ public class WikiUtil {
             }
 
             String tline = line.trim();
+	    //	    System.err.println("Line:"+ line+":");
+
+	    if(tline.startsWith("{{")) {
+		buff.append(tline);
+		buff.append("\n");
+		if(tline.indexOf("}}")<0) {
+		    inPropertyTag = true;
+		}
+		continue;
+	    }
+
+	    if(inPropertyTag && tline.endsWith("}}")) {
+		buff.append(tline);
+		buff.append("\n");
+		inPropertyTag = false;
+		continue;
+	    }
+
+	    if(inPropertyTag) {
+		buff.append(tline);
+		buff.append("\n");
+		continue;
+	    }
+
+
             if (tline.equals("+pre")) {
                 inPre = true;
                 buff.append("<pre>\n");
@@ -769,7 +793,6 @@ public class WikiUtil {
 
             if (currentVar != null) {
                 currentVarValue.append(tline);
-
                 continue;
             }
 
@@ -1357,8 +1380,8 @@ public class WikiUtil {
 		continue;
 	    }
 
-            if (tline.startsWith("+section")) {
 
+            if (tline.startsWith("+section")) {
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                 Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
                                       > 1)
@@ -2016,7 +2039,8 @@ public class WikiUtil {
         }
 
 
-        StringBuffer sb      = new StringBuffer();
+
+        StringBuffer sb = new StringBuffer();
         int          baseIdx = 0;
         while (true) {
             int idx1 = s.indexOf(TAG_PREFIX, baseIdx);
@@ -2201,6 +2225,9 @@ public class WikiUtil {
 
         return s;
     }
+
+
+
 
 
 

@@ -107,6 +107,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_LABEL, null, ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property"),
                             new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),
                             new WikiTag(WIKI_TAG_HTML),
+                            new WikiTag("multi", null, "_attrs", "attr1,attr2"),
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
                             new WikiTag(WIKI_TAG_IMPORT, null, ATTR_ENTRY,""),
                             new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"false"),
@@ -130,6 +131,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE), 
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
+                            new WikiTag(WIKI_TAG_MULTI, null), 
                             new WikiTag(WIKI_TAG_APPLY, null, APPLY_PREFIX
                                                               + "tag", WIKI_TAG_HTML, APPLY_PREFIX
                                                               + "layout", "table", APPLY_PREFIX
@@ -593,6 +595,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        String[] notTags) {
 
         try {
+
+
+
+
             Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request = (Request) wikiUtil.getProperty(ATTR_REQUEST);
             //Check for infinite loop
@@ -602,9 +608,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             property = property.replaceAll("(?m)^\\s*//.*?$", "");
-            property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
-            property = property.replaceAll("\\n", " ");
-            property = property.replaceAll("\r", "");
+	    //            property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
+	    //            property = property.replaceAll("\\n", " ");
+	    //            property = property.replaceAll("\r", "");
 
 
 
@@ -652,15 +658,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                 }
             }
+	    remainder = remainder.replaceAll("\\\\\"","_XQUOTE_");
+	    //	    System.err.println("PROPERTY:");
+	    //	    System.err.println("TAG:" + tag);
+	    //	    System.err.println("REMAINDER:" + remainder);
             Hashtable tmpProps = HtmlUtils.parseHtmlProperties(remainder);
             Hashtable props    = new Hashtable();
             for (Enumeration keys =
-                    tmpProps.keys(); keys.hasMoreElements(); ) {
-                Object key = keys.nextElement();
-                if (key.toString().startsWith("#")) {
+		     tmpProps.keys(); keys.hasMoreElements(); ) {
+                String key = (String)keys.nextElement();
+                if (key.startsWith("#")) {
                     continue;
                 }
-                Object value = tmpProps.get(key);
+                String value = (String)tmpProps.get(key);
+		value  = value.replaceAll("_XQUOTE_","\"");
+		//		System.err.println("\tKEY:" + key +"=" +value);
                 props.put(key, value);
                 if (key instanceof String) {
                     String lowerCaseKey = ((String) key).toLowerCase();
@@ -1515,6 +1527,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        String theTag, Hashtable props)
             throws Exception {
 
+
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
 
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
@@ -2212,6 +2225,63 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             ss.processSearchRequest(myRequest, sb);
 
             return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_MULTI)) {
+	    //	    System.err.println("Mutli");
+	    Hashtable props2 = new Hashtable();
+	    Hashtable<String, List<String>> multiAttrs = new Hashtable<String, List<String>>();
+	    StringBuilder buff = new StringBuilder();
+	    //	    {{multi _foo="1,2,3" _bar="1,2,3" a="hello""}}	    
+	    //	    {{multi _template=":heading 1,2,3" _bar="1,2,3" a="hello""}}
+	    String tag = null;
+	    int max = 0;
+	    String template = null;
+	    for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+		String key = (String)keys.nextElement();
+		String value = (String) props.get(key);
+		//		System.err.println("\tk:" + key+"=" + value);
+		if(key.equals("_tag")) {
+		    tag = value;
+		} else if(key.equals("template")) {
+		    template = value;
+		} else if(key.startsWith("_")) {
+		    key = key.substring(1);
+		    List<String> toks = StringUtil.split(value,",");
+		    max  = Math.max(max, toks.size());
+		    multiAttrs.put(key, toks);
+		} else {
+		    props2.put(key,value);
+		}
+	    }
+            int multiCount = getProperty(wikiUtil, props, "multiCount",-1);
+	    if(multiCount>0) max = multiCount;
+	    if(template!=null)
+		template = template.replaceAll("\\\\\\{","{").replaceAll("\\\\\\}","}");
+	    for(int i=0;i<max;i++) {
+		Hashtable _props = new Hashtable();
+		_props.putAll(props2);
+		String s = template;
+		for (Enumeration keys = multiAttrs.keys(); keys.hasMoreElements(); ) {
+		    String key = (String)keys.nextElement();
+		    List<String>values = multiAttrs.get(key);
+		    if(i<values.size()) {
+			String value =values.get(i); 
+			value  = value.replaceAll("_comma_",",");
+			_props.put(key,value);
+			if(s!=null) {
+			    s = s.replaceAll("\\$\\{" + key +"\\}",value).replaceAll("\\$\\{" + "multiIndex" +"\\}",(i+1)+"");
+			}
+		    }
+		}
+		if(s!=null) {
+		    buff.append(wikifyEntry(request, entry, s));
+		} else {
+		    buff.append(getWikiIncludeInner(wikiUtil, request,
+						    originalEntry, entry,
+						    tag, _props));
+		}
+
+	    }
+	    return buff.toString();
         } else if (theTag.equals(WIKI_TAG_APPLY)) {
             StringBuilder style = new StringBuilder(getProperty(wikiUtil,
                                       props, APPLY_PREFIX + ATTR_STYLE, ""));

@@ -173,7 +173,7 @@ var wikiAttributes = {
 	    'label:Group Attributes',
 	    "showMenu=\"true\"",	      
 	    "showTitle=\"true\"",
-	    'layoutType="table"',
+	    'layoutType="table|flextable|tabs|columns|rows"',
 	    'layoutColumns="1"'
 	    ],
     links: [
