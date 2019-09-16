@@ -549,7 +549,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             }
         }
 
-        return new Result("", sb);
+        return new Result("", sb,Json.MIMETYPE);
     }
 
     /**
