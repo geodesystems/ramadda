@@ -933,7 +933,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		this.selectedRecord = null;
 		this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    }
-	    SUPER.updateUI.call(this);
+	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
 	    var pointData = this.getData();
