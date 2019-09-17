@@ -1150,8 +1150,17 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    } else {
 			var widget =$("#" + this.getDomId("filterby_" + f.getId())); 
 			if(!widget.val || widget.val()==null) continue;
-			var value = widget.val().trim();
-			//${filter_id template="sdsds"}
+			var value = widget.val();
+			if(!value) continue;
+			if(Array.isArray(value)) {
+			    var tmp = "";
+			    value.map(v=>{
+				if(tmp!="") tmp+=", ";
+				tmp+=v;
+			    });
+			    value = tmp;
+			}
+			value = value.trim();
 			if(value==FILTER_ALL) {
 			    var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
 			    headerTemplate = headerTemplate.replace(regexp,"");
