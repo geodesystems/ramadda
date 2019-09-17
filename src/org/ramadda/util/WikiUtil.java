@@ -545,10 +545,14 @@ public class WikiUtil {
             s = s.replaceAll("\r\n\r\n", "\n<p></p>\n");
             s = s.replaceAll("\r\r", "\n<p></p>\n");
         }
-        //        System.err.println (s);
-        s = s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");
-        s = s.replaceAll("'''([^']+)'''", "<b>$1</b>");
-        s = s.replaceAll("''([^']+)''", "<i>$1</i>");
+	/*
+        s = s.replaceAll("''''([^']+?)''''", "<b><i>$1</i></b>");
+        s = s.replaceAll("'''([^']+?)'''", "<b>$1</b>");
+        s = s.replaceAll("''([^']+?)''", "<i>$1</i>");
+	*/
+        s = s.replaceAll("''''(.*?)''''", "<b><i>$1</i></b>");
+        s = s.replaceAll("'''(.*?)'''", "<b>$1</b>");
+        s = s.replaceAll("''(.*?)''", "<i>$1</i>");	
         Pattern pattern;
         Matcher matcher;
         //<nowiki>
@@ -2385,23 +2389,27 @@ public class WikiUtil {
      * @param args _more_
      */
     public static void main(String[] args) {
-        try {
-            //            String contents = IOUtil.readContents(new java.io.File(args[0]));
-            //            contents = new WikiUtil().wikify(contents, null);
-            //            System.out.println("\ncontents:" + contents);
-            for (String c : new String[] {
-                "just text", "<nowiki>no wiki</nowiki>",
-                "text<nowiki>no wiki</nowiki>",
-                "text<nowiki>no wiki</nowiki>more text",
-                "text<nowiki>no wiki</nowiki>more text<nowiki>more no wiki</nowiki>",
-                "text<nowiki>no wiki</nowiki>more text<nowiki>more no wiki</nowiki>and more text"
-            }) {
-                System.out.println("Content:" + c);
-                System.out.println(splitOnNoWiki(c));
-            }
-        } catch (Exception exc) {
-            exc.printStackTrace();
-        }
+	String s="";
+	String s1 = "hello there how are you ''''contents '''' and how are you";
+	for(int i=0;i<1000;i++)
+	    s  = s+s1;
+	long t1 =  System.currentTimeMillis();
+	for(int i=0;i<10000;i++) {
+	    s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");
+	}
+	long t2 =  System.currentTimeMillis();
+	Utils.printTimes("t1:",t1,t2);
+
+	Pattern  p =Pattern.compile("'''''([^']+)'''''");
+	long tt1 =  System.currentTimeMillis();
+	for(int i=0;i<10000;i++) {
+	    Matcher m = p.matcher(s);
+	    m.replaceAll("<b><i>$1</i></b>");
+	}
+	long tt2 =  System.currentTimeMillis();
+	Utils.printTimes("t2:",tt1,tt2);
+
+
     }
 
     /**
