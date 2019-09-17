@@ -131,7 +131,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE), 
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
-                            new WikiTag(WIKI_TAG_MULTI, null), 
+                            new WikiTag(WIKI_TAG_MULTI, null,"#_tag","","#_template",""), 
                             new WikiTag(WIKI_TAG_APPLY, null, APPLY_PREFIX
                                                               + "tag", WIKI_TAG_HTML, APPLY_PREFIX
                                                               + "layout", "table", APPLY_PREFIX
@@ -604,7 +604,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             property = property.replaceAll("(?m)^\\s*//.*?$", "");
-	    property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
+            property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
             //            property = property.replaceAll("\\n", " ");
             //            property = property.replaceAll("\r", "");
 
@@ -2235,24 +2235,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MULTI)) {
-            //      System.err.println("Mutli");
             Hashtable props2 = new Hashtable();
             Hashtable<String, List<String>> multiAttrs =
                 new Hashtable<String, List<String>>();
-            StringBuilder buff = new StringBuilder();
-            //      {{multi _foo="1,2,3" _bar="1,2,3" a="hello""}}          
-            //      {{multi _template=":heading 1,2,3" _bar="1,2,3" a="hello""}}
-            String tag      = null;
-            int    max      = 0;
-            String template = null;
+            StringBuilder buff     = new StringBuilder();
+            String        tag      = null;
+            int           max      = 0;
+            String        template = null;
+            int           columns  = -1;
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
                 String value = (String) props.get(key);
-                //              System.err.println("\tk:" + key+"=" + value);
                 if (key.equals("_tag")) {
                     tag = value;
-                } else if (key.equals("template")) {
+                } else if (key.equals("_template")) {
                     template = value;
+                } else if (key.equals("_columns")) {
+                    columns = Integer.parseInt(value);
                 } else if (key.startsWith("_")) {
                     key = key.substring(1);
                     List<String> toks = StringUtil.split(value, ",");
@@ -2262,6 +2261,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     props2.put(key, value);
                 }
             }
+            if ((tag == null) && (template == null)) {
+                return getPageHandler().showDialogError(
+                    "No _tag or _template attribute specified");
+            }
             int multiCount = getProperty(wikiUtil, props, "multiCount", -1);
             if (multiCount > 0) {
                 max = multiCount;
@@ -2269,6 +2272,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (template != null) {
                 template = template.replaceAll("\\\\\\{",
                         "{").replaceAll("\\\\\\}", "}");
+            }
+            if (columns > 0) {
+                buff.append("<table width=100%><tr valign=top>\n");
+            }
+            int    colCnt   = 0;
+            String colWidth = null;
+            if (columns > 0) {
+                colWidth = ((int) 100 / columns) + "%";
             }
             for (int i = 0; i < max; i++) {
                 Hashtable _props = new Hashtable();
@@ -2290,13 +2301,26 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         }
                     }
                 }
+                if (columns > 0) {
+                    if (colCnt++ >= columns) {
+                        buff.append("</tr><tr valign=top>");
+                        colCnt = 0;
+                    }
+                    buff.append("<td width='" + colWidth + "'>");
+                }
                 if (s != null) {
-                    buff.append(wikifyEntry(request, entry, s));
+                    buff.append(wikifyEntry(request, entry, wikiUtil, s,
+                                            false, null, null, null));
                 } else {
                     buff.append(getWikiIncludeInner(wikiUtil, request,
                             originalEntry, entry, tag, _props));
                 }
-
+                if (columns > 0) {
+                    buff.append("</td>");
+                }
+            }
+            if (columns > 0) {
+                buff.append("</tr></table>\n");
             }
 
             return buff.toString();
