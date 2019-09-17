@@ -989,10 +989,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var widgetId = this.getFilterId(prop.fieldId);
 		this.settingFilterValue = true;
 		if(Utils.isDefined(prop.value2)) {
-		    this.jq(widgetId+"_min").val(prop.value);
-		    this.jq(widgetId+"_min").attr("value", prop.value);
-		    this.jq(widgetId+"_max").val(prop.value2);
-		    this.jq(widgetId+"_max").attr("value", prop.value2);
+		    $("#" +widgetId+"_min").val(prop.value);
+		    $("#" +widgetId+"_min").attr("value", prop.value);
+		    $("#" +widgetId+"_max").val(prop.value2);
+		    $("#" +widgetId+"_max").attr("value", prop.value2);
 		} else {
 		    var widget = $("#"+widgetId);
 		    widget.val(prop.value);
@@ -1619,6 +1619,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var maxValue = parseFloat(maxField.val().trim());
 		    var dfltMinValue = parseFloat(minField.attr("data-min"));
 		    var dfltMaxValue = parseFloat(maxField.attr("data-max"));
+//		    console.log(this.type +" filterData:" + filterField.getId() +" " +minValue +" " + maxValue);
+
 		    if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 			value = [minValue,maxValue];
 		    } else  {
@@ -1653,6 +1655,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		values.push({value:value,regexps:regexps,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
 	    }
 
+//	    console.log(this.type +" filterData:" + JSON.stringify(values,null,2));
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
 		var record = dataList[rowIdx];
                 var date = record.getDate();
@@ -3283,9 +3286,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var dfltValueMin = this.getProperty(filterField.getId() +".filterValueMin",min);
 			var dfltValueMax = this.getProperty(filterField.getId() +".filterValueMax",max);
 
-                        widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range","style",widgetStyle, "id",widgetId+"_min","size",4,"fieldId",filterField.getId()]);
+                        widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",4,"fieldId",filterField.getId()]);
 			widget += " - ";
-                        widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range","style",widgetStyle, "id",widgetId+"_max","size",4,"fieldId",filterField.getId()]);
+                        widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",4,"fieldId",filterField.getId()]);
 		    } else if(filterField.getType() == "date") {
                         widget =HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date1"]) +" - " +
 			    HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date2"]);
@@ -3331,7 +3334,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    this.jq(ID_HEADER2).html(header2);
-
 	    var theDisplay = this;
 
             if(filterBy.length>0) {
@@ -3392,6 +3394,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 
 		});
+
+
 
 
 
