@@ -1366,6 +1366,7 @@ var HtmlUtils = {
         info.editor = ace.edit(id);
         info.formId = formId;
         info.hidden = hidden;
+	info.editor.setBehavioursEnabled(false);
         info.editor.setKeyboardHandler("emacs");
         info.editor.setShowPrintMargin(false);
         info.editor.getSession().setUseWrapMode(true);
