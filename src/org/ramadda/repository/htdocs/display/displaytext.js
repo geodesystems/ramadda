@@ -2240,7 +2240,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (pattern) {
                 regexp = new RegExp("(" + pattern + ")","i");
             }
-	    var regexpMap = {};
+	    var regexpMaps = {};
 	    var filterFieldMap = {};
 	    if(this.filterFields) {
 		this.filterFields.map(f=>{if(f.isString)filterFieldMap[f.getId()]=true;});
@@ -2256,10 +2256,16 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     var f = fields[col];
 		    if(rowIdx==0) {
 			if(filterFieldMap[f.getId()]) {
-			    var value = this.getFilterFieldValue(f);
+			    var value = this.getFilterFieldValues(f);
+			    //TODO:
 			    if(value && value.length>0) {
 				try {
-				    regexpMap[f.getId()] =  new RegExp("(" + value + ")","i");
+				    regexpMaps[f.getId()] =  [];
+				    if(Array.isArray(value)) {
+					value.map(v=>regexpMaps[f.getId()].push(new RegExp("(" + v + ")","i")));
+				    } else {
+					regexpMaps[f.getId()].push(new RegExp("(" + value + ")","i"));
+				    }
 				} catch(e) {}
 			    }
 			}
@@ -2267,8 +2273,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     line += " ";
 		    var value = ""+row[f.getIndex()];
                     value = value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-		    if(regexpMap[f.getId()]) {
-			value = value.replace(regexpMap[f.getId()], "<span style=background:yellow;>$1</span>");
+		    if(regexpMaps[f.getId()]) {
+			regexpMaps[f.getId()].map(re=>{value = value.replace(re, "<span style=background:yellow;>$1</span>")});
 		    }
                     line += value;
                 }

@@ -1711,14 +1711,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         requiresGrouping:  function() {
             return false;
         },
-	getFilterFieldValue:function(field) {
-	    var value;
+	getFilterFieldValues:function(field) {
 	    var element =$("#" + this.getDomId("filterby_" + field.getId()));
-	    value = element.val();
+	    var value = element.val();
 	    if(!value)
 		value = element.attr("value");
+	    if(!Array.isArray(value)) value = value.split(",");
+	    var tmp = [];
+	    value.map(v=>tmp.push(v.trim()));
+	    value = tmp;
 	    return value;
-
 	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 	    var t1=  new Date();
@@ -1741,8 +1743,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
 		if(filterField.isString()) {
-		    var value = this.getFilterFieldValue(filterField);
-		    if(value == FILTER_ALL) {
+		    var values = this.getFilterFieldValues(filterField);
+		    if(values.includes(FILTER_ALL)) {
 			allIsUsed = true;
 			break;
 		    }
@@ -1760,6 +1762,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if (prefix) pattern = prefix + value;
 		if (suffix) pattern = value + suffix;
 		var value;
+		var values = [];
 		var _values =[];
 		var regexps =[];
 		if(filterField.isNumeric()) {
@@ -1789,7 +1792,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date2=null;
 		    value = [date1,date2]; 
 		}  else {
-		    value = this.getFilterFieldValue(filterField);
+		    value = this.getFilterFieldValues(filterField);
 		    if(!Array.isArray(value)) value = [value];
 		    value.map(v=>{
 			_values.push((""+v).toLowerCase());
@@ -1797,7 +1800,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    regexps.push(new RegExp(v,"i"));
 			} catch(skipIt){}
 		    });
-		    
 		}
 		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
 		var anyValues = false;
@@ -1828,13 +1830,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(values[i]==null) continue;
 		    var filterValue = values[i].value;
 		    var filterField = this.filterFields[i];
-		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]==FILTER_ALL)) continue;
+		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]==FILTER_ALL)) {
+			continue;
+		    }
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
 			ok = false;
 			for(var j=0;j<filterValue.length;j++) {
-			    var v = ""+filterValue[j];
-			    if((""+value)==v) {
+			    var fv = ""+filterValue[j];
+			    if((""+value)==fv) {
 				ok = true;
 				break;
 			    }
@@ -3553,7 +3557,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			parent.find(".display-filterby-button-selected").each(function() {
 			    values.push($(this).attr("value"));
 			});
-			var value =  Utils.join(values,",");
+			if(values.length==0) {
+			    parent.find(".display-filterby-button-all").addClass("display-filterby-button-selected");
+			    values.push(FILTER_ALL);
+			}
+			var value =  Utils.join(values,", ");
 			parent.attr("value",value);
 			$("#"+parent.attr("id") +"_label").html(values.includes(FILTER_ALL)?"&nbsp;":value);
 			inputFunc(parent,null, value);
@@ -4682,7 +4690,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 function DisplayGroup(argDisplayManager, argId, argProperties, type) {
     var LAYOUT_TABLE = "table";
-    var LAYOUT_FLEXTABLE = "flextable";
+    var LAYOUT_HTABLE = "htable";
     var LAYOUT_TABS = "tabs";
     var LAYOUT_COLUMNS = "columns";
     var LAYOUT_ROWS = "rows";
@@ -4835,7 +4843,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 displaysToLayout[i].setProperty(PROP_DIVID,divId);
                 displaysToLayout[i].layoutDiv=div;
             }
-            if (this.layout == LAYOUT_FLEXTABLE) {
+            if (this.layout == LAYOUT_TABLE) {
                 if  (displaysToLayout.length== 1) {
                     html += displaysToLayout[0].layoutDiv;
                 } else {
@@ -4877,7 +4885,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                         html += HtmlUtils.closeTag(TAG_DIV);
                     }
                 }
-	    } else if (this.layout == LAYOUT_TABLE) {
+	    } else if (this.layout == LAYOUT_HTABLE) {
                 if  (displaysToLayout.length== 1) {
                     html += displaysToLayout[0].layoutDiv;
                 } else {
@@ -17273,7 +17281,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (pattern) {
                 regexp = new RegExp("(" + pattern + ")","i");
             }
-	    var regexpMap = {};
+	    var regexpMaps = {};
 	    var filterFieldMap = {};
 	    if(this.filterFields) {
 		this.filterFields.map(f=>{if(f.isString)filterFieldMap[f.getId()]=true;});
@@ -17289,10 +17297,16 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     var f = fields[col];
 		    if(rowIdx==0) {
 			if(filterFieldMap[f.getId()]) {
-			    var value = this.getFilterFieldValue(f);
+			    var value = this.getFilterFieldValues(f);
+			    //TODO:
 			    if(value && value.length>0) {
 				try {
-				    regexpMap[f.getId()] =  new RegExp("(" + value + ")","i");
+				    regexpMaps[f.getId()] =  [];
+				    if(Array.isArray(value)) {
+					value.map(v=>regexpMaps[f.getId()].push(new RegExp("(" + v + ")","i")));
+				    } else {
+					regexpMaps[f.getId()].push(new RegExp("(" + value + ")","i"));
+				    }
 				} catch(e) {}
 			    }
 			}
@@ -17300,8 +17314,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     line += " ";
 		    var value = ""+row[f.getIndex()];
                     value = value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-		    if(regexpMap[f.getId()]) {
-			value = value.replace(regexpMap[f.getId()], "<span style=background:yellow;>$1</span>");
+		    if(regexpMaps[f.getId()]) {
+			regexpMaps[f.getId()].map(re=>{value = value.replace(re, "<span style=background:yellow;>$1</span>")});
 		    }
                     line += value;
                 }
