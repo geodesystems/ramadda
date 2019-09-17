@@ -1159,8 +1159,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(request, entry,
                               wikiTemplate, true, null, null,
-                              new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
-                                             WikiConstants.WIKI_TAG_MAP });
+						       new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
+								      WikiConstants.WIKI_TAG_MAP, 
+								      WikiConstants.WIKI_TAG_EARTH});
             info.append(wiki);
         } else {
             HtmlUtils.sectionHeader(

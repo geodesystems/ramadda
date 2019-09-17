@@ -1537,6 +1537,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
+
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
 
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
@@ -1544,7 +1545,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (criteria != null) {}
 
         StringBuilder sb = new StringBuilder();
-        //        System.err.println("theTag:" + theTag);
         if (theTag.equals(WIKI_TAG_INFORMATION)) {
             Request myRequest = request.cloneMe();
             myRequest.put(ATTR_SHOWTITLE,
@@ -2106,8 +2106,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     children, sb, style, props);
 
             return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_EARTH)) {
+	    return getPageHandler().showDialogWarning("Google earth view is no longer available");
         } else if (theTag.equals(WIKI_TAG_MAP)
-                   || theTag.equals(WIKI_TAG_EARTH)
                    || theTag.equals(WIKI_TAG_MAPENTRY)) {
             handleMapTag(request, wikiUtil, entry, originalEntry, theTag,
                          props, sb);

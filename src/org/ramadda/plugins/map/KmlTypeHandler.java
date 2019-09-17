@@ -156,6 +156,8 @@ public class KmlTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
+
+    /*
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
@@ -170,7 +172,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
 
         return new Result("", sb);
     }
-
+    */
 
     /**
      * _more_
