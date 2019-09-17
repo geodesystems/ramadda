@@ -3383,7 +3383,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		this.jq(ID_FILTERBAR).find(".display-filterby-buttons").each(function(){
 		    let parent = $(this);
-		    $(this).find(".display-filterby-button").click(function(){
+		    $(this).find(".display-filterby-button").click(function(event){
 			parent.find(".display-filterby-button").removeClass("display-filterby-button-selected");
 			$(this).addClass("display-filterby-button-selected");
 			var value =  $(this).attr("value");

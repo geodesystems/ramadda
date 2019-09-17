@@ -1044,10 +1044,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return dflt;
             }
             s = s.trim();
-            boolean isPercent = s.endsWith("%");
-            if (isPercent) {
-                s = s.substring(0, s.length() - 1);
+	    boolean isPercent = false;
+	    while(s.length()>0 && s.endsWith("%")) {
+		isPercent = true;
+                s = s.substring(0, s.length() - 1).trim();
             }
+	    if(s.length()==0) return dflt;
             int v = new Integer(s).intValue();
             if (isPercent) {
                 v = -v;
