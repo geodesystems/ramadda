@@ -383,23 +383,40 @@ function initMapFunctions(theMap) {
             theMap.centerOnMarkers(theMap.dfltBounds);
         },
         handleFeatureover: function(feature, skipText) {
+	    if(feature.highlightText) {
+		console.log("over");
+		var location = feature.location;
+		if (location) {
+		    if(this.highlightFeature != feature) {
+			this.closeHighlightPopup();
+			var projPoint = this.transformLLPoint(location);
+			var text =HtmlUtils.div(["style","padding:2px;"],feature.highlightText);
+			this.highlightPopup = new OpenLayers.Popup("popup",
+								   projPoint,
+								   null,
+								   //								   feature.highlightSize,
+								   text,
+								   false);
+
+			this.highlightPopup.keepInMap=true;
+			this.highlightPopup.autoSize=true;
+			this.highlightPopup.padding=0;
+			this.map.addPopup(this.highlightPopup);
+		    }
+		}
+	    }
+
+
             var layer = feature.layer;
             if (!(layer.isMapLayer === true)) {
-                /*
-                if(feature.ramaddaId) {
-                    marker = this.findMarker(feature.ramaddaId);
-                    if(marker) {
-                        this.circleMarker(feature.ramaddaId,ramaddaCircleHiliteAttrs);
-                        return;
-                    }
-                    }*/
                 if (!skipText && feature.text) {
                     this.showFeatureText(feature);
                 }
                 return;
             }
 
-            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
+//            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
+	    if (layer.canSelect === false) return;
             var _this = this;
             if (!feature.isSelected) {
                 feature.originalStyle = feature.style;
@@ -420,7 +437,16 @@ function initMapFunctions(theMap) {
 
             }
         },
+	closeHighlightPopup: function() {
+            if(this.highlightPopup) {
+                this.map.removePopup(this.highlightPopup);
+                this.highlightPopup.destroy();
+		this.highlightPopup  = null;
+		this.highlightFeature = null;
+	    }
+	},
         handleFeatureout: function(feature, skipText) {
+	    this.closeHighlightPopup();
             layer = feature.layer;
             if (layer && !(layer.isMapLayer === true)) {
                 if (!skipText) {
@@ -3424,7 +3450,7 @@ function initMapFunctions(theMap) {
         }
 
     }
-    theMap.showMarkerPopup = function(marker, fromClick) {
+    theMap.showMarkerPopup = function(marker, fromClick, simplePopup) {
         if (this.entryClickHandler && window[this.entryClickHandler]) {
             if (!window[this.entryClickHandler](this, marker)) {
                 return;
@@ -3496,12 +3522,23 @@ function initMapFunctions(theMap) {
 
         var projPoint = this.transformLLPoint(location);
 
-        popup = new OpenLayers.Popup.FramedCloud("popup", projPoint,
-            null, markertext, null, true,
-            function() {
-                theMap.onPopupClose()
-            });
 
+
+
+
+	if(simplePopup || this.simplePopup) {
+	    popup = new OpenLayers.Popup("popup",
+					 projPoint,
+					 null,
+					 HtmlUtils.div(["style",""],markertext),
+					 true);
+	} else {
+            popup = new OpenLayers.Popup.FramedCloud("popup", projPoint,
+						     null, markertext, null, true,
+						     function() {
+							 theMap.onPopupClose()
+						     });
+	} 
 
         if (marker.inputProps && marker.inputProps.minSizeX) {
             popup.minSize = new OpenLayers.Size(marker.inputProps.minSizeX, marker.inputProps.minSizeY);

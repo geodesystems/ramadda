@@ -22140,6 +22140,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 
 		var tooltip = this.getProperty("tooltip");
+		var highlight = this.getProperty("highlight");
                 var html = this.getRecordHtml(pointRecord, fields,tooltip);
 		if(polygonField) {
 		    var s = values[polygonField.getIndex()];
@@ -22260,6 +22261,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     var date = pointRecord.getDate();
 		    if(mapPoint) {
+			if(highlight)
+			    mapPoint.highlightText = this.getRecordHtml(pointRecord, fields,highlight);
 			mapPoint.record = pointRecord;
 			mapPoint.hasColorByValue = hasColorByValue;
 		 	mapPoint.colorByValue= colorByValue;

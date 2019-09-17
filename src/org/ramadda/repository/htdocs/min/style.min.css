@@ -419,6 +419,10 @@ a.ramadda-menubar-button:hover {
     position:relative;
 }
 
+.olPopupContent {
+    padding:0px !important;
+}
+
 .ramadda-map {
     border:1px #aaa solid;
     background-color:#7391ad; 
