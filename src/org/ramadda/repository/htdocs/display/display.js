@@ -1071,7 +1071,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return HtmlUtils.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
         getLoadingMessage: function(msg) {
-            if (!msg) msg = "Loading data...";
+            if (!msg) msg = this.getProperty("loadingMessage", "Loading data...");
+	    if(msg=="") return "";
             return HtmlUtils.div(["text-align", "center"], this.getMessage("&nbsp;" + msg));
         },
         getMessage: function(msg) {
