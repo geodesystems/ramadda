@@ -25,6 +25,9 @@ merra2:MERRA-2
 ncep.reanalysis:NCEP/NCAR R1
 ncep.reanalysis2:NCEP/DOE R2
 jra55:JRA-55
+era5:ERA5
 
 # Observations
 GPCP:Global Precip Clim Project (GPCP)
+cpc_global_temp:CPC Global Temperature
+cpc_global_precip:CPC Global Precipitation
