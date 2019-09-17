@@ -3245,18 +3245,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    label = v;
 				}
 				if(v == dfltValue) extra = " display-filterby-button-selected ";
+				if(v == FILTER_ALL) extra = " display-filterby-button-all ";
 				if(useImage) {
 				    var image=null;
 				    if(imageMap) image = imageMap[v];
 				    if(!image || image=="") image = enums[j].image;
 				    if(image) {
-					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],
+					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],
 							       HtmlUtils.image(image,imageAttrs));
 				    } else {
-					buttons+=HtmlUtils.div(["class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],label);
+					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],label);
 				    }
 				} else {
-				    buttons+=HtmlUtils.div(["class","display-filterby-button  display-filterby-button-image" + extra,"value",v],label);
+				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button  display-filterby-button-image" + extra,"value",v],label);
 				}
 			    }
 
@@ -3384,12 +3385,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.jq(ID_FILTERBAR).find(".display-filterby-buttons").each(function(){
 		    let parent = $(this);
 		    $(this).find(".display-filterby-button").click(function(event){
-			parent.find(".display-filterby-button").removeClass("display-filterby-button-selected");
-			$(this).addClass("display-filterby-button-selected");
-			var value =  $(this).attr("value");
+			var isAll = $(this).hasClass("display-filterby-button-all");
+			var wasSelected = $(this).hasClass("display-filterby-button-selected");
+			var fieldId = $(this).attr("fieldId");
+			var multiples = _this.getProperty(fieldId +".filterMultiple",false);
+			if(!event.metaKey || isAll || !multiples) {
+			    parent.find(".display-filterby-button").removeClass("display-filterby-button-selected");
+			} else {
+			    parent.find(".display-filterby-button-all").removeClass("display-filterby-button-selected");
+			}
+			if(wasSelected  && event.metaKey) {
+			    $(this).removeClass("display-filterby-button-selected");
+			} else {
+			    $(this).addClass("display-filterby-button-selected");
+			}
+			var values = [];
+			parent.find(".display-filterby-button-selected").each(function() {
+			    values.push($(this).attr("value"));
+			});
+			var value =  Utils.join(values,",");
 			parent.attr("value",value);
-			$("#"+parent.attr("id") +"_label").html(value==FILTER_ALL?"&nbsp;":value);
-//			console.log(_this.type +" button clicked:" + value);
+			$("#"+parent.attr("id") +"_label").html(values.includes(FILTER_ALL)?"&nbsp;":value);
 			inputFunc(parent,null, value);
 		    });
 
