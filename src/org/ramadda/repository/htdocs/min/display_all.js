@@ -197,7 +197,7 @@ var PROP_LAYOUT_HERE = "layoutHere";
 var PROP_HEIGHT = "height";
 var PROP_WIDTH = "width";
 var FILTER_ALL = "-all-";
-
+var HIGHLIGHT_COLOR = "yellow";
 
 function initRamaddaDisplays() {
     ramaddaCheckForResize();
@@ -1723,7 +1723,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return value;
 	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
-	    var t1=  new Date();
+//	    var t1=  new Date();
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -1737,34 +1737,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 	    var newData = [];
-	    var values = [];
-	    var allIsUsed = false;
-	    
-	    for(var i=0;i<this.filterFields.length;i++) {
-		var filterField = this.filterFields[i];
-		if(filterField.isString()) {
-		    var values = this.getFilterFieldValues(filterField);
-		    if(values.includes(FILTER_ALL)) {
-			allIsUsed = true;
-			break;
-		    }
-		}
-	    }
+	    var filters = {};
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
 		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
-		var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
- 		if(allIsUsed && !useIfAll) {
-		    values.push(null);
-		    continue;
-		}
 		if (prefix) pattern = prefix + value;
 		if (suffix) pattern = value + suffix;
-		var value;
-		var values = [];
+		var value=null;
+		var values=null;
 		var _values =[];
 		var regexps =[];
+		var values=null;
 		if(filterField.isNumeric()) {
 		    var minField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_min"));
 		    var maxField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_max"));
@@ -1776,8 +1760,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		    if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 			value = [minValue,maxValue];
-		    } else  {
-			value = [NaN,NaN];
 		    }
  		} else if(filterField.getType()=="date"){
 		    var date1 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date1")).val();
@@ -1790,11 +1772,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date2 =  Utils.parseDate(date2);
 		    else
 			date2=null;
-		    value = [date1,date2]; 
+		    if(date1!=null && date2!=null)
+			value = [date1,date2]; 
 		}  else {
-		    value = this.getFilterFieldValues(filterField);
-		    if(!Array.isArray(value)) value = [value];
-		    value.map(v=>{
+		    values = this.getFilterFieldValues(filterField);
+		    if(!values && !Array.isArray(values)) values = [values];
+		    if(values.length==0) continue;
+		    var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
+		    if(!useIfAll) {
+			var allIsUsed = false;
+			if(values.includes(FILTER_ALL)) {
+			    allIsUsed = true;
+			    break;
+			}
+ 			if(allIsUsed) {
+			    continue;
+			}
+		    }
+		    values.map(v=>{
 			_values.push((""+v).toLowerCase());
 			try {
 			    regexps.push(new RegExp(v,"i"));
@@ -1802,12 +1797,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		}
 		var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
-		var anyValues = false;
-		_values.map(v=>{if(v.length>0)anyValues = true});
-		values.push({value:value,regexps:regexps,_values:_values,anyValues:anyValues,startsWith:filterStartsWith});
-	    }
+		var anyValues = value!=null;
+		if(!anyValues && values) {
+		    values.map(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
+		}
+		if(anyValues) {
+		    filters[filterField.getId()] = {
+			value:value,
+			values:values,
+			regexps:regexps,
+			_values:_values,
+			anyValues:anyValues,
+			startsWith:filterStartsWith,
+		
+		    };
 
-//	    console.log(this.type +" filterData:" + JSON.stringify(values,null,2));
+		}
+	    }
+//	    console.log(this.type +" filterData:" + JSON.stringify(filters,null,2));
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
 		var record = dataList[rowIdx];
                 var date = record.getDate();
@@ -1821,68 +1828,61 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
 			continue;
 		}
-
-
 		var row = this.getDataValues(record);
 		var ok = true;
 		for(var i=0;i<this.filterFields.length;i++) {
 		    if(!ok) break;
-		    if(values[i]==null) continue;
-		    var filterValue = values[i].value;
 		    var filterField = this.filterFields[i];
-		    if(filterValue == null || filterValue.length==0 || (filterValue.length==1 && filterValue[0]==FILTER_ALL)) {
-			continue;
-		    }
-		    var value = row[filterField.getIndex()];
+		    var filter = filters[filterField.getId()];
+		    if(filter==null) continue;
+		    var rowValue = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
-			ok = false;
-			for(var j=0;j<filterValue.length;j++) {
-			    var fv = ""+filterValue[j];
-			    if((""+value)==fv) {
+			    ok = false;
+			for(var j=0;j<filter.values.length;j++) {
+			    var fv = ""+filter.values[j];
+			    if((""+rowValue)==fv) {
 				ok = true;
 				break;
 			    }
 			}
 		    } else if(filterField.isNumeric()) {
-			if(isNaN(filterValue[0]) && isNaN(filterValue[0])) continue;
-			if(isNaN(value)) {
-			    ok = false;
-			}  else {
-			    if(!isNaN(filterValue[0]) && value<filterValue[0]) ok = false;
-			    else if(!isNaN(filterValue[1]) && value>filterValue[1]) ok = false;
-			}
+			if(isNaN(filter.value[0]) && isNaN(filter.value[0])) continue;
+			if(!isNaN(filter.value[0]) && rowValue<filter.value[0]) ok = false;
+			else if(!isNaN(filter.value[1]) && rowValue>filter.value[1]) ok = false;
 		    } else if(filterField.getType()=="date"){
-			if(value && typeof value == "object") {
-			    var date1 = filterValue[0];
-			    var date2 = filterValue[1];
-			    if(date1 && value.getTime()<date1.getTime())
+			if(filter.value && typeof filter.value[0] && Array.isArray(filter.value)) {
+			    if(rowValue == null) {
 				ok = false;
-			    else if(date2 && value.getTime()>date2.getTime())
-				ok = false;
+			    }    else  {
+				var date1 = filter.value[0];
+				var date2 = filter.value[1];
+				if(date1 && rowValue.getTime()<date1.getTime())
+				    ok = false;
+				else if(date2 && rowValue.getTime()>date2.getTime())
+				    ok = false;
+			    }
 			}
 		    } else {
-			var startsWith = values[i].startsWith;
-			var _values = values[i]._values;
-			if(values[i].anyValues) {
-			    ok = false;
-			    value  = (""+value).toLowerCase();
-			    for(var j=0;j<_values.length;j++) {
-				var fv = _values[j];
-				if(startsWith) {
-				    if(value.startsWith(fv)) {
-					ok = true;
-					break;
-				    }
-				} else  if(value.indexOf(fv)>=0) {
+			var startsWith = filter.startsWith;
+			ok = false;
+			roWValue  = (""+rowValue).toLowerCase();
+			for(var j=0;j<filter._values.length;j++) {
+			    var fv = _values[j];
+			    if(startsWith) {
+				if(rowValue.startsWith(fv)) {
 				    ok = true;
 				    break;
-				} else {
-				    for(ri=0;ri<values[i].regexps.length;ri++) {
-					if(value.match(values[i].regexps[ri])) {
-					    ok = true;
-					    break;
-					}
-				    }
+				}
+			    } else  if(rowValue.indexOf(fv)>=0) {
+				ok = true;
+				break;
+			    }
+			}
+			if(!ok) {
+			    for(ri=0;ri<filter.regexps.length;ri++) {
+				if(rowValue.match(filter.regexps[ri])) {
+				    ok = true;
+				    break;
 				}
 			    }
 			}
@@ -3441,9 +3441,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var dfltValueMin = this.getProperty(filterField.getId() +".filterValueMin",min);
 			var dfltValueMax = this.getProperty(filterField.getId() +".filterValueMax",max);
 
-                        widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",4,"fieldId",filterField.getId()]);
+                        widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",14,"fieldId",filterField.getId()]);
 			widget += " - ";
-                        widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",4,"fieldId",filterField.getId()]);
+                        widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",14,"fieldId",filterField.getId()]);
 		    } else if(filterField.getType() == "date") {
                         widget =HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date1"]) +" - " +
 			    HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date2"]);
@@ -3600,7 +3600,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var match = item[0];
 			    item =  item[1];
 			    if(item.length>50) return;
-			    var label = item.replace(regexp,"<span style='background:yellow;'>" + match +"</span>");
+			    var label = item.replace(regexp,"<span style='background:" + HIGHLIGHT_COLOR +";'>" + match +"</span>");
 			    item = item.replace(/\'/g,"\'");
 			    html+=HtmlUtils.div(["class","display-filterby-popup-item","item",item],label)+"\n";
 			    itemCnt++;
@@ -3648,17 +3648,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		    if(isNaN(minValue)) minValue = range.min;	
 		    if(isNaN(maxValue)) maxValue = range.max;
-		    var scale = 1;
-		    if(range.min != Math.round(range.min)  || range.max != Math.round(range.max))
-			scale  = 10000;
+		    var step = (range.max-range.min)/100000;
 		    $( "#filterby-range" ).slider({
 			range: true,
-			min: parseFloat(range.min*scale),
-			max: parseFloat(range.max*scale),
-			values: [ parseFloat(minValue*scale), parseFloat(maxValue*scale)],
+			min: range.min,
+			max: range.max,
+			step: step,
+			values: [minValue, maxValue],
 			slide: function( event, ui ) {
-			    min.val(ui.values[0]/scale);
-			    max.val(ui.values[1]/scale);
+			    min.val(ui.values[0]);
+			    max.val(ui.values[1]);
 			    min.attr("value",min.val());
 			    max.attr("value",max.val());
 			},
@@ -3706,13 +3705,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var value = f.val();
 	    if(Utils.isDefined(min)) {
 		if(value != min) {
-		    f.css("background","yellow");
+		    f.css("background",HIGHLIGHT_COLOR);
 		} else {
 		    f.css("background","white");
 		}
 	    } else if(Utils.isDefined(max)) {
 		if(value != max) {
-		    f.css("background","yellow");
+		    f.css("background",HIGHLIGHT_COLOR);
 		} else {
 		    f.css("background","white");
 		}
