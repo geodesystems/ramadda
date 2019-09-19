@@ -1140,13 +1140,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.settingFilterValue = true;
 		if(Utils.isDefined(prop.value2)) {
 		    $("#" +widgetId+"_min").val(prop.value);
-		    $("#" +widgetId+"_min").attr("value", prop.value);
+		    $("#" +widgetId+"_min").attr("data-value", prop.value);
 		    $("#" +widgetId+"_max").val(prop.value2);
-		    $("#" +widgetId+"_max").attr("value", prop.value2);
+		    $("#" +widgetId+"_max").attr("data-value", prop.value2);
 		} else {
 		    var widget = $("#"+widgetId);
 		    widget.val(prop.value);
-		    widget.attr("value",prop.value);
+		    widget.attr("data-value",prop.value);
 		    if(widget.attr("isButton")) {
 			widget.find(".display-filterby-button").removeClass("display-filterby-button-selected");
 			widget.find("[value='" + prop.value +"']").addClass("display-filterby-button-selected");
@@ -1713,9 +1713,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	getFilterFieldValues:function(field) {
 	    var element =$("#" + this.getDomId("filterby_" + field.getId()));
-	    var value = element.val();
-	    if(!value)
-		value = element.attr("value");
+	    var value=null;
+	    if(element.attr("isButton")) {
+		value = element.attr("data-value");
+	    } else {
+		value = element.val();
+	    }
 	    if(!Array.isArray(value)) value = value.split(",");
 	    var tmp = [];
 	    value.map(v=>tmp.push(v.trim()));
@@ -1778,6 +1781,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    values = this.getFilterFieldValues(filterField);
 		    if(!values && !Array.isArray(values)) values = [values];
 		    if(values.length==0) continue;
+		    var tmp = [];
+		    values.map(v=>{
+			tmp.push(v.replace(/_comma_/g,","));
+		    });
+		    values = tmp;
 		    var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
 		    if(!useIfAll) {
 			var allIsUsed = false;
@@ -3405,18 +3413,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    if(imageMap) image = imageMap[v];
 				    if(!image || image=="") image = enums[j].image;
 				    if(image) {
-					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],
+					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"data-value",v,"title",label],
 							       HtmlUtils.image(image,imageAttrs));
 				    } else {
-					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"value",v,"title",label],label);
+					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"data-value",v,"title",label],label);
 				    }
 				} else {
-				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button  display-filterby-button-image" + extra,"value",v],label);
+				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button  display-filterby-button-image" + extra,"data-value",v],label);
 				}
 			    }
 
 			    buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
-			    bottom+= HtmlUtils.div(["value",dfltValue,"class","display-filterby-buttons","id",widgetId,"isButton","true", "fieldId",
+			    bottom+= HtmlUtils.div(["data-value",dfltValue,"class","display-filterby-buttons","id",widgetId,"isButton","true", "fieldId",
 						    filterField.getId()], buttons);
 			    continue;
 			} else {
@@ -3441,9 +3449,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var dfltValueMin = this.getProperty(filterField.getId() +".filterValueMin",min);
 			var dfltValueMax = this.getProperty(filterField.getId() +".filterValueMax",max);
 
-                        widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",14,"fieldId",filterField.getId()]);
+                        widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",5,"fieldId",filterField.getId()]);
 			widget += " - ";
-                        widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",14,"fieldId",filterField.getId()]);
+                        widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",5,"fieldId",filterField.getId()]);
 		    } else if(filterField.getType() == "date") {
                         widget =HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date1"]) +" - " +
 			    HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date2"]);
@@ -3509,11 +3517,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    input2 = tmp;
 			}
 		    }
-		    if(!value)
+		    if(!value) {
 			value = input.val();
-		    if(!value || value=="")
-			value = input.attr("value");
-		    if(!value)value = input.val();
+		    } 
+		    if(!value || value=="") {
+			value = input.attr("data-value");
+		    }
+		    if(!value) {
+			value = input.val();
+		    }
+
 
                     var fieldId = input.attr("fieldId");
 		    _this.checkFilterField(input);
@@ -3555,16 +3568,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 			var values = [];
 			parent.find(".display-filterby-button-selected").each(function() {
-			    values.push($(this).attr("value"));
+			    values.push($(this).attr("data-value").replace(/,/g,"_comma_"));
 			});
 			if(values.length==0) {
 			    parent.find(".display-filterby-button-all").addClass("display-filterby-button-selected");
 			    values.push(FILTER_ALL);
 			}
-			var value =  Utils.join(values,", ");
-			parent.attr("value",value);
+			var value =  Utils.join(values,",");
+			parent.attr("data-value", value);
 			$("#"+parent.attr("id") +"_label").html(values.includes(FILTER_ALL)?"&nbsp;":value);
-			inputFunc(parent,null, value);
+			inputFunc(parent,null, values);
 		    });
 
 		});
@@ -3648,7 +3661,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		    if(isNaN(minValue)) minValue = range.min;	
 		    if(isNaN(maxValue)) maxValue = range.max;
-		    var step = (range.max-range.min)/100000;
+		    var step = 1;
+		    if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
+			step = (range.max-range.min)/100000;
 		    $( "#filterby-range" ).slider({
 			range: true,
 			min: range.min,
@@ -3658,8 +3673,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			slide: function( event, ui ) {
 			    min.val(ui.values[0]);
 			    max.val(ui.values[1]);
-			    min.attr("value",min.val());
-			    max.attr("value",max.val());
+			    min.attr("data-value",min.val());
+			    max.attr("data-value",max.val());
 			},
 			stop: function() {
 			    var popup = getTooltip();
