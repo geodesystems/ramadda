@@ -31,6 +31,7 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
+import org.ramadda.service.ServiceOperand;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.service.ServiceProvider;
 import org.ramadda.util.HtmlUtils;
@@ -159,6 +160,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** area argument - west */
     private static final String ARG_CDO_AREA_WEST = ARG_CDO_AREA + "_west";
 
+    /** climate dataset number */
+    public static final String ARG_CLIMATE_DATASET_NUMBER =
+        ARG_CDO_PREFIX + "clim_dataset_number";
 
     /** CDO Output Type */
     public static final OutputType OUTPUT_CDO =
@@ -1105,9 +1109,10 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             sb.append(HtmlUtils.hidden(SPATIALARGS[i] + ".original",
                                        points[i]));
         }
-        //ARG_PREFIX +
+        StringBuilder mapDiv = new StringBuilder();
         String llb = map.makeSelector(ARG_CDO_AREA, usePopup, points);
-        sb.append(HtmlUtils.formEntry(msgLabel("Region"), llb, 4));
+        mapDiv.append(HtmlUtils.div(llb));
+        sb.append(HtmlUtils.formEntry(msgLabel("Region"), mapDiv.toString(), 4));
     }
 
     /**
@@ -1476,7 +1481,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      * @param entry   the associated Entry
      * @param commands list of commands
      * @param dateCounter  the date counter
-     * @param includeMonths _more_
+     * @param includeMonths true to include months
      *
      * @throws Exception  on badness
      */
@@ -1880,7 +1885,39 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      */
     public void addGridRemapServices(Request request, ServiceInput si,
                                      List<String> commands) {
-        commands.add("-remapbil,r360x180");
+        String type =
+            si.getProperty(
+                "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
+
+        boolean needAnom = requestIsAnom(request);
+        if (needAnom
+                && (type.equals(
+                    ClimateModelApiHandler
+                        .ARG_ACTION_ENS_COMPARE) || type.equals(
+                            ClimateModelApiHandler.ARG_ACTION_COMPARE))) {
+            int climDatasetNumber = request.get(ARG_CLIMATE_DATASET_NUMBER,
+                                        0);
+            // TODO: If the models/resolutions wer the same, we don't really need to
+            // regrid, but for now, we'll do use the brute force method.
+            if (climDatasetNumber > 0) {
+                commands.add("-remapbil,r360x180");
+            }
+        }
+    }
+
+    /**
+     * Is this request asking for an anomaly?
+     *
+     * @param request the request
+     * @return
+     */
+    public static boolean requestIsAnom(Request request) {
+        String stat = request.getString(CDOOutputHandler.ARG_CDO_STAT);
+        boolean needAnom = stat.equals(STAT_ANOM)
+                           || stat.equals(STAT_STDANOM)
+                           || stat.equals(STAT_PCTANOM);
+
+        return needAnom;
     }
 
 }

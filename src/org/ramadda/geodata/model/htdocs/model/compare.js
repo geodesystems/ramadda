@@ -192,9 +192,14 @@ function CollectionForm(formId, plottype, args) {
                        parentProcessEntry.getRamadda().getRoot() + 
                        "/entry/getentries?output=zip.zipgroup&returnfilename=Climate_Model_Comparison" + 
                        zipentries, "(Download All Files)");
-                }
-                if (this.plottype === "enscompare") {
+                } else if (this.plottype === "enscompare") {
                   html += this.outputPDFFiles(pdffiles);
+                } else if (this.plottype === "multicompare") {
+                  html += this.outputPlotFiles(plotfiles);
+                  html += HtmlUtil.href(
+                       parentProcessEntry.getRamadda().getRoot() + 
+                       "/entry/getentries?output=zip.zipgroup&returnfilename=Climate_Model_Comparison" + 
+                       zipentries, "(Download All Files)");
                 }
                 var outputDiv = $('#' + this.formId +"_output");
                 if(outputDiv.length==0) {

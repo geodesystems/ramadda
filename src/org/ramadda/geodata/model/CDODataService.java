@@ -90,10 +90,6 @@ public abstract class CDODataService extends Service {
     public static final String CDO_SERVICE_LOCALHOST_PROTOCOL =
         "service.cdo.localhostprotocol";
 
-    /** climate dataset number */
-    public static final String ARG_CLIMATE_DATASET_NUMBER =
-        "clim_dataset_number";
-
     /** time average */
     public static final String ARG_TIME_AVERAGE = "time_average";
 
@@ -528,30 +524,39 @@ public abstract class CDODataService extends Service {
                 || (type.equals(ClimateModelApiHandler.ARG_ACTION_COMPARE)
                     && (si.getOperands().size() == 2))) {
             climyearsSB.append(Repository.msgLabel("Relative to"));
-            climyearsSB.append(HtmlUtils.radio(ARG_CLIMATE_DATASET_NUMBER,
-                    "1",
-                    RepositoryManager.getShouldButtonBeSelected(request,
-                            ARG_CLIMATE_DATASET_NUMBER,
-                            "1",
-                            false)));
+            climyearsSB.append(
+                HtmlUtils.radio(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                                "1",
+                                RepositoryManager.getShouldButtonBeSelected(
+                                    request,
+                                    CDOOutputHandler
+                                        .ARG_CLIMATE_DATASET_NUMBER,
+                                    "1",
+                                    false)));
             climyearsSB.append(HtmlUtils.space(1));
             climyearsSB.append(Repository.msg("Dataset 1"));
             climyearsSB.append(HtmlUtils.space(2));
-            climyearsSB.append(HtmlUtils.radio(ARG_CLIMATE_DATASET_NUMBER,
-                    "2",
-                    RepositoryManager.getShouldButtonBeSelected(request,
-                            ARG_CLIMATE_DATASET_NUMBER,
-                            "2",
-                            false)));
+            climyearsSB.append(
+                HtmlUtils.radio(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                                "2",
+                                RepositoryManager.getShouldButtonBeSelected(
+                                    request,
+                                    CDOOutputHandler
+                                        .ARG_CLIMATE_DATASET_NUMBER,
+                                    "2",
+                                    false)));
             climyearsSB.append(HtmlUtils.space(1));
             climyearsSB.append(Repository.msg("Dataset 2"));
             climyearsSB.append(HtmlUtils.space(2));
-            climyearsSB.append(HtmlUtils.radio(ARG_CLIMATE_DATASET_NUMBER,
-                    "0",
-                    RepositoryManager.getShouldButtonBeSelected(request,
-                            ARG_CLIMATE_DATASET_NUMBER,
-                            "0",
-                            true)));
+            climyearsSB.append(
+                HtmlUtils.radio(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                                "0",
+                                RepositoryManager.getShouldButtonBeSelected(
+                                    request,
+                                    CDOOutputHandler
+                                        .ARG_CLIMATE_DATASET_NUMBER,
+                                    "0",
+                                    true)));
             climyearsSB.append(HtmlUtils.space(1));
             climyearsSB.append(Repository.msg("Own Dataset"));
             climyearsSB.append(HtmlUtils.br());
@@ -742,35 +747,38 @@ public abstract class CDODataService extends Service {
                                 == 2))) {
                     climyearsSB.append(Repository.msgLabel("Relative to"));
                     climyearsSB.append(
-                        HtmlUtils.radio(ARG_CLIMATE_DATASET_NUMBER,
-                                        "1",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_CLIMATE_DATASET_NUMBER,
-                                            "1",
-                                            false)));
+                        HtmlUtils.radio(
+                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                            "1",
+                            RepositoryManager.getShouldButtonBeSelected(
+                                request,
+                                CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                                "1",
+                                false)));
                     climyearsSB.append(HtmlUtils.space(1));
                     climyearsSB.append(Repository.msg("Dataset 1"));
                     climyearsSB.append(HtmlUtils.space(2));
                     climyearsSB.append(
-                        HtmlUtils.radio(ARG_CLIMATE_DATASET_NUMBER,
-                                        "2",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_CLIMATE_DATASET_NUMBER,
-                                            "2",
-                                            false)));
+                        HtmlUtils.radio(
+                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                            "2",
+                            RepositoryManager.getShouldButtonBeSelected(
+                                request,
+                                CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                                "2",
+                                false)));
                     climyearsSB.append(HtmlUtils.space(1));
                     climyearsSB.append(Repository.msg("Dataset 2"));
                     climyearsSB.append(HtmlUtils.space(2));
                     climyearsSB.append(
-                        HtmlUtils.radio(ARG_CLIMATE_DATASET_NUMBER,
-                                        "0",
-                                        RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_CLIMATE_DATASET_NUMBER,
-                                            "0",
-                                            true)));
+                        HtmlUtils.radio(
+                            CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                            "0",
+                            RepositoryManager.getShouldButtonBeSelected(
+                                request,
+                                CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                                "0",
+                                true)));
                     climyearsSB.append(HtmlUtils.space(1));
                     climyearsSB.append(Repository.msg("Own Dataset"));
                     climyearsSB.append(HtmlUtils.br());
@@ -795,6 +803,7 @@ public abstract class CDODataService extends Service {
             sb.append(HtmlUtils.hidden(CDOOutputHandler.ARG_CDO_STAT,
                                        CDOOutputHandler.STAT_ANOM));
         }
+
     }
 
     /**
@@ -1058,7 +1067,7 @@ public abstract class CDODataService extends Service {
     /**
      * Get the operand argument as a string
      *
-     * @param opNum  the operand number 
+     * @param opNum  the operand number
      *
      * @return the appropriate string for the operand number
      */
@@ -1252,12 +1261,9 @@ public abstract class CDODataService extends Service {
         boolean useThreads = (numThreads > 2) && true;
         //System.err.println("Using threads: " + useThreads);
         ThreadManager threadManager = new ThreadManager(name + ".evaluate");
-        String        stat = request.getString(CDOOutputHandler.ARG_CDO_STAT);
         // If we need an anomaly, we run the first evaluation not in a thread so that the climatology
         // can get created first and there is no interference with other threads
-        boolean needAnom = stat.equals(CDOOutputHandler.STAT_ANOM)
-                           || stat.equals(CDOOutputHandler.STAT_STDANOM)
-                           || stat.equals(CDOOutputHandler.STAT_PCTANOM);
+        boolean needAnom = CDOOutputHandler.requestIsAnom(request);
         if (needAnom
                 && type.equals(
                     ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE)) {
@@ -1272,8 +1278,8 @@ public abstract class CDODataService extends Service {
                     ClimateModelApiHandler
                         .ARG_ACTION_ENS_COMPARE) || type.equals(
                             ClimateModelApiHandler.ARG_ACTION_COMPARE))) {
-            int climDatasetNumber = request.get(ARG_CLIMATE_DATASET_NUMBER,
-                                        0);
+            int climDatasetNumber =
+                request.get(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, 0);
             //sortedOps = sortOpsByModelExperiment(request,
             //        myInput.getOperands());
             //sortedOps = sortOperandsByCollection(request,
@@ -1615,7 +1621,7 @@ public abstract class CDODataService extends Service {
      * @param sample   a sample grid
      * @param climstartYear  starting year for climatology
      * @param climendYear    ending year for climatology
-     * @param ensName _more_
+     * @param ensName   the ensemble name
      *
      * @return  an entry or null
      *

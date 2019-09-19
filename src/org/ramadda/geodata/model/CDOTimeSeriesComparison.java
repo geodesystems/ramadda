@@ -1105,6 +1105,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         */
 
         /* TODO:  There's got to be a simpler way to figure all this out.  Most was done by trial and error */
+        int leadlagYears = 1;
         if (leadlag.equals("none")) {
             if ((tsStartMonth == modelStartMonth)
                     && (tsEndMonth == modelEndMonth)) {
@@ -1119,24 +1120,24 @@ public class CDOTimeSeriesComparison extends CDODataService {
             if (((tsStartMonth == modelStartMonth)
                     && (tsEndMonth == modelEndMonth))
                     && (tsEndYear == modelEndYear)) {
-                tsEndYear      = modelEndYear - 1;
-                modelStartYear = tsStartYear + 1;
+                tsEndYear      = modelEndYear - leadlagYears;
+                modelStartYear = tsStartYear + leadlagYears;
             } else if (modelSpanYear) {                     // e.g., DJF
                 if (tsSpanYear) {                           // e.g., DJF
                     if (modelEndYear == tsEndYear) {
-                        tsEndYear      = modelEndYear - 1;
-                        modelStartYear = tsStartYear + 1;
+                        tsEndYear      = modelEndYear - leadlagYears;
+                        modelStartYear = tsStartYear + leadlagYears;
                     } else if (tsEndYear >= modelEndYear) {
-                        tsEndYear      = modelEndYear - 1;
-                        modelStartYear = tsStartYear + 1;
+                        tsEndYear      = modelEndYear - leadlagYears;
+                        modelStartYear = tsStartYear + leadlagYears;
                     }
                 } else {
                     if (tsStartMonth >= modelStartMonth) {  // D predicts DJF
-                        tsEndYear      = modelEndYear - 2;
-                        modelStartYear = tsStartYear + 2;
+                        tsEndYear      = modelEndYear - (leadlagYears + 1);
+                        modelStartYear = tsStartYear + (leadlagYears + 1);
                     } else {
-                        tsEndYear      = modelEndYear - 1;
-                        modelStartYear = tsStartYear + 1;
+                        tsEndYear      = modelEndYear - leadlagYears;
+                        modelStartYear = tsStartYear + leadlagYears;
                     }
                 }
             } else if (tsSpanYear) {                        // tsSpan, but model not
@@ -1146,43 +1147,43 @@ public class CDOTimeSeriesComparison extends CDODataService {
                 }
             } else {                                        // neither span
                 if (tsEndMonth >= modelEndMonth) {
-                    tsEndYear      = modelEndYear - 1;
-                    modelStartYear = tsStartYear + 1;
+                    tsEndYear      = modelEndYear - leadlagYears;
+                    modelStartYear = tsStartYear + leadlagYears;
                 }
             }
         } else if (leadlag.equals("lag")) {
             if (((tsStartMonth == modelStartMonth)
                     && (tsEndMonth == modelEndMonth))
                     && (tsEndYear == modelEndYear)) {
-                modelEndYear = tsEndYear - 1;
-                tsStartYear  = modelStartYear + 1;
+                modelEndYear = tsEndYear - leadlagYears;
+                tsStartYear  = modelStartYear + leadlagYears;
             } else if (modelSpanYear) {                     // e.g., DJF
                 if (tsSpanYear) {                           // e.g., DJF
                     if (modelEndYear >= tsEndYear) {
-                        modelEndYear = tsEndYear - 1;
-                        tsStartYear  = modelStartYear + 1;
+                        modelEndYear = tsEndYear - leadlagYears;
+                        tsStartYear  = modelStartYear + leadlagYears;
                     } else if (tsEndYear >= modelEndYear) {
-                        modelEndYear = tsEndYear - 1;
-                        tsStartYear  = modelStartYear + 1;
+                        modelEndYear = tsEndYear - leadlagYears;
+                        tsStartYear  = modelStartYear + leadlagYears;
                     }
                 } else {
                     if (tsStartMonth >= modelStartMonth) {  // DJF predicts D
-                        modelEndYear = tsEndYear - 2;
-                        tsStartYear  = modelStartYear + 2;
+                        modelEndYear = tsEndYear - (leadlagYears + 1);
+                        tsStartYear  = modelStartYear + (leadlagYears + 1);
                     } else {
-                        modelEndYear = tsEndYear - 1;
-                        tsStartYear  = modelStartYear + 1;
+                        modelEndYear = tsEndYear - leadlagYears;
+                        tsStartYear  = modelStartYear + leadlagYears;
                     }
                 }
             } else if (tsSpanYear) {                        // tsSpan, but model not
                 if (tsEndYear == modelEndYear) {
-                    modelEndYear = tsEndYear - 1;
-                    tsStartYear  = modelStartYear + 1;
+                    modelEndYear = tsEndYear - leadlagYears;
+                    tsStartYear  = modelStartYear + leadlagYears;
                 }
             } else {                                        // neither span
                 if (tsEndMonth >= modelEndMonth) {
-                    modelEndYear = tsEndYear - 1;
-                    tsStartYear  = modelStartYear + 1;
+                    modelEndYear = tsEndYear - leadlagYears;
+                    tsStartYear  = modelStartYear + leadlagYears;
                 }
             }
         }

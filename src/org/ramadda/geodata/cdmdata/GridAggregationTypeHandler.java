@@ -230,7 +230,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         if (request == null) {
             request = getRepository().getTmpRequest();
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         NcmlUtil ncmlUtil = new NcmlUtil(entry.getValue(INDEX_TYPE,
                                 NcmlUtil.AGG_JOINEXISTING));

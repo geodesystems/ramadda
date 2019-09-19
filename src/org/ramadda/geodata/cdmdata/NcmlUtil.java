@@ -152,9 +152,9 @@ public class NcmlUtil {
     /**
      * Create an open Ncml tag
      *
-     * @param sb  the StringBuffer to add to
+     * @param sb  the StringBuilder to add to
      */
-    public static void openNcml(StringBuffer sb) {
+    public static void openNcml(StringBuilder sb) {
         sb.append(XmlUtil.openTag(TAG_NETCDF,
                                   XmlUtil.attrs(new String[] { "xmlns",
                 XMLNS_XMLNS })));
@@ -163,21 +163,21 @@ public class NcmlUtil {
     /**
      * Add the ensemble variable and attributes
      *
-     * @param sb the StringBuffer to add to
+     * @param sb the StringBuilder to add to
      * @param name  the name of the ensemble variable
      */
-    public static void addEnsembleVariables(StringBuffer sb, String name) {
+    public static void addEnsembleVariables(StringBuilder sb, String name) {
         addEnsembleVariables(sb, name, null);
     }
 
     /**
      * Add the ensemble variable and attributes
      *
-     * @param sb the StringBuffer to add to
+     * @param sb the StringBuilder to add to
      * @param name  the name of the ensemble variable
      * @param entries list of Entry's
      */
-    public static void addEnsembleVariables(StringBuffer sb, String name,
+    public static void addEnsembleVariables(StringBuilder sb, String name,
                                             List<Entry> entries) {
         /*
  <variable name='ens' type='String' shape='ens'>

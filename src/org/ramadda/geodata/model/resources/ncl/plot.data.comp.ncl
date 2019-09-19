@@ -761,15 +761,19 @@ end
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotmap")
-procedure plotmap(files:numeric, wks_name:string, wks_type:string,  opts:logical)
+;;procedure plotmap(files:numeric, wks_name:string, wks_type:string,  opts:logical)
+procedure plotmap(files:list, wks_name:string, wks_type:string,  opts:logical)
 local data, numfiles, plots, dodiff, doPanel, isanom
 
 begin
 
-  numdims = dimsizes(files)
-  numfiles = numdims(0)
+  ;;numdims = dimsizes(files)
+  ;;numfiles = numdims(0)
+  numfiles = ListCount(files)
+  ;print(numfiles)
   ;data = readdata(files(0), opts) 
-  data = files(0,:,:)
+  ;;data = files(0,:,:)
+  data = files[0]
   plots = new(numfiles,graphic)
   outtype = opts@outtype
   dodiff = outtype .eq. "diff" .and. numfiles .eq. 2
@@ -1029,7 +1033,8 @@ begin
     if (numfiles .gt. 1) then
       do i = 1,numfiles-1
         ;newdata = readdata(files(i),opts)
-        newdata = files(i,:,:)
+        ;;newdata = files(i,:,:)
+        newdata = files[i]
         data = subData(data,newdata)
         if (numtitles .ge. i .and. \
             (.not. ismissing(plottitles(i))) .and. \
@@ -1064,7 +1069,8 @@ begin
   else 
     if (.not. doGoogle) then
       do i = 0,numfiles-1
-        mydata = files(i,:,:)
+        ;;mydata = files(i,:,:)
+        mydata = files[i]
         mydata = mask_data(mydata,masktype,maskdata)
         if (isatt(opts,"longnames")) then
            if (.not. ismissing(opts@longnames(i))) then
@@ -1188,7 +1194,8 @@ begin
             end if
             gsn_reverse_colormap(wks)
           end if
-          mydata = files(i,:,:)
+          ;;mydata = files(i,:,:)
+          mydata = files[i]
           mydata = mask_data(mydata,masktype,maskdata)
           gplot = gsn_csm_contour_map_ce(wks,mydata,rescf)
           ;if (isanom .and. cint .eq. 0) then
@@ -1394,7 +1401,7 @@ local tsdata, ncdata, rawdata, vals
 
 begin
   numfiles = dimsizes(files);
-  print("numfiles: " + numfiles)
+  ;;print("numfiles: " + numfiles)
   csvidx = 0
   pd = opts@product_dir
   do i = 0,numfiles-1
@@ -1449,7 +1456,7 @@ begin
   if (numplots .gt. 1 .and. opts@ensavg) then
      numplots = numplots+1
   end if
-  print("numplots = " +numplots)
+  ;;print("numplots = " +numplots)
   ;;if (numplots .gt. 2) then
      newtitles = new(numfiles,string)
   ;;else
@@ -1993,6 +2000,7 @@ begin
      atmpdata = dim_avg_n_Wrap(data, 0);
      delete(data)
      onetime = atmpdata
+     delete(atmpdata)
   else
      onetime = data(0,:,:)
   end if
@@ -2002,9 +2010,11 @@ begin
   if (numfiles .gt. 1 .and. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. opts@ensavg)) then
     numdatas = numfiles +1
   end if
-  alldata = new((/numdatas,xys(0),xys(1)/),float)
-  alldata(0,:,:) = onetime
-  if (numfiles .gt. 1 .and. (outtype .eq. "multicomp" .or. outtype .eq. "enscomp")) then
+  ;;alldata = new((/numdatas,xys(0),xys(1)/),float)
+  ;;alldata(0,:,:) = onetime
+  alldata = NewList("fifo")
+  ListAppend(alldata,onetime)
+  if (numfiles .gt. 2 .or. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. numfiles .gt. 1)) then
      newtitles = new(numdatas,string)
       if (outtype .eq. "enscomp") then
         newtitles(0) = opts@ens(0)
@@ -2024,14 +2034,20 @@ begin
   ;print(numfiles)
   do i = 1,numfiles-1
     ;print(opts@titles(i))
-    tmpdata = readdata(files(i), opts)
+    tmpdata := readdata(files(i), opts)
+    ;printVarSummary(tmpdata)
     if (dimsizes(getvardims(tmpdata)) .gt. 2) then
-       atmpdata = dim_avg_n_Wrap(tmpdata, 0);
-       delete(tmpdata)
-       tmpdata = atmpdata
+       ListAppend(alldata,dim_avg_n_Wrap(tmpdata, 0));
+       ;;atmpdata = dim_avg_n_Wrap(tmpdata, 0);
+       ;;delete(tmpdata)
+       ;;tmpdata = atmpdata
+       ;;delete(atmpdata)
+    else
+     ListAppend(alldata,tmpdata)
     end if
-    alldata(i,:,:) = tmpdata
-    if (numfiles .gt. 1 .or. (outtype .eq. "multicomp" .or. outtype .eq. "enscomp")) then
+    ;;alldata(i,:,:) = tmpdata
+    ;;ListAppend(alldata,tmpdata)
+    if (numfiles .gt. 2 .or. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. numfiles .gt. 1)) then
       if (outtype .eq. "enscomp") then
         newtitles(i) = opts@ens(i)
       else
@@ -2045,10 +2061,16 @@ begin
       end if
       newtitles(i) = opts@titles(i)
     end if
-    delete(tmpdata)
+    ;;delete(tmpdata)
   end do
   if (numfiles .gt. 1 .and. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. opts@ensavg)) then
-    alldata(numdatas-1,:,:) = dim_avg_n_Wrap(alldata(0:numfiles-1,:,:),0)
+    ;;alldata(numdatas-1,:,:) = dim_avg_n_Wrap(alldata(0:numfiles-1,:,:),0)
+    numgrids = ListCount(alldata)
+    avgdata = new((/numgrids,xys(0),xys(1)/),float)
+    do i = 1,numgrids-1
+      avgdata(i,:,:) = remapData(onetime, alldata[i])
+    end do
+    ListAppend(alldata, dim_avg_n_Wrap(avgdata(0:numfiles-1,:,:),0))
     if (outtype .eq. "multicomp") then
       newtitles(numdatas-1) = "Multi-Model Mean"
     else
@@ -2066,7 +2088,7 @@ begin
     levelunit = "hPa"
   end if
   titleVarName = setvartitle(onetime, opts, False, level, levelunit)
-  if (numfiles .gt. 1) then
+  if (numfiles .gt. 2 .or. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp"))) then
     if (outtype .eq. "enscomp") then  ; ensemble comp
       panel_title = titleVarName + " " + opts@models(0) + " " + opts@exps(0) + " " + opts@dates(0)
     else ; model comp 
@@ -2079,10 +2101,11 @@ begin
   if (isdefined("longnames")) then
      opts@longnames=longnames
   end if
-  if (numfiles .gt. 2) then
+  if (numfiles .gt. 2 .or. ((outtype .eq. "multicomp" .or. outtype .eq. "enscomp") .and. numfiles .gt. 1)) then
     opts@leftstring=newtitles
   end if
    ;printVarSummary(alldata)
+   ;print("numdatas "+ListCount(alldata))
    plotmap(alldata,wks_name,wks_type,opts)
 end
 

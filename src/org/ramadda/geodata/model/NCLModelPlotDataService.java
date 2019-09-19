@@ -861,7 +861,8 @@ public class NCLModelPlotDataService extends NCLDataService {
                     || type.equals(
                         ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)) {
                 int climNumber =
-                    request.get(CDODataService.ARG_CLIMATE_DATASET_NUMBER, 0);
+                    request.get(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER,
+                                0);
                 if (climNumber > 0) {
                     String modelexp =
                         ModelUtil.getModelExperimentString(request,
@@ -1169,7 +1170,7 @@ public class NCLModelPlotDataService extends NCLDataService {
                            "-"));
 
         int climNumber =
-            request.get(CDODataService.ARG_CLIMATE_DATASET_NUMBER, 0);
+            request.get(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, 0);
         if (climNumber > 0) {
             String modelexp = ModelUtil.getModelExperimentString(request,
                                   climNumber);

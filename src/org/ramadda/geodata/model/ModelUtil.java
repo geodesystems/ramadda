@@ -64,7 +64,7 @@ public class ModelUtil {
             List<Entry> sameEntries, String id, File processDir)
             throws Exception {
         Repository   repo     = request.getRepository();
-        StringBuffer sb       = new StringBuffer();
+        StringBuilder sb       = new StringBuilder();
         NcmlUtil     ncmlUtil = new NcmlUtil(NcmlUtil.AGG_JOINEXISTING);
         // TODO: get the time coordinate from the file
         String timeCoordinate = "time";

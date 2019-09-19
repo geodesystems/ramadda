@@ -129,6 +129,10 @@ div.padded {
     padding-bottom: 1em;
     padding-left: 1em;  
 }  
+
+div.modelmap {
+    font-size: .9em;
+}
     
 input[type="radio"], input[type="checkbox"] {
     margin: 0px 0px 0px;

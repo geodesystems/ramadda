@@ -73,6 +73,10 @@ public class CDOArealStatisticsService extends CDODataService {
         "Eighth", "Ninth", "Tenth"
     };
 
+    /** Shortcut to OP_SELMON + a comma */
+    private static final String selmonComma = CDOOutputHandler.OP_SELMON
+                                              + ",";
+
     /**
      * Area statistics DataProcess
      *
@@ -149,11 +153,14 @@ public class CDOArealStatisticsService extends CDODataService {
                                Appendable sb, String argPrefix)
             throws Exception {
 
+        long millis = System.currentTimeMillis();
+        System.err.println("Starting makeInputForm");
         String type =
             input.getProperty(
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
 
         input = adjustInput(request, input);
+        //System.err.println("Time to adjust input: "+(System.currentTimeMillis()-millis));
         List<NamedTimePeriod> periods = null;
         ApiMethod             api     = request.getApiMethod();
         if (api != null) {
@@ -173,11 +180,13 @@ public class CDOArealStatisticsService extends CDODataService {
 
         Entry first = input.getEntries().get(0);
 
+        millis = System.currentTimeMillis();
         CdmDataOutputHandler dataOutputHandler =
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(first,
                 first.getResource().getPath());
+        System.err.println("Time to get dataset: "+(System.currentTimeMillis()-millis));
 
         if (dataset != null) {
             getOutputHandler().addVarLevelWidget(request, sb, dataset,
@@ -186,8 +195,7 @@ public class CDOArealStatisticsService extends CDODataService {
         GridDatatype grid  = dataset.getGrids().get(0);
         String       units = grid.getUnitsString();
         boolean hasPrecipUnits = (SimpleUnit.isCompatible(units, "kg m-2 s-1")
-                                  || SimpleUnit.isCompatible(units,
-                                      "mm/day"));
+                                  || SimpleUnit.isCompatible(units, "mm/day"));
 
         boolean     isAnom    = first.getValue(3).toString().equals("anom");
         List<Entry> climos    = findClimatology(request, first);
@@ -198,36 +206,9 @@ public class CDOArealStatisticsService extends CDODataService {
         addStatsWidget(request, sb, input, hasPrecipUnits, isAnom, haveClimo,
                        type);
 
+        millis = System.currentTimeMillis();
         addTimeWidget(request, sb, input, periods);
-
-        /*
-        if (type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)) {
-            StringBuilder mysb = new StringBuilder();
-            mysb.append(HtmlUtils.radio(ARG_TIME_AVERAGE,
-                                    "true",
-                                    RepositoryManager.getShouldButtonBeSelected(
-                                        request,
-                                        ARG_TIME_AVERAGE,
-                                        "true",
-                                        true)));
-            mysb.append(HtmlUtils.space(1));
-            mysb.append(Repository.msg("True"));
-            mysb.append(HtmlUtils.space(2));
-            boolean timeSelected =
-                RepositoryManager.getShouldButtonBeSelected(request,
-                    ARG_TIME_AVERAGE, "false", false);
-            String anomRB = HtmlUtils.radio(ARG_TIME_AVERAGE,
-                                            "false",
-                                            timeSelected);
-
-            mysb.append(anomRB);
-            mysb.append(HtmlUtils.space(1));
-            mysb.append(Repository.msg("False"));
-            mysb.append(HtmlUtils.space(2));
-            mysb.append(Repository.msg("(PDF Only)"));
-            sb.append(HtmlUtils.formEntry(msgLabel("Composite"),mysb.toString()));
-        }
-        */
+        System.err.println("Time to add time widget: "+(System.currentTimeMillis()-millis));
 
         LatLonRect llr = null;
         if (dataset != null) {
@@ -236,6 +217,7 @@ public class CDOArealStatisticsService extends CDODataService {
             llr = new LatLonRect(new LatLonPointImpl(90.0,
                     -180.0), new LatLonPointImpl(-90.0, 180.0));
         }
+        System.err.println("Time to get llr: "+(System.currentTimeMillis()-millis));
         getOutputHandler().addMapWidget(request, sb, llr, false);
     }
 
@@ -1218,7 +1200,7 @@ public class CDOArealStatisticsService extends CDODataService {
                                 .DAYS_PER_MONTH[requestStartMonth - 1];
                         timeCommands.add("-selday," + startday + "/"
                                          + endday);
-                        timeCommands.add("-selmonth," + requestStartMonth);
+                        timeCommands.add(selmonComma + requestStartMonth);
                         getOutputHandler().addDateSelectServices(newRequest,
                                 sample, timeCommands, opNum, false);
                         if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
@@ -1230,7 +1212,7 @@ public class CDOArealStatisticsService extends CDODataService {
                     }
                     if (loopStart <= loopEnd) {
                         StringBuilder selmonStr =
-                            new StringBuilder("-selmonth,");
+                            new StringBuilder(selmonComma);
                         selmonStr.append(loopStart);
                         if (loopStart != loopEnd) {
                             selmonStr.append("/");
@@ -1263,7 +1245,7 @@ public class CDOArealStatisticsService extends CDODataService {
                     }
                     if (loopStart <= loopEnd) {
                         StringBuilder selmonStr =
-                            new StringBuilder("-selmonth,");
+                            new StringBuilder(selmonComma);
                         selmonStr.append(loopStart);
                         if (loopStart != loopEnd) {
                             selmonStr.append("/");
@@ -1283,7 +1265,7 @@ public class CDOArealStatisticsService extends CDODataService {
                             < CDOOutputHandler
                                 .DAYS_PER_MONTH[requestEndMonth - 1])) {
                         timeCommands.add("-selday,1/" + requestEndDay);
-                        timeCommands.add("-selmonth," + requestEndMonth);
+                        timeCommands.add(selmonComma + requestEndMonth);
                         getOutputHandler().addDateSelectServices(newRequest,
                                 sample, timeCommands, opNum, false);
                         if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
@@ -1374,7 +1356,7 @@ public class CDOArealStatisticsService extends CDODataService {
                         CDOOutputHandler
                             .DAYS_PER_MONTH[requestStartMonth - 1];
                     timeCommands.add("-selday," + startday + "/" + endday);
-                    timeCommands.add("-selmonth," + requestStartMonth);
+                    timeCommands.add(selmonComma + requestStartMonth);
                     getOutputHandler().addDateSelectServices(newRequest,
                             sample, timeCommands, opNum, false);
                     if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
@@ -1385,7 +1367,7 @@ public class CDOArealStatisticsService extends CDODataService {
                     timeCommands.add(getPath(request, sample));
                 }
                 if (loopStart <= loopEnd) {
-                    StringBuilder selmonStr = new StringBuilder("-selmonth,");
+                    StringBuilder selmonStr = new StringBuilder(selmonComma);
                     selmonStr.append(loopStart);
                     if (loopStart != loopEnd) {
                         selmonStr.append("/");
@@ -1406,7 +1388,7 @@ public class CDOArealStatisticsService extends CDODataService {
                             .DAYS_PER_MONTH[requestEndMonth - 1])
                         && (requestStartMonth != requestEndMonth)) {
                     timeCommands.add("-selday,1/" + requestEndDay);
-                    timeCommands.add("-selmonth," + requestEndMonth);
+                    timeCommands.add(selmonComma + requestEndMonth);
                     getOutputHandler().addDateSelectServices(newRequest,
                             sample, timeCommands, opNum, false);
                     if (request.defined(CdmDataOutputHandler.ARG_LEVEL)) {
@@ -1844,6 +1826,7 @@ public class CDOArealStatisticsService extends CDODataService {
          * a multi compare, we make one widget from the intersection of all grids
          */
         //int numOps = input.getOperands().size();
+        long millis = System.currentTimeMillis();
         List<List<ServiceOperand>> sortedOps =
             ModelUtil.sortOperandsByCollection(request, input.getOperands());
         int numOps = sortedOps.size();
@@ -1865,9 +1848,11 @@ public class CDOArealStatisticsService extends CDODataService {
             for (ServiceOperand op : ops) {
                 List<GridDataset> grids = new ArrayList<GridDataset>();
                 for (Entry first : op.getEntries()) {
+                    millis = System.currentTimeMillis();
                     GridDataset dataset =
                         dataOutputHandler.getCdmManager().getGridDataset(
                             first, first.getResource().getPath());
+                    System.err.println("Get dataset took: "+(System.currentTimeMillis()-millis));
                     if (dataset != null) {
                         grids.add(dataset);
                     }
@@ -1898,7 +1883,9 @@ public class CDOArealStatisticsService extends CDODataService {
                                     new CalendarDateTime(d).formattedString(
                                         "yyyy",
                                         CalendarDateTime.DEFAULT_TIMEZONE);
-                                uniqueYears.add(year);
+                                if (!uniqueYears.contains(year)) {
+                                    uniqueYears.add(year);
+                                }
                             } catch (Exception e) {}
                         }
                     }
