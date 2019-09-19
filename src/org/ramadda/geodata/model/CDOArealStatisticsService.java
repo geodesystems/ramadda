@@ -154,7 +154,6 @@ public class CDOArealStatisticsService extends CDODataService {
             throws Exception {
 
         long millis = System.currentTimeMillis();
-        System.err.println("Starting makeInputForm");
         String type =
             input.getProperty(
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
@@ -186,7 +185,7 @@ public class CDOArealStatisticsService extends CDODataService {
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(first,
                 first.getResource().getPath());
-        System.err.println("Time to get dataset: "+(System.currentTimeMillis()-millis));
+        //System.err.println("Time to get dataset: "+(System.currentTimeMillis()-millis) + " " + dataset.toString());
 
         if (dataset != null) {
             getOutputHandler().addVarLevelWidget(request, sb, dataset,
@@ -208,7 +207,7 @@ public class CDOArealStatisticsService extends CDODataService {
 
         millis = System.currentTimeMillis();
         addTimeWidget(request, sb, input, periods);
-        System.err.println("Time to add time widget: "+(System.currentTimeMillis()-millis));
+        //System.err.println("Time to add time widget: "+(System.currentTimeMillis()-millis));
 
         LatLonRect llr = null;
         if (dataset != null) {
@@ -217,7 +216,7 @@ public class CDOArealStatisticsService extends CDODataService {
             llr = new LatLonRect(new LatLonPointImpl(90.0,
                     -180.0), new LatLonPointImpl(-90.0, 180.0));
         }
-        System.err.println("Time to get llr: "+(System.currentTimeMillis()-millis));
+        //System.err.println("Time to get llr: "+(System.currentTimeMillis()-millis)+ " " + dataset.toString() );
         getOutputHandler().addMapWidget(request, sb, llr, false);
     }
 
@@ -1852,7 +1851,7 @@ public class CDOArealStatisticsService extends CDODataService {
                     GridDataset dataset =
                         dataOutputHandler.getCdmManager().getGridDataset(
                             first, first.getResource().getPath());
-                    System.err.println("Get dataset took: "+(System.currentTimeMillis()-millis));
+                    //System.err.println("Get dataset took: "+(System.currentTimeMillis()-millis) + " "  + dataset.toString());
                     if (dataset != null) {
                         grids.add(dataset);
                     }

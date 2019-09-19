@@ -1181,7 +1181,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         addAreaSelectServices(request, entry, commands);
         addDateSelectServices(request, entry, commands);
 
-        System.err.println("cmds:" + commands);
+        //System.err.println("cmds:" + commands);
 
         commands.add(entry.getResource().getPath());
         commands.add(outFile.toString());
@@ -1642,7 +1642,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                 int yearInt = Integer.parseInt(year);
                 newYears.add(yearInt);
             } catch (NumberFormatException nfe) {
-                System.out.println("Bad year: " + year + ", omitting");
+                System.err.println("Bad year: " + year + ", omitting");
 
                 continue;
             }
@@ -1816,7 +1816,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             addAreaSelectServices(request, oneOfThem, commands);
             addDateSelectServices(request, oneOfThem, commands);
 
-            System.err.println("cmds:" + commands);
+            //System.err.println("cmds:" + commands);
 
             commands.add(oneOfThem.getResource().getPath());
             commands.add(outFile.toString());

@@ -151,12 +151,12 @@ public class ModelUtil {
         int           i       = 0;
         for (Object o : values) {
             i++;
-            String ohFace = o.toString();
+            String ohFace = (o == null) ? "null" : o.toString();
             if (dupList.contains(ohFace) && excludeDoops) {
                 continue;
             }
             dupList.add(ohFace);
-            buf.append(o.toString());
+            buf.append(ohFace);
             if (i < values.length) {
                 buf.append("-");
             }
