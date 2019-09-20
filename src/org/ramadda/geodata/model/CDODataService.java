@@ -1109,8 +1109,15 @@ public abstract class CDODataService extends Service {
         String        opStr       = getOpArgString(opNum);
         Request       timeRequest = handleNamedTimePeriod(request, opStr);
         boolean       spanYear    = doMonthsSpanYearEnd(timeRequest, null);
-        boolean haveYears =
-            timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS + opStr);
+        boolean haveYears = false;
+        // only compare has 2 different years, others only use the single years string
+        if (request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE)) {
+            haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS + opStr);
+        } else {
+            timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
+            // TODO: should we do this then? 
+            //opStr = "";
+        }
         if (haveYears) {
             String yearString = timeRequest.getString(
                                     CDOOutputHandler.ARG_CDO_YEARS + opStr,

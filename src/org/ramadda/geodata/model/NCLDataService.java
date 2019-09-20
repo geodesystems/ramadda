@@ -313,6 +313,7 @@ public class NCLDataService extends Service {
             // to test for compatibility with m/s
         } else if (units.equals("Kg/m^2/s")
                    || units.equals("mm/s")
+                   || units.equals("mm")
                    || units.equals("kg m**-2 s**-1")
                    || units.equals("mm/day")  // in case it's a comparison
                    || units.equals("m/day")) {

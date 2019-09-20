@@ -262,6 +262,14 @@ begin
       end if
     end if
   end if
+
+  ;; get rid of any NaNs
+  if (any(isnan_ieee(vardata))) then
+    if (.not.isatt(vardata,"_FillValue")) then
+      vardata@_FillValue = default_fillvalue(typeof(vardata))
+    end if
+    replace_ieeenan (vardata, vardata@_FillValue, 0)
+  end if
   
   ;printVarSummary(vardata)
   if (noLatLon) then
