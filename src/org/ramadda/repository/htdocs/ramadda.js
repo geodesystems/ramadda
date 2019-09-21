@@ -26,6 +26,7 @@ function hidePopupObject() {
         popupObject.hide();
         popupObject = null;
     }
+    popupTime = new Date();
 }
 
 

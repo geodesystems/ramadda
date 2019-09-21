@@ -1255,7 +1255,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(selected.length>0) 
 		contents+= footerTemplate;
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
-	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record"), selected);
+	    var recordElements = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
+	    this.makeTooltips(recordElements, selected);
+	    this.makePopups(recordElements, selected);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
 		var record = selected[$(this).attr("recordIndex")];

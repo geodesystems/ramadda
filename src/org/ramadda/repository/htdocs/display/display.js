@@ -3656,7 +3656,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         updateUI: function() {
 	},
-
 	makeTooltips: function(selector, records, callback) {
 	    var tooltip = this.getProperty("tooltip");
 	    if(!tooltip) return;
@@ -3688,6 +3687,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    });
 	},
+	makePopups: function(selector, records, callback, popupTemplate) {
+	    if(!popupTemplate)
+		popupTemplate = this.getProperty("popupTemplate");
+	    if(!popupTemplate) return;
+	    let _this = this;
+	    selector.click(function(event){
+		hidePopupObject();
+                popupTime = new Date();
+		var record = records[parseFloat($(this).attr('recordIndex'))];
+		if(!record) return;
+		if(callback) callback(record);
+		_this.getDisplayManager().notifyEvent("handleEventRecordSelect", _this, {select:true,record: record});
+		var html =  _this.getRecordHtml(record,null,popupTemplate);
+		html = HtmlUtils.div(["class", "display-popup " + _this.getProperty("popupClass",""),"style", _this.getProperty("popupStyle","")],html);
+		popupObject = getTooltip();
+		popupObject.html(html);
+		popupObject.show();
+		popupObject.position({
+		    of: $(this),
+		    my: _this.getProperty("popupPositionMy", "left top"),
+		    at: _this.getProperty("popupPositionAt", "left bottom+2"),
+		    collision: _this.getProperty("popupCollision", "none none")
+		});
+	    });
+	},
+
+
 	animationStart: function(animation) {
 	    
 	},
