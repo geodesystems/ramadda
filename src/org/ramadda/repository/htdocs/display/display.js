@@ -3184,6 +3184,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				var tmp = tok.split(":");
 				if(tmp.length>1) {
 				    tok = [tmp[0],tmp[1]];
+
+				} else if(tok == FILTER_ALL) {
+				    tok = [tmp[0],"All"];
 				}
 				enums.push({value:tok});
 			    })
