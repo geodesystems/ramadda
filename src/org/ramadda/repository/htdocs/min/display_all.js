@@ -1145,7 +1145,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    $("#" +widgetId+"_max").attr("data-value", prop.value2);
 		} else {
 		    var widget = $("#"+widgetId);
-		    widget.val(prop.value);
+//		    console.log(this.type +" v:" + Array.isArray(prop.value) +" length:" + prop.value.length +" " +prop.value);
+		    if(widget.attr("isCheckbox")) {
+			var on = widget.attr("onValue");
+			var off = widget.attr("offValue");
+			console.log(this.type +".handleEvent cbx:"  + on +" " + off + " " + prop.value);
+			widget.prop('checked',prop.value.includes(on));
+		    } else {
+			widget.val(prop.value);
+		    }
 		    widget.attr("data-value",prop.value);
 		    if(widget.attr("isButton")) {
 			widget.find(".display-filterby-button").removeClass("display-filterby-button-selected");
@@ -1714,7 +1722,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterFieldValues:function(field) {
 	    var element =$("#" + this.getDomId("filterby_" + field.getId()));
 	    var value=null;
-	    if(element.attr("isButton")) {
+	    if(element.attr("isCheckbox")) {
+		if(element.is(':checked')) {
+		    value = element.attr("onValue");
+		} else {
+		    value = element.attr("offValue");
+		}
+		if(!value) value = FILTER_ALL;
+	    } else if(element.attr("isButton")) {
 		value = element.attr("data-value");
 	    } else {
 		value = element.val();
@@ -1723,6 +1738,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var tmp = [];
 	    value.map(v=>tmp.push(v.trim()));
 	    value = tmp;
+//	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
@@ -1741,8 +1757,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    var newData = [];
 	    var filters = {};
+	    var allIsUsed = false;
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
+		if(filterField.isString()) {
+		    var values = this.getFilterFieldValues(filterField);
+		    if(!values && !Array.isArray(values)) values = [values];
+		    if(values.includes(FILTER_ALL)) {
+			allIsUsed = true;
+			break;
+		    }
+		}
+	    }
+
+
+	    for(var i=0;i<this.filterFields.length;i++) {
+		var filterField = this.filterFields[i];
+/*
+		var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
+ 		if(allIsUsed && !useIfAll) {
+		    continue;
+		}
+*/
 		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
 		if (prefix) pattern = prefix + value;
@@ -1786,17 +1822,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			tmp.push(v.replace(/_comma_/g,","));
 		    });
 		    values = tmp;
-		    var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
-		    if(!useIfAll) {
-			var allIsUsed = false;
-			if(values.includes(FILTER_ALL)) {
-			    allIsUsed = true;
-			    break;
-			}
- 			if(allIsUsed) {
-			    continue;
-			}
-		    }
 		    values.map(v=>{
 			_values.push((""+v).toLowerCase());
 			try {
@@ -1838,21 +1863,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		var row = this.getDataValues(record);
 		var ok = true;
-		for(var i=0;i<this.filterFields.length;i++) {
-		    if(!ok) break;
+		for(var i=0;i<this.filterFields.length && ok;i++) {
 		    var filterField = this.filterFields[i];
 		    var filter = filters[filterField.getId()];
 		    if(filter==null) continue;
 		    var rowValue = row[filterField.getIndex()];
+		    var debug = false; //(rowIdx<10);
+		    if(debug)
+			console.log("filter field:" + filterField.getId() + " value:" + rowValue);
 		    if(filterField.getType() == "enumeration") {
-			    ok = false;
-			for(var j=0;j<filter.values.length;j++) {
-			    var fv = ""+filter.values[j];
-			    if((""+rowValue)==fv) {
-				ok = true;
-				break;
-			    }
-			}
+			ok = filter.values.includes(""+rowValue);
+			if(debug)
+			    console.log("enum:" + rowValue + " ok:" + ok);
 		    } else if(filterField.isNumeric()) {
 			if(isNaN(filter.value[0]) && isNaN(filter.value[0])) continue;
 			if(!isNaN(filter.value[0]) && rowValue<filter.value[0]) ok = false;
@@ -3357,7 +3379,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    if(includeAll) {
 				enums.push({value:[FILTER_ALL,allName]});
 			    }
-
 			    for(var j=0;j<enumValues.length;j++) {
 				var v = enumValues[j];
 				enums.push(v);
@@ -3419,14 +3440,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"data-value",v,"title",label],label);
 				    }
 				} else {
-				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button  display-filterby-button-image" + extra,"data-value",v],label);
+				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button  display-filterby-button-noimage" + extra,"data-value",v],label);
 				}
+				buttons+="\n";
 			    }
 
-			    buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
+			    if(useImage && this.getProperty(filterField.getId() +".filterShowButtonsLabel")) {
+				buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
+			    }
 			    bottom+= HtmlUtils.div(["data-value",dfltValue,"class","display-filterby-buttons","id",widgetId,"isButton","true", "fieldId",
 						    filterField.getId()], buttons);
 			    continue;
+			} else if(this.getProperty(filterField.getId() +".filterCheckbox")) {
+			    attrs.push("isCheckbox");
+			    attrs.push(true);
+			    var tmp = [];
+			    enums.map(e=>tmp.push(e.value));
+			    var checked = tmp.includes(dfltValue);
+			    if(tmp.length>0) {
+				attrs.push("onValue");
+				attrs.push(tmp[0]);
+			    }
+			    if(tmp.length>1) {
+				attrs.push("offValue");
+				attrs.push(tmp[1]);
+			    }
+			    widget = HtmlUtils.checkbox("",attrs,checked);
+//			    console.log(widget);
 			} else {
 			    var tmp = [];
 			    enums.map(e=>tmp.push(e.value));
@@ -3517,6 +3557,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    input2 = tmp;
 			}
 		    }
+		    if(input.attr("isCheckbox")) {
+			var on = input.attr("onValue")||true;
+			var off = input.attr("offValue")||false;
+			if (input.is(':checked')) {
+			    value = on;
+			    console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
+			} else {
+			    value=off;
+			    console.log(_this.type +" cbx is not checked value:" + value +" on:" + on +" off:" + off);
+			}
+		    }
 		    if(!value) {
 			value = input.val();
 		    } 
@@ -3526,7 +3577,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!value) {
 			value = input.val();
 		    }
-
+		    
+		    if(!value) return;
+		    if(!Array.isArray(value) && input.attr("isButton")) {
+//			console.log(_this.type +" " +Array.isArray(value));
+			var tmp = [];
+			value.split(",").map(v=>{
+			    tmp.push(v.replace(/_comma_/g,","));
+			});
+			value = tmp;
+		    }
 
                     var fieldId = input.attr("fieldId");
 		    _this.checkFilterField(input);
@@ -3710,6 +3770,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 //		HtmlUtils.initSelect(this.jq(ID_FILTERBAR).find("select"));
 		this.jq(ID_FILTERBAR).find("input:radio,select").change(function() {
+		    inputFunc($(this));
+		});
+		this.jq(ID_FILTERBAR).find("input:checkbox").change(function() {
 		    inputFunc($(this));
 		});
             }
@@ -15978,6 +16041,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				    ]);
 	},
         handleEventRecordSelection: function(source, args) {
+//	    console.log(this.type+".recordSelection");
 	    this.selectedRecord = args.record;
 	    if(this.getProperty("onlyShowSelected")) {
 		this.updateUI();
@@ -15991,6 +16055,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
+//	    console.log(this.type+".updateUI");
 	    var pointData = this.getData();
 	    if (pointData == null) return;
 	    var records = this.filterData();
@@ -16248,16 +16313,18 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var colTag;
 		if(cols>0) {
 		    colTag = "col-md-" +Math.round(12/cols);
-		    contents += '<div class="row wiki-row">';
+		    contents += '<div class="row-tight row">';
 		}
 		var colCnt = 0;
+		var style = this.getProperty("templateStyle","");
+
 		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 		    if(max!=-1 && rowIdx>=max) break;
 		    if(cols>0) {
 			if(colCnt>=cols) {
 			    colCnt=0;
-			    contents += '</div>';
-			    contents += '<div class="row wiki-row">';
+			    contents += '</div>\n';
+			    contents += '<div class="row-tight row">\n';
 			}
 			contents+='<div  class="' + colTag+'">\n';
 			colCnt++;
@@ -16278,7 +16345,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    s = s.replace("${totalCount}",records.length);
 		    s= this.applyRecordTemplate(row,fields,s,props);
 		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
-		    var tag = HtmlUtils.openTag("div",["style",color?"background: " + color:"", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
+		    var recordStyle = style;
+		    if(color)
+			recordStyle = "background: " + color+";" + recordStyle;
+		    var tag = HtmlUtils.openTag("div",["style",recordStyle, "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
+//		    console.log(tag);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
@@ -16295,9 +16366,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		}
 		if(cols>0) {
-		    contents += '</div>';
+		    contents += '</div>\n';
 		}
 	    }
+//	    console.log("CONTENTS:\n" +contents);
 	    if(selected.length>0) 
 		contents+= footerTemplate;
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
@@ -16311,17 +16383,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	},
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
-	    //	    console.log(this.type+ ".recordHighlight");
+//	    console.log(this.type+ ".recordHighlight");
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    if(this.highlightedElement) {
-		var css = this.getProperty("highlightOffCss","").split(",");
-		if(css.length>1) {
-		    for(var i=0;i<css.length;i+=2)
-			this.highlightedElement.css(css[i],css[i+1]);
-		} else {
-		    this.highlightedElement.removeClass("display-template-record-highlight");
-		}
+		this.unhighlightElement(this.highlightedElement);
+		this.highlightedElement = null;
 	    }
 	    if(args.highlight) {
 		if(args.immediate) {
@@ -16334,24 +16401,52 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    },500);
 		}
 	    } else {
-		var css = this.getProperty("highlightOffCss","").split(",");
+		var id = "#" + this.getId()+"-"+args.record.getId();
 		var element = $(id);
-		if(css.length>1) {
-		    for(var i=0;i<css.length;i+=2)
-			element.css(css[i],css[i+1]);
-		} else {
-		    element.removeClass("display-template-record-highlight");
-		}
+		this.unhighlightElement(element);
+	    }
+	},
+	unhighlightElement: function(element) {
+	    var css = this.getProperty("highlightOffCss","").split(";");
+	    if(css.length>0) {
+		css.map(tok=>{
+		    var c = tok.split(":");
+		    var a = c[0];
+		    var v = c.length>1?c[1]:null;
+		    if(!v || v=="") {
+			v = element.attr("prev-" + a);
+		    }
+		    if(v) {
+			//			    console.log("un highlight css:" + element.css("background")+ " idx:" + element.attr("recordIndex"));
+			element.css(a,v);
+		    }
+		});
+	    } else {
+		element.removeClass("display-template-record-highlight");
 	    }
 	},
 	highlightElement: function(args) {
+//	    console.log(this.type+".highlightElement");
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;
-	    var css = this.getProperty("highlightOnCss","").split(",");
-	    if(css.length>1) {
-		for(var i=0;i<css.length;i+=2)
-		    element.css(css[i],css[i+1]);
+	    var css = this.getProperty("highlightOnCss","").split(";");
+	    if(css.length>0) {
+		css.map(tok=>{
+		    var c = tok.split(":");
+		    var a = c[0];
+		    var v = c.length>1?c[1]:null;
+		    if(!v || v=="") {
+			v = element.attr("prev-" + a);
+		    }
+		    if(v) {
+			var oldV = element.css(a);
+			if(oldV) {
+			    element.attr("prev-" + a,oldV);
+			}
+			element.css(a,v);
+		    }
+		});
 	    } else {
 		element.addClass("display-template-record-highlight");
 	    }

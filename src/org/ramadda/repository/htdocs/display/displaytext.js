@@ -923,6 +923,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				    ]);
 	},
         handleEventRecordSelection: function(source, args) {
+//	    console.log(this.type+".recordSelection");
 	    this.selectedRecord = args.record;
 	    if(this.getProperty("onlyShowSelected")) {
 		this.updateUI();
@@ -936,6 +937,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
+//	    console.log(this.type+".updateUI");
 	    var pointData = this.getData();
 	    if (pointData == null) return;
 	    var records = this.filterData();
@@ -1193,16 +1195,18 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var colTag;
 		if(cols>0) {
 		    colTag = "col-md-" +Math.round(12/cols);
-		    contents += '<div class="row wiki-row">';
+		    contents += '<div class="row-tight row">';
 		}
 		var colCnt = 0;
+		var style = this.getProperty("templateStyle","");
+
 		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 		    if(max!=-1 && rowIdx>=max) break;
 		    if(cols>0) {
 			if(colCnt>=cols) {
 			    colCnt=0;
-			    contents += '</div>';
-			    contents += '<div class="row wiki-row">';
+			    contents += '</div>\n';
+			    contents += '<div class="row-tight row">\n';
 			}
 			contents+='<div  class="' + colTag+'">\n';
 			colCnt++;
@@ -1223,7 +1227,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    s = s.replace("${totalCount}",records.length);
 		    s= this.applyRecordTemplate(row,fields,s,props);
 		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
-		    var tag = HtmlUtils.openTag("div",["style",color?"background: " + color:"", "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
+		    var recordStyle = style;
+		    if(color)
+			recordStyle = "background: " + color+";" + recordStyle;
+		    var tag = HtmlUtils.openTag("div",["style",recordStyle, "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
+//		    console.log(tag);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
@@ -1240,9 +1248,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		}
 		if(cols>0) {
-		    contents += '</div>';
+		    contents += '</div>\n';
 		}
 	    }
+//	    console.log("CONTENTS:\n" +contents);
 	    if(selected.length>0) 
 		contents+= footerTemplate;
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
@@ -1256,17 +1265,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	},
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
-	    //	    console.log(this.type+ ".recordHighlight");
+//	    console.log(this.type+ ".recordHighlight");
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    if(this.highlightedElement) {
-		var css = this.getProperty("highlightOffCss","").split(",");
-		if(css.length>1) {
-		    for(var i=0;i<css.length;i+=2)
-			this.highlightedElement.css(css[i],css[i+1]);
-		} else {
-		    this.highlightedElement.removeClass("display-template-record-highlight");
-		}
+		this.unhighlightElement(this.highlightedElement);
+		this.highlightedElement = null;
 	    }
 	    if(args.highlight) {
 		if(args.immediate) {
@@ -1279,24 +1283,52 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    },500);
 		}
 	    } else {
-		var css = this.getProperty("highlightOffCss","").split(",");
+		var id = "#" + this.getId()+"-"+args.record.getId();
 		var element = $(id);
-		if(css.length>1) {
-		    for(var i=0;i<css.length;i+=2)
-			element.css(css[i],css[i+1]);
-		} else {
-		    element.removeClass("display-template-record-highlight");
-		}
+		this.unhighlightElement(element);
+	    }
+	},
+	unhighlightElement: function(element) {
+	    var css = this.getProperty("highlightOffCss","").split(";");
+	    if(css.length>0) {
+		css.map(tok=>{
+		    var c = tok.split(":");
+		    var a = c[0];
+		    var v = c.length>1?c[1]:null;
+		    if(!v || v=="") {
+			v = element.attr("prev-" + a);
+		    }
+		    if(v) {
+			//			    console.log("un highlight css:" + element.css("background")+ " idx:" + element.attr("recordIndex"));
+			element.css(a,v);
+		    }
+		});
+	    } else {
+		element.removeClass("display-template-record-highlight");
 	    }
 	},
 	highlightElement: function(args) {
+//	    console.log(this.type+".highlightElement");
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;
-	    var css = this.getProperty("highlightOnCss","").split(",");
-	    if(css.length>1) {
-		for(var i=0;i<css.length;i+=2)
-		    element.css(css[i],css[i+1]);
+	    var css = this.getProperty("highlightOnCss","").split(";");
+	    if(css.length>0) {
+		css.map(tok=>{
+		    var c = tok.split(":");
+		    var a = c[0];
+		    var v = c.length>1?c[1]:null;
+		    if(!v || v=="") {
+			v = element.attr("prev-" + a);
+		    }
+		    if(v) {
+			var oldV = element.css(a);
+			if(oldV) {
+			    element.attr("prev-" + a,oldV);
+			}
+			element.css(a,v);
+		    }
+		});
 	    } else {
 		element.addClass("display-template-record-highlight");
 	    }

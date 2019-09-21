@@ -995,7 +995,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    $("#" +widgetId+"_max").attr("data-value", prop.value2);
 		} else {
 		    var widget = $("#"+widgetId);
-		    widget.val(prop.value);
+//		    console.log(this.type +" v:" + Array.isArray(prop.value) +" length:" + prop.value.length +" " +prop.value);
+		    if(widget.attr("isCheckbox")) {
+			var on = widget.attr("onValue");
+			var off = widget.attr("offValue");
+			console.log(this.type +".handleEvent cbx:"  + on +" " + off + " " + prop.value);
+			widget.prop('checked',prop.value.includes(on));
+		    } else {
+			widget.val(prop.value);
+		    }
 		    widget.attr("data-value",prop.value);
 		    if(widget.attr("isButton")) {
 			widget.find(".display-filterby-button").removeClass("display-filterby-button-selected");
@@ -1564,7 +1572,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterFieldValues:function(field) {
 	    var element =$("#" + this.getDomId("filterby_" + field.getId()));
 	    var value=null;
-	    if(element.attr("isButton")) {
+	    if(element.attr("isCheckbox")) {
+		if(element.is(':checked')) {
+		    value = element.attr("onValue");
+		} else {
+		    value = element.attr("offValue");
+		}
+		if(!value) value = FILTER_ALL;
+	    } else if(element.attr("isButton")) {
 		value = element.attr("data-value");
 	    } else {
 		value = element.val();
@@ -1573,6 +1588,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var tmp = [];
 	    value.map(v=>tmp.push(v.trim()));
 	    value = tmp;
+//	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
@@ -1591,8 +1607,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    var newData = [];
 	    var filters = {};
+	    var allIsUsed = false;
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
+		if(filterField.isString()) {
+		    var values = this.getFilterFieldValues(filterField);
+		    if(!values && !Array.isArray(values)) values = [values];
+		    if(values.includes(FILTER_ALL)) {
+			allIsUsed = true;
+			break;
+		    }
+		}
+	    }
+
+
+	    for(var i=0;i<this.filterFields.length;i++) {
+		var filterField = this.filterFields[i];
+/*
+		var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
+ 		if(allIsUsed && !useIfAll) {
+		    continue;
+		}
+*/
 		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
 		if (prefix) pattern = prefix + value;
@@ -1636,17 +1672,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			tmp.push(v.replace(/_comma_/g,","));
 		    });
 		    values = tmp;
-		    var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
-		    if(!useIfAll) {
-			var allIsUsed = false;
-			if(values.includes(FILTER_ALL)) {
-			    allIsUsed = true;
-			    break;
-			}
- 			if(allIsUsed) {
-			    continue;
-			}
-		    }
 		    values.map(v=>{
 			_values.push((""+v).toLowerCase());
 			try {
@@ -1688,21 +1713,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		var row = this.getDataValues(record);
 		var ok = true;
-		for(var i=0;i<this.filterFields.length;i++) {
-		    if(!ok) break;
+		for(var i=0;i<this.filterFields.length && ok;i++) {
 		    var filterField = this.filterFields[i];
 		    var filter = filters[filterField.getId()];
 		    if(filter==null) continue;
 		    var rowValue = row[filterField.getIndex()];
+		    var debug = false; //(rowIdx<10);
+		    if(debug)
+			console.log("filter field:" + filterField.getId() + " value:" + rowValue);
 		    if(filterField.getType() == "enumeration") {
-			    ok = false;
-			for(var j=0;j<filter.values.length;j++) {
-			    var fv = ""+filter.values[j];
-			    if((""+rowValue)==fv) {
-				ok = true;
-				break;
-			    }
-			}
+			ok = filter.values.includes(""+rowValue);
+			if(debug)
+			    console.log("enum:" + rowValue + " ok:" + ok);
 		    } else if(filterField.isNumeric()) {
 			if(isNaN(filter.value[0]) && isNaN(filter.value[0])) continue;
 			if(!isNaN(filter.value[0]) && rowValue<filter.value[0]) ok = false;
@@ -3207,7 +3229,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    if(includeAll) {
 				enums.push({value:[FILTER_ALL,allName]});
 			    }
-
 			    for(var j=0;j<enumValues.length;j++) {
 				var v = enumValues[j];
 				enums.push(v);
@@ -3269,14 +3290,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"data-value",v,"title",label],label);
 				    }
 				} else {
-				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button  display-filterby-button-image" + extra,"data-value",v],label);
+				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button  display-filterby-button-noimage" + extra,"data-value",v],label);
 				}
+				buttons+="\n";
 			    }
 
-			    buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
+			    if(useImage && this.getProperty(filterField.getId() +".filterShowButtonsLabel")) {
+				buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
+			    }
 			    bottom+= HtmlUtils.div(["data-value",dfltValue,"class","display-filterby-buttons","id",widgetId,"isButton","true", "fieldId",
 						    filterField.getId()], buttons);
 			    continue;
+			} else if(this.getProperty(filterField.getId() +".filterCheckbox")) {
+			    attrs.push("isCheckbox");
+			    attrs.push(true);
+			    var tmp = [];
+			    enums.map(e=>tmp.push(e.value));
+			    var checked = tmp.includes(dfltValue);
+			    if(tmp.length>0) {
+				attrs.push("onValue");
+				attrs.push(tmp[0]);
+			    }
+			    if(tmp.length>1) {
+				attrs.push("offValue");
+				attrs.push(tmp[1]);
+			    }
+			    widget = HtmlUtils.checkbox("",attrs,checked);
+//			    console.log(widget);
 			} else {
 			    var tmp = [];
 			    enums.map(e=>tmp.push(e.value));
@@ -3367,6 +3407,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    input2 = tmp;
 			}
 		    }
+		    if(input.attr("isCheckbox")) {
+			var on = input.attr("onValue")||true;
+			var off = input.attr("offValue")||false;
+			if (input.is(':checked')) {
+			    value = on;
+			    console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
+			} else {
+			    value=off;
+			    console.log(_this.type +" cbx is not checked value:" + value +" on:" + on +" off:" + off);
+			}
+		    }
 		    if(!value) {
 			value = input.val();
 		    } 
@@ -3376,7 +3427,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!value) {
 			value = input.val();
 		    }
-
+		    
+		    if(!value) return;
+		    if(!Array.isArray(value) && input.attr("isButton")) {
+//			console.log(_this.type +" " +Array.isArray(value));
+			var tmp = [];
+			value.split(",").map(v=>{
+			    tmp.push(v.replace(/_comma_/g,","));
+			});
+			value = tmp;
+		    }
 
                     var fieldId = input.attr("fieldId");
 		    _this.checkFilterField(input);
@@ -3560,6 +3620,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 //		HtmlUtils.initSelect(this.jq(ID_FILTERBAR).find("select"));
 		this.jq(ID_FILTERBAR).find("input:radio,select").change(function() {
+		    inputFunc($(this));
+		});
+		this.jq(ID_FILTERBAR).find("input:checkbox").change(function() {
 		    inputFunc($(this));
 		});
             }
