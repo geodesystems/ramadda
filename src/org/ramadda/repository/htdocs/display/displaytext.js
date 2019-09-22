@@ -1291,6 +1291,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	},
 	unhighlightElement: function(element) {
+	    element.removeClass("display-template-record-highlight");
 	    var css = this.getProperty("highlightOffCss","").split(";");
 	    if(css.length>0) {
 		css.map(tok=>{
@@ -1305,15 +1306,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			element.css(a,v);
 		    }
 		});
-	    } else {
-		element.removeClass("display-template-record-highlight");
-	    }
+	    } 
 	},
 	highlightElement: function(args) {
 //	    console.log(this.type+".highlightElement");
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;
+	    element.addClass("display-template-record-highlight");
 	    var css = this.getProperty("highlightOnCss","").split(";");
 	    if(css.length>0) {
 		css.map(tok=>{
@@ -1331,9 +1331,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			element.css(a,v);
 		    }
 		});
-	    } else {
-		element.addClass("display-template-record-highlight");
-	    }
+	    } 
+	    
 
 	    try {
 		if(!args.skipScroll) {

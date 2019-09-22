@@ -321,8 +321,9 @@ position:absolute;
 
 
 .display-template-record {
-//    display:inline-block;
-cursor:pointer;
+    cursor:pointer;
+    padding:1px;
+    border:1px solid rgba(0,0,0,0);
 }
 
 .display-template-record-highlight {
@@ -332,7 +333,6 @@ cursor:pointer;
 
 .display-grid-entry-box:hover {
     border: 1px blue solid;
-//    background: blue;
     z-index: 100;
 }
 
