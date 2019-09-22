@@ -356,12 +356,6 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
             var values = "<table class=formtable>";
-            if (false && record.hasLocation()) {
-                var latitude = record.getLatitude();
-                var longitude = record.getLongitude();
-                values += "<tr><td align=right><b>Latitude:</b></td><td>" + number_format(latitude, 4, '.', '') + "</td></tr>";
-                values += "<tr><td align=right><b>Longitude:</b></td><td>" + number_format(longitude, 4, '.', '') + "</td></tr>";
-            }
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (var i = 0; i < record.getData().length; i++) {
                     var field = fields[i];
@@ -392,7 +386,11 @@ function DisplayThing(argId, argProperties) {
 		    if(field.getType() == "url") {
 			value = HtmlUtils.href(value,value);
 		    }
-                    values += "<tr><td align=right><b>" + label + ":</b></td><td>" + value + field.getUnitSuffix() + "</td></tr>";
+		    value = value + field.getUnitSuffix();
+		    if(value.length>200) {
+			value  = HtmlUtils.div(["style","max-height:200px; overflow-y:auto;"],value);
+		    }
+                    values += "<tr valign=top><td align=right><b>" + label + ":</b></td><td>" + value + "</td></tr>";
                 }
             }
             if (record.hasElevation()) {
@@ -3696,27 +3694,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!popupTemplate) return;
 	    let _this = this;
 	    selector.click(function(event){
-		hidePopupObject();
-                popupTime = new Date();
 		var record = records[parseFloat($(this).attr('recordIndex'))];
 		if(!record) return;
 		if(callback) callback(record);
 		_this.getDisplayManager().notifyEvent("handleEventRecordSelect", _this, {select:true,record: record});
-		var html =  _this.getRecordHtml(record,null,popupTemplate);
-		html = HtmlUtils.div(["class", "display-popup " + _this.getProperty("popupClass",""),"style", _this.getProperty("popupStyle","")],html);
-		popupObject = getTooltip();
-		popupObject.html(html);
-		popupObject.show();
-		popupObject.position({
-		    of: $(this),
-		    my: _this.getProperty("popupPositionMy", "left top"),
-		    at: _this.getProperty("popupPositionAt", "left bottom+2"),
-		    collision: _this.getProperty("popupCollision", "none none")
-		});
+		_this.showRecordPopup($(this),record, callback,popupTemplate);
 	    });
 	},
-
-
+	showRecordPopup: function(element, record, popupTemplate) {
+	    if(!record) return;
+	    if(!popupTemplate)
+		popupTemplate = this.getProperty("popupTemplate");
+	    if(!popupTemplate) return;
+	    let _this = this;
+	    hidePopupObject();
+	    var html =  _this.getRecordHtml(record,null,popupTemplate);
+	    html = HtmlUtils.div(["class", "display-popup " + _this.getProperty("popupClass",""),"style", _this.getProperty("popupStyle","")],html);
+	    popupObject = getTooltip();
+	    popupObject.html(html);
+	    popupObject.show();
+	    popupObject.position({
+		of: element,
+		my: _this.getProperty("popupPositionMy", "left top"),
+		at: _this.getProperty("popupPositionAt", "left bottom+2"),
+		collision: _this.getProperty("popupCollision", "none none")
+	    });
+	},
 	animationStart: function(animation) {
 	    
 	},

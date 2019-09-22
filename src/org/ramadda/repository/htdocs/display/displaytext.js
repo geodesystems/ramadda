@@ -2059,24 +2059,33 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+	    var strings = this.getFieldsByIds(fields,"fields");
+            if (strings.length == 0) {
+		strings = this.getFieldsOfType(fields, "string");
+	    }
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
                 return null;
             }
-            var corpus = "";
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var row = this.getDataValues(records[rowIdx]);
-                var line = "";
-                for (var col = 0; col < fields.length; col++) {
-                    var f = fields[col];
-                    line += " ";
-                    line += row[f.getIndex()];
-                }
-                corpus += line;
-                corpus += "\n";
-            }
-            var nlp = window.nlp(corpus);
+	    if(!this.lastRecords || this.lastRecords.length!= records.length) {
+		this.lastRecords = records;
+		var corpus = "";
+		for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                    var row = this.getDataValues(records[rowIdx]);
+                    var line = "";
+                    for (var col = 0; col < strings.length; col++) {
+			var f = fields[col];
+			line += " ";
+			line += row[f.getIndex()];
+                    }
+                    corpus += line;
+		    corpus += "\n";
+		}
+//		console.log("corpus:" + corpus.length +"\n" + corpus.substring(0,1000));
+		this.nlp = window.nlp(corpus);
+//		console.log("after");
+	    }
+	    var nlp = this.nlp;
             var cols = [];
             if (this.getProperty("showPeople", false)) {
                 cols.push(this.printList("People", nlp.people().out('topk')));
@@ -2354,8 +2363,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    lines.click(function() {
 		var idx = $(this).attr("recordIndex");
 		var record = _this.indexToRecord[idx];
-		if(record)
+		if(record) {
+		    _this.showRecordPopup($(this),record);
 		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
+		}
 	    });
 	    this.makeTooltips(lines,records);
         },

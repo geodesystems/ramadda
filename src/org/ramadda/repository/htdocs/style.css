@@ -32,6 +32,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
     color:black;
 }
 
+
 .ramadda-button a, .ramadda-button a:hover {
     color:rgb(85, 85, 85);
     text-decoration:none;
@@ -162,6 +163,16 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-page-heading, .ramadda-heading, .ramadda-blurb {
     font-size:140%;
+}
+
+
+.ramadda-credit-outer {
+    text-align:center;
+    margin-bottom:2px;
+}
+
+.ramadda-credit {
+    font-style:italic;
 }
 
 

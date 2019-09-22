@@ -506,12 +506,6 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
             var values = "<table class=formtable>";
-            if (false && record.hasLocation()) {
-                var latitude = record.getLatitude();
-                var longitude = record.getLongitude();
-                values += "<tr><td align=right><b>Latitude:</b></td><td>" + number_format(latitude, 4, '.', '') + "</td></tr>";
-                values += "<tr><td align=right><b>Longitude:</b></td><td>" + number_format(longitude, 4, '.', '') + "</td></tr>";
-            }
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (var i = 0; i < record.getData().length; i++) {
                     var field = fields[i];
@@ -542,7 +536,11 @@ function DisplayThing(argId, argProperties) {
 		    if(field.getType() == "url") {
 			value = HtmlUtils.href(value,value);
 		    }
-                    values += "<tr><td align=right><b>" + label + ":</b></td><td>" + value + field.getUnitSuffix() + "</td></tr>";
+		    value = value + field.getUnitSuffix();
+		    if(value.length>200) {
+			value  = HtmlUtils.div(["style","max-height:200px; overflow-y:auto;"],value);
+		    }
+                    values += "<tr valign=top><td align=right><b>" + label + ":</b></td><td>" + value + "</td></tr>";
                 }
             }
             if (record.hasElevation()) {
@@ -3846,27 +3844,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!popupTemplate) return;
 	    let _this = this;
 	    selector.click(function(event){
-		hidePopupObject();
-                popupTime = new Date();
 		var record = records[parseFloat($(this).attr('recordIndex'))];
 		if(!record) return;
 		if(callback) callback(record);
 		_this.getDisplayManager().notifyEvent("handleEventRecordSelect", _this, {select:true,record: record});
-		var html =  _this.getRecordHtml(record,null,popupTemplate);
-		html = HtmlUtils.div(["class", "display-popup " + _this.getProperty("popupClass",""),"style", _this.getProperty("popupStyle","")],html);
-		popupObject = getTooltip();
-		popupObject.html(html);
-		popupObject.show();
-		popupObject.position({
-		    of: $(this),
-		    my: _this.getProperty("popupPositionMy", "left top"),
-		    at: _this.getProperty("popupPositionAt", "left bottom+2"),
-		    collision: _this.getProperty("popupCollision", "none none")
-		});
+		_this.showRecordPopup($(this),record, callback,popupTemplate);
 	    });
 	},
-
-
+	showRecordPopup: function(element, record, popupTemplate) {
+	    if(!record) return;
+	    if(!popupTemplate)
+		popupTemplate = this.getProperty("popupTemplate");
+	    if(!popupTemplate) return;
+	    let _this = this;
+	    hidePopupObject();
+	    var html =  _this.getRecordHtml(record,null,popupTemplate);
+	    html = HtmlUtils.div(["class", "display-popup " + _this.getProperty("popupClass",""),"style", _this.getProperty("popupStyle","")],html);
+	    popupObject = getTooltip();
+	    popupObject.html(html);
+	    popupObject.show();
+	    popupObject.position({
+		of: element,
+		my: _this.getProperty("popupPositionMy", "left top"),
+		at: _this.getProperty("popupPositionAt", "left bottom+2"),
+		collision: _this.getProperty("popupCollision", "none none")
+	    });
+	},
 	animationStart: function(animation) {
 	    
 	},
@@ -17206,24 +17209,33 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+	    var strings = this.getFieldsByIds(fields,"fields");
+            if (strings.length == 0) {
+		strings = this.getFieldsOfType(fields, "string");
+	    }
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
                 return null;
             }
-            var corpus = "";
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var row = this.getDataValues(records[rowIdx]);
-                var line = "";
-                for (var col = 0; col < fields.length; col++) {
-                    var f = fields[col];
-                    line += " ";
-                    line += row[f.getIndex()];
-                }
-                corpus += line;
-                corpus += "\n";
-            }
-            var nlp = window.nlp(corpus);
+	    if(!this.lastRecords || this.lastRecords.length!= records.length) {
+		this.lastRecords = records;
+		var corpus = "";
+		for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                    var row = this.getDataValues(records[rowIdx]);
+                    var line = "";
+                    for (var col = 0; col < strings.length; col++) {
+			var f = fields[col];
+			line += " ";
+			line += row[f.getIndex()];
+                    }
+                    corpus += line;
+		    corpus += "\n";
+		}
+//		console.log("corpus:" + corpus.length +"\n" + corpus.substring(0,1000));
+		this.nlp = window.nlp(corpus);
+//		console.log("after");
+	    }
+	    var nlp = this.nlp;
             var cols = [];
             if (this.getProperty("showPeople", false)) {
                 cols.push(this.printList("People", nlp.people().out('topk')));
@@ -17501,8 +17513,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    lines.click(function() {
 		var idx = $(this).attr("recordIndex");
 		var record = _this.indexToRecord[idx];
-		if(record)
+		if(record) {
+		    _this.showRecordPopup($(this),record);
 		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
+		}
 	    });
 	    this.makeTooltips(lines,records);
         },

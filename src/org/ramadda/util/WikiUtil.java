@@ -1778,9 +1778,10 @@ public class WikiUtil {
             }
 
             if (tline.startsWith(":heading") || tline.startsWith(":block")
-                    || tline.startsWith(":note") || tline.startsWith(":box")
-                    || tline.startsWith(":blurb")
-                    || tline.startsWith(":callout")) {
+		||tline.startsWith(":credit")
+		|| tline.startsWith(":note") || tline.startsWith(":box")
+		|| tline.startsWith(":blurb")
+		|| tline.startsWith(":callout")) {
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
                 String       what  = toks.get(0).substring(1);
                 List<String> toks2 = StringUtil.splitUpTo(what, "-", 2);
