@@ -5938,7 +5938,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             wiki.append(metadataList.get(0).getAttr1());
         } else {
             wiki.append(
-                "{{group  showTitle=\"true\"  showMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
+                "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
             String chartType = typeHandler.getChartProperty(request, entry,
                                    "chart.type", "linechart");
             wiki.append(
@@ -5971,7 +5971,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         props.put("layoutHere", "false");
         props.put("layoutType", "table");
         props.put("layoutColumns", "2");
-        props.put("showMenu", "true");
+	//        props.put("showMenu", "true");
 
         return wikifyEntry(request, entry, wiki.toString());
     }
@@ -6004,14 +6004,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         StringBuilder js       = new StringBuilder();
 
         for (String showArg : new String[] { ATTR_SHOWMAP, ATTR_SHOWMENU }) {
-            topProps.add(showArg);
-            topProps.add("" + getProperty(wikiUtil, props, showArg, false));
-        }
-
-        if (getProperty(wikiUtil, props, ATTR_SHOWMENU) != null) {
-            propList.add(ATTR_SHOWMENU);
-            propList.add(getProperty(wikiUtil, props, ATTR_SHOWMENU, "true"));
-            props.remove(ATTR_SHOWMENU);
+	    String v = (String) getProperty(wikiUtil, props, showArg, (String)null);
+	    if(v!=null) {
+		topProps.add(showArg);
+		topProps.add(v);
+	    }
         }
 
         String derived = getProperty(wikiUtil, props, "derived");

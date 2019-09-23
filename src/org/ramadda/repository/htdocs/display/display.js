@@ -204,6 +204,18 @@ function DisplayThing(argId, argProperties) {
         setId: function(id) {
             this.objectId = id;
         },
+        getShowMenu: function() {
+            if (Utils.isDefined(this.showMenu)) {
+		return this.showMenu;
+	    }
+	    var dflt = false;
+            if (this.displayParent != null) {
+		dflt = this.displayParent.getProperty("showChildMenu",dflt);
+	    }
+	    var v = this.getProperty(PROP_SHOW_MENU, dflt);
+	    return v;
+        },
+
         getTimeZone: function() {
             return this.getProperty("timeZone");
         },
@@ -1576,12 +1588,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else {
 		    value = element.attr("offValue");
 		}
-		if(!value) value = FILTER_ALL;
 	    } else if(element.attr("isButton")) {
 		value = element.attr("data-value");
 	    } else {
 		value = element.val();
 	    }
+	    if(!value) value = FILTER_ALL;
 	    if(!Array.isArray(value)) value = value.split(",");
 	    var tmp = [];
 	    value.map(v=>tmp.push(v.trim()));
@@ -2921,14 +2933,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         needsData: function() {
             return false;
-        },
-        getShowMenu: function() {
-            if (Utils.isDefined(this.showMenu)) return this.showMenu;
-	    var dflt = true;
-            if (this.displayParent != null) {
-		dflt = this.displayParent.getProperty("showChildMenu",true);
-	    }
-            return this.getProperty(PROP_SHOW_MENU, dflt);
         },
         askSetTitle: function() {
             var t = this.getTitle(false);

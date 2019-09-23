@@ -228,9 +228,12 @@ function DisplayManager(argId, argProperties) {
             return this.ranges[field.getId()];
         },
         makeMainMenu: function() {
-            if (!this.getProperty(PROP_SHOW_MENU, true)) {
-                return "";
-            }
+	    if(!this.getShowMenu()) {
+		return "";
+	    }
+//            if (!this.getProperty(PROP_SHOW_MENU, true)) {
+//                return "";
+//            }
             //How else do I refer to this object in the html that I add 
             var get = "getDisplayManager('" + this.getId() + "')";
             var layout = "getDisplayManager('" + this.getId() + "').getLayoutManager()";
@@ -493,7 +496,8 @@ function DisplayManager(argId, argProperties) {
     var html = HtmlUtils.openTag(TAG_DIV);
     html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     //    html += this.makeMainMenu();
-    if (this.getProperty(PROP_SHOW_MENU, true)) {
+    if(this.getShowMenu()) {
+//    if (this.getProperty(PROP_SHOW_MENU, true)) {
         html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
     var targetDiv = this.getProperty("target");

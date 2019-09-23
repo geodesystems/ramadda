@@ -354,6 +354,18 @@ function DisplayThing(argId, argProperties) {
         setId: function(id) {
             this.objectId = id;
         },
+        getShowMenu: function() {
+            if (Utils.isDefined(this.showMenu)) {
+		return this.showMenu;
+	    }
+	    var dflt = false;
+            if (this.displayParent != null) {
+		dflt = this.displayParent.getProperty("showChildMenu",dflt);
+	    }
+	    var v = this.getProperty(PROP_SHOW_MENU, dflt);
+	    return v;
+        },
+
         getTimeZone: function() {
             return this.getProperty("timeZone");
         },
@@ -1726,12 +1738,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else {
 		    value = element.attr("offValue");
 		}
-		if(!value) value = FILTER_ALL;
 	    } else if(element.attr("isButton")) {
 		value = element.attr("data-value");
 	    } else {
 		value = element.val();
 	    }
+	    if(!value) value = FILTER_ALL;
 	    if(!Array.isArray(value)) value = value.split(",");
 	    var tmp = [];
 	    value.map(v=>tmp.push(v.trim()));
@@ -3071,14 +3083,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         needsData: function() {
             return false;
-        },
-        getShowMenu: function() {
-            if (Utils.isDefined(this.showMenu)) return this.showMenu;
-	    var dflt = true;
-            if (this.displayParent != null) {
-		dflt = this.displayParent.getProperty("showChildMenu",true);
-	    }
-            return this.getProperty(PROP_SHOW_MENU, dflt);
         },
         askSetTitle: function() {
             var t = this.getTitle(false);
@@ -20451,9 +20455,12 @@ function DisplayManager(argId, argProperties) {
             return this.ranges[field.getId()];
         },
         makeMainMenu: function() {
-            if (!this.getProperty(PROP_SHOW_MENU, true)) {
-                return "";
-            }
+	    if(!this.getShowMenu()) {
+		return "";
+	    }
+//            if (!this.getProperty(PROP_SHOW_MENU, true)) {
+//                return "";
+//            }
             //How else do I refer to this object in the html that I add 
             var get = "getDisplayManager('" + this.getId() + "')";
             var layout = "getDisplayManager('" + this.getId() + "').getLayoutManager()";
@@ -20716,7 +20723,8 @@ function DisplayManager(argId, argProperties) {
     var html = HtmlUtils.openTag(TAG_DIV);
     html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     //    html += this.makeMainMenu();
-    if (this.getProperty(PROP_SHOW_MENU, true)) {
+    if(this.getShowMenu()) {
+//    if (this.getProperty(PROP_SHOW_MENU, true)) {
         html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
     var targetDiv = this.getProperty("target");
