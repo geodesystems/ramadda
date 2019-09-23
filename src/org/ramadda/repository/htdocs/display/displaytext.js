@@ -21,7 +21,7 @@ var DISPLAY_BLANK = "blank";
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
     label: "Text Readout",
-    requiresData: false,
+    requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
 });
@@ -2390,18 +2390,28 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
 
 function RamaddaTextDisplay(displayManager, id, properties) {
-    var SUPER;
-    $.extend(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties));
+    let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties);
+    $.extend(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         lastHtml: "<p>&nbsp;<p>&nbsp;<p>",
-        initDisplay: function() {
-            SUPER.initDisplay.call(this);
-            this.setContents(this.lastHtml);
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+            SUPER.updateUI.call(this);
+	    if(!this.getProperty("recordTemplate")) {
+		this.setProperty("recordTemplate","${default}");
+	    }
+            let records = this.filterData();
+	    if(records && records.length>0) {
+		this.lastHtml = this.getRecordHtml(records[0]);
+		this.setContents(this.lastHtml);
+	    }
         },
         handleEventRecordSelection: function(source, args) {
-            this.lastHtml = args.html;
-            this.setContents(args.html);
+            this.lastHtml = this.getRecordHtml(args.record);
+            this.setContents(this.lastHtml);
         }
     });
 }

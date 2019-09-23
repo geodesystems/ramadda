@@ -351,7 +351,10 @@ function DisplayThing(argId, argProperties) {
         getRecordHtml: function(record, fields, template) {
             if (!fields) {
                 var pointData = this.getData();
-                if (pointData == null) return null;
+                if (pointData == null) {
+		    console.log("no data");
+		    return null;
+		}
                 fields = pointData.getRecordFields();
             }
 	    
@@ -363,7 +366,7 @@ function DisplayThing(argId, argProperties) {
 		template = this.getProperty("recordTemplate");
 	    if(template) {
 		if(template!="${default}") {
-		    var row = this.getDataValues(record);
+	    var row = this.getDataValues(record);
 		    return this.applyRecordTemplate(row, fields, template);
 		}
 	    }
