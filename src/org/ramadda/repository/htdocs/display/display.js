@@ -2714,9 +2714,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return null;
             }
             var props = {
-                showMenu: false,
                 sourceEntry: entry,
                 entryId: entry.getId(),
+//                showMenu: false,
                 showTitle: false,
                 showDetails: true,
                 title: entry.getName(),
@@ -2780,9 +2780,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 						 HtmlUtils.onClick(get + ".fetchUrl('csv');", "CSV")));
             }
 
+	    var props = "{showMenu:true}";
             var newMenu = "<a>New</a><ul>";
-            newMenu += HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay');", "New Entry Display"));
-            newMenuItems.push(HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay');", "New Entry Display")));
+            newMenu += HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
+            newMenuItems.push(HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
 
 
             //check if it has point data
@@ -2801,7 +2802,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             catMap[type.category] = "<li> <a>" + type.category + "</a><ul>\n";
                         }
                         pointUrl = pointUrl.replace(/\'/g, "_");
-                        var call = get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," + HtmlUtils.sqt(type.type) + "," + HtmlUtils.sqt(pointUrl) + ");";
+                        var call = get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," + HtmlUtils.sqt(type.type) + "," + HtmlUtils.sqt(pointUrl) + ",null," + props +");";
                         var li = HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["onclick", call], type.label));
                         catMap[type.category] += li + "\n";
                         newMenuItems.push(li);
@@ -2888,7 +2889,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return menu;
         },
         isLayoutHorizontal: function() {
-	    return this.getProperty("orientation","")!= "horizontal";
+	    return this.getProperty("orientation","horizontal")== "horizontal";
         },
         loadInitialData: function() {
             if (!this.needsData() || this.properties.data == null) {
@@ -2923,7 +2924,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getShowMenu: function() {
             if (Utils.isDefined(this.showMenu)) return this.showMenu;
-            return this.getProperty(PROP_SHOW_MENU, true);
+	    var dflt = true;
+            if (this.displayParent != null) {
+		dflt = this.displayParent.getProperty("showChildMenu",true);
+	    }
+            return this.getProperty(PROP_SHOW_MENU, dflt);
         },
         askSetTitle: function() {
             var t = this.getTitle(false);
