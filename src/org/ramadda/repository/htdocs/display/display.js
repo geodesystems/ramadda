@@ -30,7 +30,6 @@ var ID_TOOLBAR_INNER = "toolbarinner";
 var ID_LIST = "list";
 var ID_DIALOG = "dialog";
 var ID_DIALOG_TABS = "dialog_tabs";
-var ID_DIALOG_BUTTON = "dialog_button";
 var ID_FOOTER = "footer";
 var ID_FOOTER_LEFT = "footer_left";
 var ID_FOOTER_RIGHT = "footer_right";
@@ -204,6 +203,46 @@ function DisplayThing(argId, argProperties) {
         setId: function(id) {
             this.objectId = id;
         },
+        removeDisplay: function() {
+	    if(this.dialogElement)  this.dialogElement.remove();
+        },
+        popup: function(srcId, popupId, srcObj, popupObject) {
+            var popup = popupObject || $("#"+popupId);
+            var src = srcObj || $("#"+srcId);
+            var myalign = 'left top';
+            var atalign = 'left bottom';
+            popup.show();
+//	    console.log(srcObj +" " + srcId + " " + "pop:" + popup.length +" src:" + src.length);
+            popup.position({
+                of: src,
+                my: myalign,
+                at: atalign,
+                collision: "none none"
+            });
+            //Do it again to fix a bug on safari
+            popup.position({
+                of: src,
+                my: myalign,
+                at: atalign,
+                collision: "none none"
+            });
+            popup.draggable();
+            popup.show();	    
+        },
+
+	initDialog: function() {
+	},
+        showDialog: function(text) {
+	    if(!this.dialogElement) {
+		$(document.body).append(HtmlUtils.div([ATTR_CLASS, "display-dialog","id",this.getDomId(ID_DIALOG)]));
+		this.dialogElement = this.jq(ID_DIALOG);
+	    }
+	    this.dialogElement.html(this.makeDialog(text));
+            this.popup(this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
+            this.initDialog();
+        },
+
+
         getShowMenu: function() {
             if (Utils.isDefined(this.showMenu)) {
 		return this.showMenu;
@@ -429,7 +468,6 @@ function DisplayThing(argId, argProperties) {
             label = label.replace(/!!/g, " -- ");
             return label;
         },
-
         getFormValue: function(what, dflt) {
             var fromForm = $("#" + this.getDomId(what)).val();
             if (fromForm != null) {
@@ -1773,18 +1811,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			for(var j=0;j<filter._values.length;j++) {
 			    var fv = _values[j];
 			    if(startsWith) {
-				if(rowValue.startsWith(fv)) {
+				if(rowValue.toString().startsWith(fv)) {
 				    ok = true;
 				    break;
 				}
-			    } else  if(rowValue.indexOf(fv)>=0) {
+			    } else  if(rowValue.toString().indexOf(fv)>=0) {
 				ok = true;
 				break;
 			    }
 			}
 			if(!ok) {
 			    for(ri=0;ri<filter.regexps.length;ri++) {
-				if(rowValue.match(filter.regexps[ri])) {
+				if(rowValue.toString().match(filter.regexps[ri])) {
 				    ok = true;
 				    break;
 				}
@@ -1907,6 +1945,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getGet: function() {
             return "getRamaddaDisplay('" + this.getId() + "')";
         },
+        showWikiText: function(type) {
+	    var wiki =  "";
+            wiki += this.getWikiText();
+            for (var i = 0; i < this.displays.length; i++) {
+                var display = this.displays[i];
+                if (display.getIsLayoutFixed()) {
+                    continue;
+                }
+                wiki += display.getWikiText();
+            }
+	    popupObject = getTooltip();
+	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+	    wiki = HtmlUtils.pre(["style","max-width:500px;max-height:400px;overflow-x:auto;overflow-y:auto;"], wiki);
+	    this.showDialog(wiki);
+	},
+
         publish: function(type) {
             if (type == null) type = "wikipage";
             var args = [];
@@ -2901,11 +2955,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var menu = "<table class=formtable>" +
                 "<tr><td align=right><b>Move:</b></td><td>" + moveTop + " " + moveUp + " " + moveDown + " " + moveRight + " " + moveLeft + "</td></tr>" +
                 "<tr><td align=right><b>Row:</b></td><td> " + HtmlUtils.input("", this.getProperty("row", ""), ["size", "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HtmlUtils.input("", this.getProperty("column", ""), ["size", "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
-
-                //                    "<tr><td align=right><b>Name:</b></td><td> " + HtmlUtils.input("", this.getProperty("name",""), ["size","7",ATTR_ID,  this.getDomId("name")]) + "</td></tr>" +
-                //                    "<tr><td align=right><b>Source:</b></td><td>"  + 
-                //                    HtmlUtils.input("", this.getProperty("eventsource",""), ["size","7",ATTR_ID,  this.getDomId("eventsource")]) +
-                //                    "</td></tr>" +
                 "<tr><td align=right><b>Width:</b></td><td> " + HtmlUtils.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HtmlUtils.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
                 "</table>";
             var tmp =
@@ -2989,13 +3038,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (column < 0) column = 0;
             this.setDisplayProperty("column", column);
             this.getLayoutManager().layoutChanged(this);
+	    this.jq("col").val(column);
         },
         deltaRow: function(delta) {
             var row = parseInt(this.getProperty("row", 0));
+	    if(isNaN(row)) row = 0;
             row += delta;
             if (row < 0) row = 0;
             this.setDisplayProperty("row", row);
             this.getLayoutManager().layoutChanged(this);
+	    this.jq("row").val(row);
         },
         moveDisplayRight: function() {
             if (this.getLayoutManager().isLayoutColumns()) {
@@ -3039,31 +3091,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 form += HtmlUtils.div([ATTR_CLASS, "display-menu-item"], menuItems[i]);
             }
             form += "</form>";
-            tabTitles.push("Display");
-            tabContents.push(form);
-        },
-        popup: function(srcId, popupId) {
-            var popup = GuiUtils.getDomObject(popupId);
-            var srcObj = GuiUtils.getDomObject(srcId);
-            if (!popup || !srcObj) return;
-            var myalign = 'left top';
-            var atalign = 'left bottom';
-            showObject(popup);
-            jQuery("#" + popupId).position({
-                of: jQuery("#" + srcId),
-                my: myalign,
-                at: atalign,
-                collision: "none none"
-            });
-            //Do it again to fix a bug on safari
-            jQuery("#" + popupId).position({
-                of: jQuery("#" + srcId),
-                my: myalign,
-                at: atalign,
-                collision: "none none"
-            });
-
-            $("#" + popupId).draggable();
+            tabTitles.push("Display"); 
+           tabContents.push(form);
         },
         checkLayout: function() {},
         displayData: function() {},
@@ -3452,7 +3481,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			value = input.val();
 		    }
 		    
-		    if(!value) return;
+		    if(value==null) return;
 		    if(!Array.isArray(value) && input.attr("isButton")) {
 //			console.log(_this.type +" " +Array.isArray(value));
 			var tmp = [];
@@ -3534,7 +3563,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var items=[];
 		    var regexp = new RegExp("(" + val+")",'i');
 		    for(var i=0;i<values.length;i++) {
-			var match  = values[i].match(regexp);
+			var match  = values[i].toString().match(regexp);
 			if(match) {
 			    items.push([match[1], values[i]]);
 			}
@@ -3790,8 +3819,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getHtml: function() {
             var dobs = this.getDoBs();
             var html = "";
-            var menu = HtmlUtils.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
-            html += menu;
+//            var menu = HtmlUtils.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
+//            html += menu;
             html += HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
             var width = this.getWidth();
             if (dobs) {
@@ -3807,7 +3836,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.getShowMenu()) {
                 button = HtmlUtils.onClick(get + ".showDialog();",
 					   HtmlUtils.image(ramaddaBaseUrl + "/icons/downdart.png",
-							   [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_DIALOG_BUTTON)]));
+							   [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
             }
             var title = "";
             if (this.getShowTitle()) {
@@ -3917,7 +3946,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    ];
         },
-        makeDialog: function() {
+        makeDialog: function(text) {
             var html = "";
             html += HtmlUtils.div([ATTR_ID, this.getDomId(ID_HEADER), ATTR_CLASS, "display-header"]);
             var closeImage = HtmlUtils.getIconImage(icon_close, []);
@@ -3926,41 +3955,53 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var left = "";
             //                var left = this.makeToolbar({addLabel:true});
             var header = HtmlUtils.div([ATTR_CLASS, "display-dialog-header"], HtmlUtils.leftRight(left, right));
-            var tabTitles = [];
-            var tabContents = [];
-            this.getDialogContents(tabTitles, tabContents);
-            tabTitles.push("Edit");
-            tabContents.push(this.makeToolbar({
-                addLabel: true
-            }));
-            var tabLinks = "<ul>";
-            var tabs = "";
-            for (var i = 0; i < tabTitles.length; i++) {
-                var id = this.getDomId("tabs") + i;
-                tabLinks += HtmlUtils.tag("li", [], HtmlUtils.tag("a", ["href", "#" + id],
-								  tabTitles[i]));
-                tabLinks += "\n";
-                var contents = HtmlUtils.div([ATTR_CLASS, "display-dialog-tab"], tabContents[i]);
-                tabs += HtmlUtils.div(["id", id], contents);
-                tabs += "\n";
-            }
-            tabLinks += "</ul>\n";
-            var tabs = HtmlUtils.div(["id", this.getDomId(ID_DIALOG_TABS)], tabLinks + tabs);
-            dialogContents = header + tabs;
-            return dialogContents;
+	    if(!text) {
+		var tabTitles = [];
+		var tabContents = [];
+		this.getDialogContents(tabTitles, tabContents);
+		tabTitles.push("Edit");
+		tabContents.push(this.makeToolbar({
+                    addLabel: true
+		}));
+		var tabLinks = "<ul>";
+		var tabs = "";
+		for (var i = 0; i < tabTitles.length; i++) {
+                    var id = this.getDomId("tabs") + i;
+                    tabLinks += HtmlUtils.tag("li", [], HtmlUtils.tag("a", ["href", "#" + id],
+								      tabTitles[i]));
+                    tabLinks += "\n";
+                    var contents = HtmlUtils.div([ATTR_CLASS, "display-dialog-tab"], tabContents[i]);
+                    tabs += HtmlUtils.div(["id", id], contents);
+                    tabs += "\n";
+		}
+		tabLinks += "</ul>\n";
+		text =  HtmlUtils.div(["id", this.getDomId(ID_DIALOG_TABS)], tabLinks + tabs);
+	    }
+	    return  header + text;
         },
         initDialog: function() {
             var _this = this;
             var updateFunc = function(e) {
-                if (e && e.which != 13) {
+                if (e && e.which != 13 && e.which!=0) {
                     return;
                 }
-                _this.column = _this.jq("column").val();
-                _this.row = _this.jq("row").val();
-                _this.getLayoutManager().doLayout();
+		var changed = false;
+		["column","row","width","height"].map(f=>{
+                    if(_this[f] != _this.jq(f).val() && (_this[f] || _this.jq(f).val().trim()!="")) {
+			changed = true;
+			_this[f] = _this.jq(f).val();
+		    }});
+		    
+
+                if(changed) {
+		    _this.getLayoutManager().doLayout();
+		}
             };
-            this.jq("column").keypress(updateFunc);
-            this.jq("row").keypress(updateFunc);
+	    ["column","row","width","height"].map(f=>{
+		this.jq(f).blur(updateFunc);
+		this.jq(f).keypress(updateFunc);
+	    });
+
             this.jq("showtitle").change(function() {
                 _this.setShowTitle(_this.jq("showtitle").is(':checked'));
             });
@@ -3970,10 +4011,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DIALOG_TABS).tabs();
 
         },
-        showDialog: function() {
-            var dialog = this.getDomId(ID_DIALOG);
-            this.writeHtml(ID_DIALOG, this.makeDialog());
-            this.popup(this.getDomId(ID_DIALOG_BUTTON), dialog);
+        showDialog: function(text) {
+	    if(!this.dialogElement) {
+		$(document.body).append(HtmlUtils.div([ATTR_CLASS, "display-dialog","id",this.getDomId(ID_DIALOG)]));
+		this.dialogElement = this.jq(ID_DIALOG);
+	    }
+	    this.dialogElement.html(this.makeDialog(text));
+            this.popup(this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
             this.initDialog();
         },
         getWidthForStyle: function(dflt) {
@@ -4034,6 +4078,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         removeDisplay: function() {
             this.getDisplayManager().removeDisplay(this);
+	    if(this.dialogElement)  this.dialogElement.remove();
         },
         //Gets called before the displays are laid out
         prepareToLayout: function() {
@@ -4629,6 +4674,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 date = arg;
             }
+	    if(isNaN(date.getUTCFullYear())) return {v:date,f:"NA"};
             if (!formatter) {
                 formatter = this.fmt_yyyymmddhhmm;
             }

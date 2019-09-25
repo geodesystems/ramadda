@@ -391,7 +391,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         initDialog: function() {
             SUPER.initDialog.call(this);
             var _this = this;
-            var updateFunc = function() {
+            var updateFunc = function(e) {
+                if (e && e.which != 13 && e.which!=0) {
+                    return;
+                }
                 _this.vAxisMinValue = Utils.toFloat(_this.jq("vaxismin").val());
 //		console.log("vaxis:" + _this.vAxisMinValue + " " + this.getVAxisMinValue());
                 _this.vAxisMaxValue = Utils.toFloat(_this.jq("vaxismax").val());
@@ -400,10 +403,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 _this.displayData();
 
             };
-            this.jq("vaxismin").blur(updateFunc);
-            this.jq("vaxismax").blur(updateFunc);
-            this.jq("mindate").blur(updateFunc);
-            this.jq("maxdate").blur(updateFunc);
+	    ["vaxismin","vaxismax","mindate","maxdate"].map(f=>{
+		this.jq(f).blur(updateFunc);
+		this.jq(f).keypress(updateFunc);
+	    });
 
 
 
@@ -946,6 +949,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    var fIdx = 0;
+
+
             for (var j = 0; j < header.length; j++) {
 		var field;
 		if(j>0 || !props.includeIndex) {
@@ -967,6 +972,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(field.isString()) {
 			    dataTable.addColumn('string', header[j]);
 			} else if(field.isFieldDate()) {
+
 			    dataTable.addColumn('date', header[j]);
 			} else {
 			    dataTable.addColumn('number', header[j]);
@@ -2122,13 +2128,18 @@ function TableDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
 	    //		dataList = this.filterData(dataList, selectedFields,false,true);
             var rows = this.makeDataArray(dataList);
+
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
+		
                 var row = rows[rowIdx];
                 for (var colIdx = 0; colIdx < row.length; colIdx++) {
                     if ((typeof row[colIdx]) == "string") {
                         row[colIdx] = row[colIdx].replace(/\n/g, "<br>");
-                    }
+			if(row[colIdx].startsWith("http:") || row[colIdx].startsWith("https:")) {
+			    row[colIdx] = "<a href='" +row[colIdx] +"'>" + row[colIdx]+"</a>";
+			}
+		    }
                 }
                 data.push(row);
             }

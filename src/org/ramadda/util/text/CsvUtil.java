@@ -767,6 +767,7 @@ public class CsvUtil {
     public List<Row> tokenizeJson(String file,
                                   Hashtable<String, String> props)
             throws Exception {
+
         List<Row> rows       = new ArrayList<Row>();
         String    s          = IOUtil.readContents(file);
 
@@ -788,15 +789,20 @@ public class CsvUtil {
 
         List<List<String>> names = null;
         for (int i = 0; i < array.length(); i++) {
-            List<JSONObject> jrows = new ArrayList<JSONObject>();
-            JSONObject       jrow  = array.getJSONObject(i);
+            //            List<JSONObject> jrows = new ArrayList<JSONObject>();
+            List       jrows = new ArrayList();
+            JSONObject jrow  = array.getJSONObject(i);
             if (objectPath != null) {
                 for (String tok :
                         StringUtil.split(objectPath, ",", true, true)) {
                     if (tok.equals("*")) {
                         jrows.add(jrow);
                     } else {
-                        jrows.add(Json.readObject(jrow, tok));
+                        try {
+                            jrows.add(Json.readObject(jrow, tok));
+                        } catch (Exception exc) {
+                            jrows.add(Json.readArray(jrow, tok));
+                        }
                     }
                 }
             } else {
@@ -807,42 +813,71 @@ public class CsvUtil {
                 names = new ArrayList<List<String>>();
                 Row row = new Row();
                 rows.add(row);
-                for (JSONObject jobj : jrows) {
+                for (int j = 0; j < jrows.size(); j++) {
+                    Object     o      = jrows.get(j);
+                    JSONObject jobj   = null;
+                    JSONArray  jarray = null;
+                    if (o instanceof JSONObject) {
+                        jobj = (JSONObject) o;
+                    } else {
+                        jarray = (JSONArray) o;
+                    }
                     List<String> objNames = new ArrayList<String>();
                     names.add(objNames);
-                    String[] tmp = JSONObject.getNames(jobj);
-                    for (String name : tmp) {
-                        Object obj = jobj.opt(name);
-                        if (obj != null) {
-                            if ((obj instanceof JSONObject)
-                                    || (obj instanceof JSONArray)) {
-                                continue;
+                    if (jobj != null) {
+                        String[] tmp = JSONObject.getNames(jobj);
+                        for (String name : tmp) {
+                            Object obj = jobj.opt(name);
+                            if (obj != null) {
+                                if ((obj instanceof JSONObject)
+                                        || (obj instanceof JSONArray)) {
+                                    continue;
+                                }
                             }
+                            objNames.add(name);
+                            row.add(name);
                         }
-                        objNames.add(name);
-                        row.add(name);
+                    } else {
+                        for (int k = 0; k < jarray.length(); k++) {
+                            row.add("Index " + k);
+                        }
+                        //
                     }
                 }
             }
             Row row = new Row();
             rows.add(row);
             for (int j = 0; j < jrows.size(); j++) {
-                JSONObject   jobj     = jrows.get(j);
-                List<String> objNames = names.get(j);
-                for (String name : objNames) {
-                    Object obj = jobj.opt(name);
-                    if (obj == null) {
-                        obj = "";
-                    } else if ((obj instanceof JSONObject)
-                               || (obj instanceof JSONArray)) {
-                        continue;
+                Object     o      = jrows.get(j);
+                JSONObject jobj   = null;
+                JSONArray  jarray = null;
+                if (o instanceof JSONObject) {
+                    jobj = (JSONObject) o;
+                } else {
+                    jarray = (JSONArray) o;
+                }
+                if (jobj != null) {
+                    List<String> objNames = names.get(j);
+                    for (String name : objNames) {
+                        Object obj = jobj.opt(name);
+                        if (obj == null) {
+                            obj = "";
+                        } else if ((obj instanceof JSONObject)
+                                   || (obj instanceof JSONArray)) {
+                            continue;
+                        }
+                        row.add(obj.toString());
                     }
-                    row.add(obj.toString());
+                } else {
+                    for (int k = 0; k < jarray.length(); k++) {
+                        row.add(jarray.get(k));
+                    }
                 }
             }
         }
 
         return rows;
+
 
     }
 

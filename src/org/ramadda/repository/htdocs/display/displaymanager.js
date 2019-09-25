@@ -281,6 +281,7 @@ function DisplayManager(argId, argProperties) {
 
             var fileMenu =
                 HtmlUtils.tag(TAG_LI, [], "<a>Publish</a>" + HtmlUtils.tag("ul", [], publishMenu)) + "\n" +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".showWikiText();", "Show Text")) + "\n" +
                 HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
 
 
