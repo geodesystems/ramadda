@@ -406,7 +406,7 @@ public class Utils {
      */
     public static List<String> tokenizeColumns(String line,
             String columnDelimiter) {
-	//	System.err.println("line:" + line);
+        //      System.err.println("line:" + line);
         //        System.err.println("line:" + line.replaceAll("\t","_TAB_"));
         List<String> toks      = new ArrayList<String>();
         StrTokenizer tokenizer = StrTokenizer.getCSVInstance(line);
@@ -418,11 +418,11 @@ public class Utils {
         //        tokenizer.setQuoteChar('"');
         while (tokenizer.hasNext()) {
             String tok = tokenizer.nextToken();
-	    
+
             if (tok == null) {
                 tok = "";
             }
-	    //	    System.err.println("\ttok:" + tok);
+            //      System.err.println("\ttok:" + tok);
             toks.add(tok);
         }
 
@@ -1799,14 +1799,14 @@ public class Utils {
                 /*
                 //Awful hack to not have to deal with why Don't synthid's are barfing
                 try {
-                    return javax.xml.bind.DatatypeConverter.parseBase64Binary(
-                        s);
+                return javax.xml.bind.DatatypeConverter.parseBase64Binary(
+                s);
                 } catch (Exception exc3) {
                 */
-                    throw new RuntimeException(
-                        "Failed to decode base64 string:" + s + "  Error:"
-                        //+ exc3);
-                        + exc2);
+                throw new RuntimeException("Failed to decode base64 string:"
+                                           + s + "  Error:"
+                //+ exc3);
+                + exc2);
                 //}
             }
         }
@@ -2884,37 +2884,37 @@ public class Utils {
 
         /*
 
-        List<String> toks = StringUtil.split(commandString, "\n", true,
-                                             true);
-        boolean priorLineContinues = false;
-        for (int i = 0; i < toks.size(); i++) {
-            String  line       = toks.get(i);
-            if(bracketCnt==0) {
-                StringBuilder sb = new StringBuilder();
-                for(int j=0;j<line.length();j++) {
-                    char c = line.charAt(j);
-                    if(c == '{') {
-                        bracketCnt++;
-                    } else if(c == '}') {
-                        bracketCnt--;
-                    }
-                }
-            }
-            boolean appendNext = false;
-            if (line.endsWith("\\")) {
-                appendNext = true;
-                line       = line.substring(0, line.length() - 1);
-            } else {
-                appendNext = false;
-            }
-            if (priorLineContinues) {
-                lines.get(lines.size() - 1).append(" ");
-                lines.get(lines.size() - 1).append(line);
-            } else {
-                lines.add(new StringBuilder(line));
-            }
-            priorLineContinues = appendNext;
-        }
+          List<String> toks = StringUtil.split(commandString, "\n", true,
+          true);
+          boolean priorLineContinues = false;
+          for (int i = 0; i < toks.size(); i++) {
+          String  line       = toks.get(i);
+          if(bracketCnt==0) {
+          StringBuilder sb = new StringBuilder();
+          for(int j=0;j<line.length();j++) {
+          char c = line.charAt(j);
+          if(c == '{') {
+          bracketCnt++;
+          } else if(c == '}') {
+          bracketCnt--;
+          }
+          }
+          }
+          boolean appendNext = false;
+          if (line.endsWith("\\")) {
+          appendNext = true;
+          line       = line.substring(0, line.length() - 1);
+          } else {
+          appendNext = false;
+          }
+          if (priorLineContinues) {
+          lines.get(lines.size() - 1).append(" ");
+          lines.get(lines.size() - 1).append(line);
+          } else {
+          lines.add(new StringBuilder(line));
+          }
+          priorLineContinues = appendNext;
+          }
         */
 
         return lines;
@@ -3059,9 +3059,9 @@ public class Utils {
             fileName = fileName.substring(idx + FILE_SEPARATOR.length());
         } else {
             /*
-               We have this here for files from old versions of RAMADDA where we did
-               not add the StorageManager.FILE_SEPARATOR delimiter and it looked something like:
-                     "62712e31-6123-4474-a96a-5e4edb608fd5_<filename>"
+              We have this here for files from old versions of RAMADDA where we did
+              not add the StorageManager.FILE_SEPARATOR delimiter and it looked something like:
+              "62712e31-6123-4474-a96a-5e4edb608fd5_<filename>"
             */
             fileName = fileName.replaceFirst(ENTRY_ID_REGEX, "");
         }
@@ -3162,6 +3162,45 @@ public class Utils {
 
 
 
+    /**
+     * _more_
+     *
+     * @param html _more_
+     *
+     * @return _more_
+     */
+    public static String stripTags(String html) {
+        StringBuffer stripped = new StringBuffer();
+        while (html.length() > 0) {
+            int idx = html.indexOf("<");
+            if (idx < 0) {
+                stripped.append(html.trim());
+
+                break;
+            }
+            String text = html.substring(0, idx);
+            text = text.trim();
+            if (text.length() > 0) {
+                stripped.append(text);
+                stripped.append(" ");
+            }
+            html = html.substring(idx);
+            int idx2 = html.indexOf(">");
+            if (idx2 < 0) {
+                break;
+            }
+            html = html.substring(idx2 + 1);
+        }
+
+        return StringUtil.replace(stripped.toString(), "&nbsp;", "");
+        /*    return stripped.toString();
+              stripped = new StringBuffer(replace(stripped.toString(), "&nbsp;",
+              ""));
+              return stripped.toString();
+        */
+    }
+
+
 
     /**
      * _more_
@@ -3171,17 +3210,30 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	if(true) {
-	    SimpleDateFormat fmt = new SimpleDateFormat("MM/dd/YYYY HH:mm:ss a");
-	    String date = "11/8/2016 7:00:00 PM";
-	    System.err.println(fmt.parse(date));
-	    if(true) return;
 
-	}
+        if (true) {
+            String tr =
+                "<td>Confluence of <a href=\"/wiki/Runde_River\" title=\"Runde River\">Runde River</a> and <a href=\"/wiki/Save_River_(Africa)\" title=\"Save River (Africa)\">Save River</a></td>";
+            System.err.println(Utils.tokenizeChunk(tr, "<td", "</td")[0]);
+
+            return;
+        }
+
+
+        if (true) {
+            SimpleDateFormat fmt =
+                new SimpleDateFormat("MM/dd/YYYY HH:mm:ss a");
+            String date = "11/8/2016 7:00:00 PM";
+            System.err.println(fmt.parse(date));
+            if (true) {
+                return;
+            }
+
+        }
         if (true) {
             String s =
                 "hello\nPhone:asdsd\nhow\nare\nyou I am fine and you asdsad asd sd sd sd asd sadas\n\nasdsdsdas\n\nasdasdas ";
-	    //            System.err.println(
+            //            System.err.println(
 
             return;
         }
@@ -3243,36 +3295,37 @@ public class Utils {
         }
 
         /*
-        String str = "(?s)colspan=\"2\" class=\"xl239\" style=\"border-right:.5pt solid black;border-left:\n  none\">Age";
-        String pattern = ".*colspan=\"2\".*";
-        Pattern p = Pattern.compile(pattern, Pattern.MULTILINE);
-        System.err.println(        p.matcher(str).find());
-        if(true) return;
+          String str = "(?s)colspan=\"2\" class=\"xl239\" style=\"border-right:.5pt solid black;border-left:\n  none\">Age";
+          String pattern = ".*colspan=\"2\".*";
+          Pattern p = Pattern.compile(pattern, Pattern.MULTILINE);
+          System.err.println(        p.matcher(str).find());
+          if(true) return;
 
-        byte[] bytes = decodeBase64(args[0]);
-        for (int i = 0; i < bytes.length; i += 4) {
-            int asInt = (bytes[i] & 0xFF) | ((bytes[i + 1] & 0xFF) << 8)
-                        | ((bytes[i + 2] & 0xFF) << 16)
-                        | ((bytes[i + 3] & 0xFF) << 24);
-            float asFloat = Float.intBitsToFloat(asInt);
-            System.err.println("i:" + i + " f:" + asFloat);
-        }
-        if (true) {
-            return;
-        }
+          byte[] bytes = decodeBase64(args[0]);
+          for (int i = 0; i < bytes.length; i += 4) {
+          int asInt = (bytes[i] & 0xFF) | ((bytes[i + 1] & 0xFF) << 8)
+          | ((bytes[i + 2] & 0xFF) << 16)
+          | ((bytes[i + 3] & 0xFF) << 24);
+          float asFloat = Float.intBitsToFloat(asInt);
+          System.err.println("i:" + i + " f:" + asFloat);
+          }
+          if (true) {
+          return;
+          }
 
 
-        String s = "-1 \"\\\n\\\"X";
-        s = "-1 {hello \nthere} more";
-        s = " -db  {\nx1 \nx2\nx3}rhl_0000005.id  \n\"test it\" \nshould\\\n be \\\none same line\n  \nanother";
-        s = "{\nx1 \nx2 {} \n x3}";
-        s = "-db {\nrhl_0000005.id foo\n40_00485165555076 { }\n}\nanother line\n{and another line}";
-        //        s = "should\\\n be \\\non same line";
-        parseMultiLineCommandLine(s);
-        //        s = "-maxrows 30 -db \" rhl_0000005.id {test it} \" ";
-        //        System.err.println(s);
-        //        System.err.println(parseCommandLine(s));
-        */
+          String s = "-1 \"\\\n\\\"X";
+          s = "-1 {hello \nthere} more";
+          s = " -db  {\nx1 \nx2\nx3}rhl_0000005.id  \n\"test it\" \nshould\\\n be \\\none same line\n  \nanother";
+          s = "{\nx1 \nx2 {} \n x3}";
+          s = "-db {\nrhl_0000005.id foo\n40_00485165555076 { }\n}\nanother line\n{and another line}";
+          //        s = "should\\\n be \\\non same line";
+          parseMultiLineCommandLine(s);
+          //        s = "-maxrows 30 -db \" rhl_0000005.id {test it} \" ";
+          //        System.err.println(s);
+          //        System.err.println(parseCommandLine(s));
+          */
+
     }
 
     /**
@@ -4046,7 +4099,7 @@ public class Utils {
             return null;
         }
         String chunk = s.substring(idx1 + start.length(), idx2);
-	//	System.err.println(idx1 +" " + idx2 +" "  + start.length() +" " + chunk);
+        //      System.err.println(idx1 +" " + idx2 +" "  + start.length() +" " + chunk);
         s = s.substring(idx2 + start.length());
 
         return new String[] { chunk, s };

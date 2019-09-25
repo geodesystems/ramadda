@@ -501,13 +501,17 @@ public class CsvUtil {
             return new BufferedInputStream(
                 new ByteArrayInputStream(csv.getBytes()));
         } else {
-            try {
-                return new BufferedInputStream(new FileInputStream(file));
-            } catch (Exception exc) {
-                System.err.println("Error opening file:" + file);
+            if (new File(file).exists()) {
+                try {
+                    return new BufferedInputStream(new FileInputStream(file));
+                } catch (Exception exc) {
+                    System.err.println("Error opening file:" + file);
 
-                throw exc;
+                    throw exc;
+                }
             }
+
+            return IOUtil.getInputStream(file);
         }
     }
 
@@ -682,7 +686,6 @@ public class CsvUtil {
                 }
                 Row     row         = new Row();
                 boolean checkHeader = true;
-		//		System.err.println("tr:" + tr);
                 while (true) {
                     toks = Utils.tokenizeChunk(tr, "<td", "</td");
                     if (checkHeader && (toks == null)) {
@@ -692,6 +695,7 @@ public class CsvUtil {
                         break;
                     }
                     String td = toks[0].trim();
+                    //              System.out.println("td:" + td.trim());
                     tr = toks[1];
                     int idx = td.indexOf(">");
                     if ((attrPattern != null) && (idx >= 0)) {
@@ -705,9 +709,10 @@ public class CsvUtil {
                         //                        System.out.println("not skipping:" +td );
                     }
                     //              System.err.println("td:" + td);
-		    td = td.substring(idx + 1);
-		    //		    System.err.println("after TD:" + td);
-                    td = StringUtil.stripTags(td);
+                    td = td.substring(idx + 1);
+                    //              System.err.println("after TD:" + td);
+                    td = Utils.stripTags(td);
+                    //              System.err.println("after Strip:" + td);
                     td = td.replaceAll("\n", " ").replaceAll("  +", "");
                     td = HtmlUtils.unescapeHtml3(td);
                     //              System.err.println(td+"  stripped:" + td);
@@ -761,78 +766,80 @@ public class CsvUtil {
      */
     public List<Row> tokenizeJson(String file,
                                   Hashtable<String, String> props)
-	throws Exception {
-        List<Row>    rows  = new ArrayList<Row>();
-        String       s     = IOUtil.readContents(file);
-	
-        JSONArray    array = null;
-	String arrayPath = props.get("arrayPath");
-	String objectPath = props.get("objectPath");
-	try {
-	    JSONObject obj      = new JSONObject(s);
-	    if(arrayPath!=null) {
-		array = Json.readArray(obj,arrayPath);
-	    }
-	} catch(Exception exc) {
-	    System.err.println("exc:" + exc);
-	}
-	if(array==null)
-	    array= new JSONArray(s);
+            throws Exception {
+        List<Row> rows       = new ArrayList<Row>();
+        String    s          = IOUtil.readContents(file);
+
+        JSONArray array      = null;
+        String    arrayPath  = props.get("arrayPath");
+        String    objectPath = props.get("objectPath");
+        try {
+            JSONObject obj = new JSONObject(s);
+            if (arrayPath != null) {
+                array = Json.readArray(obj, arrayPath);
+            }
+        } catch (Exception exc) {
+            System.err.println("exc:" + exc);
+        }
+        if (array == null) {
+            array = new JSONArray(s);
+        }
 
 
         List<List<String>> names = null;
         for (int i = 0; i < array.length(); i++) {
-	    List<JSONObject> jrows = new ArrayList<JSONObject>();
-            JSONObject jrow = array.getJSONObject(i);
-	    if(objectPath!=null) {
-		for(String tok: StringUtil.split(objectPath,",",true,true)) {
-		    if(tok.equals("*")) {
-			jrows.add(jrow);
-		    } else {
-			jrows.add(Json.readObject(jrow,tok));
-		    }
-		}
-	    }   else {
-		jrows.add(jrow);
-	    }
+            List<JSONObject> jrows = new ArrayList<JSONObject>();
+            JSONObject       jrow  = array.getJSONObject(i);
+            if (objectPath != null) {
+                for (String tok :
+                        StringUtil.split(objectPath, ",", true, true)) {
+                    if (tok.equals("*")) {
+                        jrows.add(jrow);
+                    } else {
+                        jrows.add(Json.readObject(jrow, tok));
+                    }
+                }
+            } else {
+                jrows.add(jrow);
+            }
 
-	    if (names == null) {
-		names = new ArrayList<List<String>>();
-		Row      row = new Row();
-		rows.add(row);
-		for(JSONObject jobj: jrows) {
-		    List<String> objNames=new ArrayList<String>();
-		    names.add(objNames);
-		    String[] tmp = JSONObject.getNames(jobj);
-		    for (String name : tmp) {
-			Object obj = jobj.opt(name);
-			if (obj != null) {
-			    if ((obj instanceof JSONObject)
-                                || (obj instanceof JSONArray)) {
-				continue;
-			    }
-			}
-			objNames.add(name);
-			row.add(name);
-		    }
-		}
-	    } 
-	    Row row = new Row();
-	    rows.add(row);
-	    for(int j=0;j<jrows.size();j++) {
-		JSONObject jobj =  jrows.get(j);
-		List<String> objNames=names.get(j);
-		for (String name : objNames) {
-		    Object obj =jobj.opt(name);
-		    if (obj == null) {
-			obj = "";
-		    } else if ((obj instanceof JSONObject)
-			       || (obj instanceof JSONArray)) {
-			continue;
-		    }
-		    row.add(obj.toString());
-		}
-	    }
+            if (names == null) {
+                names = new ArrayList<List<String>>();
+                Row row = new Row();
+                rows.add(row);
+                for (JSONObject jobj : jrows) {
+                    List<String> objNames = new ArrayList<String>();
+                    names.add(objNames);
+                    String[] tmp = JSONObject.getNames(jobj);
+                    for (String name : tmp) {
+                        Object obj = jobj.opt(name);
+                        if (obj != null) {
+                            if ((obj instanceof JSONObject)
+                                    || (obj instanceof JSONArray)) {
+                                continue;
+                            }
+                        }
+                        objNames.add(name);
+                        row.add(name);
+                    }
+                }
+            }
+            Row row = new Row();
+            rows.add(row);
+            for (int j = 0; j < jrows.size(); j++) {
+                JSONObject   jobj     = jrows.get(j);
+                List<String> objNames = names.get(j);
+                for (String name : objNames) {
+                    Object obj = jobj.opt(name);
+                    if (obj == null) {
+                        obj = "";
+                    } else if ((obj instanceof JSONObject)
+                               || (obj instanceof JSONArray)) {
+                        continue;
+                    }
+                    row.add(obj.toString());
+                }
+            }
         }
 
         return rows;
@@ -1273,8 +1280,9 @@ public class CsvUtil {
             "<pattern> <template> <column label> (Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header)"),
         new Cmd("-set", "<col #s> <row #s> <value>",
                 "(write the value into the cells)"),
-	new Cmd("-setcol", "<match col #> <pattern> <write col #> <value>",
-                "(write the value into the write col for rows that match the pattern)"),
+        new Cmd(
+            "-setcol", "<match col #> <pattern> <write col #> <value>",
+            "(write the value into the write col for rows that match the pattern)"),
         new Cmd("-case", "<lower|upper|camel> <col #>",
                 "(change case of column)"),
         new Cmd("-width", "<columns>  <size>",
@@ -1302,7 +1310,8 @@ public class CsvUtil {
         new Cmd(
             "-html", "\"name value properties\"",
             "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
-        new Cmd("-json", "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
+        new Cmd("-json",
+                "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
                 "(parse the input as json)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
@@ -1318,7 +1327,7 @@ public class CsvUtil {
         new Cmd(
             "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
             "(apply the operator to the given columns and create new one)"),
-	new Cmd("-mercator","<col #s>","(convert x/y to lon/lat)"),
+        new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
         new Cmd("-round", "<columns>", "round the values"),
         new Cmd(
             "-sum", "<key columns> <value columns>",
@@ -1329,7 +1338,7 @@ public class CsvUtil {
             "Join the 2 files together"),
         new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
         new Cmd("-unique", "<columns>", "(pass through unique values)"),
-	new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
+        new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
         new Cmd("-percent", "<columns to add>"),
         new Cmd("-sort", "<column sort>"),
         new Cmd(
@@ -1754,12 +1763,13 @@ public class CsvUtil {
                 continue;
             }
 
-	    if (arg.equals("-dups")) {
+            if (arg.equals("-dups")) {
                 if ( !ensureArg(args, i, 1)) {
                     return false;
                 }
                 List<String> toks = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Dups(toks));
+
                 continue;
             }
 
@@ -2215,7 +2225,7 @@ public class CsvUtil {
                                            "\\\\]");
                 pattern = pattern.replaceAll("_dot_", "\\\\.");
                 pattern = pattern.replaceAll("_star_", "\\\\*");
-		pattern = pattern.replaceAll("_plus_", "\\\\+");
+                pattern = pattern.replaceAll("_plus_", "\\\\+");
                 //                pattern = pattern.replaceAll("_leftparen_","\\\\(").replaceAll("_rightparen_","\\\\)");
                 info.getProcessor().addProcessor(
                     new Converter.ColumnChanger(
@@ -2464,7 +2474,7 @@ public class CsvUtil {
             }
 
 
-	    if (arg.equals("-mercator")) {
+            if (arg.equals("-mercator")) {
                 if ( !ensureArg(args, i, 1)) {
                     return false;
                 }
@@ -2542,15 +2552,16 @@ public class CsvUtil {
                 if ( !ensureArg(args, i, 4)) {
                     return false;
                 }
-                int col1 = Integer.parseInt(args.get(++i));
-		String pattern = args.get(++i);
-                int col2 = Integer.parseInt(args.get(++i));
-		String what = args.get(++i);
+                int    col1    = Integer.parseInt(args.get(++i));
+                String pattern = args.get(++i);
+                int    col2    = Integer.parseInt(args.get(++i));
+                String what    = args.get(++i);
                 info.getProcessor().addProcessor(
-						 new Converter.ColumnPatternSetter(col1, pattern, col2, what));
+                    new Converter.ColumnPatternSetter(
+                        col1, pattern, col2, what));
 
                 continue;
-            }	    
+            }
 
             if (arg.equals("-width")) {
                 if ( !ensureArg(args, i, 2)) {
@@ -2713,9 +2724,10 @@ public class CsvUtil {
                 if ( !ensureArg(args, i, 2)) {
                     return false;
                 }
-                String key     = args.get(++i);
+                String key   = args.get(++i);
                 String value = args.get(++i);
-		info.getProcessor().addProcessor(new Processor.MaxValue(key,value));
+                info.getProcessor().addProcessor(new Processor.MaxValue(key,
+                        value));
 
                 continue;
             }

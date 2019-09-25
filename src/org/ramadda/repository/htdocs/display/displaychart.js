@@ -393,6 +393,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var _this = this;
             var updateFunc = function() {
                 _this.vAxisMinValue = Utils.toFloat(_this.jq("vaxismin").val());
+//		console.log("vaxis:" + _this.vAxisMinValue + " " + this.getVAxisMinValue());
                 _this.vAxisMaxValue = Utils.toFloat(_this.jq("vaxismax").val());
                 _this.minDate = _this.jq("mindate").val();
                 _this.maxDate = _this.jq("maxdate").val();
@@ -1236,6 +1237,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var defaultRange = this.getDisplayManager().getRange(selectedFields[0]);
             var range = [NaN, NaN];
+//	    console.log("range:" +this.getVAxisMinValue());
             if (!isNaN(this.getVAxisMinValue())) {
                 range[0] = this.getVAxisMinValue();
             } else if (defaultRange != null) {

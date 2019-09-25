@@ -215,6 +215,17 @@ function DisplayThing(argId, argProperties) {
 	    var v = this.getProperty(PROP_SHOW_MENU, dflt);
 	    return v;
         },
+        getShowTitle: function() {
+            if (Utils.isDefined(this.showTitle)) {
+		return this.showTitle;
+	    }
+	    var dflt = false;
+            if (this.displayParent != null) {
+		dflt = this.displayParent.getProperty("showChildTitle",dflt);
+	    }
+	    var v = this.getProperty("showTitle", dflt);
+	    return v;
+        },
 
         getTimeZone: function() {
             return this.getProperty("timeZone");
@@ -492,7 +503,7 @@ function DisplayThing(argId, argProperties) {
 
 
         getProperty: function(key, dflt,skipThis) {
-            if(!skipThis && this[key]) {
+            if(!skipThis && Utils.isDefined(this[key])) {
                 return this[key];
             }
             var value = this.properties[key];
@@ -2469,6 +2480,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         makeEntryToolbar: function(entry, handler, handlerId) {
             var get = this.getGet();
             var toolbarItems = [];
+	    var props = "{showMenu:true,showTitle:true}";
             //                 toolbarItems.push(HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
             //                                                HtmlUtils.image(ramaddaBaseUrl +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
@@ -2486,21 +2498,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (jsonUrl != null) {
                 jsonUrl = jsonUrl.replace(/\'/g, "_");
                 toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
-							HtmlUtils.sqt("table") + "," + HtmlUtils.sqt(jsonUrl) + ");"
+							HtmlUtils.sqt("table") + "," + HtmlUtils.sqt(jsonUrl) + "," + props+");"
 						       ],
 						HtmlUtils.getIconImage("fa-table", [ATTR_TITLE, "Create Tabular Display"])));
 
                 var x;
                 toolbarItems.push(x = HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
-							    HtmlUtils.sqt("linechart") + "," + HtmlUtils.sqt(jsonUrl) + ");"
+ 							    HtmlUtils.sqt("linechart") + "," + HtmlUtils.sqt(jsonUrl) + "," + props +");"
 							   ],
 						    HtmlUtils.getIconImage("fa-chart-line", [ATTR_TITLE, "Create Chart"])));
+//		console.log("X:" + x);
             }
             toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
-						    HtmlUtils.sqt("entrydisplay") + "," + HtmlUtils.sqt(jsonUrl) + ");"
+						    HtmlUtils.sqt("entrydisplay") + "," + HtmlUtils.sqt(jsonUrl) + "," + props +");"
 						   ],
 					    HtmlUtils.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
-
             if (entry.getFilesize() > 0) {
                 toolbarItems.push(HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl()],
 						HtmlUtils.image(ramaddaBaseUrl + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
@@ -2732,12 +2744,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 sourceEntry: entry,
                 entryId: entry.getId(),
 //                showMenu: false,
-                showTitle: false,
+//                showTitle: false,
                 showDetails: true,
                 title: entry.getName(),
 		layoutHere:false,
             };
-            if (displayProps) $.extend(props, displayProps);
+            if (displayProps) {
+		$.extend(props, displayProps);
+	    }
 
             //TODO: figure out when to create data, check for grids, etc
             if (displayType != DISPLAY_ENTRYLIST) {
@@ -2795,7 +2809,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 						 HtmlUtils.onClick(get + ".fetchUrl('csv');", "CSV")));
             }
 
-	    var props = "{showMenu:true}";
+	    var props = "{showMenu:true,showTitle:true}";
             var newMenu = "<a>New</a><ul>";
             newMenu += HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
             newMenuItems.push(HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
@@ -2964,9 +2978,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 this.jq(ID_TITLE).hide();
             }
-        },
-        getShowTitle: function() {
-            return this.getSelfProperty("showTitle", false);
         },
         setDisplayProperty: function(key, value) {
             this.setProperty(key, value);
