@@ -275,6 +275,8 @@ public class CDOTimeSeriesService extends CDODataService {
             throw new Exception("No grids found");
         }
         CalendarDateRange dateRange = dataset.getCalendarDateRange();
+        dataOutputHandler.getCdmManager().returnGridDataset(getPath(request,
+                sample), dataset);
         int firstDataYearMM = Integer.parseInt(
                                   new CalendarDateTime(
                                       dateRange.getStart()).formattedString(
@@ -297,6 +299,7 @@ public class CDOTimeSeriesService extends CDODataService {
         String       id       = getRepository().getGUID();
         String       newName  = IOUtil.stripExtension(tail) + "_" + id
                                 + ".nc";
+        newName = cleanName(newName);
         File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
         List<String> commands = initCDOService();
         Object[]     values   = sample.getValues(true);
@@ -349,6 +352,7 @@ public class CDOTimeSeriesService extends CDODataService {
         // If we want to use full resolution without mask, then uncomment here
         //if (!maskType.equals("none")) {
         getOutputHandler().addGridRemapServices(request, dpi, commands);
+        commands.add("-selname," + varname);
         //}
         String  opStr       = getOpArgString(opNum);
         Request timeRequest = request;
@@ -457,6 +461,7 @@ public class CDOTimeSeriesService extends CDODataService {
             Object[] vals = climEntry.getValues();
             climName = vals[4] + "_" + vals[1] + "_" + vals[2] + "_"
                        + vals[3] + ".nc";
+            climName = cleanName(climName);
             //} else {
             //    climName = IOUtil.stripExtension(tail) + "_" + id + "_clim.nc";
             //}
@@ -478,6 +483,7 @@ public class CDOTimeSeriesService extends CDODataService {
                 getOutputHandler().addGridRemapServices(request, dpi,
                         commands);
                 //}
+                commands.add("-selname," + varname);
                 getOutputHandler().addMonthSelectServices(request, climEntry,
                         commands);
                 getOutputHandler().addLevelSelectServices(request, climEntry,
@@ -496,6 +502,7 @@ public class CDOTimeSeriesService extends CDODataService {
             }
             String anomName = IOUtil.stripExtension(tail) + "_" + id + "_"
                               + anomSuffix + ".nc";
+            anomName = cleanName(anomName);
             File anomFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                     anomName));
             commands = initCDOService();
@@ -524,6 +531,7 @@ public class CDOTimeSeriesService extends CDODataService {
 
                 String sprdName = IOUtil.stripExtension(tail) + "_" + id
                                   + "_stdanom.nc";
+                sprdName = cleanName(sprdName);
                 File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                         sprdName));
                 commands = initCDOService();
@@ -627,6 +635,7 @@ public class CDOTimeSeriesService extends CDODataService {
         }
         avalues[5] = dateSB.toString();
         outputName.append(dateSB);
+        
 
         //System.out.println("Name: " + outputName.toString());
 
@@ -634,7 +643,7 @@ public class CDOTimeSeriesService extends CDODataService {
         TypeHandler myHandler = getRepository().getTypeHandler("cdm_grid",
                                     true);
         //getRepository().getTypeHandler("type_single_point_grid_netcdf", true);
-        Entry outputEntry = new Entry(myHandler, true, outputName.toString());
+        Entry outputEntry = new Entry(myHandler, true, cleanName(outputName.toString()));
         outputEntry.setResource(resource);
         outputEntry.setValues(avalues);
         getOutputHandler().getEntryManager().writeEntryXmlFile(request,

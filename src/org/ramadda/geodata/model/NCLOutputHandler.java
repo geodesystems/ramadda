@@ -134,7 +134,9 @@ public class NCLOutputHandler extends OutputHandler {
     /** spatial arguments */
     public static final String[] SPATIALARGS = new String[] {
                                                    ARG_NCL_AREA_NORTH,
-            ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
+                                                           ARG_NCL_AREA_WEST,
+                                                           ARG_NCL_AREA_SOUTH,
+                                                           ARG_NCL_AREA_EAST, };
 
     /** map plot output id */
     public static final OutputType OUTPUT_NCL_MAPPLOT =
@@ -160,7 +162,9 @@ public class NCLOutputHandler extends OutputHandler {
     /** spatial arguments */
     public static final String[] NCL_SPATIALARGS = new String[] {
                                                        ARG_NCL_AREA_NORTH,
-            ARG_NCL_AREA_WEST, ARG_NCL_AREA_SOUTH, ARG_NCL_AREA_EAST, };
+                                                               ARG_NCL_AREA_WEST,
+                                                               ARG_NCL_AREA_SOUTH,
+                                                               ARG_NCL_AREA_EAST, };
 
     /** NCL version regex */
     private static final String NCL_VERSION_REGEX =
@@ -225,7 +229,7 @@ public class NCLOutputHandler extends OutputHandler {
                         resourceDir);
                 nclScript = nclScript.replaceAll("%convert%", convertPath);
                 File outputFile = new File(IOUtil.joinDir(resourceDir,
-                                      SCRIPTS[i]));
+                                                          SCRIPTS[i]));
                 InputStream is =
                     new ByteArrayInputStream(nclScript.getBytes());
                 OutputStream os =
@@ -250,7 +254,7 @@ public class NCLOutputHandler extends OutputHandler {
                         continue;
                     }
                     File outputFile = new File(IOUtil.joinDir(cmapDir,
-                                          rgbfile));
+                                                              rgbfile));
                     InputStream is =
                         new ByteArrayInputStream(cmapresource.getBytes());
                     OutputStream os =
@@ -294,7 +298,8 @@ public class NCLOutputHandler extends OutputHandler {
         if ( !isEnabled()) {
             return;
         }
-        if ((state.entry != null) && state.entry.isFile()
+        if ((state.entry != null)
+                && state.entry.isFile()
                 && state.entry.getResource().getPath().endsWith(".nc")) {
             links.add(makeLink(request, state.entry, OUTPUT_NCL_MAPPLOT));
         }
@@ -409,7 +414,9 @@ sb.append(HtmlUtils.form(formUrl,
             dataOutputHandler.getCdmManager().getGridDataset(entry,
                 entry.getResource().getPath());
         List<GridDatatype> grids = dataset.getGrids();
-        GridDatatype       var   = grids.get(0);
+        dataOutputHandler.getCdmManager().returnGridDataset(
+            entry.getResource().getPath(), dataset);
+        GridDatatype var = grids.get(0);
         sb.append(HtmlUtils.hidden(ARG_NCL_VARIABLE, var));
         GridCoordSystem gcs = var.getCoordinateSystem();
         sb.append(HtmlUtils.formEntry(msgLabel("Variable"),
@@ -429,12 +436,11 @@ sb.append(HtmlUtils.form(formUrl,
                 int level = (int) zAxis.getCoordValue(k);
                 levels.add(new TwoFacedObject(String.valueOf(level), level));
             }
-            sb.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Level"),
-                    HtmlUtils.select(CdmDataOutputHandler.ARG_LEVEL, levels)
-                    + HtmlUtils.space(1) + "(" + zAxis.getUnitsString()
-                    + ")"));
+            sb.append(HtmlUtils.formEntry(msgLabel("Level"),
+                                          HtmlUtils.select(
+                                          CdmDataOutputHandler.ARG_LEVEL,
+                                          levels) + HtmlUtils.space(1) + "("
+                                          + zAxis.getUnitsString() + ")"));
         }
         LatLonRect llr = dataset.getBoundingBox();
         if (llr != null) {
@@ -446,8 +452,9 @@ sb.append(HtmlUtils.form(formUrl,
                               null, true, null);
 
             map.setMapRegions(getPageHandler().getMapRegions(mapRegionGroup));
-            map.addBox("", "", "", llr,
-                       new MapBoxProperties("blue", false, true));
+            map.addBox("", "", "", llr, new MapBoxProperties("blue",
+                    false,
+                    true));
             String[] points = new String[] { "" + llr.getLatMax(),
                                              "" + llr.getLonMin(),
                                              "" + llr.getLatMin(),
@@ -518,8 +525,8 @@ sb.append(HtmlUtils.form(formUrl,
         if (plotType.equals("timeseries")) {
             suffix = "png";
         }
-        File outFile = new File(IOUtil.joinDir(getProductDir(), wksName)
-                                + "." + suffix);
+        File outFile = new File(IOUtil.joinDir(getProductDir(),
+                                               wksName) + "." + suffix);
         //String wksName = IOUtil.joinDir(getProductDir(),
         //                                getRepository().getGUID());
         //File outFile = new File(wksName+".png");
@@ -535,7 +542,8 @@ sb.append(HtmlUtils.form(formUrl,
         commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
         commands.add(
             IOUtil.joinDir(
-                IOUtil.joinDir(getStorageManager().getResourceDir(), "ncl"),
+                IOUtil.joinDir(getStorageManager().getResourceDir(),
+                               "ncl"),
                 SCRIPT_MAPPLOT));
         Map<String, String> envMap = new HashMap<String, String>();
         addGlobalEnvVars(envMap);
@@ -572,10 +580,12 @@ sb.append(HtmlUtils.form(formUrl,
         double origLonMin = llb.getLonMin();
         double lonMin =
             Double.parseDouble(request.getString(ARG_NCL_AREA_WEST,
-                String.valueOf(llb.getLonMin())));
+                                                 String.valueOf(
+                                                     llb.getLonMin())));
         double lonMax =
             Double.parseDouble(request.getString(ARG_NCL_AREA_EAST,
-                String.valueOf(llb.getLonMax())));
+                                                 String.valueOf(
+                                                     llb.getLonMax())));
         if (origLonMin < 0) {  // -180 to 180
             lonMin = GeoUtils.normalizeLongitude(lonMin);
             lonMax = GeoUtils.normalizeLongitude(lonMax);
@@ -587,12 +597,10 @@ sb.append(HtmlUtils.form(formUrl,
         if (lonMin == lonMax) {  // 360 got set to 0
             lonMax += 360;
         }
-        envMap.put("maxLat",
-                   request.getString(ARG_NCL_AREA_NORTH,
-                                     String.valueOf(llb.getLatMax())));
-        envMap.put("minLat",
-                   request.getString(ARG_NCL_AREA_SOUTH,
-                                     String.valueOf(llb.getLatMin())));
+        envMap.put("maxLat", request.getString(ARG_NCL_AREA_NORTH,
+                String.valueOf(llb.getLatMax())));
+        envMap.put("minLat", request.getString(ARG_NCL_AREA_SOUTH,
+                String.valueOf(llb.getLatMin())));
         envMap.put("minLon", String.valueOf(lonMin));
         envMap.put("maxLon", String.valueOf(lonMax));
 
@@ -600,7 +608,7 @@ sb.append(HtmlUtils.form(formUrl,
         for (String spatialArg : NCL_SPATIALARGS) {
             if ( !Misc.equals(request.getString(spatialArg, ""),
                               request.getString(spatialArg + ".original",
-                                  ""))) {
+                                      ""))) {
                 haveOriginalBounds = false;
 
                 break;
@@ -616,8 +624,8 @@ sb.append(HtmlUtils.form(formUrl,
         boolean haveAnom = input.toString().indexOf("anom") >= 0;
         envMap.put("anom", Boolean.toString(haveAnom));
         envMap.put("colormap", "rainbow");
-        envMap.put("annotation",
-                   repository.getProperty(PROP_REPOSITORY_NAME, ""));
+        envMap.put("annotation", repository.getProperty(PROP_REPOSITORY_NAME,
+                ""));
 
 
         //System.err.println("cmds:" + commands);
@@ -656,6 +664,7 @@ sb.append(HtmlUtils.form(formUrl,
         }
 
         return outFile;
+
     }
 
     /**
@@ -664,10 +673,11 @@ sb.append(HtmlUtils.form(formUrl,
      */
     public void addGlobalEnvVars(Map<String, String> envMap) {
         envMap.put("NCARG_ROOT", ncargRoot);
-        envMap.put("NCARG_USRRESFILE",
-                   IOUtil.joinDir(resourceDir, SCRIPT_HLURESFILE));
+        envMap.put("NCARG_USRRESFILE", IOUtil.joinDir(resourceDir,
+                SCRIPT_HLURESFILE));
         envMap.put("NCARG_COLORMAPS",
-                   cmapDir + ":"
-                   + IOUtil.joinDir(ncargRoot, "lib/ncarg/colormaps"));
+                   cmapDir + ":" + IOUtil.joinDir(ncargRoot,
+                           "lib/ncarg/colormaps"));
     }
+
 }

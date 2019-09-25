@@ -218,6 +218,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** statistic min */
     public static final String STAT_MIN = "min";
 
+    /** statistic min */
+    public static final String STAT_SUM = "sum";
+
     /** year period */
     public static final String PERIOD_TIM = "tim";
 
@@ -267,13 +270,14 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** stat types */
     @SuppressWarnings("unchecked")
     public static final List<TwoFacedObject> STAT_TYPES =
-        Misc.toList(new Object[] { new TwoFacedObject("Mean", STAT_MEAN),
-                                   new TwoFacedObject("Std Deviation",
-                                       STAT_STD),
-                                   new TwoFacedObject("Maximum", STAT_MAX),
-                                   new TwoFacedObject("Minimum", STAT_MIN),
-                                   new TwoFacedObject("Anomaly",
-                                       STAT_ANOM) });
+        Misc.toList(new Object[] {
+        new TwoFacedObject("Mean", STAT_MEAN),
+        new TwoFacedObject("Std Deviation", STAT_STD),
+        new TwoFacedObject("Maximum", STAT_MAX),
+        new TwoFacedObject("Minimum", STAT_MIN),
+        new TwoFacedObject("Sum", STAT_SUM),
+        new TwoFacedObject("Anomaly", STAT_ANOM)
+    });
 
     /** period types */
     @SuppressWarnings("unchecked")
@@ -593,6 +597,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             request, entry, sb,
             msg("Select a folder to publish the generated NetCDF file to"));
         //sb.append(HtmlUtils.formTableClose());
+        dataset.close();
     }
 
     /**
@@ -1110,9 +1115,11 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                        points[i]));
         }
         StringBuilder mapDiv = new StringBuilder();
-        String llb = map.makeSelector(ARG_CDO_AREA, usePopup, points);
+        String        llb = map.makeSelector(ARG_CDO_AREA, usePopup, points);
         mapDiv.append(HtmlUtils.div(llb));
-        sb.append(HtmlUtils.formEntry(msgLabel("Region"), mapDiv.toString(), 4));
+        sb.append(HtmlUtils.formEntry(msgLabel("Region"),
+                                      mapDiv.toString(),
+                                      4));
     }
 
     /**
@@ -1374,6 +1381,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                             have.convertTo(Misc.parseDouble(level),
                                            want));
                     }
+                    dataOutputHandler.getCdmManager().returnGridDataset(
+                        entry.getResource().getPath(), dataset);
                 } catch (Exception e) {
                     System.err.println("can't convert level from "
                                        + levelUnit + " to " + dataUnit);
@@ -1897,7 +1906,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                             ClimateModelApiHandler.ARG_ACTION_COMPARE))) {
             int climDatasetNumber = request.get(ARG_CLIMATE_DATASET_NUMBER,
                                         0);
-            // TODO: If the models/resolutions wer the same, we don't really need to
+            // TODO: If the models/resolutions were the same, we don't really need to
             // regrid, but for now, we'll do use the brute force method.
             if (climDatasetNumber > 0) {
                 commands.add("-remapbil,r360x180");

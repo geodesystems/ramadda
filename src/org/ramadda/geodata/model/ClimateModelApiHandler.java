@@ -838,10 +838,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         String frequency = "monthly";
         if (request.defined(ARG_FREQUENCY)) {
-            frequency = request.getString(request.getString(ARG_FREQUENCY)).toLowerCase();
-            
+            frequency = request.getString(
+                request.getString(ARG_FREQUENCY)).toLowerCase();
+
         }
-        
+
         String title = "Model Comparison";
         String desc  = "";
         if (type.equals(ARG_ACTION_COMPARE)) {
@@ -849,28 +850,33 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 String groupName = request.getString(ARG_EVENT_GROUP);
                 //groupName = groupName.replaceAll("[+_]"," ");
                 title += " for " + groupName;
-                desc = "Plot "+frequency+" maps from different model datasets as well as differences between datasets for "
+                desc = "Plot " + frequency
+                       + " maps from different model datasets as well as differences between datasets for "
                        + groupName;
             } else {
                 title = "Model Comparison";
-                desc = "Plot "+frequency+" maps from different model datasets as well as differences between datasets.";
+                desc = "Plot " + frequency
+                       + " maps from different model datasets as well as differences between datasets.";
             }
 
         } else if (type.equals(ARG_ACTION_TIMESERIES)) {
             title = "Model Time Series";
-            desc  = "Plot "+frequency+" time series from different model datasets.";
+            desc = "Plot " + frequency
+                   + " time series from different model datasets.";
         } else if (type.equals(ARG_ACTION_MULTI_TIMESERIES)) {
             title = "Model Ensemble Time Series";
-            desc = "Plot "+frequency+" time series from different model ensemble members.";
+            desc = "Plot " + frequency
+                   + " time series from different model ensemble members.";
         } else if (type.equals(ARG_ACTION_ENS_COMPARE)) {
             title = "Model Ensemble Plot";
-            desc  = "Compare "+frequency+" model ensemble members.";
+            desc  = "Compare " + frequency + " model ensemble members.";
         } else if (type.equals(ARG_ACTION_CORRELATION)) {
             title = "Model Correlation";
             desc = "Plot correlations between model output and climate index time series";
         } else {
             title = "Model Comparison";
-            desc  = "Plot "+frequency+" maps from different model datasets.";
+            desc = "Plot " + frequency
+                   + " maps from different model datasets.";
         }
 
 

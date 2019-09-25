@@ -31,3 +31,7 @@ era5:ERA5
 GPCP:Global Precip Clim Project (GPCP)
 cpc_global_temp:CPC Global Temperature
 cpc_global_precip:CPC Global Precipitation
+gistemp1200c:NASA GISTEMP 1200km Combined
+gistemp250c:NASA GISTEMP 250km Combined
+gistemp1200l:NASA GISTEMP 1200km Land Only
+gistemp250l:NASA GISTEMP 250km Land Only

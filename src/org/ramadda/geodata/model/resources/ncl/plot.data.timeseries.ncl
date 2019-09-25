@@ -137,13 +137,33 @@ begin
   tmpdata = datafile->$varname$
   ;printVarSummary(tmpdata)
   if (numdims .eq. 3) then  ; (time,lat,lon)
-    vardata = tmpdata(:,:,:)
-  else ; (time,level,lat,lon)
-    if (varlevel .eq. "") then
-      vardata = tmpdata(:,0,:,:)
+    if (vartype .eq. "short") then
+      vardata = short2flt(tmpdata(:,:,:))
     else
-      vardata = tmpdata(:,{stringtointeger(varlevel)},:,:)
+      vardata = tmpdata(:,:,:)
     end if
+  else ; (time,level,lat,lon)
+    if (vartype .eq. "short") then
+      if (varlevel .eq. "") then
+        vardata = short2flt(tmpdata(:,0,:,:))
+      else
+        vardata = short2flt(tmpdata(:,{stringtointeger(varlevel)},:,:))
+      end if
+    else
+      if (varlevel .eq. "") then
+        vardata = tmpdata(:,0,:,:)
+      else
+        vardata = tmpdata(:,{stringtointeger(varlevel)},:,:)
+      end if
+    end if
+  end if
+
+  ;; get rid of any NaNs
+  if (any(isnan_ieee(vardata))) then
+    if (.not.isatt(vardata,"_FillValue")) then
+      vardata@_FillValue = default_fillvalue(typeof(vardata))
+    end if
+    replace_ieeenan (vardata, vardata@_FillValue, 0)
   end if
   
   if (isatt(vardata,"units")) then
@@ -308,7 +328,7 @@ begin
        anomString = " Anomaly (Percent)"
      end if
   end if
-  if (isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anomaly",-1))) then
+  if (isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
     vartitle = vartitle + anomString
   end if 
   if (.not. (opts@level .eq. "")) then
@@ -415,7 +435,12 @@ begin
   do i = 0,numlines-1
     if (i .eq. meanIndex .or. numlines .eq. 1) then
       ;print("mean index = "+opts@meanIndex)
-      lineColors(i) = "Black"
+      if (opts@plottype .eq. "lines" .and. numlines .eq. 1) then
+        ;;lineColors(i) = "Light"+opts@linecolor
+        lineColors(i) = opts@linecolor
+      else
+        lineColors(i) = "Black"
+      end if
       lineThicknesses(i) = 3.
       dashPatterns(i) = 0
     else
@@ -618,7 +643,9 @@ begin
   amres@amParallelPosF   = 0.5              ; Move legend to right
   amres@amOrthogonalPosF = 0.5              ; Move legend down.
 
-  annoid = gsn_add_annotation(plot,lbid,amres)  ; add legend to plot
+  if (opts@plottype .eq. "lines" .and. numlines .gt. 1) then
+    annoid = gsn_add_annotation(plot,lbid,amres)  ; add legend to plot
+  end if
 
 ;
 ; Manually create and attach titles
@@ -643,7 +670,13 @@ begin
   amres@amOrthogonalPosF = -0.62  ; This is just below the previous title.
   annoid_mid = gsn_add_annotation(plot, txid_mid, amres)
 
-  if (opts@isanom) then
+  ;;if (opts@isanom) then
+  if (isatt(sample,"long_name")) then
+    vartitle = sample@long_name
+  else
+    vartitle = opts@variable
+  end if
+  if (opts@isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
     res_text@txFontHeightF = 0.012                     ; change font size
     climText = "Anomaly relative to "+opts@climyears+" average"
     txid_bot = gsn_create_text(wks, climText, res_text)

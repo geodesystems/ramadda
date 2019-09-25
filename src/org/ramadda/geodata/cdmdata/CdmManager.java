@@ -203,10 +203,10 @@ public class CdmManager extends RepositoryManager {
                 "/org/ramadda/geodata/cdmdata/resources/threddsConfig.xml");
         String outdir =
             getRepository().getStorageManager().getScratchDir().getDir()
-                .toString();
+            .toString();
         tdsConfig = tdsConfig.replaceAll("%ncssdir%", outdir);
         File outputFile = new File(IOUtil.joinDir(nj22Dir.getDir(),
-                              "threddsConfig.xml"));
+                                                  "threddsConfig.xml"));
         InputStream is = new ByteArrayInputStream(tdsConfig.getBytes());
         OutputStream os =
             getStorageManager().getUncheckedFileOutputStream(outputFile);
@@ -496,9 +496,9 @@ public class CdmManager extends RepositoryManager {
                         ucar.nc2.constants.FeatureType.POINT, path, null,
                         buf);
                 if (pods == null) {  // try as ANY_POINT
-                    pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
-                        .open(ucar.nc2.constants.FeatureType.ANY_POINT, path,
-                              null, buf);
+                    pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+                        ucar.nc2.constants.FeatureType.ANY_POINT, path, null,
+                        buf);
                 }
 
                 long t2 = System.currentTimeMillis();
@@ -612,21 +612,30 @@ public class CdmManager extends RepositoryManager {
         ncFilePool.getStats(poolStats);
         ncDatasetPool.getStats(poolStats);
         poolStats.append("</pre>");
-        sb.append(
-            HtmlUtils.formEntryTop(
-                "Data Cache Size:",
-                "NC File Pool:" + ncFilePool.getSize()
-                + " have ncfile cache:"
-                + (NetcdfDataset.getNetcdfFileCache() != null) + " "
-                + " Count:  Create:" + ncCreateCounter.getCount()
-                + " Remove:" + ncRemoveCounter.getCount() + "<br>" + " Get:"
-                + ncGetCounter.getCount() + " Put:" + ncPutCounter.getCount()
-                + "<br>" + " Ext Count:" + extCounter.getCount()
-                + " Dap Count:" + opendapCounter.getCount() + poolStats
-                + HtmlUtils.br() + "Grid Pool:" + gridPool.getSize()
-                + HtmlUtils.br() + "Point Pool:" + pointPool.getSize()
-                + HtmlUtils.br() + "Trajectory Pool:"
-                + trajectoryPool.getSize() + HtmlUtils.br()));
+        sb.append(HtmlUtils.formEntryTop("Data Cache Size:",
+                                         "NC File Pool:"
+                                         + ncFilePool.getSize()
+                                         + " have ncfile cache:"
+                                         + (NetcdfDataset.getNetcdfFileCache() != null)
+                                         + " " + " Count:  Create:"
+                                         + ncCreateCounter.getCount()
+                                         + " Remove:"
+                                         + ncRemoveCounter.getCount()
+                                         + "<br>" + " Get:"
+                                         + ncGetCounter.getCount() + " Put:"
+                                         + ncPutCounter.getCount() + "<br>"
+                                         + " Ext Count:"
+                                         + extCounter.getCount()
+                                         + " Dap Count:"
+                                         + opendapCounter.getCount()
+                                         + poolStats + HtmlUtils.br()
+                                         + "Grid Pool:" + gridPool.getSize()
+                                         + HtmlUtils.br() + "Point Pool:"
+                                         + pointPool.getSize()
+                                         + HtmlUtils.br()
+                                         + "Trajectory Pool:"
+                                         + trajectoryPool.getSize()
+                                         + HtmlUtils.br()));
 
     }
 
@@ -995,7 +1004,8 @@ public class CdmManager extends RepositoryManager {
                 List patterns = StringUtil.split(
                                     getRepository().getProperty(
                                         "ramadda.data." + types[i]
-                                        + ".patterns", ""), ",", true, true);
+                                        + ".patterns",
+                                        ""), ",", true, true);
                 for (String pattern : (List<String>) patterns) {
                     if ((pattern.length() == 0) || pattern.equals("!")) {
                         continue;
@@ -1063,7 +1073,8 @@ public class CdmManager extends RepositoryManager {
             return true;
         }
         String type = entry.getTypeHandler().getType();
-        if ((type.indexOf("trajectory") >= 0) || (type.indexOf("point") >= 0)
+        if ((type.indexOf("trajectory") >= 0)
+                || (type.indexOf("point") >= 0)
                 || (type.indexOf("track") >= 0)) {
             return false;
         }
@@ -1314,7 +1325,8 @@ public class CdmManager extends RepositoryManager {
             Resource resource = entry.getResource();
             location = resource.getPath();
             String ext = IOUtil.getFileExtension(location).toLowerCase();
-            if (ext.equals(".html") || ext.equals(".das")
+            if (ext.equals(".html")
+                    || ext.equals(".das")
                     || ext.equals(".dds")) {
                 location = IOUtil.stripExtension(location);
             }
@@ -1348,7 +1360,8 @@ public class CdmManager extends RepositoryManager {
                         IOUtil.joinDir(
                             getRepository().getStorageManager().getEntryDir(
                                 metadata.getEntryId(),
-                                false), metadata.getAttr1()));
+                                false),
+                            metadata.getAttr1()));
                 String ncml =
                     getStorageManager().readSystemResource(templateNcmlFile);
                 if (isNcml) {

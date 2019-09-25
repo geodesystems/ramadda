@@ -685,7 +685,7 @@ public class NCLModelPlotDataService extends NCLDataService {
             CdmDataOutputHandler dataOutputHandler =
                 nclOutputHandler.getDataOutputHandler();
             GridDataset dataset =
-                dataOutputHandler.getCdmManager().createGrid(
+                dataOutputHandler.getCdmManager().getGridDataset(inputEntry,
                     inputEntry.getResource().toString());
             if (dataset == null) {
                 throw new Exception("Not a grid");
@@ -753,6 +753,7 @@ public class NCLModelPlotDataService extends NCLDataService {
                 }
             }
             LatLonRect llb = dataset.getBoundingBox();
+            dataset.close();
             // Normalize longitude bounds to the data
             double origLonMin = llb.getLonMin();
             double lonMin = Double.parseDouble(

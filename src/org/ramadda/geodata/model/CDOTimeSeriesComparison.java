@@ -301,6 +301,9 @@ public class CDOTimeSeriesComparison extends CDODataService {
                     if (dataset != null) {
                         List<CalendarDate> dates =
                             CdmDataOutputHandler.getGridDates(dataset);
+                        dataOutputHandler.getCdmManager().returnGridDataset(
+                            getPath(request,
+                                    e), dataset);
                         if ((dates != null) && !dates.isEmpty()) {
                             if (calString == null) {
                                 CalendarDate cd  = dates.get(0);
@@ -429,6 +432,9 @@ public class CDOTimeSeriesComparison extends CDODataService {
                 if (dataset != null) {
                     grids.add(dataset);
                 }
+                dataOutputHandler.getCdmManager().returnGridDataset(
+                    getPath(request,
+                            e), dataset);
             } else if (e.getTypeHandler()
                        instanceof NoaaPsdMonthlyClimateIndexTypeHandler) {
                 tsEntry = e;
@@ -773,6 +779,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
             throw new Exception("No grids found");
         }
         String varname = ((GridDatatype) dataset.getGrids().get(0)).getName();
+        dataset.close();
         submillis = System.currentTimeMillis();
 
         Object[] values  = sample.getValues(true);

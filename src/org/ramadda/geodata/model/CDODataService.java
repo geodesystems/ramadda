@@ -360,7 +360,9 @@ public abstract class CDODataService extends Service {
                 getPath(request,
                         sample));
         CalendarDateRange dateRange = dataset.getCalendarDateRange();
-        dataset.close();
+        dataOutputHandler.getCdmManager().returnGridDataset(getPath(request,
+                sample), dataset);
+        //dataset.close();
         int firstDataYearMM = Integer.parseInt(
                                   new CalendarDateTime(
                                       dateRange.getStart()).formattedString(
@@ -623,7 +625,9 @@ public abstract class CDODataService extends Service {
                 if ( !uniqueYears.isEmpty()) {
                     years.addAll(uniqueYears);
                 }
-                dataset.close();
+                dataOutputHandler.getCdmManager().returnGridDataset(
+                    first.getResource().getPath(), dataset);
+                //dataset.close();
             }
             // TODO:  make a better list of years
             if (years.isEmpty()) {
@@ -1109,10 +1113,11 @@ public abstract class CDODataService extends Service {
         String        opStr       = getOpArgString(opNum);
         Request       timeRequest = handleNamedTimePeriod(request, opStr);
         boolean       spanYear    = doMonthsSpanYearEnd(timeRequest, null);
-        boolean haveYears = false;
+        boolean       haveYears   = false;
         // only compare has 2 different years, others only use the single years string
         if (request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE)) {
-            haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS + opStr);
+            haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS
+                                            + opStr);
         } else {
             timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
             // TODO: should we do this then? 
@@ -1709,5 +1714,20 @@ public abstract class CDODataService extends Service {
 
         return newRequest;
     }
+    
+    /**
+     *     _more_
+     *
+     *     @param name _more_
+     *
+     *     @return _more_
+     */
+    public static String cleanName(String name) {
+        name = name.replaceAll("\\s+", "_").replaceAll(",", "_");
+        name = name.replaceAll("__+", "_");
+
+        return name;
+    }
+
 
 }

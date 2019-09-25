@@ -185,16 +185,20 @@ public class CDOArealStatisticsService extends CDODataService {
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(first,
                 first.getResource().getPath());
-        //System.err.println("Time to get dataset: "+(System.currentTimeMillis()-millis) + " " + dataset.toString());
+        //System.out.println("Time to get dataset in makeInputForm: "+(System.currentTimeMillis()-millis) + " " + dataset.toString());
+        dataOutputHandler.getCdmManager().returnGridDataset(
+            first.getResource().getPath(), dataset);
 
-        if (dataset != null) {
-            getOutputHandler().addVarLevelWidget(request, sb, dataset,
-                    CdmDataOutputHandler.ARG_LEVEL);
-        }
+        // if dataset is null, it will throw a NullPointerException on the next line.
+        //if (dataset != null) {
+        getOutputHandler().addVarLevelWidget(request, sb, dataset,
+                                             CdmDataOutputHandler.ARG_LEVEL);
+        //}
         GridDatatype grid  = dataset.getGrids().get(0);
         String       units = grid.getUnitsString();
         boolean hasPrecipUnits = (SimpleUnit.isCompatible(units, "kg m-2 s-1")
-                                  || SimpleUnit.isCompatible(units, "mm/day"));
+                                  || SimpleUnit.isCompatible(units,
+                                      "mm/day"));
 
         boolean     isAnom    = first.getValue(3).toString().equals("anom");
         List<Entry> climos    = findClimatology(request, first);
@@ -205,10 +209,10 @@ public class CDOArealStatisticsService extends CDODataService {
         addStatsWidget(request, sb, input, hasPrecipUnits, isAnom, haveClimo,
                        type);
 
-        millis = System.currentTimeMillis();
         addTimeWidget(request, sb, input, periods);
         //System.err.println("Time to add time widget: "+(System.currentTimeMillis()-millis));
 
+        millis = System.currentTimeMillis();
         LatLonRect llr = null;
         if (dataset != null) {
             llr = dataset.getBoundingBox();
@@ -365,12 +369,14 @@ public class CDOArealStatisticsService extends CDODataService {
             climSample = sample;
         }
         //sample = oneOfThem;
+        long millis = System.currentTimeMillis();
         CdmDataOutputHandler dataOutputHandler =
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
                 getPath(timeRequest,
                         sample));
+        //System.out.println("getDataset in evaluateDaily Request took: "+(System.currentTimeMillis()-millis));
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
             throw new Exception("No grids found");
         }
@@ -715,12 +721,14 @@ public class CDOArealStatisticsService extends CDODataService {
             climSample = sample;
         }
         //sample = oneOfThem;
+        long millis = System.currentTimeMillis();
         CdmDataOutputHandler dataOutputHandler =
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
                 getPath(timeRequest,
                         sample));
+        //System.out.println("getDataset in evaluateMonthly Request took: "+(System.currentTimeMillis()-millis));
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
             throw new Exception("No grids found");
         }
@@ -1851,10 +1859,12 @@ public class CDOArealStatisticsService extends CDODataService {
                     GridDataset dataset =
                         dataOutputHandler.getCdmManager().getGridDataset(
                             first, first.getResource().getPath());
-                    //System.err.println("Get dataset took: "+(System.currentTimeMillis()-millis) + " "  + dataset.toString());
+                    //System.out.println("Get dataset took in makeYearsWidget: "+(System.currentTimeMillis()-millis) + " "  + dataset.toString());
                     if (dataset != null) {
                         grids.add(dataset);
                     }
+                    dataOutputHandler.getCdmManager().returnGridDataset(
+                        first.getResource().getPath(), dataset);
                 }
                 List<String> opYears = new ArrayList<String>();
                 for (GridDataset dataset : grids) {
@@ -1882,7 +1892,7 @@ public class CDOArealStatisticsService extends CDODataService {
                                     new CalendarDateTime(d).formattedString(
                                         "yyyy",
                                         CalendarDateTime.DEFAULT_TIMEZONE);
-                                if (!uniqueYears.contains(year)) {
+                                if ( !uniqueYears.contains(year)) {
                                     uniqueYears.add(year);
                                 }
                             } catch (Exception e) {}
@@ -1897,7 +1907,8 @@ public class CDOArealStatisticsService extends CDODataService {
                     }
                     opYears.addAll(years);
                     grid++;
-                    dataset.close();
+                    //dataset.close();
+
                 }
                 dataYears.add(opYears);
                 dateIdx++;
