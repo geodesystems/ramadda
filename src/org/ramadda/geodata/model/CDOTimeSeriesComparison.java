@@ -1757,6 +1757,21 @@ public class CDOTimeSeriesComparison extends CDODataService {
     }
 
     /**
+     * Get the help for this widget
+     *
+     * @return the help
+     */
+    @Override
+    public String getHelp() {
+        try {
+            return getStorageManager().readSystemResource(
+                "/org/ramadda/geodata/model/htdocs/model/help/correlation-stats.html");
+        } catch (Exception excp) {}
+
+        return null;
+    }
+
+    /**
      * Create a comma separated list from the years
      * @param l  list of years
      * @return  comma separated list

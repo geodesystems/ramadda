@@ -158,7 +158,7 @@ public class CDOArealStatisticsService extends CDODataService {
             input.getProperty(
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
 
-        input = adjustInput(request, input);
+        input = adjustInput(request, input, false);
         //System.err.println("Time to adjust input: "+(System.currentTimeMillis()-millis));
         List<NamedTimePeriod> periods = null;
         ApiMethod             api     = request.getApiMethod();
@@ -197,12 +197,12 @@ public class CDOArealStatisticsService extends CDODataService {
         GridDatatype grid  = dataset.getGrids().get(0);
         String       units = grid.getUnitsString();
         boolean hasPrecipUnits = (SimpleUnit.isCompatible(units, "kg m-2 s-1")
-                                  || SimpleUnit.isCompatible(units,
-                                      "mm/day"));
+                                  || SimpleUnit.isCompatible(units, "mm/day")
+                                  || units.equals("mm"));  // for cpc global precip
 
-        boolean     isAnom    = first.getValue(3).toString().equals("anom");
+        boolean isAnom = first.getValue(3).toString().equals("anom");
         List<Entry> climos    = findClimatology(request, first);
-        boolean     haveClimo = true;
+        boolean haveClimo = true;  // we make this true since we can create one on the fly
         if ((climos == null) || climos.isEmpty()) {
             haveClimo = false;
         }

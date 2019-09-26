@@ -1,184 +1,186 @@
 #
 # new mostly CMIP5 names
 #
+alb:Surface Albedo  
 clt:Total Cloud Fraction       
+dtas:Near-Surface Dew Point Temperature
+evspsbl:Evaporation
 hfls:Surface Upward Latent Heat Flux
 hfss:Surface Upward Sensible Heat Flux
+hur:Relative Humidity       
+hus:Specific Humidity
+huss:Near-Surface Specific Humidity
+lwsnl:Liquid Water Content of Snow Layer
+mrlsl:Water Content of Soil Layer (1m)
+mrro:Total Runoff  
+mrso:Total Soil Moisture Content
+mrsos:Moisture in Upper Portion of Soil Column (10cm)
+pr:Precipitation
 prc:Convective Precipitation
 prl:Large Scale Precipitation
 prsn:Snowfall Flux   
-ps:Surface Air Pressure    
-evspsbl:Evaporation
-zg:Geopotential Height
-wap:Omega   
-pr:Precipitation
-hus:Specific Humidity
-huss:Near-Surface Specific Humidity
 prw:Vertically Integrated Water Vapor
-hur:Relative Humidity       
-mrro:Total Runoff  
+ps:Surface Air Pressure    
 psl:Sea Level Pressure
+rlds:Surface Downwelling Longwave Radiation
+rlns:Surface Net Longwave Radiation
+rlus:Surface Upwelling Longwave Radiation
+rlut:TOA Outgoing Longwave Radiation
+rsds:Surface Downwelling Shortwave Radiation
+rsns:Surface Net Shortwave Radiation
+rsus:Surface Upwelling Shortwave Radiation
+rtns:Surface Net Thermal Radiation
 snd:Snow Depth      
+sic:Sea Ice Concentration
 snw:Surface Snow Amount      
-lwsnl:Liquid Water Content of Snow Layer
+stream:Stream Function
 ta:Air Temperature         
+tas:Near-Surface Air Temperature
 tasmax:Maximum Near-Surface Air Temperature
 tasmin:Minimum Near-Surface Air Temperature
-tas:Near-Surface Air Temperature
+tos:Sea Surface Temperature
+trop:WMO-defined Tropopause Pressure
 ts:Surface Temperature     
 ua:Eastward Wind   
 uas:Eastward Near-Surface Wind      
 va:Northward Wind  
 vas:Northward Near-Surface Wind     
-alb:Surface Albedo  
-dtas:Near-Surface Dew Point Temperature
 velpot:Velocity Potential
-stream:Stream Function
-trop:WMO-defined Tropopause Pressure
-mrso:Total Soil Moisture Content
-rsns:Surface Net Shortwave Radiation
-rlns:Surface Net Longwave Radiation
-rtns:Surface Net Thermal Radiation
-rlds:Surface Downwelling Longwave Radiation
-rlus:Surface Upwelling Longwave Radiation
-rlut:TOA Outgoing Longwave Radiation
-rsds:Surface Downwelling Shortwave Radiation
-rsus:Surface Upwelling Shortwave Radiation
-mrsos:Moisture in Upper Portion of Soil Column (10cm)
-mrlsl:Water Content of Soil Layer (1m)
-tos:Sea Surface Temperature
+wap:Omega   
+zg:Geopotential Height
+zg500:500 hPa Geopotential Height
 #
 # Old mostly ECHAM5 names
 #
-u:u-velocity
-v:v-velocity
-omega:vertical velocity
-velopot:velocity potential
-slp:mean sea level pressure
+abso4:antropogenic sulfur burden
+aclcac:cloud cover
+aclcov:total cloud cover
+ahfcon:conductive heat flux through ice
+ahfice:conductive heat flux
+ahfl:latent heat flux
+ahfliac:latent heat flux over ice
+ahfllac:latent heat flux over land
+ahflwac:latent heat flux over water
+ahfres:melting of ice
+ahfs:sensible heat flux
+ahfsiac:sensible heat flux over ice
+ahfslac:sensible heat flux over land
+ahfswac:sensible heat flux over water
+albedo:surface albedo
+alsoi:albedo of ice
+alsol:albedo of land
+alsow:albedo of water
+amlcorac:mixed layer flux correction
+ao3:ipcc ozone
+apmeb:vert.integr.tendencies of water
+apmegl:P-E over land ice
+aprc:convective  precipitation
+aprl:large scale precipitation
+aprs:snow fall
+aps:surface pressure
+az0i:roughness length over ice
+az0l:roughness length over land
+az0w:roughness length over water
+dew2:2m dew point temperature
+drain:drainage
+evap:evaporation
+evapiac:evaporation over ice
+evaplac:evaporation over land
+evapwac:evaporation over water
+friac:ice cover
 geopoth:geopotential height
-sclfs:surface SW cloud forcing
-tclfs:surface LW cloud forcing
-sclf0:SW top cloud forcing
-tclf0:LW top cloud forcing
-windspeed:windspeed
-precip:total precipitation
-swnirac:net surface NIR flux acc.
-swdifnirac:fraction of diffuse NIR acc.
-swvisac:net surface visible flux acc.
-swdifvisac:fraction of diffuse visibleacc.
+geosp:surface geopotential (orography)
+glac:fraction of land covered by glaciers
+gld:glacier depth
+grndflux:surface ground heat flux
+lsp:log surface pressure
 ocu:ocean u-velocity
 ocv:ocean v-velocity
-tradl:net LW radiation 200mb
-sradl:net SW radiation 200mb
-trafl:net LW radiation 200mb (clear sky)
-srafl:net SW radiation 200mb (clear sky)
-amlcorac:mixed layer flux correction
-trfliac:LW flux over ice
-trflwac:LW flux over water
-trfllac:LW flux over land
-sofliac:SW flux over ice
-soflwac:SW flux over water
-sofllac:SW flux over land
-friac:ice cover
-tsi:surface temperature of ice
-tsw:surface temperature of water
-ustri:zonal wind stress over ice
-vstri:meridional wind stress over ice
-ustrw:zonal wind stress over water
-vstrw:meridional wind stress over water
-ustrl:zonal wind stress over land
-vstrl:meridional wind stress over land
-ahfliac:latent heat flux over ice
-ahflwac:latent heat flux over water
-ahfllac:latent heat flux over land
-evapiac:evaporation over ice
-evapwac:evaporation over water
-evaplac:evaporation over land
-az0i:roughness length over ice
-az0w:roughness length over water
-az0l:roughness length over land
-ahfsiac:sensible heat flux over ice
-ahfswac:sensible heat flux over water
-ahfslac:sensible heat flux over land
-alsoi:albedo of ice
-alsow:albedo of water
-alsol:albedo of land
-ahfice:conductive heat flux
-qres:residual heat flux for melting sea ice
-geosp:surface geopotential (orography)
-st:temperature
+omega:vertical velocity
+prec:total precipitation
+precip:total precipitation
 q:specific humidity
-aps:surface pressure
-apmeb:vert.integr.tendencies of water
-svo:vorticity
-tslm1:surface temperature of land
-ws:soil wetness
-sn:snow depth
-aprl:large scale precipitation
-aprc:convective  precipitation
-aprs:snow fall
-vdis:boundary layer dissipation
-ahfs:sensible heat flux
-ahfl:latent heat flux
-xivi:vertically integrated cloud ice
-lsp:log surface pressure
-xl:cloud water
-xi:cloud ice
-sd:divergence
+qres:residual heat flux for melting sea ice
+qvi:vertically integrated water vapor
 relhum:relative humidity
 runoff:surface runoff and drainage
-drain:drainage
-aclcov:total cloud cover
-u10:10m u-velocity
-v10:10m v-velocity
-temp2:2m temperature
-dew2:2m dew point temperature
-tsurf:surface temperature
-wind10:10m windspeed
-slm:land sea mask
-albedo:surface albedo
-srads:net surface solar radiation
-trads:net surface thermal radiation
-srad0:net top solar radiation
-trad0:top thermal radiation (OLR)
-ustr:u-stress
-vstr:v-stress
-evap:evaporation
-srad0d:top incoming solar radiation
-srafs:net surface solar radiation
-trafs:net surface thermal radiation
-sraf0:net top solar radiation
-traf0:net top thermal radiation
-wl:skin reservoir content
-vdisgw:gravity wave dissipation
-t2max:maximum 2m temperature
-t2min:minimum 2m temperature
-srad0u:top solar radiation upward
-sradsu:surface solar radiation upward
-tradsu:surface thermal radiation upward
-grndflux:surface ground heat flux
-tsoil:deep soil temperatures
-ahfcon:conductive heat flux through ice
-ahfres:melting of ice
+sclf0:SW top cloud forcing
+sclfs:surface SW cloud forcing
+sd:divergence
 seaice:ice cover
 siced:ice depth
-gld:glacier depth
-sni:water equivalent of snow on ice
-wimax:maximum 10m-wind speed
-topmax:maximum height of convective cloud tops
-snmel:snow melt
-apmegl:P-E over land ice
+slm:land sea mask
+slp:mean sea level pressure
+sn:snow depth
 snacl:snow accumulation over land
-aclcac:cloud cover
-wsmx:field capacity of soil
-qvi:vertically integrated water vapor
-xlvi:vertically integrated cloud water
-glac:fraction of land covered by glaciers
 snc:snow depth at the canopy
-abso4:antropogenic sulfur burden
-ao3:ipcc ozone
-tropo:tropopause height
-prec:total precipitation
+sni:water equivalent of snow on ice
+snmel:snow melt
+sofliac:SW flux over ice
+sofllac:SW flux over land
+soflwac:SW flux over water
+srad0:net top solar radiation
+srad0d:top incoming solar radiation
+srad0u:top solar radiation upward
+sradl:net SW radiation 200mb
+srads:net surface solar radiation
+sradsu:surface solar radiation upward
+sraf0:net top solar radiation
+srafl:net SW radiation 200mb (clear sky)
+srafs:net surface solar radiation
+st:temperature
+svo:vorticity
+swdifnirac:fraction of diffuse NIR acc.
+swdifvisac:fraction of diffuse visibleacc.
+swnirac:net surface NIR flux acc.
+swvisac:net surface visible flux acc.
+t2max:maximum 2m temperature
+t2min:minimum 2m temperature
+tclf0:LW top cloud forcing
+tclfs:surface LW cloud forcing
+temp2:2m temperature
+topmax:maximum height of convective cloud tops
+trad0:top thermal radiation (OLR)
+tradl:net LW radiation 200mb
+trads:net surface thermal radiation
+tradsu:surface thermal radiation upward
+traf0:net top thermal radiation
+trafl:net LW radiation 200mb (clear sky)
+trafs:net surface thermal radiation
 tref:reference height temperature
+trfliac:LW flux over ice
+trfllac:LW flux over land
+trflwac:LW flux over water
+tropo:tropopause height
+tsi:surface temperature of ice
+tslm1:surface temperature of land
+tsoil:deep soil temperatures
+tsurf:surface temperature
+tsw:surface temperature of water
+u10:10m u-velocity
+u:u-velocity
+ustr:u-stress
+ustri:zonal wind stress over ice
+ustrl:zonal wind stress over land
+ustrw:zonal wind stress over water
+v10:10m v-velocity
+v:v-velocity
+vdis:boundary layer dissipation
+vdisgw:gravity wave dissipation
+velopot:velocity potential
+vstr:v-stress
+vstri:meridional wind stress over ice
+vstrl:meridional wind stress over land
+vstrw:meridional wind stress over water
+wimax:maximum 10m-wind speed
+wind10:10m windspeed
+windspeed:windspeed
+wl:skin reservoir content
+ws:soil wetness
+wsmx:field capacity of soil
+xi:cloud ice
+xivi:vertically integrated cloud ice
+xl:cloud water
+xlvi:vertically integrated cloud water
 z200:200 hPa geopotenial height
 z500:500 hPa geopotenial height

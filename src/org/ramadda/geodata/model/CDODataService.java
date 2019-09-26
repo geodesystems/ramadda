@@ -307,7 +307,7 @@ public abstract class CDODataService extends Service {
             commands.add(getPath(request, mean));
             commands.add(statFile.toString());
             //System.err.println("stat command: "+commands);
-            runCommands(commands, dpi.getProcessDir(), statFile);
+            runCommands(commands, dpi.getProcessDir(), statFile, 90); // add more time if daily
         }
         Object[] newValues = new Object[values.length];
         System.arraycopy(values, 0, newValues, 0, values.length);
@@ -441,6 +441,21 @@ public abstract class CDODataService extends Service {
     protected void runCommands(List<String> commands, File processDir,
                                File outFile)
             throws Exception {
+        runCommands(commands, processDir, outFile, 60);
+    }
+
+    /**
+     * Run the process
+     *
+     * @param commands  the list of commands to run
+     * @param processDir  the processing directory
+     * @param outFile     the outfile
+     *
+     * @throws Exception problem running commands
+     */
+    protected void runCommands(List<String> commands, File processDir,
+                               File outFile, int timeoutSecs)
+            throws Exception {
 
         //System.out.println(commands);
         // Have to add this for our stupid system
@@ -452,7 +467,7 @@ public abstract class CDODataService extends Service {
         long millis = System.currentTimeMillis();
         JobManager.CommandResults results =
             getRepository().getJobManager().executeCommand(commands, envMap,
-                processDir, 60);
+                processDir, 90);
         //System.out.println("processing took: " + (System.currentTimeMillis()-millis));
         String errorMsg = results.getStderrMsg();
         String outMsg   = results.getStdoutMsg();
@@ -1038,11 +1053,7 @@ public abstract class CDODataService extends Service {
                         if (adjustDaily) {
                             aggEntries = extractDailyEntries(request,
                                     opEntries, opNum);
-                            id += "_" + opNum;
-                        } else {
-                            newOps.add(so);
-
-                            break;
+                            id += "_reduced_" + opNum;
                         }
                     }
                     Entry agg = ModelUtil.aggregateEntriesByTime(request,
@@ -1251,40 +1262,24 @@ public abstract class CDODataService extends Service {
             ServiceInput input, String argPrefix, String name, String type)
             throws Exception {
 
-        final Request      myRequest = request;
-        final ServiceInput myInput   = adjustInput(request, input);
-        final String       argP      = argPrefix;
+        // The first time we adjust without reducing daily entries so we have something
+        // for the climatology if necessary
+        ServiceInput climInput = adjustInput(request, input, false);
+        boolean      needAnom  = CDOOutputHandler.requestIsAnom(request);
 
-        if ( !canHandle(myInput)) {
+        if ( !canHandle(climInput)) {
             throw new Exception("Illegal data type");
         }
+
         final String myType =
-            myInput.getProperty(
+            input.getProperty(
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
 
 
-        final List<ServiceOperand> outputEntries =
-            new ArrayList<ServiceOperand>();
-        int  opNum    = 0;
-        int  numProcs = Runtime.getRuntime().availableProcessors();
-        long millis   = System.currentTimeMillis();
-        //System.out.println("num Ops = " + myInput.getOperands().size() + ", num processors = " + numProcs);
-        int     numThreads = Math.min(myInput.getOperands().size(), numProcs);
-        boolean useThreads = (numThreads > 2) && true;
-        //System.err.println("Using threads: " + useThreads);
-        ThreadManager threadManager = new ThreadManager(name + ".evaluate");
-        // If we need an anomaly, we run the first evaluation not in a thread so that the climatology
-        // can get created first and there is no interference with other threads
-        boolean needAnom = CDOOutputHandler.requestIsAnom(request);
-        if (needAnom
-                && type.equals(
-                    ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE)) {
-            useThreads = false;
-        }
         List<List<ServiceOperand>> sortedOps =
             ModelUtil.sortOperandsByCollection(request,
-                myInput.getOperands());
-        Entry climSample = null;
+                climInput.getOperands());
+        Entry climSample = sortedOps.get(0).get(0).getEntries().get(0);
         if (needAnom
                 && (type.equals(
                     ClimateModelApiHandler
@@ -1297,9 +1292,8 @@ public abstract class CDODataService extends Service {
             //sortedOps = sortOperandsByCollection(request,
             //        myInput.getOperands());
             if ((sortedOps.size() > 1) && (climDatasetNumber > 0)) {
-                String climKey =
-                    ModelUtil.getModelExperimentString(myRequest,
-                        climDatasetNumber);
+                String climKey = ModelUtil.getModelExperimentString(request,
+                                     climDatasetNumber);
                 for (List<ServiceOperand> myOp : sortedOps) {
                     Entry    firstOne = myOp.get(0).getEntries().get(0);
                     Object[] values   = firstOne.getValues();
@@ -1315,7 +1309,38 @@ public abstract class CDODataService extends Service {
         } else {
             //sortedOps.add(myInput.getOperands());
         }
-        final Entry myClimSample = climSample;
+        // If we have daily data, we now adjust to get only the years we need
+        if (getFrequency(request,
+                         climSample).equals(
+                             CDOOutputHandler.FREQUENCY_DAILY)) {
+            climInput = adjustInput(request, input, true);
+            sortedOps = ModelUtil.sortOperandsByCollection(request,
+                    climInput.getOperands());
+        }
+
+        // make some things final for the threading
+        final Entry        myClimSample = climSample;
+        final ServiceInput myInput      = climInput;
+        final List<ServiceOperand> outputEntries =
+            new ArrayList<ServiceOperand>();
+        final Request myRequest = request;
+
+        // Check on using multiple threads
+        int  opNum    = 0;
+        int  numProcs = Runtime.getRuntime().availableProcessors();
+        long millis   = System.currentTimeMillis();
+        //System.out.println("num Ops = " + myInput.getOperands().size() + ", num processors = " + numProcs);
+        int numThreads = Math.min(climInput.getOperands().size(), numProcs);
+        boolean useThreads = (numThreads > 2) && true;
+        //System.err.println("Using threads: " + useThreads);
+        ThreadManager threadManager = new ThreadManager(name + ".evaluate");
+        // If we need an anomaly, we run the first evaluation not in a thread so that the climatology
+        // can get created first and there is no interference with other threads
+        if (needAnom
+                && type.equals(
+                    ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE)) {
+            useThreads = false;
+        }
         for (List<ServiceOperand> ops : sortedOps) {
             int threadNum = 0;
             for (final ServiceOperand op : ops) {
@@ -1714,7 +1739,7 @@ public abstract class CDODataService extends Service {
 
         return newRequest;
     }
-    
+
     /**
      *     _more_
      *
