@@ -5370,7 +5370,28 @@ function DisplayAnimation(display) {
 	    this.begin = this.dateMin;
 	    this.end = this.dateMax;
 	    if(!this.dateMin) return;
+	    
 
+	    if (this.mode == "frame") {
+		this.end = this.begin;
+
+	    }
+
+	    this.dates=[];
+	    var seen = {};
+	    records.map(r=>{
+		if(!seen[r.getDate()]) {
+		    seen[r.getDate()] = true;
+		    this.dates.push(r.getDate());
+		}
+	    });
+	    this.dates.sort(function(a,b) {
+		return a.getTime() - b.getTime();
+	    });
+	    
+	    this.frameIndex = 0;
+
+	    
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 	    this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
 	    this.windowUnit = this.display.getProperty("animationWindow", "");
@@ -5405,22 +5426,37 @@ function DisplayAnimation(display) {
 	    this.updateLabels();
 	    
 
+	    this.setSliderValues = function(v) {
+		if(this.mode != "frame") {
+		    this.begin = new Date(v[0]);
+		    this.end = new Date(v[1]);
+		} else {
+		    var sliderDate = new Date(v[0]);
+		    var closest = this.dates[0];
+		    var dist = 0;
+		    this.dates.map(d=>{
+			if(Math.abs(d.getTime()-sliderDate.getTime()) < Math.abs(closest.getTime()-sliderDate.getTime())) {
+			    closest = d;
+			}
+		    });
+		    this.begin = this.end = closest;
+		}
+	    }
+
+	    var sliderValues = _this.mode != "frame"?[_this.begin.getTime(),_this.end.getTime()]:[_this.begin.getTime()];
 	    this.jq(ID_SLIDER).slider({
-		range: true,
-		min: this.dateMin.getTime(),
-		max: this.dateMax.getTime(),
-		values: [this.dateMin.getTime(),this.dateMax.getTime()],
+		range: _this.mode != "frame",
+		min: _this.dateMin.getTime(),
+		max: _this.dateMax.getTime(),
+		values: sliderValues,
 		slide: function( event, ui ) {
 		    _this.stopAnimation();
-		    _this.begin = new Date(ui.values[0]);
-		    _this.end = new Date(ui.values[1]);
-		    //			    _this.applyAnimation(true);
+		    _this.setSliderValues(ui.values);
 		    _this.updateLabels();
 		},
 		stop: function(event,ui) {
 		    _this.stopAnimation();
-		    _this.begin = new Date(ui.values[0]);
-		    _this.end = new Date(ui.values[1]);
+		    _this.setSliderValues(ui.values);
 		    _this.applyAnimation(true);
 		}
 	    });
@@ -5486,6 +5522,9 @@ function DisplayAnimation(display) {
 		this.begin = this.dateMin;
 		if (this.mode == "sliding") {
 		    this.end = new Date(this.dateMin.getTime()+this.window);
+		} else if (this.mode == "frame") {
+		    this.frameIndex = 0;
+		    this.begin = this.end = this.deltaFrame(0);
 		} else {
 		    this.end = new Date(this.dateMin.getTime()+this.window);
 		    //			this.end =this.begin;
@@ -5497,6 +5536,9 @@ function DisplayAnimation(display) {
 		this.end = this.dateMax;
 		if (this.mode == "sliding") {
 		    this.begin = new Date(this.dateMax.getTime()-this.window);
+		} else if (this.mode == "frame") {
+		    this.frameIndex = this.dates.length+1;
+		    this.begin = this.end = this.deltaFrame(0);
 		} else {
 		    this.end =this.dateMax;
 		}
@@ -5509,6 +5551,8 @@ function DisplayAnimation(display) {
 		    if(this.begin.getTime()<this.dateMin.getTime())
 			this.begin = this.dateMin;
 		    this.end = new Date(this.begin.getTime()+this.window);
+		} else if (this.mode == "frame") {
+		    this.begin = this.end = this.deltaFrame(-1);
 		} else {
 		    this.end = new Date(this.end.getTime()-this.window);
 		    if(this.end.getTime()<=this.begin.getTime()) {
@@ -5543,6 +5587,8 @@ function DisplayAnimation(display) {
 		    this.inAnimation = false;
 		    this.stopAnimation();
 		}
+	    } else if (this.mode == "frame") {
+		this.begin = this.end = this.deltaFrame(1);
 	    } else {
 		this.end = new Date(this.end.getTime()+this.window);
 		if(this.end.getTime()>=this.dateMax.getTime()) {
@@ -5554,14 +5600,31 @@ function DisplayAnimation(display) {
 	    this.applyAnimation();
 	},
 
+	deltaFrame: function(delta) {
+	    this.frameIndex+=delta;
+	    if(this.frameIndex>= this.dates.length)
+		this.frameIndex = this.dates.length-1;
+	    else if(this.frameIndex<0)
+		this.frameIndex = 0;
+	    return this.dates[this.frameIndex];
+	},
 	startAnimation: function() {
 	    //		if (!this.display.points) {
 	    //		    return;
 	    //		}
             if (!this.dateMax) return;
-            if (!this.inAnimation) {
+
+	    if (!this.inAnimation) {
                 this.inAnimation = true;
                 this.label.html("");
+		if (this.mode == "frame") {
+		    this.frameIndex =0;
+		    this.begin = this.end = this.deltaFrame(0);
+		    this.display.animationStart();
+		    return;
+		}
+
+
                 var date = this.dateMin;
                 this.begin = date;
                 var unit = this.windowUnit;
@@ -5625,8 +5688,15 @@ function DisplayAnimation(display) {
 	},
 
 	updateLabels: function() {
-	    if(this.label)
-		this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
+	    if(this.label) {
+		if (this.mode == "frame" && this.begin == this.end) {
+		    this.label.html(this.formatAnimationDate(this.begin));
+		} else {
+		    this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
+		}
+	    }
+
+
 	},
         formatAnimationDate: function(d) {
             if (this.dateFormat == "yyyy") {
