@@ -40,8 +40,26 @@ function csvMakeDbMenu(field,value,label) {
     return HtmlUtil.tag("a",["class","ramadda-menuitem-link","onclick","csvInsertDb('" + field+"'," +value+");"],(label||field));
 }
 
+function csvMakeHeaderMenu(field,value,label) {
+    if(!value) value = "null";
+    else value = "'" + value +"'";
+    return HtmlUtil.tag("a",["class","ramadda-menuitem-link","onclick","csvInsertHeader('" + field+"'," +value+");"],(label||field));
+}
+
+function csvInsertHeader(field,value) {
+    var popup = $("#csv_popup");
+    popup.css("display","none");
+    if(!value) value = " ";
+//    if(value!="true" && value!="false") 
+//        value = " \"" +value+"\"";
+//    else
+        value = " " + value +" ";
+    csvInsertCommand(field +value);
+}
+
+
 function csvInsertDb(field,value) {
-    var popup = $("#csv_db_popup");
+    var popup = $("#csv_popup");
     popup.css("display","none");
     if(!value) value = " ";
     if(value!="true" && value!="false") 
@@ -150,9 +168,26 @@ function csvCall(cmds,args) {
                     HtmlUtils.formatTable(".ramadda-table");
                 } else {
                     var isDb = result.startsWith("<tables");
+		    var isHeader = result.startsWith("#fields=");
+
 		    if(printHeader) {
 			result = result.replace(/(#[0-9]+) /g,"<a href='#' index='$1' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$1</a> ");
 			console.log("result:" + result);
+		    } else if(isHeader) {
+			var toks = result.split("\n");
+			var line = toks[0];
+			line = line.replace("#fields=","");
+			line = line.replace(/(\] *),/g,"$1\n");
+//			line = line.replace(/([^\[]+)(\[.*\])/g,"X$1$2");
+			var tmp ="";
+			toks = line.split("\n");
+			for(var i=0;i<toks.length;i++) {
+			    var l = toks[i];
+			    l = l.replace(/^(.*?)\[/,"<span class=csv_addheader_field field='$1' title='Add to input'>$1</span>[");
+			    tmp+=l +"\n";
+			}
+			result = tmp;
+
 		    } else if(isDb) {
                         result = result.replace("<tables>","Database:");
                         result = result.replace(/<property[^>]+>/g,"");
@@ -174,9 +209,9 @@ function csvCall(cmds,args) {
                         result = result.replace(/>/,"&gt;");
                     }
                     var html = "<pre>" + result +"</pre>";
-                    if(isDb) {
-                        html+="<div class=\"ramadda-popup\" xstyle=\"display: none;position:absolute;\" id=csv_db_popup></div>" ;
-                    }
+                    if(isDb || isHeader) {
+                        html+="<div class=\"ramadda-popup\" xstyle=\"display: none;position:absolute;\" id=csv_popup></div>" ;
+		    }
                     $("#convertcsv_output").html(html);
 		    if(printHeader) {
                         $("#convertcsv_output .csv_header_field").click(function(event) {
@@ -186,6 +221,35 @@ function csvCall(cmds,args) {
 			    
 			});
 		    }			
+		    if(isHeader) {
+                        $("#convertcsv_output .csv_addheader_field").click(function(event) {
+                            event.preventDefault();
+			    var field = $(this).attr("field");
+                            var pos=$(this).offset();
+                            var h=$(this).height();
+                            var w=$(this).width();
+                            var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
+                            html +="type=" + 
+				csvMakeHeaderMenu(field+".type","enumeration","enumeration")+ "  "+
+				csvMakeHeaderMenu(field+".type","string","string")+ " "+
+				csvMakeHeaderMenu(field+".type","double","double")+" "+
+				csvMakeHeaderMenu(field+".type","date","date")+
+				"<br>";
+                            html+="</div>";
+                            var popup = $("#csv_popup");
+                            csvDbPopupTime = new Date();
+                            popup.css("display","block");
+                            popup.html(html);
+                            var myalign  = "left top";
+                            var atalign  = "left bottom";
+                            popup.position({
+                                of: $(this),
+                                my: myalign,
+                                at: atalign,
+                                collision: "none none"
+                            });
+			});
+		    }
 			
                     if(isDb){
                         $("#convertcsv_output .csv_db_field").click(function(event) {
@@ -222,7 +286,7 @@ function csvCall(cmds,args) {
                                         "<br>";
                                 }
                                 html+="</div>";
-                                var popup = $("#csv_db_popup");
+                                var popup = $("#csv_popup");
                                 csvDbPopupTime = new Date();
                                 popup.css("display","block");
                                 popup.html(html);
@@ -376,7 +440,7 @@ $(document).click(function(e) {
                 return;
             }
         }
-    var popup = $("#csv_db_popup");
+    var popup = $("#csv_popup");
     popup.css("display","none");
     });
 $('#convertcsv_input').keyup(function(e){
