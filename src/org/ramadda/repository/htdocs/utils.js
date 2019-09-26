@@ -807,7 +807,7 @@ var Utils = {
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
         if (stringValues && stringValues.length) {
             var tdw = 100 / stringValues.length + "%";
-            html += "<table width=100%><tr>";
+            html += "<table width=100%><tr valign=top>";
             for (var i = 0; i < stringValues.length; i++) {
                 html += "<td align=center width='" + tdw + "'>" + stringValues[i] + "</td>";
             }
