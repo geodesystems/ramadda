@@ -1199,6 +1199,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!this.getProperty("acceptFilterEvent",true)) return;
 		this.haveCalledUpdateUI = false;
 		var widgetId = this.getFilterId(prop.fieldId);
+		if(prop.id && prop.id.endsWith("date1")) {
+		    widgetId+="_date1";
+		} else 	if(prop.id && prop.id.endsWith("date2")) {
+		    widgetId+="_date2";
+		}
 		this.settingFilterValue = true;
 		if(Utils.isDefined(prop.value2)) {
 		    $("#" +widgetId+"_min").val(prop.value);
@@ -1207,16 +1212,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    $("#" +widgetId+"_max").attr("data-value", prop.value2);
 		} else {
 		    var widget = $("#"+widgetId);
-//		    console.log(this.type +" v:" + Array.isArray(prop.value) +" length:" + prop.value.length +" " +prop.value);
 		    if(widget.attr("isCheckbox")) {
 			var on = widget.attr("onValue");
 			var off = widget.attr("offValue");
-			console.log(this.type +".handleEvent cbx:"  + on +" " + off + " " + prop.value);
 			widget.prop('checked',prop.value.includes(on));
 		    } else {
 			widget.val(prop.value);
 		    }
 		    widget.attr("data-value",prop.value);
+
 		    if(widget.attr("isButton")) {
 			widget.find(".display-filterby-button").removeClass("display-filterby-button-selected");
 			widget.find("[value='" + prop.value +"']").addClass("display-filterby-button-selected");
@@ -1873,7 +1877,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date2 =  Utils.parseDate(date2);
 		    else
 			date2=null;
-		    if(date1!=null && date2!=null)
+		    if(date1!=null || date2!=null)
 			value = [date1,date2]; 
 		}  else {
 		    values = this.getFilterFieldValues(filterField);
@@ -1942,15 +1946,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(!isNaN(filter.value[0]) && rowValue<filter.value[0]) ok = false;
 			else if(!isNaN(filter.value[1]) && rowValue>filter.value[1]) ok = false;
 		    } else if(filterField.getType()=="date"){
-			if(filter.value && typeof filter.value[0] && Array.isArray(filter.value)) {
+			if(filter.value &&  Array.isArray(filter.value)) {
 			    if(rowValue == null) {
 				ok = false;
-			    }    else  {
+			    }  else  {
 				var date1 = filter.value[0];
 				var date2 = filter.value[1];
-				if(date1 && rowValue.getTime()<date1.getTime())
+				var dttm = rowValue.getTime();
+				if(isNaN(dttm)) ok = false;
+				else if(date1 && dttm<date1.getTime())
 				    ok = false;
-				else if(date2 && rowValue.getTime()>date2.getTime())
+				else if(date2 && dttm>date2.getTime())
 				    ok = false;
 			    }
 			}
@@ -3546,8 +3552,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			widget += " - ";
                         widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",5,"fieldId",filterField.getId()]);
 		    } else if(filterField.getType() == "date") {
-                        widget =HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date1"]) +" - " +
-			    HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date2"]);
+
+                        widget =HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +" - " +
+			    HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date2","fieldId",filterField.getId()]);
 			dateIds.push(widgetId+"_date1");
 			dateIds.push(widgetId+"_date2");
                     } else {
@@ -3599,7 +3606,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 
-		var inputFunc = function(input, input2, value){
+ 		var inputFunc = function(input, input2, value){
                     var id = input.attr("id");
 		    if(!input2) {
 			if(id.endsWith("_min")) {
@@ -3813,6 +3820,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jq("sizebyselect").change(function(){
 		    _this.sizeByFieldChanged($(this).val());
 		});
+
+
+		dateIds.map(id=>{
+		    $("#" + id).change(function(){
+			inputFunc($(this));
+		    });
+
+		});
+
 
 
                 this.jq(ID_FILTERBAR).find("input").keyup(function(e){
