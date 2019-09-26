@@ -2599,11 +2599,16 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private List<Integer> valueIndices;
 
+	/** _more_ */
+        private List<Integer> extraIndices;
+
         /** _more_ */
         private List<String> keys;
 
         /** _more_ */
         private List<String> values;
+	/** _more_ */
+        private List<String> extra;
 
         /**
          * _more_
@@ -2613,9 +2618,10 @@ public abstract class Processor extends CsvOperator {
          * @param keys _more_
          * @param values _more_
          */
-        public Summer(List<String> keys, List<String> values) {
+        public Summer(List<String> keys, List<String> values,List<String>extra) {
             this.keys   = keys;
             this.values = values;
+	    this.extra= extra;
         }
 
 
@@ -2634,6 +2640,8 @@ public abstract class Processor extends CsvOperator {
                 throws Exception {
             uniqueIndices = getIndices(keys);
             valueIndices  = getIndices(values);
+            valueIndices  = getIndices(values);	    
+	    extraIndices  = getIndices(extra);	    
             List<Integer> allIndices = new ArrayList<Integer>();
             allIndices.addAll(uniqueIndices);
             allIndices.addAll(valueIndices);
@@ -2644,8 +2652,10 @@ public abstract class Processor extends CsvOperator {
             List<String> keys     = new ArrayList<String>();
             Hashtable<String, List<Row>> rowMap = new Hashtable<String,
                                                       List<Row>>();
+	    Hashtable<String, Row> origMap = new Hashtable<String,Row>();
             List<Row> allRows   = getRows(rows);
             Row       headerRow = allRows.get(0);
+	    Row firstRow = allRows.get(0);
             allRows.remove(0);
             //            Collections.sort(allRows,new Row.RowCompare(uniqueIndex));
             Object[] array = null;
@@ -2659,6 +2669,7 @@ public abstract class Processor extends CsvOperator {
                 String    key      = keySB.toString();
                 List<Row> rowGroup = rowMap.get(key);
                 if (rowGroup == null) {
+		    origMap.put(key,row);
                     rowMap.put(key, rowGroup = new ArrayList<Row>());
                     keys.add(key);
                 }
@@ -2680,8 +2691,12 @@ public abstract class Processor extends CsvOperator {
 	    if(valueIndices.size()==0) {
 		newHeader.add("Count");
 	    }
+	    for(int j: extraIndices) {
+		newHeader.add(firstRow.get(j));
+	    }
             newRows.add(newHeader);
             for (String key : keys) {
+		Row orig = origMap.get(key);
 		if(valueIndices.size()==0) {
 		    //just count them
 		    List<Row> rowGroup = rowMap.get(key);
@@ -2692,13 +2707,15 @@ public abstract class Processor extends CsvOperator {
 			newRow.add(row.get(i));
 		    }
 		    newRow.add(rowGroup.size());
+		    for(int j: extraIndices) {
+			newRow.add(orig.get(j));
+		    }
 		    continue;
+		} 
+		for (int i = 0; i < array.length; i++) {
+		    array[i] = null;
 		}
-
-                for (int i = 0; i < array.length; i++) {
-                    array[i] = null;
-                }
-                Row newRow = null;
+		Row newRow = null;
                 for (int i = 0; i < valueIndices.size(); i++) {
                     int    valueIdx = valueIndices.get(i);
                     double sum      = 0;
@@ -2717,7 +2734,10 @@ public abstract class Processor extends CsvOperator {
                         sum += Double.parseDouble(value.toString());
                     }
                     newRow.add(new Double(sum));
-                }
+		}
+		for(int j: extraIndices) {
+		    newRow.add(orig.get(j));
+		}
             }
 
             return newRows;
@@ -2751,7 +2771,6 @@ public abstract class Processor extends CsvOperator {
         private List<String> keys2;
 
         /** _more_ */
-        private List<String> values2;
 
         /** _more_ */
         private String file;
@@ -2764,14 +2783,12 @@ public abstract class Processor extends CsvOperator {
          * @param values1 _more_
          * @param file _more_
          * @param keys2 _more_
-         * @param values2 _more_
          */
         public Joiner(List<String> keys1, List<String> values1, String file,
-                      List<String> keys2, List<String> values2) {
+                      List<String> keys2) {
             this.keys1   = keys1;
             this.values1 = values1;
             this.keys2   = keys2;
-            this.values2 = values2;
             this.file    = file;
         }
 
@@ -2792,7 +2809,6 @@ public abstract class Processor extends CsvOperator {
             List<Integer> keys1Indices   = getIndices(keys1);
             List<Integer> values1Indices = getIndices(values1);
             List<Integer> keys2Indices   = getIndices(keys2);
-            List<Integer> values2Indices = getIndices(values2);
             List<Row>     newRows        = new ArrayList<Row>();
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
@@ -2800,6 +2816,8 @@ public abstract class Processor extends CsvOperator {
             TextReader reader = new TextReader(br);
 	    Hashtable<String,Row> map = new Hashtable<String,Row>();
 	    
+	    Row headerRow1 = null;
+	    Row headerRow2 = null;
             List<Row>  rows2  = new ArrayList<Row>();
             while (true) {
                 String line = reader.readLine();
@@ -2810,17 +2828,27 @@ public abstract class Processor extends CsvOperator {
 		String key = "";
 		for(int i:keys1Indices) 
 		    key += cols.get(i);
-		map.put(key,new Row(cols));
+		Row row = new Row(cols);
+		if(headerRow1==null) headerRow1=row;
+		map.put(key,row);
             }
 
             for (Row row : getRows()) {
+		if(headerRow2==null) {
+		    headerRow2=row;
+		    for(int j: values1Indices) {
+			row.add(headerRow1.get(j));
+		    }
+		    newRows.add(row);
+		    continue;
+		}
 		String key = "";
 		for(int i:keys2Indices) {
 		    key += row.getString(i);
 		}
 		Row other = map.get(key);
 		if(other==null) {
-		    System.err.println("no join:" + row);
+		    System.err.println("no join:" + " key=" + key +" row:" +row);
 		    continue;
 		}
 		for(int j: values1Indices) {

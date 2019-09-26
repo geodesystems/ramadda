@@ -2508,7 +2508,7 @@ public abstract class Converter extends Processor {
                 if ((index < 0) || (index >= row.size())) {
                     continue;
                 }
-                String s = (String) row.getValues().get(index);
+                String s =  row.getValues().get(index).toString();
                 double v = (s.length() == 0)
                            ? 0
                            : Double.parseDouble(s.replaceAll(",", ""));

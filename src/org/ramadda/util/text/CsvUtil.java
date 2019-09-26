@@ -1365,11 +1365,11 @@ public class CsvUtil {
         new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
         new Cmd("-round", "<columns>", "round the values"),
         new Cmd(
-            "-sum", "<key columns> <value columns>",
+            "-sum", "<key columns> <value columns> <carry over columns>",
             "sum values keying on name column value. If no value columns specified then do a count"),
         new Cmd(
             "-join",
-            "<key columns> <value columns> <file> <key 2 columns> <value 2 columns>",
+            "<key columns> <value columns> <file> <src key columns>",
             "Join the 2 files together"),
         new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
         new Cmd("-unique", "<columns>", "(pass through unique values)"),
@@ -1767,22 +1767,22 @@ public class CsvUtil {
                 List<String> values1 = getCols(args.get(++i));
                 String       file    = args.get(++i);
                 List<String> keys2   = getCols(args.get(++i));
-                List<String> values2 = getCols(args.get(++i));
 
                 info.getProcessor().addProcessor(new Processor.Joiner(keys1,
-                        values1, file, keys2, values2));
+                        values1, file, keys2));
 
                 continue;
             }
 
             if (arg.equals("-sum")) {
-                if ( !ensureArg(args, i, 2)) {
+                if ( !ensureArg(args, i, 3)) {
                     return false;
                 }
                 List<String> keys   = getCols(args.get(++i));
                 List<String> values = getCols(args.get(++i));
+                List<String> extra   = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Summer(keys,
-                        values));
+								      values,extra));
 
                 continue;
             }
