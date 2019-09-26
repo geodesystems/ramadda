@@ -3258,22 +3258,32 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
                 this.setContents(this.getLoadingMessage());
                 return;
             }
+	    this.records = records;
+	    let _this = this;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
             var html = "";
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+		var div = "";
                 var tuple = this.getDataValues(records[rowIdx]);
                 for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                     var field = fields[fieldIdx];
                     var v = tuple[field.getIndex()];
-                    html += HtmlUtil.b(field.getLabel()) + ": " + v + "</br>";
+                    div += HtmlUtil.b(field.getLabel()) + ": " + v + "</br>";
                 }
-                html += "<p>";
+                html += HtmlUtils.div(["class","display-records-record","recordIndex",rowIdx], div);
             }
             var height = this.getProperty("maxHeight", "400px");
             if (!height.endsWith("px")) {
                 height = height + "px";
             }
             this.setContents(HtmlUtil.div(["style", "max-height:" + height + ";overflow-y:auto;"], html));
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-records-record").click(function() {
+		var record = _this.records[$(this).attr("recordIndex")];
+		if(record) {
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+		}
+
+	    });
         },
         handleEventRecordSelection: function(source, args) {
             //                this.lastHtml = args.html;

@@ -320,6 +320,13 @@ position:absolute;
 }
 
 
+.display-records-record {
+    margin-bottom:8px;
+    border-bottom:1px solid #ccc;
+    cursor: pointer;
+}
+
+
 .display-template-record {
     cursor:pointer;
     padding:1px;
