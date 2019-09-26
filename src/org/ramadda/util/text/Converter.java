@@ -1152,10 +1152,9 @@ public abstract class Converter extends Processor {
             }
             String value    = row.getString(col);
             String newValue = StringUtil.findPattern(value, pattern);
-	    System.err.println("value:" + value);
-	    System.err.println("pattern:" + pattern);
-	    System.err.println("NV:" + newValue);
-	    System.exit(0);
+	    //	    System.err.println("value:" + value);
+	    //	    System.err.println("pattern:" + pattern);
+	    //	    System.err.println("NV:" + newValue);
             if (newValue == null) {
                 newValue = "";
             }
