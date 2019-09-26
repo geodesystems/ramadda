@@ -1222,14 +1222,17 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
                     }
 
 		    var row = this.getDataValues(record);
-		    var s = template;
+		    var s = template.trim();
 		    s = s.replace("${selectCount}",selected.length);
 		    s = s.replace("${totalCount}",records.length);
 		    s= this.applyRecordTemplate(row,fields,s,props);
 		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
 		    var recordStyle = style;
-		    if(color)
-			recordStyle = "background: " + color+";" + recordStyle;
+		    if(color) {
+			if(this.getProperty("colorBackground",false))
+			    recordStyle = "background: " + color+";" + recordStyle;
+			s = s.replace("${color}",color);
+		    }
 		    var tag = HtmlUtils.openTag("div",["style",recordStyle, "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
 //		    console.log(tag);
 		    if(s.startsWith("<td")) {
