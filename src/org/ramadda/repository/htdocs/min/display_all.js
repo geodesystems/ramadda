@@ -17668,18 +17668,19 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
                 if (displayedLineCnt > maxLines) break;
 		var lineAttrs = ["title"," ","class", "display-raw-line","recordIndex",rowIdx]
+		var rowAttrs =["valign", "top"];
                 if (colorBy.index >= 0) {
 		    var value = record.getData()[colorBy.index];
 		    var color =  colorBy.getColor(value, record);
 		    if(color) {
-			lineAttrs.push("style");
-			lineAttrs.push("background:" + Utils.addAlphaToColor(color,"0.25")+";");
+			rowAttrs.push("style");
+			rowAttrs.push("background:" + Utils.addAlphaToColor(color,"0.25")+";");
 		    }
                 }
 		line = HtmlUtils.div(lineAttrs,line);
 
                 if (addLineNumbers) {
-                    corpus += HtmlUtils.tr(["valign", "top"], HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
+                    corpus += HtmlUtils.tr(rowAttrs, HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
 									   "<a href=#line_" + lineCnt + ">#" + lineCnt + "</a>&nbsp;  ") +
 					   HtmlUtils.td([], line));
                 } else {
