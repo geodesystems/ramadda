@@ -1732,6 +1732,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    values.map(v=>{
 			_values.push((""+v).toLowerCase());
 			try {
+			    v = v.replace(/\./g,"\\.");
 			    regexps.push(new RegExp(v,"i"));
 			} catch(skipIt){}
 		    });
@@ -3559,9 +3560,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var field = fieldMap[fieldId].field;
 		    var values = fieldMap[fieldId].values;
 		    var items=[];
-		    var regexp = new RegExp("(" + val+")",'i');
+		    var regexp=null;
+		    try {
+			val = val.replace(/\./g,"\\.");
+			regexp = new RegExp("(" + val+")",'i');
+		    } catch(ignore) {
+			//todo
+		    }
 		    for(var i=0;i<values.length;i++) {
-			var match  = values[i].toString().match(regexp);
+			var text= values[i].toString();
+			var match  = regexp?text.match(regexp):text.indexOf(val)>=0;
 			if(match) {
 			    items.push([match[1], values[i]]);
 			}

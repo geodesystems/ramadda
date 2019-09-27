@@ -1882,6 +1882,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    values.map(v=>{
 			_values.push((""+v).toLowerCase());
 			try {
+			    v = v.replace(/\./g,"\\.");
 			    regexps.push(new RegExp(v,"i"));
 			} catch(skipIt){}
 		    });
@@ -3709,9 +3710,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var field = fieldMap[fieldId].field;
 		    var values = fieldMap[fieldId].values;
 		    var items=[];
-		    var regexp = new RegExp("(" + val+")",'i');
+		    var regexp=null;
+		    try {
+			val = val.replace(/\./g,"\\.");
+			regexp = new RegExp("(" + val+")",'i');
+		    } catch(ignore) {
+			//todo
+		    }
 		    for(var i=0;i<values.length;i++) {
-			var match  = values[i].toString().match(regexp);
+			var text= values[i].toString();
+			var match  = regexp?text.match(regexp):text.indexOf(val)>=0;
 			if(match) {
 			    items.push([match[1], values[i]]);
 			}
@@ -17636,16 +17644,19 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    if(rowIdx==0) {
 			if(filterFieldMap[f.getId()]) {
 			    var value = this.getFilterFieldValues(f);
-			    //TODO:
-			    if(value && value.length>0) {
+			    if(value) {
+				if(!Array.isArray(value)) {
+				    value = [value];
+				}
 				try {
 				    regexpMaps[f.getId()] =  [];
-				    if(Array.isArray(value)) {
-					value.map(v=>regexpMaps[f.getId()].push(new RegExp("(" + v + ")","i")));
-				    } else {
-					regexpMaps[f.getId()].push(new RegExp("(" + value + ")","i"));
-				    }
-				} catch(e) {}
+				    value.map(v=>{
+					if(v == "" || v == FILTER_ALL) return;
+					v = v.replace(/\./g,"\\.");
+					var re = new RegExp("(" + v + ")","i");
+					regexpMaps[f.getId()].push(re);
+				    })
+				} catch(e) {console.log("Error making regexp:" + e);}
 			    }
 			}
 		    }
@@ -17653,7 +17664,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    var value = ""+row[f.getIndex()];
                     value = value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		    if(regexpMaps[f.getId()]) {
-			regexpMaps[f.getId()].map(re=>{value = value.replace(re, "<span style=background:yellow;>$1</span>")});
+			regexpMaps[f.getId()].map(re=>{
+			    value = value.replace(re, "<span style=background:yellow;>$1</span>");
+			}
+);
 		    }
                     line += value;
                 }
