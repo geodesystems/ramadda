@@ -890,8 +890,21 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+        needsData: function() {
+            return true;
+        },
 	updateUI: function() {
+	    var records = this.filterData();
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
+	    if(records) {
+		var colorBy = this.getColorByInfo(records);
+		if(colorBy.index>=0) {
+		    records.map(record=>{
+			color =  colorBy.getColor(record.getData()[colorBy.index], record);
+		    });
+		    colorBy.displayColorTable();
+		}
+	    }
 	}});
 }
 
@@ -1216,9 +1229,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var color = null;
                     if (colorBy.index >= 0) {
 			var value = record.getData()[colorBy.index];
-			hasColorByValue  = true;
-			colorByValue = value;
-			didColorBy = true;
 			color =  colorBy.getColor(value, record);
                     }
 
@@ -2216,6 +2226,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (!records) {
                 return null;
             }
+            var pointData = this.getData();
+            this.allRecords = pointData.getRecords();
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
 	    var input = "";
@@ -2291,6 +2303,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    if(this.filterFields) {
 		this.filterFields.map(f=>{if(f.isString)filterFieldMap[f.getId()]=true;});
 	    }
+            var colorBy = this.getColorByInfo(records);
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
 		var record = records[rowIdx];
 		this.indexToRecord[rowIdx] = record;
@@ -2334,7 +2347,16 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 displayedLineCnt++;
 
                 if (displayedLineCnt > maxLines) break;
-		line = HtmlUtils.div(["title"," ","class", "display-raw-line","recordIndex",rowIdx],line);
+		var lineAttrs = ["title"," ","class", "display-raw-line","recordIndex",rowIdx]
+                if (colorBy.index >= 0) {
+		    var value = record.getData()[colorBy.index];
+		    var color =  colorBy.getColor(value, record);
+		    if(color) {
+			lineAttrs.push("style");
+			lineAttrs.push("background:" + Utils.addAlphaToColor(color,"0.25")+";");
+		    }
+                }
+		line = HtmlUtils.div(lineAttrs,line);
 
                 if (addLineNumbers) {
                     corpus += HtmlUtils.tr(["valign", "top"], HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
@@ -2361,7 +2383,13 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (!asHtml)
                 corpus = HtmlUtils.tag("pre", [], corpus);
             this.writeHtml(ID_TEXT, corpus);
-	    this.jq(ID_LABEL).html(displayedLineCnt +" lines");
+	    colorBy.displayColorTable();
+	    var linesWord = " "+ this.getProperty("linesDescriptor","lines");
+	    var label =displayedLineCnt +linesWord;
+	    if(this.allRecords.length!=displayedLineCnt) {
+		label = displayedLineCnt+"/" + this.allRecords.length+linesWord+" (" + Math.round(displayedLineCnt/this.allRecords.length*100)+"%)";
+	    }
+	    this.jq(ID_LABEL).html(label);
 	    this.jq(ID_SEARCH).focus();
 	    var lines =this.jq(ID_TEXT).find(".display-raw-line");
 	    lines.click(function() {

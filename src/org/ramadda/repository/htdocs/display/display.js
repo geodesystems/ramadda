@@ -670,17 +670,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    colors=  Utils.cloneList(colors);
 	    var ac = [];
 	    colors.map((c)=>{
-		if(c.indexOf("#")==0) {
-		    var rgb = Utils.hexToRgb(c);
-		    if(rgb) {
-			c = "rgba(" + rgb.r+"," + rgb.g +"," + rgb.b+"," + alpha+")";
-		    }
-		    ac.push(c);
-		    return;
-		}
-		c = c.replace(/rgb *\((.*),(.*),(.*)\)/,"rgba($1,$2,$3,_alpha_)");
-		c = c.replace("_alpha_",alpha);
-		ac.push(c);
+		ac.push(Utils.addAlphaToColor(c,alpha));
 	    });
 	    return ac;
         },
@@ -777,6 +767,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		colorByOffset: 0,
                 pctFields:null,
 		displayColorTable: function() {
+		    if(this.index<0 || !_this.getProperty("showColorTable",true)) return;
 		    if(this.stringMap) {
 			var colors = [];
 			this.colorByValues= [];
@@ -788,7 +779,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    stringValues: this.colorByValues});
 		    } else {
 			var colors = this.colors;
-			if(_this.getProperty("clipColorTable") && this.colorByValues.length) {
+			if(_this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 			    var tmp = [];
 			    for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
 				tmp.push(this.colors[i]);

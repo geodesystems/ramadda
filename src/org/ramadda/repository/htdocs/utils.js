@@ -729,6 +729,19 @@ var Utils = {
             }
         });
     },
+    addAlphaToColor: function(c, alpha) {
+	if(!alpha) alpha = "0.5";
+	if(c.indexOf("#")==0) {
+	    var rgb = Utils.hexToRgb(c);
+	    if(rgb) {
+		c = "rgba(" + rgb.r+"," + rgb.g +"," + rgb.b+"," + alpha+")";
+	    }
+	    return c;
+	}
+	c = c.replace(/rgb *\((.*),(.*),(.*)\)/,"rgba($1,$2,$3,_alpha_)");
+	c = c.replace("_alpha_",alpha);
+	return c;
+    },
     getColorTable: function(name, justColors) {
         var ct = this.ColorTables[name];
         if (ct && justColors) return ct.colors;
