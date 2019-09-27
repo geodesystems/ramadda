@@ -1030,69 +1030,70 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var max =0; 
 		var min = 0;
 		var cnt = 0;
-		var maxRow;
-		var minRow;
-		var equalsRow;
-		records.map(r=>{
-		    r  =  this.getDataValues(r);
-		    var v =selectField.getValue(r);
+		var maxRecord;
+		var minRecord;
+		var equalsRecord;
+		records.map(record=>{
+		    var v =record.getValue(selectField.getIndex());
 		    if(select == "match") {
 			if(v.match(selectValue)) {
-			    selected.push(r);
+			    selected.push(record);
 			}
 			return;
 		    }
 		    if(select == "=") {
 			if(v == selectValue) {
-			    selected.push(r);
+			    selected.push(record);
 			}
 			return;
 		    }
 		    if(isNaN(v)) return;
 		    if(select == "<") {
 			if(v < selectValueNum) {
-			    selected.push(r);
+			    selected.push(record);
 			}
 			return;
 		    }
 		    if(select == ">") {
 			if(v > selectValueNum) {
-			    selected.push(r);
+			    selected.push(record);
 			}
 			return;
 		    }
 		    if(select == ">=") {
 			if(v >= selectValueNum) {
-			    selected.push(r);
+			    selected.push(record);
 			}
 			return;
 		    }
 		    if(select == "<=") {
 			if(v <= selectValueNum) {
-			    selected.push(r);
+			    selected.push(record);
 			}
 			return;
 		    }
 		    if(cnt++ == 0) {
 			min  = v;
 			max = v;
-			minRow = r;
-			maxRow = r;
+			minRecord = record;
+			maxRecord = record;
 			return;
 		    }
 		    if(v<min) {
 			min  = v;
-			minRow = r;
+			minRecord = record;
 		    }
 		    if(v > max) {
 			max =v;
-			maxRow = r;
+			maxRecord = record;
 		    }
 		});
 		if(select == "min") {
-		    selected.push(minRow);
+		    if(minRecord)
+			selected.push(minRecord);
 		} else 	if(select == "max") {
-		    selected.push(maxRow);
+		    if(maxRecord)
+			selected.push(maxRecord);
 		}
 	    } else {
 		selected = records;
