@@ -1284,6 +1284,9 @@ public class CsvUtil {
         new Cmd(
             "-columns", "<e.g., 0,1,2,7-10,12>",
             "(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
+	new Cmd(
+            "-notcolumns", "<e.g., 0,1,2,7-10,12>",
+            "(A comma separated list of columns #s or column range, 0-based. Don't include the given columns)"),
         new Cmd("-skip", "<how many lines to skip>"),
         new Cmd("-start", "<start pattern>"),
         new Cmd("-stop", "<stop pattern>"),
@@ -2029,6 +2032,15 @@ public class CsvUtil {
                 info.setSelector(new Converter.ColumnSelector(cols));
                 info.getProcessor().addProcessor(info.getSelector());
 
+                continue;
+            }
+
+	    if (arg.equals("-notcolumns")) {
+                if ( !ensureArg(args, i, 1)) {
+                    return false;
+                }
+                List<String> cols = getCols(args.get(++i));
+		info.getProcessor().addProcessor(new Converter.ColumnNotSelector(cols));
                 continue;
             }
 

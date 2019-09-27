@@ -160,6 +160,50 @@ public abstract class Converter extends Processor {
 
 
 
+        public static class ColumnNotSelector extends Converter {
+
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         */
+        public ColumnNotSelector(List<String> cols) {
+            super(cols);
+        }
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+
+            List<Integer> indices = getIndices(info);
+            if (indices.size() == 0) {
+                return row;
+            }
+            List<String> result = new ArrayList<String>();
+	    for(int i=0;i<row.size();i++) {
+		if(!indices.contains(i)) {
+                    result.add(row.getString(i));
+                }
+            }
+            return new Row(result);
+        }
+
+    }
+
+
+
 
     private static Hashtable<String,String>imageMap  = new Hashtable<String,String>();
 
