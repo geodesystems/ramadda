@@ -2303,6 +2303,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    if(this.filterFields) {
 		this.filterFields.map(f=>{if(f.isString)filterFieldMap[f.getId()]=true;});
 	    }
+	    var templates = {};
+	    fields.map(f=>{
+		templates[f.getId()] = this.getProperty(f.getId() +".template");
+	    });
             var colorBy = this.getColorByInfo(records);
 	    var delimiter = this.getProperty("delimiter","");
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
@@ -2341,8 +2345,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			}
 );
 		    }
+		    
 		    if(line!="") 
 			line += delimiter+" ";
+		    if(templates[f.getId()]) {
+			value = templates[f.getId()].replace("${value}",value);
+		    }
                     line += value;
                 }
                 line = line.trim();
