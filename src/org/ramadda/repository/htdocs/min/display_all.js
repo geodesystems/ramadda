@@ -17632,6 +17632,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		this.filterFields.map(f=>{if(f.isString)filterFieldMap[f.getId()]=true;});
 	    }
             var colorBy = this.getColorByInfo(records);
+	    var delimiter = this.getProperty("delimiter","");
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
 		var record = records[rowIdx];
 		this.indexToRecord[rowIdx] = record;
@@ -17653,14 +17654,13 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 				    value.map(v=>{
 					if(v == "" || v == FILTER_ALL) return;
 					v = v.replace(/\./g,"\\.");
-					var re = new RegExp("(" + v + ")","i");
+					var re = new RegExp("(" + v + ")","ig");
 					regexpMaps[f.getId()].push(re);
 				    })
 				} catch(e) {console.log("Error making regexp:" + e);}
 			    }
 			}
 		    }
-                    line += " ";
 		    var value = ""+row[f.getIndex()];
                     value = value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		    if(regexpMaps[f.getId()]) {
@@ -17669,6 +17669,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			}
 );
 		    }
+		    if(line!="") 
+			line += delimiter+" ";
                     line += value;
                 }
                 line = line.trim();
