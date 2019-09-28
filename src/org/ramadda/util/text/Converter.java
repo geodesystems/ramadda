@@ -1724,7 +1724,10 @@ public abstract class Converter extends Processor {
                 if (cnt++ > 0) {
                     sb.append(delimiter);
                 }
-                sb.append(row.getString(i));
+		if(i>=row.size())
+		    sb.append("");
+		else
+		    sb.append(row.getString(i));
             }
 
             //            if(rowCnt<5)

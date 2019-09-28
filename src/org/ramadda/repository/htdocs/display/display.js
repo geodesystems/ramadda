@@ -3655,9 +3655,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 
 
-		HtmlUtils.initSelect(this.jq("colorbyselect"));
-		HtmlUtils.initSelect(this.jq("sizebyselect"));
-		HtmlUtils.initSelect(this.jq("chartfields"));
+//		HtmlUtils.initSelect(this.jq("colorbyselect"));
+//		HtmlUtils.initSelect(this.jq("sizebyselect"));
+//		HtmlUtils.initSelect(this.jq("chartfields"));
 
                 this.jq("chartfields").change(function(){
 		    _this.setProperty("fields",$(this).val());
