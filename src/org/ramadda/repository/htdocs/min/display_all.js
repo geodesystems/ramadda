@@ -15343,6 +15343,7 @@ var DISPLAY_TEMPLATE = "template";
 var DISPLAY_SLIDES = "slides";
 var DISPLAY_IMAGES = "images";
 var DISPLAY_BLANK = "blank";
+var DISPLAY_TOPFIELDS = "topfields";
 
 
 
@@ -15389,6 +15390,15 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_BLANK,
     label: "Blank",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+
+addGlobalDisplayType({
+    type: DISPLAY_TOPFIELDS,
+    label: "Top Fields",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -16800,6 +16810,104 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	},
         handleEventRecordHighlight: function(source, args) {
 	}
+    })}
+
+
+
+
+function RamaddaTopfieldsDisplay(displayManager, id, properties) {
+    var ID_SLIDE = "slide";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TOPFIELDS, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Top Fields Attributes",
+					'fieldCount=""',
+					'labelField=""',
+					'dateFormat"yyyy"',
+					'labelField=""',
+					'scaleFont="false"',
+				    ]);
+	},
+	updateUI: function() {
+	    var pointData = this.getData();
+	    if (pointData == null) return;
+	    var records = this.filterData();
+	    if(!records) return;
+
+            var fields = this.getData().getNonGeoFields();
+	    var labelField = this.getFieldById(fields,this.getProperty("labelField"));
+	    if(labelField==null) {
+		labelField = this.getFieldOfType(fields, "string");
+	    }
+	    var fieldsToUse = this.getFieldsByIds(fields,this.getProperty("fields"));
+	    if(fieldsToUse.length==0) fieldsToUse = fields;
+	    var html = "";
+	    var fieldCount = +this.getProperty("fieldCount",10);
+	    var dataList = [];
+	    var min = Number.MAX_VALUE;
+	    var max = Number.MIN_VALUE;
+	    var dateFormat = this.getProperty("dateFormat");
+	    for(var i=0;i<records.length;i++) {
+		var record = records[i]; 
+		var tuple = record.getData();
+		var data =[];
+		for(var j=0;j<fieldsToUse.length;j++) {
+		    var field = fieldsToUse[j];
+		    if(!field.isNumeric()) continue;
+		    var value  =tuple[field.getIndex()];
+		    if(!isNaN(value)) {
+			min  = Math.min(min, value);
+			max  = Math.max(max, value);
+		    }
+		    data.push({value: value, field: field});
+		}
+		data.sort((a,b)=>{
+		    return b.value-a.value;
+		});
+		var header = labelField?tuple[labelField.getIndex()]:" Record:" + (i+1);
+		if((labelField && labelField.isFieldDate()) || (typeof header =="date"))  {
+		    header = Utils.formatDateWithFormat(header, dateFormat);
+		}
+		dataList.push({data:data,record:record,header:header});
+	    }
+	    var scaleFont = this.getProperty("scaleFont",true);
+	    for(var i=0;i<dataList.length;i++) {
+		var data = dataList[i].data;
+		var record = dataList[i].record;
+		var header = dataList[i].header;
+		var tuple = record.getData();
+		var div = "";
+		var contents = "";
+		for(var j=0;j<data.length && j<fieldCount;j++) {
+		    var value = data[j].value;
+		    var percent = max==min?1:(value-min)/(max-min);
+		    var fontSize = 6+Math.round(percent*24)+"pt";
+		    if(!scaleFont) fontSize = "100%";
+		    var field = data[j].field;
+		    contents += HtmlUtils.div(["data-value",field.getLabel(), "title","Value: " + value, "class","display-topfields-row","style","font-size:" + fontSize+";"], field.getLabel());
+		}
+		div += HtmlUtils.div(["class","display-topfields-header"],header);
+		div += HtmlUtils.div(["class","display-topfields-values"], contents);
+		html+=HtmlUtils.div(["class","display-topfields-record"], div);
+	    }
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    let _this = this;
+	    let rows =this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-row");
+	    rows.hover(function() {
+		rows.removeClass("display-topfields-highlight");
+		var value = $(this).attr("data-value");
+		_this.jq(ID_DISPLAY_CONTENTS).find("[data-value='" + value +"']").addClass("display-topfields-highlight");
+	    });
+	},
+
+
     })}
 
 

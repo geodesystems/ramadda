@@ -415,6 +415,22 @@ var Utils = {
     },
 
 
+    formatDateWithFormat(d, dateFormat) {
+        if (dateFormat == "yyyy") {
+            return Utils.formatDateYYYY(d);
+        } else if (dateFormat == "yyyyMMdd") {
+            return Utils.formatDateYYYYMMDD(d);
+	} else if (dateFormat == "monthdayyear") {
+            return Utils.formatDateMonthDayYear(d);
+	} else if (dateFormat == "mdy") {
+            return Utils.formatDateMDY(d);
+	} else if (dateFormat == "hhmm") {
+            return Utils.formatDateHHMM(d);
+        } else {
+            return Utils.formatDate(d);
+        }
+    },
+
     formatDate: function(date, options, args) {
         if (!args) args = {};
         if (!options) {
