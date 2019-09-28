@@ -21244,6 +21244,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
 */
 
 var DISPLAY_MAP = "map";
+var DISPLAY_MAPGRID = "mapgrid";
 
 var displayMapMarkers = ["marker.png", "marker-blue.png", "marker-gold.png", "marker-green.png"];
 var displayMapCurrentMarker = -1;
@@ -21253,6 +21254,11 @@ var displayMapMarkerIcons = {};
 addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_MAPGRID,
+    label: "Map Grid"
 });
 
 function MapFeature(source, points) {
@@ -23118,6 +23124,163 @@ function MapEntryInfo(entry) {
 }
 
 
+
+
+function RamaddaMapgridDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MAPGRID, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Grid Map Attributes",
+					'stateField=""',
+				    ]);
+	},
+	updateUI: function() {
+	    var pointData = this.getData();
+	    if (pointData == null) return;
+	    var records = this.filterData();
+	    if(!records) return;
+
+            var fields = this.getData().getNonGeoFields();
+	    var stateField = this.getFieldById(fields,this.getProperty("stateField"));
+	    if(stateField==null) {
+		stateField = this.getFieldById(fields,"state");
+	    }
+	    var minx = Number.MAX_VALUE;
+	    var miny = Number.MAX_VALUE;
+	    var maxx = Number.MIN_VALUE;
+	    var maxy = Number.MIN_VALUE;
+	    var map = {};
+	    this.grid.map(o=>{
+		minx = Math.min(minx,o.x);
+		maxx = Math.max(maxx,o.x);
+		miny = Math.min(miny,o.y);
+		maxy = Math.max(maxy,o.y);
+		map[o.x+"_"+o.y] = o;
+	    });
+
+	    var table ="<table border=0 cellspacing=0 cellpadding=0>";
+	    var w = this.getProperty("cellDimension","40");
+	    var showLabel  = this.getProperty("showCellLabel",true);
+	    var cellStyle  = this.getProperty("cellStyle","");
+	    var cellMap = {};
+	    for(var y=1;y<=maxy;y++) {
+		table+="<tr>";
+		for(var x=1;x<=maxx;x++) {
+		    var id = x+ "_"+y;
+		    var o = map[id];
+		    var extra = " id='" + id +"' ";
+		    var style = "margin:1px;padding:10px;vertical-align:center;text-align:center;width:" + w+"px;" +"height:" + w+"px;";
+		    var c = "";
+		    if(o) {
+			style+="background:#ccc;" + cellStyle;
+			extra += " title='" + o.state +"' ";
+			extra += " class='display-mapgrid-cell' ";
+			c = "<div>" + (showLabel?o.code:"")+"</div>";
+			cellMap[o.code] = id;
+			cellMap[o.state] = id;
+		    }
+		    var td = "<td>" + "<div " + extra +" style='" + style +"'>" + c+"</div></td>";
+		    table+=td;
+		}
+		table+="</tr>";
+	    }
+	    table +="<tr><td colspan=" + maxx+"><br>" +   HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)]) +"</td></tr>";
+	    table+="</table>";
+            var colorBy = this.getColorByInfo(records);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, table);
+	    var contents = this.jq(ID_DISPLAY_CONTENTS);
+	    for(var i=0;i<records.length;i++) {
+		var record = records[i]; 
+		var tuple = record.getData();
+		var state = tuple[stateField.getIndex()];
+		var cellId = cellMap[state];
+		if(!cellId) {
+		    cellId = cellMap[state.toUpperCase()];
+		}
+
+		if(!cellId) {
+		    console.log("Could not find cell:" + state);
+		    continue;
+		}
+                if (colorBy.index >= 0) {
+                    var value = record.getData()[colorBy.index];
+		    var color = colorBy.getColor(value, record);
+		    var cell = contents.find("#" + cellId);
+		    cell.css("background",color);
+		    cell.attr("recordIndex",i);
+                }
+	    }
+	    this.makePopups(contents.find(".display-mapgrid-cell"), records);
+            if (colorBy.index >= 0) {
+		colorBy.displayColorTable();
+	    }
+	},
+
+	grid:  [
+{state:"Alaska",code:"AK",x:2,y:1},
+{state:"Hawaii",code:"HI",x:2,y:8},
+{state:"Washington",code:"WA",x:3,y:3},
+{state:"Oregon",code:"OR",x:3,y:4},
+{state:"California",code:"CA",x:3,y:5},
+{state:"Idaho",code:"ID",x:4,y:3},
+{state:"Nevada",code:"NV",x:4,y:4},
+{state:"Utah",code:"UT",x:4,y:5},
+{state:"Arizona",code:"AZ",x:4,y:6},
+{state:"Montana",code:"MT",x:5,y:3},
+{state:"Wyoming",code:"WY",x:5,y:4},
+{state:"Colorado",code:"CO",x:5,y:5},
+{state:"New Mexico",code:"NM",x:5,y:6},
+{state:"North Dakota",code:"ND",x:6,y:3},
+{state:"South Dakota",code:"SD",x:6,y:4},
+{state:"Nebraska",code:"NE",x:6,y:5},
+{state:"Kansas",code:"KS",x:6,y:6},
+{state:"Oklahoma",code:"OK",x:6,y:7},
+{state:"Texas",code:"TX",x:6,y:8},
+{state:"Minnesota",code:"MN",x:7,y:3},
+{state:"Iowa",code:"IA",x:7,y:4},
+{state:"Missouri",code:"MO",x:7,y:5},
+{state:"Arkansas",code:"AR",x:7,y:6},
+{state:"Louisiana",code:"LA",x:7,y:7},
+{state:"Illinois",code:"IL",x:8,y:3},
+{state:"Indiana",code:"IN",x:8,y:4},
+{state:"Kentucky",code:"KY",x:8,y:5},
+{state:"Tennessee",code:"TN",x:8,y:6},
+{state:"Mississippi",code:"MS",x:8,y:7},
+{state:"Wisconsin",code:"WI",x:9,y:2},
+{state:"Ohio",code:"OH",x:9,y:4},
+{state:"West Virginia",code:"WV",x:9,y:5},
+{state:"North Carolina",code:"NC",x:9,y:6},
+{state:"Alabama",code:"AL",x:9,y:7},
+{state:"Michigan",code:"MI",x:9,y:3},
+{state:"Pennsylvania",code:"PA",x:10,y:4},
+{state:"Virginia",code:"VA",x:10,y:5},
+{state:"South Carolina",code:"SC",x:10,y:6},
+{state:"Georgia",code:"GA",x:10,y:7},
+{state:"New York",code:"NY",x:11,y:3},
+{state:"New Jersey",code:"NJ",x:11,y:4},
+{state:"Maryland",code:"MD",x:11,y:5},
+{state:"DC",code:"DC",x:11,y:6},
+{state:"Florida",code:"FL",x:11,y:8},
+{state:"Vermont",code:"VT",x:12,y:2},
+{state:"Rhode Island",code:"RI",x:12,y:3},
+{state:"Connecticut",code:"CT",x:12,y:4},
+{state:"Delaware",code:"DE",x:12,y:5},
+{state:"Maine",code:"ME",x:13,y:1},
+{state:"New Hampshire",code:"NH",x:13,y:2},
+{state:"Massachusetts",code:"MA",x:13,y:3},
+]
+
+
+
+
+    })}
 /**
 Copyright 2008-2019 Geode Systems LLC
 */

@@ -1688,3 +1688,8 @@ margin:10px;
 .display-topfields-highlight {
     background:#FFFBD8;
 }
+
+
+.display-mapgrid-cell {
+    cursor:pointer;
+}
