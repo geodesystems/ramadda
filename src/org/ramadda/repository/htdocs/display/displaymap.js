@@ -825,12 +825,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 
 
-		var j=0;
+
 		features.map(feature=>{
-		    feature.featureIndex = j++;
-		    feature.featureMatched = false;
-		    feature.pointCount = 0;
-		    feature.circles = [];
 		    var attrs = feature.attributes;
 		    var ok = false;
 		    for (var attr in attrs) {
@@ -866,6 +862,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 	    }
 
+	    var j=0;
+	    features.map(feature=>{
+		feature.featureIndex = j++;
+		feature.featureMatched = false;
+		feature.pointCount = 0;
+		feature.circles = [];
+	    });
+
 
             if (!this.points) {
                 return;
@@ -892,10 +896,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		var matchedFeature = recordToFeature[record.getId()];
 		if(matchedFeature) {
 		    matchedFeature.featureMatched = true;
-//		    recordToFeature[record.getId()] = null;
 		} 
-
-
 		if(!matchedFeature) 
                     matchedFeature = this.findContainingFeature(features, center,tmp);
 		if(!matchedFeature) continue;
