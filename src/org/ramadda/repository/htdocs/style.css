@@ -1761,16 +1761,60 @@ label {
 
 
 
-.ramadda-bubble
-{
-    font-family: georgia;
-    display:inline-block;
-    padding: 6px;
-    padding-bottom: 0px;
-    border-top: #ccc solid 1px;
-    border-bottom: #ccc solid 1px;
+
+.ramadda-bubble {
+  position:relative;
+  padding:10px;
+/*  margin-bottom:1em;*/
+  border:1px solid #ccc;
+  color:#333;
+  background:#fff;
+  -webkit-border-radius:10px;
+  -moz-border-radius:10px;
+  border-radius:10px;
 }
 
+.ramadda-bubble:before {
+  content:"";
+  position:absolute;
+  bottom:-18px; /* value = - border-top-width - border-bottom-width */
+  left:40px; /* controls horizontal position */
+
+/*top right bottom left*/
+  border-width:18px 16px 0px 16px;
+
+  border-style:solid;
+  border-color:#ccc transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
+}
+
+.ramadda-bubble-from {
+    margin-top:10px;
+    margin-left:70px;
+    margin-bottom:5px;
+}
+
+/* creates the smaller  triangle */
+.ramadda-bubble:after {
+  content:"";
+  position:absolute;
+/*top right bottom left*/
+  border-width:18px 15px 0px 15px;
+
+/* value = - border-top-width - border-bottom-width */
+  bottom:-16px; 
+
+/* value = (:before left) + (:before border-left) - (:after border-left) */
+  left:41px; 
+
+  border-style:solid;
+  border-color:#fff transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
+}
 
 
 .ramadda-comment-block {

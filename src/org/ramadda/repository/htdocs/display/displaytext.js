@@ -2326,6 +2326,18 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Raw Text Attributes",
+					'doBubble=true',
+					'addLineNumbers=false',
+					'maxLines=1000',
+					'pattern="initial search pattern"',
+					'fromField=""',
+				    ]);
+	},
+
         checkLayout: function() {
             this.updateUI();
         },
@@ -2397,6 +2409,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 return null;
             }
             var corpus = "";
+	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
+	    var bubble=this.getProperty("doBubble",false);
             if (addLineNumbers) {
                 corpus = "<table width=100%>";
             }
@@ -2404,7 +2418,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var displayedLineCnt = 0;
             var regexp;
             if (pattern) {
-                regexp = new RegExp("(" + pattern + ")","i");
+		pattern = pattern.replace(/\./g,"\\.");
+                regexp = new RegExp("(" + pattern + ")","ig");
             }
 	    var regexpMaps = {};
 	    var filterFieldMap = {};
@@ -2421,7 +2436,6 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		var record = records[rowIdx];
 		this.indexToRecord[rowIdx] = record;
 		this.recordToIndex[record.getId()] = rowIdx;
-		
                 var row = this.getDataValues(record);
                 var line = "";
                 for (var col = 0; col < fields.length; col++) {
@@ -2466,12 +2480,13 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 lineCnt++;
                 if (regexp) {
                     if (!line.toLowerCase().match(regexp)) continue;
-                    line = line.replace(re, "<span style=background:yellow;>$1</span>");
+                    line = line.replace(regexp, "<span style=background:yellow;>$1</span>");
                 }
                 displayedLineCnt++;
 
                 if (displayedLineCnt > maxLines) break;
-		var lineAttrs = ["title"," ","class", "display-raw-line","recordIndex",rowIdx]
+
+		var lineAttrs = ["title"," ","class", " display-raw-line ","recordIndex",rowIdx]
 		var rowAttrs =["valign", "top"];
                 if (colorBy.index >= 0) {
 		    var value = record.getData()[colorBy.index];
@@ -2481,6 +2496,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			rowAttrs.push("background:" + Utils.addAlphaToColor(color,"0.25")+";");
 		    }
                 }
+		if(bubble) line = HtmlUtils.div(["class","ramadda-bubble"],line);
+		if(fromField) line+=HtmlUtils.div(["class","ramadda-bubble-from"],  ""+row[fromField.getIndex()]);
+
 		line = HtmlUtils.div(lineAttrs,line);
 
                 if (addLineNumbers) {
