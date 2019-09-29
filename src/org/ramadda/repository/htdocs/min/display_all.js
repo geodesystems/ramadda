@@ -9978,7 +9978,7 @@ var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
 var DISPLAY_BARSTACK = "barstack";
 var DISPLAY_PIECHART = "piechart";
-var DISPLAY_TIMELINECHART = "timelinechart";
+var DISPLAY_TIMERANGECHART = "timerangechart";
 var DISPLAY_SANKEY = "sankey";
 var DISPLAY_CALENDAR = "calendar";
 var DISPLAY_SCATTERPLOT = "scatterplot";
@@ -10097,8 +10097,8 @@ addGlobalDisplayType({
     category: CATEGORY_MISC
 });
 addGlobalDisplayType({
-    type: DISPLAY_TIMELINECHART,
-    label: "Timeline",
+    type: DISPLAY_TIMERANGECHART,
+    label: "Timerange",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -12444,8 +12444,8 @@ function TreemapDisplay(displayManager, id, properties) {
 
 
 
-function TimelinechartDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_TIMELINECHART, properties));
+function TimerangechartDisplay(displayManager, id, properties) {
+    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_TIMERANGECHART, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
