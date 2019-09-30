@@ -1671,9 +1671,15 @@ margin:10px;
 
 .display-topfields-record {
     display:inline-block;
-    margin:10px;
+    margin:5px;
     vertical-align:top;
     cursor:pointer;
+    padding:4px;
+}
+
+.display-topfields-selected {
+//    border:1px solid #ccc;
+    background:#efefef;
 }
 
 .display-topfields-header {

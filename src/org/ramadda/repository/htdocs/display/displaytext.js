@@ -1584,7 +1584,10 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-header").click(function(){
-		var record = records[$(this).attr("recordIndex")];
+		var idx = $(this).attr("recordIndex");
+		_this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-record").removeClass("display-topfields-selected");
+		$(this).parent().addClass("display-topfields-selected");
+		var record = records[idx];
 		if(record) {
 		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
 		}
@@ -1601,9 +1604,17 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		_this.getDisplayManager().notifyEvent("handleEventFieldsSelected", _this, [field]);
 		
 	    });
-
+	},
+        handleEventRecordSelection: function(source, args) {
+	    if(!args.record) return;
+	    var index = this.recordToIndex[args.record.getId()];
+	    if(!Utils.isDefined(index)) return;
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-record").removeClass("display-topfields-selected");
+	    this.jq(ID_DISPLAY_CONTENTS).find("[recordIndex='" + index +"']").parent().addClass("display-topfields-selected");
+	    
 
 	},
+
 
 
     })}
