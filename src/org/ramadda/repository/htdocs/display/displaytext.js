@@ -16,7 +16,7 @@ var DISPLAY_SLIDES = "slides";
 var DISPLAY_IMAGES = "images";
 var DISPLAY_BLANK = "blank";
 var DISPLAY_TOPFIELDS = "topfields";
-
+var DISPLAY_TIMELINE = "timeline";
 
 
 addGlobalDisplayType({
@@ -71,6 +71,15 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_TOPFIELDS,
     label: "Top Fields",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+
+addGlobalDisplayType({
+    type: DISPLAY_TIMELINE,
+    label: "Timeline",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -1581,6 +1590,130 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 
 
     })}
+
+
+
+
+function RamaddaTimelineDisplay(displayManager, id, properties) {
+    var ID_TIMELINE = "timeline";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+
+
+//    Utils.importCSS(ramaddaBaseUrl +'/lib/timeline/timeline_js/timeline-bundle.css');
+//    Utils.importJS(ramaddaBaseUrl +'/lib/timeline/timeline_js/timeline-api.js?bundle=true');
+    
+    Utils.importJS("https://cdn.knightlab.com/libs/timeline3/latest/js/timeline-min.js");
+    $('<link rel="stylesheet" href="' + "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css" +'" type="text/css" />').appendTo("head");
+
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Timeline",
+					'justTimeline="true"',
+					'titleField=""',
+					'startDateField=""',
+					'endDateField=""',
+					'textTemplate=""',
+					'timeTo="year|day|hour|second"',
+					'justTimeline="true"',
+					'startAtEnd=true',
+					'navHeight=250'
+				    ]);
+	},
+	loadCnt:0,
+	timelineLoaded: false,
+	updateUI: function() {
+	    if(!this.timelineLoaded) {
+		try {
+		    var tmp =  TL.Timeline;
+		    this.timelineLoaded = true;
+		} catch(err) {
+		    if(this.loadCnt++<100) {
+			setTimeout(()=>this.updateUI(),100);
+			return;
+		    }
+		}
+	    }
+	    if(!this.timelineLoaded) {
+		this.writeHtml(ID_DISPLAY_CONTENTS, "Could not load timeline");
+		return;
+	    }
+            var records = this.filterData();
+	    if(records==null) return;
+	    var timelineId = this.getDomId(ID_TIMELINE);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id",timelineId]));
+	    console.log("got timeline ");
+	    var opts = {
+		start_at_end: this.getProperty("startAtEnd",false),
+		default_bg_color: {r:0, g:0, b:0},
+		timenav_height: this.getProperty("navHeight",250)
+            };
+	    var json = {};
+	    var events = [];
+	    json.events = events;
+	    var headlineField = this.getFieldById(null,this.getProperty("headlineField"));
+	    var startDateField = this.getFieldById(null,this.getProperty("startDateField"));
+	    var endDateField = this.getFieldById(null,this.getProperty("endDateField"));
+	    var textTemplate = this.getProperty("textTemplate","${default}");
+	    var timeTo = this.getProperty("timeTo","day");
+	    for(var i=0;i<records.length;i++) {
+		var record = records[i]; 
+		var tuple = record.getData();
+		var event = {
+		};	
+		var text =  this.getRecordHtml(record, null, textTemplate);
+		event.text = {
+		    headline: headlineField? tuple[headlineField.getIndex()]:" record:" + (i+1),
+		    text:text
+		};
+		if(startDateField)
+		    event.start_date = tuple[startDateField.getIndex()];
+		else
+		    event.start_date = this.getDate(record.getTime());
+		if(endDateField) {
+		    event.end_date = tuple[endDateField.getIndex()];
+		}
+		events.push(event);
+	    }
+	    this.timeline = new TL.Timeline(timelineId,json);
+	    if(this.getProperty("",false)) {
+		this.jq(ID_TIMELINE).find(".tl-storyslider").css("display","none");
+	    }
+
+
+
+
+	},
+	getDate: function(time) {
+	    var timeTo = this.getProperty("timeTo","day");
+	    var dt =  {year: time.getUTCFullYear()};
+	    if(timeTo!="year") {
+		dt.month = time.getUTCMonth()+1;
+		if(timeTo!="month") {
+		    dt.day = time.getUTCDate();
+		    if(timeTo!="day") {
+			dt.hour = time.getHours();
+			dt.minute = time.getMinutes();
+			if(timeTo!="hour") {
+			    dt.second = time.getSeconds();
+			}
+		    }
+		}
+	    }
+	    return dt;
+	}
+    });
+}
+
+
+
+
 
 
 

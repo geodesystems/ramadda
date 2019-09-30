@@ -70,6 +70,8 @@ public class AcsTypeHandler extends PointTypeHandler {
     /** _more_ */
     public static final int IDX_HEADER = IDX++;
 
+    public static final int IDX_PATTERN = IDX++;
+
     /** _more_ */
     public static final int IDX_FOR_TYPE = IDX++;
 
@@ -219,9 +221,18 @@ public class AcsTypeHandler extends PointTypeHandler {
         String               header = entry.getValue(IDX_HEADER, "");
         boolean includeSpecial = entry.getValue(IDX_INCLUDE_LOCALES, false);
         List<CensusVariable> vars   = getVariables(entry);
+	String pattern = (String) entry.getValue(IDX_PATTERN);
+	if(pattern == null || pattern.trim().length()==0) {
+	    List<Metadata> metadataList =
+		getMetadataManager().findMetadata(request, entry, "census_name_pattern",true);
+	    if ((metadataList != null) && (metadataList.size() > 0)) {
+		pattern  = metadataList.get(0).getAttr1();
+	    }
+	}
         AcsFile file = new AcsFile(getPathForEntry(request, entry),
                                    StringUtil.split(header, "\n", true,
-                                       true), includeSpecial);
+						    true), includeSpecial,
+				   pattern);
 
         file.putProperty("output.latlon", "false");
         file.setVariables(vars);

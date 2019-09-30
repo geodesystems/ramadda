@@ -519,6 +519,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.map) return;
 	    if(this.highlightMarker) {
 		this.map.removePoint(this.highlightMarker);
+		this.map.removeMarker(this.highlightMarker);
 		this.highlightMarker = null;
 	    }
 	    if(args.highlight) {
@@ -531,7 +532,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
 		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.75)),
                 };
-		this.highlightMarker =  this.map.addPoint(args.record.getId(), point, attrs);
+		if(this.getProperty("recordHighlightUseMarker",false)) {
+		    var size = parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",24)));
+		    this.highlightMarker = this.map.addMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
+		} else {
+		    this.highlightMarker =  this.map.addPoint(args.record.getId(), point, attrs);
+		}
 		if(this.getProperty("centerOnHighlight",false)) {
 		    this.map.setCenter(point);
 		}
@@ -1204,6 +1210,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    if(this.highlightMarker) {
 		this.map.removePoint(this.highlightMarker);
+		this.map.removeMarker(this.highlightMarker);
 		this.highlightMarker = null;
 	    }
 	    this.map.clearSeenMarkers();

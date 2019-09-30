@@ -402,7 +402,6 @@ function DisplayThing(argId, argProperties) {
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) {
-		    console.log("no data");
 		    return null;
 		}
                 fields = pointData.getRecordFields();
@@ -880,6 +879,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
 	    colorBy.stringMap = this.getColorByMap();
 	    if(colorBy.index>=0) {
+		var cnt = 0;
 		records.map(record=>{
                     var tuple = record.getData();
                     var v = tuple[colorBy.index];
@@ -893,13 +893,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             colorBy.maxValue = colorBy.colorByValues.length;
 			}
 			return;
-                    }
+		    }
                     if (excludeZero && v === 0) {
 			return;
                     }
 		    if (!isNaN(v) && !(v === null)) {
-			if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
-			if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
+			if (cnt == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
+			if (cnt == 0 || v < colorBy.minValue) colorBy.minValue = v;
+			cnt++;
 		    }
 		});
 	    }

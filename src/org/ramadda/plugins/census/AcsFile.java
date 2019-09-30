@@ -74,6 +74,8 @@ public class AcsFile extends CsvFile {
     /** _more_ */
     private boolean includeSpecial = true;
 
+    private String namePattern;
+
     /**
      * ctor
      *
@@ -95,11 +97,14 @@ public class AcsFile extends CsvFile {
      * @throws IOException _more_
      */
     public AcsFile(String filename, List<String> labels,
-                   boolean includeSpecial)
+                   boolean includeSpecial, String pattern)
             throws IOException {
         super(filename);
         this.labels         = labels;
         this.includeSpecial = includeSpecial;
+	if(pattern!=null && pattern.equals("")) pattern = null;
+	this.namePattern = pattern;
+
     }
 
 
@@ -207,6 +212,7 @@ public class AcsFile extends CsvFile {
                 StringBuilder header     = new StringBuilder("#fields=");
                 boolean[]     numeric    = new boolean[headerJson.length()];
                 int[]         depends    = new int[headerJson.length()];
+                boolean[]     name       = new boolean[headerJson.length()];
                 boolean[]     special    = new boolean[headerJson.length()];
                 boolean[]     skip       = new boolean[headerJson.length()];
                 String[]      rowValues  = new String[headerJson.length()];
@@ -218,6 +224,7 @@ public class AcsFile extends CsvFile {
                     String         type  = RecordField.TYPE_DOUBLE;
                     numeric[i] = true;
                     depends[i] = -1;
+		    name[i] = false;
                     special[i] = isNameSpecial(value);
                     //                System.err.println("n:" + value +" special:"+ isSpecial);
 
@@ -238,6 +245,7 @@ public class AcsFile extends CsvFile {
                         header.append(", ");
                     }
                     skip[i] = false;
+		    name[i] = value.equals("NAME");
                     if (special[i] || value.equals("NAME")) {
                         type       = "string";
                         numeric[i] = false;
@@ -294,11 +302,21 @@ public class AcsFile extends CsvFile {
                     int          len         = row.length();
                     List<String> specialOnes = new ArrayList<String>();
 
+		    boolean rowOk = true;
+		    StringBuilder rowBuff = new StringBuilder();
                     for (int allColIdx = 0; allColIdx < len; allColIdx++) {
                         String value = row.optString(allColIdx, null);
+
                         if (special[allColIdx]) {
                             specialOnes.add(value);
                         }
+
+			if (name[allColIdx] && namePattern!=null) {
+			    if(!value.matches(namePattern)) {
+				rowOk = false;
+				continue;
+			    }
+			}
 
                         if (value == null) {
                             if (numeric[allColIdx]) {
@@ -306,7 +324,12 @@ public class AcsFile extends CsvFile {
                             } else {
                                 value = "";
                             }
-                        }
+                        } else  if (numeric[allColIdx]) {
+			    double tmp = Double.parseDouble(value);
+			    //A hack to catch -666,000,000 values I've seen
+			    if(tmp<-10000)
+				value = "NaN";
+			}
 
                         if (depends[allColIdx] >= 0) {
                             double v1 = Double.parseDouble(value);
@@ -323,18 +346,21 @@ public class AcsFile extends CsvFile {
                         }
 
                         if (colIdx > 0) {
-                            writer.print(",");
+			    rowBuff.append(",");
                         }
                         boolean quote = value.indexOf(",") >= 0;
                         if (quote) {
-                            writer.print("\"");
+                            rowBuff.append("\"");
                         }
-                        writer.print(value);
+                        rowBuff.append(value);
                         if (quote) {
-                            writer.print("\"");
+			    rowBuff.append("\"");
                         }
                         colIdx++;
                     }
+		    if(!rowOk)
+			continue;
+		    writer.print(rowBuff.toString());
 
                     Place place = null;
                     //TODO: maybe a bit inefficient

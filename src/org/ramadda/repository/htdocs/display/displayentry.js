@@ -11,7 +11,7 @@ var DISPLAY_ENTRY_GALLERY = "entrygallery";
 var DISPLAY_ENTRY_GRID = "entrygrid";
 var DISPLAY_OPERANDS = "operands";
 var DISPLAY_METADATA = "metadata";
-var DISPLAY_TIMELINE = "timeline";
+var DISPLAY_ENTRYTIMELINE = "entrytimeline";
 var DISPLAY_REPOSITORIES = "repositories";
 
 var ID_RESULTS = "results";
@@ -63,7 +63,6 @@ addGlobalDisplayType({
     category: "Entry Displays"
 });
 
-//addGlobalDisplayType({type: DISPLAY_TIMELINE, label:"Timeline",requiresData:false,category:"Test"});
 
 
 function RamaddaEntryDisplay(displayManager, id, type, properties) {
@@ -2148,12 +2147,13 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaTimelineDisplay(displayManager, id, properties) {
+
+function RamaddaEntrytimelineDisplay(displayManager, id, properties) {
     if (properties.formOpen == null) {
         properties.formOpen = false;
     }
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcher(displayManager, id, DISPLAY_TIMELINE, properties));
+    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcher(displayManager, id, DISPLAY_ENTRYTIMELINE, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         initDisplay: function() {

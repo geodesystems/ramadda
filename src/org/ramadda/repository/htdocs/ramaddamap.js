@@ -573,18 +573,25 @@ function initMapFunctions(theMap) {
             }
         },
         checkLayerOrder: function() {
+	    var base = 0;
+	    this.loadedLayers.map(layer=>{
+		this.map.setLayerIndex(layer, base++);		
+	    });
+
 	    if (this.lines) {
-                this.map.setLayerIndex(this.lines, 0);
+                this.map.setLayerIndex(this.lines, base++);
 	    }
             if (this.circles) {
-                this.map.setLayerIndex(this.circles, 1);
+                this.map.setLayerIndex(this.circles, base++);
 	    }
 	    if (this.markers) {
-                this.map.setLayerIndex(this.markers, 2);
+                this.map.setLayerIndex(this.markers, base++);
 	    }
 	    if (this.labelLayer) {
-		this.map.setLayerIndex(this.labelLayer, 3);
+		this.map.setLayerIndex(this.labelLayer, base++);
 	    }
+
+
 //            this.map.resetLayersZIndex();
         },
         addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
@@ -2103,8 +2110,8 @@ function initMapFunctions(theMap) {
 
     theMap.addVectorLayer = function(layer, canSelect) {
         this.addLayer(layer);
+        this.vectorLayers.push(layer);
         if (this.getCanSelect(canSelect)) {
-            this.vectorLayers.push(layer);
             var _this = this;
             if (!this.map.featureSelect) {
                 this.map.featureSelect = new OpenLayers.Control.SelectFeature([layer], {

@@ -178,6 +178,7 @@ var Utils = {
                 success: (data) => {
                     if (!noCache)
                         this.imports[key] = true;
+//		    console.log("loaded:" + data);
                     $('<style type="text/css">\n' + data + '</style>').appendTo("head");
                     Utils.call(callback);
                 }

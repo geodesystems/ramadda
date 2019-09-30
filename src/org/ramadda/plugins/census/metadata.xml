@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Miscellaneous" >
+    <type id="census_name_pattern" name="Census name pattern"  values="">
+      <element id="pattern" name="Pattern" datatype="string"/>
+    </type>
+  </handler>
+
+
+
+</metadata>
