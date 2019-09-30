@@ -1673,6 +1673,7 @@ margin:10px;
     display:inline-block;
     margin:10px;
     vertical-align:top;
+    cursor:pointer;
 }
 
 .display-topfields-header {
@@ -1681,6 +1682,7 @@ margin:10px;
     padding-right:10px;
     font-weight:bold;
     border-bottom: 1px solid #ccc;
+    cursor:pointer;
 }
 .display-topfields-values {
 }

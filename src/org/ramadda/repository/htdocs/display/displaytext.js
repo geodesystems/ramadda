@@ -1519,7 +1519,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    var pointData = this.getData();
 	    if (pointData == null) return;
-	    var records = this.filterData();
+	    let records = this.filterData();
 	    if(!records) return;
 
             var fields = this.getData().getNonGeoFields();
@@ -1575,20 +1575,34 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		    var fontSize = 6+Math.round(percent*24)+"pt";
 		    if(!scaleFont) fontSize = "100%";
 		    var field = data[j].field;
-		    contents += HtmlUtils.div(["data-value",field.getLabel(), "title","Value: " + value, "class","display-topfields-row","style","font-size:" + fontSize+";"], field.getLabel());
+		    contents += HtmlUtils.div(["field-id",field.getId(), "data-value",field.getLabel(), "title","Value: " + value, "class","display-topfields-row","style","font-size:" + fontSize+";"], field.getLabel());
 		}
-		div += HtmlUtils.div(["class","display-topfields-header"],header);
+		div += HtmlUtils.div(["class","display-topfields-header","recordIndex",i],header);
 		div += HtmlUtils.div(["class","display-topfields-values"], contents);
 		html+=HtmlUtils.div(["class","display-topfields-record"], div);
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-header").click(function(){
+		var record = records[$(this).attr("recordIndex")];
+		if(record) {
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
+		}
+	    });
 	    let rows =this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-row");
 	    rows.hover(function() {
 		rows.removeClass("display-topfields-highlight");
 		var value = $(this).attr("data-value");
 		_this.jq(ID_DISPLAY_CONTENTS).find("[data-value='" + value +"']").addClass("display-topfields-highlight");
+		
 	    });
+	    rows.click(function() {
+		var field = $(this).attr("field-id");
+		_this.getDisplayManager().notifyEvent("handleEventFieldsSelected", _this, [field]);
+		
+	    });
+
+
 	},
 
 

@@ -315,6 +315,14 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             SUPER.getDialogContents.call(this, tabTitles, tabContents);
         },
         handleEventFieldsSelected: function(source, fields) {
+	    if(fields.length>0 && (typeof fields[0] =="string")) {
+		var tmp = [];
+		fields.map(f=>{
+		    f = this.getFieldById(null, f);
+		    if(f) tmp.push(f);
+		});
+		fields=tmp;
+	    }
             this.userHasSelectedAField = true;
             this.overrideFields = null;
             this.removeProperty(PROP_FIELDS);
