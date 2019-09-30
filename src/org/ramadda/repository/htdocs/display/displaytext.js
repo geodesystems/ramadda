@@ -1698,14 +1698,9 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		this.jq(ID_TIMELINE).find(".tl-storyslider").css("display","none");
 	    }
 	    this.jq(ID_TIMELINE).find(".tl-text").css("padding","0px");
-	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("padding","0px");
+	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("padding","0px 0px");
+//	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("width","100%");
 	    this.jq(ID_TIMELINE).find(".tl-slidenav-description").css("display","none");
-	    if(this.getProperty("bannerHeight")) {
-//		console.log("height:" +this.getProperty("bannerHeight") +" " + this.jq(ID_TIMELINE).find(".tl-storyslider").length);
-//		this.jq(ID_TIMELINE).find(".tl-storyslider").css("height",this.getProperty("bannerHeight"));
-//		this.jq(ID_TIMELINE).find(".tl-storyslider").css("height","100px");
-	    }
-
 	    this.timelineReady = true;
 
 	},
