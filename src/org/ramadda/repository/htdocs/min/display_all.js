@@ -4522,6 +4522,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (a in fields)
                 console.log("   " + fields[a].getId());
         },
+	makeIndexValue: function(indexField, value, offset) {
+	    return value+offset;
+	},
         getStandardData: function(fields, args) {
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
@@ -4642,7 +4645,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
-                        values.push(record.getValue(indexField.getIndex()) + offset);
+			var value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),j);
+                        values.push(value);
                         indexName = indexField.getLabel();
                     } else {
                         if (this.hasDate) {
@@ -10565,6 +10569,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getIncludeIndexIfDate: function() {
             return false;
         },
+	makeIndexValue: function(indexField, value, offset) {
+	    if(indexField.isString()) {
+		value = {v:offset,f:value};
+	    } 
+	    return value;
+	},
         displayData: function() {
             var _this = this;
 
@@ -10690,8 +10700,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     rowCnt++;
                     var values = [];
                     var indexName = null;
+		    console.log("row:" + rowIdx);
                     if (indexField) {
-                        values.push(record.getValue(indexField.getIndex()) + offset);
+			var value = record.getValue(indexField.getIndex());
+//                        values.push( + offset);
+			console.log("v:" + value);
+			if(indexField.isString()) {
+			    value = {v:offset,f:value};
+			} 
+			values.push(value);
                         indexName = indexField.getLabel();
                     } else {
                         if (this.hasDate) {
@@ -10940,7 +10957,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     //This might be a number or a date
                     if ((typeof value) == "object") {
                         //assume its a date
-			dataTable.addColumn('date', header[j]);
+			if(typeof value.v == "number") {
+			    dataTable.addColumn('number', header[j]);
+			} else {
+			    dataTable.addColumn('date', header[j]);
+			}
                     } else {
                         dataTable.addColumn((typeof value), header[j]);
                     }
@@ -11040,6 +11061,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    var didColorBy = false;
             for (var i = 1; i < dataList.length; i++) {
+		if(i>5) break;
 		var record =dataList[i];
 		var theRecord = dataList[i].record;
                 var row = this.getDataValues(record);
@@ -11185,8 +11207,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 textStyle: {}
             };
             chartOptions.hAxis = {
+		baseline: 0,
                 gridlines: {},
-                textStyle: {}
+                textStyle: {},
+//		ticks: [{v:0, f:"3-4"},{v:1, f:"5-9"},{v:2, f:"9-13"},{v:3, f:"13-14"},{v:4, f:"15-20"}]
             };
             chartOptions.vAxis = {
                 gridlines: {},
@@ -11489,11 +11513,11 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 //	    console.log(JSON.stringify(chartOptions,null, 2));
 
-            if (this.hAxis) {
-                chartOptions.hAxis.title = this.hAxis;
+            if (this.getProperty("hAxisTitle")) {
+                chartOptions.hAxis.title = this.getProperty("hAxisTitle");
             }
-            if (this.vAxis) {
-                chartOptions.vAxis.title = this.vAxis;
+            if (this.getProperty("vAxisTitle")) {
+                chartOptions.vAxis.title = this.getProperty("vAxisTitle");
             }
             if (Utils.isDefined(this.chartHeight)) {
                 chartOptions.height = this.chartHeight;

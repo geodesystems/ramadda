@@ -4372,6 +4372,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (a in fields)
                 console.log("   " + fields[a].getId());
         },
+	makeIndexValue: function(indexField, value, offset) {
+	    return value+offset;
+	},
         getStandardData: function(fields, args) {
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
@@ -4492,7 +4495,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
-                        values.push(record.getValue(indexField.getIndex()) + offset);
+			var value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),j);
+                        values.push(value);
                         indexName = indexField.getLabel();
                     } else {
                         if (this.hasDate) {
