@@ -11061,7 +11061,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    var didColorBy = false;
             for (var i = 1; i < dataList.length; i++) {
-		if(i>5) break;
 		var record =dataList[i];
 		var theRecord = dataList[i].record;
                 var row = this.getDataValues(record);
