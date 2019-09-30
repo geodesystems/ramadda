@@ -179,7 +179,7 @@ function convertToPointData(array) {
         else if(sample.getTime)
             type = "date";
         else 
-            console.log("Unknwon type:" + tof);
+            console.log("Unknown type:" + tof);
         fields.push(new RecordField({
             id:id,
             label:label,
@@ -874,8 +874,6 @@ function makePointData(json, derived, source) {
             value = (value + offset.offset1) * offset.scale + offset.offset2;
             values[field.getIndex()] = value;
         }
-
-
         rows.push(values);
         var record = new PointRecord(tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);

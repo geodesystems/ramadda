@@ -512,8 +512,13 @@ function DisplayThing(argId, argProperties) {
 		    }
 		} else if(f.getType()=="url") {
 		    if(value && value.trim().length>1) {
-			value = HtmlUtils.href(value,value);
+			s = s.replace("${" + f.getId() +"_href}", HtmlUtils.href(value,value));
+			s = s.replace("${" + f.getId() +"}", value);
+		    } else {
+			s = s.replace("${" + f.getId() +"_href}", "");
+			s = s.replace("${" + f.getId() +"}", "");
 		    }
+		    continue;
 		} else if(f.isDate) {
 		    if(value) {
 			s = s.replace("${" + f.getId() +"}", value);
@@ -565,7 +570,7 @@ function DisplayThing(argId, argProperties) {
 		template = this.getProperty("recordTemplate");
 	    if(template) {
 		if(template!="${default}") {
-	    var row = this.getDataValues(record);
+		    var row = this.getDataValues(record);
 		    return this.applyRecordTemplate(row, fields, template);
 		}
 	    }
@@ -5897,7 +5902,7 @@ function convertToPointData(array) {
         else if(sample.getTime)
             type = "date";
         else 
-            console.log("Unknwon type:" + tof);
+            console.log("Unknown type:" + tof);
         fields.push(new RecordField({
             id:id,
             label:label,
@@ -6592,8 +6597,6 @@ function makePointData(json, derived, source) {
             value = (value + offset.offset1) * offset.scale + offset.offset2;
             values[field.getIndex()] = value;
         }
-
-
         rows.push(values);
         var record = new PointRecord(tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
@@ -16995,7 +16998,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    var json = {};
 	    var events = [];
 	    json.events = events;
-	    var headlineField = this.getFieldById(null,this.getProperty("headlineField"));
+	    var titleField = this.getFieldById(null,this.getProperty("titleField"));
 	    var startDateField = this.getFieldById(null,this.getProperty("startDateField"));
 	    var endDateField = this.getFieldById(null,this.getProperty("endDateField"));
 	    var textTemplate = this.getProperty("textTemplate","${default}");
@@ -17009,7 +17012,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		};	
 		var text =  this.getRecordHtml(record, null, textTemplate);
 		event.text = {
-		    headline: headlineField? tuple[headlineField.getIndex()]:" record:" + (i+1),
+		    headline: titleField? tuple[titleField.getIndex()]:" record:" + (i+1),
 		    text:text
 		};
 		if(startDateField)

@@ -1666,7 +1666,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    var json = {};
 	    var events = [];
 	    json.events = events;
-	    var headlineField = this.getFieldById(null,this.getProperty("headlineField"));
+	    var titleField = this.getFieldById(null,this.getProperty("titleField"));
 	    var startDateField = this.getFieldById(null,this.getProperty("startDateField"));
 	    var endDateField = this.getFieldById(null,this.getProperty("endDateField"));
 	    var textTemplate = this.getProperty("textTemplate","${default}");
@@ -1680,7 +1680,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		};	
 		var text =  this.getRecordHtml(record, null, textTemplate);
 		event.text = {
-		    headline: headlineField? tuple[headlineField.getIndex()]:" record:" + (i+1),
+		    headline: titleField? tuple[titleField.getIndex()]:" record:" + (i+1),
 		    text:text
 		};
 		if(startDateField)

@@ -151,12 +151,15 @@ public class CsvOutputHandler extends OutputHandler {
         String  delimiter      = request.getString(ARG_DELIMITER, ",");
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
         boolean showFullHeader = request.get(ARG_FULLHEADER, false);
+        boolean escapeCommas  = request.get("escapecommas", false)||showFullHeader;
+	
         String  filler         = request.getString("filler", " ");
 
         String fieldsArg =
             request.getString(
                 ARG_FIELDS,
-                "name,id,type,entry_url,north,south,east,west,url,fields");
+                "name,id,type,description,entry_url,north,south,east,west,url,fields");
+
         StringBuffer sb          = new StringBuffer();
         StringBuffer header      = new StringBuffer();
         List<String> toks = StringUtil.split(fieldsArg, ",", true, true);
@@ -164,22 +167,50 @@ public class CsvOutputHandler extends OutputHandler {
         List<String> fieldLabels = new ArrayList<String>();
         for (int i = 0; i < toks.size(); i++) {
             String       tok   = toks.get(i);
-            String       name  = tok;
+            String       field  = tok;
             String       label = tok;
             List<String> pair  = StringUtil.splitUpTo(tok, ";", 2);
             if (pair.size() > 1) {
-                name  = pair.get(0);
+                field  = pair.get(0);
                 label = pair.get(1);
             }
-            fieldNames.add(name);
+            fieldNames.add(field);
             fieldLabels.add(label);
             if (header.length() > 0) {
                 header.append(",");
             }
-            header.append(label);
-        }
+	    String type = "string";
+	    if (field.equals("type")) {
+		type ="enumeration";
+	    } else if (field.equals("icon")) {
+		type ="image";
+	    } else if (field.equals("entry_url")) {
+		type = "url";
+	    } else if (field.equals("url")) {
+		type = "url";
+	    } else if (field.equals("latitude")) {
+		type = "double";
+	    } else if (field.equals("longitude")) {
+		type = "double";
+	    } else if (field.equals("north")) {
+		type = "double";
+                } else if (field.equals("south")) {
+type = "double";
+                } else if (field.equals("east")) {
+type = "double";
 
-        boolean escapeCommas  = request.get("escapecommas", false);
+                } else if (field.equals("west")) {
+type = "double";
+                } else if (field.equals("description")) {
+                } else if (field.equals("size")) {
+type = "integer";
+	    }
+
+	    if(sb.length()>0)
+		sb.append(",");
+	    addHeader(sb,field,label,type,escapeCommas, showFullHeader);
+        }
+	sb.append("\n");
 
         int[]   maxStringSize = null;
         //        String[] paddingmaxStringSize = null;
@@ -379,6 +410,18 @@ public class CsvOutputHandler extends OutputHandler {
         }
 
         return new Result("", sb, getMimeType(OUTPUT_CSV));
+    }
+
+    private void addHeader(Appendable sb, String s, String label, String type, boolean escapeCommas, boolean full) throws Exception {
+	sb.append(sanitize(escapeCommas, s));
+	if(full) {
+	    sb.append("[");
+	    sb.append(" type=\"" + (type!=null?type:"string") +"\" ");
+	    if(label!=null) {
+		sb.append(" label=\"" + sanitize(true, label) +"\" ");
+	    }
+	    sb.append("]");
+	}
     }
 
     /**

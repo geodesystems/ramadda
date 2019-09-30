@@ -2079,7 +2079,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         } else if (theTag.equals(WIKI_TAG_DISPLAY)
                    || theTag.equals(WIKI_TAG_CHART)) {
-            String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
+	    String jsonUrl = null;
+            if(getProperty(wikiUtil, props, "doEntries",false)) {
+		jsonUrl = request.entryUrl(
+					   getRepository().URL_ENTRY_SHOW, entry,
+					   ARG_OUTPUT, JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+	    }
+	    
+            if(jsonUrl ==null)
+		jsonUrl= entry.getTypeHandler().getUrlForWiki(request,
                                  entry, theTag, props);
             //Gack - handle the files that are gridded netcdf
             //This is awful to have this here but I just don't know how to 

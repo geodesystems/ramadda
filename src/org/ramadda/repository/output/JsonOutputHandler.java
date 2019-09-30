@@ -91,6 +91,11 @@ public class JsonOutputHandler extends OutputHandler {
                        OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
                        ICON_JSON);
 
+    public static final OutputType OUTPUT_JSON_POINT =
+        new OutputType("JSON", "json.point",
+                       OutputType.TYPE_FEEDS, "",
+                       ICON_JSON);
+
 
 
     /**
@@ -104,6 +109,7 @@ public class JsonOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_JSON);
+	addType(OUTPUT_JSON_POINT);
     }
 
 
@@ -164,7 +170,11 @@ public class JsonOutputHandler extends OutputHandler {
             allEntries.addAll(entries);
         }
         StringBuilder sb = new StringBuilder();
-        makeJson(request, allEntries, sb);
+        if (outputType.equals(OUTPUT_JSON_POINT)) {
+	    makePointJson(request, group, allEntries, sb);
+	} else {
+	    makeJson(request, allEntries, sb);
+	}
         request.setCORSHeaderOnResponse();
 
         return new Result("", sb, Json.MIMETYPE);
@@ -190,12 +200,75 @@ public class JsonOutputHandler extends OutputHandler {
         List<Entry> allEntries = new ArrayList<Entry>();
         allEntries.add(entry);
         StringBuilder sb = new StringBuilder();
-        makeJson(request, allEntries, sb);
+        if (outputType.equals(OUTPUT_JSON_POINT)) {
+	    makeJson(request, allEntries, sb);
+	} else {
+	    makeJson(request, allEntries, sb);
+	}
         request.setCORSHeaderOnResponse();
 
         return new Result("", sb, Json.MIMETYPE);
     }
 
+
+    private void addPointHeader(List<String> header,String name, String label,String type) throws Exception {
+	List<String> items = new ArrayList<String>();
+	Json.quoteAttr(items, "index", ""+header.size());
+	Json.quoteAttr(items, "id", name);
+	Json.quoteAttr(items, "type", type);
+	Json.quoteAttr(items, "label", label);
+	if(name.indexOf("date")>=0) 
+	    Json.attr(items, "isDate", "true");
+	header.add(Json.map(null,items,false).toString());
+    }
+
+    public void makePointJson(Request request, Entry mainEntry, List<Entry> entries, Appendable sb)
+            throws Exception {
+	List<String> fields = new ArrayList<String>();
+	addPointHeader(fields,"id","Id","string");
+	addPointHeader(fields,"name","Name","string");
+	addPointHeader(fields,"type","Type","enumeration");
+        addPointHeader(fields,"description","Description","string");
+        addPointHeader(fields,"icon","Icon","image");
+	addPointHeader(fields,"start_date","Start Date","date");
+	addPointHeader(fields,"end_date","End Date","date");
+	addPointHeader(fields,"create_date","Create Date","date");
+	addPointHeader(fields,"entry_url","Entry Url","url");
+	addPointHeader(fields,"file_url","File Url","url");
+	addPointHeader(fields,"latitude","Latitude","double");
+	addPointHeader(fields,"longitude","Longitude","double");
+	addPointHeader(fields,"elevation","Elevation","double");
+	/*
+        if (request.get(ARG_EXTRACOLUMNS, true)) {
+	    Entry entry = entries.get(0);
+            Object[]     extraParameters = entry.getValues();
+	    if (extraParameters != null) {
+		List<Column> columns = entry.getTypeHandler().getColumns();
+                for (int i = 0; i < extraParameters.length; i++) {
+                    Column column     = columns.get(i);
+                    String columnName = column.getName();
+		}
+	    }
+	}
+	*/
+        List<String> values = new ArrayList<String>();
+        for (Entry entry : entries) {
+	    List<String> entryArray = new ArrayList<String>();
+	    String array = toPointJson(request, entry);
+	    entryArray.add("values");
+	    entryArray.add(array);
+            values.add(Json.map(entryArray,false));
+        }
+	
+	List<String> topItems  = new ArrayList<String>();
+	topItems.add("name");
+	topItems.add(Json.quote(mainEntry.getName()));
+	topItems.add("fields");
+	topItems.add(Json.list(null,fields,false).toString());
+	topItems.add("data");
+	topItems.add(Json.list(null,values,false).toString());
+	Json.map(sb,topItems, false);
+    }
 
 
     /**
@@ -540,8 +613,49 @@ public class JsonOutputHandler extends OutputHandler {
         Json.attr(items, "properties", Json.list(attrs, false));
 
         return Json.map(items);
-
     }
+
+
+    private String toPointJson(Request request, Entry entry) throws Exception {
+
+        List<String> items = new ArrayList<String>();
+	items.add(Json.quote(entry.getId()));
+	items.add(Json.quote(entry.getName()));
+	items.add(Json.quote(entry.getTypeHandler().getType()));
+	items.add(Json.quote(entry.getDescription()));
+	items.add(Json.quote(request.getAbsoluteUrl(getPageHandler().getIconUrl(request, entry))));
+	items.add(Json.quote(formatDate(entry.getStartDate())));
+	items.add(Json.quote(formatDate(entry.getEndDate())));
+	items.add(Json.quote(formatDate(entry.getCreateDate())));
+	items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
+	//todo
+	items.add(Json.quote(entry.getTypeHandler().getEntryResourceUrl(request, entry)));
+	items.add("" + (entry.getLatitude()==Entry.NONGEO?"null":entry.getLatitude()));
+	items.add("" + (entry.getLongitude()==Entry.NONGEO?"null":entry.getLongitude()));
+	items.add("" + (entry.getAltitude()==Entry.NONGEO?"null":entry.getAltitude()));
+
+	/****
+        TypeHandler       typeHandler = entry.getTypeHandler();
+        if (request.get(ARG_EXTRACOLUMNS, true)) {
+            List<String> extraColumns    = new ArrayList<String>();
+            List<String> columnNames     = new ArrayList<String>();
+            List<String> columnLabels    = new ArrayList<String>();
+            Object[]     extraParameters = entry.getValues();
+            if (extraParameters != null) {
+                List<Column> columns = entry.getTypeHandler().getColumns();
+                for (int i = 0; i < extraParameters.length; i++) {
+                    Column column     = columns.get(i);
+                    String columnName = column.getName();
+                    String value = entry.getValue(i, "");
+		    items.add(Json.quote(value));
+                }
+            }
+        }
+	***/
+        return Json.list(items);
+    }
+
+
 
     /**
      * _more_

@@ -362,8 +362,13 @@ function DisplayThing(argId, argProperties) {
 		    }
 		} else if(f.getType()=="url") {
 		    if(value && value.trim().length>1) {
-			value = HtmlUtils.href(value,value);
+			s = s.replace("${" + f.getId() +"_href}", HtmlUtils.href(value,value));
+			s = s.replace("${" + f.getId() +"}", value);
+		    } else {
+			s = s.replace("${" + f.getId() +"_href}", "");
+			s = s.replace("${" + f.getId() +"}", "");
 		    }
+		    continue;
 		} else if(f.isDate) {
 		    if(value) {
 			s = s.replace("${" + f.getId() +"}", value);
@@ -415,7 +420,7 @@ function DisplayThing(argId, argProperties) {
 		template = this.getProperty("recordTemplate");
 	    if(template) {
 		if(template!="${default}") {
-	    var row = this.getDataValues(record);
+		    var row = this.getDataValues(record);
 		    return this.applyRecordTemplate(row, fields, template);
 		}
 	    }

@@ -183,9 +183,10 @@ public class Json {
      * @param values _more_
      * @param quoteValue _more_
      */
-    public static void map(Appendable row, List<String> values,
+    public static Appendable map(Appendable row, List<String> values,
                            boolean quoteValue) {
         try {
+	    if(row == null) row=new StringBuilder();
             row.append(mapOpen());
             int cnt = 0;
             for (int i = 0; i < values.size(); i += 2) {
@@ -204,6 +205,7 @@ public class Json {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
+	return row;
     }
 
 
@@ -302,8 +304,9 @@ public class Json {
      * @param values _more_
      * @param quoteValue _more_
      */
-    public static void list(Appendable row, List values, boolean quoteValue) {
+    public static Appendable list(Appendable row, List values, boolean quoteValue) {
         try {
+	    if(row == null) row=new StringBuilder();
             row.append(listOpen());
             for (int i = 0; i < values.size(); i++) {
                 if (i > 0) {
@@ -319,6 +322,7 @@ public class Json {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
+	return row;
     }
 
 
