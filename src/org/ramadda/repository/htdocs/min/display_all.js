@@ -16931,9 +16931,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 
 //    Utils.importCSS(ramaddaBaseUrl +'/lib/timeline/timeline_js/timeline-bundle.css');
-//    Utils.importJS(ramaddaBaseUrl +'/lib/timeline/timeline_js/timeline-api.js?bundle=true');
+//    Utils.importJS(ramaddaBaseUrl +w    Utils.importJS("https://cdn.knightlab.com/libs/timeline3/latest/js/timeline-min.js");'/lib/timeline/timeline_js/timeline-api.js?bundle=true');
     
-    Utils.importJS("https://cdn.knightlab.com/libs/timeline3/latest/js/timeline-min.js");
+//    Utils.importJS("https://cdn.knightlab.com/libs/timeline3/latest/js/timeline-min.js");
+    Utils.importJS(ramaddaBaseUrl+"/lib/timeline3/timeline.js");
     $('<link rel="stylesheet" href="' + "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css" +'" type="text/css" />').appendTo("head");
 
     $.extend(this, {
@@ -16977,11 +16978,19 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    if(records==null) return;
 	    var timelineId = this.getDomId(ID_TIMELINE);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id",timelineId]));
-	    console.log("got timeline ");
+	    this.timelineReady = false;
 	    var opts = {
 		start_at_end: this.getProperty("startAtEnd",false),
-		default_bg_color: {r:0, g:0, b:0},
-		timenav_height: this.getProperty("navHeight",250)
+//		default_bg_color: {r:0, g:0, b:0},
+		timenav_height: this.getProperty("navHeight",250),
+		gotoCallback: (slide)=>{
+		    if(this.timelineReady) {
+			var record = records[slide];
+			if(record) {
+			    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+			}
+		    }
+		}
             };
 	    var json = {};
 	    var events = [];
@@ -16991,8 +17000,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    var endDateField = this.getFieldById(null,this.getProperty("endDateField"));
 	    var textTemplate = this.getProperty("textTemplate","${default}");
 	    var timeTo = this.getProperty("timeTo","day");
+	    this.recordToIndex = {};
 	    for(var i=0;i<records.length;i++) {
 		var record = records[i]; 
+		this.recordToIndex[record.getId()] = i;
 		var tuple = record.getData();
 		var event = {
 		};	
@@ -17010,14 +17021,19 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		}
 		events.push(event);
 	    }
-	    this.timeline = new TL.Timeline(timelineId,json);
+	    this.timeline = new TL.Timeline(timelineId,json,opts);
 	    if(this.getProperty("",false)) {
 		this.jq(ID_TIMELINE).find(".tl-storyslider").css("display","none");
 	    }
 
+	    this.timelineReady = true;
 
-
-
+	},
+        handleEventRecordSelection: function(source, args) {
+	    if(!args.record) return;
+	    var index = this.recordToIndex[args.record.getId()];
+	    if(!Utils.isDefined(index)) return;
+	    this.timeline.goTo(index);
 	},
 	getDate: function(time) {
 	    var timeTo = this.getProperty("timeTo","day");
