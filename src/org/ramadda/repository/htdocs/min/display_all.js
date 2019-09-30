@@ -16954,7 +16954,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 					'endDateField=""',
 					'textTemplate=""',
 					'timeTo="year|day|hour|second"',
-					'justTimeline="true"',
+					'hideBanner="true"',
 					'startAtEnd=true',
 					'navHeight=250'
 				    ]);
@@ -16985,7 +16985,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    var opts = {
 		start_at_end: this.getProperty("startAtEnd",false),
 //		default_bg_color: {r:0, g:0, b:0},
-		timenav_height: this.getProperty("navHeight",250),
+		timenav_height: this.getProperty("navHeight",150),
+//		menubar_height:100,
 		gotoCallback: (slide)=>{
 		    if(this.timelineReady) {
 			var record = records[slide];
@@ -17025,8 +17026,16 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		events.push(event);
 	    }
 	    this.timeline = new TL.Timeline(timelineId,json,opts);
-	    if(this.getProperty("",false)) {
+	    if(this.getProperty("hideBanner",false)) {
 		this.jq(ID_TIMELINE).find(".tl-storyslider").css("display","none");
+	    }
+	    this.jq(ID_TIMELINE).find(".tl-text").css("padding","0px");
+	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("padding","0px");
+	    this.jq(ID_TIMELINE).find(".tl-slidenav-description").css("display","none");
+	    if(this.getProperty("bannerHeight")) {
+//		console.log("height:" +this.getProperty("bannerHeight") +" " + this.jq(ID_TIMELINE).find(".tl-storyslider").length);
+//		this.jq(ID_TIMELINE).find(".tl-storyslider").css("height",this.getProperty("bannerHeight"));
+//		this.jq(ID_TIMELINE).find(".tl-storyslider").css("height","100px");
 	    }
 
 	    this.timelineReady = true;
