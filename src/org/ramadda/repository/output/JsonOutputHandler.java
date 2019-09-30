@@ -622,7 +622,11 @@ public class JsonOutputHandler extends OutputHandler {
 	items.add(Json.quote(entry.getId()));
 	items.add(Json.quote(entry.getName()));
 	items.add(Json.quote(entry.getTypeHandler().getType()));
-	items.add(Json.quote(entry.getDescription()));
+	String description =entry.getDescription();
+	//TODO
+	//Don't wikify the description. Figure out how to display things
+	//	description = getWikiManager().wikifyEntry(request, entry,description,false,null,null,null);
+	items.add(Json.quote(description));
 	items.add(Json.quote(request.getAbsoluteUrl(getPageHandler().getIconUrl(request, entry))));
 	items.add(Json.quote(formatDate(entry.getStartDate())));
 	items.add(Json.quote(formatDate(entry.getEndDate())));

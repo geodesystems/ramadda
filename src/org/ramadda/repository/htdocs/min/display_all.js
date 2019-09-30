@@ -16857,7 +16857,10 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
             var fields = this.getData().getNonGeoFields();
 	    var labelField = this.getFieldById(fields,this.getProperty("labelField"));
 	    if(labelField==null) {
-		labelField = this.getFieldOfType(fields, "string");
+		labelField = this.getFieldById(fields, "title");
+	    }
+	    if(labelField==null) {
+		labelField = this.getFieldById(fields, "name");
 	    }
 	    var fieldsToUse = this.getFieldsByIds(fields,this.getProperty("fields"));
 	    if(fieldsToUse.length==0) fieldsToUse = fields;
@@ -16931,14 +16934,11 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
-
-
-//    Utils.importCSS(ramaddaBaseUrl +'/lib/timeline/timeline_js/timeline-bundle.css');
-//    Utils.importJS(ramaddaBaseUrl +w    Utils.importJS("https://cdn.knightlab.com/libs/timeline3/latest/js/timeline-min.js");'/lib/timeline/timeline_js/timeline-api.js?bundle=true');
     
-//    Utils.importJS("https://cdn.knightlab.com/libs/timeline3/latest/js/timeline-min.js");
     Utils.importJS(ramaddaBaseUrl+"/lib/timeline3/timeline.js");
-    $('<link rel="stylesheet" href="' + "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css" +'" type="text/css" />').appendTo("head");
+    var css = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css";
+//    css =  ramaddaBaseUrl+"/lib/timeline3/timeline.css";
+    $('<link rel="stylesheet" href="' + css +'" type="text/css" />').appendTo("head");
 
     $.extend(this, {
         needsData: function() {
@@ -17000,6 +17000,13 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    var events = [];
 	    json.events = events;
 	    var titleField = this.getFieldById(null,this.getProperty("titleField"));
+	    if(titleField==null) {
+		titleField = this.getFieldById(null, "title");
+	    }
+	    if(titleField==null) {
+		titleField = this.getFieldById(null, "name");
+	    }
+
 	    var startDateField = this.getFieldById(null,this.getProperty("startDateField"));
 	    var endDateField = this.getFieldById(null,this.getProperty("endDateField"));
 	    var textTemplate = this.getProperty("textTemplate","${default}");
