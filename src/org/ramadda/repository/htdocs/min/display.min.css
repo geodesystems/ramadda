@@ -1700,4 +1700,11 @@ margin:10px;
 
 .display-mapgrid-cell {
     cursor:pointer;
+    padding:2px;
+}
+
+.display-mapgrid-selected {
+    border: 1px solid red;
+    background:red;
+    margin:10px;
 }

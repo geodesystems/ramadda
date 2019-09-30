@@ -15361,7 +15361,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
 
 
     });
-}/**
+}/*
    Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -21843,6 +21843,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
         handleEventPointDataLoaded: function(source, pointData) {
         },
+        handleEventFieldsSelected: function(source, fields) {
+	    if(this.getProperty("selectedFieldIsColorBy") && fields.length>0) {
+		this.colorByFieldChanged(fields[0]);
+	    }
+        },
         baseMapLoaded: function(layer, url) {
             this.vectorLayer = layer;
             this.applyVectorMap();
@@ -23385,8 +23390,22 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 				    [
 					"label:Grid Map Attributes",
 					'stateField=""',
+					'cellSize="20"',
+					'showCellLabel=false',
 				    ]);
 	},
+        handleEventFieldsSelected: function(source, fields) {
+	    if(this.getProperty("selectedFieldIsColorBy") && fields.length>0) {
+		this.colorByFieldChanged(fields[0]);
+	    }
+        },
+	colorByFieldChanged:function(field) {
+	    this.haveCalledUpdateUI = false;
+	    this.setProperty("colorBy", field);
+	    this.vectorMapApplied  = false;
+	    this.updateUI();
+	},
+
 	updateUI: function() {
 	    var pointData = this.getData();
 	    if (pointData == null) return;
@@ -23412,7 +23431,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    });
 
 	    var table ="<table border=0 cellspacing=0 cellpadding=0>";
-	    var w = this.getProperty("cellDimension","40");
+	    var w = this.getProperty("cellSize","40");
 	    var showLabel  = this.getProperty("showCellLabel",true);
 	    var cellStyle  = this.getProperty("cellStyle","");
 	    var cellMap = {};
@@ -23422,7 +23441,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    var id = x+ "_"+y;
 		    var o = map[id];
 		    var extra = " id='" + id +"' ";
-		    var style = "margin:1px;padding:10px;vertical-align:center;text-align:center;width:" + w+"px;" +"height:" + w+"px;";
+		    var style = "margin:1px;vertical-align:center;text-align:center;width:" + w+"px;" +"height:" + w+"px;";
 		    var c = "";
 		    if(o) {
 			style+="background:#ccc;" + cellStyle;
@@ -23464,9 +23483,28 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
                 }
 	    }
 	    this.makePopups(contents.find(".display-mapgrid-cell"), records);
+	    let _this = this;
+	    contents.find(".display-mapgrid-cell").click(function() {
+		var record = records[$(this).attr("recordIndex")];
+		if(record) {
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
+		}
+	    });
             if (colorBy.index >= 0) {
 		colorBy.displayColorTable();
 	    }
+	},
+
+        handleEventRecordSelection: function(source, args) {
+	    var contents = this.jq(ID_DISPLAY_CONTENTS);
+	    if(this.selectedCell) {
+		this.selectedCell.css("border",this.selectedBorder);
+	    }
+	    var index = this.recordToIndex[args.record.getId()];
+	    if(!Utils.isDefined(index)) return;
+	    this.selectedCell = contents.find("[recordIndex='" + index+"']");
+	    this.selectedBorder = this.selectedCell.css("border");
+	    this.selectedCell.css("border","1px solid red");
 	},
 
 	grid:  [
