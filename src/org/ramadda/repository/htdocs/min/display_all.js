@@ -17881,6 +17881,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 					'maxLines=1000',
 					'pattern="initial search pattern"',
 					'fromField=""',
+					'linesDescriptor=""'
 				    ]);
 	},
 

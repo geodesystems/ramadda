@@ -1335,7 +1335,7 @@ public class CsvUtil {
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
         new Cmd("-changerow", "<row> <pattern> <substitution string>"),
         new Cmd("-extract",
-                "<col #> <pattern> <replace with> <New column name>",
+                "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
                 "(extract text from column and make a new column)"),
         new Cmd("-formatdate",
                 "<col #s> <intial date format> <target date format>"),

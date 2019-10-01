@@ -1203,7 +1203,9 @@ public abstract class Converter extends Processor {
                 newValue = "";
             }
             row.add(newValue);
-            value = value.replaceAll(pattern, replace);
+	    if(!replace.equals("none")) {
+		value = value.replaceAll(pattern, replace);
+	    }
             row.set(col, value);
 
             return row;
