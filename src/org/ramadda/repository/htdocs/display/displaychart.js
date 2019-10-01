@@ -1231,10 +1231,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 textStyle: {}
             };
             chartOptions.hAxis = {
-		baseline: 0,
                 gridlines: {},
                 textStyle: {},
-//		ticks: [{v:0, f:"3-4"},{v:1, f:"5-9"},{v:2, f:"9-13"},{v:3, f:"13-14"},{v:4, f:"15-20"}]
             };
             chartOptions.vAxis = {
                 gridlines: {},
