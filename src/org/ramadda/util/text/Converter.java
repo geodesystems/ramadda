@@ -1136,6 +1136,61 @@ public abstract class Converter extends Processor {
     }
 
 
+
+    public static class DateConverter extends Converter {
+
+        /** _more_ */
+        private int col;
+
+        /** _more_ */
+        private SimpleDateFormat sdf1;
+
+	private SimpleDateFormat sdf2;
+
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         */ 
+        public DateConverter(int col, SimpleDateFormat sdf1, SimpleDateFormat sdf2) {
+            this.col = col;
+	    this.sdf1 = sdf1;
+	    this.sdf2 = sdf2;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+		return row;
+            }
+	    try {
+		String s = row.get(col).toString();
+		Date d = sdf1.parse(s);
+		//		System.err.println(s + " D:" + d  +" " + sdf2.format(d));
+		row.set(col,sdf2.format(d));
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+            return row;
+        }
+
+    }
+
+
     /**
      * Class description
      *
@@ -3090,6 +3145,57 @@ public abstract class Converter extends Processor {
 
         }
 
+    }
+
+
+    public static class Letter extends Converter {
+
+	int cnt = 0;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param rows _more_
+         *
+         * @param value _more_
+         */
+        public  Letter() {
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+	    cnt++;
+	    if(cnt==1){
+		row.add("label");
+		return row;
+
+	    }
+	    String letter = getLabel(cnt-2);
+	    row.add(letter);
+	    return row;
+	}
+
+	private String getLabel(int n) {
+	    int d = (int)(n/25.0);
+	    int r = n%25;
+	    if (d != 0) {
+		return  getLabel(d) +  Utils.LETTERS[r];
+	    }
+	    else {
+		return Utils.LETTERS[r];
+	    }
+	}
     }
 
 

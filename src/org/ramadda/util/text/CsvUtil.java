@@ -881,6 +881,29 @@ public class CsvUtil {
 
     }
 
+    public List<Row> tokenizePattern(String file,
+				     List<String> header,
+				     String pattern)
+	throws Exception {
+        String    s          = IOUtil.readContents(file);
+        List<Row> rows       = new ArrayList<Row>();
+	rows.add(new Row(header));
+	if(pattern.length()==0) return rows;
+	Pattern p = Pattern.compile(pattern);
+	while(true) {
+	    Matcher m = p.matcher(s);
+	    if(!m.find()) break;
+	    Row row = new Row();
+	    rows.add(row);
+	    for(int i=1;i<=m.groupCount();i++) {
+		row.add(m.group(i));
+	    }
+	    s = s.substring(m.end());
+	    //	    System.err.println(s.length());
+	}
+        return rows;
+    }
+
 
     /**
      *     _more_
@@ -1321,6 +1344,9 @@ public class CsvUtil {
         new Cmd(
             "-setcol", "<match col #> <pattern> <write col #> <value>",
             "(write the value into the write col for rows that match the pattern)"),
+        new Cmd("-letter", "",
+                "(add 'A','B', ... as column)"),
+
         new Cmd("-case", "<lower|upper|camel> <col #>",
                 "(change case of column)"),
         new Cmd("-width", "<columns>  <size>",
@@ -1334,6 +1360,7 @@ public class CsvUtil {
         new Cmd("-suffix", "<col #> <suffix>", "(add suffix to column)"),
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
         new Cmd("-changerow", "<row> <pattern> <substitution string>"),
+        new Cmd("-convertdate", "<column> <format1> <format2>"),
         new Cmd("-extract",
                 "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
                 "(extract text from column and make a new column)"),
@@ -1351,6 +1378,9 @@ public class CsvUtil {
         new Cmd("-json",
                 "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
                 "(parse the input as json)"),
+        new Cmd("-tokenize",
+		" \"header1,header2...\" \"pattern\"",
+                "(tokenize the input from the pattern)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
         //        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
@@ -1567,6 +1597,9 @@ public class CsvUtil {
         String  htmlProps = null;
         boolean doJson    = false;
         String  jsonProps = null;
+	boolean doPattern = false;
+	List<String> tokenizeHeader = null;
+	String tokenizePattern = null;
         if (comment != null) {
             info.setComment(comment);
         }
@@ -1594,6 +1627,16 @@ public class CsvUtil {
                 doJson    = true;
                 jsonProps = args.get(++i);
 
+                continue;
+            }
+
+	    if (arg.equals("-tokenize")) {
+                if ( !ensureArg(args, i, 2)) {
+                    return false;
+                }
+                doPattern    = true;
+                tokenizeHeader = StringUtil.split(args.get(++i),",");
+                tokenizePattern = args.get(++i).replaceAll("_quote_","\"");
                 continue;
             }
 
@@ -2337,6 +2380,20 @@ public class CsvUtil {
             }
 
 
+	    if (arg.equals("-convertdate")) {
+                if ( !ensureArg(args, i, 3)) {
+                    return false;
+                }
+                int col = Integer.parseInt(args.get(++i));
+                String sdf1 = args.get(++i);
+		String sdf2 = args.get(++i);
+                info.getProcessor().addProcessor(
+						 new Converter.DateConverter(col,new SimpleDateFormat(sdf1), new SimpleDateFormat(sdf2)));
+
+                continue;
+            }
+
+
             if (arg.equals("-debug")) {
                 System.err.println("CsvUtil args:" + this.args);
 
@@ -2602,6 +2659,13 @@ public class CsvUtil {
                 continue;
             }
 
+	    if (arg.equals("-letter")) {
+                info.getProcessor().addProcessor(
+						 new Converter.Letter());
+
+                continue;
+            }
+
             if (arg.equals("-setcol")) {
                 if ( !ensureArg(args, i, 4)) {
                     return false;
@@ -2859,6 +2923,8 @@ public class CsvUtil {
         } else if (doJson) {
             Hashtable<String, String> props = parseProps(jsonProps);
             tokenizedRows.add(tokenizeJson(files.get(0), props));
+	} else if (doPattern) {
+            tokenizedRows.add(tokenizePattern(files.get(0), tokenizeHeader,tokenizePattern));
         }
 
         return true;
