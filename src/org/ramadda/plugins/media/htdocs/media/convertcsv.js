@@ -366,7 +366,6 @@ function csvFlipInput(text) {
     var val = null;
     if(text!=null) {
         text = text.replace(/_newline_/g,"\n");
-        text = text.replace(/_quote_/g,"\"");
         text = text.replace(/_backslash_/g,"\\");
         text = text.replace(/\"/g,'&quot;');
         val = text;

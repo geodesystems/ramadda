@@ -625,6 +625,9 @@ function PointRecord(lat, lon, elevation, time, data) {
         push: function(v) {
             this.data.push(v);
         },
+        hasDate: function() {
+	    return this.getDate()!=null;
+	},
         hasLocation: function() {
             return !isNaN(this.latitude);
         },

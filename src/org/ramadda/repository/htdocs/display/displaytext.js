@@ -2746,9 +2746,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    this.makeTooltips(lines,records);
         },
         handleEventRecordSelection: function(source, args) {
-	    if(!args.record) return;
-	    var index = this.recordToIndex[args.record.getId()];
-	    if(!Utils.isDefined(index)) return;
+	    var index = this.findMatchingIndex(args.record);
+	    if(index<0 || !Utils.isDefined(index)) {
+		return;
+	    }
 	    var container = this.jq(ID_TEXT);
 	    container.find(".display-raw-line").removeClass("display-raw-line-selected");
 	    var sel = "[recordIndex='" + index+"']";

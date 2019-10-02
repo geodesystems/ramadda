@@ -4494,6 +4494,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	indexToRecord: {},
 	recordToIndex: {},
+	findMatchingIndex: function(record) {
+	    if(!record) return -1;
+	    var index = this.recordToIndex[record.getId()];
+	    if(Utils.isDefined(index)) {
+		return index;
+	    }
+	    if(!record.hasDate()) return -1;
+	    var closest;
+	    var min  =0;
+	    for(i in this.indexToRecord) {
+		var r = this.indexToRecord[i];
+		if(!r.hasDate()) return -1;
+		var diff = Math.abs(record.getDate().getTime()-r.getDate().getTime());
+		if(!closest) {
+		    min = diff;
+		    closest = r;
+		} else {
+		    if(diff<min) {
+			min = diff;
+			closest = r;
+		    }
+		}
+	    }
+	    if(!closest) 
+		return -1;
+	    return this.recordToIndex[closest.getId()];
+	},
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
 
@@ -6352,6 +6379,9 @@ function PointRecord(lat, lon, elevation, time, data) {
         push: function(v) {
             this.data.push(v);
         },
+        hasDate: function() {
+	    return this.getDate()!=null;
+	},
         hasLocation: function() {
             return !isNaN(this.latitude);
         },
@@ -10543,11 +10573,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.okToHandleEventRecordSelection()) {
                 return;
 	    }
-	    if(!args.record) return;
-	    var index = this.recordToIndex[args.record.getId()];
-	    if(Utils.isDefined(index)) {
-		this.setChartSelection(index);
+	    var index = this.findMatchingIndex(args.record);
+	    console.log(this.type +" index:" + index);
+	    if(index<0 || !Utils.isDefined(index)) {
+		return;
 	    }
+	    this.setChartSelection(index);
         },
         getFieldsToSelect: function(pointData) {
             //STRING return pointData.getChartableFields();
@@ -10877,6 +10908,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         setChartSelection: function(index) {
             if (this.chart != null) {
                 if (this.chart.setSelection) {
+		    console.log(this.type +".setSelection:" + index);
                     this.chart.setSelection([{
                         row: index,
 			column:null
@@ -18107,9 +18139,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    this.makeTooltips(lines,records);
         },
         handleEventRecordSelection: function(source, args) {
-	    if(!args.record) return;
-	    var index = this.recordToIndex[args.record.getId()];
-	    if(!Utils.isDefined(index)) return;
+	    var index = this.findMatchingIndex(args.record);
+	    if(index<0 || !Utils.isDefined(index)) {
+		return;
+	    }
 	    var container = this.jq(ID_TEXT);
 	    container.find(".display-raw-line").removeClass("display-raw-line-selected");
 	    var sel = "[recordIndex='" + index+"']";

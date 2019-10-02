@@ -1610,7 +1610,7 @@ public class CsvUtil {
 
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-
+	    try {
             if (arg.equals("-html")) {
                 if ( !ensureArg(args, i, 1)) {
                     return false;
@@ -2908,6 +2908,8 @@ public class CsvUtil {
                     break;
                 }
             }
+
+
             if (didone) {
                 continue;
             }
@@ -2915,7 +2917,11 @@ public class CsvUtil {
             if (addFiles) {
                 files.add(arg);
             }
-        }
+	    } catch(Exception exc) {
+		System.err.println("Error processing arg:" + arg);
+		throw exc;
+	    }
+	}
 
         if (doHtml) {
             Hashtable<String, String> props = parseProps(htmlProps);

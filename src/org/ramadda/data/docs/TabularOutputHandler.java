@@ -250,8 +250,10 @@ public class TabularOutputHandler extends OutputHandler {
         if (lastInput != null) {
             lastInput = lastInput.replaceAll("\n", "_newline_");
             lastInput = lastInput.replaceAll("\r", "_newline_");
-            lastInput = lastInput.replaceAll("\"", "_quote_");
-            lastInput = lastInput.replaceAll("\\\\", "_backslash_");
+	    //	    System.err.println("before:" + lastInput);
+            lastInput = lastInput.replaceAll("\\\\", "\\\\\\");
+	    lastInput = lastInput.replaceAll("\"", "\\\\\"");
+	    //	    System.err.println("after:" + lastInput);
             //            System.err.println("last input:"+ lastInput);
             js.append("var convertCsvLastInput =\"" + lastInput + "\";\n");
         } else {

@@ -568,11 +568,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.okToHandleEventRecordSelection()) {
                 return;
 	    }
-	    if(!args.record) return;
-	    var index = this.recordToIndex[args.record.getId()];
-	    if(Utils.isDefined(index)) {
-		this.setChartSelection(index);
+	    var index = this.findMatchingIndex(args.record);
+	    console.log(this.type +" index:" + index);
+	    if(index<0 || !Utils.isDefined(index)) {
+		return;
 	    }
+	    this.setChartSelection(index);
         },
         getFieldsToSelect: function(pointData) {
             //STRING return pointData.getChartableFields();
@@ -902,6 +903,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         setChartSelection: function(index) {
             if (this.chart != null) {
                 if (this.chart.setSelection) {
+		    console.log(this.type +".setSelection:" + index);
                     this.chart.setSelection([{
                         row: index,
 			column:null

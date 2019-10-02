@@ -4344,6 +4344,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	indexToRecord: {},
 	recordToIndex: {},
+	findMatchingIndex: function(record) {
+	    if(!record) return -1;
+	    var index = this.recordToIndex[record.getId()];
+	    if(Utils.isDefined(index)) {
+		return index;
+	    }
+	    if(!record.hasDate()) return -1;
+	    var closest;
+	    var min  =0;
+	    for(i in this.indexToRecord) {
+		var r = this.indexToRecord[i];
+		if(!r.hasDate()) return -1;
+		var diff = Math.abs(record.getDate().getTime()-r.getDate().getTime());
+		if(!closest) {
+		    min = diff;
+		    closest = r;
+		} else {
+		    if(diff<min) {
+			min = diff;
+			closest = r;
+		    }
+		}
+	    }
+	    if(!closest) 
+		return -1;
+	    return this.recordToIndex[closest.getId()];
+	},
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
 

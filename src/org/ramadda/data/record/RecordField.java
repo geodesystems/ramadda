@@ -267,7 +267,7 @@ public class RecordField {
         this.description = description;
         this.paramId     = paramId;
         this.unit        = unit;
-        this.rawType     = rawType;
+        this.type = this.rawType     = rawType;
         this.typeName    = typeName;
         this.arity       = arity;
         if (searchable) {
