@@ -1410,9 +1410,11 @@ public class CsvUtil {
             "-flag", "",
             " (be strict on columns. any rows that are not the size of the other rows are shown)"),
         new Cmd("-rotate"), new Cmd("-flip"),
+	new Cmd("-verify", "# columns", "(throw error if a row has a different number of columns)"),
         new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
         new Cmd("-widths", "w1,w2,...,wN", "(columns are fixed widths)"),
         new Cmd("-comment", "<string>"),
+	new Cmd("-verify", "","(verify that all of the rows have the same # of columns)"),
         new Cmd("-print", "", "(print to stdout)"),
         new Cmd("-raw", "", "(print the file raw)"),
         new Cmd("-record", "", " (print records)"),
@@ -1810,6 +1812,11 @@ public class CsvUtil {
 
                 continue;
             }
+
+            if (arg.equals("-verify")) {
+                info.getProcessor().addProcessor(new Processor.Verifier());
+                continue;
+            }	    
 
             if (arg.equals("-count")) {
                 info.getProcessor().addProcessor(new Processor.Counter());

@@ -2041,7 +2041,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var date = Utils.parseDate(key);
 			var data = Utils.cloneList(record.getData());
 			if(binCount) {
-			    for(k=0;k<data.length;k++) data[k]=0;
+			    for(k=0;k<data.length;k++) data[k]=1;
 			    //			    data =  [0];
 			}
 			var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
@@ -17878,6 +17878,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 					"label:Raw Text Attributes",
 					'doBubble=true',
 					'addLineNumbers=false',
+					'labelTemplate="${lineNumber}"',
 					'maxLines=1000',
 					'pattern="initial search pattern"',
 					'fromField=""',
@@ -17939,7 +17940,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (pattern && pattern.length == 0) pattern = null;
             var asHtml = this.getProperty("asHtml", true);
             var addLineNumbers = this.getProperty("addLineNumbers", true);
-            if (addLineNumbers) asHtml = true;
+	    var labelTemplate = this.getProperty("labelTemplate");
+	    if(!labelTemplate && addLineNumbers) {
+		labelTemplate = "${lineNumber}";
+	    }
+
+            if (labelTemplate) asHtml = true;
             var maxLines = parseInt(this.getProperty("maxLines", 100000));
             var lineLength = parseInt(this.getProperty("lineLength", 10000));
             var breakLines = this.getProperty("breakLines", true);
@@ -17958,7 +17964,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var corpus = "";
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
 	    var bubble=this.getProperty("doBubble",false);
-            if (addLineNumbers) {
+            if (labelTemplate) {
                 corpus = "<table width=100%>";
             }
             var lineCnt = 0;
@@ -18048,9 +18054,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
 		line = HtmlUtils.div(lineAttrs,line);
 
-                if (addLineNumbers) {
+                if (labelTemplate) {
+		    var label =  this.getRecordHtml(record, null, labelTemplate);
+		    label = label.replace("${lineNumber}", "#" +(lineCnt));
+		    label = label.replace(/ /g,"&nbsp;");
                     corpus += HtmlUtils.tr(rowAttrs, HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
-									   "<a href=#line_" + lineCnt + ">#" + lineCnt + "</a>&nbsp;  ") +
+									   "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
 					   HtmlUtils.td([], line));
                 } else {
                     corpus += line;

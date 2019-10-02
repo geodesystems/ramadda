@@ -644,6 +644,52 @@ public abstract class Processor extends CsvOperator {
     }
 
 
+
+    
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class Verifier extends Processor {
+
+	private int cnt = -1;
+
+        /**
+         * _more_
+         */
+        public Verifier() {}
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line)
+                throws Exception {
+	    if(cnt==-1) {
+		cnt = row.size();
+		return row;
+	    }
+	    if(row.size()!=cnt) {
+		throw new IllegalArgumentException("Bad column count:" + row.size() +" row:" + row);
+	    }
+	    return row;
+        }
+    }
+
+
     /**
      * Class description
      *

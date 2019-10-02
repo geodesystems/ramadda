@@ -1891,7 +1891,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var date = Utils.parseDate(key);
 			var data = Utils.cloneList(record.getData());
 			if(binCount) {
-			    for(k=0;k<data.length;k++) data[k]=0;
+			    for(k=0;k<data.length;k++) data[k]=1;
 			    //			    data =  [0];
 			}
 			var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
