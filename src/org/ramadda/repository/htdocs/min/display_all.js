@@ -18134,20 +18134,28 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		if(record) {
 		    _this.showRecordPopup($(this),record);
 		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
+		    _this.highlightLine(idx);
 		}
 	    });
 	    this.makeTooltips(lines,records);
         },
-        handleEventRecordSelection: function(source, args) {
-	    var index = this.findMatchingIndex(args.record);
-	    if(index<0 || !Utils.isDefined(index)) {
-		return;
-	    }
+	highlightLine: function(index) {
 	    var container = this.jq(ID_TEXT);
 	    container.find(".display-raw-line").removeClass("display-raw-line-selected");
 	    var sel = "[recordIndex='" + index+"']";
 	    var element =  container.find(sel);
 	    element.addClass("display-raw-line-selected");
+
+	},
+        handleEventRecordSelection: function(source, args) {
+	    var index = this.findMatchingIndex(args.record);
+	    if(index<0 || !Utils.isDefined(index)) {
+		return;
+	    }
+	    this.highlightLine(index);
+	    var container = this.jq(ID_TEXT);
+	    var sel = "[recordIndex='" + index+"']";
+	    var element =  container.find(sel);
 	    var c = container.offset().top;
 	    var s = container.scrollTop();
 	    var eo = element.offset();
