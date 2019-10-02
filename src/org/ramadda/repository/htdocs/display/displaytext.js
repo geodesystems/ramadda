@@ -2542,6 +2542,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             this.allRecords = pointData.getRecords();
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
+	    if(pattern) pattern = pattern.replace(/"/g,"&quot;");
 	    var input = "";
 	    if(!this.filterFields || this.filterFields.length==0) 
 		input = " " + HtmlUtils.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", "id", this.getDomId(ID_SEARCH)]);
@@ -2582,7 +2583,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    this.indexToRecord = {};
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
-            var asHtml = this.getProperty("asHtml", true);
+	    var asHtml = this.getProperty("asHtml", true);
             var addLineNumbers = this.getProperty("addLineNumbers", true);
 	    var labelTemplate = this.getProperty("labelTemplate");
 	    if(!labelTemplate && addLineNumbers) {
@@ -2613,11 +2614,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
             var lineCnt = 0;
             var displayedLineCnt = 0;
-            var regexp;
-            if (pattern) {
-		pattern = pattern.replace(/\./g,"\\.");
-                regexp = new RegExp("(" + pattern + ")","ig");
-            }
+	    var patternMatch = new TextMatcher(pattern);
 	    var regexpMaps = {};
 	    var filterFieldMap = {};
 	    if(this.filterFields) {
@@ -2648,8 +2645,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 				    regexpMaps[f.getId()] =  [];
 				    value.map(v=>{
 					if(v == "" || v == FILTER_ALL) return;
-					v = v.replace(/\./g,"\\.");
-					var re = new RegExp("(" + v + ")","ig");
+					var re = new TextMatcher(v);
 					regexpMaps[f.getId()].push(re);
 				    })
 				} catch(e) {console.log("Error making regexp:" + e);}
@@ -2660,7 +2656,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     value = value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		    if(regexpMaps[f.getId()]) {
 			regexpMaps[f.getId()].map(re=>{
-			    value = value.replace(re, "<span style=background:yellow;>$1</span>");
+			    value  = re.highlight(value);
 			}
 );
 		    }
@@ -2675,10 +2671,11 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 line = line.trim();
                 if (!includeEmptyLines && line.length == 0) continue;
                 lineCnt++;
-                if (regexp) {
-                    if (!line.toLowerCase().match(regexp)) continue;
-                    line = line.replace(regexp, "<span style=background:yellow;>$1</span>");
-                }
+
+		if(!patternMatch.matches(line)) {
+		    continue;
+		}
+                line = patternMatch.highlight(line);
                 displayedLineCnt++;
 
                 if (displayedLineCnt > maxLines) break;

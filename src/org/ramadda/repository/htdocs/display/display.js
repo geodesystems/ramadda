@@ -1699,7 +1699,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var value=null;
 		var values=null;
 		var _values =[];
-		var regexps =[];
+		var matchers =[];
 		var values=null;
 		if(filterField.isNumeric()) {
 		    var minField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_min"));
@@ -1738,8 +1738,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    values.map(v=>{
 			_values.push((""+v).toLowerCase());
 			try {
-			    v = v.replace(/\./g,"\\.");
-			    regexps.push(new RegExp(v,"i"));
+			    matchers.push(new TextMatcher(v));
 			} catch(skipIt){}
 		    });
 		}
@@ -1752,7 +1751,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    filters[filterField.getId()] = {
 			value:value,
 			values:values,
-			regexps:regexps,
+			matchers:matchers,
 			_values:_values,
 			anyValues:anyValues,
 			startsWith:filterStartsWith,
@@ -1825,8 +1824,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    }
 			}
 			if(!ok) {
-			    for(ri=0;ri<filter.regexps.length;ri++) {
-				if(rowValue.toString().match(filter.regexps[ri])) {
+			    for(ri=0;ri<filter.matchers.length;ri++) {
+				var matcher = filter.matchers[ri];
+				if(matcher.matches(rowValue.toString())) {
 				    ok = true;
 				    break;
 				}

@@ -361,6 +361,7 @@ public class TextRecord extends DataRecord {
                     StringBuilder msg = new StringBuilder("Bad token count:"
                                             + tokens.length + " toks:"
                                             + toks.size());
+                    msg.append("\nLine:" + line);
                     msg.append("\nExpected:");
                     for (int i = 0; i < fields.size(); i++) {
                         RecordField field = fields.get(i);
