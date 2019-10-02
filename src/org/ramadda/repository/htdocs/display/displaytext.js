@@ -2628,6 +2628,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var delimiter = this.getProperty("delimiter","");
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
 		var record = records[rowIdx];
+		if(!Utils.isDefined(record.lineNumber)) {
+		    record.lineNumber = (rowIdx+1);
+		}
 		this.indexToRecord[rowIdx] = record;
 		this.recordToIndex[record.getId()] = rowIdx;
                 var row = this.getDataValues(record);
@@ -2697,7 +2700,11 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
                 if (labelTemplate) {
 		    var label =  this.getRecordHtml(record, null, labelTemplate);
-		    label = label.replace("${lineNumber}", "#" +(lineCnt));
+		    var num = record.lineNumber;
+		    if(!Utils.isDefined(num)) {
+			num - lineCnt;
+		    }
+		    label = label.replace("${lineNumber}", "#" +(num));
 		    label = label.replace(/ /g,"&nbsp;");
                     corpus += HtmlUtils.tr(rowAttrs, HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
 									   "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
