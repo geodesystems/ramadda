@@ -1609,10 +1609,15 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    if(!args.record) return;
 	    var index = this.recordToIndex[args.record.getId()];
 	    if(!Utils.isDefined(index)) return;
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-record").removeClass("display-topfields-selected");
-	    this.jq(ID_DISPLAY_CONTENTS).find("[recordIndex='" + index +"']").parent().addClass("display-topfields-selected");
-	    
-
+	    var container = this.jq(ID_DISPLAY_CONTENTS);
+	    container.find(".display-topfields-record").removeClass("display-topfields-selected");
+	    var element =   container.find("[recordIndex='" + index +"']").parent();
+	    element.addClass("display-topfields-selected");
+	    var c = container.offset().top;
+	    var s = container.scrollTop();
+	    var eo = element.offset();
+	    var diff = eo.top- c + s;
+	    container.scrollTop(diff)
 	},
 
 
