@@ -1278,6 +1278,8 @@ public class WikiUtil {
                     if (tmp != null) {
                         clazz = tmp;
                     }
+		    style = (String) props.get("style");
+		    if(style==null) style = "";
                     String image = (String) props.get("image");
                     if (image != null) {
                         String attach = (String) props.get("attach");
@@ -1305,6 +1307,15 @@ public class WikiUtil {
 
                 continue;
             }
+
+
+
+
+
+
+
+
+
 
             if (tline.startsWith("-div")) {
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
