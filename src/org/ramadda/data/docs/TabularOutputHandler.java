@@ -248,13 +248,12 @@ public class TabularOutputHandler extends OutputHandler {
                 (String) entry.getValue(TabularTypeHandler.IDX_CONVERT);
         }
         if (lastInput != null) {
-            lastInput = lastInput.replaceAll("\n", "_newline_");
-            lastInput = lastInput.replaceAll("\r", "_newline_");
-	    //	    System.err.println("before:" + lastInput);
-            lastInput = lastInput.replaceAll("\\\\", "\\\\\\");
-	    lastInput = lastInput.replaceAll("\"", "\\\\\"");
-	    //	    System.err.println("after:" + lastInput);
-            //            System.err.println("last input:"+ lastInput);
+	    //A hack but escaping the escapes in java is a pain
+            lastInput = lastInput.replaceAll("\r\n", "_escnl_");
+	    lastInput = lastInput.replaceAll("\r", "_escnl_");
+	    lastInput = lastInput.replaceAll("\n", "_escnl_");
+	    lastInput = lastInput.replaceAll("\"", "_escquote_");
+	    lastInput = lastInput.replaceAll("\\\\", "_escslash_");
             js.append("var convertCsvLastInput =\"" + lastInput + "\";\n");
         } else {
             js.append("var convertCsvLastInput =null;\n");
