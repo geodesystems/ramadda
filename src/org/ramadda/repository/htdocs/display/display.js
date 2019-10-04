@@ -1876,35 +1876,46 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		  }
 		*/
 		var map ={};
+		var counts ={};
 		for (var i = 0; i < dataList.length; i++) {
 		    var record = dataList[i];
 		    var tuple = this.getDataValues(record);
 		    var key;
+		    var baseDate=null
+
 		    if(what=="month") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1);
 		    } else if(what=="day") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1) +"-" + record.getDate().getUTCDate();
+		    } else if(what=="week") {
+			var week = +Utils.formatDateWeek(record.getDate());
+			key = record.getDate().getUTCFullYear()+"-"+week;
+			var d =  (1 + (week - 1) * 7);
+			baseDate = new Date(record.getDate().getUTCFullYear(), 0, d);			
 		    } else {
 			key = record.getDate().getUTCFullYear()+"";
 		    }
 		    if(!Utils.isDefined(map[key])) {
-			var date = Utils.parseDate(key);
+			counts[key]=1;
+			var date = baseDate;
+			if(!baseDate) {
+			    date = Utils.parseDate(key);
+			}
 			var data = Utils.cloneList(record.getData());
 			if(binCount) {
 			    for(k=0;k<data.length;k++) data[k]=1;
-			    //			    data =  [0];
 			}
 			var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
 							 record.getElevation(),date,data);
 			map[key] = data;
 			binned.push(newRecord);
 		    } else {
+			counts[key]++;
 			var tuple1 = map[key];
 			if(binCount) {
 			    for(k=0;k<tuple1.length;k++) tuple1[k]++;
-			    //			    tuple1[0]++; 
 			    continue;
-			}
+			} 
 			var tuple2 = record.getData();
 			for(var j=0;j<tuple2.length;j++) {
 			    var v = tuple2[j];
@@ -1915,6 +1926,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 		    }
 		}
+		if(binType == "average") {
+		    for(key in counts) {
+			var tuple = map[key];
+			for(var j=0;j<tuple.length;j++) {
+			    var v = tuple[j];
+			    if((typeof v) !="number") continue;
+			    if(isNaN(v)) continue;
+			    tuple[j] = v/counts[key];
+			}
+		    }
+		}
+
 		dataList = binned;
 	    }
 //	    var t2=  new Date();
@@ -3721,6 +3744,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	},
 	colorByFieldChanged:function(field) {
+	    this.updateUI();
 	},
 
 	sizeByFieldChanged:function(field) {

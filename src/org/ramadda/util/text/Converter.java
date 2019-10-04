@@ -749,6 +749,8 @@ public abstract class Converter extends Processor {
                 sb.append("#fields=");
             }
             List values = new ArrayList<String>();
+	    String dfltFormat =  CsvUtil.getDbProp(props, "default",
+						   "format", null);
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
                 String[] toks;
@@ -812,7 +814,7 @@ public abstract class Converter extends Processor {
                 if (label != null) {
                     label = label.replaceAll(",", "%2C").replaceAll("<br>",
                                              " ").replaceAll("<p>", " ");
-                    label = label.replaceAll("  +", " ");
+                    label = label.replaceAll("  +", " ").replace("_space_"," ");
                     attrs.append("label=\"" + label + "\" ");
                 }
                 if (desc != null) {
@@ -826,7 +828,7 @@ public abstract class Converter extends Processor {
                     attrs.append("unit=\"" + unit + "\" ");
 
                 }
-                String  format = null;
+                String  format = dfltFormat;
                 String  type   = defaultType;
                 boolean isGeo  = false;
 
@@ -869,11 +871,12 @@ public abstract class Converter extends Processor {
                 }
 
                 type   = CsvUtil.getDbProp(props, id, "type", type);
+		if(Misc.equals(type,"enum")) type = "enumeration";
                 format = CsvUtil.getDbProp(props, id, "format", format);
 		if(format!=null) format = format.replaceAll("_space_"," ");
 
                 attrs.append(" type=\"" + type + "\"");
-                if (format != null) {
+                if (format != null && Misc.equals(type,"date")) {
                     attrs.append(" format=\"" + format + "\" ");
                 }
                 if (type.equals("double") || type.equals("integer")) {

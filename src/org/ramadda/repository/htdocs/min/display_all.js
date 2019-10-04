@@ -2026,35 +2026,46 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		  }
 		*/
 		var map ={};
+		var counts ={};
 		for (var i = 0; i < dataList.length; i++) {
 		    var record = dataList[i];
 		    var tuple = this.getDataValues(record);
 		    var key;
+		    var baseDate=null
+
 		    if(what=="month") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1);
 		    } else if(what=="day") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1) +"-" + record.getDate().getUTCDate();
+		    } else if(what=="week") {
+			var week = +Utils.formatDateWeek(record.getDate());
+			key = record.getDate().getUTCFullYear()+"-"+week;
+			var d =  (1 + (week - 1) * 7);
+			baseDate = new Date(record.getDate().getUTCFullYear(), 0, d);			
 		    } else {
 			key = record.getDate().getUTCFullYear()+"";
 		    }
 		    if(!Utils.isDefined(map[key])) {
-			var date = Utils.parseDate(key);
+			counts[key]=1;
+			var date = baseDate;
+			if(!baseDate) {
+			    date = Utils.parseDate(key);
+			}
 			var data = Utils.cloneList(record.getData());
 			if(binCount) {
 			    for(k=0;k<data.length;k++) data[k]=1;
-			    //			    data =  [0];
 			}
 			var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
 							 record.getElevation(),date,data);
 			map[key] = data;
 			binned.push(newRecord);
 		    } else {
+			counts[key]++;
 			var tuple1 = map[key];
 			if(binCount) {
 			    for(k=0;k<tuple1.length;k++) tuple1[k]++;
-			    //			    tuple1[0]++; 
 			    continue;
-			}
+			} 
 			var tuple2 = record.getData();
 			for(var j=0;j<tuple2.length;j++) {
 			    var v = tuple2[j];
@@ -2065,6 +2076,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 		    }
 		}
+		if(binType == "average") {
+		    for(key in counts) {
+			var tuple = map[key];
+			for(var j=0;j<tuple.length;j++) {
+			    var v = tuple[j];
+			    if((typeof v) !="number") continue;
+			    if(isNaN(v)) continue;
+			    tuple[j] = v/counts[key];
+			}
+		    }
+		}
+
 		dataList = binned;
 	    }
 //	    var t2=  new Date();
@@ -3871,6 +3894,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	},
 	colorByFieldChanged:function(field) {
+	    this.updateUI();
 	},
 
 	sizeByFieldChanged:function(field) {
@@ -12779,6 +12803,9 @@ function ScatterplotDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
+        trendLineEnabled: function() {
+            return true;
+        },
         makeChartOptions: function(dataList, props, selectedFields) {
             var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             chartOptions.curveType = null;
@@ -12809,9 +12836,12 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if(this.getProperty("vAxisLogScale", false)) 
 		chartOptions.vAxis.logScale = true;
 
-	    /*
-	      chartOptions.trendlines =  {
-	      0: {
+	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","maximized");
+	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","maximized");
+
+/*
+  chartOptions.trendlines =  {
+  0: {
 	      type: 'linear',
 	      color: 'green',
 	      lineWidth: 3,
@@ -12820,37 +12850,56 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	      visibleInLegend: true
 	      }
 	      };		
-	    */
+
+*/
+//	    console.log(JSON.stringify(chartOptions,null,2));
 
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
-                $.extend(chartOptions.hAxis, {
-                    title: this.getDataValues(dataList[0])[0]
-                });
                 if (!chartOptions.vAxis) chartOptions.vAxis = {};
-                $.extend(chartOptions.vAxis, {
-                    title: this.getDataValues(dataList[0])[1]
-                });
+                if (!chartOptions.hAxis) chartOptions.hAxis = {};
+		if (this.getProperty("hAxisTitle")) {
+                    chartOptions.hAxis.title = this.getProperty("hAxisTitle");
+		}
+		if (this.getProperty("vAxisTitle")) {
+                    chartOptions.vAxis.title = this.getProperty("vAxisTitle");
+		}
+
+		if(!chartOptions.hAxis.title) {
+                    $.extend(chartOptions.hAxis, {
+			title: this.getDataValues(dataList[0])[0]
+                    });
+		}
+
+		if(!chartOptions.vAxis.title) {
+                    $.extend(chartOptions.vAxis, {
+			title: this.getDataValues(dataList[0])[1]
+                    });
+		}
                 //We only have the one vAxis range for now
                 if (!isNaN(this.getVAxisMinValue())) {
-                    chartOptions.hAxis.minValue = this.getVAxisMinValue();
+//                    chartOptions.hAxis.minValue = this.getVAxisMinValue();
                     chartOptions.vAxis.minValue = this.getVAxisMinValue();
                 }
                 if (!isNaN(this.getVAxisMaxValue())) {
-                    chartOptions.hAxis.maxValue = this.getVAxisMaxValue();
+//                    chartOptions.hAxis.maxValue = this.getVAxisMaxValue();
                     chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
+//	    console.log(JSON.stringify(chartOptions,null,2));
+
             return chartOptions;
         },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
-            var height = 400;
-            if (Utils.isDefined(this.chartHeight)) {
-                height = this.chartHeight;
+            var height = this.getProperty("height",400);
+            if (Utils.isDefined(this.getProperty("chartHeight"))) {
+                height = this.getProperty("chartHeight");
             }
             var width = "100%";
-            if (Utils.isDefined(this.chartWidth)) {
-                width = this.chartWidth;
+	    if (Utils.isDefined(this.getProperty("chartWidth"))) {
+                width = this.getProperty("chartWidth");
             }
+	    if((typeof height)=="number") height = height+"px";
+	    if((typeof width)=="number") width = width+"px";
 
             var chartId = this.getChartId();
             $("#" + chartId).css("width", width);
