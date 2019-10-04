@@ -1890,6 +1890,9 @@ public class WikiUtil {
             }
 
             if (tline.startsWith(":comment")) {
+		List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		if(toks.size()>1) 
+		    HtmlUtils.comment(buff, toks.get(1));
 		continue;
 	    }
 

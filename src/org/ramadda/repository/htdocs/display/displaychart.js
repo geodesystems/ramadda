@@ -360,17 +360,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     //Init the defaults first
     $.extend(this, {
         indexField: -1,
-        colorList: ['blue', 'red', 'green', 'orange', 'fuchsia', 'teal', 'navy', 'silver'],
         curveType: 'none',
         fontSize: 0,
         showPercent: false,
         percentFields: null,
     });
-    if (properties.colors) {
-        this.colorList = ("" + properties.colors).split(",");
-    }
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
+
 
     RamaddaUtil.defineMembers(this, {
         clearCachedData: function() {
@@ -392,10 +389,27 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             SUPER.getWikiAttributes.call(this, attrs);
             if (this.colorList.join(",") != "blue,red,green") {
                 attrs.push("colors");
-                attrs.push(this.colorList.join(", "));
+                attrs.push(this.getColorList().join(", "));
             }
         },
 
+	getColorList:function() {
+	    if(this.colorList && this.colorList.length>0) {
+		return this.colorList;
+	    }
+
+	    if (this.getProperty("colors")) {
+		var v = this.getProperty("colors");
+		if(!Array.isArray(v)) {
+		    v = v.split(",");
+		}
+		this.colorList =  v;
+	    }
+	    if(!this.colorList || this.colorList.length==0) {
+		this.colorList= ['blue', 'red', 'green', 'orange', 'fuchsia', 'teal', 'navy', 'silver'];
+	    }
+	    return this.colorList;
+	},
         initDialog: function() {
             SUPER.initDialog.call(this);
             var _this = this;
@@ -478,7 +492,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
             tmp += HtmlUtils.formEntry("Colors:",
-				       HtmlUtils.input("", this.colorList.join(","), ["size", "35", ATTR_ID, this.getDomId(ID_COLORS)]));
+				       HtmlUtils.input("", this.getColorList().join(","), ["size", "35", ATTR_ID, this.getDomId(ID_COLORS)]));
             tmp += "</table>";
             menuItems.push(tmp);
 
@@ -1218,7 +1232,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             $.extend(chartOptions, {
                 lineWidth: this.getProperty("lineWidth",1),
-                colors: this.colorList,
+                colors: this.getColorList(),
                 curveType: this.curveType,
 		pointShape:this.getProperty("pointShape"),
 		pointSize: this.getProperty("pointSize"),
@@ -2214,7 +2228,7 @@ function BubbleDisplay(displayManager, id, properties) {
             if (ct) {
                 chartOptions.colors = ct;
             } else if (!this.colors) {
-                chartOptions.colors = this.colorList;
+                chartOptions.colors = this.getColorList();
             }
             if (chartOptions.colors) {
                 chartOptions.colors = Utils.getColorTable("rainbow", true);
@@ -2289,7 +2303,7 @@ function BartableDisplay(displayManager, id, properties) {
             $.extend(chartOptions, {
                 title: "the title",
                 bars: 'horizontal',
-                colors: this.colorList,
+                colors: this.getColorList(),
                 width: (Utils.isDefined(this.chartWidth) ? this.chartWidth : "100%"),
                 chartArea: {
                     left: '30%',

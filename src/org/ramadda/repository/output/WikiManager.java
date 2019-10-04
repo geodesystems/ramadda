@@ -6254,6 +6254,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         topProps.add(HtmlUtils.quote(entry.getId()));
 
 
+
         if (tag.equals(WIKI_TAG_GROUP) || tag.equals(WIKI_TAG_GROUP_OLD)) {
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 Object key   = keys.nextElement();
@@ -6264,12 +6265,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
             sb.append("\n");
 
+
             request.putExtraProperty("added displaymanager", "true");
+	    topProps.addAll(propList);
             js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
-
             return;
         }
 
