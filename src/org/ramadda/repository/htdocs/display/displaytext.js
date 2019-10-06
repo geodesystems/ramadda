@@ -2559,7 +2559,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 }
             });
             var height = this.getProperty("height", "600");
-            var html = HtmlUtils.div(["id", this.getDomId(ID_TEXT), "style", "padding:4px;border:1px #ccc solid;border-top:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;"]);
+	    var style = this.getProperty("displayInnerStyle","");
+            var html = HtmlUtils.div(["id", this.getDomId(ID_TEXT), "style", "padding:4px;border:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;" + style]);
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
             this.showText();
         },
