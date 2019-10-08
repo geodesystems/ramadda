@@ -19,6 +19,18 @@ load "$NCL_RESOURCES/change_units.ncl"
 ;************************************************
 
 ;*****************************************************************
+; Replicate a variable
+;*****************************************************************
+undef("replicate_var")
+function replicate_var(tmpvar)
+local dummyvar
+begin
+  dummyvar = (/tmpvar/)
+  copy_VarMeta(tmpvar, dummyvar)
+  return(dummyvar)
+end 
+
+;*****************************************************************
 ; Check for an array of all the same value
 ;*****************************************************************
 undef("check_array_equal")
@@ -704,6 +716,7 @@ begin
     vartitle = opts@variable
   end if
   anomString = " Anomaly"
+  accumString = " Accumulation"
   if (isanom) then
       if (opts@anomtype .eq. "stdanom") then
         anomString = " Anomaly (Standardized)"
@@ -712,11 +725,14 @@ begin
        anomString = " Anomaly (Percent)"
      end if
   end if
-  if (isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anomaly",-1))) then
+  if (isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
     vartitle = vartitle + anomString
   end if 
   if (opts@anomtype .eq. "timstd") then
     vartitle = vartitle + " Standard Deviation"
+  end if
+  if (opts@stattype .eq. "sum") then
+    vartitle = vartitle + " Accumulation"
   end if
   if (.not. (opts@level .eq. "")) then
     vartitle = vartitle + " (" + level +" "+levelunit+ ")"
@@ -885,6 +901,11 @@ begin
   rescf@cnFillMode= "AreaFill"  
   rescf@lbLabelAutoStride = True
 
+  if (isatt(data,"long_name")) then
+    vartitle = data@long_name
+  else
+    vartitle = opts@variable
+  end if
   ; labelbar
   if (doPanel) then
     rescf@lbLabelBarOn = False         ; turn off label bar
@@ -892,7 +913,8 @@ begin
     rescf@mpNationalLineThicknessF = .5     ; reduce the line thickness
   else
     rescf@lbLabelBarOn = True         ; turn on label bar
-    if (opts@isanom) then   ; add clim string as label bar title
+    ;;if (opts@isanom) then   ; add clim string as label bar title
+    if (opts@isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
       climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
       rescf@lbTitleString = climText
       rescf@lbTitleFontHeightF = 0.01
@@ -1322,7 +1344,8 @@ begin
       ;resP@lbTitleFontHeightF = 0.013
       ;resP@lbTitlePosition = "Bottom"
       ;resP@lbTitleOffsetF = 0.005
-      if (opts@isanom) then   ; add clim string as label bar title
+      ;if (opts@isanom) then   ; add clim string as label bar title
+      if (opts@isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
         climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
         resP@lbTitleString = climText
         resP@lbTitleFontHeightF = 0.01
@@ -1405,7 +1428,7 @@ end
 undef("plotcorr")
 procedure plotcorr(files[*]:string, wks_name:string, wks_type:string,  opts:logical)
 
-local tsdata, ncdata, rawdata, vals
+local tsdata, ncdata, rawdata, vals, plotData, corr, cdata
 
 begin
   numfiles = dimsizes(files);
@@ -1523,6 +1546,7 @@ begin
     cdata(ncidx-1,:,:) = corr
     ;printVarSummary(cdata)
     ncidx = ncidx + 1
+    delete(corr)
   end do
   ;;if (numfiles .gt. 2) then
   if (numplots .ge. 2 .and. opts@ensavg) then
@@ -1552,10 +1576,13 @@ begin
   end if
 
   ;print("calling plotmap")
-  plotmap(cdata,wks_name,wks_type,opts)
+  plotData = NewList("fifo")
+  do i = 0,numplots-1
+    ListAppend(plotData,replicate_var(cdata(i,:,:)))
+  end do
+  plotmap(plotData,wks_name,wks_type,opts)
   delete(csvidx)
   delete(ncidx)
-  delete(corr)
   delete(cdata)
   delete(shape)
   
@@ -2005,7 +2032,11 @@ begin
   numfiles = dimsizes(files)
   data = readdata(files(0), opts)
   if (dimsizes(getvardims(data)) .gt. 2) then
-     atmpdata = dim_avg_n_Wrap(data, 0);
+     if (opts@stattype .eq. "sum") then
+       atmpdata = dim_sum_n_Wrap(data, 0);
+     else
+       atmpdata = dim_avg_n_Wrap(data, 0);
+     end if
      delete(data)
      onetime = atmpdata
      delete(atmpdata)
@@ -2045,13 +2076,17 @@ begin
     tmpdata := readdata(files(i), opts)
     ;printVarSummary(tmpdata)
     if (dimsizes(getvardims(tmpdata)) .gt. 2) then
-       ListAppend(alldata,dim_avg_n_Wrap(tmpdata, 0));
+       if (opts@stattype .eq. "sum") then
+         ListAppend(alldata,dim_sum_n_Wrap(tmpdata, 0));
+       else
+         ListAppend(alldata,dim_avg_n_Wrap(tmpdata, 0));
+       end if
        ;;atmpdata = dim_avg_n_Wrap(tmpdata, 0);
        ;;delete(tmpdata)
        ;;tmpdata = atmpdata
        ;;delete(atmpdata)
     else
-     ListAppend(alldata,tmpdata)
+     ListAppend(alldata,replicate_var(tmpdata))
     end if
     ;;alldata(i,:,:) = tmpdata
     ;;ListAppend(alldata,tmpdata)
@@ -2254,6 +2289,10 @@ begin
     anomtype = "anom"
   end if
   
+  stattype=getenv("stat")
+  if (ismissing(stattype)) then
+    stattype = "mean"
+  end if
   
   colormap=getenv("colormap")
   if (ismissing(colormap)) then
@@ -2423,6 +2462,7 @@ begin
   options@colormap = colormap
   options@isanom = isanom
   options@anomtype = anomtype
+  options@stattype = stattype
   options@annotation = getenv("annotation")
   options@titles = titles
   options@units=units

@@ -307,7 +307,7 @@ public abstract class CDODataService extends Service {
             commands.add(getPath(request, mean));
             commands.add(statFile.toString());
             //System.err.println("stat command: "+commands);
-            runCommands(commands, dpi.getProcessDir(), statFile, 90); // add more time if daily
+            runCommands(commands, dpi.getProcessDir(), statFile, 90);  // add more time if daily
         }
         Object[] newValues = new Object[values.length];
         System.arraycopy(values, 0, newValues, 0, values.length);
@@ -450,6 +450,7 @@ public abstract class CDODataService extends Service {
      * @param commands  the list of commands to run
      * @param processDir  the processing directory
      * @param outFile     the outfile
+     * @param timeoutSecs _more_
      *
      * @throws Exception problem running commands
      */
@@ -722,21 +723,31 @@ public abstract class CDODataService extends Service {
                                String type)
             throws Exception {
 
+        boolean isMonthly = getFrequency(
+                                request, si.getEntries().get(0)).equals(
+                                CDOOutputHandler.FREQUENCY_MONTHLY);
         if ( !isAnom) {
             List<TwoFacedObject> stats = new ArrayList<TwoFacedObject>();
             stats.add(new TwoFacedObject("Average",
                                          CDOOutputHandler.STAT_MEAN));
+            if ( !isMonthly && addPct) {  // for now, don't allow this
+                stats.add(new TwoFacedObject("Accumulation",
+                                             CDOOutputHandler.STAT_SUM));
+            }
             if (haveClimo) {
                 stats.add(new TwoFacedObject("Anomaly",
                                              CDOOutputHandler.STAT_ANOM));
-                stats.add(new TwoFacedObject("Standardized Anomaly",
-                                             CDOOutputHandler.STAT_STDANOM));
+                if (isMonthly) {  // for now, don't allow this
+                    stats.add(new TwoFacedObject("Standardized Anomaly",
+                            CDOOutputHandler.STAT_STDANOM));
+                }
                 if (addPct) {
                     stats.add(new TwoFacedObject("Percent of Normal",
                             CDOOutputHandler.STAT_PCTANOM));
                 }
                 if ( !type.equals(
-                        ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES)) {
+                        ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES)
+                        && isMonthly) {
                     stats.add(new TwoFacedObject("Standard Deviation",
                             CDOOutputHandler.STAT_STD));
                 }
@@ -757,7 +768,7 @@ public abstract class CDODataService extends Service {
                                 .ARG_ACTION_MULTI_TIMESERIES) || (type.equals(
                                     ClimateModelApiHandler
                                         .ARG_ACTION_COMPARE) && (si.getOperands()
-                                            .size() <= 2)))) {
+                                            .size() <= 2) && isMonthly))) {
                 StringBuilder climyearsSB = new StringBuilder();
                 statForm.append(HtmlUtils.br());
                 if (type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)
@@ -1279,19 +1290,25 @@ public abstract class CDODataService extends Service {
         List<List<ServiceOperand>> sortedOps =
             ModelUtil.sortOperandsByCollection(request,
                 climInput.getOperands());
-        Entry climSample = sortedOps.get(0).get(0).getEntries().get(0);
+        Entry freqSample = sortedOps.get(0).get(0).getEntries().get(0);
+        boolean isMonthly = getFrequency(request, freqSample).equals(
+                                CDOOutputHandler.FREQUENCY_MONTHLY);
+        Entry[] climSamples = new Entry[sortedOps.size()];
         if (needAnom
                 && (type.equals(
                     ClimateModelApiHandler
                         .ARG_ACTION_ENS_COMPARE) || type.equals(
                             ClimateModelApiHandler.ARG_ACTION_COMPARE))) {
+            Entry climSample = null;
             int climDatasetNumber =
                 request.get(CDOOutputHandler.ARG_CLIMATE_DATASET_NUMBER, 0);
             //sortedOps = sortOpsByModelExperiment(request,
             //        myInput.getOperands());
             //sortedOps = sortOperandsByCollection(request,
             //        myInput.getOperands());
-            if ((sortedOps.size() > 1) && (climDatasetNumber > 0)) {
+            if ((sortedOps.size() > 1)
+                    && (climDatasetNumber > 0)
+                    && isMonthly) {
                 String climKey = ModelUtil.getModelExperimentString(request,
                                      climDatasetNumber);
                 for (List<ServiceOperand> myOp : sortedOps) {
@@ -1305,22 +1322,26 @@ public abstract class CDODataService extends Service {
                         break;
                     }
                 }
+                for (int i = 0; i < sortedOps.size(); i++) {
+                    climSamples[i] = climSample;
+                }
+            } else if ( !isMonthly) {
+                for (int i = 0; i < sortedOps.size(); i++) {
+                    climSamples[i] =
+                        sortedOps.get(i).get(0).getEntries().get(0);
+                    i++;
+                }
             }
-        } else {
-            //sortedOps.add(myInput.getOperands());
         }
         // If we have daily data, we now adjust to get only the years we need
-        if (getFrequency(request,
-                         climSample).equals(
-                             CDOOutputHandler.FREQUENCY_DAILY)) {
+        if ( !isMonthly) {
             climInput = adjustInput(request, input, true);
             sortedOps = ModelUtil.sortOperandsByCollection(request,
                     climInput.getOperands());
         }
 
         // make some things final for the threading
-        final Entry        myClimSample = climSample;
-        final ServiceInput myInput      = climInput;
+        final ServiceInput myInput = climInput;
         final List<ServiceOperand> outputEntries =
             new ArrayList<ServiceOperand>();
         final Request myRequest = request;
@@ -1345,20 +1366,6 @@ public abstract class CDODataService extends Service {
             int threadNum = 0;
             for (final ServiceOperand op : ops) {
                 Entry oneOfThem = op.getEntries().get(0);
-
-                /**
-                 * Entry collection =
-                 *   GranuleTypeHandler.getCollectionEntry(request, oneOfThem);
-                 * String frequency = "Monthly";
-                 * if (collection != null) {
-                 *   //frequency = collection.getValues()[0].toString();
-                 *   frequency = collection.getValue(0).toString();
-                 * }
-                 * boolean isMonthly = frequency.toLowerCase().indexOf("mon")
-                 *                   >= 0;
-                 */
-                boolean isMonthly = getFrequency(request, oneOfThem).equals(
-                                        CDOOutputHandler.FREQUENCY_MONTHLY);
                 if ( !useThreads || ((threadNum == 0) && needAnom)) {
                     if (isMonthly) {
                         outputEntries.add(evaluateMonthlyRequest(request,
@@ -1366,18 +1373,19 @@ public abstract class CDODataService extends Service {
                                 op,
                                 opNum,
                                 myType,
-                                myClimSample));
+                                climSamples[opNum]));
                     } else {
                         outputEntries.add(evaluateDailyRequest(request,
                                 myInput,
                                 op,
                                 opNum,
                                 myType,
-                                myClimSample));
+                                climSamples[opNum]));
                     }
                 } else {
-                    final int     myOp        = opNum;
-                    final boolean myIsMonthly = isMonthly;
+                    final int     myOp         = opNum;
+                    final boolean myIsMonthly  = isMonthly;
+                    final Entry   myClimSample = climSamples[opNum];
                     //System.out.println("making thread " + opNum);
                     threadManager.addRunnable(new ThreadManager.MyRunnable() {
                                 public void run() throws Exception {

@@ -845,6 +845,15 @@ public class NCLModelPlotDataService extends NCLDataService {
             }
             envMap.put("anomtype", anomType);
 
+            String stat = "mean";
+            if (request.getString(CDOOutputHandler.ARG_CDO_STAT,
+                                  CDOOutputHandler.STAT_MEAN).equals(
+                                      CDOOutputHandler.STAT_SUM)) {
+                stat = "sum";
+            }
+            envMap.put("stat", stat);
+
+
             String climstartYear =
                 request.getString(
                     CDOOutputHandler.ARG_CDO_CLIM_STARTYEAR,

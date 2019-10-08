@@ -643,7 +643,7 @@ begin
   amres@amParallelPosF   = 0.5              ; Move legend to right
   amres@amOrthogonalPosF = 0.5              ; Move legend down.
 
-  if (opts@plottype .eq. "lines" .and. numlines .gt. 1) then
+  if ((opts@plottype .eq. "lines" .and. numlines .gt. 1) .or. (.not. (opts@plottype .eq. "lines"))) then
     annoid = gsn_add_annotation(plot,lbid,amres)  ; add legend to plot
   end if
 

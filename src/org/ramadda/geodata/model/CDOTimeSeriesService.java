@@ -296,9 +296,8 @@ public class CDOTimeSeriesService extends CDODataService {
 
         String tail =
             getOutputHandler().getStorageManager().getFileTail(sample);
-        String       id       = getRepository().getGUID();
-        String       newName  = IOUtil.stripExtension(tail) + "_" + id
-                                + ".nc";
+        String id      = getRepository().getGUID();
+        String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
         newName = cleanName(newName);
         File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
         List<String> commands = initCDOService();
@@ -635,7 +634,7 @@ public class CDOTimeSeriesService extends CDODataService {
         }
         avalues[5] = dateSB.toString();
         outputName.append(dateSB);
-        
+
 
         //System.out.println("Name: " + outputName.toString());
 
@@ -643,7 +642,8 @@ public class CDOTimeSeriesService extends CDODataService {
         TypeHandler myHandler = getRepository().getTypeHandler("cdm_grid",
                                     true);
         //getRepository().getTypeHandler("type_single_point_grid_netcdf", true);
-        Entry outputEntry = new Entry(myHandler, true, cleanName(outputName.toString()));
+        Entry outputEntry = new Entry(myHandler, true,
+                                      cleanName(outputName.toString()));
         outputEntry.setResource(resource);
         outputEntry.setValues(avalues);
         getOutputHandler().getEntryManager().writeEntryXmlFile(request,
