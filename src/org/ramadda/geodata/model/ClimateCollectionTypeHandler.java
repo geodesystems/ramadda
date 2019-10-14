@@ -17,7 +17,6 @@
 package org.ramadda.geodata.model;
 
 
-//import org.ramadda.geodata.cdmdata.CDOOutputHandler;
 import org.ramadda.geodata.thredds.CatalogOutputHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
@@ -67,7 +66,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
     /** NCL output handler */
     private NCLOutputHandler nclOutputHandler;
 
-    /** _more_ */
+    /** catalog output handler */
     private CatalogOutputHandler catalogOutputHandler;
 
     /** image request id */
@@ -79,7 +78,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
     /** Timeseries request id */
     public static final String REQUEST_TIMESERIES = "timeseries";
 
-    /** _more_ */
+    /** thredds catalog */
     public static final String REQUEST_THREDDSCATALOG = "threddscatalog";
 
     /**
@@ -94,16 +93,15 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
                                         Element entryNode)
             throws Exception {
         super(repository, entryNode);
-        //processes.addAll(new CDOOutputHandler(repository).getServices());
         processes.add(new CDOArealStatisticsService(repository));
         nclOutputHandler = new NCLOutputHandler(repository);
     }
 
 
     /**
-     * _more_
+     * Get the services
      *
-     * @return _more_
+     * @return the list of Services
      */
     public List<Service> getServices() {
         return processes;
@@ -143,20 +141,21 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         String wiki =
             "+section title={{name}}\n{{description wikify=true}}\n{{collection.form}}\n-section";
         StringBuilder sb =
-            new StringBuilder(getWikiManager().wikifyEntry(request, entry,
-                wiki));
+            new StringBuilder(getWikiManager().wikifyEntry(request,
+                                                           entry,
+                                                           wiki));
 
         return new Result(msg(getLabel()), sb);
     }
 
     /**
-     * _more_
+     * Get the download form
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
+     * @param request the request
+     * @param entry the collection entry
+     * @param sb  the HTML
      *
-     * @throws Exception _more_
+     * @throws Exception something went wrong
      */
     private void getDownloadForm(Request request, Entry entry, Appendable sb)
             throws Exception {
@@ -169,18 +168,18 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
     }
 
     /**
-     * _more_
+     * Get the wiki include
      *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
+     * @param wikiUtil  WikiUtil instance
+     * @param request   the request
+     * @param originalEntry the original entry
+     * @param entry the entry for wiki
+     * @param tag the wiki tag
+     * @param props the properties
      *
-     * @return _more_
+     * @return the wiki include text
      *
-     * @throws Exception _more_
+     * @throws Exception worries
      */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
@@ -220,31 +219,36 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         addSelectorsToForm(request, entry, selectorSB, formId, js);
         String searchButton = JQ.button("Search", formId + "_search", js,
                                         HtmlUtils.call(formId + ".search",
-                                            "event"));
+                                                "event"));
         String downloadButton = JQ.button("Download Data",
                                           formId + "_do_download", js,
-                                          HtmlUtils.call(formId
-                                              + ".download", "event"));
+                                          HtmlUtils.call(formId + ".download",
+                                                  "event"));
         String bdownloadButton = JQ.button("Get Download Script",
                                            formId + "_do_bulkdownload", js,
                                            HtmlUtils.call(formId
-                                               + ".bulkdownload", "event"));
+                                               + ".bulkdownload",
+                                                   "event"));
         String catalogButton = JQ.button("Get THREDDS Catalog",
                                          formId + "_do_threddscatalog", js,
                                          HtmlUtils.call(formId
-                                             + ".threddscatalog", "event"));
+                                             + ".threddscatalog",
+                                                 "event"));
 
         selectorSB.append(HtmlUtils.formTableClose());
         sb.append(
             "<table width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>");
-        sb.append("<td width=30%>");
+        sb.append("<td width=\"30%\" align=\"center\">");
         String freq = getFrequency(request, entry).trim();
 
         WikiUtil.heading(sb, "Select " + freq + " Data");
         sb.append(HtmlUtils.div(selectorSB.toString(),
                                 HtmlUtils.cssClass("entryselect")));
-        sb.append(HtmlUtils.buttons(searchButton, downloadButton,
-                                    bdownloadButton));
+        StringBuilder buttonBuf = new StringBuilder();
+        buttonBuf.append(searchButton);
+        buttonBuf.append(HtmlUtils.p());
+        buttonBuf.append(HtmlUtils.buttons(downloadButton, bdownloadButton));
+        sb.append(HtmlUtils.div(buttonBuf.toString()));
         sb.append("</td><td>");
         sb.append(HtmlUtils.div("",
                                 HtmlUtils.cssClass("entryoutput")
@@ -256,20 +260,19 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
     /**
      * @see org.ramadda.repository.type.CollectionTypeHandler#addSelectorsToForm(org.ramadda.repository.Request, org.ramadda.repository.Entry, java.lang.StringBuilder, java.lang.String, java.lang.StringBuilder)
      *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param formId _more_
-     * @param js _more_
+     * @param request the request
+     * @param entry   the entry
+     * @param sb      the form
+     * @param formId  the form id
+     * @param js      the JavaScript
      *
-     * @throws Exception _more_
+     * @throws Exception something went wrong
      */
     @Override
     public void addSelectorsToForm(Request request, Entry entry,
                                    Appendable sb, String formId,
                                    Appendable js)
             throws Exception {
-        // TODO Auto-generated method stub
         super.addSelectorsToForm(request, entry, sb, formId, js);
         if (getFrequency(request, entry).equalsIgnoreCase("Daily")) {
             String widget = msgLabel("Start") + HtmlUtils.space(1)
@@ -285,16 +288,15 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
     /**
      * @see org.ramadda.repository.type.CollectionTypeHandler#addClauses(org.ramadda.repository.Request, org.ramadda.repository.Entry, java.util.List)
      *
-     * @param request _more_
-     * @param group _more_
-     * @param clauses _more_
+     * @param request  the request
+     * @param group    the groups
+     * @param clauses  the clauses
      *
-     * @throws Exception _more_
+     * @throws Exception problemos
      */
     @Override
     public void addClauses(Request request, Entry group, List<Clause> clauses)
             throws Exception {
-        // TODO Auto-generated method stub
         super.addClauses(request, group, clauses);
         if (request.defined(ARG_FROMDATE) || request.defined(ARG_TODATE)) {
             String           start = request.getString(ARG_FROMDATE, null);
@@ -369,16 +371,20 @@ JQ.button(
     HtmlUtils.call(formId + ".download", "event")) + " "
         +
         */
-        JQ.button(
-            "Plot Map", formId + "_do_image", js,
-            HtmlUtils.call(formId + ".makeImage", "event")) + " "
-                + JQ.button(
-                    "Google Earth", formId + "_do_kmz", js,
-                    HtmlUtils.call(formId + ".makeKMZ", "event")) + " "
-                        + JQ.button(
-                            "Time Series", formId + "_do_timeseries", js,
-                            HtmlUtils.call(
-                                formId + ".makeTimeSeries", "event"));
+        JQ.button("Plot Map", formId + "_do_image", js,
+                  HtmlUtils.call(formId + ".makeImage",
+                                 "event")) + " "
+                                           + JQ.button("Google Earth",
+                                               formId + "_do_kmz", js,
+                                               HtmlUtils.call(formId
+                                                   + ".makeKMZ",
+                                                       "event")) + " "
+                                                           + JQ.button(
+                                                               "Time Series", formId
+                                                               + "_do_timeseries", js, HtmlUtils.call(
+                                                                   formId
+                                                                   + ".makeTimeSeries",
+                                                                           "event"));
         List<String>  processTabs   = new ArrayList<String>();
         List<String>  processTitles = new ArrayList<String>();
 
@@ -395,16 +401,17 @@ JQ.button(
             //TODO: add radio buttons
             StringBuilder tmpSB = new StringBuilder();
             tmpSB.append(HtmlUtils.radio(ARG_DATA_PROCESS_ID,
-                                         process.getId(), false));
+                                         process.getId(),
+                                         false));
             tmpSB.append(HtmlUtils.space(1));
             tmpSB.append(msg("Select"));
             tmpSB.append(HtmlUtils.br());
             ServiceOperand op = new ServiceOperand(entry);
             process.addToForm(request, new ServiceInput(op), tmpSB, null,
                               null);
-            processTabs.add(
-                HtmlUtils.div(
-                    tmpSB.toString(), HtmlUtils.style("min-height:200px;")));
+            processTabs.add(HtmlUtils.div(tmpSB.toString(),
+                                          HtmlUtils.style(
+                                          "min-height:200px;")));
             processTitles.add(process.getLabel());
         }
 
@@ -441,7 +448,8 @@ JQ.button(
         if (what == null) {
             return null;
         }
-        if (what.equals(REQUEST_IMAGE) || what.equals(REQUEST_KMZ)
+        if (what.equals(REQUEST_IMAGE)
+                || what.equals(REQUEST_KMZ)
                 || what.equals(REQUEST_TIMESERIES)
                 || what.equals(REQUEST_THREDDSCATALOG)) {
             return processDataRequest(request, entry, what);
@@ -452,13 +460,13 @@ JQ.button(
 
 
     /**
-     * _more_
+     * Get the services to run
      *
-     * @param request _more_
+     * @param request the request
      *
-     * @return _more_
+     * @return  the services
      *
-     * @throws Exception _more_
+     * @throws Exception  something went wrong
      */
     public List<Service> getServicesToRun(Request request) throws Exception {
         List<Service> processesToRun = new ArrayList<Service>();
@@ -481,7 +489,7 @@ JQ.button(
      *
      * @param request  the Request
      * @param entry    the Entry
-     * @param type _more_
+     * @param type     the type of request
      *
      * @return  the Result of the Request
      *
@@ -605,14 +613,16 @@ JQ.button(
 
         return coh.outputGroup(request, CatalogOutputHandler.OUTPUT_CATALOG,
                                entry, new ArrayList<Entry>(),
-                               processSearch(request, entry, true));
+                               processSearch(request,
+                                             entry,
+                                             true));
 
     }
 
     /**
-     * _more_
+     * Get the catalog output handler
      *
-     * @return _more_
+     * @return the handler
      */
     public CatalogOutputHandler getCatalogOutputHandler() {
         if (catalogOutputHandler == null) {
