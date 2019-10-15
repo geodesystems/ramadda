@@ -246,8 +246,8 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
                                 HtmlUtils.cssClass("entryselect")));
         StringBuilder buttonBuf = new StringBuilder();
         buttonBuf.append(searchButton);
-        buttonBuf.append(HtmlUtils.p());
-        buttonBuf.append(HtmlUtils.buttons(downloadButton, bdownloadButton));
+        //buttonBuf.append(HtmlUtils.p());
+        buttonBuf.append(HtmlUtils.div(HtmlUtils.buttons(downloadButton, bdownloadButton),"style=\"margin-top: 1em;\""));
         sb.append(HtmlUtils.div(buttonBuf.toString()));
         sb.append("</td><td>");
         sb.append(HtmlUtils.div("",
