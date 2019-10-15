@@ -485,6 +485,9 @@ function RecordField(props) {
         getValue: function(row) {
             return row[this.index];
         },
+        getEnumeratedValues: function(row) {
+	    return this.enumeratedValues;
+	},
         isFieldGroup: function() {
             return this.isGroup;
         },

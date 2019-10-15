@@ -25,6 +25,8 @@ import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
+import org.ramadda.data.point.PointFile;
+
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -63,7 +65,7 @@ import javax.crypto.spec.DESKeySpec;
  *
  * @author RAMADDA Development Team
  */
-public class StorageManager extends RepositoryManager {
+public class StorageManager extends RepositoryManager implements PointFile.FileReader {
 
 
     /** file separator */
@@ -229,6 +231,7 @@ public class StorageManager extends RepositoryManager {
      */
     public StorageManager(Repository repository) {
         super(repository);
+	PointFile.setFileReader(this);
     }
 
     /**
@@ -2287,7 +2290,6 @@ public class StorageManager extends RepositoryManager {
      */
     public String readSystemResource(URL url) throws Exception {
         checkPath(url.toString());
-
         return IOUtil.readContents(url.toString(), getClass());
     }
 
@@ -2595,5 +2597,9 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    public String readPointFileContents(String path) throws Exception {
+        checkPath(path);
+        return IOUtil.readContents(path, getClass());
+    }
 
 }

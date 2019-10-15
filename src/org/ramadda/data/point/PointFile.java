@@ -217,7 +217,15 @@ public abstract class PointFile extends RecordFile implements Cloneable,
 
 
 
-    public PointFile(String filename, RecordFileContext context, Hashtable properties) {
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param context _more_
+     * @param properties _more_
+     */
+    public PointFile(String filename, RecordFileContext context,
+                     Hashtable properties) {
         super(filename, context, properties);
     }
 
@@ -482,7 +490,9 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         String s = "label=\"Height\" type=double missing=99999";
         System.err.println(parseAttributes(s));
 
-        if(true) return;
+        if (true) {
+            return;
+        }
 
 
         String epsg = "32610";
@@ -903,25 +913,31 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * @param fieldString _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
-    public List<RecordField> doMakeFields(String fieldString) {
+    public List<RecordField> doMakeFields(String fieldString)
+            throws Exception {
 
         //        System.err.println ("fields:" + fieldString);
         //x[unit="m"],y[unit="m"],z[unit="m"],red[],green[],blue[],amplitude[]
         //        System.err.println ("fields:" + fieldString);
-        String defaultMissing     = getProperty(ATTR_MISSING, (String) null);
-	List<String> toks = Utils.tokenizeColumns(fieldString,",");
-	//        String[]          toks    = fieldString.split(",");
+        String       defaultMissing = getProperty(ATTR_MISSING,
+                                          (String) null);
+        List<String> toks           = Utils.tokenizeColumns(fieldString, ",");
+        //        String[]          toks    = fieldString.split(",");
         List<RecordField> fields  = new ArrayList<RecordField>();
         int               paramId = 1;
         for (String tok : toks) {
-	    tok =tok.replaceAll("%2C",",");
-            List<String> pair  = StringUtil.splitUpTo(tok, "[", 2);
-	    if(pair.size()==0) continue;
-            String       name  = pair.get(0).trim();
-            String       attrs = ((pair.size() > 1)
-                                  ? pair.get(1)
-                                  : "").trim();
+            tok = tok.replaceAll("%2C", ",");
+            List<String> pair = StringUtil.splitUpTo(tok, "[", 2);
+            if (pair.size() == 0) {
+                continue;
+            }
+            String name  = pair.get(0).trim();
+            String attrs = ((pair.size() > 1)
+                            ? pair.get(1)
+                            : "").trim();
             if (attrs.startsWith("[")) {
                 attrs = attrs.substring(1);
             }
@@ -938,7 +954,34 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             RecordField field = new RecordField(name, name, "", paramId++,
                                     getProperty(properties, ATTR_UNIT, ""));
 
-            field.setIsGroup(getProperty(field, properties,"group","false").equals("true"));
+            String values    = (String) properties.get("enumeratedValues");
+
+            String delimiter = ";";
+            if ((values != null) && values.startsWith("file:")) {
+                if (fileReader == null) {
+                    values = null;
+                } else {
+                    values = fileReader.readPointFileContents(
+                        values.substring("file:".length()));
+                    delimiter = "\n";
+                }
+            }
+
+            if (values != null) {
+                List<String[]> enums = new ArrayList<String[]>();
+                for (String vtok :
+                        StringUtil.split(values, delimiter, true, true)) {
+                    List<String> tuple = StringUtil.splitUpTo(vtok, ":", 2);
+                    String       value = tuple.get(0);
+                    String       label = ((tuple.size() > 1)
+                                          ? tuple.get(1)
+                                          : value);
+                    enums.add(new String[] { value, label });
+                }
+                field.setEnumeratedValues(enums);
+            }
+            field.setIsGroup(getProperty(field, properties, "group",
+                                         "false").equals("true"));
             field.setColumnWidth(new Integer(getProperty(field, properties,
                     "width", "0")).intValue());
             field.setIndex(new Integer(getProperty(field, properties,
@@ -1007,14 +1050,14 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             }
 
             if (fmt != null) {
-		fmt = fmt.replaceAll("_comma_",",");
+                fmt = fmt.replaceAll("_comma_", ",");
                 String timezone = getProperty(field, properties, "timezone",
                                       "UTC");
                 field.setType(field.TYPE_DATE);
                 SimpleDateFormat sdf = new SimpleDateFormat();
                 sdf.setTimeZone(TimeZone.getTimeZone(timezone));
                 sdf.applyPattern(fmt);
-                field.setDateFormat(sdf,fmt);
+                field.setDateFormat(sdf, fmt);
             }
 
             String type = getProperty(field, properties, ATTR_TYPE,
@@ -1090,14 +1133,15 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                                        (String) null);
             String desc = getProperty(field, properties, "description",
                                       (String) null);
-            if(desc !=null)
-                desc = desc.replaceAll("_comma_",",");
+            if (desc != null) {
+                desc = desc.replaceAll("_comma_", ",");
+            }
             if (label == null) {
                 label = desc;
             }
             if (label == null) {
-		label = Utils.makeLabel(name);
-	    }
+                label = Utils.makeLabel(name);
+            }
 
             if (label != null) {
                 field.setLabel(label);
@@ -1124,8 +1168,9 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * @return _more_
      */
     public static Hashtable parseAttributes(String attrs) {
-        if(true)
+        if (true) {
             return HtmlUtils.parseHtmlProperties(attrs);
+        }
         Hashtable ht                    = new Hashtable();
         String    attrName              = "";
         String    attrValue             = "";
@@ -1219,6 +1264,38 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return "";
     }
 
+
+    /** _more_          */
+    private static FileReader fileReader;
+
+    /**
+     * _more_
+     *
+     * @param fileReader _more_
+     */
+    public static void setFileReader(FileReader fileReader) {
+        PointFile.fileReader = fileReader;
+    }
+
+    /**
+     * Interface description
+     *
+     *
+     * @author         Enter your name here...    
+     */
+    public static interface FileReader {
+
+        /**
+         * _more_
+         *
+         * @param path _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public String readPointFileContents(String path) throws Exception;
+    }
 
 
 }

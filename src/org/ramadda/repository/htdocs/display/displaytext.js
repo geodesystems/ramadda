@@ -424,6 +424,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     html += "<p>";
                 }
             }
+
             if (showRecords) {
                 this.writeHtml(ID_DISPLAY_BOTTOM, html);
             } else {
@@ -2510,12 +2511,18 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
 
 function RamaddaTextrawDisplay(displayManager, id, properties) {
     var ID_TEXT = "text";
+    var ID_OVERLAY = "overlay";
+    var ID_OVERLAY_TABLE = "overlaytable";
     var ID_LABEL = "label";
     var ID_SEARCH = "search";
+    var ID_HIGHLIGHT = "highlight"; 
+    var ID_SHRINK = "shrink";
+    
     let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	doShrink: this.getProperty("initialShrink",false),
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
@@ -2546,8 +2553,18 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var input = "";
 	    if(!this.filterFields || this.filterFields.length==0) 
 		input = " " + HtmlUtils.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", "id", this.getDomId(ID_SEARCH)]);
+	    this.showShrink = this.getProperty("showShrink",false);
+	    if(this.showShrink) {
+		input += " " + HtmlUtils.checkbox("shrink",["id",this.getDomId(ID_SHRINK)], this.getProperty("initialShrink", true)) +" Shrink ";
+	    }
+
             this.writeHtml(ID_TOP_RIGHT, HtmlUtils.span(["id",this.getDomId(ID_LABEL)]," ") + input);
             let _this = this;
+	    this.jq(ID_SHRINK).click(function() {
+		_this.doShrink = _this.jq(ID_SHRINK).is(':checked');
+		_this.setProperty("initialShrink",_this.doShrink);
+		_this.updateUI();
+	    });
             this.jq(ID_SEARCH).keypress(function(event) {
                 if (event.which == 13) {
                     _this.setProperty("pattern", $(this).val());
@@ -2586,8 +2603,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (pattern && pattern.length == 0) pattern = null;
 	    var asHtml = this.getProperty("asHtml", true);
             var addLineNumbers = this.getProperty("addLineNumbers", true);
-	    var labelTemplate = this.getProperty("labelTemplate");
-	    if(!labelTemplate && addLineNumbers) {
+	    var labelTemplate = this.getProperty("labelTemplate","");
+	    var labelWidth = "10px";
+	    if(labelTemplate == "") {
+		labelWidth = "1px";
+	    }
+	    if(labelTemplate == "" && addLineNumbers) {
 		labelTemplate = "${lineNumber}";
 	    }
 
@@ -2607,11 +2628,25 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 this.displayError("No string fields specified");
                 return null;
             }
-            var corpus = "";
+	    var highlights;
+	    var highlightStyles;
+	    if(this.getProperty("highlights")) {
+		highlights=[];
+		highlightStyles = this.getProperty("highlightStyles","background:rgb(250_comma_0_comma_0);").split(",");
+		this.getProperty("highlights","").split(",").map(h=>{
+		    if(h.indexOf("(")<0) h = "(" + h +")";
+		    highlights.push(RegExp(h,'ig'));
+		});
+	    }
+
+            var corpus = HtmlUtils.openTag("div", ["style","position:relative;"]);
+	    corpus+=HtmlUtils.div(["id",this.getDomId(ID_OVERLAY),"style","position:absolute;top:0;left:0;"],
+				  HtmlUtils.tag("table",["id",this.getDomId(ID_OVERLAY_TABLE)]));
+
 	    var fromField = this.getFieldById(null,this.getProperty("fromField"));
 	    var bubble=this.getProperty("doBubble",false);
             if (labelTemplate) {
-                corpus = "<table width=100%>";
+                corpus += "<table width=100%>";
             }
             var lineCnt = 0;
             var displayedLineCnt = 0;
@@ -2627,6 +2662,11 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    });
             var colorBy = this.getColorByInfo(records);
 	    var delimiter = this.getProperty("delimiter","");
+	    var rowScale = this.showShrink?this.getProperty("rowScale",0.3):null;
+
+	    if(this.showShrink) {
+		corpus+="<tr><td>" + HtmlUtils.getIconImage("fa-caret-down") +"</td></tr>";
+	    }
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
 		var record = records[rowIdx];
 		if(!Utils.isDefined(record.lineNumber)) {
@@ -2675,8 +2715,32 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 line = line.trim();
                 if (!includeEmptyLines && line.length == 0) continue;
                 lineCnt++;
-
-		if(!patternMatch.matches(line)) {
+		var rowAttrs =["valign", "top"];
+		var rowStyle="";
+                if (colorBy.index >= 0) {
+		    var value = record.getData()[colorBy.index];
+		    var color =  colorBy.getColor(value, record);
+		    if(color) {
+			rowAttrs.push("style");
+			rowStyle +="background:" + Utils.addAlphaToColor(color,"0.25")+";";
+		    }
+                }
+		rowAttrs.push("class");
+		rowAttrs.push("display-raw-row");
+		var matches=patternMatch.matches(line);
+		var hasMatch = matches && patternMatch.hasPattern();
+		if(hasMatch) {
+		    rowAttrs.push("matched");
+		    rowAttrs.push(true);
+		}
+		if(rowScale) {
+		    if(!hasMatch) {
+			rowStyle += "-webkit-transform: scale(1," + rowScale +");";
+			rowStyle += "line-height:"+ rowScale +";";
+			rowAttrs.push("style");
+			rowAttrs.push(rowStyle);
+		    }
+		} else  if(!matches) {
 		    continue;
 		}
                 line = patternMatch.highlight(line);
@@ -2685,20 +2749,19 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 if (displayedLineCnt > maxLines) break;
 
 		var lineAttrs = ["title"," ","class", " display-raw-line ","recordIndex",rowIdx]
-		var rowAttrs =["valign", "top"];
-                if (colorBy.index >= 0) {
-		    var value = record.getData()[colorBy.index];
-		    var color =  colorBy.getColor(value, record);
-		    if(color) {
-			rowAttrs.push("style");
-			rowAttrs.push("background:" + Utils.addAlphaToColor(color,"0.25")+";");
-		    }
-                }
+
 		if(bubble) line = HtmlUtils.div(["class","ramadda-bubble"],line);
 		if(fromField) line+=HtmlUtils.div(["class","ramadda-bubble-from"],  ""+row[fromField.getIndex()]);
 
+		if(highlights) {
+		    for(var hi=0;hi<highlights.length;hi++) {
+			var h = highlights[hi];
+			var s = hi<highlightStyles.length?highlightStyles[hi]:highlightStyles[highlightStyles.length-1];
+			s = s.replace(/_comma_/g,",");
+			line= line.replace(h, "<span style='" + s +"'>$1</span>");
+		    }
+		}
 		line = HtmlUtils.div(lineAttrs,line);
-
                 if (labelTemplate) {
 		    var label =  this.getRecordHtml(record, null, labelTemplate);
 		    var num = record.lineNumber;
@@ -2707,9 +2770,15 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    }
 		    label = label.replace("${lineNumber}", "#" +(num));
 		    label = label.replace(/ /g,"&nbsp;");
-                    corpus += HtmlUtils.tr(rowAttrs, HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
-									   "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
-					   HtmlUtils.td([], line));
+		    var r =  "";
+		    if(this.showShrink) {
+			r+= HtmlUtils.td(["width", "5px","style","background:#ccc;"],  HtmlUtils.getIconImage("fa-caret-right",null, ["style","line-height:0px;"]));
+		    }
+		    r+= HtmlUtils.td(["width", labelWidth], "<a name=line_" + lineCnt + "></a>" +
+				       "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
+			HtmlUtils.td([], line);
+		    
+		    corpus += HtmlUtils.tr(rowAttrs, r);
                 } else {
                     corpus += line;
                     if (asHtml) {
@@ -2727,6 +2796,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (addLineNumbers) {
                 corpus += "</table>";
             }
+            corpus+= HtmlUtils.closeTag("div");
 
             if (!asHtml)
                 corpus = HtmlUtils.tag("pre", [], corpus);
@@ -2739,6 +2809,28 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_LABEL).html(label);
 	    this.jq(ID_SEARCH).focus();
+	    if(rowScale) {
+		var rows =  this.jq(ID_TEXT).find(".display-raw-row");
+		var open = function() {
+		    $(this).css("transform","scaleY(1)");		    
+		    $(this).css("line-height","1.5");
+		    $(this).css("border-bottom","1px solid #ccc");
+		    $(this).css("border-top","1px solid #ccc");
+		};
+		var close = function() {
+		    var row = this;
+		    if(!$(row).attr("matched")) {	
+			$(row).css("transform","scaleY(" + rowScale +")");
+			$(row).css("line-height",rowScale);
+			$(row).css("border-bottom","0px solid #ccc");
+			$(row).css("border-top","0px solid #ccc");
+		    }
+		}
+		rows.each(close);
+		rows.mouseenter(open);
+		rows.mousemove(open);
+		rows.mouseout(close);
+	    }
 	    var lines =this.jq(ID_TEXT).find(".display-raw-line");
 	    lines.click(function() {
 		var idx = $(this).attr("recordIndex");

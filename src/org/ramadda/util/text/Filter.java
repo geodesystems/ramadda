@@ -20,10 +20,6 @@ package org.ramadda.util.text;
 import org.ramadda.util.Utils;
 
 
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-
 import java.io.*;
 
 import java.text.DateFormat;

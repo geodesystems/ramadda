@@ -19,11 +19,6 @@ package org.ramadda.util.text;
 
 import org.ramadda.util.Utils;
 
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-
 import java.io.*;
 
 import java.text.DateFormat;
@@ -50,8 +45,11 @@ import java.util.regex.*;
 
 public class Row {
 
-    static int x=0;
-    public int myx= x++;
+    /** _more_          */
+    static int x = 0;
+
+    /** _more_          */
+    public int myx = x++;
 
     /** _more_ */
     private List values;

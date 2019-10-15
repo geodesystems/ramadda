@@ -24,7 +24,6 @@ import org.ramadda.util.Utils;
 
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -306,9 +305,17 @@ public abstract class CsvOperator {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param idx _more_
+     *
+     * @return _more_
+     */
     public int getIndex(String idx) {
         List<Integer> indices = new ArrayList<Integer>();
-	getColumnIndex(indices, idx);
+        getColumnIndex(indices, idx);
+
         return indices.get(0);
     }
 

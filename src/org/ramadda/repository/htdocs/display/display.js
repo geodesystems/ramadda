@@ -3248,6 +3248,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var dfltValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
 			var filterValues = this.getProperty(filterField.getId()+".filterValues");
                         var enums = null;
+
+
 			if (filterValues) {
 			    var toks;
 			    if ((typeof filterValues) == "string") {
@@ -3273,9 +3275,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(enums == null) {
 			    var allName = this.getProperty(filterField.getId() +".allName","All");
 			    enums = [];
+			    if(includeAll) {
+				enums.push({value:[FILTER_ALL,allName]});
+			    }
+
+			    var seen = {};
+			    var dflt = filterField.getEnumeratedValues();
+			    if(dflt) {
+				for(var v in dflt) {
+				    seen[v] = true;
+				    enums.push({value:[v,dflt[v]]});
+				}
+			    }
+
 			    var enumValues = [];
 			    var imageField=this.getFieldOfType(null, "image");
-			    var seen = {};
 			    var valuesAreNumbers = true;
 			    records.map(record=>{
 				var value = this.getDataValues(record)[filterField.getIndex()];
@@ -3306,9 +3320,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    
 				return (""+a[1]).localeCompare(""+b[1]);
 			    });
-			    if(includeAll) {
-				enums.push({value:[FILTER_ALL,allName]});
-			    }
 			    for(var j=0;j<enumValues.length;j++) {
 				var v = enumValues[j];
 				enums.push(v);

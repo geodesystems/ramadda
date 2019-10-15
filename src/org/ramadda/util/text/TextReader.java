@@ -83,6 +83,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String prepend;
 
+    /** _more_          */
     private String commentChar;
 
     /** _more_ */
@@ -236,23 +237,23 @@ public class TextReader implements Cloneable {
     }
 
 
-/**
-Set the CommentChar property.
+    /**
+     * Set the CommentChar property.
+     *
+     * @param value The new value for CommentChar
+     */
+    public void setCommentChar(String value) {
+        commentChar = value;
+    }
 
-@param value The new value for CommentChar
-**/
-public void setCommentChar (String value) {
-	commentChar = value;
-}
-
-/**
-Get the CommentChar property.
-
-@return The CommentChar
-**/
-public String getCommentChar () {
-	return commentChar;
-}
+    /**
+     * Get the CommentChar property.
+     *
+     * @return The CommentChar
+     */
+    public String getCommentChar() {
+        return commentChar;
+    }
 
 
     /**

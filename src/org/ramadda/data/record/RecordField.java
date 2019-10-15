@@ -20,9 +20,13 @@ package org.ramadda.data.record;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
+
 import ucar.unidata.util.Misc;
+
 import java.io.*;
+
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -78,8 +82,14 @@ public class RecordField {
 
     /** _more_ */
     public static final String TYPE_STRING = "string";
+
+    /** _more_          */
     public static final String TYPE_URL = "url";
+
+    /** _more_          */
     public static final String TYPE_ENUMERATION = "enumeration";
+
+    /** _more_          */
     public static final String TYPE_IMAGE = "image";
 
     /** _more_ */
@@ -105,6 +115,7 @@ public class RecordField {
     private boolean isDate = false;
 
 
+    /** _more_          */
     private boolean isGroup = false;
 
     /** _more_ */
@@ -133,6 +144,8 @@ public class RecordField {
 
     /** _more_ */
     private SimpleDateFormat dateFormat;
+
+    /** _more_          */
     private String sDateFormat;
 
     /** _more_ */
@@ -267,7 +280,7 @@ public class RecordField {
         this.description = description;
         this.paramId     = paramId;
         this.unit        = unit;
-        this.type = this.rawType     = rawType;
+        this.type        = this.rawType = rawType;
         this.typeName    = typeName;
         this.arity       = arity;
         if (searchable) {
@@ -403,11 +416,22 @@ public class RecordField {
         items.add(HtmlUtils.quote(name));
         items.add("label");
         items.add(Json.quote(label));
-        if(description!=null) {
+        if (description != null) {
             items.add("description");
-            items.add(Json.quote(description.replaceAll("\n"," ")));
+            items.add(Json.quote(description.replaceAll("\n", " ")));
         }
-        if(isGroup) {
+        if ((enumeratedValues != null) && (enumeratedValues.size() > 0)) {
+            String       v   = "";
+            List<String> tmp = new ArrayList<String>();
+            for (String[] tuple : enumeratedValues) {
+                tmp.add(tuple[0]);
+                tmp.add(tuple[1]);
+            }
+            items.add("enumeratedValues");
+            items.add(Json.mapAndQuote(tmp));
+        }
+
+        if (isGroup) {
             System.err.println("isGroup");
             items.add("isGroup");
             items.add("true");
@@ -544,27 +568,27 @@ public class RecordField {
     }
 
 
-/**
-Set the IsGroup property.
+    /**
+     * Set the IsGroup property.
+     *
+     * @param value The new value for IsGroup
+     */
+    public void setIsGroup(boolean value) {
+        isGroup = value;
+    }
 
-@param value The new value for IsGroup
-**/
-public void setIsGroup (boolean value) {
-	isGroup = value;
-}
-
-/**
-Get the IsGroup property.
-
-@return The IsGroup
-**/
-public boolean getIsGroup () {
-	return isGroup;
-}
+    /**
+     * Get the IsGroup property.
+     *
+     * @return The IsGroup
+     */
+    public boolean getIsGroup() {
+        return isGroup;
+    }
 
 
 
-    
+
     /**
      *  Set the Name property.
      *
@@ -1034,8 +1058,10 @@ public boolean getIsGroup () {
         isTypeNumeric = value.equals("numeric") || value.equals("integer")
                         || value.equals(TYPE_DOUBLE)
                         || value.equals(TYPE_INT);
-        isTypeString = value.equals(TYPE_STRING) || value.equals(TYPE_URL)|| value.equals(TYPE_IMAGE) || value.equals(TYPE_ENUMERATION);
-        isTypeDate   = value.equals(TYPE_DATE);
+        isTypeString = value.equals(TYPE_STRING) || value.equals(TYPE_URL)
+                       || value.equals(TYPE_IMAGE)
+                       || value.equals(TYPE_ENUMERATION);
+        isTypeDate = value.equals(TYPE_DATE);
     }
 
     /**
@@ -1092,28 +1118,34 @@ public boolean getIsGroup () {
         dateFormat = value;
     }
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     * @param fmt _more_
+     */
     public void setDateFormat(SimpleDateFormat value, String fmt) {
-        dateFormat = value;
-	sDateFormat = fmt;
+        dateFormat  = value;
+        sDateFormat = fmt;
     }
 
-/**
-Set the SDateFormat property.
+    /**
+     * Set the SDateFormat property.
+     *
+     * @param value The new value for SDateFormat
+     */
+    public void setSDateFormat(String value) {
+        sDateFormat = value;
+    }
 
-@param value The new value for SDateFormat
-**/
-public void setSDateFormat (String value) {
-	sDateFormat = value;
-}
-
-/**
-Get the SDateFormat property.
-
-@return The SDateFormat
-**/
-public String getSDateFormat () {
-	return sDateFormat;
-}
+    /**
+     * Get the SDateFormat property.
+     *
+     * @return The SDateFormat
+     */
+    public String getSDateFormat() {
+        return sDateFormat;
+    }
 
 
 

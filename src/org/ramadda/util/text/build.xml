@@ -1,25 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project basedir="../../../../.." default="all" name="Ramadda">
+<project basedir="../../../../.." default="csv" name="Ramadda">
 
-    <target name="all" depends="">
+    <target name="init">
         <property file="${basedir}/build.properties"/>
+        <property name="ramadda_relpath" value="org/ramadda/repository" />
+        <property name="ramadda_dir" value="${src_dir}/${ramadda_relpath}" />
+        <property name="tmpjar_dir" value="${dist_dir}/tmpjardir" />
+    </target>
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compile_dir}" includes="**/*.class"/>
+        </delete>
+    </target>
+
+    <target name="csv" depends="init,clean">
+      <echo message="BASE:${basedir}/src/org/ramadda/util/text/CsvUtil.java"/>
+      <echo message="src: ${src_dir}"/>
        <javac
             verbose="false"
-            classpath="${classpath}"
             debug="true"
+            classpath="${classpath}"
             deprecation="false" 
-            destdir="${compile_dir}"
             failonerror="true" 
             nowarn="true"
             srcdir="${src_dir}"
             fork="true"
-            memoryMaximumSize="${javac.maxmemory}"
             source="${javac.version}"
             target="${javac.version}"
         >
-        <include name="org/ramadda/util/text/*.java"/>
+        <include name="org/ramadda/util/text/CsvUtil.java"/>
         </javac>
-     </target>
+        <mkdir dir="${tmpjar_dir}"/>
+        <jar 
+            basedir="${basedir}/src"
+            update="false"
+            compress="true"
+            jarfile="${dist_dir}/ramaddacsv.jar">
+           <manifest>
+              <attribute name="Implementation-Title" value="Ramadda CSV"/>
+              <attribute name="Implementation-Version" value="1.0"/>
+              <attribute name="Implementation-Vendor" value="RAMADDA"/>
+              <attribute name="Main-class" value="org.ramadda.util.text.CsvUtil"/>
+              <attribute name="Class-Path" value=""/>
+            </manifest> 
+            <include name="org/**/*.class"/>
+	    </jar>
+    </target>
+
 
 </project>

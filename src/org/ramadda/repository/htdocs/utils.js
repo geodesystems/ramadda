@@ -1352,9 +1352,12 @@ var HtmlUtils = {
 	});
     },
 
-    getIconImage: function(url,attrs) {
+    getIconImage: function(url,attrs,attrs2) {
         if(StringUtil.startsWith(url,"fa-")) {
-            return HtmlUtils.span(attrs,HtmlUtils.tag("i",["class","fa " + url]));
+	    var a = ["class","fa " + url]
+	    if(attrs2)
+		a = Utils.mergeLists(a, attrs2);
+            return HtmlUtils.span(attrs,HtmlUtils.tag("i",a));
         } else {
             return HtmlUtils.image(url, attrs);
         }
@@ -2231,6 +2234,9 @@ function TextMatcher (pattern) {
     }	
     $.extend(this, {
 	pattern: pattern,
+	hasPattern: function() {
+	    return this.regexps.length>0;
+	},
 	highlight: function(text) {
 	    for(var i=0;i<this.regexps.length;i++) {
 		text  =  text.replace(this.regexps[i], "<span style=background:yellow;>$1</span>");

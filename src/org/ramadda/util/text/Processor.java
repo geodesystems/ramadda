@@ -25,7 +25,6 @@ import org.ramadda.util.Utils;
 
 
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.xml.XmlUtil;
@@ -367,6 +366,7 @@ public abstract class Processor extends CsvOperator {
                     return null;
                 }
             }
+
             return row;
         }
 
@@ -401,14 +401,15 @@ public abstract class Processor extends CsvOperator {
             }
 
             for (Processor processor : firstProcessors) {
-		//		System.out.println("before: " + processor.getClass().getName().replace("org.ramadda.util.text.","") +" row:" + row.myx +" size:" + row.size());
+                //              System.out.println("before: " + processor.getClass().getName().replace("org.ramadda.util.text.","") +" row:" + row.myx +" size:" + row.size());
 
                 row = processor.processRow(info, row, line);
                 if (row == null) {
                     return null;
                 }
-		//		System.out.println("after: " +" row:" + row.myx +" size:" + row.size());
+                //              System.out.println("after: " +" row:" + row.myx +" size:" + row.size());
             }
+
             return row;
         }
 
@@ -442,8 +443,8 @@ public abstract class Processor extends CsvOperator {
                         break;
                     }
                     if (textReader.getExtraRow() != null) {
-			row = processRowInner(textReader,
-					      textReader.getExtraRow(), null);
+                        row = processRowInner(textReader,
+                                textReader.getExtraRow(), null);
                         textReader.setExtraRow(null);
                     }
                     if ( !textReader.getOkToRun()) {
@@ -645,7 +646,7 @@ public abstract class Processor extends CsvOperator {
 
 
 
-    
+
     /**
      * Class description
      *
@@ -655,7 +656,8 @@ public abstract class Processor extends CsvOperator {
      */
     public static class Verifier extends Processor {
 
-	private int cnt = -1;
+        /** _more_          */
+        private int cnt = -1;
 
         /**
          * _more_
@@ -678,14 +680,17 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader info, Row row, String line)
                 throws Exception {
-	    if(cnt==-1) {
-		cnt = row.size();
-		return row;
-	    }
-	    if(row.size()!=cnt) {
-		throw new IllegalArgumentException("Bad column count:" + row.size() +" row:" + row);
-	    }
-	    return row;
+            if (cnt == -1) {
+                cnt = row.size();
+
+                return row;
+            }
+            if (row.size() != cnt) {
+                throw new IllegalArgumentException("Bad column count:"
+                        + row.size() + " row:" + row);
+            }
+
+            return row;
         }
     }
 
@@ -843,18 +848,32 @@ public abstract class Processor extends CsvOperator {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Oct 14, '19
+     * @author         Enter your name here...    
+     */
     public static class MaxValue extends RowCollector {
-	String key;
-	String value;
+
+        /** _more_          */
+        String key;
+
+        /** _more_          */
+        String value;
 
         /**
          * _more_
          *
+         *
+         * @param key _more_
+         * @param value _more_
          */
         public MaxValue(String key, String value) {
-	    this.key =key;
-	    this.value  = value;
-	}
+            this.key   = key;
+            this.value = value;
+        }
 
         /**
          * _more_
@@ -869,32 +888,37 @@ public abstract class Processor extends CsvOperator {
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
-	    Hashtable<String,Row> map = new Hashtable<String,Row>();
-            int keyIdx  =getIndex(this.key);
-            int valueIdx  =getIndex(this.value);
-            List<Row> newRows = new ArrayList<Row>();
-	    int cnt =0;
+            Hashtable<String, Row> map      = new Hashtable<String, Row>();
+            int                    keyIdx   = getIndex(this.key);
+            int                    valueIdx = getIndex(this.value);
+            List<Row>              newRows  = new ArrayList<Row>();
+            int                    cnt      = 0;
             for (Row row : getRows()) {
-		if(cnt++==0) {
-		    newRows.add(row);
-		    continue;
-		}
-                List values = row.getValues();
-		String v = (String) row.get(keyIdx);
-		Row maxRow = map.get(v);
-		if(maxRow == null) {
-		    map.put(v,row);
-		    continue;
-		}
-		String v1  = (String)maxRow.get(valueIdx);
-		String v2  = (String)row.get(valueIdx);
-		int compare = v1.compareTo(v2);
-		if(compare<0) map.put(v,row);
+                if (cnt++ == 0) {
+                    newRows.add(row);
+
+                    continue;
+                }
+                List   values = row.getValues();
+                String v      = (String) row.get(keyIdx);
+                Row    maxRow = map.get(v);
+                if (maxRow == null) {
+                    map.put(v, row);
+
+                    continue;
+                }
+                String v1      = (String) maxRow.get(valueIdx);
+                String v2      = (String) row.get(valueIdx);
+                int    compare = v1.compareTo(v2);
+                if (compare < 0) {
+                    map.put(v, row);
+                }
             }
             for (Enumeration keys = map.keys(); keys.hasMoreElements(); ) {
                 String key = (String) keys.nextElement();
-		newRows.add(map.get(key));
-	    }
+                newRows.add(map.get(key));
+            }
+
             return newRows;
         }
 
@@ -1069,13 +1093,16 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
+         *
+         * @param info _more_
          * @param writer _more_
          * @param row _more_
          *
          * @throws Exception _more_
          */
-        private void handleRow(TextReader info, PrintWriter writer, Row row) throws Exception {
-	    boolean first = rowCnt++==0;
+        private void handleRow(TextReader info, PrintWriter writer, Row row)
+                throws Exception {
+            boolean first         = rowCnt++ == 0;
             String  theTemplate   = template;
             List    values        = row.getValues();
             boolean escapeColumns = true;
@@ -1090,7 +1117,11 @@ public abstract class Processor extends CsvOperator {
                         if (trim) {
                             sv = sv.trim();
                         }
-                        if ((first && sv.startsWith("#"))  ||  ((colIdx == 0) && info.getCommentChar()!=null  && sv.startsWith(info.getCommentChar()))) {
+                        if ((first && sv.startsWith("#"))
+                                || ((colIdx == 0)
+                                    && (info.getCommentChar() != null)
+                                    && sv.startsWith(
+                                        info.getCommentChar()))) {
                             escapeColumns = false;
                         }
                         boolean addQuote = false;
@@ -1128,12 +1159,15 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
+         *
+         * @param info _more_
          * @param writer _more_
          * @param rows _more_
          *
          * @throws Exception _more_
          */
-        public void writeCsv(TextReader info, PrintWriter writer, List<Row> rows)
+        public void writeCsv(TextReader info, PrintWriter writer,
+                             List<Row> rows)
                 throws Exception {
             if (addPointHeader) {
                 Row header = rows.get(0);
@@ -2319,7 +2353,8 @@ public abstract class Processor extends CsvOperator {
      */
     public static class Dups extends RowCollector {
 
-	private List<String> toks;
+        /** _more_          */
+        private List<String> toks;
 
 
 
@@ -2331,9 +2366,11 @@ public abstract class Processor extends CsvOperator {
          * @param valueCols _more_
          * @param uniqueIndex _more_
          * @param extraCols _more_
+         *
+         * @param toks _more_
          */
         public Dups(List<String> toks) {
-	    this.toks = toks;
+            this.toks = toks;
         }
 
 
@@ -2350,31 +2387,35 @@ public abstract class Processor extends CsvOperator {
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
-	    List<Row> newRows = new ArrayList<Row>();
-            List<Row> allRows   = getRows();
-	    List<Integer> cols = Utils.toInt(toks);
-	    newRows.add(allRows.get(0));
-            Hashtable<String,Row>     seen    = new Hashtable<String,Row>();
-	    HashSet   seenKeys    = new HashSet();
-	    
-            for (int i=1;i<allRows.size();i++) {
-		Row row = allRows.get(i);
-		String key ="";
-		for(int idx:cols)
-		    key+=row.get(idx)+"__";
-		if(seenKeys.contains(key)) {
-		    newRows.add(row);
-		    continue;
-		}
-		Row seenRow = seen.get(key);
-		if(seenRow==null) {
-		    seen.put(key, row);
-		    continue;
-		}
-		newRows.add(seenRow);
-		newRows.add(row);
-		seenKeys.add(key);
-	    }
+            List<Row>     newRows = new ArrayList<Row>();
+            List<Row>     allRows = getRows();
+            List<Integer> cols    = Utils.toInt(toks);
+            newRows.add(allRows.get(0));
+            Hashtable<String, Row> seen     = new Hashtable<String, Row>();
+            HashSet                seenKeys = new HashSet();
+
+            for (int i = 1; i < allRows.size(); i++) {
+                Row    row = allRows.get(i);
+                String key = "";
+                for (int idx : cols) {
+                    key += row.get(idx) + "__";
+                }
+                if (seenKeys.contains(key)) {
+                    newRows.add(row);
+
+                    continue;
+                }
+                Row seenRow = seen.get(key);
+                if (seenRow == null) {
+                    seen.put(key, row);
+
+                    continue;
+                }
+                newRows.add(seenRow);
+                newRows.add(row);
+                seenKeys.add(key);
+            }
+
             return newRows;
         }
     }
@@ -2396,9 +2437,11 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private String value;
 
-	private String delimiter;
+        /** _more_          */
+        private String delimiter;
 
-	private String name;
+        /** _more_          */
+        private String name;
 
         /**
          * _more_
@@ -2408,12 +2451,17 @@ public abstract class Processor extends CsvOperator {
          * @param valueCols _more_
          * @param uniqueIndex _more_
          * @param extraCols _more_
+         *
+         * @param key _more_
+         * @param value _more_
+         * @param delim _more_
+         * @param name _more_
          */
         public Splatter(String key, String value, String delim, String name) {
-            this.key = key; 
-            this.value = value;
-	    this.delimiter = delim;
-	    this.name = name;
+            this.key       = key;
+            this.value     = value;
+            this.delimiter = delim;
+            this.name      = name;
         }
 
 
@@ -2430,33 +2478,38 @@ public abstract class Processor extends CsvOperator {
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
-	    List<Row> newRows = new ArrayList<Row>();
-	    int keyIndex =  getIndices(StringUtil.split(key,",",true,true)).get(0);
-	    int valueIndex =  getIndices(StringUtil.split(value,",",true,true)).get(0);
+            List<Row> newRows = new ArrayList<Row>();
+            int keyIndex = getIndices(StringUtil.split(key, ",", true,
+                               true)).get(0);
+            int valueIndex = getIndices(StringUtil.split(value, ",", true,
+                                 true)).get(0);
             List<Row> allRows   = getRows();
             Row       headerRow = allRows.get(0);
-	    headerRow.add(name);
-	    newRows.add(headerRow);
+            headerRow.add(name);
+            newRows.add(headerRow);
             allRows.remove(0);
             Hashtable<Object, Row> map = new Hashtable<Object, Row>();
             for (Row row : allRows) {
-		Object key = row.get(keyIndex);
-		Row existing = map.get(key);
-		Object value = row.get(valueIndex);
-		if(existing==null) {
-		    existing = new Row(row.getValues());
-		    map.put(key,existing);
-		    newRows.add(existing);
-		    existing.add("X:" + value);
-		    System.out.println("splat:" + existing.myx);
-		} else {
-		    for(int i=0;i<row.size();i++) {
-			existing.set(i,row.get(i));
-		    }
-		    existing.set(existing.size()-1,existing.get(existing.size()-1)+delimiter+value);
-		}
-		//		System.out.println("key:" + key +" row:" + existing);
-	    }
+                Object key      = row.get(keyIndex);
+                Row    existing = map.get(key);
+                Object value    = row.get(valueIndex);
+                if (existing == null) {
+                    existing = new Row(row.getValues());
+                    map.put(key, existing);
+                    newRows.add(existing);
+                    existing.add("X:" + value);
+                    System.out.println("splat:" + existing.myx);
+                } else {
+                    for (int i = 0; i < row.size(); i++) {
+                        existing.set(i, row.get(i));
+                    }
+                    existing.set(existing.size() - 1,
+                                 existing.get(existing.size() - 1)
+                                 + delimiter + value);
+                }
+                //              System.out.println("key:" + key +" row:" + existing);
+            }
+
             return newRows;
         }
     }
@@ -2467,19 +2520,19 @@ public abstract class Processor extends CsvOperator {
      *
      *
      * @version        $version$, Thu, Aug 8, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Breaker extends RowCollector {
 
-        /** _more_          */
+        /** _more_ */
         private String label1;
 
-        /** _more_          */
+        /** _more_ */
         private String label2;
 
         /**
          * _more_
-	 *
+         *
          * @param label1 _more_
          * @param label2 _more_
          * @param cols _more_
@@ -2645,7 +2698,7 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private List<Integer> valueIndices;
 
-	/** _more_ */
+        /** _more_ */
         private List<Integer> extraIndices;
 
         /** _more_ */
@@ -2653,7 +2706,8 @@ public abstract class Processor extends CsvOperator {
 
         /** _more_ */
         private List<String> values;
-	/** _more_ */
+
+        /** _more_ */
         private List<String> extra;
 
         /**
@@ -2663,11 +2717,13 @@ public abstract class Processor extends CsvOperator {
          *
          * @param keys _more_
          * @param values _more_
+         * @param extra _more_
          */
-        public Summer(List<String> keys, List<String> values,List<String>extra) {
+        public Summer(List<String> keys, List<String> values,
+                      List<String> extra) {
             this.keys   = keys;
             this.values = values;
-	    this.extra= extra;
+            this.extra  = extra;
         }
 
 
@@ -2684,10 +2740,11 @@ public abstract class Processor extends CsvOperator {
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
+
             uniqueIndices = getIndices(keys);
             valueIndices  = getIndices(values);
-            valueIndices  = getIndices(values);	    
-	    extraIndices  = getIndices(extra);	    
+            valueIndices  = getIndices(values);
+            extraIndices  = getIndices(extra);
             List<Integer> allIndices = new ArrayList<Integer>();
             allIndices.addAll(uniqueIndices);
             allIndices.addAll(valueIndices);
@@ -2698,10 +2755,10 @@ public abstract class Processor extends CsvOperator {
             List<String> keys     = new ArrayList<String>();
             Hashtable<String, List<Row>> rowMap = new Hashtable<String,
                                                       List<Row>>();
-	    Hashtable<String, Row> origMap = new Hashtable<String,Row>();
-            List<Row> allRows   = getRows(rows);
-            Row       headerRow = allRows.get(0);
-	    Row firstRow = allRows.get(0);
+            Hashtable<String, Row> origMap   = new Hashtable<String, Row>();
+            List<Row>              allRows   = getRows(rows);
+            Row                    headerRow = allRows.get(0);
+            Row                    firstRow  = allRows.get(0);
             allRows.remove(0);
             //            Collections.sort(allRows,new Row.RowCompare(uniqueIndex));
             Object[] array = null;
@@ -2715,7 +2772,7 @@ public abstract class Processor extends CsvOperator {
                 String    key      = keySB.toString();
                 List<Row> rowGroup = rowMap.get(key);
                 if (rowGroup == null) {
-		    origMap.put(key,row);
+                    origMap.put(key, row);
                     rowMap.put(key, rowGroup = new ArrayList<Row>());
                     keys.add(key);
                 }
@@ -2734,34 +2791,35 @@ public abstract class Processor extends CsvOperator {
                 }
             }
 
-	    if(valueIndices.size()==0) {
-		newHeader.add("Count");
-	    }
-	    for(int j: extraIndices) {
-		newHeader.add(firstRow.get(j));
-	    }
+            if (valueIndices.size() == 0) {
+                newHeader.add("Count");
+            }
+            for (int j : extraIndices) {
+                newHeader.add(firstRow.get(j));
+            }
             newRows.add(newHeader);
             for (String key : keys) {
-		Row orig = origMap.get(key);
-		if(valueIndices.size()==0) {
-		    //just count them
-		    List<Row> rowGroup = rowMap.get(key);
-		    Row row = rowGroup.get(0);
-		    Row newRow = new Row();
-		    newRows.add(newRow);
-		    for (int i : uniqueIndices) {
-			newRow.add(row.get(i));
-		    }
-		    newRow.add(rowGroup.size());
-		    for(int j: extraIndices) {
-			newRow.add(orig.get(j));
-		    }
-		    continue;
-		} 
-		for (int i = 0; i < array.length; i++) {
-		    array[i] = null;
-		}
-		Row newRow = null;
+                Row orig = origMap.get(key);
+                if (valueIndices.size() == 0) {
+                    //just count them
+                    List<Row> rowGroup = rowMap.get(key);
+                    Row       row      = rowGroup.get(0);
+                    Row       newRow   = new Row();
+                    newRows.add(newRow);
+                    for (int i : uniqueIndices) {
+                        newRow.add(row.get(i));
+                    }
+                    newRow.add(rowGroup.size());
+                    for (int j : extraIndices) {
+                        newRow.add(orig.get(j));
+                    }
+
+                    continue;
+                }
+                for (int i = 0; i < array.length; i++) {
+                    array[i] = null;
+                }
+                Row newRow = null;
                 for (int i = 0; i < valueIndices.size(); i++) {
                     int    valueIdx = valueIndices.get(i);
                     double sum      = 0;
@@ -2780,13 +2838,14 @@ public abstract class Processor extends CsvOperator {
                         sum += Double.parseDouble(value.toString());
                     }
                     newRow.add(new Double(sum));
-		}
-		for(int j: extraIndices) {
-		    newRow.add(orig.get(j));
-		}
+                }
+                for (int j : extraIndices) {
+                    newRow.add(orig.get(j));
+                }
             }
 
             return newRows;
+
 
         }
 
@@ -2859,49 +2918,56 @@ public abstract class Processor extends CsvOperator {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
-            TextReader reader = new TextReader(br);
-	    Hashtable<String,Row> map = new Hashtable<String,Row>();
-	    
-	    Row headerRow1 = null;
-	    Row headerRow2 = null;
-            List<Row>  rows2  = new ArrayList<Row>();
+            TextReader             reader     = new TextReader(br);
+            Hashtable<String, Row> map        = new Hashtable<String, Row>();
+
+            Row                    headerRow1 = null;
+            Row                    headerRow2 = null;
+            List<Row>              rows2      = new ArrayList<Row>();
             while (true) {
                 String line = reader.readLine();
                 if (line == null) {
                     break;
                 }
                 List<String> cols = Utils.tokenizeColumns(line, ",");
-		String key = "";
-		for(int i:keys1Indices) 
-		    key += cols.get(i);
-		Row row = new Row(cols);
-		if(headerRow1==null) headerRow1=row;
-		map.put(key,row);
+                String       key  = "";
+                for (int i : keys1Indices) {
+                    key += cols.get(i);
+                }
+                Row row = new Row(cols);
+                if (headerRow1 == null) {
+                    headerRow1 = row;
+                }
+                map.put(key, row);
             }
 
             for (Row row : getRows()) {
-		if(headerRow2==null) {
-		    headerRow2=row;
-		    for(int j: values1Indices) {
-			row.add(headerRow1.get(j));
-		    }
-		    newRows.add(row);
-		    continue;
-		}
-		String key = "";
-		for(int i:keys2Indices) {
-		    key += row.getString(i);
-		}
-		Row other = map.get(key);
-		if(other==null) {
-		    System.err.println("no join:" + " key=" + key +" row:" +row);
-		    continue;
-		}
-		for(int j: values1Indices) {
-		    row.add(other.get(j));
-		}
-		newRows.add(row);
-	    }
+                if (headerRow2 == null) {
+                    headerRow2 = row;
+                    for (int j : values1Indices) {
+                        row.add(headerRow1.get(j));
+                    }
+                    newRows.add(row);
+
+                    continue;
+                }
+                String key = "";
+                for (int i : keys2Indices) {
+                    key += row.getString(i);
+                }
+                Row other = map.get(key);
+                if (other == null) {
+                    System.err.println("no join:" + " key=" + key + " row:"
+                                       + row);
+
+                    continue;
+                }
+                for (int j : values1Indices) {
+                    row.add(other.get(j));
+                }
+                newRows.add(row);
+            }
+
             return newRows;
         }
 

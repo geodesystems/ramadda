@@ -49,6 +49,11 @@
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="client"/>
     </target>
 
+    <target name="csv" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/util/build.xml" inheritAll="false"/>
+    </target>
+
+
     <target name="ramadda" depends="init">
       <echo message="Building RAMADDA"/>
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false"/>

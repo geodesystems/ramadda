@@ -881,26 +881,41 @@ public class CsvUtil {
 
     }
 
-    public List<Row> tokenizePattern(String file,
-				     List<String> header,
-				     String pattern)
-	throws Exception {
-        String    s          = IOUtil.readContents(file);
-        List<Row> rows       = new ArrayList<Row>();
-	rows.add(new Row(header));
-	if(pattern.length()==0) return rows;
-	Pattern p = Pattern.compile(pattern);
-	while(true) {
-	    Matcher m = p.matcher(s);
-	    if(!m.find()) break;
-	    Row row = new Row();
-	    rows.add(row);
-	    for(int i=1;i<=m.groupCount();i++) {
-		row.add(m.group(i));
-	    }
-	    s = s.substring(m.end());
-	    //	    System.err.println(s.length());
-	}
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param header _more_
+     * @param pattern _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Row> tokenizePattern(String file, List<String> header,
+                                     String pattern)
+            throws Exception {
+        String    s    = IOUtil.readContents(file);
+        List<Row> rows = new ArrayList<Row>();
+        rows.add(new Row(header));
+        if (pattern.length() == 0) {
+            return rows;
+        }
+        Pattern p = Pattern.compile(pattern);
+        while (true) {
+            Matcher m = p.matcher(s);
+            if ( !m.find()) {
+                break;
+            }
+            Row row = new Row();
+            rows.add(row);
+            for (int i = 1; i <= m.groupCount(); i++) {
+                row.add(m.group(i));
+            }
+            s = s.substring(m.end());
+            //      System.err.println(s.length());
+        }
+
         return rows;
     }
 
@@ -1307,7 +1322,7 @@ public class CsvUtil {
         new Cmd(
             "-columns", "<e.g., 0,1,2,7-10,12>",
             "(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
-	new Cmd(
+        new Cmd(
             "-notcolumns", "<e.g., 0,1,2,7-10,12>",
             "(A comma separated list of columns #s or column range, 0-based. Don't include the given columns)"),
         new Cmd("-skip", "<how many lines to skip>"),
@@ -1344,9 +1359,7 @@ public class CsvUtil {
         new Cmd(
             "-setcol", "<match col #> <pattern> <write col #> <value>",
             "(write the value into the write col for rows that match the pattern)"),
-        new Cmd("-letter", "",
-                "(add 'A','B', ... as column)"),
-
+        new Cmd("-letter", "", "(add 'A','B', ... as column)"),
         new Cmd("-case", "<lower|upper|camel> <col #>",
                 "(change case of column)"),
         new Cmd("-width", "<columns>  <size>",
@@ -1361,9 +1374,12 @@ public class CsvUtil {
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
         new Cmd("-changerow", "<row> <pattern> <substitution string>"),
         new Cmd("-convertdate", "<column> <format1> <format2>"),
-        new Cmd("-extract",
-                "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
-                "(extract text from column and make a new column)"),
+        new Cmd("-before", "<column> <format> <date> <format2>"),
+        new Cmd("-after", "<column> <format> <date> <format2>"),
+        new Cmd(
+            "-extract",
+            "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
+            "(extract text from column and make a new column)"),
         new Cmd("-formatdate",
                 "<col #s> <intial date format> <target date format>"),
         new Cmd("-map", "<col #> <new columns name> <value newvalue ...>",
@@ -1378,8 +1394,7 @@ public class CsvUtil {
         new Cmd("-json",
                 "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
                 "(parse the input as json)"),
-        new Cmd("-tokenize",
-		" \"header1,header2...\" \"pattern\"",
+        new Cmd("-tokenize", " \"header1,header2...\" \"pattern\"",
                 "(tokenize the input from the pattern)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
@@ -1400,10 +1415,9 @@ public class CsvUtil {
         new Cmd(
             "-sum", "<key columns> <value columns> <carry over columns>",
             "sum values keying on name column value. If no value columns specified then do a count"),
-        new Cmd(
-            "-join",
-            "<key columns> <value columns> <file> <src key columns>",
-            "Join the 2 files together"),
+        new Cmd("-join",
+                "<key columns> <value columns> <file> <src key columns>",
+                "Join the 2 files together"),
         new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
         new Cmd("-unique", "<columns>", "(pass through unique values)"),
         new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
@@ -1440,11 +1454,13 @@ public class CsvUtil {
             "-flag", "",
             " (be strict on columns. any rows that are not the size of the other rows are shown)"),
         new Cmd("-rotate"), new Cmd("-flip"),
-	new Cmd("-verify", "# columns", "(throw error if a row has a different number of columns)"),
+        new Cmd("-verify", "# columns",
+                "(throw error if a row has a different number of columns)"),
         new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
         new Cmd("-widths", "w1,w2,...,wN", "(columns are fixed widths)"),
         new Cmd("-comment", "<string>"),
-	new Cmd("-verify", "","(verify that all of the rows have the same # of columns)"),
+        new Cmd("-verify", "",
+                "(verify that all of the rows have the same # of columns)"),
         new Cmd("-print", "", "(print to stdout)"),
         new Cmd("-raw", "", "(print the file raw)"),
         new Cmd("-record", "", " (print records)"),
@@ -1593,13 +1609,13 @@ public class CsvUtil {
         Filter.FilterGroup filterToAddTo = null;
         //info.getFilter();
 
-        boolean doHtml    = false;
-        String  htmlProps = null;
-        boolean doJson    = false;
-        String  jsonProps = null;
-	boolean doPattern = false;
-	List<String> tokenizeHeader = null;
-	String tokenizePattern = null;
+        boolean      doHtml          = false;
+        String       htmlProps       = null;
+        boolean      doJson          = false;
+        String       jsonProps       = null;
+        boolean      doPattern       = false;
+        List<String> tokenizeHeader  = null;
+        String       tokenizePattern = null;
         if (comment != null) {
             info.setComment(comment);
         }
@@ -1610,1318 +1626,1386 @@ public class CsvUtil {
 
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-	    try {
-            if (arg.equals("-html")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                doHtml    = true;
-                htmlProps = args.get(++i);
-
-                continue;
-            }
-            if (arg.equals("-json")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                doJson    = true;
-                jsonProps = args.get(++i);
-
-                continue;
-            }
-
-	    if (arg.equals("-tokenize")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
-                }
-                doPattern    = true;
-                tokenizeHeader = StringUtil.split(args.get(++i),",");
-                tokenizePattern = args.get(++i).replaceAll("_quote_","\"");
-                continue;
-            }
-
-
-            if (arg.equals("-skip")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.setSkip(Integer.parseInt(args.get(++i)));
-
-                continue;
-            }
-
-
-            if (arg.equals("-skipline")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.setSkipPattern(args.get(++i));
-
-                continue;
-            }
-
-            if (arg.equals("-changeline")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
-                }
-                info.setChangeString(args.get(++i), args.get(++i));
-
-                continue;
-            }
-
-            if (arg.equals("-maxrows")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.setMaxRows(Integer.parseInt(args.get(++i)));
-
-                continue;
-            }
-
-            if (arg.equals("-prune")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.setPruneBytes(Integer.parseInt(args.get(++i)));
-
-                continue;
-            }
-
-            /*
-            if (arg.equals("-prefix")) {
-                new PrintWriter(getOutputStream()).println(args.get(++i));
-                continue;
-                }*/
-
-
-            if (arg.equals("-start")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.getFilter().addFilter(new Filter.Start(args.get(++i)));
-
-                continue;
-            }
-
-
-            if (arg.equals("-stop")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.getFilter().addFilter(new Filter.Stop(args.get(++i)));
-
-                continue;
-            }
-
-            if (arg.equals("-min")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.getFilter().addFilter(
-                    new Filter.MinColumns(new Integer(args.get(++i))));
-
-                continue;
-            }
-
-            if (arg.equals("-max")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.getFilter().addFilter(
-                    new Filter.MaxColumns(new Integer(args.get(++i))));
-
-                continue;
-            }
-
-
-
-            if (arg.equals("-decimate")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
-                }
-                int start = Integer.parseInt(args.get(++i));
-                int skip  = Integer.parseInt(args.get(++i));
-                if (skip > 0) {
-                    info.getFilter().addFilter(new Filter.Decimate(start,
-                            skip));
-                }
-
-                continue;
-            }
-
-            if (arg.equals("-db")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                Hashtable<String, String> props = parseProps(args.get(++i));
-                this.installPlugin = Misc.equals(props.get("-install"),
-                        "true") || Misc.equals(props.get("install"), "true");
-                this.nukeDb = Misc.equals(props.get("-nukedb"), "true")
-                              || Misc.equals(props.get("nukedb"), "true");
-                info.getProcessor().addProcessor(dbXml =
-                    new Processor.DbXml(props));
-
-                continue;
-            }
-
-
-            if (arg.equals("-unfurl")) {
-
-                if ( !ensureArg(args, i, 5)) {
-                    return false;
-                }
-                int          idx1      = Integer.parseInt(args.get(++i));
-                List<String> valueCols = getCols(args.get(++i));
-                //                int          idx2 = Integer.parseInt(args.get(++i));
-                int          idx3      = Integer.parseInt(args.get(++i));
-                List<String> extraCols = getCols(args.get(++i));
-                info.getProcessor().addProcessor(new Processor.Unfurler(idx1,
-                        valueCols, idx3, extraCols));
-
-                continue;
-            }
-
-
-            if (arg.equals("-break")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
-                }
-                String       label1 = args.get(++i);
-                String       label2 = args.get(++i);
-                List<String> cols   = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Processor.Breaker(label1, label2, cols));
-
-                continue;
-            }
-
-
-            if (arg.equals("-sort")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                int idx = Integer.parseInt(args.get(++i));
-                info.getProcessor().addProcessor(new Processor.Sorter(idx,
-                        true));
-
-                continue;
-            }
-
-            if (arg.equals("-join")) {
-                if ( !ensureArg(args, i, 4)) {
-                    return false;
-                }
-                List<String> keys1   = getCols(args.get(++i));
-                List<String> values1 = getCols(args.get(++i));
-                String       file    = args.get(++i);
-                List<String> keys2   = getCols(args.get(++i));
-
-                info.getProcessor().addProcessor(new Processor.Joiner(keys1,
-                        values1, file, keys2));
-
-                continue;
-            }
-
-            if (arg.equals("-sum")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
-                }
-                List<String> keys   = getCols(args.get(++i));
-                List<String> values = getCols(args.get(++i));
-                List<String> extra   = getCols(args.get(++i));
-                info.getProcessor().addProcessor(new Processor.Summer(keys,
-								      values,extra));
-
-                continue;
-            }
-
-
-            if (arg.equals("-unique")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                List<String> toks = getCols(args.get(++i));
-                info.getProcessor().addProcessor(new Filter.Unique(toks));
-
-                continue;
-            }
-
-            if (arg.equals("-dups")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                List<String> toks = getCols(args.get(++i));
-                info.getProcessor().addProcessor(new Processor.Dups(toks));
-
-                continue;
-            }
-
-            if (arg.equals("-verify")) {
-                info.getProcessor().addProcessor(new Processor.Verifier());
-                continue;
-            }	    
-
-            if (arg.equals("-count")) {
-                info.getProcessor().addProcessor(new Processor.Counter());
-
-                continue;
-            }
-
-
-            if (arg.equals("-log")) {
-                info.getProcessor().addProcessor(new Processor.Logger());
-
-                continue;
-            }
-
-            if (arg.equals("-strict")) {
-                info.getProcessor().addProcessor(new Processor.Counter(true));
-
-                continue;
-            }
-
-            if (arg.equals("-flag")) {
-                info.getProcessor().addProcessor(new Processor.Counter(true,
-                        true));
-
-                continue;
-            }
-
-            if (arg.equals("-sum")) {
-                info.getProcessor().addProcessor(
-                    new Processor.RowOperator(Processor.RowOperator.OP_SUM));
-
-                continue;
-            }
-
-            if (arg.equals("-rotate")) {
-                info.getProcessor().addProcessor(new Processor.Rotator());
-
-                continue;
-            }
-
-            if (arg.equals("-flip")) {
-                info.getProcessor().addProcessor(new Processor.Flipper());
-
-                continue;
-            }
-
-
-
-            if (arg.equals("-rawlines")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                rawLines = Integer.parseInt(args.get(++i));
-
-                continue;
-            }
-
-
-            if (arg.equals("-delimiter")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.setDelimiter(delimiter = args.get(++i));
-
-                continue;
-            }
-
-            if (arg.equals("-widths")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                List<Integer> widths = new ArrayList<Integer>();
-                for (String tok :
-                        StringUtil.split(args.get(++i), ",", true, true)) {
-                    widths.add(Integer.parseInt(tok));
-                }
-                info.setWidths(widths);
-
-                continue;
-            }
-
-            if (arg.equals("-comment")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.setComment(comment = args.get(++i));
-
-                continue;
-            }
-
-            if (arg.equals("-outputdelimiter")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                String s = args.get(++i);
-                if (s.equals("tab")) {
-                    s = "\t";
-                }
-                info.setOutputDelimiter(s);
-
-                continue;
-            }
-
-            if (arg.equals("-cut") || arg.equals("-include")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                String r = args.get(++i);
-                info.getFilter().addFilter(new Filter.Cutter(getNumbers(r),
-                        arg.equals("-cut")));
-
-                continue;
-            }
-
-
-
-            if (arg.equals("-max")) {
-                info.getProcessor().addProcessor(
-                    new Processor.RowOperator(Processor.RowOperator.OP_MAX));
-
-                continue;
-            }
-
-            if (arg.equals("-min")) {
-                info.getProcessor().addProcessor(
-                    new Processor.RowOperator(Processor.RowOperator.OP_MIN));
-
-                continue;
-            }
-
-            if (arg.equals("-average")) {
-                info.getProcessor().addProcessor(
-                    new Processor.RowOperator(
-                        Processor.RowOperator.OP_AVERAGE));
-
-                continue;
-            }
-            if (arg.equals("-processor")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                Class c = Misc.findClass(args.get(++i));
-                info.getProcessor().addProcessor((Processor) c.newInstance());
-
-                continue;
-            }
-
-            if (arg.equals("-fields")) {
-                printFields = true;
-
-                continue;
-            }
-
-            if (arg.equals("-trim")) {
-                trim = true;
-
-                continue;
-            }
-
-            if (arg.equals("-output")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                String out = args.get(++i);
-                this.outputStream = new FileOutputStream(out);
-                info.setWriter(new PrintWriter(this.outputStream));
-                info.getProcessor().addProcessor(
-                    new Processor.Printer(printFields, trim));
-
-                continue;
-
-            }
-
-            if (arg.equals("-print")) {
-                info.getProcessor().addProcessor(
-                    new Processor.Printer(printFields, trim));
-
-                continue;
-            }
-
-            if (arg.equals("-table")) {
-                info.getProcessor().addProcessor(new Processor.Html());
+            try {
+                if (arg.equals("-html")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    doHtml    = true;
+                    htmlProps = args.get(++i);
 
-                continue;
-            }
-
-
-            if (arg.equals("-dump")) {
-                info.getProcessor().addProcessor(
-                    new Processor.Printer(printFields, trim));
-
-                continue;
-            }
-
-            if (arg.equals("-record")) {
-                info.getProcessor().addProcessor(new Processor.Prettifier());
-
-                continue;
-            }
-
-            if (arg.equals("-template")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                String template = args.get(++i);
-                if (new File(template).exists()) {
-                    template = IOUtil.readContents(new File(template));
-                }
-                info.getProcessor().addProcessor(
-                    new Processor.Printer(template));
-
-                continue;
-            }
-
-            if (arg.equals("-columns")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                List<String> cols = getCols(args.get(++i));
-                info.setSelector(new Converter.ColumnSelector(cols));
-                info.getProcessor().addProcessor(info.getSelector());
-
-                continue;
-            }
-
-	    if (arg.equals("-notcolumns")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols = getCols(args.get(++i));
-		info.getProcessor().addProcessor(new Converter.ColumnNotSelector(cols));
-                continue;
-            }
-
-            if (arg.equals("-mergerows")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                String r = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Converter.RowMerger(
-                        getNumbers(r), args.get(++i), args.get(++i)));
-
-                continue;
-            }
-
-
-
-
-            /*
-            if (arg.equals("-addrange")) {
-                if(!ensureArg(args, i,3)) return false;
-                List<String> cols = getCols(args.get(++i));
-                int from = new Integer(args.get(++i)).intValue();
-                int to  = new Integer(args.get(++i)).intValue();
-                info.getProcessor().addProcessor(new Converter.AddRange(cols,from,to));
-                continue;
-            }
-            */
-
-            if (arg.equals("-addheader")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.getProcessor().addProcessor(
-                    new Converter.HeaderMaker(parseProps(args.get(++i))));
-
-                continue;
-            }
-
-
-            if (arg.equals("-printheader")) {
-                info.getProcessor().addProcessor(new Converter.PrintHeader());
-
-                continue;
-            }
-
-            if (arg.equals("-pointheader")) {
-                info.getProcessor().addProcessor(
-                    new Converter.PrintHeader(true));
+                if (arg.equals("-json")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    doJson    = true;
+                    jsonProps = args.get(++i);
 
-                continue;
-            }
-
-            if (arg.equals("-prepend")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                String text = args.get(++i);
-                text = text.replaceAll("_nl_", "\n");
-                textReader.setPrepend(text);
-
-                continue;
-            }
-
 
+                if (arg.equals("-tokenize")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    doPattern      = true;
+                    tokenizeHeader = StringUtil.split(args.get(++i), ",");
+                    tokenizePattern = args.get(++i).replaceAll("_quote_",
+                            "\"");
 
-            if (arg.equals("-percent")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnPercenter(cols));
-
-                continue;
-            }
-
-
 
-            if (arg.equals("-sumrow")) {
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnOperator());
 
-                continue;
-            }
+                if (arg.equals("-skip")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.setSkip(Integer.parseInt(args.get(++i)));
 
-            if (arg.equals("-pad")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                int    count = new Integer(args.get(++i)).intValue();
-                String pad   = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Padder(count,
-                        pad));
 
-                continue;
-            }
 
-            if (arg.equals("-prefix")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
-                }
-                List<String> cols = getCols(args.get(++i));
-                String       s    = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Prefixer(cols,
-                        s));
+                if (arg.equals("-skipline")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.setSkipPattern(args.get(++i));
 
-                continue;
-            }
-
-            if (arg.equals("-suffix")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols = getCols(args.get(++i));
-                String       s    = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Suffixer(cols,
-                        s));
-
-                continue;
-            }
 
+                if (arg.equals("-changeline")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    info.setChangeString(args.get(++i), args.get(++i));
 
-            if (arg.equals("-explode")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                String col = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Processor.Exploder(Integer.parseInt(col)));
 
-                continue;
-            }
+                if (arg.equals("-maxrows")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.setMaxRows(Integer.parseInt(args.get(++i)));
 
-            if (arg.equals("-gender")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                String col = args.get(++i);
 
-                info.getProcessor().addProcessor(
-                    new Converter.Genderizer(new Integer(col)));
+                if (arg.equals("-prune")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.setPruneBytes(Integer.parseInt(args.get(++i)));
 
-                continue;
-            }
-
-            if (arg.equals("-image")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols   = getCols(args.get(++i));
-                String       suffix = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Converter.ImageSearch(cols, suffix));
 
-                continue;
-            }
+                /*
+                if (arg.equals("-prefix")) {
+                    new PrintWriter(getOutputStream()).println(args.get(++i));
+                    continue;
+                    }*/
 
 
+                if (arg.equals("-start")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.getFilter().addFilter(
+                        new Filter.Start(args.get(++i)));
 
-            if (arg.equals("-geocode")) {
-                if ( !ensureArg(args, i, 5)) {
-                    return false;
+                    continue;
                 }
-                String col      = args.get(++i);
-                String filename = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Geocoder(col,
-                        filename, Integer.parseInt(args.get(++i)),
-                        Integer.parseInt(args.get(++i)),
-                        Integer.parseInt(args.get(++i)), false));
 
-                continue;
-            }
 
-            if (arg.equals("-geocodeaddress")) {
-                if ( !ensureArg(args, i, 5)) {
-                    return false;
-                }
-                List<String> cols   = getCols(args.get(++i));
-                String       lat    = args.get(++i);
-                String       lon    = args.get(++i);
-                String       prefix = args.get(++i).trim();
-                String       suffix = args.get(++i).trim();
-                info.getProcessor().addProcessor(new Converter.Geocoder(cols,
-                        lat, lon, prefix, suffix));
+                if (arg.equals("-stop")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.getFilter().addFilter(
+                        new Filter.Stop(args.get(++i)));
 
-                continue;
-            }
-            if (arg.equals("-geocodeaddressdb")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols   = getCols(args.get(++i));
-                String       prefix = args.get(++i).trim();
-                String       suffix = args.get(++i).trim();
-                info.getProcessor().addProcessor(new Converter.Geocoder(cols,
-                        prefix, suffix, true));
 
-                continue;
-            }
+                if (arg.equals("-min")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.getFilter().addFilter(
+                        new Filter.MinColumns(new Integer(args.get(++i))));
 
-            if (arg.equals("-geocodedb")) {
-                if ( !ensureArg(args, i, 5)) {
-                    return false;
+                    continue;
                 }
-                String col      = args.get(++i);
-                String filename = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Geocoder(col,
-                        filename, Integer.parseInt(args.get(++i)),
-                        Integer.parseInt(args.get(++i)),
-                        Integer.parseInt(args.get(++i)), true));
 
-                continue;
-            }
+                if (arg.equals("-max")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.getFilter().addFilter(
+                        new Filter.MaxColumns(new Integer(args.get(++i))));
 
-            if (arg.equals("-change")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols    = getCols(args.get(++i));
-                String       pattern = args.get(++i);
-                pattern =
-                    pattern.replaceAll("_leftparen_",
-                                       "\\\\(").replaceAll("_rightparen_",
-                                           "\\\\)");
-                pattern =
-                    pattern.replaceAll("_leftbracket_",
-                                       "\\\\[").replaceAll("_rightbracket_",
-                                           "\\\\]");
-                pattern = pattern.replaceAll("_dot_", "\\\\.");
-                pattern = pattern.replaceAll("_star_", "\\\\*");
-                pattern = pattern.replaceAll("_plus_", "\\\\+");
-                //                pattern = pattern.replaceAll("_leftparen_","\\\\(").replaceAll("_rightparen_","\\\\)");
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnChanger(
-                        cols, pattern, args.get(++i)));
-
-                continue;
-            }
-
 
-            if (arg.equals("-extract")) {
-                if ( !ensureArg(args, i, 4)) {
-                    return false;
-                }
-                int    col     = new Integer(args.get(++i));
-                String pattern = args.get(++i);
-                String replace = args.get(++i);
-                String name    = args.get(++i);
-                pattern =
-                    pattern.replaceAll("_leftparen_",
-                                       "\\\\(").replaceAll("_rightparen_",
-                                           "\\\\)");
-                pattern =
-                    pattern.replaceAll("_leftbracket_",
-                                       "\\\\[").replaceAll("_rightbracket_",
-                                           "\\\\]");
-                pattern = pattern.replaceAll("_dot_", "\\\\.");
-                pattern = pattern.replaceAll("_nl_", "\n");
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnExtracter(
-                        col, pattern, replace, name));
 
-                continue;
-            }
 
+                if (arg.equals("-decimate")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    int start = Integer.parseInt(args.get(++i));
+                    int skip  = Integer.parseInt(args.get(++i));
+                    if (skip > 0) {
+                        info.getFilter().addFilter(new Filter.Decimate(start,
+                                skip));
+                    }
 
-            if (arg.equals("-changerow")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                int    row     = Integer.parseInt(args.get(++i));
-                String pattern = args.get(++i);
-                pattern =
-                    pattern.replaceAll("_leftparen_",
-                                       "\\\\(").replaceAll("_rightparen_",
-                                           "\\\\)");
-                pattern =
-                    pattern.replaceAll("_leftbracket_",
-                                       "\\\\[").replaceAll("_rightbracket_",
-                                           "\\\\]");
-                pattern = pattern.replaceAll("_dot_", "\\\\.");
-                info.getProcessor().addProcessor(
-                    new Converter.RowChanger(row, pattern, args.get(++i)));
 
-                continue;
-            }
+                if (arg.equals("-db")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    Hashtable<String, String> props =
+                        parseProps(args.get(++i));
+                    this.installPlugin = Misc.equals(props.get("-install"),
+                            "true") || Misc.equals(props.get("install"),
+                                "true");
+                    this.nukeDb = Misc.equals(props.get("-nukedb"), "true")
+                                  || Misc.equals(props.get("nukedb"), "true");
+                    info.getProcessor().addProcessor(dbXml =
+                        new Processor.DbXml(props));
 
-
-	    if (arg.equals("-convertdate")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                int col = Integer.parseInt(args.get(++i));
-                String sdf1 = args.get(++i);
-		String sdf2 = args.get(++i);
-                info.getProcessor().addProcessor(
-						 new Converter.DateConverter(col,new SimpleDateFormat(sdf1), new SimpleDateFormat(sdf2)));
-
-                continue;
-            }
 
 
-            if (arg.equals("-debug")) {
-                System.err.println("CsvUtil args:" + this.args);
+                if (arg.equals("-unfurl")) {
 
-                continue;
-            }
+                    if ( !ensureArg(args, i, 5)) {
+                        return false;
+                    }
+                    int          idx1      = Integer.parseInt(args.get(++i));
+                    List<String> valueCols = getCols(args.get(++i));
+                    //                int          idx2 = Integer.parseInt(args.get(++i));
+                    int          idx3      = Integer.parseInt(args.get(++i));
+                    List<String> extraCols = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Processor.Unfurler(
+                            idx1, valueCols, idx3, extraCols));
 
-
-            if (arg.equals("-columndebug")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols    = getCols(args.get(++i));
-                String       pattern = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnDebugger(cols, pattern));
-
-                continue;
-            }
 
-
-            if (arg.equals("-formatdate")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
-                }
-                List<String> cols = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.DateFormatter(
-                        cols, args.get(++i), args.get(++i)));
 
-                continue;
-            }
+                if (arg.equals("-break")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    String       label1 = args.get(++i);
+                    String       label2 = args.get(++i);
+                    List<String> cols   = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Processor.Breaker(label1, label2, cols));
 
-            if (arg.equals("-map")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnMapper(
-                        cols, args.get(++i),
-                        Utils.parseCommandLine(args.get(++i))));
 
-                continue;
-            }
 
+                if (arg.equals("-sort")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    int idx = Integer.parseInt(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Processor.Sorter(idx, true));
 
-            if (arg.equals("-tcl")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                i++;
-                info.getProcessor().addProcessor(
-                    new Processor.TclWrapper(args.get(i)));
 
-                continue;
-            }
+                if (arg.equals("-join")) {
+                    if ( !ensureArg(args, i, 4)) {
+                        return false;
+                    }
+                    List<String> keys1   = getCols(args.get(++i));
+                    List<String> values1 = getCols(args.get(++i));
+                    String       file    = args.get(++i);
+                    List<String> keys2   = getCols(args.get(++i));
 
-            if (arg.equals("-split")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
-                }
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnSplitter(
-                        args.get(++i), args.get(++i),
-                        StringUtil.split(args.get(++i), ",")));
-
-                continue;
-            }
-
-            if (arg.equals("-delete")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnDeleter(getCols(args.get(++i))));
-
-                continue;
-            }
+                    info.getProcessor().addProcessor(
+                        new Processor.Joiner(keys1, values1, file, keys2));
 
-            if (arg.equals("-insert")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnInserter(
-                        Integer.parseInt(args.get(++i)), args.get(++i)));
-
-                continue;
-            }
-
 
+                if (arg.equals("-sum")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> keys   = getCols(args.get(++i));
+                    List<String> values = getCols(args.get(++i));
+                    List<String> extra  = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Processor.Summer(keys, values, extra));
 
-            if (arg.equals("-macro")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnMacro(
-                        args.get(++i), args.get(++i), args.get(++i)));
 
-                continue;
-            }
 
+                if (arg.equals("-unique")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> toks = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(new Filter.Unique(toks));
 
-            if (arg.equals("-format")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnFormatter(cols, args.get(++i)));
 
-                continue;
+                if (arg.equals("-dups")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> toks = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Processor.Dups(toks));
 
-            }
-
-
-            if (arg.equals("-scale")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnScaler(
-                        args.get(++i), Double.parseDouble(args.get(++i)),
-                        Double.parseDouble(args.get(++i)),
-                        Double.parseDouble(args.get(++i))));
-
-                continue;
-            }
 
+                if (arg.equals("-verify")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.Verifier());
 
-            if (arg.equals("-decimals")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                List<String> idxs = getCols(args.get(++i));
-                info.getProcessor().addProcessor(new Converter.Decimals(idxs,
-                        new Integer(args.get(++i))));
 
-                continue;
-            }
+                if (arg.equals("-count")) {
+                    info.getProcessor().addProcessor(new Processor.Counter());
 
-            if (arg.equals("-copy")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnCopier(args.get(++i), args.get(++i)));
 
-                continue;
-            }
 
-            if (arg.equals("-concat")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
-                }
-                List<String> idxs = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnNewer(idxs, args.get(++i)));
+                if (arg.equals("-log")) {
+                    info.getProcessor().addProcessor(new Processor.Logger());
 
-                continue;
-            }
-
-            if (arg.equals("-splat")) {
-                if ( !ensureArg(args, i, 4)) {
-                    return false;
+                    continue;
                 }
-                String key       = args.get(++i);
-                String value     = args.get(++i);
-                String delimiter = args.get(++i);
-                String name      = args.get(++i);
-                info.getProcessor().addProcessor(new Processor.Splatter(key,
-                        value, delimiter, name));
 
-                continue;
-            }
+                if (arg.equals("-strict")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.Counter(true));
 
-            if (arg.equals("-operator")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                List<String> idxs = getCols(args.get(++i));
-                String       name = args.get(++i);
-                String       op   = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnMathOperator(idxs, name, op));
-
-                continue;
-            }
 
+                if (arg.equals("-flag")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.Counter(true, true));
 
-            if (arg.equals("-mercator")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                List<String> idxs = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.Mercator(idxs));
 
-                continue;
-            }
+                if (arg.equals("-sum")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.RowOperator(
+                            Processor.RowOperator.OP_SUM));
 
-
-
-            if (arg.equals("-round")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
+                    continue;
                 }
-                List<String> idxs = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnRounder(idxs));
 
-                continue;
-            }
+                if (arg.equals("-rotate")) {
+                    info.getProcessor().addProcessor(new Processor.Rotator());
 
-            if (arg.equals("-case")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                String       action = args.get(++i);
-                List<String> idxs   = getCols(args.get(++i));
-                info.getProcessor().addProcessor(new Converter.Case(idxs,
-                        action));
-
-                continue;
-            }
 
+                if (arg.equals("-flip")) {
+                    info.getProcessor().addProcessor(new Processor.Flipper());
 
-
-            if (arg.equals("-addcell")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                int row = Integer.parseInt(args.get(++i));
-                int col = Integer.parseInt(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnNudger(row, col, args.get(++i)));
 
-                continue;
-            }
 
-            if (arg.equals("-deletecell")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
-                }
-                int row = Integer.parseInt(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnUnNudger(
-                        row, getCols(args.get(++i))));
 
-                continue;
-            }
+                if (arg.equals("-rawlines")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    rawLines = Integer.parseInt(args.get(++i));
 
-            if (arg.equals("-set")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols = getCols(args.get(++i));
-                List<String> rows = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnSetter(cols, rows, args.get(++i)));
 
-                continue;
-            }
 
-	    if (arg.equals("-letter")) {
-                info.getProcessor().addProcessor(
-						 new Converter.Letter());
+                if (arg.equals("-delimiter")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.setDelimiter(delimiter = args.get(++i));
 
-                continue;
-            }
-
-            if (arg.equals("-setcol")) {
-                if ( !ensureArg(args, i, 4)) {
-                    return false;
+                    continue;
                 }
-                int    col1    = Integer.parseInt(args.get(++i));
-                String pattern = args.get(++i);
-                int    col2    = Integer.parseInt(args.get(++i));
-                String what    = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnPatternSetter(
-                        col1, pattern, col2, what));
 
-                continue;
-            }
+                if (arg.equals("-widths")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<Integer> widths = new ArrayList<Integer>();
+                    for (String tok :
+                            StringUtil.split(args.get(++i), ",", true,
+                                             true)) {
+                        widths.add(Integer.parseInt(tok));
+                    }
+                    info.setWidths(widths);
 
-            if (arg.equals("-width")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols = getCols(args.get(++i));
-                int          size = Integer.parseInt(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnWidth(cols, size));
-
-                continue;
-            }
 
-            /*
-            if (arg.equals("-addrow")) {
-            if(!ensureArg(args, i,2)) return false;
-                int row = Integer.parseInt(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.RowInserter(
-                        row, args.get(++i)));
+                if (arg.equals("-comment")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.setComment(comment = args.get(++i));
 
-                continue;
-                }*/
-
-
-            if (arg.equals("-combine")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols      = getCols(args.get(++i));
-                String       separator = args.get(++i);
-                String       name      = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnConcatter(
-                        cols, separator, name, false));
-
-                continue;
-            }
 
+                if (arg.equals("-outputdelimiter")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String s = args.get(++i);
+                    if (s.equals("tab")) {
+                        s = "\t";
+                    }
+                    info.setOutputDelimiter(s);
 
-            if (arg.equals("-combineinplace")) {
-                if ( !ensureArg(args, i, 3)) {
-                    return false;
+                    continue;
                 }
-                List<String> cols      = getCols(args.get(++i));
-                String       separator = args.get(++i);
-                String       name      = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnConcatter(
-                        cols, separator, name, true));
 
-                continue;
-            }
+                if (arg.equals("-cut") || arg.equals("-include")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String r = args.get(++i);
+                    info.getFilter().addFilter(
+                        new Filter.Cutter(getNumbers(r), arg.equals("-cut")));
 
-            if (arg.equals("-denormalize")) {
-                if ( !ensureArg(args, i, 6)) {
-                    return false;
+                    continue;
                 }
-                String file = args.get(++i);
-                int    col1 = Integer.parseInt(args.get(++i));
-                int    col2 = Integer.parseInt(args.get(++i));
-                int    col3 = Integer.parseInt(args.get(++i));
-                String name = args.get(++i);
-                String mode = args.get(++i);
-                info.getProcessor().addProcessor(
-                    new Converter.Denormalizer(
-                        file, col1, col2, col3, name, mode));
 
-                continue;
-            }
 
 
-            if (arg.equals("-or")) {
-                filterToAddTo = new Filter.FilterGroup(false);
-                info.getProcessor().addProcessor(filterToAddTo);
+                if (arg.equals("-max")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.RowOperator(
+                            Processor.RowOperator.OP_MAX));
 
-                continue;
-            }
-
-            if (arg.equals("-and")) {
-                filterToAddTo = new Filter.FilterGroup(true);
-                info.getProcessor().addProcessor(filterToAddTo);
-
-                continue;
-            }
-
-            if (arg.equals("-pattern")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                String col     = args.get(++i);
-                String pattern = args.get(++i);
-                handlePattern(info, filterToAddTo,
-                              new Filter.PatternFilter(col, pattern));
-
-                continue;
-            }
 
+                if (arg.equals("-min")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.RowOperator(
+                            Processor.RowOperator.OP_MIN));
 
-            if (arg.equals("-notpattern")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                String col     = args.get(++i);
-                String pattern = args.get(++i);
-                handlePattern(info, filterToAddTo,
-                              new Filter.PatternFilter(col, pattern, true));
 
-                continue;
-            }
+                if (arg.equals("-average")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.RowOperator(
+                            Processor.RowOperator.OP_AVERAGE));
 
-            if (arg.equals("-countvalue")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                String col = args.get(++i);
-                int    cnt = Integer.parseInt(args.get(++i));
-                handlePattern(info, filterToAddTo,
-                              new Filter.CountValue(col, cnt));
+                if (arg.equals("-processor")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    Class c = Misc.findClass(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        (Processor) c.newInstance());
 
-                continue;
-            }
-
-            if (arg.equals("-lt")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                handlePattern(info, filterToAddTo,
-                              new Filter.ValueFilter(args.get(++i),
-                                  Filter.ValueFilter.OP_LT,
-                                  Double.parseDouble(args.get(++i))));
 
-                continue;
-            }
+                if (arg.equals("-fields")) {
+                    printFields = true;
 
-            if (arg.equals("-gt")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                handlePattern(info, filterToAddTo,
-                              new Filter.ValueFilter(args.get(++i),
-                                  Filter.ValueFilter.OP_GT,
-                                  Double.parseDouble(args.get(++i))));
-
-                continue;
-            }
-
 
-            if (arg.equals("-defined")) {
-                if ( !ensureArg(args, i, 1)) {
-                    return false;
-                }
-                handlePattern(info, filterToAddTo,
-                              new Filter.ValueFilter(args.get(++i),
-                                  Filter.ValueFilter.OP_DEFINED, 0));
+                if (arg.equals("-trim")) {
+                    trim = true;
 
-                continue;
-            }
-            if (arg.equals("-maxvalue")) {
-                if ( !ensureArg(args, i, 2)) {
-                    return false;
+                    continue;
                 }
-                String key   = args.get(++i);
-                String value = args.get(++i);
-                info.getProcessor().addProcessor(new Processor.MaxValue(key,
-                        value));
-
-                continue;
-            }
-
-
 
-            if (arg.equals("-quit")) {
-                String last = args.get(args.size() - 1);
-                if (last.equals("-print")) {
+                if (arg.equals("-output")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String out = args.get(++i);
+                    this.outputStream = new FileOutputStream(out);
+                    info.setWriter(new PrintWriter(this.outputStream));
                     info.getProcessor().addProcessor(
                         new Processor.Printer(printFields, trim));
 
-                } else if (last.equals("-table")) {
-                    info.getProcessor().addProcessor(new Processor.Html());
+                    continue;
+
                 }
 
-                break;
-            }
-            if (arg.startsWith("-")) {
-                throw new IllegalArgumentException("Unknown arg:" + arg);
-            }
+                if (arg.equals("-print")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.Printer(printFields, trim));
 
-            int idx;
+                    continue;
+                }
 
-            idx = arg.indexOf("!=");
-            if (idx >= 0) {
-                handlePattern(info, filterToAddTo,
-                              new Filter.PatternFilter(arg.substring(0,
-                                  idx).trim(), arg.substring(idx + 2).trim(),
+                if (arg.equals("-table")) {
+                    info.getProcessor().addProcessor(new Processor.Html());
+
+                    continue;
+                }
+
+
+                if (arg.equals("-dump")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.Printer(printFields, trim));
+
+                    continue;
+                }
+
+                if (arg.equals("-record")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.Prettifier());
+
+                    continue;
+                }
+
+                if (arg.equals("-template")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String template = args.get(++i);
+                    if (new File(template).exists()) {
+                        template = IOUtil.readContents(new File(template));
+                    }
+                    info.getProcessor().addProcessor(
+                        new Processor.Printer(template));
+
+                    continue;
+                }
+
+                if (arg.equals("-columns")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    info.setSelector(new Converter.ColumnSelector(cols));
+                    info.getProcessor().addProcessor(info.getSelector());
+
+                    continue;
+                }
+
+                if (arg.equals("-notcolumns")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnNotSelector(cols));
+
+                    continue;
+                }
+
+                if (arg.equals("-mergerows")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String r = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.RowMerger(
+                            getNumbers(r), args.get(++i), args.get(++i)));
+
+                    continue;
+                }
+
+
+
+
+                /*
+                if (arg.equals("-addrange")) {
+                    if(!ensureArg(args, i,3)) return false;
+                    List<String> cols = getCols(args.get(++i));
+                    int from = new Integer(args.get(++i)).intValue();
+                    int to  = new Integer(args.get(++i)).intValue();
+                    info.getProcessor().addProcessor(new Converter.AddRange(cols,from,to));
+                    continue;
+                }
+                */
+
+                if (arg.equals("-addheader")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.HeaderMaker(parseProps(args.get(++i))));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-printheader") || arg.equals("-ph")) {
+                    info.getProcessor().addProcessor(
+                        new Converter.PrintHeader());
+
+                    continue;
+                }
+
+                if (arg.equals("-pointheader")) {
+                    info.getProcessor().addProcessor(
+                        new Converter.PrintHeader(true));
+
+                    continue;
+                }
+
+                if (arg.equals("-prepend")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String text = args.get(++i);
+                    text = text.replaceAll("_nl_", "\n");
+                    textReader.setPrepend(text);
+
+                    continue;
+                }
+
+
+
+                if (arg.equals("-percent")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnPercenter(cols));
+
+                    continue;
+                }
+
+
+
+                if (arg.equals("-sumrow")) {
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnOperator());
+
+                    continue;
+                }
+
+                if (arg.equals("-pad")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    int    count = new Integer(args.get(++i)).intValue();
+                    String pad   = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.Padder(count, pad));
+
+                    continue;
+                }
+
+                if (arg.equals("-prefix")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    String       s    = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.Prefixer(cols, s));
+
+                    continue;
+                }
+
+                if (arg.equals("-suffix")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    String       s    = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.Suffixer(cols, s));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-explode")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String col = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Processor.Exploder(Integer.parseInt(col)));
+
+                    continue;
+                }
+
+                if (arg.equals("-gender")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String col = args.get(++i);
+
+                    info.getProcessor().addProcessor(
+                        new Converter.Genderizer(new Integer(col)));
+
+                    continue;
+                }
+
+                if (arg.equals("-image")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols   = getCols(args.get(++i));
+                    String       suffix = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.ImageSearch(cols, suffix));
+
+                    continue;
+                }
+
+
+
+                if (arg.equals("-geocode")) {
+                    if ( !ensureArg(args, i, 5)) {
+                        return false;
+                    }
+                    String col      = args.get(++i);
+                    String filename = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.Geocoder(
+                            col, filename, Integer.parseInt(args.get(++i)),
+                            Integer.parseInt(args.get(++i)),
+                            Integer.parseInt(args.get(++i)), false));
+
+                    continue;
+                }
+
+                if (arg.equals("-geocodeaddress")) {
+                    if ( !ensureArg(args, i, 5)) {
+                        return false;
+                    }
+                    List<String> cols   = getCols(args.get(++i));
+                    String       lat    = args.get(++i);
+                    String       lon    = args.get(++i);
+                    String       prefix = args.get(++i).trim();
+                    String       suffix = args.get(++i).trim();
+                    info.getProcessor().addProcessor(
+                        new Converter.Geocoder(
+                            cols, lat, lon, prefix, suffix));
+
+                    continue;
+                }
+                if (arg.equals("-geocodeaddressdb")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols   = getCols(args.get(++i));
+                    String       prefix = args.get(++i).trim();
+                    String       suffix = args.get(++i).trim();
+                    info.getProcessor().addProcessor(
+                        new Converter.Geocoder(cols, prefix, suffix, true));
+
+                    continue;
+                }
+
+                if (arg.equals("-geocodedb")) {
+                    if ( !ensureArg(args, i, 5)) {
+                        return false;
+                    }
+                    String col      = args.get(++i);
+                    String filename = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.Geocoder(
+                            col, filename, Integer.parseInt(args.get(++i)),
+                            Integer.parseInt(args.get(++i)),
+                            Integer.parseInt(args.get(++i)), true));
+
+                    continue;
+                }
+
+                if (arg.equals("-change")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols    = getCols(args.get(++i));
+                    String       pattern = args.get(++i);
+                    pattern = pattern.replaceAll("_leftparen_",
+                            "\\\\(").replaceAll("_rightparen_", "\\\\)");
+                    pattern = pattern.replaceAll("_leftbracket_",
+                            "\\\\[").replaceAll("_rightbracket_", "\\\\]");
+                    pattern = pattern.replaceAll("_dot_", "\\\\.");
+                    pattern = pattern.replaceAll("_star_", "\\\\*");
+                    pattern = pattern.replaceAll("_plus_", "\\\\+");
+                    //                pattern = pattern.replaceAll("_leftparen_","\\\\(").replaceAll("_rightparen_","\\\\)");
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnChanger(
+                            cols, pattern, args.get(++i)));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-extract")) {
+                    if ( !ensureArg(args, i, 4)) {
+                        return false;
+                    }
+                    int    col     = new Integer(args.get(++i));
+                    String pattern = args.get(++i);
+                    String replace = args.get(++i);
+                    String name    = args.get(++i);
+                    pattern = pattern.replaceAll("_leftparen_",
+                            "\\\\(").replaceAll("_rightparen_", "\\\\)");
+                    pattern = pattern.replaceAll("_leftbracket_",
+                            "\\\\[").replaceAll("_rightbracket_", "\\\\]");
+                    pattern = pattern.replaceAll("_dot_", "\\\\.");
+                    pattern = pattern.replaceAll("_nl_", "\n");
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnExtracter(
+                            col, pattern, replace, name));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-changerow")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    int    row     = Integer.parseInt(args.get(++i));
+                    String pattern = args.get(++i);
+                    pattern = pattern.replaceAll("_leftparen_",
+                            "\\\\(").replaceAll("_rightparen_", "\\\\)");
+                    pattern = pattern.replaceAll("_leftbracket_",
+                            "\\\\[").replaceAll("_rightbracket_", "\\\\]");
+                    pattern = pattern.replaceAll("_dot_", "\\\\.");
+                    info.getProcessor().addProcessor(
+                        new Converter.RowChanger(
+                            row, pattern, args.get(++i)));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-convertdate")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    int    col  = Integer.parseInt(args.get(++i));
+                    String sdf1 = args.get(++i);
+                    String sdf2 = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.DateConverter(
+                            col, new SimpleDateFormat(sdf1),
+                            new SimpleDateFormat(sdf2)));
+
+                    continue;
+                }
+
+                if (arg.equals("-before")) {
+                    if ( !ensureArg(args, i, 4)) {
+                        return false;
+                    }
+                    int    col  = Integer.parseInt(args.get(++i));
+                    String sdf1 = args.get(++i);
+                    String date = args.get(++i);
+                    String sdf2 = args.get(++i);
+                    Date   dttm = null;
+                    if (date.equals("now")) {
+                        dttm = new Date();
+                    } else if (sdf2.length() > 0) {
+                        SimpleDateFormat sdf = new SimpleDateFormat(sdf2);
+                        dttm = sdf.parse(date);
+                    } else {
+                        dttm = Utils.parseDate(date);
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.DateBefore(
+                            col, new SimpleDateFormat(sdf1), dttm));
+
+                    continue;
+                }
+
+                if (arg.equals("-after")) {
+                    if ( !ensureArg(args, i, 4)) {
+                        return false;
+                    }
+                    int    col  = Integer.parseInt(args.get(++i));
+                    String sdf1 = args.get(++i);
+                    String date = args.get(++i);
+                    String sdf2 = args.get(++i);
+                    Date   dttm = null;
+                    if (date.equals("now")) {
+                        dttm = new Date();
+                    } else if (sdf2.length() > 0) {
+                        SimpleDateFormat sdf = new SimpleDateFormat(sdf2);
+                        dttm = sdf.parse(date);
+                    } else {
+                        dttm = Utils.parseDate(date);
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.DateAfter(
+                            col, new SimpleDateFormat(sdf1), dttm));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-debug")) {
+                    System.err.println("CsvUtil args:" + this.args);
+
+                    continue;
+                }
+
+
+                if (arg.equals("-columndebug")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols    = getCols(args.get(++i));
+                    String       pattern = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnDebugger(cols, pattern));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-formatdate")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.DateFormatter(
+                            cols, args.get(++i), args.get(++i)));
+
+                    continue;
+                }
+
+                if (arg.equals("-map")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnMapper(
+                            cols, args.get(++i),
+                            Utils.parseCommandLine(args.get(++i))));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-tcl")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    i++;
+                    info.getProcessor().addProcessor(
+                        new Processor.TclWrapper(args.get(i)));
+
+                    continue;
+                }
+
+                if (arg.equals("-split")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnSplitter(
+                            args.get(++i), args.get(++i),
+                            StringUtil.split(args.get(++i), ",")));
+
+                    continue;
+                }
+
+                if (arg.equals("-delete")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnDeleter(getCols(args.get(++i))));
+
+                    continue;
+                }
+
+                if (arg.equals("-insert")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnInserter(
+                            Integer.parseInt(args.get(++i)), args.get(++i)));
+
+                    continue;
+                }
+
+
+
+                if (arg.equals("-macro")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnMacro(
+                            args.get(++i), args.get(++i), args.get(++i)));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-format")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnFormatter(cols, args.get(++i)));
+
+                    continue;
+
+                }
+
+
+                if (arg.equals("-scale")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnScaler(
+                            args.get(++i), Double.parseDouble(args.get(++i)),
+                            Double.parseDouble(args.get(++i)),
+                            Double.parseDouble(args.get(++i))));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-decimals")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> idxs = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.Decimals(
+                            idxs, new Integer(args.get(++i))));
+
+                    continue;
+                }
+
+                if (arg.equals("-copy")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnCopier(
+                            args.get(++i), args.get(++i)));
+
+                    continue;
+                }
+
+                if (arg.equals("-concat")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> idxs = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnNewer(idxs, args.get(++i)));
+
+                    continue;
+                }
+
+                if (arg.equals("-splat")) {
+                    if ( !ensureArg(args, i, 4)) {
+                        return false;
+                    }
+                    String key       = args.get(++i);
+                    String value     = args.get(++i);
+                    String delimiter = args.get(++i);
+                    String name      = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Processor.Splatter(key, value, delimiter, name));
+
+                    continue;
+                }
+
+                if (arg.equals("-operator")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> idxs = getCols(args.get(++i));
+                    String       name = args.get(++i);
+                    String       op   = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnMathOperator(idxs, name, op));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-mercator")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> idxs = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.Mercator(idxs));
+
+                    continue;
+                }
+
+
+
+                if (arg.equals("-round")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> idxs = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnRounder(idxs));
+
+                    continue;
+                }
+
+                if (arg.equals("-case")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    String       action = args.get(++i);
+                    List<String> idxs   = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(new Converter.Case(idxs,
+                            action));
+
+                    continue;
+                }
+
+
+
+                if (arg.equals("-addcell")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    int row = Integer.parseInt(args.get(++i));
+                    int col = Integer.parseInt(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnNudger(row, col, args.get(++i)));
+
+                    continue;
+                }
+
+                if (arg.equals("-deletecell")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    int row = Integer.parseInt(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnUnNudger(
+                            row, getCols(args.get(++i))));
+
+                    continue;
+                }
+
+                if (arg.equals("-set")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    List<String> rows = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnSetter(
+                            cols, rows, args.get(++i)));
+
+                    continue;
+                }
+
+                if (arg.equals("-letter")) {
+                    info.getProcessor().addProcessor(new Converter.Letter());
+
+                    continue;
+                }
+
+                if (arg.equals("-setcol")) {
+                    if ( !ensureArg(args, i, 4)) {
+                        return false;
+                    }
+                    int    col1    = Integer.parseInt(args.get(++i));
+                    String pattern = args.get(++i);
+                    int    col2    = Integer.parseInt(args.get(++i));
+                    String what    = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnPatternSetter(
+                            col1, pattern, col2, what));
+
+                    continue;
+                }
+
+                if (arg.equals("-width")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    int          size = Integer.parseInt(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnWidth(cols, size));
+
+                    continue;
+                }
+
+                /*
+                if (arg.equals("-addrow")) {
+                if(!ensureArg(args, i,2)) return false;
+                    int row = Integer.parseInt(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.RowInserter(
+                            row, args.get(++i)));
+
+                    continue;
+                    }*/
+
+
+                if (arg.equals("-combine")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols      = getCols(args.get(++i));
+                    String       separator = args.get(++i);
+                    String       name      = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnConcatter(
+                            cols, separator, name, false));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-combineinplace")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols      = getCols(args.get(++i));
+                    String       separator = args.get(++i);
+                    String       name      = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnConcatter(
+                            cols, separator, name, true));
+
+                    continue;
+                }
+
+                if (arg.equals("-denormalize")) {
+                    if ( !ensureArg(args, i, 6)) {
+                        return false;
+                    }
+                    String file = args.get(++i);
+                    int    col1 = Integer.parseInt(args.get(++i));
+                    int    col2 = Integer.parseInt(args.get(++i));
+                    int    col3 = Integer.parseInt(args.get(++i));
+                    String name = args.get(++i);
+                    String mode = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.Denormalizer(
+                            file, col1, col2, col3, name, mode));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-or")) {
+                    filterToAddTo = new Filter.FilterGroup(false);
+                    info.getProcessor().addProcessor(filterToAddTo);
+
+                    continue;
+                }
+
+                if (arg.equals("-and")) {
+                    filterToAddTo = new Filter.FilterGroup(true);
+                    info.getProcessor().addProcessor(filterToAddTo);
+
+                    continue;
+                }
+
+                if (arg.equals("-pattern")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    String col     = args.get(++i);
+                    String pattern = args.get(++i);
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.PatternFilter(col, pattern));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-notpattern")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    String col     = args.get(++i);
+                    String pattern = args.get(++i);
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.PatternFilter(col, pattern,
                                       true));
 
-                continue;
-            }
+                    continue;
+                }
+
+                if (arg.equals("-countvalue")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    String col = args.get(++i);
+                    int    cnt = Integer.parseInt(args.get(++i));
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.CountValue(col, cnt));
+
+                    continue;
+                }
+
+                if (arg.equals("-lt")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.ValueFilter(args.get(++i),
+                                      Filter.ValueFilter.OP_LT,
+                                      Double.parseDouble(args.get(++i))));
+
+                    continue;
+                }
+
+                if (arg.equals("-gt")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.ValueFilter(args.get(++i),
+                                      Filter.ValueFilter.OP_GT,
+                                      Double.parseDouble(args.get(++i))));
+
+                    continue;
+                }
 
 
-            idx = arg.indexOf("=~");
-            if (idx >= 0) {
-                handlePattern(info, filterToAddTo,
-                              new Filter.PatternFilter(arg.substring(0,
-                                  idx).trim(), arg.substring(idx
-                                  + 2).trim()));
+                if (arg.equals("-defined")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.ValueFilter(args.get(++i),
+                                      Filter.ValueFilter.OP_DEFINED, 0));
 
-                continue;
-            }
+                    continue;
+                }
+                if (arg.equals("-maxvalue")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    String key   = args.get(++i);
+                    String value = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Processor.MaxValue(key, value));
+
+                    continue;
+                }
 
 
-            boolean didone = false;
-            for (String op : new String[] { "<=", ">=", "<", ">", "=" }) {
-                idx = arg.indexOf(op);
-                if (idx >= 0) {
-                    handlePattern(
-                        info, filterToAddTo,
-                        new Filter.ValueFilter(
-                            arg.substring(0, idx).trim(),
-                            Filter.ValueFilter.getOperator(op),
-                            Double.parseDouble(
-                                arg.substring(idx + op.length()).trim())));
-                    didone = true;
+
+                if (arg.equals("-quit")) {
+                    String last = args.get(args.size() - 1);
+                    if (last.equals("-print")) {
+                        info.getProcessor().addProcessor(
+                            new Processor.Printer(printFields, trim));
+
+                    } else if (last.equals("-table")) {
+                        info.getProcessor().addProcessor(
+                            new Processor.Html());
+                    }
 
                     break;
                 }
-            }
+                if (arg.startsWith("-")) {
+                    throw new IllegalArgumentException("Unknown arg:" + arg);
+                }
+
+                int idx;
+
+                idx = arg.indexOf("!=");
+                if (idx >= 0) {
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.PatternFilter(arg.substring(0,
+                                      idx).trim(), arg.substring(idx
+                                      + 2).trim(), true));
+
+                    continue;
+                }
 
 
-            if (didone) {
-                continue;
-            }
+                idx = arg.indexOf("=~");
+                if (idx >= 0) {
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.PatternFilter(arg.substring(0,
+                                      idx).trim(), arg.substring(idx
+                                      + 2).trim()));
 
-            if (addFiles) {
-                files.add(arg);
+                    continue;
+                }
+
+
+                boolean didone = false;
+                for (String op : new String[] { "<=", ">=", "<", ">", "=" }) {
+                    idx = arg.indexOf(op);
+                    if (idx >= 0) {
+                        handlePattern(
+                            info, filterToAddTo,
+                            new Filter.ValueFilter(
+                                arg.substring(0, idx).trim(),
+                                Filter.ValueFilter.getOperator(op),
+                                Double.parseDouble(
+                                    arg.substring(
+                                        idx + op.length()).trim())));
+                        didone = true;
+
+                        break;
+                    }
+                }
+
+
+                if (didone) {
+                    continue;
+                }
+
+                if (addFiles) {
+                    files.add(arg);
+                }
+            } catch (Exception exc) {
+                System.err.println("Error processing arg:" + arg);
+
+                throw exc;
             }
-	    } catch(Exception exc) {
-		System.err.println("Error processing arg:" + arg);
-		throw exc;
-	    }
-	}
+        }
 
         if (doHtml) {
             Hashtable<String, String> props = parseProps(htmlProps);
@@ -2929,8 +3013,9 @@ public class CsvUtil {
         } else if (doJson) {
             Hashtable<String, String> props = parseProps(jsonProps);
             tokenizedRows.add(tokenizeJson(files.get(0), props));
-	} else if (doPattern) {
-            tokenizedRows.add(tokenizePattern(files.get(0), tokenizeHeader,tokenizePattern));
+        } else if (doPattern) {
+            tokenizedRows.add(tokenizePattern(files.get(0), tokenizeHeader,
+                    tokenizePattern));
         }
 
         return true;
