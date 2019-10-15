@@ -896,7 +896,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(HtmlUtils.importJS(getHtdocsUrl("/selectform.js")));
         String formId = "selectform" + HtmlUtils.blockCnt++;
         sb.append(
-            HtmlUtils.form(
+            HtmlUtils.formPost(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                 HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
