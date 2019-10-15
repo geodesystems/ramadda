@@ -893,7 +893,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public String openForm(Request request, Entry entry, Appendable sb,
                            Appendable js)
             throws Exception {
-        sb.append(HtmlUtils.importJS(getFileUrl("/selectform.js")));
+        sb.append(HtmlUtils.importJS(getHtdocsUrl("/selectform.js")));
         String formId = "selectform" + HtmlUtils.blockCnt++;
         sb.append(
             HtmlUtils.form(

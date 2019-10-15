@@ -1171,6 +1171,16 @@ input, password, fileinput,textarea {
 }
 
 
+.selectform-table-header {
+    font-weight:bold;
+    padding:4px;
+    text-align:center;
+}
+
+.selectform-table-entry {
+    padding:4px;
+}
+
 table.dataTable thead th, table.dataTable thead td {
     padding: 2px 8px;
 }
