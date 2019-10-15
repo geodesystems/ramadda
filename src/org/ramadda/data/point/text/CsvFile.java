@@ -220,7 +220,7 @@ public class CsvFile extends TextFile {
      * @return _more_
      */
     @Override
-    public List<RecordField> doMakeFields(boolean failureOk) {
+    public List<RecordField> doMakeFields(boolean failureOk)  {
         String fieldString = getProperty(PROP_FIELDS, null);
         //        System.err.println("CsvFile.props:" + getProperties());
         if (fieldString == null) {

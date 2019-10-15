@@ -916,8 +916,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      *
      * @throws Exception _more_
      */
-    public List<RecordField> doMakeFields(String fieldString)
-            throws Exception {
+    public List<RecordField> doMakeFields(String fieldString) {
 
         //        System.err.println ("fields:" + fieldString);
         //x[unit="m"],y[unit="m"],z[unit="m"],red[],green[],blue[],amplitude[]
@@ -1294,7 +1293,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
          *
          * @throws Exception _more_
          */
-        public String readPointFileContents(String path) throws Exception;
+        public String readPointFileContents(String path);
     }
 
 

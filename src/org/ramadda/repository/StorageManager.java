@@ -2597,9 +2597,13 @@ public class StorageManager extends RepositoryManager implements PointFile.FileR
     }
 
 
-    public String readPointFileContents(String path) throws Exception {
-        checkPath(path);
-        return IOUtil.readContents(path, getClass());
+    public String readPointFileContents(String path)  {
+	try {
+	    checkPath(path);
+	    return IOUtil.readContents(path, getClass());
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
 }
