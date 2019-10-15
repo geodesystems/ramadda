@@ -122,86 +122,80 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
 
 
 
-    this.processEntryJson = function(data) {
+   this.processEntryJson = function(data) {
         var totalSize = 0;
         var html = "";
+        var tableId = HtmlUtils.getUniqueId("");
         if (data.length == 0) {
             html = "Nothing found";
         } else {
-            var firstColWidth = "40%";
-            var widthPerColumn = 0;
             var listHtml = "";
             var header = "";
-            var footer = "";
             var columnNames = null;
-            var row1 = true;
             var entries = createEntriesFromJson(data);
             for (var i = 0; i < entries.length; i++) {
                 var entry = entries[i];
+                var labels = entry.getAttributeLabels();
                 if (i == 0) {
                     columnNames = entry.getAttributeNames();
-                    widthPerColumn = Math.floor(60 / (columnNames.length + 1)) + "%";
-                    var labels = entry.getAttributeLabels();
                     for (var colIdx = 0; colIdx < labels.length; colIdx++) {
-                        header += "<td width=" + widthPerColumn + "><b>" + labels[colIdx] + "</b></td>";
-                        footer += "<td></td>";
+                        //A terrible hack to not show the collection id
+                        if(labels[colIdx] == "Collection ID") continue;
+                        header += "<th><div class=selectform-table-header>" + labels[colIdx] + "</div></th>";
                     }
                 }
 
-                if (row1)
-                    listHtml += "<tr class=listrow1>";
-                else
-                    listHtml += "<tr class=listrow2>";
-                row1 = !row1;
-                listHtml += "<td width=" + firstColWidth + " ><input name=\"entryselect\" type=checkbox checked value=\"" + entry.getId() + "\" id=\"" +
+                listHtml += "<tr>";
+                listHtml += "<td><input name=\"entryselect\" type=checkbox checked value=\"" + entry.getId() + "\" id=\"" +
                     this.checkboxPrefix +
                     +entry.getId() + "\" >";
                 listHtml += "&nbsp;&nbsp;" + entry.getLink(entry.getIconImage() + " " + entry.getName());
 
                 for (var colIdx = 0; colIdx < columnNames.length; colIdx++) {
+                    //A terrible hack to not show the collection id
+                    if(labels[colIdx] == "Collection ID") continue;
                     var value = entry.getAttributeValue(columnNames[colIdx]);
-                    listHtml += "<td width=" + widthPerColumn + ">" + value + "</td>";
+                    listHtml += "<td>" + HtmlUtils.div(["class","selectform-table-entry"], value) + "</td>";
                 }
 
-                listHtml += "</td><td align=right width=10%>";
+                listHtml += "</td><td align=right>";
                 listHtml += entry.getFormattedFilesize();
-
+      
                 totalSize += entry.getFilesize();
                 listHtml += "</tr>";
             }
 
 
 
-            var tableHeader = "<table width=100% cellpadding=3 cellspacing=3 id=\"listing\" class=\"entry-listing\" >";
-
-            html += "<div>";
-            html += tableHeader;
-            html += "<thead><tr style=\"background: #FFF;\">";
-            html += "<td width=" + firstColWidth + ">";
+            var table = HtmlUtils.openTag("table", ["class", "selectform-table stripe rowborder nowrap ramadda-table", "id", tableId]);
             var checkboxId = this.id + "_listcbx";
-            html += "<input type=checkbox checked value=true id=\"" + checkboxId + "\"\> ";
-            html += "<b>" + data.length + " files found</b></td>" + header + "<td width=" + widthPerColumn + " align=right><b>Size</b></td></tr></thead>";
-            html += "</table>"
-            html += "</div>";
+            header = "<tr><th><input type=checkbox checked value=true id=\"" + checkboxId + "\"\> " +
+                "<b>" + data.length + " files found</b></th>" + header + "<th align=right><b>Size</b></td></tr>";
 
-
-            html += "<div style=\" margin-bottom:2px;  margin-top:2px; max-height: 250px; overflow-y: auto; border: 1px #ccc solid;\">";
-            html += tableHeader;
-            html += listHtml;
-            html += "</table>";
-            html += "</div>";
-
-            html += "<div>";
-            html += tableHeader;
-            html += "<thead><tr style=\"background: #Fff;\">";
-            html += "<td width=" + firstColWidth + ">";
-            html += "</td>" + header + "<td width=" + widthPerColumn + " align=right><b>" + GuiUtils.size_format(totalSize) + "</b></td></tr></thead>";
-            html += "</table>"
-            html += "</div>"
-
+            table += HtmlUtils.openTag("thead", []);
+            table += header;
+            table += HtmlUtils.closeTag("thead");
+            table += HtmlUtils.openTag("tbody", []);
+            table += listHtml;
+            /* for testing
+            table += listHtml;
+            table += listHtml;
+            table += listHtml;
+            table += listHtml;
+            table += listHtml;
+            */
+            table += HtmlUtils.closeTag("tbody");
+            table += HtmlUtils.closeTag("table");
+            html += table;
+            html +=  HtmlUtils.leftRight("",GuiUtils.size_format(totalSize));
         }
         this.totalSize = totalSize;
         $("#" + this.outputDivPrefix + "list").html(html);
+
+        HtmlUtils.formatTable("#"+ tableId,{
+            scrollY: "250",
+            ordering:true,
+        });
         var theForm = this;
         var cbx = $("#" + checkboxId);
 
@@ -216,8 +210,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
             theForm.listUpdated();
         });
         this.listUpdated()
-    }
-
+    }                
 
 
     this.getEntryCheckboxes = function() {
