@@ -31,8 +31,6 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         return false;
     }
 
-
-
     this.getUrl = function(what) {
         var url = ramaddaBaseUrl + "/entry/show?entryid=" + this.entryId;
         var theForm = this;
@@ -41,6 +39,10 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         inputs.each(function() {
             //if(this.name == "entryselect" && !this.attr('checked')) {
             var value = $(this).val();
+            if (this.name == "request") {
+		return;
+	    }
+
             if (this.name == "entryselect") {
                 if (!$(this).is(':checked')) {
                     return;
@@ -63,28 +65,27 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         return url;
     }
 
+    //This sets the request input to what and submits the form
+    this.formSubmit = function(what, event) {
+	$("#"+this.id).find("input[name=request]").val(what);
+	document.getElementById(this.id).submit();
+	if(event)event.preventDefault();
+    }
+
     this.bulkdownload = function(event) {
-        var url = this.getUrl("bulkdownload");
-        event.preventDefault();
-        window.location.href = url;
+	this.formSubmit("bulkdownload",event);
     }
 
     this.download = function(event) {
-        var url = this.getUrl("download");
-        event.preventDefault();
-        window.location.href = url;
+	this.formSubmit("download",event);
     }
 
     this.makeKMZ = function(event) {
-        var url = this.getUrl("kmz");
-        event.preventDefault();
-        window.location.href = url;
+	this.formSubmit("kmz",event);
     }
 
     this.threddscatalog = function(event) {
-        var url = this.getUrl("threddscatalog");
-        event.preventDefault();
-        window.location.href = url;
+	this.formSubmit("threddscatalog",event);
     }
 
 
