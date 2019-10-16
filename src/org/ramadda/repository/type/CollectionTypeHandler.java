@@ -900,6 +900,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
                 HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HtmlUtils.hidden(ARG_REQUEST, ""));
         js.append("var " + formId + " =  "
                   + HtmlUtils.call("new  SelectForm",
                                    HtmlUtils.jsMakeArgs(true, formId,
