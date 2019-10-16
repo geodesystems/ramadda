@@ -284,6 +284,11 @@ public abstract class CDODataService extends Service {
                 int totalMonths = ((12 - startMonth) + 1) + endMonth;
                 if (isMonthly) {
                     commands.add("-timselmean," + totalMonths);
+                    /*  when we create a climatology, should we condense it down to one value?
+                    if (!(stat.equals("sprd") || stat.equals("smegma"))) {
+                        commands.add("-ymonmean");
+                    }
+                    */
                 } else {
                     commands.add("-ydaymean");
                 }
@@ -1137,11 +1142,25 @@ public abstract class CDODataService extends Service {
         boolean       spanYear    = doMonthsSpanYearEnd(timeRequest, null);
         boolean       haveYears   = false;
         // only compare has 2 different years, others only use the single years string
+        // this convoluted code handles the case where the user doesn't enter anything for the second
+        // dataset and is using years for dataset 1
         if (request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE)) {
+            if (opStr.isEmpty()) {
+                haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
+            } else {
+                haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS+opStr) ||
+                 (!timeRequest.defined(CDOOutputHandler.ARG_CDO_STARTYEAR+opStr) &&
+                 timeRequest.getString(CDOOutputHandler.ARG_CDO_YEARS + opStr,
+                                    timeRequest.getString(
+                                        CDOOutputHandler.ARG_CDO_YEARS,
+                                        null)) != null);
+            }
+            /*
             haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS
                                             + opStr);
+            */
         } else {
-            timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
+            haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
             // TODO: should we do this then? 
             //opStr = "";
         }

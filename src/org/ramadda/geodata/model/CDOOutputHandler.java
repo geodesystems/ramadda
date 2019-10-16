@@ -194,6 +194,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** select llbox operator */
     public static final String OP_SELLLBOX = "-sellonlatbox";
 
+    /** remapnn operator */
+    public static final String OP_REMAPNN = "-remapnn";
+
     /** select level operator */
     public static final String OP_SELLEVEL = "-sellevel";
 
@@ -1388,6 +1391,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                        + levelUnit + " to " + dataUnit);
                 }
                 levSelect = OP_SELLEVEL + "," + level;
+
             }
         }
         if (levSelect != null) {
