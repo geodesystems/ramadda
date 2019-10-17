@@ -307,21 +307,6 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader info, Row row, String line)
                 throws Exception {
-            if (processors.size() == 0) {
-                if (info.getRow() == 0) {
-                    //not now
-                    for (String header : info.getHeaderLines()) {
-                        //                        info.getWriter().println(header);
-                    }
-                }
-                /*
-                info.getWriter().println(
-                                         CsvUtil.columnsToString(
-                                                                 row.getValues(), info.getOutputDelimiter()));
-                info.getWriter().flush();
-                */
-            }
-
             Object  skipTo      = row.getSkipTo();
             boolean sawBufferer = false;
             if (remainderProcessors == null) {
@@ -333,7 +318,6 @@ public abstract class Processor extends CsvOperator {
                         if (skipTo == processor) {
                             skipTo = null;
                         }
-
                         continue;
                     }
                     if (sawBufferer) {
@@ -369,6 +353,10 @@ public abstract class Processor extends CsvOperator {
 
             return row;
         }
+
+	/*
+rotate -> pass -> pass -> rotate -> pass
+	 */
 
         /**
          * _more_
@@ -451,7 +439,7 @@ public abstract class Processor extends CsvOperator {
                         break;
                     }
                 }
-            }
+	    }
             if (firstProcessors != null) {
                 for (Processor processor : firstProcessors) {
                     inputRows = processor.finish(textReader, inputRows);
@@ -645,6 +633,34 @@ public abstract class Processor extends CsvOperator {
     }
 
 
+
+    public static class Pass extends Processor {
+
+        /**
+         * _more_
+         */
+        public Pass() {}
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line)
+                throws Exception {
+	    System.err.println("#" + (rowCnt++) +" row:" + row);
+	    return row;
+	}
+    }
 
 
     /**
