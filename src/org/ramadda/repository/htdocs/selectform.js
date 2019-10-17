@@ -152,7 +152,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
                 listHtml += "<td><input name=\"entryselect\" type=checkbox checked value=\"" + entry.getId() + "\" id=\"" +
                     this.checkboxPrefix +
                     +entry.getId() + "\" >";
-                listHtml += "&nbsp;&nbsp;" + entry.getLink(entry.getIconImage() + " " + entry.getName());
+                listHtml += "&nbsp;" + entry.getLink(entry.getIconImage() + " " + entry.getName());
 
                 for (var colIdx = 0; colIdx < columnNames.length; colIdx++) {
 		            //A terrible hack to not show the collection id
@@ -171,7 +171,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
 
 
 
-	    var table = HtmlUtils.openTag("table", ["class", "selectform-table stripe rowborder nowrap ramadda-table", "id", tableId]);
+	    var table = HtmlUtils.openTag("table", ["class", "selectform-table stripe rowborder ramadda-table", "id", tableId]);
             var checkboxId = this.id + "_listcbx";
             header = "<tr><th><input type=checkbox checked value=true id=\"" + checkboxId + "\"\> " +
 		"<b>" + data.length + " files found</b></th>" + header + "<th align=right><b>Size</b></td></tr>";
