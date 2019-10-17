@@ -743,7 +743,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-
+	    System.err.println("hm:" + row);
             rowCnt++;
             if (rowCnt > 2) {
                 return row;

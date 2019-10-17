@@ -299,8 +299,7 @@ public class CsvUtil {
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
             if (arg.equals("-help")) {
-                usage("", null, false, false);
-
+                usage("", null);
                 return;
             }
             if (arg.equals("-genhelp")) {
@@ -309,13 +308,15 @@ public class CsvUtil {
                 return;
             }
             if (arg.equals("-helpraw")) {
-                usage("", null, false, true);
-
+                usage("", null, "-raw","true");
+                return;
+            }
+	    if (arg.equals("-helpjson")) {
+                usage("", null, "-json","true");
                 return;
             }
             if (arg.startsWith("-help:")) {
-                usage("", arg.substring("-help:".length()), false, false);
-
+                usage("", arg.substring("-help:".length()));
                 return;
             }
             if (arg.equals("-alldata")) {
@@ -388,7 +389,8 @@ public class CsvUtil {
                 iterateValues.add("dummy");
             } else {
                 iteratePattern = new Filter.PatternFilter(iterateColumn, "");
-                textReader.getFilter().addFilter(iteratePattern);
+		textReader.getProcessor().addProcessor(
+						 iteratePattern);
             }
             for (int i = 0; i < iterateValues.size(); i++) {
                 String pattern = iterateValues.get(i);
@@ -1069,7 +1071,6 @@ public class CsvUtil {
                 rowCnt++;
                 if (rowCnt <= textReader.getSkip()) {
                     textReader.addHeaderLine(line);
-
                     continue;
                 }
 
@@ -1332,8 +1333,8 @@ public class CsvUtil {
         new Cmd("-max", "<max # columns>"),
         new Cmd("-rawlines", "<how many lines to pass through unprocesed>"),
         new Cmd("-cut", "<one or more rows. -1 to the end>"),
+        new Cmd("-include", "<one or more rows, -1 to the end>","(Only include given rows)"),
         new Cmd("-mergerows", "<2 or more rows> <delimiter> <close>"),
-        new Cmd("-include", "<one or more rows, -1 to the end>"),
         new Cmd("-pattern", "<col #> <regexp pattern>",
                 "(extract rows that match the pattern)"),
         new Cmd("-notpattern", "<col #> <regexp pattern>",
@@ -1441,19 +1442,21 @@ public class CsvUtil {
         new Cmd("-geocodeaddress",
                 "<col indices> Latitude Longitude <prefix> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
-        new Cmd("-gender", "<column>"), new Cmd("-count", "", "(show count)"),
+        new Cmd("-gender", "<column>","(figure out the gender of the name in the column)"), 
+	new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
         new Cmd("-skipline", " <pattern>",
                 "(skip any line that matches the pattern)"),
         new Cmd("-changeline", "<from> <to>", "(change the line)"),
-        new Cmd("-prune", "<number of leading bytes to remove>"),
+        new Cmd("-prune", "<number of leading bytes to remove>","(prune out the first N bytes)"),
         new Cmd(
             "-strict", "",
             "(be strict on columns. any rows that are not the size of the other rows are dropped)"),
         new Cmd(
             "-flag", "",
             " (be strict on columns. any rows that are not the size of the other rows are shown)"),
-        new Cmd("-rotate"), new Cmd("-flip"),
+        new Cmd("-rotate"), 
+	new Cmd("-flip"),
         new Cmd("-verify", "# columns",
                 "(throw error if a row has a different number of columns)"),
         new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
@@ -1477,17 +1480,6 @@ public class CsvUtil {
     };
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     * @param match _more_
-     *
-     * @throws Exception _more_
-     */
-    public void usage(String msg, String match) throws Exception {
-        usage(msg, match, false, false);
-    }
 
     /**
      * _more_
@@ -1499,14 +1491,26 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    public void usage(String msg, String match, boolean exact, boolean raw)
+    public void usage(String msg, String match, String ...args)
             throws Exception {
+	boolean exact = false;
+	boolean raw = false;
+	boolean json = false;
+	for(int i=0;i<args.length;i+=2) {
+	    if(args[i].equals("-exact")) exact = args[i+1].equals("true");
+	    else if(args[i].equals("-raw")) raw = args[i+1].equals("true");
+	    else if(args[i].equals("-json")) json = args[i+1].equals("true");
+	}
         PrintWriter pw = new PrintWriter(getOutputStream());
         if (msg.length() > 0) {
             pw.println(msg);
         }
-        pw.println("Usage:");
-        for (Cmd c : commands) {
+	if(!json)
+	    pw.println("Usage:");
+	else
+	    pw.println("{\"commands\":[");
+	int cnt=0;
+	for (Cmd c : commands) {
             String cmd = c.getLine();
             if (match != null) {
                 if (exact && !c.cmd.equals(match)) {
@@ -1519,11 +1523,19 @@ public class CsvUtil {
             if ( !raw) {
                 cmd = cmd.replaceAll("_nl_", "\n").replaceAll("_tab_", "\n");
             }
-            pw.println(cmd);
+	    if(json) {
+		if(cnt>0) pw.println(",");
+		pw.println(Json.mapAndQuote("command",c.cmd,"args",c.args,"description",c.desc));
+	    } else {
+		pw.println(cmd);
+	    }
             if (raw && cmd.startsWith("-db")) {
                 break;
             }
-        }
+	    cnt++;
+	}
+	if(json)
+	    pw.println("]}");
         pw.flush();
     }
 
@@ -1574,7 +1586,7 @@ public class CsvUtil {
     private boolean ensureArg(List args, int i, int cnt) throws Exception {
         if (args.size() <= (i + cnt)) {
             String arg = (String) args.get(i);
-            usage("Bad argument count for:" + arg, arg, true, false);
+            usage("Bad argument count for:" + arg, arg, "-exact","true");
 
             return false;
         }
@@ -1678,6 +1690,11 @@ public class CsvUtil {
                     continue;
                 }
 
+                if (arg.equals("-pass")) {
+		    info.getProcessor().addProcessor(new Processor.Pass());
+		    continue;
+		}
+
                 if (arg.equals("-changeline")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
@@ -1716,7 +1733,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    info.getFilter().addFilter(
+		    info.getProcessor().addProcessor(
                         new Filter.Start(args.get(++i)));
 
                     continue;
@@ -1727,7 +1744,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    info.getFilter().addFilter(
+		    info.getProcessor().addProcessor(
                         new Filter.Stop(args.get(++i)));
 
                     continue;
@@ -1737,7 +1754,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    info.getFilter().addFilter(
+		    info.getProcessor().addProcessor(
                         new Filter.MinColumns(new Integer(args.get(++i))));
 
                     continue;
@@ -1747,7 +1764,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    info.getFilter().addFilter(
+		    info.getProcessor().addProcessor(
                         new Filter.MaxColumns(new Integer(args.get(++i))));
 
                     continue;
@@ -1762,8 +1779,8 @@ public class CsvUtil {
                     int start = Integer.parseInt(args.get(++i));
                     int skip  = Integer.parseInt(args.get(++i));
                     if (skip > 0) {
-                        info.getFilter().addFilter(new Filter.Decimate(start,
-                                skip));
+			info.getProcessor().addProcessor(
+							 new Filter.Decimate(start,skip));
                     }
 
                     continue;
@@ -1997,9 +2014,8 @@ public class CsvUtil {
                         return false;
                     }
                     String r = args.get(++i);
-                    info.getFilter().addFilter(
-                        new Filter.Cutter(getNumbers(r), arg.equals("-cut")));
-
+                    info.getProcessor().addProcessor(
+                        new Filter.RowCutter(getNumbers(r), arg.equals("-cut")));
                     continue;
                 }
 

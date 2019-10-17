@@ -1537,16 +1537,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
 		var binCount = binType=="count";
-		if(binCount) {
-		    var fields = [];
-		    fields.push(new RecordField({
-			id:"count",
-			label:this.getProperty("binCountLabel","Count"),
-			type:"double",
-			chartable:true
-		    }));		    
-		    return fields;
-		}
+		var fields = [];
+		fields.push(new RecordField({
+		    id:binType,
+		    label:this.getProperty("binDateLabel", this.getProperty("binCountLabel",binType)),
+		    type:"double",
+		    chartable:true
+		}));		    
+		return fields;
 	    }
 
 

@@ -41,7 +41,7 @@ import java.util.regex.*;
  * @author Jeff McWhirter
  */
 
-public class Filter extends Converter {
+public class Filter extends Processor {
 
     /** _more_ */
     private String commentPrefix = "#";
@@ -868,7 +868,7 @@ public class Filter extends Converter {
      * @version        $version$, Fri, Jan 9, '15
      * @author         Jeff McWhirter
      */
-    public static class Cutter extends Filter {
+    public static class RowCutter extends Filter {
 
         /** _more_ */
         private boolean cut = true;
@@ -883,7 +883,7 @@ public class Filter extends Converter {
          * _more_
          * @param rows _more_
          */
-        public Cutter(List<Integer> rows) {
+        public RowCutter(List<Integer> rows) {
             this.rows = rows;
         }
 
@@ -893,7 +893,7 @@ public class Filter extends Converter {
          * @param rows _more_
          * @param cut _more_
          */
-        public Cutter(List<Integer> rows, boolean cut) {
+        public RowCutter(List<Integer> rows, boolean cut) {
             this(rows);
             this.cut = cut;
         }
@@ -913,12 +913,10 @@ public class Filter extends Converter {
             for (int rowIdx : rows) {
                 if ((rowIdx == -1) && cutOne) {
                     inRange = true;
-
                     break;
                 }
                 if (rowIdx == rowCnt) {
                     inRange = true;
-
                     break;
                 }
             }
@@ -932,7 +930,6 @@ public class Filter extends Converter {
             if ( !rowOk) {
                 cutOne = true;
             }
-
             return rowOk;
         }
     }
