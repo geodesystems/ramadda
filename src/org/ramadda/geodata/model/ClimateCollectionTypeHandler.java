@@ -239,6 +239,8 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         sb.append(
             "<table width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>");
         sb.append("<td width=\"30%\" align=\"center\">");
+        //sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class","row"));    
+        //sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class", "col-md-4"));    // div
         String freq = getFrequency(request, entry).trim();
 
         WikiUtil.heading(sb, "Select " + freq + " Data");
@@ -250,10 +252,14 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
         buttonBuf.append(HtmlUtils.div(HtmlUtils.buttons(downloadButton,
                 bdownloadButton), "style=\"margin-top: 1em;\""));
         sb.append(HtmlUtils.div(buttonBuf.toString()));
-        sb.append("</td><td>");
+        sb.append("</td><td width=\"70%\">");
+        //sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));    //  col-md
+        //sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class", "col-md-8"));    // div
         sb.append(HtmlUtils.div("",
                                 HtmlUtils.cssClass("entryoutput")
                                 + HtmlUtils.id(formId + "_output_list")));
+        //sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));    //  col-md
+        //sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));    //row
         sb.append("</td></tr>");
         sb.append("</table>");
     }

@@ -128,7 +128,6 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
    this.processEntryJson = function(data) {
         var totalSize = 0;
         var html = "";
-	var tableId = HtmlUtils.getUniqueId("");
         var tableId = HtmlUtils.getUniqueId("");
         if (data.length == 0) {
             html = "Nothing found";
@@ -156,14 +155,15 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
                 listHtml += "&nbsp;&nbsp;" + entry.getLink(entry.getIconImage() + " " + entry.getName());
 
                 for (var colIdx = 0; colIdx < columnNames.length; colIdx++) {
-		    //A terrible hack to not show the collection id
-		    if(labels[colIdx] == "Collection ID") continue;
+		            //A terrible hack to not show the collection id
+		            if(labels[colIdx] == "Collection ID") continue;
                     var value = entry.getAttributeValue(columnNames[colIdx]);
                     listHtml += "<td>" + HtmlUtils.div(["class","selectform-table-entry"], value) + "</td>";
                 }
 
                 listHtml += "</td><td align=right>";
                 listHtml += entry.getFormattedFilesize();
+                listHtml += "</td>";
       
                 totalSize += entry.getFilesize();
                 listHtml += "</tr>";
@@ -177,13 +177,13 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
 		"<b>" + data.length + " files found</b></th>" + header + "<th align=right><b>Size</b></td></tr>";
 
             table += HtmlUtils.openTag("thead", []);
-	    table += header;
+  	        table += header;
             table += HtmlUtils.closeTag("thead");
             table += HtmlUtils.openTag("tbody", []);
-	    table += listHtml;
+	        table += listHtml;
             table += HtmlUtils.closeTag("tbody");
-	    table += HtmlUtils.closeTag("table");
-	    html += table;
+	        table += HtmlUtils.closeTag("table");
+	        html += table;
             html +=  HtmlUtils.leftRight("",GuiUtils.size_format(totalSize));
         }
         this.totalSize = totalSize;

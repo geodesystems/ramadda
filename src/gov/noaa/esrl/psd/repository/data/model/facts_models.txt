@@ -17,7 +17,9 @@ CM3:GFDL CM3
 # Reanalyses
 20thC_ReanV2:20th Century Reanalysis V2
 20thC_ReanV2c:20th Century Reanalysis V2c
+20thC_ReanV3:20th Century Reanalysis V3
 20CRV3:20th Century Reanalysis V3
+20CRv3:20th Century Reanalysis V3
 cfsr:CFSR
 erainterim:ERA-Interim
 merra:MERRA
