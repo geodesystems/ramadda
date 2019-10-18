@@ -1493,6 +1493,11 @@ var HtmlUtils = {
                 collapsible: true,
                 heightStyle: "content",
                 active: 0,
+		activate: function() {
+		    if (window["ramaddaDisplayCheckLayout"]) {
+			ramaddaDisplayCheckLayout();
+		    }
+		}
             }
             $.extend(ctorArgs, args);
 	    if(ctorArgs.active<0) ctorArgs.active='none';

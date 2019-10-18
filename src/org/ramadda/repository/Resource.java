@@ -237,6 +237,11 @@ public class Resource {
         return fileSize;
     }
 
+
+    public long getFileSizeRaw() {
+	return fileSize;
+    }
+
     /**
      * _more_
      *

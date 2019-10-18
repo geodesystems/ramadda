@@ -274,7 +274,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         checkLayout: function() {
             var _this = this;
             var d = _this.jq(ID_DISPLAY_CONTENTS);
-            //       console.log("checklayout:  widths:" + this.lastWidth +" " + d.width());
+//            console.log("checklayout:  widths:" + this.lastWidth +" " + d.width());
             if (this.lastWidth != d.width()) {
                 _this.displayData();
             }
@@ -892,7 +892,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.displayError("" + e);
                 return;
             }
-
             var d = _this.jq(ID_CHART);
             this.lastWidth = d.width();
         },

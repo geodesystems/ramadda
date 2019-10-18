@@ -1387,14 +1387,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
 		var binCount = binType=="count";
-		var fields = [];
-		fields.push(new RecordField({
-		    id:binType,
-		    label:this.getProperty("binDateLabel", this.getProperty("binCountLabel",binType)),
-		    type:"double",
-		    chartable:true
-		}));		    
-		return fields;
+		if(binCount) {
+		    var fields = [];
+		    fields.push(new RecordField({
+			id:binType,
+			label:this.getProperty("binDateLabel", this.getProperty("binCountLabel","Count")),
+			type:"double",
+			chartable:true
+		    }));		    
+		    return fields;
+		} 
 	    }
 
 
@@ -1403,7 +1405,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var fixedFields = this.getProperty(PROP_FIELDS);
             if (fixedFields) fixedFields.length = 0;
             this.setDisplayTitle();
-            return this.lastSelectedFields;
+	    if(this.getProperty("binDate")) {
+		var binType = this.getProperty("binType","total");
+		let fields = [];
+		this.lastSelectedFields.map(field=>{
+//		    fields.push(field);    return;
+		    if(!field.isNumeric()) {
+			fields.push(field);
+		    } else {
+			fields.push(new RecordField({
+			    id:"average_" + field.getId(),
+			    label:this.getProperty("binDateLabel", Utils.camelCase(binType) +" of " + field.getLabel()),
+			    type:"double",
+			    chartable:field.isChartable()
+			}));		    
+		    }
+		});
+		this.lastSelectedFields = fields;
+	    }
+//	    console.log("fields:" + this.lastSelectedFields);
+	    return this.lastSelectedFields;
         },
         getSelectedFieldsInner: function(dfltList) {
             if (this.debugSelected)
@@ -4473,7 +4494,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			f.push(new RecordField({
 			    index:0,
 			    id:field.getId(),
-			    label:this.getProperty("binCountLabel","Count"),
+			    label:this.getProperty("binDateLabel", this.getProperty("binCountLabel","Count")),
 			    type:"double",
 			    chartable:true
 			}));
@@ -4482,6 +4503,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
+	    //	    console.log("F:" + fields);
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.isFieldNumeric() && field.isFieldDate()) {

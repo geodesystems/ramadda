@@ -5042,7 +5042,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         tags.append(
             addWikiEditButton(
                 textAreaId, "button_blockquote.png", "Accordion",
-                "+accordion_newline_+segment segment  title_newline_",
+                "+accordion decorate=true activeSegment=0 _newline_+segment segment  title_newline_",
                 "-segment_newline_-accordion_newline_", "Accordion",
                 "mw-editbutton-headline"));
 
