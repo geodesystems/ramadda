@@ -1500,6 +1500,10 @@ var HtmlUtils = {
 		}
             }
             $.extend(ctorArgs, args);
+	    if(!ctorArgs.decorate) {
+		var accordion = $(id +" .ui-accordion-header");
+		accordion.css("padding","0em 0em 0em 0em");
+	    }
 	    if(ctorArgs.active<0) ctorArgs.active='none';
             $(id).accordion(ctorArgs);
         });
