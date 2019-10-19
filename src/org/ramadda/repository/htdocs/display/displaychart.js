@@ -1627,10 +1627,20 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
                 chartOptions.isStacked = true;
             }
             if (this.getProperty("barWidth")) {
-                chartOptions.bar = {
-                    groupWidth: this.getProperty("barWidth")
-                }
-            }
+		let w = this.getProperty("barWidth");
+		if(w=="flex") {
+		    if(dataList.length<100) {
+			w = "10";
+		    } else {
+			w = null;
+		    }
+		}
+		if(w) {
+                    chartOptions.bar = {
+			groupWidth: w
+                    }
+		}
+	    }
             chartOptions.orientation = "horizontal";
             return new google.visualization.BarChart(document.getElementById(this.getChartId()));
         }
@@ -1738,23 +1748,20 @@ function PiechartDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Pie Chart Attributes",
+					'groupBy=""',
+					'groupByCount=true',
+					'groupByCountLabel=""',
+					'binCount=true',
 					"pieHole=\"0.5\"",
 					"is3D=\"true\"",
 					"bins=\"\"",
 					"binMin=\"\"",
 					"binMax=\"max\"",
-					"groupBy=\"field\""  ,
 					"sliceVisibilityThreshold=\"0.01\"",
 				    ]);
 	},
 
-
-
-
-
-
         getGroupBy: function() {
-
             if (!this.groupBy && this.groupBy != "") {
                 var stringField = this.getFieldOfType(this.allFields, "string");
                 if (stringField) {
@@ -1820,7 +1827,6 @@ function PiechartDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
             var dataTable = new google.visualization.DataTable();
             var list = [];
-            var groupBy = this.groupByField;
             var header = this.getDataValues(dataList[0]);
             dataTable.addColumn("string", header[0]);
             dataTable.addColumn("number", header[1]);
@@ -1853,7 +1859,6 @@ function PiechartDisplay(displayManager, id, properties) {
                         max = Math.max(value, max);
                     goodValues.push(value);
                 }
-
 
                 var binList = [];
                 var step = (max - min) / bins;

@@ -4667,14 +4667,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var groups = [];
                 var agg = [];
                 var title = [];
+		let groupByCount = this.getProperty("groupByCount");
                 title.push(props.groupByField.getLabel());
-                for (var j = 0; j < fields.length; j++) {
-                    var field = fields[j];
-                    if (field.getIndex() != groupByIndex) {
-                        title.push(field.getLabel());
+		if(groupByCount) {
+		    title.push(this.getProperty("groupByCountLabel", "Count"));
+		} else {
+                    for (var j = 0; j < fields.length; j++) {
+			var field = fields[j];
+			if (field.getIndex() != groupByIndex) {
+                            title.push(field.getLabel());
+			}
                     }
-                }
-                agg.push(title);
+		}
+//                agg.push(title);
 
                 for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
                     var data = this.getDataValues(dataList[rowIdx]);
@@ -4688,16 +4693,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         tuple = new Array();
                         agg.push(tuple);
                         tuple.push(groupBy);
-                        for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                            var field = fields[fieldIdx];
-                            if (field.getIndex() == groupByIndex) {
-                                continue;
+			if(groupByCount) {
+			    tuple.push(0);
+			} else {
+                            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+				var field = fields[fieldIdx];
+				if (field.getIndex() == groupByIndex) {
+                                    continue;
+				}
+				tuple.push(0);
                             }
-                            tuple.push(0);
-                        }
+			}
                         groupToTuple[groupBy] = tuple;
                     }
                     var index = 0;
+		    if(groupByCount) {
+			tuple[1]++;
+			continue;
+		    }
                     for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                         var field = fields[fieldIdx];
                         if (field.getIndex() == groupByIndex) {
@@ -4736,7 +4749,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                     }
                 }
-                return agg;
+		if(this.getProperty("groupBySort")) {
+		    agg.sort(function(a,b) {return a[0]>b[0]});
+		}
+		let tmp = [];
+		tmp.push(title);
+		agg.map(t=>tmp.push(t));
+                return tmp;
             }
 
             return dataList;
