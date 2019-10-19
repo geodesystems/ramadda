@@ -4817,14 +4817,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var groups = [];
                 var agg = [];
                 var title = [];
+		let groupByCount = this.getProperty("groupByCount");
                 title.push(props.groupByField.getLabel());
-                for (var j = 0; j < fields.length; j++) {
-                    var field = fields[j];
-                    if (field.getIndex() != groupByIndex) {
-                        title.push(field.getLabel());
+		if(groupByCount) {
+		    title.push(this.getProperty("groupByCountLabel", "Count"));
+		} else {
+                    for (var j = 0; j < fields.length; j++) {
+			var field = fields[j];
+			if (field.getIndex() != groupByIndex) {
+                            title.push(field.getLabel());
+			}
                     }
-                }
-                agg.push(title);
+		}
+//                agg.push(title);
 
                 for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
                     var data = this.getDataValues(dataList[rowIdx]);
@@ -4838,16 +4843,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         tuple = new Array();
                         agg.push(tuple);
                         tuple.push(groupBy);
-                        for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                            var field = fields[fieldIdx];
-                            if (field.getIndex() == groupByIndex) {
-                                continue;
+			if(groupByCount) {
+			    tuple.push(0);
+			} else {
+                            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+				var field = fields[fieldIdx];
+				if (field.getIndex() == groupByIndex) {
+                                    continue;
+				}
+				tuple.push(0);
                             }
-                            tuple.push(0);
-                        }
+			}
                         groupToTuple[groupBy] = tuple;
                     }
                     var index = 0;
+		    if(groupByCount) {
+			tuple[1]++;
+			continue;
+		    }
                     for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                         var field = fields[fieldIdx];
                         if (field.getIndex() == groupByIndex) {
@@ -4886,7 +4899,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                     }
                 }
-                return agg;
+		if(this.getProperty("groupBySort")) {
+		    agg.sort(function(a,b) {return a[0]>b[0]});
+		}
+		let tmp = [];
+		tmp.push(title);
+		agg.map(t=>tmp.push(t));
+                return tmp;
             }
 
             return dataList;
@@ -11690,10 +11709,20 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
                 chartOptions.isStacked = true;
             }
             if (this.getProperty("barWidth")) {
-                chartOptions.bar = {
-                    groupWidth: this.getProperty("barWidth")
-                }
-            }
+		let w = this.getProperty("barWidth");
+		if(w=="flex") {
+		    if(dataList.length<100) {
+			w = "10";
+		    } else {
+			w = null;
+		    }
+		}
+		if(w) {
+                    chartOptions.bar = {
+			groupWidth: w
+                    }
+		}
+	    }
             chartOptions.orientation = "horizontal";
             return new google.visualization.BarChart(document.getElementById(this.getChartId()));
         }
@@ -11801,23 +11830,20 @@ function PiechartDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Pie Chart Attributes",
+					'groupBy=""',
+					'groupByCount=true',
+					'groupByCountLabel=""',
+					'binCount=true',
 					"pieHole=\"0.5\"",
 					"is3D=\"true\"",
 					"bins=\"\"",
 					"binMin=\"\"",
 					"binMax=\"max\"",
-					"groupBy=\"field\""  ,
 					"sliceVisibilityThreshold=\"0.01\"",
 				    ]);
 	},
 
-
-
-
-
-
         getGroupBy: function() {
-
             if (!this.groupBy && this.groupBy != "") {
                 var stringField = this.getFieldOfType(this.allFields, "string");
                 if (stringField) {
@@ -11883,7 +11909,6 @@ function PiechartDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
             var dataTable = new google.visualization.DataTable();
             var list = [];
-            var groupBy = this.groupByField;
             var header = this.getDataValues(dataList[0]);
             dataTable.addColumn("string", header[0]);
             dataTable.addColumn("number", header[1]);
@@ -11916,7 +11941,6 @@ function PiechartDisplay(displayManager, id, properties) {
                         max = Math.max(value, max);
                     goodValues.push(value);
                 }
-
 
                 var binList = [];
                 var step = (max - min) / bins;
