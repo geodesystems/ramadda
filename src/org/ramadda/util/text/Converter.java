@@ -30,6 +30,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import java.text.DateFormat;
 
@@ -1236,6 +1238,95 @@ public abstract class Converter extends Processor {
 
     }
 
+
+
+    public static class DateExtracter extends Converter {
+
+        /** _more_ */
+        private int col;
+
+        /** _more_ */
+        private SimpleDateFormat sdf;
+
+        /** _more_          */
+        private TimeZone tz;
+
+	private String whatLabel="Hour";
+	private int what = GregorianCalendar.HOUR;
+
+	
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         *
+         * @param col _more_
+         * @param sdf1 _more_
+         * @param sdf2 _more_
+         */
+        public DateExtracter(int col, String sdf, String tz, String what) {
+            this.col  = col;
+	    if(sdf.length()>0) {
+		this.sdf = new SimpleDateFormat(sdf);
+		this.sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
+	    }
+
+	    
+	    if(tz.length()>0) {
+		tz = tz.toUpperCase();
+		this.tz = TimeZone.getTimeZone(tz);
+
+		System.err.println(tz +" tz:" + this.tz);
+
+	    }
+	    whatLabel = StringUtil.camelCase(what);
+	    what = what.toUpperCase();
+	    if(what.equals("ERA")) this.what = GregorianCalendar.ERA;
+	    else if(what.equals("YEAR")) this.what = GregorianCalendar.YEAR;
+	    else if(what.equals("MONTH")) this.what = GregorianCalendar.MONTH;
+	    else if(what.equals("DAY_OF_MONTH")) this.what = GregorianCalendar.DAY_OF_MONTH;
+	    else if(what.equals("DAY_OF_WEEK")) this.what = GregorianCalendar.DAY_OF_WEEK;
+	    else if(what.equals("WEEK_OF_MONTH")) this.what = GregorianCalendar.WEEK_OF_MONTH;
+	    else if(what.equals("DAY_OF_WEEK_IN_MONTH")) this.what = GregorianCalendar.DAY_OF_WEEK_IN_MONTH;
+	    else if(what.equals("AM_PM")) this.what = GregorianCalendar.AM_PM;
+	    else if(what.equals("HOUR")) this.what = GregorianCalendar.HOUR;
+	    else if(what.equals("HOUR_OF_DAY")) this.what = GregorianCalendar.HOUR_OF_DAY;
+	    else if(what.equals("MINUTE")) this.what = GregorianCalendar.MINUTE;
+	    else if(what.equals("SECOND")) this.what = GregorianCalendar.SECOND;
+	    else if(what.equals("MILLISECOND")) this.what = GregorianCalendar.MILLISECOND;
+	}
+
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+		row.add(whatLabel);
+                return row;
+            }
+            try {
+                String s = row.get(col).toString();
+                Date   d = sdf==null?Utils.parseDate(s):sdf.parse(s);
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTimeZone(TimeZone.getTimeZone("GMT")); 
+		cal.setTime(d);
+		if(this.tz!=null) {
+		    cal.setTimeZone(this.tz);
+		}
+		String v = "NA";
+		v = ""+cal.get(what);
+		row.add(v);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+
+            return row;
+        }
+
+    }
+
+    
     /**
      * Class description
      *

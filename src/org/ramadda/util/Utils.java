@@ -3238,6 +3238,18 @@ public class Utils {
      */
     public static void main(String[] args) throws Exception {
 
+	if(true) {
+	    Date d = new Date();
+	    GregorianCalendar cal = new GregorianCalendar();
+	    cal.setTime(d);
+	    cal.setTimeZone(TimeZone.getTimeZone("GMT")); 
+	    System.err.println(cal.get(cal.HOUR));
+	    cal.setTimeZone(TimeZone.getTimeZone("MST")); 
+	    System.err.println(cal.get(cal.HOUR));
+	    return;
+	}
+
+
         if (true) {
             String tr =
                 "<td>Confluence of <a href=\"/wiki/Runde_River\" title=\"Runde River\">Runde River</a> and <a href=\"/wiki/Save_River_(Africa)\" title=\"Save River (Africa)\">Save River</a></td>";

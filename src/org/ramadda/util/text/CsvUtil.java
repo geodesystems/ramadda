@@ -1375,14 +1375,14 @@ public class CsvUtil {
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
         new Cmd("-changerow", "<row> <pattern> <substitution string>"),
         new Cmd("-convertdate", "<column> <format1> <format2>"),
+	new Cmd("-extractdate", "<date column> <format> <tz> <era|year|month|day_of_month|day_of_week|week_of_month|day_of_week_in_month|am_pm|hour|hour_of_day|minute|second|millisecond>"),
+        new Cmd("-formatdate", "<col #s> <intial date format> <target date format>"),
         new Cmd("-before", "<column> <format> <date> <format2>"),
         new Cmd("-after", "<column> <format> <date> <format2>"),
         new Cmd(
             "-extract",
             "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
             "(extract text from column and make a new column)"),
-        new Cmd("-formatdate",
-                "<col #s> <intial date format> <target date format>"),
         new Cmd("-map", "<col #> <new columns name> <value newvalue ...>",
                 "(change values in column to new values)"),
         new Cmd("-combine", "<col #s> <delimiter> <new column name>",
@@ -2438,6 +2438,22 @@ public class CsvUtil {
 
                     continue;
                 }
+
+                if (arg.equals("-extractdate")) {
+                    if ( !ensureArg(args, i, 4)) {
+                        return false;
+                    }
+                    int    col  = Integer.parseInt(args.get(++i));
+                    String sdf = args.get(++i);
+                    String tz= args.get(++i);
+                    String what= args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.DateExtracter(
+						    col, sdf,tz,what));
+                    continue;
+                }
+		
+
 
                 if (arg.equals("-before")) {
                     if ( !ensureArg(args, i, 4)) {
