@@ -3641,7 +3641,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void deleteEntry(Request request, Entry entry) throws Exception {
+    public void deleteEntry(Request request, Entry entry) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
         deleteEntries(request, entries, null);
@@ -8259,10 +8259,19 @@ public class EntryManager extends RepositoryManager {
             }
             Connection connection = getDatabaseManager().getConnection();
             //FOR NOW:  Try using the name for uniqueness instead of the resource
-            PreparedStatement select =
+            PreparedStatement selectbak =
                 SqlUtil.getSelectStatement(
                     connection, "count(" + Tables.ENTRIES.COL_ID + ")",
                     Misc.newList(Tables.ENTRIES.NAME), Clause.and(
+            //                        Clause.eq(Tables.ENTRIES.COL_RESOURCE, ""),
+            Clause.eq(Tables.ENTRIES.COL_NAME,
+                      ""), Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
+                                     "?")), "");
+
+            PreparedStatement select = SqlUtil.getSelectStatement(connection,
+                                           Tables.ENTRIES.COL_ID,
+                                           Misc.newList(Tables.ENTRIES.NAME),
+                                           Clause.and(
             //                        Clause.eq(Tables.ENTRIES.COL_RESOURCE, ""),
             Clause.eq(Tables.ENTRIES.COL_NAME,
                       ""), Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
@@ -8289,12 +8298,20 @@ public class EntryManager extends RepositoryManager {
                 select.setString(2, entry.getParentEntry().getId());
                 ResultSet results = select.executeQuery();
                 if (results.next()) {
+                    String id = results.getString(1);
+                    if (id == null) {
+                        needToAdd.add(entry);
+                    } else {
+                        entry.putTransientProperty("existingEntryId", id);
+                        nonUniqueOnes.add(entry);
+                    }
+                    /*
                     int found = results.getInt(1);
                     if (found == 0) {
                         needToAdd.add(entry);
                     } else {
                         nonUniqueOnes.add(entry);
-                    }
+                        }*/
                 } else {
                     needToAdd.add(entry);
                 }

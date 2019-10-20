@@ -66,7 +66,7 @@ public class Resource {
     private File file;
 
     /** _more_ */
-    private long fileSize = -1;
+    private long fileSize;
 
     /** _more_ */
     private String md5;
@@ -132,6 +132,7 @@ public class Resource {
         this(path, type, null, -1);
     }
 
+
     /**
      * _more_
      *
@@ -146,7 +147,7 @@ public class Resource {
         this.md5      = md5;
         this.fileSize = fileSize;
         if ((fileSize < 0) && (path != null)) {
-            fileSize = new File(path).length();
+            this.fileSize = new File(path).length();
         }
     }
 
@@ -238,8 +239,13 @@ public class Resource {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public long getFileSizeRaw() {
-	return fileSize;
+        return fileSize;
     }
 
     /**

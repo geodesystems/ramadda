@@ -842,7 +842,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         //Initialize the list of entry ids for post-processing
         idList = new ArrayList<String[]>();
 
-        List<Entry>         entries   = new ArrayList<Entry>();
+
         List<Entry>         needToAdd = new ArrayList<Entry>();
         List<HarvesterFile> tmpDirs   = new ArrayList<HarvesterFile>(dirs);
         entryCnt    = 0;
@@ -855,6 +855,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         //and we skip them then we miss them the next time through
         checkIfDirHasChanged = true;
 
+        boolean replaceIfFileChanged = true;
+        boolean replaceInPlace       = true;
+
+        Request request              = getRequest();
         //Iterate by size because we can add new dirs to the list
         for (int fileIdx = 0; fileIdx < tmpDirs.size(); fileIdx++) {
             printTab = "\t";
@@ -869,8 +873,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             boolean directoryChanged = dirInfo.hasChanged();
             if (checkIfDirHasChanged && !firstTime && !directoryChanged) {
                 /*
-                logHarvesterInfo("Directory:" + dirInfo.getFile()
-                                 + "  * no change *");
+                  logHarvesterInfo("Directory:" + dirInfo.getFile()
+                  + "  * no change *");
                 */
                 continue;
             }
@@ -917,9 +921,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     logHarvesterInfo("Skipping recently modified file:" + f
                                      + " milliseconds since modified:"
                                      + (now - fileTime));
-                    System.err.println("file:" + f + " last modified:"
+                    /*
+                    System.err.println("skipping file:" + f + " last modified:"
                                        + new Date(fileTime) + " " + fileTime
                                        + " now:" + new Date(now) + " " + now);
+                    */
 
                     //Reset the state that gets set and checked in hasChanged so we can return to this dir
                     dirInfo.reset();
@@ -940,73 +946,74 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     continue;
                 }
 
-                entries.add(entry);
                 entryCnt++;
-                if (getTestMode() && (entryCnt >= getTestCount())) {
-                    return;
-                }
-                if ( !getTestMode()) {
-                    //Check every time
-                    //                    if (entries.size() > 1000) {
-                    if (entries.size() > 0) {
-                        List<Entry> nonUniqueOnes = new ArrayList<Entry>();
-                        List<Entry> uniqueEntries =
-                            getEntryManager().getUniqueEntries(entries,
-                                nonUniqueOnes);
-                        //                        System.err.println("non unique:" + nonUniqueOnes);
-                        //                        System.err.println("unique:" + uniqueEntries);
-                        for (Entry e : nonUniqueOnes) {
-                            logHarvesterInfo("Entry already exists:"
-                                             + e.getResource());
-                        }
-                        newEntryCnt += uniqueEntries.size();
-                        needToAdd.addAll(uniqueEntries);
-                        for (Entry newEntry : uniqueEntries) {
-                            logHarvesterInfo("New entry:"
-                                             + newEntry.getResource());
-                            dirInfo.addFile(newEntry.getResource().getPath());
-                        }
-                        entries = new ArrayList();
+                if (getTestMode()) {
+                    if (entryCnt >= getTestCount()) {
+                        return;
                     }
-                    if (needToAdd.size() > 1000) {
-                        addEntries(needToAdd, timestamp);
-                        needToAdd = new ArrayList<Entry>();
-                    }
-                }
-                if ( !canContinueRunning(timestamp)) {
-                    logHarvesterInfo("stopping harvest");
 
-                    return;
+                    continue;
+                }
+                List<Entry> nonUnique = new ArrayList<Entry>();
+                List<Entry> uniqueEntries =
+                    getEntryManager().getUniqueEntries(
+                        new Utils.TypedList<Entry>(entry), nonUnique);
+                //              System.err.println("non unique:" + nonUnique+"\nunique:" +  uniqueEntries);
+                for (Entry found : nonUnique) {
+                    String existingId = (String) found.getTransientProperty(
+                                            "existingEntryId");
+                    if (replaceIfFileChanged && (existingId != null)) {
+                        Entry existing = getEntryManager().getEntry(request,
+                                             existingId);
+                        if (existing != null) {
+                            //                      System.err.println("existing:" + existing.getResource() +" " + existing.getResource().getFileSizeRaw() +" found:" +  found.getResource().getFileSizeRaw());
+                            if (existing.getResource().getFileSizeRaw()
+                                    != found.getResource().getFileSizeRaw()) {
+                                //                              System.err.println("Replacing entry:"+ existing);
+                                uniqueEntries.add(found);
+                                getEntryManager().deleteEntry(request,
+                                        existing);
+                                logHarvesterInfo("Replacing entry:"
+                                        + existing);
+                                if (replaceInPlace) {
+                                    found.setId(existing.getId());
+                                }
+
+                                continue;
+                            }
+                        } else {
+                            //                      System.err.println("already exists:" + found.getResource());
+                            logHarvesterInfo("Entry already exists:"
+                                             + found.getResource());
+                        }
+                    }
+                }
+                newEntryCnt += uniqueEntries.size();
+                needToAdd.addAll(uniqueEntries);
+                for (Entry newEntry : uniqueEntries) {
+                    logHarvesterInfo("New entry:" + newEntry.getResource());
+                    dirInfo.addFile(newEntry.getResource().getPath());
+                }
+                if (needToAdd.size() > 1000) {
+                    addEntries(needToAdd, timestamp);
+                    needToAdd = new ArrayList<Entry>();
                 }
             }
+            if ( !canContinueRunning(timestamp)) {
+                logHarvesterInfo("stopping harvest");
+
+                return;
+            }
+        }
+
+        if (needToAdd.size() > 0) {
+            addEntries(needToAdd, timestamp);
         }
 
         if ( !canContinueRunning(timestamp)) {
             return;
         }
 
-        //Uggh, cut-and-paste from above
-        if ( !getTestMode()) {
-            if (entries.size() > 0) {
-                List<Entry> nonUniqueOnes = new ArrayList<Entry>();
-                List<Entry> uniqueEntries =
-                    getEntryManager().getUniqueEntries(entries,
-                        nonUniqueOnes);
-                for (Entry e : nonUniqueOnes) {
-                    logHarvesterInfo("Entry already exists:"
-                                     + e.getResource());
-                }
-                for (Entry newEntry : uniqueEntries) {
-                    logHarvesterInfo("New entry:" + newEntry.getResource());
-                }
-                newEntryCnt += uniqueEntries.size();
-                needToAdd.addAll(uniqueEntries);
-            }
-            addEntries(needToAdd, timestamp);
-        }
-
-
-        Request request = getRequest();
         for (String[] tuple : idList) {
             String newId    = tuple[0];
             Entry  newEntry = getEntryManager().getEntry(request, newId);
@@ -1245,16 +1252,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             throws Exception {
 
         logHarvesterInfo("processFile:" + f);
-
         String filePath = f.toString();
-
-
         String fileName = f.getName();
         //check if its a hidden file
         boolean isPlaceholder = fileName.equals(FILE_PLACEHOLDER);
         boolean isEntryXml    = isEntryXml(fileName);
         if ( !isPlaceholder) {
-            //CHECK THIS            if (f.getName().startsWith(".") && !isEntryXml) {
             if (f.getName().startsWith(".")) {
                 logHarvesterInfo("File is hidden file:" + f);
 
@@ -1327,20 +1330,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         boolean isPlaceholder = f.getName().equals(FILE_PLACEHOLDER);
         String  fileName      = f.toString();
         fileName = fileName.replace("\\", "/");
-
-        if ( !getTestMode()) {
-
-            /**
-             * * TRY THIS
-             * if (haveProcessedFile(fileName)) {
-             *   logHarvesterInfo("Already processed file:" + fileName);
-             *   debug("Already harvested file:" + fileName);
-             *   return null;
-             * }
-             * putProcessedFile(fileName);
-             */
-        }
-
         TypeHandler typeHandler      = getTypeHandler();
         TypeHandler typeHandlerToUse = null;
 
@@ -1400,18 +1389,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         //        dirPath = dirPath.replaceAll("_", " ");
         List dirToks = (List<String>) StringUtil.split(dirPath, "/", true,
                            true);
-        //        System.err.println ("file:" +fileName + " " + dirPath +" " + dirToks);
         Entry baseGroup = getBaseGroup();
-
         String dirGroup =
             getDirNames(fileInfo.getRootDir(), baseGroup, dirToks,
                         !getTestMode()
                         && (groupTemplate.indexOf("${dirgroup}") >= 0));
 
-
         dirGroup = SqlUtil.cleanUp(dirGroup);
         dirGroup = dirGroup.replace("\\", "/");
-
 
         Hashtable map       = new Hashtable();
         Date      fromDate  = null;
@@ -1455,7 +1440,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         tag = tag.replace("${extension}", ext);
         String filename   = f.getName();
 
-
         Date   createDate = new Date(f.lastModified());
 
         if (fromDate == null) {
@@ -1490,7 +1474,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
 
         groupName = groupName.replace("${dirgroup}", dirGroup);
-
         groupName = applyMacros(groupName, createDate, fromDate, toDate,
                                 filename);
         name = applyMacros(name, createDate, fromDate, toDate, filename);
@@ -1557,8 +1540,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
             return null;
         }
-        //        System.err.println("Harvester: created group:" + group);
-
 
         //If its just a placeholder then all we need to do is create the group and return
         if (isPlaceholder) {
@@ -1603,8 +1584,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         } else {
             resource = new Resource(fileName, Resource.TYPE_FILE);
         }
-
-
         entry.setParentEntry(group);
         entry.setUser(getUser());
 
@@ -1617,7 +1596,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             if (getGenerateMd5()) {
                 resource.setMd5(IOUtil.getMd5(resource.getPath()));
             }
-            //        System.err.println("\tcalling initEntry");
             //We used to use the file create date as the entry create and change date. This is wrong so we now use the current time
             Date changeDate = now;
             long createTime = now.getTime();
@@ -1664,18 +1642,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
         }
 
-        /*
-        if (tag.length() > 0) {
-            List tags = StringUtil.split(tag, ",", true, true);
-            for (int i = 0; i < tags.size(); i++) {
-                entry.addMetadata(new Metadata(getRepository().getGUID(),
-                        entry.getId(), EnumeratedMetadataHandler.TYPE_TAG,
-                        DFLT_INHERITED, (String) tags.get(i), "", "", ""));
-            }
-            }*/
-        //        logHarvesterInfo("Created entry:" + f);
         return initializeNewEntry(fileInfo, f, entry);
-        //        return entry;
 
     }
 
