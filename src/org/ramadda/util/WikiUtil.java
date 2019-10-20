@@ -88,7 +88,7 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable wikiProperties = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private StringBuilder js = new StringBuilder();
 
     /** _more_ */
@@ -265,7 +265,14 @@ public class WikiUtil {
      */
     public static interface WikiPageHandler {
 
-	public String getHtdocsUrl(String path);
+        /**
+         * _more_
+         *
+         * @param path _more_
+         *
+         * @return _more_
+         */
+        public String getHtdocsUrl(String path);
 
         /**
          * _more_
@@ -518,13 +525,20 @@ public class WikiUtil {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param tline _more_
+     *
+     * @return _more_
+     */
     private Hashtable lineToProps(String tline) {
-	List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-	Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
-							 > 1)
-							? toks.get(1)
-							: "");
-	return props;
+        List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+        Hashtable    props = HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                ? toks.get(1)
+                : "");
+
+        return props;
     }
 
 
@@ -536,23 +550,26 @@ public class WikiUtil {
      * @param notTags _more_
      *
      * @return _more_
+     *
+     * @throws IOException _more_
      */
     private String wikifyInner(String s, WikiPageHandler handler,
-                               String[] notTags)             throws IOException {
+                               String[] notTags)
+            throws IOException {
 
         s = s.replace("\\\\[", "_BRACKETOPEN_");
         if (getReplaceNewlineWithP()) {
             s = s.replaceAll("\r\n\r\n", "\n<p></p>\n");
             s = s.replaceAll("\r\r", "\n<p></p>\n");
         }
-	/*
+        /*
         s = s.replaceAll("''''([^']+?)''''", "<b><i>$1</i></b>");
         s = s.replaceAll("'''([^']+?)'''", "<b>$1</b>");
         s = s.replaceAll("''([^']+?)''", "<i>$1</i>");
-	*/
+        */
         s = s.replaceAll("''''(.*?)''''", "<b><i>$1</i></b>");
         s = s.replaceAll("'''(.*?)'''", "<b>$1</b>");
-        s = s.replaceAll("''(.*?)''", "<i>$1</i>");	
+        s = s.replaceAll("''(.*?)''", "<i>$1</i>");
         Pattern pattern;
         Matcher matcher;
         //<nowiki>
@@ -632,7 +649,7 @@ public class WikiUtil {
             matcher = pattern.matcher(s);
         }
 
-	//	s = parseProperties(s, handler, notTags);
+        //      s = parseProperties(s, handler, notTags);
 
         boolean              closeTheTag     = false;
         int                  ulCnt           = 0;
@@ -650,13 +667,13 @@ public class WikiUtil {
         StringBuilder    currentVarValue = null;
         boolean          inCss           = false;
         boolean          inPre           = false;
-	boolean inScroll = false;
-	String afterId = null;
-	String afterPause = null;
-	String afterFade = null;
-	boolean inPropertyTag = false;
-	//	System.err.println("S:"+ s+":");
-	s = s.replaceAll("\r", "");
+        boolean          inScroll        = false;
+        String           afterId         = null;
+        String           afterPause      = null;
+        String           afterFade       = null;
+        boolean          inPropertyTag   = false;
+        //      System.err.println("S:"+ s+":");
+        s = s.replaceAll("\r", "");
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             if ((line.indexOf("${") >= 0)
@@ -682,29 +699,32 @@ public class WikiUtil {
             }
 
             String tline = line.trim();
-	    //	    System.err.println("Line:"+ line+":");
+            //      System.err.println("Line:"+ line+":");
 
-	    if(tline.startsWith("{{")) {
-		buff.append(tline);
-		buff.append("\n");
-		if(tline.indexOf("}}")<0) {
-		    inPropertyTag = true;
-		}
-		continue;
-	    }
+            if (tline.startsWith("{{")) {
+                buff.append(tline);
+                buff.append("\n");
+                if (tline.indexOf("}}") < 0) {
+                    inPropertyTag = true;
+                }
 
-	    if(inPropertyTag && tline.endsWith("}}")) {
-		buff.append(tline);
-		buff.append("\n");
-		inPropertyTag = false;
-		continue;
-	    }
+                continue;
+            }
 
-	    if(inPropertyTag) {
-		buff.append(tline);
-		buff.append("\n");
-		continue;
-	    }
+            if (inPropertyTag && tline.endsWith("}}")) {
+                buff.append(tline);
+                buff.append("\n");
+                inPropertyTag = false;
+
+                continue;
+            }
+
+            if (inPropertyTag) {
+                buff.append(tline);
+                buff.append("\n");
+
+                continue;
+            }
 
 
             if (tline.equals("+pre")) {
@@ -797,6 +817,7 @@ public class WikiUtil {
 
             if (currentVar != null) {
                 currentVarValue.append(tline);
+
                 continue;
             }
 
@@ -1104,7 +1125,8 @@ public class WikiUtil {
 
             }
 
-            if (tline.startsWith("+accordian") || tline.startsWith("+accordion")) {
+            if (tline.startsWith("+accordian")
+                    || tline.startsWith("+accordion")) {
                 AccordionState accordionState = new AccordionState();
                 accordionStates.add(accordionState);
                 List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
@@ -1136,7 +1158,8 @@ public class WikiUtil {
                 continue;
             }
 
-            if (tline.startsWith("-accordian") || tline.startsWith("-accordion")) {
+            if (tline.startsWith("-accordian")
+                    || tline.startsWith("-accordion")) {
                 if (accordionStates.size() == 0) {
                     buff.append("No open accordion tag");
 
@@ -1278,8 +1301,10 @@ public class WikiUtil {
                     if (tmp != null) {
                         clazz = tmp;
                     }
-		    style = (String) props.get("style");
-		    if(style==null) style = "";
+                    style = (String) props.get("style");
+                    if (style == null) {
+                        style = "";
+                    }
                     String image = (String) props.get("image");
                     if (image != null) {
                         String attach = (String) props.get("attach");
@@ -1378,22 +1403,33 @@ public class WikiUtil {
             }
 
             if (tline.startsWith("+after")) {
-		afterId = HtmlUtils.getUniqueId("after");
+                afterId = HtmlUtils.getUniqueId("after");
                 Hashtable props = lineToProps(tline);
-		afterPause = (String) props.get("pause");
-		if(afterPause==null) afterPause = "0";
-		afterFade = (String) props.get("afterFade");
-		if(afterFade==null) afterPause = "3000";
-		buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-					   HtmlUtils.style("opacity:0;") +HtmlUtils.id(afterId)));
-		continue;
-	    }
+                afterPause = (String) props.get("pause");
+                if (afterPause == null) {
+                    afterPause = "0";
+                }
+                afterFade = (String) props.get("afterFade");
+                if (afterFade == null) {
+                    afterPause = "3000";
+                }
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                           HtmlUtils.style("opacity:0;")
+                                           + HtmlUtils.id(afterId)));
+
+                continue;
+            }
 
             if (tline.startsWith("-after")) {
-		HtmlUtils.close(buff,HtmlUtils.TAG_DIV);
-		HtmlUtils.script(buff, "HtmlUtils.callWhenScrolled('" +afterId +"',()=>{$('#" + afterId +"').fadeTo(" + afterFade+",1.0);}," + afterPause+");");
-		continue;
-	    }
+                HtmlUtils.close(buff, HtmlUtils.TAG_DIV);
+                HtmlUtils.script(buff,
+                                 "HtmlUtils.callWhenScrolled('" + afterId
+                                 + "',()=>{$('#" + afterId + "').fadeTo("
+                                 + afterFade + ",1.0);}," + afterPause
+                                 + ");");
+
+                continue;
+            }
 
 
             if (tline.startsWith("+section")) {
@@ -1416,12 +1452,12 @@ public class WikiUtil {
 
                 String  label       = (String) props.get("label");
                 String  heading     = (String) props.get("heading");
-		String  title       = (String) props.get("title");
-		String  subTitle       = (String) props.get("subTitle");
+                String  title       = (String) props.get("title");
+                String  subTitle    = (String) props.get("subTitle");
                 String  classArg    = (String) props.get("class");
                 String  style       = (String) props.get("style");
                 String  titleStyle  = (String) props.get("titleStyle");
-		String  headerStyle  = (String) props.get("headerStyle");
+                String  headerStyle = (String) props.get("headerStyle");
                 boolean doBorderTop = tline.indexOf("----") >= 0;
                 boolean doEvenOdd   = tline.indexOf("#") >= 0;
                 String  extraClass  = "";
@@ -1479,65 +1515,87 @@ public class WikiUtil {
                     buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
                 }
                 if (title != null) {
-		    String sub = "";
-		    if(subTitle!=null) {
-			sub = HtmlUtils.div(subTitle,HtmlUtils.clazz("ramadda-page-subtitle"));
-		    }
-                    buff.append(HtmlUtils.div(getTitle(title, titleStyle)+sub,
-					      HtmlUtils.cssClass("ramadda-page-title") +
-					      (headerStyle==null?"":HtmlUtils.style(headerStyle))));
+                    String sub = "";
+                    if (subTitle != null) {
+                        sub = HtmlUtils.div(
+                            subTitle,
+                            HtmlUtils.clazz("ramadda-page-subtitle"));
+                    }
+                    buff.append(HtmlUtils.div(getTitle(title, titleStyle)
+                            + sub, HtmlUtils.cssClass("ramadda-page-title")
+                                   + ((headerStyle == null)
+                                      ? ""
+                                      : HtmlUtils.style(headerStyle))));
                 }
 
                 continue;
             }
             if (tline.startsWith("-section")) {
                 buff.append("</div>");
+
                 continue;
             }
 
-	    if(tline.startsWith("+scroll")) {
-		buff.append("\n");
-		HtmlUtils.cssLink(buff, handler.getHtdocsUrl("/lib/scrollify/scrollify.css"));
-		HtmlUtils.importJS(buff, handler.getHtdocsUrl("/lib/scrollify/jquery.scrollify.js"));
-		continue;
-	    }
+            if (tline.startsWith("+scroll")) {
+                buff.append("\n");
+                HtmlUtils.cssLink(
+                    buff,
+                    handler.getHtdocsUrl("/lib/scrollify/scrollify.css"));
+                HtmlUtils.importJS(
+                    buff,
+                    handler.getHtdocsUrl(
+                        "/lib/scrollify/jquery.scrollify.js"));
 
-	    if(tline.startsWith("-scroll")) {
-		buff.append("\n");
-		inScroll = false;
-		HtmlUtils.importJS(buff, handler.getHtdocsUrl("/lib/scrollify/template.js"));
-		continue;
-	    }
+                continue;
+            }
 
-	    if(tline.startsWith("+panel")) {
-		buff.append("\n");
+            if (tline.startsWith("-scroll")) {
+                buff.append("\n");
+                inScroll = false;
+                HtmlUtils.importJS(
+                    buff, handler.getHtdocsUrl("/lib/scrollify/template.js"));
+
+                continue;
+            }
+
+            if (tline.startsWith("+panel")) {
+                buff.append("\n");
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                 Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
                                       > 1)
                         ? toks.get(1)
                         : "");
-		String name = (String)props.get("name");
-		String style = (String)props.get("style");
-		String color = (String)props.get("color");
-		String extra = "";
-		String clazz = "panel ";
-		if(name!=null)
-		    extra += " data-section-name=\"" + name +"\"  ";
-		if(style!=null)
-		    extra += HtmlUtils.style(style);
- 		if(!inScroll) clazz+= " panel-first ";
-		if(color!=null) clazz+= " panel-" + color +" ";
-		buff.append("<section class=\"" + clazz +"\" " + extra +">\n");
-		buff.append("<div class=\"panel-inner\">");
-		inScroll = true;
-		continue;
-	    }
+                String name  = (String) props.get("name");
+                String style = (String) props.get("style");
+                String color = (String) props.get("color");
+                String extra = "";
+                String clazz = "panel ";
+                if (name != null) {
+                    extra += " data-section-name=\"" + name + "\"  ";
+                }
+                if (style != null) {
+                    extra += HtmlUtils.style(style);
+                }
+                if ( !inScroll) {
+                    clazz += " panel-first ";
+                }
+                if (color != null) {
+                    clazz += " panel-" + color + " ";
+                }
+                buff.append("<section class=\"" + clazz + "\" " + extra
+                            + ">\n");
+                buff.append("<div class=\"panel-inner\">");
+                inScroll = true;
 
-	    if(tline.startsWith("-panel")) {
-		buff.append("\n");
-		buff.append("</div></section>");
-		continue;
-	    }
+                continue;
+            }
+
+            if (tline.startsWith("-panel")) {
+                buff.append("\n");
+                buff.append("</div></section>");
+
+                continue;
+            }
 
             if (tline.equals("+info-text")) {
                 buff.append("<div class=\"info-text\">");
@@ -1570,7 +1628,9 @@ public class WikiUtil {
                         : "");
                 String outerClazz = "ramadda-frame-outer";
                 String innerStyle = (String) props.get("innerStyle");
-		if(innerStyle==null) innerStyle="";
+                if (innerStyle == null) {
+                    innerStyle = "";
+                }
                 String frameStyle = "";
                 if (props.get("shadow") != null) {
                     outerClazz += " ramadda-frame-shadow ";
@@ -1592,19 +1652,25 @@ public class WikiUtil {
                 HtmlUtils.open(buff, "div",
                                HtmlUtils.cssClass(outerClazz)
                                + HtmlUtils.style(frameStyle));
-		if(title!=null) {
-		    String titleBackground  = (String) props.get("titleBackground");
-		    String titleColor  = (String) props.get("titleColor");
-		    String titleStyle = Misc.getProperty(props,"titleStyle","");
-		    if(titleBackground!=null)
-			titleStyle+="background:" + titleBackground +";";
-		    if(titleColor!=null)
-			titleStyle+="color:" + titleColor +";";
-		    //		    String url = getTitleUrl(false);
-		    //		    if(url!=null) 
-		    //			title = HtmlUtils.href(url, title);
-		    HtmlUtils.div(buff, title, HtmlUtils.clazz("ramadda-frame-title") + HtmlUtils.style(titleStyle));
-		}
+                if (title != null) {
+                    String titleBackground =
+                        (String) props.get("titleBackground");
+                    String titleColor = (String) props.get("titleColor");
+                    String titleStyle = Misc.getProperty(props, "titleStyle",
+                                            "");
+                    if (titleBackground != null) {
+                        titleStyle += "background:" + titleBackground + ";";
+                    }
+                    if (titleColor != null) {
+                        titleStyle += "color:" + titleColor + ";";
+                    }
+                    //              String url = getTitleUrl(false);
+                    //              if(url!=null) 
+                    //                  title = HtmlUtils.href(url, title);
+                    HtmlUtils.div(buff, title,
+                                  HtmlUtils.clazz("ramadda-frame-title")
+                                  + HtmlUtils.style(titleStyle));
+                }
                 HtmlUtils.open(buff, "div",
                                HtmlUtils.cssClass("ramadda-frame-inner")
                                + HtmlUtils.style(innerStyle));
@@ -1675,14 +1741,16 @@ public class WikiUtil {
 
 
             if (tline.startsWith("+vertical-center")) {
-		buff.append("\n<div class=\"vertical-center\">\n");
-		continue;
-	    }
+                buff.append("\n<div class=\"vertical-center\">\n");
+
+                continue;
+            }
 
             if (tline.startsWith("-vertical-center")) {
-		buff.append("\n</div>\n");
-		continue;
-	    }
+                buff.append("\n</div>\n");
+
+                continue;
+            }
 
 
             if (tline.equals("+centerdiv")) {
@@ -1771,8 +1839,8 @@ public class WikiUtil {
             if (tline.startsWith(":center")) {
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                 buff.append(HtmlUtils.center((toks.size() > 1)
-					     ? toks.get(1)
-					     : ""));
+                                             ? toks.get(1)
+                                             : ""));
 
                 continue;
             }
@@ -1789,10 +1857,10 @@ public class WikiUtil {
             }
 
             if (tline.startsWith(":heading") || tline.startsWith(":block")
-		||tline.startsWith(":credit")
-		|| tline.startsWith(":note") || tline.startsWith(":box")
-		|| tline.startsWith(":blurb")
-		|| tline.startsWith(":callout")) {
+                    || tline.startsWith(":credit")
+                    || tline.startsWith(":note") || tline.startsWith(":box")
+                    || tline.startsWith(":blurb")
+                    || tline.startsWith(":callout")) {
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
                 String       what  = toks.get(0).substring(1);
                 List<String> toks2 = StringUtil.splitUpTo(what, "-", 2);
@@ -1814,6 +1882,16 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith("+flow")) {
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                           HtmlUtils.style("display:inline-block;")));
+		continue;
+	    }
+
+	    if (tline.startsWith("-flow")) {
+                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+		continue;
+	    }
 
             if (tline.startsWith("+mini") || tline.startsWith("+block")
                     || tline.startsWith("+note") || tline.startsWith("+box")
@@ -1868,12 +1946,13 @@ public class WikiUtil {
 
 
             if (tline.startsWith("+row")) {
-                List<String>  toks      = StringUtil.splitUpTo(tline, " ", 2);
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                 Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
                                       > 1)
                         ? toks.get(1)
                         : "");
-                rowStates.add(new RowState(buff,props));
+                rowStates.add(new RowState(buff, props));
+
                 continue;
             }
             if (tline.equals("-row")) {
@@ -1890,24 +1969,29 @@ public class WikiUtil {
             }
 
             if (tline.startsWith(":comment")) {
-		List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-		if(toks.size()>1) 
-		    HtmlUtils.comment(buff, toks.get(1));
-		continue;
-	    }
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                if (toks.size() > 1) {
+                    HtmlUtils.comment(buff, toks.get(1));
+                }
 
-	    if (tline.startsWith(":pad")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-		String height = "100px";
-		if(toks.size()>1) height = toks.get(1);
-		HtmlUtils.div(buff,"",HtmlUtils.style("height:" + height));
-		continue;
-	    }
+                continue;
+            }
+
+            if (tline.startsWith(":pad")) {
+                List<String> toks   = StringUtil.splitUpTo(tline, " ", 2);
+                String       height = "100px";
+                if (toks.size() > 1) {
+                    height = toks.get(1);
+                }
+                HtmlUtils.div(buff, "", HtmlUtils.style("height:" + height));
+
+                continue;
+            }
             if (tline.startsWith(":col-")) {
                 RowState rowState = null;
                 if (rowStates.size() == 0) {
                     //Add a row if we're not in one
-                    rowStates.add(rowState = new RowState(buff,null));
+                    rowStates.add(rowState = new RowState(buff, null));
                 } else {
                     rowState = rowStates.get(rowStates.size() - 1);
                 }
@@ -2059,17 +2143,19 @@ public class WikiUtil {
 
 
 
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb      = new StringBuffer();
         int          baseIdx = 0;
         while (true) {
             int idx1 = s.indexOf(TAG_PREFIX, baseIdx);
             if (idx1 < 0) {
                 sb.append(s.substring(baseIdx));
+
                 break;
             }
             int idx2 = s.indexOf(TAG_SUFFIX, idx1);
             if (idx2 <= idx1) {
                 sb.append(s.substring(baseIdx));
+
                 break;
             }
             sb.append(s.substring(baseIdx, idx1));
@@ -2273,6 +2359,7 @@ public class WikiUtil {
      */
     public String getTitle(String label, String style) {
         String url = getTitleUrl(true);
+
         return (url != null)
                ? HtmlUtils.href(url, label, (style == null)
                                             ? null
@@ -2404,25 +2491,27 @@ public class WikiUtil {
      * @param args _more_
      */
     public static void main(String[] args) {
-	String s="";
-	String s1 = "hello there how are you ''''contents '''' and how are you";
-	for(int i=0;i<1000;i++)
-	    s  = s+s1;
-	long t1 =  System.currentTimeMillis();
-	for(int i=0;i<10000;i++) {
-	    s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");
-	}
-	long t2 =  System.currentTimeMillis();
-	Utils.printTimes("t1:",t1,t2);
+        String s = "";
+        String s1 =
+            "hello there how are you ''''contents '''' and how are you";
+        for (int i = 0; i < 1000; i++) {
+            s = s + s1;
+        }
+        long t1 = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");
+        }
+        long t2 = System.currentTimeMillis();
+        Utils.printTimes("t1:", t1, t2);
 
-	Pattern  p =Pattern.compile("'''''([^']+)'''''");
-	long tt1 =  System.currentTimeMillis();
-	for(int i=0;i<10000;i++) {
-	    Matcher m = p.matcher(s);
-	    m.replaceAll("<b><i>$1</i></b>");
-	}
-	long tt2 =  System.currentTimeMillis();
-	Utils.printTimes("t2:",tt1,tt2);
+        Pattern p   = Pattern.compile("'''''([^']+)'''''");
+        long    tt1 = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            Matcher m = p.matcher(s);
+            m.replaceAll("<b><i>$1</i></b>");
+        }
+        long tt2 = System.currentTimeMillis();
+        Utils.printTimes("t2:", tt1, tt2);
 
 
     }
@@ -2565,7 +2654,7 @@ public class WikiUtil {
      *
      *
      * @version        $version$, Wed, Jul 31, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ContentState {
 
@@ -2613,26 +2702,26 @@ public class WikiUtil {
      *
      *
      * @version        $version$, Wed, Jul 31, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class AccordionState extends ContentState {
 
-        /** _more_          */
+        /** _more_ */
         int segmentId = 0;
 
-        /** _more_          */
+        /** _more_ */
         int activeSegment = 0;
 
-        /** _more_          */
+        /** _more_ */
         String heightStyle = "content";
 
-        /** _more_          */
+        /** _more_ */
         boolean collapsible;
 
-        /** _more_          */
+        /** _more_ */
         int animate = 200;
 
-        /** _more_          */
+        /** _more_ */
         boolean decorate = true;
 
         /**
@@ -2654,23 +2743,25 @@ public class WikiUtil {
         /** _more_ */
         int colCnt = 0;
 
-	Hashtable props;
-	
+        /** _more_          */
+        Hashtable props;
+
         /**
          * _more_
          *
          * @param buff _more_
+         * @param props _more_
          */
         public RowState(Appendable buff, Hashtable props) {
             try {
-		String clazz = "row wiki-row";
-		if(props!=null) {
-		    String c = (String)props.get("tight");
-		    if(c!=null) {
-			clazz+=" row-tight ";
-		    }
-		}
-		HtmlUtils.open(buff, "div",HtmlUtils.clazz(clazz));
+                String clazz = "row wiki-row";
+                if (props != null) {
+                    String c = (String) props.get("tight");
+                    if (c != null) {
+                        clazz += " row-tight ";
+                    }
+                }
+                HtmlUtils.open(buff, "div", HtmlUtils.clazz(clazz));
             } catch (Exception exc) {
                 throw new IllegalArgumentException(exc);
             }
