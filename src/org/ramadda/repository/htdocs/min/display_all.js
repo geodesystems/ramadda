@@ -10356,7 +10356,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         checkLayout: function() {
             var _this = this;
             var d = _this.jq(ID_DISPLAY_CONTENTS);
-//            console.log("checklayout:  widths:" + this.lastWidth +" " + d.width());
+//	    console.log(this.type +".checklayout:  widths:" + this.lastWidth +" " + d.width() +" " + _this.jq(ID_CHART).is(':visible'));
             if (this.lastWidth != d.width()) {
                 _this.displayData();
             }
@@ -10665,7 +10665,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
 	    }
 	    var index = this.findMatchingIndex(args.record);
-	    console.log(this.type +" index:" + index);
+//	    console.log(this.type +" index:" + index);
 	    if(index<0 || !Utils.isDefined(index)) {
 		return;
 	    }
@@ -10822,11 +10822,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     rowCnt++;
                     var values = [];
                     var indexName = null;
-		    console.log("row:" + rowIdx);
+//		    console.log("row:" + rowIdx);
                     if (indexField) {
 			var value = record.getValue(indexField.getIndex());
 //                        values.push( + offset);
-			console.log("v:" + value);
+//			console.log("v:" + value);
 			if(indexField.isString()) {
 			    value = {v:offset,f:value};
 			} 
@@ -10975,7 +10975,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
             var d = _this.jq(ID_CHART);
-            this.lastWidth = d.width();
+	    if(_this.jq(ID_CHART).is(':visible')) {
+		this.lastWidth = d.width();
+	    } else {
+		this.lastWidth = -1;
+	    }
+
+//	    console.log(this.type +" lastWidth:" + this.lastWidth+" "+_this.jq(ID_CHART).is(':visible'));
         },
         printDataList: function(dataList) {
             console.log("data list:" + dataList.length);
@@ -10998,7 +11004,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         setChartSelection: function(index) {
             if (this.chart != null) {
                 if (this.chart.setSelection) {
-		    console.log(this.type +".setSelection:" + index);
+//		    console.log(this.type +".setSelection:" + index);
                     this.chart.setSelection([{
                         row: index,
 			column:null
@@ -11842,7 +11848,6 @@ function PiechartDisplay(displayManager, id, properties) {
 					"sliceVisibilityThreshold=\"0.01\"",
 				    ]);
 	},
-
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
                 var stringField = this.getFieldOfType(this.allFields, "string");
