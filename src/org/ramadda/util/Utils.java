@@ -92,32 +92,11 @@ import javax.imageio.stream.ImageOutputStream;
  */
 
 public class Utils {
+
+    /** _more_          */
     public static final String[] LETTERS = {
-	"A",
-	"B",
-	"C",
-	"D",
-	"E",
-	"F",
-	"G",
-	"H",
-	"I",
-	"J",
-	"K",
-	"L",
-	"M",
-	"N",
-	"O",
-	"P",
-	"R",
-	"S",
-	"T",
-	"U",
-	"V",
-	"W",
-	"X",
-	"Y",
-	"Z",
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
+        "O", "P", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
     };
 
     /** _more_ */
@@ -3238,16 +3217,17 @@ public class Utils {
      */
     public static void main(String[] args) throws Exception {
 
-	if(true) {
-	    Date d = new Date();
-	    GregorianCalendar cal = new GregorianCalendar();
-	    cal.setTime(d);
-	    cal.setTimeZone(TimeZone.getTimeZone("GMT")); 
-	    System.err.println(cal.get(cal.HOUR));
-	    cal.setTimeZone(TimeZone.getTimeZone("MST")); 
-	    System.err.println(cal.get(cal.HOUR));
-	    return;
-	}
+        if (true) {
+            Date              d   = new Date();
+            GregorianCalendar cal = new GregorianCalendar();
+            cal.setTime(d);
+            cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+            System.err.println(cal.get(cal.HOUR));
+            cal.setTimeZone(TimeZone.getTimeZone("MST"));
+            System.err.println(cal.get(cal.HOUR));
+
+            return;
+        }
 
 
         if (true) {
@@ -3449,6 +3429,7 @@ public class Utils {
 
         return h;
     }
+
 
     /**
      * _more_
@@ -4201,5 +4182,29 @@ public class Utils {
 
         return text;
     }
+
+    /**
+     * Class description
+     *
+     *
+     * @param <TYPE>
+     *
+     * @version        $version$, Sun, Oct 20, '19
+     * @author         Enter your name here...    
+     */
+    public static class TypedList<TYPE> extends ArrayList {
+
+        /**
+         * _more_
+         *
+         * @param args _more_
+         */
+        public TypedList(TYPE... args) {
+            for (TYPE arg : args) {
+                this.add(arg);
+            }
+        }
+    }
+
 
 }
