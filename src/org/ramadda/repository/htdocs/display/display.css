@@ -1276,6 +1276,10 @@ height:100%;
    padding-left:0px;
 }
 
+.display-chart-legend {
+    font-size: 10pt;
+}
+
 .display-chernoff-label {
   margin-top:10px;
   text-align:center;

@@ -8,6 +8,7 @@ var displayDebug = false;
 //Ids of DOM components
 var ID_BOTTOM = "bottom";
 var ID_COLORTABLE = "colortable";
+var ID_LEGEND = "legend";
 var ID_FIELDS = "fields";
 var ID_HEADER = "header";
 var ID_HEADER1 = "header1";
@@ -3943,7 +3944,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 html += HtmlUtils.closeTag(TAG_DIV);
             }
 	    html += HtmlUtils.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)],
-				  HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)]));
+				  HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)])+
+				  HtmlUtils.div(["id",this.getDomId(ID_LEGEND)]));
 
             return html;
         },

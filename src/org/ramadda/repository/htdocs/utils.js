@@ -387,6 +387,9 @@ var Utils = {
     formatDateYYYY: function(date, options, args) {
         return date.getUTCFullYear();
     },
+    formatDateYYYYWeek: function(date, options, args) {
+        return date.getUTCFullYear() + " week:" + this.formatDateWeek(date);
+    },
     formatDateWeek: function(date) {
 	var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
 	return   Math.ceil(( ( (date - yearStart) / 86400000) + 1)/7);

@@ -1060,6 +1060,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    var annotationsMap = {};
 	    if(annotations) {
+		let legend = "";
                 dataTable.addColumn({
                     type: 'string',
                     role: 'annotation',
@@ -1082,16 +1083,30 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    var index = toks2[0].trim();
 		    var label = toks2[1];
 		    var desc = toks2[2];
+		    let isDate = false;
+		    let dateLabel ="";
 		    if(index.match(/^[0-9]+$/)) {
 			index = parseFloat(index);
 		    } else {
 			index = Utils.parseDate(index,false);
+			isDate = true;
+			dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
 		    }
 //		    console.log("annotation:" + index +" l:" + label);
-		    annotationsMap[index] = {
-			label: label,
-			description: desc
+		    let annotation = {label: label,description: desc   };
+		    
+		    legend+= HtmlUtils.b(label)+":" + desc+" ";
+		    annotationsMap[index] = annotation;
+		    if(isDate) {
+			annotationsMap[Utils.formatDateYYYYMMDD(index)] = annotation;
+			annotationsMap[Utils.formatDateYYYYWeek(index)] = annotation;
 		    }
+		}
+		if(this.getProperty("showAnnotationsLegend")) {
+		    //Pad the left to align with  the chart axis
+		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
+					    HtmlUtils.div(["class", "display-chart-legend"],legend)
+					    +"</td></tr></table>");
 		}
 	    }
 
@@ -1201,13 +1216,28 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 
 		}
-
 		if(annotations) {
 		    var index = newRow[0];
 		    if(index.v) index=  index.v;
 		    var annotation = annotationsMap[index];
+		    if(annotation) {
+			annotationsMap[index]=null;
+		    }
+
 		    if(!annotation) {
 			annotation = annotationsMap[i];
+		    }
+		    if(!annotation &&  index.getTime) {
+		    	annotation = annotationsMap[Utils.formatDateYYYYMMDD(index)];
+			if(annotation) {
+			    annotationsMap[Utils.formatDateYYYYMMDD(index)] = null;
+			}
+			if(!annotation) {
+			    annotation = annotationsMap[Utils.formatDateYYYYWeek(index)];
+			    if(annotation) {
+				annotationsMap[Utils.formatDateYYYYWeek(index)]= null;
+			    }
+			} 
 		    }
 		    if(annotation) {
 			newRow.push(annotation.label);
