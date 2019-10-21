@@ -1248,6 +1248,8 @@ public class CsvUtil {
      */
     public static class Cmd {
 
+	boolean category;
+	
         /** _more_ */
         String cmd;
 
@@ -1256,6 +1258,11 @@ public class CsvUtil {
 
         /** _more_ */
         String desc;
+
+        public Cmd(boolean isCat, String category) {
+	    this.category = isCat;
+	    this.desc = category;
+	}
 
         /**
          * _more_
@@ -1320,13 +1327,14 @@ public class CsvUtil {
         new Cmd("-help", "", "(print this help)"),
         new Cmd("-help:<topic search string>", "",
                 "(print help that matches topic)"),
+	new Cmd(true, "Slice and Dice"),
         new Cmd(
             "-columns", "<e.g., 0,1,2,7-10,12>",
             "(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
         new Cmd(
             "-notcolumns", "<e.g., 0,1,2,7-10,12>",
             "(A comma separated list of columns #s or column range, 0-based. Don't include the given columns)"),
-        new Cmd("-skip", "<how many lines to skip>"),
+        new Cmd("-skip", "<how many rows to skip>"),
         new Cmd("-start", "<start pattern>"),
         new Cmd("-stop", "<stop pattern>"),
         new Cmd("-min", "<min # columns>"),
@@ -1352,6 +1360,7 @@ public class CsvUtil {
         new Cmd("-insert", "<col #> <comma separated values>"),
         new Cmd("-addcell", "<row #>  <col #>  <value>"),
         new Cmd("-deletecell", "<row #> <col #>"),
+	new Cmd(true, "Change Values"),
         new Cmd(
             "-macro",
             "<pattern> <template> <column label> (Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header)"),
@@ -1389,14 +1398,6 @@ public class CsvUtil {
                 "(combine columns with the delimiter. deleting columns)"),
         new Cmd("-combineinplace", "<col #s> <delimiter> <new column name>",
                 "(combine columns with the delimiter.)"),
-        new Cmd(
-            "-html", "\"name value properties\"",
-            "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
-        new Cmd("-json",
-                "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
-                "(parse the input as json)"),
-        new Cmd("-tokenize", " \"header1,header2...\" \"pattern\"",
-                "(tokenize the input from the pattern)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
         //        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
@@ -1405,24 +1406,13 @@ public class CsvUtil {
                 "(split the column)"),
         new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",
                 "(create a new column from the values in the given column)"),
-        new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
-                "(set value={value+delta1}*scale+delta2)"),
-        new Cmd("-decimals", "<col #> <how many decimals to round to>", ""),
-        new Cmd(
-            "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
-            "(apply the operator to the given columns and create new one)"),
-        new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
-        new Cmd("-round", "<columns>", "round the values"),
-        new Cmd(
-            "-sum", "<key columns> <value columns> <carry over columns>",
-            "sum values keying on name column value. If no value columns specified then do a count"),
+
         new Cmd("-join",
                 "<key columns> <value columns> <file> <src key columns>",
                 "Join the 2 files together"),
         new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
         new Cmd("-unique", "<columns>", "(pass through unique values)"),
         new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
-        new Cmd("-percent", "<columns to add>"),
         new Cmd("-sort", "<column sort>"),
         new Cmd(
             "-denormalize",
@@ -1437,18 +1427,38 @@ public class CsvUtil {
             "<col to get new column header#> <value columns> <unique col>  <other columns>",
             "(make columns from data values)"),
         new Cmd("-image", "<col idx> suffix", "(search for an image)"),
+        new Cmd("-gender", "<column>","(figure out the gender of the name in the column)"), 
+
+	new Cmd(true,"Numeric"),
+        new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
+                "(set value={value+delta1}*scale+delta2)"),
+	new Cmd("-rowaverage", "",    "(average the row values)"),
+        new Cmd("-decimals", "<col #> <how many decimals to round to>", ""),
+        new Cmd(
+            "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
+            "(apply the operator to the given columns and create new one)"),
+        new Cmd("-round", "<columns>", "round the values"),
+        new Cmd(
+            "-sum", "<key columns> <value columns> <carry over columns>",
+            "sum values keying on name column value. If no value columns specified then do a count"),
+        new Cmd("-percent", "<columns to add>"),
+	new Cmd("-increase", "<column> <how far back>","(calculate percent increase)"),
+	new Cmd("-average", "<columns> <period> <label>","(calculate a moving average)"),
+
+	new Cmd(true, "Geocode"),
         new Cmd("-geocode",
                 "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
         new Cmd("-geocodeaddress",
                 "<col indices> Latitude Longitude <prefix> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
-        new Cmd("-gender", "<column>","(figure out the gender of the name in the column)"), 
+        new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
+	new Cmd(true, "Other Commands"),
 	new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
         new Cmd("-skipline", " <pattern>",
                 "(skip any line that matches the pattern)"),
         new Cmd("-changeline", "<from> <to>", "(change the line)"),
-        new Cmd("-prune", "<number of leading bytes to remove>","(prune out the first N bytes)"),
+
         new Cmd(
             "-strict", "",
             "(be strict on columns. any rows that are not the size of the other rows are dropped)"),
@@ -1464,6 +1474,17 @@ public class CsvUtil {
         new Cmd("-comment", "<string>"),
         new Cmd("-verify", "",
                 "(verify that all of the rows have the same # of columns)"),
+	new Cmd(true, "Input"),
+        new Cmd(
+            "-html", "\"name value properties\"",
+            "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
+        new Cmd("-json",
+                "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
+                "(parse the input as json)"),
+        new Cmd("-tokenize", " \"header1,header2...\" \"pattern\"",
+                "(tokenize the input from the pattern)"),
+        new Cmd("-prune", "<number of leading bytes to remove>","(prune out the first N bytes)"),
+	new Cmd(true, "Output"),
         new Cmd("-print", "", "(print to stdout)"),
         new Cmd("-raw", "", "(print the file raw)"),
         new Cmd("-record", "", " (print records)"),
@@ -1525,7 +1546,11 @@ public class CsvUtil {
             }
 	    if(json) {
 		if(cnt>0) pw.println(",");
-		pw.println(Json.mapAndQuote("command",c.cmd,"args",c.args,"description",c.desc));
+		if(c.category) {
+		    pw.println(Json.mapAndQuote("isCategory","true","description",c.desc));
+		} else {
+		    pw.println(Json.mapAndQuote("command",c.cmd,"args",c.args,"description",c.desc));
+		}
 	    } else {
 		pw.println(cmd);
 	    }
@@ -2037,7 +2062,7 @@ public class CsvUtil {
                     continue;
                 }
 
-                if (arg.equals("-average")) {
+                if (arg.equals("-rowaverage")) {
                     info.getProcessor().addProcessor(
                         new Processor.RowOperator(
                             Processor.RowOperator.OP_AVERAGE));
@@ -2216,6 +2241,32 @@ public class CsvUtil {
                     List<String> cols = getCols(args.get(++i));
                     info.getProcessor().addProcessor(
                         new Converter.ColumnPercenter(cols));
+
+                    continue;
+                }
+
+
+		if (arg.equals("-average")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+		    int period = Integer.parseInt(args.get(++i));
+		    String label = args.get(++i);
+                    info.getProcessor().addProcessor(
+						     new Converter.ColumnAverage(Converter.ColumnAverage.MA,cols,period,label));
+
+                    continue;
+                }
+
+		if (arg.equals("-increase")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+		    int col = Integer.parseInt(args.get(++i));
+		    int step = Integer.parseInt(args.get(++i));
+                    info.getProcessor().addProcessor(
+						     new Converter.ColumnIncrease(col,step));
 
                     continue;
                 }

@@ -745,7 +745,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-	    System.err.println("hm:" + row);
+	    //	    System.err.println("hm:" + row);
             rowCnt++;
             if (rowCnt > 2) {
                 return row;
@@ -1027,6 +1027,138 @@ public abstract class Converter extends Processor {
         }
 
     }
+
+
+
+    public static class ColumnIncrease extends Converter {
+
+
+	int col;
+	int step;
+	List<Double> values = new ArrayList<Double>();
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         *
+         */
+        public ColumnIncrease(int col, int step) {
+	    this.col =col;
+	    this.step = step;
+	}
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+	    if(rowCnt++==0) {
+		row.add(row.get(col)+" increase");
+		return row;
+	    }
+	    double v = Double.parseDouble(row.get(col).toString());
+	    if(values.size()<step) {
+		row.add(Double.NaN);
+	    } else {
+		double pastValue = values.get(0);
+		values.remove(0);
+		double increase = 0;
+		// 20 30
+		if(pastValue==0) {
+		    row.add(Double.NaN);
+		} else {
+		    double diff = v-pastValue;
+		    increase = diff/pastValue;
+		    //		    System.out.println("x:" + v +" " + pastValue +"  diff:" + diff +" i:" + increase);
+
+		    row.add(increase);
+		}
+	    }
+	    values.add(v);
+            return row;
+        }
+
+    }
+
+
+
+    public static class ColumnAverage extends Converter {
+
+	public static final int MA = 0;
+
+	int what;
+	int period;
+	List<List<Double>> values = new ArrayList<List<Double>>();
+	String label;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         *
+         */
+        public ColumnAverage(int what, List<String> cols, int period, String label) {
+            super(cols);
+	    this.what = what;
+	    this.period = period;
+	    this.label = label;
+	}
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            List<Integer> indices = getIndices(info);
+	    if(rowCnt++==0) {
+		for(int i=0;i<indices.size();i++) {
+		    values.add(new ArrayList<Double>());
+		    row.add(row.get(indices.get(i))+" " + label);
+		}
+		return row;
+	    }
+
+	    for(int i=0;i<indices.size();i++) {
+		int index = indices.get(i);
+		List<Double> nums = values.get(i);
+		double v = Double.parseDouble(row.get(index).toString());
+		nums.add(v);
+		if(nums.size()>period) nums.remove(0);
+		double total = 0;
+		int cnt = 0;
+		for(int j=0;j<nums.size();j++) {
+		    if(!Double.isNaN(nums.get(j))) {
+			cnt++;
+			total+=nums.get(j);
+		    }
+		}
+		double average = cnt==0?Double.NaN:total/cnt;
+		row.add(average);
+	    }
+            return row;
+        }
+
+    }
+
+
+
+
 
 
 

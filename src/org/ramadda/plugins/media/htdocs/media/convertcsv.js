@@ -450,7 +450,7 @@ $('#convertcsv_input').keyup(function(e){
     })
 
 
-    var helpUrl = csvGetUrl("-helpraw");
+    var helpUrl = csvGetUrl("-helpjson");
     var jqxhr = $.getJSON( helpUrl, function(data) {
             if(data.error!=null) {
                 return;
@@ -460,44 +460,36 @@ $('#convertcsv_input').keyup(function(e){
                 var result = window.atob(data.result);
                 var select = "<select id=csv_command_select class=ramadda-pulldown>";
                 select +=HtmlUtil.tag("option",[],"Commands");
-                var lines = result.split("\n");
-                for(var i=0;i<lines.length;i++){
-                    line = lines[i].trim();
-                    if(line =="" || line == "CsvUtil") continue;
-                    if(line.startsWith("-help")) continue;
-                    var index = line.indexOf(" ");
-                    var command = line;
-
-                    if(index>0) {
-                        command  = line.substring(0,index).trim();
-                        //                        if(line.includes("decimate")) {
-                            //                            console.log(index +" " + command +" line:" + line);
-                        //}
-                    }
-                    if(!command.startsWith("-")) continue;
-                    var tooltip="";
-                    var arr = line.match(/\((.*?)\)/g);
-                    if(arr && arr.length>0) {
-                        tooltip = arr[0];
-                        tooltip = tooltip.replace(/\"/g,"&quot;");
-                        tooltip = tooltip.replace(/\(/g,"");
-                        tooltip = tooltip.replace(/\)/g,"");
-                        //                        console.log("tt:" + tooltip);
-                    }
-
+		result= JSON.parse(result);
+                result.commands.map(cmd=>{
+		    var command = cmd.command;
+		    if(cmd.isCategory) {
+			select +=HtmlUtil.tag("option",[],cmd.description);
+			return;
+		    }
+		    if(!command) return;
+                    if(!command.startsWith("-")) return;
+		    if(command.startsWith("-help")) return;
+		    var tooltip = "";
+		    var desc = cmd.description;
+		    if(desc && desc!="") {
+			tooltip =desc+"\n";
+		    }
+                    tooltip += command + " " + cmd.args;
+                    tooltip = tooltip.replace(/\"/g,"&quot;").replace(/\(/g,"").replace(/\)/g,"");
                     var label = command;
                     label = Utils.camelCase(label.replace("-",""));
-                    line = line.replace(/\(.*?\)/g,"");
-                    csvCommandsMap[command] = line;
-                    select +=HtmlUtil.tag("option",["value", command,"title",tooltip],label);
-                }
+                    csvCommandsMap[command] = cmd;
+                    select +=HtmlUtil.tag("option",["value", command,"title",tooltip],"&nbsp;&nbsp;&nbsp;" + label);
+                });
                 select += "</select>&nbsp;&nbsp;";
                 $("#csv_commands").html(select);
                 //                $(".ramadda-pulldown").selectBoxIt({});                                 
                 $("#csv_command_select").change(function(evt) {
-                        var line = csvCommandsMap[$("#csv_command_select").val()];
-                        csvInsertCommand(line);
-                    });
+                    var cmd = csvCommandsMap[$("#csv_command_select").val()];
+		    if(!cmd)return;
+                    csvInsertCommand(cmd.command +" " + cmd.args);
+                });
             }
             
 

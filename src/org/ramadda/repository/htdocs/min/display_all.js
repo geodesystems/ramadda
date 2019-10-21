@@ -985,7 +985,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         percent = (v - this.minValue) / this.range;
                     }
 
-                    var index = parseInt(percent * this.colors.length);
+		    var index=0;
+		    if(this.steps) {
+			percent = 0;
+			var inc = 1/this.steps.length;
+			for(var step=0;step<this.steps.length-1;step++) {
+			    if(v<=this.steps[step]) {
+				index = step;
+				break;
+			    }
+			}
+		    } else {
+			index = parseInt(percent * this.colors.length);
+		    }
                     if (index >= this.colors.length) index = this.colors.length - 1;
                     else if (index < 0) index = 0;
 		    if(this.stringMap) {
@@ -1065,6 +1077,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 colorBy.minValue = 0;
                 colorBy.maxValue = 100;
             }
+	    var steps = this.getProperty("colorBySteps");
+	    if(steps) {
+		colorBy.steps = steps.split(",");
+	    }
+            colorBy.minValue = this.getDisplayProp(this, "colorByMin", colorBy.minValue);
             colorBy.minValue = this.getDisplayProp(this, "colorByMin", colorBy.minValue);
             colorBy.maxValue = this.getDisplayProp(this, "colorByMax", colorBy.maxValue);
             colorBy.origMinValue = colorBy.minValue;
