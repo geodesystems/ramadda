@@ -837,14 +837,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		    var index=0;
 		    if(this.steps) {
-			percent = 0;
-			var inc = 1/this.steps.length;
-			for(var step=0;step<this.steps.length-1;step++) {
-			    if(v<=this.steps[step]) {
-				index = step;
+			for(;index<this.steps.length;index++) {
+			    if(v<=this.steps[index]) {
 				break;
 			    }
 			}
+			this.xcnt++;
 		    } else {
 			index = parseInt(percent * this.colors.length);
 		    }
