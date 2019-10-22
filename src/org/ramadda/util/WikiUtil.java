@@ -1174,7 +1174,7 @@ public class WikiUtil {
                 String args = "{heightStyle: \"" + accordionState.heightStyle
                               + "\"" + ", collapsible: "
                               + accordionState.collapsible + ", active: "
-                              + accordionState.collapsible + ", decorate: "
+                              + accordionState.activeSegment + ", decorate: "
                               + accordionState.decorate + ", animate:"
                               + accordionState.animate + "}";
                 js.append("HtmlUtil.makeAccordion(\"#" + accordionState.id
