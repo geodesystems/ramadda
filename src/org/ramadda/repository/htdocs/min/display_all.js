@@ -1575,16 +1575,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var binType = this.getProperty("binType","total");
 		let fields = [];
 		this.lastSelectedFields.map(field=>{
-//		    fields.push(field);    return;
 		    if(!field.isNumeric()) {
 			fields.push(field);
 		    } else {
+			const prefix = binType;
+			if(field.getId().startsWith(prefix)) {
+			    fields.push(field);
+			} else {
 			fields.push(new RecordField({
-			    id:"average_" + field.getId(),
+			    id:prefix +"_"+ field.getId(),
+			    index:  field.getIndex(),
 			    label:this.getProperty("binDateLabel", Utils.camelCase(binType) +" of " + field.getLabel()),
 			    type:"double",
 			    chartable:field.isChartable()
-			}));		    
+			}));
+			}
 		    }
 		});
 		this.lastSelectedFields = fields;
@@ -1617,15 +1622,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     for (var i = 0; i < fixedFields.length; i++) {
                         var sfield = fixedFields[i];
                         if (this.debugSelected)
-                            console.log("\t\tfield:" + sfield);
+                            console.log("\t\tfixed field:" + sfield);
                         for (var j = 0; j < fields.length; j++) {
                             var field = fields[j];
                             var id = field.getId();
                             if (this.debugSelected)
-                                console.log("\t\t\tid:" + id);
+                                console.log("\t\t\tlooking at:" + id);
                             if (id == sfield || ("#" + (j + 1)) == sfield) {
                                 if (this.debugSelected)
-                                    console.log("\t\t\tgot:" + field.getLabel());
+                                    console.log("\t\t\t\tgot:" + field.getLabel());
                                 df.push(field);
                                 break;
                             }
@@ -4724,6 +4729,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var nonNullRecords = 0;
             var records = this.filterData();
+//	    console.log("display.getStandardData records.length:" + records.length);
             var allFields = pointData.getRecordFields();
 
             //Check if there are dates and if they are different
@@ -4731,8 +4737,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var date_formatter = this.getDateFormatter();
             var rowCnt = -1;
             var indexField = this.getFieldById(null,this.getProperty("indexField"));
-            for (j = 0; j < records.length; j++) {
-                var record = records[j];
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                var record = records[rowIdx];
                 var date = record.getDate();
                 if (!this.dateInRange(date)) {
 		    continue;
@@ -4744,7 +4750,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
-			var value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),j);
+			var value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),rowIdx);
                         values.push(value);
                         indexName = indexField.getLabel();
                     } else {
@@ -4754,7 +4760,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             indexName = "Date";
                         } else {
                             if (!props.includeIndexIfDate) {
-                                values.push(j);
+                                values.push(rowIdx);
                                 indexName = "Index";
                             }
                         }
@@ -4764,23 +4770,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
 
+	    
 
-
-
-                var allNull = true;
-                var allZero = true;
-                var hasNumber = false;
-                for (var i = 0; i < fields.length; i++) {
-                    var field = fields[i];
+                let allNull = true;
+                let allZero = true;
+                let hasNumber = false;
+                for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                    let field = fields[fieldIdx];
                     if (field.isFieldNumeric() && field.isFieldDate()) {
                         //                            continue;
                     }
                     var value = record.getValue(field.getIndex());
-		    //		    if(j<10)
-		    //			console.log(field.getId() +" = " + value);
                     if (offset != 0) {
                         value += offset;
                     }
+
                     if (value != null) {
                         allNull = false;
                     }
@@ -4825,8 +4829,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (nonNullRecords == 0) {
 		//		console.log("Num non null:" + nonNullRecords);
-                return [];
+		console.log("no nonNull records");
+		return [];
             }
+
 
 
             if (groupByIndex >= 0) {
@@ -4839,14 +4845,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(groupByCount) {
 		    title.push(this.getProperty("groupByCountLabel", "Count"));
 		} else {
-                    for (var j = 0; j < fields.length; j++) {
-			var field = fields[j];
+                    for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+			var field = fields[fieldIdx];
 			if (field.getIndex() != groupByIndex) {
                             title.push(field.getLabel());
 			}
                     }
 		}
 //                agg.push(title);
+
 
                 for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
                     var data = this.getDataValues(dataList[rowIdx]);
@@ -4925,6 +4932,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return tmp;
             }
 
+//	    console.log("display.getStandardData returning "+ dataList.length);
+	    
             return dataList;
         },
         googleLoaded: function() {
@@ -10101,6 +10110,7 @@ function NotebookChunk(cell, props) {
    Copyright 2008-2019 Geode Systems LLC
 */
 
+
 var CATEGORY_CHARTS = "Charts";
 var CATEGORY_OTHER = "Other Charts";
 var CATEGORY_MISC = "Misc";
@@ -10878,6 +10888,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (dataList == null) {
                 dataList = this.getStandardData(fieldsToSelect, props);
+//		console.log("standard data:" + fieldsToSelect +" " +dataList.length);
             }
 
 
@@ -10891,9 +10902,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
+
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
                 var chartableFields = this.getFieldsToSelect(pointData);
+//		console.log("fields:" + chartableFields);
                 for (var i = 0; i < chartableFields.length; i++) {
                     var field = chartableFields[i];
                     dataList = this.getStandardData([field], props);
@@ -11224,6 +11237,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		var record =dataList[i];
 		var theRecord = dataList[i].record;
                 var row = this.getDataValues(record);
+		if(i<2) {
+//		    console.log("record:" + record);
+//		    console.log("row:" + row);
+		}
+
 		var color = "";
                 if (colorBy.index >= 0) {
                     var value = theRecord.getData()[colorBy.index];

@@ -2,6 +2,7 @@
    Copyright 2008-2019 Geode Systems LLC
 */
 
+
 var CATEGORY_CHARTS = "Charts";
 var CATEGORY_OTHER = "Other Charts";
 var CATEGORY_MISC = "Misc";
@@ -779,6 +780,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (dataList == null) {
                 dataList = this.getStandardData(fieldsToSelect, props);
+//		console.log("standard data:" + fieldsToSelect +" " +dataList.length);
             }
 
 
@@ -792,9 +794,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
+
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
                 var chartableFields = this.getFieldsToSelect(pointData);
+//		console.log("fields:" + chartableFields);
                 for (var i = 0; i < chartableFields.length; i++) {
                     var field = chartableFields[i];
                     dataList = this.getStandardData([field], props);
@@ -1125,6 +1129,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		var record =dataList[i];
 		var theRecord = dataList[i].record;
                 var row = this.getDataValues(record);
+		if(i<2) {
+//		    console.log("record:" + record);
+//		    console.log("row:" + row);
+		}
+
 		var color = "";
                 if (colorBy.index >= 0) {
                     var value = theRecord.getData()[colorBy.index];
