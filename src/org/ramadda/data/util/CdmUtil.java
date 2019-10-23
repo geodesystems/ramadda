@@ -23,6 +23,8 @@ import ucar.unidata.util.DateUtil;
 
 import java.util.Date;
 
+import org.ramadda.util.Utils;
+
 
 /**
  * Utility class for netCDF-Java Common Data Model (CDM) stuff
@@ -108,7 +110,8 @@ public class CdmUtil {
     public static Date makeDate(CalendarDate cd) {
         Date d = null;
         try {
-            d = DateUtil.parse(cd.toString());
+            //d = DateUtil.parse(cd.toString());
+            d = Utils.parseDate(cd.toString());
         } catch (Exception e) {
             d = cd.toDate();  // not correct for non-standard calendars
         }
