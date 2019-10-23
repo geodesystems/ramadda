@@ -11300,6 +11300,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 newRow = [];
                 for (var j = 0; j < row.length; j++) {
                     var value = row[j];
+		    
 		    if(j>0 && fixedValueS) {
 			newRow.push(fixedValueN);
 		    } else {
@@ -11418,6 +11419,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             };
             chartOptions.hAxis.titleTextStyle = {};
             chartOptions.vAxis.titleTextStyle = {};
+	    if(this.getProperty("dateFormat")) {
+		chartOptions.hAxis.format = this.getProperty("dateFormat");
+	    }
+
             this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", null);
             this.setPropertyOn(chartOptions.backgroundColor, "chart.stroke", "stroke", this.getProperty("chartArea.fill", ""));
             this.setPropertyOn(chartOptions.backgroundColor, "chart.strokeWidth", "strokeWidth", null);
