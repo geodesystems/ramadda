@@ -10894,13 +10894,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             this.computedData = dataList;
 
-            if (this.rotateTable && dataList.length) {
-                var header = dataList[0];
-                var flipped = [];
-                for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-                    var row = dataList[rowIdx];
+            if (this.getProperty("rotateTable") && dataList.length>0) {
+		let rotated = [];
+                var header = this.getDataValues(dataList[0]);
+		for(var colIdx=0;colIdx<header.length;colIdx++) {
+		    rotated.push([]);
+		}
+                for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
+                    var row = this.getDataValues(dataList[rowIdx]);
+		    for(var colIdx=0;colIdx<row.length;colIdx++) {
+			var value = row[colIdx];
+			if(typeof value == "object" && value.f) value = value.f;
+			rotated[colIdx].push(value);
+		    }
                 }
+		dataList = rotated;
             }
+
 
 
             if (dataList.length == 0 && !this.userHasSelectedAField) {
