@@ -1382,7 +1382,7 @@ public class CsvUtil {
         new Cmd("-prefix", "<col #> <prefix>", "(add prefix to column)"),
         new Cmd("-suffix", "<col #> <suffix>", "(add suffix to column)"),
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
-        new Cmd("-changerow", "<row> <pattern> <substitution string>"),
+        new Cmd("-changerow", "<row #s> <col #s> <pattern> <substitution string>","(Change the values in the row/cols)"),
         new Cmd("-convertdate", "<column> <format1> <format2>"),
 	new Cmd("-extractdate", "<date column> <format> <tz> <era|year|month|day_of_month|day_of_week|week_of_month|day_of_week_in_month|am_pm|hour|hour_of_day|minute|second|millisecond>"),
         new Cmd("-formatdate", "<col #s> <intial date format> <target date format>"),
@@ -2457,10 +2457,11 @@ public class CsvUtil {
 
 
                 if (arg.equals("-changerow")) {
-                    if ( !ensureArg(args, i, 3)) {
+                    if ( !ensureArg(args, i, 4)) {
                         return false;
                     }
-                    int    row     = Integer.parseInt(args.get(++i));
+		    List<Integer> rows = getNumbers(args.get(++i));
+                    List<String> cols    = getCols(args.get(++i));
                     String pattern = args.get(++i);
                     pattern = pattern.replaceAll("_leftparen_",
                             "\\\\(").replaceAll("_rightparen_", "\\\\)");
@@ -2469,7 +2470,7 @@ public class CsvUtil {
                     pattern = pattern.replaceAll("_dot_", "\\\\.");
                     info.getProcessor().addProcessor(
                         new Converter.RowChanger(
-                            row, pattern, args.get(++i)));
+						 rows, cols, pattern, args.get(++i)));
 
                     continue;
                 }

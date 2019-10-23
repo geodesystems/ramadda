@@ -1692,8 +1692,6 @@ public abstract class Converter extends Processor {
      */
     public static class RowChanger extends Converter {
 
-        /** _more_ */
-        int row;
 
         /** _more_ */
         private String pattern;
@@ -1701,6 +1699,8 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String value;
 
+	private HashSet<Integer> rows;
+	
         /**
          * _more_
          *
@@ -1709,10 +1709,12 @@ public abstract class Converter extends Processor {
          * @param pattern _more_
          * @param value _more_
          */
-        public RowChanger(int row, String pattern, String value) {
+        public RowChanger(List<Integer> rowList,  List<String> cols, String pattern, String value) {
+	    super(cols);
+	    rows = new HashSet<Integer>();
+	    for(int row: rowList) rows.add(row);
             this.pattern = pattern;
             this.value   = value;
-            this.row     = row;
         }
 
         /**
@@ -1728,15 +1730,17 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
-            if (rowCnt++ != this.row) {
+            if (!rows.contains(rowCnt++)) {
                 if ( !info.getAllData()) {
                     return row;
                 }
             }
-            for (int i = 0; i < row.size(); i++) {
-                String s = row.getString(i);
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                String s = row.getString(index);
                 s = s.replaceAll(pattern, value);
-                row.set(i, s);
+                row.set(index, s);
             }
 
             return row;
