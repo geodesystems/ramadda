@@ -26,7 +26,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.metadata.MetadataTypeBase;
-
+import org.ramadda.util.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -876,7 +876,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
      */
     private Date getDate(String dateString) throws java.text.ParseException {
         //        System.err.println ("getDate:" + dateString +" Date:" +DateUtil.parse(dateString));
-        return DateUtil.parse(dateString);
+        //return DateUtil.parse(dateString);
+        return Utils.parseDate(dateString);
     }
 
     /** _more_ */
