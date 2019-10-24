@@ -1,0 +1,119 @@
+<a href="index.html"><i class="fa fa-list "></i>&nbsp;&nbsp;FACTS User Guide</a>
+<p>
+<h1>Introduction to the FACTS User inteface</h1>
+
+<div class="row">
+<div class="col-md-9">
+The FACTS user interface was designed to be modular so that different components could be used in different
+contexts to provide the user with a consistent interface.  Figure 1 shows the major features of the analysis
+and visualization web pages.
+
+<img src="images/ui_overview.png" alt="FACTS UI" width="100%"/>
+
+<strong>Figure 1. Overview of the FACTS User Interface</strong>
+
+<p>
+
+This page walks you through the interface to produce a Probability
+Density Function (PDF) from two different datasets, but the same
+concepts are applicable to other analysis functions of the website.
+
+<p>
+<h3>Data Selection</h4>
+
+For each of the analysis and visualizations pages, 
+a user first selects the datasets, model experiments, ensemble member and variable. 
+<p>
+<ol>
+<li>From the Collection, select the Model, Experiment, Ensemble Member and Variable you wish to plot
+<li>Optionally, select a second data set you wish to compare with the first.
+<li>Click the Select Data button to bring up the options for analyzing and plotting the data you've selected. 
+If you make any changes in the Field(s) section, click the Update Data Selection button to refresh the options below. 
+</ol>
+
+<img src="images/dataselection.png" alt="FACTS Data Selection UI" width="100%"/>
+<strong> Figure 2.  Selecting data </strong>
+
+<p>
+<h3>Data Analysis Options</h4>
+
+After the data has been selected, options are presented for data
+analysis and visualization.  
+<p>
+
+<ol>
+<li>If you are plotting pressure level data, select the Level you wish to use
+
+<li>You can plot either the Average, the Anomaly, the Standardized
+Anomaly or (for precipitation) the Percent of Normal over the region.
+Anomalies are computed relative to the 1981-2010 average for the
+ensemble mean by default. You can select a different time period
+if desired for single model comparisons.
+
+<li>For times, depending on the configuration you can either select:
+    <ul>
+    <li>Choose a starting and ending month over which to average the data.
+    <li>Choose a starting and ending year over which to average the data. Alternatively, type in a list of years that are separated by commas (e.g. 1983, 1986, 1997)
+    <li>If you are doing a comparison, select the years for the second dataset.
+    <p>
+    OR
+    </p>
+    Select from a list of pre-defined times. 
+    </ul>
+</li>
+
+<li>Select the Region that the data will be averaged over. You can
+select from a predefined list of regions, or select Custom. If you
+choose custom, you can draw a region on the map (use Shift+drag to
+draw the region), or enter the North, South, West and East coordinates
+of the region.
+</ol>
+
+<img src="images/dataanal.png" alt="FACTS Data Analysis UI" width="100%"/>
+<strong> Figure 3. Data Analysis and Subset Options </strong>
+
+<p>
+<h3>Visualization Options</h4>
+
+The <strong>Plot Options</strong> box provides some controls for customizing the visualization
+that is produced.  
+<p>
+
+<ol>
+<li>If you are doing a comparison between datasets, you can either plot the result as a 
+difference between the two fields, or as 2 separate plots.
+<li>For some fields, you can select the output units for the plot.
+<li>You can select a mask for the data to block out either ocean or land areas.
+<li><strong>Model Comparison</strong>
+<ul>
+<li>You can plot the output as color-filled contours and optionally overlay contour lines and labels.
+<li>You can override the default contour intervals for the plots by specifying a contour interval, 
+minimum and maximum values. 
+</ul>
+<li><strong>Ensemble Comparison</strong>
+<ul>
+<li>If you are doing an ensemble comparison, you can select to plot maps or a probability density function (PDF)
+<li>For the PDF, you can set the X and Y axis ranges. For the maps, you can set the contour options as above. 
+</ol>
+
+<img src="images/vizoptions.png" alt="FACTS visualization options" width="100%"/>
+
+<strong> Figure 3. Options for customizing the plot </strong>
+
+<p>
+<h3>Making the Plot</h3>
+
+After you have made your selections, click the <strong>Make Plot</strong> button to generate the image.
+<p>
+
+<ol>
+<li>An image will be displayed to the right of the data selection region. You can click on the image to get a full sized version of it. There is link below the image which allows you to download the image to your computer.
+<li> There are links for downloading the files that were used to create the images and to download all files (images, netCDF, etc) 
+<li> There is also a link to the URL that can be used to generate the plot.  This is useful if you wish to use a script 
+with replaceable parameters to generate images from other models or experiments.
+</ol>
+<img src="images/output.png" alt="FACTS Output UI" width="100%"/>
+<strong> Figure 4. Display output </strong>
+
+</div>
+</div>
