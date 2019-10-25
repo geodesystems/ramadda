@@ -2093,9 +2093,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 					   ARG_OUTPUT, JsonOutputHandler.OUTPUT_JSON_POINT.getId());
 	    }
 	    
-            if(jsonUrl ==null)
+            if(jsonUrl ==null) {
 		jsonUrl= entry.getTypeHandler().getUrlForWiki(request,
-                                 entry, theTag, props);
+							      entry, theTag, props);
+	    }
+	    //	    System.err.println("jsonurl:" +jsonUrl);
             //Gack - handle the files that are gridded netcdf
             //This is awful to have this here but I just don't know how to 
             //handle these entries
@@ -5948,8 +5950,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String getStandardChartDisplay(Request request, Entry entry)
             throws Exception {
-        RecordTypeHandler typeHandler =
-            (RecordTypeHandler) entry.getTypeHandler();
+        TypeHandler typeHandler = entry.getTypeHandler();
+        RecordTypeHandler recordTypeHandler = null;
+	if(typeHandler instanceof RecordTypeHandler)  {
+	    recordTypeHandler = (RecordTypeHandler) typeHandler;
+	}
+		
         String        name = entry.getName();
         StringBuilder wiki = new StringBuilder();
 
@@ -5961,8 +5967,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else {
             wiki.append(
                 "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
-            String chartType = typeHandler.getChartProperty(request, entry,
-                                   "chart.type", "linechart");
+            String chartType = (recordTypeHandler==null?"linechart":recordTypeHandler.getChartProperty(request, entry,
+												      "chart.type", "linechart"));
             wiki.append(
                 "{{display  xwidth=\"600\"  height=\"400\"   type=\""
                 + chartType
@@ -5974,10 +5980,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     mapLayers = mapLayers.replaceAll(";", ",");
                     layerVar  = "mapLayers=\"" + mapLayers + "\"";
                 }
-                String entryAttrs = typeHandler.getChartProperty(request,
-                                        entry, "chart.wiki.map", "");
-                if (entry.getTypeHandler().getTypeProperty("isTrajectory",
-                        false) || entry.getTypeHandler().getProperty(entry,
+                String entryAttrs = (recordTypeHandler==null?"":recordTypeHandler.getChartProperty(request,
+											     entry, "chart.wiki.map", ""));
+                if (typeHandler.getTypeProperty("isTrajectory",
+                        false) || typeHandler.getProperty(entry,
                             "isTrajectory", false)) {
                     entryAttrs += " isTrajectory=\"true\" ";
                 }
