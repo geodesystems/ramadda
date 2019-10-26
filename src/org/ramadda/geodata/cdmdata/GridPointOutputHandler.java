@@ -459,6 +459,13 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
         }
         LatLonPointImpl llp = null;
 
+        if (request.defined("default_latitude")) {
+            deflat = request.get("default_latitude", 0.0);
+        }
+        if (request.defined("default_longitude")) {
+            deflon = request.get("default_longitude", 0.0);
+        }
+
         if (request.defined(TypeHandler.REQUESTARG_LATITUDE)) {
             llp = new LatLonPointImpl(request
                 .getLatOrLonValue(TypeHandler.REQUESTARG_LATITUDE,
@@ -549,7 +556,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             }
         }
 
-        return new Result("", sb,Json.MIMETYPE);
+        return new Result("", sb, Json.MIMETYPE);
     }
 
     /**
@@ -558,7 +565,6 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
      * @param request _more_
      * @param entry _more_
      * @param gds _more_
-     * @param varNames _more_
      * @param vars _more_
      * @param llp _more_
      * @param dates _more_
@@ -635,10 +641,10 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
                 SupportedFormat.XML_STREAM.getResponseContentType())) {
             suffix = SUFFIX_XML;
         }
-	if(doingJson) {
-	    suffix = "json";
-	}
-	
+        if (doingJson) {
+            suffix = "json";
+        }
+
         String baseName = IOUtil.stripExtension(entry.getName());
         if (format.equalsIgnoreCase(FORMAT_TIMESERIES_CHART)) {
             request.put(CdmConstants.ARG_FORMAT, FORMAT_JSON);
@@ -766,7 +772,9 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             result = outputTimeSeriesImage(request, entry, f);
         } else {
             result = new Result(getStorageManager().getFileInputStream(f),
-                                doingJson?Json.MIMETYPE:pdrb.getAccept());
+                                doingJson
+                                ? Json.MIMETYPE
+                                : pdrb.getAccept());
             //Set return filename sets the Content-Disposition http header so the browser saves the file
             //with the correct name and suffix
             result.setReturnFilename(baseName + "_pointsubset" + suffix);
@@ -1253,12 +1261,16 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
      * @return  the grids
      */
     public List<GridDatatype> sortGrids(GridDataset dataset) {
-        List tuples = new ArrayList();
+        List               tuples = new ArrayList();
         List<GridDatatype> result = new ArrayList<GridDatatype>();
-        List<GridDatatype> grids = dataset.getGrids();
-        if(grids==null) return result;
+        List<GridDatatype> grids  = dataset.getGrids();
+        if (grids == null) {
+            return result;
+        }
         for (GridDatatype grid : grids) {
-            if(grid==null) continue;
+            if (grid == null) {
+                continue;
+            }
             VariableEnhanced var = grid.getVariable();
             tuples.add(new Object[] { var.getShortName().toLowerCase(),
                                       grid });

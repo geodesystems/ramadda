@@ -481,6 +481,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
+    /** _more_ */
+    private String displayImports;
+
+
+    /** _more_ */
+    private Hashtable<String, String> wikiMacros;
+
+
+
+
     /**
      * ctor
      *
@@ -490,12 +500,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         super(repository);
     }
 
-    /** _more_ */
-    private String displayImports;
-
-
-    /** _more_ */
-    private Hashtable<String, String> wikiMacros;
 
     /**
      * _more_
@@ -741,7 +745,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param entry _more_
      * @param wikiUtil _more_
      * @param entryId _more_
@@ -1058,12 +1062,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return dflt;
             }
             s = s.trim();
-	    boolean isPercent = false;
-	    while(s.length()>0 && s.endsWith("%")) {
-		isPercent = true;
-                s = s.substring(0, s.length() - 1).trim();
+            boolean isPercent = false;
+            while ((s.length() > 0) && s.endsWith("%")) {
+                isPercent = true;
+                s         = s.substring(0, s.length() - 1).trim();
             }
-	    if(s.length()==0) return dflt;
+            if (s.length() == 0) {
+                return dflt;
+            }
             int v = new Integer(s).intValue();
             if (isPercent) {
                 v = -v;
@@ -1341,7 +1347,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      *
      * @return _more_
      *
@@ -1364,7 +1370,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      *
      * @return _more_
      *
@@ -1393,7 +1399,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      *
      * @return _more_
      *
@@ -1441,7 +1447,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      *
      * @return _more_
      *
@@ -1464,7 +1470,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      *
      * @return _more_
      *
@@ -1535,7 +1541,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param wikiUtil _more_
-     * @param request _more_
+     * @param request the request
      * @param originalEntry _more_
      * @param entry _more_
      * @param theTag _more_
@@ -2086,18 +2092,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         } else if (theTag.equals(WIKI_TAG_DISPLAY)
                    || theTag.equals(WIKI_TAG_CHART)) {
-	    String jsonUrl = null;
-            if(getProperty(wikiUtil, props, "doEntries",false)) {
-		jsonUrl = request.entryUrl(
-					   getRepository().URL_ENTRY_SHOW, entry,
-					   ARG_OUTPUT, JsonOutputHandler.OUTPUT_JSON_POINT.getId());
-	    }
-	    
-            if(jsonUrl ==null) {
-		jsonUrl= entry.getTypeHandler().getUrlForWiki(request,
-							      entry, theTag, props);
-	    }
-	    //	    System.err.println("jsonurl:" +jsonUrl);
+            String jsonUrl = null;
+            if (getProperty(wikiUtil, props, "doEntries", false)) {
+                jsonUrl = request.entryUrl(
+                    getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
+                    JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+            }
+
+            if (jsonUrl == null) {
+                jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
+                        entry, theTag, props);
+            }
+            //      System.err.println("jsonurl:" +jsonUrl);
             //Gack - handle the files that are gridded netcdf
             //This is awful to have this here but I just don't know how to 
             //handle these entries
@@ -2133,7 +2139,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_EARTH)) {
-	    return getPageHandler().showDialogWarning("Google earth view is no longer available");
+            return getPageHandler().showDialogWarning(
+                "Google earth view is no longer available");
         } else if (theTag.equals(WIKI_TAG_MAP)
                    || theTag.equals(WIKI_TAG_MAPENTRY)) {
             handleMapTag(request, wikiUtil, entry, originalEntry, theTag,
@@ -3272,7 +3279,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param entry _more_
      * @param id _more_
      * @param text _more_
@@ -3304,7 +3311,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param entry _more_
      * @param originalEntry _more_
@@ -3453,7 +3460,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param props _more_
      * @param sb _more_
@@ -3476,7 +3483,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param child _more_
      *
      * @return _more_
@@ -3511,7 +3518,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param props _more_
      *
      * @return _more_
@@ -3592,7 +3599,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wiki _more_
      *
      * @return _more_
@@ -3607,7 +3614,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param entry _more_
      *
@@ -3719,7 +3726,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * Get the entries that are images
      *
      *
-     * @param request _more_
+     * @param request the request
      * @param entries  the list of entries
      * @param useAttachment _more_
      *
@@ -3759,7 +3766,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      *
-     * @param request _more_
+     * @param request the request
      * @param entries _more_
      * @param orNot _more_
      * @param useAttachment _more_
@@ -3873,7 +3880,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param entry _more_
      * @param filter _more_
@@ -3897,7 +3904,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param entries _more_
      * @param filter _more_
@@ -4003,7 +4010,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param originalEntry _more_
      * @param entry _more_
@@ -4576,7 +4583,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param props _more_
      * @param baseEntry _more_
@@ -5578,7 +5585,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param entry _more_
      * @param wikiContent _more_
      * @param wrapInDiv _more_
@@ -5718,7 +5725,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param props _more_
      * @param originalEntry _more_
@@ -5758,7 +5765,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param props _more_
      * @param originalEntry _more_
@@ -5941,7 +5948,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param entry _more_
      *
      * @return _more_
@@ -5950,12 +5957,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String getStandardChartDisplay(Request request, Entry entry)
             throws Exception {
-        TypeHandler typeHandler = entry.getTypeHandler();
+        TypeHandler       typeHandler       = entry.getTypeHandler();
         RecordTypeHandler recordTypeHandler = null;
-	if(typeHandler instanceof RecordTypeHandler)  {
-	    recordTypeHandler = (RecordTypeHandler) typeHandler;
-	}
-		
+        if (typeHandler instanceof RecordTypeHandler) {
+            recordTypeHandler = (RecordTypeHandler) typeHandler;
+        }
+
         String        name = entry.getName();
         StringBuilder wiki = new StringBuilder();
 
@@ -5967,8 +5974,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else {
             wiki.append(
                 "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
-            String chartType = (recordTypeHandler==null?"linechart":recordTypeHandler.getChartProperty(request, entry,
-												      "chart.type", "linechart"));
+            String chartType = (recordTypeHandler == null)
+                               ? typeHandler.getProperty(entry, "chart.type",
+                                   "linechart")
+                               : recordTypeHandler.getChartProperty(request,
+                                   entry, "chart.type", "linechart");
             wiki.append(
                 "{{display  xwidth=\"600\"  height=\"400\"   type=\""
                 + chartType
@@ -5980,11 +5990,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     mapLayers = mapLayers.replaceAll(";", ",");
                     layerVar  = "mapLayers=\"" + mapLayers + "\"";
                 }
-                String entryAttrs = (recordTypeHandler==null?"":recordTypeHandler.getChartProperty(request,
-											     entry, "chart.wiki.map", ""));
-                if (typeHandler.getTypeProperty("isTrajectory",
-                        false) || typeHandler.getProperty(entry,
-                            "isTrajectory", false)) {
+                String entryAttrs = (recordTypeHandler == null)
+                                    ? typeHandler.getProperty(entry,
+                                        "chart.wiki.map", "")
+                                    : recordTypeHandler.getChartProperty(
+                                        request, entry, "chart.wiki.map", "");
+
+                if (typeHandler.getTypeProperty("isTrajectory", false)
+                        || typeHandler.getProperty(entry, "isTrajectory",
+                            false)) {
                     entryAttrs += " isTrajectory=\"true\" ";
                 }
                 wiki.append(
@@ -5994,35 +6008,30 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        Hashtable props = new Hashtable();
-
-        props.put("layoutHere", "false");
-        props.put("layoutType", "table");
-        props.put("layoutColumns", "2");
-	//        props.put("showMenu", "true");
-
         return wikifyEntry(request, entry, wiki.toString());
     }
+
 
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param wikiUtil _more_
      * @param entry _more_
      * @param originalEntry _more_
      * @param tag _more_
      * @param name _more_
-     * @param url _more_
+     * @param pointDataUrl _more_
      * @param sb _more_
      * @param props _more_
      *
      * @throws Exception _more_
      */
-    public void getEntryDisplay(Request request, WikiUtil wikiUtil,
-                                Entry entry, Entry originalEntry, String tag,
-                                String name, String url, StringBuilder sb,
-                                Hashtable props)
+    private void getEntryDisplay(Request request, WikiUtil wikiUtil,
+                                 Entry entry, Entry originalEntry,
+                                 String tag, String name,
+                                 String pointDataUrl, StringBuilder sb,
+                                 Hashtable props)
             throws Exception {
 
         this.addDisplayImports(request, sb);
@@ -6032,11 +6041,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         StringBuilder js       = new StringBuilder();
 
         for (String showArg : new String[] { ATTR_SHOWMAP, ATTR_SHOWMENU }) {
-	    String v = (String) getProperty(wikiUtil, props, showArg, (String)null);
-	    if(v!=null) {
-		topProps.add(showArg);
-		topProps.add(v);
-	    }
+            String v = (String) getProperty(wikiUtil, props, showArg,
+                                            (String) null);
+            if (v != null) {
+                topProps.add(showArg);
+                topProps.add(v);
+            }
         }
 
         String derived = getProperty(wikiUtil, props, "derived");
@@ -6273,11 +6283,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             request.putExtraProperty("added displaymanager", "true");
-	    topProps.addAll(propList);
+            topProps.addAll(propList);
             js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
+
             return;
         }
 
@@ -6412,13 +6423,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 ");\n");
         }
         Utils.add(propList, "entryId", HtmlUtils.quote(entry.getId()));
-        if ((url != null)
+        if ((pointDataUrl != null)
                 && getProperty(wikiUtil, props, "includeData", true)) {
             Utils.add(propList, "data",
                       Utils.concatString("new PointData(",
                                          HtmlUtils.quote(name),
                                          ",  null,null,",
-                                         HtmlUtils.quote(url), ",",
+                                         HtmlUtils.quote(pointDataUrl), ",",
                                          "{entryId:'", entry.getId(), "'}",
                                          ")"));
         }
@@ -6503,7 +6514,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * _more_
      *
-     * @param request _more_
+     * @param request the request
      * @param sb _more_
      *
      * @throws Exception _more_

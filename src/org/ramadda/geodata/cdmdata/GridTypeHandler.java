@@ -72,13 +72,29 @@ public class GridTypeHandler extends TypeHandler {
         super(repository, node);
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public String getProperty(Entry entry, String name, String dflt) {
+        //For now don't do this
+        //if(name.equals("chart.wiki.map")) return " showData=\"false\" ";
+        return super.getProperty(entry, name, dflt);
+    }
+
 
     /**
      * _more_
      *
      * @param request _more_
      * @param entry _more_
-     * @param tag _more_
+     * @param tag _more_NN
      * @param props _more_
      *
      * @return _more_
@@ -90,19 +106,28 @@ public class GridTypeHandler extends TypeHandler {
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             StringBuilder jsonbuf = new StringBuilder();
             jsonbuf.append(getRepository().getUrlBase() + "/grid/json?"
-                           + HtmlUtils.args(new String[] {
-                ARG_ENTRYID, entry.getId()
-                //, ARG_LOCATION_LATITUDE,
-                //"${latitude}", ARG_LOCATION_LONGITUDE, "${longitude}"
-            }, false));
+                           + HtmlUtils.args(new String[] { ARG_ENTRYID,
+                    entry.getId() }, false));
             // get the lat/lon from the request if there
             String latArg = "${latitude}";
             String lonArg = "${longitude}";
             if (request.defined(ARG_LOCATION_LATITUDE)) {
-                latArg = request.getString(ARG_LOCATION_LATITUDE, latArg);
+                //                latArg = request.getString(ARG_LOCATION_LONGITUDE, latArg)
+                jsonbuf.append("&");
+                jsonbuf.append(
+                    HtmlUtils.arg(
+                        "default_latitude",
+                        request.getString(ARG_LOCATION_LATITUDE, latArg),
+                        false));
             }
             if (request.defined(ARG_LOCATION_LONGITUDE)) {
-                lonArg = request.getString(ARG_LOCATION_LONGITUDE, lonArg);
+                //                lonArg = request.getString(ARG_LOCATION_LONGITUDE, lonArg)
+                jsonbuf.append("&");
+                jsonbuf.append(
+                    HtmlUtils.arg(
+                        "default_longitude",
+                        request.getString(ARG_LOCATION_LONGITUDE, lonArg),
+                        false));
             }
             jsonbuf.append("&");
             jsonbuf.append(HtmlUtils.arg(ARG_LOCATION_LATITUDE, latArg,
