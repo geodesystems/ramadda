@@ -375,13 +375,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             SUPER.clearCachedData();
             this.computedData = null;
         },
-        updateUI: function() {
-            SUPER.updateUI.call(this);
+        updateUI: function(reload) {
+            SUPER.updateUI.call(this, reload);
             if (!this.getDisplayReady()) {
                 return;
             }
 //	    var t1= new Date();
-            this.displayData();
+            this.displayData(reload);
 //	    var t2= new Date();
 //	    Utils.displayTimes("chart.displayData",[t1,t2]);
         },
@@ -616,7 +616,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    } 
 	    return value;
 	},
-        displayData: function() {
+        displayData: function(reload) {
             var _this = this;
 
             if (!this.getDisplayReady()) {
@@ -912,6 +912,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    } else {
 		this.lastWidth = -1;
 	    }
+
+	    if(reload) {
+		var pointData = this.getData();
+		if(pointData) {
+		    let dataList = pointData.getRecords();
+		    if(dataList.length>0) {
+			let record = dataList[0];
+			this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		    }
+		}
+	    }
+
+
 
 //	    console.log(this.type +" lastWidth:" + this.lastWidth+" "+_this.jq(ID_CHART).is(':visible'));
         },
@@ -3065,8 +3078,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             SUPER.fieldSelectionChanged.call(this);
             this.updateUI();
         },
-        updateUI: function() {
-            SUPER.updateUI.call(this);
+        updateUI: function(reload) {
+            SUPER.updateUI.call(this,reload);
             if (!this.hasData()) {
                 this.setContents(this.getLoadingMessage());
                 return;
@@ -3333,9 +3346,11 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             html += "</table>";
             this.setContents(html);
             this.initTooltip();
+
             //always propagate the event when loaded
-            this.displayManager.propagateEventRecordSelection(this,
-							      this.dataCollection.getList()[0], {
+	    let record = this.dataCollection.getList()[0];
+	    this.displayManager.propagateEventRecordSelection(this,
+							      record, {
 								  index: 0
 							      });
         },
@@ -3380,8 +3395,8 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
             SUPER.fieldSelectionChanged.call(this);
             this.updateUI();
         },
-        updateUI: function() {
-            SUPER.updateUI.call(this);
+        updateUI: function(reload) {
+            SUPER.updateUI.call(this,reload);
             var records = this.filterData();
             if (!records) {
                 this.setContents(this.getLoadingMessage());

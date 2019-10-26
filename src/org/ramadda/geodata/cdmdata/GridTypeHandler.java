@@ -83,8 +83,7 @@ public class GridTypeHandler extends TypeHandler {
      */
     @Override
     public String getProperty(Entry entry, String name, String dflt) {
-        //For now don't do this
-        //if(name.equals("chart.wiki.map")) return " showData=\"false\" ";
+	if(name.equals("chart.wiki.map")) return " recordHighlightFillColor=red recordHighlightRadius=8 ";
         return super.getProperty(entry, name, dflt);
     }
 

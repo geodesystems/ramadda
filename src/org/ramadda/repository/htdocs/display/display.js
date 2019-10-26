@@ -4356,7 +4356,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!this.getDisplayReady()) {
                 return;
             }
-            this.updateUI();
+            this.updateUI(reload);
             if (!reload) {
                 this.lastPointData = pointData;
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
