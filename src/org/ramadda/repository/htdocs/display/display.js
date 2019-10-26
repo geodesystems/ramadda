@@ -4956,6 +4956,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 if (display == source) {
                     continue;
                 }
+		if(!display.getProperty("accept." + func, true)) continue;
                 var eventSource = display.getEventSource();
                 if (eventSource != null && eventSource.length > 0) {
                     if (eventSource != source.getId() && eventSource != source.getName()) {

@@ -83,8 +83,23 @@ public class GridTypeHandler extends TypeHandler {
      */
     @Override
     public String getProperty(Entry entry, String name, String dflt) {
-	if(name.equals("chart.wiki.map")) return " recordHighlightFillColor=red recordHighlightRadius=8 ";
-        return super.getProperty(entry, name, dflt);
+	if(!name.equals("chart.wiki")) {
+	    return super.getProperty(entry, name, dflt);
+	}
+	String s = "\n+row\n+col-6\n" +
+	    ":center &nbsp;\n"+
+	    "{{display height=200  width=100% type=linechart " +
+	    " showMenu=false  showTitle=false}} " +
+	    "<br>" +
+	    "{{display height=200  width=100% type=linechart accept.handleEventMapClick=false " +
+	    " showMenu=false  showTitle=false}}" +
+	    "\n-col-6\n+col-6\n"+
+	    ":center Click on map to select new location\n" +
+	    "{{display  height=400   width=100% type=map " +
+	    " recordHighlightFillColor=red recordHighlightRadius=8 " +
+	    " showMenu=false  showTitle=false}}\n" +
+	    "-col-6\n-row\n";
+	return s;
     }
 
 

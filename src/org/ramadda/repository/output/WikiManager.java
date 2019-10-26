@@ -5972,39 +5972,44 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if ((metadataList != null) && (metadataList.size() > 0)) {
             wiki.append(metadataList.get(0).getAttr1());
         } else {
-            wiki.append(
-                "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
-            String chartType = (recordTypeHandler == null)
-                               ? typeHandler.getProperty(entry, "chart.type",
-                                   "linechart")
-                               : recordTypeHandler.getChartProperty(request,
-                                   entry, "chart.type", "linechart");
-            wiki.append(
-                "{{display  xwidth=\"600\"  height=\"400\"   type=\""
-                + chartType
-                + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"false\"  showTitle=\"false\"  row=\"0\"  column=\"0\"  }}");
-            if (entry.isGeoreferenced()) {
-                String mapLayers = getMapManager().getMapLayers();
-                String layerVar  = "";
-                if (mapLayers != null) {
-                    mapLayers = mapLayers.replaceAll(";", ",");
-                    layerVar  = "mapLayers=\"" + mapLayers + "\"";
-                }
-                String entryAttrs = (recordTypeHandler == null)
-                                    ? typeHandler.getProperty(entry,
-                                        "chart.wiki.map", "")
-                                    : recordTypeHandler.getChartProperty(
-                                        request, entry, "chart.wiki.map", "");
+            String fromEntry = typeHandler.getProperty(entry, "chart.wiki",null);
+	    if(fromEntry!=null) {
+		wiki.append(fromEntry);
+	    } else {
+		wiki.append(
+			    "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
+		String chartType = (recordTypeHandler == null)
+		    ? typeHandler.getProperty(entry, "chart.type",
+					      "linechart")
+		    : recordTypeHandler.getChartProperty(request,
+							 entry, "chart.type", "linechart");
+		wiki.append(
+			    "{{display  xwidth=\"600\"  height=\"400\"   type=\""
+			    + chartType
+			    + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"false\"  showTitle=\"false\"  row=\"0\"  column=\"0\"  }}");
+		if (entry.isGeoreferenced()) {
+		    String mapLayers = getMapManager().getMapLayers();
+		    String layerVar  = "";
+		    if (mapLayers != null) {
+			mapLayers = mapLayers.replaceAll(";", ",");
+			layerVar  = "mapLayers=\"" + mapLayers + "\"";
+		    }
+		    String entryAttrs = (recordTypeHandler == null)
+			? typeHandler.getProperty(entry,
+						  "chart.wiki.map", "")
+			: recordTypeHandler.getChartProperty(
+							     request, entry, "chart.wiki.map", "");
 
-                if (typeHandler.getTypeProperty("isTrajectory", false)
+		    if (typeHandler.getTypeProperty("isTrajectory", false)
                         || typeHandler.getProperty(entry, "isTrajectory",
-                            false)) {
-                    entryAttrs += " isTrajectory=\"true\" ";
-                }
-                wiki.append(
-                    "{{display  width=\"600\"  height=\"400\"   type=\"map\" "
-                    + layerVar + entryAttrs
-                    + " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
+						   false)) {
+			entryAttrs += " isTrajectory=\"true\" ";
+		    }
+		    wiki.append(
+				"{{display  width=\"600\"  height=\"400\"   type=\"map\" "
+				+ layerVar + entryAttrs
+				+ " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
+		}
             }
         }
 
