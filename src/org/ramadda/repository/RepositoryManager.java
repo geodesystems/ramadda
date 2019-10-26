@@ -78,7 +78,7 @@ public class RepositoryManager implements RepositorySource, Constants,
 
     /** _more_ */
     public static final String HELP_ROOT =
-        "http://geodesystems.com/repository";
+        "https://geodesystems.com/repository";
 
 
     /** _more_ */

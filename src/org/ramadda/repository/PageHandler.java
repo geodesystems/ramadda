@@ -79,7 +79,7 @@ public class PageHandler extends RepositoryManager {
 
     /** _more_ */
     public static final String REGISTER_MESSAGE =
-        "<div class=\"ramadda-register-outer\"><div class=\"ramadda-register\">Powered by <a href=\"http://geodesystems.com\">Geode Systems RAMADDA</a></div></div>";
+        "<div class=\"ramadda-register-outer\"><div class=\"ramadda-register\">Powered by <a href=\"https://geodesystems.com\">Geode Systems RAMADDA</a></div></div>";
 
 
 
