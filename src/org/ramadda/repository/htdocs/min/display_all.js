@@ -11214,14 +11214,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         'html': true
                     }
                 });
+		var labelCnt = 0;
 		var toks = annotations.split(",");
 		for(var i=0;i<toks.length;i++) {
 		    var toks2 = toks[i].split(";");
-		    //index,label,description
-		    if(toks2.length!=3) continue;
+		    //index,label,description,url
+		    if(toks2.length<2) continue;
 		    var index = toks2[0].trim();
-		    var label = toks2[1];
-		    var desc = toks2[2];
+		    var label = toks2[1].trim();
+		    if(label == "") {
+			labelCnt++;
+			label  =""+labelCnt;
+		    }
+		    var desc = toks2.length<2?"":toks2[2];
+		    var url = toks2.length<3?null:toks2[3];
 		    let isDate = false;
 		    let dateLabel ="";
 		    if(index.match(/^[0-9]+$/)) {
@@ -11231,10 +11237,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			isDate = true;
 			dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
 		    }
-//		    console.log("annotation:" + index +" l:" + label);
 		    let annotation = {label: label,description: desc   };
 		    
-		    legend+= HtmlUtils.b(label)+":" + desc+" ";
+		    var legendLabel = desc;
+		    if(url!=null) {
+			legendLabel = HtmlUtils.href(url, legendLabel,["target","_annotation"]);
+		    }
+		    legend+= HtmlUtils.b(label)+":" + legendLabel+" ";
 		    annotationsMap[index] = annotation;
 		    if(isDate) {
 			annotationsMap[Utils.formatDateYYYYMMDD(index)] = annotation;
@@ -11944,6 +11953,9 @@ function PiechartDisplay(displayManager, id, properties) {
 					"binMax=\"max\"",
 					"sliceVisibilityThreshold=\"0.01\"",
 				    ]);
+	},
+        setChartSelection: function(index) {
+	    //noop
 	},
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
