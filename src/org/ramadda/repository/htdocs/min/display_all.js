@@ -11197,23 +11197,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 });
 	    }
-	    var annotationsMap = {};
+
+	    var indexToAnnotation = null;
 	    if(annotations) {
+		indexToAnnotation = {};
+		var annotationsList=[];
+		var annotationsMap = {};
 		let legend = "";
-                dataTable.addColumn({
-                    type: 'string',
-                    role: 'annotation',
-                    'p': {
-                        'html': true
-                    }
-                });
-		dataTable.addColumn({
-                    type: 'string',
-                    role: 'annotationText',
-                    'p': {
-                        'html': true
-                    }
-                });
 		var labelCnt = 0;
 		var toks = annotations.split(",");
 		for(var i=0;i<toks.length;i++) {
@@ -11237,18 +11227,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			isDate = true;
 			dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
 		    }
-		    let annotation = {label: label,description: desc   };
-		    
+		    var annotation = {label: label,description: desc   };
+		    annotationsList.push(annotation);
+		    annotation.index = isDate?index.getTime():index;
 		    var legendLabel = desc;
 		    if(url!=null) {
 			legendLabel = HtmlUtils.href(url, legendLabel,["target","_annotation"]);
 		    }
 		    legend+= HtmlUtils.b(label)+":" + legendLabel+" ";
-		    annotationsMap[index] = annotation;
-		    if(isDate) {
-			annotationsMap[Utils.formatDateYYYYMMDD(index)] = annotation;
-			annotationsMap[Utils.formatDateYYYYWeek(index)] = annotation;
-		    }
 		}
 		if(this.getProperty("showAnnotationsLegend")) {
 		    //Pad the left to align with  the chart axis
@@ -11256,8 +11242,49 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 					    HtmlUtils.div(["class", "display-chart-legend"],legend)
 					    +"</td></tr></table>");
 		}
+		for(var aidx=0;aidx<annotationsList.length;aidx++) {
+		    var annotation = annotationsList[aidx];
+
+		    var minIndex = null;
+		    var minDistance = null;
+		    for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+			var row = this.getDataValues(dataList[rowIdx]);
+			var index = row[0];
+			if(index.v) index=  index.v;
+			if(index.getTime) index = index.getTime();
+			var distance = Math.abs(annotation.index-index);
+			if(minIndex == null) {
+			    minIndex = rowIdx;
+			    minDistance = distance;
+			} else {
+			    if(distance<minDistance) {
+				minIndex = rowIdx;
+				minDistance = distance;
+			    }
+			}
+		    }
+		    if(minIndex!=null) {
+			indexToAnnotation[minIndex] = annotation;
+		    }
+		}
 	    }
 
+	    if(indexToAnnotation) {
+		dataTable.addColumn({
+                    type: 'string',
+                    role: 'annotation',
+                    'p': {
+                        'html': true
+                    }
+                });
+		dataTable.addColumn({
+                    type: 'string',
+                    role: 'annotationText',
+                    'p': {
+                        'html': true
+                    }
+                });
+	    }
 
 	    var annotationCnt=0;
 
@@ -11269,15 +11296,17 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var colorBy = this.getColorByInfo(records);
 
 	    var didColorBy = false;
-            for (var i = 1; i < dataList.length; i++) {
-		var record =dataList[i];
-		var theRecord = dataList[i].record;
-                var row = this.getDataValues(record);
-		if(i<2) {
-//		    console.log("record:" + record);
-//		    console.log("row:" + row);
-		}
+	    var tuples = [];
 
+
+
+            for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+
+		var record =dataList[rowIdx];
+                var row = this.getDataValues(record);
+		var index = row[0];
+		if(index.v) index  = index.v;
+		var theRecord = record.record;
 		var color = "";
                 if (colorBy.index >= 0) {
                     var value = theRecord.getData()[colorBy.index];
@@ -11289,7 +11318,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
                 row = row.slice(0);
                 var label = "";
-                if (dataList[i].record) {
+                if (theRecord) {
                     for (var j = 0; j < tooltipFields.length; j++) {
                         label += "<b>" + tooltipFields[j].getLabel() + "</b>: " +
                             theRecord.getValue(tooltipFields[j].getIndex()) + "<br>";
@@ -11323,10 +11352,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tooltip = tt;
 		}
 		tooltip = "<div style='padding:8px;'>" + tooltip + "</div>";
-                newRow = [];
+                var newRow = [];
                 for (var j = 0; j < row.length; j++) {
                     var value = row[j];
-		    
 		    if(j>0 && fixedValueS) {
 			newRow.push(fixedValueN);
 		    } else {
@@ -11342,13 +11370,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			break;
 		    }
                 }
-                //                    newRow.push("annotation");
-	    
 		if(annotationFields.length>0) {
-                    if (dataList[i].record) {
+                    if (theRecord) {
 			var desc = "";
 			annotationFields.map(f=>{
-			    var d = ""+dataList[i].record.getValue(f.getIndex());
+			    var d = ""+theRecord.getValue(f.getIndex());
 			    if(d!="")
 				desc+= (d+"<br>");
 			});
@@ -11357,7 +11383,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			annotationCnt++;
 			var label = null; 
 			if(desc.trim().length>0) {
-			    label =""+( annotationLabelField?dataList[i].record.getValue(annotationLabelField.getIndex()):(annotationCnt))
+			    label =""+( annotationLabelField?theRecord.getValue(annotationLabelField.getIndex()):(annotationCnt))
 			    if(label.trim().length==0) label = ""+annotationCnt;
 			}
 
@@ -11368,35 +11394,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(i<2)
 			    console.log("No records for annotation");
 		    }
-
 		}
-		if(annotations) {
-		    var index = newRow[0];
-		    if(index.v) index=  index.v;
-		    var annotation = annotationsMap[index];
-		    if(annotation) {
-			annotationsMap[index]=null;
-		    }
-
-		    if(!annotation) {
-			annotation = annotationsMap[i];
-		    }
-		    if(!annotation &&  index.getTime) {
-		    	annotation = annotationsMap[Utils.formatDateYYYYMMDD(index)];
-			if(annotation) {
-			    annotationsMap[Utils.formatDateYYYYMMDD(index)] = null;
-			}
-			if(!annotation) {
-			    annotation = annotationsMap[Utils.formatDateYYYYWeek(index)];
-			    if(annotation) {
-				annotationsMap[Utils.formatDateYYYYWeek(index)]= null;
-			    }
-			} 
-		    }
+		if(indexToAnnotation) {
+		    var annotation = indexToAnnotation[rowIdx];
 		    if(annotation) {
 			newRow.push(annotation.label);
 			newRow.push(annotation.description);
-//			console.log("index:" + index +" label:" + annotation.label +" " + annotation.description);
 		    } else {
 			newRow.push(null);
 			newRow.push(null);
