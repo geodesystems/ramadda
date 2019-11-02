@@ -4689,6 +4689,14 @@ public class TypeHandler extends RepositoryManager {
         return "";
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<String[]> getWikiEditLinks() {
+        return null;
+    }
 
 
     /**
@@ -4759,7 +4767,9 @@ public class TypeHandler extends RepositoryManager {
                               String hiddenId, String text, String label,
                               boolean readOnly, int length)
             throws Exception {
-	if(text.startsWith("<wiki>")) text = text.substring(6).trim();
+        if (text.startsWith("<wiki>")) {
+            text = text.substring(6).trim();
+        }
         String sidebar = "";
         if ( !readOnly) {
             sidebar = getWikiEditorSidebar(request, entry);
@@ -5551,9 +5561,10 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (request.defined(ARG_GROUP)) {
-            String groupId = (String) request.getString(ARG_GROUP, "").trim();
+            String  groupId = (String) request.getString(ARG_GROUP,
+                                  "").trim();
 
-            boolean doNot = groupId.startsWith("!");
+            boolean doNot   = groupId.startsWith("!");
             if (doNot) {
                 groupId = groupId.substring(1);
             }

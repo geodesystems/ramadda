@@ -5107,8 +5107,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         List<Link> links = getRepository().getOutputLinks(request,
                                new OutputHandler.State(entry));
-
-
         for (Link link : links) {
             if (link.getOutputType() == null) {
                 continue;
@@ -5122,6 +5120,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         + HtmlUtils.squote(prop) + ");";
         }
 
+
+        List<String[]> fromType = entry.getTypeHandler().getWikiEditLinks();
+        Appendable     fromTypeBuff = null;
+        if ((fromType != null) && (fromType.size() > 0)) {
+            fromTypeBuff = new StringBuilder();
+            for (String[] pair : fromType) {
+                String js = "javascript:insertTags("
+                            + HtmlUtils.squote(textAreaId) + ","
+                            + HtmlUtils.squote(pair[1]) + ",'');";
+                fromTypeBuff.append(HtmlUtils.href(js, pair[0]));
+                fromTypeBuff.append("<br>");
+            }
+        }
 
         String        buttonClass = HtmlUtils.clazz("ramadda-menubar-button");
 
@@ -5234,6 +5245,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                       HtmlUtils.id(textAreaId + "_prefix")));
         buttons.append(tagsButton);
         buttons.append(tagsButton1);
+        if (fromTypeBuff != null) {
+            buttons.append(
+                getPageHandler().makePopupLink(
+                    msg(entry.getTypeHandler().getLabel() + " tags"),
+                    fromTypeBuff.toString(), buttonClass));
+        }
+
         buttons.append(tagsButton2);
         buttons.append(addEntry);
         buttons.append(addLink);
@@ -5972,44 +5990,47 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if ((metadataList != null) && (metadataList.size() > 0)) {
             wiki.append(metadataList.get(0).getAttr1());
         } else {
-            String fromEntry = typeHandler.getProperty(entry, "chart.wiki",null);
-	    if(fromEntry!=null) {
-		wiki.append(fromEntry);
-	    } else {
-		wiki.append(
-			    "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
-		String chartType = (recordTypeHandler == null)
-		    ? typeHandler.getProperty(entry, "chart.type",
-					      "linechart")
-		    : recordTypeHandler.getChartProperty(request,
-							 entry, "chart.type", "linechart");
-		wiki.append(
-			    "{{display  xwidth=\"600\"  height=\"400\"   type=\""
-			    + chartType
-			    + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"false\"  showTitle=\"false\"  row=\"0\"  column=\"0\"  }}");
-		if (entry.isGeoreferenced()) {
-		    String mapLayers = getMapManager().getMapLayers();
-		    String layerVar  = "";
-		    if (mapLayers != null) {
-			mapLayers = mapLayers.replaceAll(";", ",");
-			layerVar  = "mapLayers=\"" + mapLayers + "\"";
-		    }
-		    String entryAttrs = (recordTypeHandler == null)
-			? typeHandler.getProperty(entry,
-						  "chart.wiki.map", "")
-			: recordTypeHandler.getChartProperty(
-							     request, entry, "chart.wiki.map", "");
+            String fromEntry = typeHandler.getProperty(entry, "chart.wiki",
+                                   null);
+            if (fromEntry != null) {
+                wiki.append(fromEntry);
+            } else {
+                wiki.append(
+                    "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
+                String chartType = (recordTypeHandler == null)
+                                   ? typeHandler.getProperty(entry,
+                                       "chart.type", "linechart")
+                                   : recordTypeHandler.getChartProperty(
+                                       request, entry, "chart.type",
+                                       "linechart");
+                wiki.append(
+                    "{{display  xwidth=\"600\"  height=\"400\"   type=\""
+                    + chartType
+                    + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"false\"  showTitle=\"false\"  row=\"0\"  column=\"0\"  }}");
+                if (entry.isGeoreferenced()) {
+                    String mapLayers = getMapManager().getMapLayers();
+                    String layerVar  = "";
+                    if (mapLayers != null) {
+                        mapLayers = mapLayers.replaceAll(";", ",");
+                        layerVar  = "mapLayers=\"" + mapLayers + "\"";
+                    }
+                    String entryAttrs = (recordTypeHandler == null)
+                                        ? typeHandler.getProperty(entry,
+                                            "chart.wiki.map", "")
+                                        : recordTypeHandler.getChartProperty(
+                                            request, entry, "chart.wiki.map",
+                                            "");
 
-		    if (typeHandler.getTypeProperty("isTrajectory", false)
-                        || typeHandler.getProperty(entry, "isTrajectory",
-						   false)) {
-			entryAttrs += " isTrajectory=\"true\" ";
-		    }
-		    wiki.append(
-				"{{display  width=\"600\"  height=\"400\"   type=\"map\" "
-				+ layerVar + entryAttrs
-				+ " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
-		}
+                    if (typeHandler.getTypeProperty("isTrajectory", false)
+                            || typeHandler.getProperty(entry, "isTrajectory",
+                                false)) {
+                        entryAttrs += " isTrajectory=\"true\" ";
+                    }
+                    wiki.append(
+                        "{{display  width=\"600\"  height=\"400\"   type=\"map\" "
+                        + layerVar + entryAttrs
+                        + " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
+                }
             }
         }
 
