@@ -1884,15 +1884,20 @@ public class WikiUtil {
             }
 
             if (tline.startsWith("+flow")) {
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.style("display:inline-block;")));
-		continue;
-	    }
+                buff.append(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.style(
+                            "display:inline-block;vertical-align:top;")));
 
-	    if (tline.startsWith("-flow")) {
+                continue;
+            }
+
+            if (tline.startsWith("-flow")) {
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-		continue;
-	    }
+
+                continue;
+            }
 
             if (tline.startsWith("+mini") || tline.startsWith("+block")
                     || tline.startsWith("+note") || tline.startsWith("+box")
@@ -2744,7 +2749,7 @@ public class WikiUtil {
         /** _more_ */
         int colCnt = 0;
 
-        /** _more_          */
+        /** _more_ */
         Hashtable props;
 
         /**
