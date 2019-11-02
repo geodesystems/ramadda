@@ -215,22 +215,30 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             HtmlUtils.cssBlock(
                 ".nws-contents {padding:5px;}\n.nws-block {margin-bottom:10px; border: 1px #eee solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
 
-        boolean addHeader = !Misc.equals(props.get("addHeader"), "false");
+        boolean addHeader = Utils.getProperty(props, "addHeader", true);
         boolean vertical  = Misc.equals(props.get("orientation"), "vertical");
         if (tag.equals("nws.hazards")) {
             addHazard(request, entry, sb, addHeader);
         } else if (tag.equals("nws.current")) {
-            addCurrent(request, entry, sb, addHeader, vertical);
+            boolean showDetails = Utils.getProperty(props, "showDetails",
+                                      true);
+            addCurrent(request, entry, sb, addHeader, vertical, showDetails);
         } else if (tag.equals("nws.forecast")) {
-            addForecast(request, entry, sb, addHeader);
-            addDetails(request, entry, sb, addHeader);
+            boolean showDetails = Utils.getProperty(props, "showDetails",
+                                      true);
+            int cnt = Utils.getProperty(props, "count", 1000);
+            addForecast(request, entry, sb, addHeader, cnt);
+            if (showDetails) {
+                addDetails(request, entry, sb, addHeader, cnt);
+            }
         } else if (tag.equals("nws.details")) {
-            addDetails(request, entry, sb, addHeader);
+            int cnt = Utils.getProperty(props, "count", 1000);
+            addDetails(request, entry, sb, addHeader, cnt);
         } else if (tag.equals("nws.all")) {
             addHazard(request, entry, sb, addHeader);
-            addCurrent(request, entry, sb, addHeader, vertical);
-            addForecast(request, entry, sb, addHeader);
-            addDetails(request, entry, sb, addHeader);
+            addCurrent(request, entry, sb, addHeader, vertical, true);
+            addForecast(request, entry, sb, addHeader, 1000);
+            addDetails(request, entry, sb, addHeader, 1000);
         } else {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
@@ -239,6 +247,32 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         return sb.toString();
     }
 
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public List<String[]> getWikiEditLinks() {
+        List<String[]> fromParent = super.getWikiEditLinks();
+
+        List<String[]> links      = new ArrayList<String[]>();
+        if (fromParent != null) {
+            links.addAll(fromParent);
+        }
+        links.add(new String[] { "Hazards",
+                                 "{{nws.hazards addHeader=false}}" });
+        links.add(new String[] { "Current Conditions",
+                                 "{{nws.current addHeader=false showDetails=true}}" });
+        links.add(new String[] { "Forecast",
+                                 "{{nws.forecast addHeader=false showDetails=true count=1000}}" });
+        links.add(new String[] { "Forecast Details",
+                                 "{{nws.details addHeader=false}}" });
+        links.add(new String[] { "Forecast All",
+                                 "{{nws.all addHeader=false}}" });
+
+        return links;
+    }
 
 
     /**
@@ -290,11 +324,13 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
      * @param sb _more_
      * @param addHeader _more_
      * @param vertical _more_
+     * @param showDetails _more_
      *
      * @throws Exception _more_
      */
     private void addCurrent(Request request, Entry entry, Appendable sb,
-                            boolean addHeader, boolean vertical)
+                            boolean addHeader, boolean vertical,
+                            boolean showDetails)
             throws Exception {
 
         Weather current = getCurrent(entry);
@@ -323,74 +359,101 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             HtmlUtils.div(sb, header, HtmlUtils.cssClass("nws-header"));
             HtmlUtils.open(sb, "div", HtmlUtils.cssClass("nws-contents"));
         }
+
         if ( !vertical) {
             sb.append("<table><tr><td>");
-            HtmlUtils.open(sb, "div", " class=\"row\" ");
-            HtmlUtils.open(sb, "div", " class=\"col-md-6\" ");
+            if (showDetails) {
+                HtmlUtils.open(sb, "div", " class=\"row\" ");
+                HtmlUtils.open(sb, "div", " class=\"col-md-6\" ");
+            }
         }
 
         sb.append("<table border=0 cellspacing=0 cellpadding=0>\n");
         sb.append("<tr valign=top>");
-        if ((time.icon != null) && !time.icon.equals("NULL")) {
-            sb.append(
+        if ( !showDetails) {
+            HtmlUtils.open(sb, "td", "align=center");
+            HtmlUtils.div(sb, "Now", "style='font-weight: bold;'");
+
+            if ((time.icon != null) && !time.icon.equals("NULL")) {
+                HtmlUtils.div(sb, HtmlUtils.img(time.icon, time.words),
+                              "style=\" margin:5px;  font-weight: bold;\" ");
+            }
+            if (time.apparent != null) {
+                HtmlUtils.div(sb, time.apparent + "&deg;&nbsp;F", "");
+            }
+            if (time.weather != null) {
+                HtmlUtils.div(sb, time.weather, "style=\" \" ");
+            }
+            HtmlUtils.close(sb, "td");
+        } else {
+            if ((time.icon != null) && !time.icon.equals("NULL")) {
                 HtmlUtils.td(
+                    sb,
                     HtmlUtils.div(
                         HtmlUtils.img(time.icon, time.words),
-                        "style=\" margin:5px;  font-weight: bold;\" ")));
-        }
-        sb.append(HtmlUtils.open("td"));
-        sb.append(
-            HtmlUtils.open(
-                "div", " style=\"margin-left:5px; margin-right:30px;\""));
-        if (time.weather != null) {
-            sb.append(HtmlUtils.div(time.weather, "style=\" \" "));
-        }
-        if (time.apparent != null) {
-            sb.append(
-                HtmlUtils.div(
-                    time.apparent + "&deg;&nbsp;F",
-                    "style=\" font-size:30px; font-weight: bold;\" "));
-        }
-        HtmlUtils.close(sb, "div");
-        HtmlUtils.close(sb, "td");
-        HtmlUtils.close(sb, "table");
-        if ( !vertical) {
-            HtmlUtils.close(sb, "div");  //col
-            HtmlUtils.open(sb, "div", " class=\"col-md-6\" ");
-        }
-
-        sb.append(HtmlUtils.formTable());
-        if (time.humidity != null) {
-            sb.append(HtmlUtils.formEntry("Humidity:", time.humidity + "%"));
-        }
-        if (time.sustained != null) {
-            String gust = "";
-            if (Utils.stringDefined(time.gust) && !time.gust.equals("NA")) {
-                gust = "&nbsp;G&nbsp;" + time.gust;
+                        "style=\" margin:5px;  font-weight: bold;\" "));
             }
-            sb.append(HtmlUtils.formEntry("Wind&nbsp;Speed:",
-                                          time.sustained + gust
-                                          + "&nbsp;MPH"));
+            HtmlUtils.open(sb, "td");
+            HtmlUtils.open(sb, "div",
+                           " style=\"margin-left:5px; margin-right:30px;\"");
+            if (time.weather != null) {
+                HtmlUtils.div(sb, time.weather, "style=\" \" ");
+            }
+            if (time.apparent != null) {
+                HtmlUtils.div(
+                    sb, time.apparent + "&deg;&nbsp;F",
+                    "style=\" font-size:30px; font-weight: bold;\" ");
+            }
+            HtmlUtils.close(sb, "div");
+            HtmlUtils.close(sb, "td");
+        }
+        HtmlUtils.close(sb, "table");
+
+        if (showDetails) {
+            if ( !vertical) {
+                HtmlUtils.close(sb, "div");  //col
+                HtmlUtils.open(sb, "div", " class=\"col-md-6\" ");
+            }
         }
 
-        if (time.pressure != null) {
-            sb.append(HtmlUtils.formEntry("Barometer:",
-                                          time.pressure + "&nbsp;in"));
-        }
+        if (showDetails) {
+            sb.append(HtmlUtils.formTable());
+            if (time.humidity != null) {
+                sb.append(HtmlUtils.formEntry("Humidity:",
+                        time.humidity + "%"));
+            }
+            if (time.sustained != null) {
+                String gust = "";
+                if (Utils.stringDefined(time.gust)
+                        && !time.gust.equals("NA")) {
+                    gust = "&nbsp;G&nbsp;" + time.gust;
+                }
+                sb.append(HtmlUtils.formEntry("Wind&nbsp;Speed:",
+                        time.sustained + gust + "&nbsp;MPH"));
+            }
 
-        if (time.dewpoint != null) {
-            sb.append(HtmlUtils.formEntry("Dew&nbsp;Point:", time.dewpoint));
-        }
+            if (time.pressure != null) {
+                sb.append(HtmlUtils.formEntry("Barometer:",
+                        time.pressure + "&nbsp;in"));
+            }
 
-        sb.append(
-            HtmlUtils.formEntry(
-                "Last&nbsp;Update:",
-                dateFormat.format(time.date).replaceAll(" ", "&nbsp;")));
-        sb.append(HtmlUtils.formTableClose());
+            if (time.dewpoint != null) {
+                sb.append(HtmlUtils.formEntry("Dew&nbsp;Point:",
+                        time.dewpoint));
+            }
+
+            sb.append(
+                HtmlUtils.formEntry(
+                    "Last&nbsp;Update:",
+                    dateFormat.format(time.date).replaceAll(" ", "&nbsp;")));
+            sb.append(HtmlUtils.formTableClose());
+        }
 
         if ( !vertical) {
-            HtmlUtils.close(sb, "div");  //col
-            HtmlUtils.close(sb, "div");  //row
+            if (showDetails) {
+                HtmlUtils.close(sb, "div");  //col
+                HtmlUtils.close(sb, "div");  //row
+            }
             sb.append("</td></tr></table>");
         }
         if (addHeader) {
@@ -407,11 +470,12 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
      * @param entry _more_
      * @param sb _more_
      * @param addHeader _more_
+     * @param cnt _more_
      *
      * @throws Exception _more_
      */
     private void addForecast(Request request, Entry entry, Appendable sb,
-                             boolean addHeader)
+                             boolean addHeader, int cnt)
             throws Exception {
         Weather forecast = getForecast(entry);
         if (forecast == null) {
@@ -428,7 +492,11 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         sb.append("<div style=\"width:100%;overflow-x:auto;\">\n");
         sb.append("<table border=0 cellspacing=0 cellpadding=0>\n");
         sb.append("<tr valign=bottom>");
+        int tmpCnt = cnt;
         for (Weather.Time time : forecast.times) {
+            if (tmpCnt-- <= 0) {
+                break;
+            }
             sb.append(
                 HtmlUtils.td(
                     time.label,
@@ -437,7 +505,11 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         sb.append("</tr>");
         sb.append("<tr>");
         String td;
+        tmpCnt = cnt;
         for (Weather.Time time : forecast.times) {
+            if (tmpCnt-- <= 0) {
+                break;
+            }
             if (time.icon == null) {
                 td = "";
             } else {
@@ -448,14 +520,18 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             sb.append(HtmlUtils.td(td, " align=center "));
         }
         sb.append("</tr>");
+        tmpCnt = cnt;
         sb.append("<tr>");
         for (Weather.Time time : forecast.times) {
+            if (tmpCnt-- <= 0) {
+                break;
+            }
             if (time.max != null) {
                 td = HtmlUtils.div("High: " + time.max + "F",
-                                   " style=\"margin:5px; color:red;\" ");
+                                   " style=\"xmargin:5px; color:red;\" ");
             } else if (time.min != null) {
                 td = HtmlUtils.div("Low: " + time.min + "F",
-                                   "style=\"margin:5px; color:blue;\" ");
+                                   "style=\"xmargin:5px; color:blue;\" ");
             } else {
                 td = "";
             }
@@ -464,17 +540,20 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         sb.append("</tr>");
 
 
+        tmpCnt = cnt;
         sb.append("<tr valign=top >");
         for (Weather.Time time : forecast.times) {
+            if (tmpCnt-- <= 0) {
+                break;
+            }
             if (time.weather == null) {
                 td = "";
             } else {
-                td = HtmlUtils.div(time.weather, "style=\"margin:5px; \" ");
+                td = HtmlUtils.div(time.weather, "style=\"xmargin:5px; \" ");
             }
             sb.append(HtmlUtils.td(td, " align=center "));
         }
         sb.append("</tr>");
-
 
         sb.append("</table>\n");
         sb.append("</div>");
@@ -492,11 +571,12 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
      * @param entry _more_
      * @param sb _more_
      * @param addHeader _more_
+     * @param cnt _more_
      *
      * @throws Exception _more_
      */
     private void addDetails(Request request, Entry entry, Appendable sb,
-                            boolean addHeader)
+                            boolean addHeader, int cnt)
             throws Exception {
         Weather forecast = getForecast(entry);
         if (forecast == null) {
@@ -517,6 +597,9 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         sb.append("<table border=0 cellspacing=0 cellpadding=0>\n");
         boolean even = true;
         for (Weather.Time time : forecast.times) {
+            if (cnt-- <= 0) {
+                break;
+            }
             String style = (even
                             ? HtmlUtils.style("background-color:#eff8fd")
                             : "");
