@@ -875,6 +875,8 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         private void processTimes(Element dataNode) throws Exception {
             SimpleDateFormat sdf =
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+	    SimpleDateFormat sdf2 =
+                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Hashtable<Date, Time> timeMap = new Hashtable<Date, Time>();
             NodeList timeNodes = XmlUtil.getElements(dataNode, "time-layout");
             //            System.err.println(timeNodes);
@@ -890,7 +892,12 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
                                          "start-valid-time");
                 for (int i = 0; i < timesList.getLength(); i++) {
                     Element timeNode = (Element) timesList.item(i);
-                    Date    dttm = sdf.parse(XmlUtil.getChildText(timeNode));
+                    Date    dttm = null;
+		    try {
+			dttm = sdf.parse(XmlUtil.getChildText(timeNode));
+		    } catch(Exception exc) {
+			dttm = sdf2.parse(XmlUtil.getChildText(timeNode));
+		    }
                     Time    time     = timeMap.get(dttm);
                     if (time == null) {
                         time = new Time(dttm,
