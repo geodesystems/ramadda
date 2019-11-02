@@ -5121,7 +5121,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        List<String[]> fromType = entry.getTypeHandler().getWikiEditLinks();
+        List<String[]> fromType = entry==null?null:entry.getTypeHandler().getWikiEditLinks();
         Appendable     fromTypeBuff = null;
         if ((fromType != null) && (fromType.size() > 0)) {
             fromTypeBuff = new StringBuilder();
