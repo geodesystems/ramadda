@@ -911,11 +911,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    return iconMap;
 	},
-	getColorByInfo: function(records) {
+	getColorByInfo: function(records, prop,colorByMapProp) {
             var pointData = this.getData();
             if (pointData == null) return null;
             var fields = pointData.getRecordFields();
-            var colorByAttr = this.getProperty("colorBy", null);
+            var colorByAttr = this.getProperty(prop||"colorBy", null);
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
 	    var _this = this;
 
@@ -1056,7 +1056,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 	    }
             colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
-	    colorBy.stringMap = this.getColorByMap();
+	    colorBy.stringMap = this.getColorByMap(colorByMapProp);
 	    if(colorBy.index>=0) {
 		var cnt = 0;
 		records.map(record=>{
@@ -1113,8 +1113,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return colorBy;
 	},
-	getColorByMap: function() {
-	    return Utils.parseMap(this.getProperty("colorByMap"));
+	getColorByMap: function(prop) {
+	    return Utils.parseMap(this.getProperty(prop||"colorByMap"));
         },
         toString: function() {
             return "RamaddaDisplay:" + this.type + " - " + this.getId();
@@ -3562,10 +3562,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				} else {
 				    label = v;
 				}
-				var style = "";
+				var style = this.getProperty(filterField.getId() +".filterItemStyle","");
 				if(color) {
 				    style += " background-color:" + color +"; ";
 				}
+				
 				var clazz = " display-filterby-item display-filterby-item-" + displayType +" ";
 				if(v == dfltValue) {
 				    clazz+=  " display-filterby-item-" + displayType +"-selected ";
@@ -23868,6 +23869,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    table +="<tr><td colspan=" + maxx+"><br>" +   HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)]) +"</td></tr>";
 	    table+="</table>";
             var colorBy = this.getColorByInfo(records);
+	    var strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, table);
 	    var contents = this.jq(ID_DISPLAY_CONTENTS);
 	    for(var i=0;i<records.length;i++) {
@@ -23890,6 +23892,16 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    cell.css("background",color);
 		    cell.attr("recordIndex",i);
                 }
+		if (strokeColorBy.index >= 0) {
+                    var value = record.getData()[strokeColorBy.index];
+		    var color = strokeColorBy.getColor(value, record);
+		    var cell = contents.find("#" + cellId);
+		    cell.css("border-color",color);
+		    cell.css("border-width","2px");
+                }
+
+
+
 	    }
 	    this.makePopups(contents.find(".display-mapgrid-cell"), records);
 	    let _this = this;

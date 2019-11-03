@@ -1980,6 +1980,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    table +="<tr><td colspan=" + maxx+"><br>" +   HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)]) +"</td></tr>";
 	    table+="</table>";
             var colorBy = this.getColorByInfo(records);
+	    var strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, table);
 	    var contents = this.jq(ID_DISPLAY_CONTENTS);
 	    for(var i=0;i<records.length;i++) {
@@ -2002,6 +2003,16 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    cell.css("background",color);
 		    cell.attr("recordIndex",i);
                 }
+		if (strokeColorBy.index >= 0) {
+                    var value = record.getData()[strokeColorBy.index];
+		    var color = strokeColorBy.getColor(value, record);
+		    var cell = contents.find("#" + cellId);
+		    cell.css("border-color",color);
+		    cell.css("border-width","2px");
+                }
+
+
+
 	    }
 	    this.makePopups(contents.find(".display-mapgrid-cell"), records);
 	    let _this = this;
