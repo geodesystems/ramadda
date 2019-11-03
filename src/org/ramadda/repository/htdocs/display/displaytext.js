@@ -19,6 +19,7 @@ var DISPLAY_TOPFIELDS = "topfields";
 var DISPLAY_TIMELINE = "timeline";
 
 
+
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
     label: "Text Readout",
@@ -2896,3 +2897,5 @@ function RamaddaTextDisplay(displayManager, id, properties) {
         }
     });
 }
+
+

@@ -313,6 +313,18 @@ var Utils = {
         return s;
     },
 
+    parseMap: function(str) {
+	if(str==null) return null;
+        var toks = str.split(",");
+	var map = {};
+        for (var i = 0; i < toks.length; i++) {
+	    var toks2 = toks[i].split(":");
+	    if (toks2.length > 1) {
+                map[toks2[0].trim()] = toks2[1].trim();
+	    }
+        }
+	return map;
+    },
     getUniqueValues: function(l) {
         var u = [];
         var map = {};

@@ -696,6 +696,19 @@ function DisplayThing(argId, argProperties) {
 
 
         getProperty: function(key, dflt,skipThis) {
+	    return  this.getPropertyInner(key,dflt,skipThis);
+	    /*
+	    if(value && (typeof value == "string") && value.startsWith("${") && value.endsWith("}")) {
+		var innerProp = value.substring(2,value.length-1);
+		console.log(key +" inner:" + innerProp);
+		value = this.getProperty(innerProp, dflt,skipThis);
+	    }
+	    return value;
+	    */
+	},
+
+
+        getPropertyInner: function(key, dflt,skipThis) {	    
             if(!skipThis && Utils.isDefined(this[key])) {
                 return this[key];
             }
@@ -1101,20 +1114,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return colorBy;
 	},
 	getColorByMap: function() {
-		var colorByMapProp = this.getProperty("colorByMap");
-		if (colorByMapProp) {
-                    var toks = colorByMapProp.split(",");
-		    var stringMap = {};
-                    for (var i = 0; i < toks.length; i++) {
-			var toks2 = toks[i].split(":");
-			if (toks2.length > 1) {
-                            stringMap[toks2[0].trim()] = toks2[1].trim();
-			}
-                    }
-		    return stringMap;
-		}
-		return null;
-            },
+	    return Utils.parseMap(this.getProperty("colorByMap"));
+        },
         toString: function() {
             return "RamaddaDisplay:" + this.type + " - " + this.getId();
         },
@@ -3523,10 +3524,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    attrs.push(this.getProperty(filterField.getId() +".filterMultipleSize","3"));
 			    dfltValue = dfltValue.split(",");
 			}
-			if(this.getProperty(filterField.getId() +".filterShowButtons")) {
+			var displayType = this.getProperty(filterField.getId() +".filterDisplay","menu");
+			if(displayType!="menu") {
 			    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 			    var buttons = "";
-			    var useImage = this.getProperty(filterField.getId() +".filterUseImage");
+			    var colorMap = Utils.parseMap(this.getProperty(filterField.getId() +".filterColorByMap"));
+			    var useImage = displayType == "image";
 			    var imageAttrs = [];
 			    var imageMap = Utils.getNameValue(this.getProperty(filterField.getId() +".filterImages"));
 			    if(useImage) {
@@ -3551,6 +3554,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    for(var j=0;j<enums.length;j++) {
 				var extra = "";
 				var v = enums[j].value;
+				var color = colorMap?colorMap[v]:null;
 				var label;
 				if(Array.isArray(v)) {
 				    label = v[1];
@@ -3558,28 +3562,38 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				} else {
 				    label = v;
 				}
-				if(v == dfltValue) extra = " display-filterby-button-selected ";
-				if(v == FILTER_ALL) extra = " display-filterby-button-all ";
+				var style = "";
+				if(color) {
+				    style += " background-color:" + color +"; ";
+				}
+				var clazz = " display-filterby-item display-filterby-item-" + displayType +" ";
+				if(v == dfltValue) {
+				    clazz+=  " display-filterby-item-" + displayType +"-selected ";
+				} else {
+				}
+				if(v == FILTER_ALL) {
+				    extra = " display-filterby-item-all ";
+				}
 				if(useImage) {
 				    var image=null;
 				    if(imageMap) image = imageMap[v];
 				    if(!image || image=="") image = enums[j].image;
 				    if(image) {
-					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"data-value",v,"title",label],
+					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz,"style",style, "data-value",v,"title",label],
 							       HtmlUtils.image(image,imageAttrs));
 				    } else {
-					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button display-filterby-button-image" + extra,"data-value",v,"title",label],label);
+					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz,"style",style,"data-value",v,"title",label],label);
 				    }
 				} else {
-				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class","display-filterby-button  display-filterby-button-noimage" + extra,"data-value",v],label);
+				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz, "style",style,"data-value",v],label);
 				}
 				buttons+="\n";
 			    }
 
 			    if(useImage && this.getProperty(filterField.getId() +".filterShowButtonsLabel")) {
-				buttons+=HtmlUtils.div(["class","display-filterby-button-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
+				buttons+=HtmlUtils.div(["class","display-filterby-item-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
 			    }
-			    bottom+= HtmlUtils.div(["data-value",dfltValue,"class","display-filterby-buttons","id",widgetId,"isButton","true", "fieldId",
+			    bottom+= HtmlUtils.div(["data-value",dfltValue,"class","display-filterby-items","id",widgetId,"isButton","true", "fieldId",
 						    filterField.getId()], buttons);
 			    continue;
 			} else if(this.getProperty(filterField.getId() +".filterCheckbox")) {
@@ -3741,29 +3755,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    _this.settingFilterValue = false;
                 };
 
-		this.jq(ID_FILTERBAR).find(".display-filterby-buttons").each(function(){
+		this.jq(ID_FILTERBAR).find(".display-filterby-items").each(function(){
 		    let parent = $(this);
-		    $(this).find(".display-filterby-button").click(function(event){
-			var isAll = $(this).hasClass("display-filterby-button-all");
-			var wasSelected = $(this).hasClass("display-filterby-button-selected");
+		    $(this).find(".display-filterby-item").click(function(event){
+			var isAll = $(this).hasClass("display-filterby-item-all");
+			var selectClazz = "display-filterby-item-" + displayType +"-selected"
+			var wasSelected = $(this).hasClass(selectClazz);
 			var fieldId = $(this).attr("fieldId");
 			var multiples = _this.getProperty(fieldId +".filterMultiple",false);
 			if(!event.metaKey || isAll || !multiples) {
-			    parent.find(".display-filterby-button").removeClass("display-filterby-button-selected");
+			    parent.find(".display-filterby-item").removeClass(selectClazz);
 			} else {
-			    parent.find(".display-filterby-button-all").removeClass("display-filterby-button-selected");
+			    parent.find(".display-filterby-item-all").removeClass(selectClazz);
 			}
 			if(wasSelected  && event.metaKey) {
-			    $(this).removeClass("display-filterby-button-selected");
+			    $(this).removeClass(selectClazz);
 			} else {
-			    $(this).addClass("display-filterby-button-selected");
+			    $(this).addClass(selectClazz);
 			}
 			var values = [];
-			parent.find(".display-filterby-button-selected").each(function() {
+			parent.find("." + selectClazz).each(function() {
 			    values.push($(this).attr("data-value").replace(/,/g,"_comma_"));
 			});
 			if(values.length==0) {
-			    parent.find(".display-filterby-button-all").addClass("display-filterby-button-selected");
+			    parent.find(".display-filterby-item-all").addClass(selectClazz);
 			    values.push(FILTER_ALL);
 			}
 			var value =  Utils.join(values,",");
@@ -4174,6 +4189,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterByStyle=\"background:white;\"",
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
+		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
 		"binDate=\"day|month|year\"",
 		"label:Color Attributes",
 		"colorTable=\"\"",
@@ -15651,6 +15667,7 @@ var DISPLAY_TOPFIELDS = "topfields";
 var DISPLAY_TIMELINE = "timeline";
 
 
+
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
     label: "Text Readout",
@@ -18528,6 +18545,8 @@ function RamaddaTextDisplay(displayManager, id, properties) {
         }
     });
 }
+
+
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
