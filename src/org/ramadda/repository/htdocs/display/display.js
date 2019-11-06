@@ -1695,6 +1695,55 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
+	makeTree: function(records) {
+	    if(records==null)  {
+		var pointData = this.getData();
+                if (pointData == null) return null;
+                records = pointData.getRecords();
+            }
+	    let roots = [];
+	    //{label:..., id:...., record:...,	    children:[]}
+            var parentField = this.getFieldById(null, this.getProperty("parentField"));
+	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    var idField = this.getFieldById(null, this.getProperty("idField"));
+	    if(!parentField) {
+		throw new Error("No parent field specified");
+		return;
+	    }
+	    if(!idField) {
+                throw new Error("No id field specified");
+	    }
+	    let idToNode = {};
+	    let nodes=[];
+	    let idToRoot = {};
+	    records.map(r=>{
+		var parent = r.getValue(parentField.getIndex());
+		var id = r.getValue(idField.getIndex());
+		var label= labelField==null?id:r.getValue(labelField.getIndex());		
+		var node = {id:id,label:label,children:[],record:r,parentId:parent, parent:null};
+		idToNode[id] = node;
+		nodes.push(node);
+		if(parent=="") {
+		    //is a root
+		    idToRoot[id]=node;
+		    roots.push(node);
+		}
+	    });
+	    nodes.map(node=>{
+		let parentNode = idToNode[node.parentId];
+		if(!parentNode) {
+		    if(!idToRoot[node.id]) {
+			throw new Error("No parent :" + node.parentId +" for node:" + node.label);
+		    }
+		    return;
+		}
+		node.parent= parentNode;
+		parentNode.children.push(node);
+	    });
+
+	    return roots;
+	},
+
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 //	    var t1=  new Date();
             var pointData = this.getData();

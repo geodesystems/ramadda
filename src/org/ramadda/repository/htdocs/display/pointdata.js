@@ -628,6 +628,9 @@ function PointRecord(lat, lon, elevation, time, data) {
         getValue: function(index) {
             return this.data[index];
         },
+	setValue: function(index,value) {
+            this.data[index] = value;
+        },
         push: function(v) {
             this.data.push(v);
         },

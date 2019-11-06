@@ -1845,6 +1845,55 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
+	makeTree: function(records) {
+	    if(records==null)  {
+		var pointData = this.getData();
+                if (pointData == null) return null;
+                records = pointData.getRecords();
+            }
+	    let roots = [];
+	    //{label:..., id:...., record:...,	    children:[]}
+            var parentField = this.getFieldById(null, this.getProperty("parentField"));
+	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    var idField = this.getFieldById(null, this.getProperty("idField"));
+	    if(!parentField) {
+		throw new Error("No parent field specified");
+		return;
+	    }
+	    if(!idField) {
+                throw new Error("No id field specified");
+	    }
+	    let idToNode = {};
+	    let nodes=[];
+	    let idToRoot = {};
+	    records.map(r=>{
+		var parent = r.getValue(parentField.getIndex());
+		var id = r.getValue(idField.getIndex());
+		var label= labelField==null?id:r.getValue(labelField.getIndex());		
+		var node = {id:id,label:label,children:[],record:r,parentId:parent, parent:null};
+		idToNode[id] = node;
+		nodes.push(node);
+		if(parent=="") {
+		    //is a root
+		    idToRoot[id]=node;
+		    roots.push(node);
+		}
+	    });
+	    nodes.map(node=>{
+		let parentNode = idToNode[node.parentId];
+		if(!parentNode) {
+		    if(!idToRoot[node.id]) {
+			throw new Error("No parent :" + node.parentId +" for node:" + node.label);
+		    }
+		    return;
+		}
+		node.parent= parentNode;
+		parentNode.children.push(node);
+	    });
+
+	    return roots;
+	},
+
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 //	    var t1=  new Date();
             var pointData = this.getData();
@@ -6499,6 +6548,9 @@ function PointRecord(lat, lon, elevation, time, data) {
         },
         getValue: function(index) {
             return this.data[index];
+        },
+	setValue: function(index,value) {
+            this.data[index] = value;
         },
         push: function(v) {
             this.data.push(v);
@@ -24651,6 +24703,7 @@ var DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
 var DISPLAY_PLOTLY_3DMESH = "3dmesh";
 var DISPLAY_PLOTLY_TREEMAP = "ptreemap";
 var DISPLAY_PLOTLY_TERNARY = "ternary";
+var DISPLAY_PLOTLY_SUNBURST= "sunburst";
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
@@ -24697,6 +24750,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
     label: "3D Mesh",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_PLOTLY
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_PLOTLY_SUNBURST,
+    label: "Suburst",
     requiresData: true,
     forUser: true,
     category: CATEGORY_PLOTLY
@@ -24769,19 +24830,28 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             //               Plotly.plot(this.getDomId(ID_DISPLAY_CONTENTS), data, layout)
             var plot = Plotly.plot(this.getDomId("tmp"), data, layout,{displayModeBar: false});
             var myPlot = document.getElementById(this.getDomId("tmp"));
-            this.addEvents(plot, myPlot);
+	    if(myPlot) {
+		this.addEvents(plot, myPlot);
+	    }
+	    return myPlot;
         },
-        addEvents: function(plot, myPlot) {
-	    var _this = this;
-            myPlot.on('plotly_click', function(data) {
-		if(data.points && data.points.length>0) {
+        handleClickEvent: function(data) {
+	    if(data.points && data.points.length>0) {
+		let record = data.points[0].record;
+		if(!record) {
 		    var index = data.points[0].pointIndex;
-		    var record = _this.indexToRecord[index];
-		    console.log("R:" + JSON.stringify(_this.indexToRecord,null,2));
-		    if(record) {
-			_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
-		    }
+		    record = this.indexToRecord[index];
 		}
+//		console.log("index:" + index +" record:"+  record);
+		if(record) {
+		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		}
+	    }
+	},
+        addEvents: function(plot, myPlot) {
+	    let _this = this;
+            myPlot.on('plotly_click', function(data) {
+		_this.handleClickEvent(data);
             });
 
 	}
@@ -25108,6 +25178,102 @@ function Ramadda3dscatterDisplay(displayManager, id, properties) {
     });
 }
 
+
+
+function RamaddaSunburstDisplay(displayManager, id, properties) {
+    $.extend(this, {
+        width: "500",
+        height: "500",
+    });
+    let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_SUNBURST, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        getDisplayStyle: function() {
+            return "";
+        },
+        updateUI: function() {
+            var records = this.filterData();
+            if (!records) return;
+            var parentField = this.getFieldById(null, this.getProperty("parentField"));
+	    var valueField = this.getFieldById(null, this.getProperty("valueField"));
+	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    let roots=null;
+	    try {
+		roots = this.makeTree();
+	    } catch(error) {
+                this.setContents(this.getMessage(error.toString()));
+		return;
+	    }
+
+	    if(!valueField) {
+                this.setContents(this.getMessage("No value field specified"));
+		return;
+	    }
+
+	    let labels = [];
+	    let parents = [];
+	    let values=[];
+	    //descend and calculate values
+	    let calcValue = function(node) {
+		if(node.children.length==0) {
+		    var value = node.record.getValue(valueField.getIndex());
+		    node.value = value;
+		    return value;
+		}
+		let sum = 0;
+		node.children.map(child=>{
+		    sum += calcValue(child);
+		});
+		node.value = sum;
+		node.record.setValue(valueField.getIndex(),sum);
+		return sum;
+	    }
+	    roots.map(calcValue);
+	    this.myRecords = [];
+	    let recordList =  this.myRecords;
+	    let makeList = function(node) {
+		recordList.push(node.record);
+		values.push(node.value);
+		labels.push(node.label);
+		parents.push(node.parent==null?"":node.parent.label);
+		node.children.map(makeList);
+	    }
+	    roots.map(makeList);
+	    var data = [{
+		type: "sunburst",
+		labels: labels,
+		parents: parents,
+		values:  values,
+		outsidetextfont: {size: 20, color: "#377eb8"},
+		leaf: {opacity: 0.4},
+		marker: {line: {width: 2}},
+		branchvalues: 'total'
+	    }];
+
+	    var layout = {
+		margin: {l: 0, r: 0, b: 0, t: 0},
+		width: +this.getProperty("width"),
+		height: +this.getProperty("height"),
+	    };
+
+	    var myPlot =  this.makePlot(data, layout);
+	    myPlot.on('plotly_sunburstclick', d=>{this.handleSunburstClickEvent(d)});
+        },
+        handleSunburstClickEvent: function(data) {
+	    if(!data.points || data.points.length<=0) {
+		return;
+	    }
+	    var pointNumber = data.points[0].pointNumber;
+	    var record = this.myRecords[pointNumber];
+//	    console.log(pointNumber +" " + record);
+	    if(record) {
+		this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+	    }
+	},
+
+    });
+}
 
 
 

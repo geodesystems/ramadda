@@ -299,8 +299,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         "Wind Rose",
                                         ATTR_TYPE, "windrose"),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Sunburst",
+                                        ATTR_TYPE, "sunburst"),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Dot Plot",
                                         ATTR_TYPE, "dotplot"),
+			    
                             new WikiTag(WIKI_TAG_DISPLAY,
                                         "Scatter Matrix",
                                         ATTR_TYPE, "splom", 
@@ -6380,7 +6384,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "splom") || displayType.equals(
                 "3dscatter") || displayType.equals(
                 "3dmesh") || displayType.equals(
-                "density")) && (request.getExtraProperty(
+                "density")|| displayType.equals(
+						"sunburst")) && (request.getExtraProperty(
                 "added plotly") == null)) {
             HtmlUtils.importJS(
                 sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
