@@ -5954,6 +5954,10 @@ public class HtmlUtils {
         }
     }
 
-
+    public static String sanitizeString(String s) {
+	if(s==null)return null;
+	s = s.replaceAll("<","&lt;").replaceAll(">","&gt;");
+	return s;
+    }
 
 }

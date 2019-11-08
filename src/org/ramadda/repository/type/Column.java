@@ -2020,7 +2020,6 @@ public class Column implements DataTypes, Constants {
         if (text.startsWith("\"") && text.endsWith("\"")) {
             text = Utils.unquote(text);
             where.add(Clause.eq(getFullName(), text));
-
             return;
         }
         List<String> values  = StringUtil.split(text, ",", true, true);

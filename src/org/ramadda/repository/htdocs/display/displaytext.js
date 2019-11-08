@@ -11,6 +11,7 @@ var DISPLAY_TEXTRAW = "textraw";
 var DISPLAY_TEXT = "text";
 var DISPLAY_CARDS = "cards";
 var DISPLAY_BLOCKS = "blocks";
+var DISPLAY_TREE = "tree";
 var DISPLAY_TEMPLATE = "template";
 var DISPLAY_SLIDES = "slides";
 var DISPLAY_IMAGES = "images";
@@ -132,6 +133,15 @@ addGlobalDisplayType({
     label: "Blocks",
     requiresData: false,
     category: "Other Charts"
+});
+
+
+addGlobalDisplayType({
+    type: DISPLAY_TREE,
+    forUser: true,
+    label: "Tree",
+    requiresData: false,
+    category: "Text"
 });
 
 
@@ -2899,3 +2909,114 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 }
 
 
+
+
+function RamaddaTreeDisplay(displayManager, id, properties) {
+    let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TREE, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+	countToRecord: {},
+        needsData: function() {
+            return true;
+        },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Tree Attributes",
+					"maxDepth=3",
+					"showDetails=false",
+				    ])},
+
+        updateUI: function() {
+            var records = this.filterData();
+            if (!records) return;
+	    let roots=null;
+	    try {
+		roots = this.makeTree();
+	    } catch(error) {
+                this.setContents(this.getMessage(error.toString()));
+		return;
+	    }
+	    var html = "";
+	    let baseId = this.getDomId("node");
+	    let cnt=0;
+	    let depth = 0;
+	    let maxDepth = +this.getProperty("maxDepth",10);
+	    let template = this.getProperty("recordTemplate","${default}");
+	    let showDetails = this.getProperty("showDetails",true);
+	    let _this =this;
+	    let func = function(node) {
+		cnt++;
+		if(node.record) {
+		    _this.countToRecord[cnt] = node.record;
+		}
+		depth++;
+		let on = node.children.length>0 && depth<=maxDepth;
+		let details = null;
+		if(showDetails && node.record) {
+		    details = _this.getRecordHtml(node.record,null, template);
+		    if(details == "") details = null;
+		}
+		let image = "";
+		if(node.children.length>0 || details) {
+		    image = HtmlUtils.image(on?icon_downdart:icon_rightdart,["id",baseId+"_toggle_image" + cnt]) + " ";
+		}
+		html+=HtmlUtils.div(["class","display-tree-toggle","id",baseId+"_toggle" + cnt,"toggle-state",on,"block-count",cnt], image +  node.label);
+		html+=HtmlUtils.openTag("div",["id", baseId+"_block"+cnt,"class","display-tree-block","style","display:" + (on?"block":"none")]);
+		if(details && details!="") {
+		    if(node.children.length>0) {
+			html+= HtmlUtils.div(["class","display-tree-toggle-details","id",baseId+"_toggle_details" + cnt,"toggle-state",false,"block-count",cnt], HtmlUtils.image(icon_rightdart,["id",baseId+"_toggle_details_image" + cnt]) + " Details");
+			html+=HtmlUtils.div(["id", baseId+"_block_details"+cnt,"class","display-tree-block","style","display:none"],details);
+		    } else {
+			html+=details;
+		    }
+		}
+			     
+		if(node.children.length>0) {
+		    node.children.map(func);
+		}
+		depth--;
+		html+=HtmlUtils.closeTag("div");
+	    }
+	    console.log("roots:" + roots.length);
+	    roots.map(func);
+	    this.myRecords = [];
+            this.displayHtml(html);
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-tree-toggle").click(function() {
+		var state = (/true/i).test($(this).attr("toggle-state"));
+		state = !state;
+		var cnt = $(this).attr("block-count");
+		var block = $("#"+ baseId+"_block"+cnt);
+		var img = $("#"+ baseId+"_toggle_image"+cnt);
+		$(this).attr("toggle-state",state);
+		if(state)  {
+		    block.css("display","block");
+		    img.attr("src",icon_downdart);
+		} else {
+		    block.css("display","none");
+		    img.attr("src",icon_rightdart);
+		}
+		let record = _this.countToRecord[cnt];
+		if(record) {
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		}
+	    });
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-tree-toggle-details").click(function() {
+		var state = (/true/i).test($(this).attr("toggle-state"));
+		state = !state;
+		var cnt = $(this).attr("block-count");
+		var block = $("#"+ baseId+"_block_details"+cnt);
+		var img = $("#"+ baseId+"_toggle_details_image"+cnt);
+		$(this).attr("toggle-state",state);
+		if(state)  {
+		    block.css("display","block");
+		    img.attr("src",icon_downdart);
+		} else {
+		    block.css("display","none");
+		    img.attr("src",icon_rightdart);
+		}
+	    });
+        },
+    });
+}

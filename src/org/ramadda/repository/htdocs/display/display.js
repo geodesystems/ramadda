@@ -425,7 +425,7 @@ function DisplayThing(argId, argProperties) {
 		    return this.applyRecordTemplate(row, fields, template);
 		}
 	    }
-            var values = "<table class=formtable>";
+            var values = "<table xclass=formtable>";
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (var i = 0; i < record.getData().length; i++) {
                     var field = fields[i];

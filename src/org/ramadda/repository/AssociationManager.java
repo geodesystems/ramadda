@@ -977,7 +977,7 @@ public class AssociationManager extends RepositoryManager {
                                      + msg("Match exactly");
         sb.append(HtmlUtils.formEntry(msgLabel("Name"),
                                       HtmlUtils.input(ARG_NAME,
-                                          request.getString(ARG_NAME, ""),
+                                          request.getSanitizedString(ARG_NAME, ""),
                                           HtmlUtils.SIZE_40) + searchExact));
 
 
@@ -986,7 +986,7 @@ public class AssociationManager extends RepositoryManager {
         if (types.size() > 1) {
             sb.append(HtmlUtils.formEntry(msgLabel("Type"),
                                           HtmlUtils.select(ARG_TYPE, types,
-                                              request.getString(ARG_TYPE,
+                                              request.getSanitizedString(ARG_TYPE,
                                                   ""))));
         }
 

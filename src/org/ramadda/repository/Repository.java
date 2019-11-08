@@ -3559,6 +3559,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else if (request.responseAsText()) {
             return msg;
         } else {
+	    msg = HtmlUtils.sanitizeString(msg);
             StringBuilder sb = new StringBuilder();
             sb.append(
                 getPageHandler().showDialogError(
@@ -4072,7 +4073,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (entry == null) {
                 if ( !tryingOnePathAsAlias) {
                     throw new RepositoryUtil.MissingEntryException(
-                        "Could not find aliased entry:" + alias);
+								   "Could not find aliased entry:" + HtmlUtils.sanitizeString(alias));
                 } else {
                     return null;
                 }

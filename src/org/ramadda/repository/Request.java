@@ -975,7 +975,8 @@ public class Request implements Constants, Cloneable {
             sb.append(arg + "=" + svalue);
         }
 
-        return sb.toString();
+	String s =  sb.toString();
+	return HtmlUtils.sanitizeString(s);
     }
 
 
@@ -1618,6 +1619,17 @@ public class Request implements Constants, Cloneable {
         }
 
         return getCheckedString(key, dflt, checker);
+    }
+
+
+    public String getSanitizedString(String key, String dflt) {
+        if (checker == null) {
+            //Don't run the checker for now
+            //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
+        }
+
+        String s =  getCheckedString(key, dflt, checker);
+	return  HtmlUtils.sanitizeString(s);
     }
 
 

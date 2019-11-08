@@ -279,7 +279,6 @@ public interface Constants {
     public static final String ICON_RIGHTARROW = "/icons/rightarrow.png";
 
     /** _more_ */
-    public static final String ICON_RIGHTDART = "/icons/rightdart.gif";
 
     /** _more_ */
     public static final String ICON_ATOM = "/icons/atom.gif";

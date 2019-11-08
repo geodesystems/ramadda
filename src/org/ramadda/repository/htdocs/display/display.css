@@ -1741,3 +1741,17 @@ margin:10px;
     background:red;
     margin:10px;
 }
+
+
+
+.display-tree-block {
+    margin-left:20px;
+}
+
+.display-tree-toggle:hover {
+    cursor:pointer;
+}
+
+.display-tree-toggle-details:hover {
+    cursor:pointer;
+}

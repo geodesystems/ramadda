@@ -515,11 +515,7 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		return;
 	    }
 
-	    if(!valueField) {
-                this.setContents(this.getMessage("No value field specified"));
-		return;
-	    }
-
+	    let ids = [];
 	    let labels = [];
 	    let parents = [];
 	    let values=[];
@@ -538,33 +534,69 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		node.record.setValue(valueField.getIndex(),sum);
 		return sum;
 	    }
-	    roots.map(calcValue);
+	    if(valueField) {
+		roots.map(calcValue);
+	    }
 	    this.myRecords = [];
 	    let recordList =  this.myRecords;
 	    let makeList = function(node) {
 		recordList.push(node.record);
-		values.push(node.value);
+		if(valueField)
+		    values.push(node.value);
+		ids.push(node.id);
 		labels.push(node.label);
-		parents.push(node.parent==null?"":node.parent.label);
+		parents.push(node.parent==null?"":node.parent.id);
 		node.children.map(makeList);
 	    }
 	    roots.map(makeList);
 	    var data = [{
 		type: "sunburst",
+		ids:ids,
 		labels: labels,
 		parents: parents,
-		values:  values,
 		outsidetextfont: {size: 20, color: "#377eb8"},
 		leaf: {opacity: 0.4},
 		marker: {line: {width: 2}},
 		branchvalues: 'total'
 	    }];
 
+	    if(valueField) {
+		data[0].values = values;
+	    }
+            var colors = this.getColorTable(true);
+	    if(!colors) {
+		var colorMap = Utils.parseMap(this.getProperty("colorMap"));
+		if(colorMap) {
+		    colors = [];
+		    let dfltIdx =0;
+		    let dflt = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
+		    ids.map((id,idx)=>{
+			let color = colors[id];
+			if(!color) {
+			    color = colorMap[labels[idx]];
+			}
+			if(!color) {
+			    if(dfltIdx>=dflt.length) dfltIdx = 0;
+			    color = dflt[dfltIdx];
+			    dfltIdx++;
+			}
+			color = "#000";
+
+			colors.push(color);
+		    });
+		}
+	    }
+
 	    var layout = {
 		margin: {l: 0, r: 0, b: 0, t: 0},
 		width: +this.getProperty("width"),
 		height: +this.getProperty("height"),
 	    };
+	    if(colors) {
+		layout.sunburstcolorway= colors;
+		layout.extendsunburstcolors= false;
+//		layout.extendsunburstcolors= true;
+	    }
 
 	    var myPlot =  this.makePlot(data, layout);
 	    myPlot.on('plotly_sunburstclick', d=>{this.handleSunburstClickEvent(d)});
