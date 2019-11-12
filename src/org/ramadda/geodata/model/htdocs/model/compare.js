@@ -177,6 +177,8 @@ function CollectionForm(formId, plottype, args) {
                         plotfiles.push(entry);
                     } else if (entry.toString().indexOf("pdf") >= 0) {
                         pdffiles.push(entry);
+                    } else if (entry.toString().indexOf("csv") >= 0) {
+                        tsfiles.push(entry);
                     } else {
                         continue;
                     }
@@ -194,6 +196,8 @@ function CollectionForm(formId, plottype, args) {
                        zipentries, "(Download All Files)");
                 } else if (this.plottype === "enscompare") {
                   html += this.outputPDFFiles(pdffiles);
+                } else if (this.plottype === "multitimeseries") {
+                  html += this.outputTimeSeriesFiles(tsfiles);
                 } else if (this.plottype === "multicompare") {
                   html += this.outputPlotFiles(plotfiles);
                   html += HtmlUtil.href(
@@ -300,7 +304,7 @@ function CollectionForm(formId, plottype, args) {
                    filehtml += "<div id=\"chart"+i+"\"></div>"
                 }
                 */
-                filehtml += "<b>Files used for timeseries:</b><br/>";
+                filehtml += "<b>Timeseries values:</b><br/>";
                 for (var i = 0; i < files.length; i++) {
                     var entry = files[i];
                     filehtml += entry.getResourceLink();
