@@ -374,6 +374,59 @@ begin
 
 end
 
+;************************************************
+; Procedure: writets
+;
+; Purpose: write the time series to a file
+;
+; Params:  data  - the time series data
+;          tsTitles  - list of titles
+;          opts  - the global options
+; 
+;************************************************
+undef("writets")
+procedure writets(tsdata:numeric, tsTitles:logical, opts:logical)
+
+begin
+tsName = opts@models(0) + "_" + opts@exps(0) + "_" + opts@dates(0)
+tsName = str_sub_str(tsName," ","_")
+tsName = tsName+"_tsvalues.csv"
+outfile = opts@product_dir+"/"+tsName
+;tsName = opts@product_dir+"/timeseries.csv"
+system("/bin/rm -f "+outfile)
+dims = dimsizes(tsdata)
+time = tsdata&time
+ntimes = dimsizes(time)
+nens = dims(0)
+enses = opts@ens
+tfmt = "%Y-%N-%D"
+strtimes= ut_string(time,tfmt)
+header = "date,"+str_join(enses,",")
+fmtstring = "%d"
+do ens=0,nens-1
+  fmtstring = fmtstring+",%g"
+end do
+titles=(/"varTitle","mainTitle","regionTitle","climTitle","avgTitle","missingTitle", "createdTitle"/)
+filemode="w"
+do i = 0,dimsizes(titles)-1
+  title=titles(i)
+  if isatt(tsTitles,title) then
+    write_table(outfile, filemode, [/"##  "+tsTitles@$title$/],"%s")
+    filemode="a"
+  end if
+end do
+write_table(outfile, filemode, [/header/],"%s")
+do t=0,ntimes-1
+  line = strtimes(t)
+  do e = 0,nens-1
+    line = line+","+tsdata(e,t)
+  end do
+  write_table(outfile, filemode, [/line/], "%s")
+  delete(line)
+end do
+
+end
+
 
 ;************************************************
 ; Procedure: plotts
@@ -408,6 +461,7 @@ begin
   else
     avgdata = runave_n_Wrap(files,nave,0,1)  ; 0=option, 1=n dimension
   end if
+  ;printVarSummary(avgdata)
 
   sample = avgdata(0,:)
   time = sample&time
@@ -507,9 +561,22 @@ begin
   restick@ttmMinorStride = 1
   time_axis_labels(time,res,restick)
 
+  tsTitles=True
+  tsTitles@mainTitle = opts@mainTitle
+  tsTitles@regionTitle = opts@regionTitle
+  tsTitles@missingTitle = "Missing: "+sample@_FillValue
+  datestr = systemfunc("date -u +'%Y-%m-%d %H:%M UTC' ")
+  text = opts@annotation
+  if ((.not. ismissing(text)) .and. (text .ne. "")) then
+    plottext = "Created from " + text + " on "+datestr
+  else
+    plottext = "Created from FACTS on "+datestr
+  end if
+  tsTitles@createdTitle = plottext
   xLabel = "Years"
   if (nave .gt. 1) then
     xLabel = xLabel + " (" +nave+" year running average)"
+    tsTitles@avgTitle = nave+" year running average"
   end if
   res@tiXAxisString = xLabel
   res@tiXAxisFontHeightF = 0.015
@@ -676,9 +743,11 @@ begin
   else
     vartitle = opts@variable
   end if
+  tsTitles@varTitle = opts@yTitle
   if (opts@isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
     res_text@txFontHeightF = 0.012                     ; change font size
     climText = "Anomaly relative to "+opts@climyears+" average"
+    tsTitles@climTitle = climText
     txid_bot = gsn_create_text(wks, climText, res_text)
 
     amres@amOrthogonalPosF = -0.55  ; This is just below the previous title.
@@ -696,6 +765,7 @@ begin
 ;  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
 ;     addLogo(wksname, opts@logo, opts@imageformat)
 ;  end if
+  writets(avgdata,tsTitles,opts)
 
 end
 
