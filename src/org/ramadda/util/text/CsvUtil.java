@@ -105,6 +105,10 @@ public class CsvUtil {
     /** _more_ */
     private String comment;
 
+    private List<String> changeFrom = new ArrayList<String>();
+    private List<String> changeTo = new ArrayList<String>();
+    
+    
     /**
      * _more_
      *
@@ -649,6 +653,10 @@ public class CsvUtil {
         boolean   debug = false;
         List<Row> rows  = new ArrayList<Row>();
         String    s     = IOUtil.readContents(file);
+	for(int i=0;i<changeFrom.size();i++) {
+	    s = s.replaceAll(changeFrom.get(i), changeTo.get(i));
+	}
+	
         //        System.err.println("HTML:" + file);
         //        System.out.println("TABLE:" + s);
 
@@ -1458,6 +1466,7 @@ public class CsvUtil {
         new Cmd("-skipline", " <pattern>",
                 "(skip any line that matches the pattern)"),
         new Cmd("-changeline", "<from> <to>", "(change the line)"),
+	new Cmd("-changeraw", "<from> <to>", "(change input text)"),
 
         new Cmd(
             "-strict", "",
@@ -1726,6 +1735,15 @@ public class CsvUtil {
                     }
                     info.setChangeString(args.get(++i), args.get(++i));
 
+                    continue;
+                }
+
+		if (arg.equals("-changeraw")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+		    changeFrom.add(args.get(++i));
+		    changeTo.add(args.get(++i));
                     continue;
                 }
 
