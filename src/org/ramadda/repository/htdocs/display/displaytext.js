@@ -1183,6 +1183,13 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
 		}
 	    }
+	    if(selected.length==1) {
+		var row = this.getDataValues(selected[0]);
+		headerTemplate = this.applyRecordTemplate(row,fields,headerTemplate);
+		footerTemplate = this.applyRecordTemplate(row,fields,footerTemplate);
+	    }
+
+
 	    if(this.filterFields) {
 		for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
 		    var f = this.filterFields[filterIdx];
@@ -1261,7 +1268,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			var value = record.getData()[colorBy.index];
 			color =  colorBy.getColor(value, record);
                     }
-
 		    var row = this.getDataValues(record);
 		    var s = template.trim();
 		    s = s.replace("${selectCount}",selected.length);
