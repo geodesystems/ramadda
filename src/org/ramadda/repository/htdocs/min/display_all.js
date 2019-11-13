@@ -16802,14 +16802,13 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    
 	    if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
 	       select == "<=" || 	       select == "?>=" || select=="match") {
-		var selectField = this.getProperty("selectField","");
-
-		if(selectField)selectField  =this.getFieldById(fields, selectField);
+		var selectField = this.getProperty("selectField",null);
+		if(selectField) selectField  =this.getFieldById(null, selectField);
 		if(!selectField) {
 		    this.writeHtml(ID_DISPLAY_CONTENTS, "No selectField specified");
 		    return;
 		}
-		var selectValue = this.getProperty("selectValue","XXX");
+		var selectValue = this.getProperty("selectValue","0");
 		var selectValueNum = parseFloat(selectValue);
 		var max =0; 
 		var min = 0;
@@ -16901,8 +16900,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var s = summary[f.getId()];
 		if(!s) continue;
 		if(f.isDate) {
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max)).replace("${" + f.getId() +"_yyyy}",Utils.formatDateYYYY(s.max));
+		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max)).replace("${" + f.getId() +"_yyyy}",Utils.formatDateYYYY(s.max));
 		    continue;
 		    
 		}
