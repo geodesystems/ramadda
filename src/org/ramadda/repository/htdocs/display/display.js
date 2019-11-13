@@ -546,17 +546,10 @@ function DisplayThing(argId, argProperties) {
 
 
         getProperty: function(key, dflt,skipThis) {
-	    return  this.getPropertyInner(key,dflt,skipThis);
-	    /*
-	    if(value && (typeof value == "string") && value.startsWith("${") && value.endsWith("}")) {
-		var innerProp = value.substring(2,value.length-1);
-		console.log(key +" inner:" + innerProp);
-		value = this.getProperty(innerProp, dflt,skipThis);
-	    }
+	    var value =  this.getPropertyInner(key,null,skipThis);
+	    if(!value) return dflt;
 	    return value;
-	    */
 	},
-
 
         getPropertyInner: function(key, dflt,skipThis) {	    
             if(!skipThis && Utils.isDefined(this[key])) {
@@ -566,11 +559,20 @@ function DisplayThing(argId, argProperties) {
             if (value != null) {
                 return value;
             }
+	    var fromParent=null;
+		    
             if (this.displayParent != null) {
-                return this.displayParent.getProperty(key, dflt, skipThis);
+                fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
+            }
+            if (!fromParent && this.getDisplayManager) {
+                fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
+            }
+	    if(fromParent) return fromParent;
+            if (this.displayParent != null) {
+                return this.displayParent.getPropertyInner(key, skipThis);
             }
             if (this.getDisplayManager) {
-                return this.getDisplayManager().getProperty(key, dflt);
+                return   this.getDisplayManager().getPropertyInner(key);
             }
             value = getGlobalDisplayProperty(key);
             if (value) {
@@ -1702,9 +1704,49 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.getRecords();
             }
 	    let roots = [];
+	    let idToNode = {};
+	    let nodes=[];
+	    let idToRoot = {};
+	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    var nodeFields = this.getFieldsByIds(null, this.getProperty("nodeFields"));
+	    if(nodeFields.length>0) {
+		let cnt = 0;
+		let valueToNode = {};
+		let parentId = "";
+		records.map(r=>{
+		    var label= labelField==null?id:r.getValue(labelField.getIndex());		
+		    let parentId = null;
+		    let parentNode= null;
+//		    console.log("record:" + label);
+
+		    nodeFields.map(nodeField=>{
+			let id = r.getValue(nodeField.getIndex());
+			let nodeId = parentId?parentId+"-"+id:id;
+			let tmpNode = idToNode[nodeId];
+			if(!tmpNode) {
+			    tmpNode = {id:nodeId,label:id,children:[],parent:parentNode};
+			    idToNode[nodeId] = tmpNode;
+			    if(!parentNode) {
+				roots.push(tmpNode);
+			    }
+			    if(parentNode) {
+				parentNode.children.push(tmpNode);
+			    }
+			}
+			parentId = nodeId;
+			parentNode = tmpNode;
+		    });
+		    var id= "leaf" + (cnt++);
+		    var node = {id:id,label:label,children:[],record:r, parent:parentNode};
+		    parentNode.children.push(node);
+		    idToNode[id] = node;
+		    nodes.push(node);
+		});
+		return roots;
+	    }
+
 	    //{label:..., id:...., record:...,	    children:[]}
             var parentField = this.getFieldById(null, this.getProperty("parentField"));
-	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
 	    var idField = this.getFieldById(null, this.getProperty("idField"));
 	    if(!parentField) {
 		throw new Error("No parent field specified");
@@ -1713,9 +1755,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!idField) {
                 throw new Error("No id field specified");
 	    }
-	    let idToNode = {};
-	    let nodes=[];
-	    let idToRoot = {};
 	    records.map(r=>{
 		var parent = r.getValue(parentField.getIndex());
 		var id = r.getValue(idField.getIndex());

@@ -517,21 +517,28 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 
 	    let ids = [];
 	    let labels = [];
+	    let parentNodes= [];
+
 	    let parents = [];
 	    let values=[];
 	    //descend and calculate values
 	    let calcValue = function(node) {
 		if(node.children.length==0) {
-		    var value = node.record.getValue(valueField.getIndex());
-		    node.value = value;
-		    return value;
+		    if(node.record) {
+			var value = node.record.getValue(valueField.getIndex());
+			node.value = value;
+			return value;
+		    }
+		    return 0;
 		}
 		let sum = 0;
 		node.children.map(child=>{
 		    sum += calcValue(child);
 		});
 		node.value = sum;
-		node.record.setValue(valueField.getIndex(),sum);
+		if(node.record){
+		    node.record.setValue(valueField.getIndex(),sum);
+		}
 		return sum;
 	    }
 	    if(valueField) {
@@ -543,27 +550,15 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		recordList.push(node.record);
 		if(valueField)
 		    values.push(node.value);
+		parentNodes.push(node.parent);
 		ids.push(node.id);
 		labels.push(node.label);
 		parents.push(node.parent==null?"":node.parent.id);
 		node.children.map(makeList);
 	    }
 	    roots.map(makeList);
-	    var data = [{
-		type: "sunburst",
-		ids:ids,
-		labels: labels,
-		parents: parents,
-		outsidetextfont: {size: 20, color: "#377eb8"},
-		leaf: {opacity: 0.4},
-		marker: {line: {width: 2}},
-		branchvalues: 'total'
-	    }];
-
-	    if(valueField) {
-		data[0].values = values;
-	    }
             var colors = this.getColorTable(true);
+	    let doTopColors= this.getProperty("doTopColors",true);
 	    if(!colors) {
 		var colorMap = Utils.parseMap(this.getProperty("colorMap"));
 		if(colorMap) {
@@ -571,7 +566,8 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		    let dfltIdx =0;
 		    let dflt = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
 		    ids.map((id,idx)=>{
-			let color = colors[id];
+			if(doTopColors && parentNodes[idx]!=null)  return;
+			let color = colorMap[id];
 			if(!color) {
 			    color = colorMap[labels[idx]];
 			}
@@ -580,22 +576,42 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 			    color = dflt[dfltIdx];
 			    dfltIdx++;
 			}
-			color = "#000";
-
 			colors.push(color);
 		    });
 		}
 	    }
 
+	    var data = [{
+		type: "sunburst",
+		ids:ids,
+		labels: labels,
+		parents: parents,
+		outsidetextfont: {size: 20, color: "#377eb8"},
+		leaf: {opacity: 0.4},
+		marker: {
+		    line: {width: 1}
+		},
+		branchvalues: 'total'
+	    }];
+	    console.log("l:" + ids);
+	    console.log("p:" + parents);
+	    console.log("v:" + values);
+	    if(valueField) {
+		data[0].values = values;
+	    }
 	    var layout = {
 		margin: {l: 0, r: 0, b: 0, t: 0},
 		width: +this.getProperty("width"),
 		height: +this.getProperty("height"),
 	    };
 	    if(colors) {
-		layout.sunburstcolorway= colors;
-		layout.extendsunburstcolors= false;
-//		layout.extendsunburstcolors= true;
+		if(!doTopColors) {
+		    data[0].marker.colors = colors;
+		} else {
+		    layout.sunburstcolorway= colors;
+		    layout.extendsunburstcolors= true;
+		    layout.extendsunburstcolorway= true;
+		}
 	    }
 
 	    var myPlot =  this.makePlot(data, layout);

@@ -696,17 +696,10 @@ function DisplayThing(argId, argProperties) {
 
 
         getProperty: function(key, dflt,skipThis) {
-	    return  this.getPropertyInner(key,dflt,skipThis);
-	    /*
-	    if(value && (typeof value == "string") && value.startsWith("${") && value.endsWith("}")) {
-		var innerProp = value.substring(2,value.length-1);
-		console.log(key +" inner:" + innerProp);
-		value = this.getProperty(innerProp, dflt,skipThis);
-	    }
+	    var value =  this.getPropertyInner(key,null,skipThis);
+	    if(!value) return dflt;
 	    return value;
-	    */
 	},
-
 
         getPropertyInner: function(key, dflt,skipThis) {	    
             if(!skipThis && Utils.isDefined(this[key])) {
@@ -716,11 +709,20 @@ function DisplayThing(argId, argProperties) {
             if (value != null) {
                 return value;
             }
+	    var fromParent=null;
+		    
             if (this.displayParent != null) {
-                return this.displayParent.getProperty(key, dflt, skipThis);
+                fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
+            }
+            if (!fromParent && this.getDisplayManager) {
+                fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
+            }
+	    if(fromParent) return fromParent;
+            if (this.displayParent != null) {
+                return this.displayParent.getPropertyInner(key, skipThis);
             }
             if (this.getDisplayManager) {
-                return this.getDisplayManager().getProperty(key, dflt);
+                return   this.getDisplayManager().getPropertyInner(key);
             }
             value = getGlobalDisplayProperty(key);
             if (value) {
@@ -1852,9 +1854,49 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.getRecords();
             }
 	    let roots = [];
+	    let idToNode = {};
+	    let nodes=[];
+	    let idToRoot = {};
+	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    var nodeFields = this.getFieldsByIds(null, this.getProperty("nodeFields"));
+	    if(nodeFields.length>0) {
+		let cnt = 0;
+		let valueToNode = {};
+		let parentId = "";
+		records.map(r=>{
+		    var label= labelField==null?id:r.getValue(labelField.getIndex());		
+		    let parentId = null;
+		    let parentNode= null;
+//		    console.log("record:" + label);
+
+		    nodeFields.map(nodeField=>{
+			let id = r.getValue(nodeField.getIndex());
+			let nodeId = parentId?parentId+"-"+id:id;
+			let tmpNode = idToNode[nodeId];
+			if(!tmpNode) {
+			    tmpNode = {id:nodeId,label:id,children:[],parent:parentNode};
+			    idToNode[nodeId] = tmpNode;
+			    if(!parentNode) {
+				roots.push(tmpNode);
+			    }
+			    if(parentNode) {
+				parentNode.children.push(tmpNode);
+			    }
+			}
+			parentId = nodeId;
+			parentNode = tmpNode;
+		    });
+		    var id= "leaf" + (cnt++);
+		    var node = {id:id,label:label,children:[],record:r, parent:parentNode};
+		    parentNode.children.push(node);
+		    idToNode[id] = node;
+		    nodes.push(node);
+		});
+		return roots;
+	    }
+
 	    //{label:..., id:...., record:...,	    children:[]}
             var parentField = this.getFieldById(null, this.getProperty("parentField"));
-	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
 	    var idField = this.getFieldById(null, this.getProperty("idField"));
 	    if(!parentField) {
 		throw new Error("No parent field specified");
@@ -1863,9 +1905,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!idField) {
                 throw new Error("No id field specified");
 	    }
-	    let idToNode = {};
-	    let nodes=[];
-	    let idToRoot = {};
 	    records.map(r=>{
 		var parent = r.getValue(parentField.getIndex());
 		var id = r.getValue(idField.getIndex());
@@ -18680,7 +18719,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		depth--;
 		html+=HtmlUtils.closeTag("div");
 	    }
-	    console.log("roots:" + roots.length);
+//	    console.log("roots:" + roots.length);
 	    roots.map(func);
 	    this.myRecords = [];
             this.displayHtml(html);
@@ -25329,21 +25368,28 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 
 	    let ids = [];
 	    let labels = [];
+	    let parentNodes= [];
+
 	    let parents = [];
 	    let values=[];
 	    //descend and calculate values
 	    let calcValue = function(node) {
 		if(node.children.length==0) {
-		    var value = node.record.getValue(valueField.getIndex());
-		    node.value = value;
-		    return value;
+		    if(node.record) {
+			var value = node.record.getValue(valueField.getIndex());
+			node.value = value;
+			return value;
+		    }
+		    return 0;
 		}
 		let sum = 0;
 		node.children.map(child=>{
 		    sum += calcValue(child);
 		});
 		node.value = sum;
-		node.record.setValue(valueField.getIndex(),sum);
+		if(node.record){
+		    node.record.setValue(valueField.getIndex(),sum);
+		}
 		return sum;
 	    }
 	    if(valueField) {
@@ -25355,27 +25401,15 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		recordList.push(node.record);
 		if(valueField)
 		    values.push(node.value);
+		parentNodes.push(node.parent);
 		ids.push(node.id);
 		labels.push(node.label);
 		parents.push(node.parent==null?"":node.parent.id);
 		node.children.map(makeList);
 	    }
 	    roots.map(makeList);
-	    var data = [{
-		type: "sunburst",
-		ids:ids,
-		labels: labels,
-		parents: parents,
-		outsidetextfont: {size: 20, color: "#377eb8"},
-		leaf: {opacity: 0.4},
-		marker: {line: {width: 2}},
-		branchvalues: 'total'
-	    }];
-
-	    if(valueField) {
-		data[0].values = values;
-	    }
             var colors = this.getColorTable(true);
+	    let doTopColors= this.getProperty("doTopColors",true);
 	    if(!colors) {
 		var colorMap = Utils.parseMap(this.getProperty("colorMap"));
 		if(colorMap) {
@@ -25383,7 +25417,8 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		    let dfltIdx =0;
 		    let dflt = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
 		    ids.map((id,idx)=>{
-			let color = colors[id];
+			if(doTopColors && parentNodes[idx]!=null)  return;
+			let color = colorMap[id];
 			if(!color) {
 			    color = colorMap[labels[idx]];
 			}
@@ -25392,22 +25427,42 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 			    color = dflt[dfltIdx];
 			    dfltIdx++;
 			}
-			color = "#000";
-
 			colors.push(color);
 		    });
 		}
 	    }
 
+	    var data = [{
+		type: "sunburst",
+		ids:ids,
+		labels: labels,
+		parents: parents,
+		outsidetextfont: {size: 20, color: "#377eb8"},
+		leaf: {opacity: 0.4},
+		marker: {
+		    line: {width: 1}
+		},
+		branchvalues: 'total'
+	    }];
+	    console.log("l:" + ids);
+	    console.log("p:" + parents);
+	    console.log("v:" + values);
+	    if(valueField) {
+		data[0].values = values;
+	    }
 	    var layout = {
 		margin: {l: 0, r: 0, b: 0, t: 0},
 		width: +this.getProperty("width"),
 		height: +this.getProperty("height"),
 	    };
 	    if(colors) {
-		layout.sunburstcolorway= colors;
-		layout.extendsunburstcolors= false;
-//		layout.extendsunburstcolors= true;
+		if(!doTopColors) {
+		    data[0].marker.colors = colors;
+		} else {
+		    layout.sunburstcolorway= colors;
+		    layout.extendsunburstcolors= true;
+		    layout.extendsunburstcolorway= true;
+		}
 	    }
 
 	    var myPlot =  this.makePlot(data, layout);

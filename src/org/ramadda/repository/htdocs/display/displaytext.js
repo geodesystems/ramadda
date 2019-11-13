@@ -2979,7 +2979,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		depth--;
 		html+=HtmlUtils.closeTag("div");
 	    }
-	    console.log("roots:" + roots.length);
+//	    console.log("roots:" + roots.length);
 	    roots.map(func);
 	    this.myRecords = [];
             this.displayHtml(html);
