@@ -1709,6 +1709,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let idToRoot = {};
 	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
 	    var nodeFields = this.getFieldsByIds(null, this.getProperty("nodeFields"));
+
+	    let treeRootLabel = this.getProperty("treeRoot");
+	    let treeRoot = null;
+	    if(treeRootLabel) {
+		treeRoot = {id:treeRootLabel,label:treeRootLabel,children:[],parent:null};
+		roots.push(treeRoot);
+	    }
+
+
 	    if(nodeFields.length>0) {
 		let cnt = 0;
 		let valueToNode = {};
@@ -1727,7 +1736,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    tmpNode = {id:nodeId,label:id,children:[],parent:parentNode};
 			    idToNode[nodeId] = tmpNode;
 			    if(!parentNode) {
-				roots.push(tmpNode);
+				if(treeRoot) {
+				    tmpNode.parent = treeRoot;
+				    treeRoot.children.push(tmpNode);
+				} else {
+				    roots.push(tmpNode);
+				}
 			    }
 			    if(parentNode) {
 				parentNode.children.push(tmpNode);
@@ -1765,7 +1779,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(parent=="") {
 		    //is a root
 		    idToRoot[id]=node;
-		    roots.push(node);
+		    if(treeRoot) {
+			node.parent = treeRoot;
+			node.parentId = treeRoot.id;
+			treeRoot.children.push(node);
+		    } else {
+			roots.push(node);
+		    }
 		}
 	    });
 	    nodes.map(node=>{

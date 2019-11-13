@@ -501,6 +501,18 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
         getDisplayStyle: function() {
             return "";
         },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    ["label:Sunburst Display",
+				     'parentField=""',
+				     'labelField=""',
+				     'idField=""',
+				     'valueField=""',
+				     'nodeFields=""',
+				     'treeRoot="some label"',
+				     'doTopColors="true"',
+				    ])},
+
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
@@ -593,9 +605,6 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		},
 		branchvalues: 'total'
 	    }];
-	    console.log("l:" + ids);
-	    console.log("p:" + parents);
-	    console.log("v:" + values);
 	    if(valueField) {
 		data[0].values = values;
 	    }

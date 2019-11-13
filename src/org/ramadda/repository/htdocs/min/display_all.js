@@ -1859,6 +1859,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let idToRoot = {};
 	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
 	    var nodeFields = this.getFieldsByIds(null, this.getProperty("nodeFields"));
+
+	    let treeRootLabel = this.getProperty("treeRoot");
+	    let treeRoot = null;
+	    if(treeRootLabel) {
+		treeRoot = {id:treeRootLabel,label:treeRootLabel,children:[],parent:null};
+		roots.push(treeRoot);
+	    }
+
+
 	    if(nodeFields.length>0) {
 		let cnt = 0;
 		let valueToNode = {};
@@ -1877,7 +1886,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    tmpNode = {id:nodeId,label:id,children:[],parent:parentNode};
 			    idToNode[nodeId] = tmpNode;
 			    if(!parentNode) {
-				roots.push(tmpNode);
+				if(treeRoot) {
+				    tmpNode.parent = treeRoot;
+				    treeRoot.children.push(tmpNode);
+				} else {
+				    roots.push(tmpNode);
+				}
 			    }
 			    if(parentNode) {
 				parentNode.children.push(tmpNode);
@@ -1915,7 +1929,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(parent=="") {
 		    //is a root
 		    idToRoot[id]=node;
-		    roots.push(node);
+		    if(treeRoot) {
+			node.parent = treeRoot;
+			node.parentId = treeRoot.id;
+			treeRoot.children.push(node);
+		    } else {
+			roots.push(node);
+		    }
 		}
 	    });
 	    nodes.map(node=>{
@@ -25357,6 +25377,18 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
         getDisplayStyle: function() {
             return "";
         },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    ["label:Sunburst Display",
+				     'parentField=""',
+				     'labelField=""',
+				     'idField=""',
+				     'valueField=""',
+				     'nodeFields=""',
+				     'treeRoot="some label"',
+				     'doTopColors="true"',
+				    ])},
+
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
@@ -25449,9 +25481,6 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 		},
 		branchvalues: 'total'
 	    }];
-	    console.log("l:" + ids);
-	    console.log("p:" + parents);
-	    console.log("v:" + values);
 	    if(valueField) {
 		data[0].values = values;
 	    }
