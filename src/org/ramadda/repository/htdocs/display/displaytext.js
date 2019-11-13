@@ -2949,7 +2949,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 	    let depth = 0;
 	    let maxDepth = +this.getProperty("maxDepth",10);
 	    let template = this.getProperty("recordTemplate","${default}");
-	    let showDetails = this.getProperty("showDetails",true);
+	    var showDetails = this.getProperty("showDetails",true);
 	    let _this =this;
 	    let func = function(node) {
 		cnt++;

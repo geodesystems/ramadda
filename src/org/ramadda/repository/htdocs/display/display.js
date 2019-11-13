@@ -547,7 +547,7 @@ function DisplayThing(argId, argProperties) {
 
         getProperty: function(key, dflt,skipThis) {
 	    var value =  this.getPropertyInner(key,null,skipThis);
-	    if(!value) return dflt;
+	    if(!Utils.isDefined(value)) return dflt;
 	    return value;
 	},
 
@@ -567,7 +567,9 @@ function DisplayThing(argId, argProperties) {
             if (!fromParent && this.getDisplayManager) {
                 fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
             }
-	    if(fromParent) return fromParent;
+	    if(fromParent) {
+		return fromParent;
+	    }
             if (this.displayParent != null) {
                 return this.displayParent.getPropertyInner(key, skipThis);
             }
