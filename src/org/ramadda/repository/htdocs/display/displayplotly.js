@@ -13,6 +13,7 @@ var DISPLAY_PLOTLY_3DMESH = "3dmesh";
 var DISPLAY_PLOTLY_TREEMAP = "ptreemap";
 var DISPLAY_PLOTLY_TERNARY = "ternary";
 var DISPLAY_PLOTLY_SUNBURST= "sunburst";
+var DISPLAY_PLOTLY_TEXTCOUNT = "textcount";
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
@@ -71,6 +72,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_PLOTLY
 });
+addGlobalDisplayType({
+    type: DISPLAY_PLOTLY_TEXTCOUNT,
+    label: "Text Count",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
 //Ternary doesn't work
 //addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
 //Treempap doesn't work
@@ -78,6 +87,7 @@ addGlobalDisplayType({
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
+    var ID_PLOTY = "plotly";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     RamaddaUtil.inherit(this, SUPER);
     RamaddaUtil.defineMembers(this, {
@@ -134,9 +144,12 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         },
         makePlot: function(data, layout) {
             this.clearHtml();
+	    let html = 
+		HtmlUtils.div(["id",this.getDomId(ID_HEADER)],"") +
+		HtmlUtils.div(["id", this.getDomId("tmp"), "style", this.getDisplayStyle()], "") +
+		HtmlUtils.div(["id",this.getDomId(ID_FOOTER)],"");
+	    this.jq(ID_DISPLAY_CONTENTS).html(html);
             //For some reason plotly won't display repeated times in the DISPLAY div
-	    this.jq(ID_DISPLAY_CONTENTS).html(HtmlUtils.div(["id", this.getDomId("tmp"), "style", this.getDisplayStyle()], ""));
-            //               Plotly.plot(this.getDomId(ID_DISPLAY_CONTENTS), data, layout)
             var plot = Plotly.plot(this.getDomId("tmp"), data, layout,{displayModeBar: false});
             var myPlot = document.getElementById(this.getDomId("tmp"));
 	    if(myPlot) {
@@ -1178,4 +1191,113 @@ function RamaddaPTreemapDisplay(displayManager, id, properties) {
 
 
 
+}
+function TextcountDisplay(displayManager, id, properties) {
+    let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TEXTCOUNT, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    ["label:Text Count Display",
+				     'patterns="foo,bar"',
+				     'labels="Foo,Bar"',
+				     'textField=""',
+				    ])},
+        getDialogContents: function(tabTitles, tabContents) {
+	    let html = HtmlUtils.div(["id",this.getDomId("dialog_set_pattern")],"Change patterns") + "<br>" +
+		HtmlUtils.textarea("",Utils.join(this.patternList||[],"\n"),["id", this.getDomId("dialog_patterns"),"rows","10"]);
+
+	    
+            tabTitles.push("Patterns");
+            tabContents.push(html);
+            SUPER.getDisplayDialogContents.call(this, tabTitles, tabContents);
+        },
+        initDialog: function() {
+            SUPER.initDialog.call(this);
+	    let _this = this;
+            this.jq("dialog_set_pattern").button().click(function() {
+		_this.patterns = _this.jq("dialog_patterns").val().trim().replace(/\n/g,",");
+		_this.updateUI();
+            });
+
+        },
+        updateUI: function() {
+            let records = this.filterData();
+            if (!records) return;
+	    let patterns = this.getProperty("patterns");
+	    if(patterns == null) {
+		this.setContents(this.getMessage("No patterns specified"));
+		return;
+	    }
+	    this.patternList = patterns.split(",");
+	    let labels = this.getProperty("labels");
+	    if(labels) {
+		labels = labels.split(",");
+	    }
+
+	    this.textField = this.getFieldById(null, this.getProperty("textField"));
+	    if(!this.textField) {
+		this.textField = this.getFieldOfType(null, "string");
+	    }
+	    if(!this.textField) {
+		this.setContents(this.getMessage("No text field in data"));
+		return;
+	    }
+
+	    let count = [];
+	    let matchers = [];
+	    this.patternList.map(p=>{
+		count.push(0);
+		matchers.push(new TextMatcher(p));
+	    });
+
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                var record = records[rowIdx];
+                var row = record.getData();
+		var value = record.getValue(this.textField.getIndex());
+		matchers.map((m,index)=>{
+		    if(m.matches(value)) {
+			count[index]++;
+		    }
+		});
+	    }
+
+	    let data = [{
+		type: 'bar',
+		x: count,
+		y: labels?labels:this.patternList,
+		orientation: 'h',
+	    }];
+	    let layout = {
+		margin: {
+		    l: 100,
+		    r: 50,
+		    b: 50,
+		    t: 10,
+		    padding:4
+		},
+	    };
+	    if(Utils.isDefined(this.properties.height)) {
+		layout.height = +this.properties.height;
+	    }
+
+            this.makePlot(data, layout);
+        },
+        handleClickEvent: function(data) {
+	    if(!data.points || data.points.length<=0) {
+		return;
+	    }
+	    var pointNumber = data.points[0].pointNumber;
+	    var pattern = this.patternList[pointNumber];
+	    console.log(pattern);
+	    var args = {
+		property: "filterValue",
+		fieldId: this.textField.getId(),
+		value: pattern
+	    };
+	    this.propagateEvent("handleEventPropertyChanged", args);
+	},
+
+    });
 }

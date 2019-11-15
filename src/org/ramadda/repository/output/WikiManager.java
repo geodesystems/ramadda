@@ -411,6 +411,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 					"handleClick","true",
 					"showFieldLabel","true"),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Text Count",
+                                        ATTR_TYPE, "textcount"),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Text Stats",
                                         ATTR_TYPE, "textstats", 
 					"#maxWords", "100",
@@ -6381,12 +6384,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        if ((displayType.equals("radar") || displayType.equals(
-                "windrose") || displayType.equals(
-                "dotplot") || displayType.equals(
-                "splom") || displayType.equals(
-                "3dscatter") || displayType.equals(
-                "3dmesh") || displayType.equals(
+        if ((displayType.equals("radar") || 
+	     displayType.equals("windrose") || 
+	     displayType.equals("dotplot") ||
+	     displayType.equals("splom") ||
+	     displayType.equals("3dscatter") ||
+	     displayType.equals("3dmesh") || displayType.equals("textcount")	     || displayType.equals(
                 "density")|| displayType.equals(
 						"sunburst")) && (request.getExtraProperty(
                 "added plotly") == null)) {

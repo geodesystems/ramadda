@@ -1706,7 +1706,9 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    ["barWidth=\"10\""])},
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+
+        makeChartOptions: function(dataList, props, selectedFields) {
+            chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             var chartType = this.getChartType();
             if (chartType == DISPLAY_BARSTACK) {
                 chartOptions.isStacked = true;
@@ -1727,6 +1729,10 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
 		}
 	    }
             chartOptions.orientation = "horizontal";
+	    return chartOptions;
+	},
+
+        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             return new google.visualization.BarChart(document.getElementById(this.getChartId()));
         }
     });
@@ -4356,3 +4362,5 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
         },
     });
 }
+
+

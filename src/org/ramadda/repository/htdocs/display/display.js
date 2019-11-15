@@ -3259,6 +3259,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.getLayoutManager().moveDisplayTop(this);
         },
         getDialogContents: function(tabTitles, tabContents) {
+	    this.getDisplayDialogContents(tabTitles, tabContents);
+        },
+        getDisplayDialogContents: function(tabTitles, tabContents) {
             var get = this.getGet();
             var menuItems = [];
             this.getMenuItems(menuItems);
@@ -3271,7 +3274,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             form += "</form>";
             tabTitles.push("Display"); 
            tabContents.push(form);
-        },
+        },	
         checkLayout: function() {},
         displayData: function() {},
         createUI: function() {
@@ -3651,7 +3654,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    for(var i=0;i<dateIds.length;i++) {
 			HtmlUtils.datePickerInit(dateIds[i]);
 		    }
-		}
+	}
 
  		var inputFunc = function(input, input2, value){
                     var id = input.attr("id");
