@@ -86,7 +86,7 @@ public class JettyServer implements Constants {
      */
     public JettyServer(String[] args) throws Throwable {
         this.args = args;
-        port      = 8080;
+        port      = 80;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-port")) {
                 port = new Integer(args[i + 1]).intValue();
@@ -94,7 +94,6 @@ public class JettyServer implements Constants {
             }
         }
 
-	System.err.println("port:" + port);
         server  = new Server(port);
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
