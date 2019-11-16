@@ -94,6 +94,7 @@ public class JettyServer implements Constants {
             }
         }
 
+	System.err.println("port:" + port);
         server  = new Server(port);
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
