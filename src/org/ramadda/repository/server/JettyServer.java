@@ -86,23 +86,33 @@ public class JettyServer implements Constants {
      */
     public JettyServer(String[] args) throws Throwable {
         this.args = args;
-        port      = 80;
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("-port")) {
-                port = new Integer(args[i + 1]).intValue();
-                //Keep looping so we get the last -port in the arg list
-            }
-        }
 
-        server  = new Server(port);
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         GzipHandler gzipHandler = new GzipHandler();
         //        gzipHandler.addIncludedMimeTypes("application/vnd.google-earth.kml+xml","application/vnd.google-earth.kmz");
         gzipHandler.addIncludedMethods("GET", "POST");
         context.setGzipHandler(gzipHandler);
-        server.setHandler(context);
         baseServlet = addServlet();
+        baseRepository = baseServlet.getRepository();
+
+	boolean hadPort = false;
+        port      = 8080;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-port")) {
+		hadPort = true;
+                port = new Integer(args[i + 1]).intValue();
+                //Keep looping so we get the last -port in the arg list
+            }
+        }
+	if(!hadPort) {
+	    port = baseRepository.getProperty("ramadda.port", port);
+	}
+
+        server  = new Server(port);
+        server.setHandler(context);
+
+
         context.addServlet(new ServletHolder(baseServlet), "/");
         try {
             initSsl(server, baseServlet.getRepository());
@@ -110,7 +120,6 @@ public class JettyServer implements Constants {
             baseServlet.getRepository().getLogManager().logError(
                 "SSL: error opening ssl connection", exc);
         }
-        baseRepository = baseServlet.getRepository();
         server.start();
         server.join();
     }
