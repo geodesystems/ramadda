@@ -83,7 +83,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String prepend;
 
-    /** _more_          */
+    /** _more_ */
     private String commentChar;
 
     /** _more_ */

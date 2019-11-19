@@ -105,10 +105,13 @@ public class CsvUtil {
     /** _more_ */
     private String comment;
 
+    /** _more_ */
     private List<String> changeFrom = new ArrayList<String>();
+
+    /** _more_ */
     private List<String> changeTo = new ArrayList<String>();
-    
-    
+
+
     /**
      * _more_
      *
@@ -304,6 +307,7 @@ public class CsvUtil {
             String arg = args.get(i);
             if (arg.equals("-help")) {
                 usage("", null);
+
                 return;
             }
             if (arg.equals("-genhelp")) {
@@ -312,15 +316,18 @@ public class CsvUtil {
                 return;
             }
             if (arg.equals("-helpraw")) {
-                usage("", null, "-raw","true");
+                usage("", null, "-raw", "true");
+
                 return;
             }
-	    if (arg.equals("-helpjson")) {
-                usage("", null, "-json","true");
+            if (arg.equals("-helpjson")) {
+                usage("", null, "-json", "true");
+
                 return;
             }
             if (arg.startsWith("-help:")) {
                 usage("", arg.substring("-help:".length()));
+
                 return;
             }
             if (arg.equals("-alldata")) {
@@ -393,8 +400,7 @@ public class CsvUtil {
                 iterateValues.add("dummy");
             } else {
                 iteratePattern = new Filter.PatternFilter(iterateColumn, "");
-		textReader.getProcessor().addProcessor(
-						 iteratePattern);
+                textReader.getProcessor().addProcessor(iteratePattern);
             }
             for (int i = 0; i < iterateValues.size(); i++) {
                 String pattern = iterateValues.get(i);
@@ -653,10 +659,10 @@ public class CsvUtil {
         boolean   debug = false;
         List<Row> rows  = new ArrayList<Row>();
         String    s     = IOUtil.readContents(file);
-	for(int i=0;i<changeFrom.size();i++) {
-	    s = s.replaceAll(changeFrom.get(i), changeTo.get(i));
-	}
-	
+        for (int i = 0; i < changeFrom.size(); i++) {
+            s = s.replaceAll(changeFrom.get(i), changeTo.get(i));
+        }
+
         //        System.err.println("HTML:" + file);
         //        System.out.println("TABLE:" + s);
 
@@ -1079,6 +1085,7 @@ public class CsvUtil {
                 rowCnt++;
                 if (rowCnt <= textReader.getSkip()) {
                     textReader.addHeaderLine(line);
+
                     continue;
                 }
 
@@ -1256,8 +1263,9 @@ public class CsvUtil {
      */
     public static class Cmd {
 
-	boolean category;
-	
+        /** _more_ */
+        boolean category;
+
         /** _more_ */
         String cmd;
 
@@ -1267,10 +1275,16 @@ public class CsvUtil {
         /** _more_ */
         String desc;
 
+        /**
+         * _more_
+         *
+         * @param isCat _more_
+         * @param category _more_
+         */
         public Cmd(boolean isCat, String category) {
-	    this.category = isCat;
-	    this.desc = category;
-	}
+            this.category = isCat;
+            this.desc     = category;
+        }
 
         /**
          * _more_
@@ -1335,7 +1349,7 @@ public class CsvUtil {
         new Cmd("-help", "", "(print this help)"),
         new Cmd("-help:<topic search string>", "",
                 "(print help that matches topic)"),
-	new Cmd(true, "Slice and Dice"),
+        new Cmd(true, "Slice and Dice"),
         new Cmd(
             "-columns", "<e.g., 0,1,2,7-10,12>",
             "(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
@@ -1349,16 +1363,9 @@ public class CsvUtil {
         new Cmd("-max", "<max # columns>"),
         new Cmd("-rawlines", "<how many lines to pass through unprocesed>"),
         new Cmd("-cut", "<one or more rows. -1 to the end>"),
-        new Cmd("-include", "<one or more rows, -1 to the end>","(Only include given rows)"),
+        new Cmd("-include", "<one or more rows, -1 to the end>",
+                "(Only include given rows)"),
         new Cmd("-mergerows", "<2 or more rows> <delimiter> <close>"),
-        new Cmd("-pattern", "<col #> <regexp pattern>",
-                "(extract rows that match the pattern)"),
-        new Cmd("-notpattern", "<col #> <regexp pattern>",
-                "(extract rows that don't match the pattern)"),
-        new Cmd("-maxvalue", "<key column> <value column>"),
-        new Cmd("<column>=~<value>", "", "(same as -pattern)"),
-        new Cmd("<-gt|-ge|-lt|-le>", "<col #> <value>",
-                "(extract rows that pass the expression)"),
         new Cmd("-decimate", "<# of start rows to include> <skip factor>",
                 "(only include every <skip factor> row)"),
         new Cmd("-countvalue", "<col #> <count>"),
@@ -1368,7 +1375,46 @@ public class CsvUtil {
         new Cmd("-insert", "<col #> <comma separated values>"),
         new Cmd("-addcell", "<row #>  <col #>  <value>"),
         new Cmd("-deletecell", "<row #> <col #>"),
-	new Cmd(true, "Change Values"),
+        new Cmd("-rotate"), new Cmd("-flip"),
+
+        new Cmd(
+            "-unfurl",
+            "<col to get new column header#> <value columns> <unique col>  <other columns>",
+            "(make columns from data values)"),
+        new Cmd("-furl", "<cols> <header value> <value label>",
+                "(use values in header to make new row)"),
+        new Cmd("-explode", "<col #> ",
+                "(make separate files based on value of column)"),
+
+        new Cmd("-concat", "<col #s>  <delimiter>",
+                "(create a new column from the given columns)"),
+        //        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
+        new Cmd("-split",
+                "<column> <delimiter> <comma separated new column names>",
+                "(split the column)"),
+        new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",
+                "(create a new column from the values in the given column)"),
+        new Cmd("-join",
+                "<key columns> <value columns> <file> <src key columns>",
+                "Join the 2 files together"),
+
+        new Cmd(true, "Filter"),
+        new Cmd("-unique", "<columns>", "(pass through unique values)"),
+        new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
+        new Cmd("-pattern", "<col #> <regexp pattern>",
+                "(extract rows that match the pattern)"),
+        new Cmd("-notpattern", "<col #> <regexp pattern>",
+                "(extract rows that don't match the pattern)"),
+        new Cmd("-maxvalue", "<key column> <value column>"),
+        new Cmd("<column>=~<value>", "", "(same as -pattern)"),
+        new Cmd("<-gt|-ge|-lt|-le>", "<col #> <value>",
+                "(extract rows that pass the expression)"),
+        new Cmd("-before", "<column> <format> <date> <format2>"),
+        new Cmd("-after", "<column> <format> <date> <format2>"),
+        new Cmd("-skipline", " <pattern>",
+                "(skip any line that matches the pattern)"),
+
+        new Cmd(true, "Change Values"),
         new Cmd(
             "-macro",
             "<pattern> <template> <column label> (Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header)"),
@@ -1390,12 +1436,16 @@ public class CsvUtil {
         new Cmd("-prefix", "<col #> <prefix>", "(add prefix to column)"),
         new Cmd("-suffix", "<col #> <suffix>", "(add suffix to column)"),
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
-        new Cmd("-changerow", "<row #s> <col #s> <pattern> <substitution string>","(Change the values in the row/cols)"),
+        new Cmd("-changerow",
+                "<row #s> <col #s> <pattern> <substitution string>",
+                "(Change the values in the row/cols)"),
         new Cmd("-convertdate", "<column> <format1> <format2>"),
-	new Cmd("-extractdate", "<date column> <format> <tz> <era|year|month|day_of_month|day_of_week|week_of_month|day_of_week_in_month|am_pm|hour|hour_of_day|minute|second|millisecond>"),
-        new Cmd("-formatdate", "<col #s> <intial date format> <target date format>"),
-        new Cmd("-before", "<column> <format> <date> <format2>"),
-        new Cmd("-after", "<column> <format> <date> <format2>"),
+        new Cmd(
+            "-extractdate",
+            "<date column> <format> <tz> <era|year|month|day_of_month|day_of_week|week_of_month|day_of_week_in_month|am_pm|hour|hour_of_day|minute|second|millisecond>"),
+        new Cmd("-formatdate",
+                "<col #s> <intial date format> <target date format>"),
+
         new Cmd(
             "-extract",
             "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
@@ -1406,41 +1456,20 @@ public class CsvUtil {
                 "(combine columns with the delimiter. deleting columns)"),
         new Cmd("-combineinplace", "<col #s> <delimiter> <new column name>",
                 "(combine columns with the delimiter.)"),
-        new Cmd("-concat", "<col #s>  <delimiter>",
-                "(create a new column from the given columns)"),
-        //        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
-        new Cmd("-split",
-                "<column> <delimiter> <comma separated new column names>",
-                "(split the column)"),
-        new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",
-                "(create a new column from the values in the given column)"),
-
-        new Cmd("-join",
-                "<key columns> <value columns> <file> <src key columns>",
-                "Join the 2 files together"),
         new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
-        new Cmd("-unique", "<columns>", "(pass through unique values)"),
-        new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
-        new Cmd("-sort", "<column sort>"),
         new Cmd(
             "-denormalize",
             "<from csv file> <from id idx> <from value idx> <to idx>    <new col name> <mode replace add>",
             "(read the id,value from file and substitute the value in the dest file col idx)"),
-        new Cmd("-explode", "<col #> ",
-                "(make separate files based on value of column)"),
         new Cmd("-break", "<label1> <label2> <columns",
                 "(break apart column values and make new rows)"),
-        new Cmd(
-            "-unfurl",
-            "<col to get new column header#> <value columns> <unique col>  <other columns>",
-            "(make columns from data values)"),
         new Cmd("-image", "<col idx> suffix", "(search for an image)"),
-        new Cmd("-gender", "<column>","(figure out the gender of the name in the column)"), 
-
-	new Cmd(true,"Numeric"),
+        new Cmd("-gender", "<column>",
+                "(figure out the gender of the name in the column)"),
+        new Cmd(true, "Numeric"),
         new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
                 "(set value={value+delta1}*scale+delta2)"),
-	new Cmd("-rowaverage", "",    "(average the row values)"),
+        new Cmd("-rowaverage", "", "(average the row values)"),
         new Cmd("-decimals", "<col #> <how many decimals to round to>", ""),
         new Cmd(
             "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
@@ -1450,32 +1479,30 @@ public class CsvUtil {
             "-sum", "<key columns> <value columns> <carry over columns>",
             "sum values keying on name column value. If no value columns specified then do a count"),
         new Cmd("-percent", "<columns to add>"),
-	new Cmd("-increase", "<column> <how far back>","(calculate percent increase)"),
-	new Cmd("-average", "<columns> <period> <label>","(calculate a moving average)"),
-
-	new Cmd(true, "Geocode"),
+        new Cmd("-increase", "<column> <how far back>",
+                "(calculate percent increase)"),
+        new Cmd("-average", "<columns> <period> <label>",
+                "(calculate a moving average)"),
+        new Cmd(true, "Geocode"),
         new Cmd("-geocode",
                 "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
         new Cmd("-geocodeaddress",
                 "<col indices> Latitude Longitude <prefix> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
         new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
-	new Cmd(true, "Other Commands"),
-	new Cmd("-count", "", "(show count)"),
+        new Cmd(true, "Other Commands"),
+        new Cmd("-sort", "<column sort>"),
+        new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
-        new Cmd("-skipline", " <pattern>",
-                "(skip any line that matches the pattern)"),
-        new Cmd("-changeline", "<from> <to>", "(change the line)"),
-	new Cmd("-changeraw", "<from> <to>", "(change input text)"),
 
+        new Cmd("-changeline", "<from> <to>", "(change the line)"),
+        new Cmd("-changeraw", "<from> <to>", "(change input text)"),
         new Cmd(
             "-strict", "",
             "(be strict on columns. any rows that are not the size of the other rows are dropped)"),
         new Cmd(
             "-flag", "",
             " (be strict on columns. any rows that are not the size of the other rows are shown)"),
-        new Cmd("-rotate"), 
-	new Cmd("-flip"),
         new Cmd("-verify", "# columns",
                 "(throw error if a row has a different number of columns)"),
         new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
@@ -1483,7 +1510,7 @@ public class CsvUtil {
         new Cmd("-comment", "<string>"),
         new Cmd("-verify", "",
                 "(verify that all of the rows have the same # of columns)"),
-	new Cmd(true, "Input"),
+        new Cmd(true, "Input"),
         new Cmd(
             "-html", "\"name value properties\"",
             "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
@@ -1492,19 +1519,19 @@ public class CsvUtil {
                 "(parse the input as json)"),
         new Cmd("-tokenize", " \"header1,header2...\" \"pattern\"",
                 "(tokenize the input from the pattern)"),
-        new Cmd("-prune", "<number of leading bytes to remove>","(prune out the first N bytes)"),
-	new Cmd(true, "Output"),
-        new Cmd("-print", "", "(print to stdout)"),
+        new Cmd("-prune", "<number of leading bytes to remove>",
+                "(prune out the first N bytes)"),
+        new Cmd(true, "Output"), new Cmd("-print", "", "(print to stdout)"),
         new Cmd("-raw", "", "(print the file raw)"),
         new Cmd("-record", "", " (print records)"),
         new Cmd("-printheader", "", "(print the first line)"),
         new Cmd("-pointheader", "",
                 "(generate the RAMADDA point properties)"),
-        new Cmd("-addheader", "<name1 value1 ... nameN valueN>",
+        new Cmd("-addheader", "\"name1 value1 ... nameN valueN\"",
                 "(add the RAMADDA point properties)"),
         new Cmd(
-            "-db", "{<props>}",
-            "(generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>"),
+            "-db", "\"props\"",
+            "(generate the RAMADDA db xml from the header, props are a set of name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t\t<column name>.id <new id for column> <column name>.label <new label>\n\t\t<column name>.type <string|enumeration|double|int|date>\n\t\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs>"),
         new Cmd("-run", "<name of process directory>"),
         new Cmd("-cat", " <*.csv>", "(one or more csv files)"),
     };
@@ -1514,35 +1541,43 @@ public class CsvUtil {
     /**
      * _more_
      *
+     *
      * @param msg _more_
      * @param match _more_
-     * @param exact _more_
-     * @param raw _more_
-     *
+     * @param args _more_
      * @throws Exception _more_
      */
-    public void usage(String msg, String match, String ...args)
+    public void usage(String msg, String match, String... args)
             throws Exception {
-	boolean exact = false;
-	boolean raw = false;
-	boolean json = false;
-	for(int i=0;i<args.length;i+=2) {
-	    if(args[i].equals("-exact")) exact = args[i+1].equals("true");
-	    else if(args[i].equals("-raw")) raw = args[i+1].equals("true");
-	    else if(args[i].equals("-json")) json = args[i+1].equals("true");
-	}
+        boolean exact = false;
+        boolean raw   = false;
+        boolean json  = false;
+        for (int i = 0; i < args.length; i += 2) {
+            if (args[i].equals("-exact")) {
+                exact = args[i + 1].equals("true");
+            } else if (args[i].equals("-raw")) {
+                raw = args[i + 1].equals("true");
+            } else if (args[i].equals("-json")) {
+                json = args[i + 1].equals("true");
+            }
+        }
         PrintWriter pw = new PrintWriter(getOutputStream());
         if (msg.length() > 0) {
             pw.println(msg);
         }
-	if(!json)
-	    pw.println("Usage:");
-	else
-	    pw.println("{\"commands\":[");
-	int cnt=0;
-	for (Cmd c : commands) {
+        if ( !json) {
+            pw.println("Usage:");
+        } else {
+            pw.println("{\"commands\":[");
+        }
+        int    cnt = 0;
+        String pad = "\t";
+        for (Cmd c : commands) {
             String cmd = c.getLine();
             if (match != null) {
+                if (c.category) {
+                    continue;
+                }
                 if (exact && !c.cmd.equals(match)) {
                     continue;
                 }
@@ -1553,23 +1588,32 @@ public class CsvUtil {
             if ( !raw) {
                 cmd = cmd.replaceAll("_nl_", "\n").replaceAll("_tab_", "\n");
             }
-	    if(json) {
-		if(cnt>0) pw.println(",");
-		if(c.category) {
-		    pw.println(Json.mapAndQuote("isCategory","true","description",c.desc));
-		} else {
-		    pw.println(Json.mapAndQuote("command",c.cmd,"args",c.args,"description",c.desc));
-		}
-	    } else {
-		pw.println(cmd);
-	    }
+            if (json) {
+                if (cnt > 0) {
+                    pw.println(",");
+                }
+                if (c.category) {
+                    pw.println(Json.mapAndQuote("isCategory", "true",
+                            "description", c.desc));
+                } else {
+                    pw.println(Json.mapAndQuote("command", c.cmd, "args",
+                            c.args, "description", c.desc));
+                }
+            } else {
+                if (c.category) {
+                    pw.println(c.desc);
+                } else {
+                    pw.println(pad + cmd);
+                }
+            }
             if (raw && cmd.startsWith("-db")) {
                 break;
             }
-	    cnt++;
-	}
-	if(json)
-	    pw.println("]}");
+            cnt++;
+        }
+        if (json) {
+            pw.println("]}");
+        }
         pw.flush();
     }
 
@@ -1620,7 +1664,7 @@ public class CsvUtil {
     private boolean ensureArg(List args, int i, int cnt) throws Exception {
         if (args.size() <= (i + cnt)) {
             String arg = (String) args.get(i);
-            usage("Bad argument count for:" + arg, arg, "-exact","true");
+            usage("Bad argument count for:" + arg, arg, "-exact", "true");
 
             return false;
         }
@@ -1725,9 +1769,10 @@ public class CsvUtil {
                 }
 
                 if (arg.equals("-pass")) {
-		    info.getProcessor().addProcessor(new Processor.Pass());
-		    continue;
-		}
+                    info.getProcessor().addProcessor(new Processor.Pass());
+
+                    continue;
+                }
 
                 if (arg.equals("-changeline")) {
                     if ( !ensureArg(args, i, 2)) {
@@ -1738,12 +1783,13 @@ public class CsvUtil {
                     continue;
                 }
 
-		if (arg.equals("-changeraw")) {
+                if (arg.equals("-changeraw")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-		    changeFrom.add(args.get(++i));
-		    changeTo.add(args.get(++i));
+                    changeFrom.add(args.get(++i));
+                    changeTo.add(args.get(++i));
+
                     continue;
                 }
 
@@ -1776,7 +1822,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-		    info.getProcessor().addProcessor(
+                    info.getProcessor().addProcessor(
                         new Filter.Start(args.get(++i)));
 
                     continue;
@@ -1787,7 +1833,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-		    info.getProcessor().addProcessor(
+                    info.getProcessor().addProcessor(
                         new Filter.Stop(args.get(++i)));
 
                     continue;
@@ -1797,7 +1843,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-		    info.getProcessor().addProcessor(
+                    info.getProcessor().addProcessor(
                         new Filter.MinColumns(new Integer(args.get(++i))));
 
                     continue;
@@ -1807,7 +1853,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-		    info.getProcessor().addProcessor(
+                    info.getProcessor().addProcessor(
                         new Filter.MaxColumns(new Integer(args.get(++i))));
 
                     continue;
@@ -1822,8 +1868,8 @@ public class CsvUtil {
                     int start = Integer.parseInt(args.get(++i));
                     int skip  = Integer.parseInt(args.get(++i));
                     if (skip > 0) {
-			info.getProcessor().addProcessor(
-							 new Filter.Decimate(start,skip));
+                        info.getProcessor().addProcessor(
+                            new Filter.Decimate(start, skip));
                     }
 
                     continue;
@@ -1863,6 +1909,20 @@ public class CsvUtil {
 
                     continue;
                 }
+
+                if (arg.equals("-furl")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> valueCols = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Processor.Furler(
+                            valueCols, args.get(++i), args.get(++i)));
+
+                    continue;
+                }
+
+
 
 
                 if (arg.equals("-break")) {
@@ -2058,7 +2118,9 @@ public class CsvUtil {
                     }
                     String r = args.get(++i);
                     info.getProcessor().addProcessor(
-                        new Filter.RowCutter(getNumbers(r), arg.equals("-cut")));
+                        new Filter.RowCutter(
+                            getNumbers(r), arg.equals("-cut")));
+
                     continue;
                 }
 
@@ -2264,27 +2326,28 @@ public class CsvUtil {
                 }
 
 
-		if (arg.equals("-average")) {
+                if (arg.equals("-average")) {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
-                    List<String> cols = getCols(args.get(++i));
-		    int period = Integer.parseInt(args.get(++i));
-		    String label = args.get(++i);
+                    List<String> cols   = getCols(args.get(++i));
+                    int          period = Integer.parseInt(args.get(++i));
+                    String       label  = args.get(++i);
                     info.getProcessor().addProcessor(
-						     new Converter.ColumnAverage(Converter.ColumnAverage.MA,cols,period,label));
+                        new Converter.ColumnAverage(
+                            Converter.ColumnAverage.MA, cols, period, label));
 
                     continue;
                 }
 
-		if (arg.equals("-increase")) {
+                if (arg.equals("-increase")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-		    int col = Integer.parseInt(args.get(++i));
-		    int step = Integer.parseInt(args.get(++i));
+                    int col  = Integer.parseInt(args.get(++i));
+                    int step = Integer.parseInt(args.get(++i));
                     info.getProcessor().addProcessor(
-						     new Converter.ColumnIncrease(col,step));
+                        new Converter.ColumnIncrease(col, step));
 
                     continue;
                 }
@@ -2478,9 +2541,9 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 4)) {
                         return false;
                     }
-		    List<Integer> rows = getNumbers(args.get(++i));
-                    List<String> cols    = getCols(args.get(++i));
-                    String pattern = args.get(++i);
+                    List<Integer> rows    = getNumbers(args.get(++i));
+                    List<String>  cols    = getCols(args.get(++i));
+                    String        pattern = args.get(++i);
                     pattern = pattern.replaceAll("_leftparen_",
                             "\\\\(").replaceAll("_rightparen_", "\\\\)");
                     pattern = pattern.replaceAll("_leftbracket_",
@@ -2488,7 +2551,7 @@ public class CsvUtil {
                     pattern = pattern.replaceAll("_dot_", "\\\\.");
                     info.getProcessor().addProcessor(
                         new Converter.RowChanger(
-						 rows, cols, pattern, args.get(++i)));
+                            rows, cols, pattern, args.get(++i)));
 
                     continue;
                 }
@@ -2514,15 +2577,15 @@ public class CsvUtil {
                         return false;
                     }
                     int    col  = Integer.parseInt(args.get(++i));
-                    String sdf = args.get(++i);
-                    String tz= args.get(++i);
-                    String what= args.get(++i);
+                    String sdf  = args.get(++i);
+                    String tz   = args.get(++i);
+                    String what = args.get(++i);
                     info.getProcessor().addProcessor(
-                        new Converter.DateExtracter(
-						    col, sdf,tz,what));
+                        new Converter.DateExtracter(col, sdf, tz, what));
+
                     continue;
                 }
-		
+
 
 
                 if (arg.equals("-before")) {

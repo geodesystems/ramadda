@@ -45,10 +45,10 @@ import java.util.regex.*;
 
 public class Row {
 
-    /** _more_          */
+    /** _more_ */
     static int x = 0;
 
-    /** _more_          */
+    /** _more_ */
     public int myx = x++;
 
     /** _more_ */

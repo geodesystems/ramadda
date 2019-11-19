@@ -30,8 +30,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import java.text.DateFormat;
 
@@ -41,10 +39,12 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import java.util.regex.*;
 
@@ -66,12 +66,13 @@ public abstract class Converter extends Processor {
 
 
     /**
-     * _more_
+     *
      */
     public Converter() {}
 
     /**
-     * _more_
+     *
+     *
      *
      * @param col _more_
      */
@@ -80,7 +81,9 @@ public abstract class Converter extends Processor {
     }
 
     /**
-     * _more_
+     *
+     *
+     *
      *
      * @param cols _more_
      */
@@ -101,7 +104,7 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
          */
         public ConverterGroup() {}
 
@@ -119,7 +122,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          */
@@ -130,7 +135,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -167,13 +174,15 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ColumnNotSelector extends Converter {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          */
@@ -184,7 +193,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -215,6 +226,8 @@ public abstract class Converter extends Processor {
 
 
 
+    /* */
+
     /** _more_          */
     private static Hashtable<String, String> imageMap = new Hashtable<String,
                                                             String>();
@@ -228,11 +241,15 @@ public abstract class Converter extends Processor {
      */
     public static class ImageSearch extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String suffix;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param suffix _more_
@@ -244,7 +261,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -320,11 +339,15 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnWidth extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         int size;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param size _more_
@@ -337,7 +360,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -375,11 +400,15 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnFormatter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private DecimalFormat format;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param fmt _more_
@@ -392,7 +421,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -427,14 +458,19 @@ public abstract class Converter extends Processor {
      */
     public static class Padder extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int count;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String pad;
 
         /**
-         * _more_
+         *
+         *
          *
          *
          * @param count _more_
@@ -447,7 +483,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -482,11 +520,15 @@ public abstract class Converter extends Processor {
 
 
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String pad;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          *
@@ -500,7 +542,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -535,11 +579,15 @@ public abstract class Converter extends Processor {
      */
     public static class Suffixer extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String pad;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          *
@@ -553,7 +601,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -589,17 +639,20 @@ public abstract class Converter extends Processor {
      */
     public static class PrintHeader extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private boolean asPoint = false;
 
         /**
-         * _more_
+         *
          *
          */
         public PrintHeader() {}
 
         /**
-         * _more_
+         *
+         *
          *
          * @param asPoint _more_
          */
@@ -609,7 +662,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -693,34 +748,49 @@ public abstract class Converter extends Processor {
      */
     public static class HeaderMaker extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int count = 0;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         Hashtable<String, String> props;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         String defaultType = "string";
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         boolean defaultChartable = true;
 
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         boolean makeLabel = true;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         boolean toStdOut = false;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         Row firstRow;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param props _more_
-         *
          */
         public HeaderMaker(Hashtable<String, String> props) {
             this.props = props;
@@ -734,7 +804,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -745,7 +817,8 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-	    //	    System.err.println("hm:" + row);
+
+            //      System.err.println("hm:" + row);
             rowCnt++;
             if (rowCnt > 2) {
                 return row;
@@ -958,6 +1031,7 @@ public abstract class Converter extends Processor {
 
 
 
+
         }
 
 
@@ -977,10 +1051,12 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
+         *
          *
          * @param cols _more_
-         *
          */
         public ColumnPercenter(List<String> cols) {
             super(cols);
@@ -988,7 +1064,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1030,27 +1108,50 @@ public abstract class Converter extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
     public static class ColumnIncrease extends Converter {
 
 
-	int col;
-	int step;
-	List<Double> values = new ArrayList<Double>();
+        /* */
+
+        /** _more_          */
+        int col;
+
+        /* */
+
+        /** _more_          */
+        int step;
+
+        /* */
+
+        /** _more_          */
+        List<Double> values = new ArrayList<Double>();
 
         /**
-         * _more_
          *
-         * @param cols _more_
          *
+         *
+         *
+         *
+         * @param col _more_
+         * @param step _more_
          */
         public ColumnIncrease(int col, int step) {
-	    this.col =col;
-	    this.step = step;
-	}
+            this.col  = col;
+            this.step = step;
+        }
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1061,29 +1162,31 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-	    if(rowCnt++==0) {
-		row.add(row.get(col)+" increase");
-		return row;
-	    }
-	    double v = Double.parseDouble(row.get(col).toString());
-	    if(values.size()<step) {
-		row.add(Double.NaN);
-	    } else {
-		double pastValue = values.get(0);
-		values.remove(0);
-		double increase = 0;
-		// 20 30
-		if(pastValue==0) {
-		    row.add(Double.NaN);
-		} else {
-		    double diff = v-pastValue;
-		    increase = diff/pastValue;
-		    //		    System.out.println("x:" + v +" " + pastValue +"  diff:" + diff +" i:" + increase);
+            if (rowCnt++ == 0) {
+                row.add(row.get(col) + " increase");
 
-		    row.add(increase);
-		}
-	    }
-	    values.add(v);
+                return row;
+            }
+            double v = Double.parseDouble(row.get(col).toString());
+            if (values.size() < step) {
+                row.add(Double.NaN);
+            } else {
+                double pastValue = values.get(0);
+                values.remove(0);
+                double increase = 0;
+                // 20 30
+                if (pastValue == 0) {
+                    row.add(Double.NaN);
+                } else {
+                    double diff = v - pastValue;
+                    increase = diff / pastValue;
+                    //              System.out.println("x:" + v +" " + pastValue +"  diff:" + diff +" i:" + increase);
+
+                    row.add(increase);
+                }
+            }
+            values.add(v);
+
             return row;
         }
 
@@ -1091,30 +1194,63 @@ public abstract class Converter extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
     public static class ColumnAverage extends Converter {
 
-	public static final int MA = 0;
+        /* */
 
-	int what;
-	int period;
-	List<List<Double>> values = new ArrayList<List<Double>>();
-	String label;
+        /** _more_          */
+        public static final int MA = 0;
+
+        /* */
+
+        /** _more_          */
+        int what;
+
+        /* */
+
+        /** _more_          */
+        int period;
+
+        /* */
+
+        /** _more_          */
+        List<List<Double>> values = new ArrayList<List<Double>>();
+
+        /* */
+
+        /** _more_          */
+        String label;
 
         /**
-         * _more_
          *
+         *
+         *
+         *
+         *
+         * @param what _more_
          * @param cols _more_
-         *
+         * @param period _more_
+         * @param label _more_
          */
-        public ColumnAverage(int what, List<String> cols, int period, String label) {
+        public ColumnAverage(int what, List<String> cols, int period,
+                             String label) {
             super(cols);
-	    this.what = what;
-	    this.period = period;
-	    this.label = label;
-	}
+            this.what   = what;
+            this.period = period;
+            this.label  = label;
+        }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1126,31 +1262,38 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             List<Integer> indices = getIndices(info);
-	    if(rowCnt++==0) {
-		for(int i=0;i<indices.size();i++) {
-		    values.add(new ArrayList<Double>());
-		    row.add(row.get(indices.get(i))+" " + label);
-		}
-		return row;
-	    }
+            if (rowCnt++ == 0) {
+                for (int i = 0; i < indices.size(); i++) {
+                    values.add(new ArrayList<Double>());
+                    row.add(row.get(indices.get(i)) + " " + label);
+                }
 
-	    for(int i=0;i<indices.size();i++) {
-		int index = indices.get(i);
-		List<Double> nums = values.get(i);
-		double v = Double.parseDouble(row.get(index).toString());
-		nums.add(v);
-		if(nums.size()>period) nums.remove(0);
-		double total = 0;
-		int cnt = 0;
-		for(int j=0;j<nums.size();j++) {
-		    if(!Double.isNaN(nums.get(j))) {
-			cnt++;
-			total+=nums.get(j);
-		    }
-		}
-		double average = cnt==0?Double.NaN:total/cnt;
-		row.add(average);
-	    }
+                return row;
+            }
+
+            for (int i = 0; i < indices.size(); i++) {
+                int          index = indices.get(i);
+                List<Double> nums  = values.get(i);
+                double       v =
+                    Double.parseDouble(row.get(index).toString());
+                nums.add(v);
+                if (nums.size() > period) {
+                    nums.remove(0);
+                }
+                double total = 0;
+                int    cnt   = 0;
+                for (int j = 0; j < nums.size(); j++) {
+                    if ( !Double.isNaN(nums.get(j))) {
+                        cnt++;
+                        total += nums.get(j);
+                    }
+                }
+                double average = (cnt == 0)
+                                 ? Double.NaN
+                                 : total / cnt;
+                row.add(average);
+            }
+
             return row;
         }
 
@@ -1172,12 +1315,14 @@ public abstract class Converter extends Processor {
     public static class ColumnOperator extends Converter {
 
         /**
-         * _more_
+         *
          */
         public ColumnOperator() {}
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param info _more_
          * @param row _more_
@@ -1236,17 +1381,25 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnChanger extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private boolean isRegex;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String pattern;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String value;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param pattern _more_
@@ -1263,7 +1416,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1308,26 +1463,30 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class DateConverter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int col;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private SimpleDateFormat sdf1;
+
+        /* */
 
         /** _more_          */
         private SimpleDateFormat sdf2;
 
 
         /**
-         * _more_
          *
-         * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
+         *
+         *
          *
          * @param col _more_
          * @param sdf1 _more_
@@ -1341,7 +1500,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1372,83 +1533,128 @@ public abstract class Converter extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
     public static class DateExtracter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int col;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private SimpleDateFormat sdf;
+
+        /* */
 
         /** _more_          */
         private TimeZone tz;
 
-	private String whatLabel="Hour";
-	private int what = GregorianCalendar.HOUR;
+        /* */
 
-	
+        /** _more_          */
+        private String whatLabel = "Hour";
+
+        /* */
+
+        /** _more_          */
+        private int what = GregorianCalendar.HOUR;
+
+
 
         /**
-         * _more_
          *
-         * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
          *
          * @param col _more_
-         * @param sdf1 _more_
-         * @param sdf2 _more_
+         * @param sdf _more_
+         * @param tz _more_
+         * @param what _more_
          */
         public DateExtracter(int col, String sdf, String tz, String what) {
-            this.col  = col;
-	    if(sdf.length()>0) {
-		this.sdf = new SimpleDateFormat(sdf);
-		this.sdf.setTimeZone(TimeZone.getTimeZone("GMT")); 
-	    }
+            this.col = col;
+            if (sdf.length() > 0) {
+                this.sdf = new SimpleDateFormat(sdf);
+                this.sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+            }
 
-	    
-	    if(tz.length()>0) {
-		tz = tz.toUpperCase();
-		this.tz = TimeZone.getTimeZone(tz);
 
-		System.err.println(tz +" tz:" + this.tz);
+            if (tz.length() > 0) {
+                tz      = tz.toUpperCase();
+                this.tz = TimeZone.getTimeZone(tz);
 
-	    }
-	    whatLabel = StringUtil.camelCase(what);
-	    what = what.toUpperCase();
-	    if(what.equals("ERA")) this.what = GregorianCalendar.ERA;
-	    else if(what.equals("YEAR")) this.what = GregorianCalendar.YEAR;
-	    else if(what.equals("MONTH")) this.what = GregorianCalendar.MONTH;
-	    else if(what.equals("DAY_OF_MONTH")) this.what = GregorianCalendar.DAY_OF_MONTH;
-	    else if(what.equals("DAY_OF_WEEK")) this.what = GregorianCalendar.DAY_OF_WEEK;
-	    else if(what.equals("WEEK_OF_MONTH")) this.what = GregorianCalendar.WEEK_OF_MONTH;
-	    else if(what.equals("DAY_OF_WEEK_IN_MONTH")) this.what = GregorianCalendar.DAY_OF_WEEK_IN_MONTH;
-	    else if(what.equals("AM_PM")) this.what = GregorianCalendar.AM_PM;
-	    else if(what.equals("HOUR")) this.what = GregorianCalendar.HOUR;
-	    else if(what.equals("HOUR_OF_DAY")) this.what = GregorianCalendar.HOUR_OF_DAY;
-	    else if(what.equals("MINUTE")) this.what = GregorianCalendar.MINUTE;
-	    else if(what.equals("SECOND")) this.what = GregorianCalendar.SECOND;
-	    else if(what.equals("MILLISECOND")) this.what = GregorianCalendar.MILLISECOND;
-	}
+                System.err.println(tz + " tz:" + this.tz);
 
+            }
+            whatLabel = StringUtil.camelCase(what);
+            what      = what.toUpperCase();
+            if (what.equals("ERA")) {
+                this.what = GregorianCalendar.ERA;
+            } else if (what.equals("YEAR")) {
+                this.what = GregorianCalendar.YEAR;
+            } else if (what.equals("MONTH")) {
+                this.what = GregorianCalendar.MONTH;
+            } else if (what.equals("DAY_OF_MONTH")) {
+                this.what = GregorianCalendar.DAY_OF_MONTH;
+            } else if (what.equals("DAY_OF_WEEK")) {
+                this.what = GregorianCalendar.DAY_OF_WEEK;
+            } else if (what.equals("WEEK_OF_MONTH")) {
+                this.what = GregorianCalendar.WEEK_OF_MONTH;
+            } else if (what.equals("DAY_OF_WEEK_IN_MONTH")) {
+                this.what = GregorianCalendar.DAY_OF_WEEK_IN_MONTH;
+            } else if (what.equals("AM_PM")) {
+                this.what = GregorianCalendar.AM_PM;
+            } else if (what.equals("HOUR")) {
+                this.what = GregorianCalendar.HOUR;
+            } else if (what.equals("HOUR_OF_DAY")) {
+                this.what = GregorianCalendar.HOUR_OF_DAY;
+            } else if (what.equals("MINUTE")) {
+                this.what = GregorianCalendar.MINUTE;
+            } else if (what.equals("SECOND")) {
+                this.what = GregorianCalendar.SECOND;
+            } else if (what.equals("MILLISECOND")) {
+                this.what = GregorianCalendar.MILLISECOND;
+            }
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-		row.add(whatLabel);
+                row.add(whatLabel);
+
                 return row;
             }
             try {
-                String s = row.get(col).toString();
-                Date   d = sdf==null?Utils.parseDate(s):sdf.parse(s);
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTimeZone(TimeZone.getTimeZone("GMT")); 
-		cal.setTime(d);
-		if(this.tz!=null) {
-		    cal.setTimeZone(this.tz);
-		}
-		String v = "NA";
-		v = ""+cal.get(what);
-		row.add(v);
+                String            s   = row.get(col).toString();
+                Date              d   = (sdf == null)
+                                        ? Utils.parseDate(s)
+                                        : sdf.parse(s);
+                GregorianCalendar cal = new GregorianCalendar();
+                cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+                cal.setTime(d);
+                if (this.tz != null) {
+                    cal.setTimeZone(this.tz);
+                }
+                String v = "NA";
+                v = "" + cal.get(what);
+                row.add(v);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -1458,31 +1664,35 @@ public abstract class Converter extends Processor {
 
     }
 
-    
+
     /**
      * Class description
      *
      *
      * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class DateBefore extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int col;
+
+        /* */
 
         /** _more_          */
         private Date date;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private SimpleDateFormat sdf1;
 
         /**
-         * _more_
          *
-         * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
+         *
+         *
          *
          * @param col _more_
          * @param sdf1 _more_
@@ -1495,7 +1705,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1536,25 +1748,29 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class DateAfter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int col;
+
+        /* */
 
         /** _more_          */
         private Date date;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private SimpleDateFormat sdf1;
 
         /**
-         * _more_
          *
-         * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
+         *
+         *
          *
          * @param col _more_
          * @param sdf1 _more_
@@ -1567,7 +1783,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1613,26 +1831,33 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnExtracter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int col;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String pattern;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String replace;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String name;
 
         /**
-         * _more_
          *
-         * @param cols _more_
+         *
+         *
          *
          * @param col _more_
          * @param pattern _more_
-         * @param value _more_
          * @param replace _more_
          * @param name _more_
          */
@@ -1645,7 +1870,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1693,32 +1920,47 @@ public abstract class Converter extends Processor {
     public static class RowChanger extends Converter {
 
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String pattern;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String value;
 
-	private HashSet<Integer> rows;
-	
+        /* */
+
+        /** _more_          */
+        private HashSet<Integer> rows;
+
         /**
-         * _more_
          *
          *
-         * @param row _more_
+         *
+         *
+         *
+         * @param rowList _more_
+         * @param cols _more_
          * @param pattern _more_
          * @param value _more_
          */
-        public RowChanger(List<Integer> rowList,  List<String> cols, String pattern, String value) {
-	    super(cols);
-	    rows = new HashSet<Integer>();
-	    for(int row: rowList) rows.add(row);
+        public RowChanger(List<Integer> rowList, List<String> cols,
+                          String pattern, String value) {
+            super(cols);
+            rows = new HashSet<Integer>();
+            for (int row : rowList) {
+                rows.add(row);
+            }
             this.pattern = pattern;
             this.value   = value;
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1730,15 +1972,15 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
-            if (!rows.contains(rowCnt++)) {
+            if ( !rows.contains(rowCnt++)) {
                 if ( !info.getAllData()) {
                     return row;
                 }
             }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
-                int index = idx.intValue();
-                String s = row.getString(index);
+                int    index = idx.intValue();
+                String s     = row.getString(index);
                 s = s.replaceAll(pattern, value);
                 row.set(index, s);
             }
@@ -1759,25 +2001,34 @@ public abstract class Converter extends Processor {
      */
     public static class RowMerger extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         HashSet<Integer> rows = new HashSet<Integer>();
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String delimiter;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String close;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private Row firstRow;
 
         /**
-         * _more_
          *
-         * @param close _more_
+         *
+         *
          *
          * @param rows _more_
          * @param delimiter _more_
+         * @param close _more_
          */
         public RowMerger(List<Integer> rows, String delimiter, String close) {
             this.delimiter = delimiter;
@@ -1788,7 +2039,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1844,12 +2097,16 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnDebugger extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String pattern;
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param pattern _more_
@@ -1860,7 +2117,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1905,14 +2164,21 @@ public abstract class Converter extends Processor {
      */
     public static class DateFormatter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private SimpleDateFormat from;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private SimpleDateFormat to;
 
         /**
-         * _more_
+         *
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param from _more_
@@ -1931,7 +2197,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -1981,15 +2249,21 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnMapper extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String name;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private Hashtable<String, String> map = new Hashtable();
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param name _more_
@@ -2006,7 +2280,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2067,14 +2343,19 @@ public abstract class Converter extends Processor {
     public static class ColumnSplitter extends Converter {
 
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String delimiter;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private List<String> names;
 
         /**
-         * _more_
+         *
+         *
          *
          *
          * @param col _more_
@@ -2089,7 +2370,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2139,24 +2422,31 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnConcatter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String delimiter;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String name;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private boolean inPlace;
 
         /**
-         * _more_
          *
          *
-         * @param name _more_
-         * @param inPlace _more_
+         *
+         *
          *
          * @param indices _more_
          * @param delimiter _more_
+         * @param name _more_
+         * @param inPlace _more_
          */
         public ColumnConcatter(List<String> indices, String delimiter,
                                String name, boolean inPlace) {
@@ -2167,7 +2457,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2236,47 +2528,75 @@ public abstract class Converter extends Processor {
      */
     public static class Geocoder extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private HashSet seen = new HashSet();
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private boolean writeForDb = false;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int badCnt = 0;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int nameIndex;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int latIndex;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int lonIndex;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private Hashtable<String, double[]> map;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private boolean doneHeader = false;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private boolean doAddress = false;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String prefix;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String suffix;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String latLabel = "Latitude";
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String lonLabel = "Longitude";
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param col _more_
@@ -2302,7 +2622,10 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param lat _more_
@@ -2329,7 +2652,10 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param prefix _more_
@@ -2349,7 +2675,10 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
+         *
          *
          * @param filename _more_
          *
@@ -2395,7 +2724,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2498,7 +2829,9 @@ public abstract class Converter extends Processor {
 
 
 
-    /** _more_ */
+    /* */
+
+    /** _more_          */
     private static Properties genderProperties;
 
     /**
@@ -2510,16 +2843,22 @@ public abstract class Converter extends Processor {
      */
     public static class Genderizer extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private boolean doneHeader = false;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int column;
 
         /**
-         * _more_
+         *
+         *
          *
          * @param col _more_
+         *
          * @throws Exception _more_
          */
         public Genderizer(int col) throws Exception {
@@ -2527,7 +2866,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2589,30 +2930,42 @@ public abstract class Converter extends Processor {
      */
     public static class Denormalizer extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private Hashtable map = new Hashtable();
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         int destCol;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         String newColName;
 
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         String mode;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         boolean doDelete;
 
         /**
-         * _more_
          *
          *
+         *
+         *
+         *
+         * @param mapFile _more_
          * @param col1 _more_
          * @param col2 _more_
          * @param col _more_
-         * @param mapFile _more_
          * @param newName _more_
          * @param mode _more_
          *
@@ -2630,7 +2983,9 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param filename _more_
          * @param col1 _more_
@@ -2659,7 +3014,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2717,7 +3074,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
          *
          *
          * @param indices _more_
@@ -2727,7 +3085,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2755,18 +3115,25 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnScaler extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private double delta1;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private double delta2;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private double scale;
 
 
         /**
-         * _more_
+         *
+         *
          *
          * @param col _more_
          * @param delta1 _more_
@@ -2782,7 +3149,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2819,11 +3188,15 @@ public abstract class Converter extends Processor {
      */
     public static class Decimals extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int tens;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param decimals _more_
@@ -2834,7 +3207,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2874,12 +3249,15 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnCopier extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String name;
 
 
         /**
-         * _more_
+         *
+         *
          *
          * @param col _more_
          * @param name _more_
@@ -2890,7 +3268,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2928,12 +3308,15 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnNewer extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String delimiter;
 
 
         /**
-         * _more_
+         *
+         *
          *
          * @param indices _more_
          * @param delimiter _more_
@@ -2944,7 +3327,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -2986,20 +3371,25 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnMathOperator extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String name;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String op;
 
 
         /**
-         * _more_
          *
-         * @param op _more_
+         *
+         *
          *
          * @param indices _more_
          * @param name _more_
+         * @param op _more_
          */
         public ColumnMathOperator(List<String> indices, String name,
                                   String op) {
@@ -3009,7 +3399,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3072,12 +3464,11 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
          *
-         * @param op _more_
+         *
+         *
          *
          * @param indices _more_
-         * @param name _more_
          */
         public Mercator(List<String> indices) {
             super(indices);
@@ -3085,7 +3476,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3138,7 +3531,8 @@ public abstract class Converter extends Processor {
 
 
         /**
-         * _more_
+         *
+         *
          *
          * @param indices _more_
          */
@@ -3147,7 +3541,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3192,15 +3588,18 @@ public abstract class Converter extends Processor {
      */
     public static class Case extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         String action;
 
         /**
-         * _more_
          *
-         * @param action _more_
+         *
+         *
          *
          * @param indices _more_
+         * @param action _more_
          */
         public Case(List<String> indices, String action) {
             super(indices);
@@ -3208,7 +3607,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3253,17 +3654,22 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnInserter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int col;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private List<String> values;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param col _more_
-         *
          * @param value _more_
          */
         public ColumnInserter(int col, String value) {
@@ -3272,7 +3678,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3312,20 +3720,30 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnMacro extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private Pattern pattern;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String template;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String label;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String value;
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param pattern _more_
          * @param template _more_
@@ -3339,7 +3757,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3391,23 +3811,30 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnNudger extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int col;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int rowIdx;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String value;
 
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param row _more_
          * @param col _more_
-         *
          * @param value _more_
          */
         public ColumnNudger(int row, int col, String value) {
@@ -3417,7 +3844,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3453,16 +3882,21 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnUnNudger extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private List<Integer> cols;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int rowIdx;
 
 
 
         /**
-         * _more_
+         *
+         *
          *
          *
          * @param row _more_
@@ -3474,7 +3908,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3514,22 +3950,30 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnSetter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private List<Integer> cols;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private List<Integer> rows;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String value;
 
 
         /**
-         * _more_
+         *
+         *
+         *
+         *
          *
          * @param cols _more_
          * @param rows _more_
-         *
          * @param value _more_
          */
         public ColumnSetter(List<String> cols, List<String> rows,
@@ -3540,7 +3984,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3580,25 +4026,26 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Letter extends Converter {
+
+        /* */
 
         /** _more_          */
         int cnt = 0;
 
         /**
-         * _more_
          *
-         * @param cols _more_
-         * @param rows _more_
          *
-         * @param value _more_
+         *
          */
         public Letter() {}
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3623,7 +4070,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          * @param n _more_
          *
@@ -3650,32 +4099,38 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnPatternSetter extends Converter {
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private int patternCol;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String pattern;
+
+        /* */
 
         /** _more_          */
         private int writeCol;
 
-        /** _more_ */
+        /* */
+
+        /** _more_          */
         private String what;
 
 
 
         /**
-         * _more_
          *
-         * @param cols _more_
-         * @param rows _more_
+         *
+         *
+         *
          *
          * @param col1 _more_
          * @param pattern _more_
          * @param col2 _more_
          * @param what _more_
-         *
-         * @param value _more_
          */
         public ColumnPatternSetter(int col1, String pattern, int col2,
                                    String what) {
@@ -3686,7 +4141,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         * _more_
+         *
+         *
+         *
          *
          *
          * @param info _more_
@@ -3712,7 +4169,8 @@ public abstract class Converter extends Processor {
     }
 
     /**
-     * _more_
+     *
+     *
      *
      * @param args _more_
      */

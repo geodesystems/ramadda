@@ -318,6 +318,7 @@ public abstract class Processor extends CsvOperator {
                         if (skipTo == processor) {
                             skipTo = null;
                         }
+
                         continue;
                     }
                     if (sawBufferer) {
@@ -354,9 +355,9 @@ public abstract class Processor extends CsvOperator {
             return row;
         }
 
-	/*
+        /*
 rotate -> pass -> pass -> rotate -> pass
-	 */
+         */
 
         /**
          * _more_
@@ -439,7 +440,7 @@ rotate -> pass -> pass -> rotate -> pass
                         break;
                     }
                 }
-	    }
+            }
             if (firstProcessors != null) {
                 for (Processor processor : firstProcessors) {
                     inputRows = processor.finish(textReader, inputRows);
@@ -634,6 +635,13 @@ rotate -> pass -> pass -> rotate -> pass
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
     public static class Pass extends Processor {
 
         /**
@@ -657,9 +665,10 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public Row processRow(TextReader info, Row row, String line)
                 throws Exception {
-	    System.err.println("#" + (rowCnt++) +" row:" + row);
-	    return row;
-	}
+            System.err.println("#" + (rowCnt++) + " row:" + row);
+
+            return row;
+        }
     }
 
 
@@ -672,7 +681,7 @@ rotate -> pass -> pass -> rotate -> pass
      */
     public static class Verifier extends Processor {
 
-        /** _more_          */
+        /** _more_ */
         private int cnt = -1;
 
         /**
@@ -869,14 +878,14 @@ rotate -> pass -> pass -> rotate -> pass
      *
      *
      * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class MaxValue extends RowCollector {
 
-        /** _more_          */
+        /** _more_ */
         String key;
 
-        /** _more_          */
+        /** _more_ */
         String value;
 
         /**
@@ -2185,6 +2194,7 @@ rotate -> pass -> pass -> rotate -> pass
          * _more_
          *
          *
+         *
          * @param unfurlIndex _more_
          * @param valueCols _more_
          * @param uniqueIndex _more_
@@ -2357,6 +2367,93 @@ rotate -> pass -> pass -> rotate -> pass
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Nov 19, '19
+     * @author         Enter your name here...
+     */
+    public static class Furler extends RowCollector {
+
+        /** _more_ */
+        private List<Integer> indices;
+
+        /** _more_ */
+        private List<String> cols;
+
+        /** _more_ */
+        private Row header;
+
+
+        /** _more_ */
+        private String label1;
+
+        /** _more_ */
+        private String label2;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param label1 _more_
+         * @param label2 _more_
+         */
+        public Furler(List<String> cols, String label1, String label2) {
+            super(cols);
+            this.label1 = label1;
+            this.label2 = label2;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+            rows = getRows();
+            List<Integer>    indices   = getIndices(info);
+            HashSet<Integer> indexMap  = Utils.makeHashSet(indices);
+            List<Row>        newRows   = new ArrayList<Row>();
+            Row              header    = rows.get(0);
+            Row              newHeader = new Row();
+            newRows.add(newHeader);
+            for (int col = 0; col < header.size(); col++) {
+                if ( !indexMap.contains(col)) {
+                    newHeader.add(header.get(col));
+                }
+            }
+            newHeader.add(label1);
+            newHeader.add(label2);
+            for (int rowIdx = 1; rowIdx < rows.size(); rowIdx++) {
+                Row row = rows.get(rowIdx);
+                for (int i : indices) {
+                    if ((i < 0) || (i >= row.size())) {
+                        continue;
+                    }
+                    Row newRow = new Row();
+                    newRows.add(newRow);
+                    for (int col = 0; col < row.size(); col++) {
+                        if ( !indexMap.contains(col)) {
+                            newRow.add(row.get(col));
+                        }
+                    }
+                    newRow.add(header.get(i));
+                    newRow.add(row.get(i));
+                }
+            }
+
+            return newRows;
+        }
+    }
 
 
 
@@ -2369,19 +2466,13 @@ rotate -> pass -> pass -> rotate -> pass
      */
     public static class Dups extends RowCollector {
 
-        /** _more_          */
+        /** _more_ */
         private List<String> toks;
 
 
 
         /**
          * _more_
-         *
-         *
-         * @param unfurlIndex _more_
-         * @param valueCols _more_
-         * @param uniqueIndex _more_
-         * @param extraCols _more_
          *
          * @param toks _more_
          */
@@ -2453,21 +2544,14 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         private String value;
 
-        /** _more_          */
+        /** _more_ */
         private String delimiter;
 
-        /** _more_          */
+        /** _more_ */
         private String name;
 
         /**
          * _more_
-         *
-         *
-         * @param unfurlIndex _more_
-         * @param valueCols _more_
-         * @param uniqueIndex _more_
-         * @param extraCols _more_
-         *
          * @param key _more_
          * @param value _more_
          * @param delim _more_

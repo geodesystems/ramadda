@@ -913,10 +913,12 @@ public class Filter extends Processor {
             for (int rowIdx : rows) {
                 if ((rowIdx == -1) && cutOne) {
                     inRange = true;
+
                     break;
                 }
                 if (rowIdx == rowCnt) {
                     inRange = true;
+
                     break;
                 }
             }
@@ -930,6 +932,7 @@ public class Filter extends Processor {
             if ( !rowOk) {
                 cutOne = true;
             }
+
             return rowOk;
         }
     }
