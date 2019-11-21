@@ -263,13 +263,43 @@ function CollectionForm(formId, plottype, args) {
             outputImages: function(imageEntries) {
                 if (imageEntries.length == 0) return "";
                 var imagehtml = "";
+                var gifs = [];
+                var non_gifs = []
                 for (var i = 0; i < imageEntries.length; i++) {
                     var entry = imageEntries[i];
+                    var name = entry.getFilename();
+                    var suffix = name.substring(name.lastIndexOf(".")+1);
+                    if (suffix == "gif") {
+                       gifs.push(entry);
+                    } else {
+                       non_gifs.push(entry);
+                    }
+                }
+                for (var i = 0; i < gifs.length; i++) {
+                    var entry = gifs[i];
+                    var name = entry.getFilename();
+                    var prefix = name.substring(0,name.lastIndexOf("."));
                     imagehtml += "<a class=\"popup_image\" href=\""+ entry.getResourceUrl()+"\">\n";
                     imagehtml += HtmlUtil.image(entry.getResourceUrl(), ["width", "100%"])+"\n";
                     imagehtml += "</a>\n";
                     imagehtml += "<br/>\n";
-                    imagehtml += HtmlUtil.href(entry.getResourceUrl(), "Download image");
+                    if (non_gifs.length == 0) {
+                        imagehtml += "<p/>\n";
+                        imagehtml += HtmlUtil.href(entry.getResourceUrl(), "Download Image");
+                    } else {
+                        for (var j = 0; j < non_gifs.length; j++) {
+                            var myentry = non_gifs[j];
+                            var myname = myentry.getFilename();
+                            var myprefix = myname.substring(0,myname.lastIndexOf("."));
+                            var mysuffix = myname.substring(name.lastIndexOf(".")+1);
+                            if (myprefix == prefix) {
+                                imagehtml += "<p/>\n";
+                                imagehtml += HtmlUtil.href(myentry.getResourceUrl(), "Download "+mysuffix.toUpperCase()+" Image");
+                                break;
+                            }
+                        }
+                    }
+                    imagehtml += "<p/>";
                 }
                 imagehtml += "<p/>";
                 return imagehtml;

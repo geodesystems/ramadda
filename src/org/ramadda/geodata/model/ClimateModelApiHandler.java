@@ -301,12 +301,13 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                               processId);
 
         if (request.get("returnimage", false)) {
-            request.setReturnFilename(processId + ".png");
+            String suffix = IOUtil.getFileExtension(lastFile.toString());
+            request.setReturnFilename(processId + suffix);
 
             return new Result(
                 "",
                 getStorageManager().getFileInputStream(lastFile.toString()),
-                "image/png");
+                getRepository().getMimeTypeFromSuffix(suffix));
         } else if (request.get("returnjson", false)) {
             StringBuilder json = new StringBuilder();
             Entry processDirEntry =

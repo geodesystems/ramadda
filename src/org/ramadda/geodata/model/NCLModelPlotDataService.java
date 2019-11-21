@@ -162,7 +162,6 @@ public class NCLModelPlotDataService extends NCLDataService {
             || type.equals(ClimateModelApiHandler.ARG_ACTION_CORRELATION);
         boolean isCorrelation =
             type.equals(ClimateModelApiHandler.ARG_ACTION_CORRELATION);
-        sb.append(HtmlUtils.formTable());
         //List<Entry> entries = input.getEntries();
         Entry first = getFirstGridEntry(input);
         /*
@@ -194,6 +193,9 @@ public class NCLModelPlotDataService extends NCLDataService {
         //        String space1 = HtmlUtils.space(1);
         //        String space2 = HtmlUtils.space(2);
 
+        sb.append(HtmlUtils.formTable());
+        addImageFormatWidget(request, sb);
+        
         if ((input.getOperands().size() > 1)
                 && !handleMultiple
                 && !isCorrelation) {
@@ -315,8 +317,6 @@ public class NCLModelPlotDataService extends NCLDataService {
             addUnitsWidget(request, units, sb);
         }
 
-        //TODO: handle multiple output types
-        sb.append(HtmlUtils.hidden(ARG_NCL_IMAGEFORMAT, "gif"));
 
         addDataMaskWidget(request, sb);
         sb.append(HtmlUtils.formTableClose());
@@ -678,10 +678,20 @@ public class NCLModelPlotDataService extends NCLDataService {
                     || plotType.equals("image")) {
                 suffix = imageFormat;
             }
+            
+            // Hack
+            if (imageFormat.equals("kmz")) {
+                plotType = "kmz";
+                imageFormat = "png";
+            }
+            
             String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
             String maskType   = request.getString(ARG_NCL_MASKTYPE, "none");
             File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                                                    wksName) + "." + suffix);
+            // The plotting routine will also generate a gif file for display
+            File displayFile = new File(IOUtil.joinDir(input.getProcessDir(),
+                                                   wksName) + ".gif");
             CdmDataOutputHandler dataOutputHandler =
                 nclOutputHandler.getDataOutputHandler();
             GridDataset dataset =
@@ -951,13 +961,25 @@ public class NCLModelPlotDataService extends NCLDataService {
             nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
                     outputEntry);
             outputEntries.add(outputEntry);
+            // add a GIF file for the entry.
+            if (!outFile.getPath().equals(displayFile.getPath())) {
+                Resource displayresource = new Resource(displayFile,
+                                             Resource.TYPE_LOCAL_FILE);
+                TypeHandler displayHandler = getRepository().getTypeHandler(outType,
+                                        true);
+                Entry displayEntry = new Entry(displayHandler, true,
+                                          displayFile.toString());
+                displayEntry.setResource(displayresource);
+                nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
+                        displayEntry);
+                //outputEntries.add(displayEntry);
+            }
             if (dataset != null) {
                 dataset.close();
             }
         }
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList,
-                                                                 outputEntries));
+                                + nameList, outputEntries));
 
         return dpo;
 
@@ -1042,6 +1064,9 @@ public class NCLModelPlotDataService extends NCLDataService {
         String  maskType    = request.getString(ARG_NCL_MASKTYPE, "none");
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                                                wksName) + "." + suffix);
+        // The plotting routine will also generate a gif file for display
+        File displayFile = new File(IOUtil.joinDir(input.getProcessDir(),
+                                                   wksName) + ".gif");
         CdmDataOutputHandler dataOutputHandler =
             nclOutputHandler.getDataOutputHandler();
         GridDataset dataset = dataOutputHandler.getCdmManager().createGrid(
@@ -1228,9 +1253,21 @@ public class NCLModelPlotDataService extends NCLDataService {
         nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
                 outputEntry);
         outputEntries.add(outputEntry);
+        // add a GIF file for the entry.
+        if (!outFile.getPath().equals(displayFile.getPath())) {
+            Resource displayresource = new Resource(displayFile,
+                                         Resource.TYPE_LOCAL_FILE);
+            TypeHandler displayHandler = getRepository().getTypeHandler(outType,
+                                    true);
+            Entry displayEntry = new Entry(displayHandler, true,
+                                      displayFile.toString());
+            displayEntry.setResource(displayresource);
+            nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
+                    displayEntry);
+            outputEntries.add(displayEntry);
+        }
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList,
-                                                                 outputEntries));
+                                + nameList, outputEntries));
         if (dataset != null) {
             dataset.close();
         }

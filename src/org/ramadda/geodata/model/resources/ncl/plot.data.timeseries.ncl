@@ -25,14 +25,21 @@ load "$NCL_RESOURCES/change_units.ncl"
 ; Return:  the name of the resulting image
 ;**************************************************
 undef ("cropImage")
-function cropImage(wksname:string, suffix:string, format:string)
+function cropImage(wksname:string, wks_type:string, format:string)
 begin
-    oldimagename = wksname+".000001"+suffix
+    suffix = "."+wks_type
     imagename = wksname+suffix
     tmpimagename = wksname+"_tmp."+format
     outimagename = wksname+"."+format
-    system("mv -f "+oldimagename+" "+imagename)
-    system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
+    if (suffix .eq. ".png") then
+      oldimagename = wksname+".000001"+suffix
+      system("mv -f "+oldimagename+" "+imagename)
+    end if
+    if (wks_type .eq. "png") then
+      system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
+    else
+      system("%convert% -alpha off -density 300 -resize 38% -quality 92 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
+    end if
     system("mv -f " + tmpimagename + " " + outimagename)
     return outimagename
 end
@@ -233,25 +240,6 @@ begin
   return data1-remappedData
 
 end
-;**************************************************
-; Procedure:  cropImage
-;
-; Purpose:  crop the extra white space around the image
-;
-; Return:  the name of the resulting image
-;**************************************************
-undef ("cropImage")
-function cropImage(wksname:string, suffix:string, format:string)
-begin
-    oldimagename = wksname+".000001"+suffix
-    imagename = wksname+suffix
-    tmpimagename = wksname+"_tmp."+format
-    outimagename = wksname+"."+format
-    system("mv -f "+oldimagename+" "+imagename)
-    system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
-    system("mv -f " + tmpimagename + " " + outimagename)
-    return outimagename
-end
 
 ;*************************************************
 ; Procedure:  addLogo
@@ -299,6 +287,35 @@ begin
   system("%convert% " + imageFilePath + "  -background white label:'" + plottext + "' -gravity Center -append " + tmpFilePath)
   system("mv -f " + tmpFilePath + " " + imageFilePath)
 
+end
+
+;**************************************************
+; Procedure:  decorateImage
+;
+; Purpose:  crop and decorate the image
+;
+; Return:  the name of the resulting image
+;**************************************************
+undef ("decorateImage")
+function decorateImage(wksname:string, wks_type:string, opts:logical)
+begin
+  ;if ((opts@imageformat .eq. "png") .or. (opts@imageformat .eq. "gif")) then
+  ;  image = cropImage(wksname, wks_type, opts@imageformat)
+  ;  addAnnotation(wksname, opts@annotation, opts@imageformat)
+  ;  ;if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+  ;  ;   addLogo(wksname, opts@logo, opts@imageformat)
+  ;  ;end if
+  ;else
+  if ((opts@imageformat .eq. "png")) then
+    image = cropImage(wksname, wks_type, opts@imageformat)
+  end if
+    image = cropImage(wksname, wks_type, "gif")
+    addAnnotation(wksname, opts@annotation, "gif")
+    ;if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+    ;   addLogo(wksname, opts@logo, "gif")
+    ;end if
+  ;end if
+  return image
 end
 
 ;************************************************
@@ -435,15 +452,18 @@ end
 ;
 ; Params:  files  - the data files to plot
 ;          wks_name - workstation name
-;          wks_type - workstation type (x11, png, etc)
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotts")
-procedure plotts(files:numeric, wks_name:string, wks_type:string,  opts:logical)
+procedure plotts(files:numeric, wks_name:string, opts:logical)
 local data, numfiles, plots, dodiff, isanom
 
 begin
 
+  wks_type = opts@imageformat
+  if (wks_type .eq. "gif") then
+    wks_type = "png"
+  end if
   numdims = dimsizes(files)
   numfiles = numdims(0)
   numtimes = numdims(1)
@@ -482,6 +502,8 @@ begin
   res = True
   res@gsnDraw           = False         ; Don't draw plots (for overlay)
   res@gsnFrame          = False         ; don't advance frame yet
+  res@gsnMaximize     = True
+  res@gsnPaperOrientation = "portrait"
 
   res@vpHeightF  = 0.4               ; change aspect ratio of plot
   res@vpWidthF   = 0.7
@@ -760,8 +782,9 @@ begin
   frame(wks)
   wksname = wks@name
   delete(wks)
-  image = cropImage(wksname,".png", opts@imageformat)
-  addAnnotation(wksname, opts@annotation, opts@imageformat)
+  image = decorateImage(wksname, wks_type, opts)
+;  image = cropImage(wksname,".png", opts@imageformat)
+;  addAnnotation(wksname, opts@annotation, opts@imageformat)
 ;  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
 ;     addLogo(wksname, opts@logo, opts@imageformat)
 ;  end if
@@ -776,11 +799,10 @@ end
 ;
 ; Params:  files  - the data files to plot
 ;          wks_name - workstation name
-;          wks_type - workstation type (x11, png, etc)
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotcomp")
-procedure plotcomp(files[*]:string, wks_name:string, wks_type:string,  opts:logical)
+procedure plotcomp(files[*]:string, wks_name:string, opts:logical)
 local data, numfiles, alldata, isanom
 
 begin
@@ -853,7 +875,7 @@ begin
   opts@regionTitle=region
   delete(data)
   ;printVarSummary(alldata)
-  plotts(alldata,wks_name,wks_type,opts)
+  plotts(alldata,wks_name,opts)
 
 end
 
@@ -1064,7 +1086,7 @@ begin
   options@linecolor=linecolor
   
   ;print("calling plotts")
-  plotcomp(ncfiles, wks_name, "png", options)
+  plotcomp(ncfiles, wks_name, options)
   
   status_exit(0)
 

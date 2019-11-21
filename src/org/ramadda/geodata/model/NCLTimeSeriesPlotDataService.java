@@ -157,6 +157,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
             || type.equals(
                 ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES);
         sb.append(HtmlUtils.formTable());
+        addImageFormatWidget(request, sb);
         Entry  first = input.getEntries().get(0);
 
         String units = "";
@@ -278,8 +279,6 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
                                               Integer.MAX_VALUE)));
         addUnitsWidget(request, units, sb);
 
-        //TODO: handle multiple output types
-        sb.append(HtmlUtils.hidden(ARG_NCL_IMAGEFORMAT, "gif"));
 
         addDataMaskWidget(request, sb);
 
@@ -295,9 +294,9 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
         yaxisOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_YMAX,
                 ARG_NCL_YMAX,
                 ""));
-        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Y-Axis Range"),
+        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Y-Axis<br>Range"),
                                       yaxisOpts.toString()));
-        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Running Average"),
+        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Running<br>Average"),
                                       HtmlUtils.select(ARG_NCL_NAVE,
                                               periods,
                                               request.getString(ARG_NCL_NAVE,
@@ -385,6 +384,8 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
         String maskType    = request.getString(ARG_NCL_MASKTYPE, "none");
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                                                wksName) + "." + suffix);
+        File displayFile = new File(IOUtil.joinDir(input.getProcessDir(),
+                                               wksName) + ".gif");
         CdmDataOutputHandler dataOutputHandler =
             nclOutputHandler.getDataOutputHandler();
         GridDataset dataset =
@@ -566,9 +567,21 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
         nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
                 outputEntry);
         outputEntries.add(outputEntry);
+        // add a GIF file for the entry.
+        if (!outFile.getPath().equals(displayFile.getPath())) {
+            Resource displayresource = new Resource(displayFile,
+                                         Resource.TYPE_LOCAL_FILE);
+            TypeHandler displayHandler = getRepository().getTypeHandler(outType,
+                                    true);
+            Entry displayEntry = new Entry(displayHandler, true,
+                                      displayFile.toString());
+            displayEntry.setResource(displayresource);
+            nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
+                    displayEntry);
+            //outputEntries.add(displayEntry);
+        }
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList,
-                                                                 outputEntries));
+                                + nameList, outputEntries));
 
         return dpo;
 

@@ -386,14 +386,22 @@ end
 ; Return:  the name of the resulting image
 ;**************************************************
 undef ("cropImage")
-function cropImage(wksname:string, suffix:string, format:string)
+function cropImage(wksname:string, wks_type:string, format:string)
 begin
-    oldimagename = wksname+".000001"+suffix
+   
+    suffix = "."+wks_type
     imagename = wksname+suffix
     tmpimagename = wksname+"_tmp."+format
     outimagename = wksname+"."+format
-    system("mv -f "+oldimagename+" "+imagename)
-    system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
+    if (suffix .eq. ".png") then
+      oldimagename = wksname+".000001"+suffix
+      system("mv -f "+oldimagename+" "+imagename)
+    end if
+    if (wks_type .eq. "png") then
+      system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
+    else
+      system("%convert% -alpha off -density 300 -resize 38% -quality 92 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
+    end if
     system("mv -f " + tmpimagename + " " + outimagename)
     return outimagename
 end
@@ -444,6 +452,35 @@ begin
   system("%convert% " + imageFilePath + "  -background white label:'" + plottext + "' -gravity Center -append " + tmpFilePath)
   system("mv -f " + tmpFilePath + " " + imageFilePath)
 
+end
+
+;**************************************************
+; Procedure:  decorateImage
+;
+; Purpose:  crop and decorate the image
+;
+; Return:  the name of the resulting image
+;**************************************************
+undef ("decorateImage")
+function decorateImage(wksname:string, wks_type:string, opts:logical)
+begin
+  ;if ((opts@imageformat .eq. "png") .or. (opts@imageformat .eq. "gif")) then
+  ;  image = cropImage(wksname, wks_type, opts@imageformat)
+  ;  addAnnotation(wksname, opts@annotation, opts@imageformat)
+  ;  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+  ;     addLogo(wksname, opts@logo, opts@imageformat)
+  ;  end if
+  ;else
+  if ((opts@imageformat .eq. "png")) then
+    image = cropImage(wksname, wks_type, opts@imageformat)
+  end if
+    image = cropImage(wksname, wks_type, "gif")
+    addAnnotation(wksname, opts@annotation, "gif")
+    if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+       addLogo(wksname, opts@logo, "gif")
+    end if
+  ;end if
+  return image
 end
 
 ;************************************************************
@@ -627,7 +664,7 @@ begin
 ;   lbcropbox = kml_get_vp_cropbox(lbwks,lbid)
    delete(lbwks)
 
-    lbicon = cropImage(wksname,".png", "png")
+    lbicon = cropImage(wksname, "png", "png")
 ;   lbicon = kml_crop_plot(lbcropbox,res)
 
 ;---Turn off the current labelbar so we can draw the one we just regenerated.
@@ -781,22 +818,20 @@ end
 ;
 ; Params:  files  - the data files to plot
 ;          wks_name - workstation name
-;          wks_type - workstation type (x11, png, etc)
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotmap")
-;;procedure plotmap(files:numeric, wks_name:string, wks_type:string,  opts:logical)
-procedure plotmap(files:list, wks_name:string, wks_type:string,  opts:logical)
+procedure plotmap(files:list, wks_name:string, opts:logical)
 local data, numfiles, plots, dodiff, doPanel, isanom
 
 begin
 
-  ;;numdims = dimsizes(files)
-  ;;numfiles = numdims(0)
+  wks_type = opts@imageformat
+  if (wks_type .eq. "gif") then
+    wks_type = "png"
+  end if
   numfiles = ListCount(files)
   ;print(numfiles)
-  ;data = readdata(files(0), opts) 
-  ;;data = files(0,:,:)
   data = files[0]
   plots = new(numfiles,graphic)
   outtype = opts@outtype
@@ -990,9 +1025,9 @@ begin
       
   else
 
-    wks_type="png"
     if (.not. doPanel) then
       rescf@gsnMaximize = True
+      rescf@gsnPaperOrientation = "portrait"
     else 
       rescf@gsnMaximize = False
     end if
@@ -1322,6 +1357,7 @@ begin
       ;---Create resources for paneling
       resP                            = True
       resP@gsnMaximize                = True    
+      resP@gsnPaperOrientation = "portrait"
       resP@gsnPanelLabelBar           = True    
       resP@txFontHeightF              = .015
       resP@txFontThicknessF=.8
@@ -1382,23 +1418,6 @@ begin
 
     else 
 
-        ;; moved to main section
-;;      if (opts@isanom) then
-;;        res_text               = True
-;;        res_text@txFontHeightF = 0.012                     ; change font size
-;;        climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
-;;        txid_bot = gsn_create_text(wks, climText, res_text)
-;;
-;;        amres                  = True
-;;        amres@amJust           = "BottomCenter"
-;;        amres@amParallelPosF   =  0.0  ; This is the center of the plot.
-;;        if (opts@usepolar) then
-;;          amres@amOrthogonalPosF =  0.60 ; This is just below the colorbar
-;;        else
-;;          amres@amOrthogonalPosF =  0.75 ; This is just below the colorbar
-;;        end if
-;;        annoid_bot = gsn_add_annotation(plots(0), txid_bot, amres)
-;;      end if
       draw(plots(0))
 
     end if
@@ -1406,11 +1425,20 @@ begin
     wksname = wks@name
     delete(wks)
     delete(plots)
-    image = cropImage(wksname,".png", opts@imageformat)
-    addAnnotation(wksname, opts@annotation, opts@imageformat)
-    if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-       addLogo(wksname, opts@logo, opts@imageformat)
-    end if
+    image = decorateImage(wksname, wks_type, opts)
+;;    if ((opts@imageformat .eq. "png") .or. (opts@imageformat .eq. "gif")) then
+;;      image = cropImage(wksname, wks_type, opts@imageformat)
+;;      addAnnotation(wksname, opts@annotation, opts@imageformat)
+;;      if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+;;         addLogo(wksname, opts@logo, opts@imageformat)
+;;      end if
+;;    else
+;;      image = cropImage(wksname, wks_type, "gif")
+;;      addAnnotation(wksname, opts@annotation, "gif")
+;;      if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+;;         addLogo(wksname, opts@logo, "gif")
+;;      end if
+;;    end if
   end if
 
 end
@@ -1422,11 +1450,10 @@ end
 ;
 ; Params:  files  - the data files to plot
 ;          wks_name - workstation name
-;          wks_type - workstation type (x11, png, etc)
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotcorr")
-procedure plotcorr(files[*]:string, wks_name:string, wks_type:string,  opts:logical)
+procedure plotcorr(files[*]:string, wks_name:string, opts:logical)
 
 local tsdata, ncdata, rawdata, vals, plotData, corr, cdata
 
@@ -1580,7 +1607,7 @@ begin
   do i = 0,numplots-1
     ListAppend(plotData,replicate_var(cdata(i,:,:)))
   end do
-  plotmap(plotData,wks_name,wks_type,opts)
+  plotmap(plotData,wks_name,opts)
   delete(csvidx)
   delete(ncidx)
   delete(cdata)
@@ -1595,26 +1622,43 @@ end
 ;
 ; Params:  files  - the data files to plot
 ;          wks_name - workstation name
-;          wks_type - workstation type (x11, png, etc)
 ;          opts - allow passing optional args
 ;***********************************************
 undef("makePdfPlot")
-procedure makePdfPlot(pdffiles[*]:string, wks_name:string, wks_type:string,  opts:logical)
+procedure makePdfPlot(pdffiles[*]:string, wks_name:string, opts:logical)
 
 begin
 
+  wks_type = opts@imageformat
+  if (wks_type .eq. "gif") then
+    wks_type = "png"
+  end if
   numpdfs = dimsizes(pdffiles)
   outfile = pdffiles(0)
   ;asciiwrite(outfile,pdffiles)
   rscript = new((/40/),string)
   if (isatt(opts,"rpath")) then
-    rscript(0) = "png(filename = '"+wks_name+".png', width = 800, height = 800, units = 'px', pointsize = 12, bg = 'white',  res = NA, type = c('cairo', 'cairo-png', 'Xlib', 'quartz'))"
+    if ((wks_type .eq. "png") .or. (wks_type .eq. "gif")) then
+      rscript(0) = "png(filename = '"+wks_name+".png', width = 800, height = 800, units = 'px', pointsize = 12, bg = 'white',  res = NA, type = c('cairo', 'cairo-png', 'Xlib', 'quartz'))"
+      c1 = "2."
+      c2 = "1.25"
+      lwd = "3"
+    else 
+      c1 = "1.25"
+      c2 = ".75"
+      lwd = "2"
+      if (wks_type .eq. "ps") then
+        rscript(0) = "postscript(paper='letter','"+wks_name+".ps',width=7.,height=7., horizontal=FALSE)"
+      else
+        rscript(0) = "pdf(paper='letter','"+wks_name+".pdf',width=7.,height=7.)"
+      end if
+    end if
     rscript(1) = "# R script for plotting density function"
     rscript(2) = "library(sm)"
     rscript(3) = "#  Read in the data"
     rscript(4) = "data<-matrix(scan(file='"+outfile+"'),ncol=1,byrow=TRUE)"
-    rscript(5) = "par(cex=2)"
-    rscript(6) = "par(lwd=2)"
+    rscript(5) = "par(cex="+c1+")"
+    rscript(6) = "par(lwd="+c1+")"
     rscript(7) = "sm.options(rugplot=FALSE)"
     rscript(8) = "options(na.action=na.exclude)"
     linenum=9
@@ -1657,7 +1701,7 @@ begin
           xlims = ",xlim=c(b,c)"
       end if
     end if
-    rscript(linenum) = "a<-sm.density(data[,1],col='black',lwd=3,ylab='Density',xlab='"+opts@varTitle+"'"+xlims+ylims+")"
+    rscript(linenum) = "a<-sm.density(data[,1],col='black',lwd="+lwd+",ylab='Density',xlab='"+opts@varTitle+"'"+xlims+ylims+")"
     rscript(linenum+1) = "a<-cbind(a$eval.points,a$estimate)"
     rscript(linenum+2) = "rug(data[,1],lwd=1.,col='black',side=1)"
     if (opts@isanom) then  ; add a line at 0
@@ -1668,13 +1712,13 @@ begin
     end if
     rscript(linenum+1) = "sm.options(add=TRUE)"
     if (numpdfs .gt. 1) then
-        rscript(linenum+2) = "a2<-sm.density(data2[,1],col='red',lwd=3"+xlims+ylims+")"
+        rscript(linenum+2) = "a2<-sm.density(data2[,1],col='red',lwd="+lwd+xlims+ylims+")"
         rscript(linenum+3) = "a2<-cbind(a2$eval.points,a2$estimate)"
         rscript(linenum+4) = "rug(data2[,1],lwd=1.,col='red',side=1)"
         linenum = linenum+3
     end if
-    rscript(linenum+2) = "title(main='"+opts@mainTitle+"',line=2., cex.main=1.3, font.main=1)"
-    rscript(linenum+3) = "title(main='"+opts@regionTitle+"',line=1.2, cex.main=1.1, font.main=1)"
+    rscript(linenum+2) = "title(main='"+opts@mainTitle+"',line=2., cex.main=1.2, font.main=1)"
+    rscript(linenum+3) = "title(main='"+opts@regionTitle+"',line=1.2, cex.main=1.0, font.main=1)"
     if (opts@isanom) then   ; add multiple titles
       climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
       rscript(linenum+4) = "title(main='"+climText+"',line=.4,cex.main=0.85, font.main=1)"
@@ -1695,7 +1739,7 @@ begin
       end if
     end if
     ;;;  legend
-    rscript(linenum+1) = "par(cex=1.25)"
+    rscript(linenum+1) = "par(cex="+c2+")"
     label1 = ""
     label2 = ""
     if (numpdfs .gt. 1) then
@@ -1720,7 +1764,7 @@ begin
         rscript(linenum+2) = "l1<-'"+label1+"'"
         rscript(linenum+3) = "l2<-'"+label2+"'"
       end if
-      rscript(linenum+4) = "legend('topleft',lty=c(1,1),lwd=3,bty='n',col=c('black','red'),c(l1,l2))"
+      rscript(linenum+4) = "legend('topleft',lty=c(1,1),lwd="+lwd+",bty='n',col=c('black','red'),c(l1,l2))"
       linenum = linenum+4
     else
       if (opts@pdfstat .ne. "none") then
@@ -1847,11 +1891,20 @@ begin
     delete(wks)
   end if
   wksname = wks_name
-  image = cropImage(wksname,".png", opts@imageformat)
-  addAnnotation(wksname, opts@annotation, opts@imageformat)
-  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-     addLogo(wksname, opts@logo, opts@imageformat)
-  end if
+  image = decorateImage(wksname, wks_type, opts)
+;;  if ((opts@imageformat .eq. "png") .or. (opts@imageformat .eq. "gif")) then
+;;    image = cropImage(wksname, wks_type, opts@imageformat)
+;;    addAnnotation(wksname, opts@annotation, opts@imageformat)
+;;    if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+;;       addLogo(wksname, opts@logo, opts@imageformat)
+;;    end if
+;;  else
+;;    image = cropImage(wksname, wks_type, "gif")
+;;    addAnnotation(wksname, opts@annotation, "gif")
+;;    if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+;;       addLogo(wksname, opts@logo, "gif")
+;;    end if
+;;  end if
 end
 
 ;************************************************
@@ -1880,11 +1933,10 @@ end
 ;
 ; Params:  files  - the data files to plot
 ;          wks_name - workstation name
-;          wks_type - workstation type (x11, png, etc)
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotpdf")
-procedure plotpdf(files[*]:string, wks_name:string, wks_type:string,  opts:logical)
+procedure plotpdf(files[*]:string, wks_name:string, opts:logical)
 
 begin
   if (isatt(opts,"mask") .and. .not.(opts@mask .eq. "none")) then
@@ -2010,7 +2062,7 @@ begin
     end if
   end if
   opts@regionTitle=region
-  makePdfPlot(pdffiles, wks_name, wks_type, opts)
+  makePdfPlot(pdffiles, wks_name, opts)
 
 end
 
@@ -2021,11 +2073,10 @@ end
 ;
 ; Params:  files  - the data files to plot
 ;          wks_name - workstation name
-;          wks_type - workstation type (x11, png, etc)
 ;          opts - allow passing optional args
 ;***********************************************
 undef("plotcomp")
-procedure plotcomp(files[*]:string, wks_name:string, wks_type:string,  opts:logical)
+procedure plotcomp(files[*]:string, wks_name:string, opts:logical)
 local data, numfiles, onetime, alldata, doPanel, isanom
 
 begin
@@ -2149,7 +2200,7 @@ begin
   end if
    ;printVarSummary(alldata)
    ;print("numdatas "+ListCount(alldata))
-   plotmap(alldata,wks_name,wks_type,opts)
+   plotmap(alldata,wks_name,opts)
 end
 
 ;**************************************************
@@ -2500,14 +2551,14 @@ begin
   
   if (outType .eq. "correlation" .or. (outType.eq."regression")) then
       ;print("calling plotcorr")
-      plotcorr(ncfiles, wks_name, "png", options)
+      plotcorr(ncfiles, wks_name, options)
   else 
     if (outType .eq. "enscomp" .and. plotType .eq. "pdf") then
         ;print("calling plotpdf")
-        plotpdf(ncfiles, wks_name, "png", options)
+        plotpdf(ncfiles, wks_name, options)
     else
         ;print("calling plotcomp")
-        plotcomp(ncfiles, wks_name, "png", options)
+        plotcomp(ncfiles, wks_name, options)
     end if
   end if
   

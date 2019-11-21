@@ -194,7 +194,7 @@ public class NCLDataService extends Service {
             throws Exception {
 
         //System.err.println("cmds:" + commands);
-        System.err.println("env:" + envMap);
+        //System.err.println("env:" + envMap);
 
         long millis = System.currentTimeMillis();
         JobManager.CommandResults results =
@@ -325,6 +325,89 @@ public class NCLDataService extends Service {
         } else if (SimpleUnit.isCompatible(units, "kg m-2")) {
             sb.append(HtmlUtils.hidden(ARG_NCL_UNITS, "mm"));
         }
+    }
+
+
+    /**
+     * Add a widget for selecting image formats
+     *
+     * @param request  the request
+     * @param sb       the UI string
+     *
+     * @throws Exception problems appending
+     */
+    protected void addImageFormatWidget(Request request, Appendable sb)
+            throws Exception {
+        //sb.append(HtmlUtils.hidden(ARG_NCL_IMAGEFORMAT, "gif"));
+        //TODO: handle multiple output types
+        StringBuilder obuttons = new StringBuilder();
+        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
+                                        "gif",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_IMAGEFORMAT,
+                                            "gif",
+                                            true)));
+        obuttons.append(space1);
+        obuttons.append(Repository.msg("GIF"));
+        obuttons.append(space2);
+        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
+                                        "png",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_IMAGEFORMAT,
+                                            "png",
+                                            false)));
+        obuttons.append(space1);
+        obuttons.append(Repository.msg("PNG"));
+        obuttons.append(space2);
+        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
+                                        "pdf",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_IMAGEFORMAT,
+                                            "pdf",
+                                            false)));
+        obuttons.append(space1);
+        obuttons.append(Repository.msg("PDF"));
+        obuttons.append(space2);
+        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
+                                        "ps",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_IMAGEFORMAT,
+                                            "ps",
+                                            false)));
+        obuttons.append(space1);
+        obuttons.append(Repository.msg("PostScript"));
+        obuttons.append(space2);
+        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
+                                        "eps",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_IMAGEFORMAT,
+                                            "eps",
+                                            false)));
+        obuttons.append(space1);
+        obuttons.append(Repository.msg("EPS"));
+        /*
+        String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
+        if (outputType.equals("comp")) {
+          obuttons.append(space2);
+          obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
+                                        "kmz",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_IMAGEFORMAT,
+                                            "kmz",
+                                            false)));
+          obuttons.append(space1);
+          obuttons.append(Repository.msg("KML"));
+        }
+        */
+
+        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Output"),
+                                      obuttons.toString()));
     }
 
 }
