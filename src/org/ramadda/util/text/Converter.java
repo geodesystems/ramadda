@@ -3713,6 +3713,60 @@ public abstract class Converter extends Processor {
      * Class description
      *
      *
+     * @version        $version$, Wed, Dec 2, '15
+     * @author         Enter your name here...
+     */
+    public static class Generator extends Converter {
+
+	private String label;
+	private double start;
+	private double step;
+	private double value;
+
+        /**
+         */
+        public Generator(String label, double start, double step) {
+	    this.label = label;
+	    this.start = start;
+	    this.step = step;
+	    value = start;
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+	    if (rowCnt++ == 0) {
+		row.add(label);
+		return row;
+	    }
+	    if(value == (int) value) {
+		row.add("" + ((int)value));
+	    } else {
+		row.add("" + value);
+	    }
+	    value+=step;
+            return row;
+        }
+    }
+    
+
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Mon, Jul 29, '19
      * @author         Enter your name here...
      */

@@ -92,9 +92,9 @@ for {set i 0} {$i < $max} {incr i} {
                     exit;
                 }
             } 
-            set fp [open test.out r]
-            set html [read $fp]
-            close $fp
+#            set fp [open test.out r]
+#            set html [read $fp]
+#            close $fp
             if {0} {
                 if {[regexp {(\$\{[^\}]+)\}} $html match macro]} {
                     puts "Got pattern in $url"
