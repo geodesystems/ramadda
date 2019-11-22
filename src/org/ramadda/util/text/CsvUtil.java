@@ -2819,11 +2819,13 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
+                    List<String> cols = getCols(args.get(++i));
                     info.getProcessor().addProcessor(
-                        new Converter.ColumnScaler(
-                            args.get(++i), Double.parseDouble(args.get(++i)),
-                            Double.parseDouble(args.get(++i)),
-                            Double.parseDouble(args.get(++i))));
+						     new Converter.ColumnScaler(
+										cols,
+										Double.parseDouble(args.get(++i)),
+										Double.parseDouble(args.get(++i)),
+										Double.parseDouble(args.get(++i))));
 
                     continue;
                 }

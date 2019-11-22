@@ -3138,9 +3138,9 @@ public abstract class Converter extends Processor {
          * @param scale _more_
          * @param delta2 _more_
          */
-        public ColumnScaler(String col, double delta1, double scale,
+        public ColumnScaler(List<String> cols, double delta1, double scale,
                             double delta2) {
-            super(col);
+            super(cols);
             this.delta1 = delta1;
             this.delta2 = delta2;
             this.scale  = scale;
@@ -3160,17 +3160,18 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-            int index = getIndex(info);
-            if ((index < 0) || (index >= row.size())) {
-                return row;
-            }
-            try {
-                double value = Double.parseDouble(row.get(index).toString());
-                row.set(index,
-                        new Double((value + delta1) * scale
-                                   + delta2).toString());
-            } catch (NumberFormatException nfe) {}
-
+            List<Integer> indices = getIndices(info);
+	    for(int index: indices) {
+		if ((index < 0) || (index >= row.size())) {
+		    continue;
+		}
+		try {
+		    double value = Double.parseDouble(row.get(index).toString());
+		    row.set(index,
+			    new Double((value + delta1) * scale
+				       + delta2).toString());
+		} catch (NumberFormatException nfe) {}
+	    }
             return row;
         }
 
