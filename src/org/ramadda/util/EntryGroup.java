@@ -16,36 +16,17 @@
 
 package org.ramadda.util;
 
-
 import org.ramadda.util.HtmlUtils;
-
-
 import org.w3c.dom.*;
-
-
-
-
-
-
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
 import ucar.unidata.xml.XmlUtil;
-
-
-
-
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-
 
 /**
  *

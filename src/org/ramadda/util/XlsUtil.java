@@ -73,7 +73,7 @@ public class XlsUtil {
         try {
 
             StringBuffer sb   = new StringBuffer();
-            InputStream myxls = IOUtil.getInputStream(filename,
+            InputStream myxls = IO.getInputStream(filename,
                                     XlsUtil.class);
             HSSFWorkbook wb         = new HSSFWorkbook(myxls);
             HSSFSheet    sheet      = wb.getSheetAt(0);
@@ -120,7 +120,7 @@ public class XlsUtil {
         try {
 
             StringBuffer sb   = new StringBuffer();
-            InputStream myxls = IOUtil.getInputStream(filename,
+            InputStream myxls = IO.getInputStream(filename,
                                     XlsUtil.class);
             XSSFWorkbook wb         = new XSSFWorkbook(myxls);
             XSSFSheet    sheet      = wb.getSheetAt(0);
@@ -191,7 +191,6 @@ public class XlsUtil {
                 csv = xlsToCsv(arg);
             }
             String newFile = IOUtil.stripExtension(arg) + ".csv";
-            System.err.println("Writing:" + newFile);
             IOUtil.writeFile(newFile, csv);
         }
     }

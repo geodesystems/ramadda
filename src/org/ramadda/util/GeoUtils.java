@@ -406,7 +406,7 @@ public class GeoUtils {
     public static Hashtable getStatesMap() throws Exception {
         if (statesMap == null) {
             InputStream inputStream =
-                IOUtil.getInputStream("/org/ramadda/util/states.properties",
+                IO.getInputStream("/org/ramadda/util/states.properties",
                                       GeoUtils.class);
             String    s    = IOUtil.readContents(inputStream);
             Hashtable tmp  = Utils.getProperties(s);
@@ -675,7 +675,7 @@ public class GeoUtils {
                                      "addresslocations2.txt"));
                 if (cacheFile.exists()) {
                     for (String line :
-                            StringUtil.split(IOUtil.readContents(cacheFile),
+                            StringUtil.split(IO.readContents(cacheFile),
                                              "\n", true, true)) {
                         List<String> toks = StringUtil.split(line,
                                                 cacheDelimiter);
@@ -730,7 +730,7 @@ public class GeoUtils {
                            + bounds.getWest() + "|" + bounds.getNorth() + ","
                            + bounds.getEast();
                 }
-                String result = IOUtil.readContents(url, GeoUtils.class);
+                String result = IO.readContents(url, GeoUtils.class);
                 //                System.err.println("result:" + result);
 
                 name = StringUtil.findPattern(result,

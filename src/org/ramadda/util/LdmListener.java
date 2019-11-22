@@ -16,30 +16,17 @@
 
 package org.ramadda.util;
 
-
 import ucar.unidata.util.DateUtil;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
 import java.io.*;
-
 import java.net.URL;
 import java.net.URLConnection;
-
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
-
 import java.util.GregorianCalendar;
-
 import java.util.List;
-
-
-
-
 import java.util.TimeZone;
 import java.util.regex.*;
 

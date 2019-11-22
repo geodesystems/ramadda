@@ -19,18 +19,16 @@ package org.ramadda.util.text;
 
 import org.json.*;
 
-
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
 
+import org.ramadda.util.IO;
+import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.XlsUtil;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -425,7 +423,7 @@ public class CsvUtil {
                     process(textReader.cloneMe(is, file, outputFile,
                             outputStream));
                     if (closeIS) {
-                        IOUtil.close(is);
+                        IO.close(is);
                     }
                     if (this.inputStream != null) {
                         break;
@@ -523,7 +521,7 @@ public class CsvUtil {
                 }
             }
 
-            return IOUtil.getInputStream(file);
+            return IO.getInputStream(file);
         }
     }
 
@@ -613,6 +611,38 @@ public class CsvUtil {
      *
      * @param file _more_
      * @param props _more_
+     * @param chunkPattern _more_
+     * @param tokenPattern _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Row> tokenizeText(String file, String chunkPattern,
+                                  String tokenPattern)
+            throws Exception {
+        String    s    = IO.readContents(file);
+        List<Row> rows = new ArrayList<Row>();
+        //      String chunk = StringUtil.findPattern(chunkPattern);
+        //      if(chunk==null) {
+        //xxxx          
+        //      }
+
+        Row row = new Row();
+        rows.add(row);
+
+        return rows;
+    }
+
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param props _more_
      *
      * @return _more_
      *
@@ -658,7 +688,7 @@ public class CsvUtil {
         //        System.out.println(skipAttr);
         boolean   debug = false;
         List<Row> rows  = new ArrayList<Row>();
-        String    s     = IOUtil.readContents(file);
+        String    s     = IO.readContents(file);
         for (int i = 0; i < changeFrom.size(); i++) {
             s = s.replaceAll(changeFrom.get(i), changeTo.get(i));
         }
@@ -785,7 +815,7 @@ public class CsvUtil {
             throws Exception {
 
         List<Row> rows       = new ArrayList<Row>();
-        String    s          = IOUtil.readContents(file);
+        String    s          = IO.readContents(file);
 
         JSONArray array      = null;
         String    arrayPath  = props.get("arrayPath");
@@ -911,7 +941,7 @@ public class CsvUtil {
     public List<Row> tokenizePattern(String file, List<String> header,
                                      String pattern)
             throws Exception {
-        String    s    = IOUtil.readContents(file);
+        String    s    = IO.readContents(file);
         List<Row> rows = new ArrayList<Row>();
         rows.add(new Row(header));
         if (pattern.length() == 0) {
@@ -1374,9 +1404,8 @@ public class CsvUtil {
         new Cmd("-insert", "<col #> <value>", "(insert a new column value)"),
         new Cmd("-insert", "<col #> <comma separated values>"),
         new Cmd("-addcell", "<row #>  <col #>  <value>"),
-        new Cmd("-deletecell", "<row #> <col #>"),
-        new Cmd("-rotate"), new Cmd("-flip"),
-
+        new Cmd("-deletecell", "<row #> <col #>"), new Cmd("-rotate"),
+        new Cmd("-flip"),
         new Cmd(
             "-unfurl",
             "<col to get new column header#> <value columns> <unique col>  <other columns>",
@@ -1385,7 +1414,6 @@ public class CsvUtil {
                 "(use values in header to make new row)"),
         new Cmd("-explode", "<col #> ",
                 "(make separate files based on value of column)"),
-
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
         //        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
@@ -1397,7 +1425,6 @@ public class CsvUtil {
         new Cmd("-join",
                 "<key columns> <value columns> <file> <src key columns>",
                 "Join the 2 files together"),
-
         new Cmd(true, "Filter"),
         new Cmd("-unique", "<columns>", "(pass through unique values)"),
         new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
@@ -1413,7 +1440,6 @@ public class CsvUtil {
         new Cmd("-after", "<column> <format> <date> <format2>"),
         new Cmd("-skipline", " <pattern>",
                 "(skip any line that matches the pattern)"),
-
         new Cmd(true, "Change Values"),
         new Cmd(
             "-macro",
@@ -1445,7 +1471,6 @@ public class CsvUtil {
             "<date column> <format> <tz> <era|year|month|day_of_month|day_of_week|week_of_month|day_of_week_in_month|am_pm|hour|hour_of_day|minute|second|millisecond>"),
         new Cmd("-formatdate",
                 "<col #s> <intial date format> <target date format>"),
-
         new Cmd(
             "-extract",
             "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
@@ -1490,11 +1515,9 @@ public class CsvUtil {
                 "<col indices> Latitude Longitude <prefix> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
         new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
-        new Cmd(true, "Other Commands"),
-        new Cmd("-sort", "<column sort>"),
+        new Cmd(true, "Other Commands"), new Cmd("-sort", "<column sort>"),
         new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
-
         new Cmd("-changeline", "<from> <to>", "(change the line)"),
         new Cmd("-changeraw", "<from> <to>", "(change input text)"),
         new Cmd(
@@ -1517,6 +1540,8 @@ public class CsvUtil {
         new Cmd("-json",
                 "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
                 "(parse the input as json)"),
+        new Cmd("-text", "\"chunk pattern\" \"token pattern\"",
+                "(extract rows from the text)"),
         new Cmd("-tokenize", " \"header1,header2...\" \"pattern\"",
                 "(tokenize the input from the pattern)"),
         new Cmd("-prune", "<number of leading bytes to remove>",
@@ -1699,6 +1724,10 @@ public class CsvUtil {
         Filter.FilterGroup filterToAddTo = null;
         //info.getFilter();
 
+        boolean      doText          = false;
+        String       chunkPattern    = null;
+        String       tokenPattern    = null;
+
         boolean      doHtml          = false;
         String       htmlProps       = null;
         boolean      doJson          = false;
@@ -1723,6 +1752,16 @@ public class CsvUtil {
                     }
                     doHtml    = true;
                     htmlProps = args.get(++i);
+
+                    continue;
+                }
+                if (arg.equals("-text")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    doText       = true;
+                    chunkPattern = args.get(++i);
+                    tokenPattern = args.get(++i);
 
                     continue;
                 }
@@ -2220,7 +2259,7 @@ public class CsvUtil {
                     }
                     String template = args.get(++i);
                     if (new File(template).exists()) {
-                        template = IOUtil.readContents(new File(template));
+                        template = IO.readContents(new File(template));
                     }
                     info.getProcessor().addProcessor(
                         new Processor.Printer(template));
@@ -3175,6 +3214,9 @@ public class CsvUtil {
         if (doHtml) {
             Hashtable<String, String> props = parseProps(htmlProps);
             tokenizedRows.add(tokenizeHtml(files.get(0), props));
+        } else if (doText) {
+            tokenizedRows.add(tokenizeText(files.get(0), chunkPattern,
+                                           tokenPattern));
         } else if (doJson) {
             Hashtable<String, String> props = parseProps(jsonProps);
             tokenizedRows.add(tokenizeJson(files.get(0), props));

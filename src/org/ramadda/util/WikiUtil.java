@@ -19,7 +19,6 @@ package org.ramadda.util;
 
 import org.ramadda.util.HtmlUtils;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
 

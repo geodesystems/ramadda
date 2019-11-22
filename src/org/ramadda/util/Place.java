@@ -16,27 +16,18 @@
 
 package org.ramadda.util;
 
-
 import org.ramadda.util.HtmlUtils;
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-
-
-
 
 /**
  *     Class description
@@ -147,7 +138,7 @@ public class Place {
 	    resourcePlacesMap.put(this.id, resourceMap);
 	    BufferedReader br = new BufferedReader(
 						   new InputStreamReader(
-									 IOUtil.getInputStream(
+									 IO.getInputStream(
 											       this.file,
 											       Place.class)));
 	    int    cnt     = 0;

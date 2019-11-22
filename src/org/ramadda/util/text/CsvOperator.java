@@ -18,18 +18,14 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.util.GeoUtils;
-
-
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
-
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
 import java.text.DateFormat;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
@@ -164,11 +160,11 @@ public abstract class CsvOperator {
             return new FileInputStream(filename);
         } catch (Exception exc) {
             try {
-                return IOUtil.getInputStream(filename, CsvOperator.class);
+                return IO.getInputStream(filename, CsvOperator.class);
             } catch (Exception exc2) {
                 for (String prefix : FILE_PREFIXES) {
                     try {
-                        return IOUtil.getInputStream(prefix + "/" + filename,
+                        return IO.getInputStream(prefix + "/" + filename,
                                 CsvOperator.class);
                     } catch (Exception exc3) {}
                 }

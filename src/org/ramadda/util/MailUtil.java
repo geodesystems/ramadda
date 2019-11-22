@@ -16,17 +16,12 @@
 
 package org.ramadda.util;
 
-
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
 import java.io.*;
 import java.io.File;
-
 import java.util.List;
 import java.util.Properties;
-
 import javax.mail.*;
 import javax.mail.internet.*;
 

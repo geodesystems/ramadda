@@ -17,6 +17,7 @@
 package org.ramadda.util.text;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
 
@@ -68,11 +69,10 @@ public class EntryXmlProcessor extends Processor.RowCollector {
 
         String template = null;
         if (new File("template.xml").exists()) {
-            template = IOUtil.readContents("template.xml");
+            template = IO.readContents("template.xml");
         } else {
-            template =
-                IOUtil.readContents("/org/ramadda/util/text/template.xml",
-                                    EntryXmlProcessor.class);
+            template = IO.readContents("/org/ramadda/util/text/template.xml",
+                                       EntryXmlProcessor.class);
         }
         List<Row>       rows = getRows();
         StringBuilder   sb   = new StringBuilder("<entries>\n");

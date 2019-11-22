@@ -19,13 +19,14 @@ package org.ramadda.repository;
 
 import org.python.util.PythonInterpreter;
 
+import org.ramadda.data.point.PointFile;
+
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
-import org.ramadda.data.point.PointFile;
 
 
 import ucar.unidata.util.DateUtil;
@@ -65,7 +66,8 @@ import javax.crypto.spec.DESKeySpec;
  *
  * @author RAMADDA Development Team
  */
-public class StorageManager extends RepositoryManager implements PointFile.FileReader {
+public class StorageManager extends RepositoryManager implements PointFile
+    .FileReader, Utils.FileChecker {
 
 
     /** file separator */
@@ -231,7 +233,7 @@ public class StorageManager extends RepositoryManager implements PointFile.FileR
      */
     public StorageManager(Repository repository) {
         super(repository);
-	PointFile.setFileReader(this);
+        PointFile.setFileReader(this);
     }
 
     /**
@@ -2159,6 +2161,22 @@ public class StorageManager extends RepositoryManager implements PointFile.FileR
 
 
     /**
+     *  Implement the global Utils.checkFile
+     *
+     * @param file _more_
+     */
+    public void checkFile(String file) {
+        try {
+            //Check if its a file:// url
+            file = new URL(file).toURI().toString();
+        } catch (Exception exc) {}
+        File f = new File(file);
+        if (f.exists()) {
+            checkReadFile(f);
+        }
+    }
+
+    /**
      * Check if a file is readable
      *
      * @param file  the file
@@ -2290,6 +2308,7 @@ public class StorageManager extends RepositoryManager implements PointFile.FileR
      */
     public String readSystemResource(URL url) throws Exception {
         checkPath(url.toString());
+
         return IOUtil.readContents(url.toString(), getClass());
     }
 
@@ -2597,13 +2616,21 @@ public class StorageManager extends RepositoryManager implements PointFile.FileR
     }
 
 
-    public String readPointFileContents(String path)  {
-	try {
-	    checkPath(path);
-	    return IOUtil.readContents(path, getClass());
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     */
+    public String readPointFileContents(String path) {
+        try {
+            checkPath(path);
+
+            return IOUtil.readContents(path, getClass());
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 }

@@ -16,41 +16,22 @@
 
 package org.ramadda.util;
 
-
 import org.ramadda.util.HtmlUtils;
-
 import org.w3c.dom.*;
-
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-
-
 import java.io.*;
-
 import java.io.File;
 import java.io.InputStream;
-
 import java.lang.reflect.*;
-
-
-
 import java.net.*;
-
 import java.util.ArrayList;
 import java.util.HashSet;
-
 import java.util.Hashtable;
 import java.util.List;
-
 import java.util.Map;
 import java.util.Properties;
-
-
 import java.util.jar.*;
-
-
-
 import java.util.regex.*;
 import java.util.zip.*;
 
@@ -132,9 +113,6 @@ public class HtmlTemplate {
 
             if (name == null) {
                 name = IOUtil.stripExtension(IOUtil.getFileTail(path));
-            }
-            if (id == null) {
-                //                id = IOUtil.stripExtension(IOUtil.getFileTail(path));
             }
         } catch (Exception exc) {
             throw new RuntimeException(exc);

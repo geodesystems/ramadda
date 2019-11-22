@@ -5570,7 +5570,6 @@ public class HtmlUtils {
             return extractLinksFtp(url, linkPattern);
         }
 
-        //        String html = IOUtil.readContents("test.html");
         String html = Utils.readUrl(url.toString());
 
 

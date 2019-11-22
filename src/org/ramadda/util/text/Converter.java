@@ -19,23 +19,21 @@ package org.ramadda.util.text;
 
 import org.json.*;
 
-
 import org.ramadda.util.GeoUtils;
+
+
+import org.ramadda.util.IO;
 import org.ramadda.util.Place;
 import org.ramadda.util.Utils;
 
-
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
 import java.text.DateFormat;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -228,7 +226,7 @@ public abstract class Converter extends Processor {
 
     /* */
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable<String, String> imageMap = new Hashtable<String,
                                                             String>();
 
@@ -243,7 +241,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String suffix;
 
         /**
@@ -297,7 +295,7 @@ public abstract class Converter extends Processor {
                                         "sh",
                                         script, s });
                         String result =
-                            IOUtil.readContents(p.getInputStream()).trim();
+                            IO.readInputStream(p.getInputStream()).trim();
                         JSONObject obj    = new JSONObject(result);
                         JSONArray  values = obj.getJSONArray("value");
                         if (values.length() == 0) {
@@ -341,7 +339,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         int size;
 
         /**
@@ -402,7 +400,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private DecimalFormat format;
 
         /**
@@ -460,12 +458,12 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int count;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String pad;
 
         /**
@@ -522,7 +520,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String pad;
 
         /**
@@ -581,7 +579,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String pad;
 
         /**
@@ -641,7 +639,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private boolean asPoint = false;
 
         /**
@@ -750,38 +748,38 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int count = 0;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         Hashtable<String, String> props;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         String defaultType = "string";
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         boolean defaultChartable = true;
 
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         boolean makeLabel = true;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         boolean toStdOut = false;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         Row firstRow;
 
         /**
@@ -1120,17 +1118,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         int col;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         int step;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         List<Double> values = new ArrayList<Double>();
 
         /**
@@ -1205,27 +1203,27 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         public static final int MA = 0;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         int what;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         int period;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         List<List<Double>> values = new ArrayList<List<Double>>();
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         String label;
 
         /**
@@ -1383,17 +1381,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private boolean isRegex;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String pattern;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String value;
 
         /**
@@ -1469,17 +1467,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private SimpleDateFormat sdf1;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private SimpleDateFormat sdf2;
 
 
@@ -1544,27 +1542,27 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private SimpleDateFormat sdf;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private TimeZone tz;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String whatLabel = "Hour";
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int what = GregorianCalendar.HOUR;
 
 
@@ -1676,17 +1674,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private Date date;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private SimpleDateFormat sdf1;
 
         /**
@@ -1754,17 +1752,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private Date date;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private SimpleDateFormat sdf1;
 
         /**
@@ -1833,22 +1831,22 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String pattern;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String replace;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String name;
 
         /**
@@ -1922,17 +1920,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String pattern;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String value;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private HashSet<Integer> rows;
 
         /**
@@ -2003,22 +2001,22 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         HashSet<Integer> rows = new HashSet<Integer>();
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String delimiter;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String close;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private Row firstRow;
 
         /**
@@ -2099,7 +2097,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String pattern;
 
 
@@ -2166,12 +2164,12 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private SimpleDateFormat from;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private SimpleDateFormat to;
 
         /**
@@ -2251,12 +2249,12 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String name;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private Hashtable<String, String> map = new Hashtable();
 
 
@@ -2345,12 +2343,12 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String delimiter;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private List<String> names;
 
         /**
@@ -2424,17 +2422,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String delimiter;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String name;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private boolean inPlace;
 
         /**
@@ -2530,67 +2528,67 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private HashSet seen = new HashSet();
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private boolean writeForDb = false;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int badCnt = 0;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int nameIndex;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int latIndex;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int lonIndex;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private Hashtable<String, double[]> map;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private boolean doneHeader = false;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private boolean doAddress = false;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String prefix;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String suffix;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String latLabel = "Latitude";
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String lonLabel = "Longitude";
 
         /**
@@ -2831,7 +2829,7 @@ public abstract class Converter extends Processor {
 
     /* */
 
-    /** _more_          */
+    /** _more_ */
     private static Properties genderProperties;
 
     /**
@@ -2845,12 +2843,12 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private boolean doneHeader = false;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int column;
 
         /**
@@ -2932,28 +2930,28 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private Hashtable map = new Hashtable();
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         int destCol;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         String newColName;
 
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         String mode;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         boolean doDelete;
 
         /**
@@ -3117,17 +3115,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private double delta1;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private double delta2;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private double scale;
 
 
@@ -3190,7 +3188,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int tens;
 
         /**
@@ -3251,7 +3249,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String name;
 
 
@@ -3310,7 +3308,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String delimiter;
 
 
@@ -3373,12 +3371,12 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String name;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String op;
 
 
@@ -3590,7 +3588,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         String action;
 
         /**
@@ -3656,12 +3654,12 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private List<String> values;
 
         /**
@@ -3722,22 +3720,22 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private Pattern pattern;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String template;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String label;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String value;
 
         /**
@@ -3813,17 +3811,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int rowIdx;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String value;
 
 
@@ -3884,12 +3882,12 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private List<Integer> cols;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int rowIdx;
 
 
@@ -3952,17 +3950,17 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private List<Integer> cols;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private List<Integer> rows;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String value;
 
 
@@ -4032,7 +4030,7 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         int cnt = 0;
 
         /**
@@ -4101,22 +4099,22 @@ public abstract class Converter extends Processor {
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int patternCol;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String pattern;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private int writeCol;
 
         /* */
 
-        /** _more_          */
+        /** _more_ */
         private String what;
 
 
