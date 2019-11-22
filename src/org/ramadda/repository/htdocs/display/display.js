@@ -280,6 +280,17 @@ function DisplayThing(argId, argProperties) {
             }
         },
         formatDateInner: function(date, args) {
+            if (this.dateFormat == "yyyy") {
+                return Utils.formatDateYYYY(date);
+            } else if (this.dateFormat == "yyyyMMdd") {
+                return Utils.formatDateYYYYMMDD(date);
+	    } else if (this.dateFormat == "monthdayyear") {
+                return Utils.formatDateMonthDayYear(date);
+	    } else if (this.dateFormat == "mdy") {
+                return Utils.formatDateMDY(date);
+	    } else if (this.dateFormat == "hhmm") {
+                return Utils.formatDateHHMM(date);
+	    }
 
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;

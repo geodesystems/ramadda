@@ -1990,6 +1990,61 @@ public abstract class Converter extends Processor {
 
 
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Mar 22, '19
+     * @author         Enter your name here...
+     */
+    public static class Shifter extends Converter {
+
+        /** _more_ */
+        private HashSet<Integer> rows;
+	private int column;
+	private int count;
+
+        /**
+	 */
+        public Shifter(List<Integer> rowList, int column, int count) {
+            rows = new HashSet<Integer>();
+            for (int row : rowList) {
+                rows.add(row);
+            }
+            this.column = column;
+            this.count = count;
+        }
+
+        /**
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if ( !rows.contains(rowCnt++)) {
+		return row;
+            }
+	    //a,b,c,d,e
+	    //a,b,c,d,e,X
+	    //a,b,c,d,e,X
+
+	    List values = row.getValues();
+	    List newValues = new ArrayList();
+	    for(int i=0;i<values.size();i++)
+		newValues.add(values.get(i));
+	    for(int i=0;i<count;i++) 
+		newValues.add(column,"");
+	    return new Row(newValues);
+        }
+
+    }
+    
+
+
     /**
      * Class description
      *

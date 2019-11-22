@@ -1426,6 +1426,7 @@ public class CsvUtil {
         new Cmd("-delete", "<col #>", "(remove the columns)"),
         new Cmd("-insert", "<col #> <value>", "(insert a new column value)"),
         new Cmd("-insert", "<col #> <comma separated values>"),
+	new Cmd("-shift", "<rows> <col #> <count>","(Shift columns over by count for given rows)"),
         new Cmd("-addcell", "<row #>  <col #>  <value>"),
         new Cmd("-deletecell", "<row #> <col #>"), new Cmd("-rotate"),
         new Cmd("-flip"),
@@ -2770,6 +2771,23 @@ public class CsvUtil {
                     info.getProcessor().addProcessor(
                         new Converter.ColumnInserter(
                             Integer.parseInt(args.get(++i)), args.get(++i)));
+
+                    continue;
+                }
+
+
+		if (arg.equals("-shift")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<Integer> rows    = getNumbers(args.get(++i));
+                    int col = Integer.parseInt(args.get(++i));
+		    int count = Integer.parseInt(args.get(++i));
+
+
+                    info.getProcessor().addProcessor(
+                        new Converter.Shifter(
+					     rows,col,count));
 
                     continue;
                 }

@@ -18,6 +18,7 @@ var DISPLAY_IMAGES = "images";
 var DISPLAY_BLANK = "blank";
 var DISPLAY_TOPFIELDS = "topfields";
 var DISPLAY_TIMELINE = "timeline";
+var DISPLAY_PERCENTCHANGE = "percentchange";
 
 
 
@@ -82,6 +83,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_TIMELINE,
     label: "Timeline",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_PERCENTCHANGE,
+    label: "Percent Change",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -1406,6 +1415,74 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	}
     })}
+
+
+
+
+function RamaddaPercentchangeDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PERCENTCHANGE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+				    ]);
+	},
+	updateUI: function() {
+	    var records = this.filterData();
+	    if(!records) return;
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+	    fields = this.getFieldsOfType(fields, "numeric");
+	    let  record1 = records[0];
+	    let  record2 = records[records.length-1];
+            let html =  "<br>";
+	    html += HtmlUtils.openTag("table", ["class", "nowrap ramadda-table", "id", this.getDomId("percentchange")]);
+	    let date1 = record1.getDate();
+	    let date2 = record2.getDate();
+	    let label1 ="Start Value";
+	    let label2 ="Start Value";
+	    if(date1)
+		label1 = this.formatDate(date1);
+	    if(date2)
+		label2 = this.formatDate(date2);
+            html += HtmlUtils.openTag("thead", []);
+            html += HtmlUtils.tr([], HtmlUtils.th([], "Field") + HtmlUtils.th([], label1) + HtmlUtils.th([], label2)
+				 + HtmlUtils.th([], "Percent Change"));
+            html += HtmlUtils.closeTag("thead");
+            html += HtmlUtils.openTag("tbody", []);
+	    var tuples= [];
+	    fields.map(f=>{
+		var val1 = record1.getValue(f.getIndex());
+		var val2 = record2.getValue(f.getIndex());
+		var percent = parseInt(1000*(val2-val1)/val1)/10;
+		tuples.push({field:f,val1:val1,val2:val2,percent:percent});
+	    });
+
+	    tuples.sort((a,b)=>{
+		return -(a.percent-b.percent);
+	    })
+	    tuples.map(t=>{
+		html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
+				     HtmlUtils.td([], t.val1) +
+				     HtmlUtils.td([], t.val2)
+				     + HtmlUtils.td([], t.percent+"%"));
+	    });
+
+
+            html += HtmlUtils.closeTag("tbody");
+            html += HtmlUtils.closeTag("table");
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+            HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {
+                //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
+            });
+	},
+    })
+}
+
+
+
 
 
 

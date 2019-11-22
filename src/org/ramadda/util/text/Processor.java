@@ -980,13 +980,13 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
             rows = getRows(rows);
-            for (int i = rows.size() - 1; i >= 0; i--) {
+            List<Row> newRows = new ArrayList<Row>();
+	    newRows.add(rows.get(0));
+	    for (int i = rows.size() - 1; i >= 1; i--) {
                 Row row = rows.get(i);
-                info.getWriter().println(
-                    CsvUtil.columnsToString(row.getValues(), ","));
+		newRows.add(row);
             }
-
-            return rows;
+            return newRows;
         }
 
     }
