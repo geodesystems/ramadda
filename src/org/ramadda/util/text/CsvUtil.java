@@ -637,10 +637,10 @@ public class CsvUtil {
 		if ( !m1.find()) {
 		    break;
 		}
+		s = s.substring(m1.end());
 		for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
 		    String chunk = m1.group(i1).trim();
 		    //		    System.err.println("CHUNK:");
-		    s = s.substring(m1.end());
 		    Pattern p2 = Pattern.compile(tokenPattern);
 		    int cnt = 1;
 		    while (true) {
@@ -1777,7 +1777,6 @@ public class CsvUtil {
                     }
                     doHtml    = true;
                     htmlProps = args.get(++i);
-
                     continue;
                 }
                 if (arg.equals("-text")) {
@@ -1788,7 +1787,6 @@ public class CsvUtil {
 		    textHeader = args.get(++i);
                     chunkPattern = args.get(++i);
                     tokenPattern = args.get(++i);
-
                     continue;
                 }
                 if (arg.equals("-json")) {
@@ -3239,8 +3237,7 @@ public class CsvUtil {
             Hashtable<String, String> props = parseProps(htmlProps);
             tokenizedRows.add(tokenizeHtml(files.get(0), props));
         } else if (doText) {
-            tokenizedRows.add(tokenizeText(files.get(0), textHeader,chunkPattern,
-                                           tokenPattern));
+	    tokenizedRows.add(tokenizeText(files.get(0), textHeader,chunkPattern,tokenPattern));
         } else if (doJson) {
             Hashtable<String, String> props = parseProps(jsonProps);
             tokenizedRows.add(tokenizeJson(files.get(0), props));
