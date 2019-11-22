@@ -175,9 +175,9 @@ function CollectionForm(formId, plottype, args) {
                         tsfiles.push(entry);
                     } else if (typeid === TYPE_CSV) {
                         plotfiles.push(entry);
-                    } else if (entry.toString().indexOf("pdf") >= 0) {
+                    } else if (entry.getFilename().endsWith("pdfvalues.txt")) {
                         pdffiles.push(entry);
-                    } else if (entry.toString().indexOf("csv") >= 0) {
+                    } else if (entry.getFilename().endsWith(".csv")) {
                         tsfiles.push(entry);
                     } else {
                         continue;
@@ -349,7 +349,7 @@ function CollectionForm(formId, plottype, args) {
                 filehtml += "<b>Files used for plot:</b><br/>";
                 for (var i = 0; i < files.length; i++) {
                     var entry = files[i];
-                    if (entry.toString().indexOf(".txt") >= 0) {
+                    if (entry.toString().endsWith(".txt")) {
                       //filehtml += "PDF values: ";
                       filehtml += entry.getResourceLink();
                       filehtml += "<br/>";

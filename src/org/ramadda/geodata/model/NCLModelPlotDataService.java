@@ -269,7 +269,7 @@ public class NCLModelPlotDataService extends NCLDataService {
                                         "pdf",
                                         true)));
                 plotTypes.append(space1);
-                plotTypes.append(Repository.msg("PDF"));
+                plotTypes.append(Repository.msg("Histogram"));
                 plotTypes.append(space2);
                 plotTypes.append(
                     HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,

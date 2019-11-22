@@ -946,6 +946,9 @@ begin
     rescf@lbLabelBarOn = False         ; turn off label bar
     rescf@mpGeophysicalLineThicknessF = .5  ; reduce the line thickness
     rescf@mpNationalLineThicknessF = .5     ; reduce the line thickness
+    rescf@tmBorderThicknessF = 1.
+    rescf@tmXBMajorThicknessF =  1.
+    rescf@tmYLMajorThicknessF = 1.
   else
     rescf@lbLabelBarOn = True         ; turn on label bar
     ;;if (opts@isanom) then   ; add clim string as label bar title
@@ -996,8 +999,8 @@ begin
         ;rescf@lbLabelStrings = (/"-1.0","","-0.8","","-0.6","","-0.4","","-0.2","","0.2","","0.4","","0.6","","0.8","","1.0"/)
     end if
   end if
-  wks_type@wkWidth                     = 1600
-  wks_type@wkHeight                    = 1600
+  ;wks_type@wkWidth                     = 1600
+  ;wks_type@wkHeight                    = 1600
 
   
   if (doGoogle) then
@@ -1013,8 +1016,6 @@ begin
     rescf@gsnCenterString = ""
     rescf@gsnRightString = ""
     rescf@gsnBoxMargin = 0.0
-    ;wks_type@wkWidth                     = 1600
-    ;wks_type@wkHeight                    = 1600
 
     ; label bar
     rescf@lbLabelBarOn = True;
@@ -1647,8 +1648,8 @@ begin
       c1 = "1.25"
       c2 = ".75"
       lwd = "2"
-      if (wks_type .eq. "ps") then
-        rscript(0) = "postscript(paper='letter','"+wks_name+".ps',width=7.,height=7., horizontal=FALSE)"
+      if ((wks_type .eq. "ps") .or. (wks_type .eq. "eps")) then
+        rscript(0) = "postscript(paper='letter','"+wks_name+"."+wks_type+"',width=7.,height=7., horizontal=FALSE)"
       else
         rscript(0) = "pdf(paper='letter','"+wks_name+".pdf',width=7.,height=7.)"
       end if
@@ -2027,7 +2028,7 @@ begin
     end if
     pdffile = opts@models(pdf) + "_" + opts@exps(pdf) + "_" + opts@dates(pdf)
     pdffile = str_sub_str(pdffile," ","_")
-    outfile = opts@product_dir+"/"+pdffile+"_valsforpdf.txt"
+    outfile = opts@product_dir+"/"+pdffile+"_pdfvalues.txt"
     asciiwrite(outfile,alldata)
     pdffiles(pdf) = outfile
     delete(ncfiles)

@@ -390,6 +390,18 @@ public class NCLDataService extends Service {
                                             false)));
         obuttons.append(space1);
         obuttons.append(Repository.msg("EPS"));
+        /*  Doesn't work so well right now:  11/22/2019
+        obuttons.append(space2);
+        obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
+                                        "svg",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_IMAGEFORMAT,
+                                            "svg",
+                                            false)));
+        obuttons.append(space1);
+        obuttons.append(Repository.msg("SVG"));
+        */
         /*
         String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
         if (outputType.equals("comp")) {
