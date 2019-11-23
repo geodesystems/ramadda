@@ -17249,9 +17249,9 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    })
 	    tuples.map(t=>{
 		html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
-				     HtmlUtils.td([], t.val1) +
-				     HtmlUtils.td([], t.val2)
-				     + HtmlUtils.td([], t.percent+"%"));
+				     HtmlUtils.td(["align","right"], t.val1) +
+				     HtmlUtils.td(["align","right"], t.val2)
+				     + HtmlUtils.td(["align","right"], t.percent+"%"));
 	    });
 
 
