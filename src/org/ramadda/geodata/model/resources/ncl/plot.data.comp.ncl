@@ -457,29 +457,22 @@ end
 ;**************************************************
 ; Procedure:  decorateImage
 ;
-; Purpose:  crop and decorate the image
+; Purpose:  crop and decorate the image.  Always produce a GIF
 ;
 ; Return:  the name of the resulting image
 ;**************************************************
 undef ("decorateImage")
 function decorateImage(wksname:string, wks_type:string, opts:logical)
 begin
-  ;if ((opts@imageformat .eq. "png") .or. (opts@imageformat .eq. "gif")) then
-  ;  image = cropImage(wksname, wks_type, opts@imageformat)
-  ;  addAnnotation(wksname, opts@annotation, opts@imageformat)
-  ;  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-  ;     addLogo(wksname, opts@logo, opts@imageformat)
-  ;  end if
-  ;else
+  ;; always crop the png image ??
   if ((opts@imageformat .eq. "png")) then
     image = cropImage(wksname, wks_type, opts@imageformat)
   end if
-    image = cropImage(wksname, wks_type, "gif")
-    addAnnotation(wksname, opts@annotation, "gif")
-    if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-       addLogo(wksname, opts@logo, "gif")
-    end if
-  ;end if
+  image = cropImage(wksname, wks_type, "gif")
+  addAnnotation(wksname, opts@annotation, "gif")
+  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+     addLogo(wksname, opts@logo, "gif")
+  end if
   return image
 end
 
@@ -911,19 +904,42 @@ begin
   rescf@gsnDraw           = False         ; Don't draw plots (for overlay)
   rescf@gsnFrame          = False         ; don't advance frame yet
   
+  ; workstation stuff
   wks_type@wkBackgroundColor="white"
   wks_type@wkForegroundColor="black"
+  if (wks_type .eq. "png") then
+    if (doPanel) then
+      wks_type@wkWidth                     = 1600
+      wks_type@wkHeight                    = 1600
+    else
+      wks_type@wkWidth                     = 800
+      wks_type@wkHeight                    = 800
+    end if
+  else
+    if (doPanel) then
+      wks_type@wkPaperSize                 = "C"
+    else
+      wks_type@wkPaperSize                 = "letter"
+    end if
+  end if
   
   ; map stuff
-  rescf@mpFillOn = False
-  
+  rescf@mpFillOn = False   ; don't fill in continents - maybe user selectable in future
+
   rescf@mpOutlineBoundarySets = "National"
   rescf@mpDataBaseVersion = "MediumRes"
   rescf@mpOutlineSpecifiers = (/"Canada : Provinces","United States : States"/) 
   rescf@mpDataSetName = "Earth..4"
   
-  rescf@mpGeophysicalLineThicknessF = 1.5
-  rescf@mpNationalLineThicknessF = 1.5
+  if (wks_type .eq. "png") then
+    rescf@mpGeophysicalLineThicknessF = 1.5
+    rescf@mpNationalLineThicknessF = 1.
+    rescf@mpUSStateLineThicknessF = 1. 
+  else
+    rescf@mpGeophysicalLineThicknessF = 1.
+    rescf@mpNationalLineThicknessF = .5
+    rescf@mpUSStateLineThicknessF = .5
+  end if
 
   rescf@mpGeophysicalLineColor = "gray29"       ; color of cont. outlines
   rescf@mpNationalLineColor    = rescf@mpGeophysicalLineColor ; color of nat'l outlines
@@ -941,17 +957,17 @@ begin
   else
     vartitle = opts@variable
   end if
-  ; labelbar
+
+  ; labelbar and panel specific stuff
   if (doPanel) then
     rescf@lbLabelBarOn = False         ; turn off label bar
     rescf@mpGeophysicalLineThicknessF = .5  ; reduce the line thickness
-    rescf@mpNationalLineThicknessF = .5     ; reduce the line thickness
+    rescf@mpNationalLineThicknessF = .25     ; reduce the line thickness
     rescf@tmBorderThicknessF = 1.
     rescf@tmXBMajorThicknessF =  1.
     rescf@tmYLMajorThicknessF = 1.
   else
     rescf@lbLabelBarOn = True         ; turn on label bar
-    ;;if (opts@isanom) then   ; add clim string as label bar title
     if (opts@isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
       climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
       rescf@lbTitleString = climText
@@ -999,9 +1015,6 @@ begin
         ;rescf@lbLabelStrings = (/"-1.0","","-0.8","","-0.6","","-0.4","","-0.2","","0.2","","0.4","","0.6","","0.8","","1.0"/)
     end if
   end if
-  ;wks_type@wkWidth                     = 1600
-  ;wks_type@wkHeight                    = 1600
-
   
   if (doGoogle) then
 
@@ -1031,11 +1044,6 @@ begin
       rescf@gsnPaperOrientation = "portrait"
     else 
       rescf@gsnMaximize = False
-    end if
-    ratio = opts@ratio
-    if (.not. doPanel) then
-      wks_type@wkWidth                     = 800
-      wks_type@wkHeight                    = 800
     end if
 
     ;contour params
@@ -1427,19 +1435,6 @@ begin
     delete(wks)
     delete(plots)
     image = decorateImage(wksname, wks_type, opts)
-;;    if ((opts@imageformat .eq. "png") .or. (opts@imageformat .eq. "gif")) then
-;;      image = cropImage(wksname, wks_type, opts@imageformat)
-;;      addAnnotation(wksname, opts@annotation, opts@imageformat)
-;;      if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-;;         addLogo(wksname, opts@logo, opts@imageformat)
-;;      end if
-;;    else
-;;      image = cropImage(wksname, wks_type, "gif")
-;;      addAnnotation(wksname, opts@annotation, "gif")
-;;      if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-;;         addLogo(wksname, opts@logo, "gif")
-;;      end if
-;;    end if
   end if
 
 end
@@ -1893,19 +1888,6 @@ begin
   end if
   wksname = wks_name
   image = decorateImage(wksname, wks_type, opts)
-;;  if ((opts@imageformat .eq. "png") .or. (opts@imageformat .eq. "gif")) then
-;;    image = cropImage(wksname, wks_type, opts@imageformat)
-;;    addAnnotation(wksname, opts@annotation, opts@imageformat)
-;;    if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-;;       addLogo(wksname, opts@logo, opts@imageformat)
-;;    end if
-;;  else
-;;    image = cropImage(wksname, wks_type, "gif")
-;;    addAnnotation(wksname, opts@annotation, "gif")
-;;    if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-;;       addLogo(wksname, opts@logo, "gif")
-;;    end if
-;;  end if
 end
 
 ;************************************************

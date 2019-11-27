@@ -370,6 +370,7 @@ public class NCLDataService extends Service {
                                             false)));
         obuttons.append(space1);
         obuttons.append(Repository.msg("PDF"));
+        /*  For now, Postscript always means EPS
         obuttons.append(space2);
         obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
                                         "ps",
@@ -380,6 +381,7 @@ public class NCLDataService extends Service {
                                             false)));
         obuttons.append(space1);
         obuttons.append(Repository.msg("PostScript"));
+        */
         obuttons.append(space2);
         obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,
                                         "eps",
@@ -389,7 +391,7 @@ public class NCLDataService extends Service {
                                             "eps",
                                             false)));
         obuttons.append(space1);
-        obuttons.append(Repository.msg("EPS"));
+        obuttons.append(Repository.msg("Postscript"));
         /*  Doesn't work so well right now:  11/22/2019
         obuttons.append(space2);
         obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,

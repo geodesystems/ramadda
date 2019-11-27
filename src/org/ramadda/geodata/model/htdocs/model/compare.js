@@ -291,10 +291,11 @@ function CollectionForm(formId, plottype, args) {
                             var myentry = non_gifs[j];
                             var myname = myentry.getFilename();
                             var myprefix = myname.substring(0,myname.lastIndexOf("."));
-                            var mysuffix = myname.substring(name.lastIndexOf(".")+1);
+                            var mysuffix = myname.substring(name.lastIndexOf(".")+1).toUpperCase();
+                            if (mysuffix == "EPS") mysuffix = "Postscript";
                             if (myprefix == prefix) {
                                 imagehtml += "<p/>\n";
-                                imagehtml += HtmlUtil.href(myentry.getResourceUrl(), "Download "+mysuffix.toUpperCase()+" Image");
+                                imagehtml += HtmlUtil.href(myentry.getResourceUrl(), "Download "+mysuffix+" Image");
                                 break;
                             }
                         }
