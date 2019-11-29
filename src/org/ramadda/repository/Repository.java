@@ -1105,11 +1105,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
             coreProperties,
             "/org/ramadda/repository/resources/repository.properties");
 
+        /*
+        for (Enumeration keys = coreProperties.keys(); keys.hasMoreElements(); ) {
+            String key   = (String) keys.nextElement();
+            String value = (String) coreProperties.get(key);
+            System.out.println("CORE:" +key +"=" + value);
+        }
+        */
+
+
+
+
         try {
             loadProperties(
                 coreProperties,
                 "/org/ramadda/repository/resources/build.properties");
         } catch (Exception exc) {}
+
+
 
 
         for (int i = 0; i < args.length; i++) {
@@ -3559,7 +3572,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else if (request.responseAsText()) {
             return msg;
         } else {
-	    msg = HtmlUtils.sanitizeString(msg);
+            msg = HtmlUtils.sanitizeString(msg);
             StringBuilder sb = new StringBuilder();
             sb.append(
                 getPageHandler().showDialogError(
@@ -4073,7 +4086,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (entry == null) {
                 if ( !tryingOnePathAsAlias) {
                     throw new RepositoryUtil.MissingEntryException(
-								   "Could not find aliased entry:" + HtmlUtils.sanitizeString(alias));
+                        "Could not find aliased entry:"
+                        + HtmlUtils.sanitizeString(alias));
                 } else {
                     return null;
                 }
@@ -4326,6 +4340,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public String getPropertyValue(String name, boolean checkDb) {
+        return getPropertyValue(name, checkDb, false);
+    }
+
+
+
+    /**
+     * get the property value
+     *
+     * @param name property name
+     * @param checkDb Check the db properties
+     * @param needsToBeNonEmpty If true then only return true if the string is length>0
+     *
+     * @return property value
+     */
+    private String getPropertyValue(String name, boolean checkDb,
+                                    boolean needsToBeNonEmpty) {
+
         if (propdebug) {
             System.err.println("prop:" + name);
         }
@@ -4338,66 +4369,121 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         //Check if there is an override 
         prop = (String) cmdLineProperties.get(override);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
             return prop;
         }
 
         prop = (String) localProperties.get(override);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
             return prop;
         }
 
         prop = (String) pluginProperties.get(override);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
             return prop;
         }
 
         prop = (String) coreProperties.get(override);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
             return prop;
         }
 
+        boolean debug = false;
         //Order:  command line, database, local (e.g., ramadda home .properties files), plugins, core
         prop = (String) cmdLineProperties.get(name);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
+            if (debug) {
+                System.out.println("prop:" + name + " from: cmdline");
+            }
+
             return prop;
         }
 
         if (checkDb) {
             prop = (String) getDbProperties().get(name);
-            if (prop != null) {
+            if (checkProperty(prop, needsToBeNonEmpty)) {
+                if (debug) {
+                    System.out.println("prop:" + name + " from: db");
+                }
+
                 return prop;
             }
         }
 
         prop = (String) localProperties.get(name);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
+            if (debug) {
+                System.out.println("prop:" + name + " from local");
+            }
+
             return prop;
         }
 
         prop = (String) pluginProperties.get(name);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
+            if (debug) {
+                System.out.println("prop:" + name + " from plugin");
+            }
+
             return prop;
         }
 
+
+        //xxxxx
         prop = (String) coreProperties.get(name);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
+            if (debug) {
+                System.out.println("prop:" + name + " from core");
+            }
+
             return prop;
         }
 
         prop = System.getProperty(name);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
+            if (debug) {
+                System.out.println("prop:" + name + " from system");
+            }
+
             return prop;
         }
 
         prop = systemEnv.get(name);
-        if (prop != null) {
+        if (checkProperty(prop, needsToBeNonEmpty)) {
+            if (debug) {
+                System.out.println("prop:" + name + " from system 2");
+            }
+
             return prop;
         }
+        if (debug) {
+            System.out.println("prop:" + name + " none");
+        }
 
+        return null;
 
-        return prop;
     }
+
+    /**
+     * Check if the property has been set
+     *
+     * @param prop The property value
+     * @param needsToBeNonEmpty If true then only return true if the string is length>0
+     *
+     * @return Is property set
+     */
+    private boolean checkProperty(String prop, boolean needsToBeNonEmpty) {
+        if (prop == null) {
+            return false;
+        }
+        if (needsToBeNonEmpty && (prop.trim().length() == 0)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
 
 
     /**
@@ -4526,7 +4612,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public int getProperty(String name, int dflt) {
-        String prop = getProperty(name);
+        String prop = getPropertyValue(name, true, true);
         if (prop != null) {
             return new Integer(prop.trim()).intValue();
         }
@@ -4544,7 +4630,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public long getProperty(String name, long dflt) {
-        String prop = getProperty(name);
+        String prop = getPropertyValue(name, true, true);
         if (prop != null) {
             return new Long(prop).longValue();
         }
@@ -4561,7 +4647,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public double getProperty(String name, double dflt) {
-        String prop = getProperty(name);
+        String prop = getPropertyValue(name, true, true);
         if (prop != null) {
             return new Double(prop).doubleValue();
         }
