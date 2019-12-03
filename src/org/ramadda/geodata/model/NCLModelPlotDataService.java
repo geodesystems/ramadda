@@ -195,7 +195,7 @@ public class NCLModelPlotDataService extends NCLDataService {
 
         sb.append(HtmlUtils.formTable());
         addImageFormatWidget(request, sb);
-        
+
         if ((input.getOperands().size() > 1)
                 && !handleMultiple
                 && !isCorrelation) {
@@ -678,20 +678,20 @@ public class NCLModelPlotDataService extends NCLDataService {
                     || plotType.equals("image")) {
                 suffix = imageFormat;
             }
-            
+
             // Hack
             if (imageFormat.equals("kmz")) {
-                plotType = "kmz";
+                plotType    = "kmz";
                 imageFormat = "png";
             }
-            
+
             String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
             String maskType   = request.getString(ARG_NCL_MASKTYPE, "none");
             File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                                                    wksName) + "." + suffix);
             // The plotting routine will also generate a gif file for display
             File displayFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                                                   wksName) + ".gif");
+                                                       wksName) + ".gif");
             CdmDataOutputHandler dataOutputHandler =
                 nclOutputHandler.getDataOutputHandler();
             GridDataset dataset =
@@ -962,13 +962,13 @@ public class NCLModelPlotDataService extends NCLDataService {
                     outputEntry);
             outputEntries.add(outputEntry);
             // add a GIF file for the entry.
-            if (!outFile.getPath().equals(displayFile.getPath())) {
+            if ( !outFile.getPath().equals(displayFile.getPath())) {
                 Resource displayresource = new Resource(displayFile,
-                                             Resource.TYPE_LOCAL_FILE);
-                TypeHandler displayHandler = getRepository().getTypeHandler(outType,
-                                        true);
+                                               Resource.TYPE_LOCAL_FILE);
+                TypeHandler displayHandler =
+                    getRepository().getTypeHandler(outType, true);
                 Entry displayEntry = new Entry(displayHandler, true,
-                                          displayFile.toString());
+                                         displayFile.toString());
                 displayEntry.setResource(displayresource);
                 nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
                         displayEntry);
@@ -979,7 +979,8 @@ public class NCLModelPlotDataService extends NCLDataService {
             }
         }
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList, outputEntries));
+                                + nameList,
+                                                                 outputEntries));
 
         return dpo;
 
@@ -1254,20 +1255,21 @@ public class NCLModelPlotDataService extends NCLDataService {
                 outputEntry);
         outputEntries.add(outputEntry);
         // add a GIF file for the entry.
-        if (!outFile.getPath().equals(displayFile.getPath())) {
+        if ( !outFile.getPath().equals(displayFile.getPath())) {
             Resource displayresource = new Resource(displayFile,
-                                         Resource.TYPE_LOCAL_FILE);
-            TypeHandler displayHandler = getRepository().getTypeHandler(outType,
-                                    true);
+                                           Resource.TYPE_LOCAL_FILE);
+            TypeHandler displayHandler =
+                getRepository().getTypeHandler(outType, true);
             Entry displayEntry = new Entry(displayHandler, true,
-                                      displayFile.toString());
+                                           displayFile.toString());
             displayEntry.setResource(displayresource);
             nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
                     displayEntry);
             outputEntries.add(displayEntry);
         }
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList, outputEntries));
+                                + nameList,
+                                                                 outputEntries));
         if (dataset != null) {
             dataset.close();
         }

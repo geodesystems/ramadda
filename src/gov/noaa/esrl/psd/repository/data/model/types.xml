@@ -52,8 +52,10 @@
   <type name="c20cplus_climate_modelfile"  description="C20C+ Model File" super="climate_modelfile" foruser="true" handler="org.ramadda.geodata.model.ClimateModelFileTypeHandler" >
      <property name="icon" value="/images/ipcc.png"/>
      <property name="collection_type" value="c20cplus_climate_collection"/>
+     <!--
      <property name="model.file.pattern" value="([^_]+)_([^_]+)_([^_]+)_([^_]+)_([^_]+)_([^_]+)_(run\d+)(_([^_.]+))?.nc"/>
      <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
+     -->
      <column name="subscenario" type="enumerationplus" label="Sub-Scenario"/>
      <column name="subexperiment" type="enumerationplus" label="Sub-Experiment"/>
      <!--

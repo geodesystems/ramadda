@@ -260,6 +260,7 @@ public abstract class CDODataService extends Service {
         String   model  = values[1].toString();
         String statName = IOUtil.stripExtension(tail) + "_" + model + "_"
                           + stat + "_" + startYear + "-" + endYear + ".nc";
+        statName = cleanName(statName);
         File statFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                 statName));
         boolean isMonthly =
@@ -1122,6 +1123,7 @@ public abstract class CDODataService extends Service {
     private List<Entry> extractDailyEntries(Request request,
                                             List<Entry> opEntries, int opNum)
             throws Exception {
+
         // for makeInputForm
         if ( !(request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE)
                 || request.defined(
@@ -1146,14 +1148,19 @@ public abstract class CDODataService extends Service {
         // dataset and is using years for dataset 1
         if (request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE)) {
             if (opStr.isEmpty()) {
-                haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
+                haveYears =
+                    timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS);
             } else {
-                haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS+opStr) ||
-                 (!timeRequest.defined(CDOOutputHandler.ARG_CDO_STARTYEAR+opStr) &&
-                 timeRequest.getString(CDOOutputHandler.ARG_CDO_YEARS + opStr,
-                                    timeRequest.getString(
-                                        CDOOutputHandler.ARG_CDO_YEARS,
-                                        null)) != null);
+                haveYears =
+                    timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS
+                                        + opStr)
+                    || ( !timeRequest.defined(
+                        CDOOutputHandler.ARG_CDO_STARTYEAR
+                        + opStr) && (timeRequest.getString(
+                            CDOOutputHandler.ARG_CDO_YEARS + opStr,
+                            timeRequest.getString(
+                                CDOOutputHandler.ARG_CDO_YEARS,
+                                null)) != null));
             }
             /*
             haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS
@@ -1217,6 +1224,7 @@ public abstract class CDODataService extends Service {
         }
 
         return newEntries;
+
     }
 
 

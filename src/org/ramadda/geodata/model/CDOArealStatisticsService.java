@@ -280,6 +280,7 @@ public class CDOArealStatisticsService extends CDODataService {
         fileName.append("_mean_");
         String id      = getRepository().getGUID();
         String newName = fileName + id + ".nc";
+        newName = cleanName(newName);
         /*
         String tail =
             getOutputHandler().getStorageManager().getFileTail(oneOfThem);
@@ -387,8 +388,9 @@ public class CDOArealStatisticsService extends CDODataService {
         System.arraycopy(values, 0, avalues, 0, values.length);
         String tail =
             getOutputHandler().getStorageManager().getFileTail(sample);
-        String  id        = getRepository().getGUID();
-        String  newName   = IOUtil.stripExtension(tail) + "_" + id + ".nc";
+        String id      = getRepository().getGUID();
+        String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
+        newName = cleanName(newName);
         File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
 
         String  stat = timeRequest.getString(CDOOutputHandler.ARG_CDO_STAT);
@@ -438,6 +440,7 @@ public class CDOArealStatisticsService extends CDODataService {
                 climName = IOUtil.stripExtension(tail) + "_" + id
                            + "_clim.nc";
             }
+            climName = cleanName(climName);
             File climFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                     climName));
             if ( !climFile.exists()) {
@@ -476,6 +479,7 @@ public class CDOArealStatisticsService extends CDODataService {
             }
             String anomName = IOUtil.stripExtension(tail) + "_" + id + "_"
                               + anomSuffix + ".nc";
+            anomName = cleanName(anomName);
             File anomFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                     anomName));
             commands = initCDOService();
@@ -504,6 +508,7 @@ public class CDOArealStatisticsService extends CDODataService {
 
                 String sprdName = IOUtil.stripExtension(tail) + "_" + id
                                   + "_stdanom.nc";
+                sprdName = cleanName(sprdName);
                 File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                         sprdName));
                 commands = initCDOService();
@@ -739,8 +744,9 @@ public class CDOArealStatisticsService extends CDODataService {
         System.arraycopy(values, 0, avalues, 0, values.length);
         String tail =
             getOutputHandler().getStorageManager().getFileTail(sample);
-        String  id        = getRepository().getGUID();
-        String  newName   = IOUtil.stripExtension(tail) + "_" + id + ".nc";
+        String id      = getRepository().getGUID();
+        String newName = IOUtil.stripExtension(tail) + "_" + id + ".nc";
+        newName = cleanName(newName);
         File outFile = new File(IOUtil.joinDir(dpi.getProcessDir(), newName));
 
         String  stat = timeRequest.getString(CDOOutputHandler.ARG_CDO_STAT);
@@ -797,6 +803,7 @@ public class CDOArealStatisticsService extends CDODataService {
 
             String sprdName = IOUtil.stripExtension(tail) + "_" + id
                               + "_timstd.nc";
+            sprdName = cleanName(sprdName);
             File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                     sprdName));
             commands = initCDOService();
@@ -831,6 +838,7 @@ public class CDOArealStatisticsService extends CDODataService {
                 climName = IOUtil.stripExtension(tail) + "_" + id
                            + "_clim.nc";
             }
+            climName = cleanName(climName);
             File climFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                     climName));
             if ( !climFile.exists()) {
@@ -867,6 +875,7 @@ public class CDOArealStatisticsService extends CDODataService {
             }
             String anomName = IOUtil.stripExtension(tail) + "_" + id + "_"
                               + anomSuffix + ".nc";
+            anomName = cleanName(anomName);
             File anomFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                     anomName));
             commands = initCDOService();
@@ -895,6 +904,7 @@ public class CDOArealStatisticsService extends CDODataService {
 
                 String sprdName = IOUtil.stripExtension(tail) + "_" + id
                                   + "_stdanom.nc";
+                sprdName = cleanName(sprdName);
                 File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                         sprdName));
                 commands = initCDOService();

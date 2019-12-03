@@ -1533,7 +1533,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      * Process the JSON request
      *
      * @param request  the request
-     * @param what     what to search for
      * @param type  the type of request
      *
      * @return  the JSON string

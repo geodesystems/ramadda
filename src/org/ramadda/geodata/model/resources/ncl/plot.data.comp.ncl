@@ -917,7 +917,7 @@ begin
     end if
   else
     if (doPanel) then
-      wks_type@wkPaperSize                 = "C"
+      wks_type@wkPaperSize                 = "letter"
     else
       wks_type@wkPaperSize                 = "letter"
     end if
@@ -936,7 +936,7 @@ begin
     rescf@mpNationalLineThicknessF = 1.
     rescf@mpUSStateLineThicknessF = 1. 
   else
-    rescf@mpGeophysicalLineThicknessF = 1.
+    rescf@mpGeophysicalLineThicknessF = .5
     rescf@mpNationalLineThicknessF = .5
     rescf@mpUSStateLineThicknessF = .5
   end if
@@ -1697,7 +1697,8 @@ begin
           xlims = ",xlim=c(b,c)"
       end if
     end if
-    rscript(linenum) = "a<-sm.density(data[,1],col='black',lwd="+lwd+",ylab='Density',xlab='"+opts@varTitle+"'"+xlims+ylims+")"
+    vartitle = opts@varTitle
+    rscript(linenum) = "a<-sm.density(data[,1],col='black',lwd="+lwd+",ylab='Density',xlab='"+vartitle+"'"+xlims+ylims+")"
     rscript(linenum+1) = "a<-cbind(a$eval.points,a$estimate)"
     rscript(linenum+2) = "rug(data[,1],lwd=1.,col='black',side=1)"
     if (opts@isanom) then  ; add a line at 0
@@ -1715,7 +1716,8 @@ begin
     end if
     rscript(linenum+2) = "title(main='"+opts@mainTitle+"',line=2., cex.main=1.2, font.main=1)"
     rscript(linenum+3) = "title(main='"+opts@regionTitle+"',line=1.2, cex.main=1.0, font.main=1)"
-    if (opts@isanom) then   ; add multiple titles
+    ;if (opts@isanom .and. ) then   ; add multiple titles
+    if (opts@isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
       climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
       rscript(linenum+4) = "title(main='"+climText+"',line=.4,cex.main=0.85, font.main=1)"
       linenum = linenum+4
@@ -1992,7 +1994,7 @@ begin
     end if
     opts@varTitle=varTitle
     delete(data)
-    if (isatt(opts,"meanIndex")) then
+    if (isatt(opts,"meanIndex") .and. (numfiles .gt. 1)) then
       dims = dimsizes(alldata);
       newAlldata = new((/dims(0)-1,dims(1)/),float)
       meanIndex = opts@meanIndex
@@ -2015,6 +2017,7 @@ begin
     pdffiles(pdf) = outfile
     delete(ncfiles)
     delete(alldata)
+    delete(opts@meanIndex)
   end do
   if (numpdfs .gt. 1) then
     if (opts@dates(0) .ne. opts@dates(1)) then

@@ -296,14 +296,14 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
                 ""));
         sb.append(HtmlUtils.formEntry(Repository.msgLabel("Y-Axis<br>Range"),
                                       yaxisOpts.toString()));
-        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Running<br>Average"),
-                                      HtmlUtils.select(ARG_NCL_NAVE,
-                                              periods,
-                                              request.getString(ARG_NCL_NAVE,
-                                                      "5"),
-                                              Integer
-                                              .MAX_VALUE) + HtmlUtils.space(
-                                                  1) + "years"));
+        sb.append(
+            HtmlUtils.formEntry(Repository.msgLabel("Running<br>Average"),
+                                HtmlUtils.select(ARG_NCL_NAVE,
+                                        periods,
+                                        request.getString(ARG_NCL_NAVE,
+                                                "5"),
+                                        Integer.MAX_VALUE) + HtmlUtils.space(
+                                            1) + "years"));
 
         sb.append(HtmlUtils.formTableClose());
 
@@ -385,7 +385,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                                                wksName) + "." + suffix);
         File displayFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                                               wksName) + ".gif");
+                                                   wksName) + ".gif");
         CdmDataOutputHandler dataOutputHandler =
             nclOutputHandler.getDataOutputHandler();
         GridDataset dataset =
@@ -568,20 +568,21 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
                 outputEntry);
         outputEntries.add(outputEntry);
         // add a GIF file for the entry.
-        if (!outFile.getPath().equals(displayFile.getPath())) {
+        if ( !outFile.getPath().equals(displayFile.getPath())) {
             Resource displayresource = new Resource(displayFile,
-                                         Resource.TYPE_LOCAL_FILE);
-            TypeHandler displayHandler = getRepository().getTypeHandler(outType,
-                                    true);
+                                           Resource.TYPE_LOCAL_FILE);
+            TypeHandler displayHandler =
+                getRepository().getTypeHandler(outType, true);
             Entry displayEntry = new Entry(displayHandler, true,
-                                      displayFile.toString());
+                                           displayFile.toString());
             displayEntry.setResource(displayresource);
             nclOutputHandler.getEntryManager().writeEntryXmlFile(request,
                     displayEntry);
             //outputEntries.add(displayEntry);
         }
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList, outputEntries));
+                                + nameList,
+                                                                 outputEntries));
 
         return dpo;
 
