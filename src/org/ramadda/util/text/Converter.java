@@ -816,7 +816,8 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
 
-            //      System.err.println("hm:" + row);
+	    //System.err.println("addheader:" + row);
+	    //      System.err.println("hm:" + row);
             rowCnt++;
             if (rowCnt > 2) {
                 return row;
@@ -885,11 +886,11 @@ public abstract class Converter extends Processor {
                     "\\.", "_").replaceAll("_+_", "_").replaceAll(
                     "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
 
-                id = CsvUtil.getDbProp(props, id, "id", id);
+                id = CsvUtil.getDbProp(props, id, i, "id", id);
 
 
                 if (label == null) {
-                    label = CsvUtil.getDbProp(props, id, "label",
+                    label = CsvUtil.getDbProp(props, id, i, "label",
                             (String) null);
                 }
                 if (makeLabel && (label == null)) {
@@ -910,7 +911,7 @@ public abstract class Converter extends Processor {
                     attrs.append(" description=\"" + desc + "\" ");
                 }
                 if (unit == null) {
-                    unit = CsvUtil.getDbProp(props, id, "unit",
+                    unit = CsvUtil.getDbProp(props, id, i, "unit",
                                              (String) null);
                 }
                 if (unit != null) {
@@ -921,7 +922,7 @@ public abstract class Converter extends Processor {
                 String  type   = defaultType;
                 boolean isGeo  = false;
 
-                boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
+                boolean chartable = CsvUtil.getDbProp(props, id,  "chartable",
                                         defaultChartable);
                 if (id.indexOf("date") >= 0) {
                     type = "date";
@@ -960,17 +961,17 @@ public abstract class Converter extends Processor {
                 }
 
 
-                type = CsvUtil.getDbProp(props, id, "type", type);
+                type = CsvUtil.getDbProp(props, id, i, "type", type);
                 if (Misc.equals(type, "enum")) {
                     type = "enumeration";
                 }
-                format = CsvUtil.getDbProp(props, id, "format", format);
+                format = CsvUtil.getDbProp(props, id, i, "format", format);
                 if (format != null) {
                     format = format.replaceAll("_space_", " ");
                 }
 
                 attrs.append(" type=\"" + type + "\"");
-                String enumeratedValues = CsvUtil.getDbProp(props, id,
+                String enumeratedValues = CsvUtil.getDbProp(props, id, i,
                                               "enumeratedValues", null);
                 if (enumeratedValues != null) {
                     attrs.append(" enumeratedValues=\"" + enumeratedValues
@@ -2790,19 +2791,15 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-            if ((info.getRow() % 100) == 0) {
-                //                System.err.println ("processed:" + info.getRow());
-            }
             List values = row.getValues();
             if ( !doneHeader) {
                 if (writeForDb) {
-                    values.add("Location");
+                    row.add("Location");
                 } else {
-                    values.add(latLabel);
-                    values.add(lonLabel);
+                    row.add(latLabel);
+                    row.add(lonLabel);
                 }
                 doneHeader = true;
-
                 return row;
             }
 
@@ -2867,10 +2864,10 @@ public abstract class Converter extends Processor {
                 }
             }
             if (writeForDb) {
-                values.add(lat + ";" + lon);
+                row.add(lat + ";" + lon);
             } else {
-                values.add(new Double(lat));
-                values.add(new Double(lon));
+                row.add(new Double(lat));
+                row.add(new Double(lon));
             }
 
             return row;

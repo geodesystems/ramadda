@@ -61,7 +61,16 @@ public class Row {
      * _more_
      */
     public Row() {
-        values = new ArrayList();
+        values = new ArrayList() {
+		public boolean xadd(Object o) {
+		    boolean v = super.add(o);
+		    if(myx==266)
+			System.err.println("\tadd: " + o);
+		    return v;
+		}
+	    };
+	if(myx==266)
+	    System.err.println("\tctor: " + values);
     }
 
     /**
@@ -70,6 +79,8 @@ public class Row {
      * @param values _more_
      */
     public Row(List values) {
+	if(myx==266)
+	    System.err.println("\tctor: " + values);
         this.values = values;
     }
 
@@ -83,6 +94,8 @@ public class Row {
         for (Object o : values) {
             this.values.add(o);
         }
+	if(myx==266)
+	    System.err.println("\tctor: " + values);
     }
 
 
@@ -125,7 +138,7 @@ public class Row {
      * @return _more_
      */
     public String toString() {
-        return values.toString();
+        return " id:" + myx +" " +values.toString();
     }
 
     /**
@@ -135,6 +148,8 @@ public class Row {
      */
     public void setValues(List value) {
         values = value;
+	if(myx==266)
+	    System.err.println("\tsetvalues: " + values);
     }
 
     /**
@@ -183,6 +198,8 @@ public class Row {
      */
     public void set(int index, Object object) {
         values.set(index, object);
+	if(myx==266)
+	    System.err.println("\tset: " + object);
     }
 
     /**
@@ -192,6 +209,8 @@ public class Row {
      */
     public void insert(Object object) {
         values.add(object);
+	if(myx==266)
+	    System.err.println("\tinsert: " + object);
     }
 
     /**
@@ -200,6 +219,8 @@ public class Row {
      * @param object _more_
      */
     public void add(Object object) {
+	if(myx==266)
+	    System.err.println("\trow add: " +myx +" v:" + object);
         values.add(object);
     }
 
@@ -211,6 +232,8 @@ public class Row {
      */
     public void insert(int index, Object object) {
         values.add(index, object);
+	if(myx==266)
+	    System.err.println("\tinsert: " + object);
     }
 
     /**

@@ -1064,6 +1064,14 @@ public class CsvUtil {
     }
 
 
+    public static String getDbProp(Hashtable<String, String> props,
+                                   String colId, int index, String prop, String dflt) {
+	String value = getDbProp(props, colId, prop, null);
+	if(value!=null) return value;
+	return  getDbProp(props, index+"", prop, dflt);
+    }
+
+
     /**
      * _more_
      *
@@ -1419,8 +1427,7 @@ public class CsvUtil {
         new Cmd("-include", "<one or more rows, -1 to the end>",
                 "(Only include given rows)"),
         new Cmd("-mergerows", "<2 or more rows> <delimiter> <close>"),
-        new Cmd("-decimate", "<# of start rows to include> <skip factor>",
-                "(only include every <skip factor> row)"),
+
         new Cmd("-countvalue", "<col #> <count>"),
         new Cmd("-copy", "<col #> <name>"),
         new Cmd("-delete", "<col #>", "(remove the columns)"),
@@ -1429,12 +1436,12 @@ public class CsvUtil {
 	new Cmd("-shift", "<rows> <col #> <count>","(Shift columns over by count for given rows)"),
         new Cmd("-addcell", "<row #>  <col #>  <value>"),
         new Cmd("-deletecell", "<row #> <col #>"), new Cmd("-rotate"),
-        new Cmd("-flip"),
+        new Cmd("-flip","","(reverse the order of the rows except the header)"),
         new Cmd(
             "-unfurl",
             "<col to get new column header#> <value columns> <unique col>  <other columns>",
             "(make columns from data values)"),
-        new Cmd("-furl", "<cols> <header value> <value label>",
+        new Cmd("-furl", "<cols> <header label> <value label>",
                 "(use values in header to make new row)"),
         new Cmd("-explode", "<col #> ",
                 "(make separate files based on value of column)"),
@@ -1462,6 +1469,8 @@ public class CsvUtil {
                 "(extract rows that pass the expression)"),
         new Cmd("-before", "<column> <format> <date> <format2>"),
         new Cmd("-after", "<column> <format> <date> <format2>"),
+        new Cmd("-decimate", "<# of start rows to include> <skip factor>",
+                "(only include every <skip factor> row)"),
         new Cmd("-skipline", " <pattern>",
                 "(skip any line that matches the pattern)"),
         new Cmd(true, "Change Values"),
@@ -1622,18 +1631,33 @@ public class CsvUtil {
         }
         int    cnt = 0;
         String pad = "\t";
+	boolean matchedCategory = false;
         for (Cmd c : commands) {
             String cmd = c.getLine();
             if (match != null) {
+		String text = c.cmd;
                 if (c.category) {
-                    continue;
-                }
-                if (exact && !c.cmd.equals(match)) {
-                    continue;
-                }
-                if ( !exact && (cmd.indexOf(match) < 0)) {
-                    continue;
-                }
+		    matchedCategory = false;
+		    text = c.desc;
+		} else {
+		    text = c.cmd;
+		}
+		boolean  ok =true;
+		text = text.toLowerCase();
+		if (exact && !text.equals(match)) {
+		    ok = false;
+		} else if ( !exact && (text.indexOf(match) < 0)) {
+		    ok  =false;
+		}
+                if (c.category) {
+		    matchedCategory = ok;
+		    continue;
+		} else {
+		    ok = ok || matchedCategory;
+		}
+		if(!ok) {
+		    continue;
+		}
             }
             if ( !raw) {
                 cmd = cmd.replaceAll("_nl_", "\n").replaceAll("_tab_", "\n");

@@ -284,8 +284,14 @@ function DisplayThing(argId, argProperties) {
                 return Utils.formatDateYYYY(date);
             } else if (this.dateFormat == "yyyyMMdd") {
                 return Utils.formatDateYYYYMMDD(date);
+	    } else if (this.dateFormat == "yyyyMM") {
+                return Utils.formatDateYYYYMM(date);
+	    } else if (this.dateFormat == "yearmonth") {
+                return Utils.formatDateYearMonth(date);
 	    } else if (this.dateFormat == "monthdayyear") {
                 return Utils.formatDateMonthDayYear(date);
+	    } else if (this.dateFormat == "monthday") {
+                return Utils.formatDateMonthDay(date);
 	    } else if (this.dateFormat == "mdy") {
                 return Utils.formatDateMDY(date);
 	    } else if (this.dateFormat == "hhmm") {
@@ -1817,6 +1823,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 	filterData: function(dataList, fields, doGroup, skipFirst) {
+	    var startDate = this.getProperty("startDate");
+	    var endDate = this.getProperty("endDate");
+	    if(startDate) {
+		this.startDateObject = new Date(startDate);
+	    } 
+	    if(endDate) {
+		this.endDateObject = new Date(endDate);
+	    } 
+
 //	    var t1=  new Date();
             var pointData = this.getData();
             if (!dataList) {
@@ -4546,6 +4561,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (this.maxDateObj != null && date.getTime() > this.maxDateObj.getTime()) {
                     return false;
                 }
+
+		if (this.startDateObject != null && date.getTime() < this.startDateObject.getTime()) {
+                    return false;
+                }
+                if (this.endDateObject != null && date.getTime() > this.endDateObject.getTime()) {
+                    return false;
+                }
+
+
+
             }
             return true;
         },

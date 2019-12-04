@@ -434,8 +434,14 @@ function DisplayThing(argId, argProperties) {
                 return Utils.formatDateYYYY(date);
             } else if (this.dateFormat == "yyyyMMdd") {
                 return Utils.formatDateYYYYMMDD(date);
+	    } else if (this.dateFormat == "yyyyMM") {
+                return Utils.formatDateYYYYMM(date);
+	    } else if (this.dateFormat == "yearmonth") {
+                return Utils.formatDateYearMonth(date);
 	    } else if (this.dateFormat == "monthdayyear") {
                 return Utils.formatDateMonthDayYear(date);
+	    } else if (this.dateFormat == "monthday") {
+                return Utils.formatDateMonthDay(date);
 	    } else if (this.dateFormat == "mdy") {
                 return Utils.formatDateMDY(date);
 	    } else if (this.dateFormat == "hhmm") {
@@ -1967,6 +1973,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 	filterData: function(dataList, fields, doGroup, skipFirst) {
+	    var startDate = this.getProperty("startDate");
+	    var endDate = this.getProperty("endDate");
+	    if(startDate) {
+		this.startDateObject = new Date(startDate);
+	    } 
+	    if(endDate) {
+		this.endDateObject = new Date(endDate);
+	    } 
+
 //	    var t1=  new Date();
             var pointData = this.getData();
             if (!dataList) {
@@ -4696,6 +4711,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (this.maxDateObj != null && date.getTime() > this.maxDateObj.getTime()) {
                     return false;
                 }
+
+		if (this.startDateObject != null && date.getTime() < this.startDateObject.getTime()) {
+                    return false;
+                }
+                if (this.endDateObject != null && date.getTime() > this.endDateObject.getTime()) {
+                    return false;
+                }
+
+
+
             }
             return true;
         },
@@ -17211,6 +17236,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
+					"label:Percent change Attributes",
+					'template="${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}"'
 				    ]);
 	},
 	updateUI: function() {
@@ -17221,21 +17248,41 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    fields = this.getFieldsOfType(fields, "numeric");
 	    let  record1 = records[0];
 	    let  record2 = records[records.length-1];
-            let html =  "<br>";
-	    html += HtmlUtils.openTag("table", ["class", "nowrap ramadda-table", "id", this.getDomId("percentchange")]);
+	    var template = this.getProperty("template",null);
+	    var headerTemplate = this.getProperty("headerTemplate","");
+	    var footerTemplate = this.getProperty("footerTemplate","");
 	    let date1 = record1.getDate();
 	    let date2 = record2.getDate();
 	    let label1 ="Start Value";
-	    let label2 ="Start Value";
+	    let label2 ="End Value";
+	    let hours = 1;
+	    let days = 1;
+	    let years = 1;
+	    let months = 1;
 	    if(date1)
 		label1 = this.formatDate(date1);
 	    if(date2)
 		label2 = this.formatDate(date2);
-            html += HtmlUtils.openTag("thead", []);
-            html += HtmlUtils.tr([], HtmlUtils.th([], "Field") + HtmlUtils.th([], label1) + HtmlUtils.th([], label2)
-				 + HtmlUtils.th([], "Percent Change"));
-            html += HtmlUtils.closeTag("thead");
-            html += HtmlUtils.openTag("tbody", []);
+	    if(date1 && date2) {
+		var diff = date2.getTime() - date1.getTime();
+		days = diff/1000/60/60/24;
+		hours = days*24;
+		years = days/365;
+		months = years*12;
+	    }
+            let html =  "";
+	    if(template) {
+		html= headerTemplate;
+	    } else {
+		html = "<br>";		
+		html += HtmlUtils.openTag("table", ["class", "nowrap ramadda-table", "id", this.getDomId("percentchange")]);
+		html += HtmlUtils.openTag("thead", []);
+		html += "\n";
+		html += HtmlUtils.tr([], HtmlUtils.th(["style","text-align:center"], "Field") + HtmlUtils.th(["style","text-align:center"], label1) + HtmlUtils.th(["style","text-align:center"], label2)
+				     + HtmlUtils.th(["style","text-align:center"], "Percent Change"));
+		html += HtmlUtils.closeTag("thead");
+		html += HtmlUtils.openTag("tbody", []);
+	    }
 	    var tuples= [];
 	    fields.map(f=>{
 		var val1 = record1.getValue(f.getIndex());
@@ -17248,17 +17295,31 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		return -(a.percent-b.percent);
 	    })
 	    tuples.map(t=>{
-		html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
-				     HtmlUtils.td(["align","right"], t.val1) +
-				     HtmlUtils.td(["align","right"], t.val2)
-				     + HtmlUtils.td(["align","right"], t.percent+"%"));
+		if(template) {
+		    var h = template.replace("${field}", t.field.getLabel()).replace("${value1}",t.val1).replace("${value2}",t.val2).replace("${percent}",this.formatNumber(t.percent)).replace("${date1}",label1).replace("${date2}",label2);
+		    
+		    h = h.replace(/\${per_hour}/g,this.formatNumber(t.percent/hours));
+		    h = h.replace(/\${per_day}/g,this.formatNumber(t.percent/days));
+		    h = h.replace(/\${per_week}/g,this.formatNumber(t.percent/(days/7)));
+		    h = h.replace(/\${per_month}/g,this.formatNumber(months));
+		    h = h.replace(/\${per_year}/g,this.formatNumber(years));
+		    html+=h;
+		} else {
+		    html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
+					 HtmlUtils.td(["align","right"], t.val1) +
+					 HtmlUtils.td(["align","right"], t.val2)
+					 + HtmlUtils.td(["align","right"], t.percent+"%"));
+		}
 	    });
 
-
-            html += HtmlUtils.closeTag("tbody");
-            html += HtmlUtils.closeTag("table");
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
-            HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {
+	    if(template) {
+		html+= footerTemplate;
+	    } else {
+		html += HtmlUtils.closeTag("tbody");
+		html += HtmlUtils.closeTag("table");
+	    }
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+           HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {
                 //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
             });
 	},

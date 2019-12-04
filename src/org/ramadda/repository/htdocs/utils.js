@@ -351,6 +351,11 @@ var Utils = {
 	if(d<10) d = "0" +d;
         return m +" " + d +", " + date.getUTCFullYear();
     },
+    formatDateYearMonth: function(date, options, args) {
+	if(isNaN(date.getUTCMonth())) return "Unknown";
+	var m = this.monthNames[date.getUTCMonth()];
+        return m +", " + date.getUTCFullYear();
+    },    
     formatDateMonthDay: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
 	var m = this.monthNames[date.getUTCMonth()];
@@ -380,6 +385,12 @@ var Utils = {
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
         return date.getUTCFullYear() + "-" + m + "-" + d;
+    },
+    formatDateYYYYMM: function(date, options, args) {
+	if(isNaN(date.getUTCMonth())) return "Unknown";
+	var m = (date.getUTCMonth() + 1);
+	if(m<10) m = "0" + m;
+        return date.getUTCFullYear() + "-" + m;
     },
     formatDateMMDD: function(date, delimiter) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
