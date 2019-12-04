@@ -17296,7 +17296,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    })
 	    tuples.map(t=>{
 		if(template) {
-		    var h = template.replace("${field}", t.field.getLabel()).replace("${value1}",t.val1).replace("${value2}",t.val2).replace("${percent}",this.formatNumber(t.percent)).replace("${date1}",label1).replace("${date2}",label2);
+		    var h = template.replace("${field}", t.field.getLabel()).replace("${value1}",t.val1).replace("${value2}",t.val2).replace("${percent}",this.formatNumber(t.percent)).replace("${date1}",label1).replace("${date2}",label2).replace("${difference}", t.val2-t.val1);
 		    
 		    h = h.replace(/\${per_hour}/g,this.formatNumber(t.percent/hours));
 		    h = h.replace(/\${per_day}/g,this.formatNumber(t.percent/days));
