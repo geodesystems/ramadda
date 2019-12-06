@@ -397,6 +397,12 @@ public class NCLModelPlotDataService extends NCLDataService {
                 */
         plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Contours"),
                                             contourOpts.toString()));
+        /* for now, don't give the option of turning on/off the shading
+        plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Shading"),
+                HtmlUtils.labeledCheckbox(ARG_NCL_SHADEMASK, "true",
+                request.get(ARG_NCL_SHADEMASK, true),
+                Repository.msg("Shade Masked Areas"))));
+        */
         // colormaps
         List          cmaps    = getColorMaps();
         StringBuilder cmapOpts = new StringBuilder();
@@ -685,8 +691,9 @@ public class NCLModelPlotDataService extends NCLDataService {
                 imageFormat = "png";
             }
 
-            String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
-            String maskType   = request.getString(ARG_NCL_MASKTYPE, "none");
+            String  outputType = request.getString(ARG_NCL_OUTPUT, "comp");
+            String  maskType   = request.getString(ARG_NCL_MASKTYPE, "none");
+            Boolean shadeMask  = request.get(ARG_NCL_SHADEMASK, true);
             File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                                                    wksName) + "." + suffix);
             // The plotting routine will also generate a gif file for display
@@ -725,6 +732,7 @@ public class NCLModelPlotDataService extends NCLDataService {
             envMap.put("image_format", imageFormat);
             envMap.put("output", outputType);
             envMap.put("mask", maskType);
+            envMap.put("shademask", Boolean.toString(shadeMask));
             envMap.put("rpath", repository.getProperty("r.rscript.path", ""));
 
             Hashtable    args     = request.getArgs();
@@ -928,10 +936,11 @@ public class NCLModelPlotDataService extends NCLDataService {
             envMap.put("ensavg", Boolean.toString(request.get(ARG_ENSAVG,
                     false)));
             envMap.put("anom", Boolean.toString(haveAnom || isCorrelation));
-            envMap.put(
-                "annotation",
-                getRepository().getProperty(Constants.PROP_REPOSITORY_NAME,
-                                            ""));
+            envMap.put("annotation",
+                       getRepository().getProperty("ramadda.model.sitename",
+                               getRepository().getProperty(
+                                   Constants.PROP_REPOSITORY_NAME,
+                                   "")));
             String logo =
                 getRepository().getProperty(Constants.PROP_LOGO_IMAGE, "");
             if ( !logo.isEmpty()) {
@@ -1063,6 +1072,7 @@ public class NCLModelPlotDataService extends NCLDataService {
         String  suffix      = imageFormat;
         String  outputType  = request.getString(ARG_NCL_OUTPUT, "enscomp");
         String  maskType    = request.getString(ARG_NCL_MASKTYPE, "none");
+        Boolean shadeMask   = request.get(ARG_NCL_SHADEMASK, true);
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
                                                wksName) + "." + suffix);
         // The plotting routine will also generate a gif file for display
@@ -1099,6 +1109,7 @@ public class NCLModelPlotDataService extends NCLDataService {
         envMap.put("image_format", imageFormat);
         envMap.put("output", outputType);
         envMap.put("mask", maskType);
+        envMap.put("shademask", Boolean.toString(shadeMask));
         String rpath = repository.getProperty("r.rscript.path");
         if (rpath != null) {
             envMap.put("rpath", rpath);
@@ -1224,8 +1235,10 @@ public class NCLModelPlotDataService extends NCLDataService {
 
         envMap.put("anom", Boolean.toString(haveAnom));
         envMap.put("annotation",
-                   getRepository().getProperty(Constants.PROP_REPOSITORY_NAME,
-                           ""));
+                   getRepository().getProperty("ramadda.model.sitename",
+                           getRepository().getProperty(
+                               Constants.PROP_REPOSITORY_NAME,
+                               "")));
         String logo = getRepository().getProperty(Constants.PROP_LOGO_IMAGE,
                           "");
         if ( !logo.isEmpty()) {

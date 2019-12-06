@@ -38,7 +38,7 @@ begin
     if (wks_type .eq. "png") then
       system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
     else
-      system("%convert% -alpha off -density 300 -resize 38% -quality 92 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
+      system("%convert% -alpha off -density 250 -resize 38% -quality 80 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
     end if
     system("mv -f " + tmpimagename + " " + outimagename)
     return outimagename
@@ -263,6 +263,55 @@ begin
 end
 
 ;*************************************************
+; Procedure:  addAnnotation2
+;
+; Purpose:    add some text
+;
+; Params:     wksname - workstation name to add to
+;             text - the text to incorporate
+;*************************************************
+undef ("addAnnotation2")
+procedure addAnnotation2(wks:graphic, text:string, plot:graphic)
+begin
+
+  if ((ismissing(text)) .or. (text .eq. "")) then
+    return
+  end if
+
+  ;; set up the resources
+  txres               = True
+  txres@txFontHeightF = 0.008
+  txres@txBackgroundFillColor = "White"
+
+  ;; Set up the text - for now use what's passed in
+  ;datestr = systemfunc("date -u +'%Y-%m-%d %H:%M UTC' ")
+  ;if ((.not. ismissing(text)) .and. (text .ne. "")) then
+  ;  plottext = "Plotted from " + text + " on "+datestr
+  ;else
+  ;  plottext = "Plotted on "+datestr
+  ;end if
+  ;plottext = "NOAA/ESRL/PSD Facility for Climate Assessments"
+  plottext = text
+
+  ;; create the object and add it to the plot
+  txid = gsn_create_text(wks,plottext,txres)
+  amres = True
+  ;; have to move it a bit from 0.5 so it doesn't block out the axis lines
+  amres@amParallelPosF   =  -0.49   ; This is the left edge of the plot.
+  amres@amOrthogonalPosF =  0.49   ; This is the bottom of the plot
+  amres@amJust           = "BottomLeft"
+  annoid = gsn_add_annotation(plot, txid, amres)  ; Attach string to plot
+                                                  ; using default values.
+
+  ;; Old way using ImageMagick
+;  imageFilePath = wksname + "."+format
+;  tmpFilePath = imageFilePath + ".tmp"    
+;  system("%convert% " + imageFilePath + "  -background white label:'" + plottext + "' -gravity Center -append " + tmpFilePath)
+;  system("mv -f " + tmpFilePath + " " + imageFilePath)
+
+end
+
+;*************************************************
 ; Procedure:  addAnnotation
 ;
 ; Purpose:    add some text
@@ -310,7 +359,7 @@ begin
     image = cropImage(wksname, wks_type, opts@imageformat)
   end if
     image = cropImage(wksname, wks_type, "gif")
-    addAnnotation(wksname, opts@annotation, "gif")
+;    addAnnotation(wksname, opts@annotation, "gif")
     ;if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
     ;   addLogo(wksname, opts@logo, "gif")
     ;end if
@@ -778,16 +827,12 @@ begin
 
 ;
 ; Draw the plot, add annotations and convert to gif
+  addAnnotation2(wks, opts@annotation, plot)
   draw(plot)
   frame(wks)
   wksname = wks@name
   delete(wks)
   image = decorateImage(wksname, wks_type, opts)
-;  image = cropImage(wksname,".png", opts@imageformat)
-;  addAnnotation(wksname, opts@annotation, opts@imageformat)
-;  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-;     addLogo(wksname, opts@logo, opts@imageformat)
-;  end if
   writets(avgdata,tsTitles,opts)
 
 end

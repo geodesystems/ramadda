@@ -540,7 +540,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
 
         envMap.put("anom", Boolean.toString(haveAnom));
         envMap.put("annotation",
-                   getRepository().getProperty(Constants.PROP_REPOSITORY_NAME,
+                   getRepository().getProperty("ramadda.model.sitename",
                            ""));
         String logo = getRepository().getProperty(Constants.PROP_LOGO_IMAGE,
                           "");

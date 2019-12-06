@@ -53,6 +53,10 @@ public class NCLDataService extends Service {
     /** mask type */
     public static final String ARG_NCL_MASKTYPE = ARG_NCL_PREFIX + "masktype";
 
+    /** mask type */
+    public static final String ARG_NCL_SHADEMASK = ARG_NCL_PREFIX
+                                                   + "shademask";
+
     /** units arg */
     public static final String ARG_NCL_UNITS = ARG_NCL_PREFIX + "units";
 

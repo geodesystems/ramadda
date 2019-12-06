@@ -400,7 +400,7 @@ begin
     if (wks_type .eq. "png") then
       system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
     else
-      system("%convert% -alpha off -density 300 -resize 38% -quality 92 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
+      system("%convert% -alpha off -density 250 -resize 38% -quality 80 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
     end if
     system("mv -f " + tmpimagename + " " + outimagename)
     return outimagename
@@ -424,6 +424,58 @@ begin
   tmpFilePath = imageFilePath + ".tmp"    
   system("%convert% -composite -gravity SouthWest " + imageFilePath + " " + logoFilePath + " " + tmpFilePath)
   system("mv -f " + tmpFilePath + " " + imageFilePath)
+
+end
+
+;*************************************************
+; Procedure:  addAnnotation2
+;
+; Purpose:    add some text
+;
+; Params:     wksname - workstation name to add to
+;             text - the text to incorporate
+;*************************************************
+undef ("addAnnotation2")
+procedure addAnnotation2(wks:graphic, text:string, plot:graphic, opts:logical)
+begin
+
+  if ((ismissing(text)) .or. (text .eq. "")) then
+    return
+  end if
+
+  ;; set up the resources
+  txres               = True
+  txres@txFontHeightF = 0.008
+  txres@txBackgroundFillColor = "White"
+  ;txres@txAngleF              = 90
+
+  ;; Set up the text - for now use what's passed in
+  ;datestr = systemfunc("date -u +'%Y-%m-%d %H:%M UTC' ")
+  ;if ((.not. ismissing(text)) .and. (text .ne. "")) then
+  ;  plottext = "Plotted from " + text + " on "+datestr
+  ;else
+  ;  plottext = "Plotted on "+datestr
+  ;end if
+  ;plottext = "NOAA/ESRL/PSD Facility for Climate Assessments"
+  plottext = text
+
+  ;; create the object and add it to the plot
+  txid = gsn_create_text(wks,plottext,txres)
+  amres = True
+  amres@amParallelPosF   =  -0.5    ; This is the left edge of the plot.
+  if (opts@usepolar) then
+     amres@amOrthogonalPosF =  0.53    ; This is the bottom of the plot
+  else
+     amres@amOrthogonalPosF =  0.5    ; This is the bottom of the plot
+  end if
+  amres@amJust           = "BottomLeft"
+  annoid = gsn_add_annotation(plot, txid, amres)  ; Attach string to plot
+                                                  ; using default values.
+  ;; Old way using ImageMagick
+;  imageFilePath = wksname + "."+format
+;  tmpFilePath = imageFilePath + ".tmp"    
+;  system("%convert% " + imageFilePath + "  -background white label:'" + plottext + "' -gravity Center -append " + tmpFilePath)
+;  system("mv -f " + tmpFilePath + " " + imageFilePath)
 
 end
 
@@ -469,10 +521,10 @@ begin
     image = cropImage(wksname, wks_type, opts@imageformat)
   end if
   image = cropImage(wksname, wks_type, "gif")
-  addAnnotation(wksname, opts@annotation, "gif")
-  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
-     addLogo(wksname, opts@logo, "gif")
-  end if
+;  addAnnotation(wksname, opts@annotation, "gif")
+;  if (isatt(opts,"logo") .and. .not. (opts@logo .eq. "")) then
+;     addLogo(wksname, opts@logo, "gif")
+;  end if
   return image
 end
 
@@ -924,7 +976,32 @@ begin
   end if
   
   ; map stuff
-  rescf@mpFillOn = False   ; don't fill in continents - maybe user selectable in future
+  rescf@mpFillOn = False     ; turn off unless masking
+  if (isatt(opts,"mask") .and. .not.(opts@mask .eq. "none")) then
+    rescf@mpFillOn = True  
+    rescf@cnLineDrawOrder = "Predraw"
+    rescf@cnFillDrawOrder = "Predraw"
+    rescf@cnLabelDrawOrder = "Predraw"
+    if (opts@mask .eq. "land") then
+       if (opts@shademask) then
+         rescf@mpLandFillColor = "snow2"
+         rescf@mpInlandWaterFillColor = "snow2"
+       else
+         rescf@mpLandFillColor = wks_type@wkBackgroundColor
+         rescf@mpInlandWaterFillColor = wks_type@wkBackgroundColor
+       end if
+       rescf@mpOceanFillColor = "transparent"
+    else
+       if (opts@shademask) then
+         rescf@mpOceanFillColor = "snow2"
+         ;rescf@mpOceanFillColor = "azure2"
+       else
+         rescf@mpOceanFillColor = wks_type@wkBackgroundColor
+       end if
+       rescf@mpLandFillColor = "transparent"
+       rescf@mpInlandWaterFillColor = "transparent"
+    end if
+  end if 
 
   rescf@mpOutlineBoundarySets = "National"
   rescf@mpDataBaseVersion = "MediumRes"
@@ -934,11 +1011,15 @@ begin
   if (wks_type .eq. "png") then
     rescf@mpGeophysicalLineThicknessF = 1.5
     rescf@mpNationalLineThicknessF = 1.
-    rescf@mpUSStateLineThicknessF = 1. 
+    if (doPanel) then
+      rescf@mpUSStateLineThicknessF = .5
+    end if
   else
     rescf@mpGeophysicalLineThicknessF = .5
     rescf@mpNationalLineThicknessF = .5
     rescf@mpUSStateLineThicknessF = .5
+    ;; and for good measure
+    rescf@mpGridLineThicknessF = .5
   end if
 
   rescf@mpGeophysicalLineColor = "gray29"       ; color of cont. outlines
@@ -1119,8 +1200,8 @@ begin
       end do
     end if
     rescf@tiMainString        = plottitle
-    ;mydata = data(0,:,:)
-    mydata = mask_data(data,masktype,maskdata)
+    mydata = data(0,:,:)
+    ;mydata = mask_data(data,masktype,maskdata)
     rescf@gsnLeftString = setvartitle(mydata, opts, addAnom, level, levelunit)
     if (doGoogle) then
       set_kml_map_defaults(rescf) ; turn off many options
@@ -1136,6 +1217,7 @@ begin
       res2 = remove_middle_contours(plots(0), rescf, 1)
       plots(0) = gsn_csm_contour_map(wks,mydata,res2)
     end if
+    addAnnotation2(wks,opts@annotation, plots(0), opts)
     ;if (.not. doGoogle) then
     ;    addAnnotation(wks,opts@annotation, opts@imageformat)
     ;end if
@@ -1145,7 +1227,7 @@ begin
       do i = 0,numfiles-1
         ;;mydata = files(i,:,:)
         mydata = files[i]
-        mydata = mask_data(mydata,masktype,maskdata)
+        ;mydata = mask_data(mydata,masktype,maskdata)
         if (isatt(opts,"longnames")) then
            if (.not. ismissing(opts@longnames(i))) then
              mydata@long_name = opts@longnames(i)
@@ -1188,6 +1270,7 @@ begin
              cint = spcF
           end if
         end if
+        addAnnotation2(wks,opts@annotation, plots(i), opts)
         ;if (.not. doPanel) then
         ;  addAnnotation(wks,opts@annotation, opts@imageformat)
         ;end if
@@ -1197,7 +1280,8 @@ begin
     else ;; doGoogle
 
       ;; Make the first plot to get the labelbar
-      mydata = mask_data(data,masktype,maskdata)
+      mydata = data;
+      ;mydata = mask_data(data,masktype,maskdata)
 ;;      ;; make title for labelbar
 ;;      vartitle = setvartitle(mydata, opts, addAnom, level, levelunit)
 
@@ -1269,8 +1353,8 @@ begin
             gsn_reverse_colormap(wks)
           end if
           ;;mydata = files(i,:,:)
-          mydata = files[i]
-          mydata = mask_data(mydata,masktype,maskdata)
+          ;mydata = files[i]
+          ;mydata = mask_data(mydata,masktype,maskdata)
           gplot = gsn_csm_contour_map_ce(wks,mydata,rescf)
           ;if (isanom .and. cint .eq. 0) then
           if (isanom .or. \
@@ -1427,7 +1511,9 @@ begin
 
     else 
 
-      draw(plots(0))
+      plot = plots(0)
+      addAnnotation2(wks,opts@annotation, plot, opts)
+      draw(plot)
 
     end if
     frame(wks)
@@ -2314,6 +2400,13 @@ begin
     maskType = "none"
   end if
 
+  shadeMask=getenv("shademask")
+  if (.not. ismissing(shadeMask)) then
+    shade = shadeMask .eq. "true"
+  else
+    shade = True
+  end if
+
   anom=getenv("anom")
   if (.not. ismissing(anom)) then
     isanom = anom .eq. "true"
@@ -2488,6 +2581,7 @@ begin
   options@imageformat=imageFormat
   options@outtype=outType
   options@mask=maskType
+  options@shademask=shade
   options@product_dir=productDir
   options@variable=variable
   options@level=level
