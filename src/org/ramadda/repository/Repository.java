@@ -3201,7 +3201,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     /** _more_ */
-    public boolean propdebug = false;
+    public static boolean propdebug = false;
 
     /** _more_ */
     public int propcnt = 0;
@@ -4358,7 +4358,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                     boolean needsToBeNonEmpty) {
 
         if (propdebug) {
-            System.err.println("prop:" + name);
+            System.err.println("getPropertyValue:" + name);
         }
         propcnt++;
         if (systemEnv == null) {
@@ -4370,21 +4370,33 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Check if there is an override 
         prop = (String) cmdLineProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
+	    if (propdebug) {
+		System.err.println("\t override from command line:" +prop);
+	    }
             return prop;
         }
 
         prop = (String) localProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
+	    if (propdebug) {
+		System.err.println("\t override from local:" +prop);
+	    }
             return prop;
         }
 
         prop = (String) pluginProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
+	    if (propdebug) {
+		System.err.println("\t override from plugin:" +prop);
+	    }
             return prop;
         }
 
         prop = (String) coreProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
+	    if (propdebug) {
+		System.err.println("\t override from core:" +prop);
+	    }
             return prop;
         }
 
@@ -4392,19 +4404,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Order:  command line, database, local (e.g., ramadda home .properties files), plugins, core
         prop = (String) cmdLineProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-            if (debug) {
-                System.out.println("prop:" + name + " from: cmdline");
-            }
-
+	    if (propdebug) {
+		System.err.println("\t from command line:" +prop);
+	    }
             return prop;
         }
 
         if (checkDb) {
             prop = (String) getDbProperties().get(name);
             if (checkProperty(prop, needsToBeNonEmpty)) {
-                if (debug) {
-                    System.out.println("prop:" + name + " from: db");
-                }
+		if (propdebug) {
+		    System.err.println("\t from db:" +prop);
+		}
 
                 return prop;
             }
@@ -4412,8 +4423,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         prop = (String) localProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-            if (debug) {
-                System.out.println("prop:" + name + " from local");
+	    if (propdebug) {
+		System.err.println("\t from local:" +prop);
             }
 
             return prop;
@@ -4421,10 +4432,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         prop = (String) pluginProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-            if (debug) {
-                System.out.println("prop:" + name + " from plugin");
+	    if (propdebug) {
+		System.err.println("\t from plugin:" +prop);
             }
-
             return prop;
         }
 
@@ -4432,34 +4442,33 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //xxxxx
         prop = (String) coreProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-            if (debug) {
-                System.out.println("prop:" + name + " from core");
-            }
+	    if (propdebug) {
+		System.err.println("\t from core:" +prop);
+	    }
 
             return prop;
         }
 
         prop = System.getProperty(name);
-        if (checkProperty(prop, needsToBeNonEmpty)) {
-            if (debug) {
-                System.out.println("prop:" + name + " from system");
-            }
+	if (checkProperty(prop, needsToBeNonEmpty)) {
+	    if (propdebug) {
+		System.err.println("\t from system:" +prop);
+	    }
 
             return prop;
         }
 
         prop = systemEnv.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-            if (debug) {
-                System.out.println("prop:" + name + " from system 2");
-            }
+	    if (propdebug) {
+		System.err.println("\t from system:" +prop);
+	    }
 
             return prop;
         }
-        if (debug) {
-            System.out.println("prop:" + name + " none");
-        }
-
+	if (propdebug) {
+	    System.err.println("\t from null:");
+	}
         return null;
 
     }
