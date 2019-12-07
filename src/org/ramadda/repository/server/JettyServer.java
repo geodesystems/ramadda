@@ -102,11 +102,15 @@ public class JettyServer implements Constants {
             if (args[i].equals("-port")) {
 		hadPort = true;
                 port = new Integer(args[i + 1]).intValue();
+		//		System.err.println("port args:" + port);
                 //Keep looping so we get the last -port in the arg list
             }
         }
 	if(!hadPort) {
+	    //	    Repository.propdebug = true;
 	    port = baseRepository.getProperty("ramadda.port", port);
+	    //	    Repository.propdebug = false;
+	    //	    System.err.println("port from properties:" + port);
 	}
 
         server  = new Server(port);
