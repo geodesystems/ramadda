@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -423,6 +424,8 @@ public class GeoUtils {
         return statesMap;
     }
 
+    private static HashSet noPlaceSet = new HashSet();
+
     /**
      * _more_
      *
@@ -509,7 +512,10 @@ public class GeoUtils {
         if (resource != null) {
             place = resource.getPlace(address);
             if (place == null) {
-                System.err.println("no place:" + address);
+		if(!noPlaceSet.contains(address)) {
+		    noPlaceSet.add(address);
+		    System.err.println("no place:" + address);
+		}
             }
             return place;
         }
