@@ -580,6 +580,7 @@ function DisplayThing(argId, argProperties) {
                 fields = pointData.getRecordFields();
             }
 	    
+            var showDate = this.getProperty("showDate", true);
             var showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
@@ -600,6 +601,12 @@ function DisplayThing(argId, argProperties) {
                     else if (doDerived == 1 && field.derived) continue;
                     var label = field.getLabel();
                     label = this.formatRecordLabel(label);
+		    if(!showDate) {
+                        if (field.isFieldDate()) {
+                            continue;
+                        }
+
+		    }
                     if (!showGeo) {
                         if (field.isFieldGeo()) {
                             continue;
@@ -607,6 +614,8 @@ function DisplayThing(argId, argProperties) {
                     }
                     var value = record.getValue(i);
                     if (typeof value == "number") {
+			value = this.formatNumber(value);
+			/**
                         var sv = value + "";
                         //total hack to decimals format numbers
                         if (sv.indexOf('.') >= 0) {
@@ -614,8 +623,12 @@ function DisplayThing(argId, argProperties) {
                             //?
                             if (Math.abs(value) < 1.5) decimals = 3;
                             value = number_format(value, decimals, '.', '');
-                        }
+                        } 
+			**/
                     } 
+                    if (field.isFieldDate()) {
+			value = this.formatDate(value);
+		    }
 		    if(field.getType() == "image" && value!="") {
 			value = HtmlUtils.image(value,["width","200"]);
 		    }
@@ -1231,7 +1244,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    if (prop.property == "filterValue") {
-		if(!this.getProperty("acceptFilterEvent",true)) return;
+		if(!this.getProperty("acceptFilterEvent",true)) {
+		    return;
+		}
 		this.haveCalledUpdateUI = false;
 		var widgetId = this.getFilterId(prop.fieldId);
 		if(prop.id && prop.id.endsWith("date1")) {
@@ -2270,6 +2285,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //	    var t2=  new Date();
 //	    Utils.displayTimes("filterData",[t1,t2]);
 	    dataList = this.sortRecords(dataList);
+
+	    if(this.getProperty("uniqueField")) {
+		let ufield =  this.getFieldById(null, this.getProperty("uniqueField"));
+		let umap = {};
+		let ulist = [];
+		for(var i=dataList.length-1;i>=0;i--) {
+		    var record = dataList[i];
+		    var v = record.getValue(ufield.getIndex());
+		    if(!Utils.isDefined(umap[v])) {
+			umap[v] = true;
+			ulist.push(record);
+		    }
+		}
+		dataList  = ulist;
+	    }
+
 
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
@@ -4322,6 +4353,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"filterFields=\"\"",
 		"hideFilterWidget=true",
 		"acceptFilterEvent=false",
+		'filterFieldsToPropagate=""',
 		"&lt;field&gt;.filterValue=\"\"",
 		"&lt;field&gt;.filterValues=\"\"",
 		"&lt;field&gt;.filterMultiple=\"true\"",
@@ -6239,8 +6271,8 @@ function PointData(name, recordFields, records, url, properties) {
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
 //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
-	    console.log("url:" + this.url);
             if (myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
+		console.log("url:" + this.url);
                 this.loadData(myDisplay, true);
                 return true;
             }
@@ -21760,6 +21792,16 @@ function DisplayManager(argId, argProperties) {
             var indexObj = [];
             var closest = RecordUtil.findClosest(records, lon, lat, indexObj);
             if (closest != null) {
+		var fields = mapDisplay.getFieldsByIds(null, mapDisplay.getProperty("filterFieldsToPropagate"));
+		fields.map(field=>{
+		    var args = {
+			property: "filterValue",
+			fieldId:field.getId(),
+			value:closest.getValue(field.getIndex())
+		    };
+		    mapDisplay.propagateEvent("handleEventPropertyChanged", args);
+		});
+
                 this.propagateEventRecordSelection(mapDisplay, pointData, {
                     index: indexObj.index
                 });
@@ -26328,7 +26370,6 @@ function TextcountDisplay(displayManager, id, properties) {
 	    }
 	    var pointNumber = data.points[0].pointNumber;
 	    var pattern = this.patternList[pointNumber];
-	    console.log(pattern);
 	    var args = {
 		property: "filterValue",
 		fieldId: this.textField.getId(),

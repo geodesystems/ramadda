@@ -1290,7 +1290,6 @@ function TextcountDisplay(displayManager, id, properties) {
 	    }
 	    var pointNumber = data.points[0].pointNumber;
 	    var pattern = this.patternList[pointNumber];
-	    console.log(pattern);
 	    var args = {
 		property: "filterValue",
 		fieldId: this.textField.getId(),

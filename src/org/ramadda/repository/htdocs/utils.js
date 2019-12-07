@@ -628,7 +628,7 @@ var Utils = {
     formatNumber: function(number, toFloat) {
         var s = this.formatNumberInner(number);
         if (toFloat) return parseFloat(s);
-        return s;
+	return this.formatNumberComma(s);
     },
 
     formatNumberInner: function(number) {

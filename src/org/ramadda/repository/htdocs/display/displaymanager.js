@@ -150,6 +150,16 @@ function DisplayManager(argId, argProperties) {
             var indexObj = [];
             var closest = RecordUtil.findClosest(records, lon, lat, indexObj);
             if (closest != null) {
+		var fields = mapDisplay.getFieldsByIds(null, mapDisplay.getProperty("filterFieldsToPropagate"));
+		fields.map(field=>{
+		    var args = {
+			property: "filterValue",
+			fieldId:field.getId(),
+			value:closest.getValue(field.getIndex())
+		    };
+		    mapDisplay.propagateEvent("handleEventPropertyChanged", args);
+		});
+
                 this.propagateEventRecordSelection(mapDisplay, pointData, {
                     index: indexObj.index
                 });

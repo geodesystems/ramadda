@@ -218,8 +218,8 @@ function PointData(name, recordFields, records, url, properties) {
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
 //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
-	    console.log("url:" + this.url);
             if (myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
+		console.log("url:" + this.url);
                 this.loadData(myDisplay, true);
                 return true;
             }
