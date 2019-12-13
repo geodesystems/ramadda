@@ -400,7 +400,10 @@ begin
     if (wks_type .eq. "png") then
       system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
     else
-      system("%convert% -alpha off -density 250 -resize 38% -quality 80 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
+      pngname=wksname+".png"
+      system("%gs% -dBATCH -dNOPAUSE -sDEVICE=pngalpha -r144 -sOutputFile="+pngname+" "+imagename)
+      system("%convert% -alpha off -trim +repage -bordercolor white -border 10 "+pngname+" "+tmpimagename)
+      ;system("%convert% -alpha off -density 300 -resize 38% -quality 92 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
     end if
     system("mv -f " + tmpimagename + " " + outimagename)
     return outimagename
@@ -878,6 +881,7 @@ begin
   numfiles = ListCount(files)
   ;print(numfiles)
   data = files[0]
+  printVarSummary(data)
   plots = new(numfiles,graphic)
   outtype = opts@outtype
   dodiff = outtype .eq. "diff" .and. numfiles .eq. 2
@@ -984,8 +988,8 @@ begin
     rescf@cnLabelDrawOrder = "Predraw"
     if (opts@mask .eq. "land") then
        if (opts@shademask) then
-         rescf@mpLandFillColor = "snow2"
-         rescf@mpInlandWaterFillColor = "snow2"
+         rescf@mpLandFillColor = "gray90"
+         rescf@mpInlandWaterFillColor = "gray90"
        else
          rescf@mpLandFillColor = wks_type@wkBackgroundColor
          rescf@mpInlandWaterFillColor = wks_type@wkBackgroundColor
@@ -993,7 +997,7 @@ begin
        rescf@mpOceanFillColor = "transparent"
     else
        if (opts@shademask) then
-         rescf@mpOceanFillColor = "snow2"
+         rescf@mpOceanFillColor = "gray90"
          ;rescf@mpOceanFillColor = "azure2"
        else
          rescf@mpOceanFillColor = wks_type@wkBackgroundColor
@@ -1200,7 +1204,8 @@ begin
       end do
     end if
     rescf@tiMainString        = plottitle
-    mydata = data(0,:,:)
+    ;mydata = data(0,:,:)
+    mydata = data
     ;mydata = mask_data(data,masktype,maskdata)
     rescf@gsnLeftString = setvartitle(mydata, opts, addAnom, level, levelunit)
     if (doGoogle) then
@@ -1802,8 +1807,8 @@ begin
     end if
     rscript(linenum+2) = "title(main='"+opts@mainTitle+"',line=2., cex.main=1.2, font.main=1)"
     rscript(linenum+3) = "title(main='"+opts@regionTitle+"',line=1.2, cex.main=1.0, font.main=1)"
-    ;if (opts@isanom .and. ) then   ; add multiple titles
-    if (opts@isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
+    if (opts@isanom) then   ; add multiple titles
+;    if (opts@isanom .and. ismissing(str_index_of_substr(str_lower(vartitle),"anom",-1))) then
       climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
       rscript(linenum+4) = "title(main='"+climText+"',line=.4,cex.main=0.85, font.main=1)"
       linenum = linenum+4
@@ -1858,6 +1863,11 @@ begin
       else
         linenum = linenum+1
       end if
+    end if
+    text = opts@annotation
+    if ((.not. ismissing(text)) .and. (text .ne. "")) then
+      rscript(linenum+1) = "legend('topright',bty='o',inset=0.005,bg='white',box.lty=0,box.col='white',col='black',c('"+text+"'),cex=.75,lty=0,y.intersp=.5)"
+      linenum = linenum+1
     end if
     rscript(linenum+1) = "dev.off()"
     do i = linenum+2,39

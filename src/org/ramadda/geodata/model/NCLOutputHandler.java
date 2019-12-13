@@ -76,6 +76,9 @@ public class NCLOutputHandler extends OutputHandler {
     /** NCL program path */
     private static final String PROP_CONVERT_PATH = "ncl.convert.path";
 
+    /** NCL program path */
+    private static final String PROP_GHOSTSCRIPT_PATH = "ncl.gs.path";
+
     /** NCL map plot script */
     public static final String SCRIPT_MAPPLOT = "plot.data.comp.ncl";
 
@@ -159,6 +162,9 @@ public class NCLOutputHandler extends OutputHandler {
     /** the path to convert program */
     private String convertPath;
 
+    /** the path to ghostscript program */
+    private String gsPath;
+
     /** spatial arguments */
     public static final String[] NCL_SPATIALARGS = new String[] {
                                                        ARG_NCL_AREA_NORTH,
@@ -190,6 +196,7 @@ public class NCLOutputHandler extends OutputHandler {
         }
         convertPath = getRepository().getProperty(PROP_CONVERT_PATH,
                 "convert");
+        gsPath = getRepository().getProperty(PROP_GHOSTSCRIPT_PATH, "gs");
         resourceDir = IOUtil.joinDir(getStorageManager().getResourceDir(),
                                      "ncl");
         cmapDir = IOUtil.joinDir(resourceDir, "colormaps");
@@ -210,6 +217,7 @@ public class NCLOutputHandler extends OutputHandler {
         ncargRoot = getRepository().getProperty(PROP_NCARG_ROOT, null);
         convertPath = getRepository().getProperty(PROP_CONVERT_PATH,
                 "convert");
+        gsPath = getRepository().getProperty(PROP_GHOSTSCRIPT_PATH, "gs");
         resourceDir = IOUtil.joinDir(getStorageManager().getResourceDir(),
                                      "ncl");
         cmapDir = IOUtil.joinDir(resourceDir, "colormaps");
@@ -228,6 +236,7 @@ public class NCLOutputHandler extends OutputHandler {
                 nclScript = nclScript.replaceAll("\\$NCL_RESOURCES",
                         resourceDir);
                 nclScript = nclScript.replaceAll("%convert%", convertPath);
+                nclScript = nclScript.replaceAll("%gs%", gsPath);
                 File outputFile = new File(IOUtil.joinDir(resourceDir,
                                                           SCRIPTS[i]));
                 InputStream is =

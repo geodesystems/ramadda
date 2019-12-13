@@ -38,7 +38,10 @@ begin
     if (wks_type .eq. "png") then
       system("%convert% -trim +repage -bordercolor white -border 10 "+imagename+" "+tmpimagename)
     else
-      system("%convert% -alpha off -density 250 -resize 38% -quality 80 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
+      pngname=wksname+".png"
+      system("%gs% -dBATCH -dNOPAUSE -sDEVICE=pngalpha -r144 -sOutputFile="+pngname+" "+imagename)
+      system("%convert% -alpha off -trim +repage -bordercolor white -border 10 "+pngname+" "+tmpimagename)
+      ;system("%convert% -alpha off -density 300 -resize 38% -quality 92 -trim +repage "+imagename+" -bordercolor white -border 10 "+tmpimagename)
     end if
     system("mv -f " + tmpimagename + " " + outimagename)
     return outimagename
@@ -297,8 +300,8 @@ begin
   txid = gsn_create_text(wks,plottext,txres)
   amres = True
   ;; have to move it a bit from 0.5 so it doesn't block out the axis lines
-  amres@amParallelPosF   =  -0.49   ; This is the left edge of the plot.
-  amres@amOrthogonalPosF =  0.49   ; This is the bottom of the plot
+  amres@amParallelPosF   =  -0.495  ; This is the left edge of the plot.
+  amres@amOrthogonalPosF =  0.495  ; This is the bottom of the plot
   amres@amJust           = "BottomLeft"
   annoid = gsn_add_annotation(plot, txid, amres)  ; Attach string to plot
                                                   ; using default values.
