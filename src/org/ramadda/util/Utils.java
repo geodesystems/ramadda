@@ -3460,4 +3460,21 @@ public class Utils extends IO {
     }
 
 
+    /** _more_          */
+    public static int debugCnt = 0;
+
+    /**
+     * _more_
+     *
+     * @param cnt _more_
+     * @param s _more_
+     */
+    public static void debugCount(int cnt, String s) {
+        if (debugCnt++ < cnt) {
+            System.err.println(s);
+        }
+    }
+
+
+
 }
