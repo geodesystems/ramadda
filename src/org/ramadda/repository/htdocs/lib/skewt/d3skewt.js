@@ -41,12 +41,13 @@ function D3Skewt(divid, args, jsonData) {
             this.hodoBoxId = this.divid + "_hodobox";
             this.textBoxId = this.divid + "_textbox";
             var hodoStyle = "vertical-align:top;";
-            var textStyle = "vertical-align:top;width:100%;";
+	    var textHeight = skewt.skewtHeight-skewt.hodographWidth;
             if (this.options.showHodograph) {
                 hodoStyle += "display:inline-block;";
             } else {
                 hodoStyle += "display:none;";
             }
+            var textStyle = "vertical-align:top;width:100%;overflow-y:auto;max-height:" + textHeight+"px;";
             if (this.options.showText) {
                 textStyle += "display:inline-block;";
             } else {
