@@ -220,6 +220,8 @@ public abstract class Processor extends CsvOperator {
      */
     public Row processRow(TextReader info, Row row, String line)
             throws Exception {
+        info.setCurrentOperator(null);
+
         return row;
     }
 
@@ -307,6 +309,7 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader info, Row row, String line)
                 throws Exception {
+            info.setCurrentOperator(this);
             Object  skipTo      = row.getSkipTo();
             boolean sawBufferer = false;
             if (remainderProcessors == null) {
@@ -346,7 +349,9 @@ public abstract class Processor extends CsvOperator {
                 }
                 //Always do this here so the indexes don't get screwed up 
                 processor.getIndices(info);
+                info.setCurrentOperator(processor);
                 row = processor.processRow(info, row, line);
+                info.setCurrentOperator(this);
                 if (row == null) {
                     return null;
                 }
@@ -981,11 +986,12 @@ rotate -> pass -> pass -> rotate -> pass
                 throws Exception {
             rows = getRows(rows);
             List<Row> newRows = new ArrayList<Row>();
-	    newRows.add(rows.get(0));
-	    for (int i = rows.size() - 1; i >= 1; i--) {
+            newRows.add(rows.get(0));
+            for (int i = rows.size() - 1; i >= 1; i--) {
                 Row row = rows.get(i);
-		newRows.add(row);
+                newRows.add(row);
             }
+
             return newRows;
         }
 

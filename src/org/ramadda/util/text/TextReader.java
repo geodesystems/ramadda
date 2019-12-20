@@ -103,6 +103,10 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String delimiter = ",";
 
+    /** _more_          */
+    private boolean splitOnSpaces = false;
+
+
     /** _more_ */
     private List<Integer> widths;
 
@@ -188,6 +192,9 @@ public class TextReader implements Cloneable {
     private List<Row> rows;
 
 
+    /** _more_          */
+    private CsvOperator currentOperator;
+
     /**
      * _more_
      */
@@ -217,6 +224,27 @@ public class TextReader implements Cloneable {
     public TextReader(BufferedReader reader) {
         this.reader = reader;
     }
+
+
+    /**
+     * Set the CurrentOperator property.
+     *
+     * @param value The new value for CurrentOperator
+     */
+    public void setCurrentOperator(CsvOperator value) {
+        currentOperator = value;
+    }
+
+    /**
+     * Get the CurrentOperator property.
+     *
+     * @return The CurrentOperator
+     */
+    public CsvOperator getCurrentOperator() {
+        return currentOperator;
+    }
+
+
 
     /**
      * Set the AllData property.
@@ -765,6 +793,8 @@ public class TextReader implements Cloneable {
 
 
 
+
+
     /**
      * _more_
      *
@@ -1147,6 +1177,9 @@ public class TextReader implements Cloneable {
                 delimiter = "\t";
             } else if (delimiter.equals("space")) {
                 delimiter = " ";
+            } else if (delimiter.equals("spaces")) {
+                delimiter     = " ";
+                splitOnSpaces = true;
             }
         }
     }
@@ -1283,6 +1316,25 @@ public class TextReader implements Cloneable {
     public List<String> getSearchExpressions() {
         return searchExpressions;
     }
+
+    /**
+     * Set the SplitSpaces property.
+     *
+     * @param value The new value for SplitSpaces
+     */
+    public void setSplitOnSpaces(boolean value) {
+        splitOnSpaces = value;
+    }
+
+    /**
+     * Get the SplitSpaces property.
+     *
+     * @return The SplitSpaces
+     */
+    public boolean getSplitOnSpaces() {
+        return splitOnSpaces;
+    }
+
 
 
 }

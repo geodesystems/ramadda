@@ -120,6 +120,20 @@ public abstract class CsvOperator {
     public void processFirstRow(TextReader info, Row row, String line)
             throws Exception {}
 
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getDescription() {
+        String className = getClass().getName();
+
+        return className.replace("org.ramadda.util.text.", "");
+    }
+
+
     /**
      * _more_
      *

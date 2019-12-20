@@ -69,6 +69,7 @@ public class Filter extends Processor {
     @Override
     public Row processRow(TextReader info, Row row, String line)
             throws Exception {
+        info.setCurrentOperator(this);
         if (rowOk(info, row, line)) {
             return row;
         } else {
@@ -276,8 +277,9 @@ public class Filter extends Processor {
         /** _more_ */
         boolean isTemplate = false;
 
-	boolean blank;
-	
+        /** _more_          */
+        boolean blank;
+
         /** _more_ */
         boolean debug = false;
 
@@ -324,7 +326,7 @@ public class Filter extends Processor {
          * @param pattern _more_
          */
         public void setPattern(String pattern) {
-	    blank =pattern.equals("");
+            blank   = pattern.equals("");
             pattern = pattern.replaceAll("_dollar_", "\\$");
             pattern =
                 pattern.replaceAll("_leftbracket_",
@@ -381,7 +383,9 @@ public class Filter extends Processor {
             if (idx < 0) {
                 for (int i = 0; i < row.size(); i++) {
                     String v = row.getString(i);
-		    if(blank) return doNegate(v.equals(""));
+                    if (blank) {
+                        return doNegate(v.equals(""));
+                    }
                     if (pattern.matcher(v).find()) {
                         return doNegate(true);
                     }
@@ -392,7 +396,9 @@ public class Filter extends Processor {
 
             String v = row.getString(idx);
             //            System.out.println("v:" + v);
-	    if(blank) return doNegate(v.equals(""));
+            if (blank) {
+                return doNegate(v.equals(""));
+            }
             if (pattern.matcher(v).find()) {
                 //                System.out.println("OK");
                 if (debug) {
@@ -565,7 +571,7 @@ public class Filter extends Processor {
             if (seenStop) {
                 return false;
             }
-            if (line.matches(pattern)) {
+            if (line.matches(pattern) || (line.indexOf(pattern) >= 0)) {
                 seenStop = true;
                 info.stopRunning();
 
@@ -843,6 +849,7 @@ public class Filter extends Processor {
                 }
                 if (op == OP_LE) {
                     return value <= this.value;
+
                 }
                 if (op == OP_GT) {
                     return value > this.value;
