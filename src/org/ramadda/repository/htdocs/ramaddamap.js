@@ -268,7 +268,7 @@ function RepositoryMap(mapId, params) {
                 if(e.feature && e.feature.noSelect) {
                     return;
                 }
-               theMap.handleFeatureclick(e.layer, e.feature);
+		theMap.handleFeatureclick(e.layer, e.feature);
             }
         }
     };
@@ -335,7 +335,7 @@ function initMapFunctions(theMap) {
             }
         },
         getBounds: function() {
-		return  this.transformProjBounds(this.map.getExtent());
+	    return  this.transformProjBounds(this.map.getExtent());
 	},
         locationChanged: function() {
 	    var latlon = this.getBounds();
@@ -415,7 +415,7 @@ function initMapFunctions(theMap) {
                 return;
             }
 
-//            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
+	    //            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
 	    if (layer.canSelect === false) return;
             var _this = this;
             if (!feature.isSelected) {
@@ -559,11 +559,11 @@ function initMapFunctions(theMap) {
             return layer;
         },
 	findLayer: function(id) {
-                for(var i=0;i<this.map.layers.length;i++) {
-		    if(this.map.layers[i].ramaddaId == id) return this.map.layers[i];
-		}
-		return null;
-	    },
+            for(var i=0;i<this.map.layers.length;i++) {
+		if(this.map.layers[i].ramaddaId == id) return this.map.layers[i];
+	    }
+	    return null;
+	},
         addLayer: function(layer) {
             if (this.map != null) {
                 this.map.addLayer(layer);
@@ -592,7 +592,7 @@ function initMapFunctions(theMap) {
 	    }
 
 
-//            this.map.resetLayersZIndex();
+	    //            this.map.resetLayersZIndex();
         },
         addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
             var _this = this;
@@ -1107,10 +1107,10 @@ function initMapFunctions(theMap) {
 
 
             var popup = new OpenLayers.Popup.FramedCloud("popup", feature.geometry.getBounds().getCenterLonLat(),
-                null, out, null, true,
-                function() {
-                    theMap.onPopupClose()
-                });
+							 null, out, null, true,
+							 function() {
+							     theMap.onPopupClose()
+							 });
 
             feature.popup = popup;
             popup.feature = feature;
@@ -1616,7 +1616,7 @@ function initMapFunctions(theMap) {
             } else if (mapLayer == map_esri_worldimagery) {
                 //Not working
                 newLayer = this.createXYZLayer("ESRI World Imagery",
-                    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
+					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
             } else if (mapLayer == map_white) {
                 this.addImageLayer(map_white, "White Background", "", ramaddaBaseUrl + "/images/white.png", false, 90, -180, -90, 180, 50, 50, {
                     isBaseLayer: true
@@ -1639,25 +1639,25 @@ function initMapFunctions(theMap) {
                 continue;
             } else if (mapLayer == map_usgs_topo) {
                 newLayer = this.createXYZLayer("USGS Topo",
-                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}",
-                    'USGS - The National Map');
+					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}",
+					       'USGS - The National Map');
             } else if (mapLayer == map_usgs_imagery) {
                 newLayer = this.createXYZLayer("USGS Imagery",
-                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}",
-                    "USGS - The National Map");
+					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}",
+					       "USGS - The National Map");
             } else if (mapLayer == map_usgs_relief) {
                 newLayer = this.createXYZLayer("USGS Shaded Relief",
-                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSShadedReliefOnly/MapServer/tile/${z}/${y}/${x}",
-                    'USGS - The National Map');
+					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSShadedReliefOnly/MapServer/tile/${z}/${y}/${x}",
+					       'USGS - The National Map');
             } else if (mapLayer == map_esri_topo) {
                 newLayer = this.createXYZLayer("ESRI Topo",
-                    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}");
+					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}");
             } else if (mapLayer == map_usfs_ownership) {
                 newLayer = this.createXYZLayer("USFS Ownership",
-                    "https://apps.fs.usda.gov/arcx/rest/services/wo_nfs_gstc/GSTC_TravelAccessBasemap_01/MapServer/tile/${z}/${y}/${x}");
+					       "https://apps.fs.usda.gov/arcx/rest/services/wo_nfs_gstc/GSTC_TravelAccessBasemap_01/MapServer/tile/${z}/${y}/${x}");
             } else if (mapLayer == map_esri_street) {
                 newLayer = this.createXYZLayer("ESRI Streets",
-                    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}");
+					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}");
             } else if (/\/tile\//.exec(mapLayer)) {
                 var layerURL = mapLayer;
                 newLayer = new OpenLayers.Layer.XYZ(
@@ -1846,10 +1846,10 @@ function initMapFunctions(theMap) {
 
 
         /*this.map.addControl(new OpenLayers.Control.TouchNavigation({
-            dragPanOptions: {
-                enableKinetic: true
-            }
-        }));*/
+          dragPanOptions: {
+          enableKinetic: true
+          }
+          }));*/
 
 
         if (this.showZoomPanControl && !this.showZoomOnlyControl) {
@@ -2122,27 +2122,27 @@ function initMapFunctions(theMap) {
                     }
                 });
                 /*
-                if (this.highlightOnHover) {
-                    this.map.highlightSelect = new OpenLayers.Control.SelectFeature(layer, {
-                            multiple: false, 
-                            hover: true,
-                            highlightOnly: true,
-                            renderIntent: "temporary"
-                        });
-                    this.map.addControl(this.map.highlightSelect);
-                    this.map.highlightSelect.activate();   
-                    }*/
+                  if (this.highlightOnHover) {
+                  this.map.highlightSelect = new OpenLayers.Control.SelectFeature(layer, {
+                  multiple: false, 
+                  hover: true,
+                  highlightOnly: true,
+                  renderIntent: "temporary"
+                  });
+                  this.map.addControl(this.map.highlightSelect);
+                  this.map.highlightSelect.activate();   
+                  }*/
 
                 //for now
                 //this.map.addControl(this.map.featureSelect);
                 //                this.map.featureSelect.activate();
             } else {
 		this.map.featureSelect.layers.push(layer);
-//		this.map.featureSelect.layers = Utils.mergeLists(tmp,this.map.featureSelect.layers);
+		//		this.map.featureSelect.layers = Utils.mergeLists(tmp,this.map.featureSelect.layers);
                 /*
                   if(this.map.highlightSelect) {
-                    this.map.highlightSelect.setLayer(this.vectorLayers);
-                }
+                  this.map.highlightSelect.setLayer(this.vectorLayers);
+                  }
                 */
             }
         }
@@ -2253,8 +2253,8 @@ function initMapFunctions(theMap) {
             if (this.fldNorth) {
                 // alert("north = " + this.fldNorth.obj.value);
                 this.setSelectionBox(this.fldNorth.obj.value,
-                    this.fldWest.obj.value, this.fldSouth.obj.value,
-                    this.fldEast.obj.value, true);
+				     this.fldWest.obj.value, this.fldSouth.obj.value,
+				     this.fldEast.obj.value, true);
             }
 
             if (this.fldLon) {
@@ -2268,8 +2268,8 @@ function initMapFunctions(theMap) {
         if (this.fldNorth) {
             // alert("north = " + this.fldNorth.obj.value);
             this.setSelectionBox(this.fldNorth.obj.value,
-                this.fldWest.obj.value, this.fldSouth.obj.value,
-                this.fldEast.obj.value, true);
+				 this.fldWest.obj.value, this.fldSouth.obj.value,
+				 this.fldEast.obj.value, true);
             if (this.selectorBox) {
                 var boxBounds = this.selectorBox.bounds
                 this.map.setCenter(boxBounds.getCenterLonLat());
@@ -2304,7 +2304,7 @@ function initMapFunctions(theMap) {
         if (north == "" || west == "" || south == "" || east == "")
             return;
         var bounds = createBounds(west, Math.max(south,
-            -mapDefaults.maxLatValue), east, Math.min(north, mapDefaults.maxLatValue));
+						 -mapDefaults.maxLatValue), east, Math.min(north, mapDefaults.maxLatValue));
         if (!this.selectorBox) {
             var args = {
                 "color": "red",
@@ -2464,7 +2464,7 @@ function initMapFunctions(theMap) {
         newLeft = Math.max(newLeft, extentBounds.left);
         newRight = Math.min(newRight, extentBounds.right);
         newBounds = createBounds(newLeft, bounds.bottom, newRight,
-            bounds.top);
+				 bounds.top);
         return newBounds;
     }
 
@@ -2502,154 +2502,154 @@ function initMapFunctions(theMap) {
         this.markers.redraw();
     }
     theMap.getMarkers = function() {
-            if (this.markers == null) return [];
-            return this.markers.features;
-        },
-        theMap.clearRegionSelector = function(listener) {
-            if (!this.selectorControl)
-                return;
-            if (this.selectorControl.box) {
-                //Nothing here really works to hide the box
-                this.selectorControl.box.removeBox();
-            }
-        },
-        theMap.addRegionSelectorControl = function(listener) {
-            var theMap = this;
-            if (theMap.selectorControl)
-                return;
-            theMap.selectorListener = listener;
-
-            theMap.selectorControl = new OpenLayers.Control();
-            OpenLayers.Util.extend(theMap.selectorControl, {
-                draw: function() {
-                    this.box = new OpenLayers.Handler.Box(theMap.selectorControl, {
-                        "done": this.notice
-                    }, {
-                        keyMask: OpenLayers.Handler.MOD_SHIFT,
-                        xxxboxDivClassName: "map-drag-box"
-                    });
-                    this.box.activate();
-                },
-
-                notice: function(bounds) {
-                    var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
-                        bounds.left, bounds.bottom));
-                    var ur = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
-                        bounds.right, bounds.top));
-                    ll = theMap.transformProjPoint(ll);
-                    ur = theMap.transformProjPoint(ur);
-                    var bounds = createBounds(ll.lon, ll.lat, ur.lon,
-                        ur.lat);
-                    bounds = theMap.normalizeBounds(bounds);
-                    theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
-                    theMap.findSelectionFields();
-                    if (listener) {
-                        listener(bounds);
-                    }
-                    if (theMap.fldNorth) {
-                        theMap.fldNorth.obj.value = formatLocationValue(bounds.top);
-                        theMap.fldSouth.obj.value = formatLocationValue(bounds.bottom);
-                        theMap.fldWest.obj.value = formatLocationValue(bounds.left);
-                        theMap.fldEast.obj.value = formatLocationValue(bounds.right);
-                    }
-                }
-            });
-            theMap.map.addControl(theMap.selectorControl);
-
-
-            theMap.panControl = new OpenLayers.Control();
-            OpenLayers.Util.extend(theMap.panControl, {
-                draw: function() {
-                    this.box = new OpenLayers.Handler.Drag(theMap.panControl, {
-                        "down": this.down,
-                        "move": this.move
-                    }, {
-                        keyMask: OpenLayers.Handler.MOD_META,
-                        boxDivClassName: "map-drag-box"
-                    });
-                    this.box.activate();
-                },
-
-                down: function(pt) {
-                    this.firstPoint = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
-                        pt.x, pt.y));
-                    this.firstPoint = theMap.transformProjPoint(this.firstPoint);
-                    theMap.findSelectionFields();
-                    if (theMap.fldNorth) {
-                        n = this.origNorth = parseFloat(theMap.fldNorth.obj.value);
-                        s = this.origSouth = parseFloat(theMap.fldSouth.obj.value);
-                        w = this.origWest = parseFloat(theMap.fldWest.obj.value);
-                        e = this.origEast = parseFloat(theMap.fldEast.obj.value);
-                        pt = this.firstPoint;
-                        this.doWest = false;
-                        this.doSouth = false;
-                        this.doEast = false;
-                        this.doNorth = false;
-                        if (pt.lon <= e && pt.lon >= w && pt.lat <= n && pt.lat >= s) {
-                            this.doSouth = this.doWest = this.doEast = this.doNorth = true;
-                            this.type = "center";
-                        } else if (pt.lon > e) {
-                            if (pt.lat > n) {
-                                this.type = "ne";
-                                this.doEast = this.doNorth = true;
-                            } else if (pt.lat < s) {
-                                this.type = "se";
-                                this.doSouth = this.doEast = true;
-                            } else {
-                                this.type = "e";
-                                this.doEast = true;
-                            }
-                        } else if (pt.lon < w) {
-                            if (pt.lat > n) {
-                                this.type = "nw";
-                                this.doWest = this.doNorth = true;
-                            } else if (pt.lat < s) {
-                                this.type = "sw";
-                                this.doSouth = this.doWest = true;
-                            } else {
-                                this.type = "w";
-                                this.doWest = true;
-                            }
-                        } else if (pt.lat > n) {
-                            this.type = "n";
-                            this.doNorth = true;
-                        } else {
-                            this.type = "s";
-                            this.doSouth = true;
-                        }
-                    }
-                },
-                move: function(pt) {
-                    var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
-                    ll = theMap.transformProjPoint(ll);
-                    dx = ll.lon - this.firstPoint.lon;
-                    dy = ll.lat - this.firstPoint.lat;
-                    newWest = this.origWest;
-                    newEast = this.origEast;
-                    newSouth = this.origSouth;
-                    newNorth = this.origNorth;
-                    if (this.doWest)
-                        newWest += dx;
-                    if (this.doSouth)
-                        newSouth += dy;
-                    if (this.doEast)
-                        newEast += dx;
-                    if (this.doNorth)
-                        newNorth += dy;
-                    var bounds = createBounds(newWest, newSouth, newEast, newNorth);
-                    bounds = theMap.normalizeBounds(bounds);
-                    theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
-                    theMap.findSelectionFields();
-                    if (!theMap.fldNorth) return;
-                    theMap.fldNorth.obj.value = bounds.top;
-                    theMap.fldSouth.obj.value = bounds.bottom;
-                    theMap.fldWest.obj.value = bounds.left;
-                    theMap.fldEast.obj.value = bounds.right;
-
-                }
-            });
-            theMap.map.addControl(theMap.panControl);
+        if (this.markers == null) return [];
+        return this.markers.features;
+    },
+    theMap.clearRegionSelector = function(listener) {
+        if (!this.selectorControl)
+            return;
+        if (this.selectorControl.box) {
+            //Nothing here really works to hide the box
+            this.selectorControl.box.removeBox();
         }
+    },
+    theMap.addRegionSelectorControl = function(listener) {
+        var theMap = this;
+        if (theMap.selectorControl)
+            return;
+        theMap.selectorListener = listener;
+
+        theMap.selectorControl = new OpenLayers.Control();
+        OpenLayers.Util.extend(theMap.selectorControl, {
+            draw: function() {
+                this.box = new OpenLayers.Handler.Box(theMap.selectorControl, {
+                    "done": this.notice
+                }, {
+                    keyMask: OpenLayers.Handler.MOD_SHIFT,
+                    xxxboxDivClassName: "map-drag-box"
+                });
+                this.box.activate();
+            },
+
+            notice: function(bounds) {
+                var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
+                    bounds.left, bounds.bottom));
+                var ur = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
+                    bounds.right, bounds.top));
+                ll = theMap.transformProjPoint(ll);
+                ur = theMap.transformProjPoint(ur);
+                var bounds = createBounds(ll.lon, ll.lat, ur.lon,
+					  ur.lat);
+                bounds = theMap.normalizeBounds(bounds);
+                theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
+                theMap.findSelectionFields();
+                if (listener) {
+                    listener(bounds);
+                }
+                if (theMap.fldNorth) {
+                    theMap.fldNorth.obj.value = formatLocationValue(bounds.top);
+                    theMap.fldSouth.obj.value = formatLocationValue(bounds.bottom);
+                    theMap.fldWest.obj.value = formatLocationValue(bounds.left);
+                    theMap.fldEast.obj.value = formatLocationValue(bounds.right);
+                }
+            }
+        });
+        theMap.map.addControl(theMap.selectorControl);
+
+
+        theMap.panControl = new OpenLayers.Control();
+        OpenLayers.Util.extend(theMap.panControl, {
+            draw: function() {
+                this.box = new OpenLayers.Handler.Drag(theMap.panControl, {
+                    "down": this.down,
+                    "move": this.move
+                }, {
+                    keyMask: OpenLayers.Handler.MOD_META,
+                    boxDivClassName: "map-drag-box"
+                });
+                this.box.activate();
+            },
+
+            down: function(pt) {
+                this.firstPoint = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
+                    pt.x, pt.y));
+                this.firstPoint = theMap.transformProjPoint(this.firstPoint);
+                theMap.findSelectionFields();
+                if (theMap.fldNorth) {
+                    n = this.origNorth = parseFloat(theMap.fldNorth.obj.value);
+                    s = this.origSouth = parseFloat(theMap.fldSouth.obj.value);
+                    w = this.origWest = parseFloat(theMap.fldWest.obj.value);
+                    e = this.origEast = parseFloat(theMap.fldEast.obj.value);
+                    pt = this.firstPoint;
+                    this.doWest = false;
+                    this.doSouth = false;
+                    this.doEast = false;
+                    this.doNorth = false;
+                    if (pt.lon <= e && pt.lon >= w && pt.lat <= n && pt.lat >= s) {
+                        this.doSouth = this.doWest = this.doEast = this.doNorth = true;
+                        this.type = "center";
+                    } else if (pt.lon > e) {
+                        if (pt.lat > n) {
+                            this.type = "ne";
+                            this.doEast = this.doNorth = true;
+                        } else if (pt.lat < s) {
+                            this.type = "se";
+                            this.doSouth = this.doEast = true;
+                        } else {
+                            this.type = "e";
+                            this.doEast = true;
+                        }
+                    } else if (pt.lon < w) {
+                        if (pt.lat > n) {
+                            this.type = "nw";
+                            this.doWest = this.doNorth = true;
+                        } else if (pt.lat < s) {
+                            this.type = "sw";
+                            this.doSouth = this.doWest = true;
+                        } else {
+                            this.type = "w";
+                            this.doWest = true;
+                        }
+                    } else if (pt.lat > n) {
+                        this.type = "n";
+                        this.doNorth = true;
+                    } else {
+                        this.type = "s";
+                        this.doSouth = true;
+                    }
+                }
+            },
+            move: function(pt) {
+                var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
+                ll = theMap.transformProjPoint(ll);
+                dx = ll.lon - this.firstPoint.lon;
+                dy = ll.lat - this.firstPoint.lat;
+                newWest = this.origWest;
+                newEast = this.origEast;
+                newSouth = this.origSouth;
+                newNorth = this.origNorth;
+                if (this.doWest)
+                    newWest += dx;
+                if (this.doSouth)
+                    newSouth += dy;
+                if (this.doEast)
+                    newEast += dx;
+                if (this.doNorth)
+                    newNorth += dy;
+                var bounds = createBounds(newWest, newSouth, newEast, newNorth);
+                bounds = theMap.normalizeBounds(bounds);
+                theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
+                theMap.findSelectionFields();
+                if (!theMap.fldNorth) return;
+                theMap.fldNorth.obj.value = bounds.top;
+                theMap.fldSouth.obj.value = bounds.bottom;
+                theMap.fldWest.obj.value = bounds.left;
+                theMap.fldEast.obj.value = bounds.right;
+
+            }
+        });
+        theMap.map.addControl(theMap.panControl);
+    }
 
     theMap.onPopupClose = function(evt) {
         if (this.currentPopup) {
@@ -2815,9 +2815,9 @@ function initMapFunctions(theMap) {
         height = this.map.viewPortDiv.offsetHeight;
         position = new OpenLayers.Pixel(width / 2 - sz.w / 2, height / 2 - sz.h / 2);
         this.loadingImage = OpenLayers.Util.createImage("loadingimage",
-            position,
-            sz,
-            ramaddaBaseUrl + '/icons/mapprogress.gif');
+							position,
+							sz,
+							ramaddaBaseUrl + '/icons/mapprogress.gif');
         this.loadingImage.style.zIndex = 1010;
         this.map.viewPortDiv.appendChild(this.loadingImage);
     }
@@ -2828,7 +2828,7 @@ function initMapFunctions(theMap) {
     }
 
     theMap.centerOnMarkersInit = function() {
-       if(!this.hadDefaultBounds) {
+	if(!this.hadDefaultBounds) {
             this.centerOnMarkers(null);
 	}
     }
@@ -2933,10 +2933,10 @@ function initMapFunctions(theMap) {
 	var p = steps/numSteps; 
 	steps++;
 	newBounds = createBounds(
-				 ob.left+(bounds.left- ob.left)*p,
-				 ob.bottom+(bounds.bottom- ob.bottom)*p,
-				 ob.right+(bounds.right- ob.right)*p,
-				 ob.top+(bounds.top-ob.top)*p);
+	    ob.left+(bounds.left- ob.left)*p,
+	    ob.bottom+(bounds.bottom- ob.bottom)*p,
+	    ob.right+(bounds.right- ob.right)*p,
+	    ob.top+(bounds.top-ob.top)*p);
 	this.setViewToBounds(newBounds);
 	setTimeout(()=>this.animateViewToBounds(bounds, ob, steps),125);
     },
@@ -3161,7 +3161,7 @@ function initMapFunctions(theMap) {
         }
 
         var bounds = createBounds(west, Math.max(south, -mapDefaults.maxLatValue),
-            east, Math.min(north, mapDefaults.maxLatValue));
+				  east, Math.min(north, mapDefaults.maxLatValue));
         var projBounds = this.transformLLBounds(bounds);
         box = new OpenLayers.Marker.Box(projBounds);
         box.sticky = args.sticky;
@@ -3228,22 +3228,22 @@ function initMapFunctions(theMap) {
 	theMap.featureHighlightHandler = callback;
     }
     theMap.addFeatureSelectHandler = function( callback) {
-	    theMap.featureSelectlightHandler= callback;
+	theMap.featureSelectlightHandler= callback;
     }
     theMap.showFeatureText = function(feature) {
 	if(this.featureHighlightHandler)
 	    this.featureHighlightHandler(feature,true);
-            var _this = this;
-            if (feature.text && this.displayDiv) {
-                this.textFeature = feature;
-                var callback = function() {
-                    if (_this.textFeature == feature) {
-                        _this.showText(_this.textFeature.text);
-                    }
+        var _this = this;
+        if (feature.text && this.displayDiv) {
+            this.textFeature = feature;
+            var callback = function() {
+                if (_this.textFeature == feature) {
+                    _this.showText(_this.textFeature.text);
                 }
-                setTimeout(callback, 500);
             }
-        },
+            setTimeout(callback, 500);
+        }
+    },
 
     theMap.showText = function(text) {
         $("#" + this.displayDiv).html(text);
@@ -3252,96 +3252,96 @@ function initMapFunctions(theMap) {
     theMap.hideFeatureText = function(feature) {
 	if(this.featureHighlightHandler)
 	    this.featureHighlightHandler(feature,false);
-            if (!feature || this.textFeature == feature) {
-		if(!this.displayDivSticky) 
-                    this.showText("");
-            }
-        },
-
-
-        theMap.addPoint = function(id, point, attrs, text, notReally) {
-            //Check if we have a LonLat instead of a Point
-            var location = point;
-            if (typeof point.x === 'undefined') {
-                point = new OpenLayers.Geometry.Point(point.lon, point.lat);
-            } else {
-                location = createLonLat(location.x, location.y);
-            }
-
-            var _this = this;
-
-            var cstyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
-            $.extend(cstyle, {
-                pointRadius: 5,
-                stroke: true,
-                strokeColor: "red",
-                strokeWidth: 0,
-                strokeOpacity: 0.75,
-                fill: true,
-                fillColor: "blue",
-                fillOpacity: 0.75,
-            });
-
-            if (attrs) {
-                $.extend(cstyle, attrs);
-                if (cstyle.pointRadius <= 0) cstyle.pointRadius = 1;
-            }
-
-            if (cstyle.fillColor == "" || cstyle.fillColor == "none") {
-                cstyle.fillOpacity = 0.0;
-            }
-            if (cstyle.strokeColor == "" || cstyle.strokeColor == "none") {
-                cstyle.strokeOpacity = 0.0;
-            }
-	    //["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
-            var center = new OpenLayers.Geometry.Point(point.x, point.y);
-            center.transform(this.displayProjection, this.sourceProjection);
-	    //	    cstyle.graphicName = "triangle";
-            var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
-	    
-
-
-
-            feature.center = center;
-            feature.ramaddaId = id;
-            feature.text = this.getPopupText(text, feature);
-            feature.location = location;
-            this.features[id] = feature;
-            if (!notReally) {
-                if (this.circles == null) {
-                    this.circles = new OpenLayers.Layer.Vector("Shapes");
-		    this.circles.layerName = "circles";
-                    this.circles.setZIndex(1);
-                    /*
-                      this.circles.events.on({
-                      'featureselected': function(feature) {
-                      feature  = feature.feature;
-                      _this.showMarkerPopup(feature);
-                      },
-                      'featureunselected': function(feature) {
-                      }
-                      });*/
-                    this.addVectorLayer(this.circles);
-                    /*
-                      this.addLayer(this.circles);
-                      var sf = new OpenLayers.Control.SelectFeature(this.circles,{
-                      clickout: false, 
-                      toggle: false,
-                      multiple: false, 
-                      hover: false,
-                      toggleKey: "ctrlKey", 
-                      multipleKey: "shiftKey", 
-                      box: false
-                      });
-
-                      this.getMap().addControl(sf);
-                      sf.activate();
-                    */
-                }
-                this.circles.addFeatures([feature]);
-            }
-            return feature;
+        if (!feature || this.textFeature == feature) {
+	    if(!this.displayDivSticky) 
+                this.showText("");
         }
+    },
+
+
+    theMap.addPoint = function(id, point, attrs, text, notReally) {
+        //Check if we have a LonLat instead of a Point
+        var location = point;
+        if (typeof point.x === 'undefined') {
+            point = new OpenLayers.Geometry.Point(point.lon, point.lat);
+        } else {
+            location = createLonLat(location.x, location.y);
+        }
+
+        var _this = this;
+
+        var cstyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+        $.extend(cstyle, {
+            pointRadius: 5,
+            stroke: true,
+            strokeColor: "red",
+            strokeWidth: 0,
+            strokeOpacity: 0.75,
+            fill: true,
+            fillColor: "blue",
+            fillOpacity: 0.75,
+        });
+
+        if (attrs) {
+            $.extend(cstyle, attrs);
+            if (cstyle.pointRadius <= 0) cstyle.pointRadius = 1;
+        }
+
+        if (cstyle.fillColor == "" || cstyle.fillColor == "none") {
+            cstyle.fillOpacity = 0.0;
+        }
+        if (cstyle.strokeColor == "" || cstyle.strokeColor == "none") {
+            cstyle.strokeOpacity = 0.0;
+        }
+	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
+        var center = new OpenLayers.Geometry.Point(point.x, point.y);
+        center.transform(this.displayProjection, this.sourceProjection);
+	//	    cstyle.graphicName = "triangle";
+        var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
+	
+
+
+
+        feature.center = center;
+        feature.ramaddaId = id;
+        feature.text = this.getPopupText(text, feature);
+        feature.location = location;
+        this.features[id] = feature;
+        if (!notReally) {
+            if (this.circles == null) {
+                this.circles = new OpenLayers.Layer.Vector("Shapes");
+		this.circles.layerName = "circles";
+                this.circles.setZIndex(1);
+                /*
+                  this.circles.events.on({
+                  'featureselected': function(feature) {
+                  feature  = feature.feature;
+                  _this.showMarkerPopup(feature);
+                  },
+                  'featureunselected': function(feature) {
+                  }
+                  });*/
+                this.addVectorLayer(this.circles);
+                /*
+                  this.addLayer(this.circles);
+                  var sf = new OpenLayers.Control.SelectFeature(this.circles,{
+                  clickout: false, 
+                  toggle: false,
+                  multiple: false, 
+                  hover: false,
+                  toggleKey: "ctrlKey", 
+                  multipleKey: "shiftKey", 
+                  box: false
+                  });
+
+                  this.getMap().addControl(sf);
+                  sf.activate();
+                */
+            }
+            this.circles.addFeatures([feature]);
+        }
+        return feature;
+    }
 
     theMap.removePoint = function(point) {
         if (this.circles)
@@ -3350,19 +3350,19 @@ function initMapFunctions(theMap) {
 
     theMap.addRectangle = function(id, north, west, south, east, attrs, info) {
         var points = [new OpenLayers.Geometry.Point(west, north),
-            new OpenLayers.Geometry.Point(west, south),
-            new OpenLayers.Geometry.Point(east, south),
-            new OpenLayers.Geometry.Point(east, north),
-            new OpenLayers.Geometry.Point(west, north)
-        ];
+		      new OpenLayers.Geometry.Point(west, south),
+		      new OpenLayers.Geometry.Point(east, south),
+		      new OpenLayers.Geometry.Point(east, north),
+		      new OpenLayers.Geometry.Point(west, north)
+		     ];
         return this.addPolygon(id, "", points, attrs, info);
     }
 
 
     theMap.addLine = function(id, name, lat1, lon1, lat2, lon2, attrs, info) {
         var points = [new OpenLayers.Geometry.Point(lon1, lat1),
-            new OpenLayers.Geometry.Point(lon2, lat2)
-        ];
+		      new OpenLayers.Geometry.Point(lon2, lat2)
+		     ];
         return this.addPolygon(id, name, points, attrs, info);
     }
 
@@ -3388,7 +3388,7 @@ function initMapFunctions(theMap) {
         var location;
         if (points.length > 1) {
             location = new OpenLayers.LonLat(points[0].x + (points[1].x - points[0].x) / 2,
-                points[0].y + (points[1].y - points[0].y) / 2);
+					     points[0].y + (points[1].y - points[0].y) / 2);
         } else {
             location = new OpenLayers.LonLat(points[0].x, points[0].y);
         }
@@ -3397,7 +3397,7 @@ function initMapFunctions(theMap) {
         }
 
         var base_style = OpenLayers.Util.extend({},
-            OpenLayers.Feature.Vector.style['default']);
+						OpenLayers.Feature.Vector.style['default']);
         var style = OpenLayers.Util.extend({}, base_style);
         style.strokeColor = "blue";
         style.strokeWidth = 1;
@@ -3564,31 +3564,37 @@ function initMapFunctions(theMap) {
     }
 
     theMap.popupChart = function(props) {
-            var displayManager = getOrCreateDisplayManager(props.divId, {}, true);
-            var pointDataProps = {
-                entryId: props.entryId
-            };
-            var title = props.title;
-            if (!title) title = "Chart";
-            var fields = (props.fields == null ? null : props.fields.split(","));
-            var chartProps = {
-                "title": title,
-                "layoutHere": true,
-                "divid": props.divId,
-                "entryId": props.entryId,
-                "fields": fields,
-                "vAxisMinValue": props.vAxisMinValue,
-                "vAxisMaxValue": props.vAxisMaxValue,
-                "data": new PointData(title, null, null, getRamadda().getRoot() + "/entry/show?entryid=" + props.entryId + "&output=points.product&product=points.json&numpoints=1000", pointDataProps)
-            };
-            displayManager.createDisplay(props.chartType, chartProps);
-        },
-        theMap.removeMarker = function(marker) {
-            if (this.markers) {
-                //            this.markers.removeMarker(marker);            
-                this.markers.removeFeatures([marker]);
-            }
+        var displayManager = getOrCreateDisplayManager(props.divId, {}, true);
+        var pointDataProps = {
+            entryId: props.entryId
+        };
+        var title = props.title;
+        if (!title) title = "Chart";
+        var fields = (props.fields == null ? null : props.fields.split(","));
+        var chartProps = {
+            "title": title,
+            "layoutHere": true,
+            "divid": props.divId,
+            "entryId": props.entryId,
+            "fields": fields,
+            "vAxisMinValue": props.vAxisMinValue,
+            "vAxisMaxValue": props.vAxisMaxValue,
+            "data": new PointData(title, null, null, getRamadda().getRoot() + "/entry/show?entryid=" + props.entryId + "&output=points.product&product=points.json&numpoints=1000", pointDataProps)
+        };
+	if(props.chartArgs) {
+	    let toks = props.chartArgs.split(",");
+	    for(var i=0;i<toks.length;i+=2) {
+		chartProps[toks[i]] = toks[i+1];
+	    }
+	}
+        displayManager.createDisplay(props.chartType, chartProps);
+    },
+    theMap.removeMarker = function(marker) {
+        if (this.markers) {
+            //            this.markers.removeMarker(marker);            
+            this.markers.removeFeatures([marker]);
         }
+    }
 
 }
 
@@ -3615,7 +3621,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
     initialize: function(options) {
         this.handlerOptions = OpenLayers.Util.extend({},
-            this.defaultHandlerOptions);
+						     this.defaultHandlerOptions);
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
         this.handler = new OpenLayers.Handler.Click(this, {
             'click': this.trigger
@@ -3757,7 +3763,7 @@ function highlightMarkers(selector, mapVar, background1, background2, id) {
                 fill: false,
             };
             point = mapVar.addPoint(id, new OpenLayers.LonLat($(this).data('longitude'), $(this).data('latitude')),
-                attrs);
+				    attrs);
             markerMap[id] = point;
         });
     $(selector).mouseleave(

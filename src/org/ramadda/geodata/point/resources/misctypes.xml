@@ -146,6 +146,8 @@ Data courtesy of
      <property name="xxxnameTemplate" value="Sounding - ${station_id} ${date}"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
+     <property name="map.chart.type" value="skewt"/>
+     <property name="map.chart.args" value="hodographWidth,150,skewtWidth,300,skewtHeight,300"/>
  <property name="record.properties">
 fields=ix[],time[ ],  pressure[ unit=mb missing=-999],    temperature[ c missing=-999],    rh[ unit=% missing=-999],  height[ unit=m missing=-999],  winddirection[ missing=-999],    windspeed[ unit=m/s missing=-999],   u[ unit=m/s missing=-999],   v[ unit=m/s missing=-999],  ns[  missing=-999]  wz[ unit=m/s missing=-999],  zw[ unit=m missing=-999],   fp[  missing=-999],  ft[  missing=-999],  fh[  missing=-999],  fw[  missing=-999],    lat[  missing=-999],   lon[  missing=-999]
 delimiter=space
