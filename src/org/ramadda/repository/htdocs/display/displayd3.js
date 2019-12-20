@@ -368,25 +368,20 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
 
-
-
-
 	    var alldata = data;
 	    data = {};
 	    //if any missing then don't include
 	    for(a  in alldata) data[a] = [];
 	    alldata[names[0].id].map((v,idx)=>{
 		var ok = true;
-		for(var i=0;i<names.length;i++) {
-                    var id = names[i].id;
+		for(id in alldata) {
 		    if(isNaN(alldata[id][idx])) {
 			ok = false;
 			break;
 		    }
 		}
 		if(ok) {
-		    for(var i=0;i<names.length;i++) {
-			var id = names[i].id;
+		    for(id in alldata) {
 			data[id].push(alldata[id][idx]);
 		    }
 		}
