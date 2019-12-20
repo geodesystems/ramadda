@@ -29,6 +29,7 @@ var DISPLAY_TSNE = "tsne";
 var DISPLAY_HEATMAP = "heatmap";
 var DISPLAY_WORDTREE = "wordtree";
 var DISPLAY_TREEMAP = "treemap";
+var DISPLAY_ORGCHART = "orgchart";
 var ID_CHART = "chart";
 
 
@@ -51,6 +52,23 @@ function haveGoogleChartsLoaded() {
     }
     return googleChartsLoaded;
 }
+
+function waitOnGoogleCharts(object, callback) {
+    if (haveGoogleChartsLoaded()) {
+	return true;
+    }
+    if (!object.googleChartCallbackPending) {
+        object.googleChartCallbackPending = true;
+        var func = function() {
+            object.googleChartCallbackPending = false;
+            callback();
+        }
+        setTimeout(func, 500);
+    }
+    return false;
+}
+
+
 
 function displayGetFunctionValue(v) {
     if(isNaN(v))return 0;
@@ -218,6 +236,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_TREEMAP,
     label: "Tree Map",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_ORGCHART,
+    label: "Org Chart",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -4362,5 +4388,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
         },
     });
 }
+
+
 
 

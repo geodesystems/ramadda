@@ -1492,8 +1492,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		    h = h.replace(/\${per_hour}/g,this.formatNumber(t.percent/hours));
 		    h = h.replace(/\${per_day}/g,this.formatNumber(t.percent/days));
 		    h = h.replace(/\${per_week}/g,this.formatNumber(t.percent/(days/7)));
-		    h = h.replace(/\${per_month}/g,this.formatNumber(months));
-		    h = h.replace(/\${per_year}/g,this.formatNumber(years));
+		    h = h.replace(/\${per_month}/g,this.formatNumber(t.percent/months));
+		    h = h.replace(/\${per_year}/g,this.formatNumber(t.percent/years));
 		    html+=h;
 		} else {
 		    html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
@@ -3051,11 +3051,12 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
             if (!records) return;
 	    let roots=null;
 	    try {
-		roots = this.makeTree();
+		roots = this.makeTree(records);
 	    } catch(error) {
                 this.setContents(this.getMessage(error.toString()));
 		return;
 	    }
+
 	    var html = "";
 	    let baseId = this.getDomId("node");
 	    let cnt=0;
@@ -3136,5 +3137,57 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		}
 	    });
         },
+    });
+}
+
+
+
+function OrgchartDisplay(displayManager, id, properties) {
+    let ID_ORGCHART = "orgchart";
+    let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ORGCHART, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    console.log("orgchart");
+    $.extend(this, {
+        handleEventRecordSelection: function(source, args) {},
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+	    console.log("ui");
+	    if(!waitOnGoogleCharts(this, ()=>{
+		this.updateUI();
+	    })) {
+		return;
+	    }
+            this.displayHtml(HtmlUtils.div(["id",this.getDomId(ID_ORGCHART)],"HELLO"));
+	    let roots=null;
+	    try {
+		roots = this.makeTree();
+	    } catch(error) {
+                this.setContents(this.getMessage(error.toString()));
+		return;
+	    }
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Parent');
+            data.addColumn('string', 'ToolTip');
+	    let rows = [];
+	    let func = function(node) {
+		cnt++;
+		rows.push([node.label,node.parent?node.parent.label:"",""]);
+		if(node.record) {
+//		    _this.countToRecord[cnt] = node.record;
+		}
+	    }
+	    roots.map(func);
+	    console.log(rows);
+            data.addRows(rows);
+//		[{'v':'Mike', 'f':'Mike<div style="color:red; font-style:italic">President</div>'}, '', 'The President'],
+            var chart = new google.visualization.OrgChart(document.getElementById(this.getDomId(ID_ORGCHART)));
+            // Draw the chart, setting the allowHtml option to true for the tooltips.
+            chart.draw(data, {'allowHtml':true});
+	}
     });
 }

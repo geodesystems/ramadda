@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -91,19 +91,19 @@ var D3Util = {
             data = record.getData()[axis.fieldIdx];
         } else {
             switch (axis.type) {
-                case TYPE_TIME:
-                    data = new Date(record.getDate());
-                    break;
-                case TYPE_ELEVATION:
-                    //console.log(record.getElevation());
-                    data = record.getElevation();
-                    break;
-                case TYPE_LATITUDE:
-                    data = record.getLatitude();
-                case TYPE_LONGITUDE:
-                    data = record.getLongitude();
-                default:
-                    data = record.getData()[index];
+            case TYPE_TIME:
+                data = new Date(record.getDate());
+                break;
+            case TYPE_ELEVATION:
+                //console.log(record.getElevation());
+                data = record.getElevation();
+                break;
+            case TYPE_LATITUDE:
+                data = record.getLatitude();
+            case TYPE_LONGITUDE:
+                data = record.getLongitude();
+            default:
+                data = record.getData()[index];
             }
         }
 
@@ -177,6 +177,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(
+		SUPER.getWikiEditorTags(),
+		['label:Skewt Attributes',
+		 'skewtWidth="500"',
+		 'skewtHeight="550"',
+		 'hodographWidth=150',
+		 'showHodograph=false',
+		 'showText=false',
+		])
+
+	},
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
         },
@@ -190,44 +202,46 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
         },
         handleEventPointDataLoaded: function(source, pointData) {
-                //TODO: this results in a double  call to updateUI when first created
-                this.updateUI();
+            //TODO: this results in a double  call to updateUI when first created
+            this.updateUI();
         },
         updateUI: async function() {
-         if(!this.loadedResources) {
-             var time = new Date();
-             await Utils.importCSS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/sounding.css");
-           //            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
-            //            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
-             await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/d3skewt.js");
-            this.loadedResources = true;
-         }
+//	    console.log("skewt.updateui");
+            if(!this.loadedResources) {
+		var time = new Date();
+		await Utils.importCSS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/sounding.css");
+		//            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
+		//            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
+		await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/d3skewt.js");
+		this.loadedResources = true;
+            }
 
-         if(!window["D3Skewt"]) {
-             setTimeout(()=>this.updateUI(),100);
-             return;
-         }
-         SUPER.updateUI.call(this);
+            if(!window["D3Skewt"]) {
+		setTimeout(()=>this.updateUI(),100);
+		return;
+            }
+            SUPER.updateUI.call(this);
 
-         var skewtId = this.getDomId(ID_SKEWT);
-         var html = HtmlUtils.div(["id", skewtId], "");
-         this.setContents(html);
-         var pointData = this.getData();
-         if (pointData == null) return;
-         var records =  pointData.getRecords();
-         if (!records || records.length==0) {
-             console.log("no data yet");
-             return;
-         }
-         var date = records[0].getDate();
-         if(this.jq(ID_DATE_LABEL).length==0) {
-             this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
-         }
-         if(date!=null) {
-             this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
-         } else {
-             this.jq(ID_DATE_LABEL).html("");
-         }
+//	    console.log("skewt.updateui-1");
+            let records =  this.filterData();
+            if (!records || records.length==0) {
+                this.setContents(this.getLoadingMessage());
+		return;
+            }
+//	    console.log("skewt.updateui-2");
+
+            let skewtId = this.getDomId(ID_SKEWT);
+            let html = HtmlUtils.div(["id", skewtId], "");
+            this.setContents(html);
+            var date = records[0].getDate();
+            if(this.jq(ID_DATE_LABEL).length==0) {
+		this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
+            }
+            if(date!=null) {
+		this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
+            } else {
+		this.jq(ID_DATE_LABEL).html("");
+            }
             var options = {};
             if (this.propertyDefined("showHodograph"))
                 options.showHodograph = this.getProperty("showHodograph", true);
@@ -240,21 +254,22 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             if (this.propertyDefined("hodographWidth")){
                 options.hodographWidth = parseInt(this.getProperty("hodographWidth"));
             }
+            options.showText = this.getProperty("showText",true);
             //            options.hodographWidth = 200;
             var fields = this.getData().getRecordFields();
             var names = [
-                         {id:"pressure",aliases:["vertCoord"]},
-                         {id:"height",aliases:["Geopotential_height_isobaric"]},
-                         {id:"temperature",aliases:["Temperature_isobaric"]},
-                         {id:"dewpoint",aliases:[]},
-                         {id:"rh",aliases:["Relative_humidity_isobaric"]},
-                         {id:"wind_direction",aliases:[]},
-                         {id:"wind_speed",aliases:[]},
-                         {id:"uwind",aliases:["u-component_of_wind_isobaric"]},
-                         {id:"vwind",aliases:["v-component_of_wind_isobaric"]},
-                         ];
+                {id:"pressure",aliases:["vertCoord"]},
+                {id:"height",aliases:["Geopotential_height_isobaric"]},
+                {id:"temperature",aliases:["Temperature_isobaric"]},
+                {id:"dewpoint",aliases:[]},
+                {id:"rh",aliases:["Relative_humidity_isobaric","relative_humidity"]},
+                {id:"wind_direction",aliases:[]},
+                {id:"wind_speed",aliases:[]},
+                {id:"uwind",aliases:["u-component_of_wind_isobaric","u"]},
+                {id:"vwind",aliases:["v-component_of_wind_isobaric","v"]},
+            ];
             //TODO: check for units
-            var data ={};
+	    var data ={};
             var dataFields ={};
             for(var i=0;i<names.length;i++) {
                 var obj = names[i];
@@ -291,12 +306,12 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     75.652, 64.674, 55.293, 25.492, 11.970, 5.746, 2.871,
                     1.491, 0.798, 0.220, 0.052, 0.010,];
                 var alts = [
-                            0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
-                            5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000,
-                            11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000,
-                            20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000,
-                            80000,
-                            ];
+                    0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
+                    5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000,
+                    11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000,
+                    20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000,
+                    80000,
+                ];
                 
                 data.height = [];
                 for(var i=0;i<data.pressure.length;i++) {
@@ -319,6 +334,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     data.height.push(alt);
                 }
             }
+
 
             if(!data.dewpoint) {
                 if(!data.rh) {
@@ -353,6 +369,30 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
 
 
+
+
+	    var alldata = data;
+	    data = {};
+	    //if any missing then don't include
+	    for(a  in alldata) data[a] = [];
+	    alldata[names[0].id].map((v,idx)=>{
+		var ok = true;
+		for(var i=0;i<names.length;i++) {
+                    var id = names[i].id;
+		    if(isNaN(alldata[id][idx])) {
+			ok = false;
+			break;
+		    }
+		}
+		if(ok) {
+		    for(var i=0;i<names.length;i++) {
+			var id = names[i].id;
+			data[id].push(alldata[id][idx]);
+		    }
+		}
+	    });
+
+
             if(data.height.length>1) {
                 if(data.height[0]>data.height[1]) {
                     for(name in data)
@@ -368,16 +408,16 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
             await this.getDisplayEntry((e)=>{
-                    var q= e.getAttribute("variables");
-                    if(!q) return;
-                    q = q.value;
-                    q = q.replace(/\r\n/g,"\n");
-                    q = q.replace(/^ *\n/,"");
-                    q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
-                    q = q.replace(/[[\r\n]/g,"\n");
-                    q = HtmlUtils.div(["class", "display-skewt-text"],q);
-                    $("#" + this.skewt.textBoxId).html(q);
-                });
+                var q= e.getAttribute("variables");
+                if(!q) return;
+                q = q.value;
+                q = q.replace(/\r\n/g,"\n");
+                q = q.replace(/^ *\n/,"");
+                q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
+                q = q.replace(/[[\r\n]/g,"\n");
+                q = HtmlUtils.div(["class", "display-skewt-text"],q);
+                $("#" + this.skewt.textBoxId).html(q);
+            });
         }
     });
 }

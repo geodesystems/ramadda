@@ -628,7 +628,7 @@ var Utils = {
     formatNumber: function(number, toFloat) {
         var s = this.formatNumberInner(number);
         if (toFloat) return parseFloat(s);
-	return this.formatNumberComma(s);
+	return s;
     },
 
     formatNumberInner: function(number) {
@@ -755,8 +755,9 @@ var Utils = {
         this.pageLoaded = true;
 
         if (window["initRamaddaDisplays"]) {
-            initRamaddaDisplays();
+	    initRamaddaDisplays();
         }
+
 
         //allow for tabs to be added to text areas
         $(document).delegate('textarea', 'keydown', function(e) {
@@ -1815,7 +1816,7 @@ var HtmlUtils = {
         this.loadedGoogleCharts = true;
         if(!window["google"]) return;
         google.charts.load("43", {
-            packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', 'sankey', 'wordtree', 'timeline', 'gauge']
+            packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', 'sankey', 'wordtree', 'timeline', 'gauge','orgchart']
         });
     },
 

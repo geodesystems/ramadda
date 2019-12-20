@@ -54,8 +54,9 @@ function initRamaddaDisplays() {
     if (window.globalDisplaysList == null) {
         return;
     }
+//    console.log("page has loaded");
     for (var i = 0; i < window.globalDisplaysList.length; i++) {
-        window.globalDisplaysList[i].pageHasLoaded();
+	window.globalDisplaysList[i].pageHasLoaded();
     }
 }
 
@@ -624,8 +625,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     RamaddaUtil.initMembers(this, {
     });
 
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new DisplayThing(argId, argProperties));
+    let SUPER  = new DisplayThing(argId, argProperties);
+    RamaddaUtil.inherit(this, SUPER);
     this.getSuper = function() {
         return SUPER;
     }
@@ -659,6 +660,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
           ]
         */
     }
+
+//    console.log("display.init:" + argType +" loaded:" +Utils.getPageLoaded());
 
     RamaddaUtil.defineMembers(this, {
         displayReady: Utils.getPageLoaded(),
@@ -2040,9 +2043,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (stride > 0) {
                 var list = [];
                 var cnt = 0;
-                //
-                //1,2,3,4,5,6,7,8,9,10
                 for (var i = 0; i < dataList.length; i += (stride + 1)) {
+		    console.log(i);
                     list.push(dataList[i]);
                 }
                 dataList = list;
@@ -3344,13 +3346,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         setDisplayReady: function() {
+	    var callUpdate = !this.displayReady;
             this.displayReady = true;
+	    if(callUpdate) {
+		this.updateUI();
+	    }
         },
         getDisplayReady: function() {
             return this.displayReady;
         },
         pageHasLoaded: function() {
-            this.setDisplayReady(true);
+	    if(!this.displayReady) {
+		this.setDisplayReady(true);
+		this.updateUI();
+	    }
         },
         initDisplay: function() {
             this.createUI();
@@ -3420,6 +3429,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.colorByFields.length>0) {
 		var enums = [];
 		this.colorByFields.map(field=>{
+		    if(field.isFieldGeo()) return;
 		    enums.push([field.getId(),field.getLabel()]);
 		});
 		header2 += HtmlUtils.span(["class","display-filterby"],
@@ -4531,17 +4541,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 this.jsonUrl = null;
             }
-
-            /**
-               This makes the date error in makeDataTable. not sure why
-               var records = pointData.getRecords();
-               var allFields = this.getData().getRecordFields();
-               var fields = this.getSelectedFields(allFields);
-               if (fields.length == 0)
-               fields = allFields;
-            **/
-
             if (!this.getDisplayReady()) {
+//		console.log("pointDataLoaded: display not ready");
                 return;
             }
             this.updateUI(reload);
