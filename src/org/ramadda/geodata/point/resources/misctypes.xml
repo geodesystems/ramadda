@@ -137,6 +137,51 @@ Data courtesy of
 </type>
 
 
+  <type name="type_sounding_frd"  description="FRD Sounding" super="type_sounding"  foruser="true"  pattern=".*\.frd">
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="icon" value="/point/noaa.gif"/>
+<!--gAircraft: Gulfstream G-IV SP, N49RF         Date: 160920   Time: 183229 UTC -->
+     <property name="record.patterns" value="latitude:Lat: *(-?[\d\.]+),longitude:Lon: *(-?[\d\.]+),time:Time: *([^ ]+),date:Date: *([^ ]+) ,sonde:Sonde: *([0-9]+),aircraft:Aircraft: *(.*?)Date:,bias_corrections: Bias corrections: *(.*),filters:Filters.*?:(.*),comment:COMMENT:(.*)"/>
+     <property name="record.pattern.date.format" value="yyMMdd hhmmss"/>
+     <property name="xxxnameTemplate" value="Sounding - ${station_id} ${date}"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+ <property name="record.properties">
+fields=ix[],time[ ],  pressure[ unit=mb missing=-999],    temperature[ c missing=-999],    rh[ unit=% missing=-999],  height[ unit=m missing=-999],  winddirection[ missing=-999],    windspeed[ unit=m/s missing=-999],   u[ unit=m/s missing=-999],   v[ unit=m/s missing=-999],  ns[  missing=-999]  wz[ unit=m/s missing=-999],  zw[ unit=m missing=-999],   fp[  missing=-999],  ft[  missing=-999],  fh[  missing=-999],  fw[  missing=-999],    lat[  missing=-999],   lon[  missing=-999]
+delimiter=space
+lastHeaderPattern=IX.*
+     </property>
+     <column  name="sonde"  label="Sonde" type="enumeration" />
+     <column  name="aircraft"  label="Aircraft" type="enumeration" />
+     <column  name="bias_corrections"  label="Bias Corrections" type="string" />
+     <column  name="filters"  label="Filters" type="string" />
+     <column  name="comment"  label="Comment" type="string" size="500"/>
+<wiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
+<div style="height:600">
+{{display type=skewt layoutHere=true  
+height=400
+skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false}}
+</div>
++row
++col-8
+{{information  details="false"  showTitle="false"  }} 
+-col
++col-4
+{{map}}
+-col
+-row
+-section
+]]>
+</wiki>
+
+
+
+</type>
+
+
   <type name="type_sounding_gsd"  description="GSD Sounding" super="type_sounding"  foruser="true" 
         handler="org.ramadda.geodata.point.GsdTypeHandler">
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
