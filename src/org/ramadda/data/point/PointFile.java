@@ -1254,17 +1254,8 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         return ht;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getTextHeader() {
-        return "";
-    }
 
-
-    /** _more_          */
+    /** _more_ */
     private static FileReader fileReader;
 
     /**
@@ -1280,7 +1271,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * Interface description
      *
      *
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static interface FileReader {
 

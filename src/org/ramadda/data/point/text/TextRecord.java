@@ -154,6 +154,7 @@ public class TextRecord extends DataRecord {
             //            System.err.println("  field:" + i +" " + field.getName());
         }
 
+
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
 
@@ -161,8 +162,15 @@ public class TextRecord extends DataRecord {
                     || field.getSkip()) {
                 continue;
             }
-            //            System.err.println("Field:" + field.getName() +" idx:" + idx +" " + indices.length);
+
             indices[idx++] = field.getIndex();
+        }
+        for (int i = 0; i < fields.size(); i++) {
+            RecordField field = fields.get(i);
+            if (field.getSynthetic() || field.hasDefaultValue()
+                    || field.getSkip()) {
+                continue;
+            }
             if (field.getColumnWidth() > 0) {
                 fixedWidth = new int[tokens.length];
                 int widthIdx = 0;
@@ -355,7 +363,6 @@ public class TextRecord extends DataRecord {
                 List<String> toks = Utils.tokenizeColumns(line, delimiter);
                 toks = ((TextFile) getRecordFile()).processTokens(this, toks,
                         false);
-                //                System.err.println("toks:" + toks);
 
                 if (bePickyAboutTokens && (toks.size() != tokens.length)) {
                     StringBuilder msg = new StringBuilder("Bad token count:"
@@ -382,7 +389,6 @@ public class TextRecord extends DataRecord {
                 }
                 int targetIdx = 0;
 
-                //                System.err.println("toks:" + toks);
                 for (int i = 0; (i < toks.size()) && (i < tokens.length);
                         i++) {
                     if ((rawOK != null) && !rawOK[i]) {
@@ -392,6 +398,8 @@ public class TextRecord extends DataRecord {
                     tokens[targetIdx++] = toks.get(i);
                 }
             }
+
+
 
             TextFile textFile = (TextFile) getRecordFile();
 
@@ -423,13 +431,12 @@ public class TextRecord extends DataRecord {
                 }
 
 
+
                 if (indices[tokenCnt] >= 0) {
                     tok = tokens[indices[tokenCnt]];
                 } else {
                     tok = tokens[tokenCnt];
-                    //                    System.err.println("tokenCnt:" + tokenCnt  +" tok:" + tok);
                 }
-                //                System.err.println("field: " + field.getName() + " tok:" + tok +" index:" + indices[tokenCnt]);
                 tokenCnt++;
 
 
@@ -457,14 +464,13 @@ public class TextRecord extends DataRecord {
                     } else {
                         dValue = textFile.parseValue(this, field, tok);
                     }
-                    if (isMissingValue(field,dValue)) {
+                    if (isMissingValue(field, dValue)) {
                         dValue = Double.NaN;
                     } else {
-                        dValue           = field.convertValue(dValue);
+                        dValue = field.convertValue(dValue);
                     }
                     values[fieldCnt] = dValue;
                 }
-                //                System.err.println ("value[ " + fieldCnt +"] = " + values[fieldCnt]);
             }
 
             if ((idxX >= 0) && (idxY >= 0)) {
@@ -481,6 +487,7 @@ public class TextRecord extends DataRecord {
             return ReadStatus.OK;
         } catch (Exception exc) {
             System.err.println("Error line:" + line);
+
             throw exc;
         }
 
@@ -506,10 +513,10 @@ public class TextRecord extends DataRecord {
         if (tok.equals("") || tok.equals("null")) {
             return null;
         }
-	String sfmt = field.getSDateFormat ();
-	if(sfmt!=null && sfmt.equals("SSS")) {
-	    return new Date(new Long(tok));
-	}
+        String sfmt = field.getSDateFormat();
+        if ((sfmt != null) && sfmt.equals("SSS")) {
+            return new Date(new Long(tok));
+        }
 
         Date date   = null;
         int  offset = field.getUtcOffset();
@@ -518,10 +525,10 @@ public class TextRecord extends DataRecord {
             //            System.err.println ("Date:" + tok +" parsed:" + date);
         } catch (java.text.ParseException ignore) {
             //Check for year
-            if(tok.length()==4) {
+            if (tok.length() == 4) {
                 date = DateUtil.parse(tok);
             }
-            if(date==null) {
+            if (date == null) {
                 //Try tacking on UTC
                 try {
                     date = getDateFormat(field).parse(tok + " UTC");
@@ -621,6 +628,7 @@ public class TextRecord extends DataRecord {
                          List<RecordField> fields)
             throws Exception {
 
+
         if (tokens == null) {
             testing = true;
             tokens  = new String[10];
@@ -630,7 +638,7 @@ public class TextRecord extends DataRecord {
         int numTokensRead = 0;
         int fromIndex     = 0;
         int sourceLength  = sourceString.length();
-        //        System.err.println ("line:" + sourceString);
+        //        System.errx.println ("line:" + sourceString);
         boolean inQuotes = sourceString.startsWith("\"");
 
         /*
@@ -641,12 +649,10 @@ public class TextRecord extends DataRecord {
         if (fixedWidth != null) {
             int lastIdx = 0;
             for (int i = 0; i < fixedWidth.length; i++) {
-                //                System.err.println("last idx:" + lastIdx +" w:" + fixedWidth[i]);
                 String theString = sourceString.substring(lastIdx,
                                        lastIdx + fixedWidth[i]);
                 tokens[numTokensRead++] = theString;
                 lastIdx                 += fixedWidth[i];
-                //                System.err.println(" tok:" + theString);
             }
         } else {
             int idx;

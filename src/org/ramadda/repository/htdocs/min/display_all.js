@@ -204,8 +204,9 @@ function initRamaddaDisplays() {
     if (window.globalDisplaysList == null) {
         return;
     }
+//    console.log("page has loaded");
     for (var i = 0; i < window.globalDisplaysList.length; i++) {
-        window.globalDisplaysList[i].pageHasLoaded();
+	window.globalDisplaysList[i].pageHasLoaded();
     }
 }
 
@@ -774,8 +775,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     RamaddaUtil.initMembers(this, {
     });
 
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new DisplayThing(argId, argProperties));
+    let SUPER  = new DisplayThing(argId, argProperties);
+    RamaddaUtil.inherit(this, SUPER);
     this.getSuper = function() {
         return SUPER;
     }
@@ -809,6 +810,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
           ]
         */
     }
+
+//    console.log("display.init:" + argType +" loaded:" +Utils.getPageLoaded());
 
     RamaddaUtil.defineMembers(this, {
         displayReady: Utils.getPageLoaded(),
@@ -2190,9 +2193,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (stride > 0) {
                 var list = [];
                 var cnt = 0;
-                //
-                //1,2,3,4,5,6,7,8,9,10
                 for (var i = 0; i < dataList.length; i += (stride + 1)) {
+		    console.log(i);
                     list.push(dataList[i]);
                 }
                 dataList = list;
@@ -3494,13 +3496,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         setDisplayReady: function() {
+	    var callUpdate = !this.displayReady;
             this.displayReady = true;
+	    if(callUpdate) {
+		this.updateUI();
+	    }
         },
         getDisplayReady: function() {
             return this.displayReady;
         },
         pageHasLoaded: function() {
-            this.setDisplayReady(true);
+	    if(!this.displayReady) {
+		this.setDisplayReady(true);
+		this.updateUI();
+	    }
         },
         initDisplay: function() {
             this.createUI();
@@ -3570,6 +3579,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.colorByFields.length>0) {
 		var enums = [];
 		this.colorByFields.map(field=>{
+		    if(field.isFieldGeo()) return;
 		    enums.push([field.getId(),field.getLabel()]);
 		});
 		header2 += HtmlUtils.span(["class","display-filterby"],
@@ -4681,17 +4691,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 this.jsonUrl = null;
             }
-
-            /**
-               This makes the date error in makeDataTable. not sure why
-               var records = pointData.getRecords();
-               var allFields = this.getData().getRecordFields();
-               var fields = this.getSelectedFields(allFields);
-               if (fields.length == 0)
-               fields = allFields;
-            **/
-
             if (!this.getDisplayReady()) {
+//		console.log("pointDataLoaded: display not ready");
                 return;
             }
             this.updateUI(reload);
@@ -10342,6 +10343,7 @@ var DISPLAY_TSNE = "tsne";
 var DISPLAY_HEATMAP = "heatmap";
 var DISPLAY_WORDTREE = "wordtree";
 var DISPLAY_TREEMAP = "treemap";
+var DISPLAY_ORGCHART = "orgchart";
 var ID_CHART = "chart";
 
 
@@ -10364,6 +10366,23 @@ function haveGoogleChartsLoaded() {
     }
     return googleChartsLoaded;
 }
+
+function waitOnGoogleCharts(object, callback) {
+    if (haveGoogleChartsLoaded()) {
+	return true;
+    }
+    if (!object.googleChartCallbackPending) {
+        object.googleChartCallbackPending = true;
+        var func = function() {
+            object.googleChartCallbackPending = false;
+            callback();
+        }
+        setTimeout(func, 500);
+    }
+    return false;
+}
+
+
 
 function displayGetFunctionValue(v) {
     if(isNaN(v))return 0;
@@ -10531,6 +10550,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_TREEMAP,
     label: "Tree Map",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_ORGCHART,
+    label: "Org Chart",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -14677,8 +14704,10 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
 }
 
 
+
+
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -14770,19 +14799,19 @@ var D3Util = {
             data = record.getData()[axis.fieldIdx];
         } else {
             switch (axis.type) {
-                case TYPE_TIME:
-                    data = new Date(record.getDate());
-                    break;
-                case TYPE_ELEVATION:
-                    //console.log(record.getElevation());
-                    data = record.getElevation();
-                    break;
-                case TYPE_LATITUDE:
-                    data = record.getLatitude();
-                case TYPE_LONGITUDE:
-                    data = record.getLongitude();
-                default:
-                    data = record.getData()[index];
+            case TYPE_TIME:
+                data = new Date(record.getDate());
+                break;
+            case TYPE_ELEVATION:
+                //console.log(record.getElevation());
+                data = record.getElevation();
+                break;
+            case TYPE_LATITUDE:
+                data = record.getLatitude();
+            case TYPE_LONGITUDE:
+                data = record.getLongitude();
+            default:
+                data = record.getData()[index];
             }
         }
 
@@ -14856,6 +14885,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(
+		SUPER.getWikiEditorTags(),
+		['label:Skewt Attributes',
+		 'skewtWidth="500"',
+		 'skewtHeight="550"',
+		 'hodographWidth=150',
+		 'showHodograph=false',
+		 'showText=false',
+		])
+
+	},
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
         },
@@ -14869,44 +14910,46 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
         },
         handleEventPointDataLoaded: function(source, pointData) {
-                //TODO: this results in a double  call to updateUI when first created
-                this.updateUI();
+            //TODO: this results in a double  call to updateUI when first created
+            this.updateUI();
         },
         updateUI: async function() {
-         if(!this.loadedResources) {
-             var time = new Date();
-             await Utils.importCSS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/sounding.css");
-           //            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
-            //            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
-             await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/d3skewt.js");
-            this.loadedResources = true;
-         }
+//	    console.log("skewt.updateui");
+            if(!this.loadedResources) {
+		var time = new Date();
+		await Utils.importCSS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/sounding.css");
+		//            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
+		//            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
+		await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/d3skewt.js");
+		this.loadedResources = true;
+            }
 
-         if(!window["D3Skewt"]) {
-             setTimeout(()=>this.updateUI(),100);
-             return;
-         }
-         SUPER.updateUI.call(this);
+            if(!window["D3Skewt"]) {
+		setTimeout(()=>this.updateUI(),100);
+		return;
+            }
+            SUPER.updateUI.call(this);
 
-         var skewtId = this.getDomId(ID_SKEWT);
-         var html = HtmlUtils.div(["id", skewtId], "");
-         this.setContents(html);
-         var pointData = this.getData();
-         if (pointData == null) return;
-         var records =  pointData.getRecords();
-         if (!records || records.length==0) {
-             console.log("no data yet");
-             return;
-         }
-         var date = records[0].getDate();
-         if(this.jq(ID_DATE_LABEL).length==0) {
-             this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
-         }
-         if(date!=null) {
-             this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
-         } else {
-             this.jq(ID_DATE_LABEL).html("");
-         }
+//	    console.log("skewt.updateui-1");
+            let records =  this.filterData();
+            if (!records || records.length==0) {
+                this.setContents(this.getLoadingMessage());
+		return;
+            }
+//	    console.log("skewt.updateui-2");
+
+            let skewtId = this.getDomId(ID_SKEWT);
+            let html = HtmlUtils.div(["id", skewtId], "");
+            this.setContents(html);
+            var date = records[0].getDate();
+            if(this.jq(ID_DATE_LABEL).length==0) {
+		this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
+            }
+            if(date!=null) {
+		this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
+            } else {
+		this.jq(ID_DATE_LABEL).html("");
+            }
             var options = {};
             if (this.propertyDefined("showHodograph"))
                 options.showHodograph = this.getProperty("showHodograph", true);
@@ -14919,21 +14962,22 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             if (this.propertyDefined("hodographWidth")){
                 options.hodographWidth = parseInt(this.getProperty("hodographWidth"));
             }
+            options.showText = this.getProperty("showText",true);
             //            options.hodographWidth = 200;
             var fields = this.getData().getRecordFields();
             var names = [
-                         {id:"pressure",aliases:["vertCoord"]},
-                         {id:"height",aliases:["Geopotential_height_isobaric"]},
-                         {id:"temperature",aliases:["Temperature_isobaric"]},
-                         {id:"dewpoint",aliases:[]},
-                         {id:"rh",aliases:["Relative_humidity_isobaric"]},
-                         {id:"wind_direction",aliases:[]},
-                         {id:"wind_speed",aliases:[]},
-                         {id:"uwind",aliases:["u-component_of_wind_isobaric"]},
-                         {id:"vwind",aliases:["v-component_of_wind_isobaric"]},
-                         ];
+                {id:"pressure",aliases:["vertCoord"]},
+                {id:"height",aliases:["Geopotential_height_isobaric"]},
+                {id:"temperature",aliases:["Temperature_isobaric"]},
+                {id:"dewpoint",aliases:[]},
+                {id:"rh",aliases:["Relative_humidity_isobaric","relative_humidity"]},
+                {id:"wind_direction",aliases:[]},
+                {id:"wind_speed",aliases:[]},
+                {id:"uwind",aliases:["u-component_of_wind_isobaric","u"]},
+                {id:"vwind",aliases:["v-component_of_wind_isobaric","v"]},
+            ];
             //TODO: check for units
-            var data ={};
+	    var data ={};
             var dataFields ={};
             for(var i=0;i<names.length;i++) {
                 var obj = names[i];
@@ -14970,12 +15014,12 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     75.652, 64.674, 55.293, 25.492, 11.970, 5.746, 2.871,
                     1.491, 0.798, 0.220, 0.052, 0.010,];
                 var alts = [
-                            0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
-                            5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000,
-                            11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000,
-                            20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000,
-                            80000,
-                            ];
+                    0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
+                    5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000,
+                    11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000,
+                    20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000,
+                    80000,
+                ];
                 
                 data.height = [];
                 for(var i=0;i<data.pressure.length;i++) {
@@ -14998,6 +15042,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     data.height.push(alt);
                 }
             }
+
 
             if(!data.dewpoint) {
                 if(!data.rh) {
@@ -15032,6 +15077,30 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
 
 
+
+
+	    var alldata = data;
+	    data = {};
+	    //if any missing then don't include
+	    for(a  in alldata) data[a] = [];
+	    alldata[names[0].id].map((v,idx)=>{
+		var ok = true;
+		for(var i=0;i<names.length;i++) {
+                    var id = names[i].id;
+		    if(isNaN(alldata[id][idx])) {
+			ok = false;
+			break;
+		    }
+		}
+		if(ok) {
+		    for(var i=0;i<names.length;i++) {
+			var id = names[i].id;
+			data[id].push(alldata[id][idx]);
+		    }
+		}
+	    });
+
+
             if(data.height.length>1) {
                 if(data.height[0]>data.height[1]) {
                     for(name in data)
@@ -15047,16 +15116,16 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
             await this.getDisplayEntry((e)=>{
-                    var q= e.getAttribute("variables");
-                    if(!q) return;
-                    q = q.value;
-                    q = q.replace(/\r\n/g,"\n");
-                    q = q.replace(/^ *\n/,"");
-                    q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
-                    q = q.replace(/[[\r\n]/g,"\n");
-                    q = HtmlUtils.div(["class", "display-skewt-text"],q);
-                    $("#" + this.skewt.textBoxId).html(q);
-                });
+                var q= e.getAttribute("variables");
+                if(!q) return;
+                q = q.value;
+                q = q.replace(/\r\n/g,"\n");
+                q = q.replace(/^ *\n/,"");
+                q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
+                q = q.replace(/[[\r\n]/g,"\n");
+                q = HtmlUtils.div(["class", "display-skewt-text"],q);
+                $("#" + this.skewt.textBoxId).html(q);
+            });
         }
     });
 }
@@ -15839,7 +15908,8 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
 
 
     });
-}/*
+}
+/*
    Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -17333,8 +17403,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		    h = h.replace(/\${per_hour}/g,this.formatNumber(t.percent/hours));
 		    h = h.replace(/\${per_day}/g,this.formatNumber(t.percent/days));
 		    h = h.replace(/\${per_week}/g,this.formatNumber(t.percent/(days/7)));
-		    h = h.replace(/\${per_month}/g,this.formatNumber(months));
-		    h = h.replace(/\${per_year}/g,this.formatNumber(years));
+		    h = h.replace(/\${per_month}/g,this.formatNumber(t.percent/months));
+		    h = h.replace(/\${per_year}/g,this.formatNumber(t.percent/years));
 		    html+=h;
 		} else {
 		    html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
@@ -18892,11 +18962,12 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
             if (!records) return;
 	    let roots=null;
 	    try {
-		roots = this.makeTree();
+		roots = this.makeTree(records);
 	    } catch(error) {
                 this.setContents(this.getMessage(error.toString()));
 		return;
 	    }
+
 	    var html = "";
 	    let baseId = this.getDomId("node");
 	    let cnt=0;
@@ -18977,6 +19048,58 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		}
 	    });
         },
+    });
+}
+
+
+
+function OrgchartDisplay(displayManager, id, properties) {
+    let ID_ORGCHART = "orgchart";
+    let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ORGCHART, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    console.log("orgchart");
+    $.extend(this, {
+        handleEventRecordSelection: function(source, args) {},
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+	    console.log("ui");
+	    if(!waitOnGoogleCharts(this, ()=>{
+		this.updateUI();
+	    })) {
+		return;
+	    }
+            this.displayHtml(HtmlUtils.div(["id",this.getDomId(ID_ORGCHART)],"HELLO"));
+	    let roots=null;
+	    try {
+		roots = this.makeTree();
+	    } catch(error) {
+                this.setContents(this.getMessage(error.toString()));
+		return;
+	    }
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Parent');
+            data.addColumn('string', 'ToolTip');
+	    let rows = [];
+	    let func = function(node) {
+		cnt++;
+		rows.push([node.label,node.parent?node.parent.label:"",""]);
+		if(node.record) {
+//		    _this.countToRecord[cnt] = node.record;
+		}
+	    }
+	    roots.map(func);
+	    console.log(rows);
+            data.addRows(rows);
+//		[{'v':'Mike', 'f':'Mike<div style="color:red; font-style:italic">President</div>'}, '', 'The President'],
+            var chart = new google.visualization.OrgChart(document.getElementById(this.getDomId(ID_ORGCHART)));
+            // Draw the chart, setting the allowHtml option to true for the tooltips.
+            chart.draw(data, {'allowHtml':true});
+	}
     });
 }
 /**

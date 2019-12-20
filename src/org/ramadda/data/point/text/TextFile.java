@@ -133,7 +133,15 @@ public abstract class TextFile extends PointFile {
     }
 
 
-    public TextFile(String filename, RecordFileContext context, Hashtable properties) {
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param context _more_
+     * @param properties _more_
+     */
+    public TextFile(String filename, RecordFileContext context,
+                    Hashtable properties) {
         super(filename, context, properties);
     }
 
@@ -397,6 +405,17 @@ public abstract class TextFile extends PointFile {
      *
      * @throws Exception _more_
      */
+    int xcnt = 0;
+
+    /**
+     * _more_
+     *
+     * @param visitInfo _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
 
         boolean haveReadHeader  = headerLines.size() > 0;
@@ -405,6 +424,8 @@ public abstract class TextFile extends PointFile {
 
         boolean firstLineFields = getProperty("firstLineDefinesFields",
                                       false);
+        String lastHeaderPattern = getProperty("lastHeaderPattern", null);
+
         if (firstLineFields) {
             int    fieldRow = Integer.parseInt(getProperty("fieldRow", "1"));
             String line     = null;
@@ -512,9 +533,24 @@ public abstract class TextFile extends PointFile {
                     }
                 }
             }
+        } else if (lastHeaderPattern != null) {
+            while (true) {
+                String line = visitInfo.getRecordIO().readLine();
+                if (line == null) {
+                    break;
+                }
+                if (line.matches(lastHeaderPattern)) {
+                    break;
+                }
+                //              System.err.println("header:" + line);
+                headerLines.add(line);
+            }
+
         } else {
             int skipCnt = getSkipLines(visitInfo);
             commentLineStart = getProperty("commentLineStart", null);
+            boolean seenLastHeaderPattern = false;
+
             //            System.err.println("Skip:" + skipCnt +" " + commentLineStart);
             for (int i = 0; i < skipCnt; ) {
                 String line = visitInfo.getRecordIO().readLine();

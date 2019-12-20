@@ -1762,5 +1762,9 @@ public abstract class RecordFile {
         return s;
     }
 
+    public String getTextHeader() {
+	return "";
+    }
+
 
 }

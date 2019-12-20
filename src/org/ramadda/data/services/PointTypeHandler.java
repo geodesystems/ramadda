@@ -150,62 +150,12 @@ public class PointTypeHandler extends RecordTypeHandler {
     public void initializeNewEntry(Request request, Entry entry)
             throws Exception {
 
-        if ( !getTypeProperty("point.initialize", true)) {
-            return;
-        }
-
-        String patterns = (String) getTypeProperty("record.patterns",
-                              (String) null);
-        if (patterns != null) {
-            String contents = IOUtil.readContents(entry.getFile());
-            for (String tok : StringUtil.split(patterns, ",", true, true)) {
-                List<String> toks2 = StringUtil.splitUpTo(tok, ":", 2);
-                if (toks2.size() != 2) {
-                    continue;
-                }
-                String field   = toks2.get(0);
-                String pattern = toks2.get(1);
-                String value   = StringUtil.findPattern(contents, pattern);
-                //                System.err.println ("p:"+ pattern +" v:" + value);
-                if (value != null) {
-                    if (field.equals("latitude")) {
-                        entry.setLatitude(Double.parseDouble(value));
-                    } else if (field.equals("longitude")) {
-                        entry.setLongitude(Double.parseDouble(value));
-                    } else if (field.equals("elevation")) {
-                        entry.setAltitude(Double.parseDouble(value));
-                    } else if (field.equals("date")) {
-                        String format =
-                            getTypeProperty("record.pattern.date.format",
-                                            "yyyyMMdd'T'HHmmss Z");
-                        SimpleDateFormat sdf =
-                            RepositoryUtil.makeDateFormat(format, null);
-                        entry.setStartAndEndDate(sdf.parse(value).getTime());
-                    } else {
-                        List<Column> columns = getColumns();
-                        if (columns != null) {
-                            for (Column c : columns) {
-                                if (c.getName().equals(field)) {
-                                    Object[] values = getEntryValues(entry);
-                                    c.setValue(entry, values, value);
-                                }
-                            }
-                        }
-
-                    }
-                }
-
-            }
-
-        }
-
         if (entry.getXmlNode() != null) {
             return;
         }
 
         if (anySuperTypesOfThisType()) {
             super.initializeNewEntry(request, entry);
-
             return;
         }
 
@@ -756,6 +706,58 @@ public class PointTypeHandler extends RecordTypeHandler {
         } else {
             //            System.err.println("no time in metadata");
         }
+
+	String header = pointEntry.getRecordFile().getTextHeader();
+	if(header!=null && header.length()>0 && getTypeProperty("point.initialize", true)) {
+	    String patterns = (String) getTypeProperty("record.patterns",
+						       (String) null);
+	    if (patterns != null) {
+		//TODO: Don't read the full contents, rather read the header
+		List<String> toks = StringUtil.split(patterns, ",");
+		String time = null;
+		for (String tok : toks) {
+		    List<String> toks2 = StringUtil.splitUpTo(tok, ":", 2);
+		    if (toks2.size() != 2) {
+			continue;
+		    }
+		    String field   = toks2.get(0).trim();
+		    String pattern = toks2.get(1);
+		    String value   = StringUtil.findPattern(header, pattern);
+		    //		    System.err.println(field +" p:" + pattern +" v:" +value);
+		    if (value != null) {
+			if (field.equals("latitude")) {
+			    entry.setLatitude(Utils.decodeLatLon(value));
+			} else if (field.equals("longitude")) {
+			    entry.setLongitude(Utils.decodeLatLon(value));
+			} else if (field.equals("elevation")) {
+			    entry.setAltitude(Double.parseDouble(value));
+			} else if (field.equals("time")) {
+			    time = value;
+			} else if (field.equals("date")) {
+			    String format =
+				getTypeProperty("record.pattern.date.format",
+						"yyyyMMdd'T'HHmmss Z");
+			    SimpleDateFormat sdf =
+				RepositoryUtil.makeDateFormat(format, null);
+			    if(time!=null) value += " " + time;
+			    Date date = sdf.parse(value);
+			    entry.setStartAndEndDate(date.getTime());
+			} else {
+			    List<Column> columns = getColumns();
+			    if (columns != null) {
+				for (Column c : columns) {
+				    if (c.getName().equals(field)) {
+					Object[] v = getEntryValues(entry);
+					c.setValue(entry, v, value);
+				    }
+				}
+			    }
+			}			    
+                    }
+                }
+
+            }
+	}
     }
 
 
