@@ -64,16 +64,9 @@ public class Row {
         values = new ArrayList() {
             public boolean xadd(Object o) {
                 boolean v = super.add(o);
-                if (myx == 266) {
-                    System.err.println("\tadd: " + o);
-                }
-
                 return v;
             }
         };
-        if (myx == 266) {
-            System.err.println("\tctor: " + values);
-        }
     }
 
     /**
@@ -82,9 +75,6 @@ public class Row {
      * @param values _more_
      */
     public Row(List values) {
-        if (myx == 266) {
-            System.err.println("\tctor: " + values);
-        }
         this.values = values;
     }
 
@@ -97,9 +87,6 @@ public class Row {
         this.values = new ArrayList();
         for (Object o : values) {
             this.values.add(o);
-        }
-        if (myx == 266) {
-            System.err.println("\tctor: " + values);
         }
     }
 

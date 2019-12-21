@@ -2040,16 +2040,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
             var stride = parseInt(this.getProperty("stride", -1));
+            if (stride < 0) {
+		var maxSize = parseInt(this.getProperty("maxDisplayedPoints", -1));		
+		stride = 1;
+		if(maxSize>0 && dataList.length>0) {
+		    while(dataList.length/stride>maxSize) {
+			stride++;
+		    }
+		}
+	    }
+
             if (stride > 0) {
                 var list = [];
                 var cnt = 0;
                 for (var i = 0; i < dataList.length; i += (stride + 1)) {
-		    console.log(i);
                     list.push(dataList[i]);
                 }
                 dataList = list;
+//		console.log("stride: " + stride +"  size:" + list.length);
             }
-
 
 	    if(this.getProperty("binDate")) {
 		var what = this.getProperty("binDate");

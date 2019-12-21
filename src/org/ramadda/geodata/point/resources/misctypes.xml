@@ -98,8 +98,7 @@ Data courtesy of
  <property name="record.properties">
 fields=level[type=string],pressure[unit="mb" label="pressure" type=double],height[unit="meters" label="Height" type=double],temperature[unit="C" label="Temperature" type=double],dewpoint[unit="C" label="Dewpoint" type=double],relative_humidity[unit="%" label="Relative humidity" type=double],dd[label="DD" unit="C" type="double"],wetbulb[label="Wet Bulb" unit="C" type="double"],wind_direction[unit="degrees" label="Wind direction" type=double],wind_speed[unit="knots" label="Wind speed" type=double],theta[label="Theta" unit="K" type=double],thetav[unit="K" label="Theta-V" type=double],thetaw[unit="K" label="Theta-W"  type=double],thetae[unit="K" label="Theta-E"  type=double],mixing_ratio[unit="g/kg" label="Mixing ratio" type=double]
 picky=false
-delimiter=space
-point.csvcommands=-start,(?s)----.*,-start,(?s)----.*,-stop,(?s)TRP.*,-print
+point.csvcommands=-delimiter,spaces,-start,(?s)----.*,-start,(?s)----.*,-stop,(?s)TRP.*,-print
      </property>
      <column  name="station_id"  label="Station ID" type="string" />
      <column  name="variables"  rows="10" htmlTemplate="&lt;pre&gt;${value}&lt;/pre&gt;" showinhtml="false" label="Variables" size="2000" type="string" />
@@ -178,6 +177,51 @@ skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=fal
 -section
 ]]>
 </wiki>
+
+
+
+</type>
+
+
+
+  <type name="type_sounding_noaa_na"  description="NOAA NA Sounding" super="type_sounding"  foruser="true"  pattern=".*\.na">
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="icon" value="/point/noaa.gif"/>
+     <property name="xrecord.patterns" value="latitude:Lat: *(-?[\d\.]+),longitude:Lon: *(-?[\d\.]+),time:Time: *([^ ]+),date:Date: *([^ ]+) ,sonde:Sonde: *([0-9]+),aircraft:Aircraft: *(.*?)Date:,bias_corrections: Bias corrections: *(.*),filters:Filters.*?:(.*),comment:COMMENT:(.*)"/>
+     <property name="record.pattern.date.format" value="yyMMdd hhmmss"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="map.chart.type" value="skewt"/>
+     <property name="map.chart.args" value="hodographWidth,150,skewtWidth,300,skewtHeight,300"/>
+ <property name="record.properties">
+fields=time[type=date format=yyyy-MM-dd-hh-mm-ss],  pressure[ unit=mb missing=9999],    temperature[ unit=c missing=9999],    rh[ unit=% missing=9999],  windspeed[ unit=m/s missing=9999], winddirection[ missing=9999], sst[unit=c missing=9999], swdn[unit=w/m2 missing=9999], latitude[missing=9999],longitude[missing=9999], cog[unit=deg missing=9999], head[unit=deg missing=9999],   sog[unit=m/s missing=9999]
+point.csvcommands=-delimiter,spaces,-start,Time.*,-concat,1-6,-,-columns,19_comma_7-18,-print
+     </property>
+     <xcolumn  name="sonde"  label="Sonde" type="enumeration" />
+     <xcolumn  name="aircraft"  label="Aircraft" type="enumeration" />
+     <xcolumn  name="bias_corrections"  label="Bias Corrections" type="string" />
+     <xcolumn  name="filters"  label="Filters" type="string" />
+     <xcolumn  name="comment"  label="Comment" type="string" size="500"/>
+<xwiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
+<div style="height:600">
+{{display type=skewt layoutHere=true  
+height=400
+skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false}}
+</div>
++row
++col-8
+{{information  details="false"  showTitle="false"  }} 
+-col
++col-4
+{{map}}
+-col
+-row
+-section
+]]>
+</xwiki>
 
 
 

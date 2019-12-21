@@ -134,10 +134,6 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
-         *
-         *
          * @param info _more_
          * @param row _more_
          * @param line _more_
@@ -159,6 +155,7 @@ public abstract class Converter extends Processor {
             }
 
             //      System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
+	    //	    System.err.println("COLS:" + result);
             return new Row(result);
         }
 
