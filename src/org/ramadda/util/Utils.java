@@ -1884,6 +1884,21 @@ public class Utils extends IO {
      *
      * @return _more_
      */
+    public static String makeID(String label) {
+        label = label.toLowerCase().replaceAll(" ", "_").replaceAll("\\.",
+                "_");
+
+        return label;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param label _more_
+     *
+     * @return _more_
+     */
     public static String makeLabel(String label) {
         label = label.replaceAll("_", " ");
         StringBuilder tmpSB             = new StringBuilder();
@@ -3460,7 +3475,7 @@ public class Utils extends IO {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static int debugCnt = 0;
 
     /**
