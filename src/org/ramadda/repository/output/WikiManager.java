@@ -353,6 +353,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_DISPLAY,
                                         "Tree",
                                         ATTR_TYPE, "tree"),
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Orgchart",
+                                        ATTR_TYPE, "orgchart"),
 			    new WikiTag(WIKI_TAG_DISPLAY,
 					"Sankey",
 					ATTR_TYPE, "sankey"),
@@ -5134,7 +5137,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        List<String[]> fromType = entry==null?null:entry.getTypeHandler().getWikiEditLinks();
+        List<String[]> fromType     = (entry == null)
+                                      ? null
+                                      : entry.getTypeHandler()
+                                          .getWikiEditLinks();
         Appendable     fromTypeBuff = null;
         if ((fromType != null) && (fromType.size() > 0)) {
             fromTypeBuff = new StringBuilder();
@@ -6387,14 +6393,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        if ((displayType.equals("radar") || 
-	     displayType.equals("windrose") || 
-	     displayType.equals("dotplot") ||
-	     displayType.equals("splom") ||
-	     displayType.equals("3dscatter") ||
-	     displayType.equals("3dmesh") || displayType.equals("textcount")	     || displayType.equals(
-                "density")|| displayType.equals(
-						"sunburst")) && (request.getExtraProperty(
+        if ((displayType.equals("radar") || displayType.equals(
+                "windrose") || displayType.equals(
+                "dotplot") || displayType.equals(
+                "splom") || displayType.equals(
+                "3dscatter") || displayType.equals(
+                "3dmesh") || displayType.equals(
+                "textcount") || displayType.equals(
+                "density") || displayType.equals(
+                "sunburst")) && (request.getExtraProperty(
                 "added plotly") == null)) {
             HtmlUtils.importJS(
                 sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
