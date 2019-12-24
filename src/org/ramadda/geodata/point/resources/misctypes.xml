@@ -184,49 +184,6 @@ skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=fal
 
 
 
-  <type name="type_sounding_noaa_na"  description="NOAA NA Sounding" super="type_sounding"  foruser="true"  pattern=".*\.na">
-     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <property name="icon" value="/point/noaa.gif"/>
-     <property name="xrecord.patterns" value="latitude:Lat: *(-?[\d\.]+),longitude:Lon: *(-?[\d\.]+),time:Time: *([^ ]+),date:Date: *([^ ]+) ,sonde:Sonde: *([0-9]+),aircraft:Aircraft: *(.*?)Date:,bias_corrections: Bias corrections: *(.*),filters:Filters.*?:(.*),comment:COMMENT:(.*)"/>
-     <property name="record.pattern.date.format" value="yyMMdd hhmmss"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="true"/>
-     <property name="map.chart.type" value="skewt"/>
-     <property name="map.chart.args" value="hodographWidth,150,skewtWidth,300,skewtHeight,300"/>
- <property name="record.properties">
-fields=time[type=date format=yyyy-MM-dd-hh-mm-ss],  pressure[ unit=mb missing=9999],    temperature[ unit=c missing=9999],    rh[ unit=% missing=9999],  windspeed[ unit=m/s missing=9999], winddirection[ missing=9999], sst[unit=c missing=9999], swdn[unit=w/m2 missing=9999], latitude[missing=9999],longitude[missing=9999], cog[unit=deg missing=9999], head[unit=deg missing=9999],   sog[unit=m/s missing=9999]
-point.csvcommands=-delimiter,spaces,-start,Time.*,-concat,1-6,-,-columns,19_comma_7-18,-print
-     </property>
-     <xcolumn  name="sonde"  label="Sonde" type="enumeration" />
-     <xcolumn  name="aircraft"  label="Aircraft" type="enumeration" />
-     <xcolumn  name="bias_corrections"  label="Bias Corrections" type="string" />
-     <xcolumn  name="filters"  label="Filters" type="string" />
-     <xcolumn  name="comment"  label="Comment" type="string" size="500"/>
-<xwiki>
-<![CDATA[
-+section title={{name}}
-{{description wikify=true}}
-<div style="height:600">
-{{display type=skewt layoutHere=true  
-height=400
-skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false}}
-</div>
-+row
-+col-8
-{{information  details="false"  showTitle="false"  }} 
--col
-+col-4
-{{map}}
--col
--row
--section
-]]>
-</xwiki>
-
-
-
-</type>
-
 
   <type name="type_sounding_gsd"  description="GSD Sounding" super="type_sounding"  foruser="true" 
         handler="org.ramadda.geodata.point.GsdTypeHandler">
@@ -287,6 +244,21 @@ Data courtesy of
 
 
 
+
+
+<type name="type_nasaames"  description="NASA AMES File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.NasaAmesTypeHandler" pattern=".*\.na" icon="/point/nasa.png">
+  <column  name="dimensions"  label="Dimensions" type="int"  />
+  <column  name="originator_name"  label="Originator Name" type="string"  />
+  <column  name="affiliation"  label="Affiliation" type="enumeration"  />
+  <column  name="instrument"  label="Instrument" type="enumeration"  />
+  <column  name="campaign"  label="Campaign" type="enumeration"  />
+  <column  name="comments"  label="Comments" type="list"  size="2000"/>
+ <property name="record.properties">
+delimiter=commasorspaces
+lineWrap=true
+     </property>
+
+</type>
 
 
 
