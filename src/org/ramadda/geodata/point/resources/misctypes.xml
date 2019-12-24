@@ -252,7 +252,7 @@ Data courtesy of
   <column  name="affiliation"  label="Affiliation" type="enumeration"  />
   <column  name="instrument"  label="Instrument" type="enumeration"  />
   <column  name="campaign"  label="Campaign" type="enumeration"  />
-  <column  name="comments"  label="Comments" type="list"  size="2000"/>
+  <column  name="comments"  label="Comments" type="list"  size="5000" rows="10" changetype="true"/>
  <property name="record.properties">
 delimiter=commasorspaces
 lineWrap=true
