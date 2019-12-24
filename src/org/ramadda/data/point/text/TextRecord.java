@@ -55,6 +55,12 @@ public class TextRecord extends DataRecord {
     /** _more_ */
     private boolean delimiterIsSpace = false;
 
+    /** _more_          */
+    private boolean delimiterIsSpaces = false;
+
+    /** _more_          */
+    private boolean delimiterIsCommasOrSpaces = false;
+
     /** _more_ */
     protected String firstDataLine = null;
 
@@ -80,6 +86,9 @@ public class TextRecord extends DataRecord {
 
     /** _more_ */
     private boolean bePickyAboutTokens = true;
+
+    /** _more_          */
+    private boolean lineWrap = true;
 
     /** _more_ */
     private boolean matchUpColumns = false;
@@ -218,6 +227,12 @@ public class TextRecord extends DataRecord {
                 || delimiter.equals("space")) {
             delimiterIsSpace = true;
             delimiter        = " ";
+        } else if (delimiter.equals("spaces")) {
+            delimiterIsSpaces = true;
+            delimiterIsSpace  = true;
+        } else if (delimiter.equals("commasorspaces")) {
+            delimiterIsSpace          = true;
+            delimiterIsCommasOrSpaces = true;
         } else {
             delimiterIsSpace = false;
         }
@@ -624,6 +639,19 @@ public class TextRecord extends DataRecord {
      *
      * @throws Exception _more_
      */
+    int xcnt = 0;
+
+    /**
+     * _more_
+     *
+     * @param recordIO _more_
+     * @param sourceString _more_
+     * @param fields _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public boolean split(RecordIO recordIO, String sourceString,
                          List<RecordField> fields)
             throws Exception {
@@ -638,7 +666,11 @@ public class TextRecord extends DataRecord {
         int numTokensRead = 0;
         int fromIndex     = 0;
         int sourceLength  = sourceString.length();
-        //        System.errx.println ("line:" + sourceString);
+        //      xcnt++;
+        boolean debug = xcnt < 5;
+        debug = false;
+        //      if(debug)
+        //          System.err.println (delimiterIsSpaces +" line:" + sourceString );
         boolean inQuotes = sourceString.startsWith("\"");
 
         /*
@@ -654,6 +686,72 @@ public class TextRecord extends DataRecord {
                 tokens[numTokensRead++] = theString;
                 lastIdx                 += fixedWidth[i];
             }
+        } else if (delimiterIsCommasOrSpaces) {
+            int cnt = 0;
+            if (debug) {
+                System.err.println("split:" + tokens.length);
+            }
+            while (true) {
+                List<String> toks = StringUtil.split(sourceString,
+                                        (sourceString.indexOf(",") >= 0)
+                                        ? ","
+                                        : " ", true, true);
+                if (debug) {
+                    System.err.println("\t" + toks.size() + " s:"
+                                       + sourceString);
+                }
+                for (int i = 0; (i < toks.size()) && (cnt < tokens.length);
+                        i++) {
+                    tokens[cnt++] = toks.get(i);
+                }
+                if ( !lineWrap) {
+                    break;
+                }
+                if (cnt >= tokens.length) {
+                    break;
+                }
+                //              System.err.println("CNT:" + cnt +" " + tokens.length);
+                sourceString = readNextLine(recordIO);
+                if (sourceString == null) {
+                    break;
+                }
+            }
+            if (bePickyAboutTokens && (cnt != tokens.length)) {
+                throw new IllegalArgumentException(
+                    "Could not tokenize line: expected:" + tokens.length
+                    + " rcvd: " + cnt + "\nLine: " + sourceString + "\n");
+            }
+
+            return true;
+
+        } else if (delimiterIsSpaces) {
+            int cnt = 0;
+            while (true) {
+                List<String> toks = StringUtil.split(sourceString, " ", true,
+                                        true);
+                for (int i = 0; (i < toks.size()) && (cnt < tokens.length);
+                        i++) {
+                    tokens[cnt++] = toks.get(i);
+                }
+                if ( !lineWrap) {
+                    break;
+                }
+                if (cnt >= tokens.length) {
+                    break;
+                }
+                //              System.err.println("CNT:" + cnt +" " + tokens.length);
+                sourceString = readNextLine(recordIO);
+                if (sourceString == null) {
+                    break;
+                }
+            }
+            if (bePickyAboutTokens && (cnt != tokens.length)) {
+                throw new IllegalArgumentException(
+                    "Could not tokenize line: expected:" + tokens.length
+                    + " rcvd: " + cnt + "\nLine: " + sourceString + "\n");
+            }
+
+            return true;
         } else {
             int idx;
             while (true) {
@@ -694,7 +792,8 @@ public class TextRecord extends DataRecord {
                     theString = theString.substring(1,
                             theString.length() - 1);
                 }
-                //                System.err.println("\ttokens[" + numTokensRead + "] = "+ theString);
+                //              if(debug)
+                //                  System.err.println("\ttokens[" + numTokensRead + "] = "+ theString);
                 tokens[numTokensRead++] = theString;
 
                 if ((idx < 0) || (numTokensRead == tokens.length)) {
@@ -858,6 +957,15 @@ public class TextRecord extends DataRecord {
      */
     public void setBePickyAboutTokens(boolean picky) {
         bePickyAboutTokens = picky;
+    }
+
+    /**
+     * _more_
+     *
+     * @param b _more_
+     */
+    public void setLineWrap(boolean b) {
+        lineWrap = b;
     }
 
     /**

@@ -689,8 +689,10 @@ public abstract class TextFile extends PointFile {
     public static String makeField(String id, String... attrs) {
         StringBuffer asb = new StringBuffer();
         for (String attr : attrs) {
-            asb.append(attr);
-            asb.append(" ");
+            if (attr != null) {
+                asb.append(attr);
+                asb.append(" ");
+            }
         }
 
         return id + "[" + asb + "]";

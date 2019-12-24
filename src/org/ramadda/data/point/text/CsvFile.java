@@ -107,25 +107,26 @@ public class CsvFile extends TextFile {
         File file = getCacheFile();
         //        System.err.println("file:" +file);
         //        System.err.println(Misc.getStackTrace());
-        if (file == null || !file.exists()) {
+        if ((file == null) || !file.exists()) {
             try {
-                ByteArrayOutputStream bos=null;
-                OutputStream      fos;
-                if(file!=null) {
-                     fos = new FileOutputStream(file);
+                ByteArrayOutputStream bos = null;
+                OutputStream          fos;
+                if (file != null) {
+                    fos = new FileOutputStream(file);
                 } else {
                     fos = bos = new ByteArrayOutputStream();
                 }
                 String[] args = StringUtil.listToStringArray(
                                     StringUtil.split(csvCommands, ","));
-                for(int i=0;i<args.length;i++) 
-                    args[i] = args[i].replaceAll("_comma_",",");
+                for (int i = 0; i < args.length; i++) {
+                    args[i] = args[i].replaceAll("_comma_", ",");
+                }
                 CsvUtil csvUtil = new CsvUtil(args,
                                       new BufferedOutputStream(fos), null);
                 csvUtil.setInputStream(super.doMakeInputStream(buffered));
                 csvUtil.run(null);
                 fos.close();
-                if(file == null) {
+                if (file == null) {
                     //                    System.err.println("processed:" +new String(bos.toByteArray()));
                     return new ByteArrayInputStream(bos.toByteArray());
                 }
@@ -220,7 +221,7 @@ public class CsvFile extends TextFile {
      * @return _more_
      */
     @Override
-    public List<RecordField> doMakeFields(boolean failureOk)  {
+    public List<RecordField> doMakeFields(boolean failureOk) {
         String fieldString = getProperty(PROP_FIELDS, null);
         //        System.err.println("CsvFile.props:" + getProperties());
         if (fieldString == null) {
@@ -270,6 +271,7 @@ public class CsvFile extends TextFile {
         TextRecord record = new TextRecord(this, getFields());
         record.setFirstDataLine(firstDataLine);
         record.setDelimiter(getDelimiter());
+        record.setLineWrap(getProperty("lineWrap", true));
         record.setBePickyAboutTokens(getProperty("picky", true));
         record.setMatchUpColumns(getProperty("matchupColumns", false));
 
