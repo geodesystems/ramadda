@@ -249,9 +249,9 @@ Data courtesy of
 <type name="type_nasaames"  description="NASA AMES File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.NasaAmesTypeHandler" pattern=".*\.na" icon="/point/nasa.png">
   <column  name="dimensions"  label="Dimensions" type="int"  />
   <column  name="originator_name"  label="Originator Name" type="string"  />
-  <column  name="affiliation"  label="Affiliation" type="enumeration"  />
-  <column  name="instrument"  label="Instrument" type="enumeration"  />
-  <column  name="campaign"  label="Campaign" type="enumeration"  />
+  <column  name="affiliation"  label="Affiliation" type="enumerationplus"  />
+  <column  name="instrument"  label="Instrument" type="enumerationplus"  />
+  <column  name="campaign"  label="Campaign" type="enumerationplus"  />
   <column  name="comments"  label="Comments" type="list"  size="5000" rows="10" changetype="true"/>
  <property name="record.properties">
 delimiter=commasorspaces
