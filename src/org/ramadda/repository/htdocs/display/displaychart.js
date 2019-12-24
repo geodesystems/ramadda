@@ -831,6 +831,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 
+
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
                 var chartableFields = this.getFieldsToSelect(pointData);
@@ -1043,11 +1044,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueS = this.getProperty("fixedValue");
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
-	    var fIdx = 0;
-
-
+	    let fIdx = 0;
             for (var j = 0; j < header.length; j++) {
-		var field;
+		var field=null;
 		if(j>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
 		}
@@ -1071,7 +1070,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(field.isString()) {
 			    dataTable.addColumn('string', header[j]);
 			} else if(field.isFieldDate()) {
-
 			    dataTable.addColumn('date', header[j]);
 			} else {
 			    dataTable.addColumn('number', header[j]);

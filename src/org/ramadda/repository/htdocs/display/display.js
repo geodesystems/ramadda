@@ -4708,7 +4708,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
-	    fields=null;
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
             var pointData = this.getPointData();
