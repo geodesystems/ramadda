@@ -217,7 +217,7 @@ function PointData(name, recordFields, records, url, properties) {
             this.lon = lon;
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
-//	    initiallatitude=40&location.latitude=0&location.longitude=179.5
+	    //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
             if (myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
 		console.log("url:" + this.url);
                 this.loadData(myDisplay, true);
@@ -315,7 +315,7 @@ function PointData(name, recordFields, records, url, properties) {
             }
             obj.pending.push(display);
             if (obj.pending.length > 1) {
-//                console.log("Waiting on callback:" + obj.pending.length +" " + url);
+		//                console.log("Waiting on callback:" + obj.pending.length +" " + url);
                 return;
             }
             var fail = function(jqxhr, textStatus, error) {
@@ -326,9 +326,9 @@ function PointData(name, recordFields, records, url, properties) {
             }
 
             var success=function(data) {
-//		console.log("got data");
+		//		console.log("got data");
                 if (GuiUtils.isJsonError(data)) {
-//                    console.log("fail");
+		    //                    console.log("fail");
                     display.pointDataLoadFailed(data);
                     return;
                 }
@@ -337,7 +337,7 @@ function PointData(name, recordFields, records, url, properties) {
                 var tmp = obj.pending;
                 obj.pending = [];
                 for (var i = 0; i < tmp.length; i++) {
-//                    console.log("Calling: " + tmp[i]);
+		    //                    console.log("Calling: " + tmp[i]);
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
                 pointData.stopLoading();

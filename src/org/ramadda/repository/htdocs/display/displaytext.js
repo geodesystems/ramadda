@@ -1,5 +1,5 @@
 /*
-   Copyright 2008-2019 Geode Systems LLC
+  Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -976,7 +976,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				    ]);
 	},
         handleEventRecordSelection: function(source, args) {
-//	    console.log(this.type+".recordSelection");
+	    //	    console.log(this.type+".recordSelection");
 	    this.selectedRecord = args.record;
 	    if(this.getProperty("onlyShowSelected")) {
 		this.updateUI();
@@ -990,7 +990,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
-//	    console.log(this.type+".updateUI");
+	    //	    console.log(this.type+".updateUI");
 	    var pointData = this.getData();
 	    if (pointData == null) return;
 	    var records = this.filterData();
@@ -1290,7 +1290,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			s = s.replace("${color}",color);
 		    }
 		    var tag = HtmlUtils.openTag("div",["style",recordStyle, "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
-//		    console.log(tag);
+		    //		    console.log(tag);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
@@ -1310,7 +1310,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents += '</div>\n';
 		}
 	    }
-//	    console.log("CONTENTS:\n" +contents);
+	    //	    console.log("CONTENTS:\n" +contents);
 	    if(selected.length>0) 
 		contents+= footerTemplate;
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
@@ -1326,7 +1326,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	},
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
-//	    console.log(this.type+ ".recordHighlight");
+	    //	    console.log(this.type+ ".recordHighlight");
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    if(this.highlightedElement) {
@@ -1368,7 +1368,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } 
 	},
 	highlightElement: function(args) {
-//	    console.log(this.type+".highlightElement");
+	    //	    console.log(this.type+".highlightElement");
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;
@@ -1510,7 +1510,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		html += HtmlUtils.closeTag("table");
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-           HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {
+            HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {
                 //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
             });
 	},
@@ -1765,7 +1765,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     
     Utils.importJS(ramaddaBaseUrl+"/lib/timeline3/timeline.js");
     var css = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css";
-//    css =  ramaddaBaseUrl+"/lib/timeline3/timeline.css";
+    //    css =  ramaddaBaseUrl+"/lib/timeline3/timeline.css";
     $('<link rel="stylesheet" href="' + css +'" type="text/css" />').appendTo("head");
 
     $.extend(this, {
@@ -1812,9 +1812,9 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.timelineReady = false;
 	    var opts = {
 		start_at_end: this.getProperty("startAtEnd",false),
-//		default_bg_color: {r:0, g:0, b:0},
+		//		default_bg_color: {r:0, g:0, b:0},
 		timenav_height: this.getProperty("navHeight",150),
-//		menubar_height:100,
+		//		menubar_height:100,
 		gotoCallback: (slide)=>{
 		    if(this.timelineReady) {
 			var record = records[slide];
@@ -1866,7 +1866,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_TIMELINE).find(".tl-text").css("padding","0px");
 	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("padding","0px 0px");
-//	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("width","100%");
+	    //	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("width","100%");
 	    this.jq(ID_TIMELINE).find(".tl-slidenav-description").css("display","none");
 	    this.timelineReady = true;
 
@@ -2523,9 +2523,9 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                     corpus += line;
 		    corpus += "\n";
 		}
-//		console.log("corpus:" + corpus.length +"\n" + corpus.substring(0,1000));
+		//		console.log("corpus:" + corpus.length +"\n" + corpus.substring(0,1000));
 		this.nlp = window.nlp(corpus);
-//		console.log("after");
+		//		console.log("after");
 	    }
 	    var nlp = this.nlp;
             var cols = [];
@@ -2831,7 +2831,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			regexpMaps[f.getId()].map(re=>{
 			    value  = re.highlight(value);
 			}
-);
+						 );
 		    }
 		    
 		    if(line!="") 
@@ -2904,7 +2904,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 			r+= HtmlUtils.td(["width", "5px","style","background:#ccc;"],  HtmlUtils.getIconImage("fa-caret-right",null, ["style","line-height:0px;"]));
 		    }
 		    r+= HtmlUtils.td(["width", labelWidth], "<a name=line_" + lineCnt + "></a>" +
-				       "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
+				     "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
 			HtmlUtils.td([], line);
 		    
 		    corpus += HtmlUtils.tr(rowAttrs, r);
@@ -3027,8 +3027,6 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 }
 
 
-
-
 function RamaddaTreeDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TREE, properties);
     RamaddaUtil.inherit(this, SUPER);
@@ -3045,7 +3043,6 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 					"maxDepth=3",
 					"showDetails=false",
 				    ])},
-
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
@@ -3091,14 +3088,14 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 			html+=details;
 		    }
 		}
-			     
+		
 		if(node.children.length>0) {
 		    node.children.map(func);
 		}
 		depth--;
 		html+=HtmlUtils.closeTag("div");
 	    }
-//	    console.log("roots:" + roots.length);
+	    //	    console.log("roots:" + roots.length);
 	    roots.map(func);
 	    this.myRecords = [];
             this.displayHtml(html);
@@ -3147,20 +3144,38 @@ function OrgchartDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ORGCHART, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
-    console.log("orgchart");
     $.extend(this, {
         handleEventRecordSelection: function(source, args) {},
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					'label:Orgchart Attributes',
+					'labelField=""',
+					'parentField=""',
+					'idField=""',
+					'treeRoot="some label"',
+					'treeTemplate=""',
+					'treeNodeSize="small|medium|large"'
+					
+				    ])},
+
+
+
         needsData: function() {
             return true;
         },
 	updateUI: function() {
-	    console.log("ui");
 	    if(!waitOnGoogleCharts(this, ()=>{
 		this.updateUI();
 	    })) {
 		return;
 	    }
             this.displayHtml(HtmlUtils.div(["id",this.getDomId(ID_ORGCHART)],"HELLO"));
+	    //	    console.log(this.jq(ID_ORGCHART).length);
+	    if(this.jq(ID_ORGCHART).length==0) {
+		setTimeout(()=>this.updateUI(),1000);
+		return;
+	    }
 	    let roots=null;
 	    try {
 		roots = this.makeTree();
@@ -3168,7 +3183,6 @@ function OrgchartDisplay(displayManager, id, properties) {
                 this.setContents(this.getMessage(error.toString()));
 		return;
 	    }
-
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Name');
             data.addColumn('string', 'Parent');
@@ -3176,18 +3190,25 @@ function OrgchartDisplay(displayManager, id, properties) {
 	    let rows = [];
 	    let func = function(node) {
 		cnt++;
-		rows.push([node.label,node.parent?node.parent.label:"",""]);
+		var value = node.label;
+		if(node.display) {
+		    value = {'v':node.label,f:node.display};
+		}
+		var row = [value, node.parent?node.parent.label:"",node.tooltip||""];
+		rows.push(row);
+		if(node.children.length>0) {
+		    node.children.map(func);
+		}
 		if(node.record) {
-//		    _this.countToRecord[cnt] = node.record;
+		    //		    _this.countToRecord[cnt] = node.record;
 		}
 	    }
 	    roots.map(func);
-	    console.log(rows);
             data.addRows(rows);
-//		[{'v':'Mike', 'f':'Mike<div style="color:red; font-style:italic">President</div>'}, '', 'The President'],
             var chart = new google.visualization.OrgChart(document.getElementById(this.getDomId(ID_ORGCHART)));
             // Draw the chart, setting the allowHtml option to true for the tooltips.
-            chart.draw(data, {'allowHtml':true});
+            chart.draw(data, {'allowHtml':true,'allowCollapse':true,
+			      'size':this.getProperty("treeNodeSize","medium")});
 	}
     });
 }

@@ -54,7 +54,7 @@ function initRamaddaDisplays() {
     if (window.globalDisplaysList == null) {
         return;
     }
-//    console.log("page has loaded");
+    //    console.log("page has loaded");
     for (var i = 0; i < window.globalDisplaysList.length; i++) {
 	window.globalDisplaysList[i].pageHasLoaded();
     }
@@ -214,7 +214,7 @@ function DisplayThing(argId, argProperties) {
             var myalign = 'left top';
             var atalign = 'left bottom';
             popup.show();
-//	    console.log(srcObj +" " + srcId + " " + "pop:" + popup.length +" src:" + src.length);
+	    //	    console.log(srcObj +" " + srcId + " " + "pop:" + popup.length +" src:" + src.length);
             popup.position({
                 of: src,
                 my: myalign,
@@ -412,7 +412,7 @@ function DisplayThing(argId, argProperties) {
 		}
 		if(color) {
 		    s = s.replace("${" + f.getId()+"_color}", color);
-//		    value = HtmlUtils.span(["style","color:" + color],value);
+		    //		    value = HtmlUtils.span(["style","color:" + color],value);
 		}
 		
 		s = s.replace(new RegExp("\\${" + f.getId() +"}","g"), value);
@@ -467,14 +467,14 @@ function DisplayThing(argId, argProperties) {
                     if (typeof value == "number") {
 			value = this.formatNumber(value);
 			/**
-                        var sv = value + "";
-                        //total hack to decimals format numbers
-                        if (sv.indexOf('.') >= 0) {
-                            var decimals = 1;
-                            //?
-                            if (Math.abs(value) < 1.5) decimals = 3;
-                            value = number_format(value, decimals, '.', '');
-                        } 
+                           var sv = value + "";
+                           //total hack to decimals format numbers
+                           if (sv.indexOf('.') >= 0) {
+                           var decimals = 1;
+                           //?
+                           if (Math.abs(value) < 1.5) decimals = 3;
+                           value = number_format(value, decimals, '.', '');
+                           } 
 			**/
                     } 
                     if (field.isFieldDate()) {
@@ -583,15 +583,21 @@ function DisplayThing(argId, argProperties) {
 	},
 
         getPropertyInner: function(key, dflt,skipThis) {	    
+	    let debug = false;
+	    //	    let debug = key== "stride";
+	    if(debug) console.log("getProperty");
+
             if(!skipThis && Utils.isDefined(this[key])) {
+		if(debug) console.log("\tgetProperty-1");
                 return this[key];
             }
             var value = this.properties[key];
             if (value != null) {
+		if(debug) console.log("\tgetProperty-2");
                 return value;
             }
 	    var fromParent=null;
-		    
+	    
             if (this.displayParent != null) {
                 fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
             }
@@ -599,18 +605,23 @@ function DisplayThing(argId, argProperties) {
                 fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
             }
 	    if(fromParent) {
+		if(debug) console.log("\tgetProperty-3");
 		return fromParent;
 	    }
             if (this.displayParent != null) {
+		if(debug) console.log("\tgetProperty-4");
                 return this.displayParent.getPropertyInner(key, skipThis);
             }
             if (this.getDisplayManager) {
+		if(debug) console.log("\tgetProperty-5");
                 return   this.getDisplayManager().getPropertyInner(key);
             }
             value = getGlobalDisplayProperty(key);
             if (value) {
+		if(debug) console.log("\tgetProperty-6:" + value);
 		return value;
 	    }
+	    if(debug) console.log("\tgetProperty-6 dflt:" + dflt);
             return dflt;
         },
     });
@@ -661,7 +672,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         */
     }
 
-//    console.log("display.init:" + argType +" loaded:" +Utils.getPageLoaded());
+    //    console.log("display.init:" + argType +" loaded:" +Utils.getPageLoaded());
 
     RamaddaUtil.defineMembers(this, {
         displayReady: Utils.getPageLoaded(),
@@ -700,7 +711,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DISPLAY_CONTENTS).html(html);
         },
         notifyEvent: function(func, source, data) {
-//	    console.log(this.type +".notifyEvent:" + func);
+	    //	    console.log(this.type +".notifyEvent:" + func);
             if (this[func] == null) {
                 return;
             }
@@ -1472,19 +1483,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(field.getId().startsWith(prefix)) {
 			    fields.push(field);
 			} else {
-			fields.push(new RecordField({
-			    id:prefix +"_"+ field.getId(),
-			    index:  field.getIndex(),
-			    label:this.getProperty("binDateLabel", Utils.camelCase(binType) +" of " + field.getLabel()),
-			    type:"double",
-			    chartable:field.isChartable()
-			}));
+			    fields.push(new RecordField({
+				id:prefix +"_"+ field.getId(),
+				index:  field.getIndex(),
+				label:this.getProperty("binDateLabel", Utils.camelCase(binType) +" of " + field.getLabel()),
+				type:"double",
+				chartable:field.isChartable()
+			    }));
 			}
 		    }
 		});
 		this.lastSelectedFields = fields;
 	    }
-//	    console.log("fields:" + this.lastSelectedFields);
+	    //	    console.log("fields:" + this.lastSelectedFields);
 	    return this.lastSelectedFields;
         },
         getSelectedFieldsInner: function(dfltList) {
@@ -1731,7 +1742,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var tmp = [];
 	    value.map(v=>tmp.push(v.trim()));
 	    value = tmp;
-//	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
+	    //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
 	makeTree: function(records) {
@@ -1740,13 +1751,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (pointData == null) return null;
                 records = pointData.getRecords();
             }
+	    let treeTemplate = this.getProperty("treeTemplate");
+	    let treeTooltip = this.getProperty("treeTooltip");
 	    let roots = [];
 	    let idToNode = {};
 	    let nodes=[];
 	    let idToRoot = {};
 	    var labelField = this.getFieldById(null, this.getProperty("labelField"));
 	    var nodeFields = this.getFieldsByIds(null, this.getProperty("nodeFields"));
-
 	    let treeRootLabel = this.getProperty("treeRoot");
 	    let treeRoot = null;
 	    if(treeRootLabel) {
@@ -1763,7 +1775,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var label= labelField==null?id:r.getValue(labelField.getIndex());		
 		    let parentId = null;
 		    let parentNode= null;
-//		    console.log("record:" + label);
+		    //		    console.log("record:" + label);
 
 		    nodeFields.map(nodeField=>{
 			let id = r.getValue(nodeField.getIndex());
@@ -1811,6 +1823,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var id = r.getValue(idField.getIndex());
 		var label= labelField==null?id:r.getValue(labelField.getIndex());		
 		var node = {id:id,label:label,children:[],record:r,parentId:parent, parent:null};
+		if(treeTemplate) {
+		    node.display = this.getRecordHtml(r, null, treeTemplate);
+		}
+		if(treeTooltip) {
+		    node.tooltip = this.getRecordHtml(r, null, treeTooltip);
+		}
 		idToNode[id] = node;
 		nodes.push(node);
 		if(parent=="") {
@@ -1850,7 +1868,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.endDateObject = new Date(endDate);
 	    } 
 
-//	    var t1=  new Date();
+	    //	    var t1=  new Date();
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -1881,12 +1899,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
-/*
-		var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
- 		if(allIsUsed && !useIfAll) {
-		    continue;
-		}
-*/
+		/*
+		  var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
+ 		  if(allIsUsed && !useIfAll) {
+		  continue;
+		  }
+		*/
 		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
 		if (prefix) pattern = prefix + value;
@@ -1903,7 +1921,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var maxValue = parseFloat(maxField.val().trim());
 		    var dfltMinValue = parseFloat(minField.attr("data-min"));
 		    var dfltMaxValue = parseFloat(maxField.attr("data-max"));
-//		    console.log(this.type +" filterData:" + filterField.getId() +" " +minValue +" " + maxValue);
+		    //		    console.log(this.type +" filterData:" + filterField.getId() +" " +minValue +" " + maxValue);
 
 		    if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 			value = [minValue,maxValue];
@@ -1950,12 +1968,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_values:_values,
 			anyValues:anyValues,
 			startsWith:filterStartsWith,
-		
+			
 		    };
 
 		}
 	    }
-//	    console.log(this.type +" filterData:" + JSON.stringify(filters,null,2));
+
+
+	    //	    console.log(this.type +" filterData:" + JSON.stringify(filters,null,2));
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
 		var record = dataList[rowIdx];
                 var date = record.getDate();
@@ -2037,13 +2057,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 	    dataList = newData;
-
-
             var stride = parseInt(this.getProperty("stride", -1));
             if (stride < 0) {
 		var maxSize = parseInt(this.getProperty("maxDisplayedPoints", -1));		
-		stride = 1;
 		if(maxSize>0 && dataList.length>0) {
+		    stride = 1;
 		    while(dataList.length/stride>maxSize) {
 			stride++;
 		    }
@@ -2051,14 +2069,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
             if (stride > 0) {
+		console.log("doing stride:" + stride);
                 var list = [];
                 var cnt = 0;
                 for (var i = 0; i < dataList.length; i += (stride + 1)) {
                     list.push(dataList[i]);
                 }
                 dataList = list;
-//		console.log("stride: " + stride +"  size:" + list.length);
+		//		console.log("stride: " + stride +"  size:" + list.length);
             }
+
+
 
 	    if(this.getProperty("binDate")) {
 		var what = this.getProperty("binDate");
@@ -2143,8 +2164,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		dataList = binned;
 	    }
-//	    var t2=  new Date();
-//	    Utils.displayTimes("filterData",[t1,t2]);
+	    //	    var t2=  new Date();
+	    //	    Utils.displayTimes("filterData",[t1,t2]);
 	    dataList = this.sortRecords(dataList);
 
 	    if(this.getProperty("uniqueField")) {
@@ -2807,7 +2828,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  							    HtmlUtils.sqt("linechart") + "," + HtmlUtils.sqt(jsonUrl) + "," + props +");"
 							   ],
 						    HtmlUtils.getIconImage("fa-chart-line", [ATTR_TITLE, "Create Chart"])));
-//		console.log("X:" + x);
+		//		console.log("X:" + x);
             }
             toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
 						    HtmlUtils.sqt("entrydisplay") + "," + HtmlUtils.sqt(jsonUrl) + "," + props +");"
@@ -3043,8 +3064,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var props = {
                 sourceEntry: entry,
                 entryId: entry.getId(),
-//                showMenu: false,
-//                showTitle: false,
+		//                showMenu: false,
+		//                showTitle: false,
                 showDetails: true,
                 title: entry.getName(),
 		layoutHere:false,
@@ -3341,7 +3362,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             form += "</form>";
             tabTitles.push("Display"); 
-           tabContents.push(form);
+            tabContents.push(form);
         },	
         checkLayout: function() {},
         displayData: function() {},
@@ -3547,7 +3568,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				if(valuesAreNumbers) {
 				    return +a - +b;
 				}
-				    
+				
 				return (""+a[1]).localeCompare(""+b[1]);
 			    });
 			    for(var j=0;j<enumValues.length;j++) {
@@ -3651,7 +3672,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				attrs.push(tmp[1]);
 			    }
 			    widget = HtmlUtils.checkbox("",attrs,checked);
-//			    console.log(widget);
+			    //			    console.log(widget);
 			} else {
 			    var tmp = [];
 			    enums.map(e=>tmp.push(e.value));
@@ -3730,7 +3751,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    for(var i=0;i<dateIds.length;i++) {
 			HtmlUtils.datePickerInit(dateIds[i]);
 		    }
-	}
+		}
 
  		var inputFunc = function(input, input2, value){
                     var id = input.attr("id");
@@ -3766,7 +3787,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    
 		    if(value==null) return;
 		    if(!Array.isArray(value) && input.attr("isButton")) {
-//			console.log(_this.type +" " +Array.isArray(value));
+			//			console.log(_this.type +" " +Array.isArray(value));
 			var tmp = [];
 			value.split(",").map(v=>{
 			    tmp.push(v.replace(/_comma_/g,","));
@@ -3940,9 +3961,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 
 
-//		HtmlUtils.initSelect(this.jq("colorbyselect"));
-//		HtmlUtils.initSelect(this.jq("sizebyselect"));
-//		HtmlUtils.initSelect(this.jq("chartfields"));
+		//		HtmlUtils.initSelect(this.jq("colorbyselect"));
+		//		HtmlUtils.initSelect(this.jq("sizebyselect"));
+		//		HtmlUtils.initSelect(this.jq("chartfields"));
 
                 this.jq("chartfields").change(function(){
 		    _this.setProperty("fields",$(this).val());
@@ -3971,7 +3992,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			inputFunc($(this));
 		    }
 		});
-//		HtmlUtils.initSelect(this.jq(ID_FILTERBAR).find("select"));
+		//		HtmlUtils.initSelect(this.jq(ID_FILTERBAR).find("select"));
 		this.jq(ID_FILTERBAR).find("input:radio,select").change(function() {
 		    inputFunc($(this));
 		});
@@ -4081,10 +4102,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.maxDateObj = animation.end;
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
-//		var t1 = new Date();
+		//		var t1 = new Date();
 		this.dataFilterChanged();
-//		var t2 = new Date();
-//		Utils.displayTimes("timeChanged",[t1,t2]);
+		//		var t2 = new Date();
+		//		Utils.displayTimes("timeChanged",[t1,t2]);
 	    }
 	    this.propagateEvent("handleEventPropertyChanged", {
 		property: "dateRange",
@@ -4120,8 +4141,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getHtml: function() {
             var dobs = this.getDoBs();
             var html = "";
-//            var menu = HtmlUtils.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
-//            html += menu;
+	    //            var menu = HtmlUtils.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
+	    //            html += menu;
             html += HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
             var width = this.getWidth();
             if (dobs) {
@@ -4295,7 +4316,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			changed = true;
 			_this[f] = _this.jq(f).val();
 		    }});
-		    
+		
 
                 if(changed) {
 		    _this.getLayoutManager().doLayout();
@@ -4551,7 +4572,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jsonUrl = null;
             }
             if (!this.getDisplayReady()) {
-//		console.log("pointDataLoaded: display not ready");
+		//		console.log("pointDataLoaded: display not ready");
                 return;
             }
             this.updateUI(reload);
@@ -4687,6 +4708,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
+	    fields=null;
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
             var pointData = this.getPointData();
@@ -4787,7 +4809,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var nonNullRecords = 0;
             var records = this.filterData();
-//	    console.log("display.getStandardData records.length:" + records.length);
+	    //	    console.log("display.getStandardData records.length:" + records.length);
             var allFields = pointData.getRecordFields();
 
             //Check if there are dates and if they are different
@@ -4828,7 +4850,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
 
-	    
+		
 
                 let allNull = true;
                 let allZero = true;
@@ -4910,7 +4932,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
                     }
 		}
-//                agg.push(title);
+		//                agg.push(title);
 
 
                 for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
@@ -4990,7 +5012,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return tmp;
             }
 
-//	    console.log("display.getStandardData returning "+ dataList.length);
+	    //	    console.log("display.getStandardData returning "+ dataList.length);
 	    
             return dataList;
         },
@@ -5676,7 +5698,7 @@ function DisplayAnimation(display) {
 	},
         handleEventRecordHighlight: function(source, args) {
 	    var element = $("#" + this.display.getId()+"-"+args.record.getId());
-//	    console.log(args.highlight +" " + element.length);
+	    //	    console.log(args.highlight +" " + element.length);
 	    if(args.highlight) {
 		element.addClass("display-animation-tick-highlight");
 	    } else {

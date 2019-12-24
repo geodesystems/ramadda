@@ -301,7 +301,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         checkLayout: function() {
             var _this = this;
             var d = _this.jq(ID_DISPLAY_CONTENTS);
-//	    console.log(this.type +".checklayout:  widths:" + this.lastWidth +" " + d.width() +" " + _this.jq(ID_CHART).is(':visible'));
+	    //	    console.log(this.type +".checklayout:  widths:" + this.lastWidth +" " + d.width() +" " + _this.jq(ID_CHART).is(':visible'));
             if (this.lastWidth != d.width()) {
                 _this.displayData();
             }
@@ -406,10 +406,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.getDisplayReady()) {
                 return;
             }
-//	    var t1= new Date();
+	    //	    var t1= new Date();
             this.displayData(reload);
-//	    var t2= new Date();
-//	    Utils.displayTimes("chart.displayData",[t1,t2]);
+	    //	    var t2= new Date();
+	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
         },
         getWikiAttributes: function(attrs) {
             this.defineWikiAttributes(["vAxisMinValue", "vAxisMaxValue"]);
@@ -445,7 +445,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     return;
                 }
                 _this.vAxisMinValue = Utils.toFloat(_this.jq("vaxismin").val());
-//		console.log("vaxis:" + _this.vAxisMinValue + " " + this.getVAxisMinValue());
+		//		console.log("vaxis:" + _this.vAxisMinValue + " " + this.getVAxisMinValue());
                 _this.vAxisMaxValue = Utils.toFloat(_this.jq("vaxismax").val());
                 _this.minDate = _this.jq("mindate").val();
                 _this.maxDate = _this.jq("maxdate").val();
@@ -610,7 +610,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
 	    }
 	    var index = this.findMatchingIndex(args.record);
-//	    console.log(this.type +" index:" + index);
+	    //	    console.log(this.type +" index:" + index);
 	    if(index<0 || !Utils.isDefined(index)) {
 		return;
 	    }
@@ -757,7 +757,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 var fieldNames = null;
                 var rowCnt = -1;
                 var indexField = this.getFieldById(null,this.getProperty("indexField"));
-//		console.log("index:" + indexField);
+		//		console.log("index:" + indexField);
 		
                 for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                     var record = records[rowIdx];
@@ -767,11 +767,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     rowCnt++;
                     var values = [];
                     var indexName = null;
-//		    console.log("row:" + rowIdx);
+		    //		    console.log("row:" + rowIdx);
                     if (indexField) {
 			var value = record.getValue(indexField.getIndex());
-//                        values.push( + offset);
-//			console.log("v:" + value);
+			//                        values.push( + offset);
+			//			console.log("v:" + value);
 			if(indexField.isString()) {
 			    value = {v:offset,f:value};
 			} 
@@ -806,7 +806,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (dataList == null) {
                 dataList = this.getStandardData(fieldsToSelect, props);
-//		console.log("standard data:" + fieldsToSelect +" " +dataList.length);
+		//		console.log("standard data:" + fieldsToSelect +" " +dataList.length);
             }
 
 
@@ -834,7 +834,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
                 var chartableFields = this.getFieldsToSelect(pointData);
-//		console.log("fields:" + chartableFields);
+		//		console.log("fields:" + chartableFields);
                 for (var i = 0; i < chartableFields.length; i++) {
                     var field = chartableFields[i];
                     dataList = this.getStandardData([field], props);
@@ -952,7 +952,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 
-//	    console.log(this.type +" lastWidth:" + this.lastWidth+" "+_this.jq(ID_CHART).is(':visible'));
+	    //	    console.log(this.type +" lastWidth:" + this.lastWidth+" "+_this.jq(ID_CHART).is(':visible'));
         },
         printDataList: function(dataList) {
             console.log("data list:" + dataList.length);
@@ -975,7 +975,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         setChartSelection: function(index) {
             if (this.chart != null) {
                 if (this.chart.setSelection) {
-//		    console.log(this.type +".setSelection:" + index);
+		    //		    console.log(this.type +".setSelection:" + index);
                     this.chart.setSelection([{
                         row: index,
 			column:null
@@ -1394,7 +1394,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var defaultRange = this.getDisplayManager().getRange(selectedFields[0]);
             var range = [NaN, NaN];
-//	    console.log("range:" +this.getVAxisMinValue());
+	    //	    console.log("range:" +this.getVAxisMinValue());
             if (!isNaN(this.getVAxisMinValue())) {
                 range[0] = this.getVAxisMinValue();
             } else if (defaultRange != null) {
@@ -1483,13 +1483,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
 	    this.chartOptions.bar = {groupWidth:"95%"}
 
-//	    console.log(JSON.stringify(this.chartOptions,null,2));
+	    //	    console.log(JSON.stringify(this.chartOptions,null,2));
 	    
 
 
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
-               var dataTable = this.makeDataTable(dataList, props, selectedFields);
+		var dataTable = this.makeDataTable(dataList, props, selectedFields);
                 if (!dataTable) {
                     this.setContents(this.getMessage("No data available"));
                     return;
@@ -1547,10 +1547,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 });
                 //always propagate the event when loaded
 		/*
-                theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
-									theDisplay.dataCollection.getList()[0], {
-									    index: 0
-									});
+                  theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
+		  theDisplay.dataCollection.getList()[0], {
+		  index: 0
+		  });
 		*/
                 google.visualization.events.addListener(this.chart, 'select', function(event) {
                     if (theDisplay.chart.getSelection) {
@@ -1558,7 +1558,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         if (selected && selected.length > 0) {
                             var index = selected[0].row;
 			    var record = theDisplay.indexToRecord[index];
-//			    console.log(index +" " + record.getData()[0]);
+			    //			    console.log(index +" " + record.getData()[0]);
 			    if(record) {
 				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {xxx:"XXX",record: record});
 			    }
@@ -1659,7 +1659,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	    chartOptions.hAxis.textPosition = this.getProperty("hAxisTextPosition");
 	    chartOptions.vAxis.textPosition = this.getProperty("vAxisTextPosition");
 
-//	    console.log(JSON.stringify(chartOptions,null, 2));
+	    //	    console.log(JSON.stringify(chartOptions,null, 2));
 
             if (this.getProperty("hAxisTitle")) {
                 chartOptions.hAxis.title = this.getProperty("hAxisTitle");
@@ -2292,7 +2292,6 @@ function TableDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
 	    //		dataList = this.filterData(dataList, selectedFields,false,true);
             var rows = this.makeDataArray(dataList);
-
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
 		
@@ -2947,9 +2946,9 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","maximized");
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","maximized");
 
-/*
-  chartOptions.trendlines =  {
-  0: {
+	    /*
+	      chartOptions.trendlines =  {
+	      0: {
 	      type: 'linear',
 	      color: 'green',
 	      lineWidth: 3,
@@ -2959,8 +2958,8 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	      }
 	      };		
 
-*/
-//	    console.log(JSON.stringify(chartOptions,null,2));
+	    */
+	    //	    console.log(JSON.stringify(chartOptions,null,2));
 
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
                 if (!chartOptions.vAxis) chartOptions.vAxis = {};
@@ -2985,15 +2984,15 @@ function ScatterplotDisplay(displayManager, id, properties) {
 		}
                 //We only have the one vAxis range for now
                 if (!isNaN(this.getVAxisMinValue())) {
-//                    chartOptions.hAxis.minValue = this.getVAxisMinValue();
+		    //                    chartOptions.hAxis.minValue = this.getVAxisMinValue();
                     chartOptions.vAxis.minValue = this.getVAxisMinValue();
                 }
                 if (!isNaN(this.getVAxisMaxValue())) {
-//                    chartOptions.hAxis.maxValue = this.getVAxisMaxValue();
+		    //                    chartOptions.hAxis.maxValue = this.getVAxisMaxValue();
                     chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
-//	    console.log(JSON.stringify(chartOptions,null,2));
+	    //	    console.log(JSON.stringify(chartOptions,null,2));
 
             return chartOptions;
         },
@@ -3183,7 +3182,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     if (v && (typeof v == 'number')) {
                         var label = field.getLabel().toLowerCase();
                         if (label.indexOf("latitude") >= 0 || label.indexOf("longitude") >= 0) {
-                            continue;
+			    continue;
                         }
                         stats[col].total += v;
                         stats[col].max = Math.max(stats[col].max, v);
