@@ -156,6 +156,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
         if (anySuperTypesOfThisType()) {
             super.initializeNewEntry(request, entry);
+
             return;
         }
 
@@ -189,8 +190,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         //        System.err.println (getClass().getName()+"  - scanning file:" + metadataHarvester.getClass().getName());
         visitorGroup.addVisitor(metadataHarvester);
         final File quickScanFile = pointEntry.getQuickScanFile();
-
-
         DataOutputStream dos = new DataOutputStream(
                                    new BufferedOutputStream(
                                        new FileOutputStream(quickScanFile)));
@@ -242,23 +241,21 @@ public class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-	StringBuilder all = new StringBuilder();
+        StringBuilder all = new StringBuilder();
 
         for (RecordField field : fields) {
-	    if(all.length()>0) all.append(",");
-	    all.append(field.getName());
-	}
-	sb.append("&nbsp;");
-	sb.append(
-		  HtmlUtils.mouseClickHref(
-					   HtmlUtils.call(
-							  "selectClick",
-							  HtmlUtils.comma(
-									  HtmlUtils.squote(target),
-									  HtmlUtils.squote(entry.getId()),
-									  HtmlUtils.squote(all.toString()),
-									  HtmlUtils.squote(type))), "All Fields"));
-	sb.append("<br>");
+            if (all.length() > 0) {
+                all.append(",");
+            }
+            all.append(field.getName());
+        }
+        sb.append("&nbsp;");
+        sb.append(HtmlUtils.mouseClickHref(HtmlUtils.call("selectClick",
+                HtmlUtils.comma(HtmlUtils.squote(target),
+                                HtmlUtils.squote(entry.getId()),
+                                HtmlUtils.squote(all.toString()),
+                                HtmlUtils.squote(type))), "All Fields"));
+        sb.append("<br>");
 
         for (RecordField field : fields) {
             sb.append("&nbsp;");
@@ -656,8 +653,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         Object[] values = entry.getTypeHandler().getEntryValues(entry);
         values[0] = new Integer(metadata.getCount());
 
-
-
         //If the file has metadata then it better match up with the values that are defined in types.xml
         Object[] fileMetadata = pointEntry.getRecordFile().getFileMetadata();
         if (fileMetadata != null) {
@@ -707,57 +702,60 @@ public class PointTypeHandler extends RecordTypeHandler {
             //            System.err.println("no time in metadata");
         }
 
-	String header = pointEntry.getRecordFile().getTextHeader();
-	if(header!=null && header.length()>0 && getTypeProperty("point.initialize", true)) {
-	    String patterns = (String) getTypeProperty("record.patterns",
-						       (String) null);
-	    if (patterns != null) {
-		//TODO: Don't read the full contents, rather read the header
-		List<String> toks = StringUtil.split(patterns, ",");
-		String time = null;
-		for (String tok : toks) {
-		    List<String> toks2 = StringUtil.splitUpTo(tok, ":", 2);
-		    if (toks2.size() != 2) {
-			continue;
-		    }
-		    String field   = toks2.get(0).trim();
-		    String pattern = toks2.get(1);
-		    String value   = StringUtil.findPattern(header, pattern);
-		    //		    System.err.println(field +" p:" + pattern +" v:" +value);
-		    if (value != null) {
-			if (field.equals("latitude")) {
-			    entry.setLatitude(Utils.decodeLatLon(value));
-			} else if (field.equals("longitude")) {
-			    entry.setLongitude(Utils.decodeLatLon(value));
-			} else if (field.equals("elevation")) {
-			    entry.setAltitude(Double.parseDouble(value));
-			} else if (field.equals("time")) {
-			    time = value;
-			} else if (field.equals("date")) {
-			    String format =
-				getTypeProperty("record.pattern.date.format",
-						"yyyyMMdd'T'HHmmss Z");
-			    SimpleDateFormat sdf =
-				RepositoryUtil.makeDateFormat(format, null);
-			    if(time!=null) value += " " + time;
-			    Date date = sdf.parse(value);
-			    entry.setStartAndEndDate(date.getTime());
-			} else {
-			    List<Column> columns = getColumns();
-			    if (columns != null) {
-				for (Column c : columns) {
-				    if (c.getName().equals(field)) {
-					Object[] v = getEntryValues(entry);
-					c.setValue(entry, v, value);
-				    }
-				}
-			    }
-			}			    
+        String header = pointEntry.getRecordFile().getTextHeader();
+        if ((header != null) && (header.length() > 0)
+                && getTypeProperty("point.initialize", true)) {
+            String patterns = (String) getTypeProperty("record.patterns",
+                                  (String) null);
+            if (patterns != null) {
+                //TODO: Don't read the full contents, rather read the header
+                List<String> toks = StringUtil.split(patterns, ",");
+                String       time = null;
+                for (String tok : toks) {
+                    List<String> toks2 = StringUtil.splitUpTo(tok, ":", 2);
+                    if (toks2.size() != 2) {
+                        continue;
+                    }
+                    String field   = toks2.get(0).trim();
+                    String pattern = toks2.get(1);
+                    String value   = StringUtil.findPattern(header, pattern);
+                    //              System.err.println(field +" p:" + pattern +" v:" +value);
+                    if (value != null) {
+                        if (field.equals("latitude")) {
+                            entry.setLatitude(Utils.decodeLatLon(value));
+                        } else if (field.equals("longitude")) {
+                            entry.setLongitude(Utils.decodeLatLon(value));
+                        } else if (field.equals("elevation")) {
+                            entry.setAltitude(Double.parseDouble(value));
+                        } else if (field.equals("time")) {
+                            time = value;
+                        } else if (field.equals("date")) {
+                            String format =
+                                getTypeProperty("record.pattern.date.format",
+                                    "yyyyMMdd'T'HHmmss Z");
+                            SimpleDateFormat sdf =
+                                RepositoryUtil.makeDateFormat(format, null);
+                            if (time != null) {
+                                value += " " + time;
+                            }
+                            Date date = sdf.parse(value);
+                            entry.setStartAndEndDate(date.getTime());
+                        } else {
+                            List<Column> columns = getColumns();
+                            if (columns != null) {
+                                for (Column c : columns) {
+                                    if (c.getName().equals(field)) {
+                                        Object[] v = getEntryValues(entry);
+                                        c.setValue(entry, v, value);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
             }
-	}
+        }
     }
 
 
@@ -893,7 +891,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         //        if(fromParent!=null) return fromParent;
         try {
             String chartType = getTypeProperty("map.chart.type", "linechart");
-	    String chartArgs = getTypeProperty("map.chart.args", "");
+            String chartArgs = getTypeProperty("map.chart.args", "");
             if ( !Utils.stringDefined(chartType)
                     || chartType.equals("none")) {
                 return super.getMapInfoBubble(request, entry);
@@ -915,8 +913,9 @@ public class PointTypeHandler extends RecordTypeHandler {
             sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
 
             return Json.mapAndQuote("entryId", entry.getId(), "chartType",
-                                    chartType, "chartArgs",chartArgs, "fields", chartField, "divId",
-                                    id, "title", "", "text", sb.toString(),
+                                    chartType, "chartArgs", chartArgs,
+                                    "fields", chartField, "divId", id,
+                                    "title", "", "text", sb.toString(),
                                     "minSizeX", minSizeX, "minSizeY",
                                     minSizeY, "vAxisMinValue", "0",
                                     "showTitle", "false", ((fields == null)
