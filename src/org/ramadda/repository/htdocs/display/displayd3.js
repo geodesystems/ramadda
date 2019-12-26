@@ -394,6 +394,11 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                         data[name] = Utils.reverseArray(data[name]);
                 }
             }
+	    if(data.temperature.length==0) {
+                this.displayError("No data is available");
+		return;
+	    }
+
             options.myid = this.getId();
             try {
                 this.skewt = new D3Skewt(skewtId, options,data);

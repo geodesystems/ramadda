@@ -3576,7 +3576,7 @@ function initMapFunctions(theMap) {
             "fields": fields,
             "vAxisMinValue": props.vAxisMinValue,
             "vAxisMaxValue": props.vAxisMaxValue,
-            "data": new PointData(title, null, null, getRamadda().getRoot() + "/entry/show?entryid=" + props.entryId + "&output=points.product&product=points.json&numpoints=1000", pointDataProps)
+            "data": new PointData(title, null, null, getRamadda().getRoot() + "/entry/show?entryid=" + props.entryId + "&output=points.product&product=points.json&numpoints=10000", pointDataProps)
         };
 	if(props.chartArgs) {
 	    let toks = props.chartArgs.split(",");

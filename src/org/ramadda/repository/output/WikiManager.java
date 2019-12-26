@@ -2114,7 +2114,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
                     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
             }
-
             if (jsonUrl == null) {
                 jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
                         entry, theTag, props);
@@ -2568,7 +2567,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                      entry);
         } else if (theTag.equals(WIKI_TAG_TABS)
                    || theTag.equals(WIKI_TAG_ACCORDION)
-                   || theTag.equals(WIKI_TAG_ACCORDIAN)
                    || theTag.equals(WIKI_TAG_SLIDESHOW)
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
                    || theTag.equals(WIKI_TAG_GRID)) {
@@ -2936,7 +2934,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_WIKITEXT)) {
-            StringBuilder editor = new StringBuilder();
+	    StringBuilder editor = new StringBuilder();
 
             boolean showToolbar = getProperty(wikiUtil, props, "showToolbar",
                                       false);
@@ -6271,6 +6269,35 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             propList.add(ATTR_TITLE);
             propList.add(Json.quote(entry.getName()));
         }
+
+
+	String changeEntries = getProperty(wikiUtil, props, "changeEntries");
+	if(changeEntries!=null && changeEntries.equals("false")) {
+	    changeEntries = null;
+	}
+	if(changeEntries!=null) {
+            List<Entry> children;
+	    if(changeEntries.equals("true")) {
+		children = getEntries(request, wikiUtil,
+				      originalEntry, entry, props);
+	    } else {
+		children = getEntries(request, wikiUtil, entry,
+				      changeEntries, props);
+	    }
+	    StringBuilder tmp = new StringBuilder();
+	    for(Entry child: children) {
+		if(tmp.length()>0) tmp.append(",");
+		tmp.append(child.getId() +":" + child.getName().replaceAll(","," "));
+	    }
+	    topProps.add("entryCollection");
+	    topProps.add(Json.quote(tmp.toString()));
+	    String tmpname = getProperty(wikiUtil,props,"changeEntriesLabel");
+	    if(tmpname!=null) {
+		topProps.add("changeEntriesLabel");
+		topProps.add(Json.quote(tmpname));
+	    }
+	}
+
         topProps.add("layoutType");
         topProps.add(Json.quote(getProperty(wikiUtil, props, "layoutType",
                                             "table")));

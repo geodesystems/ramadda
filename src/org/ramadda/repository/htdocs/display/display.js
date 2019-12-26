@@ -1199,8 +1199,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     entry = e
                     Utils.call(callback, entry);
                 });
-            }
-            Utils.call(callback, null);
+            } else {
+		Utils.call(callback, null);
+	    }
         },
         hasEntries: function() {
             return this.entries != null && this.entries.length > 0;
@@ -5176,7 +5177,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             }
         },
         getDisplays: function() {
-            return this.display;
+            return this.displays;
         },
         notifyEvent: function(func, source, data) {
             var displays = this.getDisplays();
