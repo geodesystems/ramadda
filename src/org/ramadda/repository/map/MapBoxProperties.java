@@ -26,7 +26,7 @@ package org.ramadda.repository.map;
 public class MapBoxProperties {
 
     /** color property */
-    private String color = MapInfo.DFLT_BOX_COLOR;
+    private String color;
 
     /** selectable property */
     private boolean selectable = false;

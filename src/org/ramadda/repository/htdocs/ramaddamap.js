@@ -229,6 +229,7 @@ function RepositoryMap(mapId, params) {
         strokeWidth: this.strokeWidth,
     };
 
+
     this.defaults = {};
 
     if (Utils.isDefined(params.onSelect)) {
@@ -577,7 +578,9 @@ function initMapFunctions(theMap) {
 	    this.loadedLayers.map(layer=>{
 		this.map.setLayerIndex(layer, base++);		
 	    });
-
+	    if (this.boxes) {
+                this.map.setLayerIndex(this.boxes, base++);
+	    }
 	    if (this.lines) {
                 this.map.setLayerIndex(this.lines, base++);
 	    }
@@ -590,8 +593,6 @@ function initMapFunctions(theMap) {
 	    if (this.labelLayer) {
 		this.map.setLayerIndex(this.labelLayer, base++);
 	    }
-
-
 	    //            this.map.resetLayersZIndex();
         },
         addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
@@ -2695,7 +2696,7 @@ function initMapFunctions(theMap) {
 
     theMap.hiliteBox = function(id) {
         if (this.currentBox) {
-            this.currentBox.setBorder("blue");
+            this.currentBox.setBorder(this.currentBox.defaultBorderColor||"blue",1);
         }
         this.currentBox = this.findBox(id);
         if (this.currentBox) {
@@ -3115,9 +3116,10 @@ function initMapFunctions(theMap) {
         theBoxes.getFeatureFromEvent = function(evt) {
             return null;
         };
-        var sf = new OpenLayers.Control.SelectFeature(theBoxes);
-        this.getMap().addControl(sf);
-        sf.activate();
+	//Don't do this as the box select hides the marker select
+//        var sf = new OpenLayers.Control.SelectFeature(theBoxes);
+//        this.getMap().addControl(sf);
+//        sf.activate();
     }
 
     theMap.removeBox = function(box) {
@@ -3144,7 +3146,6 @@ function initMapFunctions(theMap) {
 
 
     theMap.createBox = function(id, name, north, west, south, east, text, params) {
-
         if (text.indexOf("base64:") == 0) {
             text = window.atob(text.substring(7));
         }
@@ -3155,10 +3156,10 @@ function initMapFunctions(theMap) {
             "zoomToExtent": false,
             "sticky": false
         };
-
         for (var i in params) {
             args[i] = params[i];
         }
+	if(!args.color) args.color = this.defaultStyle.strokeColor||"blue";
 
         var bounds = createBounds(west, Math.max(south, -mapDefaults.maxLatValue),
 				  east, Math.min(north, mapDefaults.maxLatValue));
@@ -3179,13 +3180,8 @@ function initMapFunctions(theMap) {
         box.text = this.getPopupText(text);
         box.name = name;
         box.setBorder(args["color"], 1);
+	box.defaultBorderColor = args["color"];
         box.ramaddaId = id;
-        var attrs = {
-            fillColor: "red",
-            fillOpacity: 1.0,
-            pointRadius: 5,
-        };
-
         if (args["zoomToExtent"]) {
             this.centerOnMarkers(bounds);
         }

@@ -969,11 +969,11 @@ public class MapInfo {
     public void addBox(String id, String boxName, String text,
                        MapBoxProperties properties, double north,
                        double west, double south, double east) {
-        getJS().append("var mapBoxAttributes = {\"color\":\""
-                       + properties.getColor() + "\",\"selectable\": "
-                       + properties.getSelectable() + ",\"zoomToExtent\": "
-                       + properties.getZoomToExtent() + "};\n");
-
+	String color = properties.getColor();
+        String attrs = Json.map("color", color==null?"null":Json.quote(color),
+				"selectable",""+properties.getSelectable(),
+				"zoomToExtent", ""+properties.getZoomToExtent());
+        getJS().append("var mapBoxAttributes = " + attrs +";\n");
         getJS().append(
             mapVarName + ".createBox("
             + HtmlUtils.comma(

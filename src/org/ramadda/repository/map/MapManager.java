@@ -1493,7 +1493,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
 
         boolean          makeRectangles = cnt <= 100;
-        MapBoxProperties mapProperties  = new MapBoxProperties("blue", false);
+        MapBoxProperties mapProperties  = new MapBoxProperties(null, false);
 
         if (request.get(ARG_MAP_ICONSONLY, false)) {
             makeRectangles = false;
