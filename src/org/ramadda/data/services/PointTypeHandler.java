@@ -708,7 +708,6 @@ public class PointTypeHandler extends RecordTypeHandler {
             String patterns = (String) getTypeProperty("record.patterns",
                                   (String) null);
             if (patterns != null) {
-                //TODO: Don't read the full contents, rather read the header
                 List<String> toks = StringUtil.split(patterns, ",");
                 String       time = null;
                 for (String tok : toks) {
@@ -719,7 +718,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                     String field   = toks2.get(0).trim();
                     String pattern = toks2.get(1);
                     String value   = StringUtil.findPattern(header, pattern);
-                    //              System.err.println(field +" p:" + pattern +" v:" +value);
+		    //		    System.err.println(field +" p:" + pattern +" v:" +value);
                     if (value != null) {
                         if (field.equals("latitude")) {
                             entry.setLatitude(Utils.decodeLatLon(value));
@@ -738,7 +737,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                             if (time != null) {
                                 value += " " + time;
                             }
-                            Date date = sdf.parse(value);
+			    Date date = sdf.parse(value);
+			    //			    System.err.println("date:" + date);
                             entry.setStartAndEndDate(date.getTime());
                         } else {
                             List<Column> columns = getColumns();

@@ -5564,22 +5564,23 @@ public class HtmlUtils {
         if ( !Utils.stringDefined(linkPattern)) {
             linkPattern = null;
         }
-        List<Link> links = new ArrayList<Link>();
-
         if (url.getProtocol().equals("ftp")) {
             return extractLinksFtp(url, linkPattern);
         }
-
         String html = Utils.readUrl(url.toString());
+	return extractLinks(url, html, linkPattern);
+    }
 
-
-
+    public static List<Link> extractLinks(URL url, String html, String linkPattern)
+            throws Exception {
+        List<Link> links = new ArrayList<Link>();
         String pattern =
             "(?s)(?i)<\\s*a[^>]*?\\s*href\\s*=\\s*(\"|')([^\"'>]+)(\"|')[^>]*?>(.*?)</a>";
 
         html = html.replaceAll("\t", " ");
         //<a target="_blank" title="/gov/data/GISDLData/Footprints.kmz" href="/gov/data/GISDLData/Footprints.kmz">KMZ</a>
         Matcher matcher = Pattern.compile(pattern).matcher(html);
+	//	System.err.println("pattern:" + linkPattern);
         while (matcher.find()) {
             String href = matcher.group(2);
             href = href.replaceAll(" ", "");
@@ -5587,12 +5588,12 @@ public class HtmlUtils {
 
             label = StringUtil.stripTags(label).trim();
             if (linkPattern != null) {
+		//		System.err.println("\tHREF:" + href +" matches:" + href.matches(linkPattern));
                 if ( !(href.matches(linkPattern)
                         || label.matches(linkPattern))) {
                     continue;
                 }
             }
-
             if (href.toLowerCase().startsWith("javascript:")) {
                 continue;
             }
@@ -5710,6 +5711,22 @@ public class HtmlUtils {
         public URL getUrl() {
             return url;
         }
+
+	@Override
+	public int hashCode() {
+	    return url.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+	    if(!(o instanceof Link)) {
+		System.err.println("not a link");
+		return false;
+	    }
+	    Link that =(Link) o;
+	    //	    System.err.println("link:" + url +"  other:" + that.getUrl() +" " +url.equals(that.getUrl()));
+	    return url.equals(that.getUrl());
+	}
 
         /**
          *  Set the Label property.
