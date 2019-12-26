@@ -158,7 +158,7 @@ public class HtmlImportHandler extends ImportHandler {
                     return false;
                 }
 		String name = link.getLabel().trim();
-		name  = name.replaceAll("/$","").name.replaceAll("^/","");
+		name  = name.replaceAll("/$","").replaceAll("^/","");
                 Entry child = getEntryManager().findEntryWithName(request,
                                   parentEntry, name);
                 if (child == null) {
