@@ -157,15 +157,16 @@ public class HtmlImportHandler extends ImportHandler {
                 if ( !getActionManager().getActionOk(actionId)) {
                     return false;
                 }
+		String name = link.getLabel().trim();
+		name  = name.replaceAll("/$","").name.replaceAll("^/","");
                 Entry child = getEntryManager().findEntryWithName(request,
-                                  parentEntry, link.getLabel());
+                                  parentEntry, name);
                 if (child == null) {
                     child = getEntryManager().makeEntry(
                         request, new Resource(), parentEntry,
-                        link.getLabel(), "", request.getUser(),
+                        name, "", request.getUser(),
                         getRepository().getTypeHandler(
                             TypeHandler.TYPE_GROUP), null);
-                    //              System.err.println("new folder:" + child.getName());
                     getEntryManager().addNewEntry(request, child);
                 }
                 sb.append("<li>");

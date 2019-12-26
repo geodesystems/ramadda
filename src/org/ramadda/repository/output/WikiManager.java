@@ -3432,7 +3432,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             Hashtable mapProps = new Hashtable();
             String[]  mapArgs  = {
-                "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
+                "strokeColor", "fillColor", "fillOpacity", "scrollToZoom","boxColor",
                 "fill", "selectOnHover", "onSelect", "showDetailsLink",
                 "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
                 "kmlLayerName", "displayDiv", "initialBounds:bounds"

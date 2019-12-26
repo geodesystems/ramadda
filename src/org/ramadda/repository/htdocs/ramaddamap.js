@@ -151,7 +151,9 @@ function ramaddaMapShareState(source, state) {
 
 function RepositoryMap(mapId, params) {
     if (!params) params = {};
-    //    console.log("params:" + JSON.stringify(params));
+    this.params = params;
+//    console.log("params:" + JSON.stringify(params));
+
     this.mapId = mapId || "map";
     ramaddaMapAdd(this);
     let theMap = this;
@@ -3159,8 +3161,7 @@ function initMapFunctions(theMap) {
         for (var i in params) {
             args[i] = params[i];
         }
-	if(!args.color) args.color = this.defaultStyle.strokeColor||"blue";
-
+	if(!args.color) args.color = this.params.boxColor || "blue";
         var bounds = createBounds(west, Math.max(south, -mapDefaults.maxLatValue),
 				  east, Math.min(north, mapDefaults.maxLatValue));
         var projBounds = this.transformLLBounds(bounds);
