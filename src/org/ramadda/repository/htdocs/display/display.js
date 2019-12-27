@@ -281,21 +281,22 @@ function DisplayThing(argId, argProperties) {
             }
         },
         formatDateInner: function(date, args) {
-            if (this.dateFormat == "yyyy") {
+	    var fmt = this.getProperty("dateFormat");
+            if (fmt == "yyyy") {
                 return Utils.formatDateYYYY(date);
-            } else if (this.dateFormat == "yyyyMMdd") {
+            } else if (fmt == "yyyyMMdd") {
                 return Utils.formatDateYYYYMMDD(date);
-	    } else if (this.dateFormat == "yyyyMM") {
+	    } else if (fmt == "yyyyMM") {
                 return Utils.formatDateYYYYMM(date);
-	    } else if (this.dateFormat == "yearmonth") {
+	    } else if (fmt == "yearmonth") {
                 return Utils.formatDateYearMonth(date);
-	    } else if (this.dateFormat == "monthdayyear") {
+	    } else if (fmt == "monthdayyear") {
                 return Utils.formatDateMonthDayYear(date);
-	    } else if (this.dateFormat == "monthday") {
+	    } else if (fmt == "monthday") {
                 return Utils.formatDateMonthDay(date);
-	    } else if (this.dateFormat == "mdy") {
+	    } else if (fmt == "mdy") {
                 return Utils.formatDateMDY(date);
-	    } else if (this.dateFormat == "hhmm") {
+	    } else if (fmt == "hhmm") {
                 return Utils.formatDateHHMM(date);
 	    }
 

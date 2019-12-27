@@ -431,21 +431,22 @@ function DisplayThing(argId, argProperties) {
             }
         },
         formatDateInner: function(date, args) {
-            if (this.dateFormat == "yyyy") {
+	    var fmt = this.getProperty("dateFormat");
+            if (fmt == "yyyy") {
                 return Utils.formatDateYYYY(date);
-            } else if (this.dateFormat == "yyyyMMdd") {
+            } else if (fmt == "yyyyMMdd") {
                 return Utils.formatDateYYYYMMDD(date);
-	    } else if (this.dateFormat == "yyyyMM") {
+	    } else if (fmt == "yyyyMM") {
                 return Utils.formatDateYYYYMM(date);
-	    } else if (this.dateFormat == "yearmonth") {
+	    } else if (fmt == "yearmonth") {
                 return Utils.formatDateYearMonth(date);
-	    } else if (this.dateFormat == "monthdayyear") {
+	    } else if (fmt == "monthdayyear") {
                 return Utils.formatDateMonthDayYear(date);
-	    } else if (this.dateFormat == "monthday") {
+	    } else if (fmt == "monthday") {
                 return Utils.formatDateMonthDay(date);
-	    } else if (this.dateFormat == "mdy") {
+	    } else if (fmt == "mdy") {
                 return Utils.formatDateMDY(date);
-	    } else if (this.dateFormat == "hhmm") {
+	    } else if (fmt == "hhmm") {
                 return Utils.formatDateHHMM(date);
 	    }
 
@@ -17367,7 +17368,9 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Percent change Attributes",
-					'template="${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}"'
+					'template="${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}"',
+					'fieldLabel=""',
+					'sortFields=false'
 				    ]);
 	},
 	updateUI: function() {
@@ -17405,10 +17408,10 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		html= headerTemplate;
 	    } else {
 		html = "<br>";		
-		html += HtmlUtils.openTag("table", ["class", "nowrap ramadda-table", "id", this.getDomId("percentchange")]);
+		html += HtmlUtils.openTag("table", ["class", "stripe nowrap ramadda-table", "id", this.getDomId("percentchange")]);
 		html += HtmlUtils.openTag("thead", []);
 		html += "\n";
-		html += HtmlUtils.tr([], HtmlUtils.th(["style","text-align:center"], "Field") + HtmlUtils.th(["style","text-align:center"], label1) + HtmlUtils.th(["style","text-align:center"], label2)
+		html += HtmlUtils.tr([], HtmlUtils.th(["style","text-align:center"], this.getProperty("fieldLabel", "Field")) + HtmlUtils.th(["style","text-align:center"], label1) + HtmlUtils.th(["style","text-align:center"], label2)
 				     + HtmlUtils.th(["style","text-align:center"], "Percent Change"));
 		html += HtmlUtils.closeTag("thead");
 		html += HtmlUtils.openTag("tbody", []);
@@ -17421,9 +17424,11 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		tuples.push({field:f,val1:val1,val2:val2,percent:percent});
 	    });
 
-	    tuples.sort((a,b)=>{
-		return -(a.percent-b.percent);
-	    })
+	    if(this.getProperty("sortFields",true)) {
+		tuples.sort((a,b)=>{
+		    return -(a.percent-b.percent);
+		})
+	    }
 	    tuples.map(t=>{
 		if(template) {
 		    var h = template.replace("${field}", t.field.getLabel()).replace("${value1}",this.formatNumber(t.val1)).replace("${value2}",this.formatNumber(t.val2)).replace("${percent}",this.formatNumber(t.percent)).replace("${date1}",label1).replace("${date2}",label2).replace("${difference}", this.formatNumber(t.val2-t.val1));

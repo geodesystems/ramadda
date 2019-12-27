@@ -790,7 +790,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return getEntryManager().getEntryFromAlias(request, alias);
         }
 
-
         if (entryId.startsWith("child:")) {
             String tok = entryId.substring("child:".length());
             if (tok.startsWith("type:")) {
