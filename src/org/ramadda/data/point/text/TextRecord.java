@@ -529,8 +529,13 @@ public class TextRecord extends DataRecord {
             return null;
         }
         String sfmt = field.getSDateFormat();
-        if ((sfmt != null) && sfmt.equals("SSS")) {
-            return new Date(new Long(tok));
+	if(sfmt!=null) {
+	    if (sfmt.equals("SSS")) {
+		return new Date(new Long(tok));
+	    } else if(sfmt.equals("yyyy")) {
+		return yearFormat.parse(tok+"-06");
+		//
+	    }
         }
 
         Date date   = null;
@@ -564,6 +569,9 @@ public class TextRecord extends DataRecord {
         return date;
     }
 
+
+
+    private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy-MM");
 
 
     /**

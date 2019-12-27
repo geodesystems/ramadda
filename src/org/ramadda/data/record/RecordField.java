@@ -148,6 +148,7 @@ public class RecordField {
     /** _more_          */
     private String sDateFormat;
 
+
     /** _more_ */
     private int utcOffset = 0;
 
