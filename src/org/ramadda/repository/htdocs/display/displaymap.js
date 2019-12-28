@@ -1224,11 +1224,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 //console.log("points.length==0");
 		//                return;
             }
+	    var t1= new Date();
             this.addPoints(records,fields,points);
+	    var t2= new Date();
+//	    Utils.displayTimes("time",[t1,t2]);
             this.addLabels(records,fields,points);
             this.applyVectorMap();
 	},
-
         addPoints: function(records, fields, points) {
 	    var cidx=0
 	    var polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
@@ -1435,15 +1437,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		strokeWidth: this.getProperty("pathWidth",1)
 	    };
 
-
-
+	    var fillColor = this.getProperty("fillColor");
+	    var fillOpacity =  this.getProperty("fillOpacity",0.8);
+	    var isPath = this.getProperty("isPath", false);
+	    var showSegments = this.getProperty("showSegments", false);
+	    var tooltip = this.getProperty("tooltip");
+	    var highlight = this.getProperty("highlight");
+	    var addedPoints = [];
             for (var i = 0; i < records.length; i++) {
                 var record = records[i];
                 var tuple = record.getData();
 		if(!record.point)
                     record.point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
 		var point = record.point;
-                if(justOneMarker) {
+
+		if(justOneMarker) {
                     if(this.justOneMarker)
                         this.map.removeMarker(this.justOneMarker);
                     if(!isNaN(point.x) && !isNaN(point.y)) {
@@ -1454,16 +1462,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 }
 
-
-
                 var values = record.getData();
                 var props = {
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
                     strokeColor: strokeColor,
-		    fillColor: this.getProperty("fillColor"),
-		    fillOpacity: this.getProperty("fillOpacity",0.8)
+		    fillColor: fillColor,
+		    fillOpacity: fillOpacity
                 };
+
 
 		if(shapeBy.field) {
 		    var gv = values[shapeBy.index];
@@ -1482,10 +1489,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 		    }
 		}
-
-
-
-
                 if (sizeBy.index >= 0) {
                     var value = values[sizeBy.index];
                     if (sizeBy.isString) {
@@ -1531,9 +1534,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colorByColor = props.fillColor = colorBy.getColor(value, record);
                 }
 
-		var tooltip = this.getProperty("tooltip");
-		var highlight = this.getProperty("highlight");
-                var html = this.getRecordHtml(record, fields,tooltip);
+                var html = this.getRecordHtml(record, fields, tooltip);
 		if(polygonField) {
 		    var s = values[polygonField.getIndex()];
 		    var delimiter;
@@ -1573,17 +1574,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			this.lines.push(poly);
 		    }
-
-
-
-
 		}
 
 
-		var isPath = this.getProperty("isPath", false);
-
-
-		var showSegments = this.getProperty("showSegments", false);
                 if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
                     var lat1 = values[latField1.getIndex()];
                     var lat2 = values[latField2.getIndex()];
@@ -1616,11 +1609,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     }
 		}
-
                 if (showPoints) {
                     //We do this because openlayers gets really slow when there are lots of features at one point
-                    if (!Utils.isDefined(seen[point])) seen[point] = 0;
-                    if (seen[point] > 500) continue;
+		    //                    if (!Utils.isDefined(seen[point])) seen[point] = 0;
+		    if (!seen[point]) seen[point] = 0;
+                    if (seen[point] > 500) {
+			continue;
+		    }
                     seen[point]++;
 		    var mapPoint=null;
 		    if(iconField) {
@@ -1639,17 +1634,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } else {
 			if(!props.graphicName)
 			    props.graphicName = this.getProperty("shape","circle");
-			if(radius>0)
+			if(radius>0) {
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
+			}
 		    }
-
-
 
 		    if(isPath && lastPoint) {
 			this.lines.push(this.map.addLine("line-" + i, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs));
 		    }
 		    lastPoint = point;
-
 
                     var date = record.getDate();
 		    if(mapPoint) {

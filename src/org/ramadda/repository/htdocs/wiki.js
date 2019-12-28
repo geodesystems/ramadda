@@ -283,7 +283,7 @@ function wikiInitEditor(info) {
 				tags = display.getWikiEditorTags();
 			    }
 			} catch(e) {
-			    console.log("Error getting tags for:" + type +" error:" + e);
+			    console.log("Error getting tags for:" + type +" error:" + e  + " stack:" +e.stack);
 			}
 			extra = "<td><div class=wiki-editor-popup-header>Color Table</div><div class=wiki-editor-popup-items>"
 			for (a in Utils.ColorTables) {

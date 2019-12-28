@@ -3256,6 +3256,8 @@ function initMapFunctions(theMap) {
     },
 
 
+    theMap.basePointStyle = null;
+    
     theMap.addPoint = function(id, point, attrs, text, notReally) {
         //Check if we have a LonLat instead of a Point
         var location = point;
@@ -3266,24 +3268,24 @@ function initMapFunctions(theMap) {
         }
 
         var _this = this;
-
-        var cstyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
-        $.extend(cstyle, {
-            pointRadius: 5,
-            stroke: true,
-            strokeColor: "red",
-            strokeWidth: 0,
-            strokeOpacity: 0.75,
-            fill: true,
-            fillColor: "blue",
-            fillOpacity: 0.75,
-        });
-
+	if(!this.basePointStyle) {
+	    this.basePointStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
+            $.extend(this.basePointStyle, {
+		pointRadius: 5,
+		stroke: true,
+		strokeColor: "red",
+		strokeWidth: 0,
+		strokeOpacity: 0.75,
+		fill: true,
+		fillColor: "blue",
+		fillOpacity: 0.75,
+            });
+	}
+        var cstyle = $.extend({},this.basePointStyle);
         if (attrs) {
             $.extend(cstyle, attrs);
             if (cstyle.pointRadius <= 0) cstyle.pointRadius = 1;
         }
-
         if (cstyle.fillColor == "" || cstyle.fillColor == "none") {
             cstyle.fillOpacity = 0.0;
         }
@@ -3295,10 +3297,6 @@ function initMapFunctions(theMap) {
         center.transform(this.displayProjection, this.sourceProjection);
 	//	    cstyle.graphicName = "triangle";
         var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
-	
-
-
-
         feature.center = center;
         feature.ramaddaId = id;
         feature.text = this.getPopupText(text, feature);
@@ -3335,7 +3333,7 @@ function initMapFunctions(theMap) {
                   sf.activate();
                 */
             }
-            this.circles.addFeatures([feature]);
+	    this.circles.addFeatures([feature]);
         }
         return feature;
     }

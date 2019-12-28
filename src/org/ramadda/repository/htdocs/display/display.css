@@ -1652,6 +1652,27 @@ margin-bottom:10px;
 text-align:center;
 }
 
+.display-frequency-banner {
+}
+
+
+.display-frequency-banner-element {
+    display: inline-block;
+    margin:2px;
+    padding:5px;
+    text-align:center;
+    border: 1px solid rgba(0,0,0,0);
+
+}
+.display-frequency-banner-element:hover {
+    border: 1px solid #ccc;
+    cursor:pointer;
+}
+
+.display-frequency-banner-element-selected {
+    background:#efefef;
+}
+
 .display-frequency-table {
   margin:5px;
   vertical-align:top;

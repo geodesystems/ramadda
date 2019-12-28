@@ -519,7 +519,7 @@ function DisplayManager(argId, argProperties) {
     var displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
     var html = HtmlUtils.openTag(TAG_DIV);
     html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
-    if(argProperties.entryCollection) {
+    if(argProperties && argProperties.entryCollection) {
 	let entries = argProperties.entryCollection.split(",");
 	let enums = [];
 	entries.map(t=>{

@@ -2222,8 +2222,14 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 					"label:Frequency Attributes",
 					'orientation="vertical"',
 					'tableHeight="300px"',
+					'showPercent=false',
+					'showCount=false',
 					'showBars=true',
-					'barWidth=200'
+					'showBars=false',
+					'showHeader=false',
+					'banner=true',
+					'barWidth=200',
+					'clickFunction=selectother'
 				    ]);
 	},
 
@@ -2285,7 +2291,9 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
                 }
 	    }
 	    var html = "";
+	    var bannerHtml = "";
 	    for (var col = 0; col < fields.length; col++) {
+		bannerHtml += "<div style='text-align:center;'>";
 		var f = fields[col];
 		var s = summary[f.getId()];
 		//		if(col>0) html+="<br>";
@@ -2355,6 +2363,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		}
 
 		var hor = this.getProperty("orientation","") != "vertical";
+		var doBanner = this.getProperty("banner",false);
 		if(this.getProperty("floatTable") !=null) {
 		    hor = this.getProperty("floatTable")==true;
 		}
@@ -2372,8 +2381,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    html += HtmlUtils.tr([], HtmlUtils.th(["xxwidth","60%"],  label+ count+ percent+bars));
 		    html += HtmlUtils.closeTag("thead");
 		}
-		html += HtmlUtils.openTag("tbody", []);
 
+		html += HtmlUtils.openTag("tbody", []);
 		var colors = this.getColorTable(true);
 		var dfltColor = this.getProperty("barColor","blue");
 		if(colors) {
@@ -2386,8 +2395,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    }
 		}
 
-
-		if(!f.isNumeric()) {
+	    	if(!f.isNumeric()) {
 		    s.values.sort((a,b)=>{
 			if(a.count<b.count) return 1;
 			if(a.count>b.count) return -1;
@@ -2409,32 +2417,48 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    if(label=="") label="&lt;blank&gt;";
 		    var count = s.values[i].count;
 		    if(count==0) continue;
-		    value = value.replace(/\'/g,"&apos;");
-		    value = HtmlUtils.span(["title","Click to select","class","display-frequency-value","data-field",s.field.getId(),"data-value",value],label);
-		    var tdv = HtmlUtils.td([], value);
-		    var tdc =  (showCount?HtmlUtils.td(["align", "right"], count):"");
 		    var perc = count/s.total;
-		    var tdp =  showPercent?HtmlUtils.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
+		    value = value.replace(/\'/g,"&apos;");
+		    var countLabel = HtmlUtils.span(["title","Click to select","class","display-frequency-value","data-field",s.field.getId(),"data-value",value],count);
+		    value = HtmlUtils.span(["title","Click to select","class","display-frequency-value","data-field",s.field.getId(),"data-value",value],label);
 		    var color = s.values[i].color;
 		    if(!color) color = dfltColor;
-
+		    if(showPercent) countLabel+=" (" + Math.round(perc*100)+"%)";
+		    bannerHtml += HtmlUtils.div(["class", "display-frequency-banner-element"], value +"<br>" + countLabel);
+		    var tdv = HtmlUtils.td([], value);
+		    var tdc =  (showCount?HtmlUtils.td(["align", "right"], count):"");
+		    var tdp =  showPercent?HtmlUtils.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
 		    var bw = perc/maxPercent;
 		    var tdb = showBars?HtmlUtils.td(["valign","center","width",barWidth], HtmlUtils.div(["title",Math.round(perc*100)+"%","style","background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
 		    html += HtmlUtils.tr([], 
-					 tdv + tdc + tdp+tdb
+					 tdv + tdc + tdp + tdb
 					);
 		}
 		html += HtmlUtils.closeTag("tbody");
 		html += HtmlUtils.closeTag("table");
 		html += HtmlUtils.closeTag("div");
+		bannerHtml += "</div>";
 	    }
 
+	    if(doBanner) html = HtmlUtils.div(["class","display-frequency-banner"], bannerHtml);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-value").click(function(){
 		var click = _this.getProperty("clickFunction")
 		var value = $(this).attr("data-value");
 		var fieldId = $(this).attr("data-field");
+		var parent = $(this).parent();
+		if(parent.hasClass("display-frequency-banner-element")) {
+		    var banner = parent.parent();
+		    var isSelected = parent.hasClass("display-frequency-banner-element-selected");
+		    banner.find(".display-frequency-banner-element").removeClass("display-frequency-banner-element-selected");
+		    if(!isSelected) {
+			parent.addClass("display-frequency-banner-element-selected");
+		    } else {
+			parent.removeClass("display-frequency-banner-element-selected");
+			value = FILTER_ALL;
+		    }
+		}
 		if(!click || click =="select") {
 		    _this.handleEventPropertyChanged(_this,{
 			property: "pattern",
