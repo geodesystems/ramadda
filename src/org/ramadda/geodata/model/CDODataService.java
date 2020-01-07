@@ -1747,7 +1747,7 @@ public abstract class CDODataService extends Service {
         }
         Request newRequest = request.cloneMe();
         String eventString =
-            newRequest.getString(ClimateModelApiHandler.ARG_EVENT);
+            newRequest.getSanitizedString(ClimateModelApiHandler.ARG_EVENT, "");
         if (eventString == null) {
             return request;
         }

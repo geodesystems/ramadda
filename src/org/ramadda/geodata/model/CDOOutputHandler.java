@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2020 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -617,14 +617,14 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                       msgLabel("Period")
                                       + HtmlUtils.select(ARG_CDO_PERIOD,
                                               PERIOD_TYPES,
-                                              request.getString(
+                                              request.getSanitizedString(
                                               ARG_CDO_PERIOD,
                                                       null)) + HtmlUtils.space(
                                                       3) + msgLabel("Type")
                                                           + HtmlUtils.select(
                                                               ARG_CDO_STAT,
                                                                       STAT_TYPES,
-                                                                      request.getString(
+                                                                      request.getSanitizedString(
                                                                       ARG_CDO_STAT,
                                                                               null))));
     }
@@ -699,7 +699,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                 }
                 varsb.append(HtmlUtils.select(levelArg,
                         levels,
-                        request.getString(levelArg, null)));
+                        request.getSanitizedString(levelArg, null)));
                 varsb.append(HtmlUtils.space(2));
             } else {
                 int lev = (int) zAxis.getCoordValue(0);
@@ -729,7 +729,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         sb.append(HtmlUtils.formEntry(msgLabel("Months"),
                                       HtmlUtils.select(ARG_CDO_OPERATION,
                                               INFO_TYPES,
-                                              request.getString(
+                                              request.getSanitizedString(
                                               ARG_CDO_OPERATION,
                                                       null))));
     }
@@ -771,7 +771,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             Calendar     cal = cd.getCalendar();
             if (cal != null) {
                 sb.append(HtmlUtils.hidden(CdmDataOutputHandler.ARG_CALENDAR,
-                                           request.getString(
+                                           request.getSanitizedString(
                                            CdmDataOutputHandler.ARG_CALENDAR,
                                            cal.toString())));
             }
@@ -878,8 +878,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         monthsSB.append(msgLabel("Start"));
         monthsSB.append(HtmlUtils.select(ARG_CDO_STARTMONTH,
                                          MONTHS,
-                                         request.getString(ARG_CDO_STARTMONTH,
-                                                 null),
+                                         request.getSanitizedString(
+                                             ARG_CDO_STARTMONTH,
+                                             null),
                                          HtmlUtils.title(
                                              "Select the starting month")));
         monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
@@ -889,8 +890,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         monthsSB.append(msgLabel("End"));
         monthsSB.append(HtmlUtils.select(ARG_CDO_ENDMONTH,
                                          MONTHS,
-                                         request.getString(ARG_CDO_ENDMONTH,
-                                                 null),
+                                         request.getSanitizedString(
+                                             ARG_CDO_ENDMONTH,
+                                             null),
                                          HtmlUtils.title(
                                              "Select the ending month")));
         monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // col
@@ -921,7 +923,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                       msgLabel("Start")
                                       + HtmlUtils.select(ARG_CDO_STARTMONTH,
                                               MONTHS,
-                                              request.getString(
+                                              request.getSanitizedString(
                                               ARG_CDO_STARTMONTH,
                                                       null),
                                               HtmlUtils.title(
@@ -930,7 +932,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                                       + HtmlUtils.select(
                                                           ARG_CDO_ENDMONTH,
                                                                   MONTHS,
-                                                                  request.getString(
+                                                                  request.getSanitizedString(
                                                                   ARG_CDO_ENDMONTH,
                                                                           null),
                                                                   HtmlUtils.title(
@@ -956,14 +958,14 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                       msgLabel("Start")
                                       + HtmlUtils.select(ARG_CDO_STARTMONTH,
                                               SHORT_MONTHS,
-                                              request.getString(
+                                              request.getSanitizedString(
                                               ARG_CDO_STARTMONTH,
                                                       null),
                                               HtmlUtils.title(
                                               "Select the starting month")) + HtmlUtils.select(
                                                   ARG_CDO_STARTDAY,
                                                           DAYS,
-                                                          request.getString(
+                                                          request.getSanitizedString(
                                                           ARG_CDO_STARTDAY,
                                                                   null),
                                                           HtmlUtils.title(
@@ -972,14 +974,14 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                                                   "End") + HtmlUtils.select(
                                                                       ARG_CDO_ENDMONTH,
                                                                               SHORT_MONTHS,
-                                                                              request.getString(
+                                                                              request.getSanitizedString(
                                                                               ARG_CDO_ENDMONTH,
                                                                                       null),
                                                                               HtmlUtils.title(
                                                                               "Select the ending month")) + HtmlUtils.select(
                                                                                   ARG_CDO_ENDDAY,
                                                                                           DAYS,
-                                                                                          request.getString(
+                                                                                          request.getSanitizedString(
                                                                                           ARG_CDO_ENDDAY,
                                                                                                   null),
                                                                                           HtmlUtils.title(
@@ -1028,7 +1030,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                       msgLabel("Start")
                                       + HtmlUtils.select(ARG_CDO_STARTYEAR,
                                               years,
-                                              request.getString(
+                                              request.getSanitizedString(
                                               ARG_CDO_STARTYEAR,
                                                       years.get(0)),
                                               HtmlUtils.title(
@@ -1037,7 +1039,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                                       + HtmlUtils.select(
                                                           ARG_CDO_ENDYEAR,
                                                                   years,
-                                                                  request.getString(
+                                                                  request.getSanitizedString(
                                                                   ARG_CDO_ENDYEAR,
                                                                           years.get(
                                                                           endYearSelect)),
@@ -1105,7 +1107,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         }
 
         map.setMapRegions(getPageHandler().getMapRegions(mapRegionGroup));
-        map.setDefaultMapRegion(request.getString("mapregion", null));
+        map.setDefaultMapRegion(request.getSanitizedString("mapregion",
+                null));
 
         //map.addBox("", "", llr, new MapBoxProperties("blue", false, true));
         String[] points = new String[] { "" + llr.getLatMax(),

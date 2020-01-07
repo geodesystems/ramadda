@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2020 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -273,7 +273,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
         sb.append(HtmlUtils.formEntry(Repository.msgLabel("Color"),
                                       HtmlUtils.select(ARG_NCL_LINECOLOR,
                                               lineColors,
-                                              request.getString(
+                                              request.getSanitizedString(
                                               ARG_NCL_LINECOLOR,
                                                       "Gray"),
                                               Integer.MAX_VALUE)));
@@ -300,10 +300,11 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
             HtmlUtils.formEntry(Repository.msgLabel("Running<br>Average"),
                                 HtmlUtils.select(ARG_NCL_NAVE,
                                         periods,
-                                        request.getString(ARG_NCL_NAVE,
-                                                "5"),
-                                        Integer.MAX_VALUE) + HtmlUtils.space(
-                                            1) + "years"));
+                                        request.getSanitizedString(
+                                            ARG_NCL_NAVE,
+                                            "5"),
+                                        Integer.MAX_VALUE) + HtmlUtils.space(1)
+                                        + "years"));
 
         sb.append(HtmlUtils.formTableClose());
 

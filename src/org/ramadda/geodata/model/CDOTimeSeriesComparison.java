@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2020 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -251,7 +251,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
             msgLabel("Start")
             + HtmlUtils.select(CDOOutputHandler.ARG_CDO_STARTMONTH + opStr,
                                TSMONTHS,
-                               request.getString(
+                               request.getSanitizedString(
                                    CDOOutputHandler.ARG_CDO_STARTMONTH
                                    + opStr,
                                    null),
@@ -262,7 +262,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                            CDOOutputHandler.ARG_CDO_ENDMONTH
                                                + opStr,
                                            TSMONTHS,
-                                           request.getString(
+                                           request.getSanitizedString(
                                            CDOOutputHandler.ARG_CDO_ENDMONTH
                                            + opStr,
                                            null),
@@ -313,7 +313,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                     sb.append(
                                         HtmlUtils.hidden(
                                             CdmDataOutputHandler.ARG_CALENDAR,
-                                            request.getString(
+                                            request.getSanitizedString(
                                             CdmDataOutputHandler.ARG_CALENDAR,
                                             calString)));
                                 }
@@ -382,10 +382,10 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                           CDOOutputHandler.ARG_CDO_STARTYEAR
                                           + yearNum,
                                           commonYears,
-                                          request.getString(
+                                          request.getSanitizedString(
                                           CDOOutputHandler.ARG_CDO_STARTYEAR
                                           + yearNum,
-                                          request.getString(
+                                          request.getSanitizedString(
                                           CDOOutputHandler.ARG_CDO_STARTYEAR,
                                           commonYears.get(0))),
                                           HtmlUtils.title(
@@ -395,10 +395,10 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                                       CDOOutputHandler.ARG_CDO_ENDYEAR
                                                           + yearNum,
                                                               commonYears,
-                                                              request.getString(
+                                                              request.getSanitizedString(
                                                               CDOOutputHandler
                                                                   .ARG_CDO_ENDYEAR + yearNum,
-                                                                      request.getString(
+                                                                      request.getSanitizedString(
                                                                       CDOOutputHandler
                                                                           .ARG_CDO_ENDYEAR,
                                                                               commonYears.get(
