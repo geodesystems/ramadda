@@ -139,10 +139,8 @@ Data courtesy of
   <type name="type_sounding_frd"  description="FRD Sounding" super="type_sounding"  foruser="true"  pattern=".*\.frd">
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="icon" value="/point/noaa.gif"/>
-<!--gAircraft: Gulfstream G-IV SP, N49RF         Date: 160920   Time: 183229 UTC -->
      <property name="record.patterns" value="latitude:Lat: *(-?[\d\.]+ (N|S)),longitude:Lon: *(-?[\d\.]+ (E|W)),time:Time: *([^ ]+),date:Date: *([^ ]+) ,sonde:Sonde: *([0-9]+),aircraft:Aircraft: *(.*?)Date:,bias_corrections: Bias corrections: *(.*),filters:Filters.*?:(.*),comment:COMMENT:(.*)"/>
      <property name="record.pattern.date.format" value="yyMMdd hhmmss"/>
-     <property name="xxxnameTemplate" value="Sounding - ${station_id} ${date}"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
      <property name="map.chart.type" value="skewt"/>
