@@ -1529,8 +1529,11 @@ public class HtmlUtils {
     }
 
 
-    private static boolean   debug1      = false;
-    private static boolean   debug2      = false;
+    /** _more_          */
+    private static boolean debug1 = false;
+
+    /** _more_          */
+    private static boolean debug2 = false;
 
     /**
      * _more_
@@ -1567,6 +1570,7 @@ public class HtmlUtils {
                 }
                 if (c == '=') {
                     mode = MODE_VALUE;
+
                     continue;
                 }
                 nb.append(c);
@@ -1574,16 +1578,19 @@ public class HtmlUtils {
                     System.err.println("start:" + nb);
                 }
                 mode = MODE_NAME;
+
                 continue;
             }
 
             if (mode == MODE_NAME) {
                 if (c == ' ') {
                     mode = MODE_EQUALS;
+
                     continue;
                 }
                 if (c == '=') {
                     mode = MODE_VALUE;
+
                     continue;
                 }
                 nb.append(c);
@@ -1601,7 +1608,9 @@ public class HtmlUtils {
                 }
                 String name = nb.toString().trim();
                 if (name.length() > 0) {
-		    if (debug1) System.err.println("PROP:" + name +"=" + ";");
+                    if (debug1) {
+                        System.err.println("PROP:" + name + "=" + ";");
+                    }
                     properties.put(name, "");
                 }
                 nb = new StringBuilder();
@@ -1619,10 +1628,12 @@ public class HtmlUtils {
                 }
                 if (c == '"') {
                     mode = MODE_VALUE_QUOTE;
+
                     continue;
                 }
                 mode = MODE_VALUE_NOQUOTE;
                 vb.append(c);
+
                 continue;
             }
             if (mode == MODE_VALUE_QUOTE) {
@@ -1630,11 +1641,15 @@ public class HtmlUtils {
                     mode = MODE_START;
                     String name = nb.toString().trim();
                     if (name.length() > 0) {
-			if (debug1) System.err.println("PROP:" + name +"=" + vb+";");
+                        if (debug1) {
+                            System.err.println("PROP:" + name + "=" + vb
+                                    + ";");
+                        }
                         properties.put(name.trim(), vb.toString());
                     }
                     nb = new StringBuilder();
                     vb = new StringBuilder();
+
                     continue;
                 }
                 vb.append(c);
@@ -1646,11 +1661,14 @@ public class HtmlUtils {
             }
 
             if (mode == MODE_VALUE_NOQUOTE) {
-                if (c == ' ' || c == '\n') {
+                if ((c == ' ') || (c == '\n')) {
                     mode = MODE_START;
                     String name = nb.toString();
                     if (name.length() > 0) {
-			if (debug1) System.err.println("PROP:" + name +"=" + vb+";");
+                        if (debug1) {
+                            System.err.println("PROP:" + name + "=" + vb
+                                    + ";");
+                        }
                         properties.put(name.trim(), vb.toString());
                     }
                     nb = new StringBuilder();
@@ -1670,11 +1688,13 @@ public class HtmlUtils {
         }
         String name = nb.toString();
         if (name.length() > 0) {
-	    if (debug1) System.err.println("PROP:" + name +"=" + vb+";");
+            if (debug1) {
+                System.err.println("PROP:" + name + "=" + vb + ";");
+            }
             properties.put(name.trim(), vb.toString());
         }
         if (debug1) {
-	    //            System.err.println("props:" + properties);
+            //            System.err.println("props:" + properties);
         }
 
 
@@ -2309,7 +2329,7 @@ public class HtmlUtils {
     public static void arg(Appendable sb, Object name, Object value,
                            boolean encodeArg) {
         try {
-            sb.append(name.toString());
+            sb.append(sanitizeArg(name.toString()));
             sb.append("=");
             sb.append((encodeArg
                        ? java.net.URLEncoder.encode(value.toString(), "UTF-8")
@@ -5216,8 +5236,8 @@ public class HtmlUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	debug1 = true;
-	parseHtmlProperties("multi=2  \n   z= \"1\" template=\"x\ny\"");
+        debug1 = true;
+        parseHtmlProperties("multi=2  \n   z= \"1\" template=\"x\ny\"");
 
         if (true) {
             return;
@@ -5568,10 +5588,23 @@ public class HtmlUtils {
             return extractLinksFtp(url, linkPattern);
         }
         String html = Utils.readUrl(url.toString());
-	return extractLinks(url, html, linkPattern);
+
+        return extractLinks(url, html, linkPattern);
     }
 
-    public static List<Link> extractLinks(URL url, String html, String linkPattern)
+    /**
+     * _more_
+     *
+     * @param url _more_
+     * @param html _more_
+     * @param linkPattern _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static List<Link> extractLinks(URL url, String html,
+                                          String linkPattern)
             throws Exception {
         List<Link> links = new ArrayList<Link>();
         String pattern =
@@ -5580,7 +5613,7 @@ public class HtmlUtils {
         html = html.replaceAll("\t", " ");
         //<a target="_blank" title="/gov/data/GISDLData/Footprints.kmz" href="/gov/data/GISDLData/Footprints.kmz">KMZ</a>
         Matcher matcher = Pattern.compile(pattern).matcher(html);
-	//	System.err.println("pattern:" + linkPattern);
+        //      System.err.println("pattern:" + linkPattern);
         while (matcher.find()) {
             String href = matcher.group(2);
             href = href.replaceAll(" ", "");
@@ -5588,7 +5621,7 @@ public class HtmlUtils {
 
             label = StringUtil.stripTags(label).trim();
             if (linkPattern != null) {
-		//		System.err.println("\tHREF:" + href +" matches:" + href.matches(linkPattern));
+                //              System.err.println("\tHREF:" + href +" matches:" + href.matches(linkPattern));
                 if ( !(href.matches(linkPattern)
                         || label.matches(linkPattern))) {
                     continue;
@@ -5712,21 +5745,35 @@ public class HtmlUtils {
             return url;
         }
 
-	@Override
-	public int hashCode() {
-	    return url.hashCode();
-	}
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public int hashCode() {
+            return url.hashCode();
+        }
 
-	@Override
-	public boolean equals(Object o) {
-	    if(!(o instanceof Link)) {
-		System.err.println("not a link");
-		return false;
-	    }
-	    Link that =(Link) o;
-	    //	    System.err.println("link:" + url +"  other:" + that.getUrl() +" " +url.equals(that.getUrl()));
-	    return url.equals(that.getUrl());
-	}
+        /**
+         * _more_
+         *
+         * @param o _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean equals(Object o) {
+            if ( !(o instanceof Link)) {
+                System.err.println("not a link");
+
+                return false;
+            }
+            Link that = (Link) o;
+
+            //      System.err.println("link:" + url +"  other:" + that.getUrl() +" " +url.equals(that.getUrl()));
+            return url.equals(that.getUrl());
+        }
 
         /**
          *  Set the Label property.
@@ -5970,10 +6017,36 @@ public class HtmlUtils {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static String sanitizeString(String s) {
-	if(s==null)return null;
-	s = s.replaceAll("<","&lt;").replaceAll(">","&gt;");
-	return s;
+        if (s == null) {
+            return null;
+        }
+        s = s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+
+        return s;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static String sanitizeArg(String s) {
+        if (s == null) {
+            return null;
+        }
+
+        return sanitizeString(s).replaceAll("\"", "_");
     }
 
 }

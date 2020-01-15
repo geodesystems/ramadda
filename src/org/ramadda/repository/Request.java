@@ -956,7 +956,7 @@ public class Request implements Constants, Cloneable {
                     if (cnt++ > 0) {
                         sb.append("&");
                     }
-                    sb.append(arg + "=" + svalue);
+                    HtmlUtils.arg(sb, arg, svalue, true);
                 }
 
                 continue;
@@ -972,11 +972,11 @@ public class Request implements Constants, Cloneable {
                 svalue = java.net.URLEncoder.encode(svalue, "UTF-8");
             } catch (Exception exc) {  /*noop*/
             }
-            sb.append(arg + "=" + svalue);
+            HtmlUtils.arg(sb, arg, svalue, true);
         }
+        String s = sb.toString();
 
-	String s =  sb.toString();
-	return HtmlUtils.sanitizeString(s);
+        return HtmlUtils.sanitizeString(s);
     }
 
 
@@ -1622,14 +1622,23 @@ public class Request implements Constants, Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public String getSanitizedString(String key, String dflt) {
         if (checker == null) {
             //Don't run the checker for now
             //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
 
-        String s =  getCheckedString(key, dflt, checker);
-	return  HtmlUtils.sanitizeString(s);
+        String s = getCheckedString(key, dflt, checker);
+
+        return HtmlUtils.sanitizeString(s);
     }
 
 
