@@ -4742,7 +4742,9 @@ public class TypeHandler extends RepositoryManager {
     public void addReadOnlyWikiEditor(Request request, Entry entry,
                                       Appendable sb, String text)
             throws Exception {
-        addWikiEditor(request, entry, sb, null, "", "", text, null, true, 0);
+        String dummyId = Utils.getGuid();
+        addWikiEditor(request, entry, sb, null, dummyId, "", text, null,
+                      true, 0);
     }
 
 
