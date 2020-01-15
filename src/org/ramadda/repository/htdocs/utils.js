@@ -1626,7 +1626,7 @@ var HtmlUtils = {
     div: function(attrs, inner) {
         return this.tag("div", attrs, inner);
     },
-    center: function(inner) {
+    center: function(inner, attrs) {
         return this.tag("center", attrs, inner);
     },
     span: function(attrs, inner) {

@@ -88,7 +88,7 @@ function DisplayManager(argId, argProperties) {
     var ID_MENU_CONTAINER = "menu_container";
     var ID_MENU_OUTER = "menu_outer";
     var ID_MENU_INNER = "menu_inner";
-    var ID_ENTRIES_MENU = "entries_menu";
+
 
     RamaddaUtil.inherit(this, this.SUPER = new DisplayThing(argId, argProperties));
     addRamaddaDisplay(this);
@@ -501,16 +501,13 @@ function DisplayManager(argId, argProperties) {
             this.getLayoutManager().removeDisplay(display);
             this.notifyEvent("handleEventRemoveDisplay", this, display);
         },
-	handleEntryMenu: async function(entryId) {
-            await getGlobalRamadda().getEntry(entryId, e => {
-		var displays = this.getLayoutManager().getDisplays();
-		for (var i = 0; i < displays.length; i++) {
-		    var display = displays[i];
-		    display.setEntry(e);
-		}
-	    });
-
-	}
+	setEntry: function(entry) {
+	    var displays = this.getLayoutManager().getDisplays();
+	    for (var i = 0; i < displays.length; i++) {
+		var display = displays[i];
+		display.setEntry(entry);
+	    }
+	},
     });
 
     addDisplayManager(this);
@@ -519,15 +516,7 @@ function DisplayManager(argId, argProperties) {
     var displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
     var html = HtmlUtils.openTag(TAG_DIV);
     html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
-    if(argProperties && argProperties.entryCollection) {
-	let entries = argProperties.entryCollection.split(",");
-	let enums = [];
-	entries.map(t=>{
-	    var toks = t.split(":");
-	    enums.push([toks[0],toks[1]]);
-	});
-	html += (argProperties.changeEntriesLabel||"Change Entry: ") + HtmlUtils.select("",[ATTR_ID, this.getDomId(ID_ENTRIES_MENU)],enums);
-    }
+    html +=  this.getEntriesMenu(argProperties);
 
     //    html += this.makeMainMenu();
     if(this.getShowMenu()) {
@@ -547,11 +536,7 @@ function DisplayManager(argId, argProperties) {
     }
     html += HtmlUtils.closeTag(TAG_DIV);
     $("#" + this.getId()).html(html)
-    this.jq(ID_ENTRIES_MENU).change(e=>{
-	var entry = this.jq(ID_ENTRIES_MENU).val();
-	this.handleEntryMenu(entry);
-    });
-
+    this.initializeEntriesMenu();
 
     if (this.showmap) {
         this.createDisplay('map');

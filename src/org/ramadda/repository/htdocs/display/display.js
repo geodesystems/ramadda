@@ -150,8 +150,13 @@ function removeRamaddaDisplay(id) {
     }
 }
 
+const ID_ENTRIES_MENU = "entries_menu";
+const ID_ENTRIES_PREV = "entries_prev";
+const ID_ENTRIES_NEXT = "entries_next";
 
 function DisplayThing(argId, argProperties) {
+
+
     if (argProperties == null) {
         argProperties = {};
     }
@@ -208,6 +213,57 @@ function DisplayThing(argId, argProperties) {
         removeDisplay: function() {
 	    if(this.dialogElement)  this.dialogElement.remove();
         },
+	setEntry: function(entry) {
+	},
+	handleEntryMenu: async function(entryId) {
+            await getGlobalRamadda().getEntry(entryId, e => {
+		this.setEntry(e);
+	    });
+
+	},
+	getEntriesMenu: function(argProperties) {
+	    if(argProperties && argProperties.entryCollection) {
+		var entries  = argProperties.entryCollection.split(",");
+		this.changeEntries = [];
+		let enums = [];
+		entries.map(t=>{
+		    var toks = t.split(":");
+		    this.changeEntries.push(toks[0]);
+		    enums.push([toks[0],toks[1]]);
+		});
+		var prev = HtmlUtils.span(["class","display-changeentries-button", "title","Previous entry", "id", this.getDomId(ID_ENTRIES_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-chevron-left"));
+ 		var next = HtmlUtils.span(["class", "display-changeentries-button", "title","Next entry", "id", this.getDomId(ID_ENTRIES_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-chevron-right")); 
+		var label = argProperties.changeEntriesLabel||"";
+		if(label!="") label = label+"<br>";
+		return  HtmlUtils.center(label + prev +" " + HtmlUtils.select("",[ATTR_ID, this.getDomId(ID_ENTRIES_MENU)],enums) +" " + next);
+	    }
+	    return "";
+	},
+        initializeEntriesMenu: function() {
+	    this.jq(ID_ENTRIES_PREV).click(e=>{
+		var index = this.jq(ID_ENTRIES_MENU)[0].selectedIndex;
+		if(index<=0) return;
+		var entry  =this.changeEntries[index-1];
+		this.jq(ID_ENTRIES_MENU).val(entry);
+		this.handleEntryMenu(entry);
+	    });
+	    this.jq(ID_ENTRIES_NEXT).click(e=>{
+		var index = this.jq(ID_ENTRIES_MENU)[0].selectedIndex;
+		if(index>=this.changeEntries.length-1) {
+		    return;
+		}
+		var entry  =this.changeEntries[index+1];
+		this.jq(ID_ENTRIES_MENU).val(entry);
+		this.handleEntryMenu(entry);
+	    });
+	    
+	    this.jq(ID_ENTRIES_MENU).change(e=>{
+		var entry = this.jq(ID_ENTRIES_MENU).val();
+		this.handleEntryMenu(entry);
+	    });
+	},
+
+
         popup: function(srcId, popupId, srcObj, popupObject) {
             var popup = popupObject || $("#"+popupId);
             var src = srcObj || $("#"+srcId);
@@ -1058,8 +1114,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 };
                 this.properties.data = this.data = new PointData(entry.getName(), null, null, this.getRamadda().getRoot() + "/entry/show?entryid=" + entry.getId() + "&output=points.product&product=points.json&max=5000", attrs);
                 this.data.loadData(this);
-            }
-            this.updateUI();
+            } else {
+		this.updateUI();
+	    }
             var title = "";
             if (this.getShowTitle()) {
                 this.jq(ID_TITLE).html(entry.getName());

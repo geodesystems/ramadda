@@ -121,6 +121,12 @@
     xdisplay:block;
 }
 
+.display-changeentries-button {
+    cursor:pointer;
+}
+
+
+
 .display-correlation {
   border-collapse:collapse; 
 }

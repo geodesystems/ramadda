@@ -6289,12 +6289,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 		if(tmp.length()>0) tmp.append(",");
 		tmp.append(child.getId() +":" + child.getName().replaceAll(","," "));
 	    }
-	    topProps.add("entryCollection");
-	    topProps.add(Json.quote(tmp.toString()));
+	    propList.add("entryCollection");
+	    propList.add(Json.quote(tmp.toString()));
 	    String tmpname = getProperty(wikiUtil,props,"changeEntriesLabel");
 	    if(tmpname!=null) {
-		topProps.add("changeEntriesLabel");
-		topProps.add(Json.quote(tmpname));
+		propList.add("changeEntriesLabel");
+		propList.add(Json.quote(tmpname));
 	    }
 	}
 
