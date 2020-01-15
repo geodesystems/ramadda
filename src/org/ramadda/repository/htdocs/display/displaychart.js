@@ -672,10 +672,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
 
-	    console.log(this.type+".displayData");
-	    console.trace();
-
-
             this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
 					   "Building display..."));
 
@@ -1493,16 +1489,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
 	    this.chartOptions.bar = {groupWidth:"95%"}
-	    /*
-	    if(c1.length==0) {
-		console.log("no div");
-		console.trace();
-		this.bad = true;
-		return;
-	    }
-	    if(this.bad) return;
-	    */
-	    
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
 		var dataTable = this.makeDataTable(dataList, props, selectedFields);
