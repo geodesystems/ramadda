@@ -706,11 +706,14 @@ public class PointTypeHandler extends RecordTypeHandler {
             //            System.err.println("no time in metadata");
         }
 
+
         String header = pointEntry.getRecordFile().getTextHeader();
         if ((header != null) && (header.length() > 0)
                 && getTypeProperty("point.initialize", true)) {
+
             String patterns = (String) getTypeProperty("record.patterns",
                                   (String) null);
+
             if (patterns != null) {
                 List<String> toks = StringUtil.split(patterns, ",");
                 String       time = null;
@@ -723,6 +726,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                     String pattern = toks2.get(1);
                     String value   = StringUtil.findPattern(header, pattern);
                     //              System.err.println(field +" p:" + pattern +" v:" +value);
+
                     if (value != null) {
                         if (field.equals("latitude")) {
                             entry.setLatitude(Utils.decodeLatLon(value));
