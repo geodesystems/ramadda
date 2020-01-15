@@ -167,11 +167,11 @@ function convertToPointData(array) {
     var header = array[0];
     var samples = array[1];
     for(var i=0;i<header.length;i++) {
-        var label = header[i];
-        var id = label.toLowerCase().replace(/ /g,"_");
-        var sample =samples[i];
-        var tof= typeof sample;
-        var type;
+        let label = header[i];
+	let id = label.toLowerCase().replace(/[ ., ]+/g,"_");
+        let sample =samples[i];
+        let tof= typeof sample;
+        let type;
         if(tof=="string")
             type = "string";
         else if(tof=="number")
@@ -182,12 +182,13 @@ function convertToPointData(array) {
             console.log("Unknown type:" + tof);
         fields.push(new RecordField({
             id:id,
+	    index:i,
             label:label,
             type:type,
             chartable:true
         }));
     }
-    for(var i=1;array.length;i++) {
+    for(var i=1;i<array.length;i++) {
         records.push(new  PointRecord(NaN, NaN, NaN, null, array[i]));
     }
     return new  PointData("pointdata", fields, records,null,null);
@@ -479,6 +480,11 @@ function RecordField(props) {
     });
 
     RamaddaUtil.defineMembers(this, {
+	clone: function() {
+	    var newField = {};
+	    $.extend(newField,this);
+	    return newField;
+	},
 	toString: function() {
 	    return "Field:" + this.getId() +" label:" + this.getLabel() +" type:" + this.getType()+" " + this.isNumeric();
 	},
@@ -597,6 +603,13 @@ function PointRecord(lat, lon, elevation, time, data) {
         recordTime: time,
         data: data,
 	id: HtmlUtils.getUniqueId(),
+	clone: function() {
+	    var newRecord = {};
+	    $.extend(newRecord,this);
+	    newRecord.data = [];
+	    this.data.map((v,idx)=>{newRecord.data[idx] = v;});
+	    return newRecord;
+	},
 	toString: function() {
 	    return "data:"  + data;
 	},

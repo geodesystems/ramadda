@@ -1860,6 +1860,99 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return roots;
 	},
 
+	getSegments: function() {
+	    var segments = this.getProperty("timeSegments");
+	    if(!segments) return null;
+	    var result = [];
+	    var segmentList = segments.split(",");
+	    segmentList.map((tok,segmentIdx)=>{
+		var toks = tok.split(";");
+		var name = toks[0];
+		var start = Utils.parseDate(toks[1],false);
+		var end = Utils.parseDate(toks[2],false);
+		result.push({name: name, start:start,end:end});
+	    });
+	    return  result;
+	},
+	convertPointData: function(pointData) {
+	    let originalPointData = pointData;
+	    var segments = this.getSegments();
+	    if(segments) {
+                var dataList = pointData.getRecords();
+		var newData  =[];
+		var header = [];
+		newData.push(header);
+		var rowIdx = 0; 
+		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
+		segments.map((segment,segmentIdx)=>{
+		    let xcnt =0;
+		    var name = segment.name;
+		    header.push(name);
+		    var start = segment.start;
+		    var end = segment.end;
+		    var cnt = 1;
+//		    console.log("segment:" + segment.name);
+	    	    for (; rowIdx <dataList.length; rowIdx++) {
+			var record = dataList[rowIdx];
+			if(record.getTime()<start.getTime()) {
+			    continue;
+			}
+			if(record.getTime()>end.getTime()) {
+			    break;
+			}
+			var value = record.getValue(1);
+			let row=null;
+			if(cnt>=newData.length) {
+			    row = [];
+			    for(var sidx=0;sidx<segments.length;sidx++) row.push(NaN);
+			    newData.push(row);
+			} else {
+			    row = newData[cnt];
+			}
+//			if(xcnt++<10)
+//			    console.log(segmentIdx+"=" + value);
+			row[segmentIdx] = value;
+			cnt++;
+		    }
+		});
+		pointData = convertToPointData(newData);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+
+	    if(this.getProperty("showPercentIncrease",false)) {
+	        var dataList = pointData.getRecords(); 
+		var newRecords  =[];
+		var newFields = [];
+		var firstRow = dataList[0];
+                var fields  = pointData.getRecordFields();
+		var firstRecord= dataList[0];
+		fields.map(f=>{
+		    var newField = f.clone();
+		    newFields.push(newField);
+		    newField.label = newField.label+" % increase";
+		});
+	    	for (var rowIdx=0; rowIdx <dataList.length; rowIdx++) {
+		    var record = dataList[rowIdx];
+		    var newRecord = record.clone();
+		    newRecords.push(newRecord);
+		    fields.map(f=>{
+			if(!f.isNumeric()) return;
+			if(rowIdx==0) {
+			    newRecord.data[f.getIndex()] = 0;
+			} else {
+			    var v = newRecord.data[f.getIndex()];
+			    var basev = firstRecord.data[f.getIndex()];
+			    newRecord.data[f.getIndex()] = basev==0?0:(v-basev)/basev;
+			}
+		    });
+		};
+		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+	    return pointData;
+	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
@@ -1975,7 +2068,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		}
 	    }
-
 
 	    //	    console.log(this.type +" filterData:" + JSON.stringify(filters,null,2));
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
@@ -2184,6 +2276,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		dataList  = ulist;
 	    }
+
+
 
 
 	    this.recordToIndex = {};
@@ -3373,6 +3467,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (divid != null) {
                 var html = this.getHtml();
                 $("#" + divid).html(html);
+//		console.log("createUI:" + $("#" + divid).length);
+//		console.trace();
             } else {
                 console.log("error: no div defined for display:" + this.getType());
             }
@@ -3390,7 +3486,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         pageHasLoaded: function() {
 	    if(!this.displayReady) {
 		this.setDisplayReady(true);
-		this.updateUI();
 	    }
         },
         initDisplay: function() {
@@ -3399,6 +3494,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().makeControls();
             }
             this.checkSearchBar();
+	    this.updateUI();
         },
 	getFilterId: function(id) {
 	    return  this.getDomId("filterby_" + id);
@@ -3437,7 +3533,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
             if (dateMax) {
-		this.getAnimation().init(dateMin, dateMax,records);
+		var animation = this.getAnimation();
+		animation.init(dateMin, dateMax,records);
+		if(!this.minDateObj) {
+		    this.minDateObj = animation.begin;
+		    this.maxDateObj = animation.end;
+		}
             }
 
 
@@ -4268,8 +4369,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"acceptDateRangeChange=true",
 		"animationDateFormat=\"yyyy\"",
 		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
-		"animationMode=\"sliding\"",
-		"animationShowSlider=\"true|false\","
+		"animationMode=\"sliding|frame|cumulative\"",
+		"animationShowSlider=\"false\"",
+		"animationWidgetShort=\"true\""
 
 	    ];
         },
@@ -4515,9 +4617,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 this.hasElevation = false;
             }
-            this.dataCollection.addData(pointData);
+	    pointData = this.convertPointData(pointData);
+            this.dataCollection.addData (pointData);
             var entry = pointData.entry;
-            if (entry == null) {
+            if (entry == null && pointData.entryId) {
                 await this.getRamadda().getEntry(pointData.entryId, e => {
                     entry = e
                 });
@@ -4738,6 +4841,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //The first field is the domain, e.g., time or index
             var fieldNames = [];
 
+
+
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
 		var binCount = binType=="count";
@@ -4756,7 +4861,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-	    //	    console.log("F:" + fields);
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.isFieldNumeric() && field.isFieldDate()) {
@@ -4793,13 +4897,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (this.minDateObj == null && this.maxDateObj != null) {
                 this.minDateObj = Utils.parseDate(this.minDate, false, this.maxDateObj);
-            }
-
-
-            var minDate = (this.minDateObj != null ? this.minDateObj.getTime() : -1);
-            var maxDate = (this.maxDateObj != null ? this.maxDateObj.getTime() : -1);
-            if (this.minDateObj != null || this.maxDateObj != null) {
-                //                    console.log("dates: "  + this.minDateObj +" " + this.maxDateObj);
             }
 
 
@@ -4842,7 +4939,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         } else {
                             if (!props.includeIndexIfDate) {
                                 values.push(rowIdx);
-                                indexName = "Index";
+				indexName = this.getProperty("indexName", "Index");
                             }
                         }
                     }
@@ -4851,7 +4948,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
 
-		
+	
 
                 let allNull = true;
                 let allZero = true;
@@ -5208,16 +5305,21 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             return result;
         },
         pageHasLoaded: function(display) {
-            for (var i = 0; i < this.displays.length; i++) {
-                this.displays[i].setDisplayReady(true);
-            }
+	    //Maybe we don't need to do this since the displays get called globally
+//            for (var i = 0; i < this.displays.length; i++) {
+//                this.displays[i].setDisplayReady(true);
+//            }
             this.doLayout();
         },
         addDisplay: function(display) {
             this.displays.push(display);
-            if (Utils.getPageLoaded()) {
-                this.doLayout();
-            }
+            if (display.getIsLayoutFixed()) {
+		display.initDisplay();
+	    } else {
+		if (Utils.getPageLoaded()) {
+                    this.doLayout();
+		}
+	    }
         },
         layoutChanged: function(display) {
             this.doLayout();
@@ -5234,14 +5336,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             var colCnt = 100;
             var displaysToLayout = this.getDisplaysToLayout();
             var displaysToPrepare = this.displays;
-
-
-            for (var i = 0; i < displaysToPrepare.length; i++) {
-                var display = displaysToPrepare[i];
+	    displaysToPrepare.map(display=>{
                 if (display.prepareToLayout != null) {
                     display.prepareToLayout();
                 }
-            }
+            });
 
             var weightIdx = 0;
             var weights = null;
@@ -5409,18 +5508,18 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 $("#" + tabId).tabs({activate: HtmlUtil.tabLoaded});
             }
             this.initDisplays();
-        },
-        initDisplays: function() {
-            for (var i = 0; i < this.displays.length; i++) {
-                try {
-                    this.displays[i].initDisplay();
-                } catch (e) {
-                    this.displays[i].displayError("Error creating display:<br>" + e);
-                    console.log("error creating display: " + this.displays[i].getType());
-                    console.log(e.stack)
-                }
-            }
-        },
+        }, 
+	initDisplays: function() {
+	    this.getDisplaysToLayout().map(display=>{
+               try {
+                   display.initDisplay();
+               } catch (e) {
+                   display.displayError("Error creating display:<br>" + e);
+                   console.log("error creating display: " + this.displays[i].getType());
+                   console.log(e.stack)
+               }
+            });
+	},
         displayData: function() {},
         setLayout: function(layout, columns) {
             this.layout = layout;
@@ -5567,7 +5666,9 @@ function DisplayAnimation(display) {
         dateRange: 0,
         dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
         mode: display.getProperty("animationMode", "cumulative"),
+        startAtEnd: display.getProperty("animationStartAtEnd", false),
         speed: parseInt(display.getProperty("animationSpeed", 250)),
+
         toggleAnimation: function() {
 	    this.running = !this.running;
 	    if(this.btnRun)
@@ -5588,12 +5689,7 @@ function DisplayAnimation(display) {
 	    this.begin = this.dateMin;
 	    this.end = this.dateMax;
 	    if(!this.dateMin) return;
-	    
-
-	    if (this.mode == "frame") {
-		this.end = this.begin;
-
-	    }
+   
 
 	    this.dates=[];
 	    var seen = {};
@@ -5607,7 +5703,19 @@ function DisplayAnimation(display) {
 		return a.getTime() - b.getTime();
 	    });
 	    
+
 	    this.frameIndex = 0;
+	    if(this.startAtEnd) {
+		this.begin = this.dateMax;
+		this.end = this.dateMax;
+		if (this.mode == "frame") {
+		    this.frameIndex = this.dates.length-1;
+		}		    
+	    }
+	    if (this.mode == "frame") {
+		this.end = this.begin;
+	    }
+
 
 	    
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
@@ -5709,13 +5817,17 @@ function DisplayAnimation(display) {
 	makeControls:function() {
             var buttons =  "";
 	    if(this.display.getProperty("animationShowButtons",true)) {
-		buttons +=
-		    HtmlUtils.span(["id", this.getDomId(ID_BEGIN),"title","Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")) + 
-		    HtmlUtils.span(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")) + 
-		    HtmlUtils.span(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")) + 
-		    HtmlUtils.span(["id", this.getDomId(ID_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-step-forward")) +
-		    HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward")) + 
-		    HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync"));
+		var short = display.getProperty("animationWidgetShort",false);
+		if(!short)
+		    buttons +=   HtmlUtils.span(["id", this.getDomId(ID_BEGIN),"title","Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
+		buttons += HtmlUtils.span(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
+		if(!short)
+		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")); 
+		buttons +=HtmlUtils.span(["id", this.getDomId(ID_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-step-forward"));
+		if(!short)
+		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
+		if(!short)
+		    buttons += HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync"));
 	    }
 	    buttons+=HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-animation-label"]);
             buttons = HtmlUtils.div([ "class","display-animation-buttons"], buttons);
