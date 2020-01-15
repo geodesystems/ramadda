@@ -16309,7 +16309,7 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
                     }
                     for (var valueIdx = 0; valueIdx < values.length; valueIdx++) {
                         var value = values[valueIdx].trim();
-			if(value.length<=1) continue;
+			if(values.length>1 && value.length<=1) continue;
 			if(value.startsWith("&")) continue;  
 			var _value = value.toLowerCase();
                         if (cnt) {
@@ -16356,14 +16356,19 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             this.updateUIInner();
         },
         updateUI: function() {
-            var includes = "<link rel='stylesheet' href='" + ramaddaBaseUrl + "/lib/jqcloud.min.css'>";
-            includes += "<script src='" + ramaddaBaseUrl + "/lib/jqcloud.min.js'></script>";
-            this.writeHtml(ID_DISPLAY_TOP, includes);
-            let _this = this;
-            var func = function() {
-                _this.updateUIInner();
-            };
-            setTimeout(func, 10);
+	    if(!this.loadedJq) {
+		this.loadedJq = true;
+		var includes = "<link rel='stylesheet' href='" + ramaddaBaseUrl + "/lib/jqcloud.min.css'>";
+		includes += "<script src='" + ramaddaBaseUrl + "/lib/jqcloud.min.js'></script>";
+		this.writeHtml(ID_DISPLAY_TOP, includes);
+		let _this = this;
+		var func = function() {
+                    _this.updateUIInner();
+		};
+		setTimeout(func, 10);
+	    } else {
+                this.updateUIInner();
+	    }
         },
         updateUIInner: function() {
             var fieldInfo = this.processText();
@@ -16816,7 +16821,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 
                 var  imgAttrs= ["class","display-cards-popup","data-fancybox",this.getDomId("gallery"),"data-caption",caption];
 		if(img) img = img.trim();
-                if(img!="") {
+                if(Utils.stringDefined(img)) {
 		    if(this.colorAnalysisEnabled)
 			img = ramaddaBaseUrl+"/proxy?url=" + img;
                     img =  HtmlUtils.href(img, HtmlUtils.div(["id",this.getDomId("gallery")+"div" + imgCnt], HtmlUtils.image(img,["width",width,"id",this.getDomId("gallery")+"img" + imgCnt])),imgAttrs)+label;
