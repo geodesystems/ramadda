@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2020 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -1728,7 +1728,7 @@ public class CDOArealStatisticsService extends CDODataService {
                          si.getEntries().get(0)).equals(
                              CDOOutputHandler.FREQUENCY_DAILY)) {
             sb.append(HtmlUtils.hidden(CDOOutputHandler.ARG_CDO_PERIOD,
-                                       request.getString(
+                                       request.getSanitizedString(
                                            CDOOutputHandler.ARG_CDO_PERIOD,
                                            CDOOutputHandler.PERIOD_YDAY)));
         } else if ( !(type.equals(
@@ -1736,7 +1736,7 @@ public class CDOArealStatisticsService extends CDODataService {
                       || type.equals(
                           ClimateModelApiHandler.ARG_ACTION_TIMESERIES))) {
             sb.append(HtmlUtils.hidden(CDOOutputHandler.ARG_CDO_PERIOD,
-                                       request.getString(
+                                       request.getSanitizedString(
                                            CDOOutputHandler.ARG_CDO_PERIOD,
                                            CDOOutputHandler.PERIOD_TIM)));
         }
@@ -1791,13 +1791,15 @@ public class CDOArealStatisticsService extends CDODataService {
     private void makeEventsWidget(Request request, Appendable sb,
                                   List<NamedTimePeriod> periods, String type)
             throws Exception {
-        String group =
-            request.getString(ClimateModelApiHandler.ARG_EVENT_GROUP, null);
+        String group = request.getSanitizedString(
+                           ClimateModelApiHandler.ARG_EVENT_GROUP, null);
         List<TwoFacedObject> values        = new ArrayList<TwoFacedObject>();
         NamedTimePeriod      selectedEvent = periods.get(0);
         String               event         = null;
         if (request.defined(ClimateModelApiHandler.ARG_EVENT)) {
-            event = request.getString(ClimateModelApiHandler.ARG_EVENT);
+            event =
+                request.getSanitizedString(ClimateModelApiHandler.ARG_EVENT,
+                                           "");
         }
         for (NamedTimePeriod period : periods) {
             String value = period.getId() + ";" + period.getStartMonth()
@@ -1887,7 +1889,7 @@ public class CDOArealStatisticsService extends CDODataService {
                             sb.append(
                                 HtmlUtils.hidden(
                                     CdmDataOutputHandler.ARG_CALENDAR,
-                                    request.getString(
+                                    request.getSanitizedString(
                                         CdmDataOutputHandler.ARG_CALENDAR,
                                         cal.toString())));
                         }
@@ -1964,10 +1966,10 @@ public class CDOArealStatisticsService extends CDODataService {
             yearsWidget.append(
                 HtmlUtils.select(CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
                                  commonYears,
-                                 request.getString(
+                                 request.getSanitizedString(
                                      CDOOutputHandler.ARG_CDO_STARTYEAR
                                      + yearNum,
-                                     request.getString(
+                                     request.getSanitizedString(
                                          CDOOutputHandler.ARG_CDO_STARTYEAR,
                                          commonYears.get(0))),
                                  HtmlUtils.title("Select the starting year")));
@@ -1976,10 +1978,10 @@ public class CDOArealStatisticsService extends CDODataService {
             yearsWidget.append(
                 HtmlUtils.select(CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum,
                                  commonYears,
-                                 request.getString(
+                                 request.getSanitizedString(
                                      CDOOutputHandler.ARG_CDO_ENDYEAR
                                      + yearNum,
-                                     request.getString(
+                                     request.getSanitizedString(
                                          CDOOutputHandler.ARG_CDO_ENDYEAR,
                                          commonYears.get(endIndex))),
                                  HtmlUtils.title("Select the ending year")));
@@ -1987,9 +1989,9 @@ public class CDOArealStatisticsService extends CDODataService {
             yearsWidget.append(Repository.msgLabel("or List"));
             yearsWidget.append(HtmlUtils.input(CDOOutputHandler.ARG_CDO_YEARS
                     + yearNum,
-                    request.getString(CDOOutputHandler.ARG_CDO_YEARS
-                                      + yearNum,
-                                      ""),
+                    request.getSanitizedString(CDOOutputHandler.ARG_CDO_YEARS
+                    + yearNum,
+                            ""),
                     20,
                     HtmlUtils.title(
                     "Input a set of years separated by commas (e.g. 1980,1983,2012)")));

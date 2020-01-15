@@ -2566,6 +2566,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                      entry);
         } else if (theTag.equals(WIKI_TAG_TABS)
                    || theTag.equals(WIKI_TAG_ACCORDION)
+                   || theTag.equals(WIKI_TAG_ACCORDIAN)
                    || theTag.equals(WIKI_TAG_SLIDESHOW)
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
                    || theTag.equals(WIKI_TAG_GRID)) {

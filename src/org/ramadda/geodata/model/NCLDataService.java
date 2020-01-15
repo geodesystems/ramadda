@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2020 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -278,7 +278,7 @@ public class NCLDataService extends Service {
             throws Exception {
         // units
         if (SimpleUnit.isCompatible(units, "K")) {
-            String unit = request.getString(ARG_NCL_UNITS);
+            String unit = request.getSanitizedString(ARG_NCL_UNITS, null);
             // if the previous variable was not temperature and we are doing a reload, make sure one of them is selected
             Request uRequest = request.cloneMe();
             if ((unit != null)
@@ -409,7 +409,7 @@ public class NCLDataService extends Service {
         obuttons.append(Repository.msg("SVG"));
         */
         /*
-        String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
+        String outputType = request.getSanitizedString(ARG_NCL_OUTPUT, "comp");
         if (outputType.equals("comp")) {
           obuttons.append(space2);
           obuttons.append(HtmlUtils.radio(ARG_NCL_IMAGEFORMAT,

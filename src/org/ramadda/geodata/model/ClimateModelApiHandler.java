@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2020 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -579,7 +579,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             collectionArgs = new String[] { ARG_COLLECTION1 };
         }
 
-        String fixedCollectionId = request.getString(ARG_COLLECTION,
+        String fixedCollectionId = request.getSanitizedString(ARG_COLLECTION,
                                        (String) null);
         Entry fixedCollection = null;
 
@@ -816,7 +816,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         String jsArgs = getFrequencyArgs(request);
         if (request.defined(ARG_TEMPLATE)) {
             jsArgs = jsArgs + "&" + ARG_TEMPLATE + "="
-                     + request.getString(ARG_TEMPLATE);
+                     + request.getSanitizedString(ARG_TEMPLATE, "");
         }
         js.append("var " + formId + " = new "
                   + HtmlUtils.call("CollectionForm",
@@ -832,23 +832,27 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
 
         if (request.defined(ARG_EVENT_GROUP)) {
-            sb.append(HtmlUtils.hidden(ARG_EVENT_GROUP,
-                                       request.getString(ARG_EVENT_GROUP)));
+            String egroup = request.getSanitizedString(ARG_EVENT_GROUP, "");
+            if ( !egroup.isEmpty()) {
+                sb.append(HtmlUtils.hidden(ARG_EVENT_GROUP, egroup));
+            }
         }
 
 
         String frequency = "monthly";
         if (request.defined(ARG_FREQUENCY)) {
-            frequency = request.getString(
-                request.getString(ARG_FREQUENCY)).toLowerCase();
-
+            String fstring = request.getSanitizedString(ARG_FREQUENCY, "");
+            if ( !fstring.isEmpty()) {
+                frequency = fstring.toLowerCase();
+            }
         }
 
         String title = "Model Comparison";
         String desc  = "";
         if (type.equals(ARG_ACTION_COMPARE)) {
             if (request.defined(ARG_EVENT_GROUP)) {
-                String groupName = request.getString(ARG_EVENT_GROUP);
+                String groupName =
+                    request.getSanitizedString(ARG_EVENT_GROUP, "");
                 //groupName = groupName.replaceAll("[+_]"," ");
                 title += " for " + groupName;
                 desc = "Plot " + frequency
@@ -902,11 +906,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         if (request.defined(ARG_FREQUENCY)) {
             sb.append(HtmlUtils.hidden(ARG_FREQUENCY,
-                                       request.getString(ARG_FREQUENCY)));
+                                       request.getSanitizedString(
+                                           ARG_FREQUENCY,
+                                           "")));
         }
         if (request.defined(ARG_TEMPLATE)) {
             sb.append(HtmlUtils.hidden(ARG_TEMPLATE,
-                                       request.getString(ARG_TEMPLATE)));
+                                       request.getSanitizedString(
+                                           ARG_TEMPLATE,
+                                           "")));
         }
 
         String plotButton  = "&nbsp;";
@@ -991,7 +999,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                             HtmlUtils.id(id)));
             } else {
                 String collectionWidget = HtmlUtils.select(arg, tfos,
-                                              request.getString(arg,
+                                              request.getSanitizedString(arg,
                                                       ""), HtmlUtils.cssClass(
                                                           selectClass) + HtmlUtils.id(
                                                           id));
@@ -1004,7 +1012,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             //Entry        entry   = collections.get(0);
             List<Column> columns = null;
             Entry collectionEntry = getEntryManager().getEntry(request,
-                                        request.getString(arg,
+                                        request.getSanitizedString(arg,
                                                 ""));
             if (collectionEntry != null) {
                 columns =
@@ -1279,7 +1287,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
      */
     private Entry getTimeSeriesEntry(Request request) throws Exception {
         String arg     = getFieldSelectArg(ARG_COLLECTION2, 0);
-        String entryId = request.getString(arg, "");
+        String entryId = request.getSanitizedString(arg, "");
         if (entryId.isEmpty()) {
             return null;
         }
@@ -1315,7 +1323,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         String        arg           = getFieldSelectArg(ARG_COLLECTION2, 0);
         List<String>  selectors     = new ArrayList<String>();
         String        extraSelect   = "";
-        String        selectedValue = request.getString(arg, "");
+        String        selectedValue = request.getSanitizedString(arg, "");
         String selectBox =
             HtmlUtils.select(arg, values, selectedValue,
                              HtmlUtils.cssClass("multi_select_widget")
@@ -1384,7 +1392,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (request.defined(ARG_FREQUENCY)) {
             args.append(ARG_FREQUENCY);
             args.append("=");
-            args.append(request.getString(ARG_FREQUENCY));
+            args.append(request.getSanitizedString(ARG_FREQUENCY, ""));
         }
 
         return args.toString();
@@ -1714,8 +1722,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         tmpRequest.put(ARG_TYPE, collectionType);
         List<Clause> fclause = new ArrayList<Clause>();
         if (request.defined(ARG_FREQUENCY)) {
-            tmpRequest.put(Column.ARG_SEARCH_PREFIX + collectionType + "."
-                           + ARG_FREQUENCY, request.getString(ARG_FREQUENCY));
+            tmpRequest.put(
+                Column.ARG_SEARCH_PREFIX + collectionType + "."
+                + ARG_FREQUENCY, request.getSanitizedString(ARG_FREQUENCY,
+                        ""));
         }
 
         List<Entry> collections =
