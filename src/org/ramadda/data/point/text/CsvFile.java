@@ -30,6 +30,7 @@ import java.awt.image.*;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -41,6 +42,7 @@ import javax.swing.*;
  *
  */
 public class CsvFile extends TextFile {
+
 
     /** column delimiter */
     private String delimiter = null;
@@ -256,9 +258,6 @@ public class CsvFile extends TextFile {
         return doMakeFields(fieldString);
     }
 
-
-
-
     /**
      * _more_
      *
@@ -269,6 +268,9 @@ public class CsvFile extends TextFile {
     @Override
     public Record doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = new TextRecord(this, getFields());
+        if (getBaseDate() != null) {
+            record.setBaseDate(getBaseDate());
+        }
         record.setFirstDataLine(firstDataLine);
         record.setDelimiter(getDelimiter());
         record.setLineWrap(getProperty("lineWrap", true));
@@ -330,6 +332,9 @@ public class CsvFile extends TextFile {
             }
         }
     }
+
+
+
 
 
 

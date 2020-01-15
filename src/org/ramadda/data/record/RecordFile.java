@@ -122,6 +122,11 @@ public abstract class RecordFile {
     /** _more_ */
     private StringBuffer dttm = new StringBuffer();
 
+    /** _more_          */
+    private Date baseDate;
+
+
+
     /** _more_ */
     private SimpleDateFormat[] mySdfs;
 
@@ -136,10 +141,10 @@ public abstract class RecordFile {
     };
 
 
-    /** _more_          */
+    /** _more_ */
     private RecordFileContext context;
 
-    /** _more_          */
+    /** _more_ */
     private File cacheFile;
 
     /**
@@ -648,8 +653,9 @@ public abstract class RecordFile {
 
         try {
             return Utils.doMakeInputStream(path, buffered);
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             System.err.println("Error fetching data:" + path);
+
             throw ioe;
         }
     }
@@ -1414,6 +1420,7 @@ public abstract class RecordFile {
     public boolean isMissingValue(Record record, RecordField field,
                                   double v) {
         double missing = field.getMissingValue();
+
         //        System.err.println("isMissing:" + v +" " + missing);
         return missing == v;
     }
@@ -1762,9 +1769,34 @@ public abstract class RecordFile {
         return s;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getTextHeader() {
-	return "";
+        return "";
     }
+
+    /**
+     * Set the BaseDate property.
+     *
+     * @param value The new value for BaseDate
+     */
+    public void setBaseDate(Date value) {
+        baseDate = value;
+    }
+
+    /**
+     * Get the BaseDate property.
+     *
+     * @return The BaseDate
+     */
+    public Date getBaseDate() {
+        return baseDate;
+    }
+
+
 
 
 }

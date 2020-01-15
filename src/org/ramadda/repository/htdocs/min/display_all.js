@@ -2010,6 +2010,99 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return roots;
 	},
 
+	getSegments: function() {
+	    var segments = this.getProperty("timeSegments");
+	    if(!segments) return null;
+	    var result = [];
+	    var segmentList = segments.split(",");
+	    segmentList.map((tok,segmentIdx)=>{
+		var toks = tok.split(";");
+		var name = toks[0];
+		var start = Utils.parseDate(toks[1],false);
+		var end = Utils.parseDate(toks[2],false);
+		result.push({name: name, start:start,end:end});
+	    });
+	    return  result;
+	},
+	convertPointData: function(pointData) {
+	    let originalPointData = pointData;
+	    var segments = this.getSegments();
+	    if(segments) {
+                var dataList = pointData.getRecords();
+		var newData  =[];
+		var header = [];
+		newData.push(header);
+		var rowIdx = 0; 
+		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
+		segments.map((segment,segmentIdx)=>{
+		    let xcnt =0;
+		    var name = segment.name;
+		    header.push(name);
+		    var start = segment.start;
+		    var end = segment.end;
+		    var cnt = 1;
+//		    console.log("segment:" + segment.name);
+	    	    for (; rowIdx <dataList.length; rowIdx++) {
+			var record = dataList[rowIdx];
+			if(record.getTime()<start.getTime()) {
+			    continue;
+			}
+			if(record.getTime()>end.getTime()) {
+			    break;
+			}
+			var value = record.getValue(1);
+			let row=null;
+			if(cnt>=newData.length) {
+			    row = [];
+			    for(var sidx=0;sidx<segments.length;sidx++) row.push(NaN);
+			    newData.push(row);
+			} else {
+			    row = newData[cnt];
+			}
+//			if(xcnt++<10)
+//			    console.log(segmentIdx+"=" + value);
+			row[segmentIdx] = value;
+			cnt++;
+		    }
+		});
+		pointData = convertToPointData(newData);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+
+	    if(this.getProperty("showPercentIncrease",false)) {
+	        var dataList = pointData.getRecords(); 
+		var newRecords  =[];
+		var newFields = [];
+		var firstRow = dataList[0];
+                var fields  = pointData.getRecordFields();
+		var firstRecord= dataList[0];
+		fields.map(f=>{
+		    var newField = f.clone();
+		    newFields.push(newField);
+		    newField.label = newField.label+" % increase";
+		});
+	    	for (var rowIdx=0; rowIdx <dataList.length; rowIdx++) {
+		    var record = dataList[rowIdx];
+		    var newRecord = record.clone();
+		    newRecords.push(newRecord);
+		    fields.map(f=>{
+			if(!f.isNumeric()) return;
+			if(rowIdx==0) {
+			    newRecord.data[f.getIndex()] = 0;
+			} else {
+			    var v = newRecord.data[f.getIndex()];
+			    var basev = firstRecord.data[f.getIndex()];
+			    newRecord.data[f.getIndex()] = basev==0?0:(v-basev)/basev;
+			}
+		    });
+		};
+		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+	    return pointData;
+	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
@@ -2125,7 +2218,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		}
 	    }
-
 
 	    //	    console.log(this.type +" filterData:" + JSON.stringify(filters,null,2));
 	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
@@ -2334,6 +2426,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		dataList  = ulist;
 	    }
+
+
 
 
 	    this.recordToIndex = {};
@@ -3523,6 +3617,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (divid != null) {
                 var html = this.getHtml();
                 $("#" + divid).html(html);
+//		console.log("createUI:" + $("#" + divid).length);
+//		console.trace();
             } else {
                 console.log("error: no div defined for display:" + this.getType());
             }
@@ -3540,7 +3636,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         pageHasLoaded: function() {
 	    if(!this.displayReady) {
 		this.setDisplayReady(true);
-		this.updateUI();
 	    }
         },
         initDisplay: function() {
@@ -3549,6 +3644,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().makeControls();
             }
             this.checkSearchBar();
+	    this.updateUI();
         },
 	getFilterId: function(id) {
 	    return  this.getDomId("filterby_" + id);
@@ -3587,7 +3683,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
             if (dateMax) {
-		this.getAnimation().init(dateMin, dateMax,records);
+		var animation = this.getAnimation();
+		animation.init(dateMin, dateMax,records);
+		if(!this.minDateObj) {
+		    this.minDateObj = animation.begin;
+		    this.maxDateObj = animation.end;
+		}
             }
 
 
@@ -4418,8 +4519,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"acceptDateRangeChange=true",
 		"animationDateFormat=\"yyyy\"",
 		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
-		"animationMode=\"sliding\"",
-		"animationShowSlider=\"true|false\","
+		"animationMode=\"sliding|frame|cumulative\"",
+		"animationShowSlider=\"false\"",
+		"animationWidgetShort=\"true\""
 
 	    ];
         },
@@ -4665,9 +4767,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 this.hasElevation = false;
             }
-            this.dataCollection.addData(pointData);
+	    pointData = this.convertPointData(pointData);
+            this.dataCollection.addData (pointData);
             var entry = pointData.entry;
-            if (entry == null) {
+            if (entry == null && pointData.entryId) {
                 await this.getRamadda().getEntry(pointData.entryId, e => {
                     entry = e
                 });
@@ -4888,6 +4991,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //The first field is the domain, e.g., time or index
             var fieldNames = [];
 
+
+
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
 		var binCount = binType=="count";
@@ -4906,7 +5011,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-	    //	    console.log("F:" + fields);
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.isFieldNumeric() && field.isFieldDate()) {
@@ -4943,13 +5047,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (this.minDateObj == null && this.maxDateObj != null) {
                 this.minDateObj = Utils.parseDate(this.minDate, false, this.maxDateObj);
-            }
-
-
-            var minDate = (this.minDateObj != null ? this.minDateObj.getTime() : -1);
-            var maxDate = (this.maxDateObj != null ? this.maxDateObj.getTime() : -1);
-            if (this.minDateObj != null || this.maxDateObj != null) {
-                //                    console.log("dates: "  + this.minDateObj +" " + this.maxDateObj);
             }
 
 
@@ -4992,7 +5089,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         } else {
                             if (!props.includeIndexIfDate) {
                                 values.push(rowIdx);
-                                indexName = "Index";
+				indexName = this.getProperty("indexName", "Index");
                             }
                         }
                     }
@@ -5001,7 +5098,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
 
-		
+	
 
                 let allNull = true;
                 let allZero = true;
@@ -5358,16 +5455,21 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             return result;
         },
         pageHasLoaded: function(display) {
-            for (var i = 0; i < this.displays.length; i++) {
-                this.displays[i].setDisplayReady(true);
-            }
+	    //Maybe we don't need to do this since the displays get called globally
+//            for (var i = 0; i < this.displays.length; i++) {
+//                this.displays[i].setDisplayReady(true);
+//            }
             this.doLayout();
         },
         addDisplay: function(display) {
             this.displays.push(display);
-            if (Utils.getPageLoaded()) {
-                this.doLayout();
-            }
+            if (display.getIsLayoutFixed()) {
+		display.initDisplay();
+	    } else {
+		if (Utils.getPageLoaded()) {
+                    this.doLayout();
+		}
+	    }
         },
         layoutChanged: function(display) {
             this.doLayout();
@@ -5384,14 +5486,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             var colCnt = 100;
             var displaysToLayout = this.getDisplaysToLayout();
             var displaysToPrepare = this.displays;
-
-
-            for (var i = 0; i < displaysToPrepare.length; i++) {
-                var display = displaysToPrepare[i];
+	    displaysToPrepare.map(display=>{
                 if (display.prepareToLayout != null) {
                     display.prepareToLayout();
                 }
-            }
+            });
 
             var weightIdx = 0;
             var weights = null;
@@ -5559,18 +5658,18 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 $("#" + tabId).tabs({activate: HtmlUtil.tabLoaded});
             }
             this.initDisplays();
-        },
-        initDisplays: function() {
-            for (var i = 0; i < this.displays.length; i++) {
-                try {
-                    this.displays[i].initDisplay();
-                } catch (e) {
-                    this.displays[i].displayError("Error creating display:<br>" + e);
-                    console.log("error creating display: " + this.displays[i].getType());
-                    console.log(e.stack)
-                }
-            }
-        },
+        }, 
+	initDisplays: function() {
+	    this.getDisplaysToLayout().map(display=>{
+               try {
+                   display.initDisplay();
+               } catch (e) {
+                   display.displayError("Error creating display:<br>" + e);
+                   console.log("error creating display: " + this.displays[i].getType());
+                   console.log(e.stack)
+               }
+            });
+	},
         displayData: function() {},
         setLayout: function(layout, columns) {
             this.layout = layout;
@@ -5717,7 +5816,9 @@ function DisplayAnimation(display) {
         dateRange: 0,
         dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
         mode: display.getProperty("animationMode", "cumulative"),
+        startAtEnd: display.getProperty("animationStartAtEnd", false),
         speed: parseInt(display.getProperty("animationSpeed", 250)),
+
         toggleAnimation: function() {
 	    this.running = !this.running;
 	    if(this.btnRun)
@@ -5738,12 +5839,7 @@ function DisplayAnimation(display) {
 	    this.begin = this.dateMin;
 	    this.end = this.dateMax;
 	    if(!this.dateMin) return;
-	    
-
-	    if (this.mode == "frame") {
-		this.end = this.begin;
-
-	    }
+   
 
 	    this.dates=[];
 	    var seen = {};
@@ -5757,7 +5853,19 @@ function DisplayAnimation(display) {
 		return a.getTime() - b.getTime();
 	    });
 	    
+
 	    this.frameIndex = 0;
+	    if(this.startAtEnd) {
+		this.begin = this.dateMax;
+		this.end = this.dateMax;
+		if (this.mode == "frame") {
+		    this.frameIndex = this.dates.length-1;
+		}		    
+	    }
+	    if (this.mode == "frame") {
+		this.end = this.begin;
+	    }
+
 
 	    
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
@@ -5859,13 +5967,17 @@ function DisplayAnimation(display) {
 	makeControls:function() {
             var buttons =  "";
 	    if(this.display.getProperty("animationShowButtons",true)) {
-		buttons +=
-		    HtmlUtils.span(["id", this.getDomId(ID_BEGIN),"title","Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")) + 
-		    HtmlUtils.span(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")) + 
-		    HtmlUtils.span(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")) + 
-		    HtmlUtils.span(["id", this.getDomId(ID_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-step-forward")) +
-		    HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward")) + 
-		    HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync"));
+		var short = display.getProperty("animationWidgetShort",false);
+		if(!short)
+		    buttons +=   HtmlUtils.span(["id", this.getDomId(ID_BEGIN),"title","Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
+		buttons += HtmlUtils.span(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
+		if(!short)
+		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")); 
+		buttons +=HtmlUtils.span(["id", this.getDomId(ID_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-step-forward"));
+		if(!short)
+		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
+		if(!short)
+		    buttons += HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync"));
 	    }
 	    buttons+=HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-animation-label"]);
             buttons = HtmlUtils.div([ "class","display-animation-buttons"], buttons);
@@ -6253,11 +6365,11 @@ function convertToPointData(array) {
     var header = array[0];
     var samples = array[1];
     for(var i=0;i<header.length;i++) {
-        var label = header[i];
-        var id = label.toLowerCase().replace(/ /g,"_");
-        var sample =samples[i];
-        var tof= typeof sample;
-        var type;
+        let label = header[i];
+	let id = label.toLowerCase().replace(/[ ., ]+/g,"_");
+        let sample =samples[i];
+        let tof= typeof sample;
+        let type;
         if(tof=="string")
             type = "string";
         else if(tof=="number")
@@ -6268,12 +6380,13 @@ function convertToPointData(array) {
             console.log("Unknown type:" + tof);
         fields.push(new RecordField({
             id:id,
+	    index:i,
             label:label,
             type:type,
             chartable:true
         }));
     }
-    for(var i=1;array.length;i++) {
+    for(var i=1;i<array.length;i++) {
         records.push(new  PointRecord(NaN, NaN, NaN, null, array[i]));
     }
     return new  PointData("pointdata", fields, records,null,null);
@@ -6565,6 +6678,11 @@ function RecordField(props) {
     });
 
     RamaddaUtil.defineMembers(this, {
+	clone: function() {
+	    var newField = {};
+	    $.extend(newField,this);
+	    return newField;
+	},
 	toString: function() {
 	    return "Field:" + this.getId() +" label:" + this.getLabel() +" type:" + this.getType()+" " + this.isNumeric();
 	},
@@ -6683,6 +6801,13 @@ function PointRecord(lat, lon, elevation, time, data) {
         recordTime: time,
         data: data,
 	id: HtmlUtils.getUniqueId(),
+	clone: function() {
+	    var newRecord = {};
+	    $.extend(newRecord,this);
+	    newRecord.data = [];
+	    this.data.map((v,idx)=>{newRecord.data[idx] = v;});
+	    return newRecord;
+	},
 	toString: function() {
 	    return "data:"  + data;
 	},
@@ -10990,7 +11115,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         displayData: function(reload) {
             var _this = this;
-
             if (!this.getDisplayReady()) {
                 return;
             }
@@ -11002,6 +11126,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     this.googleChartCallbackPending = true;
                     var func = function() {
                         _this.googleChartCallbackPending = false;
+			console.log(_this.type+" google charts loaded");
                         _this.displayData();
                     }
                     this.setContents(this.getLoadingMessage());
@@ -11018,6 +11143,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
 
+	    console.log(this.type+".displayData");
+	    console.trace();
+
+
             this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
 					   "Building display..."));
 
@@ -11026,6 +11155,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var pointData = this.dataCollection.getList()[0];
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
             var selectedFields = this.getSelectedFields();
+
+
             if (selectedFields.length == 0 && this.lastSelectedFields != null) {
                 selectedFields = this.lastSelectedFields;
             }
@@ -11038,6 +11169,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     selectedFields = this.getSelectedFields();
                 }
             }
+
+
+
+
 
             if (selectedFields.length == 0) {
                 this.setContents("No fields selected");
@@ -11074,6 +11209,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             var fieldsToSelect = selectedFields;
+	    
             if (this.raw) {
                 fieldsToSelect = this.dataCollection.getList()[0].getRecordFields();
                 props.raw = true;
@@ -11129,7 +11265,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             indexName = "Date";
                         } else {
                             values.push(rowIdx);
-                            indexName = "Index";
+                            indexName = this.getProperty("indexName", "Index");
                         }
                     }
                     if (fieldNames == null) {
@@ -11152,7 +11288,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (dataList == null) {
                 dataList = this.getStandardData(fieldsToSelect, props);
-		//		console.log("standard data:" + fieldsToSelect +" " +dataList.length);
             }
 
 
@@ -11272,16 +11407,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 dataList = newList;
             }
 
+
             try {
                 this.makeChart(dataList, props, selectedFields);
             } catch (e) {
-                console.log(e.stack);
-                this.displayError("" + e);
+//		console.log("Error making chart:\n" + e +"\n" + e.stack);
+		console.log("Error making chart:\n" + e);
+//                this.displayError("" + e);
                 return;
             }
-            var d = _this.jq(ID_CHART);
+            var container = _this.jq(ID_CHART);
 	    if(_this.jq(ID_CHART).is(':visible')) {
-		this.lastWidth = d.width();
+		this.lastWidth = container.width();
 	    } else {
 		this.lastWidth = -1;
 	    }
@@ -11391,6 +11528,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
+
             for (var j = 0; j < header.length; j++) {
 		var field=null;
 		if(j>0 || !props.includeIndex) {
@@ -11789,7 +11927,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return this.getProperty("width");
         },
         getChartDiv: function() {
-
             var chartId = this.getDomId(ID_CHART);
             var divAttrs = [ATTR_ID, chartId];
             divAttrs.push("style");
@@ -11824,13 +11961,22 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.setContents("No google");
                 return;
             }
+
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
 	    this.chartOptions.bar = {groupWidth:"95%"}
-
 	    //	    console.log(JSON.stringify(this.chartOptions,null,2));
+            var c1 = this.jq(ID_CHART);
+//	    console.log(this.type +".displayData " + $("#" + this.getChartId()).length + " " + c1.length +" contents:"// + this.jq(ID_DISPLAY_CONTENTS).length);
+//	    console.trace();
+
+	    if(c1.length==0) {
+		console.log("no div");
+		console.trace();
+		this.bad = true;
+		return;
+	    }
+	    if(this.bad) return;
 	    
-
-
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
 		var dataTable = this.makeDataTable(dataList, props, selectedFields);
@@ -12081,6 +12227,7 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             var chartType = this.getChartType();
             if (chartType == DISPLAY_BARSTACK) {
+		chartOptions.series = null;
                 chartOptions.isStacked = true;
             }
             if (this.getProperty("barWidth")) {
@@ -12098,7 +12245,7 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
                     }
 		}
 	    }
-            chartOptions.orientation = "horizontal";
+	    chartOptions.orientation = this.getProperty("orientation","horizontal");
 	    return chartOptions;
 	},
 
@@ -12272,6 +12419,8 @@ function PiechartDisplay(displayManager, id, properties) {
             };
             if (this.getProperty("bins", null)) {
                 chartOptions.title = "Bins: " + this.getDataValues(dataList[0])[1];
+	    } else if(this.getProperty("sumFields")) {
+                chartOptions.title = this.getProperty("chartTitle","Categories/Values");
             } else {
                 chartOptions.title = this.getDataValues(dataList[0])[0] + " - " + this.getDataValues(dataList[0])[1];
             }
@@ -12354,6 +12503,24 @@ function PiechartDisplay(displayManager, id, properties) {
                                bin.values.length
 			      ]);
                 }
+            } else if(this.getProperty("sumFields")) {
+		dataTable = new google.visualization.DataTable();
+		dataTable.addColumn("string", "Category");
+		dataTable.addColumn("number", "Value");
+		var records=  this.filterData();
+		let sumFields =  this.getFieldsByIds(null, this.getProperty("sumFields"));
+		let sums = [];
+		sumFields.map(f=>{sums.push(0)});
+                records.map(record=>{
+		    sumFields.map((f,idx)=>{
+			var v = record.getValue(f.getIndex());
+			if(!isNaN(v))  sums[idx]+=v;
+		    });
+		});
+		sumFields.map((f,idx)=>{
+                    list.push([f.getLabel(),sums[idx]>0?sums[idx]:0]);
+		});
+
             } else {
                 for (var i = 1; i < dataList.length; i++) {
                     var tuple = this.getDataValues(dataList[i]);
@@ -22433,8 +22600,6 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
-
-
 
         pointDataLoaded: function(pointData, url, reload) {
             SUPER.pointDataLoaded.call(this, pointData, url, reload);

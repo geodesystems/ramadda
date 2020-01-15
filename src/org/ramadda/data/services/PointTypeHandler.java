@@ -489,6 +489,10 @@ public class PointTypeHandler extends RecordTypeHandler {
     @Override
     public boolean canHandleResource(String path, String filename) {
         try {
+            boolean canParent = super.canHandleResource(path, filename);
+            if (canParent) {
+                return true;
+            }
             if (filename.endsWith(".csv") || filename.endsWith(".txt")
                     || filename.endsWith(".xyz")
                     || filename.endsWith(".tsv")) {
@@ -500,7 +504,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                 }
             }
 
-            return super.canHandleResource(path, filename);
+            return false;
         } catch (Exception exc) {
             //If the loading flaked out then just keep going
             //            logException("Harvesting file:" + f, exc);
@@ -718,7 +722,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                     String field   = toks2.get(0).trim();
                     String pattern = toks2.get(1);
                     String value   = StringUtil.findPattern(header, pattern);
-		    //		    System.err.println(field +" p:" + pattern +" v:" +value);
+                    //              System.err.println(field +" p:" + pattern +" v:" +value);
                     if (value != null) {
                         if (field.equals("latitude")) {
                             entry.setLatitude(Utils.decodeLatLon(value));
@@ -737,8 +741,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                             if (time != null) {
                                 value += " " + time;
                             }
-			    Date date = sdf.parse(value);
-			    //			    System.err.println("date:" + date);
+                            Date date = sdf.parse(value);
+                            //                      System.err.println("date:" + date);
                             entry.setStartAndEndDate(date.getTime());
                         } else {
                             List<Column> columns = getColumns();

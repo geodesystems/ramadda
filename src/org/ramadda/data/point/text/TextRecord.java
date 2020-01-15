@@ -55,10 +55,10 @@ public class TextRecord extends DataRecord {
     /** _more_ */
     private boolean delimiterIsSpace = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean delimiterIsSpaces = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean delimiterIsCommasOrSpaces = false;
 
     /** _more_ */
@@ -75,6 +75,12 @@ public class TextRecord extends DataRecord {
     private boolean[] rawOK;
 
 
+    /** _more_          */
+    private Date baseDate;
+
+    /** _more_          */
+    private String baseDateString;
+
     /** _more_ */
     private TextReader textReader;
 
@@ -87,7 +93,7 @@ public class TextRecord extends DataRecord {
     /** _more_ */
     private boolean bePickyAboutTokens = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean lineWrap = true;
 
     /** _more_ */
@@ -528,14 +534,23 @@ public class TextRecord extends DataRecord {
         if (tok.equals("") || tok.equals("null")) {
             return null;
         }
-        String sfmt = field.getSDateFormat();
-	if(sfmt!=null) {
-	    if (sfmt.equals("SSS")) {
-		return new Date(new Long(tok));
-	    } else if(sfmt.equals("yyyy")) {
-		return yearFormat.parse(tok+"-06");
-		//
+        //This is where the tok is, e.g.,  hh:mm:ss  and we prepend a base date on it
+        if (field.getIsDateOffset()) {
+	    if(baseDateString != null) {
+		tok = baseDateString + " " + tok;
+	    } else {
+		//The field has an offset beu there isn't a base date
+		return new Date();
 	    }
+        }
+        String sfmt = field.getSDateFormat();
+        if (sfmt != null) {
+            if (sfmt.equals("SSS")) {
+                return new Date(new Long(tok));
+            } else if (sfmt.equals("yyyy")) {
+                return yearFormat.parse(tok + "-06");
+                //
+            }
         }
 
         Date date   = null;
@@ -571,6 +586,7 @@ public class TextRecord extends DataRecord {
 
 
 
+    /** _more_          */
     private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy-MM");
 
 
@@ -993,5 +1009,32 @@ public class TextRecord extends DataRecord {
     public void setMatchUpColumns(boolean v) {
         matchUpColumns = v;
     }
+
+
+    /**
+     * Set the BaseDate property.
+     *
+     * @param value The new value for BaseDate
+     */
+    public void setBaseDate(Date value) {
+        baseDate = value;
+        if (baseDate != null) {
+            baseDateString = new SimpleDateFormat("yyyy-MM-dd").format(value);
+        }
+    }
+
+
+
+    /**
+     * Get the BaseDate property.
+     *
+     * @return The BaseDate
+     */
+    public Date getBaseDate() {
+        return baseDate;
+    }
+
+
+
 
 }

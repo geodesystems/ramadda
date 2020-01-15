@@ -20,6 +20,7 @@ package org.ramadda.data.record;
 import java.io.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class VisitInfo {
 
     /** _more_ */
     private int recordIndex = 0;
+
 
 
     /**

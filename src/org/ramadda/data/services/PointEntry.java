@@ -32,6 +32,7 @@ import ucar.unidata.util.IOUtil;
 import java.io.File;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -135,6 +136,9 @@ public class PointEntry extends RecordEntry {
                 getPointOutputHandler().createAndInitializeRecordFile(
                     getRequest(), getEntry(), records);
             setRecordFile(recordFile);
+            if (getEntry().hasDate()) {
+                recordFile.setBaseDate(new Date(getEntry().getStartDate()));
+            }
         }
 
         return recordFile;

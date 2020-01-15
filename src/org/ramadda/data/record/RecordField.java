@@ -83,13 +83,13 @@ public class RecordField {
     /** _more_ */
     public static final String TYPE_STRING = "string";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_URL = "url";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_ENUMERATION = "enumeration";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_IMAGE = "image";
 
     /** _more_ */
@@ -111,11 +111,14 @@ public class RecordField {
     /** _more_ */
     private boolean isTypeDate = false;
 
+    /** _more_          */
+    private boolean isDateOffset = false;
+
     /** _more_ */
     private boolean isDate = false;
 
 
-    /** _more_          */
+    /** _more_ */
     private boolean isGroup = false;
 
     /** _more_ */
@@ -145,7 +148,7 @@ public class RecordField {
     /** _more_ */
     private SimpleDateFormat dateFormat;
 
-    /** _more_          */
+    /** _more_ */
     private String sDateFormat;
 
 
@@ -537,6 +540,9 @@ public class RecordField {
             attr(pw, "type", type);
         } else if (isTypeDate) {
             attr(pw, "type", TYPE_DATE);
+            if (isDateOffset) {
+                attr(pw, "isDateOffset", "true");
+            }
         } else {
             //Default is numeric
         }
@@ -1383,6 +1389,25 @@ public class RecordField {
         return index;
     }
 
+
+
+    /**
+     *  Set the IsDateOffset property.
+     *
+     *  @param value The new value for IsDateOffset
+     */
+    public void setIsDateOffset(boolean value) {
+        isDateOffset = value;
+    }
+
+    /**
+     *  Get the IsDateOffset property.
+     *
+     *  @return The IsDateOffset
+     */
+    public boolean getIsDateOffset() {
+        return isDateOffset;
+    }
 
 
 }

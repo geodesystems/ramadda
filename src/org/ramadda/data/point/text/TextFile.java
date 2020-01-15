@@ -492,11 +492,14 @@ public abstract class TextFile extends PointFile {
                     break;
                 }
                 line = line.trim();
-                if (starts && line.startsWith(headerDelimiter)) {
-                    break;
-                }
-                if (line.equals(headerDelimiter)) {
-                    break;
+                if (starts) {
+                    if (line.startsWith(headerDelimiter)) {
+                        break;
+                    }
+                } else {
+                    if (line.equals(headerDelimiter)) {
+                        break;
+                    }
                 }
                 if ( !haveReadHeader) {
                     headerLines.add(line);
@@ -534,16 +537,31 @@ public abstract class TextFile extends PointFile {
                 }
             }
         } else if (lastHeaderPattern != null) {
+            boolean starts = lastHeaderPattern.startsWith("starts:");
+            if (starts) {
+                lastHeaderPattern =
+                    lastHeaderPattern.substring("starts:".length());
+            }
             while (true) {
                 String line = visitInfo.getRecordIO().readLine();
                 if (line == null) {
                     break;
                 }
-                if (line.matches(lastHeaderPattern)) {
-                    break;
+                if (starts) {
+                    if (line.startsWith(lastHeaderPattern)) {
+                        break;
+                    }
+                } else {
+                    if (line.matches(lastHeaderPattern)) {
+                        break;
+                    }
                 }
-                //              System.err.println("header:" + line);
                 headerLines.add(line);
+                if (headerLines.size() > 500) {
+                    throw new IllegalStateException(
+                        "Reading way too many header lines");
+                }
+
             }
 
         } else {

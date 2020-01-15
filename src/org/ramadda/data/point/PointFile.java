@@ -953,6 +953,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             RecordField field = new RecordField(name, name, "", paramId++,
                                     getProperty(properties, ATTR_UNIT, ""));
 
+            if (getProperty(properties, "isDateOffset",
+                            "false").equals("true")) {
+                field.setIsDateOffset(true);
+            }
             String values    = (String) properties.get("enumeratedValues");
 
             String delimiter = ";";
