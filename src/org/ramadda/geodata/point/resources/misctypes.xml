@@ -230,20 +230,48 @@ Data courtesy of
 -section
 ]]>
 </wiki>
-
-
-
-
-
-
-
-
-
 </type>
 
 
-
-
+  <type name="type_sounding_atomic"  description="NOAA Atomic Sounding" super="type_sounding"  foruser="true"  pattern=".*atomic.*\.txt">
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="icon" value="/point/noaa.gif"/>
+     <property name="record.patterns" value="latitude:Release point latitude *([^ ].*),longitude:Release point longitude *([^ ].*),date:Balloon release date and time\s*([^\s].*),sonde_type:Sonde type *([^ ].*),sonde_serial:Sonde serial number *([^ ].*),station:Station name *([^ ].*)"/>
+     <property name="record.pattern.date.format" value="yyyy-MM-dd'T'HH:mm:ss"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="map.chart.type" value="skewt"/>
+     <property name="map.chart.args" value="hodographWidth,150,skewtWidth,300,skewtHeight,300"/>
+     <property name="record.properties">
+fields=elapsed_time[],height[unit=m], pressure[ unit=mb missing=-999],    temperature[ unit=c missing=-999],    rh[ unit=% missing=-999],dewpoint[]  ,  wind_direction[ missing=-999],    wind_speed[ unit=m/s missing=-999],   ecomp[missing=-999],   ncomp[missing=-999],  timeutc[format="yyyy-MM-dd HH:mm:ss" type="date" isDateOffset="true"],  gps_height_msl[ unit=m/s missing=-999],  latitude[  missing=-999],   longitude[  missing=-999], asc_rate[]
+delimiter=spaces
+##one or more spaces then an 's'
+lastHeaderPattern=^ +s.*
+     </property>
+     <column  name="sonde_type"  label="Sonde Type" type="enumeration" />
+     <column  name="sonde_serial"  label="Sonde Serial" type="string" />
+     <column  name="station"  label="Station" type="enumeration" />
+<wiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
+<div style="height:600">
+{{display type=skewt layoutHere=true  
+height=400
+skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false}}
+</div>
++row
++col-8
+{{information  details="false"  showTitle="false"  }} 
+-col
++col-4
+{{map}}
+-col
+-row
+-section
+]]>
+</wiki>
+</type>
 
 
 <type name="type_nasaames"  description="NASA AMES File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.NasaAmesTypeHandler" pattern=".*\.na" icon="/point/nasa.png">
@@ -253,11 +281,10 @@ Data courtesy of
   <column  name="instrument"  label="Instrument" type="enumerationplus"  />
   <column  name="campaign"  label="Campaign" type="enumerationplus"  />
   <column  name="comments"  label="Comments" type="list"  size="5000" rows="10" changetype="true"/>
- <property name="record.properties">
+  <property name="record.properties">
 delimiter=commasorspaces
 lineWrap=true
-     </property>
-
+  </property>
 </type>
 
 
