@@ -11126,7 +11126,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     this.googleChartCallbackPending = true;
                     var func = function() {
                         _this.googleChartCallbackPending = false;
-			console.log(_this.type+" google charts loaded");
                         _this.displayData();
                     }
                     this.setContents(this.getLoadingMessage());
@@ -11455,7 +11454,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         setChartSelection: function(index) {
             if (this.chart != null) {
                 if (this.chart.setSelection) {
-		    //		    console.log(this.type +".setSelection:" + index);
                     this.chart.setSelection([{
                         row: index,
 			column:null
