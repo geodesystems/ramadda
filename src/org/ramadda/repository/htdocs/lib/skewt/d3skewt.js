@@ -196,6 +196,16 @@ function D3Skewt(divid, args, jsonData) {
                 .y(function(d, i) {
                     return skewt.y(pp[i])
                 });
+                
+            var moistline = d3.svg.line()
+                .interpolate("linear")
+                .x(function(d,i) { 
+                    return skewt.x(d) + (skewt.y(skewt.basep)-skewt.y(p_levels[i]))/skewt.tan;
+                 })
+                .y(function(d,i) { 
+                    return skewt.y(p_levels[i])
+                });
+
 
             // Add clipping path
             svg.append("clipPath")
@@ -262,6 +272,35 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("class", "skewt-grid skewt-grid-adiabat")
                 .attr("clip-path", "url(#" + skewt.clipperId+")")
                 .attr("d", dryline);
+
+            // Draw moist adiabats (6,10,14,18,22,26,30C) at these t/p coordinates
+            var p_levels = [1000,988,975,962,950,938,925,900,875,850,825,800,750,700,650,600,550,500,450,400,350,300,275,250,225,200];
+            var moist_temps = [ 
+                [ 6.0,5.4,4.8,4.2,3.6,2.9,2.3,0.9,-0.5,-2.0,-3.5,-5.1,-8.7,-12.6,-16.9,-21.8,-27.3,-33.5,-40.5,-48.3,-57.1,-67.0,-72.3,-77.9,-84.0,-90.6 ],
+                [ 10.0,9.5,8.9,8.3,7.7,7.1,6.5,5.3,4.0,2.6,1.2,-0.3,-3.5,-7.2,-11.2,-15.8,-21.0,-26.9,-33.7,-41.5,-50.3,-60.5,-65.9,-71.7,-78.0,-84.8 ],
+                [ 14.0,13.5,13.0,12.4,11.9,11.4,10.8,9.7,8.5,7.2,5.9,4.5,1.6,-1.7,-5.4,-9.6,-14.3,-19.9,-26.3,-33.8,-42.6,-52.9,-58.4,-64.4,-70.8,-77.9 ],
+                [ 18.0,17.5,17.0,16.6,16.1,15.6,15.0,14.0,12.9,11.7,10.5,9.3,6.6,3.6,0.3,-3.4,-7.7,-12.6,-18.5,-25.4,-33.8,-44.0,-49.6,-55.7,-62.4,-69.7 ],
+                [ 22.0,21.6,21.1,20.7,20.2,19.7,19.3,18.3,17.3,16.2,15.1,14.0,11.5,8.9,5.9,2.6,-1.2,-5.6,-10.7,-16.8,-24.4,-33.9,-39.4,-45.5,-52.2,-59.8 ],
+                [ 26.0,25.6,25.2,24.8,24.3,23.9,23.5,22.5,21.6,20.6,19.6,18.6,16.4,13.9,11.2,8.3,4.9,1.1,-3.3,-8.6,-15.1,-23.4,-28.3,-33.9,-40.4,-47.9 ],
+                [ 30.0,29.6,29.2,28.8,28.4,28.0,27.6,26.8,25.9,25.0,24.1,23.1,21.0,18.8,16.4,13.7,10.7,7.4,3.5,-1.0,-6.4,-13.3,-17.4,-22.2,-27.8,-34.6 ] 
+            ];
+            svg.selectAll(".moistline")
+                .data(moist_temps)
+                .enter().append("path")
+                .attr("class", "skewt-grid skewt-grid-moist")
+                .attr("clip-path", "url(#" + skewt.clipperId+")")
+                .attr("d", moistline);
+
+            svg.selectAll(".moistlabels")
+                  .data([6,10,14,18,22,26,30]).enter().append("text")
+                  .attr("x", function (d,i) { 
+                      return skewt.x(moist_temps[i][moist_temps[i].length-2]) + (skewt.y(skewt.basep)-skewt.y(225))/skewt.tan; 
+                  })
+                  .attr("y", skewt.y(225))
+                  .attr("dy", "0.75em")
+                  .attr("class", "skewt-moistlabels")
+                  .attr("text-anchor", "middle")
+                  .text(function(d) { return d; });
 
             // Line along right edge of plot
             svg.append("line")

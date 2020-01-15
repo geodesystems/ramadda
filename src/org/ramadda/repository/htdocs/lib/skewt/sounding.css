@@ -67,9 +67,16 @@
    fill: none;
 }
 .skewt-grid-temperature-zero { 
-   stroke: #000; 
-   stroke-width: 1.5px; 
+   stroke: #888; 
+   stroke-width: 1.1px; 
 }
+
+.skewt-grid-moist {
+   stroke: #ccc;
+   stroke-dasharray: 5,5;
+}
+
+.skewt-moistlabels { font-size: 8px; opacity: 0.5;}
 
 .barline { stroke: #000; stroke-width: 0.5px; }
 .rectline { fill: #aaa; opacity: 0.5;}
@@ -81,6 +88,7 @@
 .key { font-size: 10px; }
 .windbarb { stroke: #000; stroke-width: 0.75px; fill: none; }
 .flag { fill: #000; }
+
 
 .overlay {
   fill: none;

@@ -256,7 +256,7 @@ lastHeaderPattern=^ +s.*
 <div style="height:600">
 {{display type=skewt layoutHere=true  
 height=400
-skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false}}
+skewtWidth=400 skewtHeight="400" hodographWidth=200 showMenu=false showTitle=false windStride=100}}
 </div>
 +row
 +col-8
