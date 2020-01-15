@@ -1657,6 +1657,7 @@ var HtmlUtils = {
                 info: false,
                 searching: false,
                 scrollCollapse: true,
+		retrieve: true,
             };
             if (args)
                 $.extend(options, args);
@@ -1676,6 +1677,9 @@ var HtmlUtils = {
                 var sh = "" + options.scrollY;
                 if (!sh.endsWith("px")) options.scrollY += "px";
             }
+	    if($.fn.dataTable.isDataTable("#"+$(this).attr("id"))) {
+		return;
+	    }
             table = $(this).DataTable(options);
         });
 
