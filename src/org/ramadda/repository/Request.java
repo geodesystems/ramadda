@@ -2507,7 +2507,7 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public int getServerPort() {
-	System.err.println("request.getServerPort");
+	System.err.println("request.getServerPort useFixed= " + repository.useFixedHostnameForAbsoluteUrls());
         if (!repository.useFixedHostnameForAbsoluteUrls()) {
             try {
 		System.err.println("\t httpServletRequest:" +httpServletRequest);
