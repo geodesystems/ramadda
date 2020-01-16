@@ -402,7 +402,12 @@ public class CalendarOutputHandler extends OutputHandler {
         timelineTemplate = timelineTemplate.replace("${intervalUnit}",
                 interval);
         timelineTemplate = timelineTemplate.replace("${style}", style);
-        //        System.out.println(timelineTemplate);
+
+	String extra = "";
+	if(Misc.equals(props.get("shareSelected"),"true")) {
+	    extra = "  timelineShareSelected = true;\n";
+	}
+	timelineTemplate = timelineTemplate.replace("${extra}", extra);
         sb.append(timelineTemplate);
     }
 
