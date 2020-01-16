@@ -649,7 +649,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean useFixedHostnameForAbsoluteUrls() {
-        return getProperty(PROP_USE_FIXED_HOSTNAME, false);
+	propdebug = true;
+        boolean r = getProperty(PROP_USE_FIXED_HOSTNAME, false);
+	propdebug = false;
+	return r;
     }
 
     /**
