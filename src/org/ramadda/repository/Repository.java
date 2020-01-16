@@ -649,10 +649,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean useFixedHostnameForAbsoluteUrls() {
-	propdebug = true;
-        boolean r = getProperty(PROP_USE_FIXED_HOSTNAME, false);
-	propdebug = false;
-	return r;
+        return  getProperty(PROP_USE_FIXED_HOSTNAME, false);
     }
 
     /**
@@ -677,7 +674,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (Utils.stringDefined(port)) {
             return Integer.decode(port.trim()).intValue();
         }
-
         return super.getPort();
     }
 
@@ -694,8 +690,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public boolean isSSLEnabled(Request request) {
         //Defer to the parent
-	System.err.println("Repository sslEnabled:" + getHttpsPort() );
-
         if (parentRepository != null) {
             return parentRepository.isSSLEnabled(request);
         }
@@ -705,7 +699,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (sslIgnore) {
             return false;
         }
-
         return getHttpsPort() >= 0;
     }
 
@@ -2778,12 +2771,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                           ? request.getServerName()
                           : getHostname();
         int    port     = getHttpsPort();
-        System.err.println("httpsUrl: https port=" +  port +" request.serverPort=" + request.getServerPort());
         if (port < 0) {
-            String result = getHttpProtocol() + "://" + hostname + ":"
+            return  getHttpProtocol() + "://" + hostname + ":"
                             + request.getServerPort() + url;
-
-            return result;
         }
         if (port == 0) {
             return "https://" + hostname + url;

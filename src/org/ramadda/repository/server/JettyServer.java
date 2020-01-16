@@ -102,7 +102,7 @@ public class JettyServer implements Constants {
             if (args[i].equals("-port")) {
 		hadPort = true;
                 port = new Integer(args[i + 1]).intValue();
-		System.err.println("port args:" + port);
+		//		System.err.println("port args:" + port);
                 //Keep looping so we get the last -port in the arg list
             }
         }
@@ -113,6 +113,7 @@ public class JettyServer implements Constants {
 	    //	    System.err.println("port from properties:" + port);
 	}
 
+	baseRepository.setPort(port);
         server  = new Server(port);
         server.setHandler(context);
 
@@ -253,8 +254,6 @@ public class JettyServer implements Constants {
                           (String) null, false);
         if ((ssls != null) && (ssls.trim().length() > 0)) {
             sslPort = new Integer(ssls.trim());
-	    System.err.println("JettyServer SSL port: " + sslPort);
-
         }
 
         if (sslPort < 0) {
@@ -364,7 +363,6 @@ public class JettyServer implements Constants {
         httpsConnector.setPort(sslPort);
         httpsConnector.setIdleTimeout(500000);
         server.addConnector(httpsConnector);
-	System.err.println("JettyServer setting repository SSL port: " + sslPort);
         repository.setHttpsPort(sslPort);
     }
 

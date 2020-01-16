@@ -2507,18 +2507,13 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public int getServerPort() {
-	System.err.println("request.getServerPort useFixed= " + repository.useFixedHostnameForAbsoluteUrls());
         if (!repository.useFixedHostnameForAbsoluteUrls()) {
             try {
-		System.err.println("\t httpServletRequest:" +httpServletRequest);
                 if (httpServletRequest != null) {
-		    System.err.println("\t using httpServletRequest.getServerPort():" + httpServletRequest.getServerPort());
                     return httpServletRequest.getServerPort();
                 }
             } catch (Exception ignoreThis) {}
         }
-
-	System.err.println("\t using repository.getPort():" + repository.getPort());
         return repository.getPort();
     }
 

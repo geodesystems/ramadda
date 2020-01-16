@@ -422,9 +422,6 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @param port _more_
      */
     protected void setHttpsPort(int port) {
-	System.err.println ("RepositoryBase setHttpsPort:"+ port);
-	Exception exc = new Exception();
-	exc.printStackTrace();
         httpsPort = port;
     }
 
