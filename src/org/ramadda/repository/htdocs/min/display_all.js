@@ -15119,18 +15119,19 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(
-		SUPER.getWikiEditorTags(),
-		['label:Skewt Attributes',
-		 'skewtWidth="500"',
-		 'skewtHeight="550"',
-		 'hodographWidth=150',
-		 'showHodograph=false',
-		 'showText=false',
-		])
+        getWikiEditorTags: function() {
+            return Utils.mergeLists(
+                SUPER.getWikiEditorTags(),
+                ['label:Skewt Attributes',
+                 'skewtWidth="500"',
+                 'skewtHeight="550"',
+                 'hodographWidth=150',
+                 'showHodograph=false',
+                 'windStride=1',
+                 'showText=false',
+                ])
 
-	},
+        },
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
         },
@@ -15148,41 +15149,41 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             this.updateUI();
         },
         updateUI: async function() {
-//	    console.log("skewt.updateui");
+//          console.log("skewt.updateui");
             if(!this.loadedResources) {
-		var time = new Date();
-		await Utils.importCSS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/sounding.css");
-		//            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
-		//            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
-		await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/d3skewt.js");
-		this.loadedResources = true;
+                var time = new Date();
+                await Utils.importCSS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/sounding.css");
+                //            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
+                //            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
+                await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/d3skewt.js");
+                this.loadedResources = true;
             }
 
             if(!window["D3Skewt"]) {
-		setTimeout(()=>this.updateUI(),100);
-		return;
+                setTimeout(()=>this.updateUI(),100);
+                return;
             }
             SUPER.updateUI.call(this);
 
-//	    console.log("skewt.updateui-1");
+//          console.log("skewt.updateui-1");
             let records =  this.filterData();
             if (!records || records.length==0) {
                 this.setContents(this.getLoadingMessage());
-		return;
+                return;
             }
-//	    console.log("skewt.updateui-2");
+//          console.log("skewt.updateui-2");
 
             let skewtId = this.getDomId(ID_SKEWT);
             let html = HtmlUtils.div(["id", skewtId], "");
             this.setContents(html);
             var date = records[0].getDate();
             if(this.jq(ID_DATE_LABEL).length==0) {
-		this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
+                this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
             }
             if(date!=null) {
-		this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
+                this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
             } else {
-		this.jq(ID_DATE_LABEL).html("");
+                this.jq(ID_DATE_LABEL).html("");
             }
             var options = {};
             if (this.propertyDefined("showHodograph"))
@@ -15195,6 +15196,9 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 options.skewtHeight = parseInt(this.getProperty("skewtHeight"));
             if (this.propertyDefined("hodographWidth")){
                 options.hodographWidth = parseInt(this.getProperty("hodographWidth"));
+            }
+            if (this.propertyDefined("windStride")){
+                options.windStride = parseInt(this.getProperty("windStride"));
             }
             options.showText = this.getProperty("showText",true);
             //            options.hodographWidth = 200;
@@ -15211,7 +15215,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 {id:"vwind",aliases:["v-component_of_wind_isobaric","v"]},
             ];
             //TODO: check for units
-	    var data ={};
+            var data ={};
             var dataFields ={};
             for(var i=0;i<names.length;i++) {
                 var obj = names[i];
@@ -15310,24 +15314,24 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
 
-	    var alldata = data;
-	    data = {};
-	    //if any missing then don't include
-	    for(a  in alldata) data[a] = [];
-	    alldata[names[0].id].map((v,idx)=>{
-		var ok = true;
-		for(id in alldata) {
-		    if(isNaN(alldata[id][idx])) {
-			ok = false;
-			break;
-		    }
-		}
-		if(ok) {
-		    for(id in alldata) {
-			data[id].push(alldata[id][idx]);
-		    }
-		}
-	    });
+            var alldata = data;
+            data = {};
+            //if any missing then don't include
+            for(a  in alldata) data[a] = [];
+            alldata[names[0].id].map((v,idx)=>{
+                var ok = true;
+                for(id in alldata) {
+                    if(isNaN(alldata[id][idx])) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if(ok) {
+                    for(id in alldata) {
+                        data[id].push(alldata[id][idx]);
+                    }
+                }
+            });
 
 
             if(data.height.length>1) {
@@ -15336,10 +15340,29 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                         data[name] = Utils.reverseArray(data[name]);
                 }
             }
-	    if(data.temperature.length==0) {
+            if(data.temperature.length==0) {
                 this.displayError("No data is available");
-		return;
-	    }
+                return;
+            }
+
+            if(options.windStride > 1) {
+                
+                var new_wind_speed = [];
+                var new_wind_direction = [];
+                for (var i = 0; i<data.wind_speed.length; i++) {
+		    var pres = data.pressure[i];
+                    if (i%options.windStride == 0) {
+                        new_wind_speed.push(data.wind_speed[i]);
+                        new_wind_direction.push(data.wind_direction[i]);
+                    } else {
+                        new_wind_speed.push(0);
+                        new_wind_direction.push(0);
+		    }
+                }
+                data.wind_speed = new_wind_speed;
+                data.wind_direction = new_wind_direction;
+            }
+
 
             options.myid = this.getId();
             try {
