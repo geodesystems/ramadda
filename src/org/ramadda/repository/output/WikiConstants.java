@@ -577,6 +577,9 @@ public interface WikiConstants {
     public static final String FILTER_SUFFIX = "suffix:";
 
     /** _more_ */
+    public static final String FILTER_NAME = "name:";
+
+    /** _more_ */
     public static final String FILTER_ID = "id:";
 
     /** property delimiter */

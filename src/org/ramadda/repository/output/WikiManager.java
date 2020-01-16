@@ -4002,6 +4002,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
             entries = tmp;
+        } else if (filter.startsWith(FILTER_NAME)) {
+            String name  = filter.substring(FILTER_NAME.length());
+            List<Entry> tmp = new ArrayList<Entry>();
+            for (Entry child : entries) {
+		boolean matches = child.getName().matches(name);
+		orNot(tmp, child, matches, doNot);
+	    }
+            entries = tmp;
         } else if (filter.startsWith(FILTER_ID)) {
             List<String> ids =
                 StringUtil.split(filter.substring(FILTER_ID.length()), ",",
