@@ -2757,10 +2757,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     //    @Override
     public String getUrlPath(Request request, RequestUrl requestUrl) {
         if (requestUrl.getNeedsSsl()) {
-            return httpsUrl(request, getUrlBase() + requestUrl.getPath());
+            return   httpsUrl(request, getUrlBase() + requestUrl.getPath());
         }
-
-        return getUrlBase() + requestUrl.getPath();
+        return   getUrlBase() + requestUrl.getPath();
     }
 
     /**
@@ -2776,6 +2775,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                           ? request.getServerName()
                           : getHostname();
         int    port     = getHttpsPort();
+        System.err.println("httpsUrl: https port=" +  port +" request.serverPort=" + request.getServerPort());
         if (port < 0) {
             String result = getHttpProtocol() + "://" + hostname + ":"
                             + request.getServerPort() + url;

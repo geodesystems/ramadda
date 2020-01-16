@@ -375,6 +375,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public String absoluteUrl(String url) {
         int port = getPort();
+	System.err.println("RepositoryBase.absoluteUrl port = "  + port);
         if ((port == 80) || (port == 0)) {
             return getHttpProtocol() + "://" + getHostname() + url;
         } else {
@@ -421,6 +422,9 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @param port _more_
      */
     protected void setHttpsPort(int port) {
+	System.err.println ("RepositoryBase setHttpsPort:"+ port);
+	Exception exc = new Exception();
+	exc.printStackTrace();
         httpsPort = port;
     }
 

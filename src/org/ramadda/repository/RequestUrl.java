@@ -121,14 +121,19 @@ public class RequestUrl {
      */
     public String getFullUrl(String suffix) {
         checkInit();
+	System.err.println("RequestUrl.getFullUrl needsSsl: " + needsSsl);
         if (needsSsl) {
-            return getHttpsUrl(suffix);
+            String url =  getHttpsUrl(suffix);
+	    System.err.println("\tssl  url=" + url);
+	    return url;
         }
 
-        return getRepositoryBase().absoluteUrl(
+        String url2 =  getRepositoryBase().absoluteUrl(
             getRepositoryBase().getUrlBase() + path) + ((suffix != null)
                 ? suffix
                 : "");
+	System.err.println("\turl=" + url2);
+	return url2;
     }
 
     /**
