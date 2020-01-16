@@ -253,6 +253,7 @@ public class JettyServer implements Constants {
                           (String) null, false);
         if ((ssls != null) && (ssls.trim().length() > 0)) {
             sslPort = new Integer(ssls.trim());
+	    System.err.println("JettyServer SSL port: " + sslPort);
 
         }
 
@@ -363,6 +364,7 @@ public class JettyServer implements Constants {
         httpsConnector.setPort(sslPort);
         httpsConnector.setIdleTimeout(500000);
         server.addConnector(httpsConnector);
+	System.err.println("JettyServer setting repository SSL port: " + sslPort);
         repository.setHttpsPort(sslPort);
     }
 

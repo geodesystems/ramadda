@@ -691,6 +691,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public boolean isSSLEnabled(Request request) {
         //Defer to the parent
+	System.err.println("Repository sslEnabled:" + getHttpsPort() );
+
         if (parentRepository != null) {
             return parentRepository.isSSLEnabled(request);
         }
