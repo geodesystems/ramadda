@@ -931,13 +931,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 dataList = newList;
             }
 
-
             try {
-                this.makeChart(dataList, props, selectedFields);
+                this.chart = this.makeChart(dataList, props, selectedFields);
             } catch (e) {
-//		console.log("Error making chart:\n" + e +"\n" + e.stack);
-		console.log("Error making chart:\n" + e);
-//                this.displayError("" + e);
+		console.log("Error making chart:\n" + e +"\n" + e.stack);
                 return;
             }
             var container = _this.jq(ID_CHART);

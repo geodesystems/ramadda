@@ -182,6 +182,7 @@ function RepositoryMap(mapId, params) {
         vectors: null,
         loadedLayers: [],
 	doPopup:true,
+	shareSelected:false,
 	doSelect:true,
         boxes: null,
         kmlLayer: null,
@@ -3469,11 +3470,14 @@ function initMapFunctions(theMap) {
 		return;
 	    }
 	}
-	if(!this.doPopup) return;
 
         var id = marker.ramaddaId;
         if (!id)
             id = marker.id;
+	if(this.shareSelected &&  window["ramaddaDisplaySetSelectedEntry"]) {
+	    ramaddaDisplaySetSelectedEntry(id);
+	}
+	if(!this.doPopup) return;
         this.hiliteBox(id);
         var theMap = this;
         if (marker.inputProps) {

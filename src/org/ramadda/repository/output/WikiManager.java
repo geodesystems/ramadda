@@ -240,6 +240,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         "#" +ATTR_WIDTH, "100%", 
                                         "#entries", ""),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Entry Title"),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Text Readout",
                                         ATTR_TYPE, "text"), 
                             new WikiTag(WIKI_TAG_DISPLAY,
@@ -3431,9 +3433,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Hashtable mapProps = new Hashtable();
             String[]  mapArgs  = {
                 "strokeColor", "fillColor", "fillOpacity", "scrollToZoom","boxColor",
+		"shareSelected",
+		"doPopup",
                 "fill", "selectOnHover", "onSelect", "showDetailsLink",
                 "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
-                "kmlLayerName", "displayDiv", "initialBounds:bounds"
+                "kmlLayerName", "displayDiv", "initialBounds:bounds",
+		"showLatLonPosition"
             };
             for (String mapArg : mapArgs) {
                 String key = mapArg;

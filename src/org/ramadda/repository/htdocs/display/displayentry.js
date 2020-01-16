@@ -13,6 +13,7 @@ var DISPLAY_OPERANDS = "operands";
 var DISPLAY_METADATA = "metadata";
 var DISPLAY_ENTRYTIMELINE = "entrytimeline";
 var DISPLAY_REPOSITORIES = "repositories";
+var DISPLAY_ENTRYTITLE = "entrytitle";
 
 var ID_RESULTS = "results";
 var ID_ENTRIES = "entries";
@@ -40,6 +41,12 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_ENTRYDISPLAY,
     label: "Entry Display",
+    requiresData: false,
+    category: "Entry Displays"
+});
+addGlobalDisplayType({
+    type: DISPLAY_ENTRYTITLE,
+    label: "Entry Title",
     requiresData: false,
     category: "Entry Displays"
 });
@@ -2335,6 +2342,63 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
             this.setContents(HtmlUtils.div(["class", "display-entry-description", "style", "height:" + height + ";"],
                 html));
             this.entryHtmlHasBeenDisplayed(entry);
+        },
+    });
+}
+
+
+
+function RamaddaEntrytitleDisplay(displayManager, id, properties) {
+    var SUPER;
+    $.extend(this, {
+        sourceEntry: properties.sourceEntry
+    });
+    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
+    if (properties.sourceEntry == null && properties.entryId != null) {
+        var _this = this;
+        var f = async function() {
+            await _this.getEntry(properties.entryId, entry => {
+                _this.sourceEntry = entry;
+                _this.initDisplay()
+            });
+        }
+        f();
+    }
+
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Entry Title",
+					'template="<b>${icon} ${name} Date: ${date} ${start_date} ${end_date} ${entry_attribute...}</b>"',
+					'showLink=false'
+ 				    ])},
+        initDisplay: function() {
+            this.createUI();
+	    let html = "";
+	    if(this.sourceEntry) {
+		let e = this.sourceEntry;
+		html = this.getProperty("template","<b>${icon} ${name} Date: ${date} Sonde: ${sonde}</b>");
+		html = html.replace("${name}",e.getDisplayName());
+		html = html.replace("${icon}",e.getIconImage());
+		html = html.replace("${date}",this.formatDate(e.getStartDate()));
+		html = html.replace("${start_date}",this.formatDate(e.getStartDate()));
+		html = html.replace("${end_date}",this.formatDate(e.getEndDate()));
+		e.getAttributeNames().map(n=>{
+		    html = html.replace("${" + n+"}",e.getAttributeValue(n));
+		});
+		if(this.getProperty("showLink",true)) {
+		    html = HtmlUtils.href(e.getEntryUrl(),html);
+		}
+	    }
+	    this.displayHtml(html);
+        },
+	setEntry: function(entry) {
+	    this.sourceEntry = entry;
+	    this.initDisplay();
+	},
+        handleEventEntrySelection: function(source, args) {
         },
     });
 }
