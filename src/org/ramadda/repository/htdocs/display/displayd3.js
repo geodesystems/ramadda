@@ -403,6 +403,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
 
+            /*
             if(options.windStride > 1) {
                 
                 var new_wind_speed = [];
@@ -420,6 +421,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 data.wind_speed = new_wind_speed;
                 data.wind_direction = new_wind_direction;
             }
+            */
 
 
             options.myid = this.getId();
