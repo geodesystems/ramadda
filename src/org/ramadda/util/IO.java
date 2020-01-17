@@ -37,6 +37,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -143,10 +144,7 @@ public class IO {
             InputStream is = Utils.getInputStream(file, Utils.class);
             if (is != null) {
                 byte[] bytes = IOUtil.readBytes(is);
-                Image  image = Toolkit.getDefaultToolkit().createImage(bytes);
-                //                image = ImageUtils.waitOnImage(image);
-
-                return image;
+		return  ImageIO.read(new ByteArrayInputStream(bytes));
             }
             System.err.println("Could not read image:" + file);
         } catch (Exception exc) {
