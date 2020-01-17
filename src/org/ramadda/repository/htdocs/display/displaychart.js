@@ -425,7 +425,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		return this.colorList;
 	    }
 
-	    if (this.getProperty("colors")) {
+	    if (this.getProperty("colors") && this.getProperty("colors")!="default") {
 		var v = this.getProperty("colors");
 		if(!Array.isArray(v)) {
 		    v = v.split(",");

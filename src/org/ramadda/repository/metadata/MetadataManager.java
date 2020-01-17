@@ -721,8 +721,12 @@ public class MetadataManager extends RepositoryManager {
                                              boolean shortForm) {
         List<Metadata> metadataList = new ArrayList<Metadata>();
         for (MetadataHandler handler : getMetadataHandlers()) {
-            handler.getInitialMetadata(request, entry, metadataList, extra,
-                                       shortForm);
+	    try {
+		handler.getInitialMetadata(request, entry, metadataList, extra,
+					   shortForm);
+	    } catch(Exception exc) {
+		System.err.println("MetadataManager.getInitialMetadata error: "+ exc);
+	    }
         }
 
         return metadataList;
