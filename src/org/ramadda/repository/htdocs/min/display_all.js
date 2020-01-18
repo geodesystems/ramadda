@@ -1734,6 +1734,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 fixedFields = fixedFields.split(",");
             }
 
+	    let aliases= {};
+
+	    var tmp = this.getProperty("fieldAliases");
+	    if(tmp) {
+		tmp.split(",").map(tok=>{
+		    [name,alias] =   tok.split(":");
+		    aliases[alias] = name;
+		});
+	    }
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 var pointData = dataList[collectionIdx];
                 var fields = this.getFieldsToSelect(pointData);
@@ -1742,6 +1751,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         console.log("\thave fixed fields:" + fixedFields.length);
                     for (var i = 0; i < fixedFields.length; i++) {
                         var sfield = fixedFields[i];
+			var alias = aliases[sfield];
                         if (this.debugSelected)
                             console.log("\t\tfixed field:" + sfield);
                         for (var j = 0; j < fields.length; j++) {
@@ -1749,7 +1759,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             var id = field.getId();
                             if (this.debugSelected)
                                 console.log("\t\t\tlooking at:" + id);
-                            if (id == sfield || ("#" + (j + 1)) == sfield) {
+                            if (id == sfield || ("#" + (j + 1)) == sfield || id == alias) {
                                 if (this.debugSelected)
                                     console.log("\t\t\t\tgot:" + field.getLabel());
                                 df.push(field);
@@ -11484,7 +11494,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             try {
-                this.chart = this.makeChart(dataList, props, selectedFields);
+                this.makeChart(dataList, props, selectedFields);
             } catch (e) {
 		console.log("Error making chart:\n" + e +"\n" + e.stack);
                 return;
@@ -15366,6 +15376,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
 
+            /*
             if(options.windStride > 1) {
                 
                 var new_wind_speed = [];
@@ -15383,6 +15394,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 data.wind_speed = new_wind_speed;
                 data.wind_direction = new_wind_direction;
             }
+            */
 
 
             options.myid = this.getId();
@@ -23391,12 +23403,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(args.highlight) {
 		var point = new OpenLayers.LonLat(args.record.getLongitude(), args.record.getLatitude());
                 var attrs = {
-                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",8)+8)),
+                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",6)+8)),
                     stroke: true,
                     strokeColor: this.getProperty("recordHighlightStrokeColor", "#000"),
-                    strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 1)),
+                    strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 2)),
 		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
-		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.75)),
+		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.5)),
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
 		    var size = parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",24)));

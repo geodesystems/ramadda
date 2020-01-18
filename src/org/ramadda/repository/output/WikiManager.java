@@ -2936,7 +2936,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_WIKITEXT)) {
-	    StringBuilder editor = new StringBuilder();
+            StringBuilder editor = new StringBuilder();
 
             boolean showToolbar = getProperty(wikiUtil, props, "showToolbar",
                                       false);
@@ -3432,13 +3432,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             Hashtable mapProps = new Hashtable();
             String[]  mapArgs  = {
-                "strokeColor", "fillColor", "fillOpacity", "scrollToZoom","boxColor",
-		"shareSelected",
-		"doPopup",
-                "fill", "selectOnHover", "onSelect", "showDetailsLink",
+                "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
+                "boxColor", "shareSelected", "doPopup", "fill",
+                "selectOnHover", "onSelect", "showDetailsLink",
                 "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
                 "kmlLayerName", "displayDiv", "initialBounds:bounds",
-		"showLatLonPosition"
+                "showLatLonPosition"
             };
             for (String mapArg : mapArgs) {
                 String key = mapArg;
@@ -4003,12 +4002,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             entries = tmp;
         } else if (filter.startsWith(FILTER_NAME)) {
-            String name  = filter.substring(FILTER_NAME.length());
-            List<Entry> tmp = new ArrayList<Entry>();
+            String      name = filter.substring(FILTER_NAME.length());
+            List<Entry> tmp  = new ArrayList<Entry>();
             for (Entry child : entries) {
-		boolean matches = child.getName().matches(name);
-		orNot(tmp, child, matches, doNot);
-	    }
+                boolean matches = child.getName().matches(name);
+                orNot(tmp, child, matches, doNot);
+            }
             entries = tmp;
         } else if (filter.startsWith(FILTER_ID)) {
             List<String> ids =
@@ -4284,7 +4283,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         List<Entry> entries     = new ArrayList<Entry>();
         Request myRequest = new Request(getRepository(), request.getUser());
 
-
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
             if (entryid.startsWith("#")) {
                 continue;
@@ -4544,6 +4542,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         request, wikiUtil,
                         getEntryUtil().sortEntriesOnDate(
                             grandChildren, true), filter, props));
+
 
                 continue;
             }
@@ -6284,32 +6283,36 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-	String changeEntries = getProperty(wikiUtil, props, "changeEntries");
-	if(changeEntries!=null && changeEntries.equals("false")) {
-	    changeEntries = null;
-	}
-	if(changeEntries!=null) {
+        String changeEntries = getProperty(wikiUtil, props, "changeEntries");
+        if ((changeEntries != null) && changeEntries.equals("false")) {
+            changeEntries = null;
+        }
+        if (changeEntries != null) {
             List<Entry> children;
-	    if(changeEntries.equals("true")) {
-		children = getEntries(request, wikiUtil,
-				      originalEntry, entry, props);
-	    } else {
-		children = getEntries(request, wikiUtil, entry,
-				      changeEntries, props);
-	    }
-	    StringBuilder tmp = new StringBuilder();
-	    for(Entry child: children) {
-		if(tmp.length()>0) tmp.append(",");
-		tmp.append(child.getId() +":" + child.getName().replaceAll(","," "));
-	    }
-	    propList.add("entryCollection");
-	    propList.add(Json.quote(tmp.toString()));
-	    String tmpname = getProperty(wikiUtil,props,"changeEntriesLabel");
-	    if(tmpname!=null) {
-		propList.add("changeEntriesLabel");
-		propList.add(Json.quote(tmpname));
-	    }
-	}
+            if (changeEntries.equals("true")) {
+                children = getEntries(request, wikiUtil, originalEntry,
+                                      entry, props);
+            } else {
+                children = getEntries(request, wikiUtil, entry,
+                                      changeEntries, props);
+            }
+            StringBuilder tmp = new StringBuilder();
+            for (Entry child : children) {
+                if (tmp.length() > 0) {
+                    tmp.append(",");
+                }
+                tmp.append(child.getId() + ":"
+                           + child.getName().replaceAll(",", " "));
+            }
+            propList.add("entryCollection");
+            propList.add(Json.quote(tmp.toString()));
+            String tmpname = getProperty(wikiUtil, props,
+                                         "changeEntriesLabel");
+            if (tmpname != null) {
+                propList.add("changeEntriesLabel");
+                propList.add(Json.quote(tmpname));
+            }
+        }
 
         topProps.add("layoutType");
         topProps.add(Json.quote(getProperty(wikiUtil, props, "layoutType",
@@ -6670,7 +6673,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HtmlUtils.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displaymap.js"));
-		HtmlUtils.importJS(
+                HtmlUtils.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displaymisc.js"));
                 HtmlUtils.importJS(

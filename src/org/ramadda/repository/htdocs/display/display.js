@@ -1584,6 +1584,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 fixedFields = fixedFields.split(",");
             }
 
+	    let aliases= {};
+
+	    var tmp = this.getProperty("fieldAliases");
+	    if(tmp) {
+		tmp.split(",").map(tok=>{
+		    [name,alias] =   tok.split(":");
+		    aliases[alias] = name;
+		});
+	    }
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 var pointData = dataList[collectionIdx];
                 var fields = this.getFieldsToSelect(pointData);
@@ -1592,6 +1601,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         console.log("\thave fixed fields:" + fixedFields.length);
                     for (var i = 0; i < fixedFields.length; i++) {
                         var sfield = fixedFields[i];
+			var alias = aliases[sfield];
                         if (this.debugSelected)
                             console.log("\t\tfixed field:" + sfield);
                         for (var j = 0; j < fields.length; j++) {
@@ -1599,7 +1609,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             var id = field.getId();
                             if (this.debugSelected)
                                 console.log("\t\t\tlooking at:" + id);
-                            if (id == sfield || ("#" + (j + 1)) == sfield) {
+                            if (id == sfield || ("#" + (j + 1)) == sfield || id == alias) {
                                 if (this.debugSelected)
                                     console.log("\t\t\t\tgot:" + field.getLabel());
                                 df.push(field);

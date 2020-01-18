@@ -530,12 +530,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(args.highlight) {
 		var point = new OpenLayers.LonLat(args.record.getLongitude(), args.record.getLatitude());
                 var attrs = {
-                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",8)+8)),
+                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",6)+8)),
                     stroke: true,
                     strokeColor: this.getProperty("recordHighlightStrokeColor", "#000"),
-                    strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 1)),
+                    strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 2)),
 		    fillColor: this.getProperty("recordHighlightFillColor", "#ccc"),
-		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.75)),
+		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.5)),
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
 		    var size = parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",24)));
