@@ -2996,6 +2996,7 @@ public class PageHandler extends RepositoryManager {
         sb.append("<table width=\"100%\"><tr><td>");
 
         // Comments
+	if(getRepository().getCommentsEnabled()) {
         List<Comment> comments = entry.getComments();
         if (comments != null) {
             Link link =
@@ -3012,6 +3013,7 @@ public class PageHandler extends RepositoryManager {
             sb.append(href);
             sb.append("</td><td>");
         }
+	}
 
         /*
           Don't include the sharing from addthis.com for now since I think theyre doing tracking

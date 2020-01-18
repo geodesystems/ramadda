@@ -2053,10 +2053,13 @@ public class OutputHandler extends RepositoryManager {
                                          boolean onlyIfWeHaveThem)
             throws Exception {
         StringBuilder sb = new StringBuilder();
-        List<Comment> comments =
-            getRepository().getCommentManager().getComments(request, entry);
-        if ( !onlyIfWeHaveThem || (comments.size() > 0)) {
-            sb.append(getPageHandler().getCommentHtml(request, entry));
+	if(getRepository().getCommentsEnabled()) {
+            List<Comment> comments =
+                getRepository().getCommentManager().getComments(request,
+                    entry);
+            if ( !onlyIfWeHaveThem || (comments.size() > 0)) {
+                sb.append(getPageHandler().getCommentHtml(request, entry));
+            }
         }
 
         return sb;

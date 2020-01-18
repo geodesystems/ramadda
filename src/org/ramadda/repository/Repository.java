@@ -3210,6 +3210,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return !getProperty(PROP_ACCESS_NOBOTS, false);
     }
 
+    public boolean getCommentsEnabled() {
+	return getProperty("ramadda.enable_comments", false);
+    }
+
+
     /**
      * _more_
      *

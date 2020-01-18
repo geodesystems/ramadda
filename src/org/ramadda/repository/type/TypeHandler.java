@@ -2621,7 +2621,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        if (getRepository().getProperty("ramadda.enable_comments", false)) {
+ 	if(getRepository().getCommentsEnabled()) {
             if (getRepository().isReadOnly()) {
                 links.add(
                     new Link(
