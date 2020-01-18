@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -362,11 +363,12 @@ public class CalendarOutputHandler extends OutputHandler {
             }
         }
         long diffDays = (maxDate - minDate) / 1000 / 3600 / 24;
-        //            System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
+	System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
         String interval = "Timeline.DateTime.MONTH";
+	
         if (diffDays < 3) {
             interval = "Timeline.DateTime.HOUR";
-        } else if (diffDays < 7) {
+        } else if (diffDays < 21) {
             interval = "Timeline.DateTime.DAY";
         } else if (diffDays < 30) {
             interval = "Timeline.DateTime.WEEK";
@@ -396,6 +398,35 @@ public class CalendarOutputHandler extends OutputHandler {
         if (mapVar == null) {
             mapVar = "null";
         }
+	StringBuilder json = new StringBuilder("timelineJson = {'dateTimeFormat': 'iso8601','events' : [");
+	SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	for(int i=0;i<entries.size();i++) {
+	    Entry entry = entries.get(i);
+	    List<String> jprops = new ArrayList<String>();
+	    jprops.add("id");
+	    jprops.add(entry.getId());
+	    jprops.add("start");
+	    jprops.add(sdf2.format(new Date(entry.getStartDate())));
+            if (entry.getStartDate() != entry.getEndDate()) {
+		jprops.add("end");
+		jprops.add(sdf2.format(new Date(entry.getEndDate())));
+            }
+	    jprops.add("title");
+	    jprops.add(entry.getName());
+	    jprops.add("description");
+	    jprops.add("");
+	    jprops.add("link");
+	    jprops.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
+	    if(i>0)
+		json.append(",");
+
+	    json.append(Json.mapAndQuote(jprops));
+
+	}
+	json.append("]};");
+	    
+        timelineTemplate = timelineTemplate.replace("${timelinejson}", json.toString());
+
         timelineTemplate = timelineTemplate.replace("${mapvar}", mapVar);
         timelineTemplate = timelineTemplate.replace("${basedate}",
                 sdf.format(new Date(minDate)));

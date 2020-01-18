@@ -18,7 +18,7 @@
 <script>
 
   var timelineShareSelected = false;
-  function createTimeline(dataUrl, baseDate, timelineIntervalUnit, mapVar) {
+  function createTimeline(dataUrl, json, baseDate, timelineIntervalUnit, mapVar) {
       if(!timelineIntervalUnit) {
           timelineIntervalUnit = SimileAjax.DateTime.DECADE;
       }            
@@ -107,9 +107,13 @@
        timeline._events.add(event);
       */
 
-      timeline.loadXML(dataUrl, function(xml, url) {
-          eventSource.loadXML(xml, url);
-      });
+      if(json) {
+	  eventSource.loadJSON(json, "");
+      } else {
+	  timeline.loadXML(dataUrl, function(xml, url) {
+              eventSource.loadXML(xml, url);
+	  });
+      }
       return timeline;
   }
   var resizeTimerID = null;
@@ -124,24 +128,25 @@
       }
   }
 
-  function waitForTimeline() {
+  function waitForTimeline(json) {
       var waitTime = 200;
       if(typeof Timeline == 'undefined') {
-          setTimeout(waitForTimeline, waitTime);
+          setTimeout(()=>{waitForTimeline(json)}, waitTime);
           return;
       }
       if(!Timeline.allLoaded) {
-          setTimeout(waitForTimeline, waitTime);
+          setTimeout(()=>{waitForTimeline(json)}, waitTime);
           return;
       }
-      initTimeline();
+      initTimeline(json);
   }
 
-  function initTimeline() {
+
+  function initTimeline(json) {
       var url = "${timelineurl}";
       var baseDate = "${basedate}";
       var intervalUnit = ${intervalUnit};
-      var timeline = createTimeline(url, SimileAjax.DateTime.parseGregorianDateTime(baseDate), intervalUnit, ${mapvar});
+      var timeline = createTimeline(url, json, SimileAjax.DateTime.parseGregorianDateTime(baseDate), intervalUnit, ${mapvar}); // 
       timeline.getBand(0).zoom(true);
   }
 
@@ -153,7 +158,11 @@
       }
   }
 
-  waitForTimeline();
+  var timelineJson;
+
+  ${timelinejson}
+
+  waitForTimeline(timelineJson);
 
   ${extra}
 </script>
