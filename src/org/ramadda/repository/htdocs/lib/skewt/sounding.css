@@ -32,7 +32,7 @@
 .member   { stroke-width: 2px; /*opacity: 0.4;*/}
 .mean     { stroke-width: 2.5px; }
 .hodoline { stroke: #aaa; fill: none; opacity: 0.5; }
-.hodoline.mean { stroke: #000; opacity: 1.0; stroke-width: 3.5px;}
+.hodoline.mean { stroke: #000; opacity: 1.0; stroke-width: 2.5px;}
 .hododot {  stroke: #000; opacity: 0.8; }
 .hododot.hgt0 { fill: gray;    }
 .hododot.hgt1 { fill: #225ea8; }
@@ -97,5 +97,6 @@
 
 .focus.tmpc circle { fill: red;   stroke: none; }
 .focus.dwpc circle { fill: green; stroke: none; }
+.focus.hodo circle { fill: blue; stroke: none; }
 .focus text { font-size: 12px; }
 

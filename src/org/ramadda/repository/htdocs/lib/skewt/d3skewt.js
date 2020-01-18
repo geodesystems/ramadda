@@ -8,7 +8,8 @@ function D3Skewt(divid, args, jsonData) {
         showHodograph: true,
         showText: true,
         showTimes: true,
-        textPlace:"below"
+        textPlace:"below",
+        windStride: 1
     };
     if (args) {
         $.extend(this.options, args);
@@ -31,6 +32,7 @@ function D3Skewt(divid, args, jsonData) {
         pticks: [950, 900, 800, 750, 650, 600, 550, 450, 400, 350, 250, 150],
         barbsize: 25,
         clipperId: this.divid +"_clipper",
+        windStride: this.options.windStride
     });
 
     //methods
@@ -458,6 +460,9 @@ function D3Skewt(divid, args, jsonData) {
             this.focus3 = skewt.skewtgroup.append("g").attr("class", "focus").style("display", "none");
             this.focus3.append("text").attr("x", 0).attr("text-anchor", "start").attr("dy", ".35em");
 
+            this.focus4 = skewt.hodogroup.append("g").attr("class", "focus hodo").style("display", "none");
+            this.focus4.append("circle").attr("r", 5);
+
             skewt.svg.append("rect")
                 .attr("class", "overlay")
                 .attr("width", skewt.getSkewtWidth())
@@ -466,11 +471,13 @@ function D3Skewt(divid, args, jsonData) {
                     skewt.focus.style("display", null);
                     skewt.focus2.style("display", null);
                     skewt.focus3.style("display", null);
+                    skewt.focus4.style("display", null);
                 })
                 .on("mouseout", function() {
                     skewt.focus.style("display", "none");
                     skewt.focus2.style("display", "none");
                     skewt.focus3.style("display", "none");
+                    skewt.focus4.style("display", "none");
                 })
                 .on("mousemove", mousemove);
 
@@ -486,6 +493,18 @@ function D3Skewt(divid, args, jsonData) {
                 skewt.focus.select("text").text(Math.round(skewt.d.temperature) + "°C");
                 skewt.focus2.select("text").text(Math.round(skewt.d.dewpoint) + "°C");
                 skewt.focus3.select("text").text("--" + (Math.round(skewt.d.heightagl / 100) / 10) + "km");
+
+                var uspd = skewt.d.windspeed * Math.sin((180+skewt.d.winddir)*skewt.deg2rad);
+                var vspd = skewt.d.windspeed * Math.cos((180+skewt.d.winddir)*skewt.deg2rad);
+
+                if (!(isNaN(uspd) || isNaN(vspd))) {
+                    if (skewt.d.pressure > 200) {
+                        skewt.focus4.attr("transform", " translate(" + skewt.r(uspd) + "," + -skewt.r(vspd) + ")");
+                    } else {
+                        skewt.focus4.attr("transform", " translate(1000,1000)");
+                    }
+                }
+
             }
         },
         parseDataNew: function(json) {
@@ -550,13 +569,14 @@ function D3Skewt(divid, args, jsonData) {
             skewt.holines = skewt.hodogroup.selectAll("hodolines")
                 .data(skewt.hodobarbstest[0]).enter().append("path")
                 .attr("class", function(d, i) {
-                    return (i < 10) ? "hodoline member" : "hodoline mean"
+                    return (i > 0) ? "hodoline member" : "hodoline mean"
                 })
                 .attr("d", skewt.hodoline);
 
 
             var tmp = skewt.hodobarbstest[0][0];
             //            tmp = skewt.flattened;
+            /*
             skewt.hododots = skewt.hodogroup.selectAll('hododots')
                 .data(tmp).enter().append("circle")
                 .attr("r", function(d, i) {
@@ -571,6 +591,7 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("class", function(d, i) {
                     return "hododot hgt" + parseInt(d.heightagl / 1000)
                 });
+                */
 
             var barbs = skewt.hodobarbstest[0][0];
             //            barbs = skewt.barbstest[0][skewt.numberOfMembers-1]
@@ -666,6 +687,7 @@ function D3Skewt(divid, args, jsonData) {
             // update data for lines, barbs, dots, stats
             skewt.tlines.data(skewt.tlinetest[i]).attr("d", skewt.line);
             skewt.tdlines.data(skewt.tlinetest[i]).attr("d", skewt.line2);
+            var displayBarbdata = skewt.barbstest[i][skewt.numberOfMembers-1];
             skewt.allbarbs.data(skewt.barbstest[i][skewt.numberOfMembers-1])
                 .attr("xlink:href", function(d) {
                     return "#barb" + d.windspeedround;
@@ -675,6 +697,7 @@ function D3Skewt(divid, args, jsonData) {
                 });
             skewt.holines.data(skewt.hodobarbstest[i]).attr("d", skewt.hodoline);
 
+            /*
             skewt.hododots.data(skewt.flattened.slice(i * 55, i * 55 + 55))
                 .attr("cx", function(d) {
                     return skewt.r(d.windspeed * Math.sin((180 + d.winddir) * skewt.deg2rad));
@@ -682,6 +705,8 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("cy", function(d) {
                     return -skewt.r(d.windspeed * Math.cos((180 + d.winddir) * skewt.deg2rad));
                 });
+            */
+
             skewt.means.data(skewt.indices[i].mean).text(function(d, i) {
                 return d + units[i]
             });
@@ -736,6 +761,12 @@ function D3Skewt(divid, args, jsonData) {
                         this.hodobarbs = this.barbs.filter(d=> {
                                 return (d.pressure >= 200);
                             });
+                        if (skewt.windStride > 1) {
+                            var newbarbs = this.barbs.filter(function(values,index,d) {
+                                 return index % skewt.windStride == 0;
+                            });
+                            this.barbs = newbarbs;
+                        }
                         //parsedCSVreversed = parsedCSV.reverse(); // bisector needs ascending array
                         //                        this.interpdot = this.interpobjects[hr + 49 * mem];
                         this.interpdot = this.interpobjects[0]

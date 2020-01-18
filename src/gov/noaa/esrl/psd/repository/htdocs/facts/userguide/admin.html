@@ -19,6 +19,7 @@ https://ramadda.org/repository/userguide/database.html</a> for more information.
    <li>NCAR Command Language (NCL) with OPeNDAP enabled:
    <a href="https://www.ncl.ucar.edu/Download/">https://www.ncl.ucar.edu/Download/</a> (binary release recommended) 
    <li>ImageMagick: <a href="https://www.imagemagick.org/script/binary-releases.php">https://www.imagemagick.org/script/binary-releases.php</a>
+   <li>GhostScript: <a href="https://www.ghostscript.com/">https://www.ghostscript.com/</a>
    <li>R: <a href="https://www.r-project.org/">https://www.r-project.org/</a>
      <ul>
      <li>For plotting PDFs, you'll need the smoother package (sm) for R <a href="https://www.rdocumentation.org/packages/sm/versions/2.2-5.4">https://www.rdocumentation.org/packages/sm/versions/2.2-5.4</a></li>
@@ -49,13 +50,14 @@ ramadda.storage.processdir=/mnt/ramaddaShares/process
 </pre>
 <p>
 
-<b>Program paths:</b>  Set the paths to CDO, NCL, ImageMagick's convert and RScript
+<b>Program paths:</b>  Set the paths to CDO, NCL, ImageMagick's convert, GhostScript and RScript
 <p>
 
 <pre>
 cdo.path=/usr/local/bin/cdo
 ncl.ncarg_root=/usr/local
 ncl.convert.path=/usr/bin/convert
+ncl.gs.path=/usr/bin/gs
 r.rscript.path=/opt/local/bin/Rscript
 </pre>
 <p>
