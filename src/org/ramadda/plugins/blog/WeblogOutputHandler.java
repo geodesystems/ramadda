@@ -343,13 +343,15 @@ public class WeblogOutputHandler extends OutputHandler {
 
         if ( !embedded) {
             StringBuilder comments = getCommentBlock(request, entry, false);
-            String commentsBlock = HtmlUtils.makeShowHideBlock(
-                                       msg("Comments"),
-                                       HtmlUtils.insetDiv(
-                                           comments.toString(), 0, 30, 0,
-                                           0), false);
-
-            blogBody.append(commentsBlock);
+	    if(comments.length()>0) {
+		String commentsBlock = HtmlUtils.makeShowHideBlock(
+								   msg("Comments"),
+								   HtmlUtils.insetDiv(
+										      comments.toString(), 0, 30, 0,
+										      0), false);
+		
+		blogBody.append(commentsBlock);
+	    }
         }
 
 
