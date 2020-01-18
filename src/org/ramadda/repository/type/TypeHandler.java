@@ -2615,28 +2615,29 @@ public class TypeHandler extends RepositoryManager {
 
         }
 
-
-
         Link downloadLink = getEntryDownloadLink(request, entry);
         if (downloadLink != null) {
             links.add(downloadLink);
         }
-        if (getRepository().isReadOnly()) {
-            links.add(
-                new Link(
-                    request.entryUrl(
-                        getRepository().URL_COMMENTS_SHOW,
-                        entry), ICON_COMMENTS, "View Comments",
-                                OutputType.TYPE_VIEW));
-        } else {
-            links.add(
-                new Link(
-                    request.entryUrl(
-                        getRepository().URL_COMMENTS_SHOW,
-                        entry), ICON_COMMENTS, "Add/View Comments",
-                                OutputType.TYPE_TOOLBAR));
-        }
 
+
+        if (getRepository().getProperty("ramadda.enable_comments", false)) {
+            if (getRepository().isReadOnly()) {
+                links.add(
+                    new Link(
+                        request.entryUrl(
+                            getRepository().URL_COMMENTS_SHOW,
+                            entry), ICON_COMMENTS, "View Comments",
+                                    OutputType.TYPE_VIEW));
+            } else {
+                links.add(
+                    new Link(
+                        request.entryUrl(
+                            getRepository().URL_COMMENTS_SHOW,
+                            entry), ICON_COMMENTS, "Add/View Comments",
+                                    OutputType.TYPE_TOOLBAR));
+            }
+        }
         if ((request.getUser() != null)
                 && !request.getUser().getAnonymous()) {
             links.add(
