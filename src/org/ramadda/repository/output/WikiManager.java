@@ -4147,9 +4147,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 entries = getEntryUtil().sortEntriesOnCreateDate(entries,
                         !ascending);
             } else if (sort.equals(SORT_NAME)) {
+		System.err.println("by name before:" + entries);
                 entries = getEntryUtil().sortEntriesOnName(entries,
                         !ascending);
-		System.err.println("by name:" + entries);
+		System.err.println("by name after:" + entries);
             } else if (sort.startsWith("number:")) {
                 entries = getEntryUtil().sortEntriesOnPattern(entries,
                         ascending, sort.substring(7));

@@ -100,7 +100,6 @@ public class EntryUtil extends RepositoryManager {
                     } else if (result <= -1) {
                         return 1;
                     }
-
                     return 0;
                 }
 
@@ -111,8 +110,9 @@ public class EntryUtil extends RepositoryManager {
             }
         };
         Object[] array = entries.toArray();
+	System.err.println("A before:"  + array[0]);
         Arrays.sort(array, comp);
-
+	System.err.println("A after:"  + array[0]);
         return (List<Entry>) Misc.toList(array);
     }
 
