@@ -46,7 +46,9 @@ import java.util.List;
 public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
 
-
+    /** _more_          */
+    private Hashtable<String, List<String>> cachedIds = new Hashtable<String,
+                                                            List<String>>();
 
     /**
      * _more_
@@ -61,6 +63,14 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, entryNode);
     }
 
+
+    /**
+     * _more_
+     */
+    public void clearCache() {
+        super.clearCache();
+        cachedIds = new Hashtable<String, List<String>>();
+    }
 
     /**
      * _more_
@@ -146,55 +156,61 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
         List<String> ids = getEntryManager().getChildIdsFromDatabase(request,
                                mainEntry, null);
+
         String idString = (String) mainEntry.getValue(0, "").replace(",",
                               "_COMMA_");
-        List<String> lines = new ArrayList<String>();
+        List<String> fromCache = cachedIds.get(idString);
 
 
-        for (String line : StringUtil.split(idString, "\n", true, true)) {
-            if (line.startsWith("#")) {
-                continue;
+        if (fromCache == null) {
+            fromCache = new ArrayList<String>();
+            cachedIds.put(idString, fromCache);
+            List<String> lines = new ArrayList<String>();
+
+
+            for (String line : StringUtil.split(idString, "\n", true, true)) {
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                lines.add(line);
             }
-            lines.add(line);
-        }
-        idString = StringUtil.join(",", lines);
+            idString = StringUtil.join(",", lines);
 
-        List<Entry> entries = getWikiManager().getEntries(request, null,
-                                  mainEntry, mainEntry, idString, null,
-                                  false, "");
+            List<Entry> entries = getWikiManager().getEntries(request, null,
+                                      mainEntry, mainEntry, idString, null,
+                                      false, "");
 
 
-        String by = request.getString(ARG_ORDERBY, (String) null);
+            String by = request.getString(ARG_ORDERBY, (String) null);
 
-        if (by == null) {
-            Metadata sortMetadata =
-                getMetadataManager().getSortOrderMetadata(request, mainEntry);
-            if (sortMetadata != null) {
-                by = sortMetadata.getAttr1();
+            if (by == null) {
+                Metadata sortMetadata =
+                    getMetadataManager().getSortOrderMetadata(request,
+                        mainEntry);
+                if (sortMetadata != null) {
+                    by = sortMetadata.getAttr1();
+                }
+            }
+
+            if (by == null) {
+                by = SORTBY_FROMDATE;
+            }
+
+            boolean descending = !request.get(ARG_ASCENDING, false);
+            if (by.equals(SORTBY_NAME)) {
+                entries = getEntryManager().getEntryUtil().sortEntriesOnName(
+                    entries, descending);
+                //        } else if (by.equals(SORTBY_SIZE)) {
+            } else {
+                entries = getEntryManager().getEntryUtil().sortEntriesOnDate(
+                    entries, descending);
+            }
+
+            for (Entry entry : entries) {
+                fromCache.add(entry.getId());
             }
         }
-
-        if (by == null) {
-            by = SORTBY_FROMDATE;
-        }
-
-        boolean descending = !request.get(ARG_ASCENDING, false);
-        if (by.equals(SORTBY_NAME)) {
-            entries =
-                getEntryManager().getEntryUtil().sortEntriesOnName(entries,
-                    descending);
-            //        } else if (by.equals(SORTBY_SIZE)) {
-        } else {
-            entries =
-                getEntryManager().getEntryUtil().sortEntriesOnDate(entries,
-                    descending);
-        }
-
-        for (Entry entry : entries) {
-            ids.add(entry.getId());
-        }
-
-
+        ids.addAll(fromCache);
         mainEntry.setChildIds(ids);
 
         return ids;

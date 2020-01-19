@@ -4283,12 +4283,35 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         List<Entry> entries     = new ArrayList<Entry>();
         Request myRequest = new Request(getRepository(), request.getUser());
 
+        int         max         = -1;
+        String      orderBy     = null;
+        boolean     orderDir    = true;
+
+
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
             if (entryid.startsWith("#")) {
                 continue;
             }
+            if (entryid.startsWith("entries.max=")) {
+                max = Integer.parseInt(
+                    entryid.substring("entries.max=".length()));
+
+                continue;
+            }
+            if (entryid.startsWith("entries.orderby=")) {
+                orderBy = entryid.substring("entries.orderby=".length());
+
+                continue;
+            }
+            if (entryid.startsWith("entries.orderdir=")) {
+                orderDir = entryid.substring(
+                    "entries.orderdir=".length()).equals("up");
+
+                continue;
+            }
 
             entryid = entryid.replace("_COMMA_", ",");
+
             Entry  theBaseEntry = baseEntry;
             String type         = null;
             //            entries="children:<other id>
@@ -4314,6 +4337,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 entryid = toks.get(0);
                 filter  = toks.get(1);
             }
+
+
 
 
             if (entryid.equals(ID_ANCESTORS)) {
@@ -4352,6 +4377,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 continue;
             }
 
+
             if (entryid.equals(ID_ROOT)) {
                 entries.addAll(applyFilter(request, wikiUtil,
                                            request.getRootEntry(), filter,
@@ -4376,6 +4402,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
 
+
             if (entryid.startsWith(ATTR_ENTRIES + ".filter")) {
                 List<String> tokens = StringUtil.splitUpTo(entryid, "=", 2);
                 if (tokens.size() == 2) {
@@ -4388,6 +4415,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             boolean isRemote = entryid.startsWith(ATTR_SEARCH_URL);
             if ( !isRemote && entryid.startsWith(ID_SEARCH + ".")) {
+
                 List<String> tokens = StringUtil.splitUpTo(entryid, "=", 2);
                 if (tokens.size() == 2) {
                     if (searchProps == null) {
@@ -4481,6 +4509,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
 
+
             if (entryid.equals(ID_GRANDPARENT)) {
                 Entry parent = getEntryManager().getEntry(request,
                                    theBaseEntry.getParentEntryId());
@@ -4553,6 +4582,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 entryid     = entryid.substring(1);
             }
 
+
             Entry entry = getEntryManager().getEntry(request, entryid);
             if (entry != null) {
                 if (addChildren) {
@@ -4579,6 +4609,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         entries = tmp;
 
 
+
+
+
+
         int randomCnt = getProperty(wikiUtil, props, "randomCount", 0);
         if (randomCnt > 0) {
             List<Entry> rtmp = new ArrayList<Entry>();
@@ -4595,6 +4629,27 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             return rtmp;
+        }
+
+
+        if (orderBy != null) {
+            if (orderBy.equals("date")) {
+                entries = getEntryUtil().sortEntriesOnDate(entries, orderDir);
+            } else if (orderBy.equals("createdate")) {
+                entries = getEntryUtil().sortEntriesOnCreateDate(entries,
+                        orderDir);
+            } else {
+                entries = getEntryUtil().sortEntriesOnName(entries, orderDir);
+            }
+        }
+
+
+        if (max > 0) {
+            List<Entry> l = new ArrayList<Entry>();
+            for (int i = 0; (i < max) && (i < entries.size()); i++) {
+                l.add(entries.get(i));
+            }
+            entries = l;
         }
 
 
