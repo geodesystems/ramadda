@@ -94,7 +94,7 @@ public class TextRecord extends DataRecord {
     private boolean bePickyAboutTokens = true;
 
     /** _more_ */
-    private boolean lineWrap = true;
+    private boolean lineWrap = false;
 
     /** _more_ */
     private boolean matchUpColumns = false;
@@ -728,7 +728,7 @@ public class TextRecord extends DataRecord {
                         i++) {
                     tokens[cnt++] = toks.get(i);
                 }
-                if ( !lineWrap) {
+                if (!lineWrap) {
                     break;
                 }
                 if (cnt >= tokens.length) {
@@ -770,6 +770,8 @@ public class TextRecord extends DataRecord {
                 }
             }
             if (bePickyAboutTokens && (cnt != tokens.length)) {
+		//If there is an empty line then skip it
+		if(cnt==0) return false;
                 throw new IllegalArgumentException(
                     "Could not tokenize line: expected:" + tokens.length
                     + " rcvd: " + cnt + "\nLine: " + sourceString + "\n");

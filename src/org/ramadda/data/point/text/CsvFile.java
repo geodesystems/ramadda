@@ -273,7 +273,7 @@ public class CsvFile extends TextFile {
         }
         record.setFirstDataLine(firstDataLine);
         record.setDelimiter(getDelimiter());
-        record.setLineWrap(getProperty("lineWrap", true));
+        record.setLineWrap(getProperty("lineWrap", false));
         record.setBePickyAboutTokens(getProperty("picky", true));
         record.setMatchUpColumns(getProperty("matchupColumns", false));
 

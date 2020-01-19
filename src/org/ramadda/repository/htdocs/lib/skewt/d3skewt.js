@@ -509,7 +509,6 @@ function D3Skewt(divid, args, jsonData) {
         },
         parseDataNew: function(json) {
             var skewt = this;
-            requestedLevels = [0, 1, 3, 6, 9]; // levels in km agl
             skewt.interpobjects = [];
             this.numberOfMembers = 1;
             skewt.alldata = json.temperature.map(function(c, k) {
@@ -528,24 +527,25 @@ function D3Skewt(divid, args, jsonData) {
 
             var data = skewt.alldata;
             // interpolate to given heights for each sounding
-            var test = requestedLevels.map(function(d) {
-                    if (d == 0) {
-                        return data[0];
-                    }
-                    d = 1000 * d + data[0].height; // want height AGL
-                    for (i = 0; i < data.length; i++) {
-                        if (data[i].height > d) {
-                            break;
-                        } // since heights increase monotonically
-                    }
-                    //TODO: Check if we ran off the end of the array
-                    var interp = d3.interpolateObject(data[i - 1], data[i]); // interp btw two levels
-                    var half = interp(1 - (d - data[i].height) / (data[i - 1].height - data[i].height));
-                    return half
-                });
+            let requestedLevels = [0, 1, 3, 6, 9]; // levels in km agl
+            var test = requestedLevels.map(d=> {
+                if (d == 0) {
+                    return data[0];
+                }
+                d = 1000 * d + data[0].height; // want height AGL
+                for (i = 0; i < data.length; i++) {
+                    if (data[i].height > d) {
+                        break;
+                    } // since heights increase monotonically
+                }
+                //in case we ran off the end of the array
+		if(!data[i]) return null;
+                var interp = d3.interpolateObject(data[i - 1], data[i]); // interp btw two levels
+                var half = interp(1 - (d - data[i].height) / (data[i - 1].height - data[i].height));
+                return half
+            });
             skewt.interpobjects.push(test);
             return skewt.alldata;
-
         },
         drawFirstHour: function() {
             var skewt = this;
