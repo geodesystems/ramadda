@@ -4132,6 +4132,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
                                   (String) null);
+	System.err.println("s:" + sort);
         if (sort != null) {
             boolean ascending = getProperty(wikiUtil, props,
                                             attrPrefix + ATTR_SORT_ORDER,
@@ -4148,6 +4149,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else if (sort.equals(SORT_NAME)) {
                 entries = getEntryUtil().sortEntriesOnName(entries,
                         !ascending);
+		System.err.println("by name:" + entries);
             } else if (sort.startsWith("number:")) {
                 entries = getEntryUtil().sortEntriesOnPattern(entries,
                         ascending, sort.substring(7));
