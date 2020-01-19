@@ -962,7 +962,8 @@ public class Entry implements Cloneable {
      * @return a String representation of this Object
      */
     public String toString() {
-        return name + " id:" + id + "  type:" + getTypeHandler();
+	//        return name + " id:" + id + "  type:" + getTypeHandler();
+	return name +" ";
     }
 
     /**
