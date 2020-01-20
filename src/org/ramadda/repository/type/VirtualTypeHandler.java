@@ -20,9 +20,10 @@ package org.ramadda.repository.type;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
-
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.TTLCache;
 
 
 import org.w3c.dom.*;
@@ -46,9 +47,9 @@ import java.util.List;
 public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
 
-    /** _more_          */
-    private Hashtable<String, List<String>> cachedIds = new Hashtable<String,
-                                                            List<String>>();
+    /** 5 minute cache */
+    private TTLCache<String, List<String>> cachedIds = new TTLCache<String,
+	List<String>>(5 * 60   * 1000);
 
     /**
      * _more_
@@ -69,7 +70,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public void clearCache() {
         super.clearCache();
-        cachedIds = new Hashtable<String, List<String>>();
+	cachedIds = new TTLCache<String, List<String>>(5 * 60 * 1000);
     }
 
     /**
@@ -164,6 +165,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
         if (fromCache == null) {
             fromCache = new ArrayList<String>();
+            //Don't cache for now
             cachedIds.put(idString, fromCache);
             List<String> lines = new ArrayList<String>();
 

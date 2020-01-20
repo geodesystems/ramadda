@@ -113,6 +113,7 @@ public class EntryUtil extends RepositoryManager {
                     } else if (result <= -1) {
                         return 1;
                     }
+
                     return 0;
                 }
 
@@ -124,6 +125,7 @@ public class EntryUtil extends RepositoryManager {
         };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
+
         return (List<Entry>) Misc.toList(array);
     }
 
@@ -341,26 +343,34 @@ public class EntryUtil extends RepositoryManager {
 
 
 
-    public List<Entry> sortEntries(List<Entry> entries,
-				   String sort,
-				   final boolean descending) {
-	
-	if (sort.equals(SORT_DATE)) {
-	    entries = sortEntriesOnDate(entries,   descending);
-	} else if (sort.equals(SORT_CHANGEDATE)) {
-	    entries = sortEntriesOnChangeDate(entries,  descending);
-	} else if (sort.equals(SORT_CREATEDATE)) {
-	    System.err.println("EntryUtil before:" + entries);
-	    entries = sortEntriesOnCreateDate(entries,  descending);
-	    System.err.println("EntryUtil after:" + entries);
-	} else if (sort.equals(SORT_NAME)) {
-	    entries = sortEntriesOnName(entries, descending);
-	} else if (sort.startsWith("number:")) {
-	    entries = sortEntriesOnPattern(entries, descending, sort.substring(7));
-	} else {
-	    throw new IllegalArgumentException("Unknown sort:" + sort);
-	}
-	return entries;
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param sort _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
+    public List<Entry> sortEntries(List<Entry> entries, String sort,
+                                   final boolean descending) {
+
+        if (sort.equals(SORT_DATE)) {
+            entries = sortEntriesOnDate(entries, descending);
+        } else if (sort.equals(SORT_CHANGEDATE)) {
+            entries = sortEntriesOnChangeDate(entries, descending);
+        } else if (sort.equals(SORT_CREATEDATE)) {
+            entries = sortEntriesOnCreateDate(entries, descending);
+        } else if (sort.equals(SORT_NAME)) {
+            entries = sortEntriesOnName(entries, descending);
+        } else if (sort.startsWith("number:")) {
+            entries = sortEntriesOnPattern(entries, descending,
+                                           sort.substring(7));
+        } else {
+            throw new IllegalArgumentException("Unknown sort:" + sort);
+        }
+
+        return entries;
     }
 
     /**

@@ -4136,8 +4136,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean ascending = getProperty(wikiUtil, props,
                                             attrPrefix + ATTR_SORT_ORDER,
                                             "up").equals("up");
-	    System.err.println("WikiManager sort=" + sort +" asc=" + ascending);
-	    entries = getEntryUtil().sortEntries(entries, sort, !ascending);
+            entries = getEntryUtil().sortEntries(entries, sort, !ascending);
         }
 
         String firstEntries = getProperty(wikiUtil, props,
@@ -4635,7 +4634,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             entries = l;
         }
 
-	System.err.println("e: " + entries);
+        System.err.println("e: " + entries);
 
         return entries;
 
