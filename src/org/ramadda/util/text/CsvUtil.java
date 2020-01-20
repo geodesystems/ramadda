@@ -1547,6 +1547,7 @@ public class CsvUtil {
         new Cmd(
             "-setcol", "<match col #> <pattern> <write col #> <value>",
             "(write the value into the write col for rows that match the pattern)"),
+        new Cmd("-catprefix", "<col #> <rows> <#rows> <delimiter>", "(append prefix to subsequent rows)"),
         new Cmd("-letter", "", "(add 'A','B', ... as column)"),
         new Cmd("-case", "<lower|upper|camel> <col #>",
                 "(change case of column)"),
@@ -3064,6 +3065,18 @@ public class CsvUtil {
                     continue;
                 }
 
+                if (arg.equals("-catprefix")) {
+                    if ( !ensureArg(args, i, 4)) {
+                        return false;
+                    }
+		    int col = Integer.parseInt(args.get(++i));
+		    List<Integer> rows = getNumbers(args.get(++i));
+		    int rowCnt = Integer.parseInt(args.get(++i));
+                    info.getProcessor().addProcessor(
+						     new Converter.CatPrefixer(col, rows, rowCnt,args.get(++i)));
+                    continue;
+                }
+
                 if (arg.equals("-set")) {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
@@ -3408,9 +3421,18 @@ public class CsvUtil {
             if ((tok.indexOf("-") >= 0) && !tok.startsWith("-")) {
                 int from = new Integer(StringUtil.split(tok, "-", true,
                                true).get(0)).intValue();
-                int to = new Integer(StringUtil.split(tok, "-", true,
-                             true).get(1)).intValue();
-                for (int i = from; i <= to; i++) {
+		
+		int step = 1;
+		String right = StringUtil.split(tok, "-", true,
+						true).get(1);
+		if(right.indexOf(":")>=0) {
+		    List<String> tmp = StringUtil.split(right,":",true,true);
+		    right  = tmp.get(0);
+		    if(tmp.size()>1)
+			step = Integer.parseInt(tmp.get(1));
+		}
+		int to = Integer.parseInt(right);
+                for (int i = from; i <= to; i+=step) {
                     cols.add(i);
                 }
 

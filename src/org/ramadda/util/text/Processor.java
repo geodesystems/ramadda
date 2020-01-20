@@ -2080,7 +2080,7 @@ rotate -> pass -> pass -> rotate -> pass
         public void printRow(TextReader info, Row row) throws Exception {
             if (cnt == 0) {
                 info.getWriter().println(
-                    "<table  class='stripe hover ramadda-table' xtable-height=400>");
+                    "<table  class='stripe hover ramadda-table ramadda-csv-table' xtable-height=400>");
             }
             List   values = row.getValues();
             String open   = "<td>";
@@ -2602,8 +2602,7 @@ rotate -> pass -> pass -> rotate -> pass
                     existing = new Row(row.getValues());
                     map.put(key, existing);
                     newRows.add(existing);
-                    existing.add("X:" + value);
-                    System.out.println("splat:" + existing.myx);
+                    existing.add(value);
                 } else {
                     for (int i = 0; i < row.size(); i++) {
                         existing.set(i, row.get(i));

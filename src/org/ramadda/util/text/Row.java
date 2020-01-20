@@ -49,9 +49,6 @@ public class Row {
     static int x = 0;
 
     /** _more_ */
-    public int myx = x++;
-
-    /** _more_ */
     private List values;
 
     /** _more_ */
@@ -130,7 +127,7 @@ public class Row {
      * @return _more_
      */
     public String toString() {
-        return " id:" + myx + " " + values.toString();
+        return " id:" + " " + values.toString();
     }
 
     /**
@@ -140,9 +137,6 @@ public class Row {
      */
     public void setValues(List value) {
         values = value;
-        if (myx == 266) {
-            System.err.println("\tsetvalues: " + values);
-        }
     }
 
     /**
@@ -191,9 +185,6 @@ public class Row {
      */
     public void set(int index, Object object) {
         values.set(index, object);
-        if (myx == 266) {
-            System.err.println("\tset: " + object);
-        }
     }
 
     /**
@@ -203,9 +194,6 @@ public class Row {
      */
     public void insert(Object object) {
         values.add(object);
-        if (myx == 266) {
-            System.err.println("\tinsert: " + object);
-        }
     }
 
     /**
@@ -214,9 +202,6 @@ public class Row {
      * @param object _more_
      */
     public void add(Object object) {
-        if (myx == 266) {
-            System.err.println("\trow add: " + myx + " v:" + object);
-        }
         values.add(object);
     }
 
@@ -228,9 +213,6 @@ public class Row {
      */
     public void insert(int index, Object object) {
         values.add(index, object);
-        if (myx == 266) {
-            System.err.println("\tinsert: " + object);
-        }
     }
 
     /**

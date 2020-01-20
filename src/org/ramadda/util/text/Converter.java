@@ -4142,10 +4142,49 @@ public abstract class Converter extends Processor {
             for (int col : cols) {
                 row.getValues().set(col, value);
             }
-            //            System.err.println("-set:" + row.getValues());
-
             return row;
+        }
+    }
 
+
+    public static class CatPrefixer extends Converter {
+
+	private int col;
+	private HashSet<Integer> rows;
+	private int numRows;
+	private String delim;
+	private String prefix;
+	private int  currentRow=-1;
+
+        /**
+         */
+        public CatPrefixer(int col, List<Integer> rows, int numRows, String delim) {
+	    this.col = col;
+	    this.rows = (HashSet<Integer> ) Utils.makeHashSet(rows);
+	    this.numRows  = numRows;
+	    this.delim = delim;
+        }
+
+        /**
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+	    if(rows.contains(rowCnt)) {
+		currentRow = rowCnt;
+		prefix = row.getString(col);
+		rowCnt++;
+		return row;
+	    }
+	    if(rowCnt>=currentRow &&  rowCnt<=currentRow+numRows) {
+		row.set(col, prefix + delim + row.getString(col));
+	    }
+	    rowCnt++;
+            return row;
         }
 
     }
