@@ -3528,7 +3528,9 @@ public class CsvUtil {
         if (p == null) {
             return null;
         }
+        p = p.replaceAll("_dollar_", "\\\\$");
         p = p.replaceAll("_leftparen_", "\\\\(").replaceAll("_rightparen_",
+                         "\\\\)");
                          "\\\\)");
         p = p.replaceAll("_leftbracket_",
                          "\\\\[").replaceAll("_rightbracket_", "\\\\]");
