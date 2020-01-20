@@ -29,7 +29,6 @@ var DISPLAY_TSNE = "tsne";
 var DISPLAY_HEATMAP = "heatmap";
 var DISPLAY_WORDTREE = "wordtree";
 var DISPLAY_TREEMAP = "treemap";
-var DISPLAY_ORGCHART = "orgchart";
 var ID_CHART = "chart";
 
 
@@ -236,14 +235,6 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_TREEMAP,
     label: "Tree Map",
-    requiresData: true,
-    forUser: true,
-    category: CATEGORY_MISC
-});
-
-addGlobalDisplayType({
-    type: DISPLAY_ORGCHART,
-    label: "Org Chart",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
