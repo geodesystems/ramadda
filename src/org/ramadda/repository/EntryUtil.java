@@ -52,6 +52,19 @@ import java.util.Properties;
  */
 public class EntryUtil extends RepositoryManager {
 
+    /** sort date attribute */
+    public static final String SORT_DATE = "date";
+
+    /** change date attribute */
+    public static final String SORT_CHANGEDATE = "changedate";
+
+    /** change date attribute */
+    public static final String SORT_CREATEDATE = "createdate";
+
+    /** sort name attribute */
+    public static final String SORT_NAME = "name";
+
+
     //Cache for 1 hour
 
     /** _more_ */
@@ -110,9 +123,7 @@ public class EntryUtil extends RepositoryManager {
             }
         };
         Object[] array = entries.toArray();
-	System.err.println("A before:"  + array[0]);
         Arrays.sort(array, comp);
-	System.err.println("A after:"  + array[0]);
         return (List<Entry>) Misc.toList(array);
     }
 
@@ -329,6 +340,28 @@ public class EntryUtil extends RepositoryManager {
 
 
 
+
+    public List<Entry> sortEntries(List<Entry> entries,
+				   String sort,
+				   final boolean descending) {
+	
+	if (sort.equals(SORT_DATE)) {
+	    entries = sortEntriesOnDate(entries,   descending);
+	} else if (sort.equals(SORT_CHANGEDATE)) {
+	    entries = sortEntriesOnChangeDate(entries,  descending);
+	} else if (sort.equals(SORT_CREATEDATE)) {
+	    System.err.println("EntryUtil before:" + entries);
+	    entries = sortEntriesOnCreateDate(entries,  descending);
+	    System.err.println("EntryUtil after:" + entries);
+	} else if (sort.equals(SORT_NAME)) {
+	    entries = sortEntriesOnName(entries, descending);
+	} else if (sort.startsWith("number:")) {
+	    entries = sortEntriesOnPattern(entries, descending, sort.substring(7));
+	} else {
+	    throw new IllegalArgumentException("Unknown sort:" + sort);
+	}
+	return entries;
+    }
 
     /**
      * _more_

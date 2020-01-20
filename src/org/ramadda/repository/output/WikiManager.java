@@ -4137,27 +4137,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean ascending = getProperty(wikiUtil, props,
                                             attrPrefix + ATTR_SORT_ORDER,
                                             "up").equals("up");
-            if (sort.equals(SORT_DATE)) {
-                entries = getEntryUtil().sortEntriesOnDate(entries,
-                        !ascending);
-            } else if (sort.equals(SORT_CHANGEDATE)) {
-                entries = getEntryUtil().sortEntriesOnChangeDate(entries,
-                        !ascending);
-            } else if (sort.equals(SORT_CREATEDATE)) {
-                entries = getEntryUtil().sortEntriesOnCreateDate(entries,
-                        !ascending);
-            } else if (sort.equals(SORT_NAME)) {
-		System.err.println("by name before:" + entries);
-                entries = getEntryUtil().sortEntriesOnName(entries,
-                        !ascending);
-		System.err.println("by name after:" + entries);
-            } else if (sort.startsWith("number:")) {
-                entries = getEntryUtil().sortEntriesOnPattern(entries,
-                        ascending, sort.substring(7));
-
-            } else {
-                throw new IllegalArgumentException("Unknown sort:" + sort);
-            }
+	    entries = getEntryUtil().sortEntries(entries, sort, !ascending);
         }
 
         String firstEntries = getProperty(wikiUtil, props,

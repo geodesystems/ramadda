@@ -194,17 +194,6 @@ public interface WikiConstants {
     /** sort order attribute */
     public static final String ATTR_SORT_ORDER = "sortorder";
 
-    /** sort date attribute */
-    public static final String SORT_DATE = "date";
-
-    /** change date attribute */
-    public static final String SORT_CHANGEDATE = "changedate";
-
-    /** change date attribute */
-    public static final String SORT_CREATEDATE = "createdate";
-
-    /** sort name attribute */
-    public static final String SORT_NAME = "name";
 
     /** the message attribute */
     public static final String ATTR_MESSAGE = "message";
