@@ -792,6 +792,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return getEntryManager().getEntryFromAlias(request, alias);
         }
 
+
         if (entryId.startsWith("child:")) {
             String tok = entryId.substring("child:".length());
             if (tok.startsWith("type:")) {
@@ -4268,12 +4269,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         int         max         = -1;
         String      orderBy     = null;
         boolean     orderDir    = true;
-
+	HashSet nots = new HashSet();
 
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
             if (entryid.startsWith("#")) {
                 continue;
             }
+	    if (entryid.startsWith("not:")) {
+		nots.add(entryid.substring("not:".length()));
+		continue;
+	    }	
+
+
             if (entryid.startsWith("entries.max=")) {
                 max = Integer.parseInt(
                     entryid.substring("entries.max=".length()));
@@ -4593,7 +4600,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
-
+	if(nots.size()>0) {
+            List<Entry> etmp = new ArrayList<Entry>();
+	    for(int i=0;i<entries.size();i++) {
+		if(!nots.contains(entries.get(i).getId())) {
+		    etmp.add(entries.get(i));
+		}
+	    }
+	    entries = etmp;
+	}
 
         int randomCnt = getProperty(wikiUtil, props, "randomCount", 0);
         if (randomCnt > 0) {
