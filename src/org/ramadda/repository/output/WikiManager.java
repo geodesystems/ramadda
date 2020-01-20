@@ -4633,11 +4633,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             entries = l;
         }
-
-        System.err.println("e: " + entries);
-
         return entries;
-
     }
 
 
