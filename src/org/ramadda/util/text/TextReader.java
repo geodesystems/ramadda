@@ -570,7 +570,6 @@ public class TextReader implements Cloneable {
         boolean       debug   = true;
         debug = false;
         while (true) {
-
             if (debug && (lb.length() > 750)) {
                 System.err.println("***** Whoa:" + lb);
                 System.err.println("***" + sb);
