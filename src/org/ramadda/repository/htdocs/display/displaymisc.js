@@ -41,6 +41,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 					'nodeBackground="#ccc"',
 					'linkColor="red"',
 					'linkWidth="3"',
+					'linkDash="5"',
 					'linkWidth="3"',
 					'arrowLength="6"',
 					'arrowColor="green"',
@@ -111,12 +112,15 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		return;
 	    }
 
-	    var graphData = {
+	    const graphData = {
 		nodes: nodes,
 		links: links
 	    };
 
 	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
+	    const linkColor = this.getProperty("linkColor","#ccc");
+	    const linkWidth = +this.getProperty("linkWidth",1);
+	    const linkDash = +this.getProperty("linkDash",-1);
 	    const elem = document.getElementById(this.getDomId(ID_GRAPH));
 	    const graph = ForceGraph()(elem).graphData(graphData);
 	    graph.nodeCanvasObject((node, ctx, globalScale) => {
@@ -143,19 +147,16 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		ctx.fillText(label, node.x, node.y);
 	    });
 
-/*
-	    graph.linkCanvasObjectMode('highlight');
-	    let xcnt =  0 ;
+//	    graph.linkCanvasObjectMode('replace');
 	    graph.linkCanvasObject((link, ctx) => {
-		if(xcnt++<5) console.log("in");
-		ctx.setLineDash([5, 5]);
-		ctx.lineWidth = 4;
-		ctx.strokeStyle = 'red';
-		ctx.moveTo(link.source.x, link.source.y);
+		if(linkDash>0)
+		    ctx.setLineDash([linkDash, linkDash]);
+		ctx.lineWidth = linkWidth;
+		ctx.strokeStyle = linkColor;
+				       ctx.moveTo(link.source.x, link.source.y);
 		ctx.lineTo(link.target.x, link.target.y);
-		ctx.stroke();
+		(link === graphData.links[graphData.links.length - 1]) && ctx.stroke();
 	    });
-*/
 //	    graph.linkAutoColorBy(d => gData.nodes[d.source].group);
 	    graph.nodeLabel(node => node.tooltip?node.tooltip:null)
 	    graph.linkWidth(+this.getProperty("linkWidth",4));
