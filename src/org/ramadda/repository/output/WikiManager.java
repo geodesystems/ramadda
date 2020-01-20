@@ -4132,11 +4132,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
                                   (String) null);
-	System.err.println("s:" + sort);
         if (sort != null) {
             boolean ascending = getProperty(wikiUtil, props,
                                             attrPrefix + ATTR_SORT_ORDER,
                                             "up").equals("up");
+	    System.err.println("WikiManager sort=" + sort +" asc=" + ascending);
 	    entries = getEntryUtil().sortEntries(entries, sort, !ascending);
         }
 
