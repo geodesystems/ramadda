@@ -61,6 +61,7 @@ public class Row {
         values = new ArrayList() {
             public boolean xadd(Object o) {
                 boolean v = super.add(o);
+
                 return v;
             }
         };

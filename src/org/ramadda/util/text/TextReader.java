@@ -103,7 +103,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String delimiter = ",";
 
-    /** _more_          */
+    /** _more_ */
     private boolean splitOnSpaces = false;
 
 
@@ -192,7 +192,7 @@ public class TextReader implements Cloneable {
     private List<Row> rows;
 
 
-    /** _more_          */
+    /** _more_ */
     private CsvOperator currentOperator;
 
     /**

@@ -277,7 +277,7 @@ public class Filter extends Processor {
         /** _more_ */
         boolean isTemplate = false;
 
-        /** _more_          */
+        /** _more_ */
         boolean blank;
 
         /** _more_ */

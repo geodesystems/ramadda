@@ -76,7 +76,7 @@ public class CsvUtil {
     /** _more_ */
     private TextReader textReader;
 
-    /** _more_          */
+    /** _more_ */
     private String errorDescription;
 
     /** _more_ */
@@ -1547,7 +1547,8 @@ public class CsvUtil {
         new Cmd(
             "-setcol", "<match col #> <pattern> <write col #> <value>",
             "(write the value into the write col for rows that match the pattern)"),
-        new Cmd("-catprefix", "<col #> <rows> <#rows> <delimiter>", "(append prefix to subsequent rows)"),
+        new Cmd("-catprefix", "<col #> <rows> <#rows> <delimiter>",
+                "(append prefix to subsequent rows)"),
         new Cmd("-letter", "", "(add 'A','B', ... as column)"),
         new Cmd("-case", "<lower|upper|camel> <col #>",
                 "(change case of column)"),
@@ -3069,11 +3070,13 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 4)) {
                         return false;
                     }
-		    int col = Integer.parseInt(args.get(++i));
-		    List<Integer> rows = getNumbers(args.get(++i));
-		    int rowCnt = Integer.parseInt(args.get(++i));
+                    int           col    = Integer.parseInt(args.get(++i));
+                    List<Integer> rows   = getNumbers(args.get(++i));
+                    int           rowCnt = Integer.parseInt(args.get(++i));
                     info.getProcessor().addProcessor(
-						     new Converter.CatPrefixer(col, rows, rowCnt,args.get(++i)));
+                        new Converter.CatPrefixer(
+                            col, rows, rowCnt, args.get(++i)));
+
                     continue;
                 }
 
@@ -3421,18 +3424,19 @@ public class CsvUtil {
             if ((tok.indexOf("-") >= 0) && !tok.startsWith("-")) {
                 int from = new Integer(StringUtil.split(tok, "-", true,
                                true).get(0)).intValue();
-		
-		int step = 1;
-		String right = StringUtil.split(tok, "-", true,
-						true).get(1);
-		if(right.indexOf(":")>=0) {
-		    List<String> tmp = StringUtil.split(right,":",true,true);
-		    right  = tmp.get(0);
-		    if(tmp.size()>1)
-			step = Integer.parseInt(tmp.get(1));
-		}
-		int to = Integer.parseInt(right);
-                for (int i = from; i <= to; i+=step) {
+
+                int    step  = 1;
+                String right = StringUtil.split(tok, "-", true, true).get(1);
+                if (right.indexOf(":") >= 0) {
+                    List<String> tmp = StringUtil.split(right, ":", true,
+                                           true);
+                    right = tmp.get(0);
+                    if (tmp.size() > 1) {
+                        step = Integer.parseInt(tmp.get(1));
+                    }
+                }
+                int to = Integer.parseInt(right);
+                for (int i = from; i <= to; i += step) {
                     cols.add(i);
                 }
 

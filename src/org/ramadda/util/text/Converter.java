@@ -155,7 +155,7 @@ public abstract class Converter extends Processor {
             }
 
             //      System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
-	    //	    System.err.println("COLS:" + result);
+            //      System.err.println("COLS:" + result);
             return new Row(result);
         }
 
@@ -2000,10 +2000,10 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private HashSet<Integer> rows;
 
-        /** _more_          */
+        /** _more_ */
         private int column;
 
-        /** _more_          */
+        /** _more_ */
         private int count;
 
         /**
@@ -3783,16 +3783,16 @@ public abstract class Converter extends Processor {
      */
     public static class Generator extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         private String label;
 
-        /** _more_          */
+        /** _more_ */
         private double start;
 
-        /** _more_          */
+        /** _more_ */
         private double step;
 
-        /** _more_          */
+        /** _more_ */
         private double value;
 
         /**
@@ -4142,27 +4142,52 @@ public abstract class Converter extends Processor {
             for (int col : cols) {
                 row.getValues().set(col, value);
             }
+
             return row;
         }
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Jan 20, '20
+     * @author         Enter your name here...    
+     */
     public static class CatPrefixer extends Converter {
 
-	private int col;
-	private HashSet<Integer> rows;
-	private int numRows;
-	private String delim;
-	private String prefix;
-	private int  currentRow=-1;
+        /** _more_          */
+        private int col;
+
+        /** _more_          */
+        private HashSet<Integer> rows;
+
+        /** _more_          */
+        private int numRows;
+
+        /** _more_          */
+        private String delim;
+
+        /** _more_          */
+        private String prefix;
+
+        /** _more_          */
+        private int currentRow = -1;
 
         /**
+         *
+         * @param col _more_
+         * @param rows _more_
+         * @param numRows _more_
+         * @param delim _more_
          */
-        public CatPrefixer(int col, List<Integer> rows, int numRows, String delim) {
-	    this.col = col;
-	    this.rows = (HashSet<Integer> ) Utils.makeHashSet(rows);
-	    this.numRows  = numRows;
-	    this.delim = delim;
+        public CatPrefixer(int col, List<Integer> rows, int numRows,
+                           String delim) {
+            this.col     = col;
+            this.rows    = (HashSet<Integer>) Utils.makeHashSet(rows);
+            this.numRows = numRows;
+            this.delim   = delim;
         }
 
         /**
@@ -4174,16 +4199,18 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-	    if(rows.contains(rowCnt)) {
-		currentRow = rowCnt;
-		prefix = row.getString(col);
-		rowCnt++;
-		return row;
-	    }
-	    if(rowCnt>=currentRow &&  rowCnt<=currentRow+numRows) {
-		row.set(col, prefix + delim + row.getString(col));
-	    }
-	    rowCnt++;
+            if (rows.contains(rowCnt)) {
+                currentRow = rowCnt;
+                prefix     = row.getString(col);
+                rowCnt++;
+
+                return row;
+            }
+            if ((rowCnt >= currentRow) && (rowCnt <= currentRow + numRows)) {
+                row.set(col, prefix + delim + row.getString(col));
+            }
+            rowCnt++;
+
             return row;
         }
 

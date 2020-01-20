@@ -1076,6 +1076,7 @@ rotate -> pass -> pass -> rotate -> pass
             if (addPointHeader) {
                 addPointHeader = false;
                 handleHeaderRow(info.getWriter(), row, null /*exValues*/);
+
                 return row;
             }
 
