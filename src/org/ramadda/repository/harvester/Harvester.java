@@ -948,8 +948,9 @@ public abstract class Harvester extends RepositoryManager {
             endTime = System.currentTimeMillis();
         } catch (Throwable exc) {
             logHarvesterError("Error in harvester.run", exc);
-            error.append("Error: " + exc + "<br>"
-                         + LogUtil.getStackTrace(exc) + "<br>");
+            error.append("Error: " + exc
+                         + HtmlUtils.makeShowHideBlock("Stack",
+                             LogUtil.getStackTrace(exc), false));
         }
         setActive(false);
     }

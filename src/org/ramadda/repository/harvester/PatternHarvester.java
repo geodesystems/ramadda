@@ -25,15 +25,12 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-
 import org.ramadda.util.sql.SqlUtil;
-
 
 import org.w3c.dom.*;
 
-
-
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -41,12 +38,7 @@ import java.io.File;
 
 import java.lang.reflect.*;
 
-
-
 import java.net.*;
-
-
-
 
 import java.text.SimpleDateFormat;
 
@@ -58,9 +50,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
-
 import java.util.regex.*;
 
 
@@ -79,6 +68,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     /** attribute id */
     public static final String ATTR_DATEFORMAT = "dateformat";
+
+    /** _more_ */
+    public static final String ATTR_IGNORE_ERRORS = "ignore_errors";
 
     /** attribute id */
     public static final String ATTR_FILEPATTERN = "filepattern";
@@ -114,6 +106,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** _more_ */
     private String topPatternString = "";
 
+
+    /** _more_ */
+    private boolean ignoreErrors = false;
 
     /** _more_ */
     private Pattern filePattern;
@@ -233,6 +228,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 filePatternString);
 
 
+        ignoreErrors = XmlUtil.getAttribute(element, ATTR_IGNORE_ERRORS,
+                                            ignoreErrors);
+
         topPatternString = XmlUtil.getAttribute(element, ATTR_TOPPATTERN,
                 topPatternString);
 
@@ -273,6 +271,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         super.applyState(element);
         element.setAttribute(ATTR_FILEPATTERN, filePatternString);
         element.setAttribute(ATTR_TOPPATTERN, topPatternString);
+        element.setAttribute(ATTR_IGNORE_ERRORS, "" + ignoreErrors);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
         element.setAttribute(ATTR_MOVETOSTORAGE, "" + moveToStorage);
         element.setAttribute(ATTR_DATEFORMAT, dateFormat);
@@ -299,7 +298,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         topPatternString = request.getUnsafeString(ATTR_TOPPATTERN,
                 topPatternString);
-        topPattern = null;
+        topPattern   = null;
+
+        ignoreErrors = request.get(ATTR_IGNORE_ERRORS, false);
 
         notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,
                 notfilePatternString).trim();
@@ -401,8 +402,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                           notfilePatternString,
                                           HtmlUtils.SIZE_60)));
 
-
-
+        sb.append(HtmlUtils.formEntry("",
+                                      HtmlUtils.checkbox(ATTR_IGNORE_ERRORS,
+                                          "true",
+                                          ignoreErrors) + " Ignore errors"));
 
         sb.append(
             HtmlUtils.colspan(
@@ -608,8 +611,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
             entryMsg.append("Found " + entryCnt + " file" + ((entryCnt == 1)
                     ? ""
-                    : "s") + " (" + newEntryCnt + " new)" + " in " + timeMsg
-                           + "<br>");
+                    : "s") + " (" + newEntryCnt + " new)"  /* + " in " + timeMsg*/
+                    + "<br>");
         }
         List<File> rootDirs = getRootDirs();
 
@@ -727,7 +730,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                  + "?log=harvester.log", msg(
                                      "Harvest details")) + "<br>";
             if ( !getMonitor()) {
-                status.append("Done<br>");
                 status.append(logLink);
                 logHarvesterInfo("Ran one time only. Exiting loop");
 
@@ -936,9 +938,19 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 try {
                     entry = processFile(dirInfo, f);
                 } catch (Exception exc) {
+                    appendError("Error processing file:" + f);
                     logHarvesterError("Error creating entry:" + f, exc);
+                    if ( !ignoreErrors) {
+                        throw (Exception) LogUtil.getInnerException(exc);
+                    }
+                    appendError(
+                        "Error: " + exc
+                        + HtmlUtils.makeShowHideBlock(
+                            "Stack",
+                            LogUtil.getStackTrace(
+                                LogUtil.getInnerException(exc)), false));
 
-                    throw exc;
+                    continue;
                 }
                 if (entry == null) {
                     logHarvesterInfo("No entry created for file: " + f);
@@ -1053,9 +1065,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         for (Entry newEntry : entries) {
             String originalId =
                 (String) newEntry.getProperty(ATTR_ORIGINALID);
-            idList.add(new String[] { newEntry.getId(), originalId });
-
-
             if ( !canContinueRunning(timestamp)) {
                 return;
             }
@@ -1063,11 +1072,23 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 newEntry.getTypeHandler().initializeEntryFromHarvester(
                     request, newEntry, true);
             } catch (Exception exc) {
+                appendError("Error processing file:"
+                            + newEntry.getResource().getPath());
                 logHarvesterInfo("Error initializing:"
                                  + newEntry.getResource().getPath());
+                if ( !ignoreErrors) {
+                    throw (Exception) LogUtil.getInnerException(exc);
+                }
+                appendError(
+                    "Error: " + exc
+                    + HtmlUtils.makeShowHideBlock(
+                        "Stack",
+                        LogUtil.getStackTrace(
+                            LogUtil.getInnerException(exc)), false));
 
-                throw exc;
+                continue;
             }
+            idList.add(new String[] { newEntry.getId(), originalId });
             entriesToAdd.add(newEntry);
             cnt++;
             currentStatus = "Initialized " + cnt + " of " + entries.size()
@@ -1093,9 +1114,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         logHarvesterInfo("Inserting " + entriesToAdd.size() + " new entries");
         status.append("Inserting entries<br>");
         getEntryManager().addNewEntries(getRequest(), entriesToAdd);
-        status.append("Done inserting entries<br>");
+        status.append("Done inserting " + entriesToAdd.size()
+                      + " entries<br>");
     }
-
 
     /**
      * _more_

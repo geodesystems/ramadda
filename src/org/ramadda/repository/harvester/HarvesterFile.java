@@ -104,7 +104,7 @@ public class HarvesterFile extends FileInfo {
             if (tmp.size() > 50) {
                 return s + " Added " + tmp.size() + " files";
             }
-            fileBlock = HtmlUtils.insetDiv("Added files:<br>"
+            fileBlock = HtmlUtils.insetDiv("Files:<br>"
                                            + StringUtil.join("<br>", tmp), 0,
                                                10, 0, 0);
 

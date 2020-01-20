@@ -25,6 +25,7 @@ import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
 
+import ucar.unidata.util.WrapperException;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.StringUtil;
 
@@ -507,13 +508,8 @@ public class TextRecord extends DataRecord {
 
             return ReadStatus.OK;
         } catch (Exception exc) {
-            System.err.println("Error line:" + line);
-
-            throw exc;
+	    throw new WrapperException("Error line:" + line, exc);
         }
-
-
-
     }
 
 
