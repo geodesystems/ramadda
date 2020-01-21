@@ -848,6 +848,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
 
+
             if (this.showPercent) {
                 var newList = [];
                 var isNumber = [];
@@ -877,7 +878,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             if (valueIsDate) {
                                 seenIndex = true;
                             }
-
                             if (valueIsNumber && fields != null) {
                                 valueIsNumber = fields.indexOf(fieldsToSelect[j].getId()) >= 0 ||
                                     fields.indexOf("#" + (j + 1)) >= 0;
@@ -1039,7 +1039,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
-
+	    let forceStrings = this.getProperty("forceStrings",false);
             for (var j = 0; j < header.length; j++) {
 		var field=null;
 		if(j>0 || !props.includeIndex) {
@@ -1051,7 +1051,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if ((typeof value) == "object") {
                         //assume its a date
 			if(typeof value.v == "number") {
-			    dataTable.addColumn('number', header[j]);
+			    if(forceStrings)
+				dataTable.addColumn('string', header[j]);
+			    else
+				dataTable.addColumn('number', header[j]);
 			} else {
 			    dataTable.addColumn('date', header[j]);
 			}
@@ -1262,6 +1265,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 var newRow = [];
                 for (var j = 0; j < row.length; j++) {
                     var value = row[j];
+		    if(forceStrings) {
+			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
+		    }
+		    
 		    if(j>0 && fixedValueS) {
 			newRow.push(fixedValueN);
 		    } else {
@@ -1318,7 +1325,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (didColorBy) {
 		colorBy.displayColorTable();
             }
-
             return dataTable;
         },
 
@@ -1371,10 +1377,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var textColor = this.getProperty("textColor", "#000");
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
-
+	    chartOptions.vAxis.text  = this.getProperty("vAxisText");
+	    chartOptions.hAxis.slantedText = this.getProperty("slantedText",false);
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
-
             this.setPropertyOn(chartOptions.legend.textStyle, "legend.text.color", "color", textColor);
 
 
@@ -3050,7 +3056,6 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
         showMax: dflt,
         showAverage: dflt,
         showStd: dflt,
-        showPercentile: dflt,
         showCount: dflt,
         showTotal: dflt,
         showPercentile: dflt,
