@@ -910,7 +910,10 @@ function selectClick(id, entryId, value) {
     selectCancel();
 }
 
-function selectCancel() {
+function selectCancel(override) {
+    if(!override) {
+	if($("#ramadda-selectdiv-pin").attr("data-pinned")) return;
+    }
     $("#ramadda-selectdiv").hide();
 }
 
@@ -955,9 +958,23 @@ function handleSelect(request, id) {
     selector = selectors[id];
     var xmlDoc = request.responseXML.documentElement;
     text = getChildText(xmlDoc);
+    var pinId = selector.div.id +"-pin";
+    var pin = HtmlUtils.getIconImage("fa-thumbtack", ["class","ramadda-popup-pin", "id",pinId]);
     var closeImage = HtmlUtils.getIconImage(icon_close, []);
-    var close = "<a href=\"javascript:selectCancel();\">" + closeImage+"</a>";
-    selector.div.obj.innerHTML = "<table width=100%><tr><td align=right>" + close + "</table>" + text;
+    var close = "<a href=\"javascript:selectCancel(true);\">" + closeImage+"</a>";
+    var header = HtmlUtils.div(["style","text-align:right;","class","ramadda-popup-header"],pin +" " +close);
+    var popup = HtmlUtils.div(["id",id+"-popup"], header + text);
+    selector.div.obj.innerHTML = popup;
+    $("#" + selector.div.id).draggable();
+    $("#" + pinId).click(function() {
+	if($(this).attr("data-pinned")) {
+	    $(this).removeClass("ramadda-popup-pin-pinned");
+	    $(this).attr("data-pinned",false);
+	} else {
+	    $(this).addClass("ramadda-popup-pin-pinned");
+	    $(this).attr("data-pinned",true);
+	}
+    });
 }
 
 
