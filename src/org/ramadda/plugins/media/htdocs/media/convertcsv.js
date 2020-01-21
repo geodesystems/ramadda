@@ -50,10 +50,10 @@ function csvInsertHeader(field,value) {
     var popup = $("#csv_popup");
     popup.css("display","none");
     if(!value) value = " ";
-//    if(value!="true" && value!="false") 
-//        value = " \"" +value+"\"";
-//    else
-        value = " " + value +" ";
+    //    if(value!="true" && value!="false") 
+    //        value = " \"" +value+"\"";
+    //    else
+    value = " " + value +" ";
     csvInsertCommand(field +value);
 }
 
@@ -131,186 +131,186 @@ function csvCall(cmds,args) {
     }
     //    console.log(url);
     var jqxhr = $.getJSON( url, function(data) {
-            if(data.error!=null) {
-                csvOutput(HtmlUtil.tag("pre",[],"Error:" + window.atob(data.error)));
-                return;
-            }
-            if(Utils.isDefined(args.func)) {
-                //                args.func(data);
-                //                return;
-            }
-            if(data.file) {
-                csvOutput(HtmlUtil.tag("pre",[],""));
-                iframe = '<iframe src="' + data.file +'"  style="display:none;"></iframe>';
-                $("#convertcsv_scratch").html(iframe);
-                return;
-            } 
-            if(Utils.isDefined(data.html) ) {
-                html = window.atob(data.html);
-                html = HtmlUtil.tag("pre",[],html);
+        if(data.error!=null) {
+            csvOutput(HtmlUtil.tag("pre",[],"Error:" + window.atob(data.error)));
+            return;
+        }
+        if(Utils.isDefined(args.func)) {
+            //                args.func(data);
+            //                return;
+        }
+        if(data.file) {
+            csvOutput(HtmlUtil.tag("pre",[],""));
+            iframe = '<iframe src="' + data.file +'"  style="display:none;"></iframe>';
+            $("#convertcsv_scratch").html(iframe);
+            return;
+        } 
+        if(Utils.isDefined(data.html) ) {
+            html = window.atob(data.html);
+            html = HtmlUtil.tag("pre",[],html);
+            $("#convertcsv_output").html(html);
+            return;
+        }
+        if(Utils.isDefined(data.url)) {
+            csvOutput(data.url);
+            return;
+        } 
+        if(Utils.isDefined(data.result)) {
+            var result = window.atob(data.result);
+            if(showHtml) {
+		result = result.replace(/(<th>.*?)(#[0-9]+)/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$2</a>");
+                $("#convertcsv_output").html(result);
+                $("#convertcsv_output .csv_header_field").click(function(event) {
+		    $(this).attr("style","color:black;");
+		    var index = $(this).attr("index").replace("#","").trim();
+		    csvInsertText(index+",");
+		});
+                HtmlUtils.formatTable(".ramadda-table");
+            } else {
+                var isDb = result.startsWith("<tables");
+		var isHeader = result.startsWith("#fields=");
+
+		if(printHeader) {
+		    result = result.replace(/(#[0-9]+) /g,"<a href='#' index='$1' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$1</a> ");
+		    console.log("result:" + result);
+		} else if(isHeader) {
+		    var toks = result.split("\n");
+		    var line = toks[0];
+		    line = line.replace("#fields=","");
+		    line = line.replace(/(\] *),/g,"$1\n");
+		    //			line = line.replace(/([^\[]+)(\[.*\])/g,"X$1$2");
+		    var tmp ="";
+		    toks = line.split("\n");
+		    for(var i=0;i<toks.length;i++) {
+			var l = toks[i];
+			l = l.replace(/^(.*?)\[/,"<span class=csv_addheader_field field='$1' title='Add to input'>$1</span>[");
+			tmp+=l +"\n";
+		    }
+		    result = tmp;
+
+		} else if(isDb) {
+                    result = result.replace("<tables>","Database:");
+                    result = result.replace(/<property[^>]+>/g,"");
+                    result = result.replace(/> *<\/column>/g,"/>");
+                    result = result.replace(/\n *\n/g,"\n");
+                    result = result.replace(/\/>/g,"");
+                    result = result.replace(/>/g,"");
+                    result = result.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop()  title='Add to input'>$1</a>");
+                    result = result.replace("<table ","table:");
+                    result = result.replace("</table","");
+                    result = result.replace("</tables","");
+
+                    result = result.replace(/<column +name="(.*?)"/g,"\tcolumn: name=\"<a class=csv_db_field field='$1' onclick=noop() title='Add to input'>$1</a>\"");
+                    result = result.replace(/ ([^ ]+)="([^"]+)"/g,"\t$1:$2");
+                    result = result.replace(/ ([^ ]+)="([^"]*)"/g,"\t$1:\"$2\"");
+
+                } else {
+                    result = result.replace(/</g,"&lt;");
+                    result = result.replace(/>/,"&gt;");
+                }
+                var html = "<pre>" + result +"</pre>";
+                if(isDb || isHeader) {
+                    html+="<div class=\"ramadda-popup\" xstyle=\"display: none;position:absolute;\" id=csv_popup></div>" ;
+		}
                 $("#convertcsv_output").html(html);
-                return;
-            }
-            if(Utils.isDefined(data.url)) {
-                csvOutput(data.url);
-                return;
-            } 
-            if(Utils.isDefined(data.result)) {
-                var result = window.atob(data.result);
-                if(showHtml) {
-		    result = result.replace(/(<th>.*?)(#[0-9]+)/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$2</a>");
-                    $("#convertcsv_output").html(result);
+		if(printHeader) {
                     $("#convertcsv_output .csv_header_field").click(function(event) {
 			$(this).attr("style","color:black;");
 			var index = $(this).attr("index").replace("#","").trim();
 			csvInsertText(index+",");
-		    });
-                    HtmlUtils.formatTable(".ramadda-table");
-                } else {
-                    var isDb = result.startsWith("<tables");
-		    var isHeader = result.startsWith("#fields=");
-
-		    if(printHeader) {
-			result = result.replace(/(#[0-9]+) /g,"<a href='#' index='$1' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$1</a> ");
-			console.log("result:" + result);
-		    } else if(isHeader) {
-			var toks = result.split("\n");
-			var line = toks[0];
-			line = line.replace("#fields=","");
-			line = line.replace(/(\] *),/g,"$1\n");
-//			line = line.replace(/([^\[]+)(\[.*\])/g,"X$1$2");
-			var tmp ="";
-			toks = line.split("\n");
-			for(var i=0;i<toks.length;i++) {
-			    var l = toks[i];
-			    l = l.replace(/^(.*?)\[/,"<span class=csv_addheader_field field='$1' title='Add to input'>$1</span>[");
-			    tmp+=l +"\n";
-			}
-			result = tmp;
-
-		    } else if(isDb) {
-                        result = result.replace("<tables>","Database:");
-                        result = result.replace(/<property[^>]+>/g,"");
-                        result = result.replace(/> *<\/column>/g,"/>");
-                        result = result.replace(/\n *\n/g,"\n");
-                        result = result.replace(/\/>/g,"");
-                        result = result.replace(/>/g,"");
-                        result = result.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop()  title='Add to input'>$1</a>");
-                        result = result.replace("<table ","table:");
-                        result = result.replace("</table","");
-                        result = result.replace("</tables","");
-
-                        result = result.replace(/<column +name="(.*?)"/g,"\tcolumn: name=\"<a class=csv_db_field field='$1' onclick=noop() title='Add to input'>$1</a>\"");
-                        result = result.replace(/ ([^ ]+)="([^"]+)"/g,"\t$1:$2");
-                        result = result.replace(/ ([^ ]+)="([^"]*)"/g,"\t$1:\"$2\"");
-
-                    } else {
-                        result = result.replace(/</g,"&lt;");
-                        result = result.replace(/>/,"&gt;");
-                    }
-                    var html = "<pre>" + result +"</pre>";
-                    if(isDb || isHeader) {
-                        html+="<div class=\"ramadda-popup\" xstyle=\"display: none;position:absolute;\" id=csv_popup></div>" ;
-		    }
-                    $("#convertcsv_output").html(html);
-		    if(printHeader) {
-                        $("#convertcsv_output .csv_header_field").click(function(event) {
-			    $(this).attr("style","color:black;");
-			    var index = $(this).attr("index").replace("#","").trim();
-			    csvInsertText(index+",");
-			    
-			});
-		    }			
-		    if(isHeader) {
-                        $("#convertcsv_output .csv_addheader_field").click(function(event) {
-                            event.preventDefault();
-			    var field = $(this).attr("field");
-                            var pos=$(this).offset();
-                            var h=$(this).height();
-                            var w=$(this).width();
-                            var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
-                            html +="type=" + 
-				csvMakeHeaderMenu(field+".type","enumeration","enumeration")+ "  "+
-				csvMakeHeaderMenu(field+".type","string","string")+ " "+
-				csvMakeHeaderMenu(field+".type","double","double")+" "+
-				csvMakeHeaderMenu(field+".type","date","date")+
-				"<br>";
-                            html+="</div>";
-                            var popup = $("#csv_popup");
-                            csvDbPopupTime = new Date();
-                            popup.css("display","block");
-                            popup.html(html);
-                            var myalign  = "left top";
-                            var atalign  = "left bottom";
-                            popup.position({
-                                of: $(this),
-                                my: myalign,
-                                at: atalign,
-                                collision: "none none"
-                            });
-			});
-		    }
 			
-                    if(isDb){
-                        $("#convertcsv_output .csv_db_field").click(function(event) {
-                                var space = "&nbsp;"
-                                event.preventDefault();
-                                var pos=$(this).offset();
-                                var h=$(this).height();
-                                var w=$(this).width();
-                                var field  = $(this).attr("field");
-                                var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
-                                if(field  == "table") {
-                                    html +=csvMakeDbMenu(field+".name")+"<br>";
-                                    html +=csvMakeDbMenu(field+".label")+"<br>";
-                                } else {
-                                    html +=csvMakeDbMenu(field+".id")+"<br>";
-                                    html +=csvMakeDbMenu(field+".label")+"<br>";
-                                    html +=
-                                        csvMakeDbMenu(field+".type")+space +
-                                        csvMakeDbMenu(field+".type","string","string")+space +
-                                        csvMakeDbMenu(field+".type","double","double")+space +
-                                        csvMakeDbMenu(field+".type","int","int")+space +
-                                        csvMakeDbMenu(field+".type","enumeration","enumeration")+space +
-                                        csvMakeDbMenu(field+".type","enumerationplus","enumerationplus")+space +
-                                        "<br>";
-                                    html +=
-                                        csvMakeDbMenu(field+".cansearch")+space +
-                                        csvMakeDbMenu(field+".cansearch","true","true")+space +
-                                        csvMakeDbMenu(field+".cansearch","false","false")+
-                                        "<br>";
-                                    html +=
-                                        csvMakeDbMenu(field+".canlist")+space +
-                                        csvMakeDbMenu(field+".canlist","true","true")+space+
-                                        csvMakeDbMenu(field+".canlist","false","false")+
-                                        "<br>";
-                                }
-                                html+="</div>";
-                                var popup = $("#csv_popup");
-                                csvDbPopupTime = new Date();
-                                popup.css("display","block");
-                                popup.html(html);
-                                var myalign  = "left top";
-                                var atalign  = "left bottom";
-                                popup.position({
-                                        of: $(this),
-                                            my: myalign,
-                                            at: atalign,
-                                            collision: "none none"
-                                            });
+		    });
+		}			
+		if(isHeader) {
+                    $("#convertcsv_output .csv_addheader_field").click(function(event) {
+                        event.preventDefault();
+			var field = $(this).attr("field");
+                        var pos=$(this).offset();
+                        var h=$(this).height();
+                        var w=$(this).width();
+                        var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
+                        html +="type=" + 
+			    csvMakeHeaderMenu(field+".type","enumeration","enumeration")+ "  "+
+			    csvMakeHeaderMenu(field+".type","string","string")+ " "+
+			    csvMakeHeaderMenu(field+".type","double","double")+" "+
+			    csvMakeHeaderMenu(field+".type","date","date")+
+			    "<br>";
+                        html+="</div>";
+                        var popup = $("#csv_popup");
+                        csvDbPopupTime = new Date();
+                        popup.css("display","block");
+                        popup.html(html);
+                        var myalign  = "left top";
+                        var atalign  = "left bottom";
+                        popup.position({
+                            of: $(this),
+                            my: myalign,
+                            at: atalign,
+                            collision: "none none"
+                        });
+		    });
+		}
+		
+                if(isDb){
+                    $("#convertcsv_output .csv_db_field").click(function(event) {
+                        var space = "&nbsp;"
+                        event.preventDefault();
+                        var pos=$(this).offset();
+                        var h=$(this).height();
+                        var w=$(this).width();
+                        var field  = $(this).attr("field");
+                        var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
+                        if(field  == "table") {
+                            html +=csvMakeDbMenu(field+".name")+"<br>";
+                            html +=csvMakeDbMenu(field+".label")+"<br>";
+                        } else {
+                            html +=csvMakeDbMenu(field+".id")+"<br>";
+                            html +=csvMakeDbMenu(field+".label")+"<br>";
+                            html +=
+                                csvMakeDbMenu(field+".type")+space +
+                                csvMakeDbMenu(field+".type","string","string")+space +
+                                csvMakeDbMenu(field+".type","double","double")+space +
+                                csvMakeDbMenu(field+".type","int","int")+space +
+                                csvMakeDbMenu(field+".type","enumeration","enumeration")+space +
+                                csvMakeDbMenu(field+".type","enumerationplus","enumerationplus")+space +
+                                "<br>";
+                            html +=
+                                csvMakeDbMenu(field+".cansearch")+space +
+                                csvMakeDbMenu(field+".cansearch","true","true")+space +
+                                csvMakeDbMenu(field+".cansearch","false","false")+
+                                "<br>";
+                            html +=
+                                csvMakeDbMenu(field+".canlist")+space +
+                                csvMakeDbMenu(field+".canlist","true","true")+space+
+                                csvMakeDbMenu(field+".canlist","false","false")+
+                                "<br>";
+                        }
+                        html+="</div>";
+                        var popup = $("#csv_popup");
+                        csvDbPopupTime = new Date();
+                        popup.css("display","block");
+                        popup.html(html);
+                        var myalign  = "left top";
+                        var atalign  = "left bottom";
+                        popup.position({
+                            of: $(this),
+                            my: myalign,
+                            at: atalign,
+                            collision: "none none"
+                        });
 
-                            })
+                    })
 
-                    }
                 }
-                return;
             }
-            $("#convertcsv_output").html(HtmlUtil.tag("pre",[],"No response given"));
-        })
+            return;
+        }
+        $("#convertcsv_output").html(HtmlUtil.tag("pre",[],"No response given"));
+    })
         .fail(function(jqxhr, textStatus, error) {
-                var err = textStatus + ", " + error;
-                csvOutput(HtmlUtil.tag("pre",[],"Error:" + err));
-            });
+            var err = textStatus + ", " + error;
+            csvOutput(HtmlUtil.tag("pre",[],"Error:" + err));
+        });
 }
 
 
@@ -318,9 +318,9 @@ function csvStop() {
     var url = ramaddaBaseUrl + "/entry/show?output=csv_convert_process&entryid=" + convertCsvEntry+"&stop=true";
     console.log(url);
     var jqxhr = $.getJSON( url, function(data) {
-        })
+    })
         .fail(function(jqxhr, textStatus, error) {
-            });
+        });
 }
 
 
@@ -340,7 +340,7 @@ function csvInsertText(text) {
               +text 
               + input.val().substring(end));
     setTimeout(function() {
-            input.focus();},0);
+        input.focus();},0);
     input[0].selectionStart = start+text.length;
     input[0].selectionEnd = start+text.length;
 }
@@ -380,7 +380,7 @@ function csvFlipInput(text) {
         html=HtmlUtil.input("",val,["size","120", "id","convertcsv_input"]) +" " + HtmlUtil.onClick("csvFlipInput()","Expand",[]);
         csvInputType = "input";
     } else {
-        html=HtmlUtil.textarea("",val,["style","width:100%;xxfont-size:11pt;", "id","convertcsv_input", "rows", "12"]);
+        html=HtmlUtil.textarea("",val,["style","width:100%;xxfont-size:11pt;", "id","convertcsv_input", "rows", "10"]);
         csvInputType = "textarea";
     }
     $("#convertcsv_input_container").html(html);
@@ -391,10 +391,12 @@ form="";
 //form+=HtmlUtil.input("","",["size","120", "id","convertcsv_input"]);
 form+=HtmlUtil.span(["id","convertcsv_input_container"],"");
 html = "";
+html += "<style type='text/css'>.ramadda-csv-table  {font-size:10pt;} </style>";
 
 maxRows="Rows: " + HtmlUtil.input("","30",["size","5", "id","convertcsv_maxrows"]);
 
 html+="<table border=0 width=100%><tr><td>";
+html+=HtmlUtil.href("javascript:csvCall('-help')",HtmlUtils.getIconImage("fa-question-circle"))+" ";
 html+=HtmlUtil.tag("span",["id","csv_commands"],"");
 fileSelect = HtmlUtil.href("javascript:void(0);","Select file",["style", "color:black", "onClick", "selectInitialClick(event,'convertcsv_file1','convertcsv_input','true','entry:entryid','" + convertCsvEntry+"');",  "id","convertcsv_file1_selectlink"]);
 html += fileSelect;
@@ -407,10 +409,10 @@ html +=  HtmlUtil.checkbox("csvsave",["id","csvsave"],true) +" Save";
 html += "&nbsp;&nbsp;";
 html += HtmlUtil.checkbox("",["id","convertcsv_runok"],true) +" Do Commands";
 html += "&nbsp;&nbsp;";
-html+="</td></tr></table>";
+html +="</td></tr></table>";
 html += "<form>";
 html += form;
-html +="<p>";
+html +="<div style='margin-top:5px;'></div>";
 var left = "";
 left+=HtmlUtil.href("javascript:csvDisplay('-printheader',null,true)","Header",["class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('-table',null,true)","Table",["class","convert_button"])+" ";
@@ -423,76 +425,76 @@ var right = "";
 right+=HtmlUtil.href("javascript:csvClearCommand()","Clear Output",["class","convert_button"])+" ";
 right+=HtmlUtil.href("javascript:csvCall('',{listOutput:true})","List Files",["class","convert_button"])+" ";
 right+=HtmlUtil.href("javascript:csvCall('',{clearOutput:true})","Remove Files",["class","convert_button"])+" ";
-right+=HtmlUtil.href("javascript:csvCall('-help')","Help",["class","convert_button"]);
 html+=HtmlUtil.leftRight(left,right);
 html += "</form>";
 
-html += "<p>" +HtmlUtil.div(["id", "convertcsv_output","style"," max-height: 500px;  overflow-y: auto;"],"<pre>\n</pre>");
+html +="<div style='margin-top:5px;'></div>";
+html +=  HtmlUtil.div(["id", "convertcsv_output","style"," max-height: 500px;  overflow-y: auto;"],"<pre>\n</pre>");
 html += HtmlUtil.div(["id", "convertcsv_scratch"],"");
 $("#convertcsv_div").html(html);
 csvFlipInput(convertCsvLastInput);
 $(".convert_button").button();
 $(document).click(function(e) {
-        if(csvDbPopupTime) {
-            var now = new Date();
-            var timeDiff = now-csvDbPopupTime;
-            if(timeDiff<1000)  {
-                return;
-            }
+    if(csvDbPopupTime) {
+        var now = new Date();
+        var timeDiff = now-csvDbPopupTime;
+        if(timeDiff<1000)  {
+            return;
         }
+    }
     var popup = $("#csv_popup");
     popup.css("display","none");
-    });
+});
 $('#convertcsv_input').keyup(function(e){
-        if(e.keyCode == 13) {
-            //            csvRunCommand(true);
-        }
-    })
+    if(e.keyCode == 13) {
+        //            csvRunCommand(true);
+    }
+})
 
 
-    var helpUrl = csvGetUrl("-helpjson");
-    var jqxhr = $.getJSON( helpUrl, function(data) {
-            if(data.error!=null) {
-                return;
-            }
-            if(Utils.isDefined(data.result)) {
-                var csvCommandsMap = {}
-                var result = window.atob(data.result);
-                var select = "<select id=csv_command_select class=ramadda-pulldown>";
-                select +=HtmlUtil.tag("option",[],"Commands");
-		result= JSON.parse(result);
-                result.commands.map(cmd=>{
-		    var command = cmd.command;
-		    if(cmd.isCategory) {
-			select +=HtmlUtil.tag("option",[],cmd.description);
-			return;
-		    }
-		    if(!command) return;
-                    if(!command.startsWith("-")) return;
-		    if(command.startsWith("-help")) return;
-		    var tooltip = "";
-		    var desc = cmd.description;
-		    if(desc && desc!="") {
-			tooltip =desc+"\n";
-		    }
-                    tooltip += command + " " + cmd.args;
-                    tooltip = tooltip.replace(/\"/g,"&quot;").replace(/\(/g,"").replace(/\)/g,"");
-                    var label = command;
-                    label = Utils.camelCase(label.replace("-",""));
-                    csvCommandsMap[command] = cmd;
-                    select +=HtmlUtil.tag("option",["value", command,"title",tooltip],"&nbsp;&nbsp;&nbsp;" + label);
-                });
-                select += "</select>&nbsp;&nbsp;";
-                $("#csv_commands").html(select);
-                //                $(".ramadda-pulldown").selectBoxIt({});                                 
-                $("#csv_command_select").change(function(evt) {
-                    var cmd = csvCommandsMap[$("#csv_command_select").val()];
-		    if(!cmd)return;
-                    csvInsertCommand(cmd.command +" " + cmd.args);
-                });
-            }
-            
+var helpUrl = csvGetUrl("-helpjson");
+var jqxhr = $.getJSON( helpUrl, function(data) {
+    if(data.error!=null) {
+        return;
+    }
+    if(Utils.isDefined(data.result)) {
+        var csvCommandsMap = {}
+        var result = window.atob(data.result);
+        var select = "<select id=csv_command_select class=ramadda-pulldown>";
+        select +=HtmlUtil.tag("option",[],"Commands");
+	result= JSON.parse(result);
+        result.commands.map(cmd=>{
+	    var command = cmd.command;
+	    if(cmd.isCategory) {
+		select +=HtmlUtil.tag("option",[],cmd.description);
+		return;
+	    }
+	    if(!command) return;
+            if(!command.startsWith("-")) return;
+	    if(command.startsWith("-help")) return;
+	    var tooltip = "";
+	    var desc = cmd.description;
+	    if(desc && desc!="") {
+		tooltip =desc+"\n";
+	    }
+            tooltip += command + " " + cmd.args;
+            tooltip = tooltip.replace(/\"/g,"&quot;").replace(/\(/g,"").replace(/\)/g,"");
+            var label = command;
+            label = Utils.camelCase(label.replace("-",""));
+            csvCommandsMap[command] = cmd;
+            select +=HtmlUtil.tag("option",["value", command,"title",tooltip],"&nbsp;&nbsp;&nbsp;" + label);
+        });
+        select += "</select>&nbsp;&nbsp;";
+        $("#csv_commands").html(select);
+        //                $(".ramadda-pulldown").selectBoxIt({});                                 
+        $("#csv_command_select").change(function(evt) {
+            var cmd = csvCommandsMap[$("#csv_command_select").val()];
+	    if(!cmd)return;
+            csvInsertCommand(cmd.command +" " + cmd.args);
+        });
+    }
+    
 
-        })
-        .fail(function(jqxhr, textStatus, error) {
-            });
+})
+    .fail(function(jqxhr, textStatus, error) {
+    });
