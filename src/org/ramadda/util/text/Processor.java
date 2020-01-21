@@ -306,9 +306,30 @@ public abstract class Processor extends CsvOperator {
          *
          * @throws Exception _more_
          */
+        int xcnt = 0;
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
         @Override
         public Row processRow(TextReader info, Row row, String line)
                 throws Exception {
+            if (row.get(0).equals("Mean")) {
+                xcnt++;
+            } else {
+                xcnt = 0;
+            }
+            if ((xcnt > 5) && (xcnt < 20)) {
+                System.out.println("\tProcessor xcnt:" + xcnt);
+            }
             info.setCurrentOperator(this);
             Object  skipTo      = row.getSkipTo();
             boolean sawBufferer = false;
@@ -349,6 +370,9 @@ public abstract class Processor extends CsvOperator {
                 }
                 //Always do this here so the indexes don't get screwed up 
                 processor.getIndices(info);
+                if (Row.xcnt == 5) {
+                    System.out.println("row: " + row);
+                }
                 info.setCurrentOperator(processor);
                 row = processor.processRow(info, row, line);
                 info.setCurrentOperator(this);
@@ -1079,14 +1103,11 @@ rotate -> pass -> pass -> rotate -> pass
 
                 return row;
             }
-
             handleRow(info, info.getWriter(), row);
 
             return row;
         }
 
-        /** _more_ */
-        int xxcnt = 0;
 
         /**
          * _more_
@@ -2042,7 +2063,6 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         private int cnt = 0;
 
-
         /**
          * _more_
          *
@@ -2053,6 +2073,19 @@ rotate -> pass -> pass -> rotate -> pass
         /**
          * _more_
          *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        int xcnt = 0;
+
+        /**
+         * _more_
          *
          * @param info _more_
          * @param row _more_

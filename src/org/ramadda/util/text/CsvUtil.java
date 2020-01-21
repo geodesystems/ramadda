@@ -624,7 +624,6 @@ public class CsvUtil {
      * _more_
      *
      * @param file _more_
-     * @param props _more_
      * @param header _more_
      * @param chunkPattern _more_
      * @param tokenPattern _more_
@@ -1179,7 +1178,6 @@ public class CsvUtil {
         } else {
             while (okToRun) {
                 String line = textReader.readLine();
-                //            System.err.println("line:" + line);
                 if (line == null) {
                     break;
                 }
@@ -1207,7 +1205,7 @@ public class CsvUtil {
                     continue;
                 }
 
-
+                //              System.out.println("\tLine:" + line);
 
                 List<Integer> widths = textReader.getWidths();
                 if ((widths == null) && (textReader.getDelimiter() == null)) {
@@ -1547,8 +1545,9 @@ public class CsvUtil {
         new Cmd(
             "-setcol", "<match col #> <pattern> <write col #> <value>",
             "(write the value into the write col for rows that match the pattern)"),
-        new Cmd("-catprefix", "<col #> <rows> <#rows> <delimiter>",
-                "(append prefix to subsequent rows)"),
+        new Cmd(
+            "-priorprefix", "<col #> <pattern> <delimiter>",
+            "(append prefix from the previous element to rows that match pattern)"),
         new Cmd("-letter", "", "(add 'A','B', ... as column)"),
         new Cmd("-case", "<lower|upper|camel> <col #>",
                 "(change case of column)"),
@@ -1834,7 +1833,7 @@ public class CsvUtil {
             throws Exception {
 
 
-        //        System.err.println("ARGS:" + args);
+        //      System.err.println("ARGS:" + args);
         boolean            addFiles      = files.size() == 0;
         boolean            trim          = false;
         boolean            printFields   = false;
@@ -3066,16 +3065,15 @@ public class CsvUtil {
                     continue;
                 }
 
-                if (arg.equals("-catprefix")) {
-                    if ( !ensureArg(args, i, 4)) {
+                if (arg.equals("-priorprefix")) {
+                    if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
-                    int           col    = Integer.parseInt(args.get(++i));
-                    List<Integer> rows   = getNumbers(args.get(++i));
-                    int           rowCnt = Integer.parseInt(args.get(++i));
+                    int    col     = Integer.parseInt(args.get(++i));
+                    String pattern = args.get(++i);
+                    String delim   = args.get(++i);
                     info.getProcessor().addProcessor(
-                        new Converter.CatPrefixer(
-                            col, rows, rowCnt, args.get(++i)));
+                        new Converter.PriorPrefixer(col, pattern, delim));
 
                     continue;
                 }
@@ -3533,7 +3531,7 @@ public class CsvUtil {
         p = p.replaceAll("_leftbracket_",
                          "\\\\[").replaceAll("_rightbracket_", "\\\\]");
         p = p.replaceAll("_dot_", "\\\\.");
-	p = p.replaceAll("_dollar_", "\\\\\\$");
+        p = p.replaceAll("_dollar_", "\\\\\\$");
         p = p.replaceAll("_dot_", "\\\\.");
         p = p.replaceAll("_star_", "\\\\*");
         p = p.replaceAll("_plus_", "\\\\+");

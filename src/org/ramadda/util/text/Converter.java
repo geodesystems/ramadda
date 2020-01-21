@@ -812,8 +812,6 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
 
-            //System.err.println("addheader:" + row);
-            //      System.err.println("hm:" + row);
             rowCnt++;
             if (rowCnt > 2) {
                 return row;
@@ -944,15 +942,11 @@ public abstract class Converter extends Processor {
                                    || _sample.equals("na")) {
                             type = "double";
                         } else if (sample.matches("^(\\+|-)?\\d+$")) {
-                            //                            System.out.println(label+" match int");
                             type = "integer";
                         } else if (sample.matches(
                                 "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
-                            //                            System.out.println(label+" match double");
                             type = "double";
-                        } else {
-                            //                            System.out.println(label +" no match:" + sample);
-                        }
+                        } else {}
                     } catch (Exception exc) {}
                 }
 
@@ -1023,6 +1017,7 @@ public abstract class Converter extends Processor {
             }
 
             return tmp;
+
 
 
 
@@ -3191,10 +3186,6 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
-         * @param col _more_
-         *
          * @param cols _more_
          * @param delta1 _more_
          * @param scale _more_
@@ -4153,41 +4144,40 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Mon, Jan 20, '20
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
-    public static class CatPrefixer extends Converter {
+    public static class PriorPrefixer extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         private int col;
 
-        /** _more_          */
-        private HashSet<Integer> rows;
+        /** _more_ */
+        private String pattern;
 
-        /** _more_          */
-        private int numRows;
-
-        /** _more_          */
+        /** _more_ */
         private String delim;
 
-        /** _more_          */
+        /** _more_ */
         private String prefix;
-
-        /** _more_          */
-        private int currentRow = -1;
 
         /**
          *
          * @param col _more_
-         * @param rows _more_
-         * @param numRows _more_
+         * @param pattern _more_
          * @param delim _more_
          */
-        public CatPrefixer(int col, List<Integer> rows, int numRows,
-                           String delim) {
+        public PriorPrefixer(int col, String pattern, String delim) {
             this.col     = col;
-            this.rows    = (HashSet<Integer>) Utils.makeHashSet(rows);
-            this.numRows = numRows;
+            this.pattern = pattern;
             this.delim   = delim;
+        }
+
+        /**
+         * _more_
+         */
+        public void reset() {
+            super.reset();
+            prefix = null;
         }
 
         /**
@@ -4199,17 +4189,14 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-            if (rows.contains(rowCnt)) {
-                currentRow = rowCnt;
-                prefix     = row.getString(col);
-                rowCnt++;
-
-                return row;
+            String val = row.get(col).toString();
+            if ((prefix != null)
+                    && (val.matches(pattern)
+                        || (val.indexOf(pattern) >= 0))) {
+                row.set(col, prefix + delim + val);
+            } else {
+                prefix = val;
             }
-            if ((rowCnt >= currentRow) && (rowCnt <= currentRow + numRows)) {
-                row.set(col, prefix + delim + row.getString(col));
-            }
-            rowCnt++;
 
             return row;
         }

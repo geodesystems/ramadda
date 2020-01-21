@@ -22,19 +22,15 @@ import org.ramadda.util.Utils;
 import java.io.*;
 
 import java.text.DateFormat;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-
-
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
 import java.util.regex.*;
 
 
@@ -46,9 +42,6 @@ import java.util.regex.*;
 public class Row {
 
     /** _more_ */
-    static int x = 0;
-
-    /** _more_ */
     private List values;
 
     /** _more_ */
@@ -58,13 +51,7 @@ public class Row {
      * _more_
      */
     public Row() {
-        values = new ArrayList() {
-            public boolean xadd(Object o) {
-                boolean v = super.add(o);
-
-                return v;
-            }
-        };
+        values = new ArrayList();
     }
 
     /**
@@ -74,6 +61,7 @@ public class Row {
      */
     public Row(List values) {
         this.values = values;
+        check();
     }
 
     /**
@@ -86,8 +74,32 @@ public class Row {
         for (Object o : values) {
             this.values.add(o);
         }
+        check();
     }
 
+    /** _more_ */
+    public static int xcnt = 0;
+
+    /** _more_ */
+    public static boolean doit = false;
+
+    /**
+     * _more_
+     */
+    public void check() {
+        if ((values != null) && (values.size() > 0)) {
+            String v = values.get(0).toString();
+            if ( !v.equals("Mean")) {
+                xcnt = 0;
+            } else {
+                xcnt++;
+                if ((xcnt > 5) && (xcnt < 8)) {
+                    //              System.out.println("Row xcnt:"+ xcnt);
+                    //              if(true) throw new IllegalArgumentException("");
+                }
+            }
+        }
+    }
 
     /**
      * _more_
@@ -138,6 +150,7 @@ public class Row {
      */
     public void setValues(List value) {
         values = value;
+        check();
     }
 
     /**
@@ -186,6 +199,7 @@ public class Row {
      */
     public void set(int index, Object object) {
         values.set(index, object);
+        check();
     }
 
     /**
@@ -195,6 +209,7 @@ public class Row {
      */
     public void insert(Object object) {
         values.add(object);
+        check();
     }
 
     /**
@@ -204,6 +219,7 @@ public class Row {
      */
     public void add(Object object) {
         values.add(object);
+        check();
     }
 
     /**
@@ -214,6 +230,7 @@ public class Row {
      */
     public void insert(int index, Object object) {
         values.add(index, object);
+        check();
     }
 
     /**
