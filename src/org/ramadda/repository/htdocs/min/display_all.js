@@ -10986,7 +10986,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.colorList =  v;
 	    }
 	    if(!this.colorList || this.colorList.length==0) {
-		this.colorList= ['blue', 'red', 'green', 'orange', 'fuchsia', 'teal', 'navy', 'silver'];
+		this.colorList= ['blue', 'red', 'green', 'orange', 'fuchsia', 'lightblue', 'navy', 'silver'];
 	    }
 	    return this.colorList;
 	},
@@ -11367,7 +11367,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 dataList = this.getStandardData(fieldsToSelect, props);
             }
 
-
             this.computedData = dataList;
 
             if (this.getProperty("rotateTable") && dataList.length>0) {
@@ -11381,6 +11380,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    for(var colIdx=0;colIdx<row.length;colIdx++) {
 			var value = row[colIdx];
 			if(typeof value == "object" && value.f) value = value.f;
+			if(rowIdx==0 && colIdx==0) value="";
 			rotated[colIdx].push(value);
 		    }
                 }

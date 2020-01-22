@@ -1900,6 +1900,50 @@ public abstract class Converter extends Processor {
 
 
 
+
+    public static class Truncater extends Converter {
+
+
+        /** _more_ */
+        private int col;
+
+	private int length;
+
+        /** _more_ */
+        private String suffix;
+
+
+        /**
+         */
+        public Truncater(int col, int length, String suffix) {
+            this.col     = col;
+            this.length = length;
+            this.suffix    = suffix;
+        }
+
+
+        /**
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+	    String value = row.get(col).toString();
+	    if(value.length()>length) value = value.substring(0,length-1)+suffix;
+            row.set(col, value);
+            return row;
+        }
+
+    }
+
+
+
+
+
     /**
      * Class description
      *

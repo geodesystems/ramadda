@@ -1570,6 +1570,7 @@ public class CsvUtil {
             "<date column> <format> <tz> <era|year|month|day_of_month|day_of_week|week_of_month|day_of_week_in_month|am_pm|hour|hour_of_day|minute|second|millisecond>"),
         new Cmd("-formatdate",
                 "<col #s> <intial date format> <target date format>"),
+        new Cmd("-truncate", "<column> <max length> <suffix>"),
         new Cmd(
             "-extract",
             "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
@@ -2684,6 +2685,21 @@ public class CsvUtil {
                 }
 
 
+		if (arg.equals("-truncate")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    int    col     = new Integer(args.get(++i));
+		    int    length     = new Integer(args.get(++i));
+                    String suffix = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.Truncater(
+                            col, length, suffix));
+
+                    continue;
+                }
+
+
                 if (arg.equals("-changerow")) {
                     if ( !ensureArg(args, i, 4)) {
                         return false;
@@ -3537,7 +3553,6 @@ public class CsvUtil {
         p = p.replaceAll("_plus_", "\\\\+");
         p = p.replaceAll("_nl_", "\n");
         p = p.replaceAll("_quote_", "\"");
-
         return p;
     }
 
