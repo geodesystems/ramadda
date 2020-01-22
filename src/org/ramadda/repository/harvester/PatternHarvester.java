@@ -75,6 +75,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** attribute id */
     public static final String ATTR_FILEPATTERN = "filepattern";
 
+    /** attribute id */
+    public static final String ATTR_NOTREE = "notree";
+
     /** _more_ */
     public static final String ATTR_TOPPATTERN = "toppattern";
 
@@ -109,6 +112,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     /** _more_ */
     private boolean ignoreErrors = false;
+
+    /** _more_          */
+    private boolean noTree = false;
 
     /** _more_ */
     private Pattern filePattern;
@@ -227,9 +233,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         filePatternString = XmlUtil.getAttribute(element, ATTR_FILEPATTERN,
                 filePatternString);
 
-
         ignoreErrors = XmlUtil.getAttribute(element, ATTR_IGNORE_ERRORS,
                                             ignoreErrors);
+        noTree = XmlUtil.getAttribute(element, ATTR_NOTREE, noTree);
 
         topPatternString = XmlUtil.getAttribute(element, ATTR_TOPPATTERN,
                 topPatternString);
@@ -272,6 +278,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_FILEPATTERN, filePatternString);
         element.setAttribute(ATTR_TOPPATTERN, topPatternString);
         element.setAttribute(ATTR_IGNORE_ERRORS, "" + ignoreErrors);
+        element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
         element.setAttribute(ATTR_MOVETOSTORAGE, "" + moveToStorage);
         element.setAttribute(ATTR_DATEFORMAT, dateFormat);
@@ -301,6 +308,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         topPattern   = null;
 
         ignoreErrors = request.get(ATTR_IGNORE_ERRORS, false);
+        noTree       = request.get(ATTR_NOTREE, false);
 
         notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,
                 notfilePatternString).trim();
@@ -424,6 +432,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         sb.append(HtmlUtils.formEntry(msgLabel("Folder template"),
                                       HtmlUtils.input(ATTR_GROUPTEMPLATE,
                                           groupTemplate, HtmlUtils.SIZE_60)));
+
+        sb.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.checkbox(ATTR_NOTREE, "true", noTree)
+                + " Don't make entry hierarchy from directory tree"));
 
         sb.append(HtmlUtils.formEntry(msgLabel("Name template"),
                                       HtmlUtils.input(ATTR_NAMETEMPLATE,
@@ -958,7 +972,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     continue;
                 }
 
+
                 entryCnt++;
+                //              System.err.println(entryCnt +" " + f);
                 if (getTestMode()) {
                     if (entryCnt >= getTestCount()) {
                         return;
@@ -981,7 +997,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                             //                      System.err.println("existing:" + existing.getResource() +" " + existing.getResource().getFileSizeRaw() +" found:" +  found.getResource().getFileSizeRaw());
                             if (existing.getResource().getFileSizeRaw()
                                     != found.getResource().getFileSizeRaw()) {
-                                //                              System.err.println("Replacing entry:"+ existing);
                                 uniqueEntries.add(found);
                                 getEntryManager().deleteEntry(request,
                                         existing);
@@ -994,7 +1009,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                 continue;
                             }
                         } else {
-                            //                      System.err.println("already exists:" + found.getResource());
                             logHarvesterInfo("Entry already exists:"
                                              + found.getResource());
                         }
@@ -1410,14 +1424,17 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         //        dirPath = dirPath.replaceAll("_", " ");
         List dirToks = (List<String>) StringUtil.split(dirPath, "/", true,
                            true);
-        Entry baseGroup = getBaseGroup();
-        String dirGroup =
-            getDirNames(fileInfo.getRootDir(), baseGroup, dirToks,
-                        !getTestMode()
-                        && (groupTemplate.indexOf("${dirgroup}") >= 0));
+        Entry  baseGroup = getBaseGroup();
+        String dirGroup  = null;
+        if ( !noTree) {
+            dirGroup = getDirNames(fileInfo.getRootDir(), baseGroup, dirToks,
+                                   !getTestMode()
+                                   && (groupTemplate.indexOf("${dirgroup}")
+                                       >= 0));
 
-        dirGroup = SqlUtil.cleanUp(dirGroup);
-        dirGroup = dirGroup.replace("\\", "/");
+            dirGroup = SqlUtil.cleanUp(dirGroup);
+            dirGroup = dirGroup.replace("\\", "/");
+        }
 
         Hashtable map       = new Hashtable();
         Date      fromDate  = null;
@@ -1494,9 +1511,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
 
-        groupName = groupName.replace("${dirgroup}", dirGroup);
-        groupName = applyMacros(groupName, createDate, fromDate, toDate,
-                                filename);
+        if (dirGroup != null) {
+            groupName = groupName.replace("${dirgroup}", dirGroup);
+            groupName = applyMacros(groupName, createDate, fromDate, toDate,
+                                    filename);
+        }
         name = applyMacros(name, createDate, fromDate, toDate, filename);
         desc = applyMacros(desc, createDate, fromDate, toDate, filename);
         desc = desc.replace("${name}", name);
@@ -1545,16 +1564,16 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
         boolean                createIfNeeded = !getTestMode();
         final PatternHarvester theHarvester   = this;
-        Entry group = getEntryManager().findEntryFromName(getRequest(),
-                          groupName, getUser(), createIfNeeded,
-                          getLastGroupType(), dirTemplateEntry,
-                          new EntryInitializer() {
-            @Override
-            public void initEntry(Entry entry) {
-                theHarvester.initEntry(entry);
-            }
-        });
-
+        Entry                  group          = noTree
+                ? baseGroup
+                : getEntryManager().findEntryFromName(getRequest(),
+                    groupName, getUser(), createIfNeeded, getLastGroupType(),
+                    dirTemplateEntry, new EntryInitializer() {
+      @Override
+      public void initEntry(Entry entry) {
+          theHarvester.initEntry(entry);
+      }
+  });
 
         if (group == null) {
             logHarvesterInfo("Could not create group:" + groupName);
