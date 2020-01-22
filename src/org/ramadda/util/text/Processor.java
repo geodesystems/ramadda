@@ -2153,7 +2153,7 @@ rotate -> pass -> pass -> rotate -> pass
                                        + values.get(i)).replaceAll(" ",
                                            "&nbsp;");
                     info.getWriter().print(HtmlUtils.span(label,
-                            HtmlUtils.attr("title", label)));
+							  HtmlUtils.attr("title", label.replaceAll("\"","&quot;"))));
                 } else {
                     Object value = values.get(i);
                     String label = ((value == null)
