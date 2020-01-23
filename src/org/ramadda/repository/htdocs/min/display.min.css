@@ -5,12 +5,9 @@
 }
 
 
+//To stop the flickering tooltip in google charts
+div.google-visualization-tooltip { pointer-events: none }
 
-
-.display .formlabel {
-//   font-size: 80%;
-//   font-weight: normal;
-}
 
 .display-tooltip {
     max-width:600px;
