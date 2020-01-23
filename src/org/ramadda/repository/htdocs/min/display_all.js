@@ -12372,7 +12372,7 @@ function RamaddaSeriesChart(displayManager, id, chartType, properties) {
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
         includeIndexInData: function() {
-            return true;
+            return this.getProperty("includeIndex", true);
         },
         trendLineEnabled: function() {
             return true;
@@ -13112,9 +13112,6 @@ function BartableDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
-        xgetIncludeIndexIfDate: function() {
-            return true;
-        },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var height = "";
             if (Utils.isDefined(this.chartHeight)) {
