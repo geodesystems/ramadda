@@ -1033,7 +1033,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var colorByAttr = this.getProperty(prop||"colorBy", null);
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
 	    var _this = this;
-
 	    var colorBy = {
                 id: colorByAttr,
 		fields:fields,
@@ -1049,7 +1048,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		colorByMaxPerc: this.getDisplayProp(this, "colorByMaxPercentile", -1),
 		colorByOffset: 0,
                 pctFields:null,
+		compareFields: this.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
+	    };
+	    $.extend(colorBy,{
 		displayColorTable: function() {
+		    if(this.compareFields.length>0) {
+			var legend = "";
+			this.compareFields.map((f,idx)=>{
+			    legend += HtmlUtils.div(["style","display:inline-block;width: 15px;height: 15px; background:" + this.colors[idx]+";"]) +" " +
+				f.getLabel() +" ";
+			});
+			_this.jq(ID_COLORTABLE).html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
+		    }
 		    if(this.index<0 || !_this.getProperty("showColorTable",true)) return;
 		    if(this.stringMap) {
 			var colors = [];
@@ -1136,8 +1146,46 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			return this.colors[index];
 		    }
 		    return null;
+		},
+		convertColor: function(color, colorByValue) {
+		    if(!this.convertIntensity) return color;
+		    percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
+		    intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
+//		    console.log("v:" + colorByValue +" percent: " + percent +" iten: " + intensity);
+		    return  Utils.pSBC(intensity,color);
+
 		}
-            };
+            });
+
+	    colorBy.convertIntensity = this.getProperty("convertIntensity",true);
+	    if(colorBy.convertIntensity) {
+		if(!Utils.isDefined(this.getProperty("intensitySourceMin"))) {
+		    var min = 0, max=0;
+		    records.map((record,idx)=>{
+			var tuple = record.getData();
+			if(colorBy.compareFields.length>0) {
+			    colorBy.compareFields.map((f,idx2)=>{
+				var v = tuple[f.getIndex()];
+				if(isNaN(v)) return;
+				min = idx==0 && idx2==0?v:Math.min(min,v);
+				max = idx==0 && idx2==0?v:Math.max(max,v);
+			    });
+			} else if (colorBy.index=0) {
+			    var v = tuple[colorBy.index];
+			    if(isNaN(v)) return;
+			    min = idx==0?v:Math.min(min,v);
+			    max = idx==0?v:Math.max(max,v);
+			}
+		    });
+		    colorBy.intensitySourceMin = min;
+		    colorBy.intensitySourceMax = max;
+		} else {
+		    colorBy.intensitySourceMin = this.getProperty("intensitySourceMin",80);
+		    colorBy.intensitySourceMax = this.getProperty("intensitySourceMax",40);
+		}
+		colorBy.intensityTargetMin = this.getProperty("intensityTargetMin",1); 
+		colorBy.intensityTargetMax = this.getProperty("intensityTargetMin",0); 
+	    }
 
             if (this.percentFields != null) {
                 colorBy.pctFields = this.percentFields.split(",");
@@ -2178,6 +2226,42 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
 		pointData.entryId = originalPointData.entryId;
 	    }
+	    if(this.getProperty("showAverages",false)) {
+	        var dataList = pointData.getRecords(); 
+		var newRecords  =[];
+		var newFields = [];
+		var firstRow = dataList[0];
+                var fields  = pointData.getRecordFields();
+		var firstRecord= dataList[0];
+		fields.map(f=>{
+		    var newField = f.clone();
+		    newFields.push(newField);
+		    newField.label = newField.label+" (avg)";
+		});
+		var sums=[];
+		fields.map(f=>{sums.push(0)});
+		var newRecord;
+	    	for (var rowIdx=0; rowIdx <dataList.length; rowIdx++) {
+		    var record = dataList[rowIdx];
+		    if(newRecord==null) {
+			newRecord = record.clone();
+			newRecords.push(newRecord);
+		    }
+		    fields.map((f,idx)=>{
+			if(!f.isNumeric()) return;
+			var v = record.data[f.getIndex()];
+			sums[idx]+=v;
+		    });
+		    fields.map((f,idx)=>{
+			if(!f.isNumeric()) return;
+			newRecord.data[idx] = sums[idx]/dataList.length;
+		    });
+		};
+		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+
 
 	    return pointData;
 	},
@@ -11915,10 +11999,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             };
             chartOptions.hAxis = {
                 gridlines: {},
+                minorGridlines: {},		
                 textStyle: {},
             };
             chartOptions.vAxis = {
                 gridlines: {},
+                minorGridlines: {},		
                 textStyle: {}
             };
             chartOptions.hAxis.titleTextStyle = {};
@@ -11927,6 +12013,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.hAxis.format = this.getProperty("dateFormat");
 	    }
 
+	    var lineColor = this.getProperty("lineColor");
             this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", null);
             this.setPropertyOn(chartOptions.backgroundColor, "chart.stroke", "stroke", this.getProperty("chartArea.fill", ""));
             this.setPropertyOn(chartOptions.backgroundColor, "chart.strokeWidth", "strokeWidth", null);
@@ -11934,17 +12021,30 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
-            this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color", null));
-            this.setPropertyOn(chartOptions.vAxis.gridlines, "vAxis.gridlines.color", "color", this.getProperty("gridlines.color", null));
+
+            this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.hAxis.minorGridlines, "hAxis.minorGridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.hAxis, "hAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));	    
+            this.setPropertyOn(chartOptions.vAxis.gridlines, "vAxis.gridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.vAxis.minorGridlines, "vAxis.minorGridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));
+
+
             var textColor = this.getProperty("textColor", "#000");
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
-	    chartOptions.vAxis.text  = this.getProperty("vAxisText");
-	    chartOptions.hAxis.slantedText = this.getProperty("slantedText",false);
+	    chartOptions.vAxis.text  = this.getProperty("vAxis.text", this.getProperty("vAxisText"));
+	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.legend.textStyle, "legend.text.color", "color", textColor);
 
+	    if(this.getProperty("hAxis.ticks") || this.getProperty("hAxis.ticks")=="")  {
+		chartOptions.hAxis.ticks  = this.getProperty("hAxis.ticks").split(",").filter(v=>v!="");
+	    }
+	    if(this.getProperty("vAxis.ticks") || this.getProperty("vAxis.ticks")=="")  {
+		chartOptions.vAxis.ticks  = this.getProperty("vAxis.ticks").split(",").filter(v=>v!="");
+	    }
 
             if (this.lineWidth) {
                 chartOptions.lineWidth = this.lineWidth;
@@ -12181,19 +12281,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
             if (!chartOptions.legend)
                 chartOptions.legend = {};
 
-            $.extend(chartOptions.legend, {
-                position: this.getProperty("legendPosition", 'bottom')
-            });
-
-
-            /*
-              chartOptions.chartArea={};
-              chartOptions.chartArea.backgroundColor =  {
-              'fill': '#ccc',
-              'opacity': 1
-              }
-            */
-            //            chartOptions.chartArea.backgroundColor =  "green";
+	    this.setPropertyOn(chartOptions.legend, "legend.position", "position", this.getProperty("legendPosition", 'bottom'));
 	    this.setChartArea(chartOptions);
 	    
             if (useMultipleAxes) {
@@ -23731,7 +23819,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
             var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
-            var colorByAttr = this.getProperty("colorBy", null);
             var sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
             var isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
@@ -23837,8 +23924,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
             sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
-
-
             shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
 
 	    var dateMin = null;
@@ -24017,13 +24102,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		var hasColorByValue = false;
 		var colorByValue;
 		var colorByColor;
-                if (colorBy.index >= 0) {
+		var theColor =  null;
+		if(colorBy.compareFields.length>0) {
+		    var maxColor = null;
+		    var maxValue = 0;
+		    colorBy.compareFields.map((f,idx)=>{
+			var value = record.getData()[f.getIndex()];
+			if(idx==0 || value>maxValue) {
+			    maxColor = colorBy.colors[idx];
+			    maxValue = value;
+			}
+		    });
+		    colorByValue = maxValue;
+		    theColor = maxColor;
+		} else if (colorBy.index >= 0) {
                     var value = record.getData()[colorBy.index];
-		    hasColorByValue  = true;
 		    colorByValue = value;
-                    didColorBy = true;
-		    colorByColor = props.fillColor = colorBy.getColor(value, record);
+		    theColor =  colorBy.getColor(value, record);
                 }
+		if(theColor) {
+                    didColorBy = true;
+		    hasColorByValue  = true;
+		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
+		}
+
 
                 var html = this.getRecordHtml(record, fields, tooltip);
 		if(polygonField) {
@@ -24593,6 +24695,7 @@ var DISPLAY_TIMELINE = "timeline";
 var DISPLAY_BLANK = "blank";
 
 
+
 addGlobalDisplayType({
     type: DISPLAY_GRAPH,
     label: "Graph",
@@ -24681,63 +24784,72 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		}
                 return;
             }
-            var records = this.filterData();
-            if (!records) {
-                return;
-            }  
+	    let graphData = null;
 	    let html = HtmlUtils.div(["id", this.getDomId(ID_GRAPH)]);
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-	    let seenNodes = {};
-	    let nodes = [];
-	    let links = [];
-	    let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
-	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
-	    if(!labelField) {
-		var strings = this.getFieldsOfType(null, "string");
-		if(strings.length>0) labelField = strings[0];
-	    }
-	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
-	    let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
-	    var textTemplate = this.getProperty("tooltip","${default}");
-	    if(valueFields.length>0) {
-		let seenValue = {};
-		records.map((r,index)=>{
-		    var label  = labelField?r.getValue(labelField.getIndex()):index;
-		    var tooltip =  this.getRecordHtml(r, null, textTemplate);
-		    nodes.push({id:index,label:label,tooltip:tooltip});
-		    valueFields.map(f=>{
-			let value = r.getValue(f.getIndex());
-			if(!seenValue[value+"_" + f.getId()]) {
-			    seenValue[value+"_" + f.getId()] = true;
-			    nodes.push({id:value, isValue:true});
-			}
-			links.push({source:value, target: index});
-		    });
-		});
-	    } else if(sourceField!=null && targetField!=null) {
-		records.map(r=>{
-		    var source = r.getValue(sourceField.getIndex());
-		    var target = r.getValue(targetField.getIndex());
-		    if(!seenNodes[source]) {
-			seenNodes[source] = true;
-			nodes.push({id:source,tooltip:source});
-		    }
-		    if(!seenNodes[target]) {
-			seenNodes[target] = true;
-			nodes.push({id:target,tooltip:target});
-		    }
-		    links.push({source:source, target: target});
-		});
-	    } else {
-		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
-		return;
-	    }
-//	    links = [];
 
-	    const graphData = {
-		nodes: nodes,
-		links: links
-	    };
+	    if(doGlobalGraphData) {
+		if(!globalGraphData) {
+		    setTimeout(()=>{
+			this.updateUI();
+		    },100);
+		}
+		graphData = globalGraphData;
+	    } else {
+		var records = this.filterData();
+		if (!records) {
+                    return;
+		}  
+		let seenNodes = {};
+		let nodes = [];
+		let links = [];
+		let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
+		let labelField = this.getFieldById(null, this.getProperty("labelField"));
+		if(!labelField) {
+		    var strings = this.getFieldsOfType(null, "string");
+		    if(strings.length>0) labelField = strings[0];
+		}
+		let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
+		let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
+		var textTemplate = this.getProperty("tooltip","${default}");
+		if(valueFields.length>0) {
+		    let seenValue = {};
+		    records.map((r,index)=>{
+			var label  = labelField?r.getValue(labelField.getIndex()):index;
+			var tooltip =  this.getRecordHtml(r, null, textTemplate);
+			nodes.push({id:index,label:label,tooltip:tooltip});
+			valueFields.map(f=>{
+			    let value = r.getValue(f.getIndex());
+			    if(!seenValue[value+"_" + f.getId()]) {
+				seenValue[value+"_" + f.getId()] = true;
+				nodes.push({id:value, isValue:true});
+			    }
+			    links.push({source:value, target: index});
+			});
+		    });
+		} else if(sourceField!=null && targetField!=null) {
+		    records.map(r=>{
+			var source = r.getValue(sourceField.getIndex());
+			var target = r.getValue(targetField.getIndex());
+			if(!seenNodes[source]) {
+			    seenNodes[source] = true;
+			    nodes.push({id:source,tooltip:source});
+			}
+			if(!seenNodes[target]) {
+			    seenNodes[target] = true;
+			    nodes.push({id:target,tooltip:target});
+			}
+			links.push({source:source, target: target});
+		    });
+		} else {
+		    this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
+		    return;
+		}
+		graphData = {
+		    nodes: nodes,
+		    links: links
+		};
+	    }
 
 	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
 	    const linkColor = this.getProperty("linkColor","#ccc");
@@ -24764,17 +24876,17 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		    ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
 		    ctx.strokeRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
 		} else  {
-		    let dim = [textWidth, fontSize].map(n => n + fontSize * 0.2+2); 
-		    ctx.fillStyle = nodeBackground;
-		    ctx.strokeStyle = "#000";
-		    if(drawCircle) {
-			ctx.beginPath();
-			ctx.arc(node.x, node.y, dim[0]/2, 0, 2 * Math.PI);
-			ctx.fill(); 
-		    } else {
-			ctx.fillRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
-			ctx.strokeRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
-		    }
+		      let dim = [textWidth, fontSize].map(n => n + fontSize * 0.2+2); 
+		      ctx.fillStyle = nodeBackground;
+		      ctx.strokeStyle = "#000";
+		      if(drawCircle) {
+		      ctx.beginPath();
+		      ctx.arc(node.x, node.y, dim[0]/2, 0, 2 * Math.PI);
+		      ctx.fill(); 
+		      } else {
+		      ctx.fillRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
+		      ctx.strokeRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
+		      }
 		}
 		if(drawText) {
 		    ctx.textAlign = 'center';
@@ -24784,17 +24896,18 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		}
 	    });
 
-//	    graph.linkCanvasObjectMode('replace');
-	    graph.linkCanvasObject((link, ctx) => {
-		if(linkDash>0)
-		    ctx.setLineDash([linkDash, linkDash]);
-		ctx.lineWidth = linkWidth;
-		ctx.strokeStyle = linkColor;
-				       ctx.moveTo(link.source.x, link.source.y);
-		ctx.lineTo(link.target.x, link.target.y);
-		(link === graphData.links[graphData.links.length - 1]) && ctx.stroke();
-	    });
-//	    graph.linkAutoColorBy(d => gData.nodes[d.source].group);
+	    //	    graph.linkCanvasObjectMode('replace');
+	    /*
+	      graph.linkCanvasObject((link, ctx) => {
+	      if(linkDash>0)
+	      ctx.setLineDash([linkDash, linkDash]);
+	      ctx.lineWidth = linkWidth;
+	      ctx.strokeStyle = linkColor;
+	      ctx.moveTo(link.source.x, link.source.y);
+	      ctx.lineTo(link.target.x, link.target.y);
+	      (link === graphData.links[graphData.links.length - 1]) && ctx.stroke();
+	      });*/
+	    //	    graph.linkAutoColorBy(d => gData.nodes[d.source].group);
 	    if(this.getWidth())
 		graph.width(this.getWidth());
 	    if(this.getHeight())

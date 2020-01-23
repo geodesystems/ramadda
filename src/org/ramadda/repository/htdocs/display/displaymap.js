@@ -1240,7 +1240,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
             var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
-            var colorByAttr = this.getProperty("colorBy", null);
             var sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
             var isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
@@ -1346,8 +1345,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
             sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
-
-
             shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
 
 	    var dateMin = null;
@@ -1526,13 +1523,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		var hasColorByValue = false;
 		var colorByValue;
 		var colorByColor;
-                if (colorBy.index >= 0) {
+		var theColor =  null;
+		if(colorBy.compareFields.length>0) {
+		    var maxColor = null;
+		    var maxValue = 0;
+		    colorBy.compareFields.map((f,idx)=>{
+			var value = record.getData()[f.getIndex()];
+			if(idx==0 || value>maxValue) {
+			    maxColor = colorBy.colors[idx];
+			    maxValue = value;
+			}
+		    });
+		    colorByValue = maxValue;
+		    theColor = maxColor;
+		} else if (colorBy.index >= 0) {
                     var value = record.getData()[colorBy.index];
-		    hasColorByValue  = true;
 		    colorByValue = value;
-                    didColorBy = true;
-		    colorByColor = props.fillColor = colorBy.getColor(value, record);
+		    theColor =  colorBy.getColor(value, record);
                 }
+		if(theColor) {
+                    didColorBy = true;
+		    hasColorByValue  = true;
+		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
+		}
+
 
                 var html = this.getRecordHtml(record, fields, tooltip);
 		if(polygonField) {

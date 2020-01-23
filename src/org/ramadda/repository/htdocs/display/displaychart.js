@@ -1353,10 +1353,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             };
             chartOptions.hAxis = {
                 gridlines: {},
+                minorGridlines: {},		
                 textStyle: {},
             };
             chartOptions.vAxis = {
                 gridlines: {},
+                minorGridlines: {},		
                 textStyle: {}
             };
             chartOptions.hAxis.titleTextStyle = {};
@@ -1365,6 +1367,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.hAxis.format = this.getProperty("dateFormat");
 	    }
 
+	    var lineColor = this.getProperty("lineColor");
             this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", null);
             this.setPropertyOn(chartOptions.backgroundColor, "chart.stroke", "stroke", this.getProperty("chartArea.fill", ""));
             this.setPropertyOn(chartOptions.backgroundColor, "chart.strokeWidth", "strokeWidth", null);
@@ -1372,17 +1375,30 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
-            this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color", null));
-            this.setPropertyOn(chartOptions.vAxis.gridlines, "vAxis.gridlines.color", "color", this.getProperty("gridlines.color", null));
+
+            this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.hAxis.minorGridlines, "hAxis.minorGridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.hAxis, "hAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));	    
+            this.setPropertyOn(chartOptions.vAxis.gridlines, "vAxis.gridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.vAxis.minorGridlines, "vAxis.minorGridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));
+
+
             var textColor = this.getProperty("textColor", "#000");
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
-	    chartOptions.vAxis.text  = this.getProperty("vAxisText");
-	    chartOptions.hAxis.slantedText = this.getProperty("slantedText",false);
+	    chartOptions.vAxis.text  = this.getProperty("vAxis.text", this.getProperty("vAxisText"));
+	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.legend.textStyle, "legend.text.color", "color", textColor);
 
+	    if(this.getProperty("hAxis.ticks") || this.getProperty("hAxis.ticks")=="")  {
+		chartOptions.hAxis.ticks  = this.getProperty("hAxis.ticks").split(",").filter(v=>v!="");
+	    }
+	    if(this.getProperty("vAxis.ticks") || this.getProperty("vAxis.ticks")=="")  {
+		chartOptions.vAxis.ticks  = this.getProperty("vAxis.ticks").split(",").filter(v=>v!="");
+	    }
 
             if (this.lineWidth) {
                 chartOptions.lineWidth = this.lineWidth;
@@ -1619,19 +1635,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
             if (!chartOptions.legend)
                 chartOptions.legend = {};
 
-            $.extend(chartOptions.legend, {
-                position: this.getProperty("legendPosition", 'bottom')
-            });
-
-
-            /*
-              chartOptions.chartArea={};
-              chartOptions.chartArea.backgroundColor =  {
-              'fill': '#ccc',
-              'opacity': 1
-              }
-            */
-            //            chartOptions.chartArea.backgroundColor =  "green";
+	    this.setPropertyOn(chartOptions.legend, "legend.position", "position", this.getProperty("legendPosition", 'bottom'));
 	    this.setChartArea(chartOptions);
 	    
             if (useMultipleAxes) {

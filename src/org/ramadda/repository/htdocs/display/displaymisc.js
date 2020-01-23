@@ -10,6 +10,7 @@ var DISPLAY_TIMELINE = "timeline";
 var DISPLAY_BLANK = "blank";
 
 
+
 addGlobalDisplayType({
     type: DISPLAY_GRAPH,
     label: "Graph",
@@ -98,63 +99,72 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		}
                 return;
             }
-            var records = this.filterData();
-            if (!records) {
-                return;
-            }  
+	    let graphData = null;
 	    let html = HtmlUtils.div(["id", this.getDomId(ID_GRAPH)]);
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-	    let seenNodes = {};
-	    let nodes = [];
-	    let links = [];
-	    let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
-	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
-	    if(!labelField) {
-		var strings = this.getFieldsOfType(null, "string");
-		if(strings.length>0) labelField = strings[0];
-	    }
-	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
-	    let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
-	    var textTemplate = this.getProperty("tooltip","${default}");
-	    if(valueFields.length>0) {
-		let seenValue = {};
-		records.map((r,index)=>{
-		    var label  = labelField?r.getValue(labelField.getIndex()):index;
-		    var tooltip =  this.getRecordHtml(r, null, textTemplate);
-		    nodes.push({id:index,label:label,tooltip:tooltip});
-		    valueFields.map(f=>{
-			let value = r.getValue(f.getIndex());
-			if(!seenValue[value+"_" + f.getId()]) {
-			    seenValue[value+"_" + f.getId()] = true;
-			    nodes.push({id:value, isValue:true});
-			}
-			links.push({source:value, target: index});
-		    });
-		});
-	    } else if(sourceField!=null && targetField!=null) {
-		records.map(r=>{
-		    var source = r.getValue(sourceField.getIndex());
-		    var target = r.getValue(targetField.getIndex());
-		    if(!seenNodes[source]) {
-			seenNodes[source] = true;
-			nodes.push({id:source,tooltip:source});
-		    }
-		    if(!seenNodes[target]) {
-			seenNodes[target] = true;
-			nodes.push({id:target,tooltip:target});
-		    }
-		    links.push({source:source, target: target});
-		});
-	    } else {
-		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
-		return;
-	    }
-//	    links = [];
 
-	    const graphData = {
-		nodes: nodes,
-		links: links
-	    };
+	    if(doGlobalGraphData) {
+		if(!globalGraphData) {
+		    setTimeout(()=>{
+			this.updateUI();
+		    },100);
+		}
+		graphData = globalGraphData;
+	    } else {
+		var records = this.filterData();
+		if (!records) {
+                    return;
+		}  
+		let seenNodes = {};
+		let nodes = [];
+		let links = [];
+		let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
+		let labelField = this.getFieldById(null, this.getProperty("labelField"));
+		if(!labelField) {
+		    var strings = this.getFieldsOfType(null, "string");
+		    if(strings.length>0) labelField = strings[0];
+		}
+		let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
+		let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
+		var textTemplate = this.getProperty("tooltip","${default}");
+		if(valueFields.length>0) {
+		    let seenValue = {};
+		    records.map((r,index)=>{
+			var label  = labelField?r.getValue(labelField.getIndex()):index;
+			var tooltip =  this.getRecordHtml(r, null, textTemplate);
+			nodes.push({id:index,label:label,tooltip:tooltip});
+			valueFields.map(f=>{
+			    let value = r.getValue(f.getIndex());
+			    if(!seenValue[value+"_" + f.getId()]) {
+				seenValue[value+"_" + f.getId()] = true;
+				nodes.push({id:value, isValue:true});
+			    }
+			    links.push({source:value, target: index});
+			});
+		    });
+		} else if(sourceField!=null && targetField!=null) {
+		    records.map(r=>{
+			var source = r.getValue(sourceField.getIndex());
+			var target = r.getValue(targetField.getIndex());
+			if(!seenNodes[source]) {
+			    seenNodes[source] = true;
+			    nodes.push({id:source,tooltip:source});
+			}
+			if(!seenNodes[target]) {
+			    seenNodes[target] = true;
+			    nodes.push({id:target,tooltip:target});
+			}
+			links.push({source:source, target: target});
+		    });
+		} else {
+		    this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
+		    return;
+		}
+		graphData = {
+		    nodes: nodes,
+		    links: links
+		};
+	    }
 
 	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
 	    const linkColor = this.getProperty("linkColor","#ccc");
@@ -181,17 +191,17 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		    ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
 		    ctx.strokeRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
 		} else  {
-		    let dim = [textWidth, fontSize].map(n => n + fontSize * 0.2+2); 
-		    ctx.fillStyle = nodeBackground;
-		    ctx.strokeStyle = "#000";
-		    if(drawCircle) {
-			ctx.beginPath();
-			ctx.arc(node.x, node.y, dim[0]/2, 0, 2 * Math.PI);
-			ctx.fill(); 
-		    } else {
-			ctx.fillRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
-			ctx.strokeRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
-		    }
+		      let dim = [textWidth, fontSize].map(n => n + fontSize * 0.2+2); 
+		      ctx.fillStyle = nodeBackground;
+		      ctx.strokeStyle = "#000";
+		      if(drawCircle) {
+		      ctx.beginPath();
+		      ctx.arc(node.x, node.y, dim[0]/2, 0, 2 * Math.PI);
+		      ctx.fill(); 
+		      } else {
+		      ctx.fillRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
+		      ctx.strokeRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
+		      }
 		}
 		if(drawText) {
 		    ctx.textAlign = 'center';
@@ -201,17 +211,18 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		}
 	    });
 
-//	    graph.linkCanvasObjectMode('replace');
-	    graph.linkCanvasObject((link, ctx) => {
-		if(linkDash>0)
-		    ctx.setLineDash([linkDash, linkDash]);
-		ctx.lineWidth = linkWidth;
-		ctx.strokeStyle = linkColor;
-				       ctx.moveTo(link.source.x, link.source.y);
-		ctx.lineTo(link.target.x, link.target.y);
-		(link === graphData.links[graphData.links.length - 1]) && ctx.stroke();
-	    });
-//	    graph.linkAutoColorBy(d => gData.nodes[d.source].group);
+	    //	    graph.linkCanvasObjectMode('replace');
+	    /*
+	      graph.linkCanvasObject((link, ctx) => {
+	      if(linkDash>0)
+	      ctx.setLineDash([linkDash, linkDash]);
+	      ctx.lineWidth = linkWidth;
+	      ctx.strokeStyle = linkColor;
+	      ctx.moveTo(link.source.x, link.source.y);
+	      ctx.lineTo(link.target.x, link.target.y);
+	      (link === graphData.links[graphData.links.length - 1]) && ctx.stroke();
+	      });*/
+	    //	    graph.linkAutoColorBy(d => gData.nodes[d.source].group);
 	    if(this.getWidth())
 		graph.width(this.getWidth());
 	    if(this.getHeight())

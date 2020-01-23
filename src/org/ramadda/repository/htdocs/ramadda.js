@@ -2,6 +2,9 @@
  * Copyright (c) 2008-2019 Geode Systems LLC
  */
 
+var doGlobalGraphData = false;
+var globalGraphData;
+
 
 var popupObject;
 var tooltipObject;

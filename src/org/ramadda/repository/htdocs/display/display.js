@@ -883,7 +883,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var colorByAttr = this.getProperty(prop||"colorBy", null);
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
 	    var _this = this;
-
 	    var colorBy = {
                 id: colorByAttr,
 		fields:fields,
@@ -899,7 +898,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		colorByMaxPerc: this.getDisplayProp(this, "colorByMaxPercentile", -1),
 		colorByOffset: 0,
                 pctFields:null,
+		compareFields: this.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
+	    };
+	    $.extend(colorBy,{
 		displayColorTable: function() {
+		    if(this.compareFields.length>0) {
+			var legend = "";
+			this.compareFields.map((f,idx)=>{
+			    legend += HtmlUtils.div(["style","display:inline-block;width: 15px;height: 15px; background:" + this.colors[idx]+";"]) +" " +
+				f.getLabel() +" ";
+			});
+			_this.jq(ID_COLORTABLE).html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
+		    }
 		    if(this.index<0 || !_this.getProperty("showColorTable",true)) return;
 		    if(this.stringMap) {
 			var colors = [];
@@ -986,8 +996,46 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			return this.colors[index];
 		    }
 		    return null;
+		},
+		convertColor: function(color, colorByValue) {
+		    if(!this.convertIntensity) return color;
+		    percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
+		    intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
+//		    console.log("v:" + colorByValue +" percent: " + percent +" iten: " + intensity);
+		    return  Utils.pSBC(intensity,color);
+
 		}
-            };
+            });
+
+	    colorBy.convertIntensity = this.getProperty("convertIntensity",true);
+	    if(colorBy.convertIntensity) {
+		if(!Utils.isDefined(this.getProperty("intensitySourceMin"))) {
+		    var min = 0, max=0;
+		    records.map((record,idx)=>{
+			var tuple = record.getData();
+			if(colorBy.compareFields.length>0) {
+			    colorBy.compareFields.map((f,idx2)=>{
+				var v = tuple[f.getIndex()];
+				if(isNaN(v)) return;
+				min = idx==0 && idx2==0?v:Math.min(min,v);
+				max = idx==0 && idx2==0?v:Math.max(max,v);
+			    });
+			} else if (colorBy.index=0) {
+			    var v = tuple[colorBy.index];
+			    if(isNaN(v)) return;
+			    min = idx==0?v:Math.min(min,v);
+			    max = idx==0?v:Math.max(max,v);
+			}
+		    });
+		    colorBy.intensitySourceMin = min;
+		    colorBy.intensitySourceMax = max;
+		} else {
+		    colorBy.intensitySourceMin = this.getProperty("intensitySourceMin",80);
+		    colorBy.intensitySourceMax = this.getProperty("intensitySourceMax",40);
+		}
+		colorBy.intensityTargetMin = this.getProperty("intensityTargetMin",1); 
+		colorBy.intensityTargetMax = this.getProperty("intensityTargetMin",0); 
+	    }
 
             if (this.percentFields != null) {
                 colorBy.pctFields = this.percentFields.split(",");
@@ -2028,6 +2076,42 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
 		pointData.entryId = originalPointData.entryId;
 	    }
+	    if(this.getProperty("showAverages",false)) {
+	        var dataList = pointData.getRecords(); 
+		var newRecords  =[];
+		var newFields = [];
+		var firstRow = dataList[0];
+                var fields  = pointData.getRecordFields();
+		var firstRecord= dataList[0];
+		fields.map(f=>{
+		    var newField = f.clone();
+		    newFields.push(newField);
+		    newField.label = newField.label+" (avg)";
+		});
+		var sums=[];
+		fields.map(f=>{sums.push(0)});
+		var newRecord;
+	    	for (var rowIdx=0; rowIdx <dataList.length; rowIdx++) {
+		    var record = dataList[rowIdx];
+		    if(newRecord==null) {
+			newRecord = record.clone();
+			newRecords.push(newRecord);
+		    }
+		    fields.map((f,idx)=>{
+			if(!f.isNumeric()) return;
+			var v = record.data[f.getIndex()];
+			sums[idx]+=v;
+		    });
+		    fields.map((f,idx)=>{
+			if(!f.isNumeric()) return;
+			newRecord.data[idx] = sums[idx]/dataList.length;
+		    });
+		};
+		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+
 
 	    return pointData;
 	},
