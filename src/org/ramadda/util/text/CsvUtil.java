@@ -1613,7 +1613,7 @@ public class CsvUtil {
         new Cmd("-geocode",
                 "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
         new Cmd("-geocodeaddress",
-                "<col indices> Latitude Longitude <prefix> <suffix> "),
+                "<col indices> <prefix, e.g., state: or county:> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
         new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
         new Cmd(true, "Other Commands"), new Cmd("-sort", "<column sort>"),
@@ -2611,17 +2611,15 @@ public class CsvUtil {
                 }
 
                 if (arg.equals("-geocodeaddress")) {
-                    if ( !ensureArg(args, i, 5)) {
+                    if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
                     List<String> cols   = getCols(args.get(++i));
-                    String       lat    = args.get(++i);
-                    String       lon    = args.get(++i);
                     String       prefix = args.get(++i).trim();
                     String       suffix = args.get(++i).trim();
                     info.getProcessor().addProcessor(
                         new Converter.Geocoder(
-                            cols, lat, lon, prefix, suffix));
+                            cols, prefix, suffix));
 
                     continue;
                 }

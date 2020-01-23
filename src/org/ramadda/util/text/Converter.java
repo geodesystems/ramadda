@@ -1436,8 +1436,8 @@ public abstract class Converter extends Processor {
                     } else {
                         s = s.replaceAll(pattern, value);
                     }
+		    //		    System.err.println("P:"  + pattern +" os:" + os +" s:" + s);
                     row.set(index, s);
-
                 }
             }
 
@@ -2728,26 +2728,18 @@ public abstract class Converter extends Processor {
          *
          *
          * @param cols _more_
-         * @param lat _more_
-         * @param lon _more_
          * @param prefix _more_
          * @param suffix _more_
          *
          * @throws Exception _more_
          */
-        public Geocoder(List<String> cols, String lat, String lon,
+        public Geocoder(List<String> cols, 
                         String prefix, String suffix)
                 throws Exception {
             super(cols);
             this.prefix     = prefix;
             this.suffix     = suffix;
             this.writeForDb = false;
-            if (lat.length() > 0) {
-                latLabel = lat;
-            }
-            if (lon.length() > 0) {
-                lonLabel = lon;
-            }
             doAddress = true;
         }
 
