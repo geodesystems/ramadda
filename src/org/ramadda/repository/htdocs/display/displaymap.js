@@ -1544,7 +1544,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(theColor) {
                     didColorBy = true;
 		    hasColorByValue  = true;
-		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
+		    colorByColor = props.fillColor = colorBy.convertColorIntensity(theColor, colorByValue);
 		}
 
 

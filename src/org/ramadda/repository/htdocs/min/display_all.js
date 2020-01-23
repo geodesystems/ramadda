@@ -1147,13 +1147,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    return null;
 		},
-		convertColor: function(color, colorByValue) {
+		convertColorIntensity: function(color, colorByValue) {
 		    if(!this.convertIntensity) return color;
 		    percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
 		    intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
-//		    console.log("v:" + colorByValue +" percent: " + percent +" iten: " + intensity);
-		    return  Utils.pSBC(intensity,color);
-
+		    return  Utils.pSBC(intensity,color) || color;
 		}
             });
 
@@ -24123,7 +24121,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(theColor) {
                     didColorBy = true;
 		    hasColorByValue  = true;
-		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
+		    colorByColor = props.fillColor = colorBy.convertColorIntensity(theColor, colorByValue);
 		}
 
 
