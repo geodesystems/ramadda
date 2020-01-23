@@ -834,6 +834,8 @@ public abstract class Converter extends Processor {
             List values = new ArrayList<String>();
             String dfltFormat = CsvUtil.getDbProp(props, "default", "format",
                                     null);
+	    String dfltUnit = CsvUtil.getDbProp(props, "default", "unit",
+						null);
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
                 String[] toks;
@@ -906,7 +908,7 @@ public abstract class Converter extends Processor {
                 }
                 if (unit == null) {
                     unit = CsvUtil.getDbProp(props, id, i, "unit",
-                                             (String) null);
+                                             dfltUnit);
                 }
                 if (unit != null) {
                     attrs.append("unit=\"" + unit + "\" ");
