@@ -1001,11 +1001,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!this.convertIntensity) return color;
 		    percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
 		    intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
-		    return  Utils.pSBC(intensity,color) || color;
+		    var result =  Utils.pSBC(intensity,color);
+		    //		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
+		    return result || color;
 		}
             });
 
-	    colorBy.convertIntensity = this.getProperty("convertIntensity",true);
+	    colorBy.convertIntensity = this.getProperty("convertColorIntensity",false);
 	    if(colorBy.convertIntensity) {
 		if(!Utils.isDefined(this.getProperty("intensitySourceMin"))) {
 		    var min = 0, max=0;
@@ -1028,11 +1030,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    colorBy.intensitySourceMin = min;
 		    colorBy.intensitySourceMax = max;
 		} else {
-		    colorBy.intensitySourceMin = this.getProperty("intensitySourceMin",80);
-		    colorBy.intensitySourceMax = this.getProperty("intensitySourceMax",40);
+		    colorBy.intensitySourceMin = +this.getProperty("intensitySourceMin",80);
+		    colorBy.intensitySourceMax = +this.getProperty("intensitySourceMax",40);
 		}
-		colorBy.intensityTargetMin = this.getProperty("intensityTargetMin",1); 
-		colorBy.intensityTargetMax = this.getProperty("intensityTargetMin",0); 
+		colorBy.intensityTargetMin = +this.getProperty("intensityTargetMin",1); 
+		colorBy.intensityTargetMax = +this.getProperty("intensityTargetMax",0); 
 	    }
 
             if (this.percentFields != null) {
