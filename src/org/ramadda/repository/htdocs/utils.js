@@ -785,8 +785,8 @@ var Utils = {
     },
     //From  https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
     pSBC: function(p,c0,c1,l) {
-	if(this.colorToRgb[c0]) c0 = this.colorToRgb[c0];
-	if(this.colorToRgb[c1]) c1 = this.colorToRgb[c1];
+	c0 = this.colorToRgb[c0] || c0;
+	c1 = this.colorToRgb[c1] || c1;
 	let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
 	if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a)) {
 	    return null;
@@ -814,6 +814,7 @@ var Utils = {
 	else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
     },
     addAlphaToColor: function(c, alpha) {
+	c = this.colorToRgb[c] || c;
 	if(!alpha) alpha = "0.5";
 	if(c.indexOf("#")==0) {
 	    var rgb = Utils.hexToRgb(c);

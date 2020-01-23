@@ -997,15 +997,58 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    return null;
 		},
+		convertColor: function(color, colorByValue) {
+		    color = this.convertColorIntensity(color, colorByValue);
+		    color = this.convertColorAlpha(color, colorByValue);
+		    return color;
+		},
 		convertColorIntensity: function(color, colorByValue) {
 		    if(!this.convertIntensity) return color;
 		    percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
 		    intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
 		    var result =  Utils.pSBC(intensity,color);
-		    //		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
+//		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
+		    return result || color;
+		},
+		convertColorAlpha: function(color, colorByValue) {
+		    if(!this.convertAlpha) return color;
+		    percent = (colorByValue-this.alphaSourceMin)/(this.alphaSourceMax-this.alphaSourceMin);
+		    alpha=this.alphaTargetMin+percent*(this.alphaTargetMax-this.alphaTargetMin);
+		    var result =  Utils.addAlphaToColor(color, alpha);
 		    return result || color;
 		}
             });
+	    colorBy.convertAlpha = this.getProperty("convertColorAlpha",false);
+	    if(colorBy.convertAlpha) {
+		if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
+		    var min = 0, max=0;
+		    records.map((record,idx)=>{
+			var tuple = record.getData();
+			if(colorBy.compareFields.length>0) {
+			    colorBy.compareFields.map((f,idx2)=>{
+				var v = tuple[f.getIndex()];
+				if(isNaN(v)) return;
+				min = idx==0 && idx2==0?v:Math.min(min,v);
+				max = idx==0 && idx2==0?v:Math.max(max,v);
+			    });
+			} else if (colorBy.index=0) {
+			    var v = tuple[colorBy.index];
+			    if(isNaN(v)) return;
+			    min = idx==0?v:Math.min(min,v);
+			    max = idx==0?v:Math.max(max,v);
+			}
+		    });
+		    colorBy.alphaSourceMin = min;
+		    colorBy.alphaSourceMax = max;
+		} else {
+		    colorBy.alphaSourceMin = +this.getProperty("alphaSourceMin",40);
+		    colorBy.alphaSourceMax = +this.getProperty("alphaSourceMax",80);
+		}
+		colorBy.alphaTargetMin = +this.getProperty("alphaTargetMin",0); 
+		colorBy.alphaTargetMax = +this.getProperty("alphaTargetMax",1); 
+	    }
+
+
 
 	    colorBy.convertIntensity = this.getProperty("convertColorIntensity",false);
 	    if(colorBy.convertIntensity) {

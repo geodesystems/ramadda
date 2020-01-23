@@ -1544,7 +1544,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(theColor) {
                     didColorBy = true;
 		    hasColorByValue  = true;
-		    colorByColor = props.fillColor = colorBy.convertColorIntensity(theColor, colorByValue);
+		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
 
 
@@ -1742,6 +1742,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"markerIcon=\"/icons/...\"",
 		"showSegments=\"true\"",
 		'showRecordSelection=false',
+		'convertColorIntensity=true',
+		'intensitySourceMin=0',
+		'intensitySourceMax=100',
+		'intensityTargetMin=1',
+		'intensityTargetMax=0',
+		'convertColorAlpha=true',
+		'alphaSourceMin=0',
+		'alphaSourceMax=100',
+		'alphaTargetMin=0',
+		'alphaTargetMax=1',
 	    ]);
 	},
 
