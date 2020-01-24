@@ -124,6 +124,14 @@
 }
 
 
+.display-multi-header {
+    margin:5px;
+}
+
+.display-multi-header {
+    font-weight:bold;
+    text-align:center;
+}
 
 .display-correlation {
   border-collapse:collapse; 

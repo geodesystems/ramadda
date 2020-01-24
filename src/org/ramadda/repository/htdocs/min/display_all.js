@@ -10719,6 +10719,7 @@ var DISPLAY_HEATMAP = "heatmap";
 var DISPLAY_WORDTREE = "wordtree";
 var DISPLAY_TREEMAP = "treemap";
 var ID_CHART = "chart";
+var ID_CHARTS = "charts";
 
 
 var googleChartsLoaded = false;
@@ -10981,7 +10982,6 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         checkLayout: function() {
             var _this = this;
             var d = _this.jq(ID_DISPLAY_CONTENTS);
-	    //	    console.log(this.type +".checklayout:  widths:" + this.lastWidth +" " + d.width() +" " + _this.jq(ID_CHART).is(':visible'));
             if (this.lastWidth != d.width()) {
                 _this.displayData();
             }
@@ -11612,7 +11612,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             try {
-                this.makeChart(dataList, props, selectedFields);
+                this.makeGoogleChart(dataList, props, selectedFields);
             } catch (e) {
 		console.log("Error making chart:\n" + e +"\n" + e.stack);
                 return;
@@ -11634,10 +11634,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		}
 	    }
-
-
-
-	    //	    console.log(this.type +" lastWidth:" + this.lastWidth+" "+_this.jq(ID_CHART).is(':visible'));
         },
         printDataList: function(dataList) {
             console.log("data list:" + dataList.length);
@@ -11651,21 +11647,28 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 console.log("row: " + i + "  " + s);
             }
         },
+	mapCharts: function(func) {
+            if (this.charts != null) {
+		this.charts.map(chart=>{
+		    func(chart);
+		});
+	    }
+	},
         clearChart: function() {
-            if (this.chart != null && this.chart.clearChart) {
-                this.chart.clearChart();
-            }
+	    this.mapCharts(chart=>{
+		if(chart.clearChart) {
+		    chart.clearChart();
+		}
+	    });
         },
-
         setChartSelection: function(index) {
-            if (this.chart != null) {
-                if (this.chart.setSelection) {
-                    this.chart.setSelection([{
+	    this.mapCharts(chart=>{
+                if (chart.setSelection) {
+		    chart.setSelection([{
                         row: index,
 			column:null
-                    }]);
-                }
-            }
+		    }]);
+		}});
         },
         tableHeaderMouseover: function(i, tooltip) {},
         makeDataTable: function(dataList, props, selectedFields) {
@@ -12016,7 +12019,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
             return dataTable;
         },
-
         makeChartOptions: function(dataList, props, selectedFields) {
             var chartOptions = {
                 tooltip: {
@@ -12139,7 +12141,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 };
             }
-            this.setContents(this.getChartDiv());
+            this.setContents(HtmlUtils.div(["id",this.getDomId(ID_CHARTS)]));
             return chartOptions;
         },
         getChartHeight: function() {
@@ -12148,8 +12150,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getChartWidth: function() {
             return this.getProperty("width");
         },
-        getChartDiv: function() {
-            var chartId = this.getDomId(ID_CHART);
+        getChartDiv: function(chartId) {
             var divAttrs = [ATTR_ID, chartId];
             divAttrs.push("style");
             var style = "";
@@ -12178,7 +12179,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
-        makeGoogleChart: function(dataList, props, selectedFields) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
+            throw new Error("doMakeGoogleChart undefined");
+        },
+	makeGoogleChart: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
                 this.setContents("No google");
                 return;
@@ -12186,94 +12190,113 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
 	    this.chartOptions.bar = {groupWidth:"95%"}
-            this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
-            if (this.chart != null) {
-		var dataTable = this.makeDataTable(dataList, props, selectedFields);
-                if (!dataTable) {
-                    this.setContents(this.getMessage("No data available"));
+            if (!Utils.isDefined(this.chartOptions.height)) {
+                this.chartOptions.height = "100%";
+            }
+	    this.charts = [];
+	    this.chartCount  = -1;
+	    if(this.getProperty("multipleCharts",false)) {
+		var headerPosition = this.getProperty("multipleChartsHeaderPosition","bottom");
+		for(var chartCount=0;chartCount<dataList.length-1;chartCount++) {
+		    this.chartCount  = chartCount;
+		    let tmpDataList = [];
+		    tmpDataList.push(dataList[0]);
+		    tmpDataList.push(dataList[chartCount+1]);
+                    var record = dataList[chartCount+1].record;
+		    var innerId = this.getDomId(ID_CHART)+"_" + chartCount;
+		    var header = HtmlUtils.div(["class","display-multi-header"], this.formatDate(new Date(record.getDate())));
+		    var top =headerPosition=="top"?header:"";
+		    var bottom = headerPosition=="bottom"?header+"<br>":"";
+		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"], top + this.getChartDiv(innerId) + bottom);
+		    this.jq(ID_CHARTS).append(div);
+		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
+		    if(chart) this.charts.push(chart);
+		}
+	    } else {
+		this.jq(ID_CHARTS).append(this.getChartDiv(this.getDomId(ID_CHART)));
+		let chart = this.makeGoogleChartInner(dataList, this.getDomId(ID_CHART), props, selectedFields);
+		if(chart) this.charts.push(chart);
+	    }
+
+	},
+	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
+	    let chartDiv = document.getElementById(chartId);
+            let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
+            if (chart == null) return null;
+	    var dataTable = this.makeDataTable(dataList, props, selectedFields);
+            if (!dataTable) {
+                this.setContents(this.getMessage("No data available"));
+                return null;
+            }
+
+	    if(this.getProperty("animation",false,true)) {
+		this.chartOptions.animation = {
+		    startup: true,
+		    duration:parseFloat(this.getProperty("animationDuration",1000,true)),
+		    easing:this.getProperty("animationEasing","linear",true)
+		};
+		HtmlUtils.callWhenScrolled(this.getDomId(ID_CHART),()=>{
+		    if(!this.animationCalled) {
+			this.animationCalled = true;
+			this.mapCharts(chart=>{
+			    chart.draw(dataTable, this.chartOptions);
+			});
+		    }
+		});
+	    } else {
+		chart.draw(dataTable, this.chartOptions);
+	    }
+	    this.addEvents(chart);
+	    return chart;
+	},
+	addEvents: function(chart) {
+            let theDisplay = this;
+	    google.visualization.events.addListener(chart, 'onmouseover', function(event) {
+                mapVar = theDisplay.getProperty("mapVar", null);
+                if (!Utils.stringDefined(mapVar)) {
                     return;
                 }
-                if (!Utils.isDefined(this.chartOptions.height)) {
-                    this.chartOptions.height = "100%";
+                row = event.row;
+                pointData = theDisplay.dataCollection.getList()[0];
+                var fields = pointData.getRecordFields();
+                var records = pointData.getRecords();
+                var record = records[row];
+                map = ramaddaMapMap[mapVar];
+                if (map) {
+                    if (theDisplay.mouseOverPoint)
+                        map.removePoint(theDisplay.mouseOverPoint);
+                } else {}
+                if (record && map) {
+                    latField = null;
+                    lonField = null;
+                    for (i = 0; i < fields.length; i++) {
+                        if (fields[i].isFieldLatitude()) latField = fields[i];
+                        else if (fields[i].isFieldLongitude()) lonField = fields[i];
+                    }
+                    if (latField && lonField) {
+                        lat = record.getValue(latField.getIndex());
+                        lon = record.getValue(lonField.getIndex());
+                        theDisplay.mouseOverPoint = map.addPoint(chartId, new OpenLayers.LonLat(lon, lat));
+                    }
                 }
-                //                console.log("draw:" +" " +JSON.stringify(this.chartOptions,null,3));
-		if(this.getProperty("animation",false,true)) {
-		    this.chartOptions.animation = {
-			startup: true,
-			duration:parseFloat(this.getProperty("animationDuration",1000,true)),
-			easing:this.getProperty("animationEasing","linear",true)
-		    };
-		    HtmlUtils.callWhenScrolled(this.getDomId(ID_CHART),()=>{
-			if(!this.animationCalled) {
-			    this.animationCalled = true;
-			    this.chart.draw(dataTable, this.chartOptions);
-			}
-		    });
-		} else {
-		    this.chart.draw(dataTable, this.chartOptions);
-		}
-
-
-                var theDisplay = this;
-                google.visualization.events.addListener(this.chart, 'onmouseover', function(event) {
-                    mapVar = theDisplay.getProperty("mapVar", null);
-                    if (!Utils.stringDefined(mapVar)) {
-                        return;
-                    }
-                    row = event.row;
-                    pointData = theDisplay.dataCollection.getList()[0];
-                    var fields = pointData.getRecordFields();
-                    var records = pointData.getRecords();
-                    var record = records[row];
-                    map = ramaddaMapMap[mapVar];
-                    if (map) {
-                        if (theDisplay.mouseOverPoint)
-                            map.removePoint(theDisplay.mouseOverPoint);
-                    } else {}
-                    if (record && map) {
-                        latField = null;
-                        lonField = null;
-                        for (i = 0; i < fields.length; i++) {
-                            if (fields[i].isFieldLatitude()) latField = fields[i];
-                            else if (fields[i].isFieldLongitude()) lonField = fields[i];
-                        }
-                        if (latField && lonField) {
-                            lat = record.getValue(latField.getIndex());
-                            lon = record.getValue(lonField.getIndex());
-                            theDisplay.mouseOverPoint = map.addPoint(chartId, new OpenLayers.LonLat(lon, lat));
-                        }
-                    }
-                });
-                //always propagate the event when loaded
-		/*
-                  theDisplay.displayManager.propagateEventRecordSelection(theDisplay,
-		  theDisplay.dataCollection.getList()[0], {
-		  index: 0
-		  });
-		*/
-                google.visualization.events.addListener(this.chart, 'select', function(event) {
-                    if (theDisplay.chart.getSelection) {
-                        var selected = theDisplay.chart.getSelection();
-                        if (selected && selected.length > 0) {
+            });
+            google.visualization.events.addListener(chart, 'select', function(event) {
+                theDisplay.mapCharts(chart=>{
+		    if (chart.getSelection) {
+			var selected = chart.getSelection();
+			if (selected && selected.length > 0) {
                             var index = selected[0].row;
 			    var record = theDisplay.indexToRecord[index];
-			    //			    console.log(index +" " + record.getData()[0]);
 			    if(record) {
-				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {xxx:"XXX",record: record});
+				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {record: record});
 			    }
-                        }
-                    }
-                });
-            }
-        },
-        getChartId: function() {
-            return this.getDomId(ID_CHART);
-        },
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
-            throw new Error("doMakeGoogleChart undefined");
-        }
+			}
+		    }});
+            });
+	}
+
+
     });
-    this.makeChart = this.makeGoogleChart;
 }
 
 
@@ -12385,8 +12408,8 @@ function LinechartDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaSeriesChart(displayManager, id, DISPLAY_LINECHART, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
-            return new google.visualization.LineChart(document.getElementById(this.getChartId()));
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
+            return new google.visualization.LineChart(chartDiv);
         },
     });
 }
@@ -12403,10 +12426,10 @@ function AreachartDisplay(displayManager, id, properties) {
 				    [
 					"isStacked=true"])},
 
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             if (this.isStacked)
                 chartOptions.isStacked = true;
-            return new google.visualization.AreaChart(document.getElementById(this.getChartId()));
+            return new google.visualization.AreaChart(chartDiv);
         }
     });
 }
@@ -12446,8 +12469,8 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
 	    return chartOptions;
 	},
 
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
-            return new google.visualization.BarChart(document.getElementById(this.getChartId()));
+        doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
+            return new google.visualization.BarChart(chartDiv);
         }
     });
 }
@@ -12489,7 +12512,7 @@ function HistogramDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
             return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
         },
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             //            chartOptions = {};
             if (this.legendPosition) {
                 if (!chartOptions.legend)
@@ -12521,7 +12544,7 @@ function HistogramDisplay(displayManager, id, properties) {
             if (!isNaN(this.getVAxisMinValue())) {
                 chartOptions.vAxis.minValue = parseFloat(this.getVAxisMinValue());
             }
-            return new google.visualization.Histogram(document.getElementById(this.getChartId()));
+            return new google.visualization.Histogram(chartDiv);
         },
 
     });
@@ -12577,12 +12600,12 @@ function PiechartDisplay(displayManager, id, properties) {
             }
             return this.groupBy;
         },
-        getChartDiv: function() {
-            var chartId = this.getDomId(ID_CHART);
+        getChartDiv: function(chartId) {
             var divAttrs = [ATTR_ID, chartId];
             divAttrs.push("style");
             var style = "";
-            var width = this.getChartWidth();
+	    var width = this.getProperty("chartWidth") || this.getChartWidth();
+	    var height = this.getProperty("chartHeight") || this.getChartHeight();
             if (width) {
                 if (width > 0)
                     style += "width:" + width + "px;";
@@ -12593,7 +12616,6 @@ function PiechartDisplay(displayManager, id, properties) {
             } else {
                 style += "width:" + "100%;";
             }
-            var height = this.getChartHeight();
             if (height) {
                 if (height > 0)
                     style += "height:" + height + "px;";
@@ -12604,16 +12626,19 @@ function PiechartDisplay(displayManager, id, properties) {
             } else {
                 style += "height:" + "100%;";
             }
+//	    style += "border:1px solid green;"
+	    
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.tooltip = {
                 textStyle: {
                     color: '#000000'
                 },
                 showColorCode: true
             };
+	    this.chartOptions.legend = {'position':'right','alignment':'center'};
             if (this.getProperty("bins", null)) {
                 chartOptions.title = "Bins: " + this.getDataValues(dataList[0])[1];
 	    } else if(this.getProperty("sumFields")) {
@@ -12631,7 +12656,16 @@ function PiechartDisplay(displayManager, id, properties) {
             if (this.sliceVisibilityThreshold) {
                 chartOptions.sliceVisibilityThreshold = this.sliceVisibilityThreshold;
             }
-            return new google.visualization.PieChart(document.getElementById(this.getChartId()));
+
+	    $.extend(chartOptions.chartArea, {
+                left: this.getProperty("chartLeft", 0),
+                right: this.getProperty("chartRight", 0),
+                top: this.getProperty("chartTop", 40),
+		bottom: this.getProperty("chartBottom",0),
+                width: '100%',
+                height: '100%'
+            });
+            return new google.visualization.PieChart(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {
             var dataTable = new google.visualization.DataTable();
@@ -12708,6 +12742,9 @@ function PiechartDisplay(displayManager, id, properties) {
 		let sumFields =  this.getFieldsByIds(null, this.getProperty("sumFields"));
 		let sums = [];
 		sumFields.map(f=>{sums.push(0)});
+		if(this.chartCount>=0) {
+		    records = [records[this.chartCount]];
+		}
                 records.map(record=>{
 		    sumFields.map((f,idx)=>{
 			var v = record.getValue(f.getIndex());
@@ -12739,7 +12776,7 @@ function SankeyDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.height = parseInt(this.getProperty("chartHeight", this.getProperty("height", "400")));
             chartOptions.sankey = {
                 node: {
@@ -12755,7 +12792,7 @@ function SankeyDisplay(displayManager, id, properties) {
                     }
                 }
             }
-            return new google.visualization.Sankey(document.getElementById(this.getChartId()));
+            return new google.visualization.Sankey(chartDiv);
         },
         defaultSelectedToAll: function() {
             return true;
@@ -12807,7 +12844,7 @@ function WordtreeDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
         handleEventRecordSelection: function(source, args) {},
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             if (this.getProperty("chartHeight"))
                 chartOptions.height = parseInt(this.getProperty("chartHeight"));
             if (this.getProperty("wordColors")) {
@@ -12835,7 +12872,7 @@ function WordtreeDisplay(displayManager, id, properties) {
                 chartOptions.maxFontSize = parseInt(this.getProperty("maxFontSize"));
             }
 
-            return new google.visualization.WordTree(document.getElementById(this.getChartId()));
+            return new google.visualization.WordTree(chartDiv); 
         },
 
 
@@ -12971,7 +13008,7 @@ function TableDisplay(displayManager, id, properties) {
         defaultSelectedToAll: function() {
             return true;
         },
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             chartOptions.height = null;
             if (this.chartHeight) {
                 chartOptions.height = this.chartHeight;
@@ -12995,7 +13032,7 @@ function TableDisplay(displayManager, id, properties) {
                     headerCell: 'display-table-header'
                 };
             }
-            return new google.visualization.Table(document.getElementById(this.getChartId()));
+            return new google.visualization.Table(chartDiv); 
         },
         makeDataTable: function(dataList, props, selectedFields) {
 	    //		dataList = this.filterData(dataList, selectedFields,false,true);
@@ -13053,7 +13090,7 @@ function BubbleDisplay(displayManager, id, properties) {
 	    }
             return google.visualization.arrayToDataTable(tmp);
         },
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             var ct = this.getColorTable(true);
             if (ct) {
                 chartOptions.colors = ct;
@@ -13098,9 +13135,7 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.vAxis.format = this.getProperty("vAxisFormat", null);
             chartOptions.hAxis.title = this.getProperty("hAxisTitle", header.length > 1 ? header[1] : null);
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
-
-
-            return new google.visualization.BubbleChart(document.getElementById(this.getChartId()));
+            return new google.visualization.BubbleChart(chartDiv); 
         }
 
     });
@@ -13112,7 +13147,7 @@ function BartableDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             var height = "";
             if (Utils.isDefined(this.chartHeight)) {
                 height = this.chartHeight;
@@ -13160,7 +13195,7 @@ function BartableDisplay(displayManager, id, properties) {
                 chartOptions.vAxis = {
                     title: this.vAxis
                 };
-            return new google.charts.Bar(document.getElementById(this.getChartId()));
+            return new google.charts.Bar(chartDiv); 
         },
         getDefaultSelectedFields: function(fields, dfltList) {
             var f = [];
@@ -13218,10 +13253,10 @@ function TreemapDisplay(displayManager, id, properties) {
             return true;
         },
 
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             var dataTable = this.makeDataTable(dataList, props, selectedFields);
             if (!dataTable) return null;
-            return new google.visualization.TreeMap(document.getElementById(this.getChartId()));
+            return new google.visualization.TreeMap(chartDiv);
         },
 
         addTuple: function(data, colorField, seen, value, parent, n1, n2) {
@@ -13349,8 +13384,8 @@ function TimerangechartDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_TIMERANGECHART, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
-            return new google.visualization.Timeline(document.getElementById(this.getChartId()));
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
+            return new google.visualization.Timeline(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {
 	    var records = this.filterData(null,null,false,true);
@@ -13439,7 +13474,7 @@ function CalendarDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_CALENDAR, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             chartOptions.calendar = {
                 cellSize: parseInt(this.getProperty("cellSize", 15))
             };
@@ -13447,7 +13482,7 @@ function CalendarDisplay(displayManager, id, properties) {
             if (this.jq(ID_CHART).width() == 0) {
                 return;
             }
-            return new google.visualization.Calendar(document.getElementById(this.getChartId()));
+            return new google.visualization.Calendar(chartDiv);
         },
 
         defaultSelectedToAll: function() {
@@ -13534,7 +13569,7 @@ function GaugeDisplay(displayManager, id, properties) {
         getChartWidth: function() {
             return this.getProperty("width", "150");
         },
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             this.dataList = dataList;
             this.chartOptions = chartOptions;
             var min = Number.MAX_VALUE;
@@ -13566,7 +13601,7 @@ function GaugeDisplay(displayManager, id, properties) {
                 chartOptions.min = min;
                 chartOptions.max = max;
             }
-            return new google.visualization.Gauge(document.getElementById(this.getChartId()));
+            return new google.visualization.Gauge(chartDiv);
         },
 
         makeDataTable: function(dataList, props, selectedFields) {
@@ -13599,11 +13634,11 @@ function GaugeDisplay(displayManager, id, properties) {
             return google.visualization.arrayToDataTable(list);
         },
         setChartSelection: function(index) {
-            if (this.chart) {
-                this.index = index;
-                var dataTable = this.makeDataTable(this.dataList);
-                this.chart.draw(dataTable, this.chartOptions);
-            }
+            this.index = index;
+            var dataTable = this.makeDataTable(this.dataList);
+            this.mapCharts(chart=>{
+                chart.draw(dataTable, this.chartOptions);
+	    });
         },
     });
 }
@@ -13701,7 +13736,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
 
             return chartOptions;
         },
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             var height = this.getProperty("height",400);
             if (Utils.isDefined(this.getProperty("chartHeight"))) {
                 height = this.getProperty("chartHeight");
@@ -13713,10 +13748,9 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if((typeof height)=="number") height = height+"px";
 	    if((typeof width)=="number") width = width+"px";
 
-            var chartId = this.getChartId();
             $("#" + chartId).css("width", width);
             $("#" + chartId).css("height", height);
-            return new google.visualization.ScatterChart(document.getElementById(this.getChartId()));
+            return new google.visualization.ScatterChart(chartDiv);
         },
 
         getDefaultSelectedFields: function(fields, dfltList) {
