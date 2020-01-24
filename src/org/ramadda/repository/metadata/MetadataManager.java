@@ -285,23 +285,43 @@ public class MetadataManager extends RepositoryManager {
             top.add(Json.quote(Json.cleanString(snippet)));
         }
         if (entry.hasDate()) {
-            String tmp = sdf.format(new Date(entry.getStartDate())) + "/"
-                         + sdf.format(new Date(entry.getEndDate()));
-            top.add("temporalCoverage");
-            top.add(Json.quote(tmp));
+	    top.add("temporalCoverage");
+	    if(entry.getStartDate() == entry.getEndDate()) {
+		top.add(Json.quote(sdf.format(new Date(entry.getStartDate()))));
+	    } else {
+		top.add(Json.quote(sdf.format(new Date(entry.getStartDate())) + "/"
+				   + sdf.format(new Date(entry.getEndDate()))));
+	    }
+
         }
         if (entry.isGeoreferenced()) {
-            List<String> spatial = new ArrayList<String>();
-            spatial.add("@type");
-            spatial.add(Json.quote("Place"));
-            spatial.add("geo");
-            String box = entry.getSouth() + " " + entry.getWest() + " "
-                         + entry.getNorth() + " " + entry.getEast();
-            spatial.add(Json.map("@type", Json.quote("GeoShape"), "box",
+            List<String> geo = new ArrayList<String>();
+            geo.add("@type");
+            geo.add(Json.quote("Place"));
+            geo.add("geo");
+	    if(entry.hasAreaDefined()) {
+		String box = entry.getSouth() + " " + entry.getWest() + " "
+		    + entry.getNorth() + " " + entry.getEast();
+		geo.add(Json.map("@type", Json.quote("GeoShape"), "box",
                                  Json.quote(box)));
+	    } else {
+		geo.add(Json.map("@type", Json.quote("GeoCoordinates"), 
+				 "latitude",
+                                 Json.quote(""+entry.getLatitude()),
+				 "longitude",
+                                 Json.quote(""+entry.getLongitude())));
+	    }
             top.add("spatialCoverage");
-            top.add(Json.map(spatial));
+            top.add(Json.map(geo));
         }
+
+	if(entry.isFile()) {
+	    top.add("distribution");
+	    top.add(Json.mapAndQuote("@type","DataDownload",
+				     "contentUrl",
+				     getEntryManager().getEntryResourceUrl(request,  entry, true, false)));
+	}
+
 
         List<String> keywords = null;
         List<String> ids      = null;
