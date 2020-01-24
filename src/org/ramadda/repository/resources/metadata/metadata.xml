@@ -50,6 +50,12 @@
       <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
     </type>
 
+    <type name="License" id="content.license" searchable="true" browsable="true" displaygroup="Acknowledgements"  >
+      <element name="License" />
+    </type>
+
+
+
     <type
        name="URL"
        searchable="false"

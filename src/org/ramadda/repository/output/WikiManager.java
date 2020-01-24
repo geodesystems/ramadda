@@ -3508,25 +3508,34 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @return _more_
      */
     public String getSnippet(Request request, Entry child) {
+        String snippet = getRawSnippet(request, child);
+        if (snippet == null) {
+            return "";
+        }
+
+        return HtmlUtils.div(snippet, HtmlUtils.cssClass("ramadda-snippet"));
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param child _more_
+     *
+     * @return _more_
+     */
+    public String getRawSnippet(Request request, Entry child) {
         String snippet = child.getSnippet();
         if (snippet != null) {
             return snippet;
         }
         String text = child.getTypeHandler().getEntryText(child);
-
         snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
-
         if (snippet == null) {
             snippet = StringUtil.findPattern(
                 text, "(?s)<snippet-hide>(.*)</snippet-hide>");
         }
-        if (snippet != null) {
-            snippet = HtmlUtils.div(snippet,
-                                    HtmlUtils.cssClass("ramadda-snippet"));
-        } else {
-            snippet = "";
-        }
-
         child.setSnippet(snippet);
 
         return snippet;
@@ -4269,16 +4278,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         int         max         = -1;
         String      orderBy     = null;
         boolean     orderDir    = true;
-	HashSet nots = new HashSet();
+        HashSet     nots        = new HashSet();
 
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
             if (entryid.startsWith("#")) {
                 continue;
             }
-	    if (entryid.startsWith("not:")) {
-		nots.add(entryid.substring("not:".length()));
-		continue;
-	    }	
+            if (entryid.startsWith("not:")) {
+                nots.add(entryid.substring("not:".length()));
+
+                continue;
+            }
 
 
             if (entryid.startsWith("entries.max=")) {
@@ -4600,15 +4610,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
-	if(nots.size()>0) {
+        if (nots.size() > 0) {
             List<Entry> etmp = new ArrayList<Entry>();
-	    for(int i=0;i<entries.size();i++) {
-		if(!nots.contains(entries.get(i).getId())) {
-		    etmp.add(entries.get(i));
-		}
-	    }
-	    entries = etmp;
-	}
+            for (int i = 0; i < entries.size(); i++) {
+                if ( !nots.contains(entries.get(i).getId())) {
+                    etmp.add(entries.get(i));
+                }
+            }
+            entries = etmp;
+        }
 
         int randomCnt = getProperty(wikiUtil, props, "randomCount", 0);
         if (randomCnt > 0) {
@@ -4648,6 +4658,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             entries = l;
         }
+
         return entries;
     }
 

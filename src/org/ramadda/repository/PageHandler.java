@@ -228,6 +228,9 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private boolean showCreateDate;
 
+    /** _more_          */
+    private boolean showJsonLd;
+
     /** _more_ */
     private boolean showSearch;
 
@@ -284,6 +287,7 @@ public class PageHandler extends RepositoryManager {
             getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
                                         false);
 
+        showJsonLd = getRepository().getProperty("ramadda.showjsonld", false);
         showSearch = getRepository().getProperty("ramadda.showsearch", true);
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
@@ -340,8 +344,8 @@ public class PageHandler extends RepositoryManager {
         String       template     = null;
         HtmlTemplate htmlTemplate = getTemplate(request, currentEntry);
         if (request.isMobile() && !request.defined(ARG_TEMPLATE)) {
-            if (!htmlTemplate.getTemplateProperty("mobile", false)) {
-              htmlTemplate = getMobileTemplate();
+            if ( !htmlTemplate.getTemplateProperty("mobile", false)) {
+                htmlTemplate = getMobileTemplate();
             }
         }
         template = htmlTemplate.getTemplate();
@@ -390,6 +394,9 @@ public class PageHandler extends RepositoryManager {
         }
         if (head == null) {
             head = "";
+        }
+        if (showJsonLd && (currentEntry != null)) {
+            head += getMetadataManager().getJsonLD(request, currentEntry);
         }
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
@@ -982,6 +989,7 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
+
         return mobileTemplate;
     }
 
@@ -1017,7 +1025,10 @@ public class PageHandler extends RepositoryManager {
             try {
                 imports = getStorageManager().readSystemResource(
                     "/org/ramadda/repository/resources/web/imports.html");
-		imports = imports.replace("${ramadda.bootstrap.version}", getRepository().getProperty("ramadda.bootstrap.version","bootstrap-3.3"));
+                imports = imports.replace(
+                    "${ramadda.bootstrap.version}",
+                    getRepository().getProperty(
+                        "ramadda.bootstrap.version", "bootstrap-3.3"));
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -1100,7 +1111,7 @@ public class PageHandler extends RepositoryManager {
                         theMobileTemplate = template;
                     }
                     if (defaultTemplate == null) {
-                       if (defaultId == null) {
+                        if (defaultId == null) {
                             defaultTemplate = template;
                         } else {
                             if (Misc.equals(defaultId, template.getId())) {
@@ -1108,10 +1119,11 @@ public class PageHandler extends RepositoryManager {
                             }
                         }
                         if (mobileId == null) {
-			    if (template.getTemplateProperty("mobile", false)) {
-				mobileTemplate = template;
-			    }
-			}
+                            if (template.getTemplateProperty("mobile",
+                                    false)) {
+                                mobileTemplate = template;
+                            }
+                        }
                     }
                 } catch (Exception exc) {
                     getLogManager().logError("loading template" + path, exc);
@@ -1768,7 +1780,7 @@ public class PageHandler extends RepositoryManager {
                                 boolean alignLeft) {
         StringBuilder sb = new StringBuilder();
         link = makePopupLink(link, menuContents, linkAttributes, makeClose,
-                             alignLeft, sb,null);
+                             alignLeft, sb, null);
 
         return link + sb;
     }
@@ -1782,17 +1794,20 @@ public class PageHandler extends RepositoryManager {
      * @param makeClose _more_
      * @param alignLeft _more_
      * @param popup _more_
+     * @param header _more_
      *
      * @return _more_
      */
     public String makePopupLink(String link, String menuContents,
                                 String linkAttributes, boolean makeClose,
-                                boolean alignLeft, Appendable popup, String header) {
+                                boolean alignLeft, Appendable popup,
+                                String header) {
         try {
 
             String compId = "menu_" + HtmlUtils.blockCnt++;
             String linkId = "menulink_" + HtmlUtils.blockCnt++;
-            popup.append(makePopupDiv(menuContents, compId, makeClose,header));
+            popup.append(makePopupDiv(menuContents, compId, makeClose,
+                                      header));
             String onClick =
                 HtmlUtils.onMouseClick(HtmlUtils.call("showPopup",
                     HtmlUtils.comma(new String[] { "event",
@@ -1878,6 +1893,7 @@ public class PageHandler extends RepositoryManager {
      * @param contents _more_
      * @param compId _more_
      * @param makeClose _more_
+     * @param header _more_
      *
      * @return _more_
      */
@@ -1890,10 +1906,12 @@ public class PageHandler extends RepositoryManager {
                                getIconImage(
                                    ICON_CLOSE, "title", "Close", "class",
                                    "ramadda-popup-close"), "");
-	    if(header !=null) 
-		contents = HtmlUtils.table(HtmlUtils.row("<td width=5%>" + cLink+"</td><td>" + header +"</td>")) + contents;
-	    else 
-		contents = cLink  + HtmlUtils.br() + contents;
+            if (header != null) {
+                contents = HtmlUtils.table(HtmlUtils.row("<td width=5%>"
+                        + cLink + "</td><td>" + header + "</td>")) + contents;
+            } else {
+                contents = cLink + HtmlUtils.br() + contents;
+            }
         }
 
         menu.append(HtmlUtils.div(contents,
@@ -2574,7 +2592,7 @@ public class PageHandler extends RepositoryManager {
         }
 
 
-        PageStyle pageStyle = request.getPageStyle(entry);
+        PageStyle    pageStyle    = request.getPageStyle(entry);
         OutputType   output       = OutputHandler.OUTPUT_HTML;
         int          length       = 0;
 
@@ -2587,11 +2605,11 @@ public class PageHandler extends RepositoryManager {
                            HtmlUtils.img(getIconUrl(request, entry)) + " "
                            + getEntryDisplayName(entry));
 
-        String links =
-            getEntryManager().getEntryActionsTable(request, entry,
-                OutputType.TYPE_FILE | OutputType.TYPE_EDIT
-                | OutputType.TYPE_VIEW | OutputType.TYPE_OTHER| OutputType.TYPE_CHILDREN, linkList,
-                    false, headerLabel);
+        String links = getEntryManager().getEntryActionsTable(request, entry,
+                           OutputType.TYPE_FILE | OutputType.TYPE_EDIT
+                           | OutputType.TYPE_VIEW | OutputType.TYPE_OTHER
+                           | OutputType.TYPE_CHILDREN, linkList, false,
+                               headerLabel);
 
 
         StringBuilder popup = new StringBuilder();
@@ -2600,11 +2618,11 @@ public class PageHandler extends RepositoryManager {
                                  HtmlUtils.cssClass(
                                      "ramadda-breadcrumbs-menu-button"));
         String menuLink = getPageHandler().makePopupLink(menuLinkImg, links,
-							 "", true, false, popup,null);
+                              "", true, false, popup, null);
 
         //crumbs
         //        parents.add(entry);
-	List<Entry> parents = getEntryManager().getParents(request, entry);
+        List<Entry>  parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,
                                        titleList);
@@ -2996,24 +3014,26 @@ public class PageHandler extends RepositoryManager {
         sb.append("<table width=\"100%\"><tr><td>");
 
         // Comments
-	if(getRepository().getCommentsEnabled()) {
-        List<Comment> comments = entry.getComments();
-        if (comments != null) {
-            Link link =
-                new Link(request.entryUrl(getRepository().URL_COMMENTS_SHOW,
-                                          entry), ICON_COMMENTS,
-                                              "Add/View Comments",
-                                              OutputType.TYPE_TOOLBAR);
+        if (getRepository().getCommentsEnabled()) {
+            List<Comment> comments = entry.getComments();
+            if (comments != null) {
+                Link link = new Link(
+                                request.entryUrl(
+                                    getRepository().URL_COMMENTS_SHOW,
+                                    entry), ICON_COMMENTS,
+                                            "Add/View Comments",
+                                            OutputType.TYPE_TOOLBAR);
 
-            String href = HtmlUtils.href(link.getUrl(),
-                                         "Comments:(" + comments.size() + ")"
-                                         + getIconImage(link.getIcon(),
-                                             "title", link.getLabel()));
+                String href = HtmlUtils.href(link.getUrl(),
+                                             "Comments:(" + comments.size()
+                                             + ")"
+                                             + getIconImage(link.getIcon(),
+                                                 "title", link.getLabel()));
 
-            sb.append(href);
-            sb.append("</td><td>");
+                sb.append(href);
+                sb.append("</td><td>");
+            }
         }
-	}
 
         /*
           Don't include the sharing from addthis.com for now since I think theyre doing tracking

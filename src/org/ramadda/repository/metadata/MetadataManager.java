@@ -259,6 +259,104 @@ public class MetadataManager extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getJsonLD(Request request, Entry entry) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        StringBuilder sb =
+            new StringBuilder("\n<script type=\"application/ld+json\">\n");
+        List<Metadata> metadataList = getMetadata(entry);
+        List<String>   top          = new ArrayList<String>();
+        top.add("@context");
+        top.add(Json.quote("https://schema.org/"));
+        top.add("@type");
+        top.add(Json.quote("Dataset"));
+        top.add("name");
+        top.add(Json.quote(Json.cleanString(entry.getName())));
+        top.add("url");
+        top.add(Json.quote(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                            entry)));
+        String snippet = getWikiManager().getRawSnippet(request, entry);
+        if ((snippet != null) && (snippet.length() > 0)) {
+            top.add("description");
+            top.add(Json.quote(Json.cleanString(snippet)));
+        }
+        if (entry.hasDate()) {
+            String tmp = sdf.format(new Date(entry.getStartDate())) + "/"
+                         + sdf.format(new Date(entry.getEndDate()));
+            top.add("temporalCoverage");
+            top.add(Json.quote(tmp));
+        }
+        if (entry.isGeoreferenced()) {
+            List<String> spatial = new ArrayList<String>();
+            spatial.add("@type");
+            spatial.add(Json.quote("Place"));
+            spatial.add("geo");
+            String box = entry.getSouth() + " " + entry.getWest() + " "
+                         + entry.getNorth() + " " + entry.getEast();
+            spatial.add(Json.map("@type", Json.quote("GeoShape"), "box",
+                                 Json.quote(box)));
+            top.add("spatialCoverage");
+            top.add(Json.map(spatial));
+        }
+
+        List<String> keywords = null;
+        List<String> ids      = null;
+        for (Metadata md : metadataList) {
+            String type = md.getType();
+            if (type.equals("content.license")) {
+                top.add("license");
+                top.add(Json.quote(md.getAttr1()));
+            } else if (type.equals("doi_identifier")) {
+                if (ids == null) {
+                    ids = new ArrayList<String>();
+                }
+                ids.add(md.getAttr2());
+            } else if (type.equals("thredds.creator")) {
+                List<String> ctor = new ArrayList<String>();
+                ctor.add("@type");
+                ctor.add(Json.quote("Organization"));
+                ctor.add("name");
+                ctor.add(Json.quote(md.getAttr1()));
+                ctor.add("url");
+                ctor.add(Json.quote(md.getAttr4()));
+                ctor.add("contactPoint");
+                ctor.add(Json.mapAndQuote("@type", "ContactPoint", "email",
+                                          md.getAttr3()));
+                top.add("creator");
+                top.add(Json.map(ctor));
+            } else if (type.equals("enum_gcmdkeyword")
+                       || type.equals("content.keyword")
+                       || type.equals("enum_tag")
+                       || type.equals("thredds.keyword")) {
+                if (keywords == null) {
+                    keywords = new ArrayList<String>();
+                }
+                keywords.add(md.getAttr1());
+            }
+        }
+        if (ids != null) {
+            top.add("identifier");
+            top.add(Json.list(ids, true));
+        }
+        if (keywords != null) {
+            top.add("keywords");
+            top.add(Json.list(keywords, true));
+        }
+        Json.map(sb, top, false);
+        sb.append("\n</script>\n");
+
+        return sb.toString();
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
      * @param sb _more_
      * @param forLink _more_
      *
@@ -721,12 +819,13 @@ public class MetadataManager extends RepositoryManager {
                                              boolean shortForm) {
         List<Metadata> metadataList = new ArrayList<Metadata>();
         for (MetadataHandler handler : getMetadataHandlers()) {
-	    try {
-		handler.getInitialMetadata(request, entry, metadataList, extra,
-					   shortForm);
-	    } catch(Exception exc) {
-		System.err.println("MetadataManager.getInitialMetadata error: "+ exc);
-	    }
+            try {
+                handler.getInitialMetadata(request, entry, metadataList,
+                                           extra, shortForm);
+            } catch (Exception exc) {
+                System.err.println(
+                    "MetadataManager.getInitialMetadata error: " + exc);
+            }
         }
 
         return metadataList;
