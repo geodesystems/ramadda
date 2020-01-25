@@ -52,6 +52,7 @@ import org.w3c.dom.NodeList;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -2287,8 +2288,6 @@ public class EntryManager extends RepositoryManager {
             typeHandler = entry.getTypeHandler();
             newEntry    = false;
 
-
-
             if (request.exists(ARG_CANCEL)) {
                 return new Result(
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
@@ -2392,7 +2391,9 @@ public class EntryManager extends RepositoryManager {
             getStorageManager().checkLocalFile(serverFile);
         }
 
+        Entry parentEntry = null;
         if (entry == null) {
+
             if (forUpload) {
                 logInfo("Upload:creating a new entry");
             }
@@ -2400,7 +2401,7 @@ public class EntryManager extends RepositoryManager {
             if (groupId == null) {
                 fatalError(request, "You must specify a parent folder");
             }
-            Entry parentEntry = findGroup(request);
+            parentEntry = findGroup(request);
             if (forUpload) {
                 logInfo("Upload:checking access");
             }
@@ -2901,21 +2902,31 @@ public class EntryManager extends RepositoryManager {
 
 
 
-        if (newEntry) {
-            if (request.get(ARG_METADATA_ADD, false)) {
-                addInitialMetadata(request, entries, newEntry, false);
-            } else if (request.get(ARG_METADATA_ADDSHORT, false)) {
-                addInitialMetadata(request, entries, newEntry, true);
+        try {
+            if (newEntry) {
+                if (request.get(ARG_METADATA_ADD, false)) {
+                    addInitialMetadata(request, entries, newEntry, false);
+                } else if (request.get(ARG_METADATA_ADDSHORT, false)) {
+                    addInitialMetadata(request, entries, newEntry, true);
+                }
             }
-        }
 
-
-        insertEntries(request, entries, newEntry);
-        if (newEntry) {
-            for (Entry theNewEntry : entries) {
-                theNewEntry.getTypeHandler().doFinalEntryInitialization(
-                    request, theNewEntry, false);
+            insertEntries(request, entries, newEntry);
+            if (newEntry) {
+                for (Entry theNewEntry : entries) {
+                    theNewEntry.getTypeHandler().doFinalEntryInitialization(
+                        request, theNewEntry, false);
+                }
             }
+        } catch (Exception exc) {
+            Throwable inner = LogUtil.getInnerException(exc);
+            if (parentEntry != null) {
+                return getPageHandler().makeEntryHeaderResult(request,
+                        parentEntry, "Entry Create Error",
+                        getPageHandler().showDialogError(inner.getMessage()));
+            }
+
+            throw exc;
         }
 
 
