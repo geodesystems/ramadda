@@ -21,10 +21,12 @@ function csvDisplay(what, download,html) {
         command +="\n";
     }
     command = command.trim();
-    if(what == null)
+    if(what == null) {
         csvCall(command  +" ", {download:download,html:html});
-    else
+    }  else {
+	if(what == "-raw") command = "";
         csvCall(command, {download:download, csvoutput:what,html:html});
+    }
 }
 
 function csvGetUrl(cmds,rawInput) {
