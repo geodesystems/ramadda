@@ -6298,3 +6298,110 @@ function DisplayAnimation(display) {
 
     });
 }
+
+
+/*
+ */
+function RamaddaFieldsDisplay(displayManager, id, type, properties) {
+    let _this = this;
+    this.TYPE = "RamaddaFieldsDisplay";
+    let SUPER = new RamaddaDisplay(displayManager, id, type, properties);
+    RamaddaUtil.inherit(this, this.RamaddaDisplay = SUPER);
+    RamaddaUtil.defineMembers(this, {
+        needsData: function() {
+            return true;
+        },
+	getWikiEditorTags: function() {
+	    var t = SUPER.getWikiEditorTags();
+	    var myTags = [
+		"fields=\"\"",
+	    ];
+	    myTags.map(tag=>t.push(tag));
+	    return t;
+	},
+
+        handleEventMapClick: function(source, args) {
+            if (!this.dataCollection) return;
+            var pointData = this.dataCollection.getList();
+            for (var i = 0; i < pointData.length; i++) {
+                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
+            }
+        },
+        initDisplay: function() {
+            SUPER.initDisplay.call(this);
+            if (this.needsData()) {
+                this.setContents(this.getLoadingMessage());
+            }
+            this.updateUI();
+        },
+        updateUI: function() {
+            this.addFieldsCheckboxes();
+        },
+        //This keeps checking the width of the chart element if its zero
+        //we do this for displaying in tabs
+        checkLayout: function() {
+            var _this = this;
+            var d = _this.jq(ID_DISPLAY_CONTENTS);
+            if (this.lastWidth != d.width()) {
+                _this.displayData();
+            }
+            if (true) return;
+
+            if (d.width() == 0) {
+                var cb = function() {
+                    _this.checkWidth(cnt + 1);
+                };
+                setTimeout(cb, 5000);
+            } else {
+                //                    console.log("checkWidth:"+ _this.getTitle() +" calling displayData");
+                _this.displayData();
+            }
+        },
+
+        getWikiAttributes: function(attrs) {
+            SUPER.getWikiAttributes.call(this, attrs);
+            if (this.lastSelectedFields) {
+                attrs.push("fields");
+                var v = "";
+                for (var i = 0; i < this.lastSelectedFields.length; i++) {
+                    v += this.lastSelectedFields[i].getId();
+                    v += ",";
+                }
+                attrs.push(v);
+            }
+        },
+        initDialog: function() {
+            SUPER.initDialog.call(this);
+            this.addFieldsCheckboxes();
+        },
+        getDialogContents: function(tabTitles, tabContents) {
+            var height = "600";
+            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS), "style", "overflow-y: auto;    max-height:" + height + "px;"], " FIELDS ");
+            tabTitles.push("Fields");
+            tabContents.push(html);
+            SUPER.getDialogContents.call(this, tabTitles, tabContents);
+        },
+        handleEventFieldsSelected: function(source, fields) {
+	    if(fields.length>0 && (typeof fields[0] =="string")) {
+		var tmp = [];
+		fields.map(f=>{
+		    f = this.getFieldById(null, f);
+		    if(f) tmp.push(f);
+		});
+		fields=tmp;
+	    }
+            this.userHasSelectedAField = true;
+            this.overrideFields = null;
+            this.removeProperty(PROP_FIELDS);
+            this.setSelectedFields(fields);
+            this.fieldSelectionChanged();
+        },
+        getFieldsToSelect: function(pointData) {
+            return pointData.getRecordFields();
+        },
+        canDoMultiFields: function() {
+            return true;
+        }
+    })
+}
+

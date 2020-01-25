@@ -599,3 +599,986 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    }
 	}});
 }
+
+
+function RamaddaTsneDisplay(displayManager, id, properties) {
+    var ID_BOTTOM = "bottom";
+    var ID_CANVAS = "tsnecanvas";
+    var ID_DETAILS = "tsnedetails";
+    var ID_RUN = "tsnerun";
+    var ID_RESET = "tsnereset";
+    var ID_STEP = "tsnestep";
+    var ID_SEARCH = "tsnesearch";
+    $.extend(this, {
+        colorTable: "red_white_blue",
+        colorByMin: "-1",
+        colorByMax: "1",
+        height: "500px;"
+    });
+
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TSNE, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+
+    RamaddaUtil.defineMembers(this, {
+        nameToIndex: {},
+        needsData: function() {
+            return true;
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        updateUI: async function(pointData) {
+            SUPER.updateUI.call(this, pointData);
+            if (!this.hasData()) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+            await Utils.importJS(ramaddaBaseUrl + "/lib/tsne.js");
+            //Height is the height of the overall display including the menu bar
+            var height = this.getProperty("height");
+            if (height.endsWith("px")) height = height.replace("px", "");
+            height = parseInt(height);
+            //            height-=30;
+            var details = HtmlUtils.div(["style", "height:" + height + "px;max-height:" + height + "px", "class", "display-tnse-details", "id", this.getDomId(ID_DETAILS)], "");
+            var canvas = HtmlUtils.div(["class", "display-tnse-canvas-outer", "style", "height:" + height + "px"], HtmlUtils.div(["class", "display-tnse-canvas", "id", this.getDomId(ID_CANVAS)], ""));
+            var buttons = HtmlUtils.div(["id", this.getDomId(ID_RUN), "class", "ramadda-button", "what", "run"], "Stop") + "&nbsp;" +
+                HtmlUtils.div(["id", this.getDomId(ID_STEP), "class", "ramadda-button", "what", "step"], "Step") + "&nbsp;" +
+                HtmlUtils.div(["id", this.getDomId(ID_RESET), "class", "ramadda-button", "what", "reset"], "Reset") + "&nbsp;" +
+                HtmlUtils.input("", "", ["id", this.getDomId(ID_SEARCH), "placeholder", "search"]);
+
+            buttons = HtmlUtils.div(["class", "display-tnse-toolbar"], buttons);
+            this.jq(ID_TOP_LEFT).append(buttons);
+            this.setContents("<table  width=100%><tr valign=top><td width=80%>" + canvas + "</td><td width=20%>" + details + "</td></tr></table>");
+            this.search = this.jq(ID_SEARCH);
+            this.search.keyup(e => {
+                var v = this.search.val().trim();
+                this.canvas.find(".display-tnse-mark").removeClass("display-tnse-highlight");
+                if (v == "") return;
+                v = v.toLowerCase();
+                for (name in this.nameToIndex) {
+                    if (name.toLowerCase().startsWith(v)) {
+                        this.jq("element-" + this.nameToIndex[name]).addClass("display-tnse-highlight");
+                    }
+                }
+            });
+            this.details = this.jq(ID_DETAILS);
+            this.reset = this.jq(ID_RESET);
+            this.step = this.jq(ID_STEP);
+            this.step.button().click(() => {
+                this.running = false;
+                this.run.html(this.running ? "Stop" : "Run");
+                this.takeStep();
+            });
+            this.reset.button().click(() => {
+                this.start();
+            });
+            this.run = this.jq(ID_RUN);
+            this.run.button().click(() => {
+                this.running = !this.running;
+                if (this.running) this.takeStep();
+                this.run.html(this.running ? "Stop" : "Run");
+            });
+            this.canvas = this.jq(ID_CANVAS);
+            this.running = true;
+            this.start();
+        },
+        start: function() {
+            this.canvas.html("");
+            this.haveStepped = false;
+            this.dataList = this.getStandardData(null, {
+                includeIndex: false
+            });
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+            if (!this.fields) {
+                this.fields = this.getSelectedFields([]);
+                if (this.fields.length == 0) this.fields = allFields;
+                var strings = this.getFieldsOfType(this.fields, "string");
+                if (strings.length > 0)
+                    this.textField = strings[0];
+            }
+            var data = [];
+            for (var rowIdx = 1; rowIdx < this.dataList.length; rowIdx++) {
+                var tuple = this.getDataValues(this.dataList[rowIdx]);
+                var nums = [];
+                for (var i = 0; i < this.fields.length; i++) {
+                    if (this.fields[i].isNumeric()){
+                        var v = tuple[this.fields[i].getIndex()];
+                        if(isNaN(v)) v = 0;
+                        nums.push(v);
+                    }
+                }
+                data.push(nums);
+            }
+
+            var opt = {}
+            opt.epsilon = 10; // epsilon is learning rate
+            opt.perplexity = 30; // how many neighbors each point influences
+            opt.dim = 2; // dimensionality of the embedding (2 = default)
+            this.tsne = new tsnejs.tSNE(opt);
+            this.tsne.initDataRaw(data);
+            this.takeStep();
+        },
+        takeStep: function() {
+            var numSteps = 10;
+            for (var step = 0; step < numSteps; step++) {
+                this.tsne.step();
+            }
+
+            var pts = this.tsne.getSolution();
+            var minx, miny, maxx, maxy;
+            for (var i = 0; i < pts.length; i++) {
+                if (i == 0) {
+                    maxx = minx = pts[i][0];
+                    maxy = miny = pts[i][1];
+                } else {
+                    maxx = Math.max(maxx, pts[i][0]);
+                    minx = Math.min(minx, pts[i][0]);
+                    maxy = Math.max(maxy, pts[i][1]);
+                    miny = Math.min(miny, pts[i][1]);
+                }
+            }
+            var sleep = 250;
+            for (var i = 0; i < pts.length; i++) {
+                var x = pts[i][0];
+                var y = pts[i][1];
+                var px = 100 * (x - minx) / (maxx - minx);
+                var py = 100 * (y - miny) / (maxy - miny);
+                if (!this.haveStepped) {
+                    var title = "";
+                    if (this.textField) {
+                        var tuple = this.getDataValues(this.dataList[i]);
+                        title = tuple[this.textField.getIndex()];
+                    }
+                    if (title.length > 10) {
+                        title.length = 10;
+                    }
+                    this.nameToIndex[title] = i;
+                    this.canvas.append(HtmlUtils.div(["title", title, "index", i, "id", this.getDomId("element-" + i), "class", "display-tnse-mark", "style", "left:" + px + "%;" + "top:" + py + "%;"], title));
+                } else {
+                    this.jq("element-" + i).animate({
+                        left: px + "%",
+                        top: py + "%"
+                    }, sleep, "linear");
+                }
+
+            }
+            let _this = this;
+            if (!this.haveStepped) {
+                this.canvas.find(".display-tnse-mark").click(function(e) {
+                    var index = parseInt($(this).attr("index"));
+                    if (index < 0 || index >= _this.dataList.length) return;
+                    var tuple = _this.getDataValues(_this.dataList[index]);
+                    var details = "<table class=formtable width=100% >";
+                    for (var i = 0; i < _this.fields.length; i++) {
+                        var field = _this.fields[i];
+                        details += "<tr><td align=right class=formlabel>" + field.getLabel() + ":</td><td>" + tuple[field.getIndex()] + "</td></tr>";
+                    }
+                    details += "</table>";
+                    _this.details.html(details);
+                });
+            }
+            if (!this.haveStepped) {
+                //                this.haveStepped = true;
+                //                this.takeStep();
+                //                return;
+            }
+            this.haveStepped = true;
+            if (this.running)
+                setTimeout(() => this.takeStep(), sleep);
+        },
+    });
+}
+
+
+function RamaddaHeatmapDisplay(displayManager, id, properties) {
+    $.extend(this, {
+        colorTable: "red_white_blue",
+    });
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HEATMAP, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        "map-display": false,
+        needsData: function() {
+            return true;
+        },
+        getMenuItems: function(menuItems) {
+            SUPER.getMenuItems.call(this, menuItems);
+            var get = this.getGet();
+            var tmp = HtmlUtils.formTable();
+            var colorTable = this.getColorTableName();
+            var ct = "<select id=" + this.getDomId("colortable") + ">";
+            for (table in Utils.ColorTable) {
+                if (table == colorTable)
+                    ct += "<option selected>" + table + "</option>";
+                else
+                    ct += "<option>" + table + "</option>";
+            }
+            ct += "</select>";
+
+            tmp += HtmlUtils.formEntry("Color Table:", ct);
+
+            tmp += HtmlUtils.formEntry("Color By Range:", HtmlUtils.input("", this.colorByMin, ["size", "7", ATTR_ID, this.getDomId("colorbymin")]) + " - " +
+				       HtmlUtils.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
+            tmp += "</table>";
+            menuItems.push(tmp);
+        },
+        initDialog: function() {
+            SUPER.initDialog.call(this);
+            var _this = this;
+            var updateFunc = function() {
+                _this.colorByMin = _this.jq("colorbymin").val();
+                _this.colorByMax = _this.jq("colorbymax").val();
+                _this.updateUI();
+
+            };
+            var func2 = function() {
+                _this.colorTable = _this.jq("colortable").val();
+                _this.updateUI();
+
+            };
+            this.jq("colorbymin").blur(updateFunc);
+            this.jq("colorbymax").blur(updateFunc);
+            this.jq("colortable").change(func2);
+        },
+
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        fieldSelectionChanged: function() {
+            this.updateUI();
+        },
+        getContentsStyle: function() {
+            var height = this.getProperty("height", -1);
+            if (height > 0) {
+                return " height:" + height + "px; " + " max-height:" + height + "px; overflow-y: auto;";
+            }
+            return "";
+        },
+        updateUI: function(pointData) {
+            var _this = this;
+            if (!haveGoogleChartsLoaded()) {
+                var func = function() {
+                    _this.updateUI();
+                }
+                this.setContents(this.getLoadingMessage());
+                setTimeout(func, 1000);
+                return;
+            }
+
+            SUPER.updateUI.call(this, pointData);
+            if (!this.hasData()) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+            var dataList = this.getStandardData(null, {
+                includeIndex: true
+            });
+            var header = this.getDataValues(dataList[0]);
+            var showIndex = this.getProperty("showIndex", true);
+            var showValue = this.getProperty("showValue", true);
+            var textColor = this.getProperty("textColor", "black");
+
+            var cellHeight = this.getProperty("cellHeight", null);
+            var extraTdStyle = "";
+            if (this.getProperty("showBorder", "false") == "true") {
+                extraTdStyle = "border-bottom:1px #666 solid;";
+            }
+            var extraCellStyle = "";
+            if (cellHeight)
+                extraCellStyle += "height:" + cellHeight + "px; max-height:" + cellHeight + "px; min-height:" + cellHeight + "px;";
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+            var fields = this.getSelectedFields([]);
+
+            if (fields.length == 0) fields = allFields;
+            var html = "";
+            var colors = null;
+            var colorByMin = null;
+            var colorByMax = null;
+            if (Utils.stringDefined(this.getProperty("colorByMins"))) {
+                colorByMin = [];
+                var c = this.getProperty("colorByMins").split(",");
+                for (var i = 0; i < c.length; i++) {
+                    colorByMin.push(parseFloat(c[i]));
+                }
+            }
+            if (Utils.stringDefined(this.getProperty("colorByMaxes"))) {
+                colorByMax = [];
+                var c = this.getProperty("colorByMaxes").split(",");
+                for (var i = 0; i < c.length; i++) {
+                    colorByMax.push(parseFloat(c[i]));
+                }
+            }
+
+            if (Utils.stringDefined(this.getProperty("colorTables"))) {
+                var c = this.getProperty("colorTables").split(",");
+                colors = [];
+                for (var i = 0; i < c.length; i++) {
+                    var name = c[i];
+                    if (name == "none") {
+                        colors.push(null);
+                        continue;
+                    }
+                    var ct = Utils.getColorTable(name, true);
+                    //                        console.log("ct:" + name +" " +(ct!=null));
+                    colors.push(ct);
+                }
+            } else {
+                colors = [this.getColorTable(true)];
+            }
+            var mins = null;
+            var maxs = null;
+            for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+                var row = this.getDataValues(dataList[rowIdx]);
+                if (mins == null) {
+                    mins = [];
+                    maxs = [];
+                    for (var colIdx = 1; colIdx < row.length; colIdx++) {
+                        mins.push(Number.MAX_VALUE);
+                        maxs.push(Number.MIN_VALUE);
+                    }
+                }
+
+                for (var colIdx = 0; colIdx < fields.length; colIdx++) {
+                    var field = fields[colIdx];
+                    //Add one to the field index to account for the main time index
+                    var index = field.getIndex() + 1;
+                    if (!field || !field.isFieldNumeric() || field.isFieldGeo()) continue;
+
+                    var value = row[index];
+                    if (value == Number.POSITIVE_INFINITY || isNaN(value) || !Utils.isNumber(value) || !Utils.isDefined(value) || value == null) {
+                        continue;
+                    }
+                    mins[colIdx] = Math.min(mins[colIdx], value);
+                    maxs[colIdx] = Math.max(maxs[colIdx], value);
+                }
+            }
+
+            html += HtmlUtils.openTag("table", ["border", "0", "class", "display-heatmap"]);
+            html += "<tr valign=bottom>";
+            if (showIndex) {
+                html += "<td align=center>" + HtmlUtils.tag("div", ["class", "display-heatmap-heading-top"], header[0]) + "</td>";
+            }
+            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                var field = fields[fieldIdx];
+                if ((!field.isFieldNumeric() || field.isFieldGeo())) continue;
+                html += "<td align=center>" + HtmlUtils.tag("div", ["class", "display-heatmap-heading-top"], field.getLabel()) + "</td>";
+            }
+            html += "</tr>\n";
+
+
+
+
+            for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+                var row = this.getDataValues(dataList[rowIdx]);
+                var index = row[0];
+                //check if its a date
+                if (index.f) {
+                    index = index.f;
+                }
+                var rowLabel = index;
+                html += "<tr valign='center'>\n";
+                if (showIndex) {
+                    html += HtmlUtils.td(["class", "display-heatmap-heading-side", "style", extraCellStyle], rowLabel);
+                }
+                var colCnt = 0;
+                for (var colIdx = 0; colIdx < fields.length; colIdx++) {
+                    var field = fields[colIdx];
+                    //Add one to the field index to account for the main time index
+                    var index = field.getIndex() + 1;
+                    if (!field || !field.isFieldNumeric() || field.isFieldGeo()) continue;
+                    var style = "";
+                    var value = row[index];
+                    var min = mins[colIdx];
+                    var max = maxs[colIdx];
+                    if (colorByMin && colCnt < colorByMin.length)
+                        min = colorByMin[colCnt];
+                    if (colorByMax && colCnt < colorByMax.length)
+                        max = colorByMax[colCnt];
+
+
+                    var ok = min != max && !(value == Number.POSITIVE_INFINITY || isNaN(value) || !Utils.isNumber(value) || !Utils.isDefined(value) || value == null);
+                    var title = header[0] + ": " + rowLabel + " - " + field.getLabel() + ": " + value;
+                    if (ok && colors != null) {
+                        var ct = colors[Math.min(colCnt, colors.length - 1)];
+                        if (ct) {
+                            var percent = (value - min) / (max - min);
+                            var ctIndex = parseInt(percent * ct.length);
+                            if (ctIndex >= ct.length) ctIndex = ct.length - 1;
+                            else if (ctIndex < 0) ctIndex = 0;
+                            style = "background-color:" + ct[ctIndex] + ";";
+                        }
+                    }
+                    var number;
+                    if (!ok) {
+                        number = "-";
+                    } else {
+                        number = Utils.formatNumber(value)
+                    }
+                    if (!showValue) number = "";
+                    html += HtmlUtils.td(["valign", "center", "align", "right", "style", style + extraCellStyle + extraTdStyle, "class", "display-heatmap-cell"], HtmlUtils.div(["title", title, "style", extraCellStyle + "color:" + textColor], number));
+                    colCnt++;
+                }
+                html += "</tr>";
+            }
+            html += "</table>";
+            this.setContents(html);
+            this.initTooltip();
+
+        },
+    });
+}
+
+
+function RamaddaRankingDisplay(displayManager, id, properties) {
+    var ID_TABLE = "table";
+    $.extend(this, {
+	height: "500px;",
+        sortAscending:false,
+    });
+    if(properties.sortAscending) this.sortAscending = "true" == properties.sortAscending;
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RANKING, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+
+    RamaddaUtil.defineMembers(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Chart Attributes",
+					"sortField=\"\"",
+					'nameFields=""',
+				    ]);
+
+	},
+
+
+        needsData: function() {
+            return true;
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        fieldSelectionChanged: function() {
+            this.updateUI();
+        },
+        updateUI: function(pointData) {
+            SUPER.updateUI.call(this, pointData);
+            if (!this.hasData()) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+            var dataList = this.getStandardData(null, {
+                includeIndex: false
+            });
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+            var fields = this.getSelectedFields([]);
+            if (fields.length == 0) fields = allFields;
+            var numericFields = this.getFieldsOfType(fields, "numeric");
+            var sortField = this.getFieldById(numericFields, this.getProperty("sortField","",true));
+            if (numericFields.length == 0) {
+                this.setContents("No fields specified");
+                return;
+            }
+            if (!sortField) {
+                sortField = numericFields[0];
+            }
+            if (!sortField) {
+                this.setContents("No fields specified");
+                return;
+            }
+
+            var stringFields = this.getFieldsByIds(allFields, this.getProperty("nameFields","",true));
+            if(stringFields.length==0) {
+		var tmp = this.getFieldById(allFields, this.getProperty("nameField","",true));
+		if(tmp) stringFields.push(tmp);
+	    }
+            if(stringFields.length==0) {
+                var stringField = this.getFieldOfType(allFields, "string");
+		if(stringField) stringFields.push(stringField);
+	    }
+            var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("sortfields") + "'>";
+            for (var i = 0; i < numericFields.length; i++) {
+                var field = numericFields[i];
+                var extra = "";
+                if (field.getId() == sortField.getId()) extra = " selected ";
+                menu += "<option value='" + field.getId() + "'  " + extra + " >" + field.getLabel() + "</option>\n";
+            }
+            menu += "</select>" ;
+	    var top ="";
+	    top += HtmlUtils.span(["id",this.getDomId("sort")], HtmlUtils.getIconImage(this.sortAscending?"fa-sort-up":"fa-sort-down", ["style","cursor:pointer;","title","Change sort order"]));
+            if (this.getProperty("showRankingMenu", true)) {
+                top+= " " + HtmlUtils.div(["style","display:inline-block;", "class","display-filterby"],menu);
+            }
+	    this.jq(ID_TOP_LEFT).html(top);
+	    this.jq("sort").click(()=>{
+		this.sortAscending= !this.sortAscending;
+		if(this.sortAscending) 
+		    this.jq("sort").html(HtmlUtils.getIconImage("fa-sort-up", ["style","cursor:pointer;"]));
+		else
+		    this.jq("sort").html(HtmlUtils.getIconImage("fa-sort-down", ["style","cursor:pointer;"]));
+		this.updateUI();
+	    });
+            var html = "";
+            html += HtmlUtils.openTag("div", ["style", "max-height:100%;overflow-y:auto;"]);
+            html += HtmlUtils.openTag("table", ["id", this.getDomId(ID_TABLE)]);
+            var tmp = [];
+            for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+                var obj = dataList[rowIdx];
+                obj.originalRow = rowIdx;
+                tmp.push(obj);
+            }
+
+	    var includeNaN = this.getProperty("includeNaN",false);
+	    if(!includeNaN) {
+		var tmp2 = [];
+		tmp.map(r=>{
+		    var t = this.getDataValues(r);
+		    var v = t[sortField.getIndex()];
+		    if(!isNaN(v)) tmp2.push(r);
+		});
+		tmp = tmp2;
+	    }
+            var cnt = 0;
+            tmp.sort((a, b) => {
+                var t1 = this.getDataValues(a);
+                var t2 = this.getDataValues(b);
+                var v1 = t1[sortField.getIndex()];
+                var v2 = t2[sortField.getIndex()];
+		
+                if (v1 < v2) return this.sortAscending?-1:1;
+                if (v1 > v2) return this.sortAscending?1:-1;
+                return 0;
+            });
+
+
+            for (var rowIdx = 0; rowIdx < tmp.length; rowIdx++) {
+                var obj = tmp[rowIdx];
+                var tuple = this.getDataValues(obj);
+                var label = "";
+                stringFields.map(f=>{
+		    label += tuple[f.getIndex()]+" ";
+		});
+
+                label = label.trim();
+		value = tuple[sortField.getIndex()];
+                if (isNaN(value) || value === null) {
+		    if(!includeNaN) continue;
+		    value = "NA";
+		}
+		html += "<tr valign=top class='display-ranking-row' what='" + obj.originalRow + "'><td> #" + (rowIdx + 1) + "</td><td>&nbsp;" + label + "</td><td align=right>&nbsp;" +
+                    value + "</td></tr>";
+            }
+            html += HtmlUtils.closeTag("table");
+            html += HtmlUtils.closeTag("div");
+            this.setContents(html);
+            let _this = this;
+            this.jq(ID_TABLE).find(".display-ranking-row").click(function(e) {
+                _this.getDisplayManager().propagateEventRecordSelection(_this, _this.getPointData(), {
+                    index: parseInt($(this).attr("what")) - 1
+                });
+            });
+	    HtmlUtils.initSelect(this.jq("sortfields"));
+            this.jq("sortfields").change(function() {
+                _this.setProperty("sortField", $(this).val());
+                _this.updateUI();
+            });
+        },
+    });
+}
+
+
+
+function RamaddaCrosstabDisplay(displayManager, id, properties) {
+    var ID_TABLE = "crosstab";
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CROSSTAB, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        needsData: function() {
+            return true;
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        fieldSelectionChanged: function() {
+            this.updateUI();
+        },
+        updateUI: function(pointData) {
+            SUPER.updateUI.call(this, pointData);
+            if (!this.hasData()) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+	    var enums = [];
+	    allFields.map(field=>{
+		var label = field.getLabel();
+		if(label.length>30) label = label.substring(0,29);
+		enums.push([field.getId(),label]);
+	    });
+	    var select = HtmlUtils.span(["class","display-filterby"],
+					"Display: " + HtmlUtils.select("",["style","", "id",this.getDomId("crosstabselect")],enums,
+								       this.getProperty("column", "", true)));
+
+
+            this.setContents(select+HtmlUtils.div(["id",this.getDomId(ID_TABLE)]));
+	    let _this = this;
+	    this.jq("crosstabselect").change(function() {
+		_this.setProperty("column", $(this).val());
+		_this.makeTable();
+	    });
+	    this.makeTable();
+	},
+	makeTable: function() {
+            var dataList = this.getStandardData(null, {
+                includeIndex: false
+            });
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+	    var col =  this.getFieldById(null, this.getProperty("column", "", true));
+	    var rows =  this.getFieldsByIds(null, this.getProperty("rows", null, true));
+	    if(!col) col  = allFields[0];
+	    if(rows.length==0) rows  = allFields;
+
+            var html = HtmlUtils.openTag("table", ["border", "1px", "bordercolor", "#ccc", "class", "display-crosstab", "cellspacing", "1", "cellpadding", "2"]);
+	    var total = dataList.length-1;
+	    var cnt =0;
+	    rows.map((row)=>{
+		if(row.getId()==col.getId()) return;
+		cnt++;
+		var colValues = [];
+		var rowValues = [];
+		var count ={};
+		var rowcount ={};
+		var colcount ={};
+		for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+		    var tuple = this.getDataValues(dataList[rowIdx]);
+		    var colValue = (""+tuple[col.getIndex()]).trim();
+		    var rowValue = (""+tuple[row.getIndex()]).trim();
+		    var key = colValue+"--" + rowValue;
+		    if(colValues.indexOf(colValue)<0) colValues.push(colValue);
+		    if(rowValues.indexOf(rowValue)<0) rowValues.push(rowValue);
+		    if (!(rowValue in rowcount)) {
+			rowcount[rowValue] = 0;
+		    }
+		    rowcount[rowValue]++;
+		    if (!(key in count)) {
+			count[key] = 0;
+		    }
+		    count[key]++;
+		}
+		colValues.sort();
+		rowValues.sort();
+		if(cnt==1)
+		    html+="<tr><td></td><td align=center class=display-crosstab-header colspan=" + colValues.length+">" + col.getLabel()+"</td><td>&nbsp;</td></tr>";
+		html+="<tr valign=bottom class=display-crosstab-header-row><td class=display-crosstab-header>" + row.getLabel() +"</td>";
+		for(var j=0;j<colValues.length;j++) {
+		    var colValue = colValues[j];
+		    html+="<td>" + (colValue==""?"&lt;blank&gt;":colValue) +"</td>";
+		}
+		html+="<td><b>Total</b></td>";
+		html+="</tr>";
+		for(var i=0;i<rowValues.length;i++) {
+		    var rowValue = rowValues[i];
+		    html+="<tr>";
+		    html+="<td>" + (rowValue==""?"&lt;blank&gt;":rowValue) +"</td>";
+		    for(var j=0;j<colValues.length;j++) {
+			var colValue = colValues[j];
+			var key = colValue+"--" + rowValue;
+			if(Utils.isDefined(count[key])) {
+			    var perc = Math.round(count[key]/total*100) +"%";
+			    html+="<td align=right>" + count[key] +"&nbsp;(" + perc+")</td>";
+			} else {
+			    html+="<td>&nbsp;</td>";
+			}
+		    }
+		    var perc = Math.round(rowcount[rowValue]/total*100) +"%";
+		    html+="<td align=right>" + rowcount[rowValue] +"&nbsp;(" + perc+")</td>";
+		    html+="</tr>";
+		}
+	    });
+            html += "</table>";
+	    this.jq(ID_TABLE).html(html);
+        },
+    });
+}
+
+
+
+
+function RamaddaCorrelationDisplay(displayManager, id, properties) {
+    var ID_BOTTOM = "bottom";
+    $.extend(this, {
+        colorTable: "red_white_blue",
+        colorByMin: "-1",
+        colorByMax: "1",
+    });
+
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CORRELATION, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+
+    RamaddaUtil.defineMembers(this, {
+        "map-display": false,
+        needsData: function() {
+            return true;
+        },
+        getMenuItems: function(menuItems) {
+            SUPER.getMenuItems.call(this, menuItems);
+            var get = this.getGet();
+            var tmp = HtmlUtils.formTable();
+            var colorTable = this.getColorTableName();
+            var ct = "<select id=" + this.getDomId("colortable") + ">";
+            for (table in Utils.ColorTables) {
+                if (table == colorTable)
+                    ct += "<option selected>" + table + "</option>";
+                else
+                    ct += "<option>" + table + "</option>";
+            }
+            ct += "</select>";
+
+            tmp += HtmlUtils.formEntry("Color Bar:", ct);
+
+            tmp += HtmlUtils.formEntry("Color By Range:", HtmlUtils.input("", this.colorByMin, ["size", "7", ATTR_ID, this.getDomId("colorbymin")]) + " - " +
+				       HtmlUtils.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
+            tmp += "</table>";
+            menuItems.push(tmp);
+        },
+        initDialog: function() {
+            SUPER.initDialog.call(this);
+            var _this = this;
+            var updateFunc = function() {
+                _this.colorByMin = _this.jq("colorbymin").val();
+                _this.colorByMax = _this.jq("colorbymax").val();
+                _this.updateUI();
+
+            };
+            var func2 = function() {
+                _this.colorTable = _this.jq("colortable").val();
+                _this.updateUI();
+
+            };
+            this.jq("colorbymin").blur(updateFunc);
+            this.jq("colorbymax").blur(updateFunc);
+            this.jq("colortable").change(func2);
+        },
+
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        fieldSelectionChanged: function() {
+            this.updateUI();
+        },
+        updateUI: function(pointData) {
+            SUPER.updateUI.call(this, pointData);
+            if (!this.hasData()) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+            var dataList = this.getStandardData(null, {
+                includeIndex: false
+            });
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+            var fields = this.getSelectedFields([]);
+            if (fields.length == 0) fields = allFields;
+            var fieldCnt = 0;
+            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                var field1 = fields[fieldIdx];
+                if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
+                fieldCnt++;
+            }
+
+            var html = HtmlUtils.openTag("table", ["border", "0", "class", "display-correlation", "width", "100%"]);
+            var col1Width = 10 + "%";
+            var width = 90 / fieldCnt + "%";
+            html += "\n<tr valign=bottom><td class=display-heading width=" + col1Width + ">&nbsp;</td>";
+            var short = this.getProperty("short", fieldCnt > 8);
+            var showValue = this.getProperty("showValue", !short);
+            var useId = this.getProperty("useId", true);
+            var useIdTop = this.getProperty("useIdTop", useId);
+            var useIdSide = this.getProperty("useIdSide", useId);
+            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                var field1 = fields[fieldIdx];
+                if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
+                var label = useIdTop ? field1.getId() : field1.getLabel();
+                if (short) label = "";
+                html += "<td align=center width=" + width + ">" + HtmlUtils.tag("div", ["class", "display-correlation-heading-top"], label) + "</td>";
+            }
+            html += "</tr>\n";
+
+            var colors = null;
+            colorByMin = parseFloat(this.colorByMin);
+            colorByMax = parseFloat(this.colorByMax);
+            colors = this.getColorTable(true);
+            for (var fieldIdx1 = 0; fieldIdx1 < fields.length; fieldIdx1++) {
+                var field1 = fields[fieldIdx1];
+                if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
+                var label = useIdSide ? field1.getId() : field1.getLabel();
+                html += "<tr valign=center><td>" + HtmlUtils.tag("div", ["class", "display-correlation-heading-side"], label.replace(/ /g, "&nbsp;")) + "</td>";
+                var rowName = field1.getLabel();
+                for (var fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
+                    var field2 = fields[fieldIdx2];
+                    if (!field2.isFieldNumeric() || field2.isFieldGeo()) continue;
+                    var colName = field2.getLabel();
+                    var t1 = 0;
+                    var t2 = 0;
+                    var cnt = 0;
+
+                    for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+                        var tuple = this.getDataValues(dataList[rowIdx]);
+                        var v1 = tuple[field1.getIndex()];
+                        var v2 = tuple[field2.getIndex()];
+                        t1 += v1;
+                        t2 += v2;
+                        cnt++;
+                    }
+                    var avg1 = t1 / cnt;
+                    var avg2 = t2 / cnt;
+                    var sum1 = 0;
+                    var sum2 = 0;
+                    var sum3 = 0;
+                    for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+                        var tuple = this.getDataValues(dataList[rowIdx]);
+                        var v1 = tuple[field1.getIndex()];
+                        var v2 = tuple[field2.getIndex()];
+                        sum1 += (v1 - avg1) * (v2 - avg2);
+                        sum2 += (v1 - avg1) * (v1 - avg1);
+                        sum3 += (v2 - avg2) * (v2 - avg2);
+                    }
+                    r = sum1 / Math.sqrt(sum2 * sum3);
+
+                    var style = "";
+                    if (colors != null) {
+                        var percent = (r - colorByMin) / (colorByMax - colorByMin);
+                        var index = parseInt(percent * colors.length);
+                        if (index >= colors.length) index = colors.length - 1;
+                        else if (index < 0) index = 0;
+                        style = "background-color:" + colors[index];
+                    }
+                    var value = r.toFixed(3);
+                    var label = value;
+                    if (!showValue || short) label = "&nbsp;";
+                    html += "<td class=display-correlation-cell align=right style=\"" + style + "\">" + HtmlUtils.tag("div", ["class", "display-correlation-element", "title", "&rho;(" + rowName + "," + colName + ") = " + value], label) + "</td>";
+                }
+                html += "</tr>";
+            }
+            html += "<tr><td></td><td colspan = " + (fieldCnt + 1) + ">" + HtmlUtils.div(["id", this.getDomId(ID_BOTTOM)], "") + "</td></tr>";
+            html += "</table>";
+            this.setContents(html);
+            this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);
+            this.initTooltip();
+            this.displayManager.propagateEventRecordSelection(this,
+							      this.dataCollection.getList()[0], {
+								  index: 0
+							      });
+
+        },
+    });
+}
+
+
+
+
+
+
+
+
+function RamaddaRecordsDisplay(displayManager, id, properties, type) {
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RECORDS, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"maxHeight=\"\"",
+				    ]);
+	},
+        needsData: function() {
+            return true;
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        getFieldsToSelect: function(pointData) {
+            return pointData.getRecordFields();
+        },
+        defaultSelectedToAll: function() {
+            return true;
+        },
+        fieldSelectionChanged: function() {
+            SUPER.fieldSelectionChanged.call(this);
+            this.updateUI();
+        },
+        updateUI: function(reload) {
+            SUPER.updateUI.call(this,reload);
+            var records = this.filterData();
+            if (!records) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+	    this.records = records;
+	    let _this = this;
+            var fields = this.getSelectedFields(this.getData().getRecordFields());
+            var html = "";
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+		var div = "";
+                var tuple = this.getDataValues(records[rowIdx]);
+                for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                    var field = fields[fieldIdx];
+                    var v = tuple[field.getIndex()];
+                    div += HtmlUtil.b(field.getLabel()) + ": " + v + "</br>";
+                }
+                html += HtmlUtils.div(["class","display-records-record","recordIndex",rowIdx], div);
+            }
+            var height = this.getProperty("maxHeight", "400px");
+            if (!height.endsWith("px")) {
+                height = height + "px";
+            }
+            this.setContents(HtmlUtil.div(["style", "max-height:" + height + ";overflow-y:auto;"], html));
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-records-record").click(function() {
+		var record = _this.records[$(this).attr("recordIndex")];
+		if(record) {
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+		}
+
+	    });
+        },
+        handleEventRecordSelection: function(source, args) {
+            //                this.lastHtml = args.html;
+            //                this.setContents(args.html);
+        }
+    });
+}
+
