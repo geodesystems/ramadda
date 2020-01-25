@@ -961,7 +961,6 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
         updateUIInner: function() {
             let _this = this;
             if (!Utils.isDefined(d3.chernoff)) {
-                console.log("not there");
                 this.timeout = this.timeout * 2;
                 var func = function() {
                     _this.updateUIInner();
