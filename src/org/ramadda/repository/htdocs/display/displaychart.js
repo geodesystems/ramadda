@@ -3051,6 +3051,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
             return chartOptions;
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
+	    if(!chartDiv) return
             var height = this.getProperty("height",400);
             if (Utils.isDefined(this.getProperty("chartHeight"))) {
                 height = this.getProperty("chartHeight");
@@ -3062,8 +3063,8 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if((typeof height)=="number") height = height+"px";
 	    if((typeof width)=="number") width = width+"px";
 
-            $("#" + chartId).css("width", width);
-            $("#" + chartId).css("height", height);
+            $("#" + chartDiv.id).css("width", width);
+            $("#" + chartDiv.id).css("height", height);
             return new google.visualization.ScatterChart(chartDiv);
         },
 

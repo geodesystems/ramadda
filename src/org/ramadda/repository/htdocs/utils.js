@@ -1411,12 +1411,10 @@ var HtmlUtils = {
 	$(document).ready(function(){
 	    setTimeout(function(){
 		if(HtmlUtils.elementScrolled('#' + id)) {
-		    console.log("callWhenScrolled-1");
 		    setTimeout(func, pause);
 		} else {
 		    $(window).scroll(function(){
 			if(HtmlUtils.elementScrolled('#' + id)) {
-			    console.log("callWhenScrolled-2");
 			    setTimeout(func, pause);
 			}});
 		}},1000);
