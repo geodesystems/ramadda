@@ -1997,7 +1997,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var isString = (type == "string");
             for (a in fields) {
                 var field = fields[a];
-		if(field.getId() == "recordDate") continue;
+		if(field.isRecordDate()) continue;
                 if (type == null) return field;
                 if (numeric) {
                     if (field.isFieldNumeric()) {
@@ -5245,6 +5245,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
+	    let seenDate = false;
+	    fields  = fields.filter(f=>{
+		if(f.isFieldDate()) {
+		    if(seenDate  && f.isRecordDate()) return null;
+		    seenDate = true;
+		}
+		return f;
+	    });
+	    fields.map(f=>{
+	    });
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.isFieldNumeric() && field.isFieldDate()) {
@@ -6560,6 +6570,7 @@ function BasePointData(name, properties) {
                 if (field.isFieldGeo()) {
                     continue;
                 }
+//		console.log("F:" + field.getId());
                 if (field.isFieldDate()) {
                     if (hadDate && field.getId() == "recordDate") {
                         continue;
@@ -6932,6 +6943,9 @@ function RecordField(props) {
         isFieldGroup: function() {
             return this.isGroup;
         },
+	isRecordDate: function() {
+	    return this.getId()=="recordDate";
+	},
         isFieldGeo: function() {
             return this.isFieldLatitude() || this.isFieldLongitude() || this.isFieldElevation();
         },

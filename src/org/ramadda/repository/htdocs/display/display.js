@@ -1847,7 +1847,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var isString = (type == "string");
             for (a in fields) {
                 var field = fields[a];
-		if(field.getId() == "recordDate") continue;
+		if(field.isRecordDate()) continue;
                 if (type == null) return field;
                 if (numeric) {
                     if (field.isFieldNumeric()) {
@@ -5095,6 +5095,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
+	    let seenDate = false;
+	    fields  = fields.filter(f=>{
+		if(f.isFieldDate()) {
+		    if(seenDate  && f.isRecordDate()) return null;
+		    seenDate = true;
+		}
+		return f;
+	    });
+	    fields.map(f=>{
+	    });
             for (i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.isFieldNumeric() && field.isFieldDate()) {

@@ -128,6 +128,7 @@ function BasePointData(name, properties) {
                 if (field.isFieldGeo()) {
                     continue;
                 }
+//		console.log("F:" + field.getId());
                 if (field.isFieldDate()) {
                     if (hadDate && field.getId() == "recordDate") {
                         continue;
@@ -500,6 +501,9 @@ function RecordField(props) {
         isFieldGroup: function() {
             return this.isGroup;
         },
+	isRecordDate: function() {
+	    return this.getId()=="recordDate";
+	},
         isFieldGeo: function() {
             return this.isFieldLatitude() || this.isFieldLongitude() || this.isFieldElevation();
         },
