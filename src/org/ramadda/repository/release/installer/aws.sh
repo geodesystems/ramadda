@@ -6,7 +6,8 @@
 
 ramaddaVersion=@VERSION@
 
-downloadUrl="http://geodesystems.com/repository/entry/get/ramaddainstaller.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFfMi4yL3JhbWFkZGFpbnN0YWxsZXIuemlw"
+
+downloadUrl="https://geodesystems.com/repository/entry/get/ramaddainstaller.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFfMy4wL3JhbWFkZGFpbnN0YWxsZXIuemlw"
 securityGroup="ramadda"
 imageId="ami-55a7ea65"
 instanceType="t1.micro"

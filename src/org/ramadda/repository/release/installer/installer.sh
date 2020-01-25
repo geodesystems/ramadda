@@ -22,9 +22,7 @@ yumArg=""
 
 mkdir -p  ${ramaddaDir}
 
-
-ramaddaDownload="http://geodesystems.com/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFfMi4yL3JhbWFkZGFzZXJ2ZXIuemlw"
-
+ramaddaDownload="https://geodesystems.com/repository/entry/get/ramaddainstaller.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFfMy4wL3JhbWFkZGFpbnN0YWxsZXIuemlw"
 
 serviceDir="/etc/rc.d/init.d"
 basedir=""
