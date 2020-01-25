@@ -39,6 +39,8 @@ var ID_MENU_OUTER = "menu_outer";
 var ID_MENU_INNER = "menu_inner";
 var ID_DISPLAY_PROGRESS = "display_progress";
 var ID_REPOSITORY = "repository";
+var CATEGORY_MISC = "Misc";
+
 
 var PROP_DISPLAY_FILTER = "displayFilter";
 var PROP_EXCLUDE_ZERO = "excludeZero";

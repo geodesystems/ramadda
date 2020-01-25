@@ -642,7 +642,12 @@ color: #000;
 }
 
 
+.display-stats-value-link {
+    cursor:pointer;
+}
 
+.display-stats-value-link:hover {
+}
 
 .display-stats td {
       padding: 10px;
