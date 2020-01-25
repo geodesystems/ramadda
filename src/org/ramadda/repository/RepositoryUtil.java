@@ -16,26 +16,16 @@
 
 package org.ramadda.repository;
 
-
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
 import java.io.UnsupportedEncodingException;
-
-
 import java.net.*;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -51,10 +41,10 @@ public class RepositoryUtil {
     //Make sure to change the fields in the top-level build.properties
 
     /** _more_ */
-    public static final double MAJOR_VERSION = 2.5;
+    public static final double MAJOR_VERSION = 3.0;
 
     /** _more_ */
-    public static final int MINOR_VERSION = 6;
+    public static final int MINOR_VERSION = 0;
 
 
     //When we make any real change to the css or javascript change this version
