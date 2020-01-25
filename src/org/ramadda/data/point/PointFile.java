@@ -486,7 +486,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {
+    public static void xmain(String[] args) throws Exception {
         String s = "label=\"Height\" type=double missing=99999";
         System.err.println(parseAttributes(s));
 
@@ -913,17 +913,65 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * @param fieldString _more_
      *
      * @return _more_
+     */
+    public static List<String> tokenizeFields(String fieldString) {
+        List<String>  toks    = new ArrayList<String>();
+        boolean       inQuote = false;
+
+        StringBuilder sb      = new StringBuilder();
+        for (int idx = 0; idx < fieldString.length(); idx++) {
+            char c = fieldString.charAt(idx);
+            if (c == '"') {
+                inQuote = !inQuote;
+                sb.append(c);
+
+                continue;
+            }
+            if ((c == ',') && !inQuote) {
+                toks.add(sb.toString().trim());
+                sb.setLength(0);
+
+                continue;
+            }
+            sb.append(c);
+        }
+        if (sb.length() > 0) {
+            toks.add(sb.toString().trim());
+        }
+
+        //      for(int i=0;i<toks.size();i++)
+        //          System.err.println("T:" + toks.get(i));
+        return toks;
+    }
+
+    /**
+     * _more_
+     *
+     * @param args _more_
      *
      * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        tokenizeFields(
+            "entity[label=\"Entity\"  type=\"string\"] ,code[label=\"Code\"  type=\"string\"] ,year[label=\"Year\"  type=\"date\" format=\"yyyy\" ] ,plastic_waste_generation[label=\"Plastic Waste Generation\" unit=\"tonnes, total\"  type=\"integer\" chartable=\"true\" ]");
+    }
+
+    /**
+     * _more_
+     *
+     * @param fieldString _more_
+     *
+     * @return _more_
      */
     public List<RecordField> doMakeFields(String fieldString) {
 
         //        System.err.println ("fields:" + fieldString);
         //x[unit="m"],y[unit="m"],z[unit="m"],red[],green[],blue[],amplitude[]
         //        System.err.println ("fields:" + fieldString);
-        String       defaultMissing = getProperty(ATTR_MISSING,
-                                          (String) null);
-        List<String> toks           = Utils.tokenizeColumns(fieldString, ",");
+        String defaultMissing = getProperty(ATTR_MISSING, (String) null);
+        //      entity[label="Entity"  type="string"] ,code[label="Code"  type="string"] ,year[label="Year"  type="date" format="yyyy" ] ,plastic_waste_generation[label="Plastic Waste Generation" unit="tonnes, total"  type="integer" chartable="true" ] 
+        List<String> toks = tokenizeFields(fieldString);
+
         //        String[]          toks    = fieldString.split(",");
         List<RecordField> fields  = new ArrayList<RecordField>();
         int               paramId = 1;
@@ -1285,8 +1333,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
          * @param path _more_
          *
          * @return _more_
-         *
-         * @throws Exception _more_
          */
         public String readPointFileContents(String path);
     }
