@@ -2427,6 +2427,28 @@ public class TypeHandler extends RepositoryManager {
                            && getAccessManager().canDoAction(request, entry,
                                Permission.ACTION_NEW);
 
+        if (canDoNew) {
+            links.add(
+                new Link(
+                    request.makeUrl(
+                        getRepository().URL_ENTRY_FORM, ARG_GROUP,
+                        entry.getId(), ARG_TYPE,
+                        TYPE_GROUP), ICON_FOLDER_ADD, "New Folder",
+                                     OutputType.TYPE_FILE));
+            links.add(
+                new Link(
+                    request.makeUrl(
+                        getRepository().URL_ENTRY_FORM, ARG_GROUP,
+                        entry.getId(), ARG_TYPE, TYPE_FILE), ICON_ENTRY_ADD,
+		    "New File", OutputType.TYPE_FILE));
+            links.add(new Link(request.makeUrl(getRepository().URL_ENTRY_NEW,
+                    ARG_GROUP, entry.getId()), ICON_NEW, LABEL_NEW_ENTRY,
+                        OutputType.TYPE_FILE | OutputType.TYPE_TOOLBAR));
+            links.add(makeHRLink(OutputType.TYPE_FILE));
+
+	}
+
+
         //We don't actually prevent an export - just don't show the link in the menu
         if ( !request.getUser().getAnonymous()) {
             links.add(
@@ -2457,28 +2479,10 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        if (canDoNew) {
-            links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_FORM, ARG_GROUP,
-                        entry.getId(), ARG_TYPE,
-                        TYPE_GROUP), ICON_FOLDER_ADD, "New Folder",
-                                     OutputType.TYPE_FILE));
-            links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_FORM, ARG_GROUP,
-                        entry.getId(), ARG_TYPE, TYPE_FILE), ICON_ENTRY_ADD,
-                            "New File", OutputType.TYPE_FILE));
+
+	if (canDoNew) {
 
 
-
-
-            links.add(new Link(request.makeUrl(getRepository().URL_ENTRY_NEW,
-                    ARG_GROUP, entry.getId()), ICON_NEW, LABEL_NEW_ENTRY,
-                        OutputType.TYPE_FILE | OutputType.TYPE_TOOLBAR));
-            links.add(makeHRLink(OutputType.TYPE_FILE));
             List<String> pastTypes =
                 (List<String>) getSessionManager().getSessionProperty(
                     request, ARG_TYPE);
