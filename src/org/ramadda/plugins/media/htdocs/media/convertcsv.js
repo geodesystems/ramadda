@@ -167,6 +167,7 @@ function csvCall(cmds,args) {
 		});
                 HtmlUtils.formatTable(".ramadda-table");
             } else {
+   
                 var isDb = result.startsWith("<tables");
 		var isHeader = result.startsWith("#fields=");
 
@@ -204,6 +205,26 @@ function csvCall(cmds,args) {
                     result = result.replace(/ ([^ ]+)="([^"]+)"/g,"\t$1:$2");
                     result = result.replace(/ ([^ ]+)="([^"]*)"/g,"\t$1:\"$2\"");
 
+		} else if(cmds.indexOf("-help")>=0) {
+		    var tmp = "";
+                    result = result.replace(/</g,"&lt;");
+                    result = result.replace(/>/,"&gt;");
+		    result.split("\n").map(line=>{
+			if(line.trim().startsWith("-")) {
+			    var idx= line.indexOf("(");
+			    var cmd = line;
+			    var comment = "";
+			    if(idx>0) {
+				cmd = line.substring(0,idx);
+				comment = "<i>" + line.substring(idx)+"</i>";
+			    }
+			    line = "      <a href=# onclick=\"csvInsertCommand('" + cmd.trim() +"')\">" + cmd.trim() +"</a> " + comment;
+			}  else {
+			    line = "<b>" + line +"</b>"
+			}
+			tmp+=line +"\n";
+		    });
+		    result = tmp;
                 } else {
                     result = result.replace(/</g,"&lt;");
                     result = result.replace(/>/,"&gt;");
@@ -425,7 +446,7 @@ var right = "";
 right+=HtmlUtil.href("javascript:csvClearCommand()","Clear Output",["class","convert_button"])+" ";
 right+=HtmlUtil.href("javascript:csvCall('',{listOutput:true})","List Files",["class","convert_button"])+" ";
 right+=HtmlUtil.href("javascript:csvCall('',{clearOutput:true})","Remove Files",["class","convert_button"])+" ";
-html+=HtmlUtil.leftRight(left,right);
+html+=HtmlUtil.leftRightTable(left,right);
 html += "</form>";
 
 html +="<div style='margin-top:5px;'></div>";
