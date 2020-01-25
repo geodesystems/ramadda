@@ -25,9 +25,10 @@ import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
 
-import ucar.unidata.util.WrapperException;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.StringUtil;
+
+import ucar.unidata.util.WrapperException;
 
 import java.io.*;
 
@@ -76,10 +77,10 @@ public class TextRecord extends DataRecord {
     private boolean[] rawOK;
 
 
-    /** _more_          */
+    /** _more_ */
     private Date baseDate;
 
-    /** _more_          */
+    /** _more_ */
     private String baseDateString;
 
     /** _more_ */
@@ -377,8 +378,6 @@ public class TextRecord extends DataRecord {
 
             if (delimiterIsSpace || (fixedWidth != null)) {
                 if ( !split(recordIO, line, fields)) {
-                    //                    System.err.println("Could not tokenize line:" + line);
-                    //throw new IllegalArgumentException("Could not tokenize line:" + line);
                     return ReadStatus.SKIP;
                 }
             } else {
@@ -387,9 +386,12 @@ public class TextRecord extends DataRecord {
                         false);
 
                 if (bePickyAboutTokens && (toks.size() != tokens.length)) {
-                    StringBuilder msg = new StringBuilder("Bad token count:"
-                                            + tokens.length + " toks:"
-                                            + toks.size());
+                    StringBuilder msg =
+                        new StringBuilder("Error processing file:"
+                                          + getRecordFile() + "\n"
+                                          + "Bad token count:"
+                                          + tokens.length + " toks:"
+                                          + toks.size());
                     msg.append("\nLine:" + line);
                     msg.append("\nExpected:");
                     for (int i = 0; i < fields.size(); i++) {
@@ -508,7 +510,7 @@ public class TextRecord extends DataRecord {
 
             return ReadStatus.OK;
         } catch (Exception exc) {
-	    throw new WrapperException("Error line:" + line, exc);
+            throw new WrapperException("Error line:" + line, exc);
         }
     }
 
@@ -532,18 +534,19 @@ public class TextRecord extends DataRecord {
         }
         //This is where the tok is, e.g.,  hh:mm:ss  and we prepend a base date on it
         if (field.getIsDateOffset()) {
-	    if(baseDateString != null) {
-		tok = baseDateString + " " + tok;
-	    } else {
-		//The field has an offset beu there isn't a base date
-		return new Date();
-	    }
+            if (baseDateString != null) {
+                tok = baseDateString + " " + tok;
+            } else {
+                //The field has an offset beu there isn't a base date
+                return new Date();
+            }
         }
         String sfmt = field.getSDateFormat();
         if (sfmt != null) {
             if (sfmt.equals("SSS")) {
                 return new Date(new Long(tok));
             } else if (sfmt.equals("yyyy")) {
+                //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
                 return yearFormat.parse(tok + "-06");
                 //
             }
@@ -582,7 +585,7 @@ public class TextRecord extends DataRecord {
 
 
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy-MM");
 
 
@@ -724,7 +727,7 @@ public class TextRecord extends DataRecord {
                         i++) {
                     tokens[cnt++] = toks.get(i);
                 }
-                if (!lineWrap) {
+                if ( !lineWrap) {
                     break;
                 }
                 if (cnt >= tokens.length) {
@@ -766,8 +769,11 @@ public class TextRecord extends DataRecord {
                 }
             }
             if (bePickyAboutTokens && (cnt != tokens.length)) {
-		//If there is an empty line then skip it
-		if(cnt==0) return false;
+                //If there is an empty line then skip it
+                if (cnt == 0) {
+                    return false;
+                }
+
                 throw new IllegalArgumentException(
                     "Could not tokenize line: expected:" + tokens.length
                     + " rcvd: " + cnt + "\nLine: " + sourceString + "\n");
