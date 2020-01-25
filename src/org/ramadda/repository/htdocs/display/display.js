@@ -4914,6 +4914,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//		console.log("pointDataLoaded: display not ready");
                 return;
             }
+
+	    if(!this.getProperty("dateFormat")) {
+                pointData.getRecordFields().map(f=>{
+		    if(f.isFieldDate() && f.getId() == "year") {
+			this.setProperty("dateFormat","yyyy");
+		    }
+		});
+	    }
             this.updateUI(reload);
             if (!reload) {
                 this.lastPointData = pointData;
