@@ -3751,6 +3751,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var header2="";
 	    var searchBar  = "";
 
+	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
+		var colors = this.getColorList();
+		var fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getProperty("fields", this.getProperty("sumFields"))));
+		var html = "";
+		var colorCnt = 0;
+		fields.map((f)=>{
+		    if(colorCnt>=colors.length) colorCnt = 0;
+		    var color  = colors[colorCnt];
+		    html += HtmlUtils.div(["style","display: inline-block;width:8px;height:8px;background:" + color+";"]) +" " + f.getLabel() +"&nbsp;&nbsp; ";
+		    colorCnt++;
+		});
+		header2+= html;
+
+	    }
+
+
 	    if(this.getProperty("showChartFieldsMenu")) {
 		var chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {

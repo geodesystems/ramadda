@@ -1938,6 +1938,7 @@ function PiechartDisplay(displayManager, id, properties) {
                 style += "height:" + "100%;";
             }
 //	    style += "border:1px solid green;"
+	    style += "padding:5px;"
 	    
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
@@ -1949,7 +1950,7 @@ function PiechartDisplay(displayManager, id, properties) {
                 },
                 showColorCode: true
             };
-	    this.chartOptions.legend = {'position':'right','alignment':'center'};
+	    this.chartOptions.legend = {'position':this.getProperty("legendPosition", 'right'),'alignment':'center'};
             if (this.getProperty("bins", null)) {
                 chartOptions.title = "Bins: " + this.getDataValues(dataList[0])[1];
 	    } else if(this.getProperty("sumFields")) {
@@ -1968,14 +1969,16 @@ function PiechartDisplay(displayManager, id, properties) {
                 chartOptions.sliceVisibilityThreshold = this.sliceVisibilityThreshold;
             }
 
+	    chartOptions.chartArea = {};
 	    $.extend(chartOptions.chartArea, {
                 left: this.getProperty("chartLeft", 0),
                 right: this.getProperty("chartRight", 0),
-                top: this.getProperty("chartTop", 40),
+                top: this.getProperty("chartTop", 0),
 		bottom: this.getProperty("chartBottom",0),
                 width: '100%',
                 height: '100%'
             });
+
             return new google.visualization.PieChart(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {

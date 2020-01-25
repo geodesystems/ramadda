@@ -3901,6 +3901,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var header2="";
 	    var searchBar  = "";
 
+	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
+		var colors = this.getColorList();
+		var fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getProperty("fields", this.getProperty("sumFields"))));
+		var html = "";
+		var colorCnt = 0;
+		fields.map((f)=>{
+		    if(colorCnt>=colors.length) colorCnt = 0;
+		    var color  = colors[colorCnt];
+		    html += HtmlUtils.div(["style","display: inline-block;width:8px;height:8px;background:" + color+";"]) +" " + f.getLabel() +"&nbsp;&nbsp; ";
+		    colorCnt++;
+		});
+		header2+= html;
+
+	    }
+
+
 	    if(this.getProperty("showChartFieldsMenu")) {
 		var chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {
@@ -12627,6 +12643,7 @@ function PiechartDisplay(displayManager, id, properties) {
                 style += "height:" + "100%;";
             }
 //	    style += "border:1px solid green;"
+	    style += "padding:5px;"
 	    
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
@@ -12638,7 +12655,7 @@ function PiechartDisplay(displayManager, id, properties) {
                 },
                 showColorCode: true
             };
-	    this.chartOptions.legend = {'position':'right','alignment':'center'};
+	    this.chartOptions.legend = {'position':this.getProperty("legendPosition", 'right'),'alignment':'center'};
             if (this.getProperty("bins", null)) {
                 chartOptions.title = "Bins: " + this.getDataValues(dataList[0])[1];
 	    } else if(this.getProperty("sumFields")) {
@@ -12657,14 +12674,16 @@ function PiechartDisplay(displayManager, id, properties) {
                 chartOptions.sliceVisibilityThreshold = this.sliceVisibilityThreshold;
             }
 
+	    chartOptions.chartArea = {};
 	    $.extend(chartOptions.chartArea, {
                 left: this.getProperty("chartLeft", 0),
                 right: this.getProperty("chartRight", 0),
-                top: this.getProperty("chartTop", 40),
+                top: this.getProperty("chartTop", 0),
 		bottom: this.getProperty("chartBottom",0),
                 width: '100%',
                 height: '100%'
             });
+
             return new google.visualization.PieChart(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {
