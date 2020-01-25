@@ -2427,6 +2427,36 @@ public class TypeHandler extends RepositoryManager {
                            && getAccessManager().canDoAction(request, entry,
                                Permission.ACTION_NEW);
 
+        //We don't actually prevent an export - just don't show the link in the menu
+        if ( !request.getUser().getAnonymous()) {
+            links.add(
+                new Link(
+                    HtmlUtils.url(
+                        getRepository().URL_ENTRY_EXPORT.toString() + "/"
+                        + IOUtil.stripExtension(
+                            Entry.encodeName(
+                                getEntryName(
+                                    entry))) + ".zip", new String[] {
+                                        ARG_ENTRYID,
+                                        entry.getId() }), ICON_EXPORT,
+                                        "Export",
+                                        OutputType.TYPE_FILE));
+
+
+        }
+
+        //Add an import link if they have the right privileges
+        if (canDoNew) {
+            links.add(
+                new Link(
+                    request.makeUrl(
+                        getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
+                        entry.getId()), ICON_IMPORT, "Import",
+                                        OutputType.TYPE_FILE));
+            links.add(makeHRLink(OutputType.TYPE_FILE));
+        }
+
+
         if (canDoNew) {
             links.add(
                 new Link(
@@ -2472,35 +2502,6 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-
-        //We don't actually prevent an export - just don't show the link in the menu
-        if ( !request.getUser().getAnonymous()) {
-            links.add(
-                new Link(
-                    HtmlUtils.url(
-                        getRepository().URL_ENTRY_EXPORT.toString() + "/"
-                        + IOUtil.stripExtension(
-                            Entry.encodeName(
-                                getEntryName(
-                                    entry))) + ".zip", new String[] {
-                                        ARG_ENTRYID,
-                                        entry.getId() }), ICON_EXPORT,
-                                        "Export " + LABEL_ENTRIES,
-                                        OutputType.TYPE_FILE));
-
-
-        }
-
-        //Add an import link if they have the right privileges
-        if (canDoNew) {
-            links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
-                        entry.getId()), ICON_IMPORT, "Import Entries",
-                                        OutputType.TYPE_FILE));
-            links.add(makeHRLink(OutputType.TYPE_FILE));
-        }
 
         links.add(
             new Link(
