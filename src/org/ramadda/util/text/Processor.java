@@ -2114,7 +2114,7 @@ rotate -> pass -> pass -> rotate -> pass
         public void printRow(TextReader info, Row row) throws Exception {
             if (cnt == 0) {
                 info.getWriter().println(
-                    "<table  class='stripe hover ramadda-table ramadda-csv-table' xtable-height=400>");
+                    "<table  class='stripe hover ramadda-table ramadda-csv-table' >");
             }
             List   values = row.getValues();
             String open   = "<td>";
@@ -2130,12 +2130,21 @@ rotate -> pass -> pass -> rotate -> pass
             }
 
 
+	    String style = "white-space:nowrap;overflow-x:auto;";
+	    //Check for the width
+	    int lineWidth = 0;
+	    String s = "";
+            for (int i = 0; i < values.size(); i++) {
+		lineWidth+=values.get(i).toString().length();
+		s+=" " + values.get(i);
+	    }
+	    if(lineWidth>200) style += "max-width:120px;";
 
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
                     info.getWriter().print(open);
                     info.getWriter().print(
-                        "<div style='white-space:nowrap;max-width:120px;overflow-x:auto;'>");
+                        "<div style='" + style +"'>");
                     if (cnt == 0) {
                         info.getWriter().print("&nbsp;");
                     } else {
@@ -2146,7 +2155,7 @@ rotate -> pass -> pass -> rotate -> pass
                 }
                 info.getWriter().print(open);
                 info.getWriter().print(
-                    "<div style='white-space:nowrap;max-width:120px;overflow-x:auto;'>");
+                    "<div style='" + style +"'>");
                 if (cnt == 0) {
                     info.getWriter().print("#" + i + "&nbsp;");
                     String label = Utils.makeLabel(""
