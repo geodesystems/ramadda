@@ -799,6 +799,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (ct == "none") return null;
             return ct;
         },
+	getColorList:function() {
+	    if(this.colorList && this.colorList.length>0) {
+		return this.colorList;
+	    }
+	    if (this.getProperty("colors") && this.getProperty("colors")!="default") {
+		var v = this.getProperty("colors");
+		if(!Array.isArray(v)) {
+		    v = v.split(",");
+		}
+		this.colorList =  v;
+	    }
+	    if(!this.colorList || this.colorList.length==0) {
+		this.colorList= ['blue', 'red', 'green', 'orange', 'fuchsia', 'aqua',   'navy', 'brown','cadetblue','blueviolet','coral','cornflowerblue','darkcyan','darkgoldenrod','darkorange','darkseagreen'];
+	    }
+	    return this.colorList;
+	},
+
 	addAlpha: function(colors) {
 	    var alpha = this.getProperty("colorTableAlpha");
 	    if(!alpha) return colors;
@@ -5077,16 +5094,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
-            var groupByIndex = props.groupByIndex;
-            var groupByList = [];
+            let groupByIndex = props.groupByIndex;
+            let groupByList = [];
+ 	    let groupByValues = {};
+
+	    let groupByRecords = [];
+	    let groupByDate = this.getProperty("groupByDate");
+	    let groupByFill = this.getProperty("groupByFill");
+	    let groupByDateMap = {};
+	    let groupByDates = [];
 
             var dataList = [];
             //The first entry in the dataList is the array of names
             //The first field is the domain, e.g., time or index
             var fieldNames = [];
-
-
-
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
 		var binCount = binType=="count";
@@ -5141,9 +5162,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
             groupByList.push("");
-            //These are Record objects 
-
-
+	    groupByRecords.push(null);
 	    if(!this.minDateObj)
 		this.minDateObj = Utils.parseDate(this.minDate, false);
 	    if(!this.minDateObj)
@@ -5244,7 +5263,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 //TODO: when its all null values we get some errors
                 if (groupByIndex >= 0) {
-                    groupByList.push(record.getValue(groupByIndex));
+		    var value = record.getValue(groupByIndex);
+		    if(!groupByValues[value]) groupByValues[value] = true;
+		    if(groupByDate)
+			groupByList.push(record.getDate() +"-"+value);
+		    else
+			groupByList.push(value);
+		    groupByRecords.push(record);
                 }
                 if (props.makeObject)
                     dataList.push({
@@ -5265,8 +5290,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return [];
             }
 
-
-
             if (groupByIndex >= 0) {
                 var groupToTuple = {};
                 var groups = [];
@@ -5285,20 +5308,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
 		}
 		//                agg.push(title);
-
-
+		let groupByValueTuples = {};
                 for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
                     var data = this.getDataValues(dataList[rowIdx]);
                     if (rowIdx == 0) {
                         continue;
                     }
                     var groupBy = groupByList[rowIdx];
+		    var record = groupByRecords[rowIdx];
+		    var groupByValue = record.getValue(groupByIndex);
                     var tuple = groupToTuple[groupBy];
                     if (tuple == null) {
-                        groups.push(groupBy);
                         tuple = new Array();
+                        groups.push(groupBy);
+			if(groupByDate) {
+			    let dateList = groupByDateMap[record.getDate()];
+			    if(dateList == null) {
+				groupByDateMap[record.getDate()] = dateList = [];
+				groupByDates.push(record.getDate());
+			    }
+			    dateList.push(tuple);
+			}
+			if(!groupByValueTuples[groupByValue]) groupByValueTuples[groupByValue] = [];
+			groupByValueTuples[groupByValue].push(tuple)
+			tuple.record = record;
                         agg.push(tuple);
-                        tuple.push(groupBy);
+                        tuple.push(groupByValue);
 			if(groupByCount) {
 			    tuple.push(0);
 			} else {
@@ -5355,6 +5390,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                     }
                 }
+
+
+		if(groupByFill) {
+		    groupByDates.map(date=>{
+			let dateList = groupByDateMap[date];
+			let seen = {};
+			dateList.map(tuple =>{
+			    seen[tuple[0]] = true;
+			});
+			for(v in groupByValues) {
+			    if(!seen[v]) {
+				seen[v] = true;
+				let tuple = [v,0];
+				tuple.date = date;
+				agg.push(tuple);
+			    }
+			}
+		    });
+		}
+
 		if(this.getProperty("groupBySort")) {
 		    agg.sort(function(a,b) {return a[0]>b[0]});
 		}

@@ -949,6 +949,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (ct == "none") return null;
             return ct;
         },
+	getColorList:function() {
+	    if(this.colorList && this.colorList.length>0) {
+		return this.colorList;
+	    }
+	    if (this.getProperty("colors") && this.getProperty("colors")!="default") {
+		var v = this.getProperty("colors");
+		if(!Array.isArray(v)) {
+		    v = v.split(",");
+		}
+		this.colorList =  v;
+	    }
+	    if(!this.colorList || this.colorList.length==0) {
+		this.colorList= ['blue', 'red', 'green', 'orange', 'fuchsia', 'aqua',   'navy', 'brown','cadetblue','blueviolet','coral','cornflowerblue','darkcyan','darkgoldenrod','darkorange','darkseagreen'];
+	    }
+	    return this.colorList;
+	},
+
 	addAlpha: function(colors) {
 	    var alpha = this.getProperty("colorTableAlpha");
 	    if(!alpha) return colors;
@@ -5227,16 +5244,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
-            var groupByIndex = props.groupByIndex;
-            var groupByList = [];
+            let groupByIndex = props.groupByIndex;
+            let groupByList = [];
+ 	    let groupByValues = {};
+
+	    let groupByRecords = [];
+	    let groupByDate = this.getProperty("groupByDate");
+	    let groupByFill = this.getProperty("groupByFill");
+	    let groupByDateMap = {};
+	    let groupByDates = [];
 
             var dataList = [];
             //The first entry in the dataList is the array of names
             //The first field is the domain, e.g., time or index
             var fieldNames = [];
-
-
-
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
 		var binCount = binType=="count";
@@ -5291,9 +5312,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
             groupByList.push("");
-            //These are Record objects 
-
-
+	    groupByRecords.push(null);
 	    if(!this.minDateObj)
 		this.minDateObj = Utils.parseDate(this.minDate, false);
 	    if(!this.minDateObj)
@@ -5394,7 +5413,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 //TODO: when its all null values we get some errors
                 if (groupByIndex >= 0) {
-                    groupByList.push(record.getValue(groupByIndex));
+		    var value = record.getValue(groupByIndex);
+		    if(!groupByValues[value]) groupByValues[value] = true;
+		    if(groupByDate)
+			groupByList.push(record.getDate() +"-"+value);
+		    else
+			groupByList.push(value);
+		    groupByRecords.push(record);
                 }
                 if (props.makeObject)
                     dataList.push({
@@ -5415,8 +5440,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return [];
             }
 
-
-
             if (groupByIndex >= 0) {
                 var groupToTuple = {};
                 var groups = [];
@@ -5435,20 +5458,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
 		}
 		//                agg.push(title);
-
-
+		let groupByValueTuples = {};
                 for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
                     var data = this.getDataValues(dataList[rowIdx]);
                     if (rowIdx == 0) {
                         continue;
                     }
                     var groupBy = groupByList[rowIdx];
+		    var record = groupByRecords[rowIdx];
+		    var groupByValue = record.getValue(groupByIndex);
                     var tuple = groupToTuple[groupBy];
                     if (tuple == null) {
-                        groups.push(groupBy);
                         tuple = new Array();
+                        groups.push(groupBy);
+			if(groupByDate) {
+			    let dateList = groupByDateMap[record.getDate()];
+			    if(dateList == null) {
+				groupByDateMap[record.getDate()] = dateList = [];
+				groupByDates.push(record.getDate());
+			    }
+			    dateList.push(tuple);
+			}
+			if(!groupByValueTuples[groupByValue]) groupByValueTuples[groupByValue] = [];
+			groupByValueTuples[groupByValue].push(tuple)
+			tuple.record = record;
                         agg.push(tuple);
-                        tuple.push(groupBy);
+                        tuple.push(groupByValue);
 			if(groupByCount) {
 			    tuple.push(0);
 			} else {
@@ -5505,6 +5540,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                     }
                 }
+
+
+		if(groupByFill) {
+		    groupByDates.map(date=>{
+			let dateList = groupByDateMap[date];
+			let seen = {};
+			dateList.map(tuple =>{
+			    seen[tuple[0]] = true;
+			});
+			for(v in groupByValues) {
+			    if(!seen[v]) {
+				seen[v] = true;
+				let tuple = [v,0];
+				tuple.date = date;
+				agg.push(tuple);
+			    }
+			}
+		    });
+		}
+
 		if(this.getProperty("groupBySort")) {
 		    agg.sort(function(a,b) {return a[0]>b[0]});
 		}
@@ -11085,23 +11140,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
         },
 
-	getColorList:function() {
-	    if(this.colorList && this.colorList.length>0) {
-		return this.colorList;
-	    }
-
-	    if (this.getProperty("colors") && this.getProperty("colors")!="default") {
-		var v = this.getProperty("colors");
-		if(!Array.isArray(v)) {
-		    v = v.split(",");
-		}
-		this.colorList =  v;
-	    }
-	    if(!this.colorList || this.colorList.length==0) {
-		this.colorList= ['blue', 'red', 'green', 'orange', 'fuchsia', 'lightblue', 'navy', 'silver'];
-	    }
-	    return this.colorList;
-	},
         initDialog: function() {
             SUPER.initDialog.call(this);
             var _this = this;
@@ -12182,21 +12220,49 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.chartCount  = -1;
 	    if(this.getProperty("multipleCharts",false)) {
 		var headerPosition = this.getProperty("multipleChartsHeaderPosition","bottom");
-		for(var chartCount=0;chartCount<dataList.length-1;chartCount++) {
-		    this.chartCount  = chartCount;
+		let map = {};
+		let times = [];
+		dataList.map((v,idx)=>{
+		    if(idx==0) return;
+                    var record = v.record;
+		    var date = record?record.getDate():v.date;
+		    let list=null;
+		    list = map[date];
+		    if(!list) {
+			list = [];
+			map[date] = list;
+			times.push(date);
+		    }
+		    list.push(v);
+		})
+		times.map((date,idx)=>{
+		    this.chartCount  =idx;
 		    let tmpDataList = [];
+		    let list = map[date];
 		    tmpDataList.push(dataList[0]);
-		    tmpDataList.push(dataList[chartCount+1]);
-                    var record = dataList[chartCount+1].record;
-		    var innerId = this.getDomId(ID_CHART)+"_" + chartCount;
-		    var header = HtmlUtils.div(["class","display-multi-header"], this.formatDate(new Date(record.getDate())));
+/*
+		    if(idx == 0) {
+			tmpDataList.push(["test1",5]);
+			tmpDataList.push(["test2",0]);
+			tmpDataList.push(["test3",7]);
+		    } else if(idx==1) {
+			tmpDataList.push(["test1",5]);
+			tmpDataList.push(["test2",8]);
+			tmpDataList.push(["test3",7]);
+		    } else {
+			return;
+		    }
+*/
+		    tmpDataList = Utils.mergeLists(tmpDataList,list);
+		    var innerId = this.getDomId(ID_CHART)+"_" + this.chartCount;
+		    var header = HtmlUtils.div(["class","display-multi-header"], this.formatDate(date));
 		    var top =headerPosition=="top"?header:"";
 		    var bottom = headerPosition=="bottom"?header+"<br>":"";
 		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"], top + this.getChartDiv(innerId) + bottom);
 		    this.jq(ID_CHARTS).append(div);
 		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
 		    if(chart) this.charts.push(chart);
-		}
+		});
 	    } else {
 		this.jq(ID_CHARTS).append(this.getChartDiv(this.getDomId(ID_CHART)));
 		let chart = this.makeGoogleChartInner(dataList, this.getDomId(ID_CHART), props, selectedFields);
@@ -12550,13 +12616,36 @@ function RamaddaTextChart(displayManager, id, chartType, properties) {
 
 
 function PiechartDisplay(displayManager, id, properties) {
+    let ID_PIE_LEGEND = "pielegend";
     let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	uniqueValues:[],
+	uniqueValuesMap:{},
         canDoGroupBy: function() {
             return true;
         },
+	makeGoogleChart: function(dataList, props, selectedFields) {
+	    this.uniqueValues = [];
+	    this.uniqueValuesMap = {};
+	    SUPER.makeGoogleChart.call(this, dataList, props, selectedFields);
+	    if(!this.getProperty("showTopLegend")) return;
+	    let legend = "";
+	    let colors = this.getColorList();
+	    let colorCnt = 0;
+	    this.uniqueValues.map((v,idx)=>{
+		if(colorCnt>=colors.length) colorCnt = 0;
+		var color  = colors[colorCnt];
+		legend += HtmlUtils.div(["style","display: inline-block;width:8px;height:8px;background:" + color+";"]) +"&nbsp;" + v +"&nbsp;&nbsp; ";
+		colorCnt++;
+	    });
+	    if(this.jq(ID_PIE_LEGEND).length==0) {
+		this.jq(ID_HEADER2).append(HtmlUtils.div(["id",this.getDomId(ID_PIE_LEGEND)]));
+	    }
+	    this.jq(ID_PIE_LEGEND).html(legend);
+
+	},
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
@@ -12571,6 +12660,8 @@ function PiechartDisplay(displayManager, id, properties) {
 					"binMin=\"\"",
 					"binMax=\"max\"",
 					"sliceVisibilityThreshold=\"0.01\"",
+					'pieSliceTextColor=black',
+					'pieSliceBorderColor=black'
 				    ]);
 	},
         setChartSelection: function(index) {
@@ -12643,6 +12734,11 @@ function PiechartDisplay(displayManager, id, properties) {
                 chartOptions.sliceVisibilityThreshold = this.sliceVisibilityThreshold;
             }
 
+	    chartOptions.pieSliceBorderColor = this.getProperty("pieSliceBorderColor","transparent");
+	    chartOptions.pieSliceTextStyle  = {
+		color: this.getProperty("pieSliceTextColor","white")
+            };
+
 	    chartOptions.chartArea = {};
 	    $.extend(chartOptions.chartArea, {
                 left: this.getProperty("chartLeft", 0),
@@ -12655,13 +12751,20 @@ function PiechartDisplay(displayManager, id, properties) {
 
             return new google.visualization.PieChart(chartDiv);
         },
+	getColorList:function() {
+	    if (this.getProperty("colors") && this.getProperty("colors")!="default") {
+		return SUPER.getColorList.call(this);
+	    }
+	    return Utils.mergeLists(Utils.getColorTable("schemeset1",true),
+			     Utils.getColorTable("schemecategory",true));
+	},
+
         makeDataTable: function(dataList, props, selectedFields) {
             var dataTable = new google.visualization.DataTable();
             var list = [];
             var header = this.getDataValues(dataList[0]);
             dataTable.addColumn("string", header[0]);
             dataTable.addColumn("number", header[1]);
-            //                    dataTable.addColumn({type:'string',role:'tooltip'});
             if (this.getProperty("bins", null)) {
                 var bins = parseInt(this.getProperty("bins", null));
                 var min = Number.MAX_VALUE;
@@ -12751,6 +12854,17 @@ function PiechartDisplay(displayManager, id, properties) {
                     list.push([s, v]);
                 }
             }
+	    list.map(tuple=>{
+		var s = tuple[0];
+		if(!this.uniqueValuesMap[s]) {
+		    this.uniqueValuesMap[s] = true;
+		    this.uniqueValues.push(s);
+		}
+	    });
+//	    list =[];
+//	    for(i=0;i<20;i++)list.push([""+i,5]);
+
+
             dataTable.addRows(list);
             return dataTable;
         }
