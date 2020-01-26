@@ -23524,6 +23524,26 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 */
 
 
+
+/*
+var url = "https://bost.ocks.org/mike/miserables/miserables.json";
+fetch(url).then(res => res.json()).then(data=>{
+    var names = {};
+    data.nodes.map((name,idx)=>{
+	names[idx] = name.name;
+    });
+    var csv ="";
+    data.links.map(l=>{
+	var s = names[l.source];
+	var t = names[l.target];
+	csv += s+"," + t +"," + l.value +"\n";
+    });
+    Utils.makeDownloadFile("lesmiserables.csv", csv);
+});
+*/
+
+
+
 var DISPLAY_GRAPH = "graph";
 var DISPLAY_TREE = "tree";
 var DISPLAY_ORGCHART = "orgchart";
@@ -23536,6 +23556,7 @@ var DISPLAY_CROSSTAB = "crosstab";
 var DISPLAY_CORRELATION = "correlation";
 var DISPLAY_RANKING = "ranking";
 var DISPLAY_STATS = "stats";
+var DISPLAY_COOCCURENCE = "cooccurence";
 
 
 addGlobalDisplayType({
@@ -23631,6 +23652,15 @@ addGlobalDisplayType({
     forUser: true,
     category: "Misc"
 });
+
+addGlobalDisplayType({
+    type: DISPLAY_COOCCURENCE,
+    label: "Cooccurence",
+    requiresData: true,
+    forUser: true,
+    category: "Misc"
+});
+
 
 
 
@@ -25565,6 +25595,97 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
     });
 }
 
+
+
+function RamaddaCooccurenceDisplay(displayManager, id, properties) {
+    let ID_TABLE = "table";
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
+							 DISPLAY_COOCCURENCE, properties));
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        needsData: function() {
+            return true;
+        },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Cooccurence Attributes",
+				    ])},
+
+        updateUI: function() {
+	    var records = this.filterData();
+	    if (!records) {
+                return;
+	    }  
+	    let html = HtmlUtils.div(["id", this.getDomId(ID_TABLE)]);
+	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
+	    let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
+	    let weightField = this.getFieldById(null, this.getProperty("weightField","weight"));
+	    if(sourceField==null || targetField==null) {
+		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
+		return;
+	    }
+	    let names = {};
+	    let nameList = [];
+	    let links={};
+	    var maxWeight = 0;
+	    records.map(r=>{
+		var source = r.getValue(sourceField.getIndex());
+		var target = r.getValue(targetField.getIndex());
+		if(!names[source]) {
+		    names[source] = true;
+		    nameList.push(source);
+		}
+		if(!names[target]) {
+		    names[target] = true;
+		    nameList.push(target);
+		}
+		var weight = -999;
+		if(weightField) {
+		    weight = r.getValue(weightField.getIndex());
+		    maxWeight = Math.max(maxWeight, weight);
+		}
+		links[source+"--" + target] = weight;
+	    });
+	    let table = "<div style='margin-top:100px;'></div><table order=0 cellpadding=0 cellspacing=0  >"
+	    table +="<tr valign=bottom><td></td>";
+	    nameList.map(n=>{
+		table += HtmlUtils.td(["width","6"],HtmlUtils.div(["class","display-cooc-colheader"], n));
+	    });
+	    var colors = this.getColorTable();
+	    if(!colors) colors = Utils.getColorTable("blues",true);
+	    nameList.map(n1=>{
+		table += "<tr valign=bottom ><td align=right>" + HtmlUtils.div(["class","display-cooc-rowheader"], n1) +"</td>";
+		nameList.map(n2=>{
+		    var weight = links[n2+"--" + n1];
+		    if(!Utils.isDefined(weight))
+			weight = links[n1+"--" + n2];
+		    var style="";
+		    if(weight) {
+			if(weight == -999 || maxWeight == 0) 
+			    style = "background:#ccc;";
+			else {
+			    var percent = weight/maxWeight;
+			    var index = parseInt(percent*colors.length);
+			    style = "background:" + colors[index]+";";
+			}
+		    }  else {
+			style = "background:#eee;";
+		    }
+		    table+=HtmlUtils.td(["title",n1+" -> " + n2, "width","3","class","display-cooc-cell", "style",style],HtmlUtils.div([],"&nbsp;"));
+		});
+		table+= "</tr>";
+	    });
+
+	    table+="</tr>";
+	    table+="</table>";
+	    this.jq(ID_TABLE).html(table);
+
+	}
+    })
+}
 /**
 Copyright 2008-2019 Geode Systems LLC
 */

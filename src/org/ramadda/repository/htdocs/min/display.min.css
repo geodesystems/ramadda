@@ -1726,3 +1726,25 @@ margin:10px;
 .display-tree-toggle-details:hover {
     cursor:pointer;
 }
+
+.display-cooc-colheader {
+    width:10px;
+    transform: rotate(270deg) translateX(-15px);
+    transform-origin: top left;
+    font-size:7pt;
+    margin-right:2px;
+    margin-bottom:5px;
+}
+
+
+.display-cooc-rowheader {
+    font-size:7pt;
+    margin-right:4px;
+}
+
+.display-cooc-cell {
+    border: 1px solid white;
+    font-size:2pt;
+//    margin-right:1px;
+//    margin-bottom:1px;
+}
