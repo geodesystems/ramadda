@@ -2078,6 +2078,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 
 function RamaddaCooccurenceDisplay(displayManager, id, properties) {
     let ID_TABLE = "table";
+    let ID_HEADER = "coocheader";
+    let ID_SORTBY = "sortby";
     var SUPER;
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
 							 DISPLAY_COOCCURENCE, properties));
@@ -2090,6 +2092,15 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Cooccurence Attributes",
+					'sourceField=""',
+					'targetField=""',
+					'colorBy=""',
+					'directed=false',
+					'missingBackground=#eee',
+					'showSortBy=false',
+					'sortBy=weight',
+					'topSpace=50px'
+
 				    ])},
 
         updateUI: function() {
@@ -2097,11 +2108,24 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    if (!records) {
                 return;
 	    }  
-	    let html = HtmlUtils.div(["id", this.getDomId(ID_TABLE)]);
+	    let html = HtmlUtils.div(["id", this.getDomId(ID_HEADER)]) +
+		HtmlUtils.div(["id", this.getDomId(ID_TABLE)]);
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
 	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
 	    let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
-	    let weightField = this.getFieldById(null, this.getProperty("weightField","weight"));
+	    let weightField = this.getFieldById(null, this.getProperty("colorBy","weight"));
+	    if(weightField && this.getProperty("showSortBy",true)) {
+		var enums = [["name","Name"],["weight","Weight"]];
+		var header =  HtmlUtils.div(["style","margin-left:100px;"], "Sort by: " + HtmlUtils.select("",["id",this.getDomId(ID_SORTBY),],enums,this.getProperty("sortBy","")));
+		this.jq(ID_HEADER).html(header);
+		let _this = this;
+		this.jq(ID_SORTBY).change(function() {
+		    _this.setProperty("sortBy",$(this).val());
+		    _this.updateUI();
+		});
+					
+	    }
+
 	    if(sourceField==null || targetField==null) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
 		return;
@@ -2109,38 +2133,62 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    let names = {};
 	    let nameList = [];
 	    let links={};
-	    var maxWeight = 0;
+	    let maxWeight = 0;
+	    let sortBy  = this.getProperty("sortBy","name");
+	    let directed = this.getProperty("directed",true);
+
 	    records.map(r=>{
 		var source = r.getValue(sourceField.getIndex());
 		var target = r.getValue(targetField.getIndex());
-		if(!names[source]) {
-		    names[source] = true;
-		    nameList.push(source);
-		}
-		if(!names[target]) {
-		    names[target] = true;
-		    nameList.push(target);
-		}
 		var weight = -999;
 		if(weightField) {
 		    weight = r.getValue(weightField.getIndex());
 		    maxWeight = Math.max(maxWeight, weight);
 		}
+
+		if(true||!names[source]) {
+		    names[source] = true;
+		    nameList.push({name:source,weight:weight});
+		}
+		if(true || !names[target]) {
+		    names[target] = true;
+		    nameList.push({name:target,weight:weight});
+		}
 		links[source+"--" + target] = weight;
 	    });
-	    let table = "<div style='margin-top:100px;'></div><table order=0 cellpadding=0 cellspacing=0  >"
-	    table +="<tr valign=bottom><td></td>";
-	    nameList.map(n=>{
-		table += HtmlUtils.td(["width","6"],HtmlUtils.div(["class","display-cooc-colheader"], n));
+	    maxWeight = this.getProperty("maxWeight", maxWeight);
+	    nameList.sort((a,b)=>{
+		if(sortBy == "name" || sortBy=="") {
+		    return a.name.localeCompare(b.name);
+		} else {
+		    return b.weight-a.weight;
+		}
+	    });
+	    var seen = {}
+	    var tmp =[];
+	    nameList= nameList.map(t=>{
+		if(!seen[t.name]) {
+		    seen[t.name]=true;
+		    tmp.push(t.name);
+		}
+	    });
+	    nameList = tmp;
+	    let table = "<div style='margin-top:" + this.getProperty("topSpace","100px") +";'></div><table style='height:100%;' class='display-cooc-table' order=0 cellpadding=0 cellspacing=0  >"
+	    table +="<tr valign=bottom><td style='border:none;'></td>";
+	    nameList.map(target=>{
+		target = target.replace(/ /g,"&nbsp;").replace(/-/g,"&nbsp;");
+		table += HtmlUtils.td(["style","border:none;", "width","6"],HtmlUtils.div(["class","display-cooc-colheader"], target));
 	    });
 	    var colors = this.getColorTable();
 	    if(!colors) colors = Utils.getColorTable("blues",true);
-	    nameList.map(n1=>{
-		table += "<tr valign=bottom ><td align=right>" + HtmlUtils.div(["class","display-cooc-rowheader"], n1) +"</td>";
-		nameList.map(n2=>{
-		    var weight = links[n2+"--" + n1];
-		    if(!Utils.isDefined(weight))
-			weight = links[n1+"--" + n2];
+	    var missingBackground  = this.getProperty("missingBackground","#eee");
+	    nameList.map(source=>{
+		var label =  source.replace(/ /g,"&nbsp;");
+		table += "<tr valign=bottom ><td style='   border:none;' align=right>" + HtmlUtils.div(["class","display-cooc-rowheader"], label) +"</td>";
+		nameList.map(target=>{
+		    var weight = links[source+"--" + target];
+		    if(!directed && !Utils.isDefined(weight))
+			weight = links[target+"--" + source];
 		    var style="";
 		    if(weight) {
 			if(weight == -999 || maxWeight == 0) 
@@ -2148,12 +2196,13 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 			else {
 			    var percent = weight/maxWeight;
 			    var index = parseInt(percent*colors.length);
+			    if(index>=colors.length) index=colors.length-1;
 			    style = "background:" + colors[index]+";";
 			}
 		    }  else {
-			style = "background:#eee;";
+			style = "background:" + missingBackground +";";
 		    }
-		    table+=HtmlUtils.td(["title",n1+" -> " + n2, "width","3","class","display-cooc-cell", "style",style],HtmlUtils.div([],"&nbsp;"));
+		    table+=HtmlUtils.td(["title",source+" -> " + target+(weight>0?" " + weight:""), "width","3"],HtmlUtils.div(["class","display-cooc-cell","style",style+"height:100%;"],"&nbsp;"));
 		});
 		table+= "</tr>";
 	    });
