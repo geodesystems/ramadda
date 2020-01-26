@@ -2140,6 +2140,8 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 
 	    let names = {};
 	    let nameList = [];
+	    let sources = [];
+	    let targets = [];
 	    let links={};
 	    let maxWeight = 0;
 	    let sortBy  = this.getProperty("sortBy","name");
@@ -2155,28 +2157,28 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 		    maxWeight = Math.max(maxWeight, weight);
 		}
 
-		if(true||!names[source]) {
-		    names[source] = true;
-		    nameList.push({name:source,weight:weight});
-		}
-		if(true || !names[target]) {
-		    names[target] = true;
-		    nameList.push({name:target,weight:weight});
+		sources.push({name:source,weight:weight});
+		targets.push({name:target,weight:weight});
+		if(!directed) {
+		    sources.push({name:target,weight:weight});
+		    targets.push({name:source,weight:weight});
+		    
 		}
 		links[source+"--" + target] = weight;
 	    });
 	    maxWeight = this.getProperty("maxWeight", maxWeight);
-	    nameList.sort((a,b)=>{
+	    let sortFunc =(a,b)=>{
 		if(sortBy == "name" || sortBy=="") {
 		    return a.name.localeCompare(b.name);
 		} else {
 		    return b.weight-a.weight;
-		}
-	    });
+		}} 
+	    sources.sort(sortFunc);
+	    targets.sort(sortFunc);
+	    let minWeight = this.getProperty("minWeight",missing);
 	    var seen = {}
 	    var tmp =[];
-	    let minWeight = this.getProperty("minWeight",missing);
-	    nameList= nameList.map(t=>{
+	    let pruneFunc = t=>{
 		if(minWeight!=missing) {
 		    if(t.weight==missing || t.weight<minWeight) return;
 		}
@@ -2184,11 +2186,17 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 		    seen[t.name]=true;
 		    tmp.push(t.name);
 		}
-	    });
-	    nameList = tmp;
+	    }
+	    sources.map(pruneFunc);
+	    sources=tmp;
+	    seen = {}
+	    tmp =[];
+	    targets.map(pruneFunc);
+	    targets = tmp;
+
 	    let table = "<div style='margin-top:" + this.getProperty("topSpace","100px") +";'></div><table style='height:100%;' class='display-cooc-table' order=0 cellpadding=0 cellspacing=0  >"
 	    table +="<tr valign=bottom><td style='border:none;'></td>";
-	    nameList.map(target=>{
+	    targets.map(target=>{
 		target = target.replace(/ /g,"&nbsp;").replace(/-/g,"&nbsp;");
 		table += HtmlUtils.td(["style","border:none;", "width","6"],HtmlUtils.div(["class","display-cooc-colheader"], target));
 	    });
@@ -2196,10 +2204,10 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 
 
 	    var missingBackground  = this.getProperty("missingBackground","#eee");
-	    nameList.map(source=>{
+	    sources.map(source=>{
 		var label =  source.replace(/ /g,"&nbsp;");
 		table += "<tr valign=bottom ><td style='   border:none;' align=right>" + HtmlUtils.div(["class","display-cooc-rowheader"], label) +"</td>";
-		nameList.map(target=>{
+		targets.map(target=>{
 		    var weight = links[source+"--" + target];
 		    if(!directed && !Utils.isDefined(weight))
 			weight = links[target+"--" + source];
