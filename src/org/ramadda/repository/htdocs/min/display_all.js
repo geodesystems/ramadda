@@ -10914,6 +10914,7 @@ var DISPLAY_WORDTREE = "wordtree";
 var DISPLAY_TREEMAP = "treemap";
 var ID_CHART = "chart";
 var ID_CHARTS = "charts";
+var ID_CHARTS_INNER = "chartsinner";
 
 
 var googleChartsLoaded = false;
@@ -12235,31 +12236,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		    list.push(v);
 		})
+		this.jq(ID_CHARTS).html(HtmlUtils.div(["id",this.getDomId(ID_CHARTS_INNER),"style","text-align:center;"]));
 		times.map((date,idx)=>{
 		    this.chartCount  =idx;
 		    let tmpDataList = [];
 		    let list = map[date];
 		    tmpDataList.push(dataList[0]);
-/*
-		    if(idx == 0) {
-			tmpDataList.push(["test1",5]);
-			tmpDataList.push(["test2",0]);
-			tmpDataList.push(["test3",7]);
-		    } else if(idx==1) {
-			tmpDataList.push(["test1",5]);
-			tmpDataList.push(["test2",8]);
-			tmpDataList.push(["test3",7]);
-		    } else {
-			return;
-		    }
-*/
 		    tmpDataList = Utils.mergeLists(tmpDataList,list);
 		    var innerId = this.getDomId(ID_CHART)+"_" + this.chartCount;
 		    var header = HtmlUtils.div(["class","display-multi-header"], this.formatDate(date));
 		    var top =headerPosition=="top"?header:"";
 		    var bottom = headerPosition=="bottom"?header+"<br>":"";
 		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"], top + this.getChartDiv(innerId) + bottom);
-		    this.jq(ID_CHARTS).append(div);
+		    this.jq(ID_CHARTS_INNER).append(div);
 		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
 		    if(chart) this.charts.push(chart);
 		});
