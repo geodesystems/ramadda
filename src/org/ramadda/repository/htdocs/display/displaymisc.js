@@ -36,6 +36,7 @@ var DISPLAY_CORRELATION = "correlation";
 var DISPLAY_RANKING = "ranking";
 var DISPLAY_STATS = "stats";
 var DISPLAY_COOCCURENCE = "cooccurence";
+var DISPLAY_BOXTABLE = "boxtable";
 
 
 addGlobalDisplayType({
@@ -135,6 +136,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_COOCCURENCE,
     label: "Cooccurence",
+    requiresData: true,
+    forUser: true,
+    category: "Misc"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_BOXTABLE,
+    label: "Box Table",
     requiresData: true,
     forUser: true,
     category: "Misc"
@@ -2238,6 +2247,94 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    this.jq(ID_TABLE).html(table);
 	    colorBy.displayColorTable();
 
+	}
+    })
+}
+
+
+
+function RamaddaBoxtableDisplay(displayManager, id, properties) {
+    let ID_TABLE = "table";
+    let ID_HEADER = "coocheader";
+    let ID_SORTBY = "sortby";
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
+							 DISPLAY_BOXTABLE, properties));
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        needsData: function() {
+            return true;
+        },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Color Boxes",
+					'categoryField=""',
+					'colorBy=""',
+					'tableWidth=300',
+					
+				    ])},
+
+        updateUI: function() {
+	    var records = this.filterData();
+	    if (!records) {
+                return;
+	    }  
+	    let categoryField = this.getFieldById(null, this.getProperty("categoryField","category"));
+	    if(categoryField==null) {
+		this.jq(ID_DISPLAY_CONTENTS).html("No category field field specified");
+		return;
+	    }
+	    var colors = this.getColorTable();
+	    if(!colors) colors = Utils.getColorTable("blues",true);
+	    var colorBy = this.getColorByInfo(records,null,null,colors);
+	    let catMap =  {};
+	    let cats = [];
+	    records.map(r=>{
+		let category = r.getValue(categoryField.getIndex());
+		let value = colorBy.index>=0?r.getValue(colorBy.index):0;
+		let list = catMap[category] && catMap[category].list;
+		if(!list) {
+		    list = [];
+		    catMap[category] = {list:list, max:0};
+		    cats.push(category);
+		}
+		catMap[category].max = Math.max(catMap[category].max,value);
+		list.push(r);
+	    });
+	    let html = "<table class='display-colorboxes-table' border=0 cellpadding=5>";
+	    let tableWidth=this.getProperty("tableWidth",300);
+
+
+	    cats.sort((a,b)=>{
+		return catMap[b].max - catMap[a].max;
+	    });
+
+	    cats.map(cat=>{
+		let length = catMap[cat].list.length;
+		let row = `<tr valign=top><td align=right class=display-colorboxes-header>${cat} (${length}) </td><td width=${tableWidth}>`;
+		if(colorBy.index) {
+		    catMap[cat].list.sort((a,b)=>{
+			return b.getData()[colorBy.index]-a.getData()[colorBy.index];
+		    });
+		}
+		catMap[cat].list.map((record,idx)=>{
+		    let color = "#ccc";
+		    if(colorBy.index) {
+			color =  colorBy.getColor(record.getData()[colorBy.index], record) || color;
+		    }
+		    row +=HtmlUtils.div(["title","","recordIndex", idx, "class","display-colorboxes-box","style","background:" + color+";"],"")+"\n";
+		});
+		row+="</td></tr>"
+		html+=row;
+	    });
+
+	    html +="</table>";
+            this.displayHtml(html);
+	    colorBy.displayColorTable(500);
+	    if(!this.getProperty("tooltip"))
+		this.setProperty("tooltip","${default}");
+	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-colorboxes-box"),records);
 	}
     })
 }

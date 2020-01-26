@@ -513,7 +513,7 @@ function DisplayThing(argId, argProperties) {
 		    return this.applyRecordTemplate(row, fields, template);
 		}
 	    }
-            var values = "<table xclass=formtable>";
+            var values = "<table>";
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (var i = 0; i < record.getData().length; i++) {
                     var field = fields[i];
@@ -619,8 +619,19 @@ function DisplayThing(argId, argProperties) {
             //don't do this for now                $( document ).tooltip();
         },
         formatNumber: function(number) {
+	    let f = this.formatNumberInner(number);
+	    let fmt = this.getProperty("numberTemplate");
+	    if(fmt) f = fmt.replace("${number}", f);
+	    return f;
+	},
+        formatNumberInner: function(number) {
+
+
             if (!this.getProperty("format", true)) return number;
+            if (this.getProperty("formatNumberComma", false)) 
+		return Utils.formatNumberComma(number);
             return Utils.formatNumber(number);
+
         },
         propertyDefined: function(key) {
             return Utils.isDefined(this.getProperty(key));
@@ -920,7 +931,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		compareFields: this.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
 	    };
 	    $.extend(colorBy,{
-		displayColorTable: function() {
+		displayColorTable: function(width) {
 		    if(this.compareFields.length>0) {
 			var legend = "";
 			this.compareFields.map((f,idx)=>{
@@ -938,6 +949,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    colors.push(this.stringMap[i]);
 			}
 			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			    width:width,
 			    stringValues: this.colorByValues});
 		    } else {
 			var colors = this.colors;
@@ -948,6 +960,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    colors = tmp;
 			}
 			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			    width:width,
 			    stringValues: this.colorByValues
 			});
 		    }
@@ -4374,6 +4387,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         updateUI: function() {
 	},
+	//Make sure the elements have a title set
 	makeTooltips: function(selector, records, callback) {
 	    var tooltip = this.getProperty("tooltip");
 	    if(!tooltip) return;
@@ -4543,6 +4557,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             return html;
         },
+
         makeToolbar: function(props) {
             var toolbar = "";
             var get = this.getGet();

@@ -884,7 +884,13 @@ var Utils = {
             options.showRange = false;
         min = parseFloat(min);
         max = parseFloat(max);
-        var html = HtmlUtils.openTag("div", ["class", "display-colortable"]) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
+	let divargs = ["class", "display-colortable"];
+	if(!isNaN(options.width)) {
+	    divargs.push("style");
+	    divargs.push("width:" + options.width+"px;");
+	}
+	    
+        var html = HtmlUtils.openTag("div", divargs) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
         if (options.showRange)
             html += "<td width=1%>" + this.formatNumber(min) + "&nbsp;</td>";
         var step = (max - min) / ct.length;
