@@ -1332,6 +1332,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		var headerPosition = this.getProperty("multipleChartsHeaderPosition","bottom");
 		let map = {};
 		let times = [];
+		let tmp = [];
+		dataList.map((v,idx)=>{if(idx>0) tmp.push(v)});
+		tmp.sort(function(a,b) {
+                    var record = a.record;
+		    var date1 = record?record.getDate():a.date;
+		    record = b.record;
+		    var date2 = record?record.getDate():b.date;
+		    return date1.getTime()-date2.getTime();
+		});
+		dataList = Utils.mergeLists([dataList[0]], tmp);
 		dataList.map((v,idx)=>{
 		    if(idx==0) return;
                     var record = v.record;
