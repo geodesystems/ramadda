@@ -2323,7 +2323,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 		    if(colorBy.index) {
 			color =  colorBy.getColor(record.getData()[colorBy.index], record) || color;
 		    }
-		    row +=HtmlUtils.div(["title","","recordIndex", idx, "class","display-colorboxes-box","style","background:" + color+";"],"")+"\n";
+		    row +=HtmlUtils.div(["title","","recordIndex", idx, "class","display-colorboxes-box","style","background:" + color+";"],"");
 		});
 		row+="</td></tr>"
 		html+=row;
