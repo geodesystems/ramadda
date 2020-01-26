@@ -1820,9 +1820,12 @@ function PiechartDisplay(displayManager, id, properties) {
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.tooltip = {
                 textStyle: {
-                    color: '#000000'
+                    color: '#000000',
+		    fontSize:12,
                 },
-                showColorCode: true
+                showColorCode: true,
+//		isHtml: true,
+//		ignoreBounds: true,
             };
 	    this.chartOptions.legend = {'position':this.getProperty("legendPosition", 'right'),'alignment':'center'};
             if (this.getProperty("bins", null)) {
@@ -2386,7 +2389,7 @@ function BartableDisplay(displayManager, id, properties) {
                 height: height,
                 bars: 'horizontal',
                 tooltip: {
-                    showColorCode: true
+                    showColorCode: true,
                 },
                 legend: {
                     position: 'none'
