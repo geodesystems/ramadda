@@ -1045,7 +1045,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    return iconMap;
 	},
-	getColorByInfo: function(records, prop,colorByMapProp) {
+	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable) {
             var pointData = this.getData();
             if (pointData == null) return null;
             var fields = pointData.getRecordFields();
@@ -1252,7 +1252,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.percentFields != null) {
                 colorBy.pctFields = this.percentFields.split(",");
             }
-	    var colors = this.getColorTable(true,colorByAttr +".colorTable");
+	    var colors = defaultColorTable || this.getColorTable(true,colorByAttr +".colorTable");
 	    if(!colors) {
 		var c = this.getProperty(colorByAttr +".colors");
 		if(c)
@@ -25620,8 +25620,9 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 					'missingBackground=#eee',
 					'showSortBy=false',
 					'sortBy=weight',
+					'minWeight=""',
 					'topSpace=50px'
-
+					
 				    ])},
 
         updateUI: function() {
@@ -25632,6 +25633,8 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    let html = HtmlUtils.div(["id", this.getDomId(ID_HEADER)]) +
 		HtmlUtils.div(["id", this.getDomId(ID_TABLE)]);
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+
+
 	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
 	    let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
 	    let weightField = this.getFieldById(null, this.getProperty("colorBy","weight"));
@@ -25651,17 +25654,23 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
 		return;
 	    }
+	    var colors = this.getColorTable();
+	    if(!colors) colors = Utils.getColorTable("blues",true);
+	    var colorBy = this.getColorByInfo(records,null,null,colors);
+
+
 	    let names = {};
 	    let nameList = [];
 	    let links={};
 	    let maxWeight = 0;
 	    let sortBy  = this.getProperty("sortBy","name");
 	    let directed = this.getProperty("directed",true);
+	    let missing = -999999;
 
 	    records.map(r=>{
 		var source = r.getValue(sourceField.getIndex());
 		var target = r.getValue(targetField.getIndex());
-		var weight = -999;
+		var weight = missing;
 		if(weightField) {
 		    weight = r.getValue(weightField.getIndex());
 		    maxWeight = Math.max(maxWeight, weight);
@@ -25687,7 +25696,11 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    });
 	    var seen = {}
 	    var tmp =[];
+	    let minWeight = this.getProperty("minWeight",missing);
 	    nameList= nameList.map(t=>{
+		if(minWeight!=missing) {
+		    if(t.weight==missing || t.weight<minWeight) return;
+		}
 		if(!seen[t.name]) {
 		    seen[t.name]=true;
 		    tmp.push(t.name);
@@ -25700,8 +25713,9 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 		target = target.replace(/ /g,"&nbsp;").replace(/-/g,"&nbsp;");
 		table += HtmlUtils.td(["style","border:none;", "width","6"],HtmlUtils.div(["class","display-cooc-colheader"], target));
 	    });
-	    var colors = this.getColorTable();
-	    if(!colors) colors = Utils.getColorTable("blues",true);
+
+
+
 	    var missingBackground  = this.getProperty("missingBackground","#eee");
 	    nameList.map(source=>{
 		var label =  source.replace(/ /g,"&nbsp;");
@@ -25712,13 +25726,17 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 			weight = links[target+"--" + source];
 		    var style="";
 		    if(weight) {
-			if(weight == -999 || maxWeight == 0) 
+			if(weight == missing || maxWeight == 0) 
 			    style = "background:#ccc;";
 			else {
-			    var percent = weight/maxWeight;
-			    var index = parseInt(percent*colors.length);
-			    if(index>=colors.length) index=colors.length-1;
-			    style = "background:" + colors[index]+";";
+			    if(colorBy.index>=0) {
+				color =  colorBy.getColor(weight);
+				style = "background:" + color+";";
+			    }
+			    //			    var percent = weight/maxWeight;
+			    //			    var index = parseInt(percent*colors.length);
+			    // 			    if(index>=colors.length) index=colors.length-1;
+			    //			    style = "background:" + colors[index]+";";
 			}
 		    }  else {
 			style = "background:" + missingBackground +";";
@@ -25729,8 +25747,9 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    });
 
 	    table+="</tr>";
-	    table+="</table>";
+	    table+="</table><div style='margin:5px;'></div>";
 	    this.jq(ID_TABLE).html(table);
+	    colorBy.displayColorTable();
 
 	}
     })

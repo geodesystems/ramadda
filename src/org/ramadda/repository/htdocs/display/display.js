@@ -895,7 +895,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    return iconMap;
 	},
-	getColorByInfo: function(records, prop,colorByMapProp) {
+	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable) {
             var pointData = this.getData();
             if (pointData == null) return null;
             var fields = pointData.getRecordFields();
@@ -1102,7 +1102,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.percentFields != null) {
                 colorBy.pctFields = this.percentFields.split(",");
             }
-	    var colors = this.getColorTable(true,colorByAttr +".colorTable");
+	    var colors = defaultColorTable || this.getColorTable(true,colorByAttr +".colorTable");
 	    if(!colors) {
 		var c = this.getProperty(colorByAttr +".colors");
 		if(c)
