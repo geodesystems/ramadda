@@ -22,7 +22,6 @@ fetch(url).then(res => res.json()).then(data=>{
 */
 
 
-
 var DISPLAY_GRAPH = "graph";
 var DISPLAY_TREE = "tree";
 var DISPLAY_ORGCHART = "orgchart";

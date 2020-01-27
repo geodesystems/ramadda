@@ -15167,6 +15167,8 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 					'labelField=""',
 					'categoryField=""',
 					'valueField=""',
+					'descriptionField=""',
+					'imageField=""',
 					'sizeLabel1=""',
 					'sizeLabel2=""',
 					'showSizeLegend=false'
@@ -15193,7 +15195,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    let html = HtmlUtil.tag("svg", ["id", this.getDomId(ID_BUBBLES),
 					    "width","100%","height","700", "font-family","sans-serif","font-size","10", "text-anchor","middle"])
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-            let categoryField = this.getFieldById(null, this.getProperty("categoryField"));
+            let categoryField = this.getFieldById(null, this.getProperty("categoryField","category"));
 	    let valueField = this.getFieldById(null, this.getProperty("valueField"));
 	    let values;
 	    let min = 0;
@@ -15207,6 +15209,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    }
 
 	    let labelField = this.getFieldById(null, this.getProperty("labelField","name"));
+	    let descField = this.getFieldById(null, this.getProperty("descriptionField"));	    
 	    let imageField = this.getFieldById(null, this.getProperty("imageField"));	    
 	    let template = this.getProperty("template","${default}");
 	    if(!labelField) {
@@ -15215,7 +15218,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    }
 
 	    records.map(r=>{
-		let desc =  this.getRecordHtml(r,null, template);
+		let desc =  descField?r.getValue(descField.getIndex()):this.getRecordHtml(r,null, template);
 		let label = r.getValue(labelField.getIndex());
 		let obj = {
 		    name: label,
@@ -23676,7 +23679,6 @@ fetch(url).then(res => res.json()).then(data=>{
     Utils.makeDownloadFile("lesmiserables.csv", csv);
 });
 */
-
 
 
 var DISPLAY_GRAPH = "graph";

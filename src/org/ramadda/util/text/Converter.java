@@ -928,7 +928,7 @@ public abstract class Converter extends Processor {
                 } else if (id.equals("url")) {
                     type = "url";
 
-                } else if (id.equals("state") || id.equals("country")) {
+                } else if (id.equals("state") || id.equals("country") || id.equals("category")) {
                     type = "enumeration";
 
                 } else if (id.equals("latitude") || id.equals("longitude")) {
