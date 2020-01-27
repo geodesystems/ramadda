@@ -1754,28 +1754,6 @@ var HtmlUtils = {
 	    }
 	})
     },
-    makeDialog: function(text) {
-	var id =  HtmlUtils.getUniqueId();
-	var pinId =  "pin_" + id;
-	var pin = HtmlUtils.getIconImage("fa-thumbtack", ["class","ramadda-popup-pin", "id",pinId]);
-	var closeImage = HtmlUtils.getIconImage(icon_close, []);
-	var close = `<a href="javascript:HtmlUtils.closeDialog(${pinId});">${closeImage}</a>`;
-	var header = HtmlUtils.div(["style","text-align:right;","class","ramadda-popup-header"],pin +" " +close);
-	var popup = HtmlUtils.div(["id",id], header + text);
-
-	$("#" + selector.div.id).draggable();
-    $("#" + pinId).click(function() {
-	if($(this).attr("data-pinned")) {
-	    $(this).removeClass("ramadda-popup-pin-pinned");
-	    $(this).attr("data-pinned",false);
-	} else {
-	    $(this).addClass("ramadda-popup-pin-pinned");
-	    $(this).attr("data-pinned",true);
-	}
-    });
-
-
-
     pre: function(attrs, inner) {
         return this.tag("pre", attrs, inner);
     },
