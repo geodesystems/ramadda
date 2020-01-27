@@ -1173,6 +1173,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    }
 	},
+	requiresGeoLocation: function() {
+	    return true;
+	},
         updateUI: function() {
             SUPER.updateUI.call(this);
             if (!this.getDisplayReady()) {

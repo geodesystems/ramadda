@@ -2197,6 +2197,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return pointData;
 	},
+	requiresGeoLocation: function() {
+	    return false;
+	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
@@ -2502,6 +2505,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		dataList = binned;
 	    }
+	    if(this.requiresGeoLocation()) {
+		dataList = dataList.filter(r=>{return r.hasLocation();});
+	    }
+
 	    //	    var t2=  new Date();
 	    //	    Utils.displayTimes("filterData",[t1,t2]);
 	    dataList = this.sortRecords(dataList);

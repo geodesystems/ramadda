@@ -655,10 +655,10 @@ function PointRecord(lat, lon, elevation, time, data) {
 	    return this.getDate()!=null;
 	},
         hasLocation: function() {
-            return !isNaN(this.latitude);
+            return this.latitude !=null && !isNaN(this.latitude);
         },
         hasElevation: function() {
-            return !isNaN(this.elevation);
+            return this.elevation !=null && !isNaN(this.elevation);
         },
         getLatitude: function() {
             return this.latitude;

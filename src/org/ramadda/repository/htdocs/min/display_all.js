@@ -2347,6 +2347,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return pointData;
 	},
+	requiresGeoLocation: function() {
+	    return false;
+	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
@@ -2652,6 +2655,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		dataList = binned;
 	    }
+	    if(this.requiresGeoLocation()) {
+		dataList = dataList.filter(r=>{return r.hasLocation();});
+	    }
+
 	    //	    var t2=  new Date();
 	    //	    Utils.displayTimes("filterData",[t1,t2]);
 	    dataList = this.sortRecords(dataList);
@@ -7291,10 +7298,10 @@ function PointRecord(lat, lon, elevation, time, data) {
 	    return this.getDate()!=null;
 	},
         hasLocation: function() {
-            return !isNaN(this.latitude);
+            return this.latitude !=null && !isNaN(this.latitude);
         },
         hasElevation: function() {
-            return !isNaN(this.elevation);
+            return this.elevation !=null && !isNaN(this.elevation);
         },
         getLatitude: function() {
             return this.latitude;
@@ -22719,6 +22726,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.map.centerOnMarkers(null, false, false);
 		}
 	    }
+	},
+	requiresGeoLocation: function() {
+	    return true;
 	},
         updateUI: function() {
             SUPER.updateUI.call(this);
