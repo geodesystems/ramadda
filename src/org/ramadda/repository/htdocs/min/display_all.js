@@ -12165,11 +12165,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
 
+	    let minorGridLinesColor = this.getProperty("minorGridLines.color",this.getProperty("gridlines.color", lineColor));
             this.setPropertyOn(chartOptions.hAxis.gridlines, "hAxis.gridlines.color", "color", this.getProperty("gridlines.color", lineColor));
-	    this.setPropertyOn(chartOptions.hAxis.minorGridlines, "hAxis.minorGridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.hAxis.minorGridlines, "hAxis.minorGridlines.color", "color", minorGridLinesColor);
 	    this.setPropertyOn(chartOptions.hAxis, "hAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));	    
             this.setPropertyOn(chartOptions.vAxis.gridlines, "vAxis.gridlines.color", "color", this.getProperty("gridlines.color", lineColor));
-	    this.setPropertyOn(chartOptions.vAxis.minorGridlines, "vAxis.minorGridlines.color", "color", this.getProperty("gridlines.color", lineColor));
+	    this.setPropertyOn(chartOptions.vAxis.minorGridlines, "vAxis.minorGridlines.color", "color", minorGridLinesColor);
 	    this.setPropertyOn(chartOptions.vAxis, "vAxis.baselineColor", "baselineColor", this.getProperty("baselineColor", lineColor));
 
 
@@ -13864,8 +13865,9 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if(this.getProperty("vAxisLogScale", false)) 
 		chartOptions.vAxis.logScale = true;
 
-	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","maximized");
-	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","maximized");
+
+	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
+	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 
 	    /*
 	      chartOptions.trendlines =  {
@@ -13913,7 +13915,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
-	    //	    console.log(JSON.stringify(chartOptions,null,2));
+//	    console.log(JSON.stringify(chartOptions,null,2));
 
             return chartOptions;
         },
