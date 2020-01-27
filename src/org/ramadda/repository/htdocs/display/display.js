@@ -500,7 +500,9 @@ function DisplayThing(argId, argProperties) {
                 fields = pointData.getRecordFields();
             }
 	    
-            var showDate = this.getProperty("showDate", true);
+
+	    var showDate = this.getProperty("showDate", true);
+	    var showImage = this.getProperty("showImage", true);
             var showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
@@ -550,6 +552,7 @@ function DisplayThing(argId, argProperties) {
 			value = this.formatDate(value);
 		    }
 		    if(field.getType() == "image" && value!="") {
+			if(!showImage) continue;
 			value = HtmlUtils.image(value,["width","200"]);
 		    }
 
@@ -560,13 +563,17 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>200) {
 			value  = HtmlUtils.div(["style","max-height:200px; overflow-y:auto;"],value);
 		    }
-                    values += "<tr valign=top><td align=right><b>" + label + ":</b></td><td>" + value + "</td></tr>";
+                    values += "<tr valign=top><td align=right><b>" + label + ":</b></td><td align=left>" + value + "</td></tr>\n";
                 }
             }
             if (record.hasElevation()) {
-                values += "<tr><td  align=right><b>Elevation:</b></td><td>" + number_format(record.getElevation(), 4, '.', '') + "</td></tr>";
+                values += "<tr><td  align=right><b>Elevation:</b></td><td align=left>" + number_format(record.getElevation(), 4, '.', '') + "</td></tr>";
             }
             values += "</table>";
+	    if(this.getProperty("recordHtmlStyle")){
+		values = HtmlUtils.div(["style",this.getProperty("recordHtmlStyle")], values);
+	    }
+
             return values;
         },
         formatRecordLabel: function(label) {
