@@ -198,6 +198,9 @@ public class Row {
      * @param object _more_
      */
     public void set(int index, Object object) {
+        while (index >= values.size()) {
+            values.add("");
+        }
         values.set(index, object);
         check();
     }

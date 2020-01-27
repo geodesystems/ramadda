@@ -772,6 +772,7 @@ public class CsvUtil {
                 }
                 Row     row         = new Row();
                 boolean checkHeader = true;
+                System.err.println("row");
                 while (true) {
                     toks = Utils.tokenizePattern(tr, "(<td|<th)",
                             "(</td|</th)");
@@ -780,6 +781,13 @@ public class CsvUtil {
                     }
                     String td = toks[0].trim();
                     tr = toks[1];
+                    String colspan = StringUtil.findPattern(td,
+                                         "colspan *= *\"?([0-9]+)\"?");
+                    int inserts = 1;
+                    if (colspan != null) {
+                        inserts = Integer.parseInt(colspan);
+                    }
+
                     int idx = td.indexOf(">");
                     if ((attrPattern != null) && (idx >= 0)) {
                         String attrs = td.substring(0, idx).toLowerCase();
@@ -815,7 +823,9 @@ public class CsvUtil {
                     td = td.replaceAll("&lt;", "<");
                     td = td.replaceAll("&gt;", ">");
                     td = td.replaceAll("\n", " ");
-                    row.insert(td.trim());
+                    while (inserts-- > 0) {
+                        row.insert(td.trim());
+                    }
                     if (debug) {
                         System.out.println("\t\ttd:" + td);
                     }
