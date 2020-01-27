@@ -995,7 +995,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return ac;
         },
 
+        convertColors: function(colors) {
+	    colors = this.addAlpha(colors);
+	    if(this.getProperty("colorTableInverse")) {
+		let tmp = [];
+		for(let i=colors.length-1;i>=0;i--)
+		    tmp.push(colors[i]);
+		colors = tmp;
+	    }
+	    return colors;
+	},
         getColorTable: function(justColors, name, dflt) {
+
             var colorTable = this.getColorTableName(name);
             if (!colorTable) {
                 colorTable = dflt;
@@ -1003,16 +1014,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var list;
             if (colorTable) {
                 var ct = Utils.ColorTables[colorTable];
-                if (ct && justColors) return this.addAlpha(ct.colors);
+                if (ct && justColors) return this.convertColors(ct.colors);
                 if (!ct && name) {
-                    return this.addAlpha(colorTable.split(","));
+                    return this.convertColors(colorTable.split(","));
                 }
                 return ct;
             }
             if (this.getProperty("colors") && this.getProperty("colors")!="default") {
                 var colors = this.getProperty("colors");
-                if ((typeof colors) == "object") return this.addAlpha(colors);
-                return this.addAlpha(colors.split(","));
+                if ((typeof colors) != "object") colors = colors.split(",");
+		return this.convertColors(colors);
             }
             return null;
         },
