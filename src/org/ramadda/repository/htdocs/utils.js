@@ -874,6 +874,9 @@ var Utils = {
     getColorTableDisplay: function(ct,  min, max, args) {
         if (!ct) return null;
         if (ct.colors) ct = ct.colors;
+	//Handle d3
+	if(ct.length && Array.isArray(ct[0]))
+	    ct = ct[ct.length-1];
         var options = {
             height: "15px",
             showRange: true
@@ -1021,6 +1024,7 @@ var Utils = {
 		"rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"
 	    ]
 	},
+	schemeSet3: {colors: ['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd','#ccebc5','#ffed6f',]},
 
 
 	googlecharts: {
@@ -1146,7 +1150,41 @@ var Utils = {
         topographic: {
             colors: ['rgb(20,170,42)', 'rgb(20,170,42)', 'rgb(27,174,35)', 'rgb(35,179,28)', 'rgb(43,184,22)', 'rgb(51,188,15)', 'rgb(59,193,9)', 'rgb(67,198,2)', 'rgb(70,200,0)', 'rgb(71,199,0)', 'rgb(72,199,1)', 'rgb(73,198,1)', 'rgb(74,198,2)', 'rgb(75,197,2)', 'rgb(76,197,3)', 'rgb(78,197,3)', 'rgb(79,196,4)', 'rgb(80,196,4)', 'rgb(81,195,5)', 'rgb(82,195,5)', 'rgb(83,194,6)', 'rgb(85,194,6)', 'rgb(86,194,7)', 'rgb(87,193,7)', 'rgb(88,193,8)', 'rgb(89,192,8)', 'rgb(90,192,9)', 'rgb(92,191,9)', 'rgb(93,191,10)', 'rgb(94,191,10)', 'rgb(95,190,11)', 'rgb(96,190,11)', 'rgb(97,189,12)', 'rgb(98,189,12)', 'rgb(100,188,13)', 'rgb(101,188,13)', 'rgb(102,188,14)', 'rgb(103,187,14)', 'rgb(104,187,15)', 'rgb(105,186,15)', 'rgb(107,186,16)', 'rgb(108,185,16)', 'rgb(109,185,17)', 'rgb(110,185,17)', 'rgb(111,184,18)', 'rgb(112,184,18)', 'rgb(114,183,19)', 'rgb(115,183,19)', 'rgb(116,182,20)', 'rgb(117,182,21)', 'rgb(118,182,21)', 'rgb(119,181,22)', 'rgb(120,181,22)', 'rgb(122,180,23)', 'rgb(123,180,23)', 'rgb(124,179,24)', 'rgb(125,179,24)', 'rgb(126,179,25)', 'rgb(127,178,25)', 'rgb(129,178,26)', 'rgb(130,177,26)', 'rgb(131,177,27)', 'rgb(132,176,27)', 'rgb(133,176,28)', 'rgb(134,176,28)', 'rgb(136,175,29)', 'rgb(137,175,29)', 'rgb(138,174,30)', 'rgb(139,174,30)', 'rgb(140,173,31)', 'rgb(141,173,31)', 'rgb(143,173,32)', 'rgb(144,172,32)', 'rgb(145,172,33)', 'rgb(146,171,33)', 'rgb(147,171,34)', 'rgb(148,170,34)', 'rgb(149,170,35)', 'rgb(151,170,35)', 'rgb(152,169,36)', 'rgb(153,169,36)', 'rgb(154,168,37)', 'rgb(155,168,37)', 'rgb(156,167,38)', 'rgb(158,167,38)', 'rgb(159,167,39)', 'rgb(160,166,39)', 'rgb(161,166,40)', 'rgb(162,165,40)', 'rgb(163,165,41)', 'rgb(165,165,42)', 'rgb(165,165,42)', 'rgb(165,165,43)', 'rgb(165,165,44)', 'rgb(165,165,45)', 'rgb(166,166,46)', 'rgb(166,166,47)', 'rgb(166,166,48)', 'rgb(166,166,49)', 'rgb(166,166,50)', 'rgb(167,167,51)', 'rgb(167,167,52)', 'rgb(167,167,53)', 'rgb(167,167,54)', 'rgb(167,167,55)', 'rgb(168,168,56)', 'rgb(168,168,57)', 'rgb(168,168,58)', 'rgb(168,168,59)', 'rgb(169,169,60)', 'rgb(169,169,61)', 'rgb(169,169,62)', 'rgb(169,169,63)', 'rgb(169,169,64)', 'rgb(170,170,65)', 'rgb(170,170,66)', 'rgb(170,170,67)', 'rgb(170,170,68)', 'rgb(170,170,68)', 'rgb(171,171,69)', 'rgb(171,171,70)', 'rgb(171,171,71)', 'rgb(171,171,72)', 'rgb(172,172,73)', 'rgb(172,172,74)', 'rgb(172,172,75)', 'rgb(172,172,76)', 'rgb(172,172,77)', 'rgb(173,173,78)', 'rgb(173,173,79)', 'rgb(173,173,80)', 'rgb(173,173,81)', 'rgb(173,173,82)', 'rgb(174,174,83)', 'rgb(174,174,84)', 'rgb(174,174,85)', 'rgb(174,174,86)', 'rgb(175,175,87)', 'rgb(175,175,88)', 'rgb(175,175,89)', 'rgb(175,175,90)', 'rgb(175,175,91)', 'rgb(176,176,92)', 'rgb(176,176,93)', 'rgb(176,176,94)', 'rgb(176,176,95)', 'rgb(176,176,95)', 'rgb(177,177,96)', 'rgb(177,177,97)', 'rgb(177,177,98)', 'rgb(177,177,99)', 'rgb(178,178,100)', 'rgb(178,178,101)', 'rgb(178,178,102)', 'rgb(178,178,103)', 'rgb(178,178,104)', 'rgb(179,179,105)', 'rgb(179,179,106)', 'rgb(179,179,107)', 'rgb(179,179,108)', 'rgb(179,179,109)', 'rgb(180,180,110)', 'rgb(180,180,111)', 'rgb(180,180,112)', 'rgb(180,180,113)', 'rgb(181,181,114)', 'rgb(181,181,115)', 'rgb(181,181,116)', 'rgb(181,181,117)', 'rgb(181,181,118)', 'rgb(182,182,119)', 'rgb(182,182,120)', 'rgb(182,182,121)', 'rgb(182,182,121)', 'rgb(182,182,122)', 'rgb(183,183,123)', 'rgb(183,183,124)', 'rgb(183,183,125)', 'rgb(183,183,126)', 'rgb(184,184,127)', 'rgb(184,184,128)', 'rgb(184,184,129)', 'rgb(184,184,130)', 'rgb(184,184,131)', 'rgb(185,185,132)', 'rgb(185,185,133)', 'rgb(185,185,134)', 'rgb(185,185,135)', 'rgb(185,185,136)', 'rgb(186,186,137)', 'rgb(186,186,138)', 'rgb(186,186,139)', 'rgb(186,186,140)', 'rgb(186,186,141)', 'rgb(187,187,142)', 'rgb(187,187,143)', 'rgb(187,187,144)', 'rgb(187,187,145)', 'rgb(188,188,146)', 'rgb(188,188,147)', 'rgb(188,188,148)', 'rgb(188,188,148)', 'rgb(188,188,149)', 'rgb(189,189,150)', 'rgb(189,189,151)', 'rgb(189,189,152)', 'rgb(189,189,153)', 'rgb(189,189,154)', 'rgb(190,190,155)', 'rgb(190,190,156)', 'rgb(190,190,157)', 'rgb(190,190,158)', 'rgb(191,191,159)', 'rgb(191,191,160)', 'rgb(191,191,161)', 'rgb(191,191,162)', 'rgb(191,191,163)', 'rgb(192,192,164)', 'rgb(192,192,165)', 'rgb(192,192,166)', 'rgb(192,192,167)', 'rgb(192,192,168)', 'rgb(193,193,169)', 'rgb(193,193,170)', 'rgb(193,193,171)', 'rgb(193,193,172)', 'rgb(194,194,173)', 'rgb(194,194,174)', 'rgb(194,194,175)', 'rgb(194,194,175)', 'rgb(194,194,176)', 'rgb(195,195,177)', 'rgb(195,195,178)', 'rgb(195,195,179)', 'rgb(195,195,180)', 'rgb(195,195,181)', 'rgb(196,196,182)', 'rgb(196,196,183)', 'rgb(196,196,184)', 'rgb(196,196,185)', 'rgb(197,197,186)', 'rgb(197,197,187)', 'rgb(197,197,188)', 'rgb(197,197,189)', 'rgb(197,197,190)', 'rgb(198,198,191)', 'rgb(198,198,192)', 'rgb(198,198,193)', 'rgb(198,198,194)', 'rgb(198,198,195)', 'rgb(199,199,196)', 'rgb(199,199,197)', 'rgb(199,199,198)', 'rgb(199,199,199)', 'rgb(255,255,255)', ]
         },
+	d3_schemeAccent: {colors: ['#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17','#666666',]},
+d3_schemeBrBG: {colors: ['#543005','#8c510a','#bf812d','#dfc27d','#f6e8c3','#f5f5f5','#c7eae5','#80cdc1','#35978f','#01665e','#003c30',]},
+d3_schemeBuGn: {colors: ['#f7fcfd','#e5f5f9','#ccece6','#99d8c9','#66c2a4','#41ae76','#238b45','#006d2c','#00441b',]},
+d3_schemeBuPu: {colors: ['#f7fcfd','#e0ecf4','#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c','#4d004b',]},
+d3_schemeCategory10: {colors: ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf',]},
+d3_schemeDark2: {colors: ['#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d','#666666',]},
+d3_schemeGnBu: {colors: ['#f7fcf0','#e0f3db','#ccebc5','#a8ddb5','#7bccc4','#4eb3d3','#2b8cbe','#0868ac','#084081',]},
+d3_schemeGreens: {colors: ['#f7fcf5','#e5f5e0','#c7e9c0','#a1d99b','#74c476','#41ab5d','#238b45','#006d2c','#00441b',]},
+d3_schemeGreys: {colors: ['#ffffff','#f0f0f0','#d9d9d9','#bdbdbd','#969696','#737373','#525252','#252525','#000000',]},
+d3_schemeOrRd: {colors: ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000',]},
+d3_schemeOranges: {colors: ['#fff5eb','#fee6ce','#fdd0a2','#fdae6b','#fd8d3c','#f16913','#d94801','#a63603','#7f2704',]},
+d3_schemePRGn: {colors: ['#40004b','#762a83','#9970ab','#c2a5cf','#e7d4e8','#f7f7f7','#d9f0d3','#a6dba0','#5aae61','#1b7837','#00441b',]},
+d3_schemePaired: {colors: ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928',]},
+d3_schemePastel1: {colors: ['#fbb4ae','#b3cde3','#ccebc5','#decbe4','#fed9a6','#ffffcc','#e5d8bd','#fddaec','#f2f2f2',]},
+d3_schemePastel2: {colors: ['#b3e2cd','#fdcdac','#cbd5e8','#f4cae4','#e6f5c9','#fff2ae','#f1e2cc','#cccccc',]},
+d3_schemePiYG: {colors: ['#8e0152','#c51b7d','#de77ae','#f1b6da','#fde0ef','#f7f7f7','#e6f5d0','#b8e186','#7fbc41','#4d9221','#276419',]},
+d3_schemePuBu: {colors: ['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#045a8d','#023858',]},
+d3_schemePuBuGn: {colors: ['#fff7fb','#ece2f0','#d0d1e6','#a6bddb','#67a9cf','#3690c0','#02818a','#016c59','#014636',]},
+d3_schemePuOr: {colors: ['#2d004b','#542788','#8073ac','#b2abd2','#d8daeb','#f7f7f7','#fee0b6','#fdb863','#e08214','#b35806','#7f3b08',]},
+d3_schemePuRd: {colors: ['#f7f4f9','#e7e1ef','#d4b9da','#c994c7','#df65b0','#e7298a','#ce1256','#980043','#67001f',]},
+d3_schemePurples: {colors: ['#fcfbfd','#efedf5','#dadaeb','#bcbddc','#9e9ac8','#807dba','#6a51a3','#54278f','#3f007d',]},
+d3_schemeRdBu: {colors: ['#67001f','#b2182b','#d6604d','#f4a582','#fddbc7','#f7f7f7','#d1e5f0','#92c5de','#4393c3','#2166ac','#053061',]},
+d3_schemeRdGy: {colors: ['#67001f','#b2182b','#d6604d','#f4a582','#fddbc7','#ffffff','#e0e0e0','#bababa','#878787','#4d4d4d','#1a1a1a',]},
+d3_schemeRdPu: {colors: ['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a',]},
+d3_schemeRdYlBu: {colors: ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695',]},
+d3_schemeRdYlGn: {colors: ['#a50026','#d73027','#f46d43','#fdae61','#fee08b','#ffffbf','#d9ef8b','#a6d96a','#66bd63','#1a9850','#006837',]},
+d3_schemeReds: {colors: ['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d',]},
 
+d3_schemeSpectral: {colors: ['#9e0142','#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd','#5e4fa2',]},
+d3_schemeTableau10: {colors: ['#4e79a7','#f28e2c','#e15759','#76b7b2','#59a14f','#edc949','#af7aa1','#ff9da7','#9c755f','#bab0ab',]},
+d3_schemeYlGn: {colors: ['#ffffe5','#f7fcb9','#d9f0a3','#addd8e','#78c679','#41ab5d','#238443','#006837','#004529',]},
+d3_schemeYlGnBu: {colors: ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#253494','#081d58',]},
+d3_schemeCategory20b: {colors: ['#393b79','#5254a3','#6b6ecf','#9c9ede','#637939','#8ca252','#b5cf6b','#cedb9c','#8c6d31','#bd9e39','#e7ba52','#e7cb94','#843c39','#ad494a','#d6616b','#e7969c','#7b4173','#a55194','#ce6dbd','#de9ed6',]},
+d3_schemeCategory20c: {colors: ['#3182bd','#6baed6','#9ecae1','#c6dbef','#e6550d','#fd8d3c','#fdae6b','#fdd0a2','#31a354','#74c476','#a1d99b','#c7e9c0','#756bb1','#9e9ac8','#bcbddc','#dadaeb','#636363','#969696','#bdbdbd','#d9d9d9',]},
+d3_schemeCategory20: {colors: ['#1f77b4','#aec7e8','#ff7f0e','#ffbb78','#2ca02c','#98df8a','#d62728','#ff9896','#9467bd','#c5b0d5','#8c564b','#c49c94','#e377c2','#f7b6d2','#7f7f7f','#c7c7c7','#bcbd22','#dbdb8d','#17becf','#9edae5',]},
     }
 
 
@@ -1716,6 +1754,28 @@ var HtmlUtils = {
 	    }
 	})
     },
+    makeDialog: function(text) {
+	var id =  HtmlUtils.getUniqueId();
+	var pinId =  "pin_" + id;
+	var pin = HtmlUtils.getIconImage("fa-thumbtack", ["class","ramadda-popup-pin", "id",pinId]);
+	var closeImage = HtmlUtils.getIconImage(icon_close, []);
+	var close = `<a href="javascript:HtmlUtils.closeDialog(${pinId});">${closeImage}</a>`;
+	var header = HtmlUtils.div(["style","text-align:right;","class","ramadda-popup-header"],pin +" " +close);
+	var popup = HtmlUtils.div(["id",id], header + text);
+
+	$("#" + selector.div.id).draggable();
+    $("#" + pinId).click(function() {
+	if($(this).attr("data-pinned")) {
+	    $(this).removeClass("ramadda-popup-pin-pinned");
+	    $(this).attr("data-pinned",false);
+	} else {
+	    $(this).addClass("ramadda-popup-pin-pinned");
+	    $(this).attr("data-pinned",true);
+	}
+    });
+
+
+
     pre: function(attrs, inner) {
         return this.tag("pre", attrs, inner);
     },
