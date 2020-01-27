@@ -1866,6 +1866,10 @@ function PiechartDisplay(displayManager, id, properties) {
 	    if (this.getProperty("colors") && this.getProperty("colors")!="default") {
 		return SUPER.getColorList.call(this);
 	    }
+	    if (this.getProperty("colorTable")) {
+		let ct =this.getColorTable();
+		return ct.colors;
+	    }	    
 	    return Utils.mergeLists(Utils.getColorTable("schemeset1",true),
 			     Utils.getColorTable("schemecategory",true));
 	},
