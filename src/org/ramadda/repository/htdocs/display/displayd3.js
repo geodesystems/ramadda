@@ -1773,7 +1773,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    let min = 0;
 	    let max = 0;
 	    if(valueField) {
-		values =  this.getColumnValues(records, recordField).values;
+		values =  this.getColumnValues(records, valueField).values;
 		values.map((v,idx)=>{
 		    min  = idx==0?v:Math.min(v,min);
 		    max  = idx==0?v:Math.max(v,max);
