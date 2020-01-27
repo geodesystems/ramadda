@@ -37,7 +37,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -56,6 +55,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.*;
+
+import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageOutputStream;
 
 
@@ -82,11 +83,12 @@ public class IO {
      * @param filename _more_
      * @return _more_
      *
+     *
+     * @throws Exception _more_
      * @throws FileNotFoundException _more_
-     * @throws IOException _more_
      */
     public static InputStream getInputStream(String filename)
-            throws FileNotFoundException, IOException {
+            throws FileNotFoundException, Exception {
         return getInputStream(filename, IO.class);
     }
 
@@ -99,16 +101,23 @@ public class IO {
      *
      * @return _more_
      *
+     *
+     * @throws Exception _more_
      * @throws FileNotFoundException _more_
-     * @throws IOException _more_
      */
     public static InputStream getInputStream(String filename, Class origin)
-            throws FileNotFoundException, IOException {
+            throws FileNotFoundException, Exception {
         checkFile(filename);
         File f = new File(filename);
         if (f.exists()) {
             return new FileInputStream(f);
         }
+
+        try {
+            URL url = new URL(filename);
+
+            return getInputStream(url);
+        } catch (java.net.MalformedURLException exc) {}
 
         return IOUtil.getInputStream(filename, origin);
     }
@@ -144,7 +153,8 @@ public class IO {
             InputStream is = Utils.getInputStream(file, Utils.class);
             if (is != null) {
                 byte[] bytes = IOUtil.readBytes(is);
-		return  ImageIO.read(new ByteArrayInputStream(bytes));
+
+                return ImageIO.read(new ByteArrayInputStream(bytes));
             }
             System.err.println("Could not read image:" + file);
         } catch (Exception exc) {
@@ -386,9 +396,9 @@ public class IO {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
-    public static String readContents(String contentName) throws IOException {
+    public static String readContents(String contentName) throws Exception {
         return readContents(contentName, IO.class);
     }
 
@@ -400,15 +410,21 @@ public class IO {
      * @param clazz _more_
      *
      * @return _more_
-     *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
     public static String readContents(String contentName, Class clazz)
-            throws IOException {
+            throws Exception {
         checkFile(contentName);
+        boolean isUrl = false;
+        try {
+            URL testUrl = new URL(contentName);
+            isUrl = true;
+        } catch (Exception ignoreThis) {}
+        if (isUrl) {
+            return readUrl(contentName);
+        }
 
         return IOUtil.readContents(contentName, clazz);
-
     }
 
 
@@ -434,12 +450,21 @@ public class IO {
      * @param dflt _more_
      *
      * @return _more_
-     *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
     public static String readContents(String contentName, String dflt)
-            throws IOException {
+            throws Exception {
         checkFile(contentName);
+        boolean isUrl = false;
+        try {
+            System.err.println("testing");
+            URL testUrl = new URL(contentName);
+            isUrl = true;
+            System.err.println("OK");
+        } catch (Exception ignoreThis) {}
+        if (isUrl) {
+            return readUrl(contentName);
+        }
 
         return IOUtil.readContents(contentName, dflt);
     }
@@ -458,15 +483,30 @@ public class IO {
      */
     public static String readUrl(String url) throws Exception {
         checkFile(url);
-        URL           u          = new URL(url);
-        URLConnection connection = new URL(url).openConnection();
-        connection.setRequestProperty("User-Agent", "ramadda");
-        connection.setRequestProperty("Host", u.getHost());
-        InputStream is = connection.getInputStream();
+        URL         u  = new URL(url);
+        InputStream is = getInputStream(u);
         String      s  = IOUtil.readContents(is);
         IOUtil.close(is);
 
         return s;
+    }
+
+    /**
+     * _more_
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static InputStream getInputStream(URL url) throws Exception {
+        checkFile(url.toString());
+        URLConnection connection = url.openConnection();
+        connection.setRequestProperty("User-Agent", "ramadda");
+        connection.setRequestProperty("Host", url.getHost());
+
+        return connection.getInputStream();
     }
 
 
@@ -670,10 +710,9 @@ public class IO {
      * @param file _more_
      *
      * @return _more_
-     *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
-    public static long writeTo(URL from, File file) throws IOException {
+    public static long writeTo(URL from, File file) throws Exception {
         URLConnection    connection = from.openConnection();
         InputStream is = Utils.getInputStream(from.toString(), Utils.class);
         int              length     = connection.getContentLength();
