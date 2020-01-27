@@ -725,9 +725,10 @@ public class CsvUtil {
             attrPattern = Pattern.compile(skipAttr, Pattern.MULTILINE);
         }
         //        System.out.println(skipAttr);
-        boolean   debug = false;
-        List<Row> rows  = new ArrayList<Row>();
-        String    s     = IO.readContents(file);
+        boolean debug = false;
+        //      debug = true;
+        List<Row> rows = new ArrayList<Row>();
+        String    s    = IO.readContents(file);
         for (int i = 0; i < changeFrom.size(); i++) {
             s = s.replaceAll(changeFrom.get(i), changeTo.get(i));
         }
@@ -772,15 +773,12 @@ public class CsvUtil {
                 Row     row         = new Row();
                 boolean checkHeader = true;
                 while (true) {
-                    toks = Utils.tokenizeChunk(tr, "<td", "</td");
-                    if (checkHeader && (toks == null)) {
-                        toks = Utils.tokenizeChunk(tr, "<th", "</th");
-                    }
+                    toks = Utils.tokenizePattern(tr, "(<td|<th)",
+                            "(</td|</th)");
                     if (toks == null) {
                         break;
                     }
                     String td = toks[0].trim();
-                    //              System.out.println("td:" + td.trim());
                     tr = toks[1];
                     int idx = td.indexOf(">");
                     if ((attrPattern != null) && (idx >= 0)) {
@@ -2618,8 +2616,7 @@ public class CsvUtil {
                     String       prefix = args.get(++i).trim();
                     String       suffix = args.get(++i).trim();
                     info.getProcessor().addProcessor(
-                        new Converter.Geocoder(
-                            cols, prefix, suffix));
+                        new Converter.Geocoder(cols, prefix, suffix));
 
                     continue;
                 }
@@ -2683,16 +2680,15 @@ public class CsvUtil {
                 }
 
 
-		if (arg.equals("-truncate")) {
+                if (arg.equals("-truncate")) {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
-                    int    col     = new Integer(args.get(++i));
-		    int    length     = new Integer(args.get(++i));
+                    int    col    = new Integer(args.get(++i));
+                    int    length = new Integer(args.get(++i));
                     String suffix = args.get(++i);
                     info.getProcessor().addProcessor(
-                        new Converter.Truncater(
-                            col, length, suffix));
+                        new Converter.Truncater(col, length, suffix));
 
                     continue;
                 }
@@ -3551,6 +3547,7 @@ public class CsvUtil {
         p = p.replaceAll("_plus_", "\\\\+");
         p = p.replaceAll("_nl_", "\n");
         p = p.replaceAll("_quote_", "\"");
+
         return p;
     }
 

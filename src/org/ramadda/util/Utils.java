@@ -2681,7 +2681,11 @@ public class Utils extends IO {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {}
+    public static void main(String[] args) throws Exception {
+        String s = "<th >Alabama</th><td >4,887,871</td>";
+        tokenizePattern(s, "(<td|<th)", "(</td|</th)");
+        //      tokenizeChunk(s, "<td", "</td");
+    }
 
 
     /**
@@ -3392,6 +3396,43 @@ public class Utils extends IO {
 
         return new String[] { chunk, s };
     }
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param start _more_
+     * @param end _more_
+     *
+     * @return _more_
+     */
+    public static String[] tokenizePattern(String s, String start,
+                                           String end) {
+        //String s = "<th >Alabama</th><td >4,887,871</td>";
+        Pattern p1 = Pattern.compile(start);
+        Matcher m1 = p1.matcher(s);
+        if ( !m1.find()) {
+            //      System.err.println("no match 1");
+            return null;
+        }
+        s = s.substring(m1.end());
+        //      System.err.println("S1:" + s);
+        Pattern p2 = Pattern.compile(end);
+        Matcher m2 = p2.matcher(s);
+        if ( !m2.find()) {
+            //      System.err.println("no match 2");
+            return null;
+        }
+        String chunk = s.substring(0, m2.start());
+        s = s.substring(m2.end());
+
+        //      System.err.println("C:" + chunk +" s:" + s);
+        return new String[] { chunk, s };
+    }
+
+
+
 
 
     /**
