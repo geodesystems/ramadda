@@ -1843,6 +1843,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         getFieldById: function(fields, id) {
             if (!id) return null;
+	    id = String(id).trim();
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) return null;
@@ -2508,6 +2509,39 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.requiresGeoLocation()) {
 		dataList = dataList.filter(r=>{return r.hasLocation();});
 	    }
+
+	    if(this.getProperty("excludeRow")) {
+		//col,pattern;
+		let exclude = [];
+		this.getProperty("excludeRow").split(";").map(tok=>{
+		    [col,val]  = tok.split(",");
+		    exclude.push([this.getFieldById(null,col),new RegExp(val)]);
+		});
+		dataList = dataList.filter(r=>{
+		    let ok = true;
+		    exclude.map(pair=>{
+			if(String(r.getValue(pair[0].getIndex())).match(pair[1])) ok = false;
+		    });
+		    return ok;
+		});
+	    }
+
+	    if(this.getProperty("matchRow")) {
+		//col,pattern;
+		let match = [];
+		this.getProperty("matchRow").split(";").map(tok=>{
+		    [col,val]  = tok.split(",");
+		    match.push([this.getFieldById(null,col),new RegExp(val)]);
+		});
+		dataList = dataList.filter(r=>{
+		    let ok = true;
+		    match.map(pair=>{
+			if(!String(r.getValue(pair[0].getIndex())).match(pair[1])) ok = false;
+		    });
+		    return ok;
+		});
+	    }
+
 
 	    //	    var t2=  new Date();
 	    //	    Utils.displayTimes("filterData",[t1,t2]);
