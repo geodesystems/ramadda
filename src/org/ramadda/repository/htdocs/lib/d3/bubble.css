@@ -1,0 +1,23 @@
+.circle-overlay {
+    font-size: 16px;
+    border-radius: 50%;
+    position: absolute;
+    overflow: hidden;
+}
+.circle-overlay__inner {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+.bubblechart-hidden {
+    display: none;
+}
+.node-icon--faded {
+    opacity: 0.5;
+}
+.bubblechart-legend-size circle {
+    fill: rgb(31, 119, 180);
+}
+.node-icon {
+    cursor:pointer;
+}
