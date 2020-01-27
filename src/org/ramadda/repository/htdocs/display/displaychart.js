@@ -2327,7 +2327,6 @@ function BubbleDisplay(displayManager, id, properties) {
                 height: '90%'
             });
             chartOptions.sizeAxis = {
-
 	    }
 
             chartOptions.colorAxis = {
@@ -2345,13 +2344,23 @@ function BubbleDisplay(displayManager, id, properties) {
                 },
                 stroke: "#666"
             };
-            chartOptions.hAxis = {};
-            chartOptions.vAxis = {};
+
             header = this.getDataValues(dataList[0]);
+	    chartOptions.hAxis = chartOptions.hAxis||{};
+            chartOptions.vAxis = chartOptions.vAxis||{};
+
+	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
+	    chartOptions.hAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
+
             chartOptions.hAxis.format = this.getProperty("hAxisFormat", null);
             chartOptions.vAxis.format = this.getProperty("vAxisFormat", null);
+
             chartOptions.hAxis.title = this.getProperty("hAxisTitle", header.length > 1 ? header[1] : null);
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
+
+//	    console.log(JSON.stringify(chartOptions.vAxis,null,2));
+//	    console.log(JSON.stringify(chartOptions.hAxis,null,2));
+
             return new google.visualization.BubbleChart(chartDiv); 
         }
 
@@ -2902,7 +2911,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
 
 
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
-	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
+	    chartOptions.hAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 
 	    /*
 	      chartOptions.trendlines =  {
