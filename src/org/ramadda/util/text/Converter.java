@@ -2168,8 +2168,8 @@ public abstract class Converter extends Processor {
                 return null;
             }
             for (int i = 0; i < row.size(); i++) {
-                String s  = row.getString(i);
-                String ss = firstRow.getString(i);
+                String s  = i<row.size()?row.getString(i):"";
+                String ss = i<firstRow.size()?firstRow.getString(i):"";
                 ss = ss + delimiter + s;
                 firstRow.set(i, ss);
             }
