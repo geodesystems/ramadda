@@ -1915,8 +1915,10 @@ var HtmlUtils = {
         }
         this.loadedGoogleCharts = true;
         if(!window["google"]) return;
-        google.charts.load("43", {
+	//43
+        google.charts.load("current", {
             packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', 'sankey', 'wordtree', 'timeline', 'gauge','orgchart']
+//	    packages: ['corechart', 'calendar', 'table', 'bar', 'treemap',  'wordtree', 'timeline', 'gauge','orgchart']
         });
     },
 
