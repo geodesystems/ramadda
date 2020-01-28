@@ -857,12 +857,12 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    public List<Row> tokenizeJson(String file,
+    public List<Row> tokenizeJson(String s,
                                   Hashtable<String, String> props)
             throws Exception {
 
         List<Row> rows       = new ArrayList<Row>();
-        String    s          = IO.readContents(file);
+
 
         JSONArray array      = null;
         String    arrayPath  = props.get("arrayPath");
@@ -3386,7 +3386,16 @@ public class CsvUtil {
                                            chunkPattern, tokenPattern));
         } else if (doJson) {
             Hashtable<String, String> props = parseProps(jsonProps);
-            tokenizedRows.add(tokenizeJson(files.get(0), props));
+	    //xxxx
+	    String    s=null;
+	    if(files.size()>0) {
+		s = IO.readContents(files.get(0));
+	    } else if(inputStream!=null) {
+		s  = IO.readInputStream(inputStream);
+	    } else {
+		throw new Exception("Error processing json: no file given");
+	    }
+            tokenizedRows.add(tokenizeJson(s, props));
         } else if (doPattern) {
             tokenizedRows.add(tokenizePattern(files.get(0), tokenizeHeader,
                     tokenizePattern));

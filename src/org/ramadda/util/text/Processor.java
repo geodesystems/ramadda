@@ -322,14 +322,6 @@ public abstract class Processor extends CsvOperator {
         @Override
         public Row processRow(TextReader info, Row row, String line)
                 throws Exception {
-            if (row.get(0).equals("Mean")) {
-                xcnt++;
-            } else {
-                xcnt = 0;
-            }
-            if ((xcnt > 5) && (xcnt < 20)) {
-                System.out.println("\tProcessor xcnt:" + xcnt);
-            }
             info.setCurrentOperator(this);
             Object  skipTo      = row.getSkipTo();
             boolean sawBufferer = false;

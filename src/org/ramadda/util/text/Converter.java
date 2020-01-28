@@ -154,8 +154,8 @@ public abstract class Converter extends Processor {
                 }
             }
 
-            //      System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
-            //      System.err.println("COLS:" + result);
+//	    System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
+//	    System.err.println("COLS:" + result);
             return new Row(result);
         }
 
@@ -920,7 +920,7 @@ public abstract class Converter extends Processor {
 
                 boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
                                         defaultChartable);
-                if (id.indexOf("date") >= 0) {
+                if (false && id.indexOf("date") >= 0) {
                     type = "date";
                 } else if (id.equals("year")) {
                     type   = "date";
