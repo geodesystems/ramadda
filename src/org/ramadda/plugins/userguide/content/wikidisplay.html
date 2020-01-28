@@ -155,6 +155,30 @@ uniqueField=&lt;field id&gt;
 
 
 
+[ug::subheading {Color} ]
+RAMADDA provides a large number of built-in color tables.
+When editing the wiki text if you right-lick inside
+of a <i>{{display ...}}</i> tag a context menu will be shown that will list the available color tables.
+Colors are defined and can also be modified the following ways.
+
+<pre>
+colorTable="some color table name" - specify the color table
+
+colorTable="colors:red,green,blue,...."   - explicit list of colors
+
+colorTable.&lt;field name&gt; ="some color table"  - specify a color table for one of the "color by" fields
+
+colorTableInverse="true"   -reverse the colors
+
+colorTableAlpha="0.0 - 1.0" - specify a transparency value
+
+colorBy=&lt;field name&gt; - specify a data field to color by
+
+colorByFields=&lt;field1,field2,...,fieldN&gt; - specify a number of fields to allow the user to choose how to color
+
+</pre>
+
+
 [ug::subheading {Display Groups} groups] 
 There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
 The group allows for different displays to communicate with each other 
@@ -323,7 +347,7 @@ find a containing map feature. That map feature is then colored as defined below
 
 <li> <i>pruneFeatures</i>. If set to true than any map feature that does not have a corresponding point will not be shown.
 
-<li> The <i>colorBy</i> attribute specifies the field that is used to color the points or the map segments. 
+r<li> The <i>colorBy</i> attribute specifies the field that is used to color the points or the map segments. 
 The <i>colorTable</i> attribute specifies a color table to
 use and the <i>colorByMin</i> and <i>colorByMax</i> attributes are option and are used to define a color range.
 

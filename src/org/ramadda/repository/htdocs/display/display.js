@@ -811,16 +811,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         displayColorTable: function(ct, domId, min, max, args) {
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
         },
-        getColorTableName: function(name) {
-            var ct;
-            if (name) {
-                ct = this.getProperty(name);
-            } else {
-                ct = this.getProperty("colorBar", this.getProperty("colorTable"));
-            }
-            if (ct == "none") return null;
-            return ct;
-        },
 	getColorList:function() {
 	    if(this.colorList && this.colorList.length>0) {
 		return this.colorList;
@@ -837,38 +827,37 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return this.colorList;
 	},
-
-	addAlpha: function(colors) {
-	    var alpha = this.getProperty("colorTableAlpha");
-	    if(!alpha) return colors;
-	    colors=  Utils.cloneList(colors);
-	    var ac = [];
-	    colors.map((c)=>{
-		ac.push(Utils.addAlphaToColor(c,alpha));
-	    });
-	    return ac;
+        getColorTableName: function(name) {
+            let ct = null;
+            if (name) {
+                ct = this.getProperty(name);
+            } else {
+		var colorBy = this.getProperty("colorBy");
+		if(colorBy) {
+                    ct = this.getProperty("colorTable." + colorBy);
+		}
+		if(!ct)
+                    ct = this.getProperty("colorBar", this.getProperty("colorTable"));
+            }
+            if (ct == "none") return null;
+            return ct;
         },
-
-        convertColors: function(colors) {
-	    colors = this.addAlpha(colors);
-	    if(this.getProperty("colorTableInverse")) {
-		let tmp = [];
-		for(let i=colors.length-1;i>=0;i--)
-		    tmp.push(colors[i]);
-		colors = tmp;
-	    }
-	    return colors;
-	},
-        getColorTable: function(justColors, name, dflt) {
-
+	getColorTable: function(justColors, name, dflt) {
             var colorTable = this.getColorTableName(name);
             if (!colorTable) {
                 colorTable = dflt;
             }
 	    var list;
             if (colorTable) {
-                var ct = Utils.ColorTables[colorTable];
-                if (ct && justColors) return this.convertColors(ct.colors);
+                let ct = null;
+ 		if(colorTable.startsWith("colors:")) {
+		    list = colorTable.substring("colors:".length).split(",");
+                    return this.convertColors(list);
+		}
+                ct = Utils.ColorTables[colorTable];
+                if (ct && justColors) {
+		    return this.convertColors(ct.colors);
+		}
                 if (!ct && name) {
                     return this.convertColors(colorTable.split(","));
                 }
@@ -881,6 +870,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return null;
         },
+	addAlpha: function(colors) {
+	    var alpha = this.getProperty("colorTableAlpha");
+	    if(!alpha) return colors;
+	    colors=  Utils.cloneList(colors);
+	    var ac = [];
+	    colors.map((c)=>{
+		ac.push(Utils.addAlphaToColor(c,alpha));
+	    });
+	    return ac;
+        },
+        convertColors: function(colors) {
+	    colors = this.addAlpha(colors);
+	    if(this.getProperty("colorTableInverse")) {
+		let tmp = [];
+		for(let i=colors.length-1;i>=0;i--)
+		    tmp.push(colors[i]);
+		colors = tmp;
+	    }
+	    return colors;
+	},
+
         getColorByColors: function(records, dfltColorTable) {
             var colorBy = this.getProperty("colorBy");
             if (!colorBy) {

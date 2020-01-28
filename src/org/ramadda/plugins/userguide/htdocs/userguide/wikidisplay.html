@@ -240,7 +240,31 @@ uniqueField=&lt;field id&gt;
 
 
 
-<a name="groups"></a><p><div class="ramadda-help-heading">5.2.5 <a href="#groups">Display Groups</a></div>  
+<p><div class="ramadda-help-heading">5.2.5 Color</div> 
+RAMADDA provides a large number of built-in color tables.
+When editing the wiki text if you right-lick inside
+of a <i>{{display ...}}</i> tag a context menu will be shown that will list the available color tables.
+Colors are defined and can also be modified the following ways.
+
+<pre>
+colorTable="some color table name" - specify the color table
+
+colorTable="colors:red,green,blue,...."   - explicit list of colors
+
+colorTable.&lt;field name&gt; ="some color table"  - specify a color table for one of the "color by" fields
+
+colorTableInverse="true"   -reverse the colors
+
+colorTableAlpha="0.0 - 1.0" - specify a transparency value
+
+colorBy=&lt;field name&gt; - specify a data field to color by
+
+colorByFields=&lt;field1,field2,...,fieldN&gt; - specify a number of fields to allow the user to choose how to color
+
+</pre>
+
+
+<a name="groups"></a><p><div class="ramadda-help-heading">5.2.6 <a href="#groups">Display Groups</a></div>  
 There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
 The group allows for different displays to communicate with each other 
 (e.g., creating a new chart, map click, animation, etc), the inheritance of
@@ -329,7 +353,7 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-<a name="displays"></a><p><div class="ramadda-help-heading">5.2.6 <a href="#displays">The Displays</a></div> 
+<a name="displays"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#displays">The Displays</a></div> 
 
 <a name="entrylist"></a>
 <div class="ramadda-help-subsubheading"><a href="#entrylist">Search form</a>
@@ -404,7 +428,7 @@ find a containing map feature. That map feature is then colored as defined below
 
 <li> <i>pruneFeatures</i>. If set to true than any map feature that does not have a corresponding point will not be shown.
 
-<li> The <i>colorBy</i> attribute specifies the field that is used to color the points or the map segments. 
+r<li> The <i>colorBy</i> attribute specifies the field that is used to color the points or the map segments. 
 The <i>colorTable</i> attribute specifies a color table to
 use and the <i>colorByMin</i> and <i>colorByMax</i> attributes are option and are used to define a color range.
 
@@ -927,7 +951,7 @@ labelFieldsTemplate=&quot;{name}  Age: {years}  Birth Place: {birth_place}  Race
 labelFields=&quot;name,race,birth_place,years&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image33"></a><div class="cimg"><a href="images/charts/timeline.png"><img  src="images/charts/timeline.png"  alt="Timeline" ></a><br><span class="caption">Image 33: Timeline</span></div>
 
 
-<a name="derived"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#derived">Derived Data</a></div> 
+<a name="derived"></a><p><div class="ramadda-help-heading">5.2.8 <a href="#derived">Derived Data</a></div> 
 
 Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
 <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
@@ -945,7 +969,7 @@ Percentage values can be calculated with the <i>showPercent</i> attribute. This 
 percent value.
 
 
-<a name="scaleoffset"></a><p><div class="ramadda-help-heading">5.2.8 <a href="#scaleoffset">Scaling and offset of data</a></div> 
+<a name="scaleoffset"></a><p><div class="ramadda-help-heading">5.2.9 <a href="#scaleoffset">Scaling and offset of data</a></div> 
 The data values and or displayed unit of the point data that is displayed in chart can be modified
 by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
 with the following attributes:
@@ -967,7 +991,7 @@ You can specify values specific for a particular field using:
 </pre></div>
 
 
-<a name="displayProperty"></a><p><div class="ramadda-help-heading">5.2.9 <a href="#displayProperty">Setting shared properties</a></div> 
+<a name="displayProperty"></a><p><div class="ramadda-help-heading">5.2.10 <a href="#displayProperty">Setting shared properties</a></div> 
 Sometimes there are a number of displays on a single page that share the same set of properties.
 For example, this <a href="https://geodesystems.com/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
 shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
@@ -984,7 +1008,7 @@ tag global properties can be specified that are applicable to all displays on th
 </pre></div>
 
 
-<a name="filters"></a><p><div class="ramadda-help-heading">5.2.10 <a href="#filters">Filtering data</a></div> 
+<a name="filters"></a><p><div class="ramadda-help-heading">5.2.11 <a href="#filters">Filtering data</a></div> 
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>
