@@ -777,7 +777,6 @@ function DisplayThing(argId, argProperties) {
         initTooltip: function() {
             //don't do this for now                $( document ).tooltip();
         },
-	xxxx:'y',
         formatNumber: function(number) {
 	    if(isNaN(number)) {
 		return "--";
@@ -788,7 +787,6 @@ function DisplayThing(argId, argProperties) {
 	    return f;
 	},
         formatNumberInner: function(number) {
-
 
             if (!this.getProperty("format", true)) return number;
             if (this.getProperty("formatNumberComma", false)) 
@@ -11905,6 +11903,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
+
+	    let debug = false;
+	    let debugRows = 3;
+
+	    if(debug) {
+		for(var i=0;i<dataTable.getNumberOfColumns();i++)
+		    console.log("col:" + i +" " + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
+	    }
+
 	    var annotationLabelField = this.getFieldById(null,this.getProperty("annotationLabelField"));
 	    var annotationFields = this.getFieldsByIds(null,this.getProperty("annotationFields"));
 	    var annotations = this.getProperty("annotations");
@@ -12082,27 +12089,44 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		tooltip = `<div style='padding:8px;'>'${tooltip}</div>`;
 
                 let newRow = [];
+		if(debug && rowIdx<debugRows)
+		    console.log("row:");
+
                 for (var j = 0; j < row.length; j++) {
                     var value = row[j];
 		    if(forceStrings) {
 			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
 		    }
+
 		    if(j>0 && fixedValueS) {
 			newRow.push(fixedValueN);
+			if(debug && rowIdx<debugRows)
+			    console.log("\t fixed:" + fixedValueN);
 		    } else {
                         if(formatNumbers) {
-			    if(typeof value == "number")
-				value = this.formatNumber(value);
+			    if(typeof value == "number") {
+				value = {v:value,f:String(this.formatNumber(value))};
+				if(debug && rowIdx<debugRows)
+				    console.log("\t format:" + value +" " + (typeof value));
+			    }
 			}
+			if(debug && rowIdx<debugRows)
+			    console.log("\t value:" + value +" " + (typeof value));
 			newRow.push(value);
 		    }
                     if (j == 0 && props.includeIndex) {
                         //is the index so don't add a tooltip
                     } else {
-			if(addStyle)
+			if(addStyle) {
 			    newRow.push(color);
-			if(addTooltip)
+			    if(debug && rowIdx<debugRows)
+				console.log("\t style:" + color);
+			}
+			if(addTooltip) {
                             newRow.push(tooltip);
+			    if(debug && rowIdx<debugRows)
+				console.log("\t tooltip:");
+			}
                     }
 		    if(j>0 && fixedValueS) {
 			break;
@@ -12124,6 +12148,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    label =""+( annotationLabelField?theRecord.getValue(annotationLabelField.getIndex()):(annotationCnt))
 			    if(label.trim().length==0) label = ""+annotationCnt;
 			}
+			if(debug && rowIdx<debugRows) {
+			    console.log("\t label:" + label);
+			    console.log("\t desc:" + desc);
+			}
 			newRow.push(label);
 			newRow.push(desc);
 		    } else {
@@ -12134,14 +12162,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(indexToAnnotation) {
 		    var annotation = indexToAnnotation[rowIdx];
 		    if(annotation) {
+			if(debug && rowIdx<debugRows) {
+			    console.log("\t annotation:" + annotation.label);
+			    console.log("\t desc:" + annotation.description);
+			}
 			newRow.push(annotation.label);
 			newRow.push(annotation.description);
 		    } else {
+			if(debug && rowIdx<debugRows) {
+			    console.log("\t annotation:" + "null");
+			    console.log("\t desc:" + "null");
+			}
 			newRow.push(null);
 			newRow.push(null);
 		    }
 		}
                 justData.push(newRow);
+		if(rowIdx>debugRows) break;
             }
             dataTable.addRows(justData);
             if (didColorBy) {
@@ -13261,12 +13298,10 @@ function TableDisplay(displayManager, id, properties) {
 	},
 	formatNumber: function(n) {
 	    if(isNaN(n))
-                return {v:n,f:"--"};
+                return this.getProperty("nanValue", "--");
 	    return SUPER.formatNumber.call(this, n);
 	},
-        xmakeDataTable: function(dataList, props, selectedFields) {
-	    //xxxxx
-	    //		dataList = this.filterData(dataList, selectedFields,false,true);
+        xxxxmakeDataTable: function(dataList, props, selectedFields) {
             var rows = this.makeDataArray(dataList);
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {

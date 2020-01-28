@@ -627,7 +627,6 @@ function DisplayThing(argId, argProperties) {
         initTooltip: function() {
             //don't do this for now                $( document ).tooltip();
         },
-	xxxx:'y',
         formatNumber: function(number) {
 	    if(isNaN(number)) {
 		return "--";
@@ -638,7 +637,6 @@ function DisplayThing(argId, argProperties) {
 	    return f;
 	},
         formatNumberInner: function(number) {
-
 
             if (!this.getProperty("format", true)) return number;
             if (this.getProperty("formatNumberComma", false)) 
