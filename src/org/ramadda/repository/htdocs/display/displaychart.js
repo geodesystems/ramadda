@@ -805,7 +805,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         tableHeaderMouseover: function(i, tooltip) {},
         makeDataTable: function(dataList, props, selectedFields) {
-	    //            dataList = this.filterData(dataList, selectedFields,false,true);
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -2259,11 +2258,18 @@ function TableDisplay(displayManager, id, properties) {
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
                 var row = rows[rowIdx];
                 for (var colIdx = 0; colIdx < row.length; colIdx++) {
-                    if ((typeof row[colIdx]) == "string") {
+		    var t = (typeof row[colIdx]);
+                    if (t == "string") {
                         row[colIdx] = row[colIdx].replace(/\n/g, "<br>");
 			if(row[colIdx].startsWith("http:") || row[colIdx].startsWith("https:")) {
 			    row[colIdx] = "<a href='" +row[colIdx] +"'>" + row[colIdx]+"</a>";
 			}
+		    } else if(t == "number") {
+			if(isNaN(row[colIdx])) 
+			    row[colIdx] = "--";
+			else
+			    //Prepend a " ", if we don't then the -- above doesn't hold
+			    row[colIdx] = " " +row[colIdx];			    
 		    }
                 }
                 data.push(row);

@@ -362,6 +362,8 @@ function DisplayThing(argId, argProperties) {
                 return Utils.formatDateMonthDayYear(date);
 	    } else if (fmt == "monthday") {
                 return Utils.formatDateMonthDay(date);
+	    } else if (fmt == "mon_day") {
+                return Utils.formatDateMonDay(date);
 	    } else if (fmt == "mdy") {
                 return Utils.formatDateMDY(date);
 	    } else if (fmt == "hhmm") {
@@ -626,6 +628,9 @@ function DisplayThing(argId, argProperties) {
             //don't do this for now                $( document ).tooltip();
         },
         formatNumber: function(number) {
+	    if(isNaN(number)) {
+		return "--";
+	    }
 	    let f = this.formatNumberInner(number);
 	    let fmt = this.getProperty("numberTemplate");
 	    if(fmt) f = fmt.replace("${number}", f);
