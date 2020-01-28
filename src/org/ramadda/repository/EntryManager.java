@@ -4394,8 +4394,32 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public File getCacheFile(Entry entry, String filename) {
-        return getStorageManager().getCacheFile(entry.getId() + "_"
-                + entry.getChangeDate() + "_" + filename);
+        File f = getStorageManager().getCacheFile(entry.getId() + "_"
+                     + entry.getChangeDate() + "_" + filename, false);
+        //        System.err.println("getCacheFile:" + f);
+        if (f.exists()) {
+            try {
+                List<Metadata> mtdl = getMetadataManager().findMetadata(
+                                          getRepository().getTmpRequest(),
+                                          entry, "cachetime", true);
+                if ((mtdl != null) && (mtdl.size() > 0)) {
+                    int  seconds = Integer.parseInt(mtdl.get(0).getAttr1());
+                    Date now     = new Date();
+                    long ftime   = f.lastModified();
+                    long diff    = (now.getTime() - ftime) / 1000;
+                    if (diff > seconds) {
+                        //                        System.err.println("deleting file:" + f);
+
+                        f.delete();
+                    }
+                }
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+            //      f.setLastModified(new Date().getTime());
+        }
+
+        return f;
     }
 
     /**

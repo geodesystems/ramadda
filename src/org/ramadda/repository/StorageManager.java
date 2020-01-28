@@ -656,8 +656,23 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @return  the file
      */
     public File getTmpDirFile(TempDir tmpDir, String file) {
+        return getTmpDirFile(tmpDir, file, true);
+    }
+
+    /**
+     * _more_
+     *
+     * @param tmpDir _more_
+     * @param file _more_
+     * @param andTouch _more_
+     *
+     * @return _more_
+     */
+    public File getTmpDirFile(TempDir tmpDir, String file, boolean andTouch) {
         File f = new File(IOUtil.joinDir(tmpDir.getDir(), file));
-        dirTouched(tmpDir, f);
+        if (andTouch) {
+            dirTouched(tmpDir, f);
+        }
 
         return checkReadFile(f);
     }
@@ -852,7 +867,19 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @return  the File
      */
     public File getCacheFile(String file) {
-        return getTmpDirFile(getCacheDir(), file);
+        return getCacheFile(file, true);
+    }
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param andTouch _more_
+     *
+     * @return _more_
+     */
+    public File getCacheFile(String file, boolean andTouch) {
+        return getTmpDirFile(getCacheDir(), file, andTouch);
     }
 
 
