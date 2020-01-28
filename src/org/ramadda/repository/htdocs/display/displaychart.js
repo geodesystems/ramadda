@@ -851,7 +851,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 		var data = [];
 		var dataTable = new google.visualization.DataTable();
-	    
+		
 
 		dataTable.addColumn("date", "Date");
 		groupValues.map(group=>{
@@ -924,7 +924,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             'p': {
 				'html': true
                             }
-                    });
+			});
 		    if(j>0 && fixedValueS) {
 			break;
 		    }
@@ -1143,7 +1143,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			newRow.push(value);
 		    }
                     if (j == 0 && props.includeIndex) {
-                        //is the index so don't add a tooltip
+			/*note to self - an inline comment breaks the minifier is the index so don't add a tooltip */
                     } else {
 			if(addStyle) {
 			    newRow.push(color);
@@ -1206,8 +1206,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		}
                 justData.push(newRow);
-		if(rowIdx>debugRows) break;
-            }
+		if(debug && rowIdx>debugRows) break;
+	    }
             dataTable.addRows(justData);
             if (didColorBy) {
 		colorBy.displayColorTable();
@@ -1874,7 +1874,7 @@ function PiechartDisplay(displayManager, id, properties) {
             } else {
                 style += "height:" + "100%;";
             }
-//	    style += "border:1px solid green;"
+	    //	    style += "border:1px solid green;"
 	    style += "padding:5px;"
 	    
             divAttrs.push(style);
@@ -1887,8 +1887,8 @@ function PiechartDisplay(displayManager, id, properties) {
 		    fontSize:12,
                 },
                 showColorCode: true,
-//		isHtml: true,
-//		ignoreBounds: true,
+		//		isHtml: true,
+		//		ignoreBounds: true,
             };
 	    this.chartOptions.legend = {'position':this.getProperty("legendPosition", 'right'),'alignment':'center'};
             if (this.getProperty("bins", null)) {
@@ -1935,7 +1935,7 @@ function PiechartDisplay(displayManager, id, properties) {
 		return ct.colors;
 	    }	    
 	    return Utils.mergeLists(Utils.getColorTable("schemeset1",true),
-			     Utils.getColorTable("schemecategory",true));
+				    Utils.getColorTable("schemecategory",true));
 	},
 
         makeDataTable: function(dataList, props, selectedFields) {
@@ -2040,8 +2040,8 @@ function PiechartDisplay(displayManager, id, properties) {
 		    this.uniqueValues.push(s);
 		}
 	    });
-//	    list =[];
-//	    for(i=0;i<20;i++)list.push([""+i,5]);
+	    //	    list =[];
+	    //	    for(i=0;i<20;i++)list.push([""+i,5]);
 
 
             dataTable.addRows(list);
@@ -2439,8 +2439,8 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.hAxis.title = this.getProperty("hAxisTitle", header.length > 1 ? header[1] : null);
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
 
-//	    console.log(JSON.stringify(chartOptions.vAxis,null,2));
-//	    console.log(JSON.stringify(chartOptions.hAxis,null,2));
+	    //	    console.log(JSON.stringify(chartOptions.vAxis,null,2));
+	    //	    console.log(JSON.stringify(chartOptions.hAxis,null,2));
 
             return new google.visualization.BubbleChart(chartDiv); 
         }
@@ -3040,7 +3040,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
-//	    console.log(JSON.stringify(chartOptions,null,2));
+	    //	    console.log(JSON.stringify(chartOptions,null,2));
 
             return chartOptions;
         },
