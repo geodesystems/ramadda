@@ -15340,6 +15340,10 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
                 return;
             }
 	    
+            let colorByField = this.getFieldById(null, this.getProperty("colorBy","category"));
+	    let valueField = this.getFieldById(null, this.getProperty("valueField"));
+	    if(colorByField)
+		this.setProperty("sortFields",colorByField.getId());
 	    var records = this.filterData();
 	    if (!records) {
                 return;
@@ -15349,9 +15353,6 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    let html = HtmlUtil.tag("svg", ["id", this.getDomId(ID_BUBBLES),
 					    "width","100%","height","700", "font-family","sans-serif","font-size","10", "text-anchor","middle"])
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-
-            let colorByField = this.getFieldById(null, this.getProperty("colorBy","category"));
-	    let valueField = this.getFieldById(null, this.getProperty("valueField"));
 	    let values;
 	    let min = 0;
 	    let max = 0;
