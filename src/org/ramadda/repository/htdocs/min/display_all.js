@@ -512,6 +512,8 @@ function DisplayThing(argId, argProperties) {
                 return Utils.formatDateMonthDayYear(date);
 	    } else if (fmt == "monthday") {
                 return Utils.formatDateMonthDay(date);
+	    } else if (fmt == "mon_day") {
+                return Utils.formatDateMonDay(date);
 	    } else if (fmt == "mdy") {
                 return Utils.formatDateMDY(date);
 	    } else if (fmt == "hhmm") {
@@ -776,6 +778,9 @@ function DisplayThing(argId, argProperties) {
             //don't do this for now                $( document ).tooltip();
         },
         formatNumber: function(number) {
+	    if(isNaN(number)) {
+		return "--";
+	    }
 	    let f = this.formatNumberInner(number);
 	    let fmt = this.getProperty("numberTemplate");
 	    if(fmt) f = fmt.replace("${number}", f);
@@ -11770,7 +11775,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         tableHeaderMouseover: function(i, tooltip) {},
         makeDataTable: function(dataList, props, selectedFields) {
-	    //            dataList = this.filterData(dataList, selectedFields,false,true);
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -13224,11 +13228,18 @@ function TableDisplay(displayManager, id, properties) {
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
                 var row = rows[rowIdx];
                 for (var colIdx = 0; colIdx < row.length; colIdx++) {
-                    if ((typeof row[colIdx]) == "string") {
+		    var t = (typeof row[colIdx]);
+                    if (t == "string") {
                         row[colIdx] = row[colIdx].replace(/\n/g, "<br>");
 			if(row[colIdx].startsWith("http:") || row[colIdx].startsWith("https:")) {
 			    row[colIdx] = "<a href='" +row[colIdx] +"'>" + row[colIdx]+"</a>";
 			}
+		    } else if(t == "number") {
+			if(isNaN(row[colIdx])) 
+			    row[colIdx] = "--";
+			else
+			    //Prepend a " ", if we don't then the -- above doesn't hold
+			    row[colIdx] = " " +row[colIdx];			    
 		    }
                 }
                 data.push(row);
@@ -15331,7 +15342,7 @@ var DISPLAY_TEMPLATE = "template";
 var DISPLAY_SLIDES = "slides";
 var DISPLAY_IMAGES = "images";
 var DISPLAY_TOPFIELDS = "topfields";
-var DISPLAY_PERCENTCHANGE = "percentchange";
+
 
 
 
@@ -15385,13 +15396,6 @@ addGlobalDisplayType({
 
 
 
-addGlobalDisplayType({
-    type: DISPLAY_PERCENTCHANGE,
-    label: "Percent Change",
-    requiresData: true,
-    forUser: true,
-    category: CATEGORY_MISC
-});
 
 
 
@@ -16687,108 +16691,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 
 
-
-function RamaddaPercentchangeDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PERCENTCHANGE, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Percent change Attributes",
-					'template="${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}"',
-					'fieldLabel=""',
-					'sortFields=false'
-				    ]);
-	},
-	updateUI: function() {
-	    var records = this.filterData();
-	    if(!records) return;
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
-	    fields = this.getFieldsOfType(fields, "numeric");
-	    let  record1 = records[0];
-	    let  record2 = records[records.length-1];
-	    var template = this.getProperty("template",null);
-	    var headerTemplate = this.getProperty("headerTemplate","");
-	    var footerTemplate = this.getProperty("footerTemplate","");
-	    let date1 = record1.getDate();
-	    let date2 = record2.getDate();
-	    let label1 ="Start Value";
-	    let label2 ="End Value";
-	    let hours = 1;
-	    let days = 1;
-	    let years = 1;
-	    let months = 1;
-	    if(date1)
-		label1 = this.formatDate(date1);
-	    if(date2)
-		label2 = this.formatDate(date2);
-	    if(date1 && date2) {
-		var diff = date2.getTime() - date1.getTime();
-		days = diff/1000/60/60/24;
-		hours = days*24;
-		years = days/365;
-		months = years*12;
-	    }
-            let html =  "";
-	    if(template) {
-		html= headerTemplate;
-	    } else {
-		html = "<br>";		
-		html += HtmlUtils.openTag("table", ["class", "stripe nowrap ramadda-table", "id", this.getDomId("percentchange")]);
-		html += HtmlUtils.openTag("thead", []);
-		html += "\n";
-		html += HtmlUtils.tr([], HtmlUtils.th(["style","text-align:center"], this.getProperty("fieldLabel", "Field")) + HtmlUtils.th(["style","text-align:center"], label1) + HtmlUtils.th(["style","text-align:center"], label2)
-				     + HtmlUtils.th(["style","text-align:center"], "Percent Change"));
-		html += HtmlUtils.closeTag("thead");
-		html += HtmlUtils.openTag("tbody", []);
-	    }
-	    var tuples= [];
-	    fields.map(f=>{
-		var val1 = record1.getValue(f.getIndex());
-		var val2 = record2.getValue(f.getIndex());
-		var percent = parseInt(1000*(val2-val1)/val1)/10;
-		tuples.push({field:f,val1:val1,val2:val2,percent:percent});
-	    });
-
-	    if(this.getProperty("sortFields",true)) {
-		tuples.sort((a,b)=>{
-		    return -(a.percent-b.percent);
-		})
-	    }
-	    tuples.map(t=>{
-		if(template) {
-		    var h = template.replace("${field}", t.field.getLabel()).replace("${value1}",this.formatNumber(t.val1)).replace("${value2}",this.formatNumber(t.val2)).replace("${percent}",this.formatNumber(t.percent)).replace("${date1}",label1).replace("${date2}",label2).replace("${difference}", this.formatNumber(t.val2-t.val1));
-		    
-		    h = h.replace(/\${per_hour}/g,this.formatNumber(t.percent/hours));
-		    h = h.replace(/\${per_day}/g,this.formatNumber(t.percent/days));
-		    h = h.replace(/\${per_week}/g,this.formatNumber(t.percent/(days/7)));
-		    h = h.replace(/\${per_month}/g,this.formatNumber(t.percent/months));
-		    h = h.replace(/\${per_year}/g,this.formatNumber(t.percent/years));
-		    html+=h;
-		} else {
-		    html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
-					 HtmlUtils.td(["align","right"], t.val1) +
-					 HtmlUtils.td(["align","right"], t.val2)
-					 + HtmlUtils.td(["align","right"], t.percent+"%"));
-		}
-	    });
-
-	    if(template) {
-		html+= footerTemplate;
-	    } else {
-		html += HtmlUtils.closeTag("tbody");
-		html += HtmlUtils.closeTag("table");
-	    }
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-            HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {
-                //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
-            });
-	},
-    })
-}
 
 
 
@@ -23765,7 +23667,7 @@ var DISPLAY_RANKING = "ranking";
 var DISPLAY_STATS = "stats";
 var DISPLAY_COOCCURENCE = "cooccurence";
 var DISPLAY_BOXTABLE = "boxtable";
-
+var DISPLAY_PERCENTCHANGE = "percentchange";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -23825,6 +23727,14 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: "Misc"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_PERCENTCHANGE,
+    label: "Percent Change",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
 });
 
 
@@ -26066,6 +25976,129 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	}
     })
 }
+
+
+
+function RamaddaPercentchangeDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PERCENTCHANGE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Percent change Attributes",
+					'template="${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}"',
+					'fieldLabel=""',
+					'sortFields=false'
+				    ]);
+	},
+	updateUI: function() {
+	    var records = this.filterData();
+	    if(!records) return;
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+	    fields = this.getFieldsOfType(fields, "numeric");
+	    let  record1 = records[0];
+	    let  record2 = records[records.length-1];
+	    var template = this.getProperty("template",null);
+	    var headerTemplate = this.getProperty("headerTemplate","");
+	    var footerTemplate = this.getProperty("footerTemplate","");
+	    let date1 = record1.getDate();
+	    let date2 = record2.getDate();
+	    let label1 ="Start Value";
+	    let label2 ="End Value";
+	    let hours = 1;
+	    let days = 1;
+	    let years = 1;
+	    let months = 1;
+	    if(date1)
+		label1 = this.formatDate(date1);
+	    if(date2)
+		label2 = this.formatDate(date2);
+	    if(date1 && date2) {
+		var diff = date2.getTime() - date1.getTime();
+		days = diff/1000/60/60/24;
+		hours = days*24;
+		years = days/365;
+		months = years*12;
+	    }
+            let html =  "";
+	    if(template) {
+		html= headerTemplate;
+	    } else {
+		html = "<br>";		
+		html += HtmlUtils.openTag("table", ["class", "stripe nowrap ramadda-table", "id", this.getDomId("percentchange")]);
+		html += HtmlUtils.openTag("thead", []);
+		html += "\n";
+		html += HtmlUtils.tr([], HtmlUtils.th(["style","text-align:center"], this.getProperty("fieldLabel", "Field")) + HtmlUtils.th(["style","text-align:center"], label1) + HtmlUtils.th(["style","text-align:center"], label2)
+				     + HtmlUtils.th(["style","text-align:center"], "Percent Change"));
+		html += HtmlUtils.closeTag("thead");
+		html += HtmlUtils.openTag("tbody", []);
+	    }
+	    var tuples= [];
+	    fields.map(f=>{
+		var val1 = 0;
+		for(var i=0;i<records.length;i++) {
+		    var val = records[i].getValue(f.getIndex());
+		    if(!isNaN(val)) {
+			val1 = val;
+			break;
+		    }
+		}
+		    
+		var val2 = 0;
+		for(var i=records.length-1;i>=0;i--) {
+		    var val = records[i].getValue(f.getIndex());
+		    if(!isNaN(val)) {
+			val2 = val;
+			break;
+		    }
+		}
+
+		var percent = parseInt(1000*(val2-val1)/val1)/10;
+//		val1 = record1.getValue(f.getIndex());
+//		val2 = record2.getValue(f.getIndex());
+		tuples.push({field:f,val1:val1,val2:val2,percent:percent});
+	    });
+
+	    if(this.getProperty("sortFields",true)) {
+		tuples.sort((a,b)=>{
+		    return -(a.percent-b.percent);
+		})
+	    }
+	    tuples.map(t=>{
+		if(template) {
+		    var h = template.replace("${field}", t.field.getLabel()).replace("${value1}",this.formatNumber(t.val1)).replace("${value2}",this.formatNumber(t.val2)).replace("${percent}",this.formatNumber(t.percent)).replace("${date1}",label1).replace("${date2}",label2).replace("${difference}", this.formatNumber(t.val2-t.val1));
+		    
+		    h = h.replace(/\${per_hour}/g,this.formatNumber(t.percent/hours));
+		    h = h.replace(/\${per_day}/g,this.formatNumber(t.percent/days));
+		    h = h.replace(/\${per_week}/g,this.formatNumber(t.percent/(days/7)));
+		    h = h.replace(/\${per_month}/g,this.formatNumber(t.percent/months));
+		    h = h.replace(/\${per_year}/g,this.formatNumber(t.percent/years));
+		    html+=h;
+		} else {
+		    html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
+					 HtmlUtils.td(["align","right"], this.formatNumber(t.val1)) +
+					 HtmlUtils.td(["align","right"], this.formatNumber(t.val2))
+					 + HtmlUtils.td(["align","right"], t.percent+"%"));
+		}
+	    });
+
+	    if(template) {
+		html+= footerTemplate;
+	    } else {
+		html += HtmlUtils.closeTag("tbody");
+		html += HtmlUtils.closeTag("table");
+	    }
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+            HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {
+                //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
+            });
+	},
+    })
+}
+
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
