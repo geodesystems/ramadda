@@ -4443,6 +4443,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	},
 	colorByFieldChanged:function(field) {
+	    this.setProperty("colorBy", field);
 	    this.updateUI();
 	},
 

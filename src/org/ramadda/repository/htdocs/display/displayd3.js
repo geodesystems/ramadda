@@ -1259,7 +1259,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 				    [
 					"label:Bubble Chart",
 					'labelField=""',
-					'categoryField=""',
+					'colorBy=""',
 					'valueField=""',
 					'descriptionField=""',
 					'imageField=""',
@@ -1289,7 +1289,8 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	    let html = HtmlUtil.tag("svg", ["id", this.getDomId(ID_BUBBLES),
 					    "width","100%","height","700", "font-family","sans-serif","font-size","10", "text-anchor","middle"])
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-            let categoryField = this.getFieldById(null, this.getProperty("categoryField","category"));
+
+            let colorByField = this.getFieldById(null, this.getProperty("colorBy","category"));
 	    let valueField = this.getFieldById(null, this.getProperty("valueField"));
 	    let values;
 	    let min = 0;
@@ -1322,8 +1323,8 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		    value:10,
 
 		}
-		if(categoryField)
-		    obj.cat = r.getValue(categoryField.getIndex());
+		if(colorByField)
+		    obj.cat = r.getValue(colorByField.getIndex());
 		if(valueField)
 		    obj.value = r.getValue(valueField.getIndex());
 		if(imageField)
