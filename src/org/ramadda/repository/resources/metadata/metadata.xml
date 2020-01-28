@@ -268,6 +268,16 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
     </type>
 
     <type
+       name="Cache Time"
+       showinhtml="false"
+       id="cachetime">
+      foruser="true"
+      <element name="cachetime"  label="Cache Time" datatype="int" default="" suffix="Cache time in seconds. 0 for no cache"/>
+    </type>
+
+
+
+    <type
        name="Exclude in XML Output"
        showinhtml="false"
        id="display.exclude">
