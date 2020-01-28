@@ -138,7 +138,7 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 
 <pre>{{display  type=&quot;linechart&quot; fields=&quot;#5,#6,#7,#8,#9,#10&quot; }}</pre>
 
-<a name="filterss"></a><p><div class="ramadda-help-heading">5.2.3 <a href="#filterss">Filtering Data</a></div> 
+<a name="filters"></a><p><div class="ramadda-help-heading">5.2.3 <a href="#filters">Filtering Data</a></div> 
 A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here><>/a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
 
 <a name="image1"></a><div class="cimg"><a href="images/filters.png"><img  src="images/filters.png"  alt="Filtering Data" ></a><br><span class="caption">Image 1: Filtering Data</span></div>
@@ -200,9 +200,47 @@ Specify extra text to wrap the filter value
 
 
 
+<a name="subsetting"></a><p><div class="ramadda-help-heading">5.2.4 <a href="#subsetting">Subsetting Data</a></div> 
+You can specify various filters applied to the data
+<pre>
+By date:
+startDate="yyyy-MM-dd"
+endDate="yyyy-MM-dd"
+
+By value:
+dataFilter="&lt;what&gt;,&lt;field id&gt;,&lt;value&gt;; ... &lt;what&gt;,&lt;field id&gt;,&lt;value&gt;;"
+
+Where "what" can be one of:
+match - string match
+notmatch - string not match
+lessthan - &lt;=
+greaterthan - &gt;=
+equals
+notequals
+</pre>
+
+You can also sample the data with:
+<pre>
+stride=1 -  take every other point
+maxDisplayedPoints= - if set, then set the stride so we at most have  maxDisplayedPoints points
+</pre>
+
+You can bin the data based on dates with:
+<pre>
+binDate=day|week|month|year
+binType=total|count|average
+</pre>
+
+Only show unique rows with:
+<pre>
+uniqueField=&lt;field id&gt;
+</pre>
 
 
-<a name="groups"></a><p><div class="ramadda-help-heading">5.2.4 <a href="#groups">Display Groups</a></div> 
+
+
+
+<a name="groups"></a><p><div class="ramadda-help-heading">5.2.5 <a href="#groups">Display Groups</a></div>  
 There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
 The group allows for different displays to communicate with each other 
 (e.g., creating a new chart, map click, animation, etc), the inheritance of
@@ -291,7 +329,7 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-<a name="displays"></a><p><div class="ramadda-help-heading">5.2.5 <a href="#displays">The Displays</a></div> 
+<a name="displays"></a><p><div class="ramadda-help-heading">5.2.6 <a href="#displays">The Displays</a></div> 
 
 <a name="entrylist"></a>
 <div class="ramadda-help-subsubheading"><a href="#entrylist">Search form</a>
@@ -889,7 +927,7 @@ labelFieldsTemplate=&quot;{name}  Age: {years}  Birth Place: {birth_place}  Race
 labelFields=&quot;name,race,birth_place,years&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image33"></a><div class="cimg"><a href="images/charts/timeline.png"><img  src="images/charts/timeline.png"  alt="Timeline" ></a><br><span class="caption">Image 33: Timeline</span></div>
 
 
-<a name="derived"></a><p><div class="ramadda-help-heading">5.2.6 <a href="#derived">Derived Data</a></div> 
+<a name="derived"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#derived">Derived Data</a></div> 
 
 Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
 <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
@@ -907,7 +945,7 @@ Percentage values can be calculated with the <i>showPercent</i> attribute. This 
 percent value.
 
 
-<a name="scaleoffset"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#scaleoffset">Scaling and offset of data</a></div> 
+<a name="scaleoffset"></a><p><div class="ramadda-help-heading">5.2.8 <a href="#scaleoffset">Scaling and offset of data</a></div> 
 The data values and or displayed unit of the point data that is displayed in chart can be modified
 by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
 with the following attributes:
@@ -929,7 +967,7 @@ You can specify values specific for a particular field using:
 </pre></div>
 
 
-<a name="displayProperty"></a><p><div class="ramadda-help-heading">5.2.8 <a href="#displayProperty">Setting shared properties</a></div> 
+<a name="displayProperty"></a><p><div class="ramadda-help-heading">5.2.9 <a href="#displayProperty">Setting shared properties</a></div> 
 Sometimes there are a number of displays on a single page that share the same set of properties.
 For example, this <a href="https://geodesystems.com/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
 shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
@@ -946,7 +984,7 @@ tag global properties can be specified that are applicable to all displays on th
 </pre></div>
 
 
-<a name="filters"></a><p><div class="ramadda-help-heading">5.2.9 <a href="#filters">Filtering data</a></div> 
+<a name="filters"></a><p><div class="ramadda-help-heading">5.2.10 <a href="#filters">Filtering data</a></div> 
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>

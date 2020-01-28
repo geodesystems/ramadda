@@ -1953,8 +1953,9 @@ var HtmlUtils = {
         }
         this.loadedGoogleCharts = true;
         if(!window["google"]) return;
-	//43
-        google.charts.load("current", {
+	let version = "current";
+	version = "43";
+        google.charts.load(version, {
             packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', 'sankey', 'wordtree', 'timeline', 'gauge','orgchart']
 //	    packages: ['corechart', 'calendar', 'table', 'bar', 'treemap',  'wordtree', 'timeline', 'gauge','orgchart']
         });

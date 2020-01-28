@@ -777,6 +777,7 @@ function DisplayThing(argId, argProperties) {
         initTooltip: function() {
             //don't do this for now                $( document ).tooltip();
         },
+	xxxx:'y',
         formatNumber: function(number) {
 	    if(isNaN(number)) {
 		return "--";
@@ -2577,7 +2578,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
             if (stride > 0) {
-		console.log("doing stride:" + stride);
                 var list = [];
                 var cnt = 0;
                 for (var i = 0; i < dataList.length; i += (stride + 1)) {
@@ -2614,7 +2614,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var tuple = this.getDataValues(record);
 		    var key;
 		    var baseDate=null
-
 		    if(what=="month") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1);
 		    } else if(what=="day") {
@@ -2676,33 +2675,38 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		dataList = dataList.filter(r=>{return r.hasLocation();});
 	    }
 
-	    if(this.getProperty("excludeRow")) {
+	    if(this.getProperty("dataFilter")) {
 		//col,pattern;
 		let exclude = [];
-		this.getProperty("excludeRow").split(";").map(tok=>{
-		    [col,val]  = tok.split(",");
-		    exclude.push([this.getFieldById(null,col),new RegExp(val)]);
+		this.getProperty("dataFilter").split(";").map(tok=>{
+		    [type,fieldId,value]  = tok.split(",");
+		    if(type=="match" || type=="notmatch")
+			value = new RegExp(value);
+		    else
+			value = +value;
+		    let field = this.getFieldById(null,fieldId);
+		    if(field)
+			exclude.push({type:type.trim(),field:field,value:value});
+		    else
+			console.log("No exclude field:" + fieldId);
 		});
 		dataList = dataList.filter(r=>{
 		    let ok = true;
-		    exclude.map(pair=>{
-			if(String(r.getValue(pair[0].getIndex())).match(pair[1])) ok = false;
-		    });
-		    return ok;
-		});
-	    }
-
-	    if(this.getProperty("matchRow")) {
-		//col,pattern;
-		let match = [];
-		this.getProperty("matchRow").split(";").map(tok=>{
-		    [col,val]  = tok.split(",");
-		    match.push([this.getFieldById(null,col),new RegExp(val)]);
-		});
-		dataList = dataList.filter(r=>{
-		    let ok = true;
-		    match.map(pair=>{
-			if(!String(r.getValue(pair[0].getIndex())).match(pair[1])) ok = false;
+		    exclude.map(exc=>{
+			let value = r.getValue(exc.field.getIndex());
+			if(exc.type == "match") {
+			    ok = String(value).match(exc.value);
+			} else if(exc.type == "notmatch") {
+			    ok = !String(value).match(exc.value);
+			} else if(exc.type == "lessthan") {
+			    ok = value<=exc.value;
+			} else if(exc.type == "greaterthan") {
+			    ok = value>=exc.value;
+			}  else if(exc.type == "equals") {
+			    ok = value==exc.value;
+			}  else if(exc.type == "notequals") {
+			    ok = value!=exc.value;
+			}
 		    });
 		    return ok;
 		});
@@ -11774,7 +11778,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}});
         },
         tableHeaderMouseover: function(i, tooltip) {},
+	getAddToolTip: function() {
+	    return true;
+	},
+	getAddStyle: function() {
+	    return true;
+	},
+	getFormatNumbers: function() {
+	    return false;
+	},
         makeDataTable: function(dataList, props, selectedFields) {
+	    let addTooltip = this.getAddToolTip();
+    	    let addStyle= this.getAddStyle();
+	    let formatNumbers = this.getFormatNumbers();
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -11805,8 +11821,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    newValues[value] = values[selectedFields[0].getIndex()];
 		});
 
+
+
 		var data = [];
 		var dataTable = new google.visualization.DataTable();
+	    
+
 		dataTable.addColumn("date", "Date");
 		groupValues.map(group=>{
 		    dataTable.addColumn("number",group);
@@ -11833,6 +11853,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
+
 	    let forceStrings = this.getProperty("forceStrings",false);
             for (var j = 0; j < header.length; j++) {
 		var field=null;
@@ -11845,10 +11866,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if ((typeof value) == "object") {
                         //assume its a date
 			if(typeof value.v == "number") {
-			    if(forceStrings)
+			    if(forceStrings) 
 				dataTable.addColumn('string', header[j]);
-			    else
+			    else {
 				dataTable.addColumn('number', header[j]);
+			    }
 			} else {
 			    dataTable.addColumn('date', header[j]);
 			}
@@ -11867,13 +11889,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    dataTable.addColumn('number', header[j]);
 			}
 		    }
-		    dataTable.addColumn({ type: 'string', role: 'style' });
-                    dataTable.addColumn({
-                        type: 'string',
-                        role: 'tooltip',
-                        'p': {
-                            'html': true
-                        }
+		    if(addStyle)
+			dataTable.addColumn({ type: 'string', role: 'style' });
+		    if(addTooltip)
+			dataTable.addColumn({
+                            type: 'string',
+                            role: 'tooltip',
+                            'p': {
+				'html': true
+                            }
                     });
 		    if(j>0 && fixedValueS) {
 			break;
@@ -12028,9 +12052,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             theRecord.getValue(tooltipFields[j].getIndex()) + "<br>";
                     }
 		}
-		var tooltip = "";
+		let tooltip = "";
                 tooltip += label;
-                for (var j = 0; j < row.length; j++) {
+                for (let j = 0; j < row.length; j++) {
 		    if (j > 0)
                         tooltip += "<br>";
 		    label = header[j].replace(/ /g, "&nbsp;");
@@ -12055,24 +12079,30 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tt = tt.replace("${default}",tooltip);
 		    tooltip = tt;
 		}
-		tooltip = "<div style='padding:8px;'>" + tooltip + "</div>";
-                var newRow = [];
+		tooltip = `<div style='padding:8px;'>'${tooltip}</div>`;
+
+                let newRow = [];
                 for (var j = 0; j < row.length; j++) {
                     var value = row[j];
 		    if(forceStrings) {
 			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
 		    }
-		    
 		    if(j>0 && fixedValueS) {
 			newRow.push(fixedValueN);
 		    } else {
+                        if(formatNumbers) {
+			    if(typeof value == "number")
+				value = this.formatNumber(value);
+			}
 			newRow.push(value);
 		    }
                     if (j == 0 && props.includeIndex) {
                         //is the index so don't add a tooltip
                     } else {
-                        newRow.push(color);
-                        newRow.push(tooltip);
+			if(addStyle)
+			    newRow.push(color);
+			if(addTooltip)
+                            newRow.push(tooltip);
                     }
 		    if(j>0 && fixedValueS) {
 			break;
@@ -12094,8 +12124,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    label =""+( annotationLabelField?theRecord.getValue(annotationLabelField.getIndex()):(annotationCnt))
 			    if(label.trim().length==0) label = ""+annotationCnt;
 			}
-
-
 			newRow.push(label);
 			newRow.push(desc);
 		    } else {
@@ -12449,6 +12477,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		'annotations=""',
 		'annotationFields=""',	
 		'annotationLabelField=""',
+		'indexField=""'
 	    ]
 	    myTags.map(tag=>t.push(tag));
 	    return t;
@@ -13221,7 +13250,22 @@ function TableDisplay(displayManager, id, properties) {
             }
             return new google.visualization.Table(chartDiv); 
         },
-        makeDataTable: function(dataList, props, selectedFields) {
+	getAddToolTip: function() {
+	    return false;
+	},
+	getAddStyle: function() {
+	    return false;
+	},
+	getFormatNumbers: function() {
+	    return true;
+	},
+	formatNumber: function(n) {
+	    if(isNaN(n))
+                return {v:n,f:"--"};
+	    return SUPER.formatNumber.call(this, n);
+	},
+        xmakeDataTable: function(dataList, props, selectedFields) {
+	    //xxxxx
 	    //		dataList = this.filterData(dataList, selectedFields,false,true);
             var rows = this.makeDataArray(dataList);
             var data = [];
@@ -13235,11 +13279,9 @@ function TableDisplay(displayManager, id, properties) {
 			    row[colIdx] = "<a href='" +row[colIdx] +"'>" + row[colIdx]+"</a>";
 			}
 		    } else if(t == "number") {
+			//This doesn't stick
 			if(isNaN(row[colIdx])) 
 			    row[colIdx] = "--";
-			else
-			    //Prepend a " ", if we don't then the -- above doesn't hold
-			    row[colIdx] = " " +row[colIdx];			    
 		    }
                 }
                 data.push(row);
@@ -13973,8 +14015,6 @@ function ScatterplotDisplay(displayManager, id, properties) {
 
     addRamaddaDisplay(this);
 }
-
-
 
 
 

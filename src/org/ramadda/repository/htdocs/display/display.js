@@ -627,6 +627,7 @@ function DisplayThing(argId, argProperties) {
         initTooltip: function() {
             //don't do this for now                $( document ).tooltip();
         },
+	xxxx:'y',
         formatNumber: function(number) {
 	    if(isNaN(number)) {
 		return "--";
@@ -2427,7 +2428,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
             if (stride > 0) {
-		console.log("doing stride:" + stride);
                 var list = [];
                 var cnt = 0;
                 for (var i = 0; i < dataList.length; i += (stride + 1)) {
@@ -2464,7 +2464,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var tuple = this.getDataValues(record);
 		    var key;
 		    var baseDate=null
-
 		    if(what=="month") {
 			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1);
 		    } else if(what=="day") {
@@ -2526,33 +2525,38 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		dataList = dataList.filter(r=>{return r.hasLocation();});
 	    }
 
-	    if(this.getProperty("excludeRow")) {
+	    if(this.getProperty("dataFilter")) {
 		//col,pattern;
 		let exclude = [];
-		this.getProperty("excludeRow").split(";").map(tok=>{
-		    [col,val]  = tok.split(",");
-		    exclude.push([this.getFieldById(null,col),new RegExp(val)]);
+		this.getProperty("dataFilter").split(";").map(tok=>{
+		    [type,fieldId,value]  = tok.split(",");
+		    if(type=="match" || type=="notmatch")
+			value = new RegExp(value);
+		    else
+			value = +value;
+		    let field = this.getFieldById(null,fieldId);
+		    if(field)
+			exclude.push({type:type.trim(),field:field,value:value});
+		    else
+			console.log("No exclude field:" + fieldId);
 		});
 		dataList = dataList.filter(r=>{
 		    let ok = true;
-		    exclude.map(pair=>{
-			if(String(r.getValue(pair[0].getIndex())).match(pair[1])) ok = false;
-		    });
-		    return ok;
-		});
-	    }
-
-	    if(this.getProperty("matchRow")) {
-		//col,pattern;
-		let match = [];
-		this.getProperty("matchRow").split(";").map(tok=>{
-		    [col,val]  = tok.split(",");
-		    match.push([this.getFieldById(null,col),new RegExp(val)]);
-		});
-		dataList = dataList.filter(r=>{
-		    let ok = true;
-		    match.map(pair=>{
-			if(!String(r.getValue(pair[0].getIndex())).match(pair[1])) ok = false;
+		    exclude.map(exc=>{
+			let value = r.getValue(exc.field.getIndex());
+			if(exc.type == "match") {
+			    ok = String(value).match(exc.value);
+			} else if(exc.type == "notmatch") {
+			    ok = !String(value).match(exc.value);
+			} else if(exc.type == "lessthan") {
+			    ok = value<=exc.value;
+			} else if(exc.type == "greaterthan") {
+			    ok = value>=exc.value;
+			}  else if(exc.type == "equals") {
+			    ok = value==exc.value;
+			}  else if(exc.type == "notequals") {
+			    ok = value!=exc.value;
+			}
 		    });
 		    return ok;
 		});

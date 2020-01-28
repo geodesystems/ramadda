@@ -53,7 +53,7 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 
 [ht::pre {{{display  type="linechart" fields="#5,#6,#7,#8,#9,#10" }}}]
 
-[ug::subheading {Filtering Data} filterss]
+[ug::subheading {Filtering Data} filters]
 A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here><>/a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
 
 [ht::cimg images/filters.png {Filtering Data}]
@@ -115,9 +115,47 @@ Specify extra text to wrap the filter value
 
 
 
+[ug::subheading {Subsetting Data} subsetting]
+You can specify various filters applied to the data
+<pre>
+By date:
+startDate="yyyy-MM-dd"
+endDate="yyyy-MM-dd"
+
+By value:
+dataFilter="&lt;what&gt;,&lt;field id&gt;,&lt;value&gt;; ... &lt;what&gt;,&lt;field id&gt;,&lt;value&gt;;"
+
+Where "what" can be one of:
+match - string match
+notmatch - string not match
+lessthan - &lt;=
+greaterthan - &gt;=
+equals
+notequals
+</pre>
+
+You can also sample the data with:
+<pre>
+stride=1 -  take every other point
+maxDisplayedPoints= - if set, then set the stride so we at most have  maxDisplayedPoints points
+</pre>
+
+You can bin the data based on dates with:
+<pre>
+binDate=day|week|month|year
+binType=total|count|average
+</pre>
+
+Only show unique rows with:
+<pre>
+uniqueField=&lt;field id&gt;
+</pre>
 
 
-[ug::subheading {Display Groups} groups]
+
+
+
+[ug::subheading {Display Groups} groups] 
 There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
 The group allows for different displays to communicate with each other 
 (e.g., creating a new chart, map click, animation, etc), the inheritance of
