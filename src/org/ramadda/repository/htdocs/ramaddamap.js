@@ -387,14 +387,14 @@ function initMapFunctions(theMap) {
             theMap.centerOnMarkers(theMap.dfltBounds);
         },
         handleFeatureover: function(feature, skipText) {
-	    if(feature.highlightText) {
-		console.log("over");
+	    if(feature.highlightText || feature.highlightTextGetter) {
 		var location = feature.location;
 		if (location) {
 		    if(this.highlightFeature != feature) {
 			this.closeHighlightPopup();
 			var projPoint = this.transformLLPoint(location);
-			var text =HtmlUtils.div(["style","padding:2px;"],feature.highlightText);
+			let text = feature.highlightTextGetter?feature.highlightTextGetter(feature):feature.highlightText;
+			text =HtmlUtils.div(["style","padding:2px;"],text);
 			this.highlightPopup = new OpenLayers.Popup("popup",
 								   projPoint,
 								   null,
@@ -3259,7 +3259,7 @@ function initMapFunctions(theMap) {
 
     theMap.basePointStyle = null;
     
-    theMap.addPoint = function(id, point, attrs, text, notReally) {
+    theMap.addPoint = function(id, point, attrs, text, notReally, textGetter) {
         //Check if we have a LonLat instead of a Point
         var location = point;
         if (typeof point.x === 'undefined') {
@@ -3300,7 +3300,8 @@ function initMapFunctions(theMap) {
         var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
         feature.center = center;
         feature.ramaddaId = id;
-        feature.text = this.getPopupText(text, feature);
+	if(text)
+            feature.text = this.getPopupText(text, feature);
         feature.location = location;
         this.features[id] = feature;
         if (!notReally) {
@@ -3483,8 +3484,12 @@ function initMapFunctions(theMap) {
         if (marker.inputProps) {
             marker.text = this.getPopupText(marker.inputProps.text);
         }
-
-        var markertext = marker.text;
+        let markertext;
+	if(marker.textGetter) {
+	    markertext =marker.textGetter(marker);
+	} else {
+	    markertext =marker.text;
+	}
         if (fromClick && marker.locationKey != null) {
             markers = this.seenMarkers[marker.locationKey];
             if (markers.length > 1) {
