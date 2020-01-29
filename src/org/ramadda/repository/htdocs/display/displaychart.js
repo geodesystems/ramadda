@@ -5,7 +5,9 @@
 
 var CATEGORY_CHARTS = "Charts";
 var CATEGORY_OTHER = "Other Charts";
+
 var DISPLAY_LINECHART = "linechart";
+
 var DISPLAY_AREACHART = "areachart";
 var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
@@ -444,7 +446,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         getGroupBy: function() {
-            return this.groupBy;
+            return this.getProperty("groupByField");
         },
         getIncludeIndexIfDate: function() {
             return false;
@@ -531,7 +533,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             };
             props.groupByIndex = -1;
 
-
             var groupBy = this.getGroupBy();
             if (groupBy) {
                 for (var i = 0; i < this.allFields.length; i++) {
@@ -539,14 +540,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if (field.getId() == groupBy) {
                         props.groupByIndex = field.getIndex();
                         props.groupByField = field;
-                        this.groupByField = field;
                         break;
                     }
                 }
             }
 
             var fieldsToSelect = selectedFields;
-	    
             if (this.raw) {
                 fieldsToSelect = this.dataCollection.getList()[0].getRecordFields();
                 props.raw = true;
@@ -810,12 +809,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	getAddStyle: function() {
 	    return true;
 	},
+	getAnnotationTemplate: function() {
+	    return this.getProperty("annotationTemplate");
+	},
 	getFormatNumbers: function() {
 	    return false;
 	},
         makeDataTable: function(dataList, props, selectedFields) {
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
+	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
@@ -879,8 +882,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
-
 	    let forceStrings = this.getProperty("forceStrings",false);
+	    let debug = false;
+	    let debugRows = 3;
+
+
             for (var j = 0; j < header.length; j++) {
 		var field=null;
 		if(j>0 || !props.includeIndex) {
@@ -915,9 +921,24 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    dataTable.addColumn('number', header[j]);
 			}
 		    }
-		    if(addStyle)
+		    if(annotationTemplate) {
+			dataTable.addColumn({
+			    type: 'string',
+			    role: 'annotation',
+			    'p': {
+				'html': true
+			    }
+			});
+		    }
+
+		    if(addStyle) {
+			if(debug)
+			    console.log("add style column");
 			dataTable.addColumn({ type: 'string', role: 'style' });
-		    if(addTooltip)
+		    }
+		    if(addTooltip) {
+			if(debug)
+			    console.log("add tooltip column");
 			dataTable.addColumn({
                             type: 'string',
                             role: 'tooltip',
@@ -925,6 +946,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				'html': true
                             }
 			});
+		    }
 		    if(j>0 && fixedValueS) {
 			break;
 		    }
@@ -932,8 +954,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-	    let debug = false;
-	    let debugRows = 3;
 
 	    if(debug) {
 		for(var i=0;i<dataTable.getNumberOfColumns();i++)
@@ -960,6 +980,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 });
 	    }
+
+
+
 
 	    var indexToAnnotation = null;
 	    if(annotations) {
@@ -1064,9 +1087,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-
 		var record =dataList[rowIdx];
                 var row = this.getDataValues(record);
+		//		if(rowIdx>1000) break;
+		//		continue;
 		var index = row[0];
 		if(index.v) index  = index.v;
 		var theRecord = record.record;
@@ -1145,6 +1169,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if (j == 0 && props.includeIndex) {
 			/*note to self - an inline comment breaks the minifier is the index so don't add a tooltip */
                     } else {
+			if(annotationTemplate) {
+			    let v = annotationTemplate.replace("${value}",value.f||value);
+			    newRow.push(v);
+			}
 			if(addStyle) {
 			    newRow.push(color);
 			    if(debug && rowIdx<debugRows)
@@ -1272,8 +1300,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
             var textColor = this.getProperty("textColor", "#000");
+	    var textBold = this.getProperty("textBold", "false");
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
+
+            this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.bold", "bold", textBold);
+            this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.bold", "bold", textBold);
+
 	    chartOptions.vAxis.text  = this.getProperty("vAxis.text", this.getProperty("vAxisText"));
 	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
@@ -1639,6 +1672,7 @@ function LinechartDisplay(displayManager, id, properties) {
 
 
 
+
 function AreachartDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties);
     RamaddaUtil.inherit(this, SUPER);
@@ -1666,6 +1700,9 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    ["barWidth=\"10\""])},
 
+        canDoGroupBy: function() {
+            return true;
+        },
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             var chartType = this.getChartType();

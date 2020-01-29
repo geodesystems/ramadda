@@ -1339,7 +1339,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 			     label2: this.getProperty("sizeLabel2"), 
 			     colors:colors,
 			     showSizeLegend: this.getProperty("showSizeLegend",valueField!=null)
-});
+			    });
 	}
     })
 }

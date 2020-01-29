@@ -718,6 +718,7 @@ function DisplayThing(argId, argProperties) {
                     values += "<tr valign=top><td align=right><b>" + label + ":</b></td><td align=left>" + value + "</td></tr>\n";
                 }
             }
+
             if (record.hasElevation()) {
                 values += "<tr><td  align=right><b>Elevation:</b></td><td align=left>" + number_format(record.getElevation(), 4, '.', '') + "</td></tr>";
             }
@@ -1486,6 +1487,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return;
 		}
 		this.haveCalledUpdateUI = false;
+		//xxxx
 		var widgetId = this.getFilterId(prop.fieldId);
 		if(prop.id && prop.id.endsWith("date1")) {
 		    widgetId+="_date1";
@@ -1508,7 +1510,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			widget.val(prop.value);
 		    }
 		    widget.attr("data-value",prop.value);
-
 		    if(widget.attr("isButton")) {
 			widget.find(".display-filterby-button").removeClass("display-filterby-button-selected");
 			widget.find("[value='" + prop.value +"']").addClass("display-filterby-button-selected");
@@ -2386,7 +2387,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.endDateObject = new Date(endDate);
 	    } 
 
-	    //	    var t1=  new Date();
+	    let filterDate = this.getProperty("filterDate");
+	    if(filterDate) {
+		
+		let date = $("#"+ this.getFilterId("filterDate")).val();
+		if(date) {
+		    if(date=="all") {
+			this.minDateObj = null;
+			this.maxDateObj = null;
+		    } else {
+			date = new Date(date);
+			if(filterDate == "year") {
+			    this.minDateObj = new Date(date.getFullYear()+"-01-01");
+			    this.maxDateObj = new Date(date.getFullYear()+"-12-31");
+			} else {
+			    //TODO month and day
+			}
+		    }
+		}
+	    }
+
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -2417,12 +2437,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
-		/*
-		  var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
- 		  if(allIsUsed && !useIfAll) {
-		  continue;
-		  }
-		*/
 		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
 		if (prefix) pattern = prefix + value;
@@ -2684,10 +2698,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    if(this.getProperty("dataFilter")) {
-		//col,pattern;
+		//type,field,value,enabled,Label;
 		let exclude = [];
 		this.getProperty("dataFilter").split(";").map(tok=>{
-		    [type,fieldId,value]  = tok.split(",");
+		    [type,fieldId,value,enabled,label]  = tok.split(",");
+		    if(!Utils.isDefined(enabled))
+			enabled = true;
+		    else
+			enabled = enabled=="true";
+		    if(label) {
+			var cbx =  this.jq("datafilterenabled_" + fieldId);
+			if(cbx.length && cbx.is(':checked')) {
+			    enabled = true;
+			}
+		    }
+		    if(!enabled) return;
 		    if(type=="match" || type=="notmatch")
 			value = new RegExp(value);
 		    else
@@ -2701,15 +2726,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		dataList = dataList.filter(r=>{
 		    let ok = true;
 		    exclude.map(exc=>{
+			if(!ok) return false;
 			let value = r.getValue(exc.field.getIndex());
 			if(exc.type == "match") {
 			    ok = String(value).match(exc.value);
 			} else if(exc.type == "notmatch") {
 			    ok = !String(value).match(exc.value);
 			} else if(exc.type == "lessthan") {
-			    ok = value<=exc.value;
+			    ok = value<exc.value;
 			} else if(exc.type == "greaterthan") {
-			    ok = value>=exc.value;
+			    ok = value>exc.value;
 			}  else if(exc.type == "equals") {
 			    ok = value==exc.value;
 			}  else if(exc.type == "notequals") {
@@ -4056,6 +4082,58 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					  HtmlUtils.span(["class","display-filterby-label"],"Size by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
 
+
+	    let dataFilterIds = [];
+	    if(this.getProperty("dataFilter")) {
+		this.getProperty("dataFilter").split(";").map(tok=>{
+		    [type,fieldId,value,enabled,label]  = tok.split(",");
+		    if(!label) return;
+		    enabled = enabled=="true";
+		    let cbxid = this.getDomId("datafilterenabled_" + fieldId);
+		    dataFilterIds.push(cbxid);
+		    header2 +=  HtmlUtils.checkbox("",["id",cbxid],enabled) +" " + label +"&nbsp;&nbsp;"
+		});
+	    }
+
+
+
+	    if(this.getProperty("filterDate")) { 
+		let type = this.getProperty("filterDate");
+		//get dates
+		var enums = [];
+		if(this.getProperty("filterDateIncudeAll")) {
+		    enums.push(["all","All"]);
+		}
+		let selected = null;
+		let seen  = {};
+		let dates  = [];
+		records.map(record=>dates.push(record.getDate()));
+		dates.sort(function(a,b) {
+		    return a.getTime()-b.getTime();
+		});
+		dates.map(dttm=>{
+		    let value = null;
+		    if(type == "year") {
+			value = dttm.getFullYear();
+		    }
+		    if(!seen[value]) {
+			selected = String(dttm);
+			enums.push([String(dttm), value]);
+			seen[value] = true;
+		    }
+		});
+
+		let label = type=="year"?"Year":type=="month"?"Month":type=="day"?"Day":type;
+		let style="";
+		if(!this.getProperty("filterDateShow",true))
+		    style +="display:none;";
+		var selectId = this.getFilterId("filterDate");
+		header2 += HtmlUtils.span(["class","display-filterby","style",style],
+					  HtmlUtils.span(["class","display-filterby-label"],"Select " + label+":") + HtmlUtils.select("",["fieldId","filterDate", "style","",
+																	  "id",selectId],enums,selected))+"&nbsp;";
+	    }
+	    
+
             if(filterBy.length>0) {
 		var searchBar = "";
 		var bottom = "";
@@ -4328,6 +4406,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_HEADER2).html(header2);
 	    var theDisplay = this;
 
+	    dataFilterIds.map(id=>{
+		$("#" + id).click(function(e){
+		    inputFunc($(this));
+		});
+	    });
+
+
+
             if(filterBy.length>0) {
 		if(!hideFilterWidget) {
 		    for(var i=0;i<dateIds.length;i++) {
@@ -4366,7 +4452,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!value) {
 			value = input.val();
 		    }
-		    
+	    
 		    if(value==null) return;
 		    if(!Array.isArray(value) && input.attr("isButton")) {
 			//			console.log(_this.type +" " +Array.isArray(value));
@@ -4385,6 +4471,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    _this.settingFilterValue = true;
 		    _this.dataFilterChanged();
+
+//		    console.log("ID:" + id +" v:" + value +" " + fieldId);
 		    var args = {
 			property: "filterValue",
 			id:id,
@@ -4542,11 +4630,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		});
 
-
 		//		HtmlUtils.initSelect(this.jq("colorbyselect"));
 		//		HtmlUtils.initSelect(this.jq("sizebyselect"));
 		//		HtmlUtils.initSelect(this.jq("chartfields"));
 
+		$("#" + this.getFilterId("filterDate")).change(function() {
+		    inputFunc($(this));
+		});
                 this.jq("chartfields").change(function(){
 		    _this.setProperty("fields",$(this).val());
 		    _this.updateUI();
@@ -4842,7 +4932,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		"binDate=\"day|month|year\"",
+		'dataFilter="match|notmatch|lessthan|greaterthan|equals|notequals,field,value"', 
+		'startDate="yyyy-MM-dd"',
+		'endtDate="yyyy-MM-dd"',
+		'binDate=\day|month|year"',
+		'binType="count|average|total"',
 		"label:Color Attributes",
 		"colorTable=\"\"",
 		"colors=\"color1,...,colorN\"",
@@ -5631,8 +5725,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                         }
                     }
-                }
-
+		}
 
 		if(groupByFill) {
 		    groupByDates.map(date=>{
@@ -5653,7 +5746,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
 		if(this.getProperty("groupBySort")) {
-		    agg.sort(function(a,b) {return a[0]>b[0]});
+		    agg.sort(function(a,b) {return b[1]-a[1]});
+		}
+		if(this.getProperty("groupByMaxNumber")) {
+		    let cnt = +this.getProperty("groupByMaxNumber");
+		    agg = agg.filter((t,idx)=>{
+			return idx<cnt;
+			
+		    });
+
 		}
 		let tmp = [];
 		tmp.push(title);
@@ -6240,8 +6341,6 @@ function DisplayAnimation(display) {
 	    this.begin = this.dateMin;
 	    this.end = this.dateMax;
 	    if(!this.dateMin) return;
-   
-
 	    this.dates=[];
 	    var seen = {};
 	    records.map(r=>{
@@ -6320,6 +6419,9 @@ function DisplayAnimation(display) {
 		}
 	    }
 
+
+
+
 	    var sliderValues = _this.mode != "frame"?[_this.begin.getTime(),_this.end.getTime()]:[_this.begin.getTime()];
 	    this.jq(ID_SLIDER).slider({
 		range: _this.mode != "frame",
@@ -6337,6 +6439,7 @@ function DisplayAnimation(display) {
 		    _this.applyAnimation(true);
 		}
 	    });
+
 
 	    if(records && this.display.getProperty("animationShowTicks",true)) {
 		var ticks = "";
@@ -10988,7 +11091,9 @@ function NotebookChunk(cell, props) {
 
 var CATEGORY_CHARTS = "Charts";
 var CATEGORY_OTHER = "Other Charts";
+
 var DISPLAY_LINECHART = "linechart";
+
 var DISPLAY_AREACHART = "areachart";
 var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
@@ -11427,7 +11532,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         getGroupBy: function() {
-            return this.groupBy;
+            return this.getProperty("groupByField");
         },
         getIncludeIndexIfDate: function() {
             return false;
@@ -11514,7 +11619,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             };
             props.groupByIndex = -1;
 
-
             var groupBy = this.getGroupBy();
             if (groupBy) {
                 for (var i = 0; i < this.allFields.length; i++) {
@@ -11522,14 +11626,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if (field.getId() == groupBy) {
                         props.groupByIndex = field.getIndex();
                         props.groupByField = field;
-                        this.groupByField = field;
                         break;
                     }
                 }
             }
 
             var fieldsToSelect = selectedFields;
-	    
             if (this.raw) {
                 fieldsToSelect = this.dataCollection.getList()[0].getRecordFields();
                 props.raw = true;
@@ -11793,12 +11895,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	getAddStyle: function() {
 	    return true;
 	},
+	getAnnotationTemplate: function() {
+	    return this.getProperty("annotationTemplate");
+	},
 	getFormatNumbers: function() {
 	    return false;
 	},
         makeDataTable: function(dataList, props, selectedFields) {
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
+	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
@@ -11862,8 +11968,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
-
 	    let forceStrings = this.getProperty("forceStrings",false);
+	    let debug = false;
+	    let debugRows = 3;
+
+
             for (var j = 0; j < header.length; j++) {
 		var field=null;
 		if(j>0 || !props.includeIndex) {
@@ -11898,9 +12007,24 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    dataTable.addColumn('number', header[j]);
 			}
 		    }
-		    if(addStyle)
+		    if(annotationTemplate) {
+			dataTable.addColumn({
+			    type: 'string',
+			    role: 'annotation',
+			    'p': {
+				'html': true
+			    }
+			});
+		    }
+
+		    if(addStyle) {
+			if(debug)
+			    console.log("add style column");
 			dataTable.addColumn({ type: 'string', role: 'style' });
-		    if(addTooltip)
+		    }
+		    if(addTooltip) {
+			if(debug)
+			    console.log("add tooltip column");
 			dataTable.addColumn({
                             type: 'string',
                             role: 'tooltip',
@@ -11908,6 +12032,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				'html': true
                             }
 			});
+		    }
 		    if(j>0 && fixedValueS) {
 			break;
 		    }
@@ -11915,8 +12040,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-	    let debug = false;
-	    let debugRows = 3;
 
 	    if(debug) {
 		for(var i=0;i<dataTable.getNumberOfColumns();i++)
@@ -11943,6 +12066,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 });
 	    }
+
+
+
 
 	    var indexToAnnotation = null;
 	    if(annotations) {
@@ -12047,9 +12173,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-
 		var record =dataList[rowIdx];
                 var row = this.getDataValues(record);
+		//		if(rowIdx>1000) break;
+		//		continue;
 		var index = row[0];
 		if(index.v) index  = index.v;
 		var theRecord = record.record;
@@ -12128,6 +12255,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if (j == 0 && props.includeIndex) {
 			/*note to self - an inline comment breaks the minifier is the index so don't add a tooltip */
                     } else {
+			if(annotationTemplate) {
+			    let v = annotationTemplate.replace("${value}",value.f||value);
+			    newRow.push(v);
+			}
 			if(addStyle) {
 			    newRow.push(color);
 			    if(debug && rowIdx<debugRows)
@@ -12255,8 +12386,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
             var textColor = this.getProperty("textColor", "#000");
+	    var textBold = this.getProperty("textBold", "false");
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.color", "color", this.getProperty("axis.text.color", textColor));
+
+            this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.bold", "bold", textBold);
+            this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.bold", "bold", textBold);
+
 	    chartOptions.vAxis.text  = this.getProperty("vAxis.text", this.getProperty("vAxisText"));
 	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
@@ -12622,6 +12758,7 @@ function LinechartDisplay(displayManager, id, properties) {
 
 
 
+
 function AreachartDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties);
     RamaddaUtil.inherit(this, SUPER);
@@ -12649,6 +12786,9 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    ["barWidth=\"10\""])},
 
+        canDoGroupBy: function() {
+            return true;
+        },
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             var chartType = this.getChartType();
@@ -15409,7 +15549,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 			     label2: this.getProperty("sizeLabel2"), 
 			     colors:colors,
 			     showSizeLegend: this.getProperty("showSizeLegend",valueField!=null)
-});
+			    });
 	}
     })
 }
@@ -22822,31 +22962,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.highlightMarker = null;
 	    }
 	    this.map.clearSeenMarkers();
-
-            if (points.length == 0) {
-                //console.log("points.length==0");
-		//                return;
-            }
 	    var t1= new Date();
             this.addPoints(records,fields,points);
 	    var t2= new Date();
 //	    Utils.displayTimes("time",[t1,t2]);
+
             this.addLabels(records,fields,points);
             this.applyVectorMap();
 	},
         addPoints: function(records, fields, points) {
-	    var cidx=0
-	    var polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
-	    var polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
-	    var latlon = this.getProperty("latlon",true);
-            var source = this;
-            var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
-            var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
-            var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
-            var sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
-            var isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
+	    let cidx=0
+	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
+	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
+	    let latlon = this.getProperty("latlon",true);
+            let source = this;
+            let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
+            let strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
+            let strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
+            let sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
+            let isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
-                var attrs = {
+                let attrs = {
                     strokeWidth: 2,
                     strokeColor: "blue"
                 }
@@ -22854,30 +22990,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-            var latField1 = this.getFieldById(fields, this.getProperty("latField1"));
-            var latField2 = this.getFieldById(fields, this.getProperty("latField2"));
-            var lonField1 = this.getFieldById(fields, this.getProperty("lonField1"));
-            var lonField2 = this.getFieldById(fields, this.getProperty("lonField2"));
-            var sizeSegments = this.getProperty("sizeSegments", false);
-            var sizeEndPoints = this.getProperty("sizeEndPoints", true);
-            var showEndPoints = this.getProperty("showEndPoints", false);
-            var endPointSize = parseInt(this.getProperty("endPointSize", "4"));
-            var dfltEndPointSize = endPointSize;
-            var segmentWidth = parseInt(this.getProperty("segmentWidth", "1"));
-            var dfltSegmentWidth = segmentWidth;
-            var showPoints = this.getProperty("showPoints", true);
-            var lineColor = this.getProperty("lineColor", "green");
-	    var pointIcon = this.getProperty("pointIcon");
+            let latField1 = this.getFieldById(fields, this.getProperty("latField1"));
+            let latField2 = this.getFieldById(fields, this.getProperty("latField2"));
+            let lonField1 = this.getFieldById(fields, this.getProperty("lonField1"));
+            let lonField2 = this.getFieldById(fields, this.getProperty("lonField2"));
+            let sizeSegments = this.getProperty("sizeSegments", false);
+            let sizeEndPoints = this.getProperty("sizeEndPoints", true);
+            let showEndPoints = this.getProperty("showEndPoints", false);
+            let endPointSize = parseInt(this.getProperty("endPointSize", "4"));
+            let dfltEndPointSize = endPointSize;
+            let segmentWidth = parseInt(this.getProperty("segmentWidth", "1"));
+            let dfltSegmentWidth = segmentWidth;
+            let showPoints = this.getProperty("showPoints", true);
+            let lineColor = this.getProperty("lineColor", "green");
+	    let pointIcon = this.getProperty("pointIcon");
 	    if(pointIcon) this.pointsAreMarkers = true;
-            var iconField = this.getFieldById(fields, this.getProperty("iconField"));
-            var iconSize = parseFloat(this.getProperty("iconSize",32));
-	    var iconMap = this.getIconMap();
+            let iconField = this.getFieldById(fields, this.getProperty("iconField"));
+            let iconSize = parseFloat(this.getProperty("iconSize",32));
+	    let iconMap = this.getIconMap();
 	    if(iconField || iconMap)
 		this.pointsAreMarkers = true;
-	    var dfltShape = this.getProperty("defaultShape",null);
-	    var dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
-	    var dfltShapeIdx=0;
-	    var shapeBy = {
+	    let dfltShape = this.getProperty("defaultShape",null);
+	    let dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
+	    let dfltShapeIdx=0;
+	    let shapeBy = {
 		id: this.getDisplayProp(source, "shapeBy", null),
 		field:null,
 		map: {}
@@ -22885,13 +23021,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(this.getDisplayProp(source, "shapeByMap", null)) {
 		this.getDisplayProp(source, "shapeByMap", null).split(",").map((pair)=>{
-		    var tuple = pair.split(":");
+		    let tuple = pair.split(":");
 		    shapeBy.map[tuple[0]] = tuple[1];
 		})
 	    }
 
-            var colorBy = this.getColorByInfo(records);
-            var sizeBy = {
+            let colorBy = this.getColorByInfo(records);
+            let sizeBy = {
                 id: this.getDisplayProp(source, "sizeBy", null),
                 minValue: 0,
                 maxValue: 0,
@@ -22901,11 +23037,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 stringMap: {},
             };
 
-            var sizeByMap = this.getProperty("sizeByMap");
+            let sizeByMap = this.getProperty("sizeByMap");
             if (sizeByMap) {
-                var toks = sizeByMap.split(",");
-                for (var i = 0; i < toks.length; i++) {
-                    var toks2 = toks[i].split(":");
+                let toks = sizeByMap.split(",");
+                for (let i = 0; i < toks.length; i++) {
+                    let toks2 = toks[i].split(":");
                     if (toks2.length > 1) {
                         sizeBy.stringMap[toks2[0]] = toks2[1];
                     }
@@ -22913,8 +23049,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
-            for (var i = 0; i < fields.length; i++) {
-                var field = fields[i];
+
+
+            for (let i = 0; i < fields.length; i++) {
+                let field = fields[i];
                 if (field.getId() == shapeBy.id || ("#" + (i + 1)) == shapeBy.id) {
                     shapeBy.field = field;
 		    if (field.isString()) shapeBy.isString = true;
@@ -22926,20 +23064,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
+
             if (this.getProperty("showColorByMenu", false) && colorBy.field && !this.madeColorByMenu) {
                 this.madeColorByMenu = true;
-                var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("colorByMenu") + "'>";
-                for (var i = 0; i < fields.length; i++) {
-                    var field = fields[i];
+                let menu = "<select class='ramadda-pulldown' id='" + this.getDomId("colorByMenu") + "'>";
+                for (let i = 0; i < fields.length; i++) {
+                    let field = fields[i];
                     if (!field.isNumeric() || field.isFieldGeo()) continue;
-                    var extra = "";
+                    let extra = "";
                     if (colorBy.field.getId() == field.getId()) extra = "selected ";
                     menu += "<option value='" + field.getId() + "' " + extra + ">" + field.getLabel() + "</option>\n";
                 }
                 menu += "</select>";
                 this.writeHtml(ID_TOP_RIGHT, "Color by: " + menu);
                 this.jq("colorByMenu").change(() => {
-                    var value = this.jq("colorByMenu").val();
+                    let value = this.jq("colorByMenu").val();
                     this.vectorMapApplied = false;
 		    this.haveCalledUpdateUI = false;
                     this.setProperty("colorBy", value);
@@ -22950,19 +23089,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
             shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
 
-	    var dateMin = null;
-	    var dateMax = null;
+	    let dateMin = null;
+	    let dateMax = null;
 
-	    var dates = [];
-            var justOneMarker = this.getProperty("justOneMarker",false);
-            for (var i = 0; i < records.length; i++) {
-                var pointRecord = records[i];
+	    let dates = [];
+            let justOneMarker = this.getProperty("justOneMarker",false);
+
+
+            for (let i = 0; i < records.length; i++) {
+                let pointRecord = records[i];
 		dates.push(pointRecord.getDate());
                 if (dateMin == null) {
                     dateMin = pointRecord.getDate();
                     dateMax = pointRecord.getDate();
                 } else {
-                    var date = pointRecord.getDate();
+                    let date = pointRecord.getDate();
                     if (date) {
                         if (date.getTime() < dateMin.getTime())
                             dateMin = date;
@@ -22970,9 +23111,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             dateMax = date;
                     }
                 }
-                var tuple = pointRecord.getData();
+                let tuple = pointRecord.getData();
                 if (!sizeBy.isString) {
-                    var v = tuple[sizeBy.index];
+                    let v = tuple[sizeBy.index];
 		    if (!isNaN(v) && !(v === null)) {
 			if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
 			if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
@@ -22984,9 +23125,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             sizeBy.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", -1));
             sizeBy.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", -1));
-            var sizeByOffset = 0;
-            var sizeByLog = this.getProperty("sizeByLog", false);
-            var sizeByFunc = Math.log;
+            let sizeByOffset = 0;
+            let sizeByLog = this.getProperty("sizeByLog", false);
+            let sizeByFunc = Math.log;
             if (sizeByLog) {
                 if (sizeBy.minValue < 1) {
                     sizeByOffset = 1 - sizeBy.minValue;
@@ -22999,13 +23140,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //	    console.log(JSON.stringify(sizeBy,null,2));
 
 
+
             if (dateMax) {
-		this.getAnimation().init(dateMin, dateMax,records);
+		if (this.getProperty("doAnimation", false)) {
+		    this.getAnimation().init(dateMin, dateMax,records);
+		}
             }
 
-
             if (this.points) {
-                for (var i = 0; i < this.points.length; i++) {
+                for (let i = 0; i < this.points.length; i++) {
 		    if(this.pointsAreMarkers)
 			this.map.removeMarker(this.points[i]);
 		    else
@@ -23015,41 +23158,49 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
+
             if (this.lines) {
-                for (var i = 0; i < this.lines.length; i++)
+                for (let i = 0; i < this.lines.length; i++)
                     this.map.removePolygon(this.lines[i]);
                 this.lines = [];
             }
+
 
             if (!this.points) {
                 this.points = [];
                 this.lines = [];
             }
 
-            var dontAddPoint = this.doDisplayMap();
-            var didColorBy = false;
-            var seen = {};
-	    var lastPoint;
-
-
-	    var pathAttrs ={
+            let dontAddPoint = this.doDisplayMap();
+            let didColorBy = false;
+            let seen = {};
+	    let lastPoint;
+	    let pathAttrs ={
 		strokeColor: this.getProperty("pathColor",lineColor),
 		strokeWidth: this.getProperty("pathWidth",1)
 	    };
 
-	    var fillColor = this.getProperty("fillColor");
-	    var fillOpacity =  this.getProperty("fillOpacity",0.8);
-	    var isPath = this.getProperty("isPath", false);
-	    var showSegments = this.getProperty("showSegments", false);
-	    var tooltip = this.getProperty("tooltip");
-	    var highlight = this.getProperty("highlight");
-	    var addedPoints = [];
-            for (var i = 0; i < records.length; i++) {
-                var record = records[i];
-                var tuple = record.getData();
+	    let fillColor = this.getProperty("fillColor");
+	    let fillOpacity =  this.getProperty("fillOpacity",0.8);
+	    let isPath = this.getProperty("isPath", false);
+	    let showSegments = this.getProperty("showSegments", false);
+	    let tooltip = this.getProperty("tooltip");
+	    let highlight = this.getProperty("highlight");
+	    let addedPoints = [];
+
+	    let textGetter = f=>{
+		if(f.record) {
+                    return  this.getRecordHtml(f.record, fields, tooltip);
+		}
+		return null;
+	    };
+
+            for (let i = 0; i < records.length; i++) {
+                let record = records[i];
+                let tuple = record.getData();
 		if(!record.point)
                     record.point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
-		var point = record.point;
+		let point = record.point;
 
 		if(justOneMarker) {
                     if(this.justOneMarker)
@@ -23062,8 +23213,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 }
 
-                var values = record.getData();
-                var props = {
+                let values = record.getData();
+                let props = {
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
                     strokeColor: strokeColor,
@@ -23072,8 +23223,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 };
 
 
+
 		if(shapeBy.field) {
-		    var gv = values[shapeBy.index];
+		    let gv = values[shapeBy.index];
 		    if(gv)  {
 			if(!Utils.isDefined(shapeBy.map[gv])) {
 			    if(dfltShape) {
@@ -23090,24 +23242,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
                 if (sizeBy.index >= 0) {
-                    var value = values[sizeBy.index];
+                    let value = values[sizeBy.index];
                     if (sizeBy.isString) {
                         if (Utils.isDefined(sizeBy.stringMap[value])) {
-                            var v = parseInt(sizeBy.stringMap[value]);
+                            let v = parseInt(sizeBy.stringMap[value]);
                             segmentWidth = dfltSegmentWidth + v;
                             props.pointRadius = v;
                         } else if (Utils.isDefined(sizeBy.stringMap["*"])) {
-                            var v = parseInt(sizeBy.stringMap["*"]);
+                            let v = parseInt(sizeBy.stringMap["*"]);
                             segmentWidth = dfltSegmentWidth + v;
                             props.pointRadius = v;
                         } else {
                             segmentWidth = dfltSegmentWidth;
                         }
                     } else {
-                        var denom = sizeBy.range;
-                        var v = value + sizeByOffset;
+                        let denom = sizeBy.range;
+                        let v = value + sizeByOffset;
                         if (sizeByLog) v = sizeByFunc(v);
-                        var percent = (denom == 0 ? NaN : (v - sizeBy.minValue) / denom);
+                        let percent = (denom == 0 ? NaN : (v - sizeBy.minValue) / denom);
                         if (sizeBy.radiusMax >= 0 && sizeBy.radiusMin >= 0) {
                             props.pointRadius = Math.round(sizeBy.radiusMin + percent * (sizeBy.radiusMax - sizeBy.radiusMin));
                         } else {
@@ -23122,16 +23274,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
                     }
                 }
+
+
 		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
-		var hasColorByValue = false;
-		var colorByValue;
-		var colorByColor;
-		var theColor =  null;
+		let hasColorByValue = false;
+		let colorByValue;
+		let colorByColor;
+		let theColor =  null;
 		if(colorBy.compareFields.length>0) {
-		    var maxColor = null;
-		    var maxValue = 0;
+		    let maxColor = null;
+		    let maxValue = 0;
 		    colorBy.compareFields.map((f,idx)=>{
-			var value = record.getData()[f.getIndex()];
+			let value = record.getData()[f.getIndex()];
 			if(idx==0 || value>maxValue) {
 			    maxColor = colorBy.colors[idx];
 			    maxValue = value;
@@ -23140,10 +23294,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colorByValue = maxValue;
 		    theColor = maxColor;
 		} else if (colorBy.index >= 0) {
-                    var value = record.getData()[colorBy.index];
+                    let value = record.getData()[colorBy.index];
 		    colorByValue = value;
 		    theColor =  colorBy.getColor(value, record);
                 }
+
 		if(theColor) {
                     didColorBy = true;
 		    hasColorByValue  = true;
@@ -23151,17 +23306,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 
-                var html = this.getRecordHtml(record, fields, tooltip);
 		if(polygonField) {
-		    var s = values[polygonField.getIndex()];
-		    var delimiter;
+		    let s = values[polygonField.getIndex()];
+		    let delimiter;
 		    [";",","].map(d=>{
 			if(s.indexOf(d)>=0) delimiter = d;
 		    });
-		    var toks  = s.split(delimiter);
+		    let toks  = s.split(delimiter);
 		    
 
-		    var polygonProps ={};
+		    let polygonProps ={};
 		    $.extend(polygonProps,props);
 		    if(polygonProps.strokeWidth==0)
 			polygonProps.strokeWidth=1;
@@ -23169,23 +23323,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(cidx>=polygonColorTable.length) cidx=0;
 			polygonProps.strokeColor=polygonColorTable[cidx++];
 		    }
-		    for(var pIdx=2;pIdx<toks.length;pIdx+=2) {
-			var p = [];
-			var lat1 = parseFloat(toks[pIdx-2]);
-			var lon1 = parseFloat(toks[pIdx-1]);
-			var lat2 = parseFloat(toks[pIdx]);
-			var lon2 = parseFloat(toks[pIdx+1]);
+		    for(let pIdx=2;pIdx<toks.length;pIdx+=2) {
+			let p = [];
+			let lat1 = parseFloat(toks[pIdx-2]);
+			let lon1 = parseFloat(toks[pIdx-1]);
+			let lat2 = parseFloat(toks[pIdx]);
+			let lon2 = parseFloat(toks[pIdx+1]);
 			if(!latlon) {
-			    var tmp =lat1;
+			    let tmp =lat1;
 			    lat1=lon1;
 			    lon1=tmp;
-			    var tmp =lat2;
+			    tmp =lat2;
 			    lat2=lon2;
 			    lon2=tmp;
 			}
 			p.push(new OpenLayers.Geometry.Point(lon1,lat1));
 			p.push(new OpenLayers.Geometry.Point(lon2,lat2));
-			var poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps,html);
+			let poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps);
+			poly.textGetter = textGetter;
+			poly.record = record;
 			if (date) {
 			    poly.date = date.getTime();
 			}
@@ -23195,64 +23351,77 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
                 if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
-                    var lat1 = values[latField1.getIndex()];
-                    var lat2 = values[latField2.getIndex()];
-                    var lon1 = values[lonField1.getIndex()];
-                    var lon2 = values[lonField2.getIndex()];
-                    var attrs = {};
+                    let lat1 = values[latField1.getIndex()];
+                    let lat2 = values[latField2.getIndex()];
+                    let lon1 = values[lonField1.getIndex()];
+                    let lon2 = values[lonField2.getIndex()];
+                    let attrs = {};
                     if (props.fillColor)
                         attrs.strokeColor = props.fillColor;
                     else
                         attrs.strokeColor = lineColor;
                     attrs.strokeWidth = segmentWidth;
-                    this.lines.push(this.map.addLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs, html));
+		    let line = this.map.addLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs);
+		    line.record = record;
+		    line.textGetter = textGetter;
+                    this.lines.push(line);
                     if (showEndPoints) {
-                        var pointProps = {};
+                        let pointProps = {};
                         $.extend(pointProps, props);
                         pointProps.fillColor = attrs.strokeColor;
                         pointProps.strokeColor = attrs.strokeColor;
                         pointProps.pointRadius = dfltEndPointSize;
                         pointProps.pointRadius = endPointSize;
-                        var p1 = new OpenLayers.LonLat(lon1, lat1);
-                        var p2 = new OpenLayers.LonLat(lon2, lat2);
+                        let p1 = new OpenLayers.LonLat(lon1, lat1);
+                        let p2 = new OpenLayers.LonLat(lon2, lat2);
                         if (!Utils.isDefined(seen[p1])) {
                             seen[p1] = true;
-                            this.points.push(this.map.addPoint("endpt-" + i, p1, pointProps, html));
+			    let pt1 =this.map.addPoint("endpt-" + i, p1, pointProps);
+			    pt1.record = record;
+			    pt1.textGetter = textGetter;
+                            this.points.push(pt1);
                         }
                         if (!Utils.isDefined(seen[p2])) {
                             seen[p2] = true;
-                            this.points.push(this.map.addPoint("endpt2-" + i, p2, pointProps, html));
+                            let pt2 = this.map.addPoint("endpt2-" + i, p2, pointProps);
+			    pt2.record = record;
+			    pt2.textGetter = textGetter;
+                            this.points.push(pt2);
                         }
 
                     }
 		}
+
+
                 if (showPoints) {
                     //We do this because openlayers gets really slow when there are lots of features at one point
-		    //                    if (!Utils.isDefined(seen[point])) seen[point] = 0;
-		    if (!seen[point]) seen[point] = 0;
-                    if (seen[point] > 500) {
+		    let key = String(point);
+		    if (!seen[key]) seen[key] = 1;
+                    if (seen[key] > 500) {
 			continue;
 		    }
-                    seen[point]++;
-		    var mapPoint=null;
+                    seen[key]++;
+//		    continue;
+
+		    let mapPoint=null;
 		    if(iconField) {
-			var icon = tuple[iconField.getIndex()];
+			let icon = tuple[iconField.getIndex()];
 			if(iconMap) {
 			    icon = iconMap[icon];
 			    if(!icon) icon = this.getMarkerIcon();
 			}
-			var size = iconSize;
+			let size = iconSize;
 			if(sizeBy.index >= 0) {
 			    size = props.pointRadius;
 			}
-			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,html,null,size);
+			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
 		    } else  if(pointIcon) {
-			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,html,null,props.pointRadius);
+			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
 		    } else {
 			if(!props.graphicName)
 			    props.graphicName = this.getProperty("shape","circle");
 			if(radius>0) {
-			    mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
+			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
 			}
 		    }
 
@@ -23261,11 +23430,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    lastPoint = point;
 
-                    var date = record.getDate();
+                    let date = record.getDate();
 		    if(mapPoint) {
 			if(highlight)
-			    mapPoint.highlightText = this.getRecordHtml(record, fields,highlight);
+			    mapPoint.highlightTextGetter = textGetter;
 			mapPoint.record = record;
+			mapPoint.textGetter = textGetter;
 			mapPoint.hasColorByValue = hasColorByValue;
 		 	mapPoint.colorByValue= colorByValue;
 			mapPoint.colorByColor = colorByColor;
@@ -23276,6 +23446,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
 	    }
+
 
 	    if (showSegments) {
 		this.map.centerOnMarkers(null, true, null);
@@ -23292,7 +23463,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 	    if(iconField&& iconMap) {
-		var html = "";
+		let html = "";
 		for(a in iconMap) {
 		    html+=HtmlUtils.image(iconMap[a],["width","32"]) +" " + a+" ";
 		}
@@ -23300,9 +23471,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    if(shapeBy.field) {
-		var shapes = shapeBy.field.getLabel()+": ";
+		let shapes = shapeBy.field.getLabel()+": ";
 		for(v in shapeBy.map) {
-		    var shape = shapeBy.map[v];
+		    let shape = shapeBy.map[v];
 		    if(shape=="circle") shape=HtmlUtils.getIconImage("fa-circle");
 		    else if(shape=="square") shape=HtmlUtils.getIconImage("fa-square");		    
 		    else if(shape=="rectangle") shape=HtmlUtils.getIconImage("fa-square");		    
@@ -23325,7 +23496,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
 		"label:Map Attributes",
-		"defaultMapLayer =\"\"",
+		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
 		"showLocationSearch=\"true\"",
 		"strokeWidth=1",
 		"strokeColor=\"#000\"",
@@ -26839,7 +27010,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
     });
 
 }/**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 var CATEGORY_PLOTLY = "More Charts";
@@ -26854,6 +27025,7 @@ var DISPLAY_PLOTLY_TREEMAP = "ptreemap";
 var DISPLAY_PLOTLY_TERNARY = "ternary";
 var DISPLAY_PLOTLY_SUNBURST= "sunburst";
 var DISPLAY_PLOTLY_TEXTCOUNT = "textcount";
+var DISPLAY_COMBOCHART = "combochart";
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
@@ -26876,6 +27048,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_PLOTLY
 });
+addGlobalDisplayType({
+    type: DISPLAY_COMBOCHART,
+    label: "Combo Chart",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CHARTS
+});
+
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DOTPLOT,
     label: "Dot Plot",
@@ -26943,11 +27123,11 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         pointDataLoaded: function(pointData, url, reload) {
             SUPER.pointDataLoaded.call(this, pointData, url, reload);
 	    /*
-            if (this.dataCollection)
-                this.displayManager.propagateEventRecordSelection(this,
-                    this.dataCollection.getList()[0], {
-                        index: 0
-                    });
+              if (this.dataCollection)
+              this.displayManager.propagateEventRecordSelection(this,
+              this.dataCollection.getList()[0], {
+              index: 0
+              });
 	    */
 
         },
@@ -27004,7 +27184,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		    var index = data.points[0].pointIndex;
 		    record = this.indexToRecord[index];
 		}
-//		console.log("index:" + index +" record:"+  record);
+		//		console.log("index:" + index +" record:"+  record);
 		if(record) {
 		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
 		}
@@ -27485,7 +27665,7 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 	    }
 	    var pointNumber = data.points[0].pointNumber;
 	    var record = this.myRecords[pointNumber];
-//	    console.log(pointNumber +" " + record);
+	    //	    console.log(pointNumber +" " + record);
 	    if(record) {
 		this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
 	    }
@@ -27946,7 +28126,7 @@ function RamaddaPTreemapDisplay(displayManager, id, properties) {
                 this.displayError("No numeric field specified");
                 return;
             }
-            var values = this.getColumnValues(records, field).data;
+            var values = this.getColumnValues(records, field).values;
             // declaring arrays
             var shapes = [];
             var annotations = [];
@@ -28140,3 +28320,124 @@ function TextcountDisplay(displayManager, id, properties) {
 
     });
 }
+
+
+
+function CombochartDisplay(displayManager, id, properties) {
+    let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_COMBOCHART, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    ["label:Combo Chart",
+				     'fields=""',
+ 				     '&lt;field&gt;.axisSide="right|left"',
+				     '&lt;field&gt;.axisTitle=""',
+				     '&lt;field&gt;.chartType="scatter|bar"',
+				     'chartType="scatter|bar"',
+				     '&lt;field&gt;.chartColor=""',
+				     'chartType=""',
+				     'xAxisTitle=""',
+				     'xAxisShowGrid=""',
+				     'xAxisShowLine=""',
+				     'legendBackground=""',
+				     'legendBorder=""',
+				     'chartBackground=""',
+				     'plotBackground=""',
+				     'marginLeft=""',
+				     'marginRight=""',
+				     'marginBottom=""',
+				     'marginTop=""',
+				     'chartPad=""',
+				    ])},
+
+	updateUI: function() {
+            let records = this.filterData();
+            if (!records) return;
+	    var layout = {
+                xaxis: {
+                    title: this.getProperty("xAxisTitle", "Time"),
+                    showgrid: this.getProperty("xAxisShowGrid", false),
+                    showline: this.getProperty("xAxisShowLine", true),
+                    linecolor: 'rgb(102, 102, 102)',
+                    titlefont: {
+                        font: {
+                            color: 'rgb(204, 204, 204)'
+                        }
+                    },
+                    tickfont: {
+                        font: {
+                            color: 'rgb(102, 102, 102)'
+                        }
+                    },
+                    autotick: true,
+                    ticks: 'outside',
+                    tickcolor: 'rgb(102, 102, 102)',
+		  
+		},
+                legend: {
+                    font: {
+                        size: 10,
+                    },
+		    bgcolor: this.getProperty("legendBackground",'rgba(255,255,255,0)'),
+		    bordercolor: this.getProperty("legendBorder",'rgba(255,255,255,0)'),
+		    x: 0,
+		    y: 1.0,
+
+                },
+		xautosize: false,
+		xwidth: 500,
+		xheight: 500,
+		margin: {
+                    l: this.getProperty("marginLeft", 50),
+                    r: this.getProperty("marginRight", 50),
+                    b: this.getProperty("marginBottom", 50),
+                    t: this.getProperty("marginTop", 0),
+		    pad: this.getProperty("chartPad", 4),
+		},
+		paper_bgcolor: this.getProperty("chartBackground", 'rgb(255,255,255,0)'),
+		plot_bgcolor: this.getProperty("plottBackground", 'rgb(255,255,255,0)'),
+	    };
+	    let fields   = this.getFieldsByIds(null, this.getProperty("fields","",true));
+	    var data = [];
+	    var domain = [];
+	    records.map((r,idx)=>{
+		domain.push(r.getTime());
+	    });
+	    let right =  true;
+	    fields.map((field,idx)=>{
+		let values = this.getColumnValues(records, field).values;
+		var trace = {
+		    x: domain,
+		    y: values,
+		    name: field.getLabel(),
+		    type: this.getProperty(field.getId()+".chartType",this.getProperty("chartType",'scatter')),
+		    marker: {color: this.getProperty(field.getId()+".chartColor",this.getProperty("chartColor"))},
+		};
+		if(idx>0) {
+		    trace.yaxis = "y" + (idx+1);
+		}
+		data.push(trace);
+		var yAxisId = idx>0?"yaxis"+(idx+1):"yaxis";
+		var axis = {
+		    title: this.getProperty(field.getId()+".axisTitle" ,field.getLabel()), 
+		    titlefont: {color: 'rgb(0,0,0)'},
+		    tickfont: {color: 'rgb(0,0,0,)'},
+		    side: this.getProperty(field.getId()+".axisSide",
+					   this.getProperty("axisSide", right?'right':'left'))
+		};
+		if(idx>0)
+		    axis.overlaying='y';
+		layout[yAxisId] = axis;
+		right = !right;
+	    });
+            this.makePlot(data, layout);
+	}
+    });
+}
+
+
+
+
+

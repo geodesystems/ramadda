@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 var CATEGORY_PLOTLY = "More Charts";
@@ -14,6 +14,7 @@ var DISPLAY_PLOTLY_TREEMAP = "ptreemap";
 var DISPLAY_PLOTLY_TERNARY = "ternary";
 var DISPLAY_PLOTLY_SUNBURST= "sunburst";
 var DISPLAY_PLOTLY_TEXTCOUNT = "textcount";
+var DISPLAY_COMBOCHART = "combochart";
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
@@ -36,6 +37,14 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_PLOTLY
 });
+addGlobalDisplayType({
+    type: DISPLAY_COMBOCHART,
+    label: "Combo Chart",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CHARTS
+});
+
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DOTPLOT,
     label: "Dot Plot",
@@ -103,11 +112,11 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         pointDataLoaded: function(pointData, url, reload) {
             SUPER.pointDataLoaded.call(this, pointData, url, reload);
 	    /*
-            if (this.dataCollection)
-                this.displayManager.propagateEventRecordSelection(this,
-                    this.dataCollection.getList()[0], {
-                        index: 0
-                    });
+              if (this.dataCollection)
+              this.displayManager.propagateEventRecordSelection(this,
+              this.dataCollection.getList()[0], {
+              index: 0
+              });
 	    */
 
         },
@@ -164,7 +173,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		    var index = data.points[0].pointIndex;
 		    record = this.indexToRecord[index];
 		}
-//		console.log("index:" + index +" record:"+  record);
+		//		console.log("index:" + index +" record:"+  record);
 		if(record) {
 		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
 		}
@@ -645,7 +654,7 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 	    }
 	    var pointNumber = data.points[0].pointNumber;
 	    var record = this.myRecords[pointNumber];
-//	    console.log(pointNumber +" " + record);
+	    //	    console.log(pointNumber +" " + record);
 	    if(record) {
 		this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
 	    }
@@ -1106,7 +1115,7 @@ function RamaddaPTreemapDisplay(displayManager, id, properties) {
                 this.displayError("No numeric field specified");
                 return;
             }
-            var values = this.getColumnValues(records, field).data;
+            var values = this.getColumnValues(records, field).values;
             // declaring arrays
             var shapes = [];
             var annotations = [];
@@ -1300,3 +1309,124 @@ function TextcountDisplay(displayManager, id, properties) {
 
     });
 }
+
+
+
+function CombochartDisplay(displayManager, id, properties) {
+    let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_COMBOCHART, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    ["label:Combo Chart",
+				     'fields=""',
+ 				     '&lt;field&gt;.axisSide="right|left"',
+				     '&lt;field&gt;.axisTitle=""',
+				     '&lt;field&gt;.chartType="scatter|bar"',
+				     'chartType="scatter|bar"',
+				     '&lt;field&gt;.chartColor=""',
+				     'chartType=""',
+				     'xAxisTitle=""',
+				     'xAxisShowGrid=""',
+				     'xAxisShowLine=""',
+				     'legendBackground=""',
+				     'legendBorder=""',
+				     'chartBackground=""',
+				     'plotBackground=""',
+				     'marginLeft=""',
+				     'marginRight=""',
+				     'marginBottom=""',
+				     'marginTop=""',
+				     'chartPad=""',
+				    ])},
+
+	updateUI: function() {
+            let records = this.filterData();
+            if (!records) return;
+	    var layout = {
+                xaxis: {
+                    title: this.getProperty("xAxisTitle", "Time"),
+                    showgrid: this.getProperty("xAxisShowGrid", false),
+                    showline: this.getProperty("xAxisShowLine", true),
+                    linecolor: 'rgb(102, 102, 102)',
+                    titlefont: {
+                        font: {
+                            color: 'rgb(204, 204, 204)'
+                        }
+                    },
+                    tickfont: {
+                        font: {
+                            color: 'rgb(102, 102, 102)'
+                        }
+                    },
+                    autotick: true,
+                    ticks: 'outside',
+                    tickcolor: 'rgb(102, 102, 102)',
+		  
+		},
+                legend: {
+                    font: {
+                        size: 10,
+                    },
+		    bgcolor: this.getProperty("legendBackground",'rgba(255,255,255,0)'),
+		    bordercolor: this.getProperty("legendBorder",'rgba(255,255,255,0)'),
+		    x: 0,
+		    y: 1.0,
+
+                },
+		xautosize: false,
+		xwidth: 500,
+		xheight: 500,
+		margin: {
+                    l: this.getProperty("marginLeft", 50),
+                    r: this.getProperty("marginRight", 50),
+                    b: this.getProperty("marginBottom", 50),
+                    t: this.getProperty("marginTop", 0),
+		    pad: this.getProperty("chartPad", 4),
+		},
+		paper_bgcolor: this.getProperty("chartBackground", 'rgb(255,255,255,0)'),
+		plot_bgcolor: this.getProperty("plottBackground", 'rgb(255,255,255,0)'),
+	    };
+	    let fields   = this.getFieldsByIds(null, this.getProperty("fields","",true));
+	    var data = [];
+	    var domain = [];
+	    records.map((r,idx)=>{
+		domain.push(r.getTime());
+	    });
+	    let right =  true;
+	    fields.map((field,idx)=>{
+		let values = this.getColumnValues(records, field).values;
+		var trace = {
+		    x: domain,
+		    y: values,
+		    name: field.getLabel(),
+		    type: this.getProperty(field.getId()+".chartType",this.getProperty("chartType",'scatter')),
+		    marker: {color: this.getProperty(field.getId()+".chartColor",this.getProperty("chartColor"))},
+		};
+		if(idx>0) {
+		    trace.yaxis = "y" + (idx+1);
+		}
+		data.push(trace);
+		var yAxisId = idx>0?"yaxis"+(idx+1):"yaxis";
+		var axis = {
+		    title: this.getProperty(field.getId()+".axisTitle" ,field.getLabel()), 
+		    titlefont: {color: 'rgb(0,0,0)'},
+		    tickfont: {color: 'rgb(0,0,0,)'},
+		    side: this.getProperty(field.getId()+".axisSide",
+					   this.getProperty("axisSide", right?'right':'left'))
+		};
+		if(idx>0)
+		    axis.overlaying='y';
+		layout[yAxisId] = axis;
+		right = !right;
+	    });
+            this.makePlot(data, layout);
+	}
+    });
+}
+
+
+
+
+

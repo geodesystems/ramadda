@@ -568,6 +568,7 @@ function DisplayThing(argId, argProperties) {
                     values += "<tr valign=top><td align=right><b>" + label + ":</b></td><td align=left>" + value + "</td></tr>\n";
                 }
             }
+
             if (record.hasElevation()) {
                 values += "<tr><td  align=right><b>Elevation:</b></td><td align=left>" + number_format(record.getElevation(), 4, '.', '') + "</td></tr>";
             }
@@ -1336,6 +1337,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return;
 		}
 		this.haveCalledUpdateUI = false;
+		//xxxx
 		var widgetId = this.getFilterId(prop.fieldId);
 		if(prop.id && prop.id.endsWith("date1")) {
 		    widgetId+="_date1";
@@ -1358,7 +1360,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			widget.val(prop.value);
 		    }
 		    widget.attr("data-value",prop.value);
-
 		    if(widget.attr("isButton")) {
 			widget.find(".display-filterby-button").removeClass("display-filterby-button-selected");
 			widget.find("[value='" + prop.value +"']").addClass("display-filterby-button-selected");
@@ -2236,7 +2237,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.endDateObject = new Date(endDate);
 	    } 
 
-	    //	    var t1=  new Date();
+	    let filterDate = this.getProperty("filterDate");
+	    if(filterDate) {
+		
+		let date = $("#"+ this.getFilterId("filterDate")).val();
+		if(date) {
+		    if(date=="all") {
+			this.minDateObj = null;
+			this.maxDateObj = null;
+		    } else {
+			date = new Date(date);
+			if(filterDate == "year") {
+			    this.minDateObj = new Date(date.getFullYear()+"-01-01");
+			    this.maxDateObj = new Date(date.getFullYear()+"-12-31");
+			} else {
+			    //TODO month and day
+			}
+		    }
+		}
+	    }
+
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -2267,12 +2287,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    for(var i=0;i<this.filterFields.length;i++) {
 		var filterField = this.filterFields[i];
-		/*
-		  var useIfAll = this.getProperty(filterField.getId() +".filterUseIfAllIsSet",true);
- 		  if(allIsUsed && !useIfAll) {
-		  continue;
-		  }
-		*/
 		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
 		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
 		if (prefix) pattern = prefix + value;
@@ -2534,10 +2548,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    if(this.getProperty("dataFilter")) {
-		//col,pattern;
+		//type,field,value,enabled,Label;
 		let exclude = [];
 		this.getProperty("dataFilter").split(";").map(tok=>{
-		    [type,fieldId,value]  = tok.split(",");
+		    [type,fieldId,value,enabled,label]  = tok.split(",");
+		    if(!Utils.isDefined(enabled))
+			enabled = true;
+		    else
+			enabled = enabled=="true";
+		    if(label) {
+			var cbx =  this.jq("datafilterenabled_" + fieldId);
+			if(cbx.length && cbx.is(':checked')) {
+			    enabled = true;
+			}
+		    }
+		    if(!enabled) return;
 		    if(type=="match" || type=="notmatch")
 			value = new RegExp(value);
 		    else
@@ -2551,15 +2576,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		dataList = dataList.filter(r=>{
 		    let ok = true;
 		    exclude.map(exc=>{
+			if(!ok) return false;
 			let value = r.getValue(exc.field.getIndex());
 			if(exc.type == "match") {
 			    ok = String(value).match(exc.value);
 			} else if(exc.type == "notmatch") {
 			    ok = !String(value).match(exc.value);
 			} else if(exc.type == "lessthan") {
-			    ok = value<=exc.value;
+			    ok = value<exc.value;
 			} else if(exc.type == "greaterthan") {
-			    ok = value>=exc.value;
+			    ok = value>exc.value;
 			}  else if(exc.type == "equals") {
 			    ok = value==exc.value;
 			}  else if(exc.type == "notequals") {
@@ -3906,6 +3932,58 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					  HtmlUtils.span(["class","display-filterby-label"],"Size by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
 
+
+	    let dataFilterIds = [];
+	    if(this.getProperty("dataFilter")) {
+		this.getProperty("dataFilter").split(";").map(tok=>{
+		    [type,fieldId,value,enabled,label]  = tok.split(",");
+		    if(!label) return;
+		    enabled = enabled=="true";
+		    let cbxid = this.getDomId("datafilterenabled_" + fieldId);
+		    dataFilterIds.push(cbxid);
+		    header2 +=  HtmlUtils.checkbox("",["id",cbxid],enabled) +" " + label +"&nbsp;&nbsp;"
+		});
+	    }
+
+
+
+	    if(this.getProperty("filterDate")) { 
+		let type = this.getProperty("filterDate");
+		//get dates
+		var enums = [];
+		if(this.getProperty("filterDateIncudeAll")) {
+		    enums.push(["all","All"]);
+		}
+		let selected = null;
+		let seen  = {};
+		let dates  = [];
+		records.map(record=>dates.push(record.getDate()));
+		dates.sort(function(a,b) {
+		    return a.getTime()-b.getTime();
+		});
+		dates.map(dttm=>{
+		    let value = null;
+		    if(type == "year") {
+			value = dttm.getFullYear();
+		    }
+		    if(!seen[value]) {
+			selected = String(dttm);
+			enums.push([String(dttm), value]);
+			seen[value] = true;
+		    }
+		});
+
+		let label = type=="year"?"Year":type=="month"?"Month":type=="day"?"Day":type;
+		let style="";
+		if(!this.getProperty("filterDateShow",true))
+		    style +="display:none;";
+		var selectId = this.getFilterId("filterDate");
+		header2 += HtmlUtils.span(["class","display-filterby","style",style],
+					  HtmlUtils.span(["class","display-filterby-label"],"Select " + label+":") + HtmlUtils.select("",["fieldId","filterDate", "style","",
+																	  "id",selectId],enums,selected))+"&nbsp;";
+	    }
+	    
+
             if(filterBy.length>0) {
 		var searchBar = "";
 		var bottom = "";
@@ -4178,6 +4256,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_HEADER2).html(header2);
 	    var theDisplay = this;
 
+	    dataFilterIds.map(id=>{
+		$("#" + id).click(function(e){
+		    inputFunc($(this));
+		});
+	    });
+
+
+
             if(filterBy.length>0) {
 		if(!hideFilterWidget) {
 		    for(var i=0;i<dateIds.length;i++) {
@@ -4216,7 +4302,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!value) {
 			value = input.val();
 		    }
-		    
+	    
 		    if(value==null) return;
 		    if(!Array.isArray(value) && input.attr("isButton")) {
 			//			console.log(_this.type +" " +Array.isArray(value));
@@ -4235,6 +4321,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    _this.settingFilterValue = true;
 		    _this.dataFilterChanged();
+
+//		    console.log("ID:" + id +" v:" + value +" " + fieldId);
 		    var args = {
 			property: "filterValue",
 			id:id,
@@ -4392,11 +4480,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		});
 
-
 		//		HtmlUtils.initSelect(this.jq("colorbyselect"));
 		//		HtmlUtils.initSelect(this.jq("sizebyselect"));
 		//		HtmlUtils.initSelect(this.jq("chartfields"));
 
+		$("#" + this.getFilterId("filterDate")).change(function() {
+		    inputFunc($(this));
+		});
                 this.jq("chartfields").change(function(){
 		    _this.setProperty("fields",$(this).val());
 		    _this.updateUI();
@@ -4692,7 +4782,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		"binDate=\"day|month|year\"",
+		'dataFilter="match|notmatch|lessthan|greaterthan|equals|notequals,field,value"', 
+		'startDate="yyyy-MM-dd"',
+		'endtDate="yyyy-MM-dd"',
+		'binDate=\day|month|year"',
+		'binType="count|average|total"',
 		"label:Color Attributes",
 		"colorTable=\"\"",
 		"colors=\"color1,...,colorN\"",
@@ -5481,8 +5575,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                         }
                     }
-                }
-
+		}
 
 		if(groupByFill) {
 		    groupByDates.map(date=>{
@@ -5503,7 +5596,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 
 		if(this.getProperty("groupBySort")) {
-		    agg.sort(function(a,b) {return a[0]>b[0]});
+		    agg.sort(function(a,b) {return b[1]-a[1]});
+		}
+		if(this.getProperty("groupByMaxNumber")) {
+		    let cnt = +this.getProperty("groupByMaxNumber");
+		    agg = agg.filter((t,idx)=>{
+			return idx<cnt;
+			
+		    });
+
 		}
 		let tmp = [];
 		tmp.push(title);
@@ -6090,8 +6191,6 @@ function DisplayAnimation(display) {
 	    this.begin = this.dateMin;
 	    this.end = this.dateMax;
 	    if(!this.dateMin) return;
-   
-
 	    this.dates=[];
 	    var seen = {};
 	    records.map(r=>{
@@ -6170,6 +6269,9 @@ function DisplayAnimation(display) {
 		}
 	    }
 
+
+
+
 	    var sliderValues = _this.mode != "frame"?[_this.begin.getTime(),_this.end.getTime()]:[_this.begin.getTime()];
 	    this.jq(ID_SLIDER).slider({
 		range: _this.mode != "frame",
@@ -6187,6 +6289,7 @@ function DisplayAnimation(display) {
 		    _this.applyAnimation(true);
 		}
 	    });
+
 
 	    if(records && this.display.getProperty("animationShowTicks",true)) {
 		var ticks = "";
