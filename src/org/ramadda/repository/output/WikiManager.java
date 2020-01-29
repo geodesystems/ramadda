@@ -2117,6 +2117,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
             }
             if (jsonUrl == null) {
+                if (props.get("max") == null) {
+                    String max = getProperty(wikiUtil, props, "max", null);
+                    if (max != null) {
+                        props.put("max", max);
+                    }
+                }
                 jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
                         entry, theTag, props);
             }
@@ -6503,6 +6509,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "3dmesh") || displayType.equals(
                 "textcount") || displayType.equals(
                 "density") || displayType.equals(
+                "combochart") || displayType.equals(
                 "sunburst")) && (request.getExtraProperty(
                 "added plotly") == null)) {
             HtmlUtils.importJS(
