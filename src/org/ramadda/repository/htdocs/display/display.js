@@ -2227,6 +2227,67 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	requiresGeoLocation: function() {
 	    return false;
 	},
+	checkDataFilters: function(dataFilters, record) {
+	    if(!dataFilters) { return true;}
+	    let ok = true;
+	    for(var i=0;i<dataFilters.length;i++) {
+		if(!dataFilters[i].isRecordOk(record)) return false;
+	    }
+	    return true;
+	},
+	getDataFilters: function(prop) {
+	    prop  = prop || this.getProperty("dataFilter");
+	    if(!prop) {
+		return null;
+	    }
+	    let filters = [];
+	    //type,field,value,enabled,Label;
+	    prop.split(";").map(tok=>{
+		[type,fieldId,value,enabled,label]  = tok.split(",");
+		if(!Utils.isDefined(enabled))
+		    enabled = true;
+		else
+		    enabled = enabled=="true";
+		if(label) {
+		    var cbx =  this.jq("datafilterenabled_" + fieldId);
+		    if(cbx.length && cbx.is(':checked')) {
+			enabled = true;
+		    }
+		}
+		if(type=="match" || type=="notmatch")
+		    value = new RegExp(value);
+		else
+		    value = +value;
+		let field = this.getFieldById(null,fieldId);
+		if(!field) {
+		    return;
+		}
+		filters.push({
+		    type:type.trim(),
+		    field:field,
+		    value:value,
+		    label:label,
+		    isRecordOk: function(r) {
+			let value = r.getValue(this.field.getIndex());
+			if(this.type == "match") {
+			    return String(value).match(this.value);
+			} else if(this.type == "notmatch") {
+			    return  !String(value).match(this.value);
+			} else if(this.type == "lessthan") {
+			    return  value<this.value;
+			} else if(this.type == "greaterthan") {
+			    return  value>this.value;
+			}  else if(this.type == "equals") {
+			    return  value==this.value;
+			}  else if(this.type == "notequals") {
+			    return value!=this.value;
+			}
+			return true;
+		    }
+		});
+	    });
+	    return filters;
+	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
@@ -2547,52 +2608,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		dataList = dataList.filter(r=>{return r.hasLocation();});
 	    }
 
-	    if(this.getProperty("dataFilter")) {
-		//type,field,value,enabled,Label;
-		let exclude = [];
-		this.getProperty("dataFilter").split(";").map(tok=>{
-		    [type,fieldId,value,enabled,label]  = tok.split(",");
-		    if(!Utils.isDefined(enabled))
-			enabled = true;
-		    else
-			enabled = enabled=="true";
-		    if(label) {
-			var cbx =  this.jq("datafilterenabled_" + fieldId);
-			if(cbx.length && cbx.is(':checked')) {
-			    enabled = true;
-			}
-		    }
-		    if(!enabled) return;
-		    if(type=="match" || type=="notmatch")
-			value = new RegExp(value);
-		    else
-			value = +value;
-		    let field = this.getFieldById(null,fieldId);
-		    if(field)
-			exclude.push({type:type.trim(),field:field,value:value});
-		    else
-			console.log("No exclude field:" + fieldId);
-		});
-		dataList = dataList.filter(r=>{
-		    let ok = true;
-		    exclude.map(exc=>{
-			if(!ok) return false;
-			let value = r.getValue(exc.field.getIndex());
-			if(exc.type == "match") {
-			    ok = String(value).match(exc.value);
-			} else if(exc.type == "notmatch") {
-			    ok = !String(value).match(exc.value);
-			} else if(exc.type == "lessthan") {
-			    ok = value<exc.value;
-			} else if(exc.type == "greaterthan") {
-			    ok = value>exc.value;
-			}  else if(exc.type == "equals") {
-			    ok = value==exc.value;
-			}  else if(exc.type == "notequals") {
-			    ok = value!=exc.value;
-			}
-		    });
-		    return ok;
+	    let dataFilters = this.getDataFilters();
+	    if(dataFilters) {
+		dataList = dataList.filter(r=> {
+		    if(!this.checkDataFilters(dataFilters, r)) return false;
+		    return true;
 		});
 	    }
 
@@ -4788,7 +4808,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		'dataFilter="match|notmatch|lessthan|greaterthan|equals|notequals,field,value"', 
+		'dataFilter="match|notmatch|lessthan|greaterthan|equals|notequals,field,value,enabled,label"', 
 		'startDate="yyyy-MM-dd"',
 		'endtDate="yyyy-MM-dd"',
 		'binDate=\day|month|year"',

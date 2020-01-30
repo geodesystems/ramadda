@@ -1553,6 +1553,10 @@ pre {
     color: #ff0000;
 }
 
+.ramadda-hline {
+    border-top:1px solid #ccc;
+}
+
 .ramadda-highlight {
     font-weight: bold; 
     background: #FFFFCC;

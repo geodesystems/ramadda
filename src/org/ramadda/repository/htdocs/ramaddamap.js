@@ -422,6 +422,8 @@ function initMapFunctions(theMap) {
 	    //            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
 	    if (layer.canSelect === false) return;
             var _this = this;
+	    
+
             if (!feature.isSelected) {
                 feature.originalStyle = feature.style;
                 feature.style = null;
@@ -1108,6 +1110,7 @@ function initMapFunctions(theMap) {
                 this.map.removePopup(this.currentPopup);
                 this.currentPopup.destroy();
             }
+
 
 
             var popup = new OpenLayers.Popup.FramedCloud("popup", feature.geometry.getBounds().getCenterLonLat(),
@@ -2656,6 +2659,9 @@ function initMapFunctions(theMap) {
     }
 
     theMap.onPopupClose = function(evt) {
+	if(this.displayDiv) {
+	    $("#" + this.displayDiv).html("");
+	}
         if (this.currentPopup) {
             this.map.removePopup(this.currentPopup);
             this.currentPopup.destroy();
@@ -3490,6 +3496,12 @@ function initMapFunctions(theMap) {
 	} else {
 	    markertext =marker.text;
 	}
+	if(this.displayDiv) {
+	    $("#" + this.displayDiv).html(markertext);
+	    return;
+	}
+
+
         if (fromClick && marker.locationKey != null) {
             markers = this.seenMarkers[marker.locationKey];
             if (markers.length > 1) {
@@ -3532,8 +3544,6 @@ function initMapFunctions(theMap) {
         }
 
         var projPoint = this.transformLLPoint(location);
-
-
 
 
 

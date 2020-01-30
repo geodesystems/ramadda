@@ -5,20 +5,20 @@
 
 
 /*
-var url = "https://bost.ocks.org/mike/miserables/miserables.json";
-fetch(url).then(res => res.json()).then(data=>{
-    var names = {};
-    data.nodes.map((name,idx)=>{
-	names[idx] = name.name;
-    });
-    var csv ="";
-    data.links.map(l=>{
-	var s = names[l.source];
-	var t = names[l.target];
-	csv += s+"," + t +"," + l.value +"\n";
-    });
-    Utils.makeDownloadFile("lesmiserables.csv", csv);
-});
+  var url = "https://bost.ocks.org/mike/miserables/miserables.json";
+  fetch(url).then(res => res.json()).then(data=>{
+  var names = {};
+  data.nodes.map((name,idx)=>{
+  names[idx] = name.name;
+  });
+  var csv ="";
+  data.links.map(l=>{
+  var s = names[l.source];
+  var t = names[l.target];
+  csv += s+"," + t +"," + l.value +"\n";
+  });
+  Utils.makeDownloadFile("lesmiserables.csv", csv);
+  });
 */
 
 
@@ -36,7 +36,7 @@ var DISPLAY_RANKING = "ranking";
 var DISPLAY_STATS = "stats";
 var DISPLAY_COOCCURENCE = "cooccurence";
 var DISPLAY_BOXTABLE = "boxtable";
-var DISPLAY_DATETABLE = "datetable";
+var DISPLAY_DATATABLE = "datatable";
 var DISPLAY_PERCENTCHANGE = "percentchange";
 
 addGlobalDisplayType({
@@ -158,7 +158,7 @@ addGlobalDisplayType({
 });
 
 addGlobalDisplayType({
-    type: DISPLAY_DATETABLE,
+    type: DISPLAY_DATATABLE,
     label: "Date Table",
     requiresData: true,
     forUser: true,
@@ -304,17 +304,17 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		    ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
 		    ctx.strokeRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
 		} else  {
-		      let dim = [textWidth, fontSize].map(n => n + fontSize * 0.2+2); 
-		      ctx.fillStyle = nodeBackground;
-		      ctx.strokeStyle = "#000";
-		      if(drawCircle) {
-		      ctx.beginPath();
-		      ctx.arc(node.x, node.y, dim[0]/2, 0, 2 * Math.PI);
-		      ctx.fill(); 
-		      } else {
-		      ctx.fillRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
-		      ctx.strokeRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
-		      }
+		    let dim = [textWidth, fontSize].map(n => n + fontSize * 0.2+2); 
+		    ctx.fillStyle = nodeBackground;
+		    ctx.strokeStyle = "#000";
+		    if(drawCircle) {
+			ctx.beginPath();
+			ctx.arc(node.x, node.y, dim[0]/2, 0, 2 * Math.PI);
+			ctx.fill(); 
+		    } else {
+			ctx.fillRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
+			ctx.strokeRect(node.x - dim[0] / 2, node.y - dim[1] / 2, ...dim);
+		    }
 		}
 		if(drawText) {
 		    ctx.textAlign = 'center';
@@ -2070,8 +2070,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 		    var type  = $(this).attr("data-type");
 		    var value  = $(this).attr("data-value");
 		    var links = "&nbsp;" + HtmlUtils.getIconImage("fa-less-than",["title","Filter other displays",
-									     "class","display-stats-value-link","data-type",type,"data-value",value],
-							     ["style","font-size:8pt;"]);
+										  "class","display-stats-value-link","data-type",type,"data-value",value],
+								  ["style","font-size:8pt;"]);
 
 		    $(this).append(links);
 		});
@@ -2151,7 +2151,7 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 		    _this.setProperty("sortBy",$(this).val());
 		    _this.updateUI();
 		});
-					
+		
 	    }
 
 	    if(sourceField==null || targetField==null) {
@@ -2424,7 +2424,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 			break;
 		    }
 		}
-		    
+		
 		var val2 = 0;
 		for(var i=records.length-1;i>=0;i--) {
 		    var val = records[i].getValue(f.getIndex());
@@ -2435,8 +2435,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		}
 
 		var percent = parseInt(1000*(val2-val1)/val1)/10;
-//		val1 = record1.getValue(f.getIndex());
-//		val2 = record2.getValue(f.getIndex());
+		//		val1 = record1.getValue(f.getIndex());
+		//		val2 = record2.getValue(f.getIndex());
 		tuples.push({field:f,val1:val1,val2:val2,percent:percent});
 	    });
 
@@ -2479,13 +2479,10 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaDatetableDisplay(displayManager, id, properties) {
-    let ID_TABLE = "table";
-    let ID_HEADER = "coocheader";
-    let ID_SORTBY = "sortby";
-    var SUPER;
+function RamaddaDatatableDisplay(displayManager, id, properties) {
+    let SUPER;
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
-							 DISPLAY_DATETABLE, properties));
+							 DISPLAY_DATATABLE, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
@@ -2495,26 +2492,18 @@ function RamaddaDatetableDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Date Table",
-					'viewBy="day|hour|dow"',
-					'showViewBy=false',
+					'columnSelector="day|hour|dow|month|year"',
+					'selectors="day,hour,dow,month,year,fieldid"',
+					'showColumnSelector=false',
+					'rowSelector="day|hour|dow|month"',
+					'showRowSelector=false',
+					'checkedIcon="fa-checked"',
+					'checkedTooltipHeader="${numberChecked}"',
+					'dataCheckers="match|notmatch|lessthan|greaterthan|equals|notequals,field,value"',
+					'showRowTotals=false',
+					'showColumnTotals=false',
+
 				    ])},
-
-	getHeader2:function() {
-	    if(this.getProperty("showViewBy",true)) {
-		return  "View: " + HtmlUtils.select("",["id",this.getDomId("viewby"),],
-						    [["day","By Day"],["dow","By Day of Week"],["hour","By Hour"]],
-						    this.getProperty("viewBy","day"))+"&nbsp;&nbsp;";
-	    }
-	    return "";
-	},
-	initHeader2:function() {
-	    let _this = this;
-	    this.jq("viewby").change(function() {
-		_this.setProperty("viewBy",$(this).val());
-		_this.updateUI();
-	    });
-	},
-
         updateUI: function() {
             this.setContents(this.getLoadingMessage());
 	    var records = this.filterData();
@@ -2523,45 +2512,118 @@ function RamaddaDatetableDisplay(displayManager, id, properties) {
 	    }  
 	    let colors = this.getColorTable(true);
 	    if (!colors) colors = Utils.getColorTable("blues",true);
+	    let checkers = this.getDataFilters(this.getProperty("dataCheckers"));
 	    let counts = {};
-	    let viewBy = this.getProperty("viewBy","day");
-	    let keys;
-	    let labels;
-	    if(viewBy =="dow") {
-		keys= Utils.dayNamesShortShort;
-	    }  else if(viewBy =="hour") {
-		labels=["12&nbsp;AM","1","2","3","4","5","6","7","8","9","10","11",
-			"12&nbsp;PM","1","2","3","4","5","6","7","8","9","10","11"];
-		keys=[];
-		for(var i=0;i<24;i++)
-		    keys.push(i);
-	    }   else {
-		keys = [];
-		for(var day=1;day<=31;day++)
-		    keys.push(day);
-	    }
-	    records.map(r=>{
-		let dttm = r.getDate();
-		let year = dttm.getUTCFullYear();
-		let month = dttm.getUTCMonth();
-		let sub;
-		if(viewBy =="dow") 
-		    sub = keys[dttm.getDay()];
-		else if(viewBy =="hour") {
-		    sub = keys[dttm.getUTCHours()];
-		    if(dttm.getUTCHours() ==12 )
-			console.log(dttm.getUTCHours() + " " + sub);
-		} else {
-		    sub = keys[dttm.getUTCDate()-1];
-		}
+	    this.checked= {};
 
-		let key = month+"-" +sub;
+	    let columnSelector = this.getProperty("columnSelector","day");
+	    let rowSelector = this.getProperty("rowSelector","month");
+	    let selectors;
+	    let fieldMap = {};
+	    if(this.getProperty("selectors")) {
+		selectors = [];
+		let labels = {"day":"Day","dow":"Day of Week","hour":"Hour","month":"Month","year":"Year"};
+		this.getProperty("selectors").split(",").map(s=>{
+		    let label = labels[s];
+		    if(!label) {
+			let field = this.getFieldById(null,s);
+			if(field) {
+			    label = field.getLabel();
+			    fieldMap[s] = field;
+			}
+		    }
+		    if(label)
+			selectors.push([s,label]);
+		});
+	    } else {
+		selectors  =   [["day","Day"],["dow","Day of Week"],["hour","Hour"],["month","Month"],["year","Year"]];
+	    }
+
+	    let getValues =(s=>{
+		let values = [];
+		if(s =="dow") {
+		    Utils.dayNamesShortShort.map((d,i)=>{
+			values.push({id:i,label:d});
+		    });
+		}  else if(s =="hour") {
+		    let tmp =["12&nbsp;AM","1","2","3","4","5","6","7","8","9","10","11",
+			      "12&nbsp;PM","1","2","3","4","5","6","7","8","9","10","11"];
+		    for(var i=0;i<24;i++)
+			values.push({id:i,label:tmp[i]});
+		}  else if(s =="day") {
+		    for(var day=1;day<=31;day++)
+			values.push({id:day,label:String(day)});
+		}  else if(s =="month") {
+		    Utils.monthNames.map((m,i)=>{
+			values.push({id:i,label:m});
+		    });
+		}  else if(s =="year") {
+		    let years =[];
+		    let seen = {};
+		    records.map(r=>{
+			let year = r.getDate().getUTCFullYear();
+			if(!seen[year]) {
+			    years.push(year);
+			    seen[year] = true;
+			}
+		    });
+		    years.sort();
+		    years.map((y,i)=>{
+			values.push({id:y,label:String(y)});
+		    });
+		} else {
+		    let field = fieldMap[s];
+		    if(field) {
+			let seen = {};
+			this.getColumnValues(records, field).values.map(d=>{
+			    if(!Utils.isDefined(seen[d])) {
+				seen[d] = true;
+				values.push({id:d,label:String(d)});
+			    }
+			});
+			values.sort((a,b) =>{
+			    return a.label.localeCompare(b.label);
+			});
+		    }
+		}
+		return values;
+	    });
+	    let columns =getValues(columnSelector);
+	    let rows =getValues(rowSelector);
+	    let getId =((s,r,l)=>{
+		if(s =="dow")  {
+		    return l[r.getDate().getDay()].id;
+		} else if(s =="hour") {
+		    return l[r.getDate().getUTCHours()].id;
+		} else if(s =="day") {
+		    return  l[r.getDate().getUTCDate()-1].id;
+		} else if(s =="month") {
+		    return  l[r.getDate().getUTCMonth()].id;
+		} else if(s =="year") {
+		    return r.getDate().getUTCFullYear();
+		} else {
+		    let field = fieldMap[s];
+		    if(field) {
+			return r.getValue(field.getIndex());
+		    }
+		}
+		return "null";
+	    });
+	    records.map((r,i)=>{
+		let row =getId(rowSelector,r,rows);
+		let column =getId(columnSelector,r,columns);
+		let key = row+"-" +column;
+		if(this.checkDataFilters(checkers, r)) {
+		    if(!this.checked[key]) this.checked[key] = [];
+		    this.checked[key].push(r);
+		}
 		if(!Utils.isDefined(counts[key])) {
 		    counts[key]=0;
 		}
 		counts[key]++;
 	    });
-	    if(!labels) labels = keys;
+
+
 	    let min = 0;
 	    let max  = 0;
 	    let cnt = 0;
@@ -2573,59 +2635,162 @@ function RamaddaDatetableDisplay(displayManager, id, properties) {
 
 	    let colorBy = this.getColorByInfo(records,null,null,colors);
 	    let showValues = this.getProperty("showValues", true);
-	    let html = "<table style='font-size:" + this.getProperty("fontSize",'8pt;') +"' class='display-colorboxes-table' border=0 cellpadding=0 cellspacing=0  width=100%>";
-	    let cellCount = keys.length;
-	    let width = Math.round(100/cellCount);
-	    html+="<tr><td></td>";
-	    labels.map(label=>{
-		html+=`<td class=display-datetable-header align=center>${label}</td>`;
-	    });
-	    html+="</tr>";
+	    let cellCount = columns.length;
 	    let maxRowValue = 0;
-	    for(let month=0;month<12;month++) {
-		let total = 0;
-		keys.map(label=>{
-		    let key = month+"-" +label;		    
+	    let maxColumnValue = 0;
+	    let columnTotals = {};
+	    let rowTotals = {};
+	    rows.map(row=>{
+		let rowTotal = 0;
+		columns.map(column=>{
+		    let key = row.id +"-" +column.id;
 		    if(counts[key]) {
-			total+=counts[key];
+			rowTotal+=counts[key];
 		    }
 		});
-		maxRowValue = Math.max(maxRowValue, total);
-	    }
+		rowTotals[row.id] = rowTotal;
+		maxRowValue = Math.max(maxRowValue, rowTotal);
+	    });
+	    columns.map(column=>{
+		let columnTotal = 0;
+		rows.map(row=>{
+		    let key = row.id +"-" +column.id;
+		    if(counts[key]) {
+			columnTotal+=counts[key];
+		    }
+		});
+		columnTotals[column.id] = columnTotal;
+		maxColumnValue = Math.max(maxColumnValue, columnTotal);
+	    });
 
-	    for(let month=0;month<12;month++) {
-		let name = HtmlUtils.div([],Utils.monthLongNames[month]);
-		html+="<tr>" + HtmlUtils.td(["class","display-datetable-name","align","right", "width","100"],name);
 
-		let total = 0;
-		keys.map(label=>{
-		    let key = month+"-" +label;		    
+
+
+	    let showRowTotals = this.getProperty("showRowTotals",true);
+	    let showColumnTotals = this.getProperty("showColumnTotals",true);
+	    let width = Math.round(100/cellCount);
+	    let table = "<table style='font-size:" + this.getProperty("fontSize",'8pt;') +"' class='display-colorboxes-table' border=0 cellpadding=0 cellspacing=0  width=100%>";
+	    table+="<tr valign=bottom><td></td>";
+	    let needToRotate = false;
+	    let topSpace = 0;
+	    columns.map(column=>{
+		let label = column.label;
+		if(label.length>10) {
+		    needToRotate = true;
+		    topSpace = Math.max(topSpace,Math.round(label.length*3));
+		    topSpace = 80;
+		}
+	    });
+	    
+	    columns.map(column=>{
+		let label = column.label;
+		if(needToRotate) {
+		    if(label.length>20) {
+			label = label.substring(0,20)+"...";
+		    }
+		    label = label.replace(/ /g,"&nbsp;").replace("-","&nbsp;");
+		    label = HtmlUtils.div(["tootltip",column.label,"class","display-datatable-header-inner"],label);
+		}		    
+		table+=`<td class=display-datatable-header align=center>${label}</td>`;
+	    });
+	    table+="</tr>";
+
+	    rows.map(row=>{
+		let name = HtmlUtils.div([],row.label.replace(/ /g,"&nbsp;"));
+		table+="<tr>" + HtmlUtils.td(["class","display-datatable-name","align","right", "width","100"],name);
+		columns.map(column=>{
+		    let key = row.id+"-" +column.id;		    
 		    let inner = "&nbsp;";
 		    let style = "";
+		    let marker = "";
 		    if(counts[key]) {
-			total+=counts[key];
 			if(showValues) 
 			    inner = counts[key]
+			if(this.checked[key]) {
+			    inner= HtmlUtils.getIconImage(this.getProperty("checkedIcon","fa-check"),["title","","data-key",key,"class","display-datatable-checked"]) +" " + inner;
+			}
                         var percent = (counts[key] - min) / (max - min);
                         var ctIndex = parseInt(percent * colors.length);
                         if (ctIndex >= colors.length) ctIndex = colors.length - 1;
                         else if (ctIndex < 0) ctIndex = 0;
                         style = "background-color:" + colors[ctIndex] + ";";
 		    }
-		    let cell = HtmlUtils.div(["class","display-datetable-value"],inner);
-		    html += "<td class=display-datetable-cell align=right style='" +style +"' width='" + width +"%'>" + cell+"</td>";
+		    let cell = HtmlUtils.div(["class","display-datatable-value"],inner);
+		    table += "<td class=display-datatable-cell align=right style='" +style +"' width='" + width +"%'>" + cell+"</td>";
 		});
-		let summaryWidth = Math.round(total/maxRowValue*100);
-		let bar = HtmlUtils.div(["class", "display-datetable-summary","style","width:"+ summaryWidth+"px;"],total);
-		html += HtmlUtils.td(["width",100],bar);
-		html += "</tr>";
-	    }
-	    html+="<tr><td></td>";
-	    html+=`<td colspan=${cellCount} class=display-datetable-footer align=center id='` + this.getDomId("ct")+"'></td>";
-	    html+="</tr>";
-	    html +="</table>";
+		if(showRowTotals) {
+		    let total = rowTotals[row.id];
+		    let dim = Math.round(total/maxRowValue*100);
+		    let bar = HtmlUtils.div(["class", "display-datatable-summary-row","style","width:"+ dim+"px;"],total);
+		    table += HtmlUtils.td(["width",100,"valign","top"],bar);
+		}
+		table += "</tr>";
+	    });
+	    if(showColumnTotals) {
+		table+="<tr valign=top><td></td>";
+		columns.map(column=>{
+		    let total = columnTotals[column.id];
+		    let dim = Math.round(total/maxColumnValue*100);
+		    let bar = HtmlUtils.div(["class", "display-datatable-summary-column","style","height:"+ dim+"px;"],total);
+		    table += HtmlUtils.td([],bar);
 
+		});
+	    }
+	    table+="</tr>";
+	    table+="<tr><td></td>";
+	    table+=`<td colspan=${cellCount} class=display-datatable-footer align=center id='` + this.getDomId("ct")+"'></td>";
+	    table+="</tr>";
+	    table +="</table>";
+
+	    if(topSpace>0) {
+		table  = HtmlUtils.div(["style","margin-top:" + topSpace+"px;"], table);
+	    }
+
+	    let html ="";
+	    let header = "<table width=100%><tr>";
+	    if(this.getProperty("showRowSelector",true)) {
+		header+=  HtmlUtils.td(["class","display-datatable-selector","width","10%"],HtmlUtils.select("",["id",this.getDomId("rowSelector")],
+													     selectors,
+													     this.getProperty("rowSelector","month")));
+	    }
+	    if(this.getProperty("showColumnSelector",true)) {
+		header+=  HtmlUtils.td(["class","display-datatable-selector","width","90%","align","center"],  HtmlUtils.select("",["id",this.getDomId("columnSelector")],
+																selectors,
+																this.getProperty("columnSelector","day")));;
+	    }
+	    header+="</tr></table>";
+	    html+=header;
+	    html+=table;
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+	    let _this = this;
+	    this.jq("rowSelector").change(function() {
+		_this.setProperty("rowSelector",$(this).val());
+		_this.updateUI();
+	    });	    
+	    this.jq("columnSelector").change(function() {
+		_this.setProperty("columnSelector",$(this).val());
+		_this.updateUI();
+	    });
+
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-checked").tooltip({
+		content: function() {
+		    var key = $(this).attr("data-key");
+		    var checked = _this.checked[key];
+		    if(checked) {
+			let tooltip = _this.getProperty("tooltip","${default}");
+			if(tooltip =="") return null;
+			let tt = _this.getProperty("checkedTooltipHeader","<b>#Items: ${numberChecked}</b><br>");
+			tt = tt.replace("${numberChecked}", checked.length);
+			_this.checked[key].map(r=>{
+			    if(tt!="") tt +="<div class=ramadda-hline>";
+			    tt+= _this.getRecordHtml(r,null,tooltip);
+			});
+			return HtmlUtils.div(["class", "display-datatable-tooltip"],tt);
+		    }
+		    return null;
+
+		},
+	    });
 	    this.displayColorTable(colors, "ct", min,max,{});
 	},
     })
