@@ -3838,6 +3838,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterId: function(id) {
 	    return  this.getDomId("filterby_" + id);
 	},
+	getHeader2:function() {
+	    return "";
+	},
+	initHeader2:function() {
+	},
         checkSearchBar: function() {
             let _this = this;
             var pointData = this.getData();
@@ -3882,7 +3887,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
-	    var header2="";
+	    var header2=this.getHeader2();
 	    var searchBar  = "";
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
@@ -4254,6 +4259,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    this.jq(ID_HEADER2).html(header2);
+	    this.initHeader2();
 	    var theDisplay = this;
 
 	    dataFilterIds.map(id=>{

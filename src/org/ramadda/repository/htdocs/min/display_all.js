@@ -3988,6 +3988,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterId: function(id) {
 	    return  this.getDomId("filterby_" + id);
 	},
+	getHeader2:function() {
+	    return "";
+	},
+	initHeader2:function() {
+	},
         checkSearchBar: function() {
             let _this = this;
             var pointData = this.getData();
@@ -4032,7 +4037,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
-	    var header2="";
+	    var header2=this.getHeader2();
 	    var searchBar  = "";
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
@@ -4404,6 +4409,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    this.jq(ID_HEADER2).html(header2);
+	    this.initHeader2();
 	    var theDisplay = this;
 
 	    dataFilterIds.map(id=>{
@@ -23926,6 +23932,7 @@ var DISPLAY_RANKING = "ranking";
 var DISPLAY_STATS = "stats";
 var DISPLAY_COOCCURENCE = "cooccurence";
 var DISPLAY_BOXTABLE = "boxtable";
+var DISPLAY_DATETABLE = "datetable";
 var DISPLAY_PERCENTCHANGE = "percentchange";
 
 addGlobalDisplayType({
@@ -24041,6 +24048,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_BOXTABLE,
     label: "Box Table",
+    requiresData: true,
+    forUser: true,
+    category: "Misc"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_DATETABLE,
+    label: "Date Table",
     requiresData: true,
     forUser: true,
     category: "Misc"
@@ -26358,6 +26373,159 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
     })
 }
 
+
+
+function RamaddaDatetableDisplay(displayManager, id, properties) {
+    let ID_TABLE = "table";
+    let ID_HEADER = "coocheader";
+    let ID_SORTBY = "sortby";
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
+							 DISPLAY_DATETABLE, properties));
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        needsData: function() {
+            return true;
+        },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Date Table",
+					'viewBy="day|hour|dow"',
+					'showViewBy=false',
+				    ])},
+
+	getHeader2:function() {
+	    if(this.getProperty("showViewBy",true)) {
+		return  "View: " + HtmlUtils.select("",["id",this.getDomId("viewby"),],
+						    [["day","By Day"],["dow","By Day of Week"],["hour","By Hour"]],
+						    this.getProperty("viewBy","day"))+"&nbsp;&nbsp;";
+	    }
+	    return "";
+	},
+	initHeader2:function() {
+	    let _this = this;
+	    this.jq("viewby").change(function() {
+		_this.setProperty("viewBy",$(this).val());
+		_this.updateUI();
+	    });
+	},
+
+        updateUI: function() {
+            this.setContents(this.getLoadingMessage());
+	    var records = this.filterData();
+	    if (!records) {
+                return;
+	    }  
+	    let colors = this.getColorTable(true);
+	    if (!colors) colors = Utils.getColorTable("blues",true);
+	    let counts = {};
+	    let viewBy = this.getProperty("viewBy","day");
+	    let keys;
+	    let labels;
+	    if(viewBy =="dow") {
+		keys= Utils.dayNamesShortShort;
+	    }  else if(viewBy =="hour") {
+		labels=["12&nbsp;AM","1","2","3","4","5","6","7","8","9","10","11",
+			"12&nbsp;PM","1","2","3","4","5","6","7","8","9","10","11"];
+		keys=[];
+		for(var i=0;i<24;i++)
+		    keys.push(i);
+	    }   else {
+		keys = [];
+		for(var day=1;day<=31;day++)
+		    keys.push(day);
+	    }
+	    records.map(r=>{
+		let dttm = r.getDate();
+		let year = dttm.getUTCFullYear();
+		let month = dttm.getUTCMonth();
+		let sub;
+		if(viewBy =="dow") 
+		    sub = keys[dttm.getDay()];
+		else if(viewBy =="hour") {
+		    sub = keys[dttm.getUTCHours()];
+		    if(dttm.getUTCHours() ==12 )
+			console.log(dttm.getUTCHours() + " " + sub);
+		} else {
+		    sub = keys[dttm.getUTCDate()-1];
+		}
+
+		let key = month+"-" +sub;
+		if(!Utils.isDefined(counts[key])) {
+		    counts[key]=0;
+		}
+		counts[key]++;
+	    });
+	    if(!labels) labels = keys;
+	    let min = 0;
+	    let max  = 0;
+	    let cnt = 0;
+	    for(a in counts) {
+		min = cnt==0?counts[a]:Math.min(counts[a],min);
+		max = cnt==0?counts[a]:Math.max(counts[a],max);
+		cnt++;
+	    }
+
+	    let colorBy = this.getColorByInfo(records,null,null,colors);
+	    let showValues = this.getProperty("showValues", true);
+	    let html = "<table style='font-size:" + this.getProperty("fontSize",'8pt;') +"' class='display-colorboxes-table' border=0 cellpadding=0 cellspacing=0  width=100%>";
+	    let cellCount = keys.length;
+	    let width = Math.round(100/cellCount);
+	    html+="<tr><td></td>";
+	    labels.map(label=>{
+		html+=`<td class=display-datetable-header align=center>${label}</td>`;
+	    });
+	    html+="</tr>";
+	    let maxRowValue = 0;
+	    for(let month=0;month<12;month++) {
+		let total = 0;
+		keys.map(label=>{
+		    let key = month+"-" +label;		    
+		    if(counts[key]) {
+			total+=counts[key];
+		    }
+		});
+		maxRowValue = Math.max(maxRowValue, total);
+	    }
+
+	    for(let month=0;month<12;month++) {
+		let name = HtmlUtils.div([],Utils.monthLongNames[month]);
+		html+="<tr>" + HtmlUtils.td(["class","display-datetable-name","align","right", "width","100"],name);
+
+		let total = 0;
+		keys.map(label=>{
+		    let key = month+"-" +label;		    
+		    let inner = "&nbsp;";
+		    let style = "";
+		    if(counts[key]) {
+			total+=counts[key];
+			if(showValues) 
+			    inner = counts[key]
+                        var percent = (counts[key] - min) / (max - min);
+                        var ctIndex = parseInt(percent * colors.length);
+                        if (ctIndex >= colors.length) ctIndex = colors.length - 1;
+                        else if (ctIndex < 0) ctIndex = 0;
+                        style = "background-color:" + colors[ctIndex] + ";";
+		    }
+		    let cell = HtmlUtils.div(["class","display-datetable-value"],inner);
+		    html += "<td class=display-datetable-cell align=right style='" +style +"' width='" + width +"%'>" + cell+"</td>";
+		});
+		let summaryWidth = Math.round(total/maxRowValue*100);
+		let bar = HtmlUtils.div(["class", "display-datetable-summary","style","width:"+ summaryWidth+"px;"],total);
+		html += HtmlUtils.td(["width",100],bar);
+		html += "</tr>";
+	    }
+	    html+="<tr><td></td>";
+	    html+=`<td colspan=${cellCount} class=display-datetable-footer align=center id='` + this.getDomId("ct")+"'></td>";
+	    html+="</tr>";
+	    html +="</table>";
+
+	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+	    this.displayColorTable(colors, "ct", min,max,{});
+	},
+    })
+}
 /**
 Copyright 2008-2019 Geode Systems LLC
 */

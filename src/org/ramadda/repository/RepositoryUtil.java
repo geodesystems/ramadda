@@ -29,7 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
-
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  *
@@ -44,7 +47,7 @@ public class RepositoryUtil {
     public static final double MAJOR_VERSION = 3.0;
 
     /** _more_ */
-    public static final int MINOR_VERSION = 3;
+    public static final int MINOR_VERSION = 4;
 
 
     //When we make any real change to the css or javascript change this version
@@ -64,6 +67,7 @@ public class RepositoryUtil {
 
     /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+
 
 
     /** timezone */
