@@ -2502,6 +2502,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 					'dataCheckers="match|notmatch|lessthan|greaterthan|equals|notequals,field,value"',
 					'showRowTotals=false',
 					'showColumnTotals=false',
+					'slantHeader=true'
 
 				    ])},
         updateUI: function() {
@@ -2516,8 +2517,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    let counts = {};
 	    this.checked= {};
 
-	    let columnSelector = this.getProperty("columnSelector","day");
-	    let rowSelector = this.getProperty("rowSelector","month");
+
 	    let selectors;
 	    let fieldMap = {};
 	    if(this.getProperty("selectors")) {
@@ -2538,6 +2538,10 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    } else {
 		selectors  =   [["day","Day"],["dow","Day of Week"],["hour","Hour"],["month","Month"],["year","Year"]];
 	    }
+
+	    let columnSelector = this.getProperty("columnSelector",selectors[0][0]);
+	    let rowSelector = this.getProperty("rowSelector",selectors[1][0]);
+//	    console.log(rowSelector + " " + columnSelector);
 
 	    let getValues =(s=>{
 		let values = [];
@@ -2613,9 +2617,11 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		let row =getId(rowSelector,r,rows);
 		let column =getId(columnSelector,r,columns);
 		let key = row+"-" +column;
-		if(this.checkDataFilters(checkers, r)) {
-		    if(!this.checked[key]) this.checked[key] = [];
-		    this.checked[key].push(r);
+		if(checkers && checkers.length>0) {
+		    if(this.checkDataFilters(checkers, r)) {
+			if(!this.checked[key]) this.checked[key] = [];
+			this.checked[key].push(r);
+		    }
 		}
 		if(!Utils.isDefined(counts[key])) {
 		    counts[key]=0;
@@ -2671,7 +2677,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    let width = Math.round(100/cellCount);
 	    let table = "<table style='font-size:" + this.getProperty("fontSize",'8pt;') +"' class='display-colorboxes-table' border=0 cellpadding=0 cellspacing=0  width=100%>";
 	    table+="<tr valign=bottom><td></td>";
-	    let needToRotate = false;
+	    let needToRotate = this.getProperty("slantHeader",false);
 	    let topSpace = 0;
 	    columns.map(column=>{
 		let label = column.label;
@@ -2689,7 +2695,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 			label = label.substring(0,20)+"...";
 		    }
 		    label = label.replace(/ /g,"&nbsp;").replace("-","&nbsp;");
-		    label = HtmlUtils.div(["tootltip",column.label,"class","display-datatable-header-inner"],label);
+		    label = HtmlUtils.div(["tootltip",column.label,"class","display-datatable-header-slant"],label);
 		}		    
 		table+=`<td class=display-datatable-header align=center>${label}</td>`;
 	    });
@@ -2751,12 +2757,12 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showRowSelector",true)) {
 		header+=  HtmlUtils.td(["class","display-datatable-selector","width","10%"],HtmlUtils.select("",["id",this.getDomId("rowSelector")],
 													     selectors,
-													     this.getProperty("rowSelector","month")));
+													     rowSelector));
 	    }
 	    if(this.getProperty("showColumnSelector",true)) {
 		header+=  HtmlUtils.td(["class","display-datatable-selector","width","90%","align","center"],  HtmlUtils.select("",["id",this.getDomId("columnSelector")],
 																selectors,
-																this.getProperty("columnSelector","day")));;
+																columnSelector));
 	    }
 	    header+="</tr></table>";
 	    html+=header;

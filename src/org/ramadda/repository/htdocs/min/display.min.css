@@ -1817,7 +1817,7 @@ margin:10px;
     font-weight:bold;
 }
 
-.display-datatable-header-inner {
+.display-datatable-header-slant {
     width:10px;
     transform: rotate(-45deg) translateX(6px) translateY(-4px);
     transform-origin: bottom right;
