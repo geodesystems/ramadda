@@ -228,7 +228,7 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private boolean showCreateDate;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showJsonLd;
 
     /** _more_ */

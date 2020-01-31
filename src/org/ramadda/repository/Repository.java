@@ -649,7 +649,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean useFixedHostnameForAbsoluteUrls() {
-        return  getProperty(PROP_USE_FIXED_HOSTNAME, false);
+        return getProperty(PROP_USE_FIXED_HOSTNAME, false);
     }
 
     /**
@@ -674,6 +674,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (Utils.stringDefined(port)) {
             return Integer.decode(port.trim()).intValue();
         }
+
         return super.getPort();
     }
 
@@ -699,6 +700,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (sslIgnore) {
             return false;
         }
+
         return getHttpsPort() >= 0;
     }
 
@@ -2753,9 +2755,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     //    @Override
     public String getUrlPath(Request request, RequestUrl requestUrl) {
         if (requestUrl.getNeedsSsl()) {
-            return   httpsUrl(request, getUrlBase() + requestUrl.getPath());
+            return httpsUrl(request, getUrlBase() + requestUrl.getPath());
         }
-        return   getUrlBase() + requestUrl.getPath();
+
+        return getUrlBase() + requestUrl.getPath();
     }
 
     /**
@@ -2772,8 +2775,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                           : getHostname();
         int    port     = getHttpsPort();
         if (port < 0) {
-            return  getHttpProtocol() + "://" + hostname + ":"
-                            + request.getServerPort() + url;
+            return getHttpProtocol() + "://" + hostname + ":"
+                   + request.getServerPort() + url;
         }
         if (port == 0) {
             return "https://" + hostname + url;
@@ -3210,8 +3213,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return !getProperty(PROP_ACCESS_NOBOTS, false);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean getCommentsEnabled() {
-	return getProperty("ramadda.enable_comments", false);
+        return getProperty("ramadda.enable_comments", false);
     }
 
 
@@ -3463,6 +3471,32 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param exc _more_
+     * @param message _more_
+     *
+     * @return _more_
+     */
+    public String handleError(Request request, Throwable exc,
+                              String message) {
+        getLogManager().logError("Error:" + exc.getMessage(), exc);
+        Throwable     inner = LogUtil.getInnerException(exc);
+        StringBuilder sb    = new StringBuilder();
+        sb.append(getPageHandler().showDialogError(message + "<br>"
+                + inner.getMessage()));
+        if ((request.getUser() != null) && request.getUser().getAdmin()) {
+            String stack = HtmlUtils.pre(
+                               HtmlUtils.entityEncode(
+                                   LogUtil.getStackTrace(inner)));
+            sb.append(HtmlUtils.makeShowHideBlock("Stack", stack, false));
+        }
+
+        return sb.toString();
+    }
 
     /**
      * _more_
@@ -4370,33 +4404,37 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Check if there is an override 
         prop = (String) cmdLineProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t override from command line:" +prop);
-	    }
+            if (propdebug) {
+                System.err.println("\t override from command line:" + prop);
+            }
+
             return prop;
         }
 
         prop = (String) localProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t override from local:" +prop);
-	    }
+            if (propdebug) {
+                System.err.println("\t override from local:" + prop);
+            }
+
             return prop;
         }
 
         prop = (String) pluginProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t override from plugin:" +prop);
-	    }
+            if (propdebug) {
+                System.err.println("\t override from plugin:" + prop);
+            }
+
             return prop;
         }
 
         prop = (String) coreProperties.get(override);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t override from core:" +prop);
-	    }
+            if (propdebug) {
+                System.err.println("\t override from core:" + prop);
+            }
+
             return prop;
         }
 
@@ -4404,18 +4442,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Order:  command line, database, local (e.g., ramadda home .properties files), plugins, core
         prop = (String) cmdLineProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t from command line:" +prop);
-	    }
+            if (propdebug) {
+                System.err.println("\t from command line:" + prop);
+            }
+
             return prop;
         }
 
         if (checkDb) {
             prop = (String) getDbProperties().get(name);
             if (checkProperty(prop, needsToBeNonEmpty)) {
-		if (propdebug) {
-		    System.err.println("\t from db:" +prop);
-		}
+                if (propdebug) {
+                    System.err.println("\t from db:" + prop);
+                }
 
                 return prop;
             }
@@ -4423,8 +4462,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         prop = (String) localProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t from local:" +prop);
+            if (propdebug) {
+                System.err.println("\t from local:" + prop);
             }
 
             return prop;
@@ -4432,9 +4471,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         prop = (String) pluginProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t from plugin:" +prop);
+            if (propdebug) {
+                System.err.println("\t from plugin:" + prop);
             }
+
             return prop;
         }
 
@@ -4442,33 +4482,34 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //xxxxx
         prop = (String) coreProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t from core:" +prop);
-	    }
+            if (propdebug) {
+                System.err.println("\t from core:" + prop);
+            }
 
             return prop;
         }
 
         prop = System.getProperty(name);
-	if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t from system:" +prop);
-	    }
+        if (checkProperty(prop, needsToBeNonEmpty)) {
+            if (propdebug) {
+                System.err.println("\t from system:" + prop);
+            }
 
             return prop;
         }
 
         prop = systemEnv.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
-	    if (propdebug) {
-		System.err.println("\t from system:" +prop);
-	    }
+            if (propdebug) {
+                System.err.println("\t from system:" + prop);
+            }
 
             return prop;
         }
-	if (propdebug) {
-	    System.err.println("\t from null:");
-	}
+        if (propdebug) {
+            System.err.println("\t from null:");
+        }
+
         return null;
 
     }

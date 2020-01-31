@@ -5000,7 +5000,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return content;
         } catch (Exception exc) {
-            throw new RuntimeException(exc);
+            StringBuilder msg =
+                new StringBuilder("Error processing tag:<br> {{" + tag);
+            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+                Object key   = keys.nextElement();
+                Object value = props.get(key);
+                msg.append(" " + key + "=\"" + value + "\" ");
+            }
+            msg.append("}}");
+
+            return getRepository().handleError(request, exc, msg.toString());
+
         }
     }
 
@@ -6174,6 +6184,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String derived = getProperty(wikiUtil, props, "derived");
         if (derived != null) {
+
             //derived=temp_f:Temp F:temperature;pressure:v1*9/5+32:isRow:true:decimals:2
             //{'name':'temp_f','label':'Temp F', 'columns':'temperature','function':'v1*9/5+32', 'isRow':true,'decimals':2,},
             List<String> toks = StringUtil.split(derived, ",", true, true);
