@@ -168,7 +168,7 @@ function convertToPointData(array) {
     var header = array[0];
     var samples = array[1];
     for(var i=0;i<header.length;i++) {
-        let label = header[i];
+        let label = String(header[i]);
 	let id = label.toLowerCase().replace(/[ ., ]+/g,"_");
         let sample =samples[i];
         let tof= typeof sample;
@@ -738,26 +738,11 @@ function makePointData(json, derived, source) {
 
     }
 
-
-    if (!derived) {
-        derived = [
-            //               {'name':'temp_f','label':'Temp F', 'columns':'temperature','function':'v1*9/5+32', 'isRow':true,'decimals':2,},
-            //               {'name':'Avg. Temperature','function':'return A.average(5, c1);','columns':'temperature','isColumn',true},
-            //               {'name':'max_temp_f','function':'return A.max(c1);','columns':'temp_f'},
-            //               {'name':'min_temp_f','function':'return A.min(c1);','columns':'temp_f'},
-            //               {'name':'mavg_temp_f_10','function':'return A.movingAverage(10, c1);','columns':'temp_f'},
-            //               {'name':'mavg_temp_f_20','function':'return A.movingAverage(20, c1);','columns':'temp_f'},
-        ]
-    }
-
-
     if (derived) {
         var index = lastField.getIndex() + 1;
         for (var dIdx = 0; dIdx < derived.length; dIdx++) {
             var d = derived[dIdx];
-            //            if(!d.isRow) continue;
-            var label = d.label;
-            if (!label) label = d.name;
+            var label = d.label || d.name;
             var recordField = new RecordField({
                 type: "double",
                 index: (index + dIdx),
@@ -856,7 +841,6 @@ function makePointData(json, derived, source) {
                 }
                 //TODO: compile the function once and call it
                 var args = [];
-
                 var anyNotNan = false;
                 for (var fIdx = 0; fIdx < d.fieldsToUse.length; fIdx++) {
                     var f = d.fieldsToUse[fIdx];
