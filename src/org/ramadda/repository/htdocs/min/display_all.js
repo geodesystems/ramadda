@@ -312,6 +312,13 @@ function removeRamaddaDisplay(id) {
     }
 }
 
+function displayGetFunctionValue(v) {
+    if(isNaN(v))return 0;
+    return v;
+}
+
+
+
 const ID_ENTRIES_MENU = "entries_menu";
 const ID_ENTRIES_PREV = "entries_prev";
 const ID_ENTRIES_NEXT = "entries_next";
@@ -902,17 +909,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 d.isRow = true;
             }
         }
-    } else {
-        /*
-          this.derived = [
-          {"name":"temp_f",
-          "label":"Temp F", 
-          "function":"temp_c*9/5+32",
-          "decimals":2},
-          //                        {"name":"sum","function":"$2+$1"}
-          ]
-        */
-    }
+    } 
 
     //    console.log("display.init:" + argType +" loaded:" +Utils.getPageLoaded());
 
@@ -2261,11 +2258,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	convertPointData: function(pointData) {
 	    let originalPointData = pointData;
-	    var segments = this.getSegments();
+	    let segments = this.getSegments();
 	    if(segments) {
-                var dataList = pointData.getRecords();
-		var newData  =[];
-		var header = [];
+                let dataList = pointData.getRecords();
+		let newData  =[];
+		let header = [];
 		newData.push(header);
 		var rowIdx = 0; 
 		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
@@ -2304,13 +2301,69 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData.entryId = originalPointData.entryId;
 	    }
 
+            if (this.getProperty("rotateTable")) {
+	        let dataList = pointData.getRecords(); 
+		let rotated = [];
+                let header = this.getDataValues(dataList[0]);
+		for(var colIdx=0;colIdx<header.length;colIdx++) {
+		    rotated.push([]);
+		}
+		let includeFields =this.getProperty("includeFields");
+		if (includeFields) {
+                    pointData.getRecordFields().map((f,colIdx)=>{
+			rotated[colIdx].push(colIdx==0?"":f.getLabel());
+		    });
+		}
+                for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
+                    var row = this.getDataValues(dataList[rowIdx]);
+		    for(var colIdx=0;colIdx<row.length;colIdx++) {
+			var value = row[colIdx];
+			if(value.f) value = value.f;
+			if(value.getTime) {
+			    value = this.formatDate(value);
+			}
+			if(!includeFields && rowIdx==0 && colIdx==0) value="";
+			rotated[colIdx].push(value);
+		    }
+                }
+		pointData = convertToPointData(rotated);
+		pointData.entryId = originalPointData.entryId;
+            }
 
-	    if(this.getProperty("showPercentIncrease",false)) {
+	    /*
+	      time,usa,china
+	      t1,4,5
+	      t2,1,2
+	    ->
+	    t1,usa,4
+	    t2,usa,1
+	    t1,china,5
+	    t2,china,2
+	    */
+	    if(this.getProperty("furlTable",false)) {
 	        var dataList = pointData.getRecords(); 
 		var newRecords  =[];
 		var newFields = [];
-		var firstRow = dataList[0];
+		var lastRecord = dataList[dataList.length-1];
                 var fields  = pointData.getRecordFields();
+		var newData  =[];
+		newData.push(["label","value"]);
+//		dataList.map(r=>{
+		fields.map((f,idx)=>{
+		    let row = [f.getLabel(),lastRecord.getValue(f.getIndex())];
+		    newData.push();
+		});
+
+		pointData = convertToPointData(newData);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+	    if(this.getProperty("showPercentIncrease",false)) {
+	        var dataList = pointData.getRecords(); 
+                var fields  = pointData.getRecordFields();
+		var newRecords  =[];
+		var newFields = [];
+		var firstRow = dataList[0];
 		var firstRecord= dataList[0];
 		fields.map(f=>{
 		    var newField = f.clone();
@@ -2335,6 +2388,40 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
 		pointData.entryId = originalPointData.entryId;
 	    }
+
+            if (this.getProperty("derived")) {
+		//derived=v1;a/b,v2;a*2
+		this.getProperty("derived").split(",").map(tok=>{
+		    [name,func] = tok.split(";");
+	            let records = pointData.getRecords(); 
+                    let fields  = pointData.getRecordFields();
+                    let setVars = "";
+                    fields.map((field,idx)=>{
+			if(field.isFieldNumeric()) {
+			    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
+			}
+                    });
+		    if(func.indexOf("return")<0) {
+			func = "return " + func;
+		    }
+                    let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
+		    console.log("code:" + code);
+                    eval(code);
+		    records.map(r=>{
+			let args = {};
+			fields.map((field,idx)=>{
+			    if(field.isFieldNumeric()) {
+				args[field.getId()] = r.getValue(field.getIndex());
+			    }
+			});
+			let value = displayDerivedEval(args);
+			console.log("\t" + value);
+		    });
+		});
+            }
+
+
+
 	    if(this.getProperty("showAverages",false)) {
 	        var dataList = pointData.getRecords(); 
 		var newRecords  =[];
@@ -7003,7 +7090,7 @@ function convertToPointData(array) {
     var header = array[0];
     var samples = array[1];
     for(var i=0;i<header.length;i++) {
-        let label = header[i];
+        let label = String(header[i]);
 	let id = label.toLowerCase().replace(/[ ., ]+/g,"_");
         let sample =samples[i];
         let tof= typeof sample;
@@ -7573,26 +7660,11 @@ function makePointData(json, derived, source) {
 
     }
 
-
-    if (!derived) {
-        derived = [
-            //               {'name':'temp_f','label':'Temp F', 'columns':'temperature','function':'v1*9/5+32', 'isRow':true,'decimals':2,},
-            //               {'name':'Avg. Temperature','function':'return A.average(5, c1);','columns':'temperature','isColumn',true},
-            //               {'name':'max_temp_f','function':'return A.max(c1);','columns':'temp_f'},
-            //               {'name':'min_temp_f','function':'return A.min(c1);','columns':'temp_f'},
-            //               {'name':'mavg_temp_f_10','function':'return A.movingAverage(10, c1);','columns':'temp_f'},
-            //               {'name':'mavg_temp_f_20','function':'return A.movingAverage(20, c1);','columns':'temp_f'},
-        ]
-    }
-
-
     if (derived) {
         var index = lastField.getIndex() + 1;
         for (var dIdx = 0; dIdx < derived.length; dIdx++) {
             var d = derived[dIdx];
-            //            if(!d.isRow) continue;
-            var label = d.label;
-            if (!label) label = d.name;
+            var label = d.label || d.name;
             var recordField = new RecordField({
                 type: "double",
                 index: (index + dIdx),
@@ -7691,7 +7763,6 @@ function makePointData(json, derived, source) {
                 }
                 //TODO: compile the function once and call it
                 var args = [];
-
                 var anyNotNan = false;
                 for (var fIdx = 0; fIdx < d.fieldsToUse.length; fIdx++) {
                     var f = d.fieldsToUse[fIdx];
@@ -11177,10 +11248,6 @@ function waitOnGoogleCharts(object, callback) {
 
 
 
-function displayGetFunctionValue(v) {
-    if(isNaN(v))return 0;
-    return v;
-}
 
 
 addGlobalDisplayType({
@@ -11666,7 +11733,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
-	    //            var dataList = this.computedData;
             var dataList = null;
             if (this["function"] && dataList == null) {
                 var pointData = this.dataCollection.getList()[0];
@@ -11687,8 +11753,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 var fieldNames = null;
                 var rowCnt = -1;
                 var indexField = this.getFieldById(null,this.getProperty("indexField"));
-		//		console.log("index:" + indexField);
-		
                 for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                     var record = records[rowIdx];
                     var row = record.getData();
@@ -11739,32 +11803,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             this.computedData = dataList;
-
-            if (this.getProperty("rotateTable") && dataList.length>0) {
-		let rotated = [];
-                var header = this.getDataValues(dataList[0]);
-		for(var colIdx=0;colIdx<header.length;colIdx++) {
-		    rotated.push([]);
-		}
-                for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
-                    var row = this.getDataValues(dataList[rowIdx]);
-		    for(var colIdx=0;colIdx<row.length;colIdx++) {
-			var value = row[colIdx];
-			if(typeof value == "object" && value.f) value = value.f;
-			if(rowIdx==0 && colIdx==0) value="";
-			rotated[colIdx].push(value);
-		    }
-                }
-		dataList = rotated;
-            }
-
-
-
-
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
                 var chartableFields = this.getFieldsToSelect(pointData);
-		//		console.log("fields:" + chartableFields);
                 for (var i = 0; i < chartableFields.length; i++) {
                     var field = chartableFields[i];
                     dataList = this.getStandardData([field], props);
@@ -11804,7 +11845,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             var valueIsDate = (typeof row[j] == "object");
                             if (valueIsNumber) {
                                 if (dataHasIndex && !seenIndex) {
-                                    valueIsNumber = false;
+				    valueIsNumber = false;
                                     seenIndex = true;
                                 }
                             }
@@ -11997,12 +12038,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let forceStrings = this.getProperty("forceStrings",false);
 	    let debug = false;
 	    let debugRows = 3;
-
-
             for (var j = 0; j < header.length; j++) {
-		var field=null;
+		let field=null;
 		if(j>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
+		} else {
+		    console.log("no field");
 		}
                 var value = sample[j];
                 if (j == 0 && props.includeIndex) {
@@ -26597,7 +26638,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    let topSpace = 0;
 	    columns.map(column=>{
 		let label = column.label;
-		if(label.length>10) {
+		if(label.length>15) {
 		    needToRotate = true;
 		    topSpace = Math.max(topSpace,Math.round(label.length*3));
 		    topSpace = 80;
