@@ -7815,6 +7815,7 @@ function makePointData(json, derived, source) {
     }
 
 
+    /*TODO
     for (var dIdx = 0; dIdx < derived.length; dIdx++) {
         var d = derived[dIdx];
         if (!d.isColumn) continue;
@@ -7868,6 +7869,7 @@ function makePointData(json, derived, source) {
         }
     }
 
+*/
     if (source != null) {
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
