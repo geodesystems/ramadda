@@ -162,6 +162,13 @@ function removeRamaddaDisplay(id) {
     }
 }
 
+function displayGetFunctionValue(v) {
+    if(isNaN(v))return 0;
+    return v;
+}
+
+
+
 const ID_ENTRIES_MENU = "entries_menu";
 const ID_ENTRIES_PREV = "entries_prev";
 const ID_ENTRIES_NEXT = "entries_next";
@@ -752,17 +759,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 d.isRow = true;
             }
         }
-    } else {
-        /*
-          this.derived = [
-          {"name":"temp_f",
-          "label":"Temp F", 
-          "function":"temp_c*9/5+32",
-          "decimals":2},
-          //                        {"name":"sum","function":"$2+$1"}
-          ]
-        */
-    }
+    } 
 
     //    console.log("display.init:" + argType +" loaded:" +Utils.getPageLoaded());
 
@@ -2111,11 +2108,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	convertPointData: function(pointData) {
 	    let originalPointData = pointData;
-	    var segments = this.getSegments();
+	    let segments = this.getSegments();
 	    if(segments) {
-                var dataList = pointData.getRecords();
-		var newData  =[];
-		var header = [];
+                let dataList = pointData.getRecords();
+		let newData  =[];
+		let header = [];
 		newData.push(header);
 		var rowIdx = 0; 
 		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
@@ -2154,13 +2151,69 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData.entryId = originalPointData.entryId;
 	    }
 
+            if (this.getProperty("rotateTable")) {
+	        let dataList = pointData.getRecords(); 
+		let rotated = [];
+                let header = this.getDataValues(dataList[0]);
+		for(var colIdx=0;colIdx<header.length;colIdx++) {
+		    rotated.push([]);
+		}
+		let includeFields =this.getProperty("includeFields");
+		if (includeFields) {
+                    pointData.getRecordFields().map((f,colIdx)=>{
+			rotated[colIdx].push(colIdx==0?"":f.getLabel());
+		    });
+		}
+                for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
+                    var row = this.getDataValues(dataList[rowIdx]);
+		    for(var colIdx=0;colIdx<row.length;colIdx++) {
+			var value = row[colIdx];
+			if(value.f) value = value.f;
+			if(value.getTime) {
+			    value = this.formatDate(value);
+			}
+			if(!includeFields && rowIdx==0 && colIdx==0) value="";
+			rotated[colIdx].push(value);
+		    }
+                }
+		pointData = convertToPointData(rotated);
+		pointData.entryId = originalPointData.entryId;
+            }
 
-	    if(this.getProperty("showPercentIncrease",false)) {
+	    /*
+	      time,usa,china
+	      t1,4,5
+	      t2,1,2
+	    ->
+	    t1,usa,4
+	    t2,usa,1
+	    t1,china,5
+	    t2,china,2
+	    */
+	    if(this.getProperty("furlTable",false)) {
 	        var dataList = pointData.getRecords(); 
 		var newRecords  =[];
 		var newFields = [];
-		var firstRow = dataList[0];
+		var lastRecord = dataList[dataList.length-1];
                 var fields  = pointData.getRecordFields();
+		var newData  =[];
+		newData.push(["label","value"]);
+//		dataList.map(r=>{
+		fields.map((f,idx)=>{
+		    let row = [f.getLabel(),lastRecord.getValue(f.getIndex())];
+		    newData.push();
+		});
+
+		pointData = convertToPointData(newData);
+		pointData.entryId = originalPointData.entryId;
+	    }
+
+	    if(this.getProperty("showPercentIncrease",false)) {
+	        var dataList = pointData.getRecords(); 
+                var fields  = pointData.getRecordFields();
+		var newRecords  =[];
+		var newFields = [];
+		var firstRow = dataList[0];
 		var firstRecord= dataList[0];
 		fields.map(f=>{
 		    var newField = f.clone();
@@ -2185,6 +2238,40 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
 		pointData.entryId = originalPointData.entryId;
 	    }
+
+            if (this.getProperty("derived")) {
+		//derived=v1;a/b,v2;a*2
+		this.getProperty("derived").split(",").map(tok=>{
+		    [name,func] = tok.split(";");
+	            let records = pointData.getRecords(); 
+                    let fields  = pointData.getRecordFields();
+                    let setVars = "";
+                    fields.map((field,idx)=>{
+			if(field.isFieldNumeric()) {
+			    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
+			}
+                    });
+		    if(func.indexOf("return")<0) {
+			func = "return " + func;
+		    }
+                    let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
+		    console.log("code:" + code);
+                    eval(code);
+		    records.map(r=>{
+			let args = {};
+			fields.map((field,idx)=>{
+			    if(field.isFieldNumeric()) {
+				args[field.getId()] = r.getValue(field.getIndex());
+			    }
+			});
+			let value = displayDerivedEval(args);
+			console.log("\t" + value);
+		    });
+		});
+            }
+
+
+
 	    if(this.getProperty("showAverages",false)) {
 	        var dataList = pointData.getRecords(); 
 		var newRecords  =[];

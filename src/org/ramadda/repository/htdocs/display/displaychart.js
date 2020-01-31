@@ -65,10 +65,6 @@ function waitOnGoogleCharts(object, callback) {
 
 
 
-function displayGetFunctionValue(v) {
-    if(isNaN(v))return 0;
-    return v;
-}
 
 
 addGlobalDisplayType({
@@ -554,7 +550,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
-	    //            var dataList = this.computedData;
             var dataList = null;
             if (this["function"] && dataList == null) {
                 var pointData = this.dataCollection.getList()[0];
@@ -575,8 +570,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 var fieldNames = null;
                 var rowCnt = -1;
                 var indexField = this.getFieldById(null,this.getProperty("indexField"));
-		//		console.log("index:" + indexField);
-		
                 for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                     var record = records[rowIdx];
                     var row = record.getData();
@@ -627,32 +620,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             this.computedData = dataList;
-
-            if (this.getProperty("rotateTable") && dataList.length>0) {
-		let rotated = [];
-                var header = this.getDataValues(dataList[0]);
-		for(var colIdx=0;colIdx<header.length;colIdx++) {
-		    rotated.push([]);
-		}
-                for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
-                    var row = this.getDataValues(dataList[rowIdx]);
-		    for(var colIdx=0;colIdx<row.length;colIdx++) {
-			var value = row[colIdx];
-			if(typeof value == "object" && value.f) value = value.f;
-			if(rowIdx==0 && colIdx==0) value="";
-			rotated[colIdx].push(value);
-		    }
-                }
-		dataList = rotated;
-            }
-
-
-
-
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
                 var chartableFields = this.getFieldsToSelect(pointData);
-		//		console.log("fields:" + chartableFields);
                 for (var i = 0; i < chartableFields.length; i++) {
                     var field = chartableFields[i];
                     dataList = this.getStandardData([field], props);
@@ -692,7 +662,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             var valueIsDate = (typeof row[j] == "object");
                             if (valueIsNumber) {
                                 if (dataHasIndex && !seenIndex) {
-                                    valueIsNumber = false;
+				    valueIsNumber = false;
                                     seenIndex = true;
                                 }
                             }
@@ -885,12 +855,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let forceStrings = this.getProperty("forceStrings",false);
 	    let debug = false;
 	    let debugRows = 3;
-
-
             for (var j = 0; j < header.length; j++) {
-		var field=null;
+		let field=null;
 		if(j>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
+		} else {
+		    console.log("no field");
 		}
                 var value = sample[j];
                 if (j == 0 && props.includeIndex) {
