@@ -2681,7 +2681,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    let topSpace = 0;
 	    columns.map(column=>{
 		let label = column.label;
-		if(label.length>10) {
+		if(label.length>15) {
 		    needToRotate = true;
 		    topSpace = Math.max(topSpace,Math.round(label.length*3));
 		    topSpace = 80;
