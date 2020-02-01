@@ -345,7 +345,6 @@ function DisplayThing(argId, argProperties) {
         if (toks.length <= 1) {
             continue;
         }
-	console.log("K:" + key);
 	//var map = argProperties;
 	// Don't this for now as it screws up doing something like colorTable.field=...
 	let map = {};
