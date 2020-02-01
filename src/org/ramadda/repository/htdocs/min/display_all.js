@@ -892,27 +892,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         return SUPER;
     }
 
-    if (this.derived) {
-        //        console.log("derived:" + this.derived);
-        if (this.derived.indexOf("[") == 0) {
-            this.derived = JSON.parse(this.derived);
-        } else {
-            this.derived = [JSON.parse(this.derived)];
-        }
-        //Init the derived
-        for (var i = 0; i < this.derived.length; i++) {
-            var d = this.derived[i];
-            if (!Utils.isDefined(d.isRow) && !Utils.isDefined(d.isColumn)) {
-                d.isRow = true;
-                d.isColumn = false;
-            }
-            if (!d.isRow && !d.isColumn) {
-                d.isRow = true;
-            }
-        }
-    } 
 
-    //    console.log("display.init:" + argType +" loaded:" +Utils.getPageLoaded());
 
     RamaddaUtil.defineMembers(this, {
         displayReady: Utils.getPageLoaded(),
@@ -2313,60 +2293,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return true;
 	},
-	getDataFilters: function(prop) {
-	    prop  = prop || this.getProperty("dataFilters");
-	    if(!prop) {
-		return null;
-	    }
-	    let filters = [];
-	    //type,field,value,enabled,Label;
-	    prop.split(";").map(tok=>{
-		[type,fieldId,value,enabled,label]  = tok.split(",");
-		if(!Utils.isDefined(enabled))
-		    enabled = true;
-		else
-		    enabled = enabled=="true";
-		if(label) {
-		    var cbx =  this.jq("datafilterenabled_" + fieldId);
-		    if(cbx.length) {
-			enabled = cbx.is(':checked');
-		    } 
-		}
-		if(type=="match" || type=="notmatch")
-		    value = new RegExp(value);
-		else
-		    value = +value;
-		let field = this.getFieldById(null,fieldId);
-		if(!field) {
-		    return;
-		}
-		filters.push({
-		    type:type.trim(),
-		    field:field,
-		    value:value,
-		    label:label,
-		    enabled: enabled,
-		    isRecordOk: function(r) {
-			if(!enabled) return true;
-			let value = r.getValue(this.field.getIndex());
-			if(this.type == "match") {
-			    return String(value).match(this.value);
-			} else if(this.type == "notmatch") {
-			    return  !String(value).match(this.value);
-			} else if(this.type == "lessthan") {
-			    return  value<this.value;
-			} else if(this.type == "greaterthan") {
-			    return  value>this.value;
-			}  else if(this.type == "equals") {
-			    return  value==this.value;
-			}  else if(this.type == "notequals") {
-			    return value!=this.value;
-			}
-			return true;
-		    }
-		});
-	    });
-	    return filters;
+	getDataFilters: function() {
+	    return DataUtils.getDataFilters(this, this.getProperty("dataFilters"));
 	},
 	filterData: function(dataList, fields, doGroup, skipFirst) {
 	    var startDate = this.getProperty("startDate");
@@ -2689,7 +2617,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    let dataFilters = this.getDataFilters();
-	    if(dataFilters) {
+	    if(dataFilters.length) {
 		dataList = dataList.filter((r,idx)=> {
 		    if(!this.checkDataFilters(dataFilters, r)) return false;
 		    return true;
@@ -3784,7 +3712,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.addData(this.properties.data);
                 return;
             }
-            this.properties.data.derived = this.derived;
             this.properties.data.loadData(this);
         },
         getData: function() {
@@ -4039,17 +3966,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let dataFilterIds = [];
-	    if(this.getProperty("dataFilters")) {
-		this.getProperty("dataFilters").split(";").map(tok=>{
-		    [type,fieldId,value,enabled,label]  = tok.split(",");
-		    if(!label) return;
-		    enabled = enabled=="true";
-		    let cbxid = this.getDomId("datafilterenabled_" + fieldId);
-		    dataFilterIds.push(cbxid);
-		    header2 +=  HtmlUtils.checkbox("",["id",cbxid],enabled) +" " + label +"&nbsp;&nbsp;"
-		});
-	    }
 
+	    this.getDataFilters().map(f=>{
+		if(!f.label || !f.field) return;
+		let cbxid = this.getDomId("datafilterenabled_" + f.field.getId());
+		dataFilterIds.push(cbxid);
+		header2 +=  HtmlUtils.checkbox("",["id",cbxid],f.enabled) +" " + f.label +"&nbsp;&nbsp;"
+	    });
 
 
 	    if(this.getProperty("filterDate")) { 
@@ -8105,39 +8028,17 @@ var RecordUtil = {
 function CsvUtil() {
     let eg = "convertData=\"derived(field=field_id, function=population*10);\nrotateData(includeFields=true,includeDate=true,flipColumns=true);\naddPercentIncrease(replaceValues=false);\"\n";
     $.extend(this, {
-	process: function(display, pointData, commands) {
+	process: function(display, pointData, cmds) {
 	    this.display = display;
-	    if(!commands) return pointData;
-	    commands.split(";").map(command=>{
-		command = command.trim();
-		let toks = command.match(/([^\(]+)\(([^\)]*)\)/);
-		let rest = "";
-		if(toks) {
-		    command=toks[1];
-		    rest = toks[2];
-		}
-		let args = {};
-		rest.split(",").map(arg=>{
-		    arg =arg.trim();
-		    let value = "";
-		    let atoks = arg.match(/(.*)=(.*)/);
-		    if(atoks) {
-			arg=atoks[1];
-			value= atoks[2];
-		    }
-		    arg = arg.trim();
-		    value = value.trim();
-		    if(arg!="") {
-			args[arg] = value;
-		    }
-		});
-		if(this[command]) {
+	    let commands = DataUtils.parseCommands(cmds);
+	    commands.map(cmd=>{
+		if(this[cmd.command]) {
 		    let orig = pointData;
-    		    pointData = this[command](pointData, args);
+    		    pointData = this[cmd.command](pointData, cmd.args);
 		    if(!pointData) pointData=orig;
 		    else pointData.entryId = orig.entryId;
 		} else {
-		    console.log("unknown command:" + command);
+		    console.log("unknown command:" + cmd.command);
 		}
 	    });
 	    return pointData;
@@ -8345,6 +8246,94 @@ function CsvUtil() {
     });
 }
 
+
+
+
+var DataUtils = {
+    parseCommands: function(commands) {
+	let result = [];
+	if(!commands) return result;
+	commands.split(";").map(command=>{
+	    command = command.trim();
+	    let toks = command.match(/([^\(]+)\(([^\)]*)\)/);
+	    let rest = "";
+	    if(toks) {
+		command=toks[1];
+		rest = toks[2];
+	    }
+	    let args = {};
+	    rest.split(",").map(arg=>{
+		arg =arg.trim();
+		let value = "";
+		let atoks = arg.match(/(.*)=(.*)/);
+		if(atoks) {
+		    arg=atoks[1];
+		    value= atoks[2];
+		}
+		arg = arg.trim();
+		value = value.trim();
+		//Strip off quotes
+		value = value.replace(/^'/g,"").replace(/'$/g,"");
+		if(arg!="") {
+		    args[arg] = value;
+		}
+	    });
+	    result.push({command:command,args:args});
+	});
+	return result;
+    },
+    getDataFilters: function(display, prop) {
+	let filters = [];
+	if(!prop) return filters;
+	DataUtils.parseCommands(prop).map(cmd=>{
+	    [type,fieldId,value,enabled,label]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label];
+	    if(!Utils.isDefined(enabled))
+		enabled = true;
+	    else
+		enabled = enabled=="true";
+	    if(label) {
+		var cbx =  display.jq("datafilterenabled_" + fieldId);
+		if(cbx.length) {
+		    enabled = cbx.is(':checked');
+		} 
+	    }
+	    if(type=="match" || type=="notmatch")
+		value = new RegExp(value);
+	    else
+		value = +value;
+	    let field = display.getFieldById(null,fieldId);
+	    if(!field) {
+		return;
+	    }
+	    filters.push({
+		type:type.trim(),
+		field:field,
+		value:value,
+		label:label,
+		enabled: enabled,
+		isRecordOk: function(r) {
+		    if(!enabled) return true;
+		    let value = r.getValue(this.field.getIndex());
+		    if(this.type == "match") {
+			return String(value).match(this.value);
+		    } else if(this.type == "notmatch") {
+			return  !String(value).match(this.value);
+		    } else if(this.type == "lessthan") {
+			return  value<this.value;
+		    } else if(this.type == "greaterthan") {
+			return  value>this.value;
+		    }  else if(this.type == "equals") {
+			return  value==this.value;
+		    }  else if(this.type == "notequals") {
+			return value!=this.value;
+		    }
+		    return true;
+		}
+	    });
+	});
+	return filters;
+    },
+}
 /**
 Copyright 2008-2019 Geode Systems LLC
 */

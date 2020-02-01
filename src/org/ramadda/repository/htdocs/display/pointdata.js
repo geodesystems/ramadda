@@ -1340,39 +1340,17 @@ var RecordUtil = {
 function CsvUtil() {
     let eg = "convertData=\"derived(field=field_id, function=population*10);\nrotateData(includeFields=true,includeDate=true,flipColumns=true);\naddPercentIncrease(replaceValues=false);\"\n";
     $.extend(this, {
-	process: function(display, pointData, commands) {
+	process: function(display, pointData, cmds) {
 	    this.display = display;
-	    if(!commands) return pointData;
-	    commands.split(";").map(command=>{
-		command = command.trim();
-		let toks = command.match(/([^\(]+)\(([^\)]*)\)/);
-		let rest = "";
-		if(toks) {
-		    command=toks[1];
-		    rest = toks[2];
-		}
-		let args = {};
-		rest.split(",").map(arg=>{
-		    arg =arg.trim();
-		    let value = "";
-		    let atoks = arg.match(/(.*)=(.*)/);
-		    if(atoks) {
-			arg=atoks[1];
-			value= atoks[2];
-		    }
-		    arg = arg.trim();
-		    value = value.trim();
-		    if(arg!="") {
-			args[arg] = value;
-		    }
-		});
-		if(this[command]) {
+	    let commands = DataUtils.parseCommands(cmds);
+	    commands.map(cmd=>{
+		if(this[cmd.command]) {
 		    let orig = pointData;
-    		    pointData = this[command](pointData, args);
+    		    pointData = this[cmd.command](pointData, cmd.args);
 		    if(!pointData) pointData=orig;
 		    else pointData.entryId = orig.entryId;
 		} else {
-		    console.log("unknown command:" + command);
+		    console.log("unknown command:" + cmd.command);
 		}
 	    });
 	    return pointData;
@@ -1580,3 +1558,91 @@ function CsvUtil() {
     });
 }
 
+
+
+
+var DataUtils = {
+    parseCommands: function(commands) {
+	let result = [];
+	if(!commands) return result;
+	commands.split(";").map(command=>{
+	    command = command.trim();
+	    let toks = command.match(/([^\(]+)\(([^\)]*)\)/);
+	    let rest = "";
+	    if(toks) {
+		command=toks[1];
+		rest = toks[2];
+	    }
+	    let args = {};
+	    rest.split(",").map(arg=>{
+		arg =arg.trim();
+		let value = "";
+		let atoks = arg.match(/(.*)=(.*)/);
+		if(atoks) {
+		    arg=atoks[1];
+		    value= atoks[2];
+		}
+		arg = arg.trim();
+		value = value.trim();
+		//Strip off quotes
+		value = value.replace(/^'/g,"").replace(/'$/g,"");
+		if(arg!="") {
+		    args[arg] = value;
+		}
+	    });
+	    result.push({command:command,args:args});
+	});
+	return result;
+    },
+    getDataFilters: function(display, prop) {
+	let filters = [];
+	if(!prop) return filters;
+	DataUtils.parseCommands(prop).map(cmd=>{
+	    [type,fieldId,value,enabled,label]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label];
+	    if(!Utils.isDefined(enabled))
+		enabled = true;
+	    else
+		enabled = enabled=="true";
+	    if(label) {
+		var cbx =  display.jq("datafilterenabled_" + fieldId);
+		if(cbx.length) {
+		    enabled = cbx.is(':checked');
+		} 
+	    }
+	    if(type=="match" || type=="notmatch")
+		value = new RegExp(value);
+	    else
+		value = +value;
+	    let field = display.getFieldById(null,fieldId);
+	    if(!field) {
+		return;
+	    }
+	    filters.push({
+		type:type.trim(),
+		field:field,
+		value:value,
+		label:label,
+		enabled: enabled,
+		isRecordOk: function(r) {
+		    if(!enabled) return true;
+		    let value = r.getValue(this.field.getIndex());
+		    if(this.type == "match") {
+			return String(value).match(this.value);
+		    } else if(this.type == "notmatch") {
+			return  !String(value).match(this.value);
+		    } else if(this.type == "lessthan") {
+			return  value<this.value;
+		    } else if(this.type == "greaterthan") {
+			return  value>this.value;
+		    }  else if(this.type == "equals") {
+			return  value==this.value;
+		    }  else if(this.type == "notequals") {
+			return value!=this.value;
+		    }
+		    return true;
+		}
+	    });
+	});
+	return filters;
+    },
+}

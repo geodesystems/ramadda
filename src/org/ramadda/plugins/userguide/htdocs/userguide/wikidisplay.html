@@ -224,16 +224,24 @@ startDate="yyyy-MM-dd"
 endDate="yyyy-MM-dd"
 
 By value:
-dataFilters="&lt;what&gt;,&lt;field id&gt;,&lt;value&gt;; ... &lt;what&gt;,&lt;field id&gt;,&lt;value&gt;;"
+dataFilters="command(field=&lt;field id&gt;,value=&lt;value&gt,enabled=&lt;value&gt,label=&lt;label&gt;...
 
-Where "what" can be one of:
+
+Where "command" can be one of:
 match - string match
 notmatch - string not match
 lessthan - &lt;=
 greaterthan - &gt;=
 equals
 notequals
+
+
+If the label is specified then a selector checkbox will be shown to turn on/off this filter
+
 </pre>
+
+
+
 
 You can also sample the data with:
 <pre>
