@@ -2165,7 +2165,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return true;
 	},
 	getDataFilters: function(prop) {
-	    prop  = prop || this.getProperty("dataFilter");
+	    prop  = prop || this.getProperty("dataFilters");
 	    if(!prop) {
 		return null;
 	    }
@@ -3890,8 +3890,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let dataFilterIds = [];
-	    if(this.getProperty("dataFilter")) {
-		this.getProperty("dataFilter").split(";").map(tok=>{
+	    if(this.getProperty("dataFilters")) {
+		this.getProperty("dataFilters").split(";").map(tok=>{
 		    [type,fieldId,value,enabled,label]  = tok.split(",");
 		    if(!label) return;
 		    enabled = enabled=="true";
