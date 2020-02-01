@@ -345,8 +345,10 @@ function DisplayThing(argId, argProperties) {
         if (toks.length <= 1) {
             continue;
         }
-        var map = argProperties;
-        var topMap = map;
+	console.log("K:" + key);
+	//var map = argProperties;
+	// Don't this for now as it screws up doing something like colorTable.field=...
+	let map = {};
         //graph.axis.foo=bar
         var v = argProperties[key];
         if (v == "true") v = true;
@@ -366,6 +368,7 @@ function DisplayThing(argId, argProperties) {
             }
         }
     }
+
     this.displayId = null;
     $.extend(this, argProperties);
 
@@ -833,9 +836,8 @@ function DisplayThing(argId, argProperties) {
 
         getPropertyInner: function(key, dflt,skipThis) {	    
 	    let debug = false;
-	    //	    let debug = key== "stride";
+//	    let debug = key== "colorTable";
 	    if(debug) console.log("getProperty");
-
             if(!skipThis && Utils.isDefined(this[key])) {
 		if(debug) console.log("\tgetProperty-1");
                 return this[key];
@@ -984,8 +986,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(colorBy) {
                     ct = this.getProperty("colorTable." + colorBy);
 		}
-		if(!ct)
+		if(!ct) {
                     ct = this.getProperty("colorBar", this.getProperty("colorTable"));
+		}
             }
             if (ct == "none") return null;
             return ct;

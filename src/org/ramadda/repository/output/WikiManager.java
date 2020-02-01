@@ -721,8 +721,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 //              System.err.println("\tKEY:" + key +"=" +value);
                 props.put(key, value);
                 if (key instanceof String) {
-                    String lowerCaseKey = ((String) key).toLowerCase();
-                    props.put(lowerCaseKey, value);
+		    //Don't do this for now
+		    //                    String lowerCaseKey = ((String) key).toLowerCase();
+		    //                    props.put(lowerCaseKey, value);
                 }
             }
 
