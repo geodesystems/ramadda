@@ -573,7 +573,7 @@ function RecordField(props) {
 	    return this.type == "double" || this.type == "integer";
 	},
 	isString: function() {
-	    return this.type == "string" || this.type=="enumeration";
+	    return this.type == "string" || this.type=="enumeration" || this.type =="url";
 	},
         getType: function() {
             return this.type;
