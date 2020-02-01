@@ -1629,8 +1629,6 @@ var DataUtils = {
 		label:label,
 		enabled: enabled,
 		isRecordOk: function(r) {
-		    console.log("isRecordOk " + this.enabled);
-
 		    if(!this.enabled) return true;
 		    let value = this.field?r.getValue(this.field.getIndex()):NaN;
 		    if(this.type == "match") {
