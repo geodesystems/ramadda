@@ -792,7 +792,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(j>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
 		} else {
-		    console.log("no field");
+		    //todo?
 		}
                 var value = sample[j];
                 if (j == 0 && props.includeIndex) {

@@ -2413,7 +2413,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(binCount) {
 			    for(k=0;k<data.length;k++) data[k]=1;
 			}
-			var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
+			var newRecord = new  PointRecord(fields, record.getLatitude(),record.getLongitude(),
 							 record.getElevation(),date,data);
 			map[key] = data;
 			binned.push(newRecord);
@@ -4647,7 +4647,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		'dataFilters="match|notmatch|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
+		'dataFilters="match|notmatch|nomissing|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
 		'startDate="yyyy-MM-dd"',
 		'endtDate="yyyy-MM-dd"',
 		'binDate=\day|month|year"',

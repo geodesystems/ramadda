@@ -190,7 +190,7 @@ function convertToPointData(array) {
         }));
     }
     for(var i=1;i<array.length;i++) {
-        records.push(new  PointRecord(NaN, NaN, NaN, null, array[i]));
+        records.push(new  PointRecord(fields,NaN, NaN, NaN, null, array[i]));
     }
     return new  PointData("pointdata", fields, records,null,null);
 }
@@ -598,9 +598,10 @@ function RecordField(props) {
   The main data record. This holds a lat/lon/elevation, time and an array of data
   The data array corresponds to the RecordField fields
 */
-function PointRecord(lat, lon, elevation, time, data) {
+function PointRecord(fields,lat, lon, elevation, time, data) {
     this.isPointRecord = true;
     RamaddaUtil.defineMembers(this, {
+	fields:fields,
         latitude: lat,
         longitude: lon,
         elevation: elevation,
@@ -888,7 +889,7 @@ function makePointData(json, derived, source) {
             values[field.getIndex()] = value;
         }
         rows.push(values);
-        var record = new PointRecord(tuple.latitude, tuple.longitude, tuple.elevation, date, values);
+        var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
     }
 
@@ -1590,7 +1591,9 @@ var DataUtils = {
 		    args[arg] = value;
 		}
 	    });
-	    result.push({command:command,args:args});
+	    if(command!="") {
+		result.push({command:command,args:args});
+	    }
 	});
 	return result;
     },
@@ -1613,21 +1616,43 @@ var DataUtils = {
 		value = new RegExp(value);
 	    else
 		value = +value;
-	    let field = display.getFieldById(null,fieldId);
-	    if(!field) {
-		return;
+	    let fields = null;
+	    if(cmd.args.fields) {
+		fields = display.getFieldsByIds(null, cmd.args.fields.replace(/:/g,","));
 	    }
+	    let field = display.getFieldById(null,fieldId);
 	    filters.push({
 		type:type.trim(),
 		field:field,
+		fields:fields,
 		value:value,
 		label:label,
 		enabled: enabled,
 		isRecordOk: function(r) {
+		    console.log("isRecordOk " + this.enabled);
+
 		    if(!this.enabled) return true;
-		    let value = r.getValue(this.field.getIndex());
+		    let value = this.field?r.getValue(this.field.getIndex()):NaN;
 		    if(this.type == "match") {
 			return String(value).match(this.value);
+		    } else if(this.type == "nomissing") {
+			this.fields.every(f=>{
+			    return true;
+			});
+
+			let fieldsToUse = this.fields||(this.field?[this.field]:r.fields);
+			let cnt = 0;
+			let ok = false;
+			fieldsToUse.some(f=>{
+			    if(f.isNumeric()) {
+				cnt++;
+				let v  = r.getValue(f.getIndex());
+				ok  =!isNaN(v);
+			    }
+			    if(cnt==0) return true;
+			    return ok;
+			});
+			return ok;
 		    } else if(this.type == "notmatch") {
 			return  !String(value).match(this.value);
 		    } else if(this.type == "lessthan") {
