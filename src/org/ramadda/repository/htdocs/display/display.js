@@ -2137,14 +2137,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	checkDataFilters: function(dataFilters, record) {
 	    if(!dataFilters) {return true;}
-	    let ok = true;
 	    for(var i=0;i<dataFilters.length;i++) {
 		if(!dataFilters[i].isRecordOk(record)) return false;
 	    }
 	    return true;
 	},
-	getDataFilters: function() {
-	    return DataUtils.getDataFilters(this, this.getProperty("dataFilters"));
+	getDataFilters: function(v) {
+	    return DataUtils.getDataFilters(this, v || this.getProperty("dataFilters"));
 	},
 	filterData: function(records, fields, doGroup, skipFirst) {
 	    var startDate = this.getProperty("startDate");
@@ -4648,7 +4647,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		'dataFilter="match|notmatch|lessthan|greaterthan|equals|notequals,field,value,enabled,label"', 
+		'dataFilters="match|notmatch|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
 		'startDate="yyyy-MM-dd"',
 		'endtDate="yyyy-MM-dd"',
 		'binDate=\day|month|year"',

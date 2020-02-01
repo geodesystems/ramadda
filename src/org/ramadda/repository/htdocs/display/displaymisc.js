@@ -2494,12 +2494,13 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 					"label:Date Table",
 					'columnSelector="day|hour|dow|month|year"',
 					'selectors="day,hour,dow,month,year,fieldid"',
+					'columnSelector="day|hour|dow|month"',
 					'showColumnSelector=false',
 					'rowSelector="day|hour|dow|month"',
 					'showRowSelector=false',
 					'checkedIcon="fa-checked"',
 					'checkedTooltipHeader="${numberChecked}"',
-					'dataCheckers="match|notmatch|lessthan|greaterthan|equals|notequals,field,value"',
+					'dataCheckers="match|notmatch|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
 					'showRowTotals=false',
 					'showColumnTotals=false',
 					'slantHeader=true'
@@ -2613,6 +2614,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		}
 		return "null";
 	    });
+
 	    records.map((r,i)=>{
 		let row =getId(rowSelector,r,rows);
 		let column =getId(columnSelector,r,columns);
