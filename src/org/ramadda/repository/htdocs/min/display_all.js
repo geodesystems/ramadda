@@ -8062,7 +8062,8 @@ function CsvUtil() {
 		index:fields.length,
 		label:Utils.makeLabel(id),
 		type:"double",
-		chartable:true
+		chartable:true,
+		unit: args.unit
             }));
 	    let func = args["function"];
 	    if(!func) {
@@ -8091,8 +8092,13 @@ function CsvUtil() {
 			funcArgs[field.getId()] = record.getValue(field.getIndex());
 		    }
 		});
-		let value = displayDerivedEval(funcArgs);
-		newRecord.data.push(value);
+		try {
+		    let value = displayDerivedEval(funcArgs);
+		    newRecord.data.push(value);
+		} catch(exc) {
+		    console.log("Error processing derived:" + exc);
+		    newRecord.data.push(NaN);
+		}
 	    });
 	    return   new  PointData("pointdata", fields, newRecords,null,null);
 	},
@@ -16769,7 +16775,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 		if(!f.isNumeric()) continue;
 		if(s) {
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total)
+			.replace("${" + f.getId() +"_min}",s.min)
+			.replace("${" + f.getId() +"_max}",s.max)
+			.replace("${" + f.getId() +"_average}",s.average);
+
 		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
 		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
 

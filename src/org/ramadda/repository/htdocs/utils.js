@@ -626,7 +626,14 @@ var Utils = {
     },
     formatNumberComma: function(number) {
 	if(!Utils.isDefined(number)) return "NA";
-	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	let whole = Math.round(number);
+	let rem = number-whole;
+	let wholeFormatted = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	if(rem==0) {
+	    return wholeFormatted;
+	} else {
+	    return wholeFormatted +"." + Utils.formatNumber(rem).replace("0\.","");
+	}
     },
 
     formatNumber: function(number, toFloat) {

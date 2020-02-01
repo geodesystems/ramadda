@@ -1389,7 +1389,8 @@ function CsvUtil() {
 		index:fields.length,
 		label:Utils.makeLabel(id),
 		type:"double",
-		chartable:true
+		chartable:true,
+		unit: args.unit
             }));
 	    let func = args["function"];
 	    if(!func) {
@@ -1418,8 +1419,13 @@ function CsvUtil() {
 			funcArgs[field.getId()] = record.getValue(field.getIndex());
 		    }
 		});
-		let value = displayDerivedEval(funcArgs);
-		newRecord.data.push(value);
+		try {
+		    let value = displayDerivedEval(funcArgs);
+		    newRecord.data.push(value);
+		} catch(exc) {
+		    console.log("Error processing derived:" + exc);
+		    newRecord.data.push(NaN);
+		}
 	    });
 	    return   new  PointData("pointdata", fields, newRecords,null,null);
 	},
