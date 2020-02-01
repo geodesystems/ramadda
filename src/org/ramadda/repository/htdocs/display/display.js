@@ -2154,7 +2154,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return false;
 	},
 	checkDataFilters: function(dataFilters, record) {
-	    if(!dataFilters) { return true;}
+	    if(!dataFilters) {return true;}
 	    let ok = true;
 	    for(var i=0;i<dataFilters.length;i++) {
 		if(!dataFilters[i].isRecordOk(record)) return false;
@@ -2176,9 +2176,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    enabled = enabled=="true";
 		if(label) {
 		    var cbx =  this.jq("datafilterenabled_" + fieldId);
-		    if(cbx.length && cbx.is(':checked')) {
-			enabled = true;
-		    }
+		    if(cbx.length) {
+			enabled = cbx.is(':checked');
+		    } 
 		}
 		if(type=="match" || type=="notmatch")
 		    value = new RegExp(value);
@@ -2193,7 +2193,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    field:field,
 		    value:value,
 		    label:label,
+		    enabled: enabled,
 		    isRecordOk: function(r) {
+			if(!enabled) return true;
 			let value = r.getValue(this.field.getIndex());
 			if(this.type == "match") {
 			    return String(value).match(this.value);
@@ -2536,7 +2538,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let dataFilters = this.getDataFilters();
 	    if(dataFilters) {
-		dataList = dataList.filter(r=> {
+		dataList = dataList.filter((r,idx)=> {
 		    if(!this.checkDataFilters(dataFilters, r)) return false;
 		    return true;
 		});
