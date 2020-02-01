@@ -1598,7 +1598,7 @@ var DataUtils = {
 	let filters = [];
 	if(!prop) return filters;
 	DataUtils.parseCommands(prop).map(cmd=>{
-	    [type,fieldId,value,enabled,label]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label];
+	    let [type,fieldId,value,enabled,label]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label];
 	    if(!Utils.isDefined(enabled))
 		enabled = true;
 	    else
@@ -1624,7 +1624,7 @@ var DataUtils = {
 		label:label,
 		enabled: enabled,
 		isRecordOk: function(r) {
-		    if(!enabled) return true;
+		    if(!this.enabled) return true;
 		    let value = r.getValue(this.field.getIndex());
 		    if(this.type == "match") {
 			return String(value).match(this.value);

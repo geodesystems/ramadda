@@ -2296,7 +2296,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getDataFilters: function() {
 	    return DataUtils.getDataFilters(this, this.getProperty("dataFilters"));
 	},
-	filterData: function(dataList, fields, doGroup, skipFirst) {
+	filterData: function(records, fields, doGroup, skipFirst) {
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -2308,7 +2308,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
-		
 		let date = $("#"+ this.getFilterId("filterDate")).val();
 		if(date) {
 		    if(date=="all") {
@@ -2327,15 +2326,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
             var pointData = this.getData();
-            if (!dataList) {
+            if (!records) {
                 if (pointData == null) return null;
-                dataList = pointData.getRecords();
+                records = pointData.getRecords();
             }
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
             if(doGroup || this.requiresGrouping()) {
-                dataList = pointData.extractGroup(this.dataGroup, dataList);
+                records = pointData.extractGroup(this.dataGroup, records);
             }
 
 	    var newData = [];
@@ -2426,8 +2425,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    //	    console.log(this.type +" filterData:" + JSON.stringify(filters,null,2));
-	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
-		var record = dataList[rowIdx];
+	    for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
+		var record = records[rowIdx];
                 var date = record.getDate();
                 if (!this.dateInRange(date)) {
 		    continue;
@@ -2503,16 +2502,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    ok = true;
 		}
 		if(ok) {
-		    newData.push(dataList[rowIdx]);
+		    newData.push(records[rowIdx]);
 		}
 	    }
-	    dataList = newData;
+	    records = newData;
             var stride = parseInt(this.getProperty("stride", -1));
             if (stride < 0) {
 		var maxSize = parseInt(this.getProperty("maxDisplayedPoints", -1));		
-		if(maxSize>0 && dataList.length>0) {
+		if(maxSize>0 && records.length>0) {
 		    stride = 1;
-		    while(dataList.length/stride>maxSize) {
+		    while(records.length/stride>maxSize) {
 			stride++;
 		    }
 		}
@@ -2521,37 +2520,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (stride > 0) {
                 var list = [];
                 var cnt = 0;
-                for (var i = 0; i < dataList.length; i += (stride + 1)) {
-                    list.push(dataList[i]);
+                for (var i = 0; i < records.length; i += (stride + 1)) {
+                    list.push(records[i]);
                 }
-                dataList = list;
+                records = list;
 		//		console.log("stride: " + stride +"  size:" + list.length);
             }
 
 
 
 	    if(this.getProperty("binDate")) {
-		var what = this.getProperty("binDate");
-		var binType = this.getProperty("binType","total");
-		var binCount = binType=="count";
-		var binned = [];
-		var record = dataList[0];
-		/*
-		  if(binCount) {
-		  var data = record.getData();
-		  data = [data[0],"Count"];
-		  var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
-		  record.getElevation(),record.getDate(),data);
-
-		  binned.push(newRecord);
-		  } else {
-		  binned.push(record);
-		  }
-		*/
-		var map ={};
-		var counts ={};
-		for (var i = 0; i < dataList.length; i++) {
-		    var record = dataList[i];
+		let what = this.getProperty("binDate");
+		let binType = this.getProperty("binType","total");
+		let binCount = binType=="count";
+		let binned = [];
+		let record = records[0];
+		let map ={};
+		let counts ={};
+		for (var i = 0; i < records.length; i++) {
+		    let record = records[i];
 		    var tuple = this.getDataValues(record);
 		    var key;
 		    var baseDate=null
@@ -2610,15 +2597,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 
-		dataList = binned;
+		records = binned;
 	    }
 	    if(this.requiresGeoLocation()) {
-		dataList = dataList.filter(r=>{return r.hasLocation();});
+		records = records.filter(r=>{return r.hasLocation();});
 	    }
 
 	    let dataFilters = this.getDataFilters();
 	    if(dataFilters.length) {
-		dataList = dataList.filter((r,idx)=> {
+		records = records.filter((r,idx)=> {
 		    if(!this.checkDataFilters(dataFilters, r)) return false;
 		    return true;
 		});
@@ -2627,21 +2614,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    //	    var t2=  new Date();
 	    //	    Utils.displayTimes("filterData",[t1,t2]);
-	    dataList = this.sortRecords(dataList);
+	    records = this.sortRecords(records);
 
 	    if(this.getProperty("uniqueField")) {
 		let ufield =  this.getFieldById(null, this.getProperty("uniqueField"));
 		let umap = {};
 		let ulist = [];
-		for(var i=dataList.length-1;i>=0;i--) {
-		    var record = dataList[i];
+		for(var i=records.length-1;i>=0;i--) {
+		    var record = records[i];
 		    var v = record.getValue(ufield.getIndex());
 		    if(!Utils.isDefined(umap[v])) {
 			umap[v] = true;
 			ulist.push(record);
 		    }
 		}
-		dataList  = ulist;
+		records  = ulist;
 	    }
 
 
@@ -2649,12 +2636,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
-	    for(var i=0;i<dataList.length;i++) {
-		var record = dataList[i];
+	    for(var i=0;i<records.length;i++) {
+		var record = records[i];
 		this.recordToIndex[record.getId()] = i;
 		this.indexToRecord[i] = record;
 	    }
-            return dataList;
+            return records;
         },
 
 
@@ -8286,7 +8273,7 @@ var DataUtils = {
 	let filters = [];
 	if(!prop) return filters;
 	DataUtils.parseCommands(prop).map(cmd=>{
-	    [type,fieldId,value,enabled,label]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label];
+	    let [type,fieldId,value,enabled,label]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label];
 	    if(!Utils.isDefined(enabled))
 		enabled = true;
 	    else
@@ -8312,7 +8299,7 @@ var DataUtils = {
 		label:label,
 		enabled: enabled,
 		isRecordOk: function(r) {
-		    if(!enabled) return true;
+		    if(!this.enabled) return true;
 		    let value = r.getValue(this.field.getIndex());
 		    if(this.type == "match") {
 			return String(value).match(this.value);
