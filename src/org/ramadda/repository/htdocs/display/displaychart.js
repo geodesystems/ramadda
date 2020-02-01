@@ -550,75 +550,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
-            var dataList = null;
-            if (this["function"] && dataList == null) {
-                var pointData = this.dataCollection.getList()[0];
-                var allFields = pointData.getRecordFields();
-                var records = pointData.getRecords();
-                var indexField = this.indexField;
-                var chartableFields = this.getFieldsToSelect(pointData);
-                this.hasDate = this.getHasDate(records);
-                var date_formatter = this.getDateFormatter();
-                var setVars = "";
-                for (var i = 0; i < chartableFields.length; i++) {
-                    var field = chartableFields[i];
-                    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
-                }
-                var code = "function displayChartEval(args) {\n" + setVars + "\treturn  " + this["function"] + "\n}";
-                eval(code);
-                var newList = [];
-                var fieldNames = null;
-                var rowCnt = -1;
-                var indexField = this.getFieldById(null,this.getProperty("indexField"));
-                for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                    var record = records[rowIdx];
-                    var row = record.getData();
-                    var date = record.getDate();
-                    if (!this.dateInRange(date)) continue;
-                    rowCnt++;
-                    var values = [];
-                    var indexName = null;
-		    //		    console.log("row:" + rowIdx);
-                    if (indexField) {
-			var value = record.getValue(indexField.getIndex());
-			//                        values.push( + offset);
-			//			console.log("v:" + value);
-			if(indexField.isString()) {
-			    value = {v:offset,f:value};
-			} 
-			values.push(value);
-                        indexName = indexField.getLabel();
-                    } else {
-                        if (this.hasDate) {
-                            values.push(this.getDateValue(date, date_formatter));
-                            indexName = "Date";
-                        } else {
-                            values.push(rowIdx);
-                            indexName = this.getProperty("indexName", "Index");
-                        }
-                    }
-                    if (fieldNames == null) {
-                        fieldNames = [indexName, this.functionName ? this.functionName : "value"];
-                        newList.push(fieldNames);
-                    }
-                    var args = {};
-                    for (var j = 0; j < chartableFields.length; j++) {
-                        var field = chartableFields[j];
-                        var value = row[field.getIndex()];
-                        args[field.getId()] = value;
-                    }
-                    var value = displayChartEval(args);
-                    values.push(value);
-                    newList.push(values);
-                }
-                dataList = newList;
-            }
-
-
-            if (dataList == null) {
-                dataList = this.getStandardData(fieldsToSelect, props);
-            }
-
+            let dataList = this.getStandardData(fieldsToSelect, props);
             this.computedData = dataList;
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
@@ -638,7 +570,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 					       "No data available"));
                 return;
             }
-
 
             if (this.showPercent) {
                 var newList = [];
@@ -712,6 +643,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
                 dataList = newList;
             }
+
 
             try {
                 this.makeGoogleChart(dataList, props, selectedFields);
@@ -854,7 +786,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
 	    let debug = false;
-	    let debugRows = 3;
+	    let debugRows = 10000;
             for (var j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {
@@ -1059,10 +991,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
 		var record =dataList[rowIdx];
                 var row = this.getDataValues(record);
-		//		if(rowIdx>1000) break;
-		//		continue;
-		var index = row[0];
-		if(index.v) index  = index.v;
+//		var index = row[0];
+//		if(index.v) index  = index.v;
 		var theRecord = record.record;
 		var color = "";
                 if (colorBy.index >= 0) {
@@ -1145,13 +1075,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			}
 			if(addStyle) {
 			    newRow.push(color);
-			    if(debug && rowIdx<debugRows)
-				console.log("\t style:" + color);
+//			    if(debug && rowIdx<debugRows)
+//				console.log("\t style:" + color);
 			}
 			if(addTooltip) {
                             newRow.push(tooltip);
-			    if(debug && rowIdx<debugRows)
-				console.log("\t tooltip:");
+//			    if(debug && rowIdx<debugRows)
+//				console.log("\t tooltip:");
 			}
                     }
 		    if(j>0 && fixedValueS) {

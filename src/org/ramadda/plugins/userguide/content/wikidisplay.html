@@ -115,6 +115,22 @@ Specify extra text to wrap the filter value
 
 
 
+
+[ug::subheading {Converting Data} converting]
+<pre>
+convertData="command1;command2;...;"
+
+Where commands can be:
+  derived(field=field_id, function=some_expression)
+e.g.:
+  derived(field=poptimes10, function=population*10)
+
+  rotateData(includeFields=true,includeDate=true,flipColumns=true)
+  addPercentIncrease(replaceValues=false)
+
+</pre>
+
+
 [ug::subheading {Subsetting Data} subsetting]
 You can specify various filters applied to the data
 <pre>

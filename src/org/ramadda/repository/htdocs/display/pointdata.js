@@ -947,7 +947,7 @@ function makePointData(json, derived, source) {
         }
     }
 
-*/
+a*/
     if (source != null) {
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
@@ -1335,3 +1335,214 @@ var RecordUtil = {
         return result;
     }
 };
+
+
+function CsvUtil() {
+    let eg = "convertData=\"derived(field=field_id, function=population*10);\nrotateData(includeFields=true,includeDate=true,flipColumns=true);\naddPercentIncrease(replaceValues=false);\"\n";
+    $.extend(this, {
+	process: function(display, pointData, commands) {
+	    this.display = display;
+	    if(!commands) return pointData;
+	    commands.split(";").map(command=>{
+		command = command.trim();
+		let toks = command.match(/([^\(]+)\(([^\)]*)\)/);
+		let rest = "";
+		if(toks) {
+		    command=toks[1];
+		    rest = toks[2];
+		}
+		let args = {};
+		rest.split(",").map(arg=>{
+		    arg =arg.trim();
+		    let value = "";
+		    let atoks = arg.match(/(.*)=(.*)/);
+		    if(atoks) {
+			arg=atoks[1];
+			value= atoks[2];
+		    }
+		    arg = arg.trim();
+		    value = value.trim();
+		    if(arg!="") {
+			args[arg] = value;
+		    }
+		});
+		if(this[command]) {
+		    let orig = pointData;
+    		    pointData = this[command](pointData, args);
+		    if(!pointData) pointData=orig;
+		    else pointData.entryId = orig.entryId;
+		} else {
+		    console.log("unknown command:" + command);
+		}
+	    });
+	    return pointData;
+	},
+	help: function(pointData, args) {
+	    console.log(eg);
+	    return null;
+	},
+	furlData: function(pointData, args) {
+	    /** TODO
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+	    var newRecords  =[];
+	    var newFields = [];
+	    var lastRecord = dataList[dataList.length-1];
+            var fields  = pointData.getRecordFields();
+	    var newData  =[];
+	    newData.push(["label","value"]);
+	    //		dataList.map(r=>{
+	    fields.map((f,idx)=>{
+		let row = [f.getLabel(),lastRecord.getValue(f.getIndex())];
+		newData.push();
+	    });
+	    pointData = convertToPointData(newData);
+	    pointData.entryId = originalPointData.entryId;
+	    **/
+	},
+	derived: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+	    let fields =  pointData.getRecordFields().slice();
+	    let newRecords  =[];
+	    let id = args["field"] || ("field_" + fields.length);
+            fields.push(new RecordField({
+		id:id,
+		index:fields.length,
+		label:Utils.makeLabel(id),
+		type:"double",
+		chartable:true
+            }));
+	    let func = args["function"];
+	    if(!func) {
+		console.log("No func specified in derived");
+		return null;
+	    }
+	    func = func.replace(/_nl_/g, "\n");
+	    if(func.indexOf("return")<0) {
+		func = "return " + func;
+	    }
+            let setVars = "";
+            fields.map((field,idx)=>{
+		if(field.isFieldNumeric() && field.getId()!="") {
+		    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
+		}
+            });
+            let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
+            eval(code);
+	    records.map((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecord.data= record.data.slice();
+		newRecords.push(newRecord);
+		let funcArgs = {};
+		fields.map((field,idx)=>{
+		    if(field.isFieldNumeric() && field.getId()!="") {
+			funcArgs[field.getId()] = record.getValue(field.getIndex());
+		    }
+		});
+		let value = displayDerivedEval(funcArgs);
+		newRecord.data.push(value);
+	    });
+	    return   new  PointData("pointdata", fields, newRecords,null,null);
+	},
+	rotateData: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+	    let rotated = [];
+	    for(var colIdx=0;colIdx<header.length;colIdx++) {
+		rotated.push([]);
+	    }
+	    let includeFields =args["includeFields"] == "true";
+	    let includeDate = args["includeDate"] == "true";
+	    let flipColumns =args["flipColumns"]=="true";
+	    let fields = pointData.getRecordFields();
+	    if (!flipColumns && includeFields) {
+                fields.map((f,colIdx)=>{
+		    if(f.isRecordDate()) return;
+		    rotated[colIdx].push(colIdx==0?args["fieldName"]||"Field":f.getLabel());
+		});
+	    }
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let row = this.display.getDataValues(records[rowIdx]);
+		for(var colIdx=0;colIdx<row.length;colIdx++) {
+		    let field = fields[colIdx];
+		    if(field.isRecordDate()) {
+			continue;
+		    }
+		    var value = row[colIdx];
+		    if(value.f) value = value.f;
+		    if(value.getTime) {
+			value = this.display.formatDate(value);
+		    }
+		    if(!includeFields && rowIdx==0 && colIdx==0) value="";
+
+		    if(flipColumns)
+			rotated[colIdx].unshift(value);
+		    else
+			rotated[colIdx].push(value);
+		}
+            }
+	    if (flipColumns && includeFields) {
+                fields.map((f,colIdx)=>{
+		    if(f.isRecordDate()) return;
+		    rotated[colIdx].unshift(colIdx==0?args["fieldName"]||"Field":f.getLabel());
+		});
+	    }
+	    return  convertToPointData(rotated);
+	},
+	addPercentIncrease: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    let newRecords  =[];
+	    let firstRecord= records[0];
+	    let replaceValues = args["replaceValues"]=="true";
+	    let newFields = [];
+	    fields.map((f,fieldIdx)=>{
+		f = f.clone();
+		let newField = f.clone();
+		if(!replaceValues) {
+		    f.index = newFields.length;
+		    newFields.push(f);
+		}
+		if(f.isNumeric()) {
+		    newField.unit = "%";
+		    newField.index = newFields.length;
+		    newFields.push(newField);
+		    newField.id = newField.id +"_percent";
+		    newField.label = newField.label+" % increase";
+		}
+	    });
+	    /*
+	    newFields.map((f,fieldIdx)=>{
+		if(fieldIdx>3) return;
+		console.log("F:" + f.getLabel() +" " + f.index);
+	    });*/
+	    records.map((record, rowIdx)=>{
+		let data = [];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		fields.map((f,fieldIdx)=>{
+		    let value = record.data[f.getIndex()];
+		    if(!f.isNumeric()) {
+			data.push(value);
+			return;
+		    }
+		    if(!replaceValues) {
+			data.push(value);
+		    }
+		    if(rowIdx==0) {
+			data.push(0);
+		    } else {
+			let basev = firstRecord.data[f.getIndex()];
+			let perc = basev==0?0:(value-basev)/basev;
+			data.push(perc);
+		    }
+		}); 
+		newRecord.data=data;
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	},
+
+    });
+}
+

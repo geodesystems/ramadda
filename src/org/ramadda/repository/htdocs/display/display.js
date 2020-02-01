@@ -2091,7 +2091,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return roots;
 	},
-
 	getSegments: function() {
 	    var segments = this.getProperty("timeSegments");
 	    if(!segments) return null;
@@ -2117,13 +2116,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var rowIdx = 0; 
 		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
 		segments.map((segment,segmentIdx)=>{
-		    let xcnt =0;
 		    var name = segment.name;
 		    header.push(name);
 		    var start = segment.start;
 		    var end = segment.end;
 		    var cnt = 1;
-//		    console.log("segment:" + segment.name);
 	    	    for (; rowIdx <dataList.length; rowIdx++) {
 			var record = dataList[rowIdx];
 			if(record.getTime()<start.getTime()) {
@@ -2141,8 +2138,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			} else {
 			    row = newData[cnt];
 			}
-//			if(xcnt++<10)
-//			    console.log(segmentIdx+"=" + value);
 			row[segmentIdx] = value;
 			cnt++;
 		    }
@@ -2151,163 +2146,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData.entryId = originalPointData.entryId;
 	    }
 
-            if (this.getProperty("rotateTable")) {
-	        let dataList = pointData.getRecords(); 
-		let rotated = [];
-                let header = this.getDataValues(dataList[0]);
-		for(var colIdx=0;colIdx<header.length;colIdx++) {
-		    rotated.push([]);
-		}
-		let includeFields =this.getProperty("includeFields");
-		if (includeFields) {
-                    pointData.getRecordFields().map((f,colIdx)=>{
-			rotated[colIdx].push(colIdx==0?"":f.getLabel());
-		    });
-		}
-                for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
-                    var row = this.getDataValues(dataList[rowIdx]);
-		    for(var colIdx=0;colIdx<row.length;colIdx++) {
-			var value = row[colIdx];
-			if(value.f) value = value.f;
-			if(value.getTime) {
-			    value = this.formatDate(value);
-			}
-			if(!includeFields && rowIdx==0 && colIdx==0) value="";
-			rotated[colIdx].push(value);
-		    }
-                }
-		pointData = convertToPointData(rotated);
-		pointData.entryId = originalPointData.entryId;
-            }
-
-	    /*
-	      time,usa,china
-	      t1,4,5
-	      t2,1,2
-	    ->
-	    t1,usa,4
-	    t2,usa,1
-	    t1,china,5
-	    t2,china,2
-	    */
-	    if(this.getProperty("furlTable",false)) {
-	        var dataList = pointData.getRecords(); 
-		var newRecords  =[];
-		var newFields = [];
-		var lastRecord = dataList[dataList.length-1];
-                var fields  = pointData.getRecordFields();
-		var newData  =[];
-		newData.push(["label","value"]);
-//		dataList.map(r=>{
-		fields.map((f,idx)=>{
-		    let row = [f.getLabel(),lastRecord.getValue(f.getIndex())];
-		    newData.push();
-		});
-
-		pointData = convertToPointData(newData);
-		pointData.entryId = originalPointData.entryId;
-	    }
-
-	    if(this.getProperty("showPercentIncrease",false)) {
-	        var dataList = pointData.getRecords(); 
-                var fields  = pointData.getRecordFields();
-		var newRecords  =[];
-		var newFields = [];
-		var firstRow = dataList[0];
-		var firstRecord= dataList[0];
-		fields.map(f=>{
-		    var newField = f.clone();
-		    newFields.push(newField);
-		    newField.label = newField.label+" % increase";
-		});
-	    	for (var rowIdx=0; rowIdx <dataList.length; rowIdx++) {
-		    var record = dataList[rowIdx];
-		    var newRecord = record.clone();
-		    newRecords.push(newRecord);
-		    fields.map(f=>{
-			if(!f.isNumeric()) return;
-			if(rowIdx==0) {
-			    newRecord.data[f.getIndex()] = 0;
-			} else {
-			    var v = newRecord.data[f.getIndex()];
-			    var basev = firstRecord.data[f.getIndex()];
-			    newRecord.data[f.getIndex()] = basev==0?0:(v-basev)/basev;
-			}
-		    });
-		};
-		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
-		pointData.entryId = originalPointData.entryId;
-	    }
-
-            if (this.getProperty("derived")) {
-		//derived=v1;a/b,v2;a*2
-		this.getProperty("derived").split(",").map(tok=>{
-		    [name,func] = tok.split(";");
-	            let records = pointData.getRecords(); 
-                    let fields  = pointData.getRecordFields();
-                    let setVars = "";
-                    fields.map((field,idx)=>{
-			if(field.isFieldNumeric()) {
-			    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
-			}
-                    });
-		    if(func.indexOf("return")<0) {
-			func = "return " + func;
-		    }
-                    let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
-		    console.log("code:" + code);
-                    eval(code);
-		    records.map(r=>{
-			let args = {};
-			fields.map((field,idx)=>{
-			    if(field.isFieldNumeric()) {
-				args[field.getId()] = r.getValue(field.getIndex());
-			    }
-			});
-			let value = displayDerivedEval(args);
-			console.log("\t" + value);
-		    });
-		});
-            }
-
-
-
-	    if(this.getProperty("showAverages",false)) {
-	        var dataList = pointData.getRecords(); 
-		var newRecords  =[];
-		var newFields = [];
-		var firstRow = dataList[0];
-                var fields  = pointData.getRecordFields();
-		var firstRecord= dataList[0];
-		fields.map(f=>{
-		    var newField = f.clone();
-		    newFields.push(newField);
-		    newField.label = newField.label+" (avg)";
-		});
-		var sums=[];
-		fields.map(f=>{sums.push(0)});
-		var newRecord;
-	    	for (var rowIdx=0; rowIdx <dataList.length; rowIdx++) {
-		    var record = dataList[rowIdx];
-		    if(newRecord==null) {
-			newRecord = record.clone();
-			newRecords.push(newRecord);
-		    }
-		    fields.map((f,idx)=>{
-			if(!f.isNumeric()) return;
-			var v = record.data[f.getIndex()];
-			sums[idx]+=v;
-		    });
-		    fields.map((f,idx)=>{
-			if(!f.isNumeric()) return;
-			newRecord.data[idx] = sums[idx]/dataList.length;
-		    });
-		};
-		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
-		pointData.entryId = originalPointData.entryId;
-	    }
-
-
+	    pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
 
 	    return pointData;
 	},

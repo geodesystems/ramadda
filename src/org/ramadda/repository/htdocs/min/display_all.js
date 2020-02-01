@@ -2241,7 +2241,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return roots;
 	},
-
 	getSegments: function() {
 	    var segments = this.getProperty("timeSegments");
 	    if(!segments) return null;
@@ -2267,13 +2266,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var rowIdx = 0; 
 		//timeSegments="Obama;2008-02-01;2016-01-31,Trump;2016-02-01;2020-01-31"
 		segments.map((segment,segmentIdx)=>{
-		    let xcnt =0;
 		    var name = segment.name;
 		    header.push(name);
 		    var start = segment.start;
 		    var end = segment.end;
 		    var cnt = 1;
-//		    console.log("segment:" + segment.name);
 	    	    for (; rowIdx <dataList.length; rowIdx++) {
 			var record = dataList[rowIdx];
 			if(record.getTime()<start.getTime()) {
@@ -2291,8 +2288,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			} else {
 			    row = newData[cnt];
 			}
-//			if(xcnt++<10)
-//			    console.log(segmentIdx+"=" + value);
 			row[segmentIdx] = value;
 			cnt++;
 		    }
@@ -2301,163 +2296,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData.entryId = originalPointData.entryId;
 	    }
 
-            if (this.getProperty("rotateTable")) {
-	        let dataList = pointData.getRecords(); 
-		let rotated = [];
-                let header = this.getDataValues(dataList[0]);
-		for(var colIdx=0;colIdx<header.length;colIdx++) {
-		    rotated.push([]);
-		}
-		let includeFields =this.getProperty("includeFields");
-		if (includeFields) {
-                    pointData.getRecordFields().map((f,colIdx)=>{
-			rotated[colIdx].push(colIdx==0?"":f.getLabel());
-		    });
-		}
-                for (var rowIdx = 0; rowIdx < dataList.length; rowIdx++) {
-                    var row = this.getDataValues(dataList[rowIdx]);
-		    for(var colIdx=0;colIdx<row.length;colIdx++) {
-			var value = row[colIdx];
-			if(value.f) value = value.f;
-			if(value.getTime) {
-			    value = this.formatDate(value);
-			}
-			if(!includeFields && rowIdx==0 && colIdx==0) value="";
-			rotated[colIdx].push(value);
-		    }
-                }
-		pointData = convertToPointData(rotated);
-		pointData.entryId = originalPointData.entryId;
-            }
-
-	    /*
-	      time,usa,china
-	      t1,4,5
-	      t2,1,2
-	    ->
-	    t1,usa,4
-	    t2,usa,1
-	    t1,china,5
-	    t2,china,2
-	    */
-	    if(this.getProperty("furlTable",false)) {
-	        var dataList = pointData.getRecords(); 
-		var newRecords  =[];
-		var newFields = [];
-		var lastRecord = dataList[dataList.length-1];
-                var fields  = pointData.getRecordFields();
-		var newData  =[];
-		newData.push(["label","value"]);
-//		dataList.map(r=>{
-		fields.map((f,idx)=>{
-		    let row = [f.getLabel(),lastRecord.getValue(f.getIndex())];
-		    newData.push();
-		});
-
-		pointData = convertToPointData(newData);
-		pointData.entryId = originalPointData.entryId;
-	    }
-
-	    if(this.getProperty("showPercentIncrease",false)) {
-	        var dataList = pointData.getRecords(); 
-                var fields  = pointData.getRecordFields();
-		var newRecords  =[];
-		var newFields = [];
-		var firstRow = dataList[0];
-		var firstRecord= dataList[0];
-		fields.map(f=>{
-		    var newField = f.clone();
-		    newFields.push(newField);
-		    newField.label = newField.label+" % increase";
-		});
-	    	for (var rowIdx=0; rowIdx <dataList.length; rowIdx++) {
-		    var record = dataList[rowIdx];
-		    var newRecord = record.clone();
-		    newRecords.push(newRecord);
-		    fields.map(f=>{
-			if(!f.isNumeric()) return;
-			if(rowIdx==0) {
-			    newRecord.data[f.getIndex()] = 0;
-			} else {
-			    var v = newRecord.data[f.getIndex()];
-			    var basev = firstRecord.data[f.getIndex()];
-			    newRecord.data[f.getIndex()] = basev==0?0:(v-basev)/basev;
-			}
-		    });
-		};
-		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
-		pointData.entryId = originalPointData.entryId;
-	    }
-
-            if (this.getProperty("derived")) {
-		//derived=v1;a/b,v2;a*2
-		this.getProperty("derived").split(",").map(tok=>{
-		    [name,func] = tok.split(";");
-	            let records = pointData.getRecords(); 
-                    let fields  = pointData.getRecordFields();
-                    let setVars = "";
-                    fields.map((field,idx)=>{
-			if(field.isFieldNumeric()) {
-			    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
-			}
-                    });
-		    if(func.indexOf("return")<0) {
-			func = "return " + func;
-		    }
-                    let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
-		    console.log("code:" + code);
-                    eval(code);
-		    records.map(r=>{
-			let args = {};
-			fields.map((field,idx)=>{
-			    if(field.isFieldNumeric()) {
-				args[field.getId()] = r.getValue(field.getIndex());
-			    }
-			});
-			let value = displayDerivedEval(args);
-			console.log("\t" + value);
-		    });
-		});
-            }
-
-
-
-	    if(this.getProperty("showAverages",false)) {
-	        var dataList = pointData.getRecords(); 
-		var newRecords  =[];
-		var newFields = [];
-		var firstRow = dataList[0];
-                var fields  = pointData.getRecordFields();
-		var firstRecord= dataList[0];
-		fields.map(f=>{
-		    var newField = f.clone();
-		    newFields.push(newField);
-		    newField.label = newField.label+" (avg)";
-		});
-		var sums=[];
-		fields.map(f=>{sums.push(0)});
-		var newRecord;
-	    	for (var rowIdx=0; rowIdx <dataList.length; rowIdx++) {
-		    var record = dataList[rowIdx];
-		    if(newRecord==null) {
-			newRecord = record.clone();
-			newRecords.push(newRecord);
-		    }
-		    fields.map((f,idx)=>{
-			if(!f.isNumeric()) return;
-			var v = record.data[f.getIndex()];
-			sums[idx]+=v;
-		    });
-		    fields.map((f,idx)=>{
-			if(!f.isNumeric()) return;
-			newRecord.data[idx] = sums[idx]/dataList.length;
-		    });
-		};
-		pointData=  new  PointData("pointdata", newFields, newRecords,null,null);
-		pointData.entryId = originalPointData.entryId;
-	    }
-
-
+	    pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
 
 	    return pointData;
 	},
@@ -7869,7 +7708,7 @@ function makePointData(json, derived, source) {
         }
     }
 
-*/
+a*/
     if (source != null) {
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
@@ -8257,6 +8096,217 @@ var RecordUtil = {
         return result;
     }
 };
+
+
+function CsvUtil() {
+    let eg = "convertData=\"derived(field=field_id, function=population*10);\nrotateData(includeFields=true,includeDate=true,flipColumns=true);\naddPercentIncrease(replaceValues=false);\"\n";
+    $.extend(this, {
+	process: function(display, pointData, commands) {
+	    this.display = display;
+	    if(!commands) return pointData;
+	    commands.split(";").map(command=>{
+		command = command.trim();
+		let toks = command.match(/([^\(]+)\(([^\)]*)\)/);
+		let rest = "";
+		if(toks) {
+		    command=toks[1];
+		    rest = toks[2];
+		}
+		let args = {};
+		rest.split(",").map(arg=>{
+		    arg =arg.trim();
+		    let value = "";
+		    let atoks = arg.match(/(.*)=(.*)/);
+		    if(atoks) {
+			arg=atoks[1];
+			value= atoks[2];
+		    }
+		    arg = arg.trim();
+		    value = value.trim();
+		    if(arg!="") {
+			args[arg] = value;
+		    }
+		});
+		if(this[command]) {
+		    let orig = pointData;
+    		    pointData = this[command](pointData, args);
+		    if(!pointData) pointData=orig;
+		    else pointData.entryId = orig.entryId;
+		} else {
+		    console.log("unknown command:" + command);
+		}
+	    });
+	    return pointData;
+	},
+	help: function(pointData, args) {
+	    console.log(eg);
+	    return null;
+	},
+	furlData: function(pointData, args) {
+	    /** TODO
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+	    var newRecords  =[];
+	    var newFields = [];
+	    var lastRecord = dataList[dataList.length-1];
+            var fields  = pointData.getRecordFields();
+	    var newData  =[];
+	    newData.push(["label","value"]);
+	    //		dataList.map(r=>{
+	    fields.map((f,idx)=>{
+		let row = [f.getLabel(),lastRecord.getValue(f.getIndex())];
+		newData.push();
+	    });
+	    pointData = convertToPointData(newData);
+	    pointData.entryId = originalPointData.entryId;
+	    **/
+	},
+	derived: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+	    let fields =  pointData.getRecordFields().slice();
+	    let newRecords  =[];
+	    let id = args["field"] || ("field_" + fields.length);
+            fields.push(new RecordField({
+		id:id,
+		index:fields.length,
+		label:Utils.makeLabel(id),
+		type:"double",
+		chartable:true
+            }));
+	    let func = args["function"];
+	    if(!func) {
+		console.log("No func specified in derived");
+		return null;
+	    }
+	    func = func.replace(/_nl_/g, "\n");
+	    if(func.indexOf("return")<0) {
+		func = "return " + func;
+	    }
+            let setVars = "";
+            fields.map((field,idx)=>{
+		if(field.isFieldNumeric() && field.getId()!="") {
+		    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
+		}
+            });
+            let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
+            eval(code);
+	    records.map((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecord.data= record.data.slice();
+		newRecords.push(newRecord);
+		let funcArgs = {};
+		fields.map((field,idx)=>{
+		    if(field.isFieldNumeric() && field.getId()!="") {
+			funcArgs[field.getId()] = record.getValue(field.getIndex());
+		    }
+		});
+		let value = displayDerivedEval(funcArgs);
+		newRecord.data.push(value);
+	    });
+	    return   new  PointData("pointdata", fields, newRecords,null,null);
+	},
+	rotateData: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+	    let rotated = [];
+	    for(var colIdx=0;colIdx<header.length;colIdx++) {
+		rotated.push([]);
+	    }
+	    let includeFields =args["includeFields"] == "true";
+	    let includeDate = args["includeDate"] == "true";
+	    let flipColumns =args["flipColumns"]=="true";
+	    let fields = pointData.getRecordFields();
+	    if (!flipColumns && includeFields) {
+                fields.map((f,colIdx)=>{
+		    if(f.isRecordDate()) return;
+		    rotated[colIdx].push(colIdx==0?args["fieldName"]||"Field":f.getLabel());
+		});
+	    }
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let row = this.display.getDataValues(records[rowIdx]);
+		for(var colIdx=0;colIdx<row.length;colIdx++) {
+		    let field = fields[colIdx];
+		    if(field.isRecordDate()) {
+			continue;
+		    }
+		    var value = row[colIdx];
+		    if(value.f) value = value.f;
+		    if(value.getTime) {
+			value = this.display.formatDate(value);
+		    }
+		    if(!includeFields && rowIdx==0 && colIdx==0) value="";
+
+		    if(flipColumns)
+			rotated[colIdx].unshift(value);
+		    else
+			rotated[colIdx].push(value);
+		}
+            }
+	    if (flipColumns && includeFields) {
+                fields.map((f,colIdx)=>{
+		    if(f.isRecordDate()) return;
+		    rotated[colIdx].unshift(colIdx==0?args["fieldName"]||"Field":f.getLabel());
+		});
+	    }
+	    return  convertToPointData(rotated);
+	},
+	addPercentIncrease: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    let newRecords  =[];
+	    let firstRecord= records[0];
+	    let replaceValues = args["replaceValues"]=="true";
+	    let newFields = [];
+	    fields.map((f,fieldIdx)=>{
+		f = f.clone();
+		let newField = f.clone();
+		if(!replaceValues) {
+		    f.index = newFields.length;
+		    newFields.push(f);
+		}
+		if(f.isNumeric()) {
+		    newField.unit = "%";
+		    newField.index = newFields.length;
+		    newFields.push(newField);
+		    newField.id = newField.id +"_percent";
+		    newField.label = newField.label+" % increase";
+		}
+	    });
+	    /*
+	    newFields.map((f,fieldIdx)=>{
+		if(fieldIdx>3) return;
+		console.log("F:" + f.getLabel() +" " + f.index);
+	    });*/
+	    records.map((record, rowIdx)=>{
+		let data = [];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		fields.map((f,fieldIdx)=>{
+		    let value = record.data[f.getIndex()];
+		    if(!f.isNumeric()) {
+			data.push(value);
+			return;
+		    }
+		    if(!replaceValues) {
+			data.push(value);
+		    }
+		    if(rowIdx==0) {
+			data.push(0);
+		    } else {
+			let basev = firstRecord.data[f.getIndex()];
+			let perc = basev==0?0:(value-basev)/basev;
+			data.push(perc);
+		    }
+		}); 
+		newRecord.data=data;
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	},
+
+    });
+}
+
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -11735,75 +11785,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
-            var dataList = null;
-            if (this["function"] && dataList == null) {
-                var pointData = this.dataCollection.getList()[0];
-                var allFields = pointData.getRecordFields();
-                var records = pointData.getRecords();
-                var indexField = this.indexField;
-                var chartableFields = this.getFieldsToSelect(pointData);
-                this.hasDate = this.getHasDate(records);
-                var date_formatter = this.getDateFormatter();
-                var setVars = "";
-                for (var i = 0; i < chartableFields.length; i++) {
-                    var field = chartableFields[i];
-                    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
-                }
-                var code = "function displayChartEval(args) {\n" + setVars + "\treturn  " + this["function"] + "\n}";
-                eval(code);
-                var newList = [];
-                var fieldNames = null;
-                var rowCnt = -1;
-                var indexField = this.getFieldById(null,this.getProperty("indexField"));
-                for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                    var record = records[rowIdx];
-                    var row = record.getData();
-                    var date = record.getDate();
-                    if (!this.dateInRange(date)) continue;
-                    rowCnt++;
-                    var values = [];
-                    var indexName = null;
-		    //		    console.log("row:" + rowIdx);
-                    if (indexField) {
-			var value = record.getValue(indexField.getIndex());
-			//                        values.push( + offset);
-			//			console.log("v:" + value);
-			if(indexField.isString()) {
-			    value = {v:offset,f:value};
-			} 
-			values.push(value);
-                        indexName = indexField.getLabel();
-                    } else {
-                        if (this.hasDate) {
-                            values.push(this.getDateValue(date, date_formatter));
-                            indexName = "Date";
-                        } else {
-                            values.push(rowIdx);
-                            indexName = this.getProperty("indexName", "Index");
-                        }
-                    }
-                    if (fieldNames == null) {
-                        fieldNames = [indexName, this.functionName ? this.functionName : "value"];
-                        newList.push(fieldNames);
-                    }
-                    var args = {};
-                    for (var j = 0; j < chartableFields.length; j++) {
-                        var field = chartableFields[j];
-                        var value = row[field.getIndex()];
-                        args[field.getId()] = value;
-                    }
-                    var value = displayChartEval(args);
-                    values.push(value);
-                    newList.push(values);
-                }
-                dataList = newList;
-            }
-
-
-            if (dataList == null) {
-                dataList = this.getStandardData(fieldsToSelect, props);
-            }
-
+            let dataList = this.getStandardData(fieldsToSelect, props);
             this.computedData = dataList;
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
@@ -11823,7 +11805,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 					       "No data available"));
                 return;
             }
-
 
             if (this.showPercent) {
                 var newList = [];
@@ -11897,6 +11878,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
                 dataList = newList;
             }
+
 
             try {
                 this.makeGoogleChart(dataList, props, selectedFields);
@@ -12039,7 +12021,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
 	    let debug = false;
-	    let debugRows = 3;
+	    let debugRows = 10000;
             for (var j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {
@@ -12244,10 +12226,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
 		var record =dataList[rowIdx];
                 var row = this.getDataValues(record);
-		//		if(rowIdx>1000) break;
-		//		continue;
-		var index = row[0];
-		if(index.v) index  = index.v;
+//		var index = row[0];
+//		if(index.v) index  = index.v;
 		var theRecord = record.record;
 		var color = "";
                 if (colorBy.index >= 0) {
@@ -12330,13 +12310,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			}
 			if(addStyle) {
 			    newRow.push(color);
-			    if(debug && rowIdx<debugRows)
-				console.log("\t style:" + color);
+//			    if(debug && rowIdx<debugRows)
+//				console.log("\t style:" + color);
 			}
 			if(addTooltip) {
                             newRow.push(tooltip);
-			    if(debug && rowIdx<debugRows)
-				console.log("\t tooltip:");
+//			    if(debug && rowIdx<debugRows)
+//				console.log("\t tooltip:");
 			}
                     }
 		    if(j>0 && fixedValueS) {
