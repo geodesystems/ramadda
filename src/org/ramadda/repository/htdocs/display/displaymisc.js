@@ -2405,7 +2405,6 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    if(template) {
 		html= headerTemplate;
 	    } else {
-		html = "<br>";		
 		html += HtmlUtils.openTag("table", ["class", "stripe nowrap ramadda-table", "id", this.getDomId("percentchange")]);
 		html += HtmlUtils.openTag("thead", []);
 		html += "\n";
