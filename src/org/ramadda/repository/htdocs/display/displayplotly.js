@@ -108,6 +108,12 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             var height = parseInt(this.getProperty("height", "400").replace("px", "").replace("%", ""));
             //                layout.width = width-widthDelta;
             layout.height = height;
+	    if(!layout.margin) layout.margin={};
+	    [["l","marginLeft"],["r","marginRight"],["t","marginTop"],["b","marginBottom"]].map(t=>{
+		if(Utils.isDefined(this.getProperty(t[1])))
+		    layout.margin[t[0]]  = this.getProperty(t[1]);
+	    });
+
         },
         pointDataLoaded: function(pointData, url, reload) {
             SUPER.pointDataLoaded.call(this, pointData, url, reload);
@@ -1375,9 +1381,6 @@ function CombochartDisplay(displayManager, id, properties) {
 		    y: 1.0,
 
                 },
-		xautosize: false,
-		xwidth: 500,
-		xheight: 500,
 		margin: {
                     l: this.getProperty("marginLeft", 50),
                     r: this.getProperty("marginRight", 50),
