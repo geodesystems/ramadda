@@ -624,18 +624,18 @@ The first is to specify one or more data fields to create the annotation from:
 The second way is to specify the annotations using an <i>annotations</i> attribute:
 <pre>
 annotations="
-&lt;index1&gt;label1;description1,
-&lt;index2&gt;label2;description2,
+&lt,index1&gt,label1,description1;
+&lt,index2&gt,label2,description2;
 ...
 "
 </pre>
 Where &lt;index&gt; is either a date or a numeric index, e.g;
 <pre>
  annotations="
-2;A;annotation 1,
-2016-06-24;B;annotation 2,
-2016-06-24;C;&lt;h1&gt;annotation 3&lt/h1&gt,
-2017-01-02;D;annotation 4
+2,A,annotation 1;
+2016-06-24,B,annotation 2;
+2016-06-24,C,&lt,h1&gt,annotation 3&lt/h1&gt;
+2017-01-02,D,annotation 4
 "
 </pre>
 

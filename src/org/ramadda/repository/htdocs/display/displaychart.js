@@ -786,7 +786,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
 	    let debug = false;
-	    let debugRows = 10000;
+	    let debugRows = 10;
             for (var j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {
@@ -893,9 +893,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		var annotationsMap = {};
 		let legend = "";
 		var labelCnt = 0;
-		var toks = annotations.split(",");
+		var toks = annotations.split(";");
 		for(var i=0;i<toks.length;i++) {
-		    var toks2 = toks[i].split(";");
+		    var toks2 = toks[i].split(",");
 		    //index,label,description,url
 		    if(toks2.length<2) continue;
 		    var index = toks2[0].trim();
@@ -1472,10 +1472,11 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		"chartLeft=\"\"",
 		"chartRight=\"\"",
 		'tooltipFields=""',
-		'annotations=""',
+		'annotations="date,label,desc;date,label,desc; e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;"',
 		'annotationFields=""',	
 		'annotationLabelField=""',
-		'indexField=""'
+		'indexField="alternate field to use as index"',
+		'forceStrings="if index is a string set to true"'
 	    ]
 	    myTags.map(tag=>t.push(tag));
 	    return t;
