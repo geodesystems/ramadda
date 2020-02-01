@@ -1,3 +1,4 @@
+
 function D3Skewt(divid, args, jsonData) {
     this.divid = divid;
     this.jsonData = jsonData;
@@ -107,20 +108,25 @@ function D3Skewt(divid, args, jsonData) {
         },
         initSvg: function() {
             var skewt = this;
-            this.x = d3.scale.linear().range([0, skewt.getSkewtWidth()]).domain([-45, 50]);
-            this.y = d3.scale.log().range([0, skewt.getSkewtHeight()]).domain([skewt.topp, skewt.basep]);
-            var hw = this.getHodographWidth();
-            this.r = d3.scale.linear().range([0, hw]).domain([0, 150]);
 
-            this.y2 = d3.scale.linear();
-            this.xAxis = d3.svg.axis().scale(this.x).tickSize(0, 0).ticks(10).orient("bottom");
-            this.yAxis = d3.svg.axis().scale(this.y).tickSize(0, 0).tickValues(this.plines)
-                .tickFormat(d3.format(".0d")).orient("left");
-            this.yAxis2 = d3.svg.axis().scale(this.y).tickSize(5, 0).tickValues(this.pticks).orient("right"); // just for ticks
+
+
+
+            this.x = d3.scaleLinear().range([0, skewt.getSkewtWidth()]).domain([-45, 50]);
+            this.y = d3.scaleLog().range([0, skewt.getSkewtHeight()]).domain([skewt.topp, skewt.basep]);
+            var hw = this.getHodographWidth();
+            this.r = d3.scaleLinear().range([0, hw]).domain([0, 150]);
+            this.y2 = d3.scaleLinear();
+
+            this.xAxis = d3.axisBottom().scale(this.x).tickSize(0, 0).ticks(10);
+            this.yAxis = d3.axisLeft().scale(this.y).tickSize(0, 0).tickValues(this.plines)
+                .tickFormat(d3.format(".0d"));
+            this.yAxis2 = d3.axisRight().scale(this.y).tickSize(5, 0).tickValues(this.pticks); // just for ticks
             //this.yAxis2 = d3.svg.axis().scale(this.y2).orient("right").tickSize(3,0).tickFormat(d3.format(".0d"));
 
-            this.line = d3.svg.line()
-                .interpolate("linear")
+
+            this.line = d3.line()
+                .curve(d3.curveLinear)
                 .x(function(d, i) {
                     return skewt.x(d.temperature) + (skewt.y(skewt.basep) - skewt.y(d.pressure)) / skewt.tan;
                 })
@@ -128,9 +134,9 @@ function D3Skewt(divid, args, jsonData) {
                 .y(function(d, i) {
                     return skewt.y(d.pressure);
                 });
-
-            this.line2 = d3.svg.line()
-                .interpolate("linear")
+            
+            this.line2 = d3.line()
+		.curve(d3.curveLinear)
                 .x(function(d, i) {
                     return skewt.x(d.dewpoint) + (skewt.y(skewt.basep) - skewt.y(d.pressure)) / skewt.tan;
                 })
@@ -138,7 +144,7 @@ function D3Skewt(divid, args, jsonData) {
                     return skewt.y(d.pressure);
                 });
 
-            this.hodoline = d3.svg.line.radial()
+            this.hodoline = d3.radialLine()
                 .radius(function(d) {
                     return skewt.r(d.windspeed);
                 })
@@ -190,8 +196,8 @@ function D3Skewt(divid, args, jsonData) {
             var svghodo = d3.select("#" + this.hodoBoxId + " svg g").append("g").attr("class", "hodobg");
             var svg = d3.select("#" + this.mainBoxId + " svg g").append("g").attr("class", "skewtbg");
 
-            var dryline = d3.svg.line()
-                .interpolate("linear")
+            var dryline = d3.line()
+		.curve(d3.curveLinear)
                 .x(function(d, i) {
                     return skewt.x((273.15 + d) / Math.pow((1000 / pp[i]), 0.286) - 273.15) + (skewt.y(skewt.basep) - skewt.y(pp[i])) / skewt.tan;
                 })
@@ -199,8 +205,8 @@ function D3Skewt(divid, args, jsonData) {
                     return skewt.y(pp[i])
                 });
                 
-            var moistline = d3.svg.line()
-                .interpolate("linear")
+            var moistline = d3.line()
+		.curve(d3.curveLinear)
                 .x(function(d,i) { 
                     return skewt.x(d) + (skewt.y(skewt.basep)-skewt.y(p_levels[i]))/skewt.tan;
                  })

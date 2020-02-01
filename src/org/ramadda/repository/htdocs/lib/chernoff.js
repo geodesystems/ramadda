@@ -22,6 +22,8 @@ function sign(num) {
 // eyew -- width of the eyes {0..1}
 // brow -- slant of the brows {-1..1}
 function d3_chernoff() {
+
+
     var facef = 0.5, // 0 - 1
         hairf = 0, // -1 - 1
         mouthf = 0, // -1 - 1
@@ -30,13 +32,12 @@ function d3_chernoff() {
         eyehf = 0.5, // 0 - 1
         eyewf = 0.5, // 0 - 1
         browf = 0, // -1 - 1
-
-        line = d3.svg.line()
-            .interpolate("cardinal-closed")
+        line = d3.line()
+        .curve(d3.curveCardinalClosed)
             .x(function(d) { return d.x; })
             .y(function(d) { return d.y; }),
-        bline = d3.svg.line()
-            .interpolate("basis-closed")
+        bline = d3.line()
+	.curve(d3.curveBasisClosed)
             .x(function(d) { return d.x; })
             .y(function(d) { return d.y; });
 
@@ -44,7 +45,7 @@ function d3_chernoff() {
         if(a instanceof Array) {
             a.each(__chernoff);
         } else {
-            d3.select(this).each(__chernoff);
+            a.each(__chernoff);
         }
     }
 
