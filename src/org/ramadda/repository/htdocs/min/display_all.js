@@ -8308,6 +8308,40 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
+	doAverage: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    var newRecords  =[];
+	    var newFields = [];
+	    var firstRow = records[0];
+	    fields.map(f=>{
+		var newField = f.clone();
+		newFields.push(newField);
+		newField.label = newField.label+" (avg)";
+	    });
+	    var sums=[];
+	    fields.map(f=>{sums.push(0)});
+	    var newRecord;
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		var record = records[rowIdx];
+		if(newRecord==null) {
+		    newRecord = record.clone();
+		    newRecords.push(newRecord);
+		}
+		fields.map((f,idx)=>{
+		    if(!f.isNumeric()) return;
+		    var v = record.data[f.getIndex()];
+		    sums[idx]+=v;
+		});
+		fields.map((f,idx)=>{
+		    if(!f.isNumeric()) return;
+		    newRecord.data[idx] = sums[idx]/records.length;
+		});
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	},
+
 
     });
 }
