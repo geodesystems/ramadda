@@ -10702,7 +10702,7 @@ public class EntryManager extends RepositoryManager {
                 for (Metadata metadata : metadataList) {
                     String alias = metadata.getAttr1();
                     if ( !alias.startsWith("http:")) {
-                        return getRepository().getUrlBase() + "/alias/"
+                        return getRepository().getUrlBase() + "/a/"
                                + alias;
                     }
                 }

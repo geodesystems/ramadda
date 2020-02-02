@@ -4090,6 +4090,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             alias = path.substring("/alias/".length());
         } else if (path.startsWith("/aka/")) {
             alias = path.substring("/aka/".length());
+	} else if (path.startsWith("/a/")) {
+            alias = path.substring("/a/".length());
         } else {
             if (path.endsWith("/")) {
                 path = path.substring(0, path.length() - 1);
