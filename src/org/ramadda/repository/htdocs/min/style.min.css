@@ -614,7 +614,6 @@ a.ramadda-menubar-button:hover {
 }
 
 
-
 .ramadda-background-yellow , .ramadda-block-yellow , .ramadda-heading-yellow , .ramadda-box-yellow , .ramadda-note-yellow , .ramadda-blurb-yellow , .ramadda-callout-yellow , .ramadda-section-yellow  {
     background-color: #fffeec;
 }
@@ -706,7 +705,13 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-background-green , .ramadda-block-green , .ramadda-heading-green , .ramadda-box-green , .ramadda-note-green , .ramadda-blurb-green , .ramadda-callout-green , .ramadda-section-green  {
-    background-color: honeydew;
+/*    background-color: honeydew;*/
+    background-color: #4C7B65;
+    color:white;
+}
+
+.ramadda-background-green a  , .ramadda-block-green a  , .ramadda-heading-green a  , .ramadda-box-green a  , .ramadda-note-green   a, .ramadda-blurb-green a  , .ramadda-callout-green a  , .ramadda-section-green a   {
+    color:white;
 }
 
 
