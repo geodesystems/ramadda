@@ -2323,7 +2323,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    } else {
 			var startsWith = filter.startsWith;
 			ok = false;
-			roWValue  = (""+rowValue).toLowerCase();
+			roWValue  = String(rowValue).toLowerCase();
 			for(var j=0;j<filter._values.length;j++) {
 			    var fv = _values[j];
 			    if(startsWith) {
@@ -2336,7 +2336,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				break;
 			    }
 			}
-			if(!ok) {
+			
+			if(!ok && !startsWith) {
 			    for(ri=0;ri<filter.matchers.length;ri++) {
 				var matcher = filter.matchers[ri];
 				if(matcher.matches(rowValue.toString())) {
@@ -3816,13 +3817,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let filterBy = this.getProperty("filterFields","",true).split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let dateIds = [];
+	    let fieldMap = {};
             if(filterBy.length>0) {
 		let searchBar = "";
 		let bottom = "";
 		let widgetStyle = "";
 		if(hideFilterWidget)
 		    widgetStyle = "display:none;";
-		let fieldMap = {};
                 for(let i=0;i<filterBy.length;i++) {
                     let filterField  = this.getFieldById(fields,filterBy[i]);
 		    if(!filterField) continue;

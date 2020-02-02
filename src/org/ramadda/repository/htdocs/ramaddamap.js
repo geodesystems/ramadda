@@ -3315,34 +3315,10 @@ function initMapFunctions(theMap) {
                 this.circles = new OpenLayers.Layer.Vector("Shapes");
 		this.circles.layerName = "circles";
                 this.circles.setZIndex(1);
-                /*
-                  this.circles.events.on({
-                  'featureselected': function(feature) {
-                  feature  = feature.feature;
-                  _this.showMarkerPopup(feature);
-                  },
-                  'featureunselected': function(feature) {
-                  }
-                  });*/
                 this.addVectorLayer(this.circles);
-                /*
-                  this.addLayer(this.circles);
-                  var sf = new OpenLayers.Control.SelectFeature(this.circles,{
-                  clickout: false, 
-                  toggle: false,
-                  multiple: false, 
-                  hover: false,
-                  toggleKey: "ctrlKey", 
-                  multipleKey: "shiftKey", 
-                  box: false
-                  });
-
-                  this.getMap().addControl(sf);
-                  sf.activate();
-                */
             }
 	    this.circles.addFeatures([feature]);
-        }
+	}
         return feature;
     }
 

@@ -1294,15 +1294,17 @@ var RecordUtil = {
                     if (record.getLongitude() < -180 || record.getLatitude() > 90) {
                         console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                     }
-                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
+                    points.push({latitude:record.getLongitude(), longitude:record.getLatitude()});
+//                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
                 }
             }
         }
-	if(!bounds) bounds = {};
-        bounds.north = north;
-        bounds.west = west;
-        bounds.south = south;
-        bounds.east = east;
+	if(bounds) {
+            bounds.north = north;
+            bounds.west = west;
+            bounds.south = south;
+            bounds.east = east;
+	}
         return points;
     },
     findClosest: function(records, lon, lat, indexObj) {
