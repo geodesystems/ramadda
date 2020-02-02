@@ -626,7 +626,7 @@ var Utils = {
     },
     formatNumberComma: function(number) {
 	if(!Utils.isDefined(number)) return "NA";
-	let whole = Math.round(number);
+	let whole = Math.floor(number);
 	let rem = number-whole;
 	let wholeFormatted = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	if(rem==0) {
