@@ -26360,6 +26360,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 					'fieldLabel=""',
 					'sortFields=false',
 					'highlightPercent="50"',
+					'highlightPercentPositive="50"',
+					'highlightPercentNegative="-50"',
 					'highlightColor=""',
 					'highlightColorPositive=""',
 					'highlightColorNegative=""',
@@ -26440,7 +26442,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		})
 	    }
 	    let highlightPercent = this.getProperty("highlightPercent",NaN);
-	    let doHighlight = !isNaN(highlightPercent);
+	    let highlightPercentPositive = this.getProperty("highlightPercentPositive",highlightPercent);
+	    let highlightPercentNegative = this.getProperty("highlightPercentNegative",-highlightPercent);
 	    let highlightColor = this.getProperty("highlightColor","#ccc"||"#FFFEEC");
 	    let posColor = this.getProperty("highlightColorPositive",highlightColor);
 	    let negColor = this.getProperty("highlightColorNegative",highlightColor);
@@ -26456,12 +26459,12 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		    html+=h;
 		} else {
 		    let style = "";
-		    if(doHighlight) {
-			if(t.percent>highlightPercent)
+		    if(!isNaN(highlightPercentPositive))
+			if(t.percent>highlightPercentPositive)
 			    style += "background:" + posColor+";";
-			else if(t.percent<-highlightPercent)
+		    if(!isNaN(highlightPercentNegative))
+			if(t.percent<highlightPercentNegative)
 			    style += "background:" + negColor+";";
-		    }
 		    
 		    html += HtmlUtils.tr(["style",style], HtmlUtils.td([], t.field.getLabel()) + 
 					 HtmlUtils.td(["align","right"], this.formatNumber(t.val1)) +
