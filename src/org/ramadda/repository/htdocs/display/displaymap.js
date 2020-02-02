@@ -1239,6 +1239,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
+	    let radiusThreshold = +this.getProperty("radiusThreshold",-1);
             let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             let strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
             let strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
@@ -1683,6 +1684,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(!props.graphicName)
 			    props.graphicName = this.getProperty("shape","circle");
 			if(radius>0) {
+			    if(records.length<radiusThreshold) {
+				props.pointRadius=8;
+			    }
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
 			    addedPoints.push(mapPoint);
 			}
