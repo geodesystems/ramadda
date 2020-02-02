@@ -2451,7 +2451,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    }
 	    let highlightPercent = this.getProperty("highlightPercent",NaN);
 	    let doHighlight = !isNaN(highlightPercent);
-	    let highlightColor = this.getProperty("highlightColor","#FFFEEC");
+	    let highlightColor = this.getProperty("highlightColor","#ccc"||"#FFFEEC");
 	    let posColor = this.getProperty("highlightColorPositive",highlightColor);
 	    let negColor = this.getProperty("highlightColorNegative",highlightColor);
 	    tuples.map(t=>{
