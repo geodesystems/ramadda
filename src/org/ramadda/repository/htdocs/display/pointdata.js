@@ -1381,10 +1381,11 @@ function CsvUtil() {
 	},
 	derived: function(pointData, args) {
 	    let records = pointData.getRecords(); 
-	    let fields =  pointData.getRecordFields().slice();
+	    let fields =  pointData.getRecordFields();
+	    let newFields =  fields.slice();
 	    let newRecords  =[];
 	    let id = args["field"] || ("field_" + fields.length);
-            fields.push(new RecordField({
+            newFields.push(new RecordField({
 		id:id,
 		index:fields.length,
 		label:Utils.makeLabel(id),
@@ -1397,17 +1398,19 @@ function CsvUtil() {
 		console.log("No func specified in derived");
 		return null;
 	    }
-	    func = func.replace(/_nl_/g, "\n");
+	    func = func.replace(/_nl_/g, "\n").replace(/_semi_/g,";");
 	    if(func.indexOf("return")<0) {
 		func = "return " + func;
 	    }
             let setVars = "";
             fields.map((field,idx)=>{
 		if(field.isFieldNumeric() && field.getId()!="") {
-		    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
+		    let varName = field.getId().replace(/^([0-9]+)/g,"v$1");
+		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args[\"" + field.getId() + "\"]);\n";
 		}
             });
             let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
+//	    console.log(code);
             eval(code);
 	    records.map((record, rowIdx)=>{
 		let newRecord = record.clone();
@@ -1427,7 +1430,7 @@ function CsvUtil() {
 		    newRecord.data.push(NaN);
 		}
 	    });
-	    return   new  PointData("pointdata", fields, newRecords,null,null);
+	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
 	rotateData: function(pointData, args) {
 	    let records = pointData.getRecords(); 
@@ -1574,29 +1577,29 @@ var DataUtils = {
 	if(!commands) return result;
 	commands.split(";").map(command=>{
 	    command = command.trim();
-	    let toks = command.match(/([^\(]+)\(([^\)]*)\)/);
-	    let rest = "";
-	    if(toks) {
-		command=toks[1];
-		rest = toks[2];
-	    }
+	    let idx=command.indexOf("(");
 	    let args = {};
-	    rest.split(",").map(arg=>{
-		arg =arg.trim();
-		let value = "";
-		let atoks = arg.match(/(.*)=(.*)/);
-		if(atoks) {
-		    arg=atoks[1];
-		    value= atoks[2];
-		}
-		arg = arg.trim();
-		value = value.trim();
-		//Strip off quotes
-		value = value.replace(/^'/g,"").replace(/'$/g,"");
-		if(arg!="") {
-		    args[arg] = value;
-		}
-	    });
+	    if(idx>=0) {
+		let rest = command.substring(idx+1).trim();
+		command = command.substring(0,idx).trim();
+		if(rest.endsWith(")")) rest = rest.substring(0,rest.length-1);
+		rest.split(",").map(arg=>{
+		    arg =arg.trim();
+		    let value = "";
+		    let atoks = arg.match(/(.*)=(.*)/);
+		    if(atoks) {
+			arg=atoks[1];
+			value= atoks[2];
+		    }
+		    arg = arg.trim();
+		    value = value.trim();
+		    //Strip off quotes
+		    value = value.replace(/^'/g,"").replace(/'$/g,"");
+		    if(arg!="") {
+			args[arg] = value;
+		    }
+		});
+	    }
 	    if(command!="") {
 		result.push({command:command,args:args});
 	    }
