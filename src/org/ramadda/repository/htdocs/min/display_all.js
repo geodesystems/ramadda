@@ -23008,7 +23008,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function() {
 	    this.vectorMapApplied  = false;
 	    this.updateUI();
-	    if(this.getProperty("centerOnFilterChange",false)) {
+	    let doCenter = this.getProperty("centerOnFilterChange",false);
+	    if(doCenter) {
 		if (this.vectorLayer && this.points) {
 		    //If we have  a map then don't do anything?
 		} else {
@@ -23033,6 +23034,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    var t1= new Date();
             var pointData = this.getPointData();
             var records = this.filterData();
+	    this.records = records;
             if (records == null) {
                 err = new Error();
                 console.log("null records:" + err.stack);
@@ -23562,14 +23564,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
+	    if(this.map.circles)
+		this.map.circles.redraw();
+
 	    if (showSegments) {
 		this.map.centerOnMarkers(null, true, null);
 	    }
-	    
 
-
-	    if(this.map.circles)
-		this.map.circles.redraw();
 	    this.jq(ID_BOTTOM).append(HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
 //	    this.jq(ID_BOTTOM).html(HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)])+
 //				    HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
