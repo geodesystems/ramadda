@@ -26355,7 +26355,12 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 					"label:Percent change Attributes",
 					'template="${date1} ${date2} ${value1} ${value2} ${percent} ${per_hour} ${per_day} ${per_week} ${per_month} ${per_year}"',
 					'fieldLabel=""',
-					'sortFields=false'
+					'sortFields=false',
+					'highlightPercent="50"',
+					'highlightColor=""',
+					'highlightColorPositive=""',
+					'highlightColorNegative=""',
+					
 				    ]);
 	},
 	updateUI: function() {
@@ -26431,6 +26436,11 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		    return -(a.percent-b.percent);
 		})
 	    }
+	    let highlightPercent = this.getProperty("highlightPercent",NaN);
+	    let doHighlight = !isNaN(highlightPercent);
+	    let highlightColor = this.getProperty("highlightColor","#FFFEEC");
+	    let posColor = this.getProperty("highlightColorPositive",highlightColor);
+	    let negColor = this.getProperty("highlightColorNegative",highlightColor);
 	    tuples.map(t=>{
 		if(template) {
 		    var h = template.replace("${field}", t.field.getLabel()).replace("${value1}",this.formatNumber(t.val1)).replace("${value2}",this.formatNumber(t.val2)).replace("${percent}",this.formatNumber(t.percent)).replace("${date1}",label1).replace("${date2}",label2).replace("${difference}", this.formatNumber(t.val2-t.val1));
@@ -26442,7 +26452,15 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		    h = h.replace(/\${per_year}/g,this.formatNumber(t.percent/years));
 		    html+=h;
 		} else {
-		    html += HtmlUtils.tr([], HtmlUtils.td([], t.field.getLabel()) + 
+		    let style = "";
+		    if(doHighlight) {
+			if(t.percent>highlightPercent)
+			    style += "background:" + posColor+";";
+			else if(t.percent<-highlightPercent)
+			    style += "background:" + negColor+";";
+		    }
+		    
+		    html += HtmlUtils.tr(["style",style], HtmlUtils.td([], t.field.getLabel()) + 
 					 HtmlUtils.td(["align","right"], this.formatNumber(t.val1)) +
 					 HtmlUtils.td(["align","right"], this.formatNumber(t.val2))
 					 + HtmlUtils.td(["align","right"], t.percent+"%"));
@@ -26456,7 +26474,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 		html += HtmlUtils.closeTag("table");
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-            HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {
+            HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {ordering:true
                 //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
             });
 	},
