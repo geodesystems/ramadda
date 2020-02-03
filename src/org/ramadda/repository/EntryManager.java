@@ -2298,7 +2298,7 @@ public class EntryManager extends RepositoryManager {
                     publishAnonymousEntry(request, entry);
                     List<Entry> entries = new ArrayList<Entry>();
                     entries.add(entry);
-                    insertEntries(request, entries, newEntry);
+                    insertEntries(request, entries, newEntry, false);
 
                     return new Result(
                         request.entryUrl(
@@ -2911,7 +2911,7 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
-            insertEntries(request, entries, newEntry);
+            insertEntries(request, entries, newEntry, false);
             if (newEntry) {
                 for (Entry theNewEntry : entries) {
                     theNewEntry.getTypeHandler().doFinalEntryInitialization(
@@ -5053,7 +5053,7 @@ public class EntryManager extends RepositoryManager {
                 //Do this instead of addNewEntry so the doFinalEntryInit does *not* get called
                 List<Entry> tmp = new ArrayList<Entry>();
                 tmp.add(newEntry);
-                insertEntries(request, tmp, true);
+                insertEntries(request, tmp, true, false);
                 count++;
                 getActionManager().setActionMessage(actionId,
                         "Copied " + count + "/" + newEntries.size()
@@ -7966,7 +7966,7 @@ public class EntryManager extends RepositoryManager {
     public void addNewEntries(Request request, List<Entry> entries,
                               boolean fromImport)
             throws Exception {
-        insertEntries(request, entries, true);
+        insertEntries(request, entries, true, fromImport);
         for (Entry theNewEntry : entries) {
             theNewEntry.getTypeHandler().doFinalEntryInitialization(request,
                     theNewEntry, fromImport);
@@ -7983,7 +7983,7 @@ public class EntryManager extends RepositoryManager {
      */
     public void updateEntries(Request request, List<Entry> entries)
             throws Exception {
-        insertEntries(request, entries, false);
+        insertEntries(request, entries, false, false);
     }
 
 
@@ -7995,11 +7995,12 @@ public class EntryManager extends RepositoryManager {
      * @param request _more_
      * @param entries _more_
      * @param isNew _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
     private void insertEntries(Request request, List<Entry> entries,
-                               boolean isNew)
+                               boolean isNew, boolean fromImport)
             throws Exception {
         if (entries.size() == 0) {
             return;
@@ -8007,8 +8008,10 @@ public class EntryManager extends RepositoryManager {
 
         if (isNew) {
             for (Entry theNewEntry : entries) {
-                theNewEntry.getTypeHandler().initializeNewEntry(request,
-                        theNewEntry);
+                if ( !fromImport) {
+                    theNewEntry.getTypeHandler().initializeNewEntry(request,
+                            theNewEntry);
+                }
                 String name = theNewEntry.getName();
                 if (name.trim().length() == 0) {
                     String nameTemplate =
@@ -10702,8 +10705,7 @@ public class EntryManager extends RepositoryManager {
                 for (Metadata metadata : metadataList) {
                     String alias = metadata.getAttr1();
                     if ( !alias.startsWith("http:")) {
-                        return getRepository().getUrlBase() + "/a/"
-                               + alias;
+                        return getRepository().getUrlBase() + "/a/" + alias;
                     }
                 }
             }
