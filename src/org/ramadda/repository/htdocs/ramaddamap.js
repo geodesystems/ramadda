@@ -223,6 +223,7 @@ function RepositoryMap(mapId, params) {
     $.extend(this, dflt);
     $.extend(this, params);
 
+
     this.defaultStyle = {
         pointRadius: this.pointRadius,
         fillOpacity: this.fillOpacity,
@@ -518,7 +519,18 @@ function initMapFunctions(theMap) {
 		fillOpacity: 0.75,
 	    }
 	    if(feature.style) {
-		style.pointRadius = feature.style.pointRadius;
+		if(feature.style.externalGraphic) {
+		    style = $.extend({},feature.style);
+		    style.graphicHeight*=1.5;
+		    style.graphicWidth*=1.5;
+		    style.graphicXOffset = -style.graphicWidth/ 2;
+		    style.graphicYOffset = -style.graphicHeight/ 2;
+		} else {
+		    if(Utils.isDefined(feature.style.pointRadius)) {
+			style.pointRadius = feature.style.pointRadius;
+		    }
+		}
+		   
 	    }
 	    //layer.drawFeature(layer.selectedFeature, "select");
 	    layer.drawFeature(layer.selectedFeature, style);
@@ -1128,6 +1140,7 @@ function initMapFunctions(theMap) {
                 func(this, layer);
                 return;
             }
+	    if(!this.doPopup) return;
             feature = layer.feature;
             var out = this.getFeatureText(layer, feature);
             if (this.currentPopup) {
@@ -1149,6 +1162,7 @@ function initMapFunctions(theMap) {
             //Use theMap instead of this because when the function is called the this object isn't the ramaddamap
             theMap.map.addPopup(popup);
             theMap.currentPopup = popup;
+
         }
     });
 
