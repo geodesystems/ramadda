@@ -1608,8 +1608,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps);
 			poly.textGetter = textGetter;
 			poly.record = record;
-			if (date) {
-			    poly.date = date.getTime();
+			if (record.getDate()) {
+			    poly.date = record.getDate().getTime();
 			}
 			this.lines.push(poly);
 		    }

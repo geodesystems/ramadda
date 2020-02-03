@@ -3949,6 +3949,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let dateIds = [];
 	    let fieldMap = {};
+	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
+	    let displayType = "";
             if(filterBy.length>0) {
 		let searchBar = "";
 		let bottom = "";
@@ -3964,6 +3966,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    };
 		    
                     if(!filterField) continue;
+		    displayType = this.getProperty(filterField.getId() +".filterDisplay","menu");
                     this.filterFields.push(filterField);
                     let widget;
 		    let widgetId = this.getFilterId(filterField.getId());
@@ -4056,7 +4059,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    attrs.push(this.getProperty(filterField.getId() +".filterMultipleSize","3"));
 			    dfltValue = dfltValue.split(",");
 			}
-			let displayType = this.getProperty(filterField.getId() +".filterDisplay","menu");
 			if(displayType!="menu") {
 			    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 			    let buttons = "";
@@ -23427,8 +23429,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps);
 			poly.textGetter = textGetter;
 			poly.record = record;
-			if (date) {
-			    poly.date = date.getTime();
+			if (record.getDate()) {
+			    poly.date = record.getDate().getTime();
 			}
 			this.lines.push(poly);
 		    }

@@ -109,7 +109,7 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-filterby-item-button-selected {
     background: #ddd;
-    border: 2px solid #ddd;
+    border: 2px solid #000;
 }
 
 
