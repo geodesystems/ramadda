@@ -786,7 +786,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
 	    let debug = false;
-	    let debugRows = 10;
+	    let debugRows = 3;
             for (var j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {
@@ -1067,7 +1067,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			newRow.push(value);
 		    }
                     if (j == 0 && props.includeIndex) {
-			/*note to self - an inline comment breaks the minifier is the index so don't add a tooltip */
+			/*note to self - an inline comment breaks the minifier 
+			  is the index so don't add a tooltip */
                     } else {
 			if(annotationTemplate) {
 			    let v = annotationTemplate.replace("${value}",value.f||value);

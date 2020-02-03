@@ -936,7 +936,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
-	    //	    console.log(this.type+".updateUI");
 	    var pointData = this.getData();
 	    if (pointData == null) return;
 	    var records = this.filterData();
@@ -1011,7 +1010,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(!f.isNumeric()) continue;
 		var s = summary[f.getId()];
 		if(s && s.count) {
-		    s.average =  Utils.formatNumber(s.total/s.count);
+		    s.average =  s.total/s.count;
 		}
 	    }
 	    
@@ -1103,51 +1102,40 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
             var colorBy = this.getColorByInfo(selected);
 
-	    var headerTemplate = this.getProperty("headerTemplate","");
-	    var footerTemplate = this.getProperty("footerTemplate","");
-	    headerTemplate = headerTemplate.replace("${selectedCount}",selected.length);
-	    headerTemplate = headerTemplate.replace("${totalCount}",records.length);
-	    footerTemplate = footerTemplate.replace("${selectedCount}",selected.length);
-	    footerTemplate = footerTemplate.replace("${totalCount}",records.length);
+	    let attrs = {};
+	    attrs["selectedCount"] = selected.length;
+	    attrs["totalCount"] = records.length;
 
 	    for(var i=0;i<fields.length;i++) {
 		var f = fields[i];
 		var s = summary[f.getId()];
 		if(!s) continue;
 		if(f.isDate) {
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
+		    attrs[f.getId()+"_min"] = s.min;
+		    attrs[f.getId()+"_max"] = s.max;
 		    continue;
-		    
 		}
 		if(s && f.isString()) {
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_uniques}",
-							    s.uniqueCount);
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_uniques}",
-							    s.uniqueCount);
+		    attrs[f.getId() +"_uniques"] =  s.uniqueCount;
 		    continue;
 		}
 		if(!f.isNumeric()) continue;
 		if(s) {
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total)
-			.replace("${" + f.getId() +"_min}",s.min)
-			.replace("${" + f.getId() +"_max}",s.max)
-			.replace("${" + f.getId() +"_average}",s.average);
-
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
-
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
+		    attrs[f.getId() +"_total"] = s.total;
+		    attrs[f.getId() +"_min"] = s.min;
+		    attrs[f.getId() +"_max"] = s.max;
+		    attrs[f.getId() +"_average"] = s.average;
 		}
 	    }
+
+	    var headerTemplate = this.getProperty("headerTemplate","");
+	    var footerTemplate = this.getProperty("footerTemplate","");
+
 	    if(selected.length==1) {
 		var row = this.getDataValues(selected[0]);
 		headerTemplate = this.applyRecordTemplate(row,fields,headerTemplate);
 		footerTemplate = this.applyRecordTemplate(row,fields,footerTemplate);
 	    }
-
 
 	    if(this.filterFields) {
 		for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
@@ -1155,10 +1143,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    if(f.isNumeric()) {
 			var min = $("#" + this.getDomId("filterby_" + f.getId()+"_min")).val().trim();
 			var max = $("#" + this.getDomId("filterby_" + f.getId()+"_max")).val().trim();
-			headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_min}",min);
-			headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_max}",max);
-			footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_min}",min);
-			footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_max}",max);
+			attrs["filter_" + f.getId() +"_min"] = min;
+			attrs["filter_" + f.getId() +"_max"] = max;
 		    } else {
 			var widget =$("#" + this.getDomId("filterby_" + f.getId())); 
 			if(!widget.val || widget.val()==null) continue;
@@ -1195,6 +1181,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 
+	    let th = Utils.tokenizeMacros(headerTemplate);
+	    let tf = Utils.tokenizeMacros(footerTemplate);
+	    headerTemplate = th.apply(attrs);
+	    footerTemplate = tf.apply(attrs);	    
+
 	    if(selected.length>0) {
 		contents+= headerTemplate;
 	    }
@@ -1224,23 +1215,27 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var record = selected[rowIdx];
 		    var color = null;
                     if (colorBy.index >= 0) {
-			var value = record.getData()[colorBy.index];
+			var value =  record.getData()[colorBy.index];
 			color =  colorBy.getColor(value, record);
                     }
-		    var row = this.getDataValues(record);
-		    var s = template.trim();
-		    s = s.replace("${selectCount}",selected.length);
-		    s = s.replace("${totalCount}",records.length);
+		    let s = template.trim();
+		    let row = this.getDataValues(record);
 		    s= this.applyRecordTemplate(row,fields,s,props);
-		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
+
+		    let macros = Utils.tokenizeMacros(s);
+		    let rowAttrs = {};
+		    rowAttrs["selectCount"] = selected.length;
+		    rowAttrs["totalCount"] = records.length;
+		    rowAttrs["recordIndex"] = rowIdx+1;
 		    var recordStyle = style;
 		    if(color) {
-			if(this.getProperty("colorBackground",false))
+			if(this.getProperty("colorBackground",false)) {
 			    recordStyle = "background: " + color+";" + recordStyle;
-			s = s.replace("${color}",color);
+			}
+			rowAttrs["color"] = color;
 		    }
 		    var tag = HtmlUtils.openTag("div",["style",recordStyle, "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
-		    //		    console.log(tag);
+		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
@@ -1260,7 +1255,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents += '</div>\n';
 		}
 	    }
-	    //	    console.log("CONTENTS:\n" +contents);
 	    if(selected.length>0) 
 		contents+= footerTemplate;
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);

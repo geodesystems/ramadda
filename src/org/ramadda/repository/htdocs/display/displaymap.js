@@ -1455,7 +1455,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let textGetter = f=>{
 		if(f.record) {
-                    return  this.getRecordHtml(f.record, fields, tooltip);
+                    let text =   this.getRecordHtml(f.record, fields, tooltip);
+		    return text;
 		}
 		return null;
 	    };

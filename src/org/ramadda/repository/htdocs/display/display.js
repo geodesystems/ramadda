@@ -359,25 +359,8 @@ function DisplayThing(argId, argProperties) {
         },
         formatDateInner: function(date, args) {
 	    var fmt = this.getProperty("dateFormat");
-            if (fmt == "yyyy") {
-                return Utils.formatDateYYYY(date);
-            } else if (fmt == "yyyyMMdd") {
-                return Utils.formatDateYYYYMMDD(date);
-	    } else if (fmt == "yyyyMM") {
-                return Utils.formatDateYYYYMM(date);
-	    } else if (fmt == "yearmonth") {
-                return Utils.formatDateYearMonth(date);
-	    } else if (fmt == "monthdayyear") {
-                return Utils.formatDateMonthDayYear(date);
-	    } else if (fmt == "monthday") {
-                return Utils.formatDateMonthDay(date);
-	    } else if (fmt == "mon_day") {
-                return Utils.formatDateMonDay(date);
-	    } else if (fmt == "mdy") {
-                return Utils.formatDateMDY(date);
-	    } else if (fmt == "hhmm") {
-                return Utils.formatDateHHMM(date);
-	    }
+	    let dttm = Utils.formatDateWithFormat(date,fmt,true);
+	    if(dttm) return dttm;
 
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
@@ -425,15 +408,17 @@ function DisplayThing(argId, argProperties) {
 	    }
 	},
 	xcnt:0,	
-	applyRecordTemplate: function(row, fields, s, props) {
+	applyRecordTemplate: function(row, fields, template, props) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
+	    let macros = Utils.tokenizeMacros(template);
+	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		var value = row[props.iconField.getIndex()];
 		var icon = props.iconMap[value];
 		if(icon) {
-		    s = s.replace("${" + props.iconField.getId() +"_icon}", HtmlUtils.image(icon,["width",props.iconSize]));
+		    attrs[props.iconField.getId() +"_icon"] =  HtmlUtils.image(icon,["width",props.iconSize]);
 		}
 	    }
 	    for (var col = 0; col < fields.length; col++) {
@@ -447,40 +432,38 @@ function DisplayThing(argId, argProperties) {
 		}
 		if(f.getType()=="image") {
 		    if(value && value.trim().length>1) {
-			var attrs = [];
+			var imgAttrs = [];
 			if(this.getProperty("imageWidth","")!="") {
-			    attrs.push("width");
-			    attrs.push(this.getProperty("imageWidth","")) ;
+			    imgAttrs.push("width");
+			    imgAttrs.push(this.getProperty("imageWidth","")) ;
 			}
-			var img =  HtmlUtils.image(value, attrs);
-			s = s.replace("${" + f.getId() +"_image}", img);
-			s = s.replace("${" + f.getId() +"_url}", value);
+			var img =  HtmlUtils.image(value, imgAttrs);
+			attrs[f.getId() +"_image"] =  img;
+			attrs[f.getId() +"_url"] =  value;
 		    } else {
-			s = s.replace("${" + f.getId() +"_url}", ramaddaBaseUrl+"/icons/blank.gif");
-			s = s.replace("${" + f.getId() +"_image}", "");
+			attrs[f.getId() +"_url"] =  ramaddaBaseUrl+"/icons/blank.gif";
+			attrs[f.getId() +"_image"] =  "";
 		    }
 		} else if(f.getType()=="url") {
 		    if(value && value.trim().length>1) {
-			s = s.replace("${" + f.getId() +"_href}", HtmlUtils.href(value,value));
-			s = s.replace("${" + f.getId() +"}", value);
+			attrs[f.getId() +"_href"] =  HtmlUtils.href(value,value);
+			attrs[f.getId()]=  value;
 		    } else {
-			s = s.replace("${" + f.getId() +"_href}", "");
-			s = s.replace("${" + f.getId() +"}", "");
+			attrs[f.getId() +"_href"] =  "";
+			attrs[f.getId()] =  "";
 		    }
 		    continue;
 		} else if(f.isDate) {
 		    if(value) {
-			s = s.replace("${" + f.getId() +"}", value);
-			s = s.replace("${" + f.getId() +"_yyyy}", Utils.formatDateYYYY(value));
-			s = s.replace("${" + f.getId() +"_yyyymmdd}", Utils.formatDateYYYYMMDD(value));
-			s = s.replace("${" + f.getId() +"_monthdayyear}", Utils.formatDateMonthDayYear(value));
-			s = s.replace("${" + f.getId() +"_monthday}", Utils.formatDateMonthDay(value));
-			s = s.replace("${" + f.getId() +"_mdy}", Utils.formatDateMDY(value));
+			//Todo - just use the format= attr
+			attrs[f.getId()]= value;
+			attrs[f.getId() +"_yyyy}"] =  Utils.formatDateYYYY(value);
+			attrs[f.getId() +"_yyyymmdd"] =  Utils.formatDateYYYYMMDD(value);
+			attrs[f.getId() +"_monthdayyear"] =  Utils.formatDateMonthDayYear(value);
+			attrs[f.getId() +"_monthday"] =  Utils.formatDateMonthDay(value);
+			attrs[f.getId() +"_mdy"] =  Utils.formatDateMDY(value);
 		    }
 		    continue;
-		}
-		if(typeof value == "number") {
-		    value = Utils.formatNumber(value);
 		}
 		var color;
 		if(props.colorByMap) {
@@ -491,16 +474,15 @@ function DisplayThing(argId, argProperties) {
 		    }
 		}
 		if(color) {
-		    s = s.replace("${" + f.getId()+"_color}", color);
-		    //		    value = HtmlUtils.span(["style","color:" + color],value);
+		    attrs[f.getId()+"_color"] =  color;
 		}
-		
-		s = s.replace(new RegExp("\\${" + f.getId() +"}","g"), value);
+		attrs[f.getId()]=  value;
 		if(f.isNumeric()) {
-		    s = s.replace(new RegExp("\\${" + f.getId() +"_format}","g"),Utils.formatNumberComma(value));
+		    //TODO: nuke this
+		    attrs[f.getId() +"_format"] = Utils.formatNumberComma(value);
 		}
 	    }
-	    return s;
+	    return macros.apply(attrs);
 	},
         getRecordHtml: function(record, fields, template) {
             if (!fields) {
@@ -528,7 +510,8 @@ function DisplayThing(argId, argProperties) {
 	    }
             var values = "<table>";
             for (var doDerived = 0; doDerived < 2; doDerived++) {
-                for (var i = 0; i < record.getData().length; i++) {
+		//record.getData()
+                for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
@@ -538,7 +521,6 @@ function DisplayThing(argId, argProperties) {
                         if (field.isFieldDate()) {
                             continue;
                         }
-
 		    }
                     if (!showGeo) {
                         if (field.isFieldGeo()) {
@@ -585,7 +567,6 @@ function DisplayThing(argId, argProperties) {
 	    if(this.getProperty("recordHtmlStyle")){
 		values = HtmlUtils.div(["style",this.getProperty("recordHtmlStyle")], values);
 	    }
-
             return values;
         },
         formatRecordLabel: function(label) {

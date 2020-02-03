@@ -509,25 +509,8 @@ function DisplayThing(argId, argProperties) {
         },
         formatDateInner: function(date, args) {
 	    var fmt = this.getProperty("dateFormat");
-            if (fmt == "yyyy") {
-                return Utils.formatDateYYYY(date);
-            } else if (fmt == "yyyyMMdd") {
-                return Utils.formatDateYYYYMMDD(date);
-	    } else if (fmt == "yyyyMM") {
-                return Utils.formatDateYYYYMM(date);
-	    } else if (fmt == "yearmonth") {
-                return Utils.formatDateYearMonth(date);
-	    } else if (fmt == "monthdayyear") {
-                return Utils.formatDateMonthDayYear(date);
-	    } else if (fmt == "monthday") {
-                return Utils.formatDateMonthDay(date);
-	    } else if (fmt == "mon_day") {
-                return Utils.formatDateMonDay(date);
-	    } else if (fmt == "mdy") {
-                return Utils.formatDateMDY(date);
-	    } else if (fmt == "hhmm") {
-                return Utils.formatDateHHMM(date);
-	    }
+	    let dttm = Utils.formatDateWithFormat(date,fmt,true);
+	    if(dttm) return dttm;
 
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
@@ -575,15 +558,17 @@ function DisplayThing(argId, argProperties) {
 	    }
 	},
 	xcnt:0,	
-	applyRecordTemplate: function(row, fields, s, props) {
+	applyRecordTemplate: function(row, fields, template, props) {
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
+	    let macros = Utils.tokenizeMacros(template);
+	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		var value = row[props.iconField.getIndex()];
 		var icon = props.iconMap[value];
 		if(icon) {
-		    s = s.replace("${" + props.iconField.getId() +"_icon}", HtmlUtils.image(icon,["width",props.iconSize]));
+		    attrs[props.iconField.getId() +"_icon"] =  HtmlUtils.image(icon,["width",props.iconSize]);
 		}
 	    }
 	    for (var col = 0; col < fields.length; col++) {
@@ -597,40 +582,38 @@ function DisplayThing(argId, argProperties) {
 		}
 		if(f.getType()=="image") {
 		    if(value && value.trim().length>1) {
-			var attrs = [];
+			var imgAttrs = [];
 			if(this.getProperty("imageWidth","")!="") {
-			    attrs.push("width");
-			    attrs.push(this.getProperty("imageWidth","")) ;
+			    imgAttrs.push("width");
+			    imgAttrs.push(this.getProperty("imageWidth","")) ;
 			}
-			var img =  HtmlUtils.image(value, attrs);
-			s = s.replace("${" + f.getId() +"_image}", img);
-			s = s.replace("${" + f.getId() +"_url}", value);
+			var img =  HtmlUtils.image(value, imgAttrs);
+			attrs[f.getId() +"_image"] =  img;
+			attrs[f.getId() +"_url"] =  value;
 		    } else {
-			s = s.replace("${" + f.getId() +"_url}", ramaddaBaseUrl+"/icons/blank.gif");
-			s = s.replace("${" + f.getId() +"_image}", "");
+			attrs[f.getId() +"_url"] =  ramaddaBaseUrl+"/icons/blank.gif";
+			attrs[f.getId() +"_image"] =  "";
 		    }
 		} else if(f.getType()=="url") {
 		    if(value && value.trim().length>1) {
-			s = s.replace("${" + f.getId() +"_href}", HtmlUtils.href(value,value));
-			s = s.replace("${" + f.getId() +"}", value);
+			attrs[f.getId() +"_href"] =  HtmlUtils.href(value,value);
+			attrs[f.getId()]=  value;
 		    } else {
-			s = s.replace("${" + f.getId() +"_href}", "");
-			s = s.replace("${" + f.getId() +"}", "");
+			attrs[f.getId() +"_href"] =  "";
+			attrs[f.getId()] =  "";
 		    }
 		    continue;
 		} else if(f.isDate) {
 		    if(value) {
-			s = s.replace("${" + f.getId() +"}", value);
-			s = s.replace("${" + f.getId() +"_yyyy}", Utils.formatDateYYYY(value));
-			s = s.replace("${" + f.getId() +"_yyyymmdd}", Utils.formatDateYYYYMMDD(value));
-			s = s.replace("${" + f.getId() +"_monthdayyear}", Utils.formatDateMonthDayYear(value));
-			s = s.replace("${" + f.getId() +"_monthday}", Utils.formatDateMonthDay(value));
-			s = s.replace("${" + f.getId() +"_mdy}", Utils.formatDateMDY(value));
+			//Todo - just use the format= attr
+			attrs[f.getId()]= value;
+			attrs[f.getId() +"_yyyy}"] =  Utils.formatDateYYYY(value);
+			attrs[f.getId() +"_yyyymmdd"] =  Utils.formatDateYYYYMMDD(value);
+			attrs[f.getId() +"_monthdayyear"] =  Utils.formatDateMonthDayYear(value);
+			attrs[f.getId() +"_monthday"] =  Utils.formatDateMonthDay(value);
+			attrs[f.getId() +"_mdy"] =  Utils.formatDateMDY(value);
 		    }
 		    continue;
-		}
-		if(typeof value == "number") {
-		    value = Utils.formatNumber(value);
 		}
 		var color;
 		if(props.colorByMap) {
@@ -641,16 +624,15 @@ function DisplayThing(argId, argProperties) {
 		    }
 		}
 		if(color) {
-		    s = s.replace("${" + f.getId()+"_color}", color);
-		    //		    value = HtmlUtils.span(["style","color:" + color],value);
+		    attrs[f.getId()+"_color"] =  color;
 		}
-		
-		s = s.replace(new RegExp("\\${" + f.getId() +"}","g"), value);
+		attrs[f.getId()]=  value;
 		if(f.isNumeric()) {
-		    s = s.replace(new RegExp("\\${" + f.getId() +"_format}","g"),Utils.formatNumberComma(value));
+		    //TODO: nuke this
+		    attrs[f.getId() +"_format"] = Utils.formatNumberComma(value);
 		}
 	    }
-	    return s;
+	    return macros.apply(attrs);
 	},
         getRecordHtml: function(record, fields, template) {
             if (!fields) {
@@ -678,7 +660,8 @@ function DisplayThing(argId, argProperties) {
 	    }
             var values = "<table>";
             for (var doDerived = 0; doDerived < 2; doDerived++) {
-                for (var i = 0; i < record.getData().length; i++) {
+		//record.getData()
+                for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
@@ -688,7 +671,6 @@ function DisplayThing(argId, argProperties) {
                         if (field.isFieldDate()) {
                             continue;
                         }
-
 		    }
                     if (!showGeo) {
                         if (field.isFieldGeo()) {
@@ -735,7 +717,6 @@ function DisplayThing(argId, argProperties) {
 	    if(this.getProperty("recordHtmlStyle")){
 		values = HtmlUtils.div(["style",this.getProperty("recordHtmlStyle")], values);
 	    }
-
             return values;
         },
         formatRecordLabel: function(label) {
@@ -7247,7 +7228,7 @@ function RecordField(props) {
 	    return this.type == "double" || this.type == "integer";
 	},
 	isString: function() {
-	    return this.type == "string" || this.type=="enumeration" || this.type =="url";
+	    return this.type == "string" || this.type=="enumeration" || this.type =="url" || this.type == "image";
 	},
         getType: function() {
             return this.type;
@@ -12068,7 +12049,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
 	    let debug = false;
-	    let debugRows = 10;
+	    let debugRows = 3;
             for (var j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {
@@ -12349,7 +12330,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			newRow.push(value);
 		    }
                     if (j == 0 && props.includeIndex) {
-			/*note to self - an inline comment breaks the minifier is the index so don't add a tooltip */
+			/*note to self - an inline comment breaks the minifier 
+			  is the index so don't add a tooltip */
                     } else {
 			if(annotationTemplate) {
 			    let v = annotationTemplate.replace("${value}",value.f||value);
@@ -16590,7 +16572,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
-	    //	    console.log(this.type+".updateUI");
 	    var pointData = this.getData();
 	    if (pointData == null) return;
 	    var records = this.filterData();
@@ -16665,7 +16646,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(!f.isNumeric()) continue;
 		var s = summary[f.getId()];
 		if(s && s.count) {
-		    s.average =  Utils.formatNumber(s.total/s.count);
+		    s.average =  s.total/s.count;
 		}
 	    }
 	    
@@ -16757,51 +16738,40 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
             var colorBy = this.getColorByInfo(selected);
 
-	    var headerTemplate = this.getProperty("headerTemplate","");
-	    var footerTemplate = this.getProperty("footerTemplate","");
-	    headerTemplate = headerTemplate.replace("${selectedCount}",selected.length);
-	    headerTemplate = headerTemplate.replace("${totalCount}",records.length);
-	    footerTemplate = footerTemplate.replace("${selectedCount}",selected.length);
-	    footerTemplate = footerTemplate.replace("${totalCount}",records.length);
+	    let attrs = {};
+	    attrs["selectedCount"] = selected.length;
+	    attrs["totalCount"] = records.length;
 
 	    for(var i=0;i<fields.length;i++) {
 		var f = fields[i];
 		var s = summary[f.getId()];
 		if(!s) continue;
 		if(f.isDate) {
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
+		    attrs[f.getId()+"_min"] = s.min;
+		    attrs[f.getId()+"_max"] = s.max;
 		    continue;
-		    
 		}
 		if(s && f.isString()) {
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_uniques}",
-							    s.uniqueCount);
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_uniques}",
-							    s.uniqueCount);
+		    attrs[f.getId() +"_uniques"] =  s.uniqueCount;
 		    continue;
 		}
 		if(!f.isNumeric()) continue;
 		if(s) {
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total)
-			.replace("${" + f.getId() +"_min}",s.min)
-			.replace("${" + f.getId() +"_max}",s.max)
-			.replace("${" + f.getId() +"_average}",s.average);
-
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
-
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_round}",Math.round(s.total)).replace("${" + f.getId() +"_min_round}",Math.round(s.min)).replace("${" + f.getId() +"_max_round}",Math.round(s.max)).replace("${" + f.getId() +"_average_round}",Math.round(s.average));
-		    footerTemplate = footerTemplate.replace("${" + f.getId() +"_total_format}",Utils.formatNumberComma(s.total)).replace("${" + f.getId() +"_min_format}",Utils.formatNumberComma(s.min)).replace("${" + f.getId() +"_max_format}",Utils.formatNumberComma(s.max)).replace("${" + f.getId() +"_average_format}",Utils.formatNumberComma(s.average));		    
+		    attrs[f.getId() +"_total"] = s.total;
+		    attrs[f.getId() +"_min"] = s.min;
+		    attrs[f.getId() +"_max"] = s.max;
+		    attrs[f.getId() +"_average"] = s.average;
 		}
 	    }
+
+	    var headerTemplate = this.getProperty("headerTemplate","");
+	    var footerTemplate = this.getProperty("footerTemplate","");
+
 	    if(selected.length==1) {
 		var row = this.getDataValues(selected[0]);
 		headerTemplate = this.applyRecordTemplate(row,fields,headerTemplate);
 		footerTemplate = this.applyRecordTemplate(row,fields,footerTemplate);
 	    }
-
 
 	    if(this.filterFields) {
 		for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
@@ -16809,10 +16779,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    if(f.isNumeric()) {
 			var min = $("#" + this.getDomId("filterby_" + f.getId()+"_min")).val().trim();
 			var max = $("#" + this.getDomId("filterby_" + f.getId()+"_max")).val().trim();
-			headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_min}",min);
-			headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_max}",max);
-			footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_min}",min);
-			footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_max}",max);
+			attrs["filter_" + f.getId() +"_min"] = min;
+			attrs["filter_" + f.getId() +"_max"] = max;
 		    } else {
 			var widget =$("#" + this.getDomId("filterby_" + f.getId())); 
 			if(!widget.val || widget.val()==null) continue;
@@ -16849,6 +16817,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 
+	    let th = Utils.tokenizeMacros(headerTemplate);
+	    let tf = Utils.tokenizeMacros(footerTemplate);
+	    headerTemplate = th.apply(attrs);
+	    footerTemplate = tf.apply(attrs);	    
+
 	    if(selected.length>0) {
 		contents+= headerTemplate;
 	    }
@@ -16878,23 +16851,27 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var record = selected[rowIdx];
 		    var color = null;
                     if (colorBy.index >= 0) {
-			var value = record.getData()[colorBy.index];
+			var value =  record.getData()[colorBy.index];
 			color =  colorBy.getColor(value, record);
                     }
-		    var row = this.getDataValues(record);
-		    var s = template.trim();
-		    s = s.replace("${selectCount}",selected.length);
-		    s = s.replace("${totalCount}",records.length);
+		    let s = template.trim();
+		    let row = this.getDataValues(record);
 		    s= this.applyRecordTemplate(row,fields,s,props);
-		    s = s.replace(/\${recordIndex}/g,(rowIdx+1));
+
+		    let macros = Utils.tokenizeMacros(s);
+		    let rowAttrs = {};
+		    rowAttrs["selectCount"] = selected.length;
+		    rowAttrs["totalCount"] = records.length;
+		    rowAttrs["recordIndex"] = rowIdx+1;
 		    var recordStyle = style;
 		    if(color) {
-			if(this.getProperty("colorBackground",false))
+			if(this.getProperty("colorBackground",false)) {
 			    recordStyle = "background: " + color+";" + recordStyle;
-			s = s.replace("${color}",color);
+			}
+			rowAttrs["color"] = color;
 		    }
 		    var tag = HtmlUtils.openTag("div",["style",recordStyle, "id", this.getId() +"-" + record.getId(), "title","","class","display-template-record","recordIndex",rowIdx]);
-		    //		    console.log(tag);
+		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
@@ -16914,7 +16891,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents += '</div>\n';
 		}
 	    }
-	    //	    console.log("CONTENTS:\n" +contents);
 	    if(selected.length>0) 
 		contents+= footerTemplate;
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
@@ -23298,7 +23274,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let textGetter = f=>{
 		if(f.record) {
-                    return  this.getRecordHtml(f.record, fields, tooltip);
+                    let text =   this.getRecordHtml(f.record, fields, tooltip);
+		    return text;
 		}
 		return null;
 	    };
@@ -27709,7 +27686,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
 		var dateFormat = this.getProperty("dateFormat", "yyyyMMdd");
 		thetaType = "category";
 		tmp.map(d=>{
-		    theta.push(Utils.formatDateFromProperty(dateFormat,d));
+		    theta.push(Utils.formatDateWithFormat(d,dateFormat));
 		});
 	    } else {
 		var thetaField = this.getFieldById(null, this.getProperty("thetaField"));

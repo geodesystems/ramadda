@@ -227,7 +227,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
 		var dateFormat = this.getProperty("dateFormat", "yyyyMMdd");
 		thetaType = "category";
 		tmp.map(d=>{
-		    theta.push(Utils.formatDateFromProperty(dateFormat,d));
+		    theta.push(Utils.formatDateWithFormat(d,dateFormat));
 		});
 	    } else {
 		var thetaField = this.getFieldById(null, this.getProperty("thetaField"));
