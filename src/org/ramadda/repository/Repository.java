@@ -3451,9 +3451,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 cookieExpirationDate = sdf.format(future);
             }
             //            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
-            debugSession("Cookie:"
-                         + getSessionManager().getSessionCookieName() + "="
-                         + sessionId + " path=" + getUrlBase());
+            if (debugSession) {
+                debugSession("Cookie:"
+                             + getSessionManager().getSessionCookieName()
+                             + "=" + sessionId + " path=" + getUrlBase());
+            }
             String path;
 
             if (getShutdownEnabled() && (getParentRepository() == null)) {
@@ -3464,7 +3466,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             result.addCookie(getSessionManager().getSessionCookieName(),
                              sessionId + "; path=" + path + "; expires="
+                             + cookieExpirationDate + " 23:59:59 GMT"
+                             + (isSSLEnabled(request)
+                                ? "; secure"
+                                : "") + "; HttpOnly");
+            /*
+            result.addCookie(getSessionManager().getSessionCookieName(),
+                             sessionId + "; path=" + path + "; expires="
                              + cookieExpirationDate + " 23:59:59 GMT");
+            */
         }
 
         return result;
@@ -4090,7 +4100,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             alias = path.substring("/alias/".length());
         } else if (path.startsWith("/aka/")) {
             alias = path.substring("/aka/".length());
-	} else if (path.startsWith("/a/")) {
+        } else if (path.startsWith("/a/")) {
             alias = path.substring("/a/".length());
         } else {
             if (path.endsWith("/")) {
