@@ -519,11 +519,13 @@ public class Json {
             s = s.replaceAll("\n", "\\n");
             s = s.replaceAll("\r", "\\r");
             s = s.replaceAll("\"", "\\\\\"");
+	    /***
+		this breaks some things in the display charts
             if (s.equals("true") || s.equals("false")) {
                 sb.append(s);
-
                 return;
             }
+	    */
             //This can mess up and match on what should be a string value, e.g.
             //00000000000
             //Not sure what to do here
