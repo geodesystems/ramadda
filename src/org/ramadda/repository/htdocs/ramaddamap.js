@@ -3487,15 +3487,16 @@ function initMapFunctions(theMap) {
                     if (i > 0)
                         markertext += '<hr>';
                     if (otherMarker.inputProps) {
-                        otherMarker.text = this.getPopupText(otherMarker.inputProps.text);
+			otherMarker.text = otherMarker.textGetter?otherMarker.textGetter(marker):this.getPopupText(otherMarker.inputProps.text);
                     }
-                    markertext += otherMarker.text;
+		    let text = otherMarker.text?otherMarker.text:otherMarker.textGetter?otherMarker.textGetter(marker):"NA";
+                    markertext += text;
                     if (i > 10) break;
                 }
             }
         }
 
-
+	
         // set marker text as the location
         var location = marker.location;
         if (!location) return;
