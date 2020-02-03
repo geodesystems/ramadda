@@ -488,16 +488,32 @@ function initMapFunctions(theMap) {
             if (!layer)
                 layer = feature.layer;
             this.dateFeatureSelect(feature);
+
             if (layer.canSelect === false) return;
             if (layer.selectedFeature) {
                 this.unselectFeature(layer.selectedFeature);
             }
 	    if(!this.doSelect) return;
 
+
             this.selectedFeature = feature;
             layer.selectedFeature = feature;
             layer.selectedFeature.isSelected = true;
-            layer.drawFeature(layer.selectedFeature, "select");
+            let style = {
+		pointRadius: 8,
+		stroke: true,
+		strokeColor: "blue",
+		strokeWidth: 0,
+		strokeOpacity: 0.75,
+		fill: true,
+		fillColor: "blue",
+		fillOpacity: 0.75,
+	    }
+	    if(feature.style) {
+		style.pointRadius = feature.style.pointRadius;
+	    }
+	    //layer.drawFeature(layer.selectedFeature, "select");
+	    layer.drawFeature(layer.selectedFeature, style);
             var okToPopup = true;
             if (layer.selectCallback) {
                 layer.feature = layer.selectedFeature;
