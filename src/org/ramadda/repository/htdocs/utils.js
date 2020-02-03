@@ -90,28 +90,31 @@ var Utils = {
     cloneList: function(l) {
         return l.slice(0);
     },
+    replaceAll: function(s,pattern,v) {
+	let idx = s.indexOf(pattern);
+	if(idx<0) return s;
+	return s.substring(0,idx)+v + s.substring(idx+pattern.length);
+    },
     parseAttributes: function(v) {
-        v=v.replace(/ += +/g,"=")
+        let attrs = {};
         var newv;
-        while(true) {
-            newv = v.replace(/(^| ) *([^= ]+) *($| [^= ])/g," $2='true' $3");
-            if(newv==v) break;
-            v = newv;
-        }
-        v  = newv;
-        var id = HtmlUtils.getUniqueId();
-        var dummy = $('<div ' + v+'></div>')
-        var attrs = {};
-        dummy.each(function() {
-            $.each(this.attributes,function() {
-                var name = this.name;
-                var value = this.value;
-                //                console.log(name +"=" +value);
-                if(value=="true") value=true;
-                else if(value=="false") value = false;
-                attrs[name]=value;
-            })});
-        return attrs;
+	while((toks = v.match(/([^ ]+) *= *"([^"]*)"/))!=null) {
+	    attrs[toks[1].trim()] = toks[2].trim();
+	    v = Utils.replaceAll(v, toks[0],"");
+	}
+	while((toks = v.match(/([^ ]+) *= *'([^']*)'/))!=null) {
+	    attrs[toks[1].trim()] = toks[2].trim();
+	    v = Utils.replaceAll(v, toks[0],"");
+	}
+	while((toks = v.match(/([^ ]+) *= *([^ ]*)( |$)/))!=null) {
+	    attrs[toks[1].trim()] = toks[2].trim();
+	    v = Utils.replaceAll(v, toks[0],"");
+	}
+	while((toks = v.match(/([^ ]+)( |$)/))!=null) {
+	    attrs[toks[1].trim()] = "true";
+	    v = Utils.replaceAll(v, toks[0],"");
+	}	    
+	return attrs;
     },
     replaceRoot: function(s) {
         var  p = "\\${" +"root}";
@@ -389,6 +392,21 @@ var Utils = {
 	if(d<10) d = "0" +d;
         return date.getUTCFullYear() + "-" + m + "-" + d;
     },
+
+    formatDateYYYYMMDDHHMM: function(date, options, args) {
+	if(isNaN(date.getUTCMonth())) return "Unknown";
+	var m = (date.getUTCMonth() + 1);
+	if(m<10) m = "0" + m;
+	var d = date.getUTCDate();
+	if(d<10) d = "0" +d;
+	var h = date.getHours()+1;
+	if(h<10) h = "0" + h;
+	var m = date.getMinutes();
+	if(m<10) m = "0" + m;
+	let hhmm=  h+":" +m;
+
+        return date.getUTCFullYear() + "-" + m + "-" + d+" " + hhmm;
+    },
     formatDateYYYYMM: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
 	var m = (date.getUTCMonth() + 1);
@@ -420,49 +438,39 @@ var Utils = {
 	var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
 	return   Math.ceil(( ( (date - yearStart) / 86400000) + 1)/7);
     },
-    formatDateFromProperty: function(fmt,d) {
+    formatDateWithFormat(date, fmt,returnNullIfNotFound) {
+	if(fmt==null) {
+	    if(returnNullIfNotFound) return null;
+	    fmt = "yyyymmdd";
+	}
+	fmt = fmt.toLowerCase();
         if (fmt == "yyyy") {
-            return Utils.formatDateYYYY(d);
-        } else if (fmt == "yyyyMMdd") {
-            return Utils.formatDateYYYYMMDD(d);
-        } else if (fmt == "week") {
-            return Utils.formatDateWeek(d);
+            return Utils.formatDateYYYY(date);
+        } else if (fmt == "yyyymmdd") {
+            return Utils.formatDateYYYYMMDD(date);
+	} else if (fmt == "yyyymmddhhmm") { 
+	    return Utils.formatDateYYYYMMDDHHMM(date);
+	} else if (fmt == "yyyymm") {
+            return Utils.formatDateYYYYMM(date);
+	} else if (fmt == "yearmonth") {
+            return Utils.formatDateYearMonth(date);
 	} else if (fmt == "monthdayyear") {
-            return Utils.formatDateMonthDayYear(d);
+            return Utils.formatDateMonthDayYear(date);
 	} else if (fmt == "monthday") {
-            return Utils.formatDateMonthDay(d);
-	} else if (fmt == "mon-day") {
-            return Utils.formatDateMonDay(d);
-	} else if (fmt == "mmdd") {
-            return Utils.formatDateMMDD(d);
-	} else if (fmt == "mm.dd") {
-            return Utils.formatDateMMDD(d,".");
+            return Utils.formatDateMonthDay(date);
+	} else if (fmt == "mon_day") {
+            return Utils.formatDateMonDay(date);
 	} else if (fmt == "mdy") {
-            return Utils.formatDateMDY(d);
-        } else {
-            return Utils.formatDate(d);
-        }
+            return Utils.formatDateMDY(date);
+	} else if (fmt == "hhmm") {
+            return Utils.formatDateHHMM(date);
+	} else {
+	    if(returnNullIfNotFound) return null;
+	    return Utils.formatDate(date);
+	}
     },
-
-
-    formatDateWithFormat(d, dateFormat) {
-        if (dateFormat == "yyyy") {
-            return Utils.formatDateYYYY(d);
-        } else if (dateFormat == "yyyyMMdd") {
-            return Utils.formatDateYYYYMMDD(d);
-	} else if (dateFormat == "monthdayyear") {
-            return Utils.formatDateMonthDayYear(d);
-	} else if (dateFormat == "mdy") {
-            return Utils.formatDateMDY(d);
-	} else if (dateFormat == "hhmm") {
-            return Utils.formatDateHHMM(d);
-        } else {
-            return Utils.formatDate(d);
-        }
-    },
-
     formatDate: function(date, options, args) {
-        if (!args) args = {};
+	if (!args) args = {};
         if (!options) {
             options = {
                 weekday: 'long',
@@ -624,8 +632,124 @@ var Utils = {
         if (v == null || v == "") return false;
         return true;
     },
+    tokenizeMacros:function(s) {
+	let tokens = [];
+	let cnt = 0;
+	while(s.length>0) {
+	    let idx = s.indexOf("${");
+	    if(idx<0) break;
+	    let prefix = s.substring(0,idx);
+	    if(prefix!="") {
+		tokens.push({type:"string",s:prefix});
+	    }
+	    s = s.substring(idx);
+	    let inner = "";
+	    let cidx=0;
+	    let inquote=false;
+	    while(cidx<s.length) {
+		let ch = s.charAt(cidx++);
+		if(ch == '"' || ch == "'") {
+		    if(inquote) inquote=false;
+		    else inquote=true;
+		    inner+=ch;
+		    continue;
+		}   
+		if(ch == '}') {
+		    if(!inquote) break;
+		}
+		inner+=ch;
+	    }
+	    if(cidx>s.length) break;
+	    s = s.substring(cidx);
+	    let macro = inner.substring(2);
+	    let attrs ={};
+	    idx = macro.indexOf(" ");
+	    let tag = "";
+	    if(idx<0) {
+		tag = macro;
+	    } else {
+		tag = macro.substring(0,idx).trim();
+		let attrString = macro.substring(idx).trim();
+		attrs = Utils.parseAttributes(attrString);
+	    }
+
+	    tokens.push({id:String(cnt++), attrs:attrs,tag:tag,macro:macro});
+	}
+	if(s!="") {
+	    tokens.push({type:"string",s:s});
+	}
+
+
+	return {tokens:tokens,
+		//This gets a modified version of the source string with:
+		//s...${m0}...${m1} ...
+		apply: function(source) {
+		    let cnt = 0;
+		    let s ="";
+		    this.tokens.map(t=>{
+			if(t.type=="string") {
+			    s+=t.s;
+			} else {
+			    let value = source[t.tag];
+			    if(!Utils.isDefined(value)) {
+				s+="${" + t.macro+"}";
+				return;
+			    } 
+			    if(value.getTime) {
+				value = Utils.formatDateWithFormat(value,t.attrs["format"]);
+			    } else {
+				if(t.attrs["missing"] && isNaN(value)) {
+				    s+= t.attrs["missing"]
+				    return;
+				} 
+				if(t.attrs["offset1"]) {
+				    value = value+ parseFloat(t.attrs["offset1"]);
+				}
+				if(t.attrs["scale"]) {
+				    value = value* parseFloat(t.attrs["scale"]);
+				}
+				if(t.attrs["offset2"]) {
+				    value = value+ parseFloat(t.attrs["offset2"]);
+				}
+				if(t.attrs["decimals"]) {
+				    value = parseFloat(value);
+				    let scale = Math.pow(10,t.attrs["decimals"]);
+				    value = (Math.floor(value * scale) /scale);
+				}
+				if(t.attrs["format"]) {
+				    let fmt = t.attrs["format"]
+				    if(fmt == "comma") {
+					value = Utils.formatNumberComma(value);
+				    }
+				}
+			    }
+			    if(t.attrs["template"]) {
+				value = t.attrs["template"].replace("{value}",value);
+			    }
+			    s+=value;
+			}
+		    });
+		    return s;
+		},
+		getText: function() {
+		    let cnt = 0;
+		    let s ="";
+		    this.tokens.map(t=>{
+			if(t.type=="string") {
+			    s+=t.s;
+			} else {
+			    s+="${macro" + cnt+"}";
+			    cnt++;
+			}
+		    });
+		    return s;
+		}
+	       };
+    },
     formatNumberComma: function(number) {
-	if(!Utils.isDefined(number)) return "NA";
+	if(!Utils.isDefined(number)) {
+	    return "NA";
+	}	    
 	let whole = Math.floor(number);
 	let rem = number-whole;
 	let wholeFormatted = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -641,7 +765,6 @@ var Utils = {
         if (toFloat) return parseFloat(s);
 	return s;
     },
-
     formatNumberInner: function(number) {
         var anumber = number < 0 ? -number : number;
         if (anumber == Math.floor(anumber)) return number;
@@ -2445,3 +2568,48 @@ function TextMatcher (pattern) {
     });
 
 }
+
+
+function number_format(number, decimals, dec_point, thousands_sep) {
+    // http://kevin.vanzonneveld.net
+    // +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +     bugfix by: Michael White (http://crestidg.com)
+    // +     bugfix by: Benjamin Lupton
+    // +     bugfix by: Allan Jensen (http://www.winternet.no)
+    // +    revised by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)    
+    // *     example 1: number_format(1234.5678, 2, '.', '');
+    // *     returns 1: 1234.57     
+
+    var n = number,
+        c = isNaN(decimals = Math.abs(decimals)) ? 2 : decimals;
+    var d = dec_point == undefined ? "." : dec_point;
+    var t = thousands_sep == undefined ? "," : thousands_sep,
+        s = n < 0 ? "-" : "";
+    var i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
+        j = (j = i.length) > 3 ? j % 3 : 0;
+
+    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+}
+
+
+
+/*
+let s = "hello there ${m1 format=comma scale=10} the end"
+let t = Utils.tokenizeMacros(s);
+t.tokens.map(token=>{
+    if(token.type == "string") return;
+    console.log("macro:" + token.tag);
+    for(a in token.attrs)
+	console.log("\t" +a+"=" + token.attrs[a]);
+});
+
+
+
+
+console.log(t.apply({
+    m1:50, 
+    m2:0.0156689,
+    m3:123456789.01
+}));
+*/
