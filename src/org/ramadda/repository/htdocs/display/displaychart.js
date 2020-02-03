@@ -1055,12 +1055,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(debug && rowIdx<debugRows)
 			    console.log("\t fixed:" + fixedValueN);
 		    } else {
-                        if(formatNumbers) {
-			    if(typeof value == "number") {
+			let type = (typeof value);
+			if(type == "number") {
+                            if(formatNumbers) {
 				value = {v:value,f:String(this.formatNumber(value))};
-				if(debug && rowIdx<debugRows)
-				    console.log("\t format:" + value +" " + (typeof value));
 			    }
+			}  else if(type=="boolean") {
+			    value = String(value);
 			}
 			if(debug && rowIdx<debugRows)
 			    console.log("\t value:" + value +" " + (typeof value));
