@@ -807,7 +807,6 @@ var pseudoElements = exports.pseudoElements = "(\\:+)\\b(after|before|first-lett
 var pseudoClasses  = exports.pseudoClasses =  "(:)\\b(active|checked|disabled|empty|enabled|first-child|first-of-type|focus|hover|indeterminate|invalid|last-child|last-of-type|link|not|nth-child|nth-last-child|nth-last-of-type|nth-of-type|only-child|only-of-type|required|root|target|valid|visited)\\b";
 
 var CssHighlightRules = function() {
-
     var keywordMapper = this.createKeywordMapper({
         "support.function": supportFunction,
         "support.constant": supportConstant,
@@ -867,7 +866,7 @@ var CssHighlightRules = function() {
             regex: ";",
             next:  "start"
         }, {
-            token: "keyword",
+          token: "keyword",
             regex: "(?:media|supports|document|charset|import|namespace|media|supports|document"
                 + "|page|font|keyframes|viewport|counter-style|font-feature-values"
                 + "|swash|ornaments|annotation|stylistic|styleset|character-variant)"
@@ -1559,46 +1558,56 @@ var tagMap = lang.createMap({
     tr          : 'table'
 });
 
-var RamaddaHighlightRules = function() {
-    XmlHighlightRules.call(this);
-    for (var rule in this.$rules) {
-        this.$rules[rule].unshift(
-                                  {token : "keyword",
-                                          regex : "\\+(div|frame.*|gridboxes.*|gridbox|centerdiv|center|row|col(-md)*(-[0-9]+)*|tabs|tab(-[^ ]+)*|accordian|segment(-[^ ]+)*|accordian|accordianblock(-[^ ]+)*|section(-[^ ]+)*|inset(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*|note(-[^ ]+)*)"
-                                          },
-                                  {token : "keyword",
-                                          regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
-                                          },
-                                  {token : "notebook_tag",
-                                          regex : "^ *\\%\\% *[^ ]+.*"
-                                          },
-                                  {token : "comment_line",
-                                          regex : "/\\*.*\\*/"
-                                          },
-                                  {token : "comment_line",
-                                          regex : "^ *#.*"
-                                          },
-                                  {token : "comment_line",
-                                          regex : "//.*"
-                                          },
-                                  {token : "keyword",
-                                          regex : "^(-row.*|-col.*)|-frame|-gridboxes|-gridbox|-centerdiv|-center|-div|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
-                                          },
-                                  {token : "tag",
-                                          regex : "{{",
-                                          },
-                                  {token : "tag",
-                                          regex : "}}",
-                                          },
-                                  );
-    }
+    var RamaddaHighlightRules = function() {
+	XmlHighlightRules.call(this);
+	for (var rule in this.$rules) {
+            this.$rules[rule].unshift(
+		{token : "keyword",
+		 regex : "\\+(div|frame.*|gridboxes.*|gridbox|centerdiv|center|row|col(-md)*(-[0-9]+)*|tabs|tab(-[^ ]+)*|accordian|segment(-[^ ]+)*|accordian|accordianblock(-[^ ]+)*|section(-[^ ]+)*|inset(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*|note(-[^ ]+)*)"
+		}, {
+                    token : [
+			"","display_type",""
+		    ],
+		    xtoken: "display_type",
+		    regex: "(type *= *\")([^ \"]+)(\")",
+		}, {
+		    token: ["", "display_macro",""],
+		    regex: "(\\$\\{)([^\}]+)(\\})",
+		},
+		{token : "keyword",
+                    regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
+                },
+		{token : "notebook_tag",
+                 regex : "^ *\\%\\% *[^ ]+.*"
+                },
+                {token : "comment_line",
+                 regex : "/\\*.*\\*/"
+                },
+                {token : "comment_line",
+                 regex : "^ *#.*"
+                },
+                {token : "comment_line",
+                 regex : "//.*"
+                },
+                {token : "keyword",
+                 regex : "^(-row.*|-col.*)|-frame|-gridboxes|-gridbox|-centerdiv|-center|-div|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
+                },
+                {token : "keyword",
+                 regex : "\\{\\{",
+                },
+                {token : "keyword",
+                 regex : "\\}\\}",
+		}, 
+
+            );
+	}
 
 
-    this.embedTagRules(CssHighlightRules, "css-", "style");
-    this.embedTagRules(new JavaScriptHighlightRules({jsx: false}).getRules(), "js-", "script");
-    if (this.constructor === RamaddaHighlightRules)
-        this.normalizeRules();
-};
+	this.embedTagRules(CssHighlightRules, "css-", "style");
+	this.embedTagRules(new JavaScriptHighlightRules({jsx: false}).getRules(), "js-", "script");
+	if (this.constructor === RamaddaHighlightRules)
+            this.normalizeRules();
+    };
 
 oop.inherits(RamaddaHighlightRules, XmlHighlightRules);
 

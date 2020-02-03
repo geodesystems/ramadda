@@ -3965,6 +3965,15 @@ h3.ui-accordion-header a {
     font-weight: bold;
 }
 
+.ace_display_macro {
+    background:#eee;
+}
+
+.ace_macro, .ace_display_type {
+    font-weight: bold;
+    background:#ccc;
+}
+
 .ace_editor  { 
     overflow-x:auto;
     width:100%;
