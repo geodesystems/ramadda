@@ -54,14 +54,14 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
         timestamp: 0,
         index: 0,
         sleepTime: 500,
-        iconStart: ramaddaBaseUrl + "/icons/display/control.png",
-        iconStop: ramaddaBaseUrl + "/icons/display/control-stop-square.png",
-        iconBack: ramaddaBaseUrl + "/icons/display/control-stop-180.png",
-        iconForward: ramaddaBaseUrl + "/icons/display/control-stop.png",
-        iconFaster: ramaddaBaseUrl + "/icons/display/plus.png",
-        iconSlower: ramaddaBaseUrl + "/icons/display/minus.png",
-        iconBegin: ramaddaBaseUrl + "/icons/display/control-double-180.png",
-        iconEnd: ramaddaBaseUrl + "/icons/display/control-double.png",
+        iconStart: "fa-play",
+        iconStop: "fa-stop",
+        iconBack: "fa-step-back",
+        iconForward: "fa-step-forward",
+        iconSlower: "fa-minus",
+	iconFaster: "fa-plus",
+	iconBegin: "fa-fast-backward",
+	iconEnd: "fa-fast-foreward",
         deltaIndex: function(i) {
             this.stop();
             this.setIndex(this.index + i);
@@ -118,14 +118,18 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             }
         },
         handleEventRecordSelection: function(source, args) {
+	    if(!args.record) return;
             var data = this.displayManager.getDefaultData();
             if (data == null) return;
-            if (data != args.data) {
-                return;
-            }
-            if (!data) return;
-            this.index = args.index;
-            this.applyStep(false);
+	    let records  = data.getRecords();
+	    records.every((r,idx)=>{
+		if(r.getId() == args.record.getId()) {
+		    this.index = idx;
+		    this.applyStep(false);
+		    return false;
+		}
+		return true;
+	    });
         },
         faster: function() {
             this.sleepTime = this.sleepTime / 2;
@@ -153,13 +157,13 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 
             var get = this.getGet();
             var html = "";
-            html += HtmlUtils.onClick(get + ".setIndex(0);", HtmlUtils.image(this.iconBegin, [ATTR_TITLE, "beginning", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".deltaIndex(-1);", HtmlUtils.image(this.iconBack, [ATTR_TITLE, "back 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".toggle();", HtmlUtils.image(this.iconStart, [ATTR_TITLE, "play/stop", ATTR_CLASS, "display-animation-button", "xwidth", "32", ATTR_ID, this.getDomId(ID_START)]));
-            html += HtmlUtils.onClick(get + ".deltaIndex(1);", HtmlUtils.image(this.iconForward, [ATTR_TITLE, "forward 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".setIndex();", HtmlUtils.image(this.iconEnd, [ATTR_TITLE, "end", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".faster();", HtmlUtils.image(this.iconFaster, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "faster", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".slower();", HtmlUtils.image(this.iconSlower, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "slower", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".setIndex(0);", HtmlUtils.getIconImage(this.iconBegin, [ATTR_TITLE, "beginning", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".deltaIndex(-1);", HtmlUtils.getIconImage(this.iconBack, [ATTR_TITLE, "back 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".toggle();", HtmlUtils.getIconImage(this.iconStart, [ATTR_TITLE, "play/stop", ATTR_CLASS, "display-animation-button", "xwidth", "32", ATTR_ID, this.getDomId(ID_START)]));
+            html += HtmlUtils.onClick(get + ".deltaIndex(1);", HtmlUtils.getIconImage(this.iconForward, [ATTR_TITLE, "forward 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".setIndex();", HtmlUtils.getIconImage(this.iconEnd, [ATTR_TITLE, "end", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".faster();", HtmlUtils.getIconImage(this.iconFaster, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "faster", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".slower();", HtmlUtils.getIconImage(this.iconSlower, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "slower", "xwidth", "32"]));
             html += HtmlUtils.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);

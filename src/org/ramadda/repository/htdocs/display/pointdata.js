@@ -1294,8 +1294,7 @@ var RecordUtil = {
                     if (record.getLongitude() < -180 || record.getLatitude() > 90) {
                         console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                     }
-                    points.push({latitude:record.getLongitude(), longitude:record.getLatitude()});
-//                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
+                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
                 }
             }
         }

@@ -7951,8 +7951,7 @@ var RecordUtil = {
                     if (record.getLongitude() < -180 || record.getLatitude() > 90) {
                         console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                     }
-                    points.push({latitude:record.getLongitude(), longitude:record.getLatitude()});
-//                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
+                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
                 }
             }
         }
@@ -8393,14 +8392,14 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
         timestamp: 0,
         index: 0,
         sleepTime: 500,
-        iconStart: ramaddaBaseUrl + "/icons/display/control.png",
-        iconStop: ramaddaBaseUrl + "/icons/display/control-stop-square.png",
-        iconBack: ramaddaBaseUrl + "/icons/display/control-stop-180.png",
-        iconForward: ramaddaBaseUrl + "/icons/display/control-stop.png",
-        iconFaster: ramaddaBaseUrl + "/icons/display/plus.png",
-        iconSlower: ramaddaBaseUrl + "/icons/display/minus.png",
-        iconBegin: ramaddaBaseUrl + "/icons/display/control-double-180.png",
-        iconEnd: ramaddaBaseUrl + "/icons/display/control-double.png",
+        iconStart: "fa-play",
+        iconStop: "fa-stop",
+        iconBack: "fa-step-back",
+        iconForward: "fa-step-forward",
+        iconSlower: "fa-minus",
+	iconFaster: "fa-plus",
+	iconBegin: "fa-fast-backward",
+	iconEnd: "fa-fast-foreward",
         deltaIndex: function(i) {
             this.stop();
             this.setIndex(this.index + i);
@@ -8457,14 +8456,18 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             }
         },
         handleEventRecordSelection: function(source, args) {
+	    if(!args.record) return;
             var data = this.displayManager.getDefaultData();
             if (data == null) return;
-            if (data != args.data) {
-                return;
-            }
-            if (!data) return;
-            this.index = args.index;
-            this.applyStep(false);
+	    let records  = data.getRecords();
+	    records.every((r,idx)=>{
+		if(r.getId() == args.record.getId()) {
+		    this.index = idx;
+		    this.applyStep(false);
+		    return false;
+		}
+		return true;
+	    });
         },
         faster: function() {
             this.sleepTime = this.sleepTime / 2;
@@ -8492,13 +8495,13 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 
             var get = this.getGet();
             var html = "";
-            html += HtmlUtils.onClick(get + ".setIndex(0);", HtmlUtils.image(this.iconBegin, [ATTR_TITLE, "beginning", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".deltaIndex(-1);", HtmlUtils.image(this.iconBack, [ATTR_TITLE, "back 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".toggle();", HtmlUtils.image(this.iconStart, [ATTR_TITLE, "play/stop", ATTR_CLASS, "display-animation-button", "xwidth", "32", ATTR_ID, this.getDomId(ID_START)]));
-            html += HtmlUtils.onClick(get + ".deltaIndex(1);", HtmlUtils.image(this.iconForward, [ATTR_TITLE, "forward 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".setIndex();", HtmlUtils.image(this.iconEnd, [ATTR_TITLE, "end", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".faster();", HtmlUtils.image(this.iconFaster, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "faster", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".slower();", HtmlUtils.image(this.iconSlower, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "slower", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".setIndex(0);", HtmlUtils.getIconImage(this.iconBegin, [ATTR_TITLE, "beginning", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".deltaIndex(-1);", HtmlUtils.getIconImage(this.iconBack, [ATTR_TITLE, "back 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".toggle();", HtmlUtils.getIconImage(this.iconStart, [ATTR_TITLE, "play/stop", ATTR_CLASS, "display-animation-button", "xwidth", "32", ATTR_ID, this.getDomId(ID_START)]));
+            html += HtmlUtils.onClick(get + ".deltaIndex(1);", HtmlUtils.getIconImage(this.iconForward, [ATTR_TITLE, "forward 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".setIndex();", HtmlUtils.getIconImage(this.iconEnd, [ATTR_TITLE, "end", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".faster();", HtmlUtils.getIconImage(this.iconFaster, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "faster", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".slower();", HtmlUtils.getIconImage(this.iconSlower, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "slower", "xwidth", "32"]));
             html += HtmlUtils.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);
@@ -8569,7 +8572,8 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
             attrs.push(this.text);
         },
     });
-}/**
+}
+/**
 Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -22986,8 +22990,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	dataFilterChanged: function() {
 	    this.vectorMapApplied  = false;
 	    this.updateUI();
-	    let doCenter = this.getProperty("centerOnFilterChange",false);
-	    if(doCenter) {
+	    if(this.getProperty("centerOnFilterChange",false)) {
 		if (this.vectorLayer && this.points) {
 		    //If we have  a map then don't do anything?
 		} else {
@@ -23009,24 +23012,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.getProperty("showData", true)) {
                 return;
             }
-	    var t1= new Date();
             var pointData = this.getPointData();
             var records = this.filterData();
-	    this.records = records;
             if (records == null) {
                 err = new Error();
                 console.log("null records:" + err.stack);
                 return;
             }
+
 	    if(this.haveCalledUpdateUI) {
 		return;
 	    }
 	    this.haveCalledUpdateUI = true;
             var fields = pointData.getRecordFields();
             var bounds = {};
-	    var t2= new Date();
             var points = RecordUtil.getPoints(records, bounds);
-	    var t3= new Date();
             var showSegments = this.getProperty("showSegments", false);
 
 	    if(records.length!=0) {
@@ -23047,11 +23047,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.highlightMarker = null;
 	    }
 	    this.map.clearSeenMarkers();
-	    var t4= new Date();
-//	    console.log("addPoints: #" + points.length);
+	    var t1= new Date();
             this.addPoints(records,fields,points);
-	    var t5= new Date();
-//	    Utils.displayTimes("time",[t1,t2,t3,t4,t5]);
+	    var t2= new Date();
+//	    Utils.displayTimes("time",[t1,t2]);
 
             this.addLabels(records,fields,points);
             this.applyVectorMap();
@@ -23062,7 +23061,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
-	    let radiusThreshold = +this.getProperty("radiusThreshold",-1);
             let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             let strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
             let strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
@@ -23273,22 +23271,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let showSegments = this.getProperty("showSegments", false);
 	    let tooltip = this.getProperty("tooltip");
 	    let highlight = this.getProperty("highlight");
+	    let addedPoints = [];
 
 	    let textGetter = f=>{
 		if(f.record) {
-                    let text =   this.getRecordHtml(f.record, fields, tooltip);
-		    return text;
+                    return  this.getRecordHtml(f.record, fields, tooltip);
 		}
 		return null;
 	    };
 
-	    let addedPoints = [];
             for (let i = 0; i < records.length; i++) {
                 let record = records[i];
                 let tuple = record.getData();
 		if(!record.point)
                     record.point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
 		let point = record.point;
+
 		if(justOneMarker) {
                     if(this.justOneMarker)
                         this.map.removeMarker(this.justOneMarker);
@@ -23429,8 +23427,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps);
 			poly.textGetter = textGetter;
 			poly.record = record;
-			if (record.getDate()) {
-			    poly.date = record.getDate().getTime();
+			if (date) {
+			    poly.date = date.getTime();
 			}
 			this.lines.push(poly);
 		    }
@@ -23508,11 +23506,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(!props.graphicName)
 			    props.graphicName = this.getProperty("shape","circle");
 			if(radius>0) {
-			    if(records.length<radiusThreshold) {
-				props.pointRadius=8;
-			    }
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
-			    addedPoints.push(mapPoint);
 			}
 		    }
 
@@ -23538,18 +23532,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    if(addedPoints.length) {
-//		this.map.circles.addFeatures(addedPoints);
-	    }
-
-
-	    if(this.map.circles)
-		this.map.circles.redraw();
 
 	    if (showSegments) {
 		this.map.centerOnMarkers(null, true, null);
 	    }
 
+
+	    if(this.map.circles)
+		this.map.circles.redraw();
 	    this.jq(ID_BOTTOM).append(HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
 //	    this.jq(ID_BOTTOM).html(HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)])+
 //				    HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
