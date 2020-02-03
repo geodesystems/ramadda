@@ -148,12 +148,12 @@ public class OpenAQTypeHandler extends PointTypeHandler {
             dateSDF = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm");
         }
         cal.add(cal.HOUR_OF_DAY, -hoursOffset.intValue());
-
         String startDate = dateSDF.format(cal.getTime());
         String url = "https://api.openaq.org/v1/measurements?format=csv&"
                      + HtmlUtils.arg("date_from", startDate) + "&"
                      + HtmlUtils.arg("location", location);
 
+	//	System.err.println(url);
         return url;
     }
 
@@ -226,77 +226,5 @@ public class OpenAQTypeHandler extends PointTypeHandler {
             }
 
         }
-
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
-        public VisitInfo prepareToVisit(VisitInfo visitInfo)
-                throws Exception {
-            //            putProperty(PROP_SKIPLINES, "1");
-            putProperty(PROP_HEADER_STANDARD, "true");
-
-            super.prepareToVisit(visitInfo);
-
-            //            utc,co ug/m^3,no2 ug/m^3,o3 ug/m^3,pm10 ug/m^3,so2 ug/m^3
-            /*
-
-            putFields(new String[] {
-                makeField(FIELD_DATE, attrType("date"),
-                          attrFormat("yyyy-MM-dd'T'HH:mm:ss")),
-                makeField("latitude", attrType("double"),
-                          attrLabel("Latitude")),
-                makeField("longitude", attrType("double"),
-                          attrLabel("Longitude")),
-                makeField("co", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("co")),
-                makeField("no2", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("no2")),
-                makeField("o3", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("o3")),
-                makeField("pm10", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("pm10")),
-                makeField("so2", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("so2"))
-            });
-            */
-            return visitInfo;
-        }
-
-
-
-
     }
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        SimpleDateFormat sdf =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        SimpleDateFormat sdf2 =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        //        String value = "2018-11-01T04:45:00.000Z";
-        String value = "2018-11-01T04:45:00.000Z";
-        System.err.println("date:" + sdf2.format(sdf.parse(value)));
-    }
-
-
-
-
 }

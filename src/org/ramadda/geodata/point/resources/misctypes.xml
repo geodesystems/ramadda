@@ -6,6 +6,11 @@
      <column  name="country"  label="Country" cansearch="true"/>
      <column  name="city"  label="City" cansearch="true"/>
      <column  name="hours_offset"  label="Offset Hours" type="int" default="24" cansearch="true"/>
+ <property name="record.properties">
+   header.standard=true
+   xpoint.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
+ </property>
+
 <wiki>
 <![CDATA[
 +section  title="Air Quality Station: {{name}}"
