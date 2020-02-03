@@ -272,6 +272,14 @@ function RepositoryMap(mapId, params) {
                 if(e.feature && e.feature.noSelect) {
                     return;
                 }
+		let time =  new Date().getTime();
+		//We get multiple click events if we have multiple features on the same point
+		if(Utils.isDefined(this.lastClickTime)) {
+		    if(time-this.lastClickTime <500) {
+			return;
+		    }
+		}
+		this.lastClickTime  = time;
 		theMap.handleFeatureclick(e.layer, e.feature);
             }
         }
