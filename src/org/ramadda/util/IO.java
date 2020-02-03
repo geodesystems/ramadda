@@ -183,6 +183,13 @@ public class IO {
     public static InputStream doMakeInputStream(String filename,
             boolean buffered)
             throws IOException {
+	return doMakeInputStream(filename, buffered, 0);
+    }
+	    
+
+    private static InputStream doMakeInputStream(String filename,
+						  boolean buffered, int tries)
+	throws IOException {	
         checkFile(filename);
         int         size = 8000;
         InputStream is   = null;
@@ -196,10 +203,31 @@ public class IO {
             URL           url        = new URL(filename);
             URLConnection connection = null;
             try {
+		//		System.err.println ("URL: " + url);
                 connection = url.openConnection();
                 connection.addRequestProperty("Accept", "*/*");
                 connection.addRequestProperty("Host", url.getHost());
                 connection.addRequestProperty("User-Agent", "ramadda");
+
+
+		if (connection instanceof HttpURLConnection) {
+                    HttpURLConnection huc = (HttpURLConnection) connection;
+                    int response = huc.getResponseCode();
+                    //Check for redirect
+                    if (response == HttpURLConnection.HTTP_MOVED_TEMP
+                        || response == HttpURLConnection.HTTP_MOVED_PERM
+                        || response == HttpURLConnection.HTTP_SEE_OTHER) {
+                        String newUrl = connection.getHeaderField("Location");
+			//			System.err.println("redirect:" + newUrl);
+                        //Don't follow too many redirects
+                        if(tries>10) {
+                            throw new IllegalArgumentException ("Too many nested URL fetches:" + filename);
+                        }
+                        //call this method recursively with the new URL
+                        return doMakeInputStream(newUrl, buffered, tries+1);
+                    }		
+		}
+		//		System.err.println ("OK: " + url);
                 is = connection.getInputStream();
             } catch (Exception exc) {
                 System.err.println("Error URL: " + filename);
