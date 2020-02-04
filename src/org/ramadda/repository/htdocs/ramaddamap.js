@@ -316,7 +316,10 @@ function initMapFunctions(theMap) {
                 });
             }
 
-            this.map = new OpenLayers.Map(this.mapDivId, this.mapOptions);
+
+	    $("#" + this.mapDivId).html(HtmlUtils.div(["style","width:100%;height:100%;position:relative;","id",this.mapDivId+"_themap"]));
+            this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
+	    $("#" + this.mapDivId).append(HtmlUtils.div(["id",this.mapDivId+"_progress", "style","position:absolute;top:175px;left:75px;"],""));
             //register the location listeners later since the map triggers a number of
             //events at the start
             var callback = function() {
@@ -347,6 +350,9 @@ function initMapFunctions(theMap) {
                 this.addGeoJsonLayer(this.geojsonLayerName, url, false, null, null, null, null);
             }
         },
+	setProgress: function(msg) {
+	    $("#" + this.mapDivId+"_progress").html(msg);
+	},
         getBounds: function() {
 	    return  this.transformProjBounds(this.map.getExtent());
 	},

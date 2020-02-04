@@ -1110,6 +1110,18 @@ height:100%;
 .display-map {
 }
 
+.display-map-message {
+    border-radius: 4px;
+    display:inline-block;
+    text-align:left;
+    border: 1px #aaa solid;
+    background-color : #fffeec;
+    padding-left:10px;
+    padding-right:10px;
+}
+
+
+
 .display-map-map {
      min-width:200px; 
      min-height:200px; 

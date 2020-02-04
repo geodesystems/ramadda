@@ -82,10 +82,15 @@ var Utils = {
         }
 	return map;
     },
-    displayTimes: function(label,times) {
-	console.log(label);
-	for(var i=0;i<times.length-1;i++) 
-	    console.log("\tt" +  (i+1) +" " + (times[i+1].getTime()-times[i].getTime())/1000);
+    displayTimes: function(label,times,oneLine) {
+	let t = "";
+	let delim = oneLine?" "  :"\n";
+	let pre = oneLine?" ":"\t";
+	t+=label +delim;
+	for(var i=0;i<times.length-1;i++) {
+	    t+=pre + "time" +(i+1) +": " + ((times[i+1].getTime()-times[i].getTime())/1000) + delim;
+	}
+	console.log(t);
     },
     cloneList: function(l) {
         return l.slice(0);
@@ -2592,24 +2597,3 @@ function number_format(number, decimals, dec_point, thousands_sep) {
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 }
 
-
-
-/*
-let s = "hello there ${m1 format=comma scale=10} the end"
-let t = Utils.tokenizeMacros(s);
-t.tokens.map(token=>{
-    if(token.type == "string") return;
-    console.log("macro:" + token.tag);
-    for(a in token.attrs)
-	console.log("\t" +a+"=" + token.attrs[a]);
-});
-
-
-
-
-console.log(t.apply({
-    m1:50, 
-    m2:0.0156689,
-    m3:123456789.01
-}));
-*/
