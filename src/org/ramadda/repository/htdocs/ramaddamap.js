@@ -1894,8 +1894,6 @@ function initMapFunctions(theMap) {
             }));
         }
 
-
-
         /*this.map.addControl(new OpenLayers.Control.TouchNavigation({
           dragPanOptions: {
           enableKinetic: true
@@ -1909,11 +1907,10 @@ function initMapFunctions(theMap) {
         if (this.showZoomOnlyControl && !this.showZoomPanControl) {
             this.map.addControl(new OpenLayers.Control.Zoom());
         }
-
         if (this.showScaleLine) {
             this.map.addControl(new OpenLayers.Control.ScaleLine());
         }
-        //        this.map.addControl(new OpenLayers.Control.OverviewMap());
+//        this.map.addControl(new OpenLayers.Control.OverviewMap());
 
         var keyboardControl = new OpenLayers.Control();
         var control = new OpenLayers.Control();
