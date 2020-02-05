@@ -56,12 +56,12 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
         sleepTime: 500,
         iconStart: "fa-play",
         iconStop: "fa-stop",
-        iconBack: "fa-step-back",
+        iconBack: "fa-step-backward",
         iconForward: "fa-step-forward",
         iconSlower: "fa-minus",
 	iconFaster: "fa-plus",
 	iconBegin: "fa-fast-backward",
-	iconEnd: "fa-fast-foreward",
+	iconEnd: "fa-fast-forward",
         deltaIndex: function(i) {
             this.stop();
             this.setIndex(this.index + i);
@@ -142,14 +142,14 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             if (this.running) return;
             this.running = true;
             this.timestamp++;
-            $("#" + this.getDomId(ID_START)).attr("src", this.iconStop);
+            $("#" + this.getDomId(ID_START)).html(HtmlUtils.getIconImage(this.iconStop));
             this.tick();
         },
         stop: function() {
             if (!this.running) return;
             this.running = false;
             this.timestamp++;
-            $("#" + this.getDomId(ID_START)).attr("src", this.iconStart);
+            $("#" + this.getDomId(ID_START)).html(HtmlUtils.getIconImage(this.iconStart));
         },
         initDisplay: function() {
             this.createUI();
@@ -157,13 +157,14 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 
             var get = this.getGet();
             var html = "";
-            html += HtmlUtils.onClick(get + ".setIndex(0);", HtmlUtils.getIconImage(this.iconBegin, [ATTR_TITLE, "beginning", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".deltaIndex(-1);", HtmlUtils.getIconImage(this.iconBack, [ATTR_TITLE, "back 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".toggle();", HtmlUtils.getIconImage(this.iconStart, [ATTR_TITLE, "play/stop", ATTR_CLASS, "display-animation-button", "xwidth", "32", ATTR_ID, this.getDomId(ID_START)]));
-            html += HtmlUtils.onClick(get + ".deltaIndex(1);", HtmlUtils.getIconImage(this.iconForward, [ATTR_TITLE, "forward 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".setIndex();", HtmlUtils.getIconImage(this.iconEnd, [ATTR_TITLE, "end", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".faster();", HtmlUtils.getIconImage(this.iconFaster, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "faster", "xwidth", "32"]));
-            html += HtmlUtils.onClick(get + ".slower();", HtmlUtils.getIconImage(this.iconSlower, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "slower", "xwidth", "32"]));
+	    let c = "display-animation-button";
+            html += HtmlUtils.onClick(get + ".setIndex(0);", HtmlUtils.div([ATTR_TITLE, "beginning", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconBegin)));
+            html += HtmlUtils.onClick(get + ".deltaIndex(-1);", HtmlUtils.div([ATTR_TITLE, "step back", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconBack)));
+            html += HtmlUtils.onClick(get + ".toggle();", HtmlUtils.div([ATTR_ID, this.getDomId(ID_START),ATTR_TITLE, "play/stop",ATTR_CLASS, c], HtmlUtils.getIconImage(this.iconStart)));
+            html += HtmlUtils.onClick(get + ".deltaIndex(1);", HtmlUtils.div([ATTR_TITLE, "step forward", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconForward)));
+            html += HtmlUtils.onClick(get + ".setIndex();", HtmlUtils.div([ATTR_TITLE, "end", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconEnd)));
+            html += HtmlUtils.onClick(get + ".faster();", HtmlUtils.div([ATTR_TITLE, "faster", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconFaster)));
+            html += HtmlUtils.onClick(get + ".slower();", HtmlUtils.div([ATTR_TITLE, "slower", ATTR_CLASS, c],HtmlUtils.getIconImage(this.iconSlower)));
             html += HtmlUtils.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);

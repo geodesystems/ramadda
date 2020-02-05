@@ -623,9 +623,9 @@ color: #000;
 }
 
 .display-animation-button {
+    display:inline-block;
     margin-left:4px;
     margin-right:4px;
-    margin: 1px;
 }
 
 .display-animation-button:hover {
