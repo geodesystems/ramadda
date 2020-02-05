@@ -3974,8 +3974,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let dfltValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
 			let filterValues = this.getProperty(filterField.getId()+".filterValues");
                         let enums = null;
-
-
 			if (filterValues) {
 			    let toks;
 			    if ((typeof filterValues) == "string") {
@@ -4026,8 +4024,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					obj.image = this.getDataValues(record)[imageField.getIndex()];
 				    if((+value+"") != value) valuesAreNumbers = false;
 				    let label = value;
-				    if(label.length>20) {
-					label=  label.substring(0,19)+"...";
+				    if(label.length>30) {
+					label=  label.substring(0,29)+"...";
 				    }
 				    if(typeof value == "string")
 					value = value.replace(/\'/g,"&apos;");
@@ -23383,6 +23381,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         continue;
                     }
                 }
+
 
                 let values = record.getData();
                 let props = {

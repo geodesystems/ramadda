@@ -1558,6 +1558,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 }
 
+
                 let values = record.getData();
                 let props = {
                     pointRadius: radius,
