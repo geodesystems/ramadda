@@ -1113,7 +1113,6 @@ height:100%;
 .display-map-message {
     border-radius: 4px;
     display:inline-block;
-    text-align:left;
     border: 1px #aaa solid;
     background-color : #fffeec;
     padding-left:10px;

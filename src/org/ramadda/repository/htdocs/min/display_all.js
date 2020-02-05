@@ -23062,8 +23062,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 console.log("null records:" + err.stack);
                 return;
             }
-//            this.map.showLoadingImage();
-	    this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "Loading map..."));
+
+	    //Only show the indicators for lots of records
+	    let msg = this.getProperty("loadingMessage","Loading map...");
+	    if(msg!="")
+		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(pointData, records);
