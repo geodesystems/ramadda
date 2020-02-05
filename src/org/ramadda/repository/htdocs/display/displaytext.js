@@ -1297,6 +1297,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	},
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
+	    this.currentTopRecord = null;
 	    //	    console.log(this.type+ ".recordHighlight");
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
@@ -1321,6 +1322,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	},
 	unhighlightElement: function(element) {
+	    this.currentTopRecord = null;
 	    element.removeClass("display-template-record-highlight");
 	    var css = this.getProperty("highlightOffCss","").split(";");
 	    if(css.length>0) {
