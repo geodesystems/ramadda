@@ -583,10 +583,8 @@ function DisplayThing(argId, argProperties) {
 		if(f.getType()=="image") {
 		    if(value && value.trim().length>1) {
 			var imgAttrs = [];
-			if(this.getProperty("imageWidth","")!="") {
-			    imgAttrs.push("width");
-			    imgAttrs.push(this.getProperty("imageWidth","")) ;
-			}
+			imgAttrs.push("width");
+			imgAttrs.push(this.getProperty("imageWidth","100%")) ;
 			var img =  HtmlUtils.image(value, imgAttrs);
 			attrs[f.getId() +"_image"] =  img;
 			attrs[f.getId() +"_url"] =  value;

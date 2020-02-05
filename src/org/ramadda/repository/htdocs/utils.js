@@ -727,6 +727,20 @@ var Utils = {
 					value = Utils.formatNumberComma(value);
 				    }
 				}
+				if(t.attrs["toggle"]) {
+				    value = HtmlUtils.toggleBlock(t.attrs["label"]||"More", value,false);
+				}
+				if(t.attrs["image"]) {
+				    if(value!="") {
+					let title = "";
+					if(t.attrs["title"]) {
+					    title = t.attrs["title"];
+					    for(a in source)
+						title = title.replace("{" + a+"}",source[a]);
+					}
+					value = HtmlUtils.image(value,["width",t.attrs["width"]||"100%","title", title]);
+				    }
+				}
 			    }
 			    if(t.attrs["template"]) {
 				value = t.attrs["template"].replace("{value}",value);
