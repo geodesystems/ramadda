@@ -23126,7 +23126,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    var t2= new Date();
             this.addPoints(records,fields,points,pointBounds);
 	    var t3= new Date();
-	    Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
+//	    Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
             this.addLabels(records,fields,points);
             this.applyVectorMap();
 	    this.lastUpdateTime = new Date();
@@ -23139,7 +23139,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let source = this;
             let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
 	    if(this.getProperty("scaleRadius")) {
-		let radiusScale  = [10000,1,8000,2,5000,3,2000,4,1000,6,500,8,250,10,100,16,50,18];
+		let radiusScale  = [10000,1,8000,2,5000,3,2000,3,1000,5,500,8,250,10,100,12,50,14];
 		radius=radiusScale[1];
 		for(let i=0;i<radiusScale.length;i+=2) {
 		    if(points.length<+radiusScale[i]) {
