@@ -162,8 +162,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.map) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             } else {
+		params.showScaleLine = this.getProperty("showScaleLine",false);
+		params.showLatLonPosition = this.getProperty("showLatLonPosition",false);
+		params.showZoomPanControl = this.getProperty("showZoomPanControl",false);
+		params.showZoomOnlyControl = this.getProperty("showZoomOnlyControl",true);
                 this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
                 this.lastWidth = this.jq(ID_MAP).width();
+
             }
             if (this.doDisplayMap()) {
                 this.map.setDefaultCanSelect(false);
@@ -1861,6 +1866,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'sizeByRadiusMax="20"',
 		"boundsAnimation=\"true\"",
 		"centerOnFilterChange=\"true\"",
+		"centerOnHighlight=\"true\"",
+		'recordHighlightRadius=20',
+		'recordHighlightStrokeWidth=2',
+		'recordHighlightStrokeColor=red',
+		'recordHighlightFillColor=rgba(0,0,0,0)',
 		"markerIcon=\"/icons/...\"",
 		"showSegments=\"true\"",
 		'showRecordSelection=false',
