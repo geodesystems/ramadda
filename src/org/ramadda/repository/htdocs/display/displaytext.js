@@ -922,13 +922,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'highightOnScroll=true'
 				    ]);
 	},
-        handleEventRecordSelection: function(source, args) {
-	    //	    console.log(this.type+".recordSelection");
-	    this.selectedRecord = args.record;
-	    if(this.getProperty("onlyShowSelected")) {
-		this.updateUI();
-	    }
-	},
 	dataFilterChanged: function() {
 	    if(this.getProperty("onlyShowSelected")&& this.selectedRecord ) {
 		this.selectedRecord = null;
@@ -1296,15 +1289,26 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	},
 	highlightCount:0,
+        handleEventRecordSelection: function(source, args) {
+//	    console.log(this.type+".recordSelection " + args);
+	    this.selectedRecord = args.record;
+	    if(this.getProperty("onlyShowSelected")) {
+		this.updateUI();
+	    } else {
+		args.highlight = true;
+		this.handleEventRecordHighlight(source, args);
+	    }
+	},
         handleEventRecordHighlight: function(source, args) {
+//	    console.log(this.type+ ".recordHighlight " + args.record);
 	    this.currentTopRecord = null;
-	    //	    console.log(this.type+ ".recordHighlight");
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    if(this.highlightedElement) {
 		this.unhighlightElement(this.highlightedElement);
 		this.highlightedElement = null;
 	    }
+
 	    if(args.highlight) {
 		if(args.immediate) {
 		    this.highlightElement(args);
@@ -1341,7 +1345,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } 
 	},
 	highlightElement: function(args) {
-	    //	    console.log(this.type+".highlightElement");
+
+
+//	    console.log(this.type+".highlightElement");
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;

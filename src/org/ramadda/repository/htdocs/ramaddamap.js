@@ -540,7 +540,6 @@ function initMapFunctions(theMap) {
 	    }
 	    //layer.drawFeature(layer.selectedFeature, "select");
 	    layer.drawFeature(layer.selectedFeature, style);
-            var okToPopup = true;
             if (layer.selectCallback) {
                 layer.feature = layer.selectedFeature;
                 if (feature.originalStyle) {
@@ -548,9 +547,7 @@ function initMapFunctions(theMap) {
                 }
                 layer.selectCallback(layer);
             } else {
-                if (okToPopup) {
-                    this.showMarkerPopup(feature, true);
-                }
+                this.showMarkerPopup(feature, true);
             }
 
             if (center) {
@@ -1153,8 +1150,6 @@ function initMapFunctions(theMap) {
                 this.map.removePopup(this.currentPopup);
                 this.currentPopup.destroy();
             }
-
-
 
             var popup = new OpenLayers.Popup.FramedCloud("popup", feature.geometry.getBounds().getCenterLonLat(),
 							 null, out, null, true,
@@ -3004,11 +2999,9 @@ function initMapFunctions(theMap) {
 	//        this.getMap().setCenter(projBounds.getCenterLonLat());
     }
 
-    theMap.setCenter = function(latLonPoint) {
-        var projPoint = this.transformLLPoint(latLonPoint);
-        this.getMap().setCenter(projPoint);
+    theMap.setCenter = function(to) {
+        this.getMap().setCenter(this.transformLLPoint(to));
     }
-
 
     theMap.zoomToMarkers = function() {
         if (!this.markers)
@@ -3273,7 +3266,7 @@ function initMapFunctions(theMap) {
 	theMap.featureHighlightHandler = callback;
     }
     theMap.addFeatureSelectHandler = function( callback) {
-	theMap.featureSelectlightHandler= callback;
+	theMap.featureSelectHandler= callback;
     }
     theMap.showFeatureText = function(feature) {
 	if(this.featureHighlightHandler)
@@ -3489,8 +3482,8 @@ function initMapFunctions(theMap) {
             this.currentPopup.destroy();
         }
 
-	if(this.featureSelectlightHandler) {
-	    if(this.featureSelectHandler(feature)) {
+	if(this.featureSelectHandler) {
+	    if(this.featureSelectHandler(marker)) {
 		return;
 	    }
 	}
@@ -3502,6 +3495,8 @@ function initMapFunctions(theMap) {
 	    ramaddaDisplaySetSelectedEntry(id);
 	}
 	if(!this.doPopup) return;
+
+
         this.hiliteBox(id);
         var theMap = this;
         if (marker.inputProps) {
@@ -3563,8 +3558,6 @@ function initMapFunctions(theMap) {
 
         var projPoint = this.transformLLPoint(location);
 
-
-
 	if(simplePopup || this.simplePopup) {
 	    popup = new OpenLayers.Popup("popup",
 					 projPoint,
@@ -3578,6 +3571,7 @@ function initMapFunctions(theMap) {
 							 theMap.onPopupClose()
 						     });
 	} 
+
 
         if (marker.inputProps && marker.inputProps.minSizeX) {
             popup.minSize = new OpenLayers.Size(marker.inputProps.minSizeX, marker.inputProps.minSizeY);

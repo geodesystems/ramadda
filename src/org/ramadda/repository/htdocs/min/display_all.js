@@ -16561,13 +16561,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'highightOnScroll=true'
 				    ]);
 	},
-        handleEventRecordSelection: function(source, args) {
-	    //	    console.log(this.type+".recordSelection");
-	    this.selectedRecord = args.record;
-	    if(this.getProperty("onlyShowSelected")) {
-		this.updateUI();
-	    }
-	},
 	dataFilterChanged: function() {
 	    if(this.getProperty("onlyShowSelected")&& this.selectedRecord ) {
 		this.selectedRecord = null;
@@ -16935,15 +16928,26 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 	},
 	highlightCount:0,
+        handleEventRecordSelection: function(source, args) {
+//	    console.log(this.type+".recordSelection " + args);
+	    this.selectedRecord = args.record;
+	    if(this.getProperty("onlyShowSelected")) {
+		this.updateUI();
+	    } else {
+		args.highlight = true;
+		this.handleEventRecordHighlight(source, args);
+	    }
+	},
         handleEventRecordHighlight: function(source, args) {
+//	    console.log(this.type+ ".recordHighlight " + args.record);
 	    this.currentTopRecord = null;
-	    //	    console.log(this.type+ ".recordHighlight");
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    if(this.highlightedElement) {
 		this.unhighlightElement(this.highlightedElement);
 		this.highlightedElement = null;
 	    }
+
 	    if(args.highlight) {
 		if(args.immediate) {
 		    this.highlightElement(args);
@@ -16980,7 +16984,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } 
 	},
 	highlightElement: function(args) {
-	    //	    console.log(this.type+".highlightElement");
+
+
+//	    console.log(this.type+".highlightElement");
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;
@@ -22029,8 +22035,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.addRegionSelectorControl(function(bounds) {
                 theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
+	    this.map.addFeatureSelectHandler(feature=>{
+		if(feature.record && !this.map.doPopup) {
+		    this.highlightPoint(feature.record.getLatitude(),feature.record.getLongitude(),true,false);
+		}
+	    });
+
             this.map.addFeatureHighlightHandler((feature, highlight)=>{
-//		console.log(this.type+ ".featureHighlight");
 		if(feature.record) {
 		    if(this.lastHighlightedRecord) {
 			var args = {highlight:false,record: this.lastHighlightedRecord};
@@ -22051,9 +22062,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 	    });
+
 	    this.map.doPopup = this.getProperty("doPopup",true);
-	    if(!this.map.doPopup)
-		this.map.doSelect = false;
+//	    if(!this.map.doPopup)
+//		this.map.doSelect = false;
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
@@ -22388,14 +22400,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	highlightMarker:null,
         handleEventRecordHighlight: function(source, args) {
 	    SUPER.handleEventRecordHighlight.call(this,source,args);
+	    this.highlightPoint(args.record.getLatitude(),args.record.getLongitude(),args.highlight,true);
+	},
+	highlightPoint: function(lat,lon,highlight,andCenter) {
 	    if(!this.map) return;
 	    if(this.highlightMarker) {
 		this.map.removePoint(this.highlightMarker);
 		this.map.removeMarker(this.highlightMarker);
 		this.highlightMarker = null;
 	    }
-	    if(args.highlight) {
-		var point = new OpenLayers.LonLat(args.record.getLongitude(), args.record.getLatitude());
+	    if(highlight) {
+		var point = new OpenLayers.LonLat(lon,lat);
                 var attrs = {
                     pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",6)+8)),
                     stroke: true,
@@ -22408,14 +22423,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    var size = parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",24)));
 		    this.highlightMarker = this.map.addMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
 		} else {
-		    this.highlightMarker =  this.map.addPoint(args.record.getId(), point, attrs);
+		    this.highlightMarker =  this.map.addPoint("highlight", point, attrs);
 		}
-		if(this.getProperty("centerOnHighlight",false)) {
+		if(andCenter && this.getProperty("centerOnHighlight",false)) {
 		    this.map.setCenter(point);
 		}
 	    }
-
-
 	},
 
 
