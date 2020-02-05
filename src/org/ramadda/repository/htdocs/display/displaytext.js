@@ -919,6 +919,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'${&lt;field&gt;_max}',
 					'${&lt;field&gt;_min}',
 					'${&lt;field&gt;_average}',
+					'highightOnScroll=true'
 				    ]);
 	},
         handleEventRecordSelection: function(source, args) {
@@ -1267,6 +1268,32 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		_this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
 		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
 	    });
+
+
+	    if(this.getProperty("highightOnScroll")) {
+		let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
+		this.jq(ID_DISPLAY_CONTENTS).scroll(()=>{
+		    let topElement = null;
+		    items.each(function() {
+			let pos  = $(this).position();
+			if(pos.top<0) {
+			    topElement = $(this);
+			}
+		    });
+		    if(topElement) {
+			var record = selected[topElement.attr("recordIndex")];
+			if(record && this.currentTopRecord && record!=this.currentTopRecord) {
+			    this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+			}
+			this.currentTopRecord = record;
+		    }
+		});
+	    }
+
+
+
+
+
 	},
 	highlightCount:0,
         handleEventRecordHighlight: function(source, args) {
