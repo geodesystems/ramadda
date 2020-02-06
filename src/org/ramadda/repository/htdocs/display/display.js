@@ -5109,6 +5109,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
+	    let showUnit  = this.getProperty("showUnit",true);
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
             var pointData = this.getPointData();
@@ -5178,7 +5179,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     //                        continue;
                 }
                 var name = field.getLabel();
-                if (field.getUnit() != null) {
+                if (showUnit && field.getUnit() != null) {
                     name += " (" + field.getUnit() + ")";
                 }
                 //                    name = name.replace(/!!/g,"<br><hr>&nbsp;&nbsp;&nbsp;")
