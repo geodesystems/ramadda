@@ -651,18 +651,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (property.length() == 0) {
                 return "";
             }
-
             property = property.replaceAll("(?m)^\\s*//.*?$", "");
             property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
-            //            property = property.replaceAll("\\n", " ");
-            //            property = property.replaceAll("\r", "");
-
-
-            //      System.err.println("P:" + property);
             List<String> toks;
             int          i1 = property.indexOf(" ");
             int          i2 = property.indexOf("\n");
-            if (i1 < i2) {
+            if ((i1 >= 0) && (i1 < i2)) {
                 toks = StringUtil.splitUpTo(property, " ", 2);
             } else if (i2 >= 0) {
                 toks = StringUtil.splitUpTo(property, "\n", 2);
@@ -670,8 +664,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 toks = StringUtil.splitUpTo(property, " ", 2);
             }
 
-
-            String stoks = toks.toString();
             if (toks.size() == 0) {
                 return "<b>Incorrect import specification:" + property
                        + "</b>";
@@ -2132,7 +2124,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
             }
             if (theTag.startsWith("display_")) {
-                props.put(ATTR_TYPE, theTag.substring(8));
+                String newType = theTag.substring(8);
+                props.put(ATTR_TYPE, newType);
                 theTag = theTag.substring(0, 7);
             }
             if (jsonUrl == null) {
@@ -6710,6 +6703,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
         }
+
 
 
         js.append("displayManager.createDisplay("
