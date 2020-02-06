@@ -1568,8 +1568,10 @@ var tagMap = lang.createMap({
                     token : [
 			"","display_type",""
 		    ],
-		    xtoken: "display_type",
 		    regex: "(type *= *\")([^ \"]+)(\")",
+		}, {
+                    token : ["","display_type"],
+		    regex: "({{ *)(display_[^ ]+)"
 		}, {
 		    token: ["", "display_macro",""],
 		    regex: "(\\$\\{)([^\}]+)(\\})",

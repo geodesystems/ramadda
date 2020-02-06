@@ -271,8 +271,13 @@ function wikiInitEditor(info) {
 		if(tmp && tmp.length>1)  tag = tmp[1];
 		if(tag) {
 		    var type;
-		    tmp = chunk.match(/type *= *\"([^\"]+)\"?/); 
-		    if(tmp && tmp.length>1) type=tmp[1];
+		    if(tag.startsWith("display_")) {
+			type = tag.substring(8);
+			tag = "display";
+		    } else {
+			tmp = chunk.match(/type *= *\"([^\"]+)\"?/); 
+			if(tmp && tmp.length>1) type=tmp[1];
+		    }
 		    var tags = [];
 		    var extra;
 		    if(tag == "display" && type) {

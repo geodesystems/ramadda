@@ -574,13 +574,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                               String prop, String dflt) {
         String value = Utils.getProperty(props, prop, (String) null);
         if (value == null) {
-	    value =  Utils.getProperty(props, prop.toLowerCase(), (String) null);
-	}
+            value = Utils.getProperty(props, prop.toLowerCase(),
+                                      (String) null);
+        }
         if ((value == null) && (wikiUtil != null)) {
             value = (String) wikiUtil.getWikiProperty(prop);
-	    if (value == null) {
-		value = (String) wikiUtil.getWikiProperty(prop.toLowerCase());
-	    }
+            if (value == null) {
+                value = (String) wikiUtil.getWikiProperty(prop.toLowerCase());
+            }
         }
         if (value == null) {
             return dflt;
@@ -2122,12 +2123,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         } else if (theTag.equals(WIKI_TAG_DISPLAY)
+                   || theTag.startsWith("display_")
                    || theTag.equals(WIKI_TAG_CHART)) {
             String jsonUrl = null;
             if (getProperty(wikiUtil, props, "doEntries", false)) {
                 jsonUrl = request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
                     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+            }
+            if (theTag.startsWith("display_")) {
+                props.put(ATTR_TYPE, theTag.substring(8));
+                theTag = theTag.substring(0, 7);
             }
             if (jsonUrl == null) {
                 if (props.get("max") == null) {
@@ -2369,6 +2375,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             for (int i = 0; i < max; i++) {
                 Hashtable _props = new Hashtable();
+                _props.put("displayIndex", "" + i);
                 _props.putAll(props2);
                 if (i == 0) {
                     _props.putAll(firstProps);
@@ -6201,6 +6208,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                  Hashtable props)
             throws Exception {
 
+        String displayType = getProperty(wikiUtil, props, "type",
+                                         "linechart");
+
         this.addDisplayImports(request, sb);
 
         List<String>  topProps = new ArrayList<String>();
@@ -6504,8 +6514,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.remove("fields");
         }
 
-        String displayType = getProperty(wikiUtil, props, "type",
-                                         "linechart");
+
+
 
         String anotherDivId = getProperty(wikiUtil, props, "divid");
         String layoutHere = getProperty(wikiUtil, props, "layoutHere",
@@ -6595,8 +6605,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Object value = props.get(key);
             Utils.add(propList, key, Json.quote(value.toString()));
         }
-
-
 
         boolean isMap = displayType.equals("map");
         //Don't do this now

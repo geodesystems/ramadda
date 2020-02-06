@@ -3799,8 +3799,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (divid != null) {
                 var html = this.getHtml();
                 $("#" + divid).html(html);
-//		console.log("createUI:" + $("#" + divid).length);
-//		console.trace();
+		/*
+		$("#"+divid).css("position","absolute");
+		let offset = this.getProperty("displayIndex",0)*10;
+		$("#"+divid).css("top",offset+"px");
+		$("#"+divid).css("left","0px");
+		$("#"+divid).css("right","0px");
+		*/
             } else {
                 console.log("error: no div defined for display:" + this.getType());
             }
@@ -4656,22 +4661,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         */
         cnt: 0,
         getHtml: function() {
-            var dobs = this.getDoBs();
-            var html = "";
-	    //            var menu = HtmlUtils.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
-	    //            html += menu;
+            let dobs = this.getDoBs();
+            let html = "";
             html += HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
-            var width = this.getWidth();
+            let width = this.getWidth();
             if (dobs) {
                 html += HtmlUtils.openDiv(["class", "minitron"]);
             }
-            var style = this.getProperty("displayStyle", "");
+            let style = this.getProperty("displayStyle", "");
             if (width > 0) {
                 style += "width:" + width + "px;"
             }
             html += HtmlUtils.openDiv(["class", "display-contents", "style", style]);
-            var get = this.getGet();
-            var button = "";
+            let get = this.getGet();
+            let button = "";
 
             if (this.getShowMenu()) {
                 button = HtmlUtils.onClick(get + ".showDialog();",
@@ -4682,15 +4685,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("showProgress",false)) {
 		button += HtmlUtils.image(icon_progress,["style","xdisplay:none;","id",this.getDomId(ID_DISPLAY_PROGRESS)]);
 	    }
-            var title = "";
+            let title = "";
             if (this.getShowTitle()) {
                 title = this.getTitle(false).trim();
             }
 
-            var left = "";
+            let left = "";
             if (button != "" || title != "") {
                 this.cnt++;
-                var titleDiv = this.getTitleHtml(title);
+                let titleDiv = this.getTitleHtml(title);
                 if (button == "") {
                     left = titleDiv;
                 } else {
@@ -4698,14 +4701,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
             }
             left = HtmlUtils.div(["id", this.getDomId(ID_TOP_LEFT)], left);
-            var right = HtmlUtils.div(["id", this.getDomId(ID_TOP_RIGHT)], "");
+            let right = HtmlUtils.div(["id", this.getDomId(ID_TOP_RIGHT)], "");
             html += HtmlUtils.div(["id",this.getDomId(ID_HEADER1),"class","display-header1"], "");
             html += HtmlUtils.div(["id",this.getDomId(ID_HEADER2),"class","display-header2"], "");
             html += HtmlUtils.leftRightTable(left, right, {
                 valign: "bottom"
             });
             html += HtmlUtils.div(["id",this.getDomId(ID_HEADER3),"class","display-header3"], "");
-            var contents = this.getContentsDiv();
+            let contents = this.getContentsDiv();
             html += contents;
             html += HtmlUtils.closeTag(TAG_DIV);
             if (dobs) {
@@ -12509,11 +12512,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 	    var lineColor = this.getProperty("lineColor");
-            this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", null);
+	    var backgrondColor = this.getProperty("chartBackground");
+            this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", backgrondColor);
             this.setPropertyOn(chartOptions.backgroundColor, "chart.stroke", "stroke", this.getProperty("chartArea.fill", ""));
             this.setPropertyOn(chartOptions.backgroundColor, "chart.strokeWidth", "strokeWidth", null);
 
-            this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", null);
+            this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", backgrondColor);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
 

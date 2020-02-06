@@ -1184,11 +1184,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 	    var lineColor = this.getProperty("lineColor");
-            this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", null);
+	    var backgrondColor = this.getProperty("chartBackground");
+            this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", backgrondColor);
             this.setPropertyOn(chartOptions.backgroundColor, "chart.stroke", "stroke", this.getProperty("chartArea.fill", ""));
             this.setPropertyOn(chartOptions.backgroundColor, "chart.strokeWidth", "strokeWidth", null);
 
-            this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", null);
+            this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", backgrondColor);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
 
