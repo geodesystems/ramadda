@@ -1073,6 +1073,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    };
 	    $.extend(colorBy,{
 		displayColorTable: function(width) {
+		    if(!_this.getProperty("showColorTable",true)) return;
 		    if(this.compareFields.length>0) {
 			var legend = "";
 			this.compareFields.map((f,idx)=>{
@@ -1081,7 +1082,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			});
 			_this.jq(ID_COLORTABLE).html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
 		    }
-		    if(this.index<0 || !_this.getProperty("showColorTable",true)) return;
+		    if(this.index<0) return;
 		    if(this.stringMap) {
 			var colors = [];
 			this.colorByValues= [];
@@ -4791,6 +4792,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"colorTableAlpha=\"0.5\"",
 		"colorByMin=\"value\"",
 		"colorByMax=\"value\"",
+		'showColorTable=false',
 		"inlinelabel:Animation Attributes",
 		"doAnimation=true",
 		"acceptDateRangeChange=true",
