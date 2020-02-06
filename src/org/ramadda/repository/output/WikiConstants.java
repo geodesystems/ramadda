@@ -122,7 +122,7 @@ public interface WikiConstants {
     public static final String ATTR_USEDESCRIPTION = "usedescription";
 
     /** attribute in the tabs tag */
-    public static final String ATTR_SHOWLINK = "showlink";
+    public static final String ATTR_SHOWLINK = "showLink";
 
     /** _more_ */
     public static final String ATTR_SHOWTITLE = "showTitle";

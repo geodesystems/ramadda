@@ -124,7 +124,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         ATTR_COLUMNS, "3", ATTR_INCLUDEICON, "true", "weights","",
                                         "showSnippet","false",
                                         "showSnippetHover","true",
-                                        "showLink","false","showHeading","true","showline","true"), 
+                                        "showLink","false","showHeading","true","showLine","true"), 
                             new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500"), 
                             new WikiTag(WIKI_TAG_ACCORDION, null, attrs(ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
@@ -158,7 +158,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 					"270",
 					"#textClass","note",
 					"#textStyle","margin:8px;",
-					"#showlink","true",
+					"#showLink","true",
 					"bordercolor","#efefef",
 					"#" + ATTR_TEXTPOSITION,"top|left|right|bottom"), 
                             new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopdelay","1000","loopstart","false","imageWidth","600")),
@@ -724,9 +724,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 //              System.err.println("\tKEY:" + key +"=" +value);
                 props.put(key, value);
                 if (key instanceof String) {
-		    //Don't do this for now
-		    //                    String lowerCaseKey = ((String) key).toLowerCase();
-		    //                    props.put(lowerCaseKey, value);
+                    //Don't do this for now
+                    //                    String lowerCaseKey = ((String) key).toLowerCase();
+                    //                    props.put(lowerCaseKey, value);
                 }
             }
 
@@ -2299,11 +2299,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MULTI)) {
-            Hashtable props2 = new Hashtable();
-	    Hashtable firstProps = new Hashtable();
-	    Hashtable lastProps = new Hashtable();
-	    Hashtable notLastProps = new Hashtable();
-	    Hashtable notFirstProps = new Hashtable();
+            Hashtable props2        = new Hashtable();
+            Hashtable firstProps    = new Hashtable();
+            Hashtable lastProps     = new Hashtable();
+            Hashtable notLastProps  = new Hashtable();
+            Hashtable notFirstProps = new Hashtable();
             Hashtable<String, List<String>> multiAttrs =
                 new Hashtable<String, List<String>>();
             StringBuilder buff     = new StringBuilder();
@@ -2326,15 +2326,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     max = Math.max(max, toks.size());
                     multiAttrs.put(key, toks);
                 } else {
-		    if(key.startsWith("first.")) {
-			firstProps.put(key.substring("first.".length()), value);
-		    } else if(key.startsWith("last.")) {
-			lastProps.put(key.substring("last.".length()), value);
-		    } else if(key.startsWith("notlast.")) {
-			notLastProps.put(key.substring("notlast.".length()), value);
-		    } else if(key.startsWith("notfirst.")) {
-			notFirstProps.put(key.substring("notfirst.".length()), value);
-		    }
+                    if (key.startsWith("first.")) {
+                        firstProps.put(key.substring("first.".length()),
+                                       value);
+                    } else if (key.startsWith("last.")) {
+                        lastProps.put(key.substring("last.".length()), value);
+                    } else if (key.startsWith("notlast.")) {
+                        notLastProps.put(key.substring("notlast.".length()),
+                                         value);
+                    } else if (key.startsWith("notfirst.")) {
+                        notFirstProps.put(
+                            key.substring("notfirst.".length()), value);
+                    }
                     props2.put(key, value);
                 }
             }
@@ -2361,14 +2364,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             for (int i = 0; i < max; i++) {
                 Hashtable _props = new Hashtable();
                 _props.putAll(props2);
-		if(i==0)
-		    _props.putAll(firstProps);
-		else
-		    _props.putAll(notFirstProps);
-		if(i==max-1)
-		    _props.putAll(lastProps);
-		else
-		    _props.putAll(notLastProps);		
+                if (i == 0) {
+                    _props.putAll(firstProps);
+                } else {
+                    _props.putAll(notFirstProps);
+                }
+                if (i == max - 1) {
+                    _props.putAll(lastProps);
+                } else {
+                    _props.putAll(notLastProps);
+                }
                 String s = template;
                 for (Enumeration keys = multiAttrs.keys();
                         keys.hasMoreElements(); ) {
@@ -2637,7 +2642,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                       true);
             boolean showLink = getProperty(wikiUtil, props, ATTR_SHOWLINK,
                                            true);
-	    System.err.println("showLink:" + showLink);
+
             boolean includeIcon = getProperty(wikiUtil, props,
                                       ATTR_INCLUDEICON, false);
             boolean includeUrl = getProperty(wikiUtil, props, "includeurl",
@@ -2710,7 +2715,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             ? getEntryDisplayName(child)
                             : linklabel);
 
-		    System.err.println("\tadding link:" + href);
                     //                    content.append(HtmlUtils.br());
                     content.append(HtmlUtils.leftRight("", href));
                 }
