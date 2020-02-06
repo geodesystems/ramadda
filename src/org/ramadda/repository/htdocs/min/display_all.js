@@ -12121,8 +12121,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
-	    let debug = false;
+	    let debug =false;
 	    let debugRows = 3;
+	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
+	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
+	    let headerStyle= this.getProperty("headerStyle");
             for (var j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {
@@ -12131,32 +12134,50 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    //todo?
 		}
                 var value = sample[j];
+		let headerLabel = header[j];
+		if(maxHeaderLength>0 && headerLabel.length>maxHeaderLength) {
+		    let orig = headerLabel;
+		    headerLabel = headerLabel.substring(0,maxHeaderLength-1)+"...";
+		    headerLabel = HtmlUtils.span(["title",orig], headerLabel);
+		}
+		if(maxHeaderWidth>0 || headerStyle) {
+		    let orig = headerLabel;
+		    let style = "";
+		    if(maxHeaderWidth>0)
+			headerLabel = headerLabel.replace(/ /g,"&nbsp;");
+		    if(maxHeaderWidth>0)
+			style+="max-width:" + maxHeaderWidth +"px;overflow-x:auto;";
+		    if(headerStyle)
+			style+=headerStyle;
+		    headerLabel = HtmlUtils.div(["title",orig,"style",style], headerLabel);
+		} 
+
                 if (j == 0 && props.includeIndex) {
                     //This might be a number or a date
                     if ((typeof value) == "object") {
                         //assume its a date
-			if(typeof value.v == "number") {
+ 			if(typeof value.v == "number") {
 			    if(forceStrings) 
-				dataTable.addColumn('string', header[j]);
+				dataTable.addColumn('string', headerLabel);
 			    else {
-				dataTable.addColumn('number', header[j]);
+				dataTable.addColumn('number', headerLabel);
 			    }
 			} else {
-			    dataTable.addColumn('date', header[j]);
+			    dataTable.addColumn('date', headerLabel);
 			}
                     } else {
-                        dataTable.addColumn((typeof value), header[j]);
+                        dataTable.addColumn((typeof value), headerLabel);
                     }
                 } else {
 		    if(j>0 && fixedValueS) {
 			dataTable.addColumn('number', this.getProperty("fixedValueLabel","Count"));
 		    } else {
 			if(field.isString()) {
-			    dataTable.addColumn('string', header[j]);
+			    dataTable.addColumn('string', headerLabel);
 			} else if(field.isFieldDate()) {
-			    dataTable.addColumn('date', header[j]);
+			    dataTable.addColumn('date', headerLabel);
 			} else {
-			    dataTable.addColumn('number', header[j]);
+			    dataTable.addColumn('number', headerLabel);
 			}
 		    }
 		    if(annotationTemplate) {
@@ -13621,9 +13642,10 @@ function TableDisplay(displayManager, id, properties) {
 					"label:Table Attributes",
 					'tableWidth=100%',
 					'frozenColumns=1',
-					'showRowNumber=true'
-
-				    ]);
+					'showRowNumber=true',
+					'maxHeaderLength=60',
+					'maxHeaderWidth=60',
+					'headerStyle=""']); 
 	},
 
         canDoGroupBy: function() {
