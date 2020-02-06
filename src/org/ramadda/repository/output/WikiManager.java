@@ -2635,11 +2635,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             boolean showHeading = getProperty(wikiUtil, props, "showHeading",
                                       true);
-
-
-
             boolean showLink = getProperty(wikiUtil, props, ATTR_SHOWLINK,
                                            true);
+	    System.err.println("showLink:" + showLink);
             boolean includeIcon = getProperty(wikiUtil, props,
                                       ATTR_INCLUDEICON, false);
             boolean includeUrl = getProperty(wikiUtil, props, "includeurl",
@@ -2712,6 +2710,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             ? getEntryDisplayName(child)
                             : linklabel);
 
+		    System.err.println("\tadding link:" + href);
                     //                    content.append(HtmlUtils.br());
                     content.append(HtmlUtils.leftRight("", href));
                 }
