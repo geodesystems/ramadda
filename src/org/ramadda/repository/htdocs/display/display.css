@@ -1887,3 +1887,16 @@ margin:10px;
     margin-right:1px;
     text-align:center;
 }
+
+
+.display-legend-color {
+    display:inline-block;
+    width: 20px;
+    height:10px;
+    margin-right:4px;
+}
+
+.display-legend-label {
+    display:inline-block;
+    margin-right:10px;
+}

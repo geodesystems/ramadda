@@ -39,6 +39,7 @@ var DISPLAY_BOXTABLE = "boxtable";
 var DISPLAY_DATATABLE = "datatable";
 var DISPLAY_PERCENTCHANGE = "percentchange";
 
+
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
     label: "Ranking",
@@ -106,6 +107,8 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_MISC
 });
+
+
 
 
 addGlobalDisplayType({
@@ -2823,3 +2826,5 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	},
     })
 }
+
+

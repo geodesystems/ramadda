@@ -28,7 +28,14 @@ addGlobalDisplayType({
 });
 
 
-
+var DISPLAY_LEGEND = "legend";
+addGlobalDisplayType({
+    type: DISPLAY_LEGEND,
+    label: "Legend",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
 
 function RamaddaFilterDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaDisplay(displayManager, id, properties));
@@ -235,4 +242,35 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
             attrs.push(this.text);
         },
     });
+}
+
+
+
+function RamaddaLegendDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaDisplay(displayManager, id, DISPLAY_LEGEND, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Legend Display",
+					'labels=""',
+					'colors=""',
+				    ]);
+	},
+	updateUI: function() {
+	    let labels = this.getProperty("labels","").split(",");
+	    let colors = this.getColorList();
+	    let html = "";
+	    let colorWidth = this.getProperty("colorWidth","20px");
+	    for(let i=0;i<labels.length;i++) {
+		let label = labels[i];
+		let color = colors[i]||"#fff";
+		html+=HtmlUtils.div(["class","display-legend-color","style","background:" + color+";width:" + colorWidth+";"]) +
+		    HtmlUtils.div(["class","display-legend-label"],label);
+	    }
+	    this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.center(html)); 
+	},
+    })
 }
