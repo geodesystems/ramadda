@@ -657,6 +657,11 @@ function DisplayThing(argId, argProperties) {
 
 
         getProperty: function(key, dflt,skipThis) {
+	    if(this.getPropertyShow) {
+		//console.log("'" + key + "=\"" (dflt||"") +"\"',");
+		if(!this.getPropertyOutput) this.getPropertyOutput = "";
+		this.getPropertyOutput+="'" + key + "=\"" +(dflt||"") +"\"',\n"
+	    }
 	    var value =  this.getPropertyInner(key,null,skipThis);
 	    if(!Utils.isDefined(value)) return dflt;
 	    return value;

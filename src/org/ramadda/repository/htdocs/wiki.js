@@ -158,43 +158,43 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 
 var wikiAttributes = {
     map: [
-	  "label:Map Attributes",
-	  "icon=\"#/icons/dots/green.png\"" ,
- 	  "width=\"100%\"",
-	  "height=\"400\"",
-	  "listentries=\"true\"",
-	  "details=\"false\"",
-	  "showLocationSearch=\"true\"",
-	  "showCheckbox=\"true\"",
-	  "showSearch=\"false\"",
-	  "icon=\"#/icons/dots/green.png\"",
-	  "iconsonly=\"false\""],
+	"label:Map Attributes",
+	"icon=\"#/icons/dots/green.png\"" ,
+ 	"width=\"100%\"",
+	"height=\"400\"",
+	"listentries=\"true\"",
+	"details=\"false\"",
+	"showLocationSearch=\"true\"",
+	"showCheckbox=\"true\"",
+	"showSearch=\"false\"",
+	"icon=\"#/icons/dots/green.png\"",
+	"iconsonly=\"false\""],
     group: [
-	    'label:Group Attributes',
-	    "showMenu=\"true\"",	      
-	    "showTitle=\"true\"",
-	    'layoutType="table|flextable|tabs|columns|rows"',
-	    'layoutColumns="1"'
-	    ],
+	'label:Group Attributes',
+	"showMenu=\"true\"",	      
+	"showTitle=\"true\"",
+	'layoutType="table|flextable|tabs|columns|rows"',
+	'layoutColumns="1"'
+    ],
     links: [
-	    'label:Links Attributes',
-	    'showTitle=""',
-	    'title=""',
-	    'includeicon="true"',
-	    'innerClass=""',
-	    'linkresource="true"',
-	    'separator=" | "',
-	    'tagopen=""',
-	    'tagclose=""'
+	'label:Links Attributes',
+	'showTitle=""',
+	'title=""',
+	'includeicon="true"',
+	'innerClass=""',
+	'linkresource="true"',
+	'separator=" | "',
+	'tagopen=""',
+	'tagclose=""'
     ],
     tabs:[
-	  'label:Tabs Attributes',
-	  'tag="html"',
-	  'tabsStyle="min|center|minarrow"',
-	  'showLink="false"', 
-	  'includeIcon="true"',
-	  'textposition="top|left|right|bottom"', 
-	  ]
+	'label:Tabs Attributes',
+	'tag="html"',
+	'tabsStyle="min|center|minarrow"',
+	'showLink="false"', 
+	'includeIcon="true"',
+	'textposition="top|left|right|bottom"', 
+    ]
 }
 
 
@@ -202,145 +202,146 @@ function wikiInitEditor(info) {
     var editor = info.editor
     var toolbar = $("#" + info.id +"_toolbar");
     editor.container.addEventListener("contextmenu", function(e) {
-	    e.preventDefault();
-	    var cursor = editor.getCursorPosition();
-	    var menu = toolbar.html();
-	    menu = menu.replace(/(menulink_[0-9]+)/g,"$1_popup");
-	    menu = menu.replace(/(_entryid)/g,"popup_entryid");	
-	    menu = menu.replace(/(_wikilink)/g,"popup_wikilink");
-	    menu = menu.replace(/(_fieldname)/g,"popup_fieldname");
-	    menu = HtmlUtils.div(["class","wiki-editor-popup-toolbar"],menu);
-	    var t = editor.getValue();
-	    var s = "";
-	    var lines = t.split("\n");
-	    /*
-	      hello
-	      {{there ... |
-	      }} how are you
-	     */
-	    var inTag = false;
-	    var charCnt=0;
-	    for(i=0;i<lines.length;i++) {
-		var line  = lines[i];
+	e.preventDefault();
+	var cursor = editor.getCursorPosition();
+	var menu = toolbar.html();
+	menu = menu.replace(/(menulink_[0-9]+)/g,"$1_popup");
+	menu = menu.replace(/(_entryid)/g,"popup_entryid");	
+	menu = menu.replace(/(_wikilink)/g,"popup_wikilink");
+	menu = menu.replace(/(_fieldname)/g,"popup_fieldname");
+	menu = HtmlUtils.div(["class","wiki-editor-popup-toolbar"],menu);
+	var t = editor.getValue();
+	var s = "";
+	var lines = t.split("\n");
+	/*
+	  hello
+	  {{there ... |
+	  }} how are you
+	*/
+	var inTag = false;
+	var charCnt=0;
+	for(i=0;i<lines.length;i++) {
+	    var line  = lines[i];
 
+	}
+
+	var index = editor.session.doc.positionToIndex(cursor);
+	var text =editor.getValue();
+	//	    console.log("cursor index:" + index +" text:" + text.substring(index-4,index));
+	var tmp = index;
+	var left = -1;
+	var right = -1;
+	var gotBracket=false;
+	while(tmp>=0) {
+	    if (text[tmp] == "{") {
+		if(gotBracket) {
+		    left = tmp;
+		    break;
+		}
+		gotBracket = true;
+		tmp--;
+		continue;
 	    }
+	    gotBracket = false;
+	    tmp--;
+	}
 
-	    var index = editor.session.doc.positionToIndex(cursor);
-	    var text =editor.getValue();
-	    //	    console.log("cursor index:" + index +" text:" + text.substring(index-4,index));
-	    var tmp = index;
-	    var left = -1;
-	    var right = -1;
-	    var gotBracket=false;
-	    while(tmp>=0) {
-		if (text[tmp] == "{") {
+	if(left>=0) {
+	    gotBracket=false;
+	    tmp = left;
+	    while(tmp<text.length) {
+		if (text[tmp] == "}") {
 		    if(gotBracket) {
-			left = tmp;
+			right = tmp;
 			break;
 		    }
 		    gotBracket = true;
-		    tmp--;
+		    tmp++;
 		    continue;
 		}
+		tmp++;
 		gotBracket = false;
-		tmp--;
 	    }
+	}
 
-	    if(left>=0) {
-		gotBracket=false;
-		tmp = left;
-		while(tmp<text.length) {
-		    if (text[tmp] == "}") {
-			if(gotBracket) {
-			    right = tmp;
-			    break;
-			}
-			gotBracket = true;
-			tmp++;
-			continue;
-		    }
-		    tmp++;
-		    gotBracket = false;
+	if(index>=left && index<=right && left>=0 && right>=left) {
+	    var chunk = text.substring(left,right+1);
+	    var tag;
+	    var tmp  = chunk.match(/\{\{ *([^ ]+)/);
+	    if(tmp && tmp.length>1)  tag = tmp[1];
+	    if(tag) {
+		var type;
+		if(tag.startsWith("display_")) {
+		    type = tag.substring(8);
+		    tag = "display";
+		} else {
+		    tmp = chunk.match(/type *= *\"([^\"]+)\"?/); 
+		    if(tmp && tmp.length>1) type=tmp[1];
 		}
-	    }
-
-	    if(index>=left && index<=right && left>=0 && right>=left) {
-		var chunk = text.substring(left,right+1);
-		var tag;
-		var tmp  = chunk.match(/\{\{ *([^ ]+)/);
-		if(tmp && tmp.length>1)  tag = tmp[1];
-		if(tag) {
-		    var type;
-		    if(tag.startsWith("display_")) {
-			type = tag.substring(8);
-			tag = "display";
-		    } else {
-			tmp = chunk.match(/type *= *\"([^\"]+)\"?/); 
-			if(tmp && tmp.length>1) type=tmp[1];
-		    }
-		    var tags = [];
-		    var extra;
-		    if(tag == "display" && type) {
-			try {
-			    var display = 
-				(new DisplayManager()).createDisplay(type,{dummy:true});
-			    if(display) {
-				tags = display.getWikiEditorTags();
-			    }
-			} catch(e) {
-			    console.log("Error getting tags for:" + type +" error:" + e  + " stack:" +e.stack);
+		var tags = [];
+		var extra;
+		if(tag == "display" && type) {
+		    try {
+			var display = 
+			    (new DisplayManager()).createDisplay(type,{dummy:true});
+			if(display) {
+			    tags = display.getWikiEditorTags();
 			}
-			extra = "<td><div class=wiki-editor-popup-header>Color Table</div><div class=wiki-editor-popup-items>"
-			for (a in Utils.ColorTables) {
-			    var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
-				showRange: false,
-				height: "20px"
-			    });
-			    ct = HtmlUtils.div(["style","width:150px;","title",a],ct);
-			    var call = "insertText(" + HtmlUtils.squote(info.id) +","+HtmlUtils.squote("colorTable=" + a)+")";
-			    extra+=HtmlUtils.onClick(call,ct);
-			}
-			extra+="</div></div></td>";
+		    } catch(e) {
+			console.log("Error getting tags for:" + type +" error:" + e  + " stack:" +e.stack);
 		    }
-		    if(wikiAttributes[tag]) {
-			wikiAttributes[tag].map(a=>tags.push(a));
-		    }
-
-
-		    if(tags.length>0)
-			menu = "<div class=wiki-editor-popup><table><tr valign=top><td><div>";
-		    tags.map(tag=>{
-			if(tag.startsWith("inlinelabel:")) {
-			    menu+="<b>" + tag.substring("inlinelabel:".length)+"</b><br>";
-			    return;
-			}
-			if(tag.startsWith("label:")) {
-			    if(menu!="") menu += "</div></td>";
-			    menu+="<td><div class=wiki-editor-popup-header> " + tag.substring(6)+ "</div><div class=wiki-editor-popup-items>";
-				return;
-			    }
-			    var t = " " + tag.replace(/\"/g,"&quot;")+" ";
-			    tag = tag.replace(/=.*$/,"");
-			    menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",tag)+"<br>\n";
+		    extra = "<td><div class=wiki-editor-popup-header>Color Table</div><div class=wiki-editor-popup-items>"
+		    for (a in Utils.ColorTables) {
+			var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
+			    showRange: false,
+			    height: "20px"
 			});
-		    
-		    menu+="</div></td>";
-		    if(extra) {
-			menu+=extra;
+			ct = HtmlUtils.div(["style","width:150px;","title",a],ct);
+			var call = "insertText(" + HtmlUtils.squote(info.id) +","+HtmlUtils.squote("colorTable=" + a)+")";
+			extra+=HtmlUtils.onClick(call,ct);
 		    }
-		    menu += "</tr></table></div>";
+		    extra+="</div></div></td>";
 		}
-	    }
-	     tooltipObject = getTooltip();
-	    tooltipObject.html(menu);
-	    tooltipObject.show();
-	    tooltipObject.position({
-		    of: $(window),
-                        my: "left top",
-                        at: "left+" +e.x +" top+" + (e.y),
-                        collision: "fit fit"
-			});
+		if(wikiAttributes[tag]) {
+		    wikiAttributes[tag].map(a=>tags.push(a));
+		}
 
+
+		if(tags.length>0)
+		    menu = "<div class=wiki-editor-popup><table><tr valign=top><td><div>";
+		tags.map(tag=>{
+		    if(tag.startsWith("inlinelabel:")) {
+			menu+="<b>" + tag.substring("inlinelabel:".length)+"</b><br>";
+			return;
+		    }
+		    if(tag.startsWith("label:")) {
+			if(menu!="") menu += "</div></td>";
+			menu+="<td><div class=wiki-editor-popup-header> " + tag.substring(6)+ "</div><div class=wiki-editor-popup-items>";
+			return;
+		    }
+		    var t = " " + tag.replace(/\"/g,"&quot;")+" ";
+		    tag = tag.replace(/=.*$/,"");
+		    menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",tag)+"<br>\n";
+		});
+		
+		menu+="</div></td>";
+		if(extra) {
+		    menu+=extra;
+		}
+		menu += "</tr></table></div>";
+	    }
+	}
+	
+
+	tooltipObject = getTooltip();
+	tooltipObject.html(menu);
+	tooltipObject.show();
+	tooltipObject.position({
+	    of: $(window),
+            my: "left top",
+            at: "left+" +e.x +" top+" + (e.y),
+            collision: "fit fit"
 	});
+    });
 }
 

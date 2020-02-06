@@ -991,8 +991,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
 		var record =dataList[rowIdx];
                 var row = this.getDataValues(record);
-//		var index = row[0];
-//		if(index.v) index  = index.v;
+		//		var index = row[0];
+		//		if(index.v) index  = index.v;
 		var theRecord = record.record;
 		var color = "";
                 if (colorBy.index >= 0) {
@@ -1038,7 +1038,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tt = tt.replace("${default}",tooltip);
 		    tooltip = tt;
 		}
-		tooltip = `<div style='padding:8px;'>${tooltip}</div>`;
+		tooltip = "div style='padding:8px;'>"+tooltip+"</div>";
 
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
@@ -1077,13 +1077,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			}
 			if(addStyle) {
 			    newRow.push(color);
-//			    if(debug && rowIdx<debugRows)
-//				console.log("\t style:" + color);
+			    //			    if(debug && rowIdx<debugRows)
+			    //				console.log("\t style:" + color);
 			}
 			if(addTooltip) {
                             newRow.push(tooltip);
-//			    if(debug && rowIdx<debugRows)
-//				console.log("\t tooltip:");
+			    //			    if(debug && rowIdx<debugRows)
+			    //				console.log("\t tooltip:");
 			}
                     }
 		    if(j>0 && fixedValueS) {
@@ -1183,13 +1183,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.hAxis.format = this.getProperty("dateFormat");
 	    }
 
+	    //	    this.getPropertyShow = true;
 	    var lineColor = this.getProperty("lineColor");
-	    var backgrondColor = this.getProperty("chartBackground");
-            this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", backgrondColor);
+	    var backgroundColor = this.getProperty("chartBackground");
+            this.setPropertyOn(chartOptions.backgroundColor, "chart.fill", "fill", backgroundColor);
             this.setPropertyOn(chartOptions.backgroundColor, "chart.stroke", "stroke", this.getProperty("chartArea.fill", ""));
             this.setPropertyOn(chartOptions.backgroundColor, "chart.strokeWidth", "strokeWidth", null);
 
-            this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", backgrondColor);
+            this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.fill", "fill", backgroundColor);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.stroke", "stroke", null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor, "chartArea.strokeWidth", "strokeWidth", null);
 
@@ -1275,6 +1276,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 };
             }
+	    if(this.getPropertyShow) {
+		this.getPropertyShow = false;
+		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
+	    }
             this.setContents(HtmlUtils.div(["id",this.getDomId(ID_CHARTS)]));
             return chartOptions;
         },
@@ -1471,17 +1476,65 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		"label:Chart Attributes",
 		"vAxisMinValue=\"\"",
 		"vAxisMaxValue=\"\"", 
-		"chartHeight=\"\"",
-		"chartHeight=\"\"",
-		"chartWidth=\"\"",
-		"chartLeft=\"\"",
-		"chartRight=\"\"",
 		'tooltipFields=""',
 		'annotations="date,label,desc;date,label,desc; e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;"',
 		'annotationFields=""',	
 		'annotationLabelField=""',
 		'indexField="alternate field to use as index"',
-		'forceStrings="if index is a string set to true"'
+		'forceStrings="if index is a string set to true"',
+		'inlinelabel:Chart Layout',
+		"chartHeight=\"\"",
+		"chartWidth=\"\"",
+		"chartLeft=\"0\"",
+		"chartRight=\"0\"",
+		"chartTop=\"0\"",
+		"chartBottom=\"0\"",
+		"inlinelabel:Misc Options",
+		'lineColor=""',
+		'chartBackground=""',
+		'chart.fill=""',
+		'chartArea.fill=""',
+		'chart.stroke=""',
+		'chart.strokeWidth=""',
+		'chartArea.fill=""',
+		'chartArea.stroke=""',
+		'chartArea.strokeWidth=""',
+		'gridlines.color="transparent"',
+		'minorGridLines.color="transparent"',
+		'gridlines.color=""',
+		'hAxis.gridlines.color=""',
+		'hAxis.minorGridlines.color="transparent"',
+		'baselineColor=""',
+		'hAxis.baselineColor=""',
+		'gridlines.color=""',
+		'vAxis.gridlines.color=""',
+		'vAxis.minorGridlines.color="transparent"',
+		'baselineColor=""',
+		'vAxis.baselineColor=""',
+		'textColor="#000"',
+		'textBold="true"',
+		'axis.text.color="#000"',
+		'hAxis.text.color="#000"',
+		'axis.text.color="#000"',
+		'vAxis.text.color="#000"',
+		'hAxis.text.bold="false"',
+		'vAxis.text.bold="false"',
+		'vAxisText=""',
+		'vAxis.text=""',
+		'slantedText="true"',
+		'hAxis.slantedText=""',
+		'hAxis.text.color="#000"',
+		'vAxis.text.color="#000"',
+		'legend.text.color="#000"',
+		'hAxis.ticks=""',
+		'hAxis.ticks=""',
+		'vAxis.ticks=""',
+		'vAxis.ticks=""',
+		'useMultipleAxes="true"',
+		'showTrendLines="true"',
+
+
+
 	    ]
 	    myTags.map(tag=>t.push(tag));
 	    return t;
@@ -1604,7 +1657,7 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
     $.extend(this, {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["barWidth=\"10\""])},
+				    ["inlinelabel:Bar Chart","barWidth=\"10\""])},
 
         canDoGroupBy: function() {
             return true;
@@ -2226,6 +2279,17 @@ function TableDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Table Attributes",
+					'tableWidth=100%',
+					'frozenColumns=1',
+					'showRowNumber=true'
+
+				    ]);
+	},
+
         canDoGroupBy: function() {
             return true;
         },
@@ -2247,6 +2311,11 @@ function TableDisplay(displayManager, id, properties) {
                 chartOptions.height = "300px";
             }
             chartOptions.allowHtml = true;
+	    if(this.getProperty("tableWidth"))
+		chartOptions.width=this.getProperty("tableWidth");
+            chartOptions.frozenColumns =this.getProperty("frozenColumns",0);
+	    chartOptions.showRowNumber=this.getProperty("showRowNumber",false);
+
             if (dataList.length && this.getDataValues(dataList[0]).length > 4) {
                 chartOptions.cssClassNames = {
                     headerCell: 'display-table-header-max'

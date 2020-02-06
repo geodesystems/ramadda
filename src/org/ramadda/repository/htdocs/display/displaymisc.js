@@ -295,7 +295,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		let label = node.label;
 		if(!label) label = node.id;
 		const fontSize = 12/globalScale;
-		ctx.font = `${fontSize}px Sans-Serif`;
+		ctx.font = fontSize +"px Sans-Serif";
 		let textWidth = ctx.measureText(label).width;
 		if(!drawText)
 		    textWidth=nodeWidth;
@@ -2331,7 +2331,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 
 	    cats.map(cat=>{
 		let length = catMap[cat].list.length;
-		let row = `<tr valign=top><td align=right class=display-colorboxes-header>${cat} (${length}) </td><td width=${tableWidth}>`;
+		let row = "<tr valign=top><td align=right class=display-colorboxes-header>" +cat+ "("+length+")</td><td width=${tableWidth}>";
 		if(colorBy.index) {
 		    catMap[cat].list.sort((a,b)=>{
 			return b.getData()[colorBy.index]-a.getData()[colorBy.index];
@@ -2722,7 +2722,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		    label = label.replace(/ /g,"&nbsp;").replace("-","&nbsp;");
 		    label = HtmlUtils.div(["tootltip",column.label,"class","display-datatable-header-slant"],label);
 		}		    
-		table+=`<td class=display-datatable-header align=center>${label}</td>`;
+		table+="<td class=display-datatable-header align=center>" +label +"</td>";
 	    });
 	    table+="</tr>";
 
@@ -2769,7 +2769,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    }
 	    table+="</tr>";
 	    table+="<tr><td></td>";
-	    table+=`<td colspan=${cellCount} class=display-datatable-footer align=center id='` + this.getDomId("ct")+"'></td>";
+	    table+="<td colspan=" +cellCount +"class=display-datatable-footer align=center id='" + this.getDomId("ct")+"'></td>";
 	    table+="</tr>";
 	    table +="</table>";
 
