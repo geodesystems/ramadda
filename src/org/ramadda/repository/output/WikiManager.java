@@ -573,8 +573,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String getProperty(WikiUtil wikiUtil, Hashtable props,
                               String prop, String dflt) {
         String value = Utils.getProperty(props, prop, (String) null);
+        if (value == null) {
+	    value =  Utils.getProperty(props, prop.toLowerCase(), (String) null);
+	}
         if ((value == null) && (wikiUtil != null)) {
             value = (String) wikiUtil.getWikiProperty(prop);
+	    if (value == null) {
+		value = (String) wikiUtil.getWikiProperty(prop.toLowerCase());
+	    }
         }
         if (value == null) {
             return dflt;
