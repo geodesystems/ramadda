@@ -8591,20 +8591,41 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 					"label:Legend Display",
 					'labels=""',
 					'colors=""',
+					'inBox=true',
+					'labelColor=#fff',
+					'labelColors=color1,color2,...',
+					'orientation=vertical'
 				    ]);
 	},
 	updateUI: function() {
+	    
 	    let labels = this.getProperty("labels","").split(",");
 	    let colors = this.getColorList();
 	    let html = "";
 	    let colorWidth = this.getProperty("colorWidth","20px");
+	    let labelColor = this.getProperty("labelColor","#000");
+	    let labelColors = this.getProperty("labelColors")?this.getProperty("labelColors").split(","):null;
+	    let inBox = this.getProperty("inBox",false);
+	    let orientation = this.getProperty("orientation","horizontal");
+	    let delim = orientation=="horizontal"?" ":"<br>";
 	    for(let i=0;i<labels.length;i++) {
 		let label = labels[i];
 		let color = colors[i]||"#fff";
-		html+=HtmlUtils.div(["class","display-legend-color","style","background:" + color+";width:" + colorWidth+";"]) +
-		    HtmlUtils.div(["class","display-legend-label"],label);
+		if(i>0) html+=delim;
+		if(!inBox) {
+		    html+=HtmlUtils.div(["class","display-legend-color","style","background:" + color+";width:" + colorWidth+";"+
+					 "height:15px;"]) +
+			HtmlUtils.div(["class","display-legend-label"],label);
+		} else {
+		    let lc = labelColors?labelColors[i]:labelColor || labelColor;
+		    html+=HtmlUtils.div(["class","display-legend-color","style","margin-left:8px;background:" + color+";"],
+					HtmlUtils.div(["class","display-legend-label","style","margin-left:8px;margin-right:8x;color:" + lc+";"],label));
+		}
 	    }
-	    this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.center(html)); 
+	    if(orientation!="vertical") {
+		html = HtmlUtils.center(html); 
+	    }
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	},
     })
 }
