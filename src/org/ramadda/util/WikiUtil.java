@@ -1753,6 +1753,16 @@ public class WikiUtil {
             }
 
 
+
+            if (tline.equals("+relative")) {
+		buff.append("<div style=\"position:relative;\">\n");
+		continue;
+	    }
+	    if (tline.equals("-relative")) {
+		buff.append("</div>\n");
+		continue;
+	    }
+
             if (tline.equals("+centerdiv")) {
                 buff.append(
                     HtmlUtils.open(
