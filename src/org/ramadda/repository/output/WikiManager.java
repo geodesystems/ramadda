@@ -258,6 +258,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         "loadData","false", 
                                         "showDefault","true"),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Legend",
+                                        ATTR_TYPE, "legend","labels","","colors",""), 
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Animation",
                                         ATTR_TYPE, "animation"), 
                             new WikiTag(WIKI_TAG_ODOMETER,
@@ -2297,6 +2300,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MULTI)) {
             Hashtable props2 = new Hashtable();
+	    Hashtable firstProps = new Hashtable();
+	    Hashtable lastProps = new Hashtable();
+	    Hashtable notLastProps = new Hashtable();
+	    Hashtable notFirstProps = new Hashtable();
             Hashtable<String, List<String>> multiAttrs =
                 new Hashtable<String, List<String>>();
             StringBuilder buff     = new StringBuilder();
@@ -2319,6 +2326,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     max = Math.max(max, toks.size());
                     multiAttrs.put(key, toks);
                 } else {
+		    if(key.startsWith("first.")) {
+			firstProps.put(key.substring("first.".length()), value);
+		    } else if(key.startsWith("last.")) {
+			lastProps.put(key.substring("last.".length()), value);
+		    } else if(key.startsWith("notlast.")) {
+			notLastProps.put(key.substring("notlast.".length()), value);
+		    } else if(key.startsWith("notfirst.")) {
+			notFirstProps.put(key.substring("notfirst.".length()), value);
+		    }
                     props2.put(key, value);
                 }
             }
@@ -2345,6 +2361,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             for (int i = 0; i < max; i++) {
                 Hashtable _props = new Hashtable();
                 _props.putAll(props2);
+		if(i==0)
+		    _props.putAll(firstProps);
+		else
+		    _props.putAll(notFirstProps);
+		if(i==max-1)
+		    _props.putAll(lastProps);
+		else
+		    _props.putAll(notLastProps);		
                 String s = template;
                 for (Enumeration keys = multiAttrs.keys();
                         keys.hasMoreElements(); ) {
