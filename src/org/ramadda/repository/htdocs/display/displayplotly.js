@@ -14,7 +14,8 @@ var DISPLAY_PLOTLY_TREEMAP = "ptreemap";
 var DISPLAY_PLOTLY_TERNARY = "ternary";
 var DISPLAY_PLOTLY_SUNBURST= "sunburst";
 var DISPLAY_PLOTLY_TEXTCOUNT = "textcount";
-var DISPLAY_COMBOCHART = "combochart";
+var DISPLAY_PLOTLY_COMBOCHART = "combochart";
+var DISPLAY_PLOTLY_PARCOORDS = "parcoords";
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
@@ -38,8 +39,16 @@ addGlobalDisplayType({
     category: CATEGORY_PLOTLY
 });
 addGlobalDisplayType({
-    type: DISPLAY_COMBOCHART,
+    type: DISPLAY_PLOTLY_COMBOCHART,
     label: "Combo Chart",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CHARTS
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_PLOTLY_PARCOORDS,
+    label: "Parallel Coords",
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS
@@ -948,6 +957,9 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             };
             this.setDimensions(layout, 2);
             this.makePlot(plotData, layout);
+
+
+
 	    if(didColorBy) {
 		colorBy.displayColorTable();
 	    }
@@ -1319,7 +1331,7 @@ function TextcountDisplay(displayManager, id, properties) {
 
 
 function CombochartDisplay(displayManager, id, properties) {
-    let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_COMBOCHART, properties);
+    let SUPER  =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_COMBOCHART, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -1433,3 +1445,87 @@ function CombochartDisplay(displayManager, id, properties) {
 
 
 
+function RamaddaParcoordsDisplay(displayManager, id, properties) {
+    let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_PARCOORDS, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        updateUI: function() {
+            var records = this.filterData();
+            if (!records) return;
+	    let fields   = this.getFieldsByIds(null, this.getProperty("fields","",true));
+            if (fields.length == 0) {
+                this.displayError("No fields specified");
+                return;
+            }
+	    let dimensions =[];
+	    let maxLabelLength = this.getProperty("maxLabelLength",200/fields.length);
+	    fields.map(f=>{
+		let col = this.getColumnValues(records, f)
+		let values = col.values;
+		let ticktext = null;
+		let tickvals = null;
+		if(f.isString()) {
+		    let tmpValues = [];
+		    let seen = {};
+		    ticktext =[];
+		    tickvals =[];
+		    let cnt = 1;
+		    values.map(v=>{
+			if(!seen[v]) {
+			    seen[v] = cnt++;
+			    ticktext.push(v);
+			    tickvals.push(seen[v]);
+			}
+			tmpValues.push(seen[v]);
+		    });
+		    values = tmpValues;
+		}
+
+		let label = this.getProperty(f.getId()+".label",f.getLabel());
+		if(label.length>maxLabelLength)
+		    label = label.substring(0,maxLabelLength-1)+"...";
+		let dim  = {
+		    label:label,
+		    values:values
+		};
+		if(this.getProperty(f.getId()+".constraintrange")) {
+		    dim.constraintrange = this.getProperty(f.getId()+".constraintrange").split(",");
+		}
+		if(this.getProperty(f.getId()+".tickvals")) {
+		    dim.tickvals = this.getProperty(f.getId()+".tickvals").split(",");
+		}
+		if(this.getProperty(f.getId()+".ticktext")) {
+		    dim.ticktext = this.getProperty(f.getId()+".ticktext").split(",");
+		} else {
+		    dim.ticktext = ticktext;
+		    dim.tickvals = tickvals;		    
+		}
+		dimensions.push(dim);
+	    });
+
+	    var trace = {
+		type: 'parcoords',
+		line: {
+		    color: this.getProperty("color", 'blue')
+		},
+		dimensions:dimensions,
+	    };
+
+	    var data = [trace]	    
+	    let layout  = {
+		margin: {
+		    l:150,
+		    t:50,
+		}
+	    };
+	    this.setDimensions(layout, 2);
+	    
+            this.makePlot(data, layout);
+//	    if(didColorBy) {
+//		colorBy.displayColorTable();
+//	    }
+
+        },
+    });
+}

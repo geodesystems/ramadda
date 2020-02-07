@@ -6483,6 +6483,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if ((displayType.equals("radar") || displayType.equals(
                 "windrose") || displayType.equals(
                 "dotplot") || displayType.equals(
+                "parcoords") || displayType.equals(
                 "splom") || displayType.equals(
                 "3dscatter") || displayType.equals(
                 "3dmesh") || displayType.equals(
