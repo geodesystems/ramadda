@@ -29259,27 +29259,47 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
 		dimensions.push(dim);
 	    });
 
+	    let color = this.getProperty("color", 'blue');
+	    let colorByField = this.getFieldById(null, this.getProperty("colorBy"));
+	    let line = {};
+	    let ct = null;
+	    let ctMin=0,ctMax=0;
+            if (colorByField) {
+		let colorValues =   this.getColumnValues(records, colorByField);
+		ctMin = colorValues.min;
+		ctMax = colorValues.max;
+		line.color  = colorValues.values;
+		ct = this.getColorTable(true,null,null);
+		if(ct) {
+		    let colors = [];
+		    let step   = 1/(ct.length-1);
+		    ct.map((c,idx)=>{
+			let v = idx*step;
+			colors.push([v,c]);
+		    });
+		    line.colorscale = colors;
+		}
+	    }
+
 	    var trace = {
 		type: 'parcoords',
-		line: {
-		    color: this.getProperty("color", 'blue')
-		},
+		line: line,
 		dimensions:dimensions,
 	    };
 
 	    var data = [trace]	    
 	    let layout  = {
 		margin: {
-		    l:150,
+		    l:175,
 		    t:50,
+		    b:25
 		}
 	    };
 	    this.setDimensions(layout, 2);
 	    
             this.makePlot(data, layout);
-//	    if(didColorBy) {
-//		colorBy.displayColorTable();
-//	    }
+	    if(ct)
+		this.displayColorTable(ct, ID_COLORTABLE,ctMin,ctMax);
 
         },
     });
