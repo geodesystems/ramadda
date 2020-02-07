@@ -669,7 +669,7 @@ function DisplayThing(argId, argProperties) {
 
         getPropertyInner: function(key, dflt,skipThis) {	    
 	    let debug = false;
-//	    let debug = key== "colorTable";
+	    //	    let debug = key== "colorTable";
 	    if(debug) console.log("getProperty");
             if(!skipThis && Utils.isDefined(this[key])) {
 		if(debug) console.log("\tgetProperty-1");
@@ -1036,7 +1036,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
 		    intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
 		    var result =  Utils.pSBC(intensity,color);
-//		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
+		    //		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
 		    return result || color;
 		},
 		convertColorAlpha: function(color, colorByValue) {
@@ -2478,18 +2478,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
             return records;
         },
-
-
-	drawSparkLine: function(dom,w,h,state,min,max,colorBy,attrs) {
+	drawSparkLine: function(dom,w,h,data, records,min,max,colorBy,attrs) {
 	    if(!attrs) attrs = {};
-	    const data = state.data;
 	    const MARGIN       = { top: 5, right: 5, bottom: 5, left: 5 };
 	    const INNER_WIDTH  = w - MARGIN.left - MARGIN.right;
 	    const INNER_HEIGHT = h - MARGIN.top - MARGIN.bottom;
-	    const BAR_WIDTH  = (w - data.length) / data.length;
+	    const BAR_WIDTH  = w / data.length;
 	    const x    = d3.scaleLinear().domain([0, data.length]).range([0, INNER_WIDTH]);
 	    const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
 	    const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
+
+	    var tt = d3.select("body").append("div")	
+		.attr("class", "sparkline-tooltip")				
+		.style("opacity", 0);
 
 	    const svg = d3.select(dom).append('svg')
 		  .attr('width', w)
@@ -2500,20 +2501,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		  .x((d, i) => x(i))
 		  .y(d => y(d));
 
-	    let lineColor = attrs.lineColor||this.getProperty("sparkLinesLineColor","#000");
-	    let barColor = attrs.barColor ||this.getProperty("sparkLinesBarColor","MediumSeaGreen");	    
-	    let circleColor = attrs.circleColor ||this.getProperty("sparkLinesCircleColor","#000");
-	    let circleRadius = attrs.circleRadius ||this.getProperty("sparkLinesCircleRadius",1);
-	    let lineWidth = attrs.lineWidth ||this.getProperty("sparkLinesLineWidth",1);
+	    let lineColor = attrs.lineColor||this.getProperty("sparklineLineColor","#000");
+	    let barColor = attrs.barColor ||this.getProperty("sparklineBarColor","MediumSeaGreen");	    
+	    let circleColor = attrs.circleColor ||this.getProperty("sparklineCircleColor","#000");
+	    let circleRadius = attrs.circleRadius ||this.getProperty("sparklineCircleRadius",1);
+	    let lineWidth = attrs.lineWidth ||this.getProperty("sparklineLineWidth",1);
+	    let defaultShowEndPoints = true;
 	    let getColor = (d,i,dflt)=>{
 		if (colorBy && colorBy.index >= 0) {
-		    let record = state.records[i];
+		    let record = records[i];
                     let value = record.getData()[colorBy.index];
 		    return  colorBy.getColor(value, record);
 		}
 		return dflt;
 	    };
-	    if(attrs.showLines|| this.getProperty("sparkLinesShowLines",true)) {
+	    if(attrs.showLines|| this.getProperty("sparklineShowLines",true)) {
 		svg.selectAll('line').data(data).enter().append("line")
 		    .attr('x1', (d,i)=>{return x(i)})
 		    .attr('y1', (d,i)=>{return y(d)})
@@ -2521,9 +2523,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
 		    .attr("stroke-width", lineWidth)
                     .attr("stroke", (d,i)=>getColor(d,i,lineColor))
+		    .style("cursor", "pointer");
 	    }
 
-	    if(attrs.showBars|| this.getProperty("sparkLinesShowBars",false)) {
+	    if(attrs.showBars|| this.getProperty("sparklineShowBars",false)) {
+		defaultShowEndPoints = false;
 		svg.selectAll('.bar').data(data)
 		    .enter()
 		    .append('rect')
@@ -2532,29 +2536,51 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    .attr('y', d => y(d))
 		    .attr('width', BAR_WIDTH)
 		    .attr('height', d => h-y(d))
-		    .attr('fill', (d,i)=>getColor(d,i,barColor));
+		    .attr('fill', (d,i)=>getColor(d,i,barColor))
+		    .style("cursor", "pointer")
 	    }
 
-	    if(attrs.showCircles || this.getProperty("sparkLinesShowCircles",false)) {
+	    if(attrs.showCircles || this.getProperty("sparklineShowCircles",false)) {
 		svg.selectAll('circle').data(data).enter().append("circle")
 		    .attr('r', circleRadius)
 		    .attr('cx', (d,i)=>{return x(i)})
 		    .attr('cy', (d,i)=>{return y(d)})
-		    .attr('fill', (d,i)=>getColor(d,i,circleColor));
+		    .attr('fill', (d,i)=>getColor(d,i,circleColor))
+		    .style("cursor", "pointer");
 	    }
 
-	    if(attrs.showEndpoints || this.getProperty("sparkLinesShowEndPoints",true)) {
+	    if(attrs.showEndpoints || this.getProperty("sparklineShowEndPoints",defaultShowEndPoints)) {
 		svg.append('circle')
-		    .attr('r', attrs.endPointRadius|| this.getProperty("sparkLinesEndPointRadius",2))
+		    .attr('r', attrs.endPointRadius|| this.getProperty("sparklineEndPointRadius",2))
 		    .attr('cx', x(0))
 		    .attr('cy', y(data[0]))
-		    .attr('fill', attrs.endPoint1Color || this.getProperty("sparkLinesEndPoint1Color") || getColor(data[0],0,this.getProperty("sparkLinesEndPoint1Color",'steelblue')));
+		    .attr('fill', attrs.endPoint1Color || this.getProperty("sparklineEndPoint1Color") || getColor(data[0],0,this.getProperty("sparklineEndPoint1Color",'steelblue')));
 		svg.append('circle')
-		    .attr('r', attrs.endPointRadius|| this.getProperty("sparkLinesEndPointRadius",2))
+		    .attr('r', attrs.endPointRadius|| this.getProperty("sparklineEndPointRadius",2))
 		    .attr('cx', x(data.length - 1))
 		    .attr('cy', y(data[data.length - 1]))
-		    .attr('fill', attrs.endPoint2Color || this.getProperty("sparkLinesEndPoint2Color")|| getColor(data[data.length-1],data.length-1,this.getProperty("sparkLinesEndPoint2Color",'tomato')));
+		    .attr('fill', attrs.endPoint2Color || this.getProperty("sparklineEndPoint2Color")|| getColor(data[data.length-1],data.length-1,this.getProperty("sparklineEndPoint2Color",'tomato')));
 	    }
+	    let _this = this;
+	    let doTooltip = this.getProperty("sparklineDoTooltip", false)  || attrs.doTooltip;
+	    svg.on("click", function() {
+		var coords = d3.mouse(this);
+		let record = records[Math.round(x.invert(coords[0]))]
+		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {select:true,record: record});
+		if(!doTooltip) return;
+		let html = _this.getRecordHtml(record);
+		let ele = $(dom);
+		let offset = ele.offset().top + ele.height();
+		tt.transition().duration(200).style("opacity", .9);		
+		tt.html(html)
+		    .style("left", (d3.event.pageX) + "px")		
+		    .style("top", offset + "px");	
+	    })
+		.on("mouseout", function(d) {		
+		    tt.transition()		
+			.duration(500)		
+			.style("opacity", 0);
+		});
 	},
 
 
@@ -3734,11 +3760,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var html = this.getHtml();
                 $("#" + divid).html(html);
 		/*
-		$("#"+divid).css("position","absolute");
-		let offset = this.getProperty("displayIndex",0)*10;
-		$("#"+divid).css("top",offset+"px");
-		$("#"+divid).css("left","0px");
-		$("#"+divid).css("right","0px");
+		  $("#"+divid).css("position","absolute");
+		  let offset = this.getProperty("displayIndex",0)*10;
+		  $("#"+divid).css("top",offset+"px");
+		  $("#"+divid).css("left","0px");
+		  $("#"+divid).css("right","0px");
 		*/
             } else {
                 console.log("error: no div defined for display:" + this.getType());
@@ -4202,7 +4228,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!value) {
 			value = input.val();
 		    }
-	    
+		    
 		    if(value==null) return;
 		    if(!Array.isArray(value) && input.attr("isButton")) {
 			//			console.log(_this.type +" " +Array.isArray(value));
@@ -4222,7 +4248,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    _this.settingFilterValue = true;
 		    _this.dataFilterChanged();
 
-//		    console.log("ID:" + id +" v:" + value +" " + fieldId);
+		    //		    console.log("ID:" + id +" v:" + value +" " + fieldId);
 		    var args = {
 			property: "filterValue",
 			id:id,
@@ -5340,7 +5366,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
 
-	
+		
 
                 let allNull = true;
                 let allZero = true;
@@ -5741,9 +5767,9 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         pageHasLoaded: function(display) {
 	    //Maybe we don't need to do this since the displays get called globally
-//            for (var i = 0; i < this.displays.length; i++) {
-//                this.displays[i].setDisplayReady(true);
-//            }
+	    //            for (var i = 0; i < this.displays.length; i++) {
+	    //                this.displays[i].setDisplayReady(true);
+	    //            }
             this.doLayout();
         },
         addDisplay: function(display) {
@@ -5946,13 +5972,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         }, 
 	initDisplays: function() {
 	    this.getDisplaysToLayout().map(display=>{
-               try {
-                   display.initDisplay();
-               } catch (e) {
-                   display.displayError("Error creating display:<br>" + e);
-                   console.log("error creating display: " + this.displays[i].getType());
-                   console.log(e.stack)
-               }
+		try {
+                    display.initDisplay();
+		} catch (e) {
+                    display.displayError("Error creating display:<br>" + e);
+                    console.log("error creating display: " + this.displays[i].getType());
+                    console.log(e.stack)
+		}
             });
 	},
         displayData: function() {},
@@ -6256,15 +6282,15 @@ function DisplayAnimation(display) {
 	    if(this.display.getProperty("animationShowButtons",true)) {
 		var short = display.getProperty("animationWidgetShort",false);
 		if(!short)
-			buttons +=   HtmlUtils.span(["id", this.getDomId(ID_BEGIN),"title","Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
-		    buttons += HtmlUtils.span(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
-		    if(!short)
-			buttons +=HtmlUtils.span(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")); 
-		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-step-forward"));
-		    if(!short)
-			buttons +=HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
-		    if(!short)
-			buttons += HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync"));
+		    buttons +=   HtmlUtils.span(["id", this.getDomId(ID_BEGIN),"title","Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
+		buttons += HtmlUtils.span(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
+		if(!short)
+		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")); 
+		buttons +=HtmlUtils.span(["id", this.getDomId(ID_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-step-forward"));
+		if(!short)
+		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
+		if(!short)
+		    buttons += HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync"));
 	    }
 	    buttons+=HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-animation-label"]);
             buttons = HtmlUtils.div([ "class","display-animation-buttons"], buttons);
@@ -6589,4 +6615,6 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         }
     })
 }
+
+
 

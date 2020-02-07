@@ -2778,9 +2778,11 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 		this.setProperty("recordTemplate","${default}");
 	    }
             let records = this.filterData();
-	    if(records && records.length>0) {
-		this.lastHtml = this.getRecordHtml(records[0]);
-		this.setContents(this.lastHtml);
+	    if(this.getProperty("showDefault",true)) {
+		if(records && records.length>0) {
+		    this.lastHtml = this.getRecordHtml(records[0]);
+		    this.setContents(this.lastHtml);
+		}
 	    }
         },
         handleEventRecordSelection: function(source, args) {

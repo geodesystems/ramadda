@@ -2172,15 +2172,14 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		}
 		if(sparkLineField) {
 		    let value = record.getValue(sparkLineField.getIndex());
-		    if(value==0) value=NaN;
 		    if(!isNaN(value)) {
 			minData = i==0?value:Math.min(minData, value);
 			maxData = i==0?value:Math.max(maxData, value);
 			stateData[state].data.push(value);
 			stateData[state].records.push(record);
 		    }
-
 		}
+		//TODO: sort the state data on time
                 if (colorBy.index >= 0) {
                     var value = record.getData()[colorBy.index];
 		    var color = colorBy.getColor(value, record);
@@ -2204,7 +2203,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let innerId = s.cellId+"_inner";
 		    let innerDiv = HtmlUtils.div(["id", innerId, "style","width:" + w +"px;height:" + (w-vOffset) +"px;position:absolute;left:0px;top:" + vOffset+"px;"],"");
 		    $("#" + s.cellId).append(innerDiv);
-		    this.drawSparkLine("#"+innerId,w,w-vOffset,s,minData,maxData,sparkLinesColorBy);
+		    this.drawSparkLine("#"+innerId,w,w-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
 		});
 	    }
 
@@ -2219,6 +2218,9 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    });
             if (colorBy.index >= 0) {
 		colorBy.displayColorTable();
+	    }
+	    if (sparkLinesColorBy.index >= 0) {
+		sparkLinesColorBy.displayColorTable();
 	    }
 	},
 

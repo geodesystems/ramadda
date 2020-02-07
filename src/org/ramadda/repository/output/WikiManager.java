@@ -264,6 +264,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag("display_areachart", "Area chart"),
                             new WikiTag("display_scatterplot",  "Scatter Plot"),
                             new WikiTag("display_histogram",    "Histogram"),
+                            new WikiTag("display_sparkline",    "Sparkline","field",""),
                             new WikiTag("display_bubble",
                                         "Bubble Chart",
 					ATTR_WIDTH, "500",
@@ -6412,15 +6413,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
             sb.append("\n");
-
-
             request.putExtraProperty("added displaymanager", "true");
             topProps.addAll(propList);
             js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
-
             return;
         }
 
@@ -6450,14 +6448,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             anotherDivId = HtmlUtils.getUniqueId("displaydiv");
         }
         anotherDivId = anotherDivId.replace("$entryid", entry.getId());
-        sb.append(HtmlUtils.div("", HtmlUtils.id(anotherDivId)));
+        sb.append(HtmlUtils.div("",  HtmlUtils.id(anotherDivId)));
         Utils.add(propList, "divid", Json.quote(anotherDivId));
         //        }
         props.remove("layoutHere");
 
+        boolean needToCreateGroup =
+            request.getExtraProperty("added displaymanager") == null;
+
         //Put the main div after the display div
-        sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
-        sb.append("\n");
+        if (needToCreateGroup) {
+	    sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
+	    sb.append("\n");
+	}
 
         for (String arg : new String[] {
             "eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
@@ -6547,8 +6550,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             js,
             "This gets the global display manager or creates it if not created");
 
-        boolean needToCreateGroup =
-            request.getExtraProperty("added displaymanager") == null;
         if (needToCreateGroup) {
             request.putExtraProperty("added displaymanager", "true");
             Utils.concatBuff(

@@ -38,6 +38,7 @@ var DISPLAY_COOCCURENCE = "cooccurence";
 var DISPLAY_BOXTABLE = "boxtable";
 var DISPLAY_DATATABLE = "datatable";
 var DISPLAY_PERCENTCHANGE = "percentchange";
+var DISPLAY_SPARKLINE = "sparkline";
 
 
 addGlobalDisplayType({
@@ -103,6 +104,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_PERCENTCHANGE,
     label: "Percent Change",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_SPARKLINE,
+    label: "Sparkline",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -2494,8 +2503,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
             HtmlUtils.formatTable("#" + this.getDomId("percentchange"), {ordering:true
-                //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
-            });
+									 //scrollY: this.getProperty("tableSummaryHeight", tableHeight)
+									});
 	},
     })
 }
@@ -2565,7 +2574,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 	    let columnSelector = this.getProperty("columnSelector",selectors[0][0]);
 	    let rowSelector = this.getProperty("rowSelector",selectors[1][0]);
-//	    console.log(rowSelector + " " + columnSelector);
+	    //	    console.log(rowSelector + " " + columnSelector);
 
 	    let getValues =(s=>{
 		let values = [];
@@ -2828,3 +2837,68 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 }
 
 
+function RamaddaSparklineDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Sparkline Attributes",
+					'showDate=true',
+					'sparklineWidth=60',
+					'sparklineHeight=20',
+					'sparklineLineColor="#000"',
+					'sparklineBarColor="MediumSeaGreen"',
+					'sparklineCircleColor="#000"',
+					'sparklineCircleRadius="1"',
+					'sparklineLineWidth="1"',
+					'sparklineShowLines="true"',
+					'sparklineShowBars=""',
+					'sparklineShowCircles=""',
+					'sparklineShowEndPoints="true"',
+					'sparklineEndPointRadius="2"',
+					'sparklineEndPoint1Color=""',
+					'sparklineEndPoint1Color="steelblue"',
+					'sparklineEndPointRadius="2"',
+					'sparklineEndPoint2Color=""',
+					'sparklineEndPoint2Color="tomato"',
+					'sparklineDoTooltip="true"',
+				    ]);
+	},
+        getLoadingMessage: function(msg) {
+	    return "Loading...";
+	},
+	updateUI: function() {
+	    let w = this.getProperty("sparklineWidth",60);
+	    let h = this.getProperty("sparklineHeight",20);
+	    $("#"+this.getProperty(PROP_DIVID)).css("display","inline-block");
+	    $("#"+this.getProperty(PROP_DIVID)).css("vertical-align","bottom");
+	    var records = this.filterData();
+	    if(!records) return;
+	    let field = this.getFieldById(null, this.getProperty("field"));
+	    if(field==null) {
+		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
+		return;
+	    }
+//	    this.getPropertyShow = true;
+	    let id = this.getDomId("inner");
+	    let showDate = this.getProperty("showDate",false);
+	    html = HtmlUtils.div(["class","display-sparkline-sparkline","id",this.getDomId("inner"),"style","width:" + w+"px;height:" + h+"px;"]);
+	    if(showDate) {
+		html = HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
+		    HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))
+	    }
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    let col = this.getColumnValues(records, field);
+	    let colorBy = this.getColorByInfo(records);
+	    this.drawSparkLine("#"+id,w,h,col.values,records,col.min,col.max,colorBy);
+	    if(this.getPropertyShow) {
+		this.getPropertyShow = false;
+		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
+	    }
+
+	}
+    });
+}
