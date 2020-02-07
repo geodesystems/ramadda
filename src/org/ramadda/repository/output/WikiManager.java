@@ -1878,7 +1878,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             return "";
-        } else if (theTag.equals(WIKI_TAG_PROPERTY)) {
+        } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTY)) {
             String name  = (String) props.get("name");
             String value = (String) props.get("value");
             if ((name != null) && (value != null)) {
