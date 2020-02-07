@@ -2480,6 +2480,84 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
 
+	drawSparkLine: function(dom,w,h,state,min,max,colorBy,attrs) {
+	    if(!attrs) attrs = {};
+	    const data = state.data;
+	    const MARGIN       = { top: 5, right: 5, bottom: 5, left: 5 };
+	    const INNER_WIDTH  = w - MARGIN.left - MARGIN.right;
+	    const INNER_HEIGHT = h - MARGIN.top - MARGIN.bottom;
+	    const BAR_WIDTH  = (w - data.length) / data.length;
+	    const x    = d3.scaleLinear().domain([0, data.length]).range([0, INNER_WIDTH]);
+	    const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
+	    const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
+
+	    const svg = d3.select(dom).append('svg')
+		  .attr('width', w)
+		  .attr('height', h)
+		  .append('g')
+		  .attr('transform', 'translate(' + MARGIN.left + ',' + MARGIN.top + ')');
+	    const line = d3.line()
+		  .x((d, i) => x(i))
+		  .y(d => y(d));
+
+	    let lineColor = attrs.lineColor||this.getProperty("sparkLinesLineColor","#000");
+	    let barColor = attrs.barColor ||this.getProperty("sparkLinesBarColor","MediumSeaGreen");	    
+	    let circleColor = attrs.circleColor ||this.getProperty("sparkLinesCircleColor","#000");
+	    let circleRadius = attrs.circleRadius ||this.getProperty("sparkLinesCircleRadius",1);
+	    let lineWidth = attrs.lineWidth ||this.getProperty("sparkLinesLineWidth",1);
+	    let getColor = (d,i,dflt)=>{
+		if (colorBy && colorBy.index >= 0) {
+		    let record = state.records[i];
+                    let value = record.getData()[colorBy.index];
+		    return  colorBy.getColor(value, record);
+		}
+		return dflt;
+	    };
+	    if(attrs.showLines|| this.getProperty("sparkLinesShowLines",true)) {
+		svg.selectAll('line').data(data).enter().append("line")
+		    .attr('x1', (d,i)=>{return x(i)})
+		    .attr('y1', (d,i)=>{return y(d)})
+		    .attr('x2', (d,i)=>{return x(i+1)})
+		    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
+		    .attr("stroke-width", lineWidth)
+                    .attr("stroke", (d,i)=>getColor(d,i,lineColor))
+	    }
+
+	    if(attrs.showBars|| this.getProperty("sparkLinesShowBars",false)) {
+		svg.selectAll('.bar').data(data)
+		    .enter()
+		    .append('rect')
+		    .attr('class', 'bar')
+		    .attr('x', (d, i) => x(i))
+		    .attr('y', d => y(d))
+		    .attr('width', BAR_WIDTH)
+		    .attr('height', d => h-y(d))
+		    .attr('fill', (d,i)=>getColor(d,i,barColor));
+	    }
+
+	    if(attrs.showCircles || this.getProperty("sparkLinesShowCircles",false)) {
+		svg.selectAll('circle').data(data).enter().append("circle")
+		    .attr('r', circleRadius)
+		    .attr('cx', (d,i)=>{return x(i)})
+		    .attr('cy', (d,i)=>{return y(d)})
+		    .attr('fill', (d,i)=>getColor(d,i,circleColor));
+	    }
+
+	    if(attrs.showEndpoints || this.getProperty("sparkLinesShowEndPoints",true)) {
+		svg.append('circle')
+		    .attr('r', attrs.endPointRadius|| this.getProperty("sparkLinesEndPointRadius",2))
+		    .attr('cx', x(0))
+		    .attr('cy', y(data[0]))
+		    .attr('fill', attrs.endPoint1Color || this.getProperty("sparkLinesEndPoint1Color") || getColor(data[0],0,this.getProperty("sparkLinesEndPoint1Color",'steelblue')));
+		svg.append('circle')
+		    .attr('r', attrs.endPointRadius|| this.getProperty("sparkLinesEndPointRadius",2))
+		    .attr('cx', x(data.length - 1))
+		    .attr('cy', y(data[data.length - 1]))
+		    .attr('fill', attrs.endPoint2Color || this.getProperty("sparkLinesEndPoint2Color")|| getColor(data[data.length-1],data.length-1,this.getProperty("sparkLinesEndPoint2Color",'tomato')));
+	    }
+	},
+
+
         canDoGroupBy: function() {
             return false;
         },

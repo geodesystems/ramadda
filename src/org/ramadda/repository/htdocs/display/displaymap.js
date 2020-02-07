@@ -91,7 +91,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             html += HtmlUtils.div([ATTR_CLASS, "display-map-map", "style",
 				   extraStyle, ATTR_ID, this.getDomId(ID_MAP)
 				  ]);
-//            html += HtmlUtils.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)]);
+	    //            html += HtmlUtils.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)]);
 
             if (this.showLocationReadout) {
                 html += HtmlUtils.openTag(TAG_DIV, [ATTR_CLASS,
@@ -207,8 +207,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 
 	    this.map.doPopup = this.getProperty("doPopup",true);
-//	    if(!this.map.doPopup)
-//		this.map.doSelect = false;
+	    //	    if(!this.map.doPopup)
+	    //		this.map.doSelect = false;
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
@@ -1312,7 +1312,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    var t2= new Date();
             this.addPoints(records,fields,points,pointBounds);
 	    var t3= new Date();
-//	    Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
+	    //	    Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
             this.addLabels(records,fields,points);
             this.applyVectorMap();
 	    this.lastUpdateTime = new Date();
@@ -1383,7 +1383,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
             let colorBy = this.getColorByInfo(records);
-//	    console.log("records:" + records.length +" color by range:" + colorBy.minValue + " " + colorBy.maxValue);
+	    //	    console.log("records:" + records.length +" color by range:" + colorBy.minValue + " " + colorBy.maxValue);
             let sizeBy = {
                 id: this.getDisplayProp(source, "sizeBy", null),
                 minValue: 0,
@@ -1759,7 +1759,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			continue;
 		    }
                     seen[key]++;
-//		    continue;
+		    //		    continue;
 
 		    let mapPoint=null;
 		    if(iconField) {
@@ -1814,8 +1814,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.map.circles)
 		this.map.circles.redraw();
 	    this.jq(ID_BOTTOM).append(HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
-//	    this.jq(ID_BOTTOM).html(HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)])+
-//				    HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
+	    //	    this.jq(ID_BOTTOM).html(HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)])+
+	    //				    HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
             if (didColorBy) {
 		colorBy.displayColorTable();
             }
@@ -2103,7 +2103,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		maxx = Math.max(maxx,o.x);
 		miny = Math.min(miny,o.y);
 		maxy = Math.max(maxy,o.y);
-		map[o.x+"_"+o.y] = o;
+		map[this.getDomId("cell_" +o.x+ "_"+o.y)] = o;
 	    });
 
 	    var table ="<table border=0 cellspacing=0 cellpadding=0>";
@@ -2114,16 +2114,16 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    for(var y=1;y<=maxy;y++) {
 		table+="<tr>";
 		for(var x=1;x<=maxx;x++) {
-		    var id = x+ "_"+y;
+		    var id = this.getDomId("cell_" +x+ "_"+y);
 		    var o = map[id];
 		    var extra = " id='" + id +"' ";
-		    var style = "margin:1px;vertical-align:center;text-align:center;width:" + w+"px;" +"height:" + w+"px;";
+		    var style = "position:relative;margin:1px;vertical-align:center;xtext-align:center;width:" + w+"px;" +"height:" + w+"px;";
 		    var c = "";
 		    if(o) {
 			style+="background:#ccc;" + cellStyle;
 			extra += " title='" + o.state +"' ";
 			extra += " class='display-mapgrid-cell' ";
-			c = "<div>" + (showLabel?o.code:"")+"</div>";
+			c = HtmlUtils.div(["style","padding-left:3px;"], (showLabel?o.code:""));
 			cellMap[o.code] = id;
 			cellMap[o.state] = id;
 		    }
@@ -2135,8 +2135,18 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    table +="<tr><td colspan=" + maxx+"><br>" +   HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)]) +"</td></tr>";
 	    table+="</table>";
             var colorBy = this.getColorByInfo(records);
+	    var sparkLinesColorBy = this.getColorByInfo(records,"sparkLinesColorBy");
 	    var strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, table);
+
+
+	    let sparkLineField = this.getFieldById(fields,this.getProperty("sparkLineField"));
+	    let states = [];
+	    let stateData = {
+	    }
+	    let minData = 0;
+	    let maxData = 0;
+	    let seen = {};
 	    var contents = this.jq(ID_DISPLAY_CONTENTS);
 	    for(var i=0;i<records.length;i++) {
 		var record = records[i]; 
@@ -2150,6 +2160,26 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		if(!cellId) {
 		    console.log("Could not find cell:" + state);
 		    continue;
+		}
+
+		if(!stateData[state]) {
+		    states.push(state);
+		    stateData[state] = {
+			cellId: cellId,
+			data:[],
+			records:[]
+		    }
+		}
+		if(sparkLineField) {
+		    let value = record.getValue(sparkLineField.getIndex());
+		    if(value==0) value=NaN;
+		    if(!isNaN(value)) {
+			minData = i==0?value:Math.min(minData, value);
+			maxData = i==0?value:Math.max(maxData, value);
+			stateData[state].data.push(value);
+			stateData[state].records.push(record);
+		    }
+
 		}
                 if (colorBy.index >= 0) {
                     var value = record.getData()[colorBy.index];
@@ -2165,10 +2195,20 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    cell.css("border-color",color);
 		    cell.css("border-width","2px");
                 }
-
-
-
 	    }
+
+	    if(sparkLineField) {
+		states.map((state,idx)=>{
+		    let vOffset = 15;
+		    let s = stateData[state];
+		    let innerId = s.cellId+"_inner";
+		    let innerDiv = HtmlUtils.div(["id", innerId, "style","width:" + w +"px;height:" + (w-vOffset) +"px;position:absolute;left:0px;top:" + vOffset+"px;"],"");
+		    $("#" + s.cellId).append(innerDiv);
+		    this.drawSparkLine("#"+innerId,w,w-vOffset,s,minData,maxData,sparkLinesColorBy);
+		});
+	    }
+
+
 	    this.makePopups(contents.find(".display-mapgrid-cell"), records);
 	    let _this = this;
 	    contents.find(".display-mapgrid-cell").click(function() {
@@ -2195,58 +2235,58 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	},
 
 	grid:  [
-{state:"Alaska",code:"AK",x:2,y:1},
-{state:"Hawaii",code:"HI",x:2,y:8},
-{state:"Washington",code:"WA",x:3,y:3},
-{state:"Oregon",code:"OR",x:3,y:4},
-{state:"California",code:"CA",x:3,y:5},
-{state:"Idaho",code:"ID",x:4,y:3},
-{state:"Nevada",code:"NV",x:4,y:4},
-{state:"Utah",code:"UT",x:4,y:5},
-{state:"Arizona",code:"AZ",x:4,y:6},
-{state:"Montana",code:"MT",x:5,y:3},
-{state:"Wyoming",code:"WY",x:5,y:4},
-{state:"Colorado",code:"CO",x:5,y:5},
-{state:"New Mexico",code:"NM",x:5,y:6},
-{state:"North Dakota",code:"ND",x:6,y:3},
-{state:"South Dakota",code:"SD",x:6,y:4},
-{state:"Nebraska",code:"NE",x:6,y:5},
-{state:"Kansas",code:"KS",x:6,y:6},
-{state:"Oklahoma",code:"OK",x:6,y:7},
-{state:"Texas",code:"TX",x:6,y:8},
-{state:"Minnesota",code:"MN",x:7,y:3},
-{state:"Iowa",code:"IA",x:7,y:4},
-{state:"Missouri",code:"MO",x:7,y:5},
-{state:"Arkansas",code:"AR",x:7,y:6},
-{state:"Louisiana",code:"LA",x:7,y:7},
-{state:"Illinois",code:"IL",x:8,y:3},
-{state:"Indiana",code:"IN",x:8,y:4},
-{state:"Kentucky",code:"KY",x:8,y:5},
-{state:"Tennessee",code:"TN",x:8,y:6},
-{state:"Mississippi",code:"MS",x:8,y:7},
-{state:"Wisconsin",code:"WI",x:9,y:2},
-{state:"Ohio",code:"OH",x:9,y:4},
-{state:"West Virginia",code:"WV",x:9,y:5},
-{state:"North Carolina",code:"NC",x:9,y:6},
-{state:"Alabama",code:"AL",x:9,y:7},
-{state:"Michigan",code:"MI",x:9,y:3},
-{state:"Pennsylvania",code:"PA",x:10,y:4},
-{state:"Virginia",code:"VA",x:10,y:5},
-{state:"South Carolina",code:"SC",x:10,y:6},
-{state:"Georgia",code:"GA",x:10,y:7},
-{state:"New York",code:"NY",x:11,y:3},
-{state:"New Jersey",code:"NJ",x:11,y:4},
-{state:"Maryland",code:"MD",x:11,y:5},
-{state:"DC",code:"DC",x:11,y:6},
-{state:"Florida",code:"FL",x:11,y:8},
-{state:"Vermont",code:"VT",x:12,y:2},
-{state:"Rhode Island",code:"RI",x:12,y:3},
-{state:"Connecticut",code:"CT",x:12,y:4},
-{state:"Delaware",code:"DE",x:12,y:5},
-{state:"Maine",code:"ME",x:13,y:1},
-{state:"New Hampshire",code:"NH",x:13,y:2},
-{state:"Massachusetts",code:"MA",x:13,y:3},
-]
+	    {state:"Alaska",code:"AK",x:2,y:1},
+	    {state:"Hawaii",code:"HI",x:2,y:8},
+	    {state:"Washington",code:"WA",x:3,y:3},
+	    {state:"Oregon",code:"OR",x:3,y:4},
+	    {state:"California",code:"CA",x:3,y:5},
+	    {state:"Idaho",code:"ID",x:4,y:3},
+	    {state:"Nevada",code:"NV",x:4,y:4},
+	    {state:"Utah",code:"UT",x:4,y:5},
+	    {state:"Arizona",code:"AZ",x:4,y:6},
+	    {state:"Montana",code:"MT",x:5,y:3},
+	    {state:"Wyoming",code:"WY",x:5,y:4},
+	    {state:"Colorado",code:"CO",x:5,y:5},
+	    {state:"New Mexico",code:"NM",x:5,y:6},
+	    {state:"North Dakota",code:"ND",x:6,y:3},
+	    {state:"South Dakota",code:"SD",x:6,y:4},
+	    {state:"Nebraska",code:"NE",x:6,y:5},
+	    {state:"Kansas",code:"KS",x:6,y:6},
+	    {state:"Oklahoma",code:"OK",x:6,y:7},
+	    {state:"Texas",code:"TX",x:6,y:8},
+	    {state:"Minnesota",code:"MN",x:7,y:3},
+	    {state:"Iowa",code:"IA",x:7,y:4},
+	    {state:"Missouri",code:"MO",x:7,y:5},
+	    {state:"Arkansas",code:"AR",x:7,y:6},
+	    {state:"Louisiana",code:"LA",x:7,y:7},
+	    {state:"Illinois",code:"IL",x:8,y:3},
+	    {state:"Indiana",code:"IN",x:8,y:4},
+	    {state:"Kentucky",code:"KY",x:8,y:5},
+	    {state:"Tennessee",code:"TN",x:8,y:6},
+	    {state:"Mississippi",code:"MS",x:8,y:7},
+	    {state:"Wisconsin",code:"WI",x:9,y:2},
+	    {state:"Ohio",code:"OH",x:9,y:4},
+	    {state:"West Virginia",code:"WV",x:9,y:5},
+	    {state:"North Carolina",code:"NC",x:9,y:6},
+	    {state:"Alabama",code:"AL",x:9,y:7},
+	    {state:"Michigan",code:"MI",x:9,y:3},
+	    {state:"Pennsylvania",code:"PA",x:10,y:4},
+	    {state:"Virginia",code:"VA",x:10,y:5},
+	    {state:"South Carolina",code:"SC",x:10,y:6},
+	    {state:"Georgia",code:"GA",x:10,y:7},
+	    {state:"New York",code:"NY",x:11,y:3},
+	    {state:"New Jersey",code:"NJ",x:11,y:4},
+	    {state:"Maryland",code:"MD",x:11,y:5},
+	    {state:"DC",code:"DC",x:11,y:6},
+	    {state:"Florida",code:"FL",x:11,y:8},
+	    {state:"Vermont",code:"VT",x:12,y:2},
+	    {state:"Rhode Island",code:"RI",x:12,y:3},
+	    {state:"Connecticut",code:"CT",x:12,y:4},
+	    {state:"Delaware",code:"DE",x:12,y:5},
+	    {state:"Maine",code:"ME",x:13,y:1},
+	    {state:"New Hampshire",code:"NH",x:13,y:2},
+	    {state:"Massachusetts",code:"MA",x:13,y:3},
+	]
 
 
 
