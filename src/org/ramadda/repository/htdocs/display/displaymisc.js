@@ -2881,8 +2881,6 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let w = this.getProperty("sparklineWidth",60);
 	    let h = this.getProperty("sparklineHeight",20);
-	    $("#"+this.getProperty(PROP_DIVID)).css("display","inline-block");
-	    $("#"+this.getProperty(PROP_DIVID)).css("vertical-align","bottom");
 	    var records = this.filterData();
 	    if(!records) return;
 	    let field = this.getFieldById(null, this.getProperty("field"));
@@ -2914,7 +2912,8 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 
 
 function RamaddaPointimageDisplay(displayManager, id, properties) {
-    if(!properties.height) properties.height="200";
+    if(!properties.width) properties.width="200";
+    properties.displayInline = true;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_POINTIMAGE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -2923,12 +2922,14 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Image Display",
-					'type="rect|circle"',
-					'cellSize=2',
+					'cellType="rect|circle"',
+					'cellSize=4',
+					'cellFilled=false',
+					'cellColor=false',
 					'padding=5',
 					'borderColor=#ccc',
-					'filled=false',
 					'showTooltips=false',
+					'colorBy=""'
 				    ])},
         needsData: function() {
             return true;
@@ -2940,10 +2941,17 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    let closest = null;
 	    let minDistace = 0;
 	    let cnt = 0;
+	    let seen = {};
+//	    console.log("find closest");
 	    records.map((r,i) =>{
-		let dx = r.coordinates.x-e.offsetX;
-		let dy = r.coordinates.y-e.offsetY;
+		let coords = r[this.getId()+"_coordinates"]
+		let dx = coords.x-e.offsetX;
+		let dy = coords.y-e.offsetY;
 		let d = Math.sqrt(dx*dx+dy*dy);
+//		if(!seen[r.getValue(0)]) {
+//		    console.log("\t" +r.getValue(0) +" cx:" + coords.x +" cy:" + coords.y+" ex:" + e.offsetX +" ey:" + e.offsetY +" dx:" +dx +" dy:" +dy +" d:" + d);
+//		    seen[r.getValue(0)]  =true;
+//		}
 		if(i==0) {
 		    closest = r;
 		    minDistance=d;
@@ -2951,6 +2959,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		    if(d<minDistance) {
 			minDistance = d;
 			closest=r;
+//			console.log("\tclosest:" + minDistance +" " + r.getValue(0));
 		    }
 		}
 	    });
@@ -2959,7 +2968,6 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    var records = this.filterData();
 	    if(!records) return;
-	    $("#"+this.getProperty(PROP_DIVID)).css("display","inline-block");
 	    if(this.getProperty("borderColor")) {
 		$("#"+this.getProperty(PROP_DIVID)).css("border","1px solid " + this.getProperty("borderColor"));
 	    }
@@ -2978,13 +2986,17 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
-	    let args = {
-		type: this.getProperty("type","circle"),
-		stroke: !this.getProperty("filled",true)
-	    }
-	    let img = RecordUtil.gridData(records,w,h,colorBy,"red",this.getProperty("cellSize",4),this.getProperty("cellSize",4),args);
+	    let args =$.extend(
+		{
+		    colorBy:colorBy,
+		    w:w,
+		    h:h},
+		this.getDefaultGridByArgs()
+	    );
+
+	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.jq("inner").html(HtmlUtils.image(img,["title","","id",this.getDomId("image")]));
-	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:5px;"]));
+	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","z-index:2000;display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:5px;"]));
 	    let _this = this;
 	    if(this.getProperty("showTooltips",true)) {
 		this.jq("image").mouseout(function( event ) {

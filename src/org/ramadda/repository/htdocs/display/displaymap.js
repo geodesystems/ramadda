@@ -1317,7 +1317,35 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.applyVectorMap();
 	    this.lastUpdateTime = new Date();
 	},
-        addPoints: function(records, fields, points,pointBounds) {
+        addPoints: function(records, fields, points,bounds) {
+            let colorBy = this.getColorByInfo(records);
+
+
+	    if(this.getProperty("gridPoints",false)) {
+		let w = Math.round(this.getProperty("gridWidth",800));
+		let h = Math.round(this.getProperty("gridHeight"));
+		if(isNaN(h) || !Utils.isDefined(h)) {
+		    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+		    h = Math.round(w/ratio);
+		}
+		let args =$.extend(
+		    {
+			colorBy:colorBy,
+			w:w,
+			h:h},
+		    this.getDefaultGridByArgs()
+		);
+		let img = RecordUtil.gridData(this.getId(),records,args);
+		this.map.addImageLayer("test", "test", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
+		    isBaseLayer: false
+		});
+		return;
+
+	    }
+
+
+
+
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
@@ -1382,7 +1410,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		})
 	    }
 
-            let colorBy = this.getColorByInfo(records);
+
 	    //	    console.log("records:" + records.length +" color by range:" + colorBy.minValue + " " + colorBy.maxValue);
             let sizeBy = {
                 id: this.getDisplayProp(source, "sizeBy", null),
@@ -1865,6 +1893,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"colorBy=\"\"",
 		"colorByLog=\"true\"",
 		"colorByMap=\"value1:color1,...,valueN:colorN\"",
+		'gridPoints=true',
 		"showClipToBounds=true",
 		"sizeBy=\"\"",
 		"sizeByLog=\"true\"",

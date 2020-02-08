@@ -1043,6 +1043,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 max: max
             };
         },
+	getDefaultGridByArgs: function() {
+	    return {
+		shape:this.getProperty("cellShape","circle"),
+		color: this.getProperty("cellColor","blue"),
+		stroke: !this.getProperty("cellFilled",true),
+		cellSize:this.getProperty("cellSize",4),
+		cellSizeY:this.getProperty("cellSize",4),
+	    };
+	},
 	getIconMap: function() {
 	    var iconMap;
 	    var iconMapProp = this.getProperty("iconMap");
@@ -3922,7 +3931,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var divid = this.getProperty(PROP_DIVID);
             if (divid != null) {
                 var html = this.getHtml();
+		if(this.getProperty("displayInline")) {
+		    $("#"+divid).css("display","inline-block");
+		    $("#"+divid).css("vertical-align","bottom");
+		}
                 $("#" + divid).html(html);
+
 		/*
 		  $("#"+divid).css("position","absolute");
 		  let offset = this.getProperty("displayIndex",0)*10;
@@ -7990,11 +8004,22 @@ var A = {
 }
 
 var RecordUtil = {
-    gridData: function(records,w,h, colorBy, color, cellSize, args) {
-	if(args) args = {};
-	if(!args.type) args.type="circle";
+    gridData: function(gridId,records,args) {
+	if(!args) args = {};
+	let opts = {
+	    shape:"circle",
+	    color:"blue",
+	    w:800,
+	    h:400,
+	    cellSize:2,
+	    cellSizeX:2,
+	    cellSizeY:2
+	}
+	$.extend(opts,args);
+
+//	console.log(JSON.stringify(opts,null,2));
 	let id = HtmlUtils.getUniqueId();
-	let canvas = '<canvas style="display:none;" id="' + id +'" width="' + w+'" height="' + h +'"></canvas>';
+	let canvas = '<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>';
 	$(document.body).append(canvas);
 	var c = document.getElementById(id);
 	var ctx = c.getContext("2d");
@@ -8003,33 +8028,32 @@ var RecordUtil = {
 	RecordUtil.getPoints(records, bounds);
 	let ew = bounds.east-bounds.west;
 	let eh = bounds.north-bounds.south;
-	let halfW = cellSize/2;
-	let halfH = cellSize/2;
-
-	records.map(record=>{
+	let halfW = opts.cellSize/2;
+	let halfH = opts.cellSize/2;
+	records.map((record,idx)=>{
 	    let lat = record.getLatitude();
 	    let lon = record.getLongitude();
-	    let x = Math.round(w*(lon-bounds.west)/ew)-halfW;
-	    let y = h-(Math.round(h*(lat-bounds.south)/eh)-halfH);
-	    record.coordinates = {x:x,y:y};
-	    let c =  color|| "#000";
-	    if(colorBy && colorBy.index>=0) {
-		c=  colorBy.getColor(record.getData()[colorBy.index], record);
+	    let x = Math.round(opts.w*(lon-bounds.west)/ew)-halfW;
+	    let y = opts.h-(Math.round(opts.h*(lat-bounds.south)/eh)-halfH);
+	    record[gridId+"_coordinates"] = {x:x,y:y};
+	    let c =  opts.color|| "#000";
+	    if(opts.colorBy && opts.colorBy.index>=0) {
+		c=  opts.colorBy.getColor(record.getData()[opts.colorBy.index], record);
 	    }
 	    ctx.fillStyle =c;
 	    ctx.strokeStyle =c;
-	    if(args.type == "circle") {
+	    if(opts.shape == "circle") {
 		ctx.beginPath();
-		ctx.arc(x,y, cellSize, 0, 2 * Math.PI);
+		ctx.arc(x,y, opts.cellSize, 0, 2 * Math.PI);
 		if(args.stroke)
 		    ctx.stroke();
 		else
 		    ctx.fill();
 	    } else {
 		if(args.stroke)
-		    ctx.strokeRect(x, y, cellSize||4, cellSize||4);
+		    ctx.strokeRect(x, y, opts.cellSize, opts.cellSize);
 		else
-		    ctx.fillRect(x, y, cellSize||4, cellSize||4);
+		    ctx.fillRect(x, y, opts.cellSize, opts.cellSize);
 		    
 	    }
 	});
@@ -23509,7 +23533,35 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.applyVectorMap();
 	    this.lastUpdateTime = new Date();
 	},
-        addPoints: function(records, fields, points,pointBounds) {
+        addPoints: function(records, fields, points,bounds) {
+            let colorBy = this.getColorByInfo(records);
+
+
+	    if(this.getProperty("gridPoints",false)) {
+		let w = Math.round(this.getProperty("gridWidth",800));
+		let h = Math.round(this.getProperty("gridHeight"));
+		if(isNaN(h) || !Utils.isDefined(h)) {
+		    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+		    h = Math.round(w/ratio);
+		}
+		let args =$.extend(
+		    {
+			colorBy:colorBy,
+			w:w,
+			h:h},
+		    this.getDefaultGridByArgs()
+		);
+		let img = RecordUtil.gridData(this.getId(),records,args);
+		this.map.addImageLayer("test", "test", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
+		    isBaseLayer: false
+		});
+		return;
+
+	    }
+
+
+
+
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
@@ -23574,7 +23626,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		})
 	    }
 
-            let colorBy = this.getColorByInfo(records);
+
 	    //	    console.log("records:" + records.length +" color by range:" + colorBy.minValue + " " + colorBy.maxValue);
             let sizeBy = {
                 id: this.getDisplayProp(source, "sizeBy", null),
@@ -24057,6 +24109,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"colorBy=\"\"",
 		"colorByLog=\"true\"",
 		"colorByMap=\"value1:color1,...,valueN:colorN\"",
+		'gridPoints=true',
 		"showClipToBounds=true",
 		"sizeBy=\"\"",
 		"sizeByLog=\"true\"",
@@ -33045,8 +33098,6 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let w = this.getProperty("sparklineWidth",60);
 	    let h = this.getProperty("sparklineHeight",20);
-	    $("#"+this.getProperty(PROP_DIVID)).css("display","inline-block");
-	    $("#"+this.getProperty(PROP_DIVID)).css("vertical-align","bottom");
 	    var records = this.filterData();
 	    if(!records) return;
 	    let field = this.getFieldById(null, this.getProperty("field"));
@@ -33078,7 +33129,8 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 
 
 function RamaddaPointimageDisplay(displayManager, id, properties) {
-    if(!properties.height) properties.height="200";
+    if(!properties.width) properties.width="200";
+    properties.displayInline = true;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_POINTIMAGE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -33087,12 +33139,14 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Image Display",
-					'type="rect|circle"',
-					'cellSize=2',
+					'cellType="rect|circle"',
+					'cellSize=4',
+					'cellFilled=false',
+					'cellColor=false',
 					'padding=5',
 					'borderColor=#ccc',
-					'filled=false',
 					'showTooltips=false',
+					'colorBy=""'
 				    ])},
         needsData: function() {
             return true;
@@ -33104,10 +33158,17 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    let closest = null;
 	    let minDistace = 0;
 	    let cnt = 0;
+	    let seen = {};
+//	    console.log("find closest");
 	    records.map((r,i) =>{
-		let dx = r.coordinates.x-e.offsetX;
-		let dy = r.coordinates.y-e.offsetY;
+		let coords = r[this.getId()+"_coordinates"]
+		let dx = coords.x-e.offsetX;
+		let dy = coords.y-e.offsetY;
 		let d = Math.sqrt(dx*dx+dy*dy);
+//		if(!seen[r.getValue(0)]) {
+//		    console.log("\t" +r.getValue(0) +" cx:" + coords.x +" cy:" + coords.y+" ex:" + e.offsetX +" ey:" + e.offsetY +" dx:" +dx +" dy:" +dy +" d:" + d);
+//		    seen[r.getValue(0)]  =true;
+//		}
 		if(i==0) {
 		    closest = r;
 		    minDistance=d;
@@ -33115,6 +33176,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		    if(d<minDistance) {
 			minDistance = d;
 			closest=r;
+//			console.log("\tclosest:" + minDistance +" " + r.getValue(0));
 		    }
 		}
 	    });
@@ -33123,7 +33185,6 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    var records = this.filterData();
 	    if(!records) return;
-	    $("#"+this.getProperty(PROP_DIVID)).css("display","inline-block");
 	    if(this.getProperty("borderColor")) {
 		$("#"+this.getProperty(PROP_DIVID)).css("border","1px solid " + this.getProperty("borderColor"));
 	    }
@@ -33142,13 +33203,17 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
-	    let args = {
-		type: this.getProperty("type","circle"),
-		stroke: !this.getProperty("filled",true)
-	    }
-	    let img = RecordUtil.gridData(records,w,h,colorBy,"red",this.getProperty("cellSize",4),this.getProperty("cellSize",4),args);
+	    let args =$.extend(
+		{
+		    colorBy:colorBy,
+		    w:w,
+		    h:h},
+		this.getDefaultGridByArgs()
+	    );
+
+	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.jq("inner").html(HtmlUtils.image(img,["title","","id",this.getDomId("image")]));
-	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:5px;"]));
+	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","z-index:2000;display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:5px;"]));
 	    let _this = this;
 	    if(this.getProperty("showTooltips",true)) {
 		this.jq("image").mouseout(function( event ) {

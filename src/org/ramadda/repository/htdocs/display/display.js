@@ -893,6 +893,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 max: max
             };
         },
+	getDefaultGridByArgs: function() {
+	    return {
+		shape:this.getProperty("cellShape","circle"),
+		color: this.getProperty("cellColor","blue"),
+		stroke: !this.getProperty("cellFilled",true),
+		cellSize:this.getProperty("cellSize",4),
+		cellSizeY:this.getProperty("cellSize",4),
+	    };
+	},
 	getIconMap: function() {
 	    var iconMap;
 	    var iconMapProp = this.getProperty("iconMap");
@@ -3772,7 +3781,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var divid = this.getProperty(PROP_DIVID);
             if (divid != null) {
                 var html = this.getHtml();
+		if(this.getProperty("displayInline")) {
+		    $("#"+divid).css("display","inline-block");
+		    $("#"+divid).css("vertical-align","bottom");
+		}
                 $("#" + divid).html(html);
+
 		/*
 		  $("#"+divid).css("position","absolute");
 		  let offset = this.getProperty("displayIndex",0)*10;
