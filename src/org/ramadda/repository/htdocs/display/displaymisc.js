@@ -2846,6 +2846,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 
 function RamaddaSparklineDisplay(displayManager, id, properties) {
+    properties.displayInline = true;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -2926,6 +2927,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 					'cellSize=4',
 					'cellFilled=false',
 					'cellColor=false',
+					'doHeatmap=true',
 					'padding=5',
 					'borderColor=#ccc',
 					'showTooltips=false',
@@ -2986,13 +2988,8 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
-	    let args =$.extend(
-		{
-		    colorBy:colorBy,
-		    w:w,
-		    h:h},
-		this.getDefaultGridByArgs()
-	    );
+	    let args =$.extend({colorBy:colorBy, w:w, h:h},
+			       this.getDefaultGridByArgs());
 
 	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.jq("inner").html(HtmlUtils.image(img,["title","","id",this.getDomId("image")]));

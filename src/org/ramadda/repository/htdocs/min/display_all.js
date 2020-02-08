@@ -1044,13 +1044,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
         },
 	getDefaultGridByArgs: function() {
-	    return {
+	    let doHeatmap=this.getProperty("doHeatmap",false);
+	    let args =  {
 		shape:this.getProperty("cellShape","circle"),
 		color: this.getProperty("cellColor","blue"),
 		stroke: !this.getProperty("cellFilled",true),
-		cellSize:this.getProperty("cellSize",4),
-		cellSizeY:this.getProperty("cellSize",4),
+		cellSize:this.getProperty("cellSize",doHeatmap?12:4),
+		doHeatmap:doHeatmap,
 	    };
+	    args.cellSizeX = this.getProperty("cellSizeX",args.cellSize);
+	    args.cellSizeY = this.getProperty("cellSizeY",args.cellSize);
+	    return args;
 	},
 	getIconMap: function() {
 	    var iconMap;
@@ -8004,6 +8008,43 @@ var A = {
 }
 
 var RecordUtil = {
+    gridPoints: function(grid,points,args) {
+	let rows = grid.length;
+	let cols = grid[0].length;
+	let counts = [];
+	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    for(var colIdx=0;colIdx<cols;colIdx++)  {
+		grid[rowIdx][colIdx] = NaN;
+	    }
+	}
+	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    let row = [];
+	    counts.push(row);
+	    for(var colIdx=0;colIdx<cols;colIdx++)  {
+		row.push(0);
+	    }
+	}
+	points.map((p,idx)=>{
+	    //TODO handle edge cases better
+	    if(p.y>=rows) p.y=rows-1;
+	    if(p.x>=cols) p.x=cols-1;
+	    counts[p.y][p.x]++;
+	    if(isNaN(grid[p.y][p.x]))
+		grid[p.y][p.x]=0;
+	    grid[p.y][p.x] += p.v;
+	});
+
+
+
+	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    for(var colIdx=0;colIdx<cols;colIdx++)  {
+		let count = counts[rowIdx][colIdx];
+		if(count==0) continue;
+		let total = grid[rowIdx][colIdx];
+		grid[rowIdx][colIdx] =  total/count;
+	    }
+	}	
+    },
     gridData: function(gridId,records,args) {
 	if(!args) args = {};
 	let opts = {
@@ -8016,8 +8057,6 @@ var RecordUtil = {
 	    cellSizeY:2
 	}
 	$.extend(opts,args);
-
-//	console.log(JSON.stringify(opts,null,2));
 	let id = HtmlUtils.getUniqueId();
 	let canvas = '<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>';
 	$(document.body).append(canvas);
@@ -8030,6 +8069,58 @@ var RecordUtil = {
 	let eh = bounds.north-bounds.south;
 	let halfW = opts.cellSize/2;
 	let halfH = opts.cellSize/2;
+	if(opts.doHeatmap) {
+	    let cols = Math.floor(opts.w/opts.cellSizeX);
+	    let rows = Math.floor(opts.h/opts.cellSizeY);
+//	    console.log("dim:" + cols +" " + rows + " " +opts.w + " " + opts.cellSizeX);
+	    let grid = [];
+	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+		let row = [];
+		grid.push(row);
+		for(var colIdx=0;colIdx<cols;colIdx++)  {
+		    row.push(0);
+		}
+	    }
+
+	    let points = [];
+	    records.map((record,idx)=>{
+		let lat = record.getLatitude();
+		let lon = record.getLongitude();
+		let x = Math.round(opts.w*(lon-bounds.west)/ew)-halfW;
+		let y = opts.h-(Math.round(opts.h*(lat-bounds.south)/eh)-halfH);
+		record[gridId+"_coordinates"] = {x:x,y:y};
+		let v = idx;
+		if(opts.colorBy && opts.colorBy.index>=0) {
+		    v = record.getValue(opts.colorBy.index);
+		}
+		x =Math.floor(x/opts.cellSizeX);
+		y =Math.floor(y/opts.cellSizeY);
+		points.push({x:x,y:y,v:v});
+	    });
+
+	    RecordUtil.gridPoints(grid,points,args);
+	    let tmpc = ["red","green","blue"];
+	    let tmpcnt = 0;
+	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+		let row = grid[rowIdx];
+		for(var colIdx=0;colIdx<cols;colIdx++)  {
+		    let v = row[colIdx];
+		    if(isNaN(v)) continue;
+		    let c;
+		    if(opts.colorBy && opts.colorBy.index>=0) {
+			c=  opts.colorBy.getColor(v);
+		    } else {
+			if(tmpcnt>=tmpc.length)
+			    tmpcnt=0;
+			c = tmpc[tmpcnt++];
+		    }
+		    ctx.fillStyle =c;
+		    ctx.fillRect(colIdx*opts.cellSizeX, rowIdx*opts.cellSizeY, opts.cellSizeX,opts.cellSizeY);
+		}
+	    }
+	    return c.toDataURL("image/png");
+	}
+
 	records.map((record,idx)=>{
 	    let lat = record.getLatitude();
 	    let lon = record.getLongitude();
@@ -23535,22 +23626,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         addPoints: function(records, fields, points,bounds) {
             let colorBy = this.getColorByInfo(records);
-
-
-	    if(this.getProperty("gridPoints",false)) {
+	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
 		let w = Math.round(this.getProperty("gridWidth",800));
 		let h = Math.round(this.getProperty("gridHeight"));
 		if(isNaN(h) || !Utils.isDefined(h)) {
 		    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 		    h = Math.round(w/ratio);
 		}
-		let args =$.extend(
-		    {
-			colorBy:colorBy,
-			w:w,
-			h:h},
-		    this.getDefaultGridByArgs()
-		);
+		let args =$.extend({colorBy:colorBy,w:w,h:h},
+				   this.getDefaultGridByArgs());
 		let img = RecordUtil.gridData(this.getId(),records,args);
 		this.map.addImageLayer("test", "test", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false
@@ -24109,7 +24193,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"colorBy=\"\"",
 		"colorByLog=\"true\"",
 		"colorByMap=\"value1:color1,...,valueN:colorN\"",
-		'gridPoints=true',
+		'doGridPoints=true',
 		"showClipToBounds=true",
 		"sizeBy=\"\"",
 		"sizeByLog=\"true\"",
@@ -33063,6 +33147,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 
 function RamaddaSparklineDisplay(displayManager, id, properties) {
+    properties.displayInline = true;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -33143,6 +33228,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 					'cellSize=4',
 					'cellFilled=false',
 					'cellColor=false',
+					'doHeatmap=true',
 					'padding=5',
 					'borderColor=#ccc',
 					'showTooltips=false',
@@ -33203,13 +33289,8 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
-	    let args =$.extend(
-		{
-		    colorBy:colorBy,
-		    w:w,
-		    h:h},
-		this.getDefaultGridByArgs()
-	    );
+	    let args =$.extend({colorBy:colorBy, w:w, h:h},
+			       this.getDefaultGridByArgs());
 
 	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.jq("inner").html(HtmlUtils.image(img,["title","","id",this.getDomId("image")]));

@@ -1319,22 +1319,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         addPoints: function(records, fields, points,bounds) {
             let colorBy = this.getColorByInfo(records);
-
-
-	    if(this.getProperty("gridPoints",false)) {
+	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
 		let w = Math.round(this.getProperty("gridWidth",800));
 		let h = Math.round(this.getProperty("gridHeight"));
 		if(isNaN(h) || !Utils.isDefined(h)) {
 		    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 		    h = Math.round(w/ratio);
 		}
-		let args =$.extend(
-		    {
-			colorBy:colorBy,
-			w:w,
-			h:h},
-		    this.getDefaultGridByArgs()
-		);
+		let args =$.extend({colorBy:colorBy,w:w,h:h},
+				   this.getDefaultGridByArgs());
 		let img = RecordUtil.gridData(this.getId(),records,args);
 		this.map.addImageLayer("test", "test", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false
@@ -1893,7 +1886,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"colorBy=\"\"",
 		"colorByLog=\"true\"",
 		"colorByMap=\"value1:color1,...,valueN:colorN\"",
-		'gridPoints=true',
+		'doGridPoints=true',
 		"showClipToBounds=true",
 		"sizeBy=\"\"",
 		"sizeByLog=\"true\"",

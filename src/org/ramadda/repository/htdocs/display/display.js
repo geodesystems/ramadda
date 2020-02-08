@@ -894,13 +894,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             };
         },
 	getDefaultGridByArgs: function() {
-	    return {
+	    let doHeatmap=this.getProperty("doHeatmap",false);
+	    let args =  {
 		shape:this.getProperty("cellShape","circle"),
 		color: this.getProperty("cellColor","blue"),
 		stroke: !this.getProperty("cellFilled",true),
-		cellSize:this.getProperty("cellSize",4),
-		cellSizeY:this.getProperty("cellSize",4),
+		cellSize:this.getProperty("cellSize",doHeatmap?12:4),
+		doHeatmap:doHeatmap,
 	    };
+	    args.cellSizeX = this.getProperty("cellSizeX",args.cellSize);
+	    args.cellSizeY = this.getProperty("cellSizeY",args.cellSize);
+	    return args;
 	},
 	getIconMap: function() {
 	    var iconMap;
