@@ -663,14 +663,20 @@ function DisplayThing(argId, argProperties) {
 		this.getPropertyOutput+="'" + key + "=\"" +(dflt||"") +"\"',\n"
 	    }
 	    var value =  this.getPropertyInner(key,null,skipThis);
-	    if(!Utils.isDefined(value)) return dflt;
+	    if(this.debugGetProperty)
+		console.log("GOT:" + value);
+	    if(!Utils.isDefined(value)) {
+		if(this.debugGetProperty)
+		    console.log("returning dflt:" + dflt);
+		return dflt;
+	    }
 	    return value;
 	},
-
+	debugGetProperty: false,
         getPropertyInner: function(key, dflt,skipThis) {	    
-	    let debug = false;
+	    let debug = this.debugGetProperty;
 	    //	    let debug = key== "colorTable";
-	    if(debug) console.log("getProperty");
+	    if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
             if(!skipThis && Utils.isDefined(this[key])) {
 		if(debug) console.log("\tgetProperty-1");
                 return this[key];
@@ -693,7 +699,7 @@ function DisplayThing(argId, argProperties) {
 		return fromParent;
 	    }
             if (this.displayParent != null) {
-		if(debug) console.log("\tgetProperty-4");
+		if(debug) console.log("\tgetProperty calling parent");
                 return this.displayParent.getPropertyInner(key, skipThis);
             }
             if (this.getDisplayManager) {
@@ -2562,25 +2568,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    .attr('fill', attrs.endPoint2Color || this.getProperty("sparklineEndPoint2Color")|| getColor(data[data.length-1],data.length-1,this.getProperty("sparklineEndPoint2Color",'tomato')));
 	    }
 	    let _this = this;
-	    let doTooltip = this.getProperty("sparklineDoTooltip", false)  || attrs.doTooltip;
+	    let doTooltip = this.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
 	    svg.on("click", function() {
 		var coords = d3.mouse(this);
 		let record = records[Math.round(x.invert(coords[0]))]
-		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {select:true,record: record});
-		if(!doTooltip) return;
-		let html = _this.getRecordHtml(record);
-		let ele = $(dom);
-		let offset = ele.offset().top + ele.height();
-		tt.transition().duration(200).style("opacity", .9);		
-		tt.html(html)
-		    .style("left", (d3.event.pageX) + "px")		
-		    .style("top", offset + "px");	
-	    })
-		.on("mouseout", function(d) {		
-		    tt.transition()		
-			.duration(500)		
-			.style("opacity", 0);
-		});
+		if(record)
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {select:true,record: record});
+	    });
+
+	    if(doTooltip) {
+		svg.on("mouseover", function() {
+		    var coords = d3.mouse(this);
+		    let record = records[Math.round(x.invert(coords[0]))]
+		    let html = _this.getRecordHtml(record);
+		    let ele = $(dom);
+		    let offset = ele.offset().top + ele.height();
+		    let left = ele.offset().left;
+		    tt.transition().duration(200).style("opacity", .9);		
+		    tt.html(html)
+			.style("left", left + "px")		
+			.style("top", offset + "px");	
+		})
+		    .on("mouseout", function(d) {		
+			tt.transition()		
+			    .duration(500)		
+			    .style("opacity", 0);
+		    });
+	    }
 	},
 
 

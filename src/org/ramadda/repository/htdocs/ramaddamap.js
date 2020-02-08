@@ -298,7 +298,29 @@ function RepositoryMap(mapId, params) {
 
 function initMapFunctions(theMap) {
     RamaddaUtil.defineMembers(theMap, {
+	testit: function() {
+	    console.log("test");
+	    let canvas = '<canvas style="display:none;" id="myCanvas" width="200" height="100"></canvas>';
+	    $("#" + this.mapDivId).append(canvas);
+	    var c = document.getElementById("myCanvas");
+	    var ctx = c.getContext("2d");
 
+	    let colors = ["red","green","blue"];
+	    let cnt = 0;
+	    for(var x=0;x<200;x+=20) {
+		if(cnt>=colors.length) cnt = 0;
+		ctx.fillStyle = colors[cnt++];
+		ctx.fillRect(x, 20, 20, 100);
+	    }
+//	    ctx.moveTo(0, 0);
+//	    ctx.lineTo(200, 100);
+//	    ctx.stroke(); 
+	    var img    = c.toDataURL("image/png");
+//            addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
+            this.addImageLayer("test", "test", "", img, true, 41, -109, 37, -102, 200, 100, {
+		isBaseLayer: false
+            });
+	},
         finishMapInit: function() {
             let _this = this;
             if (this.showSearch) {
@@ -321,6 +343,10 @@ function initMapFunctions(theMap) {
 	    $("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_progress", "style","z-index:2000;position:absolute;top:10px;left:50px;"],""));
             this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
             //register the location listeners later since the map triggers a number of
+
+
+
+
             //events at the start
             var callback = function() {
                 _this.map.events.register("changebaselayer", "", function() {
@@ -1665,6 +1691,7 @@ function initMapFunctions(theMap) {
 					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
             } else if (mapLayer == map_white) {
                 this.addImageLayer(map_white, "White Background", "", ramaddaBaseUrl + "/images/white.png", false, 90, -180, -90, 180, 50, 50, {
+//                this.addImageLayer(map_white, "White Background", "", iurl, false, 90, -180, -90, 180, 50, 50, {
                     isBaseLayer: true
                 });
                 continue;

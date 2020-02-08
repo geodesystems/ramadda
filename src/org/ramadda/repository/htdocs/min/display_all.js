@@ -813,14 +813,20 @@ function DisplayThing(argId, argProperties) {
 		this.getPropertyOutput+="'" + key + "=\"" +(dflt||"") +"\"',\n"
 	    }
 	    var value =  this.getPropertyInner(key,null,skipThis);
-	    if(!Utils.isDefined(value)) return dflt;
+	    if(this.debugGetProperty)
+		console.log("GOT:" + value);
+	    if(!Utils.isDefined(value)) {
+		if(this.debugGetProperty)
+		    console.log("returning dflt:" + dflt);
+		return dflt;
+	    }
 	    return value;
 	},
-
+	debugGetProperty: false,
         getPropertyInner: function(key, dflt,skipThis) {	    
-	    let debug = false;
+	    let debug = this.debugGetProperty;
 	    //	    let debug = key== "colorTable";
-	    if(debug) console.log("getProperty");
+	    if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
             if(!skipThis && Utils.isDefined(this[key])) {
 		if(debug) console.log("\tgetProperty-1");
                 return this[key];
@@ -843,7 +849,7 @@ function DisplayThing(argId, argProperties) {
 		return fromParent;
 	    }
             if (this.displayParent != null) {
-		if(debug) console.log("\tgetProperty-4");
+		if(debug) console.log("\tgetProperty calling parent");
                 return this.displayParent.getPropertyInner(key, skipThis);
             }
             if (this.getDisplayManager) {
@@ -2712,25 +2718,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    .attr('fill', attrs.endPoint2Color || this.getProperty("sparklineEndPoint2Color")|| getColor(data[data.length-1],data.length-1,this.getProperty("sparklineEndPoint2Color",'tomato')));
 	    }
 	    let _this = this;
-	    let doTooltip = this.getProperty("sparklineDoTooltip", false)  || attrs.doTooltip;
+	    let doTooltip = this.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
 	    svg.on("click", function() {
 		var coords = d3.mouse(this);
 		let record = records[Math.round(x.invert(coords[0]))]
-		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {select:true,record: record});
-		if(!doTooltip) return;
-		let html = _this.getRecordHtml(record);
-		let ele = $(dom);
-		let offset = ele.offset().top + ele.height();
-		tt.transition().duration(200).style("opacity", .9);		
-		tt.html(html)
-		    .style("left", (d3.event.pageX) + "px")		
-		    .style("top", offset + "px");	
-	    })
-		.on("mouseout", function(d) {		
-		    tt.transition()		
-			.duration(500)		
-			.style("opacity", 0);
-		});
+		if(record)
+		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {select:true,record: record});
+	    });
+
+	    if(doTooltip) {
+		svg.on("mouseover", function() {
+		    var coords = d3.mouse(this);
+		    let record = records[Math.round(x.invert(coords[0]))]
+		    let html = _this.getRecordHtml(record);
+		    let ele = $(dom);
+		    let offset = ele.offset().top + ele.height();
+		    let left = ele.offset().left;
+		    tt.transition().duration(200).style("opacity", .9);		
+		    tt.html(html)
+			.style("left", left + "px")		
+			.style("top", offset + "px");	
+		})
+		    .on("mouseout", function(d) {		
+			tt.transition()		
+			    .duration(500)		
+			    .style("opacity", 0);
+		    });
+	    }
 	},
 
 
@@ -7976,6 +7990,51 @@ var A = {
 }
 
 var RecordUtil = {
+    gridData: function(records,w,h, colorBy, color, cellSize, args) {
+	if(args) args = {};
+	if(!args.type) args.type="circle";
+	let id = HtmlUtils.getUniqueId();
+	let canvas = '<canvas style="display:none;" id="' + id +'" width="' + w+'" height="' + h +'"></canvas>';
+	$(document.body).append(canvas);
+	var c = document.getElementById(id);
+	var ctx = c.getContext("2d");
+	let cnt = 0;
+	let bounds ={};
+	RecordUtil.getPoints(records, bounds);
+	let ew = bounds.east-bounds.west;
+	let eh = bounds.north-bounds.south;
+	let halfW = cellSize/2;
+	let halfH = cellSize/2;
+
+	records.map(record=>{
+	    let lat = record.getLatitude();
+	    let lon = record.getLongitude();
+	    let x = Math.round(w*(lon-bounds.west)/ew)-halfW;
+	    let y = h-(Math.round(h*(lat-bounds.south)/eh)-halfH);
+	    record.coordinates = {x:x,y:y};
+	    let c =  color|| "#000";
+	    if(colorBy && colorBy.index>=0) {
+		c=  colorBy.getColor(record.getData()[colorBy.index], record);
+	    }
+	    ctx.fillStyle =c;
+	    ctx.strokeStyle =c;
+	    if(args.type == "circle") {
+		ctx.beginPath();
+		ctx.arc(x,y, cellSize, 0, 2 * Math.PI);
+		if(args.stroke)
+		    ctx.stroke();
+		else
+		    ctx.fill();
+	    } else {
+		if(args.stroke)
+		    ctx.strokeRect(x, y, cellSize||4, cellSize||4);
+		else
+		    ctx.fillRect(x, y, cellSize||4, cellSize||4);
+		    
+	    }
+	});
+	return c.toDataURL("image/png");
+    },
     getRanges: function(fields, records) {
         var maxValues = [];
         var minValues = [];
@@ -8050,6 +8109,9 @@ var RecordUtil = {
             for (j = 0; j < records.length; j++) {
                 var record = records[j];
                 if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
+		    if(record.getLatitude()==0) {
+			console.log("ll:" + record);
+		    }
                     if (j == 0) {
                         north = record.getLatitude();
                         south = record.getLatitude();
@@ -8404,7 +8466,7 @@ var DataUtils = {
 	    filters.push({
 		type:type.trim(),
 		field:field,
-		fields:fields,
+		fields:fields||[field],
 		value:value,
 		label:label,
 		enabled: enabled,
@@ -8449,6 +8511,8 @@ var DataUtils = {
 	return filters;
     },
 }
+
+
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -30139,7 +30203,7 @@ var DISPLAY_BOXTABLE = "boxtable";
 var DISPLAY_DATATABLE = "datatable";
 var DISPLAY_PERCENTCHANGE = "percentchange";
 var DISPLAY_SPARKLINE = "sparkline";
-
+var DISPLAY_POINTIMAGE = "pointimage";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -30212,6 +30276,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_SPARKLINE,
     label: "Sparkline",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_POINTIMAGE,
+    label: "Point Image",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -32982,7 +33054,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
 		return;
 	    }
-//	    this.getPropertyShow = true;
+	    //	    this.getPropertyShow = true;
 	    let id = this.getDomId("inner");
 	    let showDate = this.getProperty("showDate",false);
 	    html = HtmlUtils.div(["class","display-sparkline-sparkline","id",this.getDomId("inner"),"style","width:" + w+"px;height:" + h+"px;"]);
@@ -33002,6 +33074,105 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	}
     });
 }
+
+
+
+function RamaddaPointimageDisplay(displayManager, id, properties) {
+    if(!properties.height) properties.height="200";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_POINTIMAGE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Image Display",
+					'type="rect|circle"',
+					'cellSize=2',
+					'padding=5',
+					'borderColor=#ccc',
+					'filled=false',
+					'showTooltips=false',
+				    ])},
+        needsData: function() {
+            return true;
+        },
+        getLoadingMessage: function(msg) {
+	    return "Loading...";
+	},
+	findClosest: function(records, e) {
+	    let closest = null;
+	    let minDistace = 0;
+	    let cnt = 0;
+	    records.map((r,i) =>{
+		let dx = r.coordinates.x-e.offsetX;
+		let dy = r.coordinates.y-e.offsetY;
+		let d = Math.sqrt(dx*dx+dy*dy);
+		if(i==0) {
+		    closest = r;
+		    minDistance=d;
+		} else {
+		    if(d<minDistance) {
+			minDistance = d;
+			closest=r;
+		    }
+		}
+	    });
+	    return closest;
+	},
+	updateUI: function() {
+	    var records = this.filterData();
+	    if(!records) return;
+	    $("#"+this.getProperty(PROP_DIVID)).css("display","inline-block");
+	    if(this.getProperty("borderColor")) {
+		$("#"+this.getProperty(PROP_DIVID)).css("border","1px solid " + this.getProperty("borderColor"));
+	    }
+	    let bounds ={};
+	    RecordUtil.getPoints(records, bounds);
+	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+	    let style = this.getProperty("padding")?"padding:" +this.getProperty("padding")+"px;" : "";
+	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    let pad = 10;
+	    let w = Math.round(this.jq("inner").width());
+	    let h = Math.round(w/ratio);
+            var divid = this.getProperty(PROP_DIVID);
+	    $("#"+ divid).css("height",h+pad);
+	    html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:" + w +";height:"+ h+"px;" + style]);
+	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    var colorBy = this.getColorByInfo(records);
+	    let args = {
+		type: this.getProperty("type","circle"),
+		stroke: !this.getProperty("filled",true)
+	    }
+	    let img = RecordUtil.gridData(records,w,h,colorBy,"red",this.getProperty("cellSize",4),this.getProperty("cellSize",4),args);
+	    this.jq("inner").html(HtmlUtils.image(img,["title","","id",this.getDomId("image")]));
+	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:5px;"]));
+	    let _this = this;
+	    if(this.getProperty("showTooltips",true)) {
+		this.jq("image").mouseout(function( event ) {
+		    _this.jq("tooltip").hide();
+		});
+		this.jq("image").mousemove(function( event ) {
+		    let closest = _this.findClosest(records,event);
+		    if(closest) {
+			let html =  HtmlUtils.div(["style","max-height:400px;overflow-y:auto;"], _this.getRecordHtml(closest));
+			_this.jq("tooltip").html(html);
+			_this.jq("tooltip").show();
+		    }
+		});
+	    }
+	    this.jq("image").click(e=> {
+		_this.mouseEvent = event;
+		let closest = this.findClosest(records,e);
+		if(closest)
+		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: closest});
+	    });
+	}
+    });
+}
+
 /**
 Copyright 2008-2019 Geode Systems LLC
 */

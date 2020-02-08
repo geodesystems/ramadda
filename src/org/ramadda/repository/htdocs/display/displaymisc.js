@@ -39,7 +39,7 @@ var DISPLAY_BOXTABLE = "boxtable";
 var DISPLAY_DATATABLE = "datatable";
 var DISPLAY_PERCENTCHANGE = "percentchange";
 var DISPLAY_SPARKLINE = "sparkline";
-
+var DISPLAY_POINTIMAGE = "pointimage";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -112,6 +112,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_SPARKLINE,
     label: "Sparkline",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_POINTIMAGE,
+    label: "Point Image",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -2882,7 +2890,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
 		return;
 	    }
-//	    this.getPropertyShow = true;
+	    //	    this.getPropertyShow = true;
 	    let id = this.getDomId("inner");
 	    let showDate = this.getProperty("showDate",false);
 	    html = HtmlUtils.div(["class","display-sparkline-sparkline","id",this.getDomId("inner"),"style","width:" + w+"px;height:" + h+"px;"]);
@@ -2902,3 +2910,102 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	}
     });
 }
+
+
+
+function RamaddaPointimageDisplay(displayManager, id, properties) {
+    if(!properties.height) properties.height="200";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_POINTIMAGE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Image Display",
+					'type="rect|circle"',
+					'cellSize=2',
+					'padding=5',
+					'borderColor=#ccc',
+					'filled=false',
+					'showTooltips=false',
+				    ])},
+        needsData: function() {
+            return true;
+        },
+        getLoadingMessage: function(msg) {
+	    return "Loading...";
+	},
+	findClosest: function(records, e) {
+	    let closest = null;
+	    let minDistace = 0;
+	    let cnt = 0;
+	    records.map((r,i) =>{
+		let dx = r.coordinates.x-e.offsetX;
+		let dy = r.coordinates.y-e.offsetY;
+		let d = Math.sqrt(dx*dx+dy*dy);
+		if(i==0) {
+		    closest = r;
+		    minDistance=d;
+		} else {
+		    if(d<minDistance) {
+			minDistance = d;
+			closest=r;
+		    }
+		}
+	    });
+	    return closest;
+	},
+	updateUI: function() {
+	    var records = this.filterData();
+	    if(!records) return;
+	    $("#"+this.getProperty(PROP_DIVID)).css("display","inline-block");
+	    if(this.getProperty("borderColor")) {
+		$("#"+this.getProperty(PROP_DIVID)).css("border","1px solid " + this.getProperty("borderColor"));
+	    }
+	    let bounds ={};
+	    RecordUtil.getPoints(records, bounds);
+	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+	    let style = this.getProperty("padding")?"padding:" +this.getProperty("padding")+"px;" : "";
+	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    let pad = 10;
+	    let w = Math.round(this.jq("inner").width());
+	    let h = Math.round(w/ratio);
+            var divid = this.getProperty(PROP_DIVID);
+	    $("#"+ divid).css("height",h+pad);
+	    html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:" + w +";height:"+ h+"px;" + style]);
+	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    var colorBy = this.getColorByInfo(records);
+	    let args = {
+		type: this.getProperty("type","circle"),
+		stroke: !this.getProperty("filled",true)
+	    }
+	    let img = RecordUtil.gridData(records,w,h,colorBy,"red",this.getProperty("cellSize",4),this.getProperty("cellSize",4),args);
+	    this.jq("inner").html(HtmlUtils.image(img,["title","","id",this.getDomId("image")]));
+	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:5px;"]));
+	    let _this = this;
+	    if(this.getProperty("showTooltips",true)) {
+		this.jq("image").mouseout(function( event ) {
+		    _this.jq("tooltip").hide();
+		});
+		this.jq("image").mousemove(function( event ) {
+		    let closest = _this.findClosest(records,event);
+		    if(closest) {
+			let html =  HtmlUtils.div(["style","max-height:400px;overflow-y:auto;"], _this.getRecordHtml(closest));
+			_this.jq("tooltip").html(html);
+			_this.jq("tooltip").show();
+		    }
+		});
+	    }
+	    this.jq("image").click(e=> {
+		_this.mouseEvent = event;
+		let closest = this.findClosest(records,e);
+		if(closest)
+		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: closest});
+	    });
+	}
+    });
+}
+

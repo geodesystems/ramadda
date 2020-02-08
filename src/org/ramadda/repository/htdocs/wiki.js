@@ -267,7 +267,7 @@ function wikiInitEditor(info) {
 	if(index>=left && index<=right && left>=0 && right>=left) {
 	    var chunk = text.substring(left,right+1);
 	    var tag;
-	    var tmp  = chunk.match(/\{\{ *([^ ]+)/);
+	    var tmp  = chunk.match(/\{\{ *([^ \n]+)/);
 	    if(tmp && tmp.length>1)  tag = tmp[1];
 	    if(tag) {
 		var type;

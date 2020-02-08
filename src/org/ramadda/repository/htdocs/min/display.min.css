@@ -15,6 +15,8 @@ svg > g > g:last-child { pointer-events: none }
 .display-tooltip {
     max-width:600px;
     border:1px solid #999 !important;
+    margin:0px;
+    box-shadow: 0px 0px 0px  rgba(0, 0, 0, 0);
 }
 
 .display-dialog {

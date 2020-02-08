@@ -1206,6 +1206,51 @@ var A = {
 }
 
 var RecordUtil = {
+    gridData: function(records,w,h, colorBy, color, cellSize, args) {
+	if(args) args = {};
+	if(!args.type) args.type="circle";
+	let id = HtmlUtils.getUniqueId();
+	let canvas = '<canvas style="display:none;" id="' + id +'" width="' + w+'" height="' + h +'"></canvas>';
+	$(document.body).append(canvas);
+	var c = document.getElementById(id);
+	var ctx = c.getContext("2d");
+	let cnt = 0;
+	let bounds ={};
+	RecordUtil.getPoints(records, bounds);
+	let ew = bounds.east-bounds.west;
+	let eh = bounds.north-bounds.south;
+	let halfW = cellSize/2;
+	let halfH = cellSize/2;
+
+	records.map(record=>{
+	    let lat = record.getLatitude();
+	    let lon = record.getLongitude();
+	    let x = Math.round(w*(lon-bounds.west)/ew)-halfW;
+	    let y = h-(Math.round(h*(lat-bounds.south)/eh)-halfH);
+	    record.coordinates = {x:x,y:y};
+	    let c =  color|| "#000";
+	    if(colorBy && colorBy.index>=0) {
+		c=  colorBy.getColor(record.getData()[colorBy.index], record);
+	    }
+	    ctx.fillStyle =c;
+	    ctx.strokeStyle =c;
+	    if(args.type == "circle") {
+		ctx.beginPath();
+		ctx.arc(x,y, cellSize, 0, 2 * Math.PI);
+		if(args.stroke)
+		    ctx.stroke();
+		else
+		    ctx.fill();
+	    } else {
+		if(args.stroke)
+		    ctx.strokeRect(x, y, cellSize||4, cellSize||4);
+		else
+		    ctx.fillRect(x, y, cellSize||4, cellSize||4);
+		    
+	    }
+	});
+	return c.toDataURL("image/png");
+    },
     getRanges: function(fields, records) {
         var maxValues = [];
         var minValues = [];
@@ -1280,6 +1325,9 @@ var RecordUtil = {
             for (j = 0; j < records.length; j++) {
                 var record = records[j];
                 if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
+		    if(record.getLatitude()==0) {
+			console.log("ll:" + record);
+		    }
                     if (j == 0) {
                         north = record.getLatitude();
                         south = record.getLatitude();
@@ -1634,7 +1682,7 @@ var DataUtils = {
 	    filters.push({
 		type:type.trim(),
 		field:field,
-		fields:fields,
+		fields:fields||[field],
 		value:value,
 		label:label,
 		enabled: enabled,
@@ -1679,3 +1727,5 @@ var DataUtils = {
 	return filters;
     },
 }
+
+
