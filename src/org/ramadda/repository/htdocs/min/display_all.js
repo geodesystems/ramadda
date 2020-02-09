@@ -2303,10 +2303,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
-		this.startDateObject = new Date(startDate);
+		this.startDateObject = Utils.createDate(startDate);
 	    } 
 	    if(endDate) {
-		this.endDateObject = new Date(endDate);
+		this.endDateObject = Utils.createDate(endDate);
 	    } 
 
 	    let filterDate = this.getProperty("filterDate");
@@ -12680,7 +12680,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tt = tt.replace("${default}",tooltip);
 		    tooltip = tt;
 		}
-		tooltip = "div style='padding:8px;'>"+tooltip+"</div>";
+		tooltip = HtmlUtils.div(["style","padding:8px;"],tooltip);
 
                 let newRow = [];
 		if(debug && rowIdx<debugRows)

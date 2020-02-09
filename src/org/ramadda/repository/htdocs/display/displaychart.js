@@ -1059,7 +1059,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tt = tt.replace("${default}",tooltip);
 		    tooltip = tt;
 		}
-		tooltip = "div style='padding:8px;'>"+tooltip+"</div>";
+		tooltip = HtmlUtils.div(["style","padding:8px;"],tooltip);
 
                 let newRow = [];
 		if(debug && rowIdx<debugRows)

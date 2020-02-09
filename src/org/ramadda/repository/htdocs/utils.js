@@ -355,6 +355,28 @@ var Utils = {
     dayNamesShortShort:["S","M","T","W","Th","F","Sa"],
     monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],
     monthNamesShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    createDate: function(d) {
+	let regexp = new RegExp("^(\\+|-)?([0-9]+) *(minute|hour|day|week|month|year)$");
+	let toks = d.trim().match(regexp);
+	if(toks) {
+	    let mult = parseFloat(toks[1]+toks[2]);
+	    let what = toks[2];
+	    let date = new Date().getTime();
+	    if(what == "minute")
+		return new Date(date+mult*1000*60);
+	    if(what == "hour")
+		return new Date(date+mult*1000*60*60);
+	    if(what == "day")
+		return new Date(date+mult*1000*60*60*24);
+	    if(what == "week")
+		return new Date(date+mult*1000*60*60*24*7);
+	    if(what == "month")
+		return new Date(date+mult*1000*60*60*24*7*31);
+	    return new Date(date+mult*1000*60*60*24*365);
+	}
+	return  new Date(d);
+
+    },
     formatDateMonthDayYear: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
 	var m = this.monthNames[date.getUTCMonth()];

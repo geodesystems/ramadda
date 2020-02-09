@@ -2153,10 +2153,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
-		this.startDateObject = new Date(startDate);
+		this.startDateObject = Utils.createDate(startDate);
 	    } 
 	    if(endDate) {
-		this.endDateObject = new Date(endDate);
+		this.endDateObject = Utils.createDate(endDate);
 	    } 
 
 	    let filterDate = this.getProperty("filterDate");
