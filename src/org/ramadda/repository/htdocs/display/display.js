@@ -946,7 +946,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		compareFields: this.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
 	    };
 	    $.extend(colorBy,{
-		displayColorTable: function(width) {
+		displayColorTable: function(width,force) {
 		    if(!_this.getProperty("showColorTable",true)) return;
 		    if(this.compareFields.length>0) {
 			var legend = "";
@@ -956,7 +956,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			});
 			_this.jq(ID_COLORTABLE).html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
 		    }
-		    if(this.index<0) return;
+		    if(!force && this.index<0) return;
 		    if(this.stringMap) {
 			var colors = [];
 			this.colorByValues= [];
@@ -981,7 +981,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			});
 		    }
 		},
-
+		setRange: function(minValue,maxValue) {
+		    this.minValue = minValue;
+		    this.maxValue = maxValue;
+		    this.origMinValue = minValue;
+		    this.origMaxValue = maxValue;
+		    this.range = maxValue - minValue;
+		},
 		getColor: function(value, pointRecord) {
 		    var percent = 0;
                     if (this.showPercent) {
@@ -2588,6 +2594,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(record)
 		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {select:true,record: record});
 	    });
+
 
 	    if(doTooltip) {
 		svg.on("mouseover", function() {

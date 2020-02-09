@@ -1326,16 +1326,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 		    h = Math.round(w/ratio);
 		}
-		let args =$.extend({colorBy:colorBy,w:w,h:h},
+		let doCount = this.getProperty("heatmapDoCount",false);
+		let args =$.extend({colorBy:colorBy,w:w,h:h,doCount:doCount},
 				   this.getDefaultGridByArgs());
 		let img = RecordUtil.gridData(this.getId(),records,args);
-		this.map.addImageLayer("test", "test", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
+		this.map.addImageLayer("heatmap", "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false
 		});
+		colorBy.displayColorTable(null,doCount);
 		return;
-
 	    }
-
 
 
 

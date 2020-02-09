@@ -1096,7 +1096,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		compareFields: this.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
 	    };
 	    $.extend(colorBy,{
-		displayColorTable: function(width) {
+		displayColorTable: function(width,force) {
 		    if(!_this.getProperty("showColorTable",true)) return;
 		    if(this.compareFields.length>0) {
 			var legend = "";
@@ -1106,7 +1106,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			});
 			_this.jq(ID_COLORTABLE).html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
 		    }
-		    if(this.index<0) return;
+		    if(!force && this.index<0) return;
 		    if(this.stringMap) {
 			var colors = [];
 			this.colorByValues= [];
@@ -1131,7 +1131,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			});
 		    }
 		},
-
+		setRange: function(minValue,maxValue) {
+		    this.minValue = minValue;
+		    this.maxValue = maxValue;
+		    this.origMinValue = minValue;
+		    this.origMaxValue = maxValue;
+		    this.range = maxValue - minValue;
+		},
 		getColor: function(value, pointRecord) {
 		    var percent = 0;
                     if (this.showPercent) {
@@ -2738,6 +2744,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(record)
 		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {select:true,record: record});
 	    });
+
 
 	    if(doTooltip) {
 		svg.on("mouseover", function() {
@@ -8036,14 +8043,23 @@ var RecordUtil = {
 
 
 
+	let minCount = -1;
+	let maxCount = -1;
 	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    for(var colIdx=0;colIdx<cols;colIdx++)  {
 		let count = counts[rowIdx][colIdx];
 		if(count==0) continue;
 		let total = grid[rowIdx][colIdx];
-		grid[rowIdx][colIdx] =  total/count;
+		minCount = minCount==-1?count:Math.min(minCount,count);
+		maxCount = maxCount==-1?count:Math.max(maxCount,count);
+		if(args.doCount)
+		    grid[rowIdx][colIdx] =  count;
+		else
+		    grid[rowIdx][colIdx] =  total/count;
 	    }
 	}	
+	grid.minCount = minCount;
+	grid.maxCount = maxCount;
     },
     gridData: function(gridId,records,args) {
 	if(!args) args = {};
@@ -8054,7 +8070,8 @@ var RecordUtil = {
 	    h:400,
 	    cellSize:2,
 	    cellSizeX:2,
-	    cellSizeY:2
+	    cellSizeY:2,
+	    doCount:false
 	}
 	$.extend(opts,args);
 	let id = HtmlUtils.getUniqueId();
@@ -8072,7 +8089,6 @@ var RecordUtil = {
 	if(opts.doHeatmap) {
 	    let cols = Math.floor(opts.w/opts.cellSizeX);
 	    let rows = Math.floor(opts.h/opts.cellSizeY);
-//	    console.log("dim:" + cols +" " + rows + " " +opts.w + " " + opts.cellSizeX);
 	    let grid = [];
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = [];
@@ -8097,17 +8113,24 @@ var RecordUtil = {
 		y =Math.floor(y/opts.cellSizeY);
 		points.push({x:x,y:y,v:v});
 	    });
-
 	    RecordUtil.gridPoints(grid,points,args);
 	    let tmpc = ["red","green","blue"];
 	    let tmpcnt = 0;
+	    if(args.doCount) {
+		if(opts.colorBy) {
+		    opts.colorBy.setRange(grid.minCount, grid.maxCount);
+		}
+	
+	    }
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
 		for(var colIdx=0;colIdx<cols;colIdx++)  {
 		    let v = row[colIdx];
 		    if(isNaN(v)) continue;
 		    let c;
-		    if(opts.colorBy && opts.colorBy.index>=0) {
+		    if(args.doCount) {
+			c=  opts.colorBy.getColor(v);
+		    } else if(opts.colorBy && opts.colorBy.index>=0) {
 			c=  opts.colorBy.getColor(v);
 		    } else {
 			if(tmpcnt>=tmpc.length)
@@ -23633,16 +23656,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 		    h = Math.round(w/ratio);
 		}
-		let args =$.extend({colorBy:colorBy,w:w,h:h},
+		let doCount = this.getProperty("heatmapDoCount",false);
+		let args =$.extend({colorBy:colorBy,w:w,h:h,doCount:doCount},
 				   this.getDefaultGridByArgs());
 		let img = RecordUtil.gridData(this.getId(),records,args);
-		this.map.addImageLayer("test", "test", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
+		this.map.addImageLayer("heatmap", "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false
 		});
+		colorBy.displayColorTable(null,doCount);
 		return;
-
 	    }
-
 
 
 

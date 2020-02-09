@@ -810,6 +810,12 @@ a.ramadda-menubar-button:hover {
     padding-bottom:4px;
 }
 
+.ui-tooltip {
+    border:1px solid #999 !important;
+    margin:0px;
+    box-shadow: 0px 0px 0px  rgba(0, 0, 0, 0);
+}
+
 .ui-tabs .ramadda-section  {
     padding-left:0px;
     padding-right:0px;

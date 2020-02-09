@@ -1234,14 +1234,23 @@ var RecordUtil = {
 
 
 
+	let minCount = -1;
+	let maxCount = -1;
 	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    for(var colIdx=0;colIdx<cols;colIdx++)  {
 		let count = counts[rowIdx][colIdx];
 		if(count==0) continue;
 		let total = grid[rowIdx][colIdx];
-		grid[rowIdx][colIdx] =  total/count;
+		minCount = minCount==-1?count:Math.min(minCount,count);
+		maxCount = maxCount==-1?count:Math.max(maxCount,count);
+		if(args.doCount)
+		    grid[rowIdx][colIdx] =  count;
+		else
+		    grid[rowIdx][colIdx] =  total/count;
 	    }
 	}	
+	grid.minCount = minCount;
+	grid.maxCount = maxCount;
     },
     gridData: function(gridId,records,args) {
 	if(!args) args = {};
@@ -1252,7 +1261,8 @@ var RecordUtil = {
 	    h:400,
 	    cellSize:2,
 	    cellSizeX:2,
-	    cellSizeY:2
+	    cellSizeY:2,
+	    doCount:false
 	}
 	$.extend(opts,args);
 	let id = HtmlUtils.getUniqueId();
@@ -1270,7 +1280,6 @@ var RecordUtil = {
 	if(opts.doHeatmap) {
 	    let cols = Math.floor(opts.w/opts.cellSizeX);
 	    let rows = Math.floor(opts.h/opts.cellSizeY);
-//	    console.log("dim:" + cols +" " + rows + " " +opts.w + " " + opts.cellSizeX);
 	    let grid = [];
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = [];
@@ -1295,17 +1304,24 @@ var RecordUtil = {
 		y =Math.floor(y/opts.cellSizeY);
 		points.push({x:x,y:y,v:v});
 	    });
-
 	    RecordUtil.gridPoints(grid,points,args);
 	    let tmpc = ["red","green","blue"];
 	    let tmpcnt = 0;
+	    if(args.doCount) {
+		if(opts.colorBy) {
+		    opts.colorBy.setRange(grid.minCount, grid.maxCount);
+		}
+	
+	    }
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
 		for(var colIdx=0;colIdx<cols;colIdx++)  {
 		    let v = row[colIdx];
 		    if(isNaN(v)) continue;
 		    let c;
-		    if(opts.colorBy && opts.colorBy.index>=0) {
+		    if(args.doCount) {
+			c=  opts.colorBy.getColor(v);
+		    } else if(opts.colorBy && opts.colorBy.index>=0) {
 			c=  opts.colorBy.getColor(v);
 		    } else {
 			if(tmpcnt>=tmpc.length)
