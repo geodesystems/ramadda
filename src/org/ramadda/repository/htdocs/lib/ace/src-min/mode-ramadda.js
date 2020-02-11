@@ -1570,12 +1570,16 @@ var tagMap = lang.createMap({
 		    ],
 		    regex: "(type *= *\")([^ \"]+)(\")",
 		}, {
-                    token : ["","display_type"],
-		    regex: "({{ *)(display_[^ ]+)"
+                    token : ["bracket","display_type"],
+		    regex: "({{ *)(display_[^ }]+)"
 		}, {
-		    token: ["", "display_macro",""],
-		    regex: "(\\$\\{)([^\}]+)(\\})",
-		},
+                    token : ["bracket","macro"],
+		    regex: "({{ *)([^ }]+)"
+
+		}, {
+                    token : ["","bracket"],
+		    regex: ".*(\{\{).*"
+},
 		{token : "keyword",
                     regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
                 },
