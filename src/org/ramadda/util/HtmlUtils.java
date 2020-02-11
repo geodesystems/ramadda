@@ -1530,10 +1530,10 @@ public class HtmlUtils {
 
 
     /** _more_          */
-    private static boolean debug1 = false;
+    public static boolean debug1 = false;
 
     /** _more_          */
-    private static boolean debug2 = false;
+    public static boolean debug2 = false;
 
     /**
      * _more_
@@ -1583,7 +1583,7 @@ public class HtmlUtils {
             }
 
             if (mode == MODE_NAME) {
-                if (c == ' ') {
+                if (c == ' ' || c=='\n') {
                     mode = MODE_EQUALS;
 
                     continue;
@@ -1603,7 +1603,6 @@ public class HtmlUtils {
             if (mode == MODE_EQUALS) {
                 if (c == '=') {
                     mode = MODE_VALUE;
-
                     continue;
                 }
                 String name = nb.toString().trim();
@@ -4548,7 +4547,7 @@ public class HtmlUtils {
 
     /**
      * _more_
-     *
+     *as(ttr
      * @param function _more_
      * @param args _more_
      *
@@ -6049,4 +6048,8 @@ public class HtmlUtils {
         return sanitizeString(s).replaceAll("\"", "_");
     }
 
+    public static class HT extends HtmlUtils {}
+
 }
+
+
