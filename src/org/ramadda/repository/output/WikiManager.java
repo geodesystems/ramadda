@@ -641,6 +641,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //      System.err.println("TAG:" + tag);
             //      System.err.println("REMAINDER:" + remainder);
             Hashtable tmpProps = HtmlUtils.parseHtmlProperties(remainder);
+
             Hashtable props    = new Hashtable();
             for (Enumeration keys =
                     tmpProps.keys(); keys.hasMoreElements(); ) {
@@ -5275,7 +5276,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 msg("Help"),
                 HtmlUtils.div(help.toString(), "style='padding:5px;'"),
                 HtmlUtils.clazz(
-                    " ramadda-menubar-button ramadda-menubar-button-last"));
+                    " ramadda-menubar-button ramadda-menubar-button"));
 
 
         String tagsButton = getPageHandler().makePopupLink(msg("Formatting"),
@@ -5311,7 +5312,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         HtmlUtils.open(buttons, "div",
                        HtmlUtils.cssClass("ramadda-menubar")
-                       + HtmlUtils.attr("id", textAreaId + "_toolbar"));
+                       + HtmlUtils.attrs("id", textAreaId + "_toolbar",
+                                         "style", "relative"));
         buttons.append(HtmlUtils.span("",
                                       HtmlUtils.id(textAreaId + "_prefix")));
         buttons.append(tagsButton);
@@ -5334,6 +5336,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         buttons.append(helpButton);
+        String previewCall = HtmlUtils.call("wikiPreview", ((entry != null)
+                ? HtmlUtils.squote(entry.getId())
+                : "null"), HtmlUtils.squote(textAreaId));
+        String previewButton =
+            HtmlUtils.href("#", "Preview",
+                HtmlUtils.attrs("onclick", previewCall, "id",
+                    "wikieditpreviewbutton ", "style", "padding:5px;",
+                    "class",
+                    " ramadda-menubar-button ramadda-menubar-button-last")) + HtmlUtils.div("",
+                        HtmlUtils.attrs("id", "wikieditpreview", "style",
+                            "position:absolute;left:100px;top:10px;"));
+
+
+        System.err.println(previewButton);
+
+        buttons.append(previewButton);
         HtmlUtils.close(buttons, "div");
 
         return buttons.toString();
@@ -6420,6 +6438,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
+
             return;
         }
 
@@ -6449,7 +6468,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             anotherDivId = HtmlUtils.getUniqueId("displaydiv");
         }
         anotherDivId = anotherDivId.replace("$entryid", entry.getId());
-        sb.append(HtmlUtils.div("",  HtmlUtils.id(anotherDivId)));
+        sb.append(HtmlUtils.div("", HtmlUtils.id(anotherDivId)));
         Utils.add(propList, "divid", Json.quote(anotherDivId));
         //        }
         props.remove("layoutHere");
@@ -6459,9 +6478,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         //Put the main div after the display div
         if (needToCreateGroup) {
-	    sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
-	    sb.append("\n");
-	}
+            sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
+            sb.append("\n");
+        }
 
         for (String arg : new String[] {
             "eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
