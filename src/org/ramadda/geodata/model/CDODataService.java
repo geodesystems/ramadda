@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2020 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -42,6 +42,8 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -1747,7 +1749,8 @@ public abstract class CDODataService extends Service {
         }
         Request newRequest = request.cloneMe();
         String eventString =
-            newRequest.getSanitizedString(ClimateModelApiHandler.ARG_EVENT, "");
+            newRequest.getSanitizedString(ClimateModelApiHandler.ARG_EVENT,
+                                          "");
         if (eventString == null) {
             return request;
         }
@@ -1789,5 +1792,47 @@ public abstract class CDODataService extends Service {
         return name;
     }
 
+    /**
+     * Calculated the latlon rectangle for this request
+     *
+     * @param request _more_
+     * @param sb _more_
+     * @param dataset _more_
+     *
+     * @throws Exception _more_
+     */
+    protected void addMapWidget(Request request, Appendable sb,
+                                GridDataset dataset)
+            throws Exception {
+        // if a custom map region was used before, set llr to that.
+        LatLonRect llr = null;
+        if (request.defined("mapregion")
+                && request.getSanitizedString("mapregion",
+                        null).equals("CUSTOM")) {
+            double maxlon = request.get(CDOOutputHandler.ARG_AREA_EAST,
+                                        Double.NaN);
+            double minlon = request.get(CDOOutputHandler.ARG_AREA_WEST,
+                                        Double.NaN);
+            double maxlat = request.get(CDOOutputHandler.ARG_AREA_NORTH,
+                                        Double.NaN);
+            double minlat = request.get(CDOOutputHandler.ARG_AREA_SOUTH,
+                                        Double.NaN);
+            if ( !(Double.isNaN(maxlat)
+                    || Double.isNaN(minlat)
+                    || Double.isNaN(maxlon)
+                    || Double.isNaN(minlon))) {
+                llr = new LatLonRect(new LatLonPointImpl(maxlat,
+                        minlon), new LatLonPointImpl(minlat, maxlon));
+            }
+        } else {
+            if (dataset != null) {
+                llr = dataset.getBoundingBox();
+            } else {
+                llr = new LatLonRect(new LatLonPointImpl(90.0,
+                        -180.0), new LatLonPointImpl(-90.0, 180.0));
+            }
+        }
+        getOutputHandler().addMapWidget(request, sb, llr, false);
+    }
 
 }

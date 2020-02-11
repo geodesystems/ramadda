@@ -151,43 +151,11 @@ public class CDOTimeSeriesService extends CDODataService {
 
         getOutputHandler().addTimeWidget(request, sb, dataset, true, true);
 
-        LatLonRect llr       = null;
-        String     mapRegion = request.getString("mapregion", null);
-        if ((mapRegion != null) && mapRegion.equals("CUSTOM")) {
-            String north = request.getString(CDOOutputHandler.ARG_AREA_NORTH,
-                                             null);
-            String west = request.getString(CDOOutputHandler.ARG_AREA_WEST,
-                                            null);
-            String south = request.getString(CDOOutputHandler.ARG_AREA_SOUTH,
-                                             null);
-            String east = request.getString(CDOOutputHandler.ARG_AREA_EAST,
-                                            null);
-            if ( !(north.isEmpty()
-                    || south.isEmpty()
-                    || west.isEmpty()
-                    || east.isEmpty())) {
-                llr = new LatLonRect(
-                    new LatLonPointImpl(Misc.parseDouble(north),
-                                        Misc.parseDouble(
-                                            west)), new LatLonPointImpl(
-                                                Misc.parseDouble(south),
-                                                        Misc.parseDouble(
-                                                        east)));
-            }
-        }
-        if (llr == null) {
-            if (dataset != null) {
-                llr = dataset.getBoundingBox();
-            } else {
-                llr = new LatLonRect(new LatLonPointImpl(90.0,
-                        -180.0), new LatLonPointImpl(-90.0, 180.0));
-            }
-        }
+        addMapWidget(request, sb, dataset);
+
         if (dataset != null) {
             dataset.close();
         }
-        getOutputHandler().addMapWidget(request, sb, llr);
-
     }
 
     /**

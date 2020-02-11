@@ -210,18 +210,13 @@ public class CDOArealStatisticsService extends CDODataService {
                        type);
 
         addTimeWidget(request, sb, input, periods);
-        //System.err.println("Time to add time widget: "+(System.currentTimeMillis()-millis));
 
-        millis = System.currentTimeMillis();
-        LatLonRect llr = null;
+        addMapWidget(request, sb, dataset);
+        
         if (dataset != null) {
-            llr = dataset.getBoundingBox();
-        } else {
-            llr = new LatLonRect(new LatLonPointImpl(90.0,
-                    -180.0), new LatLonPointImpl(-90.0, 180.0));
+            dataset.close();
         }
-        //System.err.println("Time to get llr: "+(System.currentTimeMillis()-millis)+ " " + dataset.toString() );
-        getOutputHandler().addMapWidget(request, sb, llr, false);
+
     }
 
     /**
