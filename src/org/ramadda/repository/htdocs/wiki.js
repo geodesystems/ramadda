@@ -3,6 +3,29 @@
  */
 
 
+async function  wikiPreview(entry, id) {
+    var editor = HtmlUtils.getAceEditor(id);
+    var t = editor.getValue();
+    let area = $("#" + id);
+    $("#wikieditpreview").css("z-index",1000).css("left",area.position().left)
+	.css("min-width","400px").css("width","900px").css("max-width","900px").css("overflow-x","auto").css("left",area.position().left-100).css("top",area.position().top-10);
+    let bar = HtmlUtils.div(['class','ramadda-menubar',"style","text-align:center;width:100%;border:1px solid #ccc"],
+			    HtmlUtils.onClick("wikiPreviewClose('" + id +"');","Close",["class","ramadda-button"]));
+
+    var wikiCallback = function(html) {
+	html = HtmlUtils.div(["id","", "style","border:1px solid #ccc;background:white;"], html);
+	html = bar + html;
+	$("#wikieditpreview").html(html).show();
+	$("#wikieditpreview").draggable();
+    }
+    await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(t),
+	    wikiCallback);
+}
+
+function wikiPreviewClose() {
+    $("#wikieditpreview").hide();
+}
+
 function insertText(id, value) {
     hidePopupObject();
     var popup = getTooltip();
