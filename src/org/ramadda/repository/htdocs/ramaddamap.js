@@ -152,7 +152,7 @@ function ramaddaMapShareState(source, state) {
 function RepositoryMap(mapId, params) {
     if (!params) params = {};
     this.params = params;
-//    console.log("params:" + JSON.stringify(params));
+    //    console.log("params:" + JSON.stringify(params));
 
     this.mapId = mapId || "map";
     ramaddaMapAdd(this);
@@ -181,6 +181,7 @@ function RepositoryMap(mapId, params) {
         markers: null,
         vectors: null,
         loadedLayers: [],
+	nonSelectLayers: [],
 	doPopup:true,
 	shareSelected:false,
 	doSelect:true,
@@ -298,29 +299,6 @@ function RepositoryMap(mapId, params) {
 
 function initMapFunctions(theMap) {
     RamaddaUtil.defineMembers(theMap, {
-	testit: function() {
-	    console.log("test");
-	    let canvas = '<canvas style="display:none;" id="myCanvas" width="200" height="100"></canvas>';
-	    $("#" + this.mapDivId).append(canvas);
-	    var c = document.getElementById("myCanvas");
-	    var ctx = c.getContext("2d");
-
-	    let colors = ["red","green","blue"];
-	    let cnt = 0;
-	    for(var x=0;x<200;x+=20) {
-		if(cnt>=colors.length) cnt = 0;
-		ctx.fillStyle = colors[cnt++];
-		ctx.fillRect(x, 20, 20, 100);
-	    }
-//	    ctx.moveTo(0, 0);
-//	    ctx.lineTo(200, 100);
-//	    ctx.stroke(); 
-	    var img    = c.toDataURL("image/png");
-//            addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
-            this.addImageLayer("test", "test", "", img, true, 41, -109, 37, -102, 200, 100, {
-		isBaseLayer: false
-            });
-	},
         finishMapInit: function() {
             let _this = this;
             if (this.showSearch) {
@@ -562,7 +540,7 @@ function initMapFunctions(theMap) {
 			style.pointRadius = feature.style.pointRadius;
 		    }
 		}
-		   
+		
 	    }
 	    //layer.drawFeature(layer.selectedFeature, "select");
 	    layer.drawFeature(layer.selectedFeature, style);
@@ -635,9 +613,11 @@ function initMapFunctions(theMap) {
 	    }
 	    return null;
 	},
-        addLayer: function(layer) {
+        addLayer: function(layer,nonSelectable) {
             if (this.map != null) {
                 this.map.addLayer(layer);
+		if(nonSelectable)
+		    this.nonSelectLayers.push(layer);
                 this.checkLayerOrder();
             } else {
                 this.initialLayers.push(layer);
@@ -645,6 +625,10 @@ function initMapFunctions(theMap) {
         },
         checkLayerOrder: function() {
 	    var base = 0;
+	    this.nonSelectLayers.every(layer=>{
+		this.map.setLayerIndex(layer, base++);		
+		return true;
+	    });
 	    this.loadedLayers.map(layer=>{
 		this.map.setLayerIndex(layer, base++);		
 	    });
@@ -704,7 +688,7 @@ function initMapFunctions(theMap) {
             image.text = this.getPopupText(desc);
             image.ramaddaId = layerId;
             image.ramaddaName = name;
-            this.addLayer(image);
+            this.addLayer(image,true);
             image.north = north;
             image.west = west;
             image.south = south;
@@ -1200,6 +1184,9 @@ function initMapFunctions(theMap) {
     theMap.removeKMLLayer = function(layer) {
         this.map.removeLayer(layer);
     }
+    theMap.removeLayer = function(layer) {
+        this.map.removeLayer(layer);
+    }
 
     theMap.setDefaultCanSelect = function(canSelect) {
         this.defaultCanSelect = canSelect;
@@ -1691,7 +1678,7 @@ function initMapFunctions(theMap) {
 					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
             } else if (mapLayer == map_white) {
                 this.addImageLayer(map_white, "White Background", "", ramaddaBaseUrl + "/images/white.png", false, 90, -180, -90, 180, 50, 50, {
-//                this.addImageLayer(map_white, "White Background", "", iurl, false, 90, -180, -90, 180, 50, 50, {
+		    //                this.addImageLayer(map_white, "White Background", "", iurl, false, 90, -180, -90, 180, 50, 50, {
                     isBaseLayer: true
                 });
                 continue;
@@ -1932,7 +1919,7 @@ function initMapFunctions(theMap) {
         if (this.showScaleLine) {
             this.map.addControl(new OpenLayers.Control.ScaleLine());
         }
-//        this.map.addControl(new OpenLayers.Control.OverviewMap());
+	//        this.map.addControl(new OpenLayers.Control.OverviewMap());
 
         var keyboardControl = new OpenLayers.Control();
         var control = new OpenLayers.Control();
@@ -1979,13 +1966,13 @@ function initMapFunctions(theMap) {
             var latLonReadout = GuiUtils.getDomObject(this.latlonReadout);
             if (latLonReadout) {
                 this.map.addControl(new OpenLayers.Control.MousePosition({
-                    numDigits: 3,
+                    numDigits: 5,
                     element: latLonReadout.obj,
                     prefix: "Position: "
                 }));
             } else {
                 this.map.addControl(new OpenLayers.Control.MousePosition({
-                    numDigits: 3,
+                    numDigits: 5,
                     prefix: "Position: "
                 }));
             }
@@ -2906,6 +2893,14 @@ function initMapFunctions(theMap) {
 	}
     }
 
+    theMap.zoomToLayer = function(layer)  {
+        var dataBounds = layer.getDataExtent();
+	if(!dataBounds)
+	    dataBounds = layer.extent;
+        if (dataBounds) {
+            this.getMap().zoomToExtent(dataBounds, true);
+	}
+    }
 
     //bounds are in lat/lon
     theMap.centerOnMarkers = function(dfltBounds, force, justMarkerLayer) {
@@ -3187,9 +3182,9 @@ function initMapFunctions(theMap) {
             return null;
         };
 	//Don't do this as the box select hides the marker select
-//        var sf = new OpenLayers.Control.SelectFeature(theBoxes);
-//        this.getMap().addControl(sf);
-//        sf.activate();
+	//        var sf = new OpenLayers.Control.SelectFeature(theBoxes);
+	//        this.getMap().addControl(sf);
+	//        sf.activate();
     }
 
     theMap.removeBox = function(box) {
