@@ -8213,9 +8213,8 @@ var RecordUtil = {
 		c=  opts.colorBy.getColor(v);
 	    }
 	}
-//	ctx.strokeStyle ="#000";
-	ctx.strokeStyle =c;
 	ctx.fillStyle =c
+	ctx.strokeStyle =c
 	if(opts.shape == "circle") {
 	    ctx.beginPath();
 	    ctx.arc(x,y, opts.cellSize, 0, 2 * Math.PI);
@@ -8223,10 +8222,34 @@ var RecordUtil = {
 		ctx.stroke();
 	    else
 		ctx.fill();
+	} else if(opts.shape == "vector") {
+	    let length = 10;
+	    let x2=x+length;
+	    let y2=y;
+	    if(opts.colorBy && opts.colorBy.index>=0) {
+		let perc = opts.colorBy.getValuePercent(v);
+//		if(perc<0.3 || perc>0.7) return;
+		let degrees = (360*perc);
+//		console.log(v +" " + perc  + v +" deg:" + degrees);
+		degrees = degrees*(Math.PI / 360)
+		x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
+		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
+		x2+=x;
+		y2+=y;
+	    }
+	    ctx.save();
+	    ctx.fillStyle="#000";
+	    ctx.beginPath();
+	    ctx.arc(x,y, 1, 0, 2 * Math.PI);
+	    ctx.fill();
+	    ctx.restore();
+	    ctx.beginPath();
+	    ctx.moveTo(x,y);
+	    ctx.lineTo(x2,y2);
+	    ctx.stroke();
 	} else {
 	    if(opts.cell3D) {
 		let height = perc*20;
-//		height=opts.cellSizeH||opts.cellSize;
 		ctx.strokeStyle = "#000";
 		ctx.strokeStyle = "rgba(0,0,0,0)"
 		RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
