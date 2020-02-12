@@ -635,7 +635,6 @@ function DisplayThing(argId, argProperties) {
 	    return macros.apply(attrs);
 	},
         getRecordHtml: function(record, fields, template) {
-	    return record.id +" " + record.getLatitude() +" " + record.getLongitude();
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) {
