@@ -1577,9 +1577,9 @@ var tagMap = lang.createMap({
 		    regex: "({{ *)([^ }]+)"
 
 		}, {
-                    token : ["","bracket"],
+                    token : ["bracket"],
 		    regex: ".*(\{\{).*"
-},
+		},
 		{token : "keyword",
                     regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
                 },
