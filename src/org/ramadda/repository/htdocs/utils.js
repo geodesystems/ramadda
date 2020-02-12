@@ -1040,7 +1040,6 @@ var Utils = {
             cnt++;
         }
     },
-
     displayColorTable: function(ct, domId, min, max, args) {
         if (!ct) return;
 	var html = this.getColorTableDisplay(ct,min,max,args);
@@ -1075,11 +1074,12 @@ var Utils = {
         for (var i = 0; i < ct.length; i++) {
             var extra = "";
             var attrs = ["style", "background:" + ct[i] + ";" + "width:100%;height:" + options.height + ";min-width:1px;"];
+	    let val = min + step * i;
             if (options.showRange) {
                 attrs.push("title");
-                attrs.push(this.formatNumber(min + step * i));
+                attrs.push(this.formatNumber(val));
             }
-            html += HtmlUtils.td(["class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
+            html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
         }
         if (options.showRange) {
             html += "<td width=1%>&nbsp;" + this.formatNumber(max) + "</td>";
