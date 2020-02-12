@@ -5346,10 +5346,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     "class",
                     " ramadda-menubar-button ramadda-menubar-button-last")) + HtmlUtils.div("",
                         HtmlUtils.attrs("id", "wikieditpreview", "style",
-                            "position:absolute;left:100px;top:10px;"));
+                            "display:none;height:800px;overflow-y:auto;position:absolute;left:100px;top:10px;"));
 
-
-        System.err.println(previewButton);
 
         buttons.append(previewButton);
         HtmlUtils.close(buttons, "div");
@@ -6503,18 +6501,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        if ((displayType.equals("radar") || displayType.equals(
-                "windrose") || displayType.equals(
-                "dotplot") || displayType.equals(
-                "parcoords") || displayType.equals(
-                "splom") || displayType.equals(
-                "3dscatter") || displayType.equals(
-                "3dmesh") || displayType.equals(
-                "textcount") || displayType.equals(
-                "density") || displayType.equals(
-                "combochart") || displayType.equals(
-                "sunburst")) && (request.getExtraProperty(
-                "added plotly") == null)) {
+        if (request.getExtraProperty("added plotly") == null) {
             HtmlUtils.importJS(
                 sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
             //            HtmlUtils.importJS(sb, "https://cdn.plot.ly/plotly-latest.min.js");
