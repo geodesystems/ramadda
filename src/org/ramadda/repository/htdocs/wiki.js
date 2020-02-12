@@ -3,23 +3,41 @@
  */
 
 
-async function  wikiPreview(entry, id) {
+async function  wikiPreview(entry, id, inPlace) {
     var editor = HtmlUtils.getAceEditor(id);
     var t = editor.getValue();
     let area = $("#" + id);
-    $("#wikieditpreview").css("z-index",1000).css("left",area.position().left)
-	.css("min-width","400px").css("width","900px").css("max-width","900px").css("overflow-x","auto").css("left",area.position().left-100).css("top",area.position().top-10);
+    
+    if(!inPlace) {
+	let width =$(window).width()-100;
+	$("#wikieditpreview")
+	    .css("z-index",1000)
+	    .css("left",area.position().left-100)
+	    .css("top",area.position().top-10)
+	    .css("min-width","400px")
+	    .css("width",width +"px")
+	    .css("max-width",width+"px")
+	    .css("overflow-x","auto")
+
+    }
     let bar = HtmlUtils.div(['class','ramadda-menubar',"style","text-align:center;width:100%;border:1px solid #ccc"],
-			    HtmlUtils.onClick("wikiPreviewClose('" + id +"');","Close",["class","ramadda-button"]));
+			    HtmlUtils.onClick("wikiPreview('" + entry +"','" + id +"',true);",HtmlUtils.getIconImage("fa-sync",["title","Preview Again"]),["class","ramadda-button"]) + "&nbsp;&nbsp;" +
+			    HtmlUtils.onClick("wikiPreviewClose('" + id +"');",HtmlUtils.getIconImage("fa-window-close",["title","Close Preview"])));
 
     var wikiCallback = function(html) {
-	html = HtmlUtils.div(["id","", "style","border:1px solid #ccc;background:white;"], html);
-	html = bar + html;
-	$("#wikieditpreview").html(html).show();
-	$("#wikieditpreview").draggable();
+	if(inPlace) {
+	    $("#wikieditpreviewinner").html(html);
+	} else {
+	    html = HtmlUtils.div(["id","wikieditpreviewinner", "style","height:500px;overflow-y:auto;border:1px solid #ccc;background:white;"], html);
+	    html = bar + html;
+	    $("#wikieditpreview").draggable();
+	    //TODO: this doesn't work
+	    $("#wikieditpreview").resizable();
+	    $("#wikieditpreview").html(html).show();
+	}
     }
     await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(t),
-	    wikiCallback);
+			    wikiCallback);
 }
 
 function wikiPreviewClose() {
