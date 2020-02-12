@@ -941,7 +941,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		shape:this.getProperty("cellShape","circle"),
 		color: this.getProperty("cellColor","blue"),
 		stroke: !this.getProperty("cellFilled",true),
-		cellSize:+this.getProperty("cellSize",doHeatmap?12:4),
+		cellSize: this.getProperty("cellSize",doHeatmap?12:4),
 		cellSizeH: this.getProperty("cellSizeH"),
 		cell3D:this.getProperty("cell3D",false),
 		cellShowText:this.getProperty("cellShowText",false),

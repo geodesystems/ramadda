@@ -1208,7 +1208,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.clipToView=false;
 		html =  HtmlUtils.div(["style","display:inline-block;cursor:pointer;padding:1px;border:1px solid rgba(0,0,0,0);", "title","Clip to view", "id",this.getDomId("clip")],HtmlUtils.getIconImage("fa-globe-americas"))+"&nbsp;&nbsp;"+ html;
 	    }
-	    if(true ||this.getProperty("showMarkerToggle")) {
+	    if(this.getProperty("showMarkerToggle")) {
 		html += HtmlUtils.checkbox("",["id",this.getDomId("showMarkerToggle")],true) +" " +
 		    this.getProperty("showMarkerToggleLabel","Show Markers") +"&nbsp;&nbsp;";
 	    }
@@ -1343,10 +1343,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		records = RecordUtil.subset(records, bounds);
 	    }
 	    bounds = RecordUtil.expandBounds(bounds,0.1);
-	    let size = 1;
-	    while(w/(bounds.east-bounds.west)/size>1000)size++;
-	    dfltArgs.cellSizeX = dfltArgs.cellSizeY = dfltArgs.cellSize = size;
-	    console.log("s:" + size);
+	    if(dfltArgs.cellSize==0) {
+		let size = 1;
+		while(w/(bounds.east-bounds.west)/size>1000)size++;
+		dfltArgs.cellSizeX = dfltArgs.cellSizeY = dfltArgs.cellSize = size;
+		console.log("s:" + size);
+	    } else if(String(dfltArgs.cellSize).endsWith("%")) {
+		dfltArgs.cellSize =dfltArgs.cellSizeX =  dfltArgs.cellSizeY = Math.floor(parseFloat(dfltArgs.cellSize.substring(0,dfltArgs.cellSize.length-1))/100*w);
+	    }
 
 	    
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
@@ -1355,6 +1359,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let h = Math.floor(w/ratio);
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
+//	    console.log(JSON.stringify(bounds));
 	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.heatmapLayer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		isBaseLayer: false

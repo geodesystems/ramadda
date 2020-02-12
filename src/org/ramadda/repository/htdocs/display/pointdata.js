@@ -1358,7 +1358,7 @@ var RecordUtil = {
 	} else {
 	    if(opts.cell3D) {
 		let height = perc*20;
-		height=opts.cellSizeH||opts.cellSize;
+//		height=opts.cellSizeH||opts.cellSize;
 		ctx.strokeStyle = "#000";
 		ctx.strokeStyle = "rgba(0,0,0,0)"
 		RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
@@ -1371,11 +1371,11 @@ var RecordUtil = {
 		    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
 		else
 		    ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-		ctx.strokeStyle = "black";
+//		ctx.strokeStyle = "black";
 //		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-		ctx.font="8px arial"
-		ctx.fillStyle = "black";
-//		ctx.fillText(colIdx, crx,cry);
+//		ctx.font="8px arial"
+//		ctx.fillStyle = "black";
+//		ctx.fillText(v, crx,cry);
 //		ctx.fillText(v, crx,cry+20);
 	    }
 	    
@@ -1553,17 +1553,37 @@ var RecordUtil = {
 	var ctx = canvas.getContext("2d");
 //	ctx.strokeStyle= "red";
 //	ctx.strokeRect(0,0,canvas.width,canvas.height);
-	let cnt = 0;
-	let ew = args.bounds.east-args.bounds.west;
-	let eh = args.bounds.north-args.bounds.south;
-	let halfW = opts.cellSizeX/2;
-	let halfH = opts.cellSizeY/2;
 
+	let cnt = 0;
+	let earthWidth = args.bounds.east-args.bounds.west;
+	let earthHeight= args.bounds.north-args.bounds.south;
 	ctx.font = opts.cellFont || "8pt Arial;"
 	var gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
 	gradient.addColorStop(0,'white');
 	gradient.addColorStop(1,'red');
-	//	    ctx.fillStyle = gradient;
+
+	let scaleX = (lat,lon)=>{
+	    return Math.floor(opts.w*(lon-args.bounds.west)/earthWidth);
+	};
+	let scaleY;
+	if(opts.display && opts.display.map) {
+	    //Get the global bounds so we can map down to the image
+	    var n1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,85));
+	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
+	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
+	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
+	    scaleY = (lat,lon)=> {
+		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
+		var dy = n2.lat-pt.lat;
+		var perc = dy/(n2.lat-s2.lat)
+		return Math.floor(perc*opts.h);
+	    };
+	} else {
+	    scaleY= (lat,lon)=> {
+		return Math.floor(opts.h*(lon-args.bounds.west)/earthHeight);		
+	    }
+	}
+
 	ctx.lineStyle = "#000";
 	if(opts.doHeatmap) {
 	    let cols = Math.floor(opts.w/opts.cellSizeX);
@@ -1572,8 +1592,8 @@ var RecordUtil = {
 	    records.map((record,idx)=>{
 		let lat = record.getLatitude();
 		let lon = record.getLongitude();
-		let x = Math.floor(opts.w*(lon-args.bounds.west)/ew);
-		let y = opts.h-(Math.floor(opts.h*(lat-args.bounds.south)/eh));
+		let x = scaleX(lat,lon);
+		let y = scaleY(lat,lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
 		let v = idx;
 		if(opts.colorBy && opts.colorBy.index>=0) {
@@ -1624,11 +1644,32 @@ var RecordUtil = {
 		}
 	    }
 	} else {
+	    if(false) {
+	    var lats =[];
+	    for(i=0;i<=10;i++) {
+		lats.push(opts.bounds.south+(opts.bounds.north-opts.bounds.south)*(i/10));
+	    }
+	    var _lon =opts.bounds.east;
+	    ctx.strokeStyle="red";
+	    lats.map(_lat=>{
+		var _x = scaleX(_lat,_lon);
+		var _y = scaleY(_lat,_lon);
+                opts.display.map.addMarker("", [_lon,_lat], null, "", "");
+		ctx.moveTo(canvas.width,_y);
+		ctx.lineTo(canvas.width-40,_y);
+		ctx.stroke();
+		ctx.font="12px arial"
+		ctx.fillStyle = "black";
+		ctx.fillText(_lat, canvas.width-50,_y);
+	    });
+	    }
+
+	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
 	    records.map((record,idx)=>{
 		let lat = record.getLatitude();
 		let lon = record.getLongitude();
-		let x = Math.round(opts.w*(lon-opts.bounds.west)/ew);
-		let y = opts.h-(Math.round(opts.h*(lat-opts.bounds.south)/eh));
+		let x = scaleX(lat,lon);
+		let y = scaleY(lat,lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
 		let v = opts.colorBy? record.getData()[opts.colorBy.index]:null;
 		if(false && opts.forMercator) {
@@ -2089,14 +2130,13 @@ var DataUtils = {
 		value = +value;
 	    let fields = null;
 	    if(cmd.args.fields) {
-
 		fields = display.getFieldsByIds(null, cmd.args.fields.replace(/:/g,","));
 	    }
 	    let allFields = display.getData().getRecordFields();
 	    let field = display.getFieldById(null,fieldId);
 	    filters.push({
 		id:filterId,
-		props:cmd,
+		props:cmd.args,
 		type:type.trim(),
 		field:field,
 		fields:fields||[field],
@@ -2142,10 +2182,10 @@ var DataUtils = {
 		    }  else if(this.type == "bounds") {
 			let lat =  r.getLatitude();
 			let lon =  r.getLongitude();
-			if(props.north && lat>+props.north) return false;
-			if(props.south && lat<+props.south) return false;
-			if(props.west && lon<+props.west) return false;
-			if(props.east && lon>+props.east) return false;
+			if(this.props.north && lat>+this.props.north) return false;
+			if(this.props.south && lat<+this.props.south) return false;
+			if(this.props.west && lon<+this.props.west)   return false;
+			if(this.props.east && lon>+this.props.east) {return false;}
 			return true;
 		    }  else if(this.type == "eval") {
 			//return true;
