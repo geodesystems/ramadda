@@ -918,7 +918,6 @@ textarea, input {
     font-size: .8em;
 }
 
-
 .ui-menu-item {
 }
 
@@ -1671,6 +1670,15 @@ a.btn-primary:link, a.btn-primary  {
     -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
 
+
+.ramadda-menu-item {
+    padding-left:4px;
+    padding-right:4px;
+    cursor:pointer;
+}
+.ramadda-menu-item:hover {
+    background:#eee;
+}
 
 .ramadda-popup-header {
    padding:2px;
@@ -3975,9 +3983,18 @@ h3.ui-accordion-header a {
     background:#eee;
 }
 
-.ace_macro, .ace_display_type {
-    font-weight: bold;
+.ace_macro {
+    //font-weight: bold;
     background:#ccc;
+}
+
+.ace_bracket {
+    color:blue;
+}
+
+.ace_display_type {
+//    font-weight: bold;
+    background:lightblue;
 }
 
 .ace_editor  { 

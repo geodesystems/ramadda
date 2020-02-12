@@ -163,7 +163,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             } else {
 		params.showScaleLine = this.getProperty("showScaleLine",false);
-		params.showLatLonPosition = this.getProperty("showLatLonPosition",false);
+		params.showLatLonPosition = this.getProperty("showLatLonPosition",true);
 		params.showZoomPanControl = this.getProperty("showZoomPanControl",false);
 		params.showZoomOnlyControl = this.getProperty("showZoomOnlyControl",true);
                 this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
@@ -1191,6 +1191,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getProperty("centerOnFilterChange",false)) {
 		    if (this.vectorLayer && this.points) {
 			//If we have  a map then don't do anything?
+		    } else if(this.lastImageLayer) {
+			this.map.zoomToLayer(this.lastImageLayer);
 		    } else {
 			this.map.centerOnMarkers(null, false, false);
 		    }
@@ -1204,13 +1206,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let html = SUPER.getHeader2.call(this);
 	    if(this.getProperty("showClipToBounds")) {
 		this.clipToView=false;
-		return HtmlUtils.div(["style","display:inline-block;cursor:pointer;padding:1px;border:1px solid rgba(0,0,0,0);", "title","Clip to view", "id",this.getDomId("clip")],HtmlUtils.getIconImage("fa-globe-americas"))+"&nbsp;&nbsp;"+ html;
+		html =  HtmlUtils.div(["style","display:inline-block;cursor:pointer;padding:1px;border:1px solid rgba(0,0,0,0);", "title","Clip to view", "id",this.getDomId("clip")],HtmlUtils.getIconImage("fa-globe-americas"))+"&nbsp;&nbsp;"+ html;
+	    }
+	    if(true ||this.getProperty("showMarkerToggle")) {
+		html += HtmlUtils.checkbox("",["id",this.getDomId("showMarkerToggle")],true) +" " +
+		    this.getProperty("showMarkerToggleLabel","Show Markers") +"&nbsp;&nbsp;";
 	    }
 	    return html;
 	},
 	xcnt:0,
 	initHeader2:function() {
 	    let _this = this;
+	    this.jq("showMarkerToggle").change(function() {
+		_this.map.circles.setVisibility($(this).is(':checked'));
+	    });
 	    this.jq("clip").click(function(e){
 		console.log("clip:" + _this.clipToView);
 		_this.clipToView = !_this.clipToView;
@@ -1256,7 +1265,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(pointData, records);
-		}catch(exc) {
+		} catch(exc) {
+		    console.log(exc)
 		    this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "" + exc));
 		    return;
 		}
@@ -1265,6 +1275,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 
 	},
+	
 	updateUIInner: function(pointData, records) {
 	    var t1= new Date();
 	    this.haveCalledUpdateUI = true;
@@ -1317,27 +1328,64 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.applyVectorMap();
 	    this.lastUpdateTime = new Date();
 	},
+	heatmapCnt:0,
+	createHeatmap(records, bounds, colorBy) {
+	    records = records || this.filterData();
+	    bounds = bounds ||  RecordUtil.getBounds(records);
+	    colorBy = colorBy || this.getColorByInfo(records);
+	    if(this.heatmapLayer)
+		this.map.removeLayer(this.heatmapLayer);
+	    let w = Math.round(this.getProperty("gridWidth",800));
+	    let dfltArgs = this.getDefaultGridByArgs();
+	    if(this.reloadHeatmap) {
+		this.reloadHeatmap = false;
+		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
+		records = RecordUtil.subset(records, bounds);
+	    }
+	    bounds = RecordUtil.expandBounds(bounds,0.1);
+	    let size = 1;
+	    while(w/(bounds.east-bounds.west)/size>1000)size++;
+	    dfltArgs.cellSizeX = dfltArgs.cellSizeY = dfltArgs.cellSize = size;
+	    console.log("s:" + size);
+
+	    
+	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+	    //Skew the height so we get round circles?
+	    //	    let h = 1.25*Math.round(w/ratio);
+	    let h = Math.floor(w/ratio);
+	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
+			       dfltArgs);
+	    let img = RecordUtil.gridData(this.getId(),records,args);
+	    this.heatmapLayer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
+		isBaseLayer: false
+	    });
+	    colorBy.displayColorTable(null,true);
+	    if(this.getProperty("heatmapShowToggle",false)) {
+		let cbx = this.jq("heatmaptoggle");
+		let reload =  HtmlUtils.getIconImage("fa-sync",["style","cursor:pointer;","title","Reload heatmap", "id",this.getDomId("heatmapreload")])+"&nbsp;&nbsp;";
+		this.jq(ID_HEADER2_PREFIX).html(reload + HtmlUtils.checkbox("",["id",this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +"&nbsp;" +
+						this.getProperty("heatmapToggleLabel","Toggle Heatmap") +"&nbsp;&nbsp;");
+		let _this = this;
+		this.jq("heatmapreload").click(()=> {
+		    this.haveCalledUpdateUI = false;
+		    this.reloadHeatmap = true;
+		    this.createHeatmap();
+		});
+		this.jq("heatmaptoggle").change(function() {
+		    _this.heatmapLayer.setVisibility($(this).is(':checked'));
+		});
+	    }
+	},
+
         addPoints: function(records, fields, points,bounds) {
             let colorBy = this.getColorByInfo(records);
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
-		let w = Math.round(this.getProperty("gridWidth",800));
-		let h = Math.round(this.getProperty("gridHeight"));
-		if(isNaN(h) || !Utils.isDefined(h)) {
-		    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
-		    h = Math.round(w/ratio);
-		}
-		let doCount = this.getProperty("heatmapDoCount",false);
-		let args =$.extend({colorBy:colorBy,w:w,h:h,doCount:doCount},
-				   this.getDefaultGridByArgs());
-		let img = RecordUtil.gridData(this.getId(),records,args);
-		this.map.addImageLayer("heatmap", "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
-		    isBaseLayer: false
-		});
-		colorBy.displayColorTable(null,doCount);
-		return;
+		this.createHeatmap(records, bounds, colorBy);
+		if(!this.getProperty("heatmapIncludeData"))
+		    return;
 	    }
-
-
+//	    bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
+//	    records = RecordUtil.subset(records, bounds);
 
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
@@ -1346,7 +1394,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let source = this;
             let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
 	    if(this.getProperty("scaleRadius")) {
-		let radiusScale  = [10000,1,8000,2,5000,3,2000,3,1000,5,500,8,250,10,100,12,50,14];
+		let radiusScale  = [10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12];
 		radius=radiusScale[1];
 		for(let i=0;i<radiusScale.length;i+=2) {
 		    if(points.length<+radiusScale[i]) {
@@ -1896,6 +1944,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"boundsAnimation=\"true\"",
 		"centerOnFilterChange=\"true\"",
 		"centerOnHighlight=\"true\"",
+		'doHeatmap=true',
+		'heatmapOperator="average|min|max|count"',
 		'recordHighlightRadius=20',
 		'recordHighlightStrokeWidth=2',
 		'recordHighlightStrokeColor=red',

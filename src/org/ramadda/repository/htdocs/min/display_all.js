@@ -163,6 +163,8 @@ var ID_FIELDS = "fields";
 var ID_HEADER = "header";
 var ID_HEADER1 = "header1";
 var ID_HEADER2 = "header2";
+var ID_HEADER2_PREFIX = "header2prefix";
+var ID_HEADER2_SUFFIX = "header2suffix";
 var ID_HEADER3 = "header3";
 var ID_FILTERBAR = "filterbar";
 var ID_TITLE = ATTR_TITLE;
@@ -633,6 +635,7 @@ function DisplayThing(argId, argProperties) {
 	    return macros.apply(attrs);
 	},
         getRecordHtml: function(record, fields, template) {
+	    return record.id +" " + record.getLatitude() +" " + record.getLongitude();
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) {
@@ -929,6 +932,45 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         displayColorTable: function(ct, domId, min, max, args) {
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
+	    if(!args.colorByInfo) return;
+	    this.jq(domId).find(".display-colortable-slice").css("cursor","pointer");
+	    let _this = this;
+	    if(!this.originalColorRange) {
+		this.originalColorRange = [min,max];
+	    }		
+	    this.jq(domId).find(".display-colortable-slice").click(function(e) {
+		let val = $(this).attr("data-value");
+		let popup = getTooltip();
+		popupObject = popup;
+		let html = "";
+		html += HtmlUtils.div(["class","ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
+		html += HtmlUtils.div(["class","ramadda-menu-item","what","setmax"],"Set range max to " + Utils.formatNumber(val));
+		html += HtmlUtils.div(["class","ramadda-menu-item","what","reset"],"Reset range");
+		popup.html(html);
+		popup.show();
+		popup.position({
+                    of: $(this),
+                    my: 'left top',
+                    at: 'left bottom',
+                    collision: "none none"
+		});
+		popup.find(".ramadda-menu-item").click(function() {
+		    let what = $(this).attr("what");
+		    if(what == "reset") {
+			_this.setProperty("colorByMin",_this.originalColorRange[0]);
+			_this.setProperty("colorByMax",_this.originalColorRange[1]);
+			_this.setProperty("overrideColorRange", false);
+ 		    } else if(what == "setmin") {
+			_this.setProperty("colorByMin",val);
+			_this.setProperty("overrideColorRange", true);
+		    } else {
+			_this.setProperty("colorByMax",val);
+			_this.setProperty("overrideColorRange", true);
+		    }
+		    _this.haveCalledUpdateUI = false;
+		    _this.updateUI();
+		});
+	    });
         },
 	getColorList:function() {
 	    if(this.colorList && this.colorList.length>0) {
@@ -1046,14 +1088,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getDefaultGridByArgs: function() {
 	    let doHeatmap=this.getProperty("doHeatmap",false);
 	    let args =  {
+		display:this,
 		shape:this.getProperty("cellShape","circle"),
 		color: this.getProperty("cellColor","blue"),
 		stroke: !this.getProperty("cellFilled",true),
-		cellSize:this.getProperty("cellSize",doHeatmap?12:4),
+		cellSize:+this.getProperty("cellSize",doHeatmap?12:4),
+		cellSizeH: this.getProperty("cellSizeH"),
+		cell3D:this.getProperty("cell3D",false),
+		cellShowText:this.getProperty("cellShowText",false),
+		cellFont:this.getProperty("cellFont"),
 		doHeatmap:doHeatmap,
+		operator:this.getProperty("heatmapOperator","average"),
+		filter:this.getProperty("heatmapFilter")
 	    };
-	    args.cellSizeX = this.getProperty("cellSizeX",args.cellSize);
-	    args.cellSizeY = this.getProperty("cellSizeY",args.cellSize);
+	    args.cellSizeX = +this.getProperty("cellSizeX",args.cellSize);
+	    args.cellSizeY = +this.getProperty("cellSizeY",args.cellSize);
 	    return args;
 	},
 	getIconMap: function() {
@@ -1078,9 +1127,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var colorByAttr = this.getProperty(prop||"colorBy", null);
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
 	    var _this = this;
-	    var colorBy = {
+	    var colorBy = this.colorByInfo = {
                 id: colorByAttr,
 		fields:fields,
+		overrideRange: this.getProperty("overrideColorRange",false),
+		origRange:null,
+		origMinValue:0,
+		origMaxValue:0,
                 minValue: 0,
                 maxValue: 0,
                 field: null,
@@ -1115,6 +1168,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    colors.push(this.stringMap[i]);
 			}
 			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			    colorByInfo:this,
 			    width:width,
 			    stringValues: this.colorByValues});
 		    } else {
@@ -1126,17 +1180,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    colors = tmp;
 			}
 			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			    colorByInfo:this,
 			    width:width,
 			    stringValues: this.colorByValues
 			});
 		    }
 		},
-		setRange: function(minValue,maxValue) {
+		resetRange: function() {
+		    if(this.origRange)
+			this.setRange(this.origRange[0],this.origRange[1]);
+		},
+		setRange: function(minValue,maxValue, force) {
+		    if(!force && this.overrideRange) return;
 		    this.minValue = minValue;
 		    this.maxValue = maxValue;
 		    this.origMinValue = minValue;
 		    this.origMaxValue = maxValue;
 		    this.range = maxValue - minValue;
+		    if(!this.origRange) {
+			this.origRange = [minValue, maxValue];
+		    }
+		},
+		getValuePercent: function(v) {
+                    return  (v - this.minValue) / this.range;
 		},
 		getColor: function(value, pointRecord) {
 		    var percent = 0;
@@ -1328,8 +1394,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             colorBy.colorByValues.push(v);
                             var color  = index>=colorBy.colors.length?colorBy.colors[colorBy.colors.length-1]:colorBy.colors[index];
 			    colorBy.colorByMap[v] = color;
-                            colorBy.minValue = 1;
-                            colorBy.maxValue = colorBy.colorByValues.length;
+                            colorBy.setRange(1,  colorBy.colorByValues.length, true);
 			}
 			return;
 		    }
@@ -1345,18 +1410,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
             if (this.showPercent) {
-                colorBy.minValue = 0;
-                colorBy.maxValue = 100;
+                colorBy.setRange(0, 100,true);
             }
 	    var steps = this.getProperty("colorBySteps");
 	    if(steps) {
 		colorBy.steps = steps.split(",");
 	    }
-            colorBy.minValue = this.getDisplayProp(this, "colorByMin", colorBy.minValue);
-            colorBy.minValue = this.getDisplayProp(this, "colorByMin", colorBy.minValue);
-            colorBy.maxValue = this.getDisplayProp(this, "colorByMax", colorBy.maxValue);
-            colorBy.origMinValue = colorBy.minValue;
-            colorBy.origMaxValue = colorBy.maxValue;
+            colorBy.setRange(this.getDisplayProp(this, "colorByMin", colorBy.minValue),
+			     this.getDisplayProp(this, "colorByMax", colorBy.maxValue), true);
+
 
             var colorByLog = this.getProperty("colorByLog", false);
             colorBy.colorByFunc = Math.log;
@@ -1364,13 +1426,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (colorBy.minValue < 1) {
                     colorBy.colorByOffset = 1 - colorBy.minValue;
                 }
-                colorBy.minValue = colorBy.colorByFunc(colorBy.minValue + colorBy.colorByOffset);
-                colorBy.maxValue = colorBy.colorByFunc(colorBy.maxValue + colorBy.colorByOffset);
+                colorBy.setRange(colorBy.colorByFunc(colorBy.minValue + colorBy.colorByOffset),
+				 colorBy.colorByFunc(colorBy.maxValue + colorBy.colorByOffset));
             }
             colorBy.range = colorBy.maxValue - colorBy.minValue;
-
-
-
 	    return colorBy;
 	},
 	getColorByMap: function(prop) {
@@ -2297,6 +2356,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	checkDataFilters: function(dataFilters, record) {
 	    if(!dataFilters) {return true;}
+	    let xcnt = 0;
 	    for(var i=0;i<dataFilters.length;i++) {
 		if(!dataFilters[i].isRecordOk(record)) return false;
 	    }
@@ -4001,7 +4061,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
 
-	    let header2=this.getHeader2();
+	    let header2=HtmlUtils.div(["style","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
+	    header2 +=  this.getHeader2();
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
@@ -4053,8 +4114,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let dataFilterIds = [];
 
 	    this.getDataFilters().map(f=>{
-		if(!f.label || !f.field) return;
-		let cbxid = this.getDomId("datafilterenabled_" + f.field.getId());
+		if(!f.label) return;
+		let cbxid = this.getDomId("datafilterenabled_" + f.id);
 		dataFilterIds.push(cbxid);
 		header2 +=  HtmlUtils.checkbox("",["id",cbxid],f.enabled) +" " + f.label +"&nbsp;&nbsp;"
 	    });
@@ -4367,9 +4428,77 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
 	    }
 
+	    header2+=HtmlUtils.div(["style","display:inline-block;","id",this.getDomId(ID_HEADER2_SUFFIX)]);
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;
+
+ 	    let inputFunc = function(input, input2, value){
+                var id = input.attr("id");
+		if(!input2) {
+		    if(id.endsWith("_min")) {
+			input2 = $("#" + id.replace(/_min$/,"_max"));
+		    } else if(id.endsWith("_max")) {
+			var tmp = input;
+			input =$("#" + id.replace(/_max$/,"_min"));
+			input2 = tmp;
+		    }
+		}
+		if(input.attr("isCheckbox")) {
+		    var on = input.attr("onValue")||true;
+		    var off = input.attr("offValue")||false;
+		    if (input.is(':checked')) {
+			value = on;
+			console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
+		    } else {
+			value=off;
+			console.log(_this.type +" cbx is not checked value:" + value +" on:" + on +" off:" + off);
+		    }
+		}
+		if(!value) {
+		    value = input.val();
+		} 
+		if(!value || value=="") {
+		    value = input.attr("data-value");
+		}
+		if(!value) {
+		    value = input.val();
+		}
+		
+		if(value==null) return;
+		if(!Array.isArray(value) && input.attr("isButton")) {
+		    //			console.log(_this.type +" " +Array.isArray(value));
+		    var tmp = [];
+		    value.split(",").map(v=>{
+			tmp.push(v.replace(/_comma_/g,","));
+		    });
+		    value = tmp;
+		}
+
+                var fieldId = input.attr("fieldId");
+		_this.checkFilterField(input);
+		_this.haveCalledUpdateUI = false;
+		if(_this.settingFilterValue) {
+		    return;
+		}
+		_this.settingFilterValue = true;
+		_this.dataFilterChanged();
+
+		//		    console.log("ID:" + id +" v:" + value +" " + fieldId);
+		var args = {
+		    property: "filterValue",
+		    id:id,
+		    fieldId: fieldId,
+		    value: value
+		};
+		if(input2) {
+		    args.value2 = input2.val();
+		}
+		_this.propagateEvent("handleEventPropertyChanged", args);
+		_this.settingFilterValue = false;
+            };
+
+
 
 	    dataFilterIds.map(id=>{
 		$("#" + id).click(function(e){
@@ -4386,70 +4515,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 
- 		var inputFunc = function(input, input2, value){
-                    var id = input.attr("id");
-		    if(!input2) {
-			if(id.endsWith("_min")) {
-			    input2 = $("#" + id.replace(/_min$/,"_max"));
-			} else if(id.endsWith("_max")) {
-			    var tmp = input;
-			    input =$("#" + id.replace(/_max$/,"_min"));
-			    input2 = tmp;
-			}
-		    }
-		    if(input.attr("isCheckbox")) {
-			var on = input.attr("onValue")||true;
-			var off = input.attr("offValue")||false;
-			if (input.is(':checked')) {
-			    value = on;
-			    console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
-			} else {
-			    value=off;
-			    console.log(_this.type +" cbx is not checked value:" + value +" on:" + on +" off:" + off);
-			}
-		    }
-		    if(!value) {
-			value = input.val();
-		    } 
-		    if(!value || value=="") {
-			value = input.attr("data-value");
-		    }
-		    if(!value) {
-			value = input.val();
-		    }
-		    
-		    if(value==null) return;
-		    if(!Array.isArray(value) && input.attr("isButton")) {
-			//			console.log(_this.type +" " +Array.isArray(value));
-			var tmp = [];
-			value.split(",").map(v=>{
-			    tmp.push(v.replace(/_comma_/g,","));
-			});
-			value = tmp;
-		    }
-
-                    var fieldId = input.attr("fieldId");
-		    _this.checkFilterField(input);
-		    _this.haveCalledUpdateUI = false;
-		    if(_this.settingFilterValue) {
-			return;
-		    }
-		    _this.settingFilterValue = true;
-		    _this.dataFilterChanged();
-
-		    //		    console.log("ID:" + id +" v:" + value +" " + fieldId);
-		    var args = {
-			property: "filterValue",
-			id:id,
-			fieldId: fieldId,
-			value: value
-		    };
-		    if(input2) {
-			args.value2 = input2.val();
-		    }
-		    _this.propagateEvent("handleEventPropertyChanged", args);
-		    _this.settingFilterValue = false;
-                };
 
 		this.jq(ID_FILTERBAR).find(".display-filterby-items").each(function(){
 		    let parent = $(this);
@@ -4484,12 +4549,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 
 		});
-
-
-
-
-
-
 		this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
 		    var keyCode = e.keyCode || e.which;
 		    if (keyCode == 13) {return;}
@@ -6807,6 +6866,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 
 
 
+
 /**
    Copyright 2008-2019 Geode Systems LLC
 */
@@ -6937,7 +6997,7 @@ function BasePointData(name, properties) {
                 if (field.isFieldGeo()) {
                     continue;
                 }
-//		console.log("F:" + field.getId());
+		//		console.log("F:" + field.getId());
                 if (field.isFieldDate()) {
                     if (hadDate && field.getId() == "recordDate") {
                         continue;
@@ -7704,60 +7764,60 @@ function makePointData(json, derived, source) {
 
 
     /*TODO
-    for (var dIdx = 0; dIdx < derived.length; dIdx++) {
-        var d = derived[dIdx];
-        if (!d.isColumn) continue;
-        var f = d["function"];
-        var funcParams = [];
-        //TODO: allow for no columns and choose all
-        var params = d.columns.split(",");
-        for (var i = 0; i < params.length; i++) {
-            var index = -1;
-            for (var fIdx = 0; fIdx < fields.length; fIdx++) {
-                var f = fields[fIdx];
-                //                console.log("F:" + f.getId() +" " + f.getLabel() );
-                if (f.getId() == params[i] || f.getLabel() == params[i]) {
-                    index = f.getIndex();
-                    break;
-                }
-            }
-            if (index < 0) {
-                console.log("Could not find column index for field: " + params[i]);
-                continue;
-            }
-            funcParams.push("c" + (i + 1));
-        }
-        var columnData = RecordUtil.slice(rows, index);
-        //        var newData = A.movingAverage(columnData,{step:100});
-        var daFunk = new Function(funcParams, d["function"]);
-        console.log("daFunk - " + daFunk);
-        var newData = daFunk(columnData);
-        console.log("got new:" + newData + " " + (typeof newData));
-        if ((typeof newData) == "number") {
-            for (var rowIdx = 0; rowIdx < pointRecords.length; rowIdx++) {
-                var record = pointRecords[rowIdx];
-                record.push(newData);
-            }
-        } else if (Utils.isDefined(newData.length)) {
-            console.log("newData.length:" + newData.length + " records.length:" + pointRecords.length);
-            for (var rowIdx = 0; rowIdx < newData.length; rowIdx++) {
-                var record = pointRecords[rowIdx];
-                if (!record) {
-                    console.log("bad record: " + rowIdx);
-                    record.push(NaN);
-                } else {
-                    //                    console.log("    date:" + record.getDate() +" v: " + newData[rowIdx]);
-                    var v = newData[rowIdx];
-                    if (d.decimals >= 0) {
-                        v = parseFloat(v.toFixed(d.decimals));
-                    }
-                    record.push(v);
-                }
-            }
-        }
-    }
+      for (var dIdx = 0; dIdx < derived.length; dIdx++) {
+      var d = derived[dIdx];
+      if (!d.isColumn) continue;
+      var f = d["function"];
+      var funcParams = [];
+      //TODO: allow for no columns and choose all
+      var params = d.columns.split(",");
+      for (var i = 0; i < params.length; i++) {
+      var index = -1;
+      for (var fIdx = 0; fIdx < fields.length; fIdx++) {
+      var f = fields[fIdx];
+      //                console.log("F:" + f.getId() +" " + f.getLabel() );
+      if (f.getId() == params[i] || f.getLabel() == params[i]) {
+      index = f.getIndex();
+      break;
+      }
+      }
+      if (index < 0) {
+      console.log("Could not find column index for field: " + params[i]);
+      continue;
+      }
+      funcParams.push("c" + (i + 1));
+      }
+      var columnData = RecordUtil.slice(rows, index);
+      //        var newData = A.movingAverage(columnData,{step:100});
+      var daFunk = new Function(funcParams, d["function"]);
+      console.log("daFunk - " + daFunk);
+      var newData = daFunk(columnData);
+      console.log("got new:" + newData + " " + (typeof newData));
+      if ((typeof newData) == "number") {
+      for (var rowIdx = 0; rowIdx < pointRecords.length; rowIdx++) {
+      var record = pointRecords[rowIdx];
+      record.push(newData);
+      }
+      } else if (Utils.isDefined(newData.length)) {
+      console.log("newData.length:" + newData.length + " records.length:" + pointRecords.length);
+      for (var rowIdx = 0; rowIdx < newData.length; rowIdx++) {
+      var record = pointRecords[rowIdx];
+      if (!record) {
+      console.log("bad record: " + rowIdx);
+      record.push(NaN);
+      } else {
+      //                    console.log("    date:" + record.getDate() +" v: " + newData[rowIdx]);
+      var v = newData[rowIdx];
+      if (d.decimals >= 0) {
+      v = parseFloat(v.toFixed(d.decimals));
+      }
+      record.push(v);
+      }
+      }
+      }
+      }
 
-a*/
+      a*/
     if (source != null) {
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
@@ -8015,54 +8075,335 @@ var A = {
 }
 
 var RecordUtil = {
-    gridPoints: function(grid,points,args) {
-	let rows = grid.length;
-	let cols = grid[0].length;
-	let counts = [];
-	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
-	    for(var colIdx=0;colIdx<cols;colIdx++)  {
-		grid[rowIdx][colIdx] = NaN;
-	    }
+    expandBounds: function(bounds, perc) {
+	return {
+	    east: bounds.east +(bounds.east-bounds.west)*perc,
+	    west: bounds.west -(bounds.east-bounds.west)*perc,
+	    north: bounds.north +(bounds.north-bounds.south)*perc,
+	    south: bounds.south -(bounds.north-bounds.south)*perc,
 	}
+    },
+    convertBounds: function(bounds) {
+	if(Utils.isDefined(bounds.top)) 
+	    return  {north:bounds.top,west:bounds.left,south:bounds.bottom,east:bounds.right};
+	return bounds;
+    },
+    subset:function(records,bounds) {
+	bounds = RecordUtil.convertBounds(bounds);
+//	console.log("subset:" + JSON.stringify(bounds));
+	let cnt = 0;
+	return  records.filter(record=>{
+	    return  record.getLatitude()<= bounds.north &&
+		record.getLatitude()>= bounds.south &&
+		record.getLongitude()>= bounds.west &&
+		record.getLongitude()<= bounds.east;
+	    
+	});
+    },
+    gridPoints: function(rows,cols,points,args) {
+	let values = [];
 	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    let row = [];
-	    counts.push(row);
+	    values.push(row);
 	    for(var colIdx=0;colIdx<cols;colIdx++)  {
-		row.push(0);
+		row.push({v:NaN,count:0,total:0,min:NaN,max:NaN,t:"",t2:""});
 	    }
 	}
+
 	points.map((p,idx)=>{
-	    //TODO handle edge cases better
-	    if(p.y>=rows) p.y=rows-1;
-	    if(p.x>=cols) p.x=cols-1;
-	    counts[p.y][p.x]++;
-	    if(isNaN(grid[p.y][p.x]))
-		grid[p.y][p.x]=0;
-	    grid[p.y][p.x] += p.v;
+	    let cell = values[p.y][p.x];
+	    cell.min = cell.count==0?p.v:Math.min(cell.min,p.v);
+	    cell.max = cell.count==0?p.v:Math.max(cell.max,p.v);
+	    cell.count++;
+	    cell.total += p.v;
+	    cell.t +=" " + p.r.getId()
+	    cell.t2 +=" " + p.r.getLatitude()
 	});
 
-
-
-	let minCount = -1;
-	let maxCount = -1;
+	let minValue = NaN;
+	let maxValue = NaN;
 	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    for(var colIdx=0;colIdx<cols;colIdx++)  {
-		let count = counts[rowIdx][colIdx];
-		if(count==0) continue;
-		let total = grid[rowIdx][colIdx];
-		minCount = minCount==-1?count:Math.min(minCount,count);
-		maxCount = maxCount==-1?count:Math.max(maxCount,count);
-		if(args.doCount)
-		    grid[rowIdx][colIdx] =  count;
+		let cell = values[rowIdx][colIdx];
+		if(cell.count==0) continue;
+		let v;
+		if(args.operator=="count")
+		    v = cell.count;
+		else if(args.operator=="min")
+		    v =  cell.min;
+		else if(args.operator=="max")
+		    v =  cell.max;
+		else if(args.operator=="total")
+		    v =  cell.total;
 		else
-		    grid[rowIdx][colIdx] =  total/count;
+		    v =  cell.total/cell.count;
+		cell.v = v;
+		minValue = isNaN(minValue)?v:Math.min(minValue,v);
+		maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
 	    }
 	}	
-	grid.minCount = minCount;
-	grid.maxCount = maxCount;
+	values.minValue = minValue;
+	values.maxValue = maxValue;
+	return values;
+    },
+    draw3DRect:function(canvas,ctx,x,y,width, height, depth) {
+	// Dimetric projection functions
+	var dimetricTx = function(x,y,z) { return x + z/2; };
+	var dimetricTy = function(x,y,z) { return y + z/4; };
+	
+	// Isometric projection functions
+	var isometricTx = function(x,y,z) { return (x -z) * Math.cos(Math.PI/6); };
+	var isometricTy = function(x,y,z) { return y + (x+z) * Math.sin(Math.PI/6); };
+	
+	var drawPoly = (function(ctx,tx,ty) {
+	    return function() {
+		var args = Array.prototype.slice.call(arguments, 0);
+		// Begin the path
+		ctx.beginPath();
+		// Move to the first point
+		var p = args.pop();
+		if(p) {
+		    ctx.moveTo(tx.apply(undefined, p), ty.apply(undefined, p));
+		}
+		// Draw to the next point
+		while((p = args.pop()) !== undefined) {
+		    ctx.lineTo(tx.apply(undefined, p), ty.apply(undefined, p));
+		}
+		ctx.closePath();
+		ctx.stroke();
+		ctx.fill();
+	    };
+	})(ctx, dimetricTx, dimetricTy);
+	
+	// Set some context
+	ctx.save();
+	ctx.scale(1,-1);
+	ctx.translate(0,-canvas.height);
+	ctx.save();
+	
+	// Move our graph
+	ctx.translate(x,y);  
+	// Draw the "container"
+	//back
+	let  baseColor = ctx.fillStyle;
+	//		drawPoly([0,0,depth],[0,height,depth],[width,height,depth],[width,0,depth]);
+	//left
+	//		drawPoly([0,0,0],[0,0,depth],[0,height,depth],[0,height,0]);
+	//right
+	ctx.fillStyle =    Utils.pSBC(-0.5,baseColor);
+	drawPoly([width,0,0],[width,0,depth],[width,height,depth],[width,height,0]);
+	ctx.fillStyle =    baseColor;
+	//front
+	drawPoly([0,0,0],[0,height,0],[width,height,0],[width,0,0]);
+	//top		
+	ctx.fillStyle =    Utils.pSBC(0.5,baseColor);
+	drawPoly([0,height,0],[0,height,depth],[width,height,depth],[width,height,0]);
+	ctx.fillStyle =    baseColor;
+	ctx.restore();
+	ctx.restore();
+    },
+
+
+    xcnt:0,
+    drawGridCell: function(opts, canvas, ctx, x,y,v,colIdx,rowIdx) {
+	let c =  opts.color|| "#ccc";
+	let perc = 1.0;
+	if(opts.colorBy && v) {
+	    perc = opts.colorBy.getValuePercent(v);
+	    if(opts.colorBy.index>=0) {
+		c=  opts.colorBy.getColor(v);
+	    }
+	}
+//	ctx.strokeStyle ="#000";
+	ctx.strokeStyle =c;
+	ctx.fillStyle =c
+	if(opts.shape == "circle") {
+	    ctx.beginPath();
+	    ctx.arc(x,y, opts.cellSize, 0, 2 * Math.PI);
+	    if(opts.stroke)
+		ctx.stroke();
+	    else
+		ctx.fill();
+	} else {
+	    if(opts.cell3D) {
+		let height = perc*20;
+		height=opts.cellSizeH||opts.cellSize;
+		ctx.strokeStyle = "#000";
+		ctx.strokeStyle = "rgba(0,0,0,0)"
+		RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
+	    } else {
+		let crx = x-opts.cellSizeX/2;
+		let cry = y+opts.cellSizeY/2;
+		crx=x;
+		cry=y
+		if(opts.stroke)
+		    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+		else
+		    ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+		ctx.strokeStyle = "black";
+//		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+		ctx.font="8px arial"
+		ctx.fillStyle = "black";
+//		ctx.fillText(colIdx, crx,cry);
+//		ctx.fillText(v, crx,cry+20);
+	    }
+	    
+	}
+	if(opts.cellShowText && v!=null) {
+	    ctx.textAlign = "center";
+	    ctx.fillStyle = opts.cellTextColor||"#000";
+	    ctx.fillText(Utils.formatNumber(v), x,y+10);
+	}
+    },
+    //This gets the value at row/col if its defined. else 0
+//    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
+    getGridValue:function(src,row,col,mult,cnt) {
+	if(row>=0 && row<src.length && col>=0 && col<src[row].length) {
+	    if(isNaN(src[row][col])) return 0;
+	    cnt[0]+=mult;
+	    return src[row][col]*mult;
+	}
+	return 0;
+    },
+    applyKernel: function(src, kernel) {
+	let result = this.cloneGrid(src,null,0);
+	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = result[rowIdx];
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		if(isNaN(row[colIdx])) continue;
+		let cnt =[0];
+		let sum = 0;
+		kernel.every(t=>{
+		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],cnt); 
+		    return true;
+		});
+		if(cnt[0]>0)
+		    cnt[0] = 9;
+		if(cnt[0]>0)
+		    row[colIdx] = sum/cnt[0];
+		else
+		    row[colIdx] = NaN;
+	    }
+	}
+	return result;
+    },
+    averageGrid: function(src) {
+	let kernel = [
+	    [-1,-1,1],
+	    [-1,0,1],
+	    [-1,1,1],
+	    [0,-1,1],
+	    [0,0,1],
+	    [0,1,1],
+	    [1,-1,1],
+	    [1,0,1],
+	    [1,2,1]
+	];
+	return this.applyKernel(src, kernel);
+    },
+    gaussGrid: function(src) {
+	let kernel = [
+	    [-1,-1,1],
+	    [-1,0,2],
+	    [-1,1,1],
+	    [0,-1,2],
+	    [0,0,4],
+	    [0,1,2],
+	    [1,-1,1],
+	    [1,0,2],
+	    [1,2,1]
+	];
+	kernel = [
+	    [-2,-2,1],
+	    [-2,-1,4],
+	    [-2,0,6],
+	    [-2,1,4],
+	    [-2,2,1],
+
+	    [-1,-2,4],
+	    [-1,-1,16],
+	    [-1,0,24],
+	    [-1,1,16],
+	    [-1,2,4],
+
+	    [0,-2,6],
+	    [0,-1,24],
+	    [0,0,36],
+	    [0,1,24],
+	    [0,2,6],
+
+	    [1,-2,4],
+	    [1,-1,16],
+	    [1,0,24],
+	    [1,1,16],
+	    [1,2,4],
+
+	    [2,-2,1],
+	    [2,-1,4],
+	    [2,0,6],
+	    [2,1,4],
+	    [2,2,1],
+	];
+
+	return this.applyKernel(src, kernel);
+    },
+
+    getMinMaxGrid: function(src,valueGetter) {
+	let min = NaN;
+	let max = NaN;
+	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = src[rowIdx];
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		let v = row[colIdx]
+		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
+		if(isNaN(v)) continue;
+		min = isNaN(min)?v:Math.min(min,v);
+		max = isNaN(max)?v:Math.max(max,v);
+	    }
+	}
+	return {min:min,max:max};
+    },
+
+
+
+    cloneGrid: function(src,valueGetter,dflt) {
+	let dest = [];
+	let hasDflt = Utils.isDefined(dflt);
+	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = src[rowIdx];
+	    let nrow=[];
+	    dest.push(nrow);
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		let v = row[colIdx]
+		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
+		if(hasDflt)
+		    nrow.push(dflt);
+		else
+		    nrow.push(v);
+	    }
+	}
+	return dest;
+    },
+
+    printGrid: function(g) {
+	let t = "";
+	for(var rowIdx=0;rowIdx<g.length;rowIdx++)  {
+	    let row = g[rowIdx];
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		t+=g[rowIdx][colIdx] + " ";
+	    }
+	    t+="\n";
+	}
+	console.log(t);
     },
     gridData: function(gridId,records,args) {
 	if(!args) args = {};
+	if(isNaN(args.cellSize) || args.cellSize == null)
+	    args.cellSize = args.cellSizeX;
+	if(isNaN(args.cellSizeX) || args.cellSizeX == null)
+	    args.cellSizeX= args.cellSize;
+	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
+	    args.cellSizeY= args.cellSizeX;
 	let opts = {
 	    shape:"circle",
 	    color:"blue",
@@ -8071,39 +8412,37 @@ var RecordUtil = {
 	    cellSize:2,
 	    cellSizeX:2,
 	    cellSizeY:2,
-	    doCount:false
+	    operator:"average"
 	}
 	$.extend(opts,args);
+//	console.log(JSON.stringify(opts,null,2));
 	let id = HtmlUtils.getUniqueId();
-	let canvas = '<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>';
-	$(document.body).append(canvas);
-	var c = document.getElementById(id);
-	var ctx = c.getContext("2d");
+	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
+	let canvas = document.getElementById(id);
+	var ctx = canvas.getContext("2d");
+//	ctx.strokeStyle= "red";
+//	ctx.strokeRect(0,0,canvas.width,canvas.height);
 	let cnt = 0;
-	let bounds ={};
-	RecordUtil.getPoints(records, bounds);
-	let ew = bounds.east-bounds.west;
-	let eh = bounds.north-bounds.south;
-	let halfW = opts.cellSize/2;
-	let halfH = opts.cellSize/2;
+	let ew = args.bounds.east-args.bounds.west;
+	let eh = args.bounds.north-args.bounds.south;
+	let halfW = opts.cellSizeX/2;
+	let halfH = opts.cellSizeY/2;
+
+	ctx.font = opts.cellFont || "8pt Arial;"
+	var gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+	gradient.addColorStop(0,'white');
+	gradient.addColorStop(1,'red');
+	//	    ctx.fillStyle = gradient;
+	ctx.lineStyle = "#000";
 	if(opts.doHeatmap) {
 	    let cols = Math.floor(opts.w/opts.cellSizeX);
 	    let rows = Math.floor(opts.h/opts.cellSizeY);
-	    let grid = [];
-	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
-		let row = [];
-		grid.push(row);
-		for(var colIdx=0;colIdx<cols;colIdx++)  {
-		    row.push(0);
-		}
-	    }
-
 	    let points = [];
 	    records.map((record,idx)=>{
 		let lat = record.getLatitude();
 		let lon = record.getLongitude();
-		let x = Math.round(opts.w*(lon-bounds.west)/ew)-halfW;
-		let y = opts.h-(Math.round(opts.h*(lat-bounds.south)/eh)-halfH);
+		let x = Math.floor(opts.w*(lon-args.bounds.west)/ew);
+		let y = opts.h-(Math.floor(opts.h*(lat-args.bounds.south)/eh));
 		record[gridId+"_coordinates"] = {x:x,y:y};
 		let v = idx;
 		if(opts.colorBy && opts.colorBy.index>=0) {
@@ -8111,68 +8450,81 @@ var RecordUtil = {
 		}
 		x =Math.floor(x/opts.cellSizeX);
 		y =Math.floor(y/opts.cellSizeY);
-		points.push({x:x,y:y,v:v});
+		if(x<0) x=0;
+		if(y<0) y=0;
+		if(x>=cols) x=cols-1;
+		if(y>=rows) y=rows-1;
+		points.push({x:x,y:y,v:v,r:record});
 	    });
-	    RecordUtil.gridPoints(grid,points,args);
-	    let tmpc = ["red","green","blue"];
-	    let tmpcnt = 0;
-	    if(args.doCount) {
-		if(opts.colorBy) {
-		    opts.colorBy.setRange(grid.minCount, grid.maxCount);
+
+	    let grid = RecordUtil.gridPoints(rows,cols,points,args);
+	    opts.cellSizeX = +opts.cellSizeX;
+	    opts.cellSizeY = +opts.cellSizeY;
+
+
+	    if(opts.filter) {
+		let copy = this.cloneGrid(grid,v=>v.v);
+		let filtered = opts.filter=="average"?this.averageGrid(copy):opts.filter=="gauss"?this.gaussGrid(copy):null;
+		for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+		    let row = grid[rowIdx];
+		    for(var colIdx=0;colIdx<cols;colIdx++)  {
+			let cell = row[colIdx];
+			cell.v = filtered[rowIdx][colIdx];
+		    }
 		}
-	
 	    }
+
+	    let mm = this.getMinMaxGrid(grid,v=>v.v);
+	    if(opts.colorBy) {
+		opts.colorBy.setRange(mm.min, mm.max);
+		opts.colorBy.index=0;
+	    }
+
+
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
 		for(var colIdx=0;colIdx<cols;colIdx++)  {
-		    let v = row[colIdx];
+		    let cell = row[colIdx];
+		    let v = cell.v;
 		    if(isNaN(v)) continue;
-		    let c;
-		    if(args.doCount) {
-			c=  opts.colorBy.getColor(v);
-		    } else if(opts.colorBy && opts.colorBy.index>=0) {
-			c=  opts.colorBy.getColor(v);
-		    } else {
-			if(tmpcnt>=tmpc.length)
-			    tmpcnt=0;
-			c = tmpc[tmpcnt++];
-		    }
-		    ctx.fillStyle =c;
-		    ctx.fillRect(colIdx*opts.cellSizeX, rowIdx*opts.cellSizeY, opts.cellSizeX,opts.cellSizeY);
+		    let x = colIdx*opts.cellSizeX;
+		    let y = rowIdx*opts.cellSizeY;
+		    RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx);
 		}
 	    }
-	    return c.toDataURL("image/png");
+	} else {
+	    records.map((record,idx)=>{
+		let lat = record.getLatitude();
+		let lon = record.getLongitude();
+		let x = Math.round(opts.w*(lon-opts.bounds.west)/ew);
+		let y = opts.h-(Math.round(opts.h*(lat-opts.bounds.south)/eh));
+		record[gridId+"_coordinates"] = {x:x,y:y};
+		let v = opts.colorBy? record.getData()[opts.colorBy.index]:null;
+		if(false && opts.forMercator) {
+		    var [tx,ty]  =RecordUtil.convertGeoToPixel(lat, lon,opts.bounds,opts.w,opts.h);
+		    x = tx;
+		    y = ty;
+		}
+		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,v);
+	    });
 	}
-
-	records.map((record,idx)=>{
-	    let lat = record.getLatitude();
-	    let lon = record.getLongitude();
-	    let x = Math.round(opts.w*(lon-bounds.west)/ew)-halfW;
-	    let y = opts.h-(Math.round(opts.h*(lat-bounds.south)/eh)-halfH);
-	    record[gridId+"_coordinates"] = {x:x,y:y};
-	    let c =  opts.color|| "#000";
-	    if(opts.colorBy && opts.colorBy.index>=0) {
-		c=  opts.colorBy.getColor(record.getData()[opts.colorBy.index], record);
-	    }
-	    ctx.fillStyle =c;
-	    ctx.strokeStyle =c;
-	    if(opts.shape == "circle") {
-		ctx.beginPath();
-		ctx.arc(x,y, opts.cellSize, 0, 2 * Math.PI);
-		if(args.stroke)
-		    ctx.stroke();
-		else
-		    ctx.fill();
-	    } else {
-		if(args.stroke)
-		    ctx.strokeRect(x, y, opts.cellSize, opts.cellSize);
-		else
-		    ctx.fillRect(x, y, opts.cellSize, opts.cellSize);
-		    
-	    }
-	});
-	return c.toDataURL("image/png");
+	return canvas.toDataURL("image/png");
     },
+    convertGeoToPixel:function(lat, lon,bounds,mapWidth,mapHeight) {
+	var mapLonLeft = bounds.west;
+	var mapLonRight = bounds.east;
+	var mapLonDelta = mapLonRight - mapLonLeft;
+	var mapLatBottom = bounds.south;
+	var mapLatBottomDegree = mapLatBottom * Math.PI / 180;
+	var x = (lon - mapLonLeft) * (mapWidth / mapLonDelta);
+	var lat = lat * Math.PI / 180;
+	var worldMapWidth = ((mapWidth / mapLonDelta) * 360) / (2 * Math.PI);
+	var mapOffsetY = (worldMapWidth / 2 * Math.log((1 + Math.sin(mapLatBottomDegree)) / (1 - Math.sin(mapLatBottomDegree))));
+	var y = mapHeight - ((worldMapWidth / 2 * Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat)))) - mapOffsetY);
+	return [x, y];
+    },
+
+
     getRanges: function(fields, records) {
         var maxValues = [];
         var minValues = [];
@@ -8238,44 +8590,47 @@ var RecordUtil = {
         return fields;
     },
     getPoints: function(records, bounds) {
-        var points = [];
+	let points = [];
+	this.getBounds(records, bounds,points);
+	return points;
+    },
+    getBounds: function(records, bounds,points) {
+	bounds = bounds||{};
+        if (records == null) {
+	    return bounds;
+	}
         var north = NaN,
             west = NaN,
             south = NaN,
             east = NaN;
-        if (records != null) {
-            for (j = 0; j < records.length; j++) {
-                var record = records[j];
-                if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
-		    if(record.getLatitude()==0) {
-			console.log("ll:" + record);
-		    }
-                    if (j == 0) {
-                        north = record.getLatitude();
-                        south = record.getLatitude();
-                        west = record.getLongitude();
-                        east = record.getLongitude();
-                    } else {
-                        north = Math.max(north, record.getLatitude());
-                        south = Math.min(south, record.getLatitude());
-                        west = Math.min(west, record.getLongitude());
-                        east = Math.max(east, record.getLongitude());
-                    }
-                    if (record.getLongitude() < -180 || record.getLatitude() > 90) {
-                        console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
-                    }
-                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
+        for (j = 0; j < records.length; j++) {
+            var record = records[j];
+            if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
+                if (j == 0) {
+                    north = record.getLatitude();
+                    south = record.getLatitude();
+                    west = record.getLongitude();
+                    east = record.getLongitude();
+                } else {
+                    north = Math.max(north, record.getLatitude());
+                    south = Math.min(south, record.getLatitude());
+                    west = Math.min(west, record.getLongitude());
+                    east = Math.max(east, record.getLongitude());
                 }
+                if (record.getLongitude() < -180 || record.getLatitude() > 90) {
+                    console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
+                }
+		if(points)
+                    points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
             }
         }
-	if(bounds) {
-            bounds.north = north;
-            bounds.west = west;
-            bounds.south = south;
-            bounds.east = east;
-	}
-        return points;
+        bounds.north = north;
+        bounds.west = west;
+        bounds.south = south;
+        bounds.east = east;
+        return bounds;
     },
+
     findClosest: function(records, lon, lat, indexObj) {
         if (records == null) return null;
         var closestRecord = null;
@@ -8333,21 +8688,21 @@ function CsvUtil() {
 	},
 	furlData: function(pointData, args) {
 	    /** TODO
-	    let records = pointData.getRecords(); 
-            let header = this.display.getDataValues(records[0]);
-	    var newRecords  =[];
-	    var newFields = [];
-	    var lastRecord = dataList[dataList.length-1];
-            var fields  = pointData.getRecordFields();
-	    var newData  =[];
-	    newData.push(["label","value"]);
-	    //		dataList.map(r=>{
-	    fields.map((f,idx)=>{
+		let records = pointData.getRecords(); 
+		let header = this.display.getDataValues(records[0]);
+		var newRecords  =[];
+		var newFields = [];
+		var lastRecord = dataList[dataList.length-1];
+		var fields  = pointData.getRecordFields();
+		var newData  =[];
+		newData.push(["label","value"]);
+		//		dataList.map(r=>{
+		fields.map((f,idx)=>{
 		let row = [f.getLabel(),lastRecord.getValue(f.getIndex())];
 		newData.push();
-	    });
-	    pointData = convertToPointData(newData);
-	    pointData.entryId = originalPointData.entryId;
+		});
+		pointData = convertToPointData(newData);
+		pointData.entryId = originalPointData.entryId;
 	    **/
 	},
 	derived: function(pointData, args) {
@@ -8381,7 +8736,7 @@ function CsvUtil() {
 		}
             });
             let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
-//	    console.log(code);
+	    //	    console.log(code);
             eval(code);
 	    records.map((record, rowIdx)=>{
 		let newRecord = record.clone();
@@ -8472,10 +8827,10 @@ function CsvUtil() {
 		}
 	    });
 	    /*
-	    newFields.map((f,fieldIdx)=>{
-		if(fieldIdx>3) return;
-		console.log("F:" + f.getLabel() +" " + f.index);
-	    });*/
+	      newFields.map((f,fieldIdx)=>{
+	      if(fieldIdx>3) return;
+	      console.log("F:" + f.getLabel() +" " + f.index);
+	      });*/
 	    records.map((record, rowIdx)=>{
 		let data = [];
 		let newRecord = record.clone();
@@ -8577,17 +8932,22 @@ var DataUtils = {
 	});
 	return result;
     },
+    xcnt:0,
     getDataFilters: function(display, prop) {
 	let filters = [];
 	if(!prop) return filters;
+	let baseId = display.getId();
+	let cnt = 0;
 	DataUtils.parseCommands(prop).map(cmd=>{
-	    let [type,fieldId,value,enabled,label]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label];
+	    let filterId = baseId+"_" + (cnt++);
+	    let [type,fieldId,value,enabled,label,expr]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label,cmd.args.expr];
+
 	    if(!Utils.isDefined(enabled))
 		enabled = true;
 	    else
 		enabled = enabled=="true";
 	    if(label) {
-		var cbx =  display.jq("datafilterenabled_" + fieldId);
+		var cbx =  display.jq("datafilterenabled_" + filterId);
 		if(cbx.length) {
 		    enabled = cbx.is(':checked');
 		} 
@@ -8598,17 +8958,25 @@ var DataUtils = {
 		value = +value;
 	    let fields = null;
 	    if(cmd.args.fields) {
+
 		fields = display.getFieldsByIds(null, cmd.args.fields.replace(/:/g,","));
 	    }
+	    let allFields = display.getData().getRecordFields();
 	    let field = display.getFieldById(null,fieldId);
 	    filters.push({
+		id:filterId,
+		props:cmd,
 		type:type.trim(),
 		field:field,
 		fields:fields||[field],
+		allFields:allFields,
 		value:value,
 		label:label,
 		enabled: enabled,
+		expr:expr,
+		xcnt:0,
 		isRecordOk: function(r) {
+		    this.xcnt++;
 		    if(!this.enabled) return true;
 		    let value = this.field?r.getValue(this.field.getIndex()):NaN;
 		    if(this.type == "match") {
@@ -8617,7 +8985,6 @@ var DataUtils = {
 			this.fields.every(f=>{
 			    return true;
 			});
-
 			let fieldsToUse = this.fields||(this.field?[this.field]:r.fields);
 			let cnt = 0;
 			let ok = false;
@@ -8641,8 +9008,37 @@ var DataUtils = {
 			return  value==this.value;
 		    }  else if(this.type == "notequals") {
 			return value!=this.value;
+		    }  else if(this.type == "bounds") {
+			let lat =  r.getLatitude();
+			let lon =  r.getLongitude();
+			if(props.north && lat>+props.north) return false;
+			if(props.south && lat<+props.south) return false;
+			if(props.west && lon<+props.west) return false;
+			if(props.east && lon>+props.east) return false;
+			return true;
+		    }  else if(this.type == "eval") {
+			//return true;
+			//assume its inline code
+			let code = "function dataFilterCall(){\n";
+			this.allFields.every(f=>{
+			    let value = r.getValue(f.getIndex());
+			    if(typeof value == "string") value = "'" + value +"'";
+			    else if(typeof value != "number") value = "'" + value +"'";
+			    code+=f.getId() +"=" + value+";\n"
+			    return true;
+			});
+			let expr = this.expr;
+			if(expr == null) throw "No expr given in data filter";
+			if(expr.indexOf("return")<0)  expr  = " return " + expr;
+			code+=expr+"\n}\n";
+			code +="var dataFilterValue = dataFilterCall();\n";
+			eval(code);
+			return dataFilterValue;
+		    } else {
+			console.log("Unknown filter:" + this.type);
+			return true;
 		    }
-		    return true;
+
 		}
 	    });
 	});
@@ -22493,7 +22889,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             } else {
 		params.showScaleLine = this.getProperty("showScaleLine",false);
-		params.showLatLonPosition = this.getProperty("showLatLonPosition",false);
+		params.showLatLonPosition = this.getProperty("showLatLonPosition",true);
 		params.showZoomPanControl = this.getProperty("showZoomPanControl",false);
 		params.showZoomOnlyControl = this.getProperty("showZoomOnlyControl",true);
                 this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
@@ -23521,6 +23917,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getProperty("centerOnFilterChange",false)) {
 		    if (this.vectorLayer && this.points) {
 			//If we have  a map then don't do anything?
+		    } else if(this.lastImageLayer) {
+			this.map.zoomToLayer(this.lastImageLayer);
 		    } else {
 			this.map.centerOnMarkers(null, false, false);
 		    }
@@ -23534,13 +23932,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let html = SUPER.getHeader2.call(this);
 	    if(this.getProperty("showClipToBounds")) {
 		this.clipToView=false;
-		return HtmlUtils.div(["style","display:inline-block;cursor:pointer;padding:1px;border:1px solid rgba(0,0,0,0);", "title","Clip to view", "id",this.getDomId("clip")],HtmlUtils.getIconImage("fa-globe-americas"))+"&nbsp;&nbsp;"+ html;
+		html =  HtmlUtils.div(["style","display:inline-block;cursor:pointer;padding:1px;border:1px solid rgba(0,0,0,0);", "title","Clip to view", "id",this.getDomId("clip")],HtmlUtils.getIconImage("fa-globe-americas"))+"&nbsp;&nbsp;"+ html;
+	    }
+	    if(true ||this.getProperty("showMarkerToggle")) {
+		html += HtmlUtils.checkbox("",["id",this.getDomId("showMarkerToggle")],true) +" " +
+		    this.getProperty("showMarkerToggleLabel","Show Markers") +"&nbsp;&nbsp;";
 	    }
 	    return html;
 	},
 	xcnt:0,
 	initHeader2:function() {
 	    let _this = this;
+	    this.jq("showMarkerToggle").change(function() {
+		_this.map.circles.setVisibility($(this).is(':checked'));
+	    });
 	    this.jq("clip").click(function(e){
 		console.log("clip:" + _this.clipToView);
 		_this.clipToView = !_this.clipToView;
@@ -23586,7 +23991,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(pointData, records);
-		}catch(exc) {
+		} catch(exc) {
+		    console.log(exc)
 		    this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "" + exc));
 		    return;
 		}
@@ -23595,6 +24001,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 
 	},
+	
 	updateUIInner: function(pointData, records) {
 	    var t1= new Date();
 	    this.haveCalledUpdateUI = true;
@@ -23647,27 +24054,64 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.applyVectorMap();
 	    this.lastUpdateTime = new Date();
 	},
+	heatmapCnt:0,
+	createHeatmap(records, bounds, colorBy) {
+	    records = records || this.filterData();
+	    bounds = bounds ||  RecordUtil.getBounds(records);
+	    colorBy = colorBy || this.getColorByInfo(records);
+	    if(this.heatmapLayer)
+		this.map.removeLayer(this.heatmapLayer);
+	    let w = Math.round(this.getProperty("gridWidth",800));
+	    let dfltArgs = this.getDefaultGridByArgs();
+	    if(this.reloadHeatmap) {
+		this.reloadHeatmap = false;
+		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
+		records = RecordUtil.subset(records, bounds);
+	    }
+	    bounds = RecordUtil.expandBounds(bounds,0.1);
+	    let size = 1;
+	    while(w/(bounds.east-bounds.west)/size>1000)size++;
+	    dfltArgs.cellSizeX = dfltArgs.cellSizeY = dfltArgs.cellSize = size;
+	    console.log("s:" + size);
+
+	    
+	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+	    //Skew the height so we get round circles?
+	    //	    let h = 1.25*Math.round(w/ratio);
+	    let h = Math.floor(w/ratio);
+	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
+			       dfltArgs);
+	    let img = RecordUtil.gridData(this.getId(),records,args);
+	    this.heatmapLayer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
+		isBaseLayer: false
+	    });
+	    colorBy.displayColorTable(null,true);
+	    if(this.getProperty("heatmapShowToggle",false)) {
+		let cbx = this.jq("heatmaptoggle");
+		let reload =  HtmlUtils.getIconImage("fa-sync",["style","cursor:pointer;","title","Reload heatmap", "id",this.getDomId("heatmapreload")])+"&nbsp;&nbsp;";
+		this.jq(ID_HEADER2_PREFIX).html(reload + HtmlUtils.checkbox("",["id",this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +"&nbsp;" +
+						this.getProperty("heatmapToggleLabel","Toggle Heatmap") +"&nbsp;&nbsp;");
+		let _this = this;
+		this.jq("heatmapreload").click(()=> {
+		    this.haveCalledUpdateUI = false;
+		    this.reloadHeatmap = true;
+		    this.createHeatmap();
+		});
+		this.jq("heatmaptoggle").change(function() {
+		    _this.heatmapLayer.setVisibility($(this).is(':checked'));
+		});
+	    }
+	},
+
         addPoints: function(records, fields, points,bounds) {
             let colorBy = this.getColorByInfo(records);
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
-		let w = Math.round(this.getProperty("gridWidth",800));
-		let h = Math.round(this.getProperty("gridHeight"));
-		if(isNaN(h) || !Utils.isDefined(h)) {
-		    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
-		    h = Math.round(w/ratio);
-		}
-		let doCount = this.getProperty("heatmapDoCount",false);
-		let args =$.extend({colorBy:colorBy,w:w,h:h,doCount:doCount},
-				   this.getDefaultGridByArgs());
-		let img = RecordUtil.gridData(this.getId(),records,args);
-		this.map.addImageLayer("heatmap", "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
-		    isBaseLayer: false
-		});
-		colorBy.displayColorTable(null,doCount);
-		return;
+		this.createHeatmap(records, bounds, colorBy);
+		if(!this.getProperty("heatmapIncludeData"))
+		    return;
 	    }
-
-
+//	    bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
+//	    records = RecordUtil.subset(records, bounds);
 
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
@@ -23676,7 +24120,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let source = this;
             let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
 	    if(this.getProperty("scaleRadius")) {
-		let radiusScale  = [10000,1,8000,2,5000,3,2000,3,1000,5,500,8,250,10,100,12,50,14];
+		let radiusScale  = [10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12];
 		radius=radiusScale[1];
 		for(let i=0;i<radiusScale.length;i+=2) {
 		    if(points.length<+radiusScale[i]) {
@@ -24226,6 +24670,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"boundsAnimation=\"true\"",
 		"centerOnFilterChange=\"true\"",
 		"centerOnHighlight=\"true\"",
+		'doHeatmap=true',
+		'heatmapOperator="average|min|max|count"',
 		'recordHighlightRadius=20',
 		'recordHighlightStrokeWidth=2',
 		'recordHighlightStrokeColor=red',
@@ -33247,7 +33693,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Image Display",
-					'cellType="rect|circle"',
+					'cellShape="rect|circle"',
 					'cellSize=4',
 					'cellFilled=false',
 					'cellColor=false',
@@ -33312,7 +33758,8 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
-	    let args =$.extend({colorBy:colorBy, w:w, h:h},
+	    bounds = RecordUtil.expandBounds(bounds,0.1);
+	    let args =$.extend({colorBy:colorBy, w:w, h:h,cell3D:this.getProperty("cell3D"),bounds:bounds},
 			       this.getDefaultGridByArgs());
 
 	    let img = RecordUtil.gridData(this.getId(),records,args);

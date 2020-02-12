@@ -13,6 +13,8 @@ var ID_FIELDS = "fields";
 var ID_HEADER = "header";
 var ID_HEADER1 = "header1";
 var ID_HEADER2 = "header2";
+var ID_HEADER2_PREFIX = "header2prefix";
+var ID_HEADER2_SUFFIX = "header2suffix";
 var ID_HEADER3 = "header3";
 var ID_FILTERBAR = "filterbar";
 var ID_TITLE = ATTR_TITLE;
@@ -483,6 +485,7 @@ function DisplayThing(argId, argProperties) {
 	    return macros.apply(attrs);
 	},
         getRecordHtml: function(record, fields, template) {
+	    return record.id +" " + record.getLatitude() +" " + record.getLongitude();
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) {
@@ -779,6 +782,45 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         displayColorTable: function(ct, domId, min, max, args) {
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
+	    if(!args.colorByInfo) return;
+	    this.jq(domId).find(".display-colortable-slice").css("cursor","pointer");
+	    let _this = this;
+	    if(!this.originalColorRange) {
+		this.originalColorRange = [min,max];
+	    }		
+	    this.jq(domId).find(".display-colortable-slice").click(function(e) {
+		let val = $(this).attr("data-value");
+		let popup = getTooltip();
+		popupObject = popup;
+		let html = "";
+		html += HtmlUtils.div(["class","ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
+		html += HtmlUtils.div(["class","ramadda-menu-item","what","setmax"],"Set range max to " + Utils.formatNumber(val));
+		html += HtmlUtils.div(["class","ramadda-menu-item","what","reset"],"Reset range");
+		popup.html(html);
+		popup.show();
+		popup.position({
+                    of: $(this),
+                    my: 'left top',
+                    at: 'left bottom',
+                    collision: "none none"
+		});
+		popup.find(".ramadda-menu-item").click(function() {
+		    let what = $(this).attr("what");
+		    if(what == "reset") {
+			_this.setProperty("colorByMin",_this.originalColorRange[0]);
+			_this.setProperty("colorByMax",_this.originalColorRange[1]);
+			_this.setProperty("overrideColorRange", false);
+ 		    } else if(what == "setmin") {
+			_this.setProperty("colorByMin",val);
+			_this.setProperty("overrideColorRange", true);
+		    } else {
+			_this.setProperty("colorByMax",val);
+			_this.setProperty("overrideColorRange", true);
+		    }
+		    _this.haveCalledUpdateUI = false;
+		    _this.updateUI();
+		});
+	    });
         },
 	getColorList:function() {
 	    if(this.colorList && this.colorList.length>0) {
@@ -896,14 +938,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getDefaultGridByArgs: function() {
 	    let doHeatmap=this.getProperty("doHeatmap",false);
 	    let args =  {
+		display:this,
 		shape:this.getProperty("cellShape","circle"),
 		color: this.getProperty("cellColor","blue"),
 		stroke: !this.getProperty("cellFilled",true),
-		cellSize:this.getProperty("cellSize",doHeatmap?12:4),
+		cellSize:+this.getProperty("cellSize",doHeatmap?12:4),
+		cellSizeH: this.getProperty("cellSizeH"),
+		cell3D:this.getProperty("cell3D",false),
+		cellShowText:this.getProperty("cellShowText",false),
+		cellFont:this.getProperty("cellFont"),
 		doHeatmap:doHeatmap,
+		operator:this.getProperty("heatmapOperator","average"),
+		filter:this.getProperty("heatmapFilter")
 	    };
-	    args.cellSizeX = this.getProperty("cellSizeX",args.cellSize);
-	    args.cellSizeY = this.getProperty("cellSizeY",args.cellSize);
+	    args.cellSizeX = +this.getProperty("cellSizeX",args.cellSize);
+	    args.cellSizeY = +this.getProperty("cellSizeY",args.cellSize);
 	    return args;
 	},
 	getIconMap: function() {
@@ -928,9 +977,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var colorByAttr = this.getProperty(prop||"colorBy", null);
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
 	    var _this = this;
-	    var colorBy = {
+	    var colorBy = this.colorByInfo = {
                 id: colorByAttr,
 		fields:fields,
+		overrideRange: this.getProperty("overrideColorRange",false),
+		origRange:null,
+		origMinValue:0,
+		origMaxValue:0,
                 minValue: 0,
                 maxValue: 0,
                 field: null,
@@ -965,6 +1018,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    colors.push(this.stringMap[i]);
 			}
 			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			    colorByInfo:this,
 			    width:width,
 			    stringValues: this.colorByValues});
 		    } else {
@@ -976,17 +1030,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    colors = tmp;
 			}
 			_this.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+			    colorByInfo:this,
 			    width:width,
 			    stringValues: this.colorByValues
 			});
 		    }
 		},
-		setRange: function(minValue,maxValue) {
+		resetRange: function() {
+		    if(this.origRange)
+			this.setRange(this.origRange[0],this.origRange[1]);
+		},
+		setRange: function(minValue,maxValue, force) {
+		    if(!force && this.overrideRange) return;
 		    this.minValue = minValue;
 		    this.maxValue = maxValue;
 		    this.origMinValue = minValue;
 		    this.origMaxValue = maxValue;
 		    this.range = maxValue - minValue;
+		    if(!this.origRange) {
+			this.origRange = [minValue, maxValue];
+		    }
+		},
+		getValuePercent: function(v) {
+                    return  (v - this.minValue) / this.range;
 		},
 		getColor: function(value, pointRecord) {
 		    var percent = 0;
@@ -1178,8 +1244,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             colorBy.colorByValues.push(v);
                             var color  = index>=colorBy.colors.length?colorBy.colors[colorBy.colors.length-1]:colorBy.colors[index];
 			    colorBy.colorByMap[v] = color;
-                            colorBy.minValue = 1;
-                            colorBy.maxValue = colorBy.colorByValues.length;
+                            colorBy.setRange(1,  colorBy.colorByValues.length, true);
 			}
 			return;
 		    }
@@ -1195,18 +1260,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
             if (this.showPercent) {
-                colorBy.minValue = 0;
-                colorBy.maxValue = 100;
+                colorBy.setRange(0, 100,true);
             }
 	    var steps = this.getProperty("colorBySteps");
 	    if(steps) {
 		colorBy.steps = steps.split(",");
 	    }
-            colorBy.minValue = this.getDisplayProp(this, "colorByMin", colorBy.minValue);
-            colorBy.minValue = this.getDisplayProp(this, "colorByMin", colorBy.minValue);
-            colorBy.maxValue = this.getDisplayProp(this, "colorByMax", colorBy.maxValue);
-            colorBy.origMinValue = colorBy.minValue;
-            colorBy.origMaxValue = colorBy.maxValue;
+            colorBy.setRange(this.getDisplayProp(this, "colorByMin", colorBy.minValue),
+			     this.getDisplayProp(this, "colorByMax", colorBy.maxValue), true);
+
 
             var colorByLog = this.getProperty("colorByLog", false);
             colorBy.colorByFunc = Math.log;
@@ -1214,13 +1276,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (colorBy.minValue < 1) {
                     colorBy.colorByOffset = 1 - colorBy.minValue;
                 }
-                colorBy.minValue = colorBy.colorByFunc(colorBy.minValue + colorBy.colorByOffset);
-                colorBy.maxValue = colorBy.colorByFunc(colorBy.maxValue + colorBy.colorByOffset);
+                colorBy.setRange(colorBy.colorByFunc(colorBy.minValue + colorBy.colorByOffset),
+				 colorBy.colorByFunc(colorBy.maxValue + colorBy.colorByOffset));
             }
             colorBy.range = colorBy.maxValue - colorBy.minValue;
-
-
-
 	    return colorBy;
 	},
 	getColorByMap: function(prop) {
@@ -2147,6 +2206,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	checkDataFilters: function(dataFilters, record) {
 	    if(!dataFilters) {return true;}
+	    let xcnt = 0;
 	    for(var i=0;i<dataFilters.length;i++) {
 		if(!dataFilters[i].isRecordOk(record)) return false;
 	    }
@@ -3851,7 +3911,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
 
-	    let header2=this.getHeader2();
+	    let header2=HtmlUtils.div(["style","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
+	    header2 +=  this.getHeader2();
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
@@ -3903,8 +3964,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let dataFilterIds = [];
 
 	    this.getDataFilters().map(f=>{
-		if(!f.label || !f.field) return;
-		let cbxid = this.getDomId("datafilterenabled_" + f.field.getId());
+		if(!f.label) return;
+		let cbxid = this.getDomId("datafilterenabled_" + f.id);
 		dataFilterIds.push(cbxid);
 		header2 +=  HtmlUtils.checkbox("",["id",cbxid],f.enabled) +" " + f.label +"&nbsp;&nbsp;"
 	    });
@@ -4217,9 +4278,77 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
 	    }
 
+	    header2+=HtmlUtils.div(["style","display:inline-block;","id",this.getDomId(ID_HEADER2_SUFFIX)]);
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;
+
+ 	    let inputFunc = function(input, input2, value){
+                var id = input.attr("id");
+		if(!input2) {
+		    if(id.endsWith("_min")) {
+			input2 = $("#" + id.replace(/_min$/,"_max"));
+		    } else if(id.endsWith("_max")) {
+			var tmp = input;
+			input =$("#" + id.replace(/_max$/,"_min"));
+			input2 = tmp;
+		    }
+		}
+		if(input.attr("isCheckbox")) {
+		    var on = input.attr("onValue")||true;
+		    var off = input.attr("offValue")||false;
+		    if (input.is(':checked')) {
+			value = on;
+			console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
+		    } else {
+			value=off;
+			console.log(_this.type +" cbx is not checked value:" + value +" on:" + on +" off:" + off);
+		    }
+		}
+		if(!value) {
+		    value = input.val();
+		} 
+		if(!value || value=="") {
+		    value = input.attr("data-value");
+		}
+		if(!value) {
+		    value = input.val();
+		}
+		
+		if(value==null) return;
+		if(!Array.isArray(value) && input.attr("isButton")) {
+		    //			console.log(_this.type +" " +Array.isArray(value));
+		    var tmp = [];
+		    value.split(",").map(v=>{
+			tmp.push(v.replace(/_comma_/g,","));
+		    });
+		    value = tmp;
+		}
+
+                var fieldId = input.attr("fieldId");
+		_this.checkFilterField(input);
+		_this.haveCalledUpdateUI = false;
+		if(_this.settingFilterValue) {
+		    return;
+		}
+		_this.settingFilterValue = true;
+		_this.dataFilterChanged();
+
+		//		    console.log("ID:" + id +" v:" + value +" " + fieldId);
+		var args = {
+		    property: "filterValue",
+		    id:id,
+		    fieldId: fieldId,
+		    value: value
+		};
+		if(input2) {
+		    args.value2 = input2.val();
+		}
+		_this.propagateEvent("handleEventPropertyChanged", args);
+		_this.settingFilterValue = false;
+            };
+
+
 
 	    dataFilterIds.map(id=>{
 		$("#" + id).click(function(e){
@@ -4236,70 +4365,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 
- 		var inputFunc = function(input, input2, value){
-                    var id = input.attr("id");
-		    if(!input2) {
-			if(id.endsWith("_min")) {
-			    input2 = $("#" + id.replace(/_min$/,"_max"));
-			} else if(id.endsWith("_max")) {
-			    var tmp = input;
-			    input =$("#" + id.replace(/_max$/,"_min"));
-			    input2 = tmp;
-			}
-		    }
-		    if(input.attr("isCheckbox")) {
-			var on = input.attr("onValue")||true;
-			var off = input.attr("offValue")||false;
-			if (input.is(':checked')) {
-			    value = on;
-			    console.log(_this.type +" cbx is checked value:" + value +" on:" + on +" off:" + off);
-			} else {
-			    value=off;
-			    console.log(_this.type +" cbx is not checked value:" + value +" on:" + on +" off:" + off);
-			}
-		    }
-		    if(!value) {
-			value = input.val();
-		    } 
-		    if(!value || value=="") {
-			value = input.attr("data-value");
-		    }
-		    if(!value) {
-			value = input.val();
-		    }
-		    
-		    if(value==null) return;
-		    if(!Array.isArray(value) && input.attr("isButton")) {
-			//			console.log(_this.type +" " +Array.isArray(value));
-			var tmp = [];
-			value.split(",").map(v=>{
-			    tmp.push(v.replace(/_comma_/g,","));
-			});
-			value = tmp;
-		    }
-
-                    var fieldId = input.attr("fieldId");
-		    _this.checkFilterField(input);
-		    _this.haveCalledUpdateUI = false;
-		    if(_this.settingFilterValue) {
-			return;
-		    }
-		    _this.settingFilterValue = true;
-		    _this.dataFilterChanged();
-
-		    //		    console.log("ID:" + id +" v:" + value +" " + fieldId);
-		    var args = {
-			property: "filterValue",
-			id:id,
-			fieldId: fieldId,
-			value: value
-		    };
-		    if(input2) {
-			args.value2 = input2.val();
-		    }
-		    _this.propagateEvent("handleEventPropertyChanged", args);
-		    _this.settingFilterValue = false;
-                };
 
 		this.jq(ID_FILTERBAR).find(".display-filterby-items").each(function(){
 		    let parent = $(this);
@@ -4334,12 +4399,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 
 		});
-
-
-
-
-
-
 		this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
 		    var keyCode = e.keyCode || e.which;
 		    if (keyCode == 13) {return;}
@@ -6654,6 +6713,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         }
     })
 }
+
 
 
 

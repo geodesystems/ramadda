@@ -2923,7 +2923,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Image Display",
-					'cellType="rect|circle"',
+					'cellShape="rect|circle"',
 					'cellSize=4',
 					'cellFilled=false',
 					'cellColor=false',
@@ -2988,7 +2988,8 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
-	    let args =$.extend({colorBy:colorBy, w:w, h:h},
+	    bounds = RecordUtil.expandBounds(bounds,0.1);
+	    let args =$.extend({colorBy:colorBy, w:w, h:h,cell3D:this.getProperty("cell3D"),bounds:bounds},
 			       this.getDefaultGridByArgs());
 
 	    let img = RecordUtil.gridData(this.getId(),records,args);
