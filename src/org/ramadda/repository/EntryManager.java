@@ -8008,10 +8008,12 @@ public class EntryManager extends RepositoryManager {
 
         if (isNew) {
             for (Entry theNewEntry : entries) {
-                if ( !fromImport) {
+		//not sure how to handle the initialize new entry
+		//for xml imports. 
+		//                if ( !fromImport) {
                     theNewEntry.getTypeHandler().initializeNewEntry(request,
                             theNewEntry);
-                }
+		    //                }
                 String name = theNewEntry.getName();
                 if (name.trim().length() == 0) {
                     String nameTemplate =
