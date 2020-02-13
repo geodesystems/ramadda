@@ -1637,6 +1637,7 @@ var RecordUtil = {
 
 
 
+	    //TODO: figure out the grid filtering
 	    if(opts.filter && opts.filter!="") {
 		let copy = this.cloneGrid(grid,v=>v.v);
 		let filtered = opts.filter=="average"?this.averageGrid(copy):opts.filter=="gauss"?this.gaussGrid(copy):null;

@@ -628,7 +628,6 @@ function DisplayThing(argId, argProperties) {
 	    return f;
 	},
         formatNumberInner: function(number) {
-
             if (!this.getProperty("format", true)) return number;
             if (this.getProperty("formatNumberComma", false)) 
 		return Utils.formatNumberComma(number);
@@ -3974,7 +3973,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let type = this.getProperty("filterDate");
 		//get dates
 		let enums = [];
-		if(this.getProperty("filterDateIncudeAll")) {
+		if(this.getProperty("filterDateIncludeAll")) {
 		    enums.push(["all","All"]);
 		}
 		let selected = null;
@@ -4840,6 +4839,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
 		'dataFilters="match|notmatch|nomissing|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
+		'filterDate=year',
+		'filterDateIncludeAll=true',
 		'startDate="yyyy-MM-dd"',
 		'endtDate="yyyy-MM-dd"',
 		'binDate=\day|month|year"',

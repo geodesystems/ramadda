@@ -1347,6 +1347,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		w = seenCnt;
 	    }
 
+
 	    let dfltArgs = this.getDefaultGridByArgs();
 	    if(this.reloadHeatmap) {
 		this.reloadHeatmap = false;
@@ -1366,6 +1367,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //Skew the height so we get round circles?
 	    //	    let h = 1.25*Math.round(w/ratio);
 	    let h = Math.floor(w/ratio);
+//	    console.log("dim:" + w +" " + h);
 //	    console.log("dim:" + w +" " +h + " c:" + dfltArgs.cellSize);
 
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},

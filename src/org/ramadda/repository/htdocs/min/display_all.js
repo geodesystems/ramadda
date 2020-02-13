@@ -778,7 +778,6 @@ function DisplayThing(argId, argProperties) {
 	    return f;
 	},
         formatNumberInner: function(number) {
-
             if (!this.getProperty("format", true)) return number;
             if (this.getProperty("formatNumberComma", false)) 
 		return Utils.formatNumberComma(number);
@@ -4124,7 +4123,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let type = this.getProperty("filterDate");
 		//get dates
 		let enums = [];
-		if(this.getProperty("filterDateIncudeAll")) {
+		if(this.getProperty("filterDateIncludeAll")) {
 		    enums.push(["all","All"]);
 		}
 		let selected = null;
@@ -4990,6 +4989,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
 		'dataFilters="match|notmatch|nomissing|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
+		'filterDate=year',
+		'filterDateIncludeAll=true',
 		'startDate="yyyy-MM-dd"',
 		'endtDate="yyyy-MM-dd"',
 		'binDate=\day|month|year"',
@@ -8509,6 +8510,7 @@ var RecordUtil = {
 
 
 
+	    //TODO: figure out the grid filtering
 	    if(opts.filter && opts.filter!="") {
 		let copy = this.cloneGrid(grid,v=>v.v);
 		let filtered = opts.filter=="average"?this.averageGrid(copy):opts.filter=="gauss"?this.gaussGrid(copy):null;
@@ -16702,6 +16704,8 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
             if (!records) {
                 return null;
             }
+            var fieldInfo = {};
+
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
@@ -16711,7 +16715,6 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
                 this.displayError("No string fields specified");
                 return null;
             }
-            var fieldInfo = {};
             var minLength = parseInt(this.getProperty("minLength", 0));
             var maxLength = parseInt(this.getProperty("maxLength", 100));
             var stopWords = this.getProperty("stopWords");
@@ -16820,9 +16823,75 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 	    }
         },
         updateUIInner: function() {
+            let records = this.filterData();
+	    if(records == null) return;
+            var options = {
+                autoResize: true,
+            };
+            var colors = this.getColorTable(true);
+            if (colors) {
+                options.colors = colors,
+                options.classPattern = null;
+                options.fontSize = {
+                    from: 0.1,
+                    to: 0.02
+                };
+            }
+            if (this.getProperty("shape"))
+                options.shape = this.getProperty("shape");
+
+	    let countField = this.getFieldById(null, this.getProperty("countField"));
+	    let termField = this.getFieldById(null, this.getProperty("termField"));
+	    if(countField && termField) {
+		var minLength = parseInt(this.getProperty("minLength", 0));
+		var maxLength = parseInt(this.getProperty("maxLength", 100));
+		var stopWords = this.getProperty("stopWords");
+		if (stopWords) {
+                    if (stopWords == "default") {
+			stopWords = Utils.stopWords;
+                    } else {
+			stopWords = stopWords.split(",");
+                    }
+		}
+		let info = [];
+		let wordToWeight = {};
+		records.every(r=>{
+		    let word =r.getValue(termField.getIndex());
+		    let _word = word.toLowerCase();
+                    if (stopWords && stopWords.includes(_word)) return true;
+		    if(!wordToWeight[word]) {
+			wordToWeight[word]=0;
+		    }
+		    wordToWeight[word]+=r.getValue(countField.getIndex());
+		    return true;
+		});
+                let handlers = null;
+		let _this = this;
+                if (this.getProperty("handleClick", true)) {
+                    handlers = {
+                        click: function(w) {
+                            var word = w.target.innerText;
+                            _this.showRows(records, null, word);
+                        }
+                    }
+                };
+
+		    
+		for(word in wordToWeight) {
+		    info.push({
+			text: word,
+			html:{style:"cursor:pointer;"},
+			weight:wordToWeight[word] ,
+			handlers:handlers,
+		    });
+
+		}
+                this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId("words"), "style", "height:300px;"], ""));
+                $("#" + this.getDomId("words")).jQCloud(info, options);
+		return
+	    }
             var fieldInfo = this.processText();
             if (fieldInfo == null) return;
-            let records = this.filterData();
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
@@ -16881,11 +16950,13 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     var word = counts[wordIdx];
                     var obj1 = {
                         weight: word.count,
+			html:{style:"cursor:pointer;"},
                         handlers: handlers,
                         text: word.word,
                     };
                     var obj2 = {
                         weight: word.count,
+			html:{style:"cursor:pointer;"},
                         handlers: handlers,
                         text: field.getLabel() + ":" + word.word,
                     };
@@ -16900,22 +16971,6 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
 
             this.writeHtml(ID_DISPLAY_CONTENTS, "");
-            var options = {
-                autoResize: true,
-            };
-
-
-            var colors = this.getColorTable(true);
-            if (colors) {
-                options.colors = colors,
-                options.classPattern = null;
-                options.fontSize = {
-                    from: 0.1,
-                    to: 0.02
-                };
-            }
-            if (this.getProperty("shape"))
-                options.shape = this.getProperty("shape");
             if (this.getProperty("combined", false)) {
                 this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId("words"), "style", "height:300px;"], ""));
                 $("#" + this.getDomId("words")).jQCloud(words, options);
@@ -16928,8 +16983,10 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
         },
         showRows: function(records, field, word) {
+	    if(!field)
+		field = this.getFieldById(null, this.getProperty("termField"));
             var tokenize = this.getProperty("tokenize", false);
-            if (word.startsWith(field.getLabel() + ":")) {
+            if (fields && word.startsWith(field.getLabel() + ":")) {
                 word = word.replace(field.getLabel() + ":", "");
             }
             var tableFields;
@@ -16957,7 +17014,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             var re = new RegExp("(\\b" + word + "\\b)", 'i');
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
-                var value = "" + row[field.getIndex()];
+                var value =  row[field.getIndex()];
                 if (tokenize) {
                     if (!value.match(re)) {
                         continue;
@@ -16973,9 +17030,13 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     var f = fields[col];
                     if (tableFields && !tableFields[f.getId()]) continue;
                     var v = row[f.getIndex()];
-                    if (tokenize) {
-                        v = v.replace(re, "<span style=background:yellow;>$1</span>");
-                    }
+		    if(v.getTime) {
+			v = {v:v,f:this.formatDate(v)};
+		    } else {
+			if (tokenize) {
+                            v = v.replace(re, "<span style=background:yellow;>$1</span>");
+			}
+		    }
                     if (showRecords) {
                         html += HtmlUtil.b(f.getLabel()) + ": " + v + "</br>";
                     } else {
@@ -16992,7 +17053,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             } else {
                 var prefix = "";
                 if (!tokenize) {
-                    prefix = field.getLabel() + "=" + word
+                    prefix = (field?field.getLabel():"Word") + "=" + word
                 }
                 this.writeHtml(ID_DISPLAY_BOTTOM, prefix + HtmlUtils.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
                 var dataTable = google.visualization.arrayToDataTable(data);
@@ -24139,6 +24200,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		w = seenCnt;
 	    }
 
+
 	    let dfltArgs = this.getDefaultGridByArgs();
 	    if(this.reloadHeatmap) {
 		this.reloadHeatmap = false;
@@ -24158,6 +24220,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //Skew the height so we get round circles?
 	    //	    let h = 1.25*Math.round(w/ratio);
 	    let h = Math.floor(w/ratio);
+//	    console.log("dim:" + w +" " + h);
 //	    console.log("dim:" + w +" " +h + " c:" + dfltArgs.cellSize);
 
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
