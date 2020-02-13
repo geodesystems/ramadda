@@ -212,8 +212,22 @@ public class OpendapApiHandler extends RepositoryManager implements RequestHandl
      *
      * @throws Exception _more_
      */
-    public Result processJsonRequest(Request request) throws Exception {
+    public Result processPointJsonRequest(Request request) throws Exception {
         return getGridPointOutputHandler().processJsonRequest(request);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processGridJsonRequest(Request request) throws Exception {
+        return getDataOutputHandler().processGridJsonRequest(request);
     }
 
 }

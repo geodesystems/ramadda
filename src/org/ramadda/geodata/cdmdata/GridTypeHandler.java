@@ -23,6 +23,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -83,24 +84,46 @@ public class GridTypeHandler extends TypeHandler {
      */
     @Override
     public String getProperty(Entry entry, String name, String dflt) {
-	if(!name.equals("chart.wiki")) {
-	    return super.getProperty(entry, name, dflt);
-	}
-	String s = "\n+row\n+col-6\n" +
-	    ":center &nbsp;\n"+
-	    "{{display height=200  width=100% type=linechart " +
-	    " showMenu=false  showTitle=false}} " +
-	    "<br>" +
-	    "{{display height=200  width=100% type=linechart accept.handleEventMapClick=false " +
-	    " showMenu=false  showTitle=false}}" +
-	    "\n-col-6\n+col-6\n"+
-	    ":center Click on map to select new location\n" +
-	    "{{display  height=400   width=100% type=map " +
-	    " recordHighlightFillColor=red recordHighlightRadius=8 " +
-	    " showMenu=false  showTitle=false}}\n" +
-	    "-col-6\n-row\n";
-	return s;
+        if ( !name.equals("chart.wiki")) {
+            return super.getProperty(entry, name, dflt);
+        }
+        String s =
+            "\n+row\n+col-6\n" + ":center &nbsp;\n"
+            + "{{display height=200  width=100% type=linechart "
+            + " showMenu=false  showTitle=false}} " + "<br>"
+            + "{{display height=200  width=100% type=linechart accept.handleEventMapClick=false "
+            + " showMenu=false  showTitle=false}}" + "\n-col-6\n+col-6\n"
+            + ":center Click on map to select new location\n"
+            + "{{display  height=400   width=100% type=map "
+            + " recordHighlightFillColor=red recordHighlightRadius=8 "
+            + " showMenu=false  showTitle=false}}\n" + "-col-6\n-row\n";
+
+        return s;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param type _more_
+     * @param target _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToSelectMenu(Request request, Entry entry,
+                                StringBuilder sb, String type, String target)
+            throws Exception {
+
+        CdmDataOutputHandler cdoh =
+            (CdmDataOutputHandler) getRepository().getOutputHandler(
+                CdmDataOutputHandler.class);
+        cdoh.addToSelectMenu(request, entry, sb, type, target);
+    }
+
+
 
 
     /**
@@ -119,7 +142,24 @@ public class GridTypeHandler extends TypeHandler {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             StringBuilder jsonbuf = new StringBuilder();
-            jsonbuf.append(getRepository().getUrlBase() + "/grid/json?"
+
+
+            if (Misc.equals(props.get("forGrid"), "true")) {
+                jsonbuf.append(getRepository().getUrlBase()
+                               + "/grid/gridjson?"
+                               + HtmlUtils.args(new String[] {
+                    ARG_ENTRYID, entry.getId(), "max",
+                    Utils.getProperty(props, "max", "200000"), "gridStride",
+                    Utils.getProperty(props, "gridStride", "1"), "gridBounds",
+                    Utils.getProperty(props, "gridBounds", ""), "gridLevel",
+                    Utils.getProperty(props, "gridLevel", "1"), "gridField",
+                    Utils.getProperty(props, "gridField", "")
+                }, false));
+
+                return jsonbuf.toString();
+            }
+
+            jsonbuf.append(getRepository().getUrlBase() + "/grid/pointjson?"
                            + HtmlUtils.args(new String[] { ARG_ENTRYID,
                     entry.getId() }, false));
             // get the lat/lon from the request if there

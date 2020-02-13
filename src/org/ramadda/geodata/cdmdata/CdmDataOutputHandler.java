@@ -42,6 +42,7 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 
 import org.ramadda.util.KmlUtil;
 import org.ramadda.util.SelectionRectangle;
@@ -57,19 +58,23 @@ import ucar.ma2.Range;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 
+import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.NetcdfFileWriter.Version;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridCoordSystem;
+
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.grid.CFGridWriter2;
+import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -84,6 +89,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Counter;
@@ -148,6 +154,14 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         new OutputType("File Metadata", "data.cdl", OutputType.TYPE_OTHER,
                        OutputType.SUFFIX_NONE,
                        "/cdmdata/page_white_text.png", GROUP_DATA);
+
+
+    /** _more_          */
+    public static final OutputType OUTPUT_JSON = new OutputType("JSON",
+                                                     "data.json",
+                                                     OutputType.TYPE_OTHER,
+                                                     OutputType.SUFFIX_NONE,
+                                                     ICON_CSV, GROUP_DATA);
 
     /** WCS Output Type */
     public static final OutputType OUTPUT_WCS = new OutputType("WCS",
@@ -244,6 +258,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         getCdmManager();
         addType(OUTPUT_OPENDAP);
         addType(OUTPUT_CDL);
+        addType(OUTPUT_JSON);
         addType(OUTPUT_WCS);
         addType(OUTPUT_TRAJECTORY_MAP);
         addType(OUTPUT_POINT_MAP);
@@ -348,6 +363,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             addOutputLink(request, entry, links, OUTPUT_GRIDSUBSET_FORM);
             addOutputLink(request, entry, links,
                           GridPointOutputHandler.OUTPUT_GRIDASPOINT_FORM);
+            addOutputLink(request, entry, links, OUTPUT_JSON);
         } else if (getCdmManager().canLoadAsTrajectory(entry)) {
             addOutputLink(request, entry, links, OUTPUT_TRAJECTORY_MAP);
         } else if (getCdmManager().canLoadAsPoint(entry)) {
@@ -360,9 +376,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         Object oldOutput = request.getOutput();
         request.put(ARG_OUTPUT, OUTPUT_OPENDAP);
         String opendapUrl = getOpendapUrl(entry);
-        links.add(new Link(opendapUrl,
-                           ICON_OPENDAP,
-                           "OPeNDAP", OUTPUT_OPENDAP));
+        links.add(new Link(opendapUrl, ICON_OPENDAP, "OPeNDAP",
+                           OUTPUT_OPENDAP));
         request.put(ARG_OUTPUT, oldOutput);
 
 
@@ -1025,6 +1040,56 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             File f = getRepository().getStorageManager().getTmpFile(request,
                          "subset" + ncVersion.getSuffix());
             System.err.println(f.getPath());
+
+            List grids = gds.getGrids();
+            for (int i = 0; i < grids.size(); i++) {
+                System.err.println(grids.get(i));
+            }
+            GeoGrid grid = (GeoGrid) gds.findGridByName("Pressure_surface");
+            //      System.err.println(grid.getTimes());
+            grid = grid.subset(new Range(0, 0), null, null, 1, 2, 2);
+
+            GridCoordSystem gcs   = grid.getCoordinateSystem();
+            CoordinateAxis  xaxis = gcs.getXHorizAxis();
+            CoordinateAxis  yaxis = gcs.getYHorizAxis();
+            int[] idx1 = gcs.findXYindexFromLatLon(yaxis.getMinValue(),
+                             xaxis.getMinValue(), null);
+            int[] idx2 = gcs.findXYindexFromLatLon(yaxis.getMaxValue(),
+                             xaxis.getMaxValue(), null);
+            List<LatLonPoint> points = new ArrayList<LatLonPoint>();
+            int               lats   = 0,
+                              lons   = 0;
+            for (Dimension d : gcs.getDomain()) {
+                if (d.getShortName().equals("lat")) {
+                    lats = d.getLength();
+                } else if (d.getShortName().equals("lon")) {
+                    lons = d.getLength();
+                }
+            }
+            System.err.println("ll:" + lats + " " + lons);
+            for (int lat = 0; lat < lats; lat++) {
+                for (int lon = 0; lon < lons; lon++) {
+                    points.add(gcs.getLatLon(lon, lat));
+                }
+            }
+            Array a = grid.readYXData(0, 0);
+            System.err.println("points:" + points.size() + " a:"
+                               + a.getSize());
+            FileOutputStream fos    = new FileOutputStream(f);
+            PrintWriter      writer = new PrintWriter(fos);
+
+            writer.println("#fields="
+                           + "Pressure_surface,latitude,longitude");
+            for (int i = 0; i < a.getSize(); i++) {
+                LatLonPoint llp = points.get(i);
+                float       v   = a.getFloat(i);
+                writer.println(v + "," + llp.getLatitude() + ","
+                               + llp.getLongitude());
+            }
+            writer.close();
+
+
+            /*
             NetcdfFileWriter ncFileWriter = null;
             try {
                 ncFileWriter = NetcdfFileWriter.createNew(ncVersion,
@@ -1049,6 +1114,9 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             // boolean addLatLon,
             // NetcdfFileWriter writer
 
+
+
+
             CFGridWriter2.writeFile(gds, varNames, llr, null, hStride,
                                     zRange, ((dates[0] == null)
                                              ? null
@@ -1056,6 +1124,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                              dates[1])), timeStride,
                                                  includeLatLon, ncFileWriter);
 
+            */
             /*
             writer.makeFile(f.toString(), gds, varNames, llr, hStride,
                             zStride,
@@ -1096,6 +1165,239 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
 
 
     }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processGridJsonRequest(Request request) throws Exception {
+        String prefix = getRepository().getUrlBase() + "/grid/json";
+        Entry  entry  = getCdmManager().findEntryFromPath(request, prefix);
+        request.setCORSHeaderOnResponse();
+
+        return outputGridJson(request, entry);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result outputGridJson(Request request, Entry entry)
+            throws Exception {
+
+        String       path     = getPath(request, entry);
+        List<String> varNames = new ArrayList<String>();
+        Hashtable    args     = request.getArgs();
+        for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
+            String arg = (String) keys.nextElement();
+            if (arg.startsWith(VAR_PREFIX) && request.get(arg, false)) {
+                varNames.add(arg.substring(VAR_PREFIX.length()));
+            }
+        }
+        for (String v :
+                (List<String>) request.get(ARG_VARIABLE,
+                                           new ArrayList<String>())) {
+            varNames.addAll(StringUtil.split(v, ",", true, true));
+        }
+        GridDataset gds = getCdmManager().getGridDataset(entry, path);
+        // initialize the bounds and date range to the defaults
+        LatLonRect        llr                 = gds.getBoundingBox();
+        CalendarDateRange cdr                 = gds.getCalendarDateRange();
+        boolean           anySpatialDifferent = false;
+        boolean           haveAllSpatialArgs  = true;
+        //if (varNames.size() == 0 || varNames.get(0).equalsIgnoreCase("all")) {
+        if ((varNames.size() == 1)
+                && varNames.get(0).equalsIgnoreCase("all")) {
+            List<VariableSimpleIF> variables = gds.getDataVariables();
+            varNames = new ArrayList<String>();
+            for (VariableSimpleIF var : variables) {
+                varNames.add(var.getShortName());
+            }
+        }
+
+        for (String spatialArg : SPATIALARGS) {
+            if ( !Misc.equals(request.getString(spatialArg, ""),
+                              request.getString(spatialArg + ".original",
+                                  ""))) {
+                anySpatialDifferent = true;
+
+                break;
+            }
+        }
+        for (String spatialArg : SPATIALARGS) {
+            if ( !request.defined(spatialArg)) {
+                haveAllSpatialArgs = false;
+
+                break;
+            }
+        }
+
+        SelectionRectangle bbox = TypeHandler.getSelectionBounds(request);
+
+        if (bbox.allDefined()) {
+            llr = new LatLonRect(new LatLonPointImpl(bbox.getNorth(),
+                    bbox.getWest()), new LatLonPointImpl(bbox.getSouth(),
+                        bbox.getEast()));
+        } else if (haveAllSpatialArgs && anySpatialDifferent) {
+            llr = new LatLonRect(
+                new LatLonPointImpl(
+                    request.getLatOrLonValue(ARG_AREA_NORTH, 90.0), request
+                        .getLatOrLonValue(
+                            ARG_AREA_WEST, -180.0)), new LatLonPointImpl(
+                                request.getLatOrLonValue(
+                                    ARG_AREA_SOUTH, 0.0), request
+                                        .getLatOrLonValue(
+                                            ARG_AREA_EAST, 180.0)));
+            //                System.err.println("llr:" + llr);
+        }
+        int   hStride = request.get(ARG_HSTRIDE, 1);
+        Range zRange  = null;
+        if (request.defined(ARG_LEVEL)) {
+            int index = request.get(ARG_LEVEL, -1);
+            if (index >= 0) {
+                zRange = new Range(index, index);
+            }
+        }
+        boolean            includeLatLon = request.get(ARG_ADDLATLON, false);
+        int                timeStride    = 1;
+        List<CalendarDate> allDates      = getGridDates(gds);
+        CalendarDate[]     dates         = new CalendarDate[2];
+        if (cdr != null) {
+            dates[0] = cdr.getStart();
+            dates[1] = cdr.getEnd();
+        }
+        Calendar cal       = null;
+        String   calString = request.getString(ARG_CALENDAR, null);
+        if ( !allDates.isEmpty()) {  // have some dates
+            if (calString == null) {
+                calString = allDates.get(0).getCalendar().toString();
+            }
+            // have to check if defined, because no selection is ""
+            if (request.defined(ARG_FROMDATE)) {
+                String fromDateString = request.getString(ARG_FROMDATE,
+                                            formatDate(request,
+                                                allDates.get(0)));
+                dates[0] = CalendarDate.parseISOformat(calString,
+                        fromDateString);
+            } else {
+                dates[0] = allDates.get(0);
+            }
+            if (request.defined(ARG_TODATE)) {
+                String toDateString = request.getString(ARG_TODATE,
+                                          formatDate(request,
+                                              allDates.get(allDates.size()
+                                                  - 1)));
+                dates[1] = CalendarDate.parseISOformat(calString,
+                        toDateString);
+            } else {
+                dates[1] = allDates.get(allDates.size() - 1);
+            }
+        }
+        //have to have both dates
+        if ((dates[0] != null) && (dates[1] == null)) {
+            dates[0] = null;
+        }
+        if ((dates[1] != null) && (dates[0] == null)) {
+            dates[1] = null;
+        }
+        File f = getRepository().getStorageManager().getTmpFile(request,
+                     "subset.json");
+
+        String     field      = request.getString("gridField", "");
+        GeoGrid    grid       = (GeoGrid) gds.findGridByName(field);
+        int        stride     = request.get("gridStride", 1);
+        int        level      = request.get("gridLevel", 1);
+        int        max        = request.get("max", 200000);
+
+        LatLonRect bounds     = null;
+        String     gridBounds = request.getString("gridBounds", null);
+        if (gridBounds != null) {
+            List<String> toks = StringUtil.split(gridBounds, ",");
+            if (toks.size() == 4) {
+                bounds = new LatLonRect(
+                    new LatLonPointImpl(
+                        Double.parseDouble(toks.get(0)), Double.parseDouble(
+                            toks.get(1))), new LatLonPointImpl(
+                                Double.parseDouble(
+                                    toks.get(2)), Double.parseDouble(
+                                    toks.get(3))));
+            }
+        }
+        grid = grid.subset(new Range(0, 0), null, bounds, 1, stride, stride);
+
+        GridCoordSystem gcs   = grid.getCoordinateSystem();
+        CoordinateAxis  xaxis = gcs.getXHorizAxis();
+        CoordinateAxis  yaxis = gcs.getYHorizAxis();
+        int[] idx1 = gcs.findXYindexFromLatLon(yaxis.getMinValue(),
+                         xaxis.getMinValue(), null);
+        int[] idx2 = gcs.findXYindexFromLatLon(yaxis.getMaxValue(),
+                         xaxis.getMaxValue(), null);
+        List<LatLonPoint> points = new ArrayList<LatLonPoint>();
+        int               lats   = (int) yaxis.getSize();
+        int               lons   = (int) xaxis.getSize();
+        for (int lat = 0; lat < lats; lat++) {
+            for (int lon = 0; lon < lons; lon++) {
+                points.add(gcs.getLatLon(lon, lat));
+            }
+        }
+        Array            a      = grid.readYXData(0, 0);
+        FileOutputStream fos    = new FileOutputStream(f);
+        PrintWriter      writer = new PrintWriter(fos);
+        writer.println("{\"name\":" + Json.quote(entry.getName()) + ",");
+        writer.println("\"fields\":");
+        List<String> fields = new ArrayList<String>();
+        fields.add(Json.map("id", Json.quote(field), "label",
+                            Json.quote(field), "index", "0", "type",
+                            Json.quote("double"), "chartable", "true",
+                            "unit", Json.quote(grid.getUnitsString())));
+        fields.add(Json.map("id", Json.quote("latitude"), "label",
+                            Json.quote("Latitude"), "index", "1", "type",
+                            Json.quote("double")));
+        fields.add(Json.map("id", Json.quote("longitude"), "label",
+                            Json.quote("Longitude"), "index", "2", "type",
+                            Json.quote("double")));
+        writer.println(Json.list(fields));
+        writer.println(",\"data\":[");
+        for (int i = 0; i < a.getSize(); i++) {
+            if (i > max) {
+                break;
+            }
+            LatLonPoint llp = points.get(i);
+            float       v   = a.getFloat(i);
+            if (i > 0) {
+                writer.println(",");
+            }
+            writer.println(Json.map("values", Json.list("" + (Double.isNaN(v)
+                    ? null
+                    : v), "" + llp.getLatitude(), "" + llp.getLongitude())));
+
+        }
+        writer.println("]}");
+        writer.close();
+        getCdmManager().returnGridDataset(path, gds);
+        Result result = new Result(entry.getName() + ".json",
+                                   getStorageManager().getFileInputStream(f),
+                                   "application/json");
+        result.setReturnFilename(entry.getName() + ".json");
+
+        return result;
+
+    }
+
+
+
 
     /**
      * Make a time widget for grid subsetting
@@ -1857,6 +2159,9 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         if (outputType.equals(OUTPUT_GRIDSUBSET_FORM)) {
             return outputGridSubsetForm(request, entry);
         }
+        if (outputType.equals(OUTPUT_JSON)) {
+            return outputGridJson(request, entry);
+        }
 
         if (outputType.equals(OUTPUT_GRIDSUBSET)) {
             return outputGridSubset(request, entry);
@@ -1930,6 +2235,44 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         return (OpendapApiHandler) getRepository().getApiManager()
             .getApiHandler(OpendapApiHandler.API_ID);
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param type _more_
+     * @param target _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToSelectMenu(Request request, Entry entry,
+                                StringBuilder sb, String type, String target)
+            throws Exception {
+
+        String                 path      = getPath(request, entry);
+        GridDataset gds = getCdmManager().getGridDataset(entry, path);
+        List<VariableSimpleIF> variables = gds.getDataVariables();
+        for (VariableSimpleIF var : variables) {
+            sb.append("&nbsp;");
+            sb.append(
+                HtmlUtils.mouseClickHref(
+                    HtmlUtils.call(
+                        "selectClick",
+                        HtmlUtils.comma(
+                            HtmlUtils.squote(target),
+                            HtmlUtils.squote(entry.getId()),
+                            HtmlUtils.squote(var.getShortName()),
+                            HtmlUtils.squote(type))), var.getDescription()));
+            sb.append("<br>");
+        }
+    }
+
+
+
 
 
 
@@ -2071,6 +2414,9 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         }
 
     }
+
+
+
 
 
 }
