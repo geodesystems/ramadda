@@ -4060,7 +4060,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
 
-	    let header2=HtmlUtils.div(["style","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
+	    let header2=HtmlUtils.span(["xstyle","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
 	    header2 +=  this.getHeader2();
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
@@ -4424,10 +4424,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
 		var style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
-		header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
+		let filterBar = searchBar+bottom;
+		if(filterBar!="") {
+		    console.log("F:" + filterBar);
+		    header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
+		}
 	    }
 
-	    header2+=HtmlUtils.div(["style","display:inline-block;","id",this.getDomId(ID_HEADER2_SUFFIX)]);
+	    header2+=HtmlUtils.span(["xstyle","display:inline-block;","id",this.getDomId(ID_HEADER2_SUFFIX)]);
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;
@@ -7626,7 +7630,6 @@ function makePointData(json, derived, source) {
 
     var pointRecords = [];
     var rows = [];
-
     for (var i = 0; i < json.data.length; i++) {
         var tuple = json.data[i];
         var values = tuple.values;
@@ -8076,10 +8079,10 @@ var A = {
 var RecordUtil = {
     expandBounds: function(bounds, perc) {
 	return {
-	    east: bounds.east +(bounds.east-bounds.west)*perc,
-	    west: bounds.west -(bounds.east-bounds.west)*perc,
-	    north: bounds.north +(bounds.north-bounds.south)*perc,
-	    south: bounds.south -(bounds.north-bounds.south)*perc,
+	    east: Math.min(180,bounds.east +(bounds.east-bounds.west)*perc),
+	    west: Math.max(-180, bounds.west -(bounds.east-bounds.west)*perc),
+	    north: Math.min(90,bounds.north +(bounds.north-bounds.south)*perc),
+	    south: Math.max(-90,bounds.south -(bounds.north-bounds.south)*perc),
 	}
     },
     convertBounds: function(bounds) {
@@ -8262,7 +8265,7 @@ var RecordUtil = {
 		    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
 		else
 		    ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-//		ctx.strokeStyle = "black";
+		ctx.strokeStyle = "black";
 //		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
 //		ctx.font="8px arial"
 //		ctx.fillStyle = "black";
@@ -8463,6 +8466,7 @@ var RecordUtil = {
 	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
 	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
 	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
+//	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
 		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
 		var dy = n2.lat-pt.lat;
@@ -8471,7 +8475,7 @@ var RecordUtil = {
 	    };
 	} else {
 	    scaleY= (lat,lon)=> {
-		return Math.floor(opts.h*(lon-args.bounds.west)/earthHeight);		
+		return Math.floor(opts.h*(args.bounds.north-lat)/earthHeight);		
 	    }
 	}
 
@@ -8504,7 +8508,8 @@ var RecordUtil = {
 	    opts.cellSizeY = +opts.cellSizeY;
 
 
-	    if(opts.filter) {
+
+	    if(opts.filter && opts.filter!="") {
 		let copy = this.cloneGrid(grid,v=>v.v);
 		let filtered = opts.filter=="average"?this.averageGrid(copy):opts.filter=="gauss"?this.gaussGrid(copy):null;
 		for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
@@ -8521,7 +8526,6 @@ var RecordUtil = {
 		opts.colorBy.setRange(mm.min, mm.max);
 		opts.colorBy.index=0;
 	    }
-
 
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
@@ -24124,6 +24128,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.heatmapLayer)
 		this.map.removeLayer(this.heatmapLayer);
 	    let w = Math.round(this.getProperty("gridWidth",800));
+
+	    if(this.getProperty("heatmapSetWidthFromData")) {
+		let seen = {};
+		let seenCnt = 0;
+		records.every(r=>{
+		    if(!seen[r.getLongitude()]) {seenCnt++;seen[r.getLongitude()] = true;}
+		    return true;
+		});
+		w = seenCnt;
+	    }
+
 	    let dfltArgs = this.getDefaultGridByArgs();
 	    if(this.reloadHeatmap) {
 		this.reloadHeatmap = false;
@@ -24135,19 +24150,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let size = 1;
 		while(w/(bounds.east-bounds.west)/size>1000)size++;
 		dfltArgs.cellSizeX = dfltArgs.cellSizeY = dfltArgs.cellSize = size;
-		console.log("s:" + size);
 	    } else if(String(dfltArgs.cellSize).endsWith("%")) {
 		dfltArgs.cellSize =dfltArgs.cellSizeX =  dfltArgs.cellSizeY = Math.floor(parseFloat(dfltArgs.cellSize.substring(0,dfltArgs.cellSize.length-1))/100*w);
 	    }
 
-	    
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    //Skew the height so we get round circles?
 	    //	    let h = 1.25*Math.round(w/ratio);
 	    let h = Math.floor(w/ratio);
+//	    console.log("dim:" + w +" " +h + " c:" + dfltArgs.cellSize);
+
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
-//	    console.log(JSON.stringify(bounds));
 	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.heatmapLayer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		isBaseLayer: false
@@ -24173,6 +24187,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addPoints: function(records, fields, points,bounds) {
             let colorBy = this.getColorByInfo(records);
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
+
 		this.createHeatmap(records, bounds, colorBy);
 		if(!this.getProperty("heatmapIncludeData"))
 		    return;
@@ -33814,15 +33829,17 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    RecordUtil.getPoints(records, bounds);
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let style = this.getProperty("padding")?"padding:" +this.getProperty("padding")+"px;" : "";
-	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
+//	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
+	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"xstyle","width:100%;height:100%;"+style]);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    let pad = 10;
 	    let w = Math.round(this.jq("inner").width());
 	    let h = Math.round(w/ratio);
             var divid = this.getProperty(PROP_DIVID);
-	    $("#"+ divid).css("height",h+pad);
+//	    $("#"+ divid).css("height",h+pad);
 	    html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:" + w +";height:"+ h+"px;" + style]);
-	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
+	    html = HtmlUtils.div(["id",this.getDomId("inner")]);
+//	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
 	    bounds = RecordUtil.expandBounds(bounds,0.1);
@@ -33831,7 +33848,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 
 	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.jq("inner").html(HtmlUtils.image(img,["title","","id",this.getDomId("image")]));
-	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","z-index:2000;display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:5px;"]));
+	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","z-index:2000;display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:0px;"]));
 	    let _this = this;
 	    if(this.getProperty("showTooltips",true)) {
 		this.jq("image").mouseout(function( event ) {

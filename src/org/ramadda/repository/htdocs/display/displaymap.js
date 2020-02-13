@@ -1336,6 +1336,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.heatmapLayer)
 		this.map.removeLayer(this.heatmapLayer);
 	    let w = Math.round(this.getProperty("gridWidth",800));
+
+	    if(this.getProperty("heatmapSetWidthFromData")) {
+		let seen = {};
+		let seenCnt = 0;
+		records.every(r=>{
+		    if(!seen[r.getLongitude()]) {seenCnt++;seen[r.getLongitude()] = true;}
+		    return true;
+		});
+		w = seenCnt;
+	    }
+
 	    let dfltArgs = this.getDefaultGridByArgs();
 	    if(this.reloadHeatmap) {
 		this.reloadHeatmap = false;
@@ -1347,19 +1358,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let size = 1;
 		while(w/(bounds.east-bounds.west)/size>1000)size++;
 		dfltArgs.cellSizeX = dfltArgs.cellSizeY = dfltArgs.cellSize = size;
-		console.log("s:" + size);
 	    } else if(String(dfltArgs.cellSize).endsWith("%")) {
 		dfltArgs.cellSize =dfltArgs.cellSizeX =  dfltArgs.cellSizeY = Math.floor(parseFloat(dfltArgs.cellSize.substring(0,dfltArgs.cellSize.length-1))/100*w);
 	    }
 
-	    
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    //Skew the height so we get round circles?
 	    //	    let h = 1.25*Math.round(w/ratio);
 	    let h = Math.floor(w/ratio);
+//	    console.log("dim:" + w +" " +h + " c:" + dfltArgs.cellSize);
+
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
-//	    console.log(JSON.stringify(bounds));
 	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.heatmapLayer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		isBaseLayer: false
@@ -1385,6 +1395,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addPoints: function(records, fields, points,bounds) {
             let colorBy = this.getColorByInfo(records);
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
+
 		this.createHeatmap(records, bounds, colorBy);
 		if(!this.getProperty("heatmapIncludeData"))
 		    return;

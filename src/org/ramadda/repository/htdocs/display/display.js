@@ -3910,7 +3910,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
 
-	    let header2=HtmlUtils.div(["style","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
+	    let header2=HtmlUtils.span(["xstyle","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
 	    header2 +=  this.getHeader2();
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
@@ -4274,10 +4274,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
 		var style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
-		header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
+		let filterBar = searchBar+bottom;
+		if(filterBar!="") {
+		    console.log("F:" + filterBar);
+		    header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
+		}
 	    }
 
-	    header2+=HtmlUtils.div(["style","display:inline-block;","id",this.getDomId(ID_HEADER2_SUFFIX)]);
+	    header2+=HtmlUtils.span(["xstyle","display:inline-block;","id",this.getDomId(ID_HEADER2_SUFFIX)]);
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;

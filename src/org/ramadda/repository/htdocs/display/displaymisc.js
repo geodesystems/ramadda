@@ -2977,15 +2977,17 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    RecordUtil.getPoints(records, bounds);
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let style = this.getProperty("padding")?"padding:" +this.getProperty("padding")+"px;" : "";
-	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
+//	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
+	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"xstyle","width:100%;height:100%;"+style]);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    let pad = 10;
 	    let w = Math.round(this.jq("inner").width());
 	    let h = Math.round(w/ratio);
             var divid = this.getProperty(PROP_DIVID);
-	    $("#"+ divid).css("height",h+pad);
+//	    $("#"+ divid).css("height",h+pad);
 	    html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:" + w +";height:"+ h+"px;" + style]);
-	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
+	    html = HtmlUtils.div(["id",this.getDomId("inner")]);
+//	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
 	    bounds = RecordUtil.expandBounds(bounds,0.1);
@@ -2994,7 +2996,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 
 	    let img = RecordUtil.gridData(this.getId(),records,args);
 	    this.jq("inner").html(HtmlUtils.image(img,["title","","id",this.getDomId("image")]));
-	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","z-index:2000;display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:5px;"]));
+	    this.jq("inner").append(HtmlUtils.div(["id",this.getDomId("tooltip"),"style","z-index:2000;display:none;position:absolute;background:#fff;border:1px solid #ccc;padding:0px;"]));
 	    let _this = this;
 	    if(this.getProperty("showTooltips",true)) {
 		this.jq("image").mouseout(function( event ) {

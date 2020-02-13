@@ -758,7 +758,6 @@ function makePointData(json, derived, source) {
 
     var pointRecords = [];
     var rows = [];
-
     for (var i = 0; i < json.data.length; i++) {
         var tuple = json.data[i];
         var values = tuple.values;
@@ -1208,10 +1207,10 @@ var A = {
 var RecordUtil = {
     expandBounds: function(bounds, perc) {
 	return {
-	    east: bounds.east +(bounds.east-bounds.west)*perc,
-	    west: bounds.west -(bounds.east-bounds.west)*perc,
-	    north: bounds.north +(bounds.north-bounds.south)*perc,
-	    south: bounds.south -(bounds.north-bounds.south)*perc,
+	    east: Math.min(180,bounds.east +(bounds.east-bounds.west)*perc),
+	    west: Math.max(-180, bounds.west -(bounds.east-bounds.west)*perc),
+	    north: Math.min(90,bounds.north +(bounds.north-bounds.south)*perc),
+	    south: Math.max(-90,bounds.south -(bounds.north-bounds.south)*perc),
 	}
     },
     convertBounds: function(bounds) {
@@ -1394,7 +1393,7 @@ var RecordUtil = {
 		    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
 		else
 		    ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-//		ctx.strokeStyle = "black";
+		ctx.strokeStyle = "black";
 //		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
 //		ctx.font="8px arial"
 //		ctx.fillStyle = "black";
@@ -1595,6 +1594,7 @@ var RecordUtil = {
 	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
 	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
 	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
+//	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
 		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
 		var dy = n2.lat-pt.lat;
@@ -1603,7 +1603,7 @@ var RecordUtil = {
 	    };
 	} else {
 	    scaleY= (lat,lon)=> {
-		return Math.floor(opts.h*(lon-args.bounds.west)/earthHeight);		
+		return Math.floor(opts.h*(args.bounds.north-lat)/earthHeight);		
 	    }
 	}
 
@@ -1636,7 +1636,8 @@ var RecordUtil = {
 	    opts.cellSizeY = +opts.cellSizeY;
 
 
-	    if(opts.filter) {
+
+	    if(opts.filter && opts.filter!="") {
 		let copy = this.cloneGrid(grid,v=>v.v);
 		let filtered = opts.filter=="average"?this.averageGrid(copy):opts.filter=="gauss"?this.gaussGrid(copy):null;
 		for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
@@ -1653,7 +1654,6 @@ var RecordUtil = {
 		opts.colorBy.setRange(mm.min, mm.max);
 		opts.colorBy.index=0;
 	    }
-
 
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
