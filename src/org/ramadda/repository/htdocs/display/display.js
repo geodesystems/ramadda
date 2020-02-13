@@ -103,6 +103,7 @@ async function ramaddaDisplaySetSelectedEntry(entryId) {
 
 
 function ramaddaDisplayCheckLayout() {
+    if(!window.globalDisplaysList) return;
     for (var i = 0; i < window.globalDisplaysList.length; i++) {
         if (window.globalDisplaysList[i].checkLayout) {
             window.globalDisplaysList[i].checkLayout();
@@ -1485,6 +1486,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(msg=="") return "";
             return HtmlUtils.div(["text-align", "center"], this.getMessage("&nbsp;" + msg));
         },
+	reloadData: function() {
+	    this.startProgress();
+	    this.haveCalledUpdateUI = false;
+	    this.data.loadData(this,true);
+	},
         getMessage: function(msg) {
             return HtmlUtils.div([ATTR_CLASS, "display-message"], msg);
         },
@@ -3898,6 +3904,42 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	initHeader2:function() {
 	},
+	getRequestMacros: function() {
+	    let macros =[];
+	    this.getProperty("macros","").split(",").every(macro=>{
+		if(macro=="") return true;
+		macros.push({
+		    display:this,
+		    name: macro,
+		    type:this.getProperty("macro." +macro+".type","string"),
+		    dflt:this.getProperty("macro." +macro+".default",""),
+		    label:this.getProperty("macro." +macro+".label",Utils.makeLabel(macro)),
+		    enums:this.getProperty("macro." +macro+".values","").split(","),
+		    getWidget: function() {
+			let visible = this.display.getProperty("macro." +this.name +".visible",
+							       this.display.getProperty("macros.visible",true));
+			let style = visible?"":"display:none;";
+			return (visible?this.label+": ":"")+  HtmlUtils.input("",this.dflt,["style", style, "id",this.display.getDomId(this.getId()),"size","10","class","display-filter-input"]);
+		    },
+		    getId: function() {
+			return "macro_" + this.name;
+		    },
+		    getValue: function() {
+			let widget = this.display.jq(this.getId());
+			let value = this.dflt;
+			if(widget.length!=0) value =  widget.val();
+			this.display.setProperty(this.name+".default",value);
+			return value;
+		    },
+		    apply: function(url) {
+			url = url +"&" + HtmlUtils.urlArg("macro_" + this.name,this.getValue());
+			return  url;
+		    }
+		});
+		return true;
+	    });
+	    return macros;
+	},
         checkSearchBar: function() {
             let _this = this;
 
@@ -3909,8 +3951,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
 
+    
+
 	    let header2=HtmlUtils.span(["xstyle","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
 	    header2 +=  this.getHeader2();
+	    let macros = this.getRequestMacros();
+	    macros.every(macro=>{
+		header2+=macro.getWidget();
+		return true;
+	    });
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
@@ -4275,7 +4324,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
 		let filterBar = searchBar+bottom;
 		if(filterBar!="") {
-		    console.log("F:" + filterBar);
 		    header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
 		}
 	    }
@@ -4284,6 +4332,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;
+	    macros.every(macro=>{
+		this.jq(macro.getId()).keyup(function(e) {
+		    var keyCode = e.keyCode || e.which;
+		    if (keyCode == 13) {
+			_this.reloadData();
+		    }
+		});
+		return true;
+	    });
 
  	    let inputFunc = function(input, input2, value){
                 var id = input.attr("id");
@@ -5125,9 +5182,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_DISPLAY_PROGRESS).css("display","none");
 	},
 	startProgress: function() {
-	    this.jq(ID_DISPLAY_PROGRESS).css("display","inline-block");
+	    if(this.jq(ID_DISPLAY_PROGRESS).length>0)
+		this.jq(ID_DISPLAY_PROGRESS).css("display","inline-block");
+	    else
+		this.setContents(this.getLoadingMessage());
 	},
         pointDataLoadFailed: function(data) {
+
 	    this.clearProgress();
             this.inError = true;
             errorMessage = this.getProperty("errorMessage", null);
@@ -5166,6 +5227,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
+
+
             if (!reload) {
                 this.addData(pointData);
                 this.checkSearchBar();
@@ -5176,7 +5239,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jsonUrl = null;
             }
             if (!this.getDisplayReady()) {
-		//		console.log("pointDataLoaded: display not ready");
+		console.log("pointDataLoaded: display not ready");
                 return;
             }
 
@@ -5187,6 +5250,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		});
 	    }
+    
+	    this.haveCalledUpdateUI = false;
             this.updateUI(reload);
             if (!reload) {
                 this.lastPointData = pointData;

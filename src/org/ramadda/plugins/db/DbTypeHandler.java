@@ -4429,7 +4429,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props) {
+                                Hashtable props,List<String> topProps) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
@@ -4450,7 +4450,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        return super.getUrlForWiki(request, entry, tag, props);
+        return super.getUrlForWiki(request, entry, tag, props,topProps);
     }
 
 

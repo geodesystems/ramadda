@@ -920,7 +920,7 @@ public abstract class Converter extends Processor {
 
                 boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
                                         defaultChartable);
-                if (false && id.indexOf("date") >= 0) {
+                if (id.equals("date")) {
                     type = "date";
                 } else if (id.equals("year")) {
                     type   = "date";

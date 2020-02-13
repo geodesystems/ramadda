@@ -659,7 +659,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props) {
+                                Hashtable props,List<String> topProps) {
         return null;
     }
 

@@ -234,7 +234,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.getDisplayReady()) {
                 return;
             }
+
+
 	    //	    var t1= new Date();
+
             this.displayData(reload);
 	    //	    var t2= new Date();
 	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
@@ -461,6 +464,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (this.inError) {
                 return;
             }
+
             if (!haveGoogleChartsLoaded()) {
                 if (!this.googleChartCallbackPending) {
                     this.googleChartCallbackPending = true;
@@ -551,6 +555,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var dataHasIndex = props.includeIndex;
             let dataList = this.getStandardData(fieldsToSelect, props);
+
             this.computedData = dataList;
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];

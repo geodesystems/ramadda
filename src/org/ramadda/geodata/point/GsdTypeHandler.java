@@ -33,7 +33,9 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
+
 import java.util.Date;
+import java.util.List;
 import java.util.Hashtable;
 import java.util.GregorianCalendar;
 
@@ -72,14 +74,15 @@ public class GsdTypeHandler extends PointTypeHandler {
 
 
 
+    @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props) {
+                                Hashtable props,List<String> topProps) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
-            String url = super.getUrlForWiki(request, entry, tag,props);
+            String url = super.getUrlForWiki(request, entry, tag,props,topProps);
             return url+"&latitude=${latitude}&longitude=${longitude}&model=${model}";
         }
-        return super.getUrlForWiki(request, entry, tag, props);
+        return super.getUrlForWiki(request, entry, tag, props,topProps);
     }
 
 

@@ -347,6 +347,11 @@ function DisplayManager(argId, argProperties) {
             return jsonUrl.match(/(\${latitude})/g) != null;
         },
         getJsonUrl: function(jsonUrl, display, props) {
+	    display.getRequestMacros().every(m=>{
+		jsonUrl = m.apply(jsonUrl);
+	    });
+
+
             var fromDate = display.getProperty(PROP_FROMDATE);
             if (fromDate != null) {
                 jsonUrl += "&fromdate=" + fromDate;

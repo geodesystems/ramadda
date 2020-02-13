@@ -891,11 +891,32 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @return _more_
      * @throws Exception _more_
      */
-    public String getJsonUrl(Request request, Entry entry, Hashtable props)
+    public String getJsonUrl(Request request, Entry entry, Hashtable props,List<String> displayProps)
             throws Exception {
         String max = null;
         PointTypeHandler typeHandler =
             (PointTypeHandler) entry.getTypeHandler();
+
+	List<RecordTypeHandler.Macro> macros = typeHandler.getMacros(entry);
+	if (macros!=null) {
+	    String all=null;
+	    for(RecordTypeHandler.Macro macro: macros) {
+		if(all!=null) all+=",";
+		else all = "";
+		all+=macro.name;
+		displayProps.add("macro." + macro.name+".type");
+		displayProps.add(Json.quote(macro.type));
+		displayProps.add("macro." + macro.name+".default");
+		displayProps.add(Json.quote(macro.dflt));
+		displayProps.add("macro." + macro.name+".label");
+		displayProps.add(Json.quote(macro.label));
+		displayProps.add("macro." + macro.name+".values");
+		displayProps.add(Json.quote(macro.values));
+	    }
+	    displayProps.add("macros");
+	    displayProps.add(Json.quote(all));
+	}
+
         String extra     = "";
         String extraArgs = (String) props.get("extraArgs");
         if (extraArgs != null) {

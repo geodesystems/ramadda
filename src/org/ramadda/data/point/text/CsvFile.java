@@ -107,8 +107,7 @@ public class CsvFile extends TextFile {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
-        //        System.err.println("file:" +file);
-        //        System.err.println(Misc.getStackTrace());
+	//	System.err.println("file:" +file);
         if ((file == null) || !file.exists()) {
             try {
                 ByteArrayOutputStream bos = null;

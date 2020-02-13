@@ -210,6 +210,9 @@ function PointData(name, recordFields, records, url, properties) {
         url: url,
         loadingCnt: 0,
         equals: function(that) {
+	    if(this.jsonUrl) {
+		return this.jsonUrl == that.jsonUrl;
+	    }
             return this.url == that.url;
         },
         getIsLoading: function() {
@@ -282,9 +285,6 @@ function PointData(name, recordFields, records, url, properties) {
         isGroup: function() {
             return this.getGroupField()!=null;
         },
-
-
-
         loadData: function(display, reload) {
             if (this.url == null) {
                 console.log("No URL");
@@ -295,6 +295,7 @@ function PointData(name, recordFields, records, url, properties) {
                 lon: this.lon,
             };
             var jsonUrl = display.displayManager.getJsonUrl(this.url, display, props);
+	    this.jsonUrl = jsonUrl;
             this.loadPointJson(jsonUrl, display, reload);
         },
         loadPointJson: function(url, display, reload) {
@@ -317,7 +318,7 @@ function PointData(name, recordFields, records, url, properties) {
             }
             obj.pending.push(display);
             if (obj.pending.length > 1) {
-		//                console.log("Waiting on callback:" + obj.pending.length +" " + url);
+		console.log("Waiting on callback:" + obj.pending.length +" " + url +" d:" + display);
                 return;
             }
             var fail = function(jqxhr, textStatus, error) {
@@ -336,10 +337,11 @@ function PointData(name, recordFields, records, url, properties) {
                 }
                 var newData = makePointData(data, _this.derived, display);
                 obj.pointData = pointData.initWith(newData);
+
+
                 var tmp = obj.pending;
                 obj.pending = [];
                 for (var i = 0; i < tmp.length; i++) {
-		    //                    console.log("Calling: " + tmp[i]);
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
                 pointData.stopLoading();

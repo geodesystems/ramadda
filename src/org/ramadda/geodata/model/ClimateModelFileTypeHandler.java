@@ -28,8 +28,10 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.util.IOUtil;
 
+
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -170,17 +172,17 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
      */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props) {
+                                Hashtable props,List<String> topProps) {
         try {
             TypeHandler gridType = getRepository().getTypeHandler("cdm_grid");
             if (gridType != null) {
-                return gridType.getUrlForWiki(request, entry, tag, props);
+                return gridType.getUrlForWiki(request, entry, tag, props,topProps);
             }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
 
-        return super.getUrlForWiki(request, entry, tag, props);
+        return super.getUrlForWiki(request, entry, tag, props,topProps);
 
     }
 
