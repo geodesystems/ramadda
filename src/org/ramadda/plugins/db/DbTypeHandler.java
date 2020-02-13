@@ -4429,7 +4429,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props,List<String> topProps) {
+                                Hashtable props,List<String> displayProps) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
@@ -4439,7 +4439,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 String url =
                     ((PointOutputHandler) getRecordOutputHandler())
-                        .getJsonUrl(request, entry, props);
+		    .getJsonUrl(request, entry, props,displayProps);
                 url += "&"
                        + request.getUrlArgs(
                            (HashSet<String>) Utils.makeHashSet(
@@ -4450,7 +4450,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        return super.getUrlForWiki(request, entry, tag, props,topProps);
+        return super.getUrlForWiki(request, entry, tag, props,displayProps);
     }
 
 

@@ -445,14 +445,13 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 	    if (macros!=null) {
 		for(Macro macro: macros) {
 		    String v = request.getString("macro_" + macro.name,macro.dflt);
-		    System.err.println("cache:" + v);
 		    v = v.replaceAll("\\.","_").replaceAll("/","_");
 		    suffix+="_"+v;
 		}
 	    }
 	    String filename = "record_" + entry.getId() + "_"
 		+ entry.getChangeDate() + suffix+".csv";
-	    System.err.println("cache file:" + filename);
+	    //	    System.err.println("cache file:" + filename);
             file = getRepository().getEntryManager().getCacheFile(entry,
                                                                   filename);
             recordFile.setCacheFile(file);
