@@ -1847,7 +1847,7 @@ public class Column implements DataTypes, Constants {
         String          columnName = getFullName();
 
         DatabaseManager dbm        = getDatabaseManager();
-
+        //      System.err.println("s:" + searchArg);
         if (isType(DATATYPE_LATLON)) {
             double north = request.get(searchArg + "_north",
                                        request.get(ARG_AREA_NORTH,
@@ -1945,6 +1945,7 @@ public class Column implements DataTypes, Constants {
             Date[] dateRange = request.getDateRange(searchArg + "_fromdate",
                                    searchArg + "_todate", relativeArg,
                                    new Date());
+            //      System.err.println("D:" + dateRange[0] +" - " + dateRange[1] +" " + request.getString(searchArg + "_fromdate"));
             if (dateRange[0] != null) {
                 where.add(Clause.ge(columnName, dateRange[0]));
             }
@@ -2003,9 +2004,6 @@ public class Column implements DataTypes, Constants {
             //            typeHandler.addOrClause(columnName,
             //                                    value, where);
         }
-
-
-
     }
 
 
@@ -2020,6 +2018,7 @@ public class Column implements DataTypes, Constants {
         if (text.startsWith("\"") && text.endsWith("\"")) {
             text = Utils.unquote(text);
             where.add(Clause.eq(getFullName(), text));
+
             return;
         }
         List<String> values  = StringUtil.split(text, ",", true, true);
