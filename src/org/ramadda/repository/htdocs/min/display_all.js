@@ -1516,10 +1516,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         setDateRange: function(min, max) {
 	    this.minDateObj = min;
-	    if(max) {
-		console.log("setDateRange:" + max);
-		console.trace();
-	    }
 	    this.maxDateObj = max;
 	},
         handleDateRangeChanged: function(source, prop) {
