@@ -2552,7 +2552,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var filter = filters[filterField.getId()];
 			if(filter==null) continue;
 			var rowValue = row[filterField.getIndex()];
-			var debugFilter = false; //(rowIdx<10);
+			var debugFilter = false; 
 			if(debugfilter)
 			    console.log("filter field:" + filterField.getId() + " value:" + rowValue);
 			if(filterField.getType() == "enumeration") {
