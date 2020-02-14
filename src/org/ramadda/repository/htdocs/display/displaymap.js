@@ -1564,7 +1564,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    
                 }
-            }
+	    }
 
 
             sizeBy.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", -1));
@@ -1641,6 +1641,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             for (let i = 0; i < records.length; i++) {
                 let record = records[i];
+		let recordDate = record.getDate();
                 let tuple = record.getData();
 		if(!record.point)
                     record.point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
@@ -1787,8 +1788,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps);
 			poly.textGetter = textGetter;
 			poly.record = record;
-			if (date) {
-			    poly.date = date.getTime();
+			if (recordDate) {
+			    poly.date = recordDate.getTime();
 			}
 			this.lines.push(poly);
 		    }
@@ -1985,7 +1986,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
         addLabels:function(records, fields, points) {
-            var labelTemplate = this.getProperty("labelTemplate");
+            let labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;
 	    if(labelTemplate) {
 		labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
