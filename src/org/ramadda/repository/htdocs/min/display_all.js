@@ -931,7 +931,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         displayColorTable: function(ct, domId, min, max, args) {
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
-	    if(!args.colorByInfo) return;
+	    if(!args || !args.colorByInfo) return;
 	    this.jq(domId).find(".display-colortable-slice").css("cursor","pointer");
 	    let _this = this;
 	    if(!this.originalColorRange) {
