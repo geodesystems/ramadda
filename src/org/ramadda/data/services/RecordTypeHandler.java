@@ -527,7 +527,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 		path = path.replace("${" + macro.name+ "}",value);
 	    }
 	}
-	System.err.println("Path:" + path);
+	//	System.err.println("Path:" + path);
         if (path.indexOf("${latitude}") >= 0) {
             if (Utils.stringDefined(
                     (String) requestProperties.get("latitude"))) {

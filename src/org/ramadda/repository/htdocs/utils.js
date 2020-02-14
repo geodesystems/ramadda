@@ -1378,6 +1378,7 @@ var GuiUtils = {
             return;
         }
         console.log(error);
+	console.trace();
         if (extra) {
             console.log(extra);
         }

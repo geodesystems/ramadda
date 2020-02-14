@@ -363,7 +363,8 @@ public class CalendarOutputHandler extends OutputHandler {
             }
         }
         long diffDays = (maxDate - minDate) / 1000 / 3600 / 24;
-	System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
+	//	System.err.println("HOURS:" + diffDays +" " + new Date(minDate) + " " + new Date(maxDate));
+
         String interval = "Timeline.DateTime.MONTH";
 	
         if (diffDays < 3) {

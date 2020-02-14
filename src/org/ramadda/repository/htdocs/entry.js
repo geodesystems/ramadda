@@ -463,6 +463,11 @@ function Ramadda(repositoryRoot) {
             this.entryCache[entry.getId()] = entry;
         },
         getEntry: async function(id, callback) {
+	    if(id == null) {
+		console.log("Error in getEntry: entry id is null");
+		console.trace();
+		return null;
+	    }
             var entry = this.entryCache[id];
             if (entry != null) {
                 return Utils.call(callback, entry);

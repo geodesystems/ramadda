@@ -69,7 +69,8 @@
       var oldClickFunction =       Timeline.OriginalEventPainter.prototype._showBubble;
       Timeline.OriginalEventPainter.prototype._showBubble = function(x, y, evt) {
 	  if(timelineShareSelected &&  window["ramaddaDisplaySetSelectedEntry"]) {
-	      ramaddaDisplaySetSelectedEntry(evt.getEventID());
+
+	      ramaddaDisplaySetSelectedEntry(evt.getID());
 	      return;
 	  }
 	  oldClickFunction.call(this,x,y,evt);
