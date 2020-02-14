@@ -2313,6 +2313,8 @@ var HtmlUtils = {
 		label=item[1];
                 item = item[0];
             }
+	    if(maxWidth && label.length>maxWidth)
+		label = label.substring(0,maxWidth)+"...";
             var extra = "";
 	    if(selected && Array.isArray(selected)) {
 		if(selected.indexOf(item)>=0) extra=" selected ";
