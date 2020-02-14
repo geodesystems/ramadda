@@ -903,10 +903,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.getDisplayManager().getLayoutManager();
         },
 	getAnimation: function() {
-	    if(!this.animation) {
-		this.animation = new DisplayAnimation(this,this.getProperty("doAnimation", false));
+	    if(!this.animationControl) {
+		this.animationControl = new DisplayAnimation(this,this.getProperty("doAnimation", false));
 	    }
-	    return this.animation;
+	    return this.animationControl;
 	},
 
         propagateEvent: function(func, data) {
@@ -6623,7 +6623,6 @@ function DisplayAnimation(display, enabled) {
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
         speed: parseInt(display.getProperty("animationSpeed", 250)),
-
 	getEnabled: function() {
 	    return this.enabled;
 	},
