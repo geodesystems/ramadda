@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -388,8 +388,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         List<Object[]> valueList = (List<Object[]>) xmlEncoder.toObject(
                                        new String(
-                                           Utils.decodeBase64(
-                                               values)));
+                                           Utils.decodeBase64(values)));
         if (valueList == null) {
             throw new IllegalArgumentException(
                 "Could not read database value list");
@@ -406,7 +405,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 insertStmt);
-	    dbChanged(entry);
+            dbChanged(entry);
         }
     }
 
@@ -467,7 +466,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 stmt);
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 insertStmt);
-	    dbChanged(newEntry);
+            dbChanged(newEntry);
         }
     }
 
@@ -1168,7 +1167,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             addViewHeader(request, entry, sb, VIEW_TABLE, 0, false);
             if ( !request.get(ARG_EMBEDDED, false)) {
                 sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
-                                                      getSearchForm(request, entry).toString(), false));
+                        getSearchForm(request, entry).toString(), false));
             }
             Column iterateColumn = null;
             for (Column column : dbInfo.getColumnsToUse()) {
@@ -1180,9 +1179,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
             String selection = request.getString(ARG_DB_ITERATE_VALUES, "");
-            selection = selection.replaceAll("_nl_","\n");
-            List<String> values =
-                StringUtil.split(selection, "\n", true, true);
+            selection = selection.replaceAll("_nl_", "\n");
+            List<String> values = StringUtil.split(selection, "\n", true,
+                                      true);
             if (values.size() == 0) {
                 sb.append("Need to specify a set of values");
                 getPageHandler().entrySectionClose(request, entry, sb);
@@ -1200,7 +1199,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             request.put(ARG_EMBEDDED, "true");
             for (String value : values) {
                 String label = value;
-                if(iterateColumn.isEnumeration()) {
+                if (iterateColumn.isEnumeration()) {
                     //In case the user entered a enum label
                     value = iterateColumn.getEnumValue(value);
                     label = iterateColumn.getEnumLabel(value);
@@ -1212,20 +1211,28 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 request.put(searchArg, value);
                 iterateColumn.assembleWhereClause(request, clauses,
                         new StringBuilder());
-		valueList = (List<Object[]>) getStorageManager().getCacheObject(entry.getId(),request);
-		if(valueList == null) {
-		    valueList = readValues(request, entry, Clause.and(clauses));
-		    getStorageManager().putCacheObject(entry.getId(), request, valueList);
-		}
+                valueList =
+                    (List<Object[]>) getStorageManager().getCacheObject(
+                        entry.getId(), request);
+                if (valueList == null) {
+                    valueList = readValues(request, entry,
+                                           Clause.and(clauses));
+                    getStorageManager().putCacheObject(entry.getId(),
+                            request, valueList);
+                }
                 StringBuilder tmpSB = new StringBuilder();
-           
+
                 tmpSB.append(iterateColumn.getLabel() + ": " + label);
-                if(valueList.size()==0) {
+                if (valueList.size() == 0) {
                     tmpSB.append("<br>Nothing found");
                 } else {
-                    handleListTable(request, entry, valueList, false, false, tmpSB);
+                    handleListTable(request, entry, valueList, false, false,
+                                    tmpSB);
                 }
-                sb.append(HtmlUtils.div(tmpSB.toString(),HtmlUtils.cssClass("db_iterate_block")));
+                sb.append(
+                    HtmlUtils.div(
+                        tmpSB.toString(),
+                        HtmlUtils.cssClass("db_iterate_block")));
 
             }
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -1275,11 +1282,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (view.equals(VIEW_KML) && !request.defined(ARG_MAX)) {
             request.put(ARG_MAX, "10000");
         }
-	valueList = (List<Object[]>) getStorageManager().getCacheObject(entry.getId(),request);
-	if(valueList == null) {
-	    valueList = readValues(request, entry, clause);
-	    getStorageManager().putCacheObject(entry.getId(), request, valueList);
-	}
+        valueList = (List<Object[]>) getStorageManager().getCacheObject(
+            entry.getId(), request);
+        System.err.println("Cached:" + valueList);
+        if (valueList == null) {
+            valueList = readValues(request, entry, clause);
+            System.err.println("new values:" + valueList.size());
+            getStorageManager().putCacheObject(entry.getId(), request,
+                    valueList);
+        }
+
         return makeListResults(request, entry, view, action, fromSearch,
                                valueList);
 
@@ -2214,7 +2226,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 statement);
-	    dbChanged(entry);
+            dbChanged(entry);
         }
 
 
@@ -2231,8 +2243,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     */
     public void dbChanged(Entry entry) {
-	getStorageManager().clearCacheGroup(entry.getId());
+        getStorageManager().clearCacheGroup(entry.getId());
     }
 
 
@@ -2769,7 +2786,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 stmt);
-	    dbChanged(entry);
+            dbChanged(entry);
         }
 
     }
@@ -3858,8 +3875,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         if (column.getCanSearch() && column.isString()) {
-            String value     = (String) values[column.getOffset()];
-	    if(value == null) value = "";
+            String value = (String) values[column.getOffset()];
+            if (value == null) {
+                value = "";
+            }
             String searchArg = column.getSearchArg();
             //Only do the search link if its short text
             if (value.length() < 50) {
@@ -4424,13 +4443,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @param entry _more_
      * @param tag _more_
      * @param props _more_
+     * @param displayProps _more_
      *
      * @return _more_
      */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props,List<String> displayProps) {
+                                Hashtable props, List<String> displayProps) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
+                || tag.startsWith("display_")
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
                 if (props.get("max") == null) {
@@ -4439,7 +4460,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 String url =
                     ((PointOutputHandler) getRecordOutputHandler())
-		    .getJsonUrl(request, entry, props,displayProps);
+                        .getJsonUrl(request, entry, props, displayProps);
                 url += "&"
                        + request.getUrlArgs(
                            (HashSet<String>) Utils.makeHashSet(
@@ -4450,7 +4471,63 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        return super.getUrlForWiki(request, entry, tag, props,displayProps);
+
+        String    all         = null;
+        Hashtable recordProps = null;
+        try {
+            recordProps = getRecordProperties(entry);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+        for (Column column : getColumns(true)) {
+            //System.err.println("\tc:" + column.getName() +" p:" + recordProps.get(column.getName() +".isDisplayProperty"));
+            if ( !Misc.equals(
+                    recordProps.get(column.getName() + ".isDisplayProperty"),
+                    "true") && !Misc.equals(
+                        column.getProperty("isDisplayProperty"), "true")) {
+                continue;
+            }
+            if (all != null) {
+                all += ",";
+            } else {
+                all = "";
+            }
+            String type = column.isEnumeration()
+                          ? "enumeration"
+                          : column.isNumeric()
+                            ? "numeric"
+                            : column.isDate()
+                              ? "date"
+                              : "string";
+            all += column.getName();
+            displayProps.add("macro." + column.getName() + ".type");
+            displayProps.add(Json.quote(type));
+            displayProps.add("macro." + column.getName() + ".label");
+            displayProps.add(Json.quote(column.getLabel()));
+            displayProps.add("macro." + column.getName() + ".urlarg");
+            displayProps.add(Json.quote(column.getSearchArg()));
+            if (column.isEnumeration()) {
+                String enums = null;
+                List<TwoFacedObject> tfos = getEnumValues(request, entry,
+                                                column);
+                for (TwoFacedObject tfo : tfos) {
+                    if (enums != null) {
+                        enums += ",";
+                    } else {
+                        enums = "";
+                    }
+                    enums += tfo.getId() + ":" + tfo.getLabel();
+                }
+                if (enums != null) {
+                    displayProps.add("macro." + column.getName() + ".values");
+                    displayProps.add(Json.quote(enums));
+                }
+            }
+        }
+        displayProps.add("macros");
+        displayProps.add(Json.quote(all));
+
+        return super.getUrlForWiki(request, entry, tag, props, displayProps);
     }
 
 
@@ -4766,20 +4843,22 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @param column _more_
      *
      * @return _more_
-     *
-     * @throws Exception _more_
      */
     private List<TwoFacedObject> getEnumValues(Request request, Entry entry,
-            Column column)
-            throws Exception {
-        if (column.getType().equals(Column.DATATYPE_ENUMERATION)) {
-            List<TwoFacedObject> enums = column.getValues();
-            if (enums.size() > 0) {
-                return enums;
-            }
-        }
+            Column column) {
 
-        return tableHandler.getEnumValues(request, column, entry);
+        try {
+            if (column.getType().equals(Column.DATATYPE_ENUMERATION)) {
+                List<TwoFacedObject> enums = column.getValues();
+                if (enums.size() > 0) {
+                    return enums;
+                }
+            }
+
+            return tableHandler.getEnumValues(request, column, entry);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
 
     }
 
@@ -5676,9 +5755,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean forTable = request.getString(ARG_DB_VIEW,
                                              VIEW_TABLE).equals(VIEW_TABLE);
 
-	//	System.err.println("Clause:" + clause);
-	//	System.err.println("cols:" + SqlUtil.comma(colNames));
-	//	System.err.println("extra:" + extra);
+        //      System.err.println("Clause:" + clause);
+        //      System.err.println("cols:" + SqlUtil.comma(colNames));
+        //      System.err.println("extra:" + extra);
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              clause, extra, max);
@@ -6278,8 +6357,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             searchCriteria);
                 }
 
+
+                //              System.err.println("doMakeInputStream:" + Clause.and(where));
                 List<Object[]> valueList = readValues(request, entry,
                                                Clause.and(where));
+                //              System.err.println(" values:" + valueList.size());
                 for (Object[] list : valueList) {
                     int cnt = 0;
                     for (int i = IDX_MAX_INTERNAL + 1; i < list.length; i++) {
@@ -6316,7 +6398,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     }
                     s.append("\n");
                 }
-                //                System.err.println(s);
+                //              System.err.println(s);
                 ByteArrayInputStream bais =
                     new ByteArrayInputStream(s.toString().getBytes());
 
