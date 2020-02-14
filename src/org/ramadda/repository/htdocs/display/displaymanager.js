@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -243,9 +243,9 @@ function DisplayManager(argId, argProperties) {
 	    if(!this.getShowMenu()) {
 		return "";
 	    }
-//            if (!this.getProperty(PROP_SHOW_MENU, true)) {
-//                return "";
-//            }
+	    //            if (!this.getProperty(PROP_SHOW_MENU, true)) {
+	    //                return "";
+	    //            }
             //How else do I refer to this object in the html that I add 
             var get = "getDisplayManager('" + this.getId() + "')";
             var layout = "getDisplayManager('" + this.getId() + "').getLayoutManager()";
@@ -299,27 +299,27 @@ function DisplayManager(argId, argProperties) {
 
             var titles = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HtmlUtils.onClick(layout + ".titlesOn();", "On") + "/" + HtmlUtils.onClick(layout + ".titlesOff();", "Off"));
             var dates = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"],
-                "Set date range: " +
-                HtmlUtils.onClick(layout + ".askMinDate();", "Min") + "/" +
-                HtmlUtils.onClick(layout + ".askMaxDate();", "Max"));
+				      "Set date range: " +
+				      HtmlUtils.onClick(layout + ".askMinDate();", "Min") + "/" +
+				      HtmlUtils.onClick(layout + ".askMaxDate();", "Max"));
             var editMenu =
                 HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"],
-                    "Set axis range :" +
-                    HtmlUtils.onClick(layout + ".askMinZAxis();", "Min") + "/" +
-                    HtmlUtils.onClick(layout + ".askMaxZAxis();", "Max"))) +
+							"Set axis range :" +
+							HtmlUtils.onClick(layout + ".askMinZAxis();", "Min") + "/" +
+							HtmlUtils.onClick(layout + ".askMaxZAxis();", "Max"))) +
                 HtmlUtils.tag(TAG_LI, [], dates) +
                 HtmlUtils.tag(TAG_LI, [], titles) + "\n" +
                 HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HtmlUtils.onClick(layout + ".detailsOn();", "On", []) + "/" +
-                    HtmlUtils.onClick(layout + ".detailsOff();", "Off", []))) +
+							HtmlUtils.onClick(layout + ".detailsOff();", "Off", []))) +
                 HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
                 "";
 
 
             var table = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
-                HtmlUtils.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
-                HtmlUtils.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
-                HtmlUtils.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
-                HtmlUtils.onClick(layout + ".setLayout('table',4);", "4 column"));
+				      HtmlUtils.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
+				      HtmlUtils.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
+				      HtmlUtils.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
+				      HtmlUtils.onClick(layout + ".setLayout('table',4);", "4 column"));
             var layoutMenu =
                 HtmlUtils.tag(TAG_LI, [], table) +
                 HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
@@ -336,7 +336,7 @@ function DisplayManager(argId, argProperties) {
                 HtmlUtils.tag(TAG_LI, [], "<a>New</a>" + HtmlUtils.tag("ul", [], newMenu)) +
                 HtmlUtils.tag(TAG_LI, [], "<a>Layout</a>" + HtmlUtils.tag("ul", [], layoutMenu));
             var menu = HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-                HtmlUtils.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+				     HtmlUtils.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
 
             html += menu;
             //                html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
@@ -349,6 +349,7 @@ function DisplayManager(argId, argProperties) {
         getJsonUrl: function(jsonUrl, display, props) {
 	    display.getRequestMacros().every(m=>{
 		jsonUrl = m.apply(jsonUrl);
+		return true;
 	    });
 
 
@@ -450,9 +451,9 @@ function DisplayManager(argId, argProperties) {
             //e.g. - RamaddaLinechartDisplay, LinechartDisplay, Linechart 
             var classname = null;
             var names = ["Ramadda" + proc + "Display",
-                proc + "Display",
-                proc
-            ];
+			 proc + "Display",
+			 proc
+			];
             var func = null;
             var funcName = null;
             var msg = "";
@@ -525,7 +526,7 @@ function DisplayManager(argId, argProperties) {
 
     //    html += this.makeMainMenu();
     if(this.getShowMenu()) {
-//    if (this.getProperty(PROP_SHOW_MENU, true)) {
+	//    if (this.getProperty(PROP_SHOW_MENU, true)) {
         html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
     var targetDiv = this.getProperty("target");

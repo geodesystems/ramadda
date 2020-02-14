@@ -42,24 +42,24 @@ svg > g > g:last-child { pointer-events: none }
   -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
 
-.display-filterby textarea, .display-filterby input, .display-filterby select, .display-filterby {
-  font-size:90% !important;
+.display-filter-input, .display-filter textarea, .display-filter input, .display-filter select, .display-filter {
+  font-size:80% !important;
 }
 
-.display-filterby-popup-item {
+.display-filter-popup-item {
   font-size:90% !important;
   cursor:pointer;
 }
 
-.display-filterby-items {
+.display-filter-items {
 }
 
-.display-filterby-item-label {
+.display-filter-item-label {
     font-weight:bold;
 }
 
 
-.display-filterby-item-image {
+.display-filter-item-image {
     border:1px solid rgba(0,0,0,0);
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
@@ -67,16 +67,16 @@ svg > g > g:last-child { pointer-events: none }
     padding-right:4px;
 }
 
-.display-filterby-item-image:hover {
+.display-filter-item-image:hover {
     border:1px solid #ccc;
 }
 
 
-.display-filterby-item {
+.display-filter-item {
     display:inline-block;
 }
 
-.display-filterby-item-tab {
+.display-filter-item-tab {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;  
     border: 1px solid rgba(0,0,0,0);
@@ -89,7 +89,7 @@ svg > g > g:last-child { pointer-events: none }
     cursor:pointer;  
 }
 
-.display-filterby-item-tab-selected {
+.display-filter-item-tab-selected {
     background: #ddd;
     border: 1px solid #ddd;
     border-bottom: 0px solid #000;
@@ -97,7 +97,7 @@ svg > g > g:last-child { pointer-events: none }
 
 
 
-.display-filterby-item-button {
+.display-filter-item-button {
     border-radius: 8px;
     border: 2px solid rgba(0,0,0,0);
     margin-left:4px;
@@ -109,14 +109,14 @@ svg > g > g:last-child { pointer-events: none }
     background: #fff;
 }
 
-.display-filterby-item-button-selected {
+.display-filter-item-button-selected {
     background: #ddd;
     border: 2px solid #000;
 }
 
 
 
-.display-filterby-label {
+.display-filter-label {
     font-weight: bold;
     max-width:300px;
     overflow-x:auto;

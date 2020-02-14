@@ -23,6 +23,9 @@ function DataCollection() {
         getList: function() {
             return this.data;
         },
+	setData: function(data) {
+	    this.data = [data];
+	},
         addData: function(data) {
             this.data.push(data);
         },
@@ -299,49 +302,61 @@ function PointData(name, recordFields, records, url, properties) {
             this.loadPointJson(jsonUrl, display, reload);
         },
         loadPointJson: function(url, display, reload) {
+	    let debug = false;
             var pointData = this;
             this.startLoading();
             var _this = this;
+	    if(debug)
+		console.log("loadPointJson: "+ display.getId());
             var obj = pointDataCache[url];
             if (obj == null) {
                 obj = {
                     pointData: null,
                     pending: []
                 };
-                //                    console.log("created new obj in cache: " +url);
+		if(debug)
+                    console.log("\tcreated new obj in cache: " +url);
                 pointDataCache[url] = obj;
             }
             if (obj.pointData != null) {
-                //                    console.log("from cache " +url);
+		if(debug)
+                    console.log("\tfrom cache " +url);
                 display.pointDataLoaded(obj.pointData, url, reload);
                 return;
             }
             obj.pending.push(display);
             if (obj.pending.length > 1) {
-		console.log("Waiting on callback:" + obj.pending.length +" " + url +" d:" + display);
+		if(debug)
+		    console.log("\tWaiting on callback:" + obj.pending.length +" " + url +" d:" + display);
                 return;
             }
             var fail = function(jqxhr, textStatus, error) {
                 var err = textStatus + ": " + error;
-                console.log("JSON error:" + err);
+		console.log("JSON error:" + err);
                 display.pointDataLoadFailed(err);
                 pointData.stopLoading();
             }
 
             var success=function(data) {
-		//		console.log("got data");
+		if(debug)
+		    console.log("\tgot data");
                 if (GuiUtils.isJsonError(data)) {
-		    //                    console.log("fail");
+		    if(debug)
+			console.log("\tfail");
                     display.pointDataLoadFailed(data);
                     return;
                 }
                 var newData = makePointData(data, _this.derived, display);
                 obj.pointData = pointData.initWith(newData);
 
+		if(debug)
+                    console.log("\tpending:" + obj.pending.length);
 
                 var tmp = obj.pending;
                 obj.pending = [];
                 for (var i = 0; i < tmp.length; i++) {
+		    if(debug)
+			console.log("\tcalling pointDataLoaded:" + tmp[i].getId() +" #:" + pointData.getRecords().length);
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
                 pointData.stopLoading();
@@ -1222,7 +1237,7 @@ var RecordUtil = {
     },
     subset:function(records,bounds) {
 	bounds = RecordUtil.convertBounds(bounds);
-//	console.log("subset:" + JSON.stringify(bounds));
+	//	console.log("subset:" + JSON.stringify(bounds));
 	let cnt = 0;
 	return  records.filter(record=>{
 	    return  record.getLatitude()<= bounds.north &&
@@ -1361,9 +1376,9 @@ var RecordUtil = {
 	    let y2=y;
 	    if(opts.colorBy && opts.colorBy.index>=0) {
 		let perc = opts.colorBy.getValuePercent(v);
-//		if(perc<0.3 || perc>0.7) return;
+		//		if(perc<0.3 || perc>0.7) return;
 		let degrees = (360*perc);
-//		console.log(v +" " + perc  + v +" deg:" + degrees);
+		//		console.log(v +" " + perc  + v +" deg:" + degrees);
 		degrees = degrees*(Math.PI / 360)
 		x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
 		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
@@ -1396,11 +1411,11 @@ var RecordUtil = {
 		else
 		    ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
 		ctx.strokeStyle = "black";
-//		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-//		ctx.font="8px arial"
-//		ctx.fillStyle = "black";
-//		ctx.fillText(v, crx,cry);
-//		ctx.fillText(v, crx,cry+20);
+		//		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+		//		ctx.font="8px arial"
+		//		ctx.fillStyle = "black";
+		//		ctx.fillText(v, crx,cry);
+		//		ctx.fillText(v, crx,cry+20);
 	    }
 	    
 	}
@@ -1411,7 +1426,7 @@ var RecordUtil = {
 	}
     },
     //This gets the value at row/col if its defined. else 0
-//    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
+    //    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
     getGridValue:function(src,row,col,mult,cnt) {
 	if(row>=0 && row<src.length && col>=0 && col<src[row].length) {
 	    if(isNaN(src[row][col])) return 0;
@@ -1570,13 +1585,13 @@ var RecordUtil = {
 	    operator:"average"
 	}
 	$.extend(opts,args);
-//	console.log(JSON.stringify(opts,null,2));
+	//	console.log(JSON.stringify(opts,null,2));
 	let id = HtmlUtils.getUniqueId();
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	var ctx = canvas.getContext("2d");
-//	ctx.strokeStyle= "red";
-//	ctx.strokeRect(0,0,canvas.width,canvas.height);
+	//	ctx.strokeStyle= "red";
+	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
 
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
@@ -1596,7 +1611,7 @@ var RecordUtil = {
 	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
 	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
 	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
-//	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
+	    //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
 		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
 		var dy = n2.lat-pt.lat;
@@ -1671,23 +1686,23 @@ var RecordUtil = {
 	    }
 	} else {
 	    if(false) {
-	    var lats =[];
-	    for(i=0;i<=10;i++) {
-		lats.push(opts.bounds.south+(opts.bounds.north-opts.bounds.south)*(i/10));
-	    }
-	    var _lon =opts.bounds.east;
-	    ctx.strokeStyle="red";
-	    lats.map(_lat=>{
-		var _x = scaleX(_lat,_lon);
-		var _y = scaleY(_lat,_lon);
-                opts.display.map.addMarker("", [_lon,_lat], null, "", "");
-		ctx.moveTo(canvas.width,_y);
-		ctx.lineTo(canvas.width-40,_y);
-		ctx.stroke();
-		ctx.font="12px arial"
-		ctx.fillStyle = "black";
-		ctx.fillText(_lat, canvas.width-50,_y);
-	    });
+		var lats =[];
+		for(i=0;i<=10;i++) {
+		    lats.push(opts.bounds.south+(opts.bounds.north-opts.bounds.south)*(i/10));
+		}
+		var _lon =opts.bounds.east;
+		ctx.strokeStyle="red";
+		lats.map(_lat=>{
+		    var _x = scaleX(_lat,_lon);
+		    var _y = scaleY(_lat,_lon);
+                    opts.display.map.addMarker("", [_lon,_lat], null, "", "");
+		    ctx.moveTo(canvas.width,_y);
+		    ctx.lineTo(canvas.width-40,_y);
+		    ctx.stroke();
+		    ctx.font="12px arial"
+		    ctx.fillStyle = "black";
+		    ctx.fillText(_lat, canvas.width-50,_y);
+		});
 	    }
 
 	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});

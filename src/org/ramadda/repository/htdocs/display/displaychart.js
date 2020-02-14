@@ -237,7 +237,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 	    //	    var t1= new Date();
-
             this.displayData(reload);
 	    //	    var t2= new Date();
 	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
@@ -457,16 +456,25 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return value;
 	},
         displayData: function(reload) {
+	    let debug = false;
             var _this = this;
+	    if(debug)
+		console.log("displayData " + this.getId() +" " + this.type);
             if (!this.getDisplayReady()) {
+		if(debug)
+		    console.log("\tdisplay not ready");
                 return;
             }
             if (this.inError) {
+		if(debug)
+		    console.log("\tin error");
                 return;
             }
 
             if (!haveGoogleChartsLoaded()) {
                 if (!this.googleChartCallbackPending) {
+		    if(debug)
+			console.log("\tloading google charts still");
                     this.googleChartCallbackPending = true;
                     var func = function() {
                         _this.googleChartCallbackPending = false;
@@ -492,6 +500,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             this.allFields = this.dataCollection.getList()[0].getRecordFields();
             var pointData = this.dataCollection.getList()[0];
+
+	    if(debug)
+		console.log("\tpointData #records:" + pointData.getRecords().length);
+
+
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
             var selectedFields = this.getSelectedFields();
 
@@ -508,10 +521,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     selectedFields = this.getSelectedFields();
                 }
             }
-
-
-
-
 
             if (selectedFields.length == 0) {
                 this.setContents("No fields selected");
@@ -555,7 +564,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var dataHasIndex = props.includeIndex;
             let dataList = this.getStandardData(fieldsToSelect, props);
-
+	    if(debug)
+		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             this.computedData = dataList;
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
@@ -723,6 +733,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return false;
 	},
         makeDataTable: function(dataList, props, selectedFields) {
+	    let maxWidth = this.getProperty("maxFieldWidth",-1);
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
@@ -1091,6 +1102,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			}
 			if(debug && rowIdx<debugRows)
 			    console.log("\t value:" + value +" " + (typeof value));
+			if(maxWidth>0 && type == "string" && value.length > maxWidth)
+			    value = value.substring(0,maxWidth) +"...";
 			newRow.push(value);
 		    }
                     if (j == 0 && props.includeIndex) {
@@ -3117,10 +3130,6 @@ function ScatterplotDisplay(displayManager, id, properties) {
 
     addRamaddaDisplay(this);
 }
-
-
-
-
 
 
 
