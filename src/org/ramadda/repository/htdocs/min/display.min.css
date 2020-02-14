@@ -1,3 +1,4 @@
+
 .display {
 }
 
@@ -42,8 +43,8 @@ svg > g > g:last-child { pointer-events: none }
   -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
 
-.display-filter-input, .display-filter textarea, .display-filter input, .display-filter select, .display-filter {
-  font-size:80% !important;
+.display-filter-input, .display-filter textarea, .display-filter input, .display-filter select,  {
+  font-size:90% !important;
 }
 
 .display-filter-popup-item {
@@ -117,11 +118,11 @@ svg > g > g:last-child { pointer-events: none }
 
 
 .display-filter-label {
-    font-weight: bold;
     max-width:300px;
     overflow-x:auto;
-    xdisplay:block;
 }
+
+
 
 .display-changeentries-button {
     cursor:pointer;
@@ -135,7 +136,6 @@ svg > g > g:last-child { pointer-events: none }
     text-align:center;
 }
 
-xxx
 
 .display-correlation {
   border-collapse:collapse; 
@@ -174,6 +174,8 @@ xxx
 
 .display-header1, .display-header2, .display-header3 {
   text-align:center;
+  font-size:90% !important;
+
 }
 
 

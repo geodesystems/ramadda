@@ -2237,7 +2237,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	checkDataFilters: function(dataFilters, record) {
 	    if(!dataFilters) {return true;}
-	    let xcnt = 0;
 	    for(var i=0;i<dataFilters.length;i++) {
 		if(!dataFilters[i].isRecordOk(record)) return false;
 	    }
@@ -3996,7 +3995,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    widget = HtmlUtils.input("",this.dflt,["style", style, "id",this.display.getDomId(this.getId()),"size","10","class","display-filter-input"]);
 			}
 			if(!widget) return "";
-			return (visible?label+": ":"")+  widget;
+			return (visible?this.display.makeFilterLabel(label+": "):"")+  widget;
 		    },
 		    getId: function() {
 			return "macro_" + this.name;
@@ -4036,6 +4035,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    return macros;
 	},
+	makeFilterLabel: function(label,tt) {
+	    let attrs = ["class","display-filter-label"];
+	    if(tt)  {
+		attrs.push("title");
+		attrs.push(tt);
+	    }
+	    return HtmlUtils.span(attrs,label);
+	},
+
         checkSearchBar: function() {
             let _this = this;
 
@@ -4080,8 +4088,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    chartFields.map(field=>{
 			enums.push([field.getId(),field.getLabel()]);
 		    });
-		    header2 += HtmlUtils.span(["class","display-filterby"],
-					      HtmlUtils.span(["class","display-filter-label"], "Display: ") + HtmlUtils.select("",["style","", "id",this.getDomId("chartfields")],enums,this.getProperty("fields","")))+"&nbsp;";
+		    header2 += HtmlUtils.span(["class","display-filter"],
+					      this.makeFilterLabel("Display: ") + HtmlUtils.select("",["style","", "id",this.getDomId("chartfields")],enums,this.getProperty("fields","")))+"&nbsp;";
 		}
 	    }
 
@@ -4092,16 +4100,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(field.isFieldGeo()) return;
 		    enums.push([field.getId(),field.getLabel()]);
 		});
-		header2 += HtmlUtils.span(["class","display-filterby"],
-					  HtmlUtils.span(["class","display-filter-label"], "Color by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+"&nbsp;";
+		header2 += HtmlUtils.span(["class","display-filter"],
+					  this.makeFilterLabel("Color by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+"&nbsp;";
 	    }
 	    if(this.sizeByFields.length>0) {
 		let enums = [];
 		this.sizeByFields.map(field=>{
 		    enums.push([field.getId(),field.getLabel()]);
 		});
-		header2 += HtmlUtils.span(["class","display-filterby"],
-					  HtmlUtils.span(["class","display-filter-label"],"Size by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
+		header2 += HtmlUtils.span(["class","display-filter"],
+					  this.makeFilterLabel("Size by: ") + HtmlUtils.select("",["style","", "id",this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
 
 
@@ -4111,7 +4119,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!f.label) return;
 		let cbxid = this.getDomId("datafilterenabled_" + f.id);
 		dataFilterIds.push(cbxid);
-		header2 +=  HtmlUtils.checkbox("",["id",cbxid],f.enabled) +" " + f.label +"&nbsp;&nbsp;"
+		header2 +=  HtmlUtils.checkbox("",["id",cbxid],f.enabled) +" " +
+		    this.makeFilterLabel(f.label +"&nbsp;&nbsp;")
 	    });
 
 
@@ -4146,8 +4155,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!this.getProperty("filterDateShow",true))
 		    style +="display:none;";
 		let selectId = this.getFilterId("filterDate");
-		header2 += HtmlUtils.span(["class","display-filterby","style",style],
-					  HtmlUtils.span(["class","display-filter-label"],"Select " + label+":") + HtmlUtils.select("",["fieldId","filterDate", "style","",
+		header2 += HtmlUtils.span(["class","display-filter","style",style],
+					  this.makeFilterLabel("Select " + label+": ") + HtmlUtils.select("",["fieldId","filterDate", "style","",
 																	"id",selectId],enums,selected))+"&nbsp;";
 	    }
 	    
@@ -4410,7 +4419,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 			else
 			    label = label+": ";
-			widget = HtmlUtils.div(["style","display:inline-block;"], HtmlUtils.span(["class","display-filter-label","title",tt], label) + widget);
+			widget = HtmlUtils.div(["style","display:inline-block;"],
+					       this.makeFilterLabel(label,tt) + widget);
 		    }
 		    //                    if(i==0) searchBar += "<br>Display: ";
 		    
@@ -4420,7 +4430,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
 		let filterBar = searchBar+bottom;
 		if(filterBar!="") {
-		    header2+=HtmlUtils.span(["class","display-filterby","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
+		    header2+=HtmlUtils.span(["class","display-filter","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
 		}
 	    }
 
@@ -4545,14 +4555,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		_this.settingFilterValue = false;
             };
 
-
-
 	    dataFilterIds.map(id=>{
 		$("#" + id).click(function(e){
 		    inputFunc($(this));
 		});
 	    });
-
 
 
             if(filterBy.length>0) {
