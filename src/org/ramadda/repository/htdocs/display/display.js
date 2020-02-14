@@ -2402,13 +2402,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var filter = filters[filterField.getId()];
 			if(filter==null) continue;
 			var rowValue = row[filterField.getIndex()];
-			var debugFilter = false; 
-			if(debugfilter)
-			    console.log("filter field:" + filterField.getId() + " value:" + rowValue);
 			if(filterField.getType() == "enumeration") {
 			    ok = filter.values.includes(""+rowValue);
-			    if(debugFilter)
-				console.log("enum:" + rowValue + " ok:" + ok);
 			} else if(filterField.isNumeric()) {
 			    if(isNaN(filter.value[0]) && isNaN(filter.value[0])) continue;
 			    if(!isNaN(filter.value[0]) && rowValue<filter.value[0]) ok = false;
