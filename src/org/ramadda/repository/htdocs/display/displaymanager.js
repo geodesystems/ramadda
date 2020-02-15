@@ -356,6 +356,17 @@ function DisplayManager(argId, argProperties) {
 		jsonUrl+="&skip=" + display.pageSkip;
 	    }
 
+	    if(display.getProperty("includeBounds") && display.getBounds && display.jq(ID_INCLUDE_BOUNDS).is(':checked')) {
+		let bounds = display.getBounds();
+		if(bounds) {
+		    bounds = RecordUtil.convertBounds(bounds);
+		    ["north","south","east","west"].map(b=>{
+			jsonUrl+="&" + b+"=" +bounds[b];
+		    });
+
+		}
+	    }
+
             var fromDate = display.getProperty(PROP_FROMDATE);
             if (fromDate != null) {
                 jsonUrl += "&fromdate=" + fromDate;

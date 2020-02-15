@@ -296,6 +296,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         },
+        getBounds: function() {
+	    return this.map.getBounds();
+	},
         addBaseMapLayer: function(url, isKml) {
             var theDisplay = this;
             mapLoadInfo = displayMapUrlToVectorListeners[url];

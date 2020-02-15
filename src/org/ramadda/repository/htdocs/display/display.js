@@ -41,6 +41,7 @@ var ID_MENU_OUTER = "menu_outer";
 var ID_MENU_INNER = "menu_inner";
 var ID_DISPLAY_PROGRESS = "display_progress";
 var ID_REPOSITORY = "repository";
+let ID_INCLUDE_BOUNDS = "includebounds";
 let ID_PAGE_COUNT = "pagecount";
 let ID_PAGE_PREV = "pageprev";
 let ID_PAGE_NEXT = "pagenext";
@@ -4076,6 +4077,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
 		return true;
 	    });
+	    if(this.getProperty("includeBounds") && this.getBounds) {
+		header2+=HtmlUtils.checkbox("",["id",this.getDomId(ID_INCLUDE_BOUNDS)], false) +" In bounds&nbsp;&nbsp";
+	    }
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
@@ -4472,6 +4476,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
+	    this.jq(ID_INCLUDE_BOUNDS).change(function() {
+		macroChange("bounds",$(this).is(':checked'));
+	    });
 	    macros.every(macro=>{
 		/*
 		$("#" + this.getDomId(macro.getId())+"," +

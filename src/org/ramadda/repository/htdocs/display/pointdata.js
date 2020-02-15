@@ -1235,6 +1235,7 @@ var RecordUtil = {
 	}
     },
     convertBounds: function(bounds) {
+	if(!bounds) return null;
 	if(Utils.isDefined(bounds.top)) 
 	    return  {north:bounds.top,west:bounds.left,south:bounds.bottom,east:bounds.right};
 	return bounds;

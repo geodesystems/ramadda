@@ -1874,10 +1874,10 @@ public class Column implements DataTypes, Constants {
             getRepository().getSessionManager().setArea(request, north, west,
                     south, east);
         } else if (isType(DATATYPE_LATLONBBOX)) {
-            double north = request.get(searchArg + "_north", Double.NaN);
-            double south = request.get(searchArg + "_south", Double.NaN);
-            double east  = request.get(searchArg + "_east", Double.NaN);
-            double west  = request.get(searchArg + "_west", Double.NaN);
+            double north = request.get(searchArg + "_north", request.get("north",Double.NaN));
+            double south = request.get(searchArg + "_south", request.get("south",Double.NaN));
+            double east  = request.get(searchArg + "_east", request.get("east",Double.NaN));
+            double west  = request.get(searchArg + "_west", request.get("west",Double.NaN));
 
             if (latLonOk(north)) {
                 where.add(Clause.le(columnName + "_north", north));

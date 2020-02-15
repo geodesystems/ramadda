@@ -191,6 +191,7 @@ var ID_MENU_OUTER = "menu_outer";
 var ID_MENU_INNER = "menu_inner";
 var ID_DISPLAY_PROGRESS = "display_progress";
 var ID_REPOSITORY = "repository";
+let ID_INCLUDE_BOUNDS = "includebounds";
 let ID_PAGE_COUNT = "pagecount";
 let ID_PAGE_PREV = "pageprev";
 let ID_PAGE_NEXT = "pagenext";
@@ -4226,6 +4227,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
 		return true;
 	    });
+	    if(this.getProperty("includeBounds") && this.getBounds) {
+		header2+=HtmlUtils.checkbox("",["id",this.getDomId(ID_INCLUDE_BOUNDS)], false) +" In bounds&nbsp;&nbsp";
+	    }
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
@@ -4622,6 +4626,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
+	    this.jq(ID_INCLUDE_BOUNDS).change(function() {
+		macroChange("bounds",$(this).is(':checked'));
+	    });
 	    macros.every(macro=>{
 		/*
 		$("#" + this.getDomId(macro.getId())+"," +
@@ -8430,6 +8437,7 @@ var RecordUtil = {
 	}
     },
     convertBounds: function(bounds) {
+	if(!bounds) return null;
 	if(Utils.isDefined(bounds.top)) 
 	    return  {north:bounds.top,west:bounds.left,south:bounds.bottom,east:bounds.right};
 	return bounds;
@@ -22868,6 +22876,17 @@ function DisplayManager(argId, argProperties) {
 		jsonUrl+="&skip=" + display.pageSkip;
 	    }
 
+	    if(display.getProperty("includeBounds") && display.getBounds && display.jq(ID_INCLUDE_BOUNDS).is(':checked')) {
+		let bounds = display.getBounds();
+		if(bounds) {
+		    bounds = RecordUtil.convertBounds(bounds);
+		    ["north","south","east","west"].map(b=>{
+			jsonUrl+="&" + b+"=" +bounds[b];
+		    });
+
+		}
+	    }
+
             var fromDate = display.getProperty(PROP_FROMDATE);
             if (fromDate != null) {
                 jsonUrl += "&fromdate=" + fromDate;
@@ -23517,6 +23536,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         },
+        getBounds: function() {
+	    return this.map.getBounds();
+	},
         addBaseMapLayer: function(url, isKml) {
             var theDisplay = this;
             mapLoadInfo = displayMapUrlToVectorListeners[url];
