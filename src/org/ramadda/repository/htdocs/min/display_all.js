@@ -4228,7 +4228,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return true;
 	    });
 	    if(this.getProperty("includeBounds") && this.getBounds) {
-		header2+=HtmlUtils.checkbox("",["id",this.getDomId(ID_INCLUDE_BOUNDS)], false) +" In bounds&nbsp;&nbsp";
+		header2+=HtmlUtils.checkbox("",["id",this.getDomId(ID_INCLUDE_BOUNDS)], false) +"&nbsp;In&nbsp;bounds&nbsp;&nbsp";
 	    }
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
