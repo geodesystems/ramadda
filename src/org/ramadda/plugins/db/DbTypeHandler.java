@@ -4480,6 +4480,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throw new RuntimeException(exc);
         }
 	//	System.err.println("getWiki:" + recordProps);
+
         for (Column column : getColumns(true)) {
 	    //            System.err.println("\tcol:" + column.getName() +" p:" + recordProps.get(column.getName() +".isDisplayProperty"));
             if ( !Misc.equals(

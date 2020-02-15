@@ -24379,7 +24379,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	},
 
-        updateUI: function(callback) {
+        updateUI: function() {
 	    this.lastUpdateTime = null;
             SUPER.updateUI.call(this);
             if (!this.getDisplayReady()) {
@@ -24415,7 +24415,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return;
 		}
 		this.map.setProgress("");
-		if(callback) callback();
 	    });
 
 	},
