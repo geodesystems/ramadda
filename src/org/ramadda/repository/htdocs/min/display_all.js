@@ -4974,6 +4974,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	sizeByFieldChanged:function(field) {
 	},
 	dataFilterChanged: function() {
+	    this.pageSkip = 0;
 	    this.updateUI();
 	},
         updateUI: function() {
@@ -24401,8 +24402,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
 	dataFilterChanged: function() {
+	    this.pageSkip = 0;
 	    this.vectorMapApplied  = false;
-	    this.updateUI(()=>{
+	    this.updateUI(true, ()=>{
 		if(this.getProperty("centerOnFilterChange",false)) {
 		    if (this.vectorLayer && this.points) {
 			//If we have  a map then don't do anything?
@@ -24464,7 +24466,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.map)
 		this.map.setProgress("");
 	},
-        updateUI: function(reload) {
+        updateUI: function(reload, callback) {
 	    this.lastUpdateTime = null;
             SUPER.updateUI.call(this,reload);
             if (!this.getDisplayReady()) {
@@ -24496,6 +24498,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(pointData, records);
+		    if(callback)callback();
 		} catch(exc) {
 		    console.log(exc)
 		    this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "" + exc));

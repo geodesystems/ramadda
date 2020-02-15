@@ -4824,6 +4824,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	sizeByFieldChanged:function(field) {
 	},
 	dataFilterChanged: function() {
+	    this.pageSkip = 0;
 	    this.updateUI();
 	},
         updateUI: function() {
