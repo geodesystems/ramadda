@@ -211,9 +211,9 @@ public class JsonVisitor extends BridgeRecordVisitor {
             RecordField.addJsonFooter(pw);
         } else if (fields == null) {
             pw = getThePrintWriter();
-            String       code = "warning";
+            String       code = "nodata";
             StringBuffer json = new StringBuffer();
-            pw.append(Json.map("error", Json.quote("No data available"),
+            pw.append(Json.map("warning", Json.quote("No data available"),
                                "errorcode", Json.quote(code)));
 
         }

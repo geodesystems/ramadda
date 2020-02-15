@@ -4464,6 +4464,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    macros.every(macro=>{
+		/*
 		$("#" + this.getDomId(macro.getId())+"," +
 		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
 		  "#" + this.getDomId(macro.getId()+"_max")+ "," +
@@ -4474,6 +4475,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			  macroChange(macro, $(this).val());
 		      }
 		  });
+*/
 		this.jq(macro.getId()).change(function(e) {
 		    macroChange(macro, $(this).val());
 		});
@@ -5336,8 +5338,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    else
 		this.setContents(this.getLoadingMessage());
 	},
+	handleNoData: function(pointData,reload) {
+            if (!reload) {
+		if(debug) console.log("\tno reload");
+                this.addData(pointData);
+                this.checkSearchBar();
+            } else {
+		if(!this.dataCollection)
+		    this.dataCollection = new DataCollection();
+		this.dataCollection.setData(pointData);
+	    }
+            this.setContents(this.getMessage("No data available"));
+	},
         pointDataLoadFailed: function(data) {
-
 	    this.clearProgress();
             this.inError = true;
             errorMessage = this.getProperty("errorMessage", null);

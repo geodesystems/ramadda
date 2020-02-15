@@ -338,14 +338,18 @@ function PointData(name, recordFields, records, url, properties) {
             }
 
             var success=function(data) {
-		if(debug)
-		    console.log("\tgot data");
                 if (GuiUtils.isJsonError(data)) {
 		    if(debug)
-			console.log("\tfail");
+			console.log("\tloadPointData failed");
                     display.pointDataLoadFailed(data);
                     return;
                 }
+		if(data.errorcode == "nodata" || !data.fields) {
+                    display.handleNoData(new PointData("", [],[]),reload);
+		    return;
+		}
+		if(debug)
+		    console.log("\tgot data");
                 var newData = makePointData(data, _this.derived, display);
                 obj.pointData = pointData.initWith(newData);
 

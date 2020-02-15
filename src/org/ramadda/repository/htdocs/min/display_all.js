@@ -4614,6 +4614,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    macros.every(macro=>{
+		/*
 		$("#" + this.getDomId(macro.getId())+"," +
 		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
 		  "#" + this.getDomId(macro.getId()+"_max")+ "," +
@@ -4624,6 +4625,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			  macroChange(macro, $(this).val());
 		      }
 		  });
+*/
 		this.jq(macro.getId()).change(function(e) {
 		    macroChange(macro, $(this).val());
 		});
@@ -5486,8 +5488,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    else
 		this.setContents(this.getLoadingMessage());
 	},
+	handleNoData: function(pointData,reload) {
+            if (!reload) {
+		if(debug) console.log("\tno reload");
+                this.addData(pointData);
+                this.checkSearchBar();
+            } else {
+		if(!this.dataCollection)
+		    this.dataCollection = new DataCollection();
+		this.dataCollection.setData(pointData);
+	    }
+            this.setContents(this.getMessage("No data available"));
+	},
         pointDataLoadFailed: function(data) {
-
 	    this.clearProgress();
             this.inError = true;
             errorMessage = this.getProperty("errorMessage", null);
@@ -7465,14 +7478,18 @@ function PointData(name, recordFields, records, url, properties) {
             }
 
             var success=function(data) {
-		if(debug)
-		    console.log("\tgot data");
                 if (GuiUtils.isJsonError(data)) {
 		    if(debug)
-			console.log("\tfail");
+			console.log("\tloadPointData failed");
                     display.pointDataLoadFailed(data);
                     return;
                 }
+		if(data.errorcode == "nodata" || !data.fields) {
+                    display.handleNoData(new PointData("", [],[]),reload);
+		    return;
+		}
+		if(debug)
+		    console.log("\tgot data");
                 var newData = makePointData(data, _this.derived, display);
                 obj.pointData = pointData.initWith(newData);
 
@@ -24379,9 +24396,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	},
 
-        updateUI: function() {
+	handleNoData: function(pointData,reload) {
+            this.addPoints([],[],[]);
+	    if(this.map)
+		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "No data available"));
+	},
+	startProgress: function() {
+	    let msg = this.getProperty("loadingMessage","Loading map...");
+	    if(this.map)
+		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
+	},
+	clearProgress: function() {
+	    if(this.map)
+		this.map.setProgress("");
+	},
+        updateUI: function(reload) {
 	    this.lastUpdateTime = null;
-            SUPER.updateUI.call(this);
+            SUPER.updateUI.call(this,reload);
             if (!this.getDisplayReady()) {
                 return;
             }
@@ -24394,6 +24425,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.haveCalledUpdateUI) {
 		return;
 	    }
+
             let pointData = this.getPointData();
             let records = this.records =  this.filterData();
             if (records == null) {
@@ -24401,6 +24433,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 console.log("null records:" + err.stack);
                 return;
             }
+
 
 	    //Only show the indicators for lots of records
 	    let msg = this.getProperty("loadingMessage","Loading map...");
@@ -24545,8 +24578,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!this.getProperty("heatmapIncludeData"))
 		    return;
 	    }
-//	    bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
-//	    records = RecordUtil.subset(records, bounds);
+	    //if(bounds) {
+	    //	    bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
+	    //	    records = RecordUtil.subset(records, bounds);
+	    //}
 
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));

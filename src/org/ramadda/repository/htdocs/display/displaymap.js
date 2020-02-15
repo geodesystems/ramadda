@@ -1235,9 +1235,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	},
 
-        updateUI: function() {
+	handleNoData: function(pointData,reload) {
+            this.addPoints([],[],[]);
+	    if(this.map)
+		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "No data available"));
+	},
+	startProgress: function() {
+	    let msg = this.getProperty("loadingMessage","Loading map...");
+	    if(this.map)
+		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
+	},
+	clearProgress: function() {
+	    if(this.map)
+		this.map.setProgress("");
+	},
+        updateUI: function(reload) {
 	    this.lastUpdateTime = null;
-            SUPER.updateUI.call(this);
+            SUPER.updateUI.call(this,reload);
             if (!this.getDisplayReady()) {
                 return;
             }
@@ -1250,6 +1264,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.haveCalledUpdateUI) {
 		return;
 	    }
+
             let pointData = this.getPointData();
             let records = this.records =  this.filterData();
             if (records == null) {
@@ -1257,6 +1272,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 console.log("null records:" + err.stack);
                 return;
             }
+
 
 	    //Only show the indicators for lots of records
 	    let msg = this.getProperty("loadingMessage","Loading map...");
@@ -1401,8 +1417,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!this.getProperty("heatmapIncludeData"))
 		    return;
 	    }
-//	    bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
-//	    records = RecordUtil.subset(records, bounds);
+	    //if(bounds) {
+	    //	    bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
+	    //	    records = RecordUtil.subset(records, bounds);
+	    //}
 
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
