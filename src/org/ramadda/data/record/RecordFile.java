@@ -998,7 +998,7 @@ public abstract class RecordFile {
                                 || filter.isRecordOk(record, visitInfo)) {
                             cnt++;
                             if ((visitInfo.getMax() > 0)
-                                    && (cnt >= visitInfo.getMax())) {
+                                    && (cnt > visitInfo.getMax())) {
                                 break;
                             }
                             if ( !visitor.visitRecord(this, visitInfo,

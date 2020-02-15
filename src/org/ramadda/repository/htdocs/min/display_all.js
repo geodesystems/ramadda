@@ -874,6 +874,10 @@ function DisplayThing(argId, argProperties) {
 
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
+    let ID_PAGE_COUNT = "pagecount";
+    let ID_PAGE_PREV = "pageprev";
+    let ID_PAGE_NEXT = "pagenext";
+
 
     RamaddaUtil.initMembers(this, {
     });
@@ -4212,6 +4216,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let header2=HtmlUtils.span(["xstyle","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
 	    header2 +=  this.getHeader2();
+	    if(this.getProperty("pageRequest",false)) {
+		header2 += HtmlUtils.span(["id",this.getDomId(ID_PAGE_COUNT)]);
+	    }
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
 	    macros.every(macro=>{
@@ -5551,6 +5558,48 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.dataCollection = new DataCollection();
 		this.dataCollection.setData(pointData);
 	    }
+	    if(this.getProperty("pageRequest")) {
+		let count = pointData.getRecords().length;
+		let skip = null;
+		let skipToks = url?url.match(/skip=([0-9]+)/):null;
+		if(skipToks) skip = +skipToks[1];
+		let max = +this.getProperty("max",5000);
+//		console.log("max:" +max +" count:" + count +" skip:" + skip);
+		let label = count;
+		if(skip!=null && skip>0)
+		    label = String(skip+1)+"-"+(count+skip);
+		else if(count==max)
+		    label = "1" +"-"+count;
+		let pageInfo = this.getProperty("pageRequestLabel","Showing: ${count}").replace("${count}",label) +" ";
+		let gotAll = !skip &&  count<max;
+
+		if(skip!=null && skip>0) {
+		    pageInfo+= HtmlUtils.getIconImage("fa-step-backward",["id",this.getDomId(ID_PAGE_PREV),"class","display-page-button","title","View previous"])
+		}  else if(!gotAll) {
+		    pageInfo+= HtmlUtils.getIconImage("fa-step-backward",["class","display-page-button fa-disabled"])
+		}
+		if(count==max) {
+		    pageInfo+= HtmlUtils.getIconImage("fa-step-forward",["id",this.getDomId(ID_PAGE_NEXT),"class","display-page-button","title","View next"])
+		}  else if(!gotAll) {
+		    pageInfo+= HtmlUtils.getIconImage("fa-step-forward",["class","display-page-button fa-disabled"])
+		}
+		this.jq(ID_PAGE_COUNT).html(pageInfo+"&nbsp;&nbsp;");
+		this.jq(ID_PAGE_NEXT).click(()=>{
+		    if(!this.pageSkip)
+			this.pageSkip=0;
+		    this.pageSkip+=max;
+		    this.reloadData();
+		});
+		this.jq(ID_PAGE_PREV).click(()=>{
+		    if(!this.pageSkip)
+			this.pageSkip=0;
+		    this.pageSkip-=max;
+		    if(this.pageSkip<0) this.pageSkip=0;
+		    this.reloadData();
+		});		
+	    }
+
+
             if (url != null) {
                 this.jsonUrl = url;
             } else {
@@ -22807,6 +22856,9 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
+	    if(display.pageSkip) {
+		jsonUrl+="&skip=" + display.pageSkip;
+	    }
 
             var fromDate = display.getProperty(PROP_FROMDATE);
             if (fromDate != null) {

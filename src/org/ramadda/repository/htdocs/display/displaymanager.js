@@ -352,6 +352,9 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
+	    if(display.pageSkip) {
+		jsonUrl+="&skip=" + display.pageSkip;
+	    }
 
             var fromDate = display.getProperty(PROP_FROMDATE);
             if (fromDate != null) {

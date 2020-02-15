@@ -6495,7 +6495,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         for (String arg : new String[] {
-            "eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
+		"eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
             ARG_HEIGHT, ARG_FROMDATE, ARG_TODATE, "column", "row"
         }) {
             String value = getProperty(wikiUtil, props, arg, (String) null);

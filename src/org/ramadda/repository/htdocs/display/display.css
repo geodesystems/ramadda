@@ -98,6 +98,20 @@ svg > g > g:last-child { pointer-events: none }
 
 
 
+
+.display-page-button {
+    cursor:pointer;  
+    margin-left:2px;
+    margin-right:2px;
+
+}
+
+.fa-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
 .display-filter-item-button {
     border-radius: 8px;
     border: 2px solid rgba(0,0,0,0);
