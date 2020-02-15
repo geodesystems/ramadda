@@ -3948,7 +3948,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let values = null;
 		let enums = this.getProperty("macro." +macro+".values");
 		if(enums) {
-		    values =[];
+		    values =[]
+		    if(this.getProperty("macro." + macro+".addAll",true))
+			values.push(["","All"]);
 		    enums.split(",").every(tok=>{
 			[id,label] = tok.split(":");
 			values.push([id,label||id]);
