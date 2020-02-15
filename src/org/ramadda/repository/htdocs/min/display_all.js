@@ -4099,7 +4099,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let enums = this.getProperty("macro." +macro+".values");
 		if(enums) {
 		    values =[];
-		    values.push(["","All"]);
 		    enums.split(",").every(tok=>{
 			[id,label] = tok.split(":");
 			values.push([id,label||id]);
@@ -4114,7 +4113,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    type:this.getProperty("macro." +macro+".type","string"),
 		    dflt:this.getProperty("macro." +macro+".default",""),
 		    label:this.getProperty("macro." +macro+".label",Utils.makeLabel(macro)),
-		    enums:this.getProperty("macro." +macro+".values","").split(","),
 		    getWidget: function(dateIds) {
 			let visible = this.display.getProperty("macro." +this.name +".visible",
 							       this.display.getProperty("macros.visible",true));
