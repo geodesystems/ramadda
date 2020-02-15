@@ -191,6 +191,9 @@ var ID_MENU_OUTER = "menu_outer";
 var ID_MENU_INNER = "menu_inner";
 var ID_DISPLAY_PROGRESS = "display_progress";
 var ID_REPOSITORY = "repository";
+let ID_PAGE_COUNT = "pagecount";
+let ID_PAGE_PREV = "pageprev";
+let ID_PAGE_NEXT = "pagenext";
 var CATEGORY_MISC = "Misc";
 
 
@@ -874,9 +877,7 @@ function DisplayThing(argId, argProperties) {
 
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
-    let ID_PAGE_COUNT = "pagecount";
-    let ID_PAGE_PREV = "pageprev";
-    let ID_PAGE_NEXT = "pagenext";
+
 
 
     RamaddaUtil.initMembers(this, {
@@ -5500,6 +5501,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setContents(this.getLoadingMessage());
 	},
 	handleNoData: function(pointData,reload) {
+	    this.jq(ID_PAGE_COUNT).html("");
             if (!reload) {
 		if(debug) console.log("\tno reload");
                 this.addData(pointData);
@@ -24455,6 +24457,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
 	handleNoData: function(pointData,reload) {
+	    this.jq(ID_PAGE_COUNT).html("");
             this.addPoints([],[],[]);
 	    if(this.map)
 		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "No data available"));

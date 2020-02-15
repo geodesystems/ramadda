@@ -1236,6 +1236,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
 	handleNoData: function(pointData,reload) {
+	    this.jq(ID_PAGE_COUNT).html("");
             this.addPoints([],[],[]);
 	    if(this.map)
 		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "No data available"));
