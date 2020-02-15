@@ -4140,7 +4140,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				HtmlUtils.datePicker("","",["class","display-filter-input","style", style, "name","","id",toId])
 			    label = label+" range";
 			} else {
-			    widget = HtmlUtils.input("",this.dflt,["style", style, "id",this.display.getDomId(this.getId()),"size","10","class","display-filter-input"]);
+			    let size = "10";
+			    if(this.type=="number")
+				size = "5";
+			    widget = HtmlUtils.input("",this.dflt,["style", style, "id",this.display.getDomId(this.getId()),"size",size,"class","display-filter-input"]);
 			}
 			if(!widget) return "";
 			return (visible?this.display.makeFilterLabel(label+": "):"")+  widget;
