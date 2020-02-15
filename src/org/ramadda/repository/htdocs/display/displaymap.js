@@ -1186,7 +1186,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
 	dataFilterChanged: function() {
-	    this.pageSkip = 0;
 	    this.vectorMapApplied  = false;
 	    this.updateUI(true, ()=>{
 		if(this.getProperty("centerOnFilterChange",false)) {

@@ -4450,6 +4450,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var theDisplay = this;
 	    let macroChange = (macro,value,what)=>{
 		if(this.settingMacroValue) return;
+		this.macroChanged();
 		this.reloadData();
 		this.settingMacroValue = true;
 		var args = {
@@ -4823,8 +4824,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	sizeByFieldChanged:function(field) {
 	},
-	dataFilterChanged: function() {
+	macroChanged: function() {
 	    this.pageSkip = 0;
+	},
+	dataFilterChanged: function() {
 	    this.updateUI();
 	},
         updateUI: function() {
