@@ -1820,6 +1820,7 @@ var RecordUtil = {
             west = NaN,
             south = NaN,
             east = NaN;
+	let errorCnt = 0;
         for (j = 0; j < records.length; j++) {
             var record = records[j];
             if (!isNaN(record.getLatitude()) && !isNaN(record.getLongitude())) {
@@ -1835,7 +1836,8 @@ var RecordUtil = {
                     east = Math.max(east, record.getLongitude());
                 }
                 if (record.getLongitude() < -180 || record.getLatitude() > 90) {
-                    console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
+		    if(errorCnt++<50)
+			console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                 }
 		if(points)
                     points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
