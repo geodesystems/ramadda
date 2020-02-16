@@ -345,7 +345,14 @@ function PointData(name, recordFields, records, url, properties) {
                     return;
                 }
 		if(data.errorcode == "nodata" || !data.fields) {
-                    display.handleNoData(new PointData("", [],[]),reload);
+		    if(debug)
+			console.log("\tno data:" + url);
+		    let dummy = new PointData("", [],[]);
+                    var tmp = obj.pending;
+                    obj.pending = [];
+                    for (var i = 0; i < tmp.length; i++) {
+			tmp[i].handleNoData(dummy);
+		    }
 		    return;
 		}
 		if(debug)
@@ -355,7 +362,6 @@ function PointData(name, recordFields, records, url, properties) {
 
 		if(debug)
                     console.log("\tpending:" + obj.pending.length);
-
                 var tmp = obj.pending;
                 obj.pending = [];
                 for (var i = 0; i < tmp.length; i++) {

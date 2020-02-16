@@ -3947,15 +3947,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	getRequestMacros: function() {
 	    let macros =[];
-	    if(!this.getProperty("macros","")) return macros;
+	    let p = this.getProperty("macros","");
+	    if(p==null || p=="") return macros;
 
-	    this.getProperty("macros","").split(",").every(macro=>{
+	    p.split(",").every(macro=>{
 		if(macro=="") return true;
 		let values = null;
 		let enums = this.getProperty("macro." +macro+".values");
 		if(enums) {
 		    values =[]
-		    if(this.getProperty("macro." + macro+".addAll",true))
+		    if(this.getProperty("macro." + macro+".includeAll",true))
 			values.push(["","All"]);
 		    enums.split(",").every(tok=>{
 			[id,label] = tok.split(":");
@@ -3963,13 +3964,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			return true;
 		    });
 		}
+		let macroType = this.getProperty("macro." +macro+".type","string");
 		macros.push({
 		    display:this,
 		    name: macro,
 		    values:values,
 		    urlarg: this.getProperty("macro." +macro+".urlarg","macro_"+macro),
-		    type:this.getProperty("macro." +macro+".type","string"),
+		    type:macroType,
 		    dflt:this.getProperty("macro." +macro+".default",""),
+		    dflt_from:this.getProperty("macro." +macro+"_from.default",""),		    
+		    dflt_to:this.getProperty("macro." +macro+"_to.default",""),
+		    dflt_min:this.getProperty("macro." +macro+"_min.default",""),		    
+		    dflt_max:this.getProperty("macro." +macro+"_max.default",""),
 		    label:this.getProperty("macro." +macro+".label",Utils.makeLabel(macro)),
 		    getWidget: function(dateIds) {
 			let visible = this.display.getProperty("macro." +this.name +".visible",
@@ -3979,23 +3985,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let label = this.label;
 			//			console.log(label +" " + this.type);
 			if(this.type=="enumeration") {
- 			    if(values)
+ 			    if(values) {
 				widget = HtmlUtils.select("",["style", style, "id",this.display.getDomId(this.getId()),"class","display-filter-input"],this.values,this.dflt,20);
+
+			    }
 			} else if(this.type=="numeric") {
 			    let minId = this.display.getDomId(this.getId()+"_min");
 			    let maxId = this.display.getDomId(this.getId()+"_max");			    
-			    widget = HtmlUtils.input("","",["style", style, "id",minId,"size","5","class","display-filter-input"]) +
+			    widget = HtmlUtils.input("","",["style", style, "id",minId,"size","5","class","display-filter-input"],this.dflt_min) +
 				" - " +
-				HtmlUtils.input("","",["style", style, "id",maxId,"size","5","class","display-filter-input"])
+				HtmlUtils.input("","",["style", style, "id",maxId,"size","5","class","display-filter-input"],this.dflt_max)
 			    label = label+" range";
 			} else if(this.type=="date") {
 			    let fromId = this.display.getDomId(this.getId()+"_from");
 			    let toId = this.display.getDomId(this.getId()+"_to");
 			    dateIds.push(fromId);
 			    dateIds.push(toId);
-			    widget = HtmlUtils.datePicker("","",["class","display-filter-input","style", style, "name","","id",fromId]) +
+			    widget = HtmlUtils.datePicker("",this.dflt_from,["class","display-filter-input","style", style, "name","","id",fromId]) +
 				" - " +
-				HtmlUtils.datePicker("","",["class","display-filter-input","style", style, "name","","id",toId])
+				HtmlUtils.datePicker("",this.dflt_to,["class","display-filter-input","style", style, "name","","id",toId])
 			    label = label+" range";
 			} else {
 			    let size = "10";
@@ -4004,7 +4012,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    widget = HtmlUtils.input("",this.dflt,["style", style, "id",this.display.getDomId(this.getId()),"size",size,"class","display-filter-input"]);
 			}
 			if(!widget) return "";
-			return (visible?this.display.makeFilterLabel(label+": "):"")+  widget;
+			return (visible?this.display.makeFilterWidget(label,widget):widget);
 		    },
 		    getId: function() {
 			return "macro_" + this.name;
@@ -4013,7 +4021,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let widget = this.display.jq(this.getId());
 			let value = this.dflt;
 			if(widget.length!=0) value =  widget.val();
-			this.display.setProperty(this.name+".default",value);
+			this.display.setProperty("macro." + this.name+".default",value);
 			return value;
 		    },
 		    apply: function(url) {
@@ -4024,13 +4032,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg+"_from",min);
 			    if(max!="")
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg+"_to",max);
+			    this.display.setProperty("macro." +this.name+"_min.default",min);
+			    this.display.setProperty("macro." +this.name+"_max.default",max);
+
 			} else if(this.type=="date") {
 			    let from = this.display.jq(this.getId()+"_from").val()||"";
 			    let to = this.display.jq(this.getId()+"_to").val()||"";
+			    this.display.setProperty("macro." +this.name+"_from.default",from);
+			    this.display.setProperty("macro." +this.name+"_to.default",to);
 			    if(from!="")
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg+"_fromdate",from);
 			    if(to!="")
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg+"_todate",to);
+//			    this.display.setProperty(this.name+".default",value);
 			} else {
 			    let value = this.getValue();
 			    if(value!="") {
@@ -4043,6 +4057,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return true;
 	    });
 	    return macros;
+	},
+	makeFilterWidget:function(label, widget, title) {
+	    if(!label)
+		return HtmlUtils.div(["class","display-filter-widget"],widget);
+	    return HtmlUtils.div(["class","display-filter-widget"],this.makeFilterLabel(label,title)+": " +
+				 widget);
 	},
 	makeFilterLabel: function(label,tt) {
 	    let attrs = ["class","display-filter-label"];
@@ -4066,7 +4086,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    
 
-	    let header2=HtmlUtils.span(["xstyle","display:inline-block;","id",this.getDomId(ID_HEADER2_PREFIX)]);
+	    let header2=HtmlUtils.span(["id",this.getDomId(ID_HEADER2_PREFIX)]);
 	    header2 +=  this.getHeader2();
 	    if(this.getProperty("pageRequest",false)) {
 		header2 += HtmlUtils.span(["id",this.getDomId(ID_PAGE_COUNT)]);
@@ -4074,11 +4094,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
 	    macros.every(macro=>{
-		header2+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
+		if(this.getProperty("macro." +macro.name +".show",true)) { 
+		    header2+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
+		}
 		return true;
 	    });
 	    if(this.getProperty("includeBounds") && this.getBounds) {
-		header2+=HtmlUtils.checkbox("",["id",this.getDomId(ID_INCLUDE_BOUNDS)], false) +"&nbsp;In&nbsp;bounds&nbsp;&nbsp";
+		header2+=this.makeFilterWidget(null,
+					       HtmlUtils.checkbox("",["id",this.getDomId(ID_INCLUDE_BOUNDS)], false) +" In bounds");
 	    }
 
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
@@ -4480,7 +4503,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		macroChange("bounds",$(this).is(':checked'));
 	    });
 	    macros.every(macro=>{
-		/*
 		$("#" + this.getDomId(macro.getId())+"," +
 		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
 		  "#" + this.getDomId(macro.getId()+"_max")+ "," +
@@ -4488,18 +4510,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		  "#" + this.getDomId(macro.getId()+"_to")).keyup(function(e) {
 		      var keyCode = e.keyCode || e.which;
 		      if (keyCode == 13) {
+			  console.log("return:" + $(this).val());
 			  macroChange(macro, $(this).val());
 		      }
 		  });
-*/
-		this.jq(macro.getId()).change(function(e) {
-		    macroChange(macro, $(this).val());
-		});
+		if(macro.type=="enumeration") {
+		    this.jq(macro.getId()).change(function(e) {
+			macroChange(macro, $(this).val());
+		    });
+		}
 		this.jq(macro.getId()+"_min").change(function(e) {
-		    macroChange(macro, $(this).val(),"min");
+//		    macroChange(macro, $(this).val(),"min");
 		});
 		this.jq(macro.getId()+"_max").change(function(e) {
-		    macroChange(macro, $(this).val(),"max");
+//		    macroChange(macro, $(this).val(),"max");
 		});
 		this.jq(macro.getId()+"_from").change(function(e) {
 		    macroChange(macro, $(this).val(),"from");
@@ -5358,6 +5382,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setContents(this.getLoadingMessage());
 	},
 	handleNoData: function(pointData,reload) {
+	    let debug = false;
 	    this.jq(ID_PAGE_COUNT).html("");
             if (!reload) {
 		if(debug) console.log("\tno reload");
