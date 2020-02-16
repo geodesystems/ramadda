@@ -179,6 +179,7 @@ public class Entry implements Cloneable {
     /** transient properties */
     private Hashtable transientProperties = new Hashtable();
 
+
     /** the group property */
     private boolean isGroup = false;
 
@@ -962,8 +963,8 @@ public class Entry implements Cloneable {
      * @return a String representation of this Object
      */
     public String toString() {
-	//        return name + " id:" + id + "  type:" + getTypeHandler();
-	return name +" ";
+        //        return name + " id:" + id + "  type:" + getTypeHandler();
+        return name + " ";
     }
 
     /**
@@ -1566,6 +1567,13 @@ public class Entry implements Cloneable {
      */
     public String getRemoteUrl() {
         return remoteUrl;
+    }
+
+    /**
+     * _more_
+     */
+    public void clearTransientProperties() {
+        transientProperties = new Hashtable();
     }
 
     /**
