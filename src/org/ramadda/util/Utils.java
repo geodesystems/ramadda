@@ -1060,6 +1060,7 @@ public class Utils extends IO {
     }
 
 
+
     /**
      * _more_
      *
@@ -2732,6 +2733,23 @@ public class Utils extends IO {
         Hashtable h = new Hashtable();
         for (int i = 0; i < args.length; i += 2) {
             h.put(args[i], args[i + 1]);
+        }
+
+        return h;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param list _more_
+     *
+     * @return _more_
+     */
+    public static Hashtable makeHashtable(List list) {
+        Hashtable h = new Hashtable();
+        for (int i = 0; i < list.size(); i += 2) {
+            h.put(list.get(i), list.get(i + 1));
         }
 
         return h;
