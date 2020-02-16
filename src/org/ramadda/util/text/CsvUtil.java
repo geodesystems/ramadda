@@ -851,14 +851,15 @@ public class CsvUtil {
      * _more_
      *
      * @param file _more_
+     *
+     * @param s _more_
      * @param props _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public List<Row> tokenizeJson(String s,
-                                  Hashtable<String, String> props)
+    public List<Row> tokenizeJson(String s, Hashtable<String, String> props)
             throws Exception {
 
         List<Row> rows       = new ArrayList<Row>();
@@ -1314,6 +1315,20 @@ public class CsvUtil {
      * @return _more_
      */
     public static String columnsToString(List cols, String delimiter) {
+        return columnsToString(cols, delimiter, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param cols _more_
+     * @param delimiter _more_
+     * @param addNewLine _more_
+     *
+     * @return _more_
+     */
+    public static String columnsToString(List cols, String delimiter,
+                                         boolean addNewLine) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < cols.size(); i++) {
             String s = cols.get(i).toString();
@@ -1339,6 +1354,9 @@ public class CsvUtil {
             } else {
                 sb.append(s);
             }
+        }
+        if (addNewLine) {
+            sb.append("\n");
         }
 
         return sb.toString();
@@ -3386,15 +3404,15 @@ public class CsvUtil {
                                            chunkPattern, tokenPattern));
         } else if (doJson) {
             Hashtable<String, String> props = parseProps(jsonProps);
-	    //xxxx
-	    String    s=null;
-	    if(files.size()>0) {
-		s = IO.readContents(files.get(0));
-	    } else if(inputStream!=null) {
-		s  = IO.readInputStream(inputStream);
-	    } else {
-		throw new Exception("Error processing json: no file given");
-	    }
+            //xxxx
+            String s = null;
+            if (files.size() > 0) {
+                s = IO.readContents(files.get(0));
+            } else if (inputStream != null) {
+                s = IO.readInputStream(inputStream);
+            } else {
+                throw new Exception("Error processing json: no file given");
+            }
             tokenizedRows.add(tokenizeJson(s, props));
         } else if (doPattern) {
             tokenizedRows.add(tokenizePattern(files.get(0), tokenizeHeader,
