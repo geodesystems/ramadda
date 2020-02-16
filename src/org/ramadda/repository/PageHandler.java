@@ -2239,6 +2239,10 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String showDialogError(String h, boolean cleanString) {
+
+        if (h == null) {
+            h = "null error";
+        }
         if (cleanString) {
             h = getDialogString(h);
         }
