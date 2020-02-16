@@ -238,10 +238,12 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                     return null;
                 }
                 String table = entry.getValue(IDX_TABLE, (String) null);
+		SqlUtil.debug = true;
                 Statement stmt = SqlUtil.select(connection, "*",
                                      Misc.newList(table),
                                      Clause.and(new ArrayList<Clause>()), "",
                                      1, 0);
+		SqlUtil.debug = false;
                 SqlUtil.Iterator iter = new SqlUtil.Iterator(stmt);
                 DbRecordFile.MyReader reader =
                     new DbRecordFile(null, entry).doMakeReader(connection,
