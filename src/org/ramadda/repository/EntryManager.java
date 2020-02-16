@@ -2921,9 +2921,16 @@ public class EntryManager extends RepositoryManager {
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             if (parentEntry != null) {
+                String msg =
+                    getPageHandler().showDialogError(inner.getMessage());
+                if ((request.getUser() != null)
+                        && request.getUser().getAdmin()) {
+                    msg += HtmlUtils.pre(
+                        HtmlUtils.entityEncode(LogUtil.getStackTrace(inner)));
+                }
+
                 return getPageHandler().makeEntryHeaderResult(request,
-                        parentEntry, "Entry Create Error",
-                        getPageHandler().showDialogError(inner.getMessage()));
+                        parentEntry, "Entry Create Error", msg);
             }
 
             throw exc;
@@ -8008,12 +8015,12 @@ public class EntryManager extends RepositoryManager {
 
         if (isNew) {
             for (Entry theNewEntry : entries) {
-		//not sure how to handle the initialize new entry
-		//for xml imports. 
-		//                if ( !fromImport) {
-                    theNewEntry.getTypeHandler().initializeNewEntry(request,
-                            theNewEntry);
-		    //                }
+                //not sure how to handle the initialize new entry
+                //for xml imports. 
+                //                if ( !fromImport) {
+                theNewEntry.getTypeHandler().initializeNewEntry(request,
+                        theNewEntry);
+                //                }
                 String name = theNewEntry.getName();
                 if (name.trim().length() == 0) {
                     String nameTemplate =
@@ -8100,6 +8107,7 @@ public class EntryManager extends RepositoryManager {
         connection.setAutoCommit(false);
         long updateTime = getRepository().currentTime();
         for (Entry entry : entries) {
+            entry.clearTransientProperties();
             entry.getTypeHandler().clearCache();
 
 
