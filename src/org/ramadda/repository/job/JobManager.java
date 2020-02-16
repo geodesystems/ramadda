@@ -594,7 +594,7 @@ public class JobManager extends RepositoryManager {
                 try {
                     future.get();
                 } catch (ExecutionException ex) {
-                    throw (Exception) ex.getCause();
+                    throw new RuntimeException(ex.getCause());
                 }
             }
         } catch (Exception exc) {
