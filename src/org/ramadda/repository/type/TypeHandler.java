@@ -655,11 +655,12 @@ public class TypeHandler extends RepositoryManager {
      * @param entry _more_
      * @param tag _more_
      * @param props _more_
+     * @param topProps _more_
      *
      * @return _more_
      */
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props,List<String> topProps) {
+                                Hashtable props, List<String> topProps) {
         return null;
     }
 
@@ -2010,8 +2011,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-
     /**
      * This gets called after the entry has been created and everything has been stored into the database
      *
@@ -2440,13 +2439,13 @@ public class TypeHandler extends RepositoryManager {
                     request.makeUrl(
                         getRepository().URL_ENTRY_FORM, ARG_GROUP,
                         entry.getId(), ARG_TYPE, TYPE_FILE), ICON_ENTRY_ADD,
-		    "New File", OutputType.TYPE_FILE));
+                            "New File", OutputType.TYPE_FILE));
             links.add(new Link(request.makeUrl(getRepository().URL_ENTRY_NEW,
                     ARG_GROUP, entry.getId()), ICON_NEW, LABEL_NEW_ENTRY,
                         OutputType.TYPE_FILE | OutputType.TYPE_TOOLBAR));
             links.add(makeHRLink(OutputType.TYPE_FILE));
 
-	}
+        }
 
 
         //We don't actually prevent an export - just don't show the link in the menu
@@ -2461,8 +2460,7 @@ public class TypeHandler extends RepositoryManager {
                                     entry))) + ".zip", new String[] {
                                         ARG_ENTRYID,
                                         entry.getId() }), ICON_EXPORT,
-                                        "Export",
-                                        OutputType.TYPE_FILE));
+                                        "Export", OutputType.TYPE_FILE));
 
 
         }
@@ -2480,7 +2478,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-	if (canDoNew) {
+        if (canDoNew) {
 
 
             List<String> pastTypes =
@@ -2626,7 +2624,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
- 	if(getRepository().getCommentsEnabled()) {
+        if (getRepository().getCommentsEnabled()) {
             if (getRepository().isReadOnly()) {
                 links.add(
                     new Link(
@@ -3908,23 +3906,41 @@ public class TypeHandler extends RepositoryManager {
                                FormInfo formInfo)
             throws Exception {
 
-        sb.append(HtmlUtils.formEntry("",
-                                      getWikiManager().wikifyEntry(request,
-                                          (entry != null)
-                                          ? entry
-                                          : parentEntry, editHelp)));
+        try {
+            sb.append(
+                HtmlUtils.formEntry(
+                    "", getWikiManager().wikifyEntry(request, (entry != null)
+                    ? entry
+                    : parentEntry, editHelp)));
 
-        addBasicToEntryForm(request, sb, parentEntry, entry, formInfo, this);
-        addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
-                              this);
+            addBasicToEntryForm(request, sb, parentEntry, entry, formInfo,
+                                this);
+            addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
+                                  this);
 
-        if ((entry != null) && request.getUser().getAdmin()
-                && okToShowInForm(entry, "owner", true)) {
-            sb.append(formEntry(request, msgLabel("Owner"),
-                                HtmlUtils.input(ARG_USER_ID, ((entry != null)
-                    ? entry.getUser().getId()
-                    : ""), HtmlUtils.SIZE_20) + " "
-                    + msg("Optionally specify an owner")));
+            if ((entry != null) && request.getUser().getAdmin()
+                    && okToShowInForm(entry, "owner", true)) {
+                sb.append(formEntry(request, msgLabel("Owner"),
+                                    HtmlUtils.input(ARG_USER_ID,
+                                        ((entry != null)
+                                         ? entry.getUser().getId()
+                                         : ""), HtmlUtils.SIZE_20) + " "
+                                         + msg("Optionally specify an owner")));
+            }
+        } catch (Exception exc) {
+            StringBuilder tmp = new StringBuilder();
+            tmp.append(
+                getPageHandler().showDialogError(
+                    "An error has occurred:" + exc));
+
+            if ((request.getUser() != null) && request.getUser().getAdmin()) {
+                Throwable inner = LogUtil.getInnerException(exc);
+                tmp.append(
+                    HtmlUtils.pre(
+                        HtmlUtils.entityEncode(LogUtil.getStackTrace(exc)),
+                        "style='max-height:300px;overflow-y:auto;'"));
+            }
+            sb.append(HtmlUtils.formEntry("", tmp.toString()));
         }
 
     }
