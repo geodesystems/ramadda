@@ -5695,9 +5695,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     col = getRepository().getDatabaseManager().getExtractYear(
                         tmp);
                     //                    extract (year from col)
-                    orderBy = " ORDER BY " + col + " "
-                              + request.getEnum(ARG_DB_SORTDIR, "asc", "asc",
-                                  "desc");
+                    orderBy = SqlUtil.orderBy(col,
+					      request.getEnum(ARG_DB_SORTDIR, "desc", "desc",
+							      "asc").equals("desc"));
                 }
 
                 if (groupByColumn != null) {
@@ -5754,26 +5754,29 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 labels.add(label);
             }
             result.add(labels.toArray());
+            extra += orderBy;
 	    if(cols.size()>0) {
 		extra          = SqlUtil.groupBy(StringUtil.join(",", cols));
 	    }
-            extra += orderBy;
         } else {
             colNames = tableHandler.getColumnNames();
         }
         boolean forTable = request.getString(ARG_DB_VIEW,
                                              VIEW_TABLE).equals(VIEW_TABLE);
 
-        //      System.err.println("Clause:" + clause);
-        //      System.err.println("cols:" + SqlUtil.comma(colNames));
-        //      System.err.println("extra:" + extra);
-	SqlUtil.debug = true;
         Statement stmt = null;
 	try {
+	    SqlUtil.debug = true;
 	    stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
 					       Misc.newList(tableHandler.getTableName()),
 					       clause, extra, max);
-	} finally {
+	} catch (Exception exc) {
+	    System.err.println("Error in select:");
+	    System.err.println("Clause:" + clause);
+	    System.err.println("cols:" + SqlUtil.comma(colNames));
+	    System.err.println("extra:" + extra);
+	}
+	finally {
 	    SqlUtil.debug = false;
 	}
         try {
