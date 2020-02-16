@@ -653,8 +653,10 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                         value = new Integer(results.getInt(colIdx));
                     } else if (type == java.sql.Types.DATE) {
                         Date date = results.getDate(colIdx);
-			if(date==null) value="";
-                        value = sdf.format(date);
+			if(date==null)
+			    value="";
+			else
+			    value = sdf.format(date);
                     } else {
                         value = results.getString(colIdx);
                     }
