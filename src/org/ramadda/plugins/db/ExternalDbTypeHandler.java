@@ -452,7 +452,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             if (orderBy == null) {
                 orderBy = SqlUtil.sanitize(request.getString("orderBy"));
             }
-            if (orderBy != null) {
+            if (Utils.stringDefined(orderBy)) {
                 extraSql += SqlUtil.orderBy(orderBy,
                                             request.getString("descending",
                                                 "true").equals("true"));

@@ -477,6 +477,7 @@ public class SqlUtil {
      * @return _more_
      */
     public static String orderBy(String what, boolean desc) {
+	if(what==null) return null;
         return " ORDER BY " + sanitize(what) + " " + (desc
                 ? "desc"
                 : "asc") + " ";
