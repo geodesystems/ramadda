@@ -862,7 +862,6 @@ public abstract class RecordFile {
      * @return _more_
      */
     public int getSkip(VisitInfo visitInfo) {
-
         if ((visitInfo != null) && (visitInfo.getSkip() >= 0)) {
             return visitInfo.getSkip();
         }
