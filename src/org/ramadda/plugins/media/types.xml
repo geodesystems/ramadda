@@ -186,25 +186,6 @@
  </type>
 
 
-
-
-  <type name="type_db_table"  description="Database Table" super="type_point"  xxxsuper="type_document_tabular"   handler="org.ramadda.plugins.media.DbTableTypeHandler"         category="Database" >
-     <property name="form.resource.show" value="false"/>
-     <property name="icon" value="/media/database_table.png"/>
-     <column   name="db_id" type="string"  columns="60" label="External Database ID"  showinhtml="false"  group="Database">
-<suffix><![CDATA[The shorthand ID of the external database connection <a target="_help" href="http://ramadda.org/repository/media/dbtable.html"/>More information</a>]]></suffix>
-</column>
-     <column   name="table_name" type="string"  size="200" columns="60" label="Table name"  showinhtml="false" suffix="Database table to query"/>
-</type>
-
-
-<!--
-  <type name="type_db_schema"  description="Database Schema"  handler="org.ramadda.plugins.media.DbSchemaTypeHandler"  category="Database">
-     <property name="form.resource.show" value="false"/>
-     <property name="icon" value="/media/database.png"/>
-</type>
--->
-
   <type name="type_document_html"  description="HTML File" pattern="(.*\.html|.*\.htm)" super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
      <property name="icon" value="/icons/html.png"/>
      <column name="embed_type" type="enumeration" values="frame,full,partial,none" default="full" label="Embed style"  showinhtml="false"/>

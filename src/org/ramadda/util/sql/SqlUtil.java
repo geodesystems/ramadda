@@ -87,16 +87,6 @@ public class SqlUtil {
         return "(" + s + ")";
     }
 
-    /**
-     * _more_
-     *
-     * @param columns _more_
-     *
-     * @return _more_
-     */
-    public static String groupBy(String columns) {
-        return " GROUP BY " + columns;
-    }
 
 
     /**
@@ -222,26 +212,46 @@ public class SqlUtil {
     /**
      * _more_
      *
-     * @param s1 _more_
-     * @param s2 _more_
+     * @param s _more_
+     *
+     * @param args _more_
      *
      * @return _more_
      */
-    public static String comma(Object s1, Object s2) {
-        return s1.toString() + "," + s2.toString();
-    }
+    public static String comma(String... args) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < args.length; i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append(sanitize(args[i]));
+        }
 
+        //      if(debug) System.err.println("comma-arrray:" + sb);
+        return sb.toString();
+    }
 
 
     /**
      * _more_
      *
-     * @param s _more_
+     * @param args _more_
      *
      * @return _more_
      */
-    public static String comma(String[] s) {
-        return StringUtil.join(",", s);
+    public static String commax(String... args) {
+        StringBuilder sb = new StringBuilder();
+        System.err.println("Comma:");
+        for (int i = 0; i < args.length; i++) {
+            System.err.println("\ts:" + args[i]);
+            if (i > 0) {
+                sb.append(",");
+            }
+            sb.append(sanitize(args[i]));
+        }
+        System.err.println("\tresult:" + sb);
+
+        return sb.toString();
     }
 
     /**
@@ -254,7 +264,8 @@ public class SqlUtil {
     public static String commaNoDot(String[] s) {
         List l = new ArrayList();
         for (int i = 0; i < s.length; i++) {
-            l.add(unDot(s[i]));
+            String string = sanitize(s[i]);
+            l.add(unDot(string));
         }
 
         return StringUtil.join(",", l);
@@ -445,17 +456,46 @@ public class SqlUtil {
     }
 
 
+
     /**
      * _more_
      *
-     * @param name _more_
+     * @param columns _more_
      *
      * @return _more_
      */
-    public static String validName(String name) {
-        //TODO: Check if the given name is a valid table column name
-        return name;
+    public static String groupBy(String columns) {
+        return " GROUP BY " + sanitize(columns) + " ";
     }
+
+    /**
+     * _more_
+     *
+     * @param what _more_
+     * @param desc _more_
+     *
+     * @return _more_
+     */
+    public static String orderBy(String what, boolean desc) {
+        return " ORDER BY " + sanitize(what) + " " + (desc
+                ? "desc"
+                : "asc") + " ";
+    }
+
+    /**
+     * _more_
+     *
+     * @param max _more_
+     * @param offset _more_
+     *
+     * @return _more_
+     */
+    public static String limit(int max, int offset) {
+        return " LIMIT " + max + ((offset > 0)
+                                  ? " OFFSET " + offset + " "
+                                  : "") + " ";
+    }
+
 
     /**
      * _more_
@@ -1848,7 +1888,7 @@ public class SqlUtil {
         for (Enumeration keys = formArgs.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = (String) formArgs.get(key);
-            value = cleanUp(value);
+            value = sanitize(value);
             cleanArgs.put(key, value);
         }
 
@@ -1856,7 +1896,6 @@ public class SqlUtil {
     }
 
 
-
     /**
      * _more_
      *
@@ -1864,26 +1903,51 @@ public class SqlUtil {
      *
      * @return _more_
      */
-    public static String cleanUp(String value) {
-        //TODO: Atually implement this!!!!
-        value = value.replace("'", "");
+    public static String sanitize(Object value) {
+        if (value == null) {
+            return null;
+        }
+        //IMPORTANT: this screws up and we can have sql injection attacks
+        String s = value.toString().replaceAll("[^\\.,\\(\\)a-zA-Z0-9_]", "");
 
-        return value;
+        return s;
     }
 
 
     /**
      * _more_
      *
+     * @param name _more_
+     *
      * @param value _more_
      *
      * @return _more_
      */
-    public static String cleanName(String value) {
-        value = value.replaceAll(" ", "_");
-        value = value.replaceAll("\\.", "_");
+    public static String validName(Object value) {
+        if (value == null) {
+            return null;
+        }
+        //IMPORTANT: this screws up and we can have sql injection attacks
+        String s = value.toString().replaceAll("[^\\.a-zA-Z0-9_]", "");
 
-        return value;
+        return s;
+    }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public static String cleanName(Object value) {
+        if (value == null) {
+            return null;
+        }
+        String s = value.toString().replaceAll(" ", "_");
+        s = s.replaceAll("\\.", "_");
+
+        return s;
     }
 
 

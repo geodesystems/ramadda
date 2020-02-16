@@ -173,7 +173,7 @@ public class DbInfo {
     private Column dfltSortColumn;
 
     /** _more_ */
-    private boolean dfltSortAsc = true;
+    private boolean dfltSortAsc = false;
 
     /** _more_ */
     private String labelColumnNames;

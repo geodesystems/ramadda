@@ -914,6 +914,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (addNext[0]) {
             if (numValues > 0) {
+		if(isGroupBy(request))  numValues--;
                 if ((numValues == getMax(request))
                         || request.defined(ARG_SKIP)) {
                     getRepository().getHtmlOutputHandler().showNext(request,
@@ -1284,10 +1285,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         valueList = (List<Object[]>) getStorageManager().getCacheObject(
             entry.getId(), request);
-        System.err.println("Cached:" + valueList);
+	//        System.err.println("Cached:" + valueList);
         if (valueList == null) {
             valueList = readValues(request, entry, clause);
-            System.err.println("new values:" + valueList.size());
             getStorageManager().putCacheObject(entry.getId(), request,
                     valueList);
         }
@@ -1908,8 +1908,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 List<TwoFacedObject> aggTypes =
                     new ArrayList<TwoFacedObject>();
                 aggTypes.add(new TwoFacedObject("----", ""));
-                aggTypes.add(new TwoFacedObject("Sum", "sum"));
                 aggTypes.add(new TwoFacedObject("Count", "count"));
+                aggTypes.add(new TwoFacedObject("Sum", "sum"));
                 aggTypes.add(new TwoFacedObject("Average", "avg"));
                 aggTypes.add(new TwoFacedObject("Min", "min"));
                 aggTypes.add(new TwoFacedObject("Max", "max"));
@@ -1981,13 +1981,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         request.getString(ARG_DB_SORTBY, orderBy),
                         HtmlUtils.cssClass(
                             "search-select")) + HtmlUtils.space(2)
-                                + HtmlUtils.radio(
-                                    ARG_DB_SORTDIR, "asc", dir.equals("asc"),
-                                    " default='asc' ") + " Ascending "
-                                        + HtmlUtils.radio(
-                                            ARG_DB_SORTDIR, "desc",
-                                            dir.equals("desc"),
-                                            " default='asc' ") + " Descending"));
+		    + HtmlUtils.radio(
+				      ARG_DB_SORTDIR, "desc",
+				      dir.equals("desc"),
+				      " default='asc' ") + " Descending"
+		    + HtmlUtils.radio(
+				      ARG_DB_SORTDIR, "asc", dir.equals("asc"),
+				      " default='asc' ") + " Ascending "
+			  ));
 
             sb.append(
                 formEntry(
@@ -3215,6 +3216,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         */
         boolean embedded = request.get(ARG_EMBEDDED, false);
+	//	System.err.println("#values: "+ valueList.size());
+	//	for(Object o: valueList.get(0)) {
+	//	    System.err.println("\tvalue: "+ o);
+	//	}
         if ( !embedded) {
             addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
                           fromSearch,
@@ -5720,14 +5725,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 if (aggColumn != null) {
                     aggColumns.add(aggColumn.getName());
                     aggLabels.add(aggColumn.getLabel());
-                    aggSelectors.add(request.getEnum(ARG_AGG_TYPE + i, "sum",
-                            "count", "min", "max", "avg"));
+                    aggSelectors.add(request.getEnum(ARG_AGG_TYPE + i, 
+						     "count", "sum", "min", "max", "avg"));
                 }
             }
             if (aggColumns.size() == 0) {
                 aggColumns.add(colNames.get(0));
                 aggLabels.add(labels.get(0));
-                aggSelectors.add("sum");
+                aggSelectors.add("count");
             }
 
             for (int i = 0; i < aggColumns.size(); i++) {
@@ -5764,10 +5769,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         //      System.err.println("Clause:" + clause);
         //      System.err.println("cols:" + SqlUtil.comma(colNames));
         //      System.err.println("extra:" + extra);
+	SqlUtil.debug = true;
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              clause, extra, max);
 
+	SqlUtil.debug = false;
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;

@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package org.ramadda.plugins.media;
+package org.ramadda.plugins.db;
 
 
 
@@ -65,10 +65,10 @@ import java.util.regex.*;
  *
  *
  */
-public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHandler*/ {
+public class ExternalDbTypeHandler extends PointTypeHandler {
 
     /** _more_ */
-    private static int IDX = PointTypeHandler.IDX_LAST + 1;  //TabularTypeHandler.IDX_LAST;
+    private static int IDX = PointTypeHandler.IDX_LAST + 1;
 
     /** _more_ */
     public static final int IDX_DBID = IDX++;
@@ -90,7 +90,7 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
      *
      * @throws Exception _more_
      */
-    public DbTableTypeHandler(Repository repository, Element entryNode)
+    public ExternalDbTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
@@ -358,6 +358,7 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
          */
         private BufferedReader doMakeBufferedReader(VisitInfo visitInfo)
                 throws Exception {
+
             TableInfo tableInfo = getTableInfo(entry);
             if (tableInfo == null) {
                 System.err.println(
@@ -436,32 +437,38 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                 }
             }
 
-	    String orderBy= null;
-	    String  extraSql = "";
+            String orderBy  = null;
+            String extraSql = "";
 
-	    
-	    if(request.defined("groupBy")) {
-		String groupBy  = SqlUtil.sanitize(request.getString("groupBy"));
-		extraSql += SqlUtil.groupBy(groupBy);
-		String agg = SqlUtil.count(groupBy);
-		what = groupBy +"," +agg;
-		orderBy = agg;
-	    }
-	    if(orderBy==null) 
-		orderBy = SqlUtil.sanitize(request.getString("orderBy"));
-	    if(orderBy!=null) 
-		extraSql+= SqlUtil.orderBy(orderBy,request.getString("descending","true").equals("true"));
 
-	    extraSql += SqlUtil.limit(max, offset);
-	    SqlUtil.debug = true;
+            if (request.defined("groupBy")) {
+                String groupBy =
+                    SqlUtil.sanitize(request.getString("groupBy"));
+                extraSql += SqlUtil.groupBy(groupBy);
+                String agg = SqlUtil.count(groupBy);
+                what    = groupBy + "," + agg;
+                orderBy = agg;
+            }
+            if (orderBy == null) {
+                orderBy = SqlUtil.sanitize(request.getString("orderBy"));
+            }
+            if (orderBy != null) {
+                extraSql += SqlUtil.orderBy(orderBy,
+                                            request.getString("descending",
+                                                "true").equals("true"));
+            }
+
+            extraSql      += SqlUtil.limit(max, offset);
+            SqlUtil.debug = true;
             Statement stmt = SqlUtil.select(connection, what,
                                             Misc.newList(table),
-                                            Clause.and(andClauses),
-                                            extraSql, -1, 0);
-	    SqlUtil.debug = false;
+                                            Clause.and(andClauses), extraSql,
+                                            -1, 0);
+            SqlUtil.debug = false;
             SqlUtil.Iterator iter = new SqlUtil.Iterator(stmt);
 
             return new BufferedReader(doMakeReader(connection, iter));
+
         }
 
 
@@ -535,7 +542,8 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
             /** _more_ */
             int offset = 0;
 
-	    int cnt =0;
+            /** _more_          */
+            int cnt = 0;
 
             /**
              * _more_
@@ -572,7 +580,7 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
              */
             public int read(char[] cbuf, int off, int len) {
                 if (line == null) {
-                    line = readLine();
+                    line   = readLine();
                     offset = 0;
                 }
                 if (line == null) {
@@ -596,13 +604,16 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
              */
             public String readLine() {
                 try {
-                    String line =  readLineInner();
-		    if(line!=null) {
-			if(cnt==0) line = line.replaceAll("[\\(\\)]"," ");
-			cnt++;
-			System.out.print("LINE #"+cnt + ":" + line);
-		    }
-		    return line;
+                    String line = readLineInner();
+                    if (line != null) {
+                        if (cnt == 0) {
+                            line = line.replaceAll("[\\(\\)]", " ");
+                        }
+                        cnt++;
+                        System.out.print("LINE #" + cnt + ":" + line);
+                    }
+
+                    return line;
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
                 }
@@ -623,6 +634,7 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                     if (rsmd == null) {
                         csvFile.putProperty("fields", "dummy");
                     }
+
                     return null;
                 }
                 if (rsmd == null) {
@@ -640,8 +652,8 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                         if (typeName.equals("int")
                                 || typeName.equals("bigint")) {
                             type = "int";
-			} else if (typeName.equals("double")
-                                || typeName.equals("float8")) {
+                        } else if (typeName.equals("double")
+                                   || typeName.equals("float8")) {
                             type = "double";
                         } else if (typeName.equals("date")) {
                             extra += " format=\"yyyyMMdd'T'HHmmss\" ";
@@ -652,13 +664,14 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                         if (i > 1) {
                             fields.append(",");
                         }
-			name = name.replaceAll("(.*)[\\(]","$1_of_").replaceAll("\\)","");
+                        name = name.replaceAll("(.*)[\\(]",
+                                "$1_of_").replaceAll("\\)", "");
                         fields.append(name);
                         fields.append("[type=" + type + extra + "]");
                         names.add(name);
                     }
                     entry.putTransientProperty("db.fields", this.fieldList);
-		    System.err.println("DbTable fields:" + fields);
+                    System.err.println("DbTable fields:" + fields);
                     csvFile.putProperty("fields", fields.toString());
 
                     return CsvUtil.columnsToString(names, ",", true);
@@ -677,18 +690,20 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                         value = new Integer(results.getInt(colIdx));
                     } else if (type == java.sql.Types.DATE) {
                         Date date = results.getDate(colIdx);
-			if(date==null)
-			    value="";
-			else
-			    value = sdf.format(date);
+                        if (date == null) {
+                            value = "";
+                        } else {
+                            value = sdf.format(date);
+                        }
                     } else {
                         value = results.getString(colIdx);
                     }
                     values.add(value);
                 }
-		results = null;
+                results = null;
+
                 return CsvUtil.columnsToString(values, ",", true);
-	    }
+            }
         }
 
 

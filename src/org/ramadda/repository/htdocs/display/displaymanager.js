@@ -352,6 +352,13 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
+	    if(display.getProperty("requestArgs")) {
+		let args = display.getProperty("requestArgs").split(",");
+		for(let i=0;i<args.length;i+=2) {
+		    jsonUrl +="&" + args[i] +"=" + args[i+1];
+		}
+	    }
+
 	    if(display.pageSkip) {
 		jsonUrl+="&skip=" + display.pageSkip;
 	    }

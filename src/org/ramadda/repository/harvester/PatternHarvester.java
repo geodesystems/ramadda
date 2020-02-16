@@ -1432,7 +1432,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                    && (groupTemplate.indexOf("${dirgroup}")
                                        >= 0));
 
-            dirGroup = SqlUtil.cleanUp(dirGroup);
+            dirGroup = SqlUtil.cleanName(dirGroup);
             dirGroup = dirGroup.replace("\\", "/");
         }
 
