@@ -5677,7 +5677,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (doGroupBy) {
             colNames       = new ArrayList<String>();
             groupByColumns = new ArrayList();
-            extra          = " GROUP BY ";
             String       orderBy = null;
 
             List<String> cols    = new ArrayList<String>();
@@ -5741,11 +5740,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String aggSelector = agg + "(" + aggColumn + ") ";
                 colNames.add(aggSelector);
                 if (orderBy == null) {
-                    orderBy = " ORDER BY " + aggSelector
-                              + (request.getString(ARG_DB_SORTDIR,
-                                  "asc").equals("asc")
-                                 ? " asc "
-                                 : " desc ");
+                    orderBy = SqlUtil.orderBy(aggSelector,
+					      request.getString(ARG_DB_SORTDIR, "desc").equals("desc"));
                 }
                 String label = agg;
                 if (label.equals("avg")) {
@@ -5758,7 +5754,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 labels.add(label);
             }
             result.add(labels.toArray());
-            extra += StringUtil.join(",", cols);
+	    if(cols.size()>0) {
+		extra          = SqlUtil.groupBy(StringUtil.join(",", cols));
+	    }
             extra += orderBy;
         } else {
             colNames = tableHandler.getColumnNames();
@@ -5770,11 +5768,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         //      System.err.println("cols:" + SqlUtil.comma(colNames));
         //      System.err.println("extra:" + extra);
 	SqlUtil.debug = true;
-        Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
-                             Misc.newList(tableHandler.getTableName()),
-                             clause, extra, max);
-
-	SqlUtil.debug = false;
+        Statement stmt = null;
+	try {
+	    stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
+					       Misc.newList(tableHandler.getTableName()),
+					       clause, extra, max);
+	} finally {
+	    SqlUtil.debug = false;
+	}
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;

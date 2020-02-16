@@ -465,6 +465,7 @@ public class SqlUtil {
      * @return _more_
      */
     public static String groupBy(String columns) {
+	if(columns == null || columns.trim().length()==0) return "";
         return " GROUP BY " + sanitize(columns) + " ";
     }
 
