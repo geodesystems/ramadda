@@ -175,7 +175,7 @@ public class LasFile extends LidarFile {
         }
         if (header == null) {
             try {
-                RecordIO recordIO = doMakeInputIO(false);
+                RecordIO recordIO = doMakeInputIO(new VisitInfo(),false);
                 recordIO = readHeader(recordIO);
                 recordIO.close();
             } catch (Exception exc) {
@@ -297,7 +297,7 @@ public class LasFile extends LidarFile {
      * @throws Exception On badness
      */
     public LidarRecord getRecord(int index) throws Exception {
-        RecordIO recordIO = doMakeInputIO(false);
+        RecordIO recordIO = doMakeInputIO(new VisitInfo(),false);
         recordIO = readHeader(recordIO);
         PointRecord0 record = doMakePointRecord();
         skip(new VisitInfo(recordIO), record, index);
@@ -563,7 +563,7 @@ public class LasFile extends LidarFile {
             version = 1.3;
             //            System.err.println("version 1.3");
             header = new LasHeader_V13(this, BIGENDIAN);
-            recordIO.reset(doMakeInputIO(false));
+            recordIO.reset(doMakeInputIO(new VisitInfo(),false));
             header.read(recordIO);
         } else if (header.getVersionMinor() != 3) {
             //            throw new IllegalArgumentException("Unknown version:" +header.getVersionMajor()+"." +
@@ -581,7 +581,7 @@ public class LasFile extends LidarFile {
                            header.getMinY() +" " + header.getMaxY() +" " +
                            header.getMinZ() +" " + header.getMaxZ());
         */
-        recordIO.reset(doMakeInputIO(false));
+        recordIO.reset(doMakeInputIO(new VisitInfo(),false));
         recordIO.getDataInputStream().skip(header.getHeaderSize());
         byte[] geoKeyDirectoryBytes = null;
         byte[] geoKeyDoubleParams   = null;
@@ -633,7 +633,7 @@ public class LasFile extends LidarFile {
         }
 
         //Reset to beginning and then skip to the start of the point data
-        recordIO.reset(doMakeInputIO(false));
+        recordIO.reset(doMakeInputIO(new VisitInfo(),false));
         recordIO.getDataInputStream().skipBytes(
             (int) header.getOffsetToPointData());
 
@@ -782,7 +782,7 @@ public class LasFile extends LidarFile {
      * @throws Exception _more_
      */
     public void read() throws Exception {
-        RecordIO recordIO = doMakeInputIO(false);
+        RecordIO recordIO = doMakeInputIO(new VisitInfo(),false);
         recordIO = readHeader(recordIO);
         long pointIdx = 0;
         try {

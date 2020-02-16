@@ -122,7 +122,7 @@ public abstract class RecordFile {
     /** _more_ */
     private StringBuffer dttm = new StringBuffer();
 
-    /** _more_          */
+    /** _more_ */
     private Date baseDate;
 
 
@@ -609,28 +609,36 @@ public abstract class RecordFile {
     /**
      * Make the input io object
      *
+     *
+     * @param visitInfo _more_
      * @return The RecordIO for reading the file
      *
      * @throws IOException On badness
      */
-    public RecordIO doMakeInputIO() throws IOException {
-        return doMakeInputIO(false);
+    public RecordIO doMakeInputIO(VisitInfo visitInfo) throws IOException {
+        return doMakeInputIO(visitInfo, false);
     }
 
 
     /**
      * Make the input io object
      *
+     *
+     * @param visitInfo _more_
      * @param buffered If true then make a bufferedinputstream
      *
      * @return The RecordIO
      *
      * @throws IOException On badness
      */
-    public RecordIO doMakeInputIO(boolean buffered) throws IOException {
+    public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
+            throws IOException {
         return new RecordIO(doMakeInputStream(buffered));
     }
 
+
+
+    
 
     /**
      * Make the input stream
@@ -900,11 +908,13 @@ public abstract class RecordFile {
      */
     public void doQuickVisit() {
         try {
-            RecordIO  recordIO     = doMakeInputIO(true);
             VisitInfo tmpVisitInfo = new VisitInfo();
-            tmpVisitInfo.setRecordIO(recordIO);
-            prepareToVisit(tmpVisitInfo);
-            recordIO.close();
+            RecordIO  recordIO     = doMakeInputIO(tmpVisitInfo, true);
+            if (recordIO.isOk()) {
+                tmpVisitInfo.setRecordIO(recordIO);
+                prepareToVisit(tmpVisitInfo);
+                recordIO.close();
+            }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -958,7 +968,7 @@ public abstract class RecordFile {
         }
         int skip = getSkip(visitInfo);
         //        System.err.println("RecordFile.visit skip =" + skip);
-        RecordIO recordIO = doMakeInputIO(skip == 0);
+        RecordIO recordIO = doMakeInputIO(visitInfo, skip == 0);
         visitInfo.setRecordIO(recordIO);
         visitInfo = prepareToVisit(visitInfo);
         if (visitInfo == null) {
@@ -1167,8 +1177,10 @@ public abstract class RecordFile {
      * @throws Exception On badness
      */
     public Record getRecord(int index) throws Exception {
-        RecordIO recordIO = doMakeInputIO(false);
-        Record   record   = (Record) makeRecord(new VisitInfo());
+        //TODO: not sure about the visitInfo
+        VisitInfo visitInfo = new VisitInfo();
+        RecordIO  recordIO  = doMakeInputIO(visitInfo, false);
+        Record    record    = (Record) makeRecord(new VisitInfo());
         skip(new VisitInfo(recordIO), record, index);
         record.readNextRecord(recordIO);
 
@@ -1217,7 +1229,8 @@ public abstract class RecordFile {
         if (visitInfo == null) {
             visitInfo = doMakeVisitInfo();
         }
-        RecordIO recordInput = doMakeInputIO(getSkip(visitInfo) == 0);
+        RecordIO recordInput = doMakeInputIO(visitInfo,
+                                             getSkip(visitInfo) == 0);
         recordInput = readHeader(recordInput);
         visitInfo.setRecordIO(recordInput);
         if (writeHeader) {

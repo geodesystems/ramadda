@@ -148,20 +148,23 @@ public abstract class TextFile extends PointFile {
     /**
      * _more_
      *
+     *
+     * @param visitInfo _more_
      * @param buffered _more_
      *
      * @return _more_
      *
      * @throws IOException _more_
      */
-    public RecordIO doMakeInputIO(boolean buffered) throws IOException {
+    public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
+            throws IOException {
         String file = getFilename();
         if ((file != null) && file.endsWith(".xls")) {
             return new RecordIO(
                 new BufferedReader(new StringReader(XlsUtil.xlsToCsv(file))));
         }
 
-        return super.doMakeInputIO(buffered);
+        return super.doMakeInputIO(visitInfo, buffered);
     }
 
 

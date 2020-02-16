@@ -117,7 +117,7 @@ public class QfitFile extends PointFile {
         if ((type != TYPE_10WORD) && (type != TYPE_12WORD)
                 && (type != TYPE_14WORD)) {
             visitInfo.getRecordIO().close();
-            visitInfo.setRecordIO(doMakeInputIO(getSkip(visitInfo) == 0));
+            visitInfo.setRecordIO(doMakeInputIO(visitInfo,getSkip(visitInfo) == 0));
             dis        = visitInfo.getRecordIO().getDataInputStream();
             bigEndian  = false;
             recordSize = readInt(dis);
@@ -149,7 +149,7 @@ public class QfitFile extends PointFile {
         }
 
         //reset and read the header records
-        visitInfo.setRecordIO(doMakeInputIO(getSkip(visitInfo) == 0));
+        visitInfo.setRecordIO(doMakeInputIO(visitInfo,getSkip(visitInfo) == 0));
         dis = visitInfo.getRecordIO().getDataInputStream();
         for (int i = 0; i < numHeaderRecords; i++) {
             int size = readInt(dis);
@@ -171,7 +171,9 @@ public class QfitFile extends PointFile {
         //If we haven't determined the type then explicitly call prepareToVisit
         if (type == TYPE_UNDEFINED) {
             try {
-                prepareToVisit(new VisitInfo(doMakeInputIO()));
+		RecordIO io = doMakeInputIO(visitInfo);
+		visitInfo.setRecordIO(io);
+                prepareToVisit(visitInfo);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }

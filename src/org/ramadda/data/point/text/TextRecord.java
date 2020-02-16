@@ -392,6 +392,8 @@ public class TextRecord extends DataRecord {
                                           + "Bad token count:"
                                           + tokens.length + " toks:"
                                           + toks.size());
+		    if(line.length()>1000)
+			line = line.substring(0,999) +"...";
                     msg.append("\nLine:" + line);
                     msg.append("\nExpected:");
                     for (int i = 0; i < fields.size(); i++) {
@@ -407,6 +409,11 @@ public class TextRecord extends DataRecord {
                             msg.append(", ");
                         }
                         msg.append(toks.get(i));
+			if(i>50) {
+			    msg.append(",...");
+			    break;
+			}
+			    
                     }
 
                     throw new IllegalArgumentException(msg.toString());

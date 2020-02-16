@@ -657,6 +657,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                 if (request.defined(ARG_MAX)) {
                     visitInfo.setMax(request.get(ARG_MAX, 1000));
                 }
+		if (request.defined(ARG_SKIP)) {
+                    visitInfo.setSkip(request.get(ARG_SKIP, 0));
+                }
 
                 getRecordJobManager().visitSequential(request, pointEntries,
                         groupVisitor, visitInfo);
@@ -715,6 +718,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 String message =
                     "There was an error processing the request: "
                     + inner.getMessage();
+		inner.printStackTrace();
                 String       code = "error";
                 StringBuffer json = new StringBuffer();
                 json.append(Json.map("error", Json.quote(message),

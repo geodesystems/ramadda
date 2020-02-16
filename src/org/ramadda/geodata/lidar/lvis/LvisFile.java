@@ -280,7 +280,7 @@ public class LvisFile extends LidarFile {
             for (int versionIdx = 0; versionIdx < versions.length;
                     versionIdx++) {
                 version = versions[versionIdx];
-                RecordIO    recordIO = doMakeInputIO(false);
+                RecordIO    recordIO = doMakeInputIO(new VisitInfo(),false);
                 LidarRecord record =
                     (LidarRecord) makeRecord(new VisitInfo());
                 boolean recordOk   = true;

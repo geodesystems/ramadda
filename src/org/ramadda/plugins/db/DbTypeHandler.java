@@ -4484,7 +4484,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         for (Column column : getColumns(true)) {
 	    //            System.err.println("\tcol:" + column.getName() +" p:" + recordProps.get(column.getName() +".isDisplayProperty"));
             if ( !Misc.equals(
-                    recordProps.get(column.getName() + ".isDisplayProperty"),
+                    recordProps.get(column.getName() + ".display"),
                     "true") && !Misc.equals(
                         column.getProperty("isDisplayProperty"), "true")) {
                 continue;
@@ -4501,14 +4501,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             : column.isDate()
                               ? "date"
                               : "string";
+
             all += column.getName();
-            displayProps.add("macro." + column.getName() + ".type");
-            displayProps.add(Json.quote(type));
-            displayProps.add("macro." + column.getName() + ".label");
-            displayProps.add(Json.quote(column.getLabel()));
+	    if(!displayProps.contains("macro." + column.getName() + ".label")) {
+		displayProps.add("macro." + column.getName() + ".label");
+		displayProps.add(Json.quote(column.getLabel()));
+	    }
             displayProps.add("macro." + column.getName() + ".urlarg");
             displayProps.add(Json.quote(column.getSearchArg()));
-            if (column.isEnumeration()) {
+            displayProps.add("macro." + column.getName() + ".type");
+	    displayProps.add(Json.quote(type));
+            if (column.isEnumeration()&& !displayProps.contains("macro." + column.getName() + ".values")) {
                 String enums = null;
                 List<TwoFacedObject> tfos = getEnumValues(request, entry,
                                                 column);
@@ -4526,9 +4529,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
         }
+
+
         displayProps.add("macros");
         displayProps.add(Json.quote(all));
-
         return super.getUrlForWiki(request, entry, tag, props, displayProps);
     }
 

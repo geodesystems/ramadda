@@ -85,6 +85,18 @@ public class RecordIO {
         this.outputStream = outputStream;
     }
 
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isOk() {
+        return inputStream != null || bufferedReader!=null;
+    }
+
+
+
     /**
      * Copy ctor
      *

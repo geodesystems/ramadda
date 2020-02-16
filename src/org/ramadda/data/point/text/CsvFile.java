@@ -107,7 +107,7 @@ public class CsvFile extends TextFile {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
-	//	System.err.println("file:" +file);
+        //      System.err.println("file:" +file);
         if ((file == null) || !file.exists()) {
             try {
                 ByteArrayOutputStream bos = null;
@@ -224,7 +224,7 @@ public class CsvFile extends TextFile {
     @Override
     public List<RecordField> doMakeFields(boolean failureOk) {
         String fieldString = getProperty(PROP_FIELDS, null);
-        //        System.err.println("CsvFile.props:" + getProperties());
+        //      System.err.println("CsvFile.doMakeFields props:" + getProperties());
         if (fieldString == null) {
             doQuickVisit();
             fieldString = getProperty(PROP_FIELDS, null);
