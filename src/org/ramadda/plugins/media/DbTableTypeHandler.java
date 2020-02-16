@@ -434,12 +434,15 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                     }
                 }
             }
+
+	    String  extraSql = " LIMIT " + max + ((offset > 0)
+						  ? " OFFSET " + offset + " "
+						  : "");
+	    System.err.println("SQL:" +extraSql);
             Statement stmt = SqlUtil.select(connection, what,
                                             Misc.newList(table),
                                             Clause.and(andClauses),
-                                            " LIMIT " + max + ((offset > 0)
-                    ? " OFFSET " + offset + " "
-                    : ""), -1, 0);
+                                            extraSql, -1, 0);
             SqlUtil.Iterator iter = new SqlUtil.Iterator(stmt);
 
             return new BufferedReader(doMakeReader(connection, iter));
@@ -516,6 +519,8 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
             /** _more_ */
             int offset = 0;
 
+	    int cnt =0;
+
             /**
              * _more_
              *
@@ -539,8 +544,6 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                 } catch (Exception exc) {}
             }
 
-            /** _more_ */
-            int cnt = 0;
 
             /**
              * _more_
@@ -554,8 +557,6 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
             public int read(char[] cbuf, int off, int len) {
                 if (line == null) {
                     line = readLine();
-                    cnt++;
-                    //              System.out.print("LINE #"+cnt + ":" + line);
                     offset = 0;
                 }
                 if (line == null) {
@@ -579,7 +580,10 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
              */
             public String readLine() {
                 try {
-                    return readLineInner();
+                    String line =  readLineInner();
+                    cnt++;
+		    System.out.print("LINE #"+cnt + ":" + line);
+		    return line;
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
                 }
