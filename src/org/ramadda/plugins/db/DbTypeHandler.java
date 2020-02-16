@@ -5763,16 +5763,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         boolean forTable = request.getString(ARG_DB_VIEW,
                                              VIEW_TABLE).equals(VIEW_TABLE);
-
         Statement stmt = null;
 	try {
 	    SqlUtil.debug = true;
+	    System.err.println("clause:" + clause);
+	    System.err.println("cols:" + SqlUtil.comma(colNames));
+	    System.err.println("extra:" + extra);
 	    stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
 					       Misc.newList(tableHandler.getTableName()),
 					       clause, extra, max);
 	} catch (Exception exc) {
 	    System.err.println("Error in select:");
-	    System.err.println("Clause:" + clause);
+	    System.err.println("clause:" + clause);
 	    System.err.println("cols:" + SqlUtil.comma(colNames));
 	    System.err.println("extra:" + extra);
 	}
