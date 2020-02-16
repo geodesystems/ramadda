@@ -238,12 +238,11 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                     return null;
                 }
                 String table = entry.getValue(IDX_TABLE, (String) null);
-		SqlUtil.debug = true;
+
                 Statement stmt = SqlUtil.select(connection, "*",
                                      Misc.newList(table),
                                      Clause.and(new ArrayList<Clause>()), "",
                                      1, 0);
-		SqlUtil.debug = false;
                 SqlUtil.Iterator iter = new SqlUtil.Iterator(stmt);
                 DbRecordFile.MyReader reader =
                     new DbRecordFile(null, entry).doMakeReader(connection,
@@ -440,11 +439,12 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
 	    String  extraSql = " LIMIT " + max + ((offset > 0)
 						  ? " OFFSET " + offset + " "
 						  : "");
-	    System.err.println("SQL:" +extraSql);
+	    //	    SqlUtil.debug = true;
             Statement stmt = SqlUtil.select(connection, what,
                                             Misc.newList(table),
                                             Clause.and(andClauses),
                                             extraSql, -1, 0);
+	    //	    SqlUtil.debug = false;
             SqlUtil.Iterator iter = new SqlUtil.Iterator(stmt);
 
             return new BufferedReader(doMakeReader(connection, iter));
@@ -583,8 +583,10 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
             public String readLine() {
                 try {
                     String line =  readLineInner();
-                    cnt++;
-		    System.out.print("LINE #"+cnt + ":" + line);
+		    if(line!=null) {
+			cnt++;
+			System.out.print("LINE #"+cnt + ":" + line);
+		    }
 		    return line;
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
@@ -606,7 +608,6 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                     if (rsmd == null) {
                         csvFile.putProperty("fields", "dummy");
                     }
-
                     return null;
                 }
                 if (rsmd == null) {
@@ -668,8 +669,9 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                     }
                     values.add(value);
                 }
+		results = null;
                 return CsvUtil.columnsToString(values, ",", true);
-            }
+	    }
         }
 
 
