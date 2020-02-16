@@ -585,7 +585,7 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
                     String line =  readLineInner();
 		    if(line!=null) {
 			cnt++;
-			System.out.print("LINE #"+cnt + ":" + line);
+			//			System.out.print("LINE #"+cnt + ":" + line);
 		    }
 		    return line;
                 } catch (Exception exc) {
