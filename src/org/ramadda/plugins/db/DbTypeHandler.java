@@ -5754,10 +5754,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 labels.add(label);
             }
             result.add(labels.toArray());
-            extra += orderBy;
 	    if(cols.size()>0) {
 		extra += SqlUtil.groupBy(StringUtil.join(",", cols));
 	    }
+	    if(orderBy!=null)
+		extra += orderBy;
         } else {
             colNames = tableHandler.getColumnNames();
         }
@@ -5766,6 +5767,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Statement stmt = null;
 	try {
 	    //	    SqlUtil.debug = true;
+	    System.err.println("table:" +tableHandler.getTableName());
 	    System.err.println("clause:" + clause);
 	    System.err.println("cols:" + SqlUtil.comma(colNames));
 	    System.err.println("extra:" + extra);
@@ -5774,6 +5776,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 					       clause, extra, max);
 	} catch (Exception exc) {
 	    System.err.println("Error in select:");
+	    System.err.println("table:" +tableHandler.getTableName());
 	    System.err.println("clause:" + clause);
 	    System.err.println("cols:" + SqlUtil.comma(colNames));
 	    System.err.println("extra:" + extra);
