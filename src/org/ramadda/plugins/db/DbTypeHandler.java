@@ -5765,7 +5765,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                              VIEW_TABLE).equals(VIEW_TABLE);
         Statement stmt = null;
 	try {
-	    SqlUtil.debug = true;
+	    //	    SqlUtil.debug = true;
 	    //	    System.err.println("clause:" + clause);
 	    //	    System.err.println("cols:" + SqlUtil.comma(colNames));
 	    //	    System.err.println("extra:" + extra);
