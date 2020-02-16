@@ -460,11 +460,23 @@ public class DbTableTypeHandler extends PointTypeHandler /*extends TabularTypeHa
         }
 
 
-	@Override
-	public boolean skip(VisitInfo visitInfo, Record record, int howMany)
-            throws Exception {
-	    //noop as the DB call does this
-	}
+        /**
+         * _more_
+         *
+         * @param visitInfo _more_
+         * @param record _more_
+         * @param howMany _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+                throws Exception {
+            //noop as the DB call does this
+            return true;
+        }
 
 
         /**
