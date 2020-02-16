@@ -1331,7 +1331,8 @@ public class CsvUtil {
                                          boolean addNewLine) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < cols.size(); i++) {
-            String s = cols.get(i).toString();
+	    Object o = cols.get(i);
+            String s = (o==null?"":o.toString());
             if (i > 0) {
                 sb.append(delimiter);
             }
