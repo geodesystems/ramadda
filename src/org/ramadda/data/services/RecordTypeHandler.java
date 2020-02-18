@@ -444,7 +444,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             List<Macro> macros = getMacros(entry);
             if (macros != null) {
                 for (Macro macro : macros) {
-                    String v = request.getString("macro_" + macro.name,
+                    String v = request.getString("request." + macro.name,
                                    macro.dflt);
                     v      = v.replaceAll("\\.", "_").replaceAll("/", "_");
                     suffix += "_" + v;
@@ -539,10 +539,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         List<Macro> macros = getMacros(entry);
         if (macros != null) {
             for (Macro macro : macros) {
-
                 String value = Utils.getProperty(requestProperties,
-                                   "macro_" + macro.name, macro.dflt);
-                System.err.println(macro.name + " = " + value);
+                                   "request." + macro.name, macro.dflt);
                 path = path.replace("${" + macro.name + "}", value);
             }
         }

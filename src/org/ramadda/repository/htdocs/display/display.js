@@ -1394,7 +1394,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    if(prop.property == "macroValue") {
-		if(!this.getProperty("acceptMacroEvent",true)) {
+		if(!this.getProperty("acceptRequestChangeEvent",true)) {
 		    return;
 		}
 		if(prop.entryId!= this.entryId) return;
