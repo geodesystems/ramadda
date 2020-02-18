@@ -95,10 +95,10 @@ public class FredSeriesTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry)
             throws Exception {
         super.initializeNewEntry(request, entry);
-	if(!Utils.stringDefined(entry.getDescription())) {
-	    System.err.println("FredSeries.init");
-	    initializeSeries(entry);
-	}
+        if ( !Utils.stringDefined(entry.getDescription())) {
+            System.err.println("FredSeries.init");
+            initializeSeries(entry);
+        }
     }
 
 

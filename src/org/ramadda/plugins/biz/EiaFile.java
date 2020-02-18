@@ -67,10 +67,11 @@ public class EiaFile extends CsvFile {
      * @return _more_
      *
      * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
     @Override
-    public InputStream doMakeInputStream(boolean buffered)
-            throws IOException {
+    public InputStream doMakeInputStream(boolean buffered) throws Exception {
         try {
             if (buffer == null) {
                 //                System.err.println("Reading EIA time series");

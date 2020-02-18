@@ -97,10 +97,11 @@ public class EnigmaTable extends CsvFile {
      * @return _more_
      *
      * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
     @Override
-    public InputStream doMakeInputStream(boolean buffered)
-            throws IOException {
+    public InputStream doMakeInputStream(boolean buffered) throws Exception {
         try {
             if (bytes == null) {
                 StringBuilder     sb      = new StringBuilder();
