@@ -1090,16 +1090,20 @@ var Utils = {
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
         if (stringValues && stringValues.length) {
             var tdw = 100 / ct.length + "%";
-            html += "<table width=100%><tr valign=top>";
+	    html+="<div style='width:100%;max-height:50px;overflow-y:auto;'>"
+            html += "<table  width=100%><tr valign=top>";
 	    let colCnt =0;
             for (var i = 0; i < stringValues.length; i++) {
-		if(colCnt++>ct.length) {
-		    html += "</tr><tr valing=top>";
+		if(colCnt>=ct.length) {
+		    html += "</tr><tr valign=top>";
 		    colCnt=0;
 		}
-                html += "<td align=center width='" + tdw + "'>" + stringValues[i] + "</td>";
+		let cell = HtmlUtils.div(["style","width:100%;max-width:100%;"],stringValues[i]);
+                html += "<td align=center width='" + tdw + "'>" + cell + "</td>";
+		colCnt++;
             }
             html += "</tr></table>"
+	    html+="</div>"
         }
         html += HtmlUtils.closeTag("div");
 	return html;
