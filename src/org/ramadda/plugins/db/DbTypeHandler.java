@@ -4606,10 +4606,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         for (Column column : getColumns(true)) {
             //            System.err.println("\tcol:" + column.getName() +" p:" + recordProps.get(column.getName() +".isDisplayProperty"));
-            if ( !Misc.equals(
-                    recordProps.get(column.getName() + ".display"),
-                    "true") && !Misc.equals(
-                        column.getProperty("isDisplayProperty"), "true")) {
+            if (!Misc.equals(
+			     recordProps.get(column.getName() + ".display"),
+			     "true") && !Misc.equals(
+						     column.getProperty("isDisplayProperty"), "true")) {
                 continue;
             }
             if (all != null) {
@@ -6575,43 +6575,46 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 int cnt = 0;
                 for (Column c : columns) {
                     //                    for (int colIdx = colStart; colIdx < list.length; colIdx++) {
-                    if (cnt > 0) {
-                        s.append(",");
-                    }
-                    cnt++;
                     if (debug && (rowIdx < 3)) {
                         System.err.println("\tcolumn:" + c.getName()
                                            + " offset:" + c.getOffset());
                     }
-                    Object o = list[c.getOffset()];
-                    if (debug && (rowIdx < 3)) {
-                        System.err.println("\tvalue:" + o);
-                    }
-                    if (o instanceof String) {
-                        String  str         = (String) o;
-                        boolean needToQuote = false;
-                        if (str.indexOf("\n") >= 0) {
-                            needToQuote = true;
-                        } else if (str.indexOf(",") >= 0) {
-                            needToQuote = true;
-                        }
-                        if (str.indexOf("\"") >= 0) {
-                            str         = str.replaceAll("\"", "\"\"");
-                            needToQuote = true;
-                        }
-                        if (needToQuote) {
-                            s.append('"');
-                            s.append(str);
-                            s.append('"');
-                        } else {
-                            s.append(str);
-                        }
-                    } else if (o instanceof Date) {
-                        Date dttm = (Date) o;
-                        s.append(sdf.format(dttm));
-                    } else {
-                        s.append(o);
-                    }
+		    List<String> names = c.getColumnNames();
+		    for(int idx=0;idx<names.size();idx++) {
+			if (cnt > 0) {
+			    s.append(",");
+			}
+			cnt++;
+			Object o = list[c.getOffset()+idx];
+			if (debug && (rowIdx < 3)) {
+			    System.err.println("\tvalue:" + o);
+			}
+			if (o instanceof String) {
+			    String  str         = (String) o;
+			    boolean needToQuote = false;
+			    if (str.indexOf("\n") >= 0) {
+				needToQuote = true;
+			    } else if (str.indexOf(",") >= 0) {
+				needToQuote = true;
+			    }
+			    if (str.indexOf("\"") >= 0) {
+				str         = str.replaceAll("\"", "\"\"");
+				needToQuote = true;
+			    }
+			    if (needToQuote) {
+				s.append('"');
+				s.append(str);
+				s.append('"');
+			    } else {
+				s.append(str);
+			    }
+			} else if (o instanceof Date) {
+			    Date dttm = (Date) o;
+			    s.append(sdf.format(dttm));
+			} else {
+			    s.append(o);
+			}
+		    }
                 }
                 s.append("\n");
             }
@@ -6629,6 +6632,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
          * @throws Exception _more_
          */
         private void makeFields(Request request) throws Exception {
+	    boolean debug = false;
             boolean      doGroupBy = isGroupBy(request);
             List<Column> columns;
             if (doGroupBy) {
@@ -6670,12 +6674,38 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         makeField(
                             "longitude", attrType(RecordField.TYPE_DOUBLE),
                             attrLabel("Longitude")));
+		} else if (colType.equals(Column.DATATYPE_LATLONBBOX)) {
+                    fields.append(
+                        makeField(
+                            "north", attrType(RecordField.TYPE_DOUBLE),
+                            attrLabel("North")));
+                    fields.append(",");
+		    fields.append(
+                        makeField(
+                            "west", attrType(RecordField.TYPE_DOUBLE),
+                            attrLabel("West")));
+                    fields.append(",");
+		    fields.append(
+                        makeField(
+				  "south", attrType(RecordField.TYPE_DOUBLE),
+                            attrLabel("South")));
+                    fields.append(",");
+                    fields.append(
+                        makeField(
+                            "east", attrType(RecordField.TYPE_DOUBLE),
+                            attrLabel("East")));
+
                 } else {
                     fields.append(makeField(column.getName(), attrType(type),
                                             attrLabel(column.getLabel()),
                                             extra));
                 }
             }
+	    if(debug )
+		System.err.println("fields:" +fields.toString());
+
+	    
+
             putProperty(PROP_FIELDS, fields.toString());
         }
     }

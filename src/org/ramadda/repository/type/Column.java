@@ -603,7 +603,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static List<String> getNames(List<Column> columns) {
         List<String> names = new ArrayList<String>();
         for (Column c : columns) {
-            names.add(c.getName());
+            names.addAll(c.getColumnNames());
         }
 
         return names;
@@ -3189,24 +3189,28 @@ public class Column implements DataTypes, Constants, Cloneable {
         name = value;
     }
 
+
     /**
      * _more_
      *
      * @return _more_
      */
     public List<String> getColumnNames() {
-        List<String> names = new ArrayList<String>();
-        if (isType(DATATYPE_LATLON)) {
-            names.add(name + "_lat");
-            names.add(name + "_lon");
-        } else if (isType(DATATYPE_LATLONBBOX)) {
-            names.add(name + "_north");
-            names.add(name + "_west");
-            names.add(name + "_south");
-            names.add(name + "_east");
-        } else {
-            names.add(name);
-        }
+	List<String> names = null;
+	if(names==null) {
+	    names = new ArrayList<String>();
+	    if (isType(DATATYPE_LATLON)) {
+		names.add(name + "_lat");
+		names.add(name + "_lon");
+	    } else if (isType(DATATYPE_LATLONBBOX)) {
+		names.add(name + "_north");
+		names.add(name + "_west");
+		names.add(name + "_south");
+		names.add(name + "_east");
+	    } else {
+		names.add(name);
+	    }
+	}
 
         return names;
     }
