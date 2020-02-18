@@ -3967,8 +3967,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getRequestMacrosInner: function() {
 	    let macros =[];
 	    let p = this.getProperty("requestFields","");
-	    let e = this.getProperty("extraFields","");
-	    let list = Utils.mergeLists(e.split(","),p.split(","));
+	    let e1 = this.getProperty("extraFields1","");
+	    let e2 = this.getProperty("extraFields2","");
+	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
 	    list.every(macro=>{
 		if(macro=="") return true;
 		let values = null;
