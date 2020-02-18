@@ -1089,9 +1089,14 @@ var Utils = {
         html += HtmlUtils.closeTag("div");
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
         if (stringValues && stringValues.length) {
-            var tdw = 100 / stringValues.length + "%";
+            var tdw = 100 / ct.length + "%";
             html += "<table width=100%><tr valign=top>";
+	    let colCnt =0;
             for (var i = 0; i < stringValues.length; i++) {
+		if(colCnt++>ct.length) {
+		    html += "</tr><tr valing=top>";
+		    colCnt=0;
+		}
                 html += "<td align=center width='" + tdw + "'>" + stringValues[i] + "</td>";
             }
             html += "</tr></table>"
