@@ -111,7 +111,7 @@ public class RecordField {
     /** _more_ */
     private boolean isTypeDate = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean isDateOffset = false;
 
     /** _more_ */
@@ -238,6 +238,29 @@ public class RecordField {
     public static final RecordField FIELD_DATE =
         new RecordField("recordDate", "Date", "", 0, "", TYPE_DATE, "Date",
                         0, false, false);
+
+
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param label _more_
+     * @param description _more_
+     * @param type _more_
+     * @param paramId _more_
+     * @param unit _more_
+     */
+    public RecordField(String name, String label, String description,
+                       String type, int paramId, String unit) {
+        this.name        = name;
+        this.label       = label;
+        this.description = description;
+        this.rawType     = type;
+        setType(type);
+        this.paramId = paramId;
+        this.unit    = unit;
+    }
 
 
 
@@ -482,7 +505,8 @@ public class RecordField {
      * @return _more_
      */
     public String toString() {
-        return "field:" + name + " label: " + label + " param:" + paramId;
+        return "field:" + name + " label: " + label + " type:" + type
+               + " param:" + paramId;
     }
 
 
@@ -1069,6 +1093,7 @@ public class RecordField {
                        || value.equals(TYPE_IMAGE)
                        || value.equals(TYPE_ENUMERATION);
         isTypeDate = value.equals(TYPE_DATE);
+        //      System.err.println("set type:" + type + " is:" +isTypeNumeric +" " + isTypeString +" " + isTypeDate);
     }
 
     /**

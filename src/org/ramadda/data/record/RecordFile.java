@@ -614,8 +614,10 @@ public abstract class RecordFile {
      * @return The RecordIO for reading the file
      *
      * @throws IOException On badness
+     *
+     * @throws Exception _more_
      */
-    public RecordIO doMakeInputIO(VisitInfo visitInfo) throws IOException {
+    public RecordIO doMakeInputIO(VisitInfo visitInfo) throws Exception {
         return doMakeInputIO(visitInfo, false);
     }
 
@@ -630,15 +632,17 @@ public abstract class RecordFile {
      * @return The RecordIO
      *
      * @throws IOException On badness
+     *
+     * @throws Exception _more_
      */
     public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
-            throws IOException {
+            throws Exception {
         return new RecordIO(doMakeInputStream(buffered));
     }
 
 
 
-    
+
 
     /**
      * Make the input stream
@@ -648,9 +652,10 @@ public abstract class RecordFile {
      * @return The input stream
      *
      * @throws IOException On badness
+     *
+     * @throws Exception _more_
      */
-    public InputStream doMakeInputStream(boolean buffered)
-            throws IOException {
+    public InputStream doMakeInputStream(boolean buffered) throws Exception {
         //        System.err.println("****  RecordFile reading:" + filename);
         String path = getNormalizedFilename();
         //A hack for snotel data
@@ -715,7 +720,6 @@ public abstract class RecordFile {
     }
 
 
-
     /**
      * Factory method for creating a Record object.
      *
@@ -728,7 +732,6 @@ public abstract class RecordFile {
 
     /** _more_ */
     private List<RecordField> fields;
-
 
 
     /**
@@ -965,8 +968,7 @@ public abstract class RecordFile {
         if (visitInfo == null) {
             visitInfo = new VisitInfo();
         }
-        int skip = getSkip(visitInfo);
-        //        System.err.println("RecordFile.visit skip =" + skip);
+        int      skip     = getSkip(visitInfo);
         RecordIO recordIO = doMakeInputIO(visitInfo, skip == 0);
         visitInfo.setRecordIO(recordIO);
         visitInfo = prepareToVisit(visitInfo);

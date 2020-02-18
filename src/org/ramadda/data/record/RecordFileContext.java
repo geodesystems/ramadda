@@ -49,5 +49,14 @@ import java.util.zip.GZIPInputStream;
  * @author Jeff McWhirter
  */
 public interface RecordFileContext {
+
+    /**
+     * _more_
+     *
+     * @param field _more_
+     * @param key _more_
+     *
+     * @return _more_
+     */
     public String getFieldProperty(String field, String key);
 }

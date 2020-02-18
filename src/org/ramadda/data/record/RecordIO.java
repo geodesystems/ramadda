@@ -92,7 +92,7 @@ public class RecordIO {
      * @return _more_
      */
     public boolean isOk() {
-        return inputStream != null || bufferedReader!=null;
+        return (inputStream != null) || (bufferedReader != null);
     }
 
 
