@@ -820,12 +820,14 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    var value =  this.getPropertyInner(key,null,skipThis);
 	    if(this.debugGetProperty)
-		console.log("GOT:" + value);
+		console.log("\tgot:" + value);
 	    if(!Utils.isDefined(value)) {
 		if(this.debugGetProperty)
 		    console.log("returning dflt:" + dflt);
 		return dflt;
 	    }
+	    if(this.debugGetProperty)
+		console.log("\returning value:" + value);
 	    return value;
 	},
 	debugGetProperty: false,
@@ -1667,7 +1669,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLoadingMessage: function(msg) {
             if (!msg) msg = this.getProperty("loadingMessage", "Loading data...");
 	    if(msg=="") return "";
-            return HtmlUtils.div(["text-align", "center"], this.getMessage("&nbsp;" + msg));
+            return HtmlUtils.div(["style", "text-align:center;"], this.getMessage("&nbsp;" + msg));
         },
 	reloadData: function() {
 	    this.startProgress();
@@ -1912,6 +1914,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
         getSelectedFields: function(dfltList) {
+	    let debug = false;
+	    if(debug)
+		console.log(this.type +".getSelectedFields");
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
 		var binCount = binType=="count";
@@ -1928,8 +1933,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-            this.debugSelected = false;
+            this.debugSelected = debug;
             this.lastSelectedFields = this.getSelectedFieldsInner(dfltList);
+	    if(debug)
+		console.log("\tsetting lastSelectedFields:" + this.lastSelectedFields);
             var fixedFields = this.getProperty(PROP_FIELDS);
             if (fixedFields) fixedFields.length = 0;
             this.setDisplayTitle();
@@ -1960,11 +1967,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.lastSelectedFields;
         },
         getSelectedFieldsInner: function(dfltList) {
-            if (this.debugSelected)
-                console.log("getSelectedFields dflt:" + (dfltList ? dfltList.length : "null"));
+            if (this.debugSelected) {
+                console.log("getSelectedFieldsInner dflt:" + (dfltList ? dfltList : "null"));
+                console.log("\tlast selected = " + this.lastSelectedFields);
+	    }
             if (this.selectedFields) {
                 if (this.debugSelected)
-                    console.log("\tgot this.selectedFields");
+                    console.log("\treturning this.selectedFields:" + this.selectedFields);
                 return this.selectedFields;
             }
             var df = [];
@@ -2046,18 +2055,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (df.length == 0 && !cbxExists) {
                 if (this.lastSelectedFields && this.lastSelectedFields.length > 0) {
                     if (this.debugSelected)
-                        console.log("\tlastSelectedFields");
+                        console.log("\tlastSelectedFields:" + this.lastSelectedFields);
                     return this.lastSelectedFields;
                 }
             }
             if (df.length == 0) {
                 df = this.getDefaultSelectedFields(fieldsToSelect, dfltList);
                 if (this.debugSelected)
-                    console.log("\tgetDefault:" + df.length);
+                    console.log("\tusing default selected:" + df);
             }
             return df;
         },
         getDefaultSelectedFields: function(fields, dfltList) {
+	    let debug = false;
             if (this.defaultSelectedToAll() && this.allFields != null) {
                 var tmp = [];
                 for (i = 0; i < this.allFields.length; i++) {
@@ -2066,10 +2076,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         tmp.push(field);
                     }
                 }
+		if(debug)
+		    console.log("\treturning this.allFields:" + tmp);
                 return tmp;
             }
 
             if (dfltList != null) {
+		if(debug)
+		    console.log("\treturning dfltList:" + dfltList);
                 return dfltList;
             }
             for (i = 0; i < fields.length; i++) {
@@ -4096,39 +4110,52 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	initHeader2:function() {
 	},
 	getRequestMacros: function() {
+	    if(!this.requestMacros) {
+		this.requestMacros  = this.getRequestMacrosInner();
+	    }
+	    return this.requestMacros;
+	},
+	getRequestMacrosInner: function() {
 	    let macros =[];
-	    let p = this.getProperty("macros","");
-	    if(p==null || p=="") return macros;
-
-	    p.split(",").every(macro=>{
+	    let p = this.getProperty("requestFields","");
+	    let e = this.getProperty("extraFields","");
+	    let list = Utils.mergeLists(e.split(","),p.split(","));
+	    list.every(macro=>{
 		if(macro=="") return true;
 		let values = null;
-		let enums = this.getProperty("macro." +macro+".values");
+		let enums = this.getProperty("request." +macro+".values");
 		if(enums) {
-		    values =[]
-		    if(this.getProperty("macro." + macro+".includeAll",true))
+		    values =[]	
+		    if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",!enums.startsWith(":")))) {
 			values.push(["","All"]);
+		    }
+		    if(this.getProperty("request." + macro+".includeNone",false)) {
+			values.push(["","None"]);
+		    }
 		    enums.split(",").every(tok=>{
 			[id,label] = tok.split(":");
 			values.push([id,label||id]);
 			return true;
 		    });
 		}
-		let macroType = this.getProperty("macro." +macro+".type","string");
+		let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":"string");
 		macros.push({
 		    display:this,
 		    name: macro,
 		    values:values,
-		    urlarg: this.getProperty("macro." +macro+".urlarg","macro_"+macro),
+		    urlarg: this.getProperty("request." +macro+".urlarg",macro),
 		    type:macroType,
-		    dflt:this.getProperty("macro." +macro+".default",""),
-		    dflt_from:this.getProperty("macro." +macro+"_from.default",""),		    
-		    dflt_to:this.getProperty("macro." +macro+"_to.default",""),
-		    dflt_min:this.getProperty("macro." +macro+"_min.default",""),		    
-		    dflt_max:this.getProperty("macro." +macro+"_max.default",""),
-		    label:this.getProperty("macro." +macro+".label",Utils.makeLabel(macro)),
+		    triggerReload:this.getProperty("request." +macro+".triggerReload",true),
+		    dflt:this.getProperty("request." +macro+".default",""),
+		    dflt_from:this.getProperty("request." +macro+"_from.default",""),		    
+		    dflt_to:this.getProperty("request." +macro+"_to.default",""),
+		    dflt_min:this.getProperty("request." +macro+"_min.default",""),		    
+		    dflt_max:this.getProperty("request." +macro+"_max.default",""),
+		    label:this.getProperty("request." +macro+".label",Utils.makeLabel(macro)),
+		    multiple:this.getProperty("request." +macro+".multiple",false),
+		    rows:this.getProperty("request." +macro+".rows",3),
 		    getWidget: function(dateIds) {
-			let visible = this.display.getProperty("macro." +this.name +".visible",
+			let visible = this.display.getProperty("request." +this.name +".visible",
 							       this.display.getProperty("macros.visible",true));
 			let style = visible?"":"display:none;";
 			let widget;
@@ -4136,7 +4163,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			//			console.log(label +" " + this.type);
 			if(this.type=="enumeration") {
  			    if(values) {
-				widget = HtmlUtils.select("",["style", style, "id",this.display.getDomId(this.getId()),"class","display-filter-input"],this.values,this.dflt,20);
+				let attrs = ["style", style, "id",this.display.getDomId(this.getId()),"class","display-filter-input"];
+				if(this.multiple) {
+				    attrs.push("multiple");
+				    attrs.push(null);
+				    attrs.push("size");
+				    attrs.push(Math.min(this.rows,values.length));
+				}
+				widget = HtmlUtils.select("",attrs,this.values,this.dflt,20);
 
 			    }
 			} else if(this.type=="numeric") {
@@ -4171,32 +4205,48 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let widget = this.display.jq(this.getId());
 			let value = this.dflt;
 			if(widget.length!=0) value =  widget.val();
-			this.display.setProperty("macro." + this.name+".default",value);
+			this.display.setProperty("request." + this.name+".default",value);
 			return value;
 		    },
 		    apply: function(url) {
 			if(this.type=="numeric") {
 			    let min = this.display.jq(this.getId()+"_min").val()||"";
 			    let max = this.display.jq(this.getId()+"_max").val()||"";
+			    this.dflt_min = min;
+			    this.dflt_max = max;
 			    if(min!="")
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg+"_from",min);
 			    if(max!="")
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg+"_to",max);
-			    this.display.setProperty("macro." +this.name+"_min.default",min);
-			    this.display.setProperty("macro." +this.name+"_max.default",max);
+			    this.display.setProperty("request." +this.name+"_min.default",min);
+			    this.display.setProperty("request." +this.name+"_max.default",max);
 
 			} else if(this.type=="date") {
 			    let from = this.display.jq(this.getId()+"_from").val()||"";
 			    let to = this.display.jq(this.getId()+"_to").val()||"";
-			    this.display.setProperty("macro." +this.name+"_from.default",from);
-			    this.display.setProperty("macro." +this.name+"_to.default",to);
+			    this.dflt_from = from;
+			    this.dflt_to = to;
+			    this.display.setProperty("request." +this.name+"_from.default",from);
+			    this.display.setProperty("request." +this.name+"_to.default",to);
 			    if(from!="")
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg+"_fromdate",from);
 			    if(to!="")
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg+"_todate",to);
-//			    this.display.setProperty(this.name+".default",value);
+			    //			    this.display.setProperty(this.name+".default",value);
+			} else if(this.type=="enumeration") {
+			    let value = this.getValue();
+			    if(Array.isArray(value)) {
+				value.map(v=>{
+				    if(v!="")
+					url = url +"&" + HtmlUtils.urlArg(this.urlarg,v);
+				});
+			    } else {
+				if(value!="")
+				    url = url +"&" + HtmlUtils.urlArg(this.urlarg,value);
+			    }
 			} else {
 			    let value = this.getValue();
+			    this.dflt  = value;
 			    if(value!="") {
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg,value);
 			    }
@@ -4211,7 +4261,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	makeFilterWidget:function(label, widget, title) {
 	    if(!label)
 		return HtmlUtils.div(["class","display-filter-widget"],widget);
-	    return HtmlUtils.div(["class","display-filter-widget"],this.makeFilterLabel(label,title)+": " +
+	    return HtmlUtils.div(["class","display-filter-widget"],this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ") +
 				 widget);
 	},
 	makeFilterLabel: function(label,tt) {
@@ -4236,7 +4286,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    
 
-	    let header2=HtmlUtils.span(["id",this.getDomId(ID_HEADER2_PREFIX)]);
+	    let header2="";
+	    if(this.getProperty("showProgress",false)) {
+		header2+= HtmlUtils.div(["id",this.getDomId(ID_DISPLAY_PROGRESS), "style","display:inline-block;margin-right:4px;min-width:20px;"]);
+	    }
+	    header2+=HtmlUtils.span(["id",this.getDomId(ID_HEADER2_PREFIX)]);
 	    header2 +=  this.getHeader2();
 	    if(this.getProperty("pageRequest",false)) {
 		header2 += HtmlUtils.span(["id",this.getDomId(ID_PAGE_COUNT)]);
@@ -4244,7 +4298,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
 	    macros.every(macro=>{
-		if(this.getProperty("macro." +macro.name +".show",true)) { 
+		if(this.getProperty("request." +macro.name +".show",true)) { 
 		    header2+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
 		}
 		return true;
@@ -4345,7 +4399,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let selectId = this.getFilterId("filterDate");
 		header2 += HtmlUtils.span(["class","display-filter","style",style],
 					  this.makeFilterLabel("Select " + label+": ") + HtmlUtils.select("",["fieldId","filterDate", "style","",
-																	"id",selectId],enums,selected))+"&nbsp;";
+													      "id",selectId],enums,selected))+"&nbsp;";
 	    }
 	    
 
@@ -4628,8 +4682,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var theDisplay = this;
 	    let macroChange = (macro,value,what)=>{
 		if(this.settingMacroValue) return;
-		this.macroChanged();
-		this.reloadData();
+		if(macro.triggerReload) {
+		    this.macroChanged();
+		    this.reloadData();
+		}
 		this.settingMacroValue = true;
 		var args = {
 		    entryId:this.entryId,
@@ -4670,10 +4726,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		}
 		this.jq(macro.getId()+"_min").change(function(e) {
-//		    macroChange(macro, $(this).val(),"min");
+		    //		    macroChange(macro, $(this).val(),"min");
 		});
 		this.jq(macro.getId()+"_max").change(function(e) {
-//		    macroChange(macro, $(this).val(),"max");
+		    //		    macroChange(macro, $(this).val(),"max");
 		});
 		this.jq(macro.getId()+"_from").change(function(e) {
 		    macroChange(macro, $(this).val(),"from");
@@ -5144,7 +5200,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		button+=" ";
             }
 	    if(this.getProperty("showProgress",false)) {
-		button += HtmlUtils.image(icon_progress,["style","xdisplay:none;","id",this.getDomId(ID_DISPLAY_PROGRESS)]);
+		//		button += HtmlUtils.image(icon_progress,["style","xdisplay:none;","id",this.getDomId(ID_DISPLAY_PROGRESS)]);
 	    }
             let title = "";
             if (this.getShowTitle()) {
@@ -5523,11 +5579,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
 	clearProgress: function() {
-	    this.jq(ID_DISPLAY_PROGRESS).css("display","none");
+	    this.jq(ID_DISPLAY_PROGRESS).html("");
 	},
 	startProgress: function() {
-	    if(this.jq(ID_DISPLAY_PROGRESS).length>0)
-		this.jq(ID_DISPLAY_PROGRESS).css("display","inline-block");
+	    if(this.jq(ID_DISPLAY_PROGRESS).length>0) 
+		this.jq(ID_DISPLAY_PROGRESS).html(HtmlUtils.image(icon_progress));
 	    else
 		this.setContents(this.getLoadingMessage());
 	},
@@ -5586,7 +5642,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.inError = false;
             this.clearCache();
 
+
+
 	    if(debug) console.log("pointDataLoad:" + this.getId() + " " + this.type +" #records:" + pointData.getRecords().length);
+	    if(debug)
+		console.log("\tclearing last selected fields");
+	    
+	    this.lastSelectedFields = null;
+	    this.allFields = null;
             if (!reload) {
 		if(debug) console.log("\tno reload");
                 this.addData(pointData);
@@ -5602,7 +5665,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let skipToks = url?url.match(/skip=([0-9]+)/):null;
 		if(skipToks) skip = +skipToks[1];
 		let max = +this.getProperty("max",5000);
-//		console.log("max:" +max +" count:" + count +" skip:" + skip);
+		//		console.log("max:" +max +" count:" + count +" skip:" + skip);
 		let label = count;
 		if(skip!=null && skip>0)
 		    label = String(skip+1)+"-"+(count+skip);
@@ -12999,18 +13062,27 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
             var selectedFields = this.getSelectedFields();
+	    if(debug)
+		console.log("\tselectedFields:" + selectedFields);
+	    
 
 
             if (selectedFields.length == 0 && this.lastSelectedFields != null) {
                 selectedFields = this.lastSelectedFields;
+		if(debug)
+		    console.log("\tusing last selectedFields:" + selectedFields);
             }
 
 
             if (selectedFields == null || selectedFields.length == 0) {
                 if (this.getChartType() == DISPLAY_TABLE || this.getChartType() == DISPLAY_TREEMAP) {
                     selectedFields = this.dataCollection.getList()[0].getNonGeoFields();
+		    if(debug)
+			console.log("\tfields from data collection:" + selectedFields);
                 } else {
                     selectedFields = this.getSelectedFields();
+		    if(debug)
+			console.log("\tgetSelectedFields again:" + selectedFields);
                 }
             }
 
@@ -13027,6 +13099,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
             selectedFields = tmpFields;
+	    if(debug)
+		console.log("\tsetting lastSelectedFields:" + selectedFields);
             this.lastSelectedFields = selectedFields;
 
             var props = {
@@ -13225,7 +13299,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return false;
 	},
         makeDataTable: function(dataList, props, selectedFields) {
-	    let maxWidth = this.getProperty("maxFieldWidth",-1);
+	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
@@ -13846,6 +13920,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             } else {
                 style += "height:" + "100%;";
             }
+	    style += "text-align:center;"
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
@@ -14403,7 +14478,6 @@ function PiechartDisplay(displayManager, id, properties) {
             }
 	    //	    style += "border:1px solid green;"
 	    style += "padding:5px;"
-	    
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
@@ -22903,6 +22977,10 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
+	    if(display.getProperty("select")) {
+		jsonUrl +="&" + "select" +"=" +display.getProperty("select");
+	    }
+
 	    if(display.getProperty("requestArgs")) {
 		let args = display.getProperty("requestArgs").split(",");
 		for(let i=0;i<args.length;i+=2) {
@@ -23276,6 +23354,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
         }
     });
 }
+
 /**
    Copyright 2008-2019 Geode Systems LLC
 */

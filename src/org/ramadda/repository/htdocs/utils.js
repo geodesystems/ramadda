@@ -608,7 +608,8 @@ var Utils = {
         return arg1;
     },
     isDefined: function(v) {
-        return !(typeof v === 'undefined');
+	if(v===null) return false;
+	return  !(typeof v === 'undefined');
     },
     makeLabel: function(s) {
         s  = s+"";

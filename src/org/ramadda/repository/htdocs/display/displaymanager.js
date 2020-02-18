@@ -352,6 +352,10 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
+	    if(display.getProperty("select")) {
+		jsonUrl +="&" + "select" +"=" +display.getProperty("select");
+	    }
+
 	    if(display.getProperty("requestArgs")) {
 		let args = display.getProperty("requestArgs").split(",");
 		for(let i=0;i<args.length;i+=2) {
@@ -725,3 +729,4 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
         }
     });
 }
+

@@ -507,18 +507,27 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
             var selectedFields = this.getSelectedFields();
+	    if(debug)
+		console.log("\tselectedFields:" + selectedFields);
+	    
 
 
             if (selectedFields.length == 0 && this.lastSelectedFields != null) {
                 selectedFields = this.lastSelectedFields;
+		if(debug)
+		    console.log("\tusing last selectedFields:" + selectedFields);
             }
 
 
             if (selectedFields == null || selectedFields.length == 0) {
                 if (this.getChartType() == DISPLAY_TABLE || this.getChartType() == DISPLAY_TREEMAP) {
                     selectedFields = this.dataCollection.getList()[0].getNonGeoFields();
+		    if(debug)
+			console.log("\tfields from data collection:" + selectedFields);
                 } else {
                     selectedFields = this.getSelectedFields();
+		    if(debug)
+			console.log("\tgetSelectedFields again:" + selectedFields);
                 }
             }
 
@@ -535,6 +544,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
             selectedFields = tmpFields;
+	    if(debug)
+		console.log("\tsetting lastSelectedFields:" + selectedFields);
             this.lastSelectedFields = selectedFields;
 
             var props = {
@@ -733,7 +744,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return false;
 	},
         makeDataTable: function(dataList, props, selectedFields) {
-	    let maxWidth = this.getProperty("maxFieldWidth",-1);
+	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
@@ -1354,6 +1365,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             } else {
                 style += "height:" + "100%;";
             }
+	    style += "text-align:center;"
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
@@ -1911,7 +1923,6 @@ function PiechartDisplay(displayManager, id, properties) {
             }
 	    //	    style += "border:1px solid green;"
 	    style += "padding:5px;"
-	    
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
