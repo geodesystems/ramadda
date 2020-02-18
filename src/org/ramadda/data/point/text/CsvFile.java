@@ -99,9 +99,10 @@ public class CsvFile extends TextFile {
      * @return _more_
      *
      * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
-    public InputStream doMakeInputStream(boolean buffered)
-            throws IOException {
+    public InputStream doMakeInputStream(boolean buffered) throws Exception {
         String csvCommands = getProperty("point.csvcommands", (String) null);
         if (csvCommands == null) {
             return super.doMakeInputStream(buffered);
@@ -278,6 +279,7 @@ public class CsvFile extends TextFile {
 
         return record;
     }
+
 
     /**
      * _more_

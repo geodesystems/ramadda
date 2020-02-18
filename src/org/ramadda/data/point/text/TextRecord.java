@@ -279,6 +279,7 @@ public class TextRecord extends DataRecord {
      * @throws Exception _more_
      */
     public String readNextLine(RecordIO recordIO) throws Exception {
+        boolean debug = false;
         if (textReader == null) {
             textReader = new TextReader();
             textReader.setReader(recordIO.getBufferedReader());
@@ -295,17 +296,27 @@ public class TextRecord extends DataRecord {
                 }
             }
             if (currentLine == null) {
-                //                System.err.println("TextRecord: currentLine is null");
+                if (debug) {
+                    System.err.println("TextRecord: currentLine is null");
+                }
+
                 return null;
             }
             //Don't trim the line as there might be a tab delimiter at the end
             //            currentLine = currentLine.trim();
             if ( !lineOk(currentLine)) {
-                //                System.err.println("TextRecord: currentLine not ok:" + currentLine);
+                if (debug) {
+                    System.err.println("TextRecord: currentLine not ok:"
+                                       + currentLine);
+                }
+
                 continue;
             }
 
-            //            System.err.println("TextRecord: currentLine:" + currentLine);
+            if (debug) {
+                System.err.println("TextRecord: currentLine:" + currentLine);
+            }
+
             return currentLine;
         }
     }
@@ -392,8 +403,9 @@ public class TextRecord extends DataRecord {
                                           + "Bad token count:"
                                           + tokens.length + " toks:"
                                           + toks.size());
-		    if(line.length()>1000)
-			line = line.substring(0,999) +"...";
+                    if (line.length() > 1000) {
+                        line = line.substring(0, 999) + "...";
+                    }
                     msg.append("\nLine:" + line);
                     msg.append("\nExpected:");
                     for (int i = 0; i < fields.size(); i++) {
@@ -409,11 +421,12 @@ public class TextRecord extends DataRecord {
                             msg.append(", ");
                         }
                         msg.append(toks.get(i));
-			if(i>50) {
-			    msg.append(",...");
-			    break;
-			}
-			    
+                        if (i > 50) {
+                            msg.append(",...");
+
+                            break;
+                        }
+
                     }
 
                     throw new IllegalArgumentException(msg.toString());
@@ -430,11 +443,7 @@ public class TextRecord extends DataRecord {
                 }
             }
 
-
-
             TextFile textFile = (TextFile) getRecordFile();
-
-
             String   tok      = null;
             int      tokenCnt = 0;
             for (fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {

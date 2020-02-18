@@ -155,9 +155,12 @@ public abstract class TextFile extends PointFile {
      * @return _more_
      *
      * @throws IOException _more_
+     *
+     * @throws Exception _more_
      */
+    @Override
     public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
-            throws IOException {
+            throws Exception {
         String file = getFilename();
         if ((file != null) && file.endsWith(".xls")) {
             return new RecordIO(
