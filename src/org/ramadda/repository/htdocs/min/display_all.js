@@ -24797,10 +24797,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let source = this;
             let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
 	    if(this.getProperty("scaleRadius")) {
+		let seen ={};
+		let numLocs = 0;
+		points.every(p=>{
+		    if(!seen[p]) {
+			numLocs++;
+			seen[p] = true;
+		    }
+		    return true;
+		});
+
 		let radiusScale  = [10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12];
 		radius=radiusScale[1];
 		for(let i=0;i<radiusScale.length;i+=2) {
-		    if(points.length<+radiusScale[i]) {
+		    if(numLocs<+radiusScale[i]) {
 			radius = +radiusScale[i+1];
 		    }
 		}
