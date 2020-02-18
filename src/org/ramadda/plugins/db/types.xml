@@ -1,7 +1,7 @@
 <types>
 
 
-  <type name="type_db_table"  description="Database Table" super="type_point"  xxxsuper="type_document_tabular"   handler="org.ramadda.plugins.db.ExternalDbTypeHandler"         category="Database" >
+  <type name="type_db_table"  description="External Database" super="type_point"  xxxsuper="type_document_tabular"   handler="org.ramadda.plugins.db.ExternalDbTypeHandler"       supercategory="Basic"  category="Database" >
      <property name="form.resource.show" value="false"/>
      <property name="icon" value="/db/database_table.png"/>
      <column   name="db_id" type="string"  columns="60" label="External Database ID"  showinhtml="false"  group="Database">
