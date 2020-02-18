@@ -191,7 +191,6 @@ var ID_MENU_OUTER = "menu_outer";
 var ID_MENU_INNER = "menu_inner";
 var ID_DISPLAY_PROGRESS = "display_progress";
 var ID_REPOSITORY = "repository";
-let ID_INCLUDE_BOUNDS = "includebounds";
 let ID_PAGE_COUNT = "pagecount";
 let ID_PAGE_PREV = "pageprev";
 let ID_PAGE_NEXT = "pagenext";
@@ -4138,7 +4137,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			return true;
 		    });
 		}
-		let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":"string");
+		let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
 		macros.push({
 		    display:this,
 		    name: macro,
@@ -4161,7 +4160,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let widget;
 			let label = this.label;
 			//			console.log(label +" " + this.type);
-			if(this.type=="enumeration") {
+			if(this.type=="bounds") {
+			    widget = HtmlUtils.checkbox("",["id",this.display.getDomId(this.getId())], false) +" In bounds";
+			    label = null;
+			} else if(this.type=="enumeration") {
  			    if(values) {
 				let attrs = ["style", style, "id",this.display.getDomId(this.getId()),"class","display-filter-input"];
 				if(this.multiple) {
@@ -4209,7 +4211,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			return value;
 		    },
 		    apply: function(url) {
-			if(this.type=="numeric") {
+			if(this.type == "bounds") {
+			    if(this.display.getBounds && this.display.jq(this.getId()).is(':checked')) {
+				let bounds = this.display.getBounds();
+				if(bounds) {
+				    bounds = RecordUtil.convertBounds(bounds);
+				    ["north","south","east","west"].map(b=>{
+					url+="&" + b+"=" +bounds[b];
+				    });
+				    
+				}
+			    }
+			} else if(this.type=="numeric") {
 			    let min = this.display.jq(this.getId()+"_min").val()||"";
 			    let max = this.display.jq(this.getId()+"_max").val()||"";
 			    this.dflt_min = min;
@@ -4303,11 +4316,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		return true;
 	    });
-	    if(this.getProperty("includeBounds") && this.getBounds) {
-		header2+=this.makeFilterWidget(null,
-					       HtmlUtils.checkbox("",["id",this.getDomId(ID_INCLUDE_BOUNDS)], false) +" In bounds");
-	    }
-
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
 		let fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getProperty("fields", this.getProperty("sumFields"))));
@@ -4682,7 +4690,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var theDisplay = this;
 	    let macroChange = (macro,value,what)=>{
 		if(this.settingMacroValue) return;
+		console.log("change");
 		if(macro.triggerReload) {
+		    console.log("reloading");
 		    this.macroChanged();
 		    this.reloadData();
 		}
@@ -4704,10 +4714,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return true;
 	    });
 
-
-	    this.jq(ID_INCLUDE_BOUNDS).change(function() {
-		macroChange("bounds",$(this).is(':checked'));
-	    });
 	    macros.every(macro=>{
 		$("#" + this.getDomId(macro.getId())+"," +
 		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
@@ -4720,6 +4726,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			  macroChange(macro, $(this).val());
 		      }
 		  });
+		if(macro.type == "bounds") {
+		    this.jq(macro.getId()).change(function(e) {
+			macroChange(macro,$(this).is(':checked'));
+		    });
+		}
 		if(macro.type=="enumeration") {
 		    this.jq(macro.getId()).change(function(e) {
 			macroChange(macro, $(this).val());
@@ -22992,16 +23003,6 @@ function DisplayManager(argId, argProperties) {
 		jsonUrl+="&skip=" + display.pageSkip;
 	    }
 
-	    if(display.getProperty("includeBounds") && display.getBounds && display.jq(ID_INCLUDE_BOUNDS).is(':checked')) {
-		let bounds = display.getBounds();
-		if(bounds) {
-		    bounds = RecordUtil.convertBounds(bounds);
-		    ["north","south","east","west"].map(b=>{
-			jsonUrl+="&" + b+"=" +bounds[b];
-		    });
-
-		}
-	    }
 
             var fromDate = display.getProperty(PROP_FROMDATE);
             if (fromDate != null) {
