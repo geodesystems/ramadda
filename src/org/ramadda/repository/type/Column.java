@@ -66,7 +66,7 @@ import java.util.List;
 /**
  */
 
-public class Column implements DataTypes, Constants {
+public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     static int xcnt;
@@ -578,6 +578,62 @@ public class Column implements DataTypes, Constants {
 
 
     }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws CloneNotSupportedException _more_
+     */
+    public Column cloneColumn() throws CloneNotSupportedException {
+        Column column = (Column) this.clone();
+
+        return column;
+    }
+
+    /**
+     * _more_
+     *
+     * @param columns _more_
+     *
+     * @return _more_
+     */
+    public static List<String> getNames(List<Column> columns) {
+        List<String> names = new ArrayList<String>();
+        for (Column c : columns) {
+            names.add(c.getName());
+        }
+
+        return names;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param columns _more_
+     *
+     * @return _more_
+     */
+    public static Object[] makeValueArray(List<Column> columns) {
+        int size = 0;
+        for (Column c : columns) {
+            if (c.isType(DATATYPE_LATLON)) {
+                size += 2;
+            } else if (c.isType(DATATYPE_LATLONBBOX)) {
+                size += 4;
+            } else {
+                size++;
+            }
+        }
+
+        return new Object[size];
+    }
+
+
+
 
     /**
      * _more_
@@ -1370,6 +1426,15 @@ public class Column implements DataTypes, Constants {
     /**
      * _more_
      *
+     * @param o _more_
+     */
+    public void setOffset(int o) {
+        offset = o;
+    }
+
+    /**
+     * _more_
+     *
      * @param statement _more_
      * @param values _more_
      * @param statementIdx _more_
@@ -1564,7 +1629,6 @@ public class Column implements DataTypes, Constants {
         if (isType(DATATYPE_INT)) {
             int value = results.getInt(valueIdx);
             if (results.wasNull()) {
-                //                System.err.println(this  +" was null:" + value);
                 if (databaseDflt != null) {
                     if (Double.isNaN(databaseDfltNum)) {
                         databaseDfltNum = Double.parseDouble(databaseDflt);
@@ -1572,7 +1636,6 @@ public class Column implements DataTypes, Constants {
                     value = (int) databaseDfltNum;
                 }
             }
-            //            System.err.println(this  +" value=" + value);
             values[offset] = new Integer(value);
             valueIdx++;
         } else if (isType(DATATYPE_PERCENTAGE)) {
@@ -1874,10 +1937,14 @@ public class Column implements DataTypes, Constants {
             getRepository().getSessionManager().setArea(request, north, west,
                     south, east);
         } else if (isType(DATATYPE_LATLONBBOX)) {
-            double north = request.get(searchArg + "_north", request.get("north",Double.NaN));
-            double south = request.get(searchArg + "_south", request.get("south",Double.NaN));
-            double east  = request.get(searchArg + "_east", request.get("east",Double.NaN));
-            double west  = request.get(searchArg + "_west", request.get("west",Double.NaN));
+            double north = request.get(searchArg + "_north",
+                                       request.get("north", Double.NaN));
+            double south = request.get(searchArg + "_south",
+                                       request.get("south", Double.NaN));
+            double east = request.get(searchArg + "_east",
+                                      request.get("east", Double.NaN));
+            double west = request.get(searchArg + "_west",
+                                      request.get("west", Double.NaN));
 
             if (latLonOk(north)) {
                 where.add(Clause.le(columnName + "_north", north));
