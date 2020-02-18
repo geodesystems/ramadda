@@ -465,7 +465,10 @@ public class SqlUtil {
      * @return _more_
      */
     public static String groupBy(String columns) {
-	if(columns == null || columns.trim().length()==0) return "";
+        if ((columns == null) || (columns.trim().length() == 0)) {
+            return "";
+        }
+
         return " GROUP BY " + sanitize(columns) + " ";
     }
 
@@ -478,7 +481,10 @@ public class SqlUtil {
      * @return _more_
      */
     public static String orderBy(String what, boolean desc) {
-	if(what==null) return null;
+        if (what == null) {
+            return null;
+        }
+
         return " ORDER BY " + sanitize(what) + " " + (desc
                 ? "desc"
                 : "asc") + " ";
@@ -542,6 +548,29 @@ public class SqlUtil {
      */
     public static String min(String name) {
         return " min(" + validName(name) + ")";
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public static String sum(String name) {
+        return " sum(" + validName(name) + ")";
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public static String avg(String name) {
+        return " avg(" + validName(name) + ")";
     }
 
     /**
@@ -1637,6 +1666,15 @@ public class SqlUtil {
         }
 
         /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public Statement getStatement() {
+            return stmt;
+        }
+
+        /**
          *  Set the ShouldCloseStatement property.
          *
          *  @param value The new value for ShouldCloseStatement
@@ -1653,37 +1691,6 @@ public class SqlUtil {
         public boolean getShouldCloseStatement() {
             return shouldCloseStatement;
         }
-
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws SQLException _more_
-         */
-        public ResultSet xxxnext() throws SQLException {
-            if (stmt == null) {
-                return null;
-            }
-            if (resultSetCnt != 0) {
-                stmt.getMoreResults();
-            }
-            if (lastResultSet != null) {
-                lastResultSet.close();
-            }
-            resultSetCnt++;
-            lastResultSet = stmt.getResultSet();
-            if (lastResultSet == null) {
-                if (shouldCloseStatement) {
-                    close(stmt);
-                }
-                stmt = null;
-            }
-
-            return lastResultSet;
-        }
-
 
         /**
          * _more_
@@ -1909,10 +1916,31 @@ public class SqlUtil {
         if (value == null) {
             return null;
         }
-        //IMPORTANT: this screws up and we can have sql injection attacks
+        //IMPORTANT: if this screws up and we can have sql injection attacks
         String s = value.toString().replaceAll("[^\\.,\\(\\)a-zA-Z0-9_]", "");
 
         return s;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param values _more_
+     *
+     * @return _more_
+     */
+    public static List<String> sanitize(List<String> values) {
+        //IMPORTANT: if this screws up and we can have sql injection attacks
+        if (values == null) {
+            return null;
+        }
+        List<String> result = new ArrayList<String>();
+        for (String s : values) {
+            result.add(sanitize(s));
+        }
+
+        return result;
     }
 
 
