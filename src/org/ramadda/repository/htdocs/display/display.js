@@ -4012,7 +4012,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let label = this.label;
 			//			console.log(label +" " + this.type);
 			if(this.type=="bounds") {
-			    widget = HtmlUtils.checkbox("",["id",this.display.getDomId(this.getId())], false) +" In bounds";
+			    widget = HtmlUtils.checkbox("",["id",this.display.getDomId(this.getId())], false) +HtmlUtils.span(["class","display-request-reload","title","Reload with current bounds"], " In bounds");
 			    label = null;
 			} else if(this.type=="enumeration") {
  			    if(values) {
@@ -4541,12 +4541,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var theDisplay = this;
 	    let macroChange = (macro,value,what)=>{
 		if(this.settingMacroValue) return;
-		console.log("change");
 		if(macro.triggerReload) {
-		    console.log("reloading");
 		    this.macroChanged();
 		    this.reloadData();
 		}
+		if(!macro.name) return;
 		this.settingMacroValue = true;
 		var args = {
 		    entryId:this.entryId,
@@ -4563,6 +4562,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    macroDateIds.every(id=>{
 		HtmlUtils.datePickerInit(id);
 		return true;
+	    });
+	    this.jq(ID_HEADER2).find(".display-request-reload").click(()=>{
+		macroChange({triggerReload:true});
 	    });
 
 	    macros.every(macro=>{

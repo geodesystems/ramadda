@@ -1641,6 +1641,11 @@ margin-bottom:10px;
 text-align:center;
 }
 
+.display-request-reload {
+    cursor:pointer;
+}
+
+
 .display-frequency-banner {
 }
 
