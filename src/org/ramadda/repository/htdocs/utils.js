@@ -1090,22 +1090,31 @@ var Utils = {
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
         if (stringValues && stringValues.length) {
             var tdw = 100 / ct.length + "%";
-	    html+="<div style='width:100%;max-height:50px;overflow-y:auto;'>"
-            html += "<table  width=100%><tr valign=top>";
+            html += "<div style='width:100%;vertical-align:top;'>"
 	    let colCnt =0;
+	    let bin ={};
             for (var i = 0; i < stringValues.length; i++) {
 		if(colCnt>=ct.length) {
-		    html += "</tr><tr valign=top>";
 		    colCnt=0;
 		}
-		let cell = HtmlUtils.div(["style","width:100%;max-width:100%;"],stringValues[i]);
-                html += "<td align=center width='" + tdw + "'>" + cell + "</td>";
+		if (!bin[colCnt]) {
+		    bin[colCnt]=""
+		} else {
+		    bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
+		}
+		bin[colCnt]+=HtmlUtils.span(["title",stringValues[i]],stringValues[i]);
 		colCnt++;
             }
-            html += "</tr></table>"
+            for (var i = 0; i < stringValues.length; i++) {
+		if(!bin[i]) break;
+		let cell = HtmlUtils.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],bin[i]);
+		html+=cell;
+
+	    }
+//            html += "</tr></table>"
 	    html+="</div>"
         }
-        html += HtmlUtils.closeTag("div");
+  //      html += HtmlUtils.closeTag("div");
 	return html;
     },
 
