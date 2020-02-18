@@ -156,7 +156,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                        "/cdmdata/page_white_text.png", GROUP_DATA);
 
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_JSON = new OutputType("JSON",
                                                      "data.json",
                                                      OutputType.TYPE_OTHER,
@@ -591,6 +591,118 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
 
 
     /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     * @param displayProps _more_
+     *
+     * @throws Exception _more_
+     */
+    public void getWikiTagAttrs(Request request, Entry entry, String tag,
+                                Hashtable props, List<String> displayProps)
+            throws Exception {
+        List<String> all   = new ArrayList<String>();
+        String       field = (String) props.get("gridField");
+        if (field == null) {
+            return;
+        }
+        String      path = getPath(request, entry);
+        GridDataset gds  = getCdmManager().getGridDataset(entry, path);
+        GeoGrid     grid = (GeoGrid) gds.findGridByName(field);
+        if (grid == null) {
+            System.err.println("Cannot find grid field:" + grid);
+        }
+        GridCoordSystem        gcs       = grid.getCoordinateSystem();
+        CoordinateAxis         xaxis     = gcs.getXHorizAxis();
+        CoordinateAxis         yaxis     = gcs.getYHorizAxis();
+        CoordinateAxis1D       compAxis  = null;
+        List<CalendarDate>     dates     = getGridDates(gds);
+
+        List<VariableSimpleIF> variables = gds.getDataVariables();
+        all.add("gridField");
+        String vars = null;
+        for (VariableSimpleIF var : variables) {
+            if (vars == null) {
+                vars = "";
+            } else {
+                vars += ",";
+            }
+            vars += var.getShortName() + ":" + var.getDescription();
+        }
+        displayProps.add("request.gridField.includeAll");
+        displayProps.add("false");
+        displayProps.add("request.gridField.label");
+        displayProps.add(Json.quote("Field"));
+        displayProps.add("request.gridField.values");
+        displayProps.add(Json.quote(vars));
+
+        if (dates.size() > 0) {
+            all.add("gridTime");
+            displayProps.add("request.gridTime.includeAll");
+            displayProps.add("false");
+            displayProps.add("request.gridTime.label");
+            displayProps.add(Json.quote("Time"));
+            displayProps.add("request.gridTime.values");
+            String v = null;
+            for (int i = 0; i < dates.size(); i++) {
+                if (v == null) {
+                    v = "";
+                } else {
+                    v += ",";
+                }
+                v += i + ":" + dates.get(i);
+            }
+            displayProps.add(Json.quote(v));
+        }
+
+        if (grid.getZDimension() != null) {
+            CoordinateAxis1D zAxis =
+                grid.getCoordinateSystem().getVerticalAxis();
+            if (zAxis != null) {
+                double[] zVals = zAxis.getCoordValues();
+                all.add("gridLevel");
+                displayProps.add("request.gridLevel.label");
+                displayProps.add(Json.quote("Grid Level"));
+                displayProps.add("request.gridLevel.includeAll");
+                displayProps.add("false");
+                displayProps.add("request.gridLevel.values");
+                String v = null;
+                for (int i = 0; i < zVals.length; i++) {
+                    if (v == null) {
+                        v = "";
+                    } else {
+                        v += ",";
+                    }
+                    v += i + ":" + zVals[i];
+                }
+                displayProps.add(Json.quote(v));
+            }
+        }
+        all.add("gridStride");
+        displayProps.add("request.gridStride.includeAll");
+        displayProps.add("false");
+        displayProps.add("request.gridStride.label");
+        displayProps.add(Json.quote("Stride"));
+        displayProps.add("request.gridStride.values");
+        displayProps.add(Json.quote("1,2,3,4,5,6,7,8,10"));
+
+
+        //      displayProps.add("request." + column.getName() + ".urlarg");
+        //      displayProps.add(Json.quote(column.getSearchArg()));
+
+        displayProps.add("requestFields");
+        displayProps.add(Json.quote(Misc.join(",", all)));
+
+        getCdmManager().returnGridDataset(path, gds);
+    }
+
+
+
+
+    /**
      * Get the grid dates
      *
      * @param dataset  the dataset
@@ -663,6 +775,9 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         List<GridDatatype> grids             = sortGrids(dataset);
         boolean            haveOneVerticalCS = true;
         CoordinateAxis1D   compAxis          = null;
+
+
+
 
         for (GridDatatype grid : grids) {
             String cbxId = "varcbx_" + (varCnt++);
@@ -978,7 +1093,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                             ARG_AREA_EAST, 180.0)));
             //                System.err.println("llr:" + llr);
         }
-        int   hStride = request.get(ARG_HSTRIDE, 1);
+        int   hStride = request.get(ARG_HSTRIDE, request.get("stride", 1));
         Range zRange  = null;
         if (request.defined(ARG_LEVEL)) {
             int index = request.get(ARG_LEVEL, -1);
@@ -1262,16 +1377,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                             ARG_AREA_EAST, 180.0)));
             //                System.err.println("llr:" + llr);
         }
-        int   hStride = request.get(ARG_HSTRIDE, 1);
-        Range zRange  = null;
-        if (request.defined(ARG_LEVEL)) {
-            int index = request.get(ARG_LEVEL, -1);
-            if (index >= 0) {
-                zRange = new Range(index, index);
-            }
-        }
         boolean            includeLatLon = request.get(ARG_ADDLATLON, false);
-        int                timeStride    = 1;
         List<CalendarDate> allDates      = getGridDates(gds);
         CalendarDate[]     dates         = new CalendarDate[2];
         if (cdr != null) {
@@ -1315,12 +1421,29 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         File f = getRepository().getStorageManager().getTmpFile(request,
                      "subset.json");
 
-        String     field      = request.getString("gridField", "");
-        GeoGrid    grid       = (GeoGrid) gds.findGridByName(field);
-        int        stride     = request.get("gridStride", 1);
-        int        level      = request.get("gridLevel", 1);
-        int        max        = request.get("max", 200000);
+        String  field = request.getString("gridField", "");
+        GeoGrid grid  = (GeoGrid) gds.findGridByName(field);
+        if (grid == null) {
+            throw new RuntimeException("Could not find grid field:" + field);
+        }
 
+        Range tRange = null;
+        if (request.defined("gridTime")) {
+            int index = request.get("gridTime", -1);
+            if (index >= 0) {
+                tRange = new Range(index, index);
+            }
+        }
+
+        Range zRange = null;
+        if (request.defined("gridLevel")) {
+            int index = request.get("gridLevel", -1);
+            if (index >= 0) {
+                zRange = new Range(index, index);
+            }
+        }
+        int        stride     = request.get("gridStride", 1);
+        int        max        = request.get("max", 200000);
         LatLonRect bounds     = null;
         String     gridBounds = request.getString("gridBounds", null);
         if (gridBounds != null) {
@@ -1335,7 +1458,9 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                     toks.get(3))));
             }
         }
-        grid = grid.subset(new Range(0, 0), null, bounds, 1, stride, stride);
+
+        //grid = grid.subset(new Range(0, 0), null, bounds, 1, stride, stride);
+        grid = grid.subset(tRange, zRange, bounds, 1, stride, stride);
 
         GridCoordSystem gcs   = grid.getCoordinateSystem();
         CoordinateAxis  xaxis = gcs.getXHorizAxis();
@@ -1369,7 +1494,16 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                             Json.quote("Longitude"), "index", "2", "type",
                             Json.quote("double")));
         writer.println(Json.list(fields));
+
+
+        List<String> displayProps = new ArrayList<String>();
+        Hashtable    wikiProps    = new Hashtable();
+        wikiProps.put("gridField", field);
+        getWikiTagAttrs(request, entry, "display", wikiProps, displayProps);
+        writer.println(",\"properties\":");
+        writer.println(Json.map(displayProps));
         writer.println(",\"data\":[");
+
         for (int i = 0; i < a.getSize(); i++) {
             if (i > max) {
                 break;

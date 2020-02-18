@@ -23,7 +23,9 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
+
 
 
 import org.w3c.dom.*;
@@ -133,6 +135,7 @@ public class GridTypeHandler extends TypeHandler {
      * @param entry _more_
      * @param tag _more_NN
      * @param props _more_
+     * @param topProps _more_
      *
      * @return _more_
      */
@@ -140,10 +143,9 @@ public class GridTypeHandler extends TypeHandler {
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> topProps) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
-                || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
+                || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)
+                || tag.startsWith("display_")) {
             StringBuilder jsonbuf = new StringBuilder();
-
-
             if (Misc.equals(props.get("forGrid"), "true")) {
                 jsonbuf.append(getRepository().getUrlBase()
                                + "/grid/gridjson?"
@@ -156,8 +158,20 @@ public class GridTypeHandler extends TypeHandler {
                     Utils.getProperty(props, "gridField", "")
                 }, false));
 
+
+                CdmDataOutputHandler cdoh =
+                    (CdmDataOutputHandler) getRepository().getOutputHandler(
+                        CdmDataOutputHandler.class);
+                try {
+                    cdoh.getWikiTagAttrs(request, entry, tag, props,
+                                         topProps);
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+
                 return jsonbuf.toString();
             }
+
 
             jsonbuf.append(getRepository().getUrlBase() + "/grid/pointjson?"
                            + HtmlUtils.args(new String[] { ARG_ENTRYID,
@@ -220,7 +234,7 @@ public class GridTypeHandler extends TypeHandler {
             return jsonbuf.toString();
         }
 
-        return super.getUrlForWiki(request, entry, tag, props,topProps);
+        return super.getUrlForWiki(request, entry, tag, props, topProps);
     }
 
 
