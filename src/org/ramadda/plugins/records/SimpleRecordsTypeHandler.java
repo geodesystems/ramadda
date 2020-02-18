@@ -122,18 +122,26 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param time _more_
+     *
+     * @return _more_
+     */
     public String getTimeValue(String time) {
-        if(time.length()==0) {
+        if (time.length() == 0) {
             System.err.println(" adding time");
             time = "00:00:00";
-        } else if(time.matches("^\\d\\d?$")) {
+        } else if (time.matches("^\\d\\d?$")) {
             System.err.println(" adding mm:ss");
-            time +=":00:00";
-        } else if(time.matches("^\\d\\d?:\\d\\d?$")) {
+            time += ":00:00";
+        } else if (time.matches("^\\d\\d?:\\d\\d?$")) {
             System.err.println(" adding ss");
-            time +=":00";
+            time += ":00";
         }
         System.err.println("time:" + time);
+
         return "T" + time;
     }
 
@@ -171,8 +179,9 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 line.append(":");
                 String value = request.getString(field.getName(), "");
                 if (Misc.equals(field.getType(), "date")) {
-                    String time = request.getString(field.getName() + ".time","").trim();
-                    value  +=  getTimeValue(time);
+                    String time = request.getString(field.getName()
+                                      + ".time", "").trim();
+                    value += getTimeValue(time);
                 }
                 value = cleanValue(value);
                 line.append(value);
@@ -194,8 +203,9 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
             sb.append(HtmlUtils.formTable());
             boolean skipNextField = false;
             for (RecordField field : fields) {
-                if(skipNextField) {
+                if (skipNextField) {
                     skipNextField = false;
+
                     continue;
                 }
                 String extra = "";
@@ -208,30 +218,33 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 }
                 String rows = (String) field.getProperty("rows", null);
                 String dflt = (String) field.getProperty("default", "");
-                boolean showTime = Misc.equals("true", field.getProperty("showTime", "false"));
-                String widget  = null;
+                boolean showTime = Misc.equals("true",
+                                       field.getProperty("showTime",
+                                           "false"));
+                String widget = null;
                 List   values = (List) field.getProperty("values", null);
                 if (values != null) {
                     widget = HtmlUtils.select(field.getName(), values, dflt);
                 } else if (rows != null) {
                     widget = HtmlUtils.textArea(field.getName(), dflt,
                             Integer.parseInt(rows), 60);
-                } else if(field.getIsLatitude()) {
+                } else if (field.getIsLatitude()) {
+
                     /**
-                    MapInfo map = getRepository().getMapManager().createMap(request,
-                                                                            entry, true, null);
-                    widget = map.makeSelector(field.getName(), true,
-                                      new String[] { latLonOk(lat)
-                                                     ? lat + ""
-                                                     : "", latLonOk(lon)
-                                                     ? lon + ""
-                                                     : "" });
-                    skipNextField = true;
-                    */
+                     * MapInfo map = getRepository().getMapManager().createMap(request,
+                     *                                                       entry, true, null);
+                     * widget = map.makeSelector(field.getName(), true,
+                     *                 new String[] { latLonOk(lat)
+                     *                                ? lat + ""
+                     *                                : "", latLonOk(lon)
+                     *                                ? lon + ""
+                     *                                : "" });
+                     * skipNextField = true;
+                     */
                 } else if (Misc.equals(field.getType(), "date")) {
                     widget = getDateHandler().makeDateInput(request,
                             field.getName(), "flexiform", new Date(),
-                                                            getEntryUtil().getTimezone(entry), showTime);
+                            getEntryUtil().getTimezone(entry), showTime);
                 } else {
                     widget = HtmlUtils.input(field.getName(), dflt, extra);
                 }
@@ -281,8 +294,10 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 sb.append(HtmlUtils.hidden("row" + cnt, "true"));
                 for (int i = 0; i < cols.size(); i++) {
                     RecordField field = fields.get(i);
-                    boolean showTime = Misc.equals("true", field.getProperty("showTime", "false"));
-                    String      col   = cols.get(i);
+                    boolean showTime = Misc.equals("true",
+                                           field.getProperty("showTime",
+                                               "false"));
+                    String col = cols.get(i);
                     sb.append("<td>");
                     col = col.replaceAll("\"", "&quote;");
                     String widget;
@@ -300,7 +315,8 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                         try {
                             widget = getDateHandler().makeDateInput(request,
                                     arg, "flexiform", Utils.parseDate(col),
-                                                                    getEntryUtil().getTimezone(entry), showTime);
+                                    getEntryUtil().getTimezone(entry),
+                                    showTime);
                         } catch (Exception exc) {
                             widget = "Bad date: "
                                      + HtmlUtils.input(arg, col, "");
@@ -341,8 +357,9 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                     }
                     String value = request.getString(arg);
                     if (Misc.equals(field.getType(), "date")) {
-                        String time = request.getString(arg + ".time", "").trim();
-                        value  +=  getTimeValue(time);
+                        String time = request.getString(arg + ".time",
+                                          "").trim();
+                        value += getTimeValue(time);
                     }
                     csv.append(field.getName() + ":" + cleanValue(value));
                 }
@@ -490,27 +507,23 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
          *
          * @return _more_
          *
-         * @throws IOException _more_
+         * @throws Exception _more_
          */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
-                throws IOException {
-            try {
-                getFields(false);
-                //field:value,field:value,
-                StringBuilder      csv  = new StringBuilder();
-                List<List<String>> rows = getRows(entry, recordFields);
-                for (List<String> cols : rows) {
-                    csv.append(CsvUtil.columnsToString(cols, ","));
-                    csv.append("\n");
-                }
-                byte[]               bytes = csv.toString().getBytes();
-                ByteArrayInputStream bais  = new ByteArrayInputStream(bytes);
-
-                return bais;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
+                throws Exception {
+            getFields(false);
+            //field:value,field:value,
+            StringBuilder      csv  = new StringBuilder();
+            List<List<String>> rows = getRows(entry, recordFields);
+            for (List<String> cols : rows) {
+                csv.append(CsvUtil.columnsToString(cols, ","));
+                csv.append("\n");
             }
+            byte[]               bytes = csv.toString().getBytes();
+            ByteArrayInputStream bais  = new ByteArrayInputStream(bytes);
+
+            return bais;
 
         }
 
@@ -534,15 +547,15 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 if (line.startsWith("#")) {
                     continue;
                 }
-                List<String> toks   = StringUtil.splitUpTo(line, " ", 2);
-                String       id     = toks.get(0);
-                String       desc   = "";
-                String       type   = "double";
-                String       rows   = null;
-                String       dflt   = null;
-                String       values = null;
-                String       label  = null;
-                String showTime = null;
+                List<String> toks     = StringUtil.splitUpTo(line, " ", 2);
+                String       id       = toks.get(0);
+                String       desc     = "";
+                String       type     = "double";
+                String       rows     = null;
+                String       dflt     = null;
+                String       values   = null;
+                String       label    = null;
+                String       showTime = null;
                 if (toks.size() == 2) {
                     List<String> args = Utils.parseCommandLine(toks.get(1));
                     for (int i = 0; i < args.size(); i += 2) {
@@ -566,26 +579,28 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                         }
                     }
                 }
-                if(type.equals("location")) {
-                    RecordField field1 = new RecordField("latitude", "Latitude", desc, cnt, null);
+                if (type.equals("location")) {
+                    RecordField field1 = new RecordField("latitude",
+                                             "Latitude", desc, cnt, null);
                     field1.setIsLatitude(true);
                     field1.setType("double");
                     cnt++;
-                    RecordField field2 = new RecordField("longitude", "Longitude", desc, cnt, null);
+                    RecordField field2 = new RecordField("longitude",
+                                             "Longitude", desc, cnt, null);
                     field2.setIsLongitude(true);
                     field2.setType("double");
                     recordFields.add(field1);
                     recordFields.add(field2);
                 } else {
                     RecordField field = new RecordField(id, (label != null)
-                                                        ? label
-                                                        : Utils.makeLabel(id), desc, cnt, null);
+                            ? label
+                            : Utils.makeLabel(id), desc, cnt, null);
                     field.setType(type);
                     if (type.equals("date")) {
                         field.setDateFormat(
-                                            getDateHandler().getSDF(
-                                                                    "yyyy-MM-dd'T'HH:mm:ss Z",
-                                                                    getEntryUtil().getTimezone(entry)));
+                            getDateHandler().getSDF(
+                                "yyyy-MM-dd'T'HH:mm:ss Z",
+                                getEntryUtil().getTimezone(entry)));
                     }
 
                     if (type.equals("date") || field.isTypeNumeric()) {
@@ -594,7 +609,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                     if (values != null) {
                         field.setProperty("values",
                                           StringUtil.split(values, ",", true,
-                                                           true));
+                                              true));
                     }
                     if (rows != null) {
                         field.setProperty("rows", rows);

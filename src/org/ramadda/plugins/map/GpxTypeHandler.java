@@ -623,12 +623,10 @@ public class GpxTypeHandler extends PointTypeHandler {
     public void getEntryLinks(Request request, Entry entry, List<Link> links)
             throws Exception {
         super.getEntryLinks(request, entry, links);
-        links.add(
-            new Link(
-                request.entryUrl(
-                    getRepository().URL_ENTRY_ACCESS, entry, "type",
-                    "kml"), ICON_KML,
-                "Convert GPX to KML", OutputType.TYPE_FILE));
+        links.add(new Link(request.entryUrl(getRepository().URL_ENTRY_ACCESS,
+                                            entry, "type", "kml"), ICON_KML,
+                                                "Convert GPX to KML",
+                                                    OutputType.TYPE_FILE));
     }
 
 
@@ -816,8 +814,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                 sinfo = sinfo.replaceAll("\n", "<br>");
                 sinfo = sinfo.replaceAll("'", "\\'");
 
-                sinfo = "base64:"
-		    + Utils.encodeBase64(sinfo);
+                sinfo = "base64:" + Utils.encodeBase64(sinfo);
                 String id = entry.getId() + "-" + markerCnt;
                 markerCnt++;
                 map.addMarker(id, lat, lon, null, name, sinfo, entry.getId());
@@ -952,84 +949,80 @@ public class GpxTypeHandler extends PointTypeHandler {
          *
          * @return _more_
          *
-         * @throws IOException _more_
+         * @throws Exception _more_
          */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
-                throws IOException {
+                throws Exception {
 
-            try {
-                InputStream   source   = super.doMakeInputStream(buffered);
-                Element       root     = XmlUtil.getRoot(source);
-                StringBuilder s = new StringBuilder("#converted stream\n");
-                boolean       didTrack = false;
-                SimpleDateFormat sdf =
-                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                for (Element track :
-                        ((List<Element>) XmlUtil.findChildren(root,
-                            GpxUtil.TAG_TRK))) {
-                    TrackInfo trackInfo = new TrackInfo();
-                    for (Element trackSeg :
-                            ((List<Element>) XmlUtil.findChildren(track,
-                                GpxUtil.TAG_TRKSEG))) {
-                        didTrack = true;
-                        trackInfo.reset();
-                        for (Element pt :
-                                ((List<Element>) XmlUtil.findChildren(
-                                    trackSeg, GpxUtil.TAG_TRKPT))) {
-                            double lat = XmlUtil.getAttribute(pt,
-                                             GpxUtil.ATTR_LAT, 0.0);
-                            double lon = XmlUtil.getAttribute(pt,
-                                             GpxUtil.ATTR_LON, 0.0);
-                            double elevation = Double.parseDouble(
-                                                   XmlUtil.getGrandChildText(
-                                                       pt, "ele", "0"));
-                            String time = XmlUtil.getGrandChildText(pt,
-                                              "time", (String) null);
-                            Date dttm = ((time == null)
-                                         ? null
-                                         : sdf.parse(time));
-                            trackInfo.setPoint(lat, lon, elevation, dttm,
-                                    time, s);
-                        }
+            InputStream   source   = super.doMakeInputStream(buffered);
+            Element       root     = XmlUtil.getRoot(source);
+            StringBuilder s        = new StringBuilder("#converted stream\n");
+            boolean       didTrack = false;
+            SimpleDateFormat sdf =
+                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            for (Element track :
+                    ((List<Element>) XmlUtil.findChildren(root,
+                        GpxUtil.TAG_TRK))) {
+                TrackInfo trackInfo = new TrackInfo();
+                for (Element trackSeg :
+                        ((List<Element>) XmlUtil.findChildren(track,
+                            GpxUtil.TAG_TRKSEG))) {
+                    didTrack = true;
+                    trackInfo.reset();
+                    for (Element pt :
+                            ((List<Element>) XmlUtil.findChildren(trackSeg,
+                                GpxUtil.TAG_TRKPT))) {
+                        double lat = XmlUtil.getAttribute(pt,
+                                         GpxUtil.ATTR_LAT, 0.0);
+                        double lon = XmlUtil.getAttribute(pt,
+                                         GpxUtil.ATTR_LON, 0.0);
+                        double elevation =
+                            Double.parseDouble(XmlUtil.getGrandChildText(pt,
+                                "ele", "0"));
+                        String time = XmlUtil.getGrandChildText(pt, "time",
+                                          (String) null);
+                        Date dttm = ((time == null)
+                                     ? null
+                                     : sdf.parse(time));
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+                                           s);
                     }
                 }
-
-                if ( !didTrack) {
-
-                    Element rte = XmlUtil.findChild(root, GpxUtil.TAG_RTE);
-                    if (rte != null) {
-                        TrackInfo trackInfo = new TrackInfo();
-                        for (Element pt :
-                                ((List<Element>) XmlUtil.findChildren(rte,
-                                    GpxUtil.TAG_RTEPT))) {
-                            double lat = XmlUtil.getAttribute(pt,
-                                             GpxUtil.ATTR_LAT, 0.0);
-                            double lon = XmlUtil.getAttribute(pt,
-                                             GpxUtil.ATTR_LON, 0.0);
-                            double elevation = Double.parseDouble(
-                                                   XmlUtil.getGrandChildText(
-                                                       pt, "ele", "0"));
-                            String time = XmlUtil.getGrandChildText(pt,
-                                              "time", (String) null);
-                            Date dttm = ((time == null)
-                                         ? null
-                                         : sdf.parse(time));
-                            trackInfo.setPoint(lat, lon, elevation, dttm,
-                                    time, s);
-                        }
-                    }
-                }
-
-
-                //                System.err.println(s);
-                ByteArrayInputStream bais =
-                    new ByteArrayInputStream(s.toString().getBytes());
-
-                return bais;
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
             }
+
+            if ( !didTrack) {
+
+                Element rte = XmlUtil.findChild(root, GpxUtil.TAG_RTE);
+                if (rte != null) {
+                    TrackInfo trackInfo = new TrackInfo();
+                    for (Element pt :
+                            ((List<Element>) XmlUtil.findChildren(rte,
+                                GpxUtil.TAG_RTEPT))) {
+                        double lat = XmlUtil.getAttribute(pt,
+                                         GpxUtil.ATTR_LAT, 0.0);
+                        double lon = XmlUtil.getAttribute(pt,
+                                         GpxUtil.ATTR_LON, 0.0);
+                        double elevation =
+                            Double.parseDouble(XmlUtil.getGrandChildText(pt,
+                                "ele", "0"));
+                        String time = XmlUtil.getGrandChildText(pt, "time",
+                                          (String) null);
+                        Date dttm = ((time == null)
+                                     ? null
+                                     : sdf.parse(time));
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+                                           s);
+                    }
+                }
+            }
+
+
+            //                System.err.println(s);
+            ByteArrayInputStream bais =
+                new ByteArrayInputStream(s.toString().getBytes());
+
+            return bais;
 
         }
 

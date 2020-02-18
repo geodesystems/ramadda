@@ -64,45 +64,40 @@ public class MisoForecastFile extends CsvFile {
      *
      * @return _more_
      *
-     * @throws IOException _more_
+     * @throws Exception _more_
      */
     @Override
-    public InputStream doMakeInputStream(boolean buffered)
-            throws IOException {
-        try {
-            InputStream source = super.doMakeInputStream(buffered);
-            Element     root   = XmlUtil.getRoot(source);
-            //            System.err.println (XmlUtil.toString(root));
-            windForecast = root.getTagName().equals("WindForecastDayAhead");
+    public InputStream doMakeInputStream(boolean buffered) throws Exception {
+        InputStream source = super.doMakeInputStream(buffered);
+        Element     root   = XmlUtil.getRoot(source);
+        //            System.err.println (XmlUtil.toString(root));
+        windForecast = root.getTagName().equals("WindForecastDayAhead");
 
-            StringBuilder s     = new StringBuilder("#converted stream\n");
+        StringBuilder s     = new StringBuilder("#converted stream\n");
 
-            List          nodes = XmlUtil.findChildren(root, windForecast
-                    ? "Forecast"
-                    : "instance");
+        List          nodes = XmlUtil.findChildren(root, windForecast
+                ? "Forecast"
+                : "instance");
 
-            for (int i = 0; i < nodes.size(); i++) {
-                Element node = (Element) nodes.get(i);
-                String dttm = XmlUtil.getGrandChildText(node,
-                                  "ForecastDateTimeEST", null);
-                String hour = XmlUtil.getGrandChildText(node,
-                                  "ForecastHourEndingEST", null);
-                String forecastValue = XmlUtil.getGrandChildText(node,
-                                           "ForecasetValue", "NaN");
-                String value = XmlUtil.getGrandChildText(node, "ActualValue",
-                                   "NaN");
-                s.append(dttm + "," + hour + "," + forecastValue + ","
-                         + value + "\n");
-            }
-
-
-            ByteArrayInputStream bais =
-                new ByteArrayInputStream(s.toString().getBytes());
-
-            return bais;
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
+        for (int i = 0; i < nodes.size(); i++) {
+            Element node = (Element) nodes.get(i);
+            String dttm = XmlUtil.getGrandChildText(node,
+                              "ForecastDateTimeEST", null);
+            String hour = XmlUtil.getGrandChildText(node,
+                              "ForecastHourEndingEST", null);
+            String forecastValue = XmlUtil.getGrandChildText(node,
+                                       "ForecasetValue", "NaN");
+            String value = XmlUtil.getGrandChildText(node, "ActualValue",
+                               "NaN");
+            s.append(dttm + "," + hour + "," + forecastValue + "," + value
+                     + "\n");
         }
+
+
+        ByteArrayInputStream bais =
+            new ByteArrayInputStream(s.toString().getBytes());
+
+        return bais;
     }
 
     /**
