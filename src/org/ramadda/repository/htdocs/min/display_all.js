@@ -23527,6 +23527,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.lastWidth = this.jq(ID_MAP).width();
 
             }
+
             if (this.doDisplayMap()) {
                 this.map.setDefaultCanSelect(false);
             }
@@ -23563,6 +23564,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    });
 
+	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","rgba(0,0,0,0)");
 	    this.map.doPopup = this.getProperty("doPopup",true);
 	    //	    if(!this.map.doPopup)
 	    //		this.map.doSelect = false;
@@ -25009,6 +25011,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let showSegments = this.getProperty("showSegments", false);
 	    let tooltip = this.getProperty("tooltip");
 	    let highlight = this.getProperty("highlight");
+	    let highlightTemplate = this.getProperty("highlightTemplate",tooltip);
 	    let addedPoints = [];
 
 	    let textGetter = f=>{
@@ -25017,6 +25020,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		return null;
 	    };
+	    let highlightGetter = f=>{
+		if(f.record) {
+                    return  this.getRecordHtml(f.record, fields, highlightTemplate);
+		}
+		return null;
+	    };	    
 
             for (let i = 0; i < records.length; i++) {
                 let record = records[i];
@@ -25258,7 +25267,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     let date = record.getDate();
 		    if(mapPoint) {
 			if(highlight)
-			    mapPoint.highlightTextGetter = textGetter;
+			    mapPoint.highlightTextGetter = highlightGetter;
 			mapPoint.record = record;
 			mapPoint.textGetter = textGetter;
 			mapPoint.hasColorByValue = hasColorByValue;

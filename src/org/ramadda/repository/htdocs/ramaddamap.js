@@ -417,10 +417,13 @@ function initMapFunctions(theMap) {
 			this.highlightPopup = new OpenLayers.Popup("popup",
 								   projPoint,
 								   null,
-								   //								   feature.highlightSize,
+								   //feature.highlightSize,
 								   text,
 								   false);
 
+
+			this.highlightPopup.backgroundColor=this.highlightBackgroundColor||"#fff";
+			this.highlightPopup.autoSize=true;
 			this.highlightPopup.keepInMap=true;
 			this.highlightPopup.autoSize=true;
 			this.highlightPopup.padding=0;
