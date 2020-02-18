@@ -135,6 +135,7 @@ public class DataRecord extends PointRecord {
     public void initFields(List<RecordField> fields) {
 
         super.initFields(fields);
+        this.fields = fields;
         if (values != null) {
             return;
         }
@@ -297,6 +298,7 @@ public class DataRecord extends PointRecord {
             }
         }
         checkIndices();
+
 
     }
 
