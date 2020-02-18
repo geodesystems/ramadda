@@ -253,7 +253,7 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
                 + entry.getResource());
             if (entry.getTypeHandler() instanceof RecordTypeHandler) {
                 ((RecordTypeHandler) entry.getTypeHandler())
-                    .initializeRecordEntry(entry, originalFile,false);
+                    .initializeRecordEntry(entry, originalFile, false);
             }
             getRepository().getLogManager().logInfo(
                 "RecordCollectonHarvester:initializeNewEntry done");

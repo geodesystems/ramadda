@@ -439,21 +439,22 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         }
 
         File file = null;
-        if(getTypeProperty("record.file.cacheok",true)) {
-	    String suffix = "";
-	    List<Macro> macros = getMacros(entry);
-	    if (macros!=null) {
-		for(Macro macro: macros) {
-		    String v = request.getString("macro_" + macro.name,macro.dflt);
-		    v = v.replaceAll("\\.","_").replaceAll("/","_");
-		    suffix+="_"+v;
-		}
-	    }
-	    String filename = "record_" + entry.getId() + "_"
-		+ entry.getChangeDate() + suffix+".csv";
-	    //	    System.err.println("cache file:" + filename);
+        if (getTypeProperty("record.file.cacheok", true)) {
+            String      suffix = "";
+            List<Macro> macros = getMacros(entry);
+            if (macros != null) {
+                for (Macro macro : macros) {
+                    String v = request.getString("macro_" + macro.name,
+                                   macro.dflt);
+                    v      = v.replaceAll("\\.", "_").replaceAll("/", "_");
+                    suffix += "_" + v;
+                }
+            }
+            String filename = "record_" + entry.getId() + "_"
+                              + entry.getChangeDate() + suffix + ".csv";
+            //      System.err.println("cache file:" + filename);
             file = getRepository().getEntryManager().getCacheFile(entry,
-                                                                  filename);
+                    filename);
             recordFile.setCacheFile(file);
         }
 
@@ -484,24 +485,41 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    public List<Macro> getMacros(Entry entry)  throws Exception {
-	List<Macro> macros= null;
-        Hashtable props = getRecordProperties(entry);
-	if (props != null) {
-	    String m = (String)props.get("macros");
-	    if(m!=null) {
-		macros = new ArrayList<Macro>();
-		for(String macro: StringUtil.split(m,",",true,true)) {
-		    macros.add(new Macro(macro,
-					 Utils.getProperty(props,"macro." +macro+".type","string"),
-					 Utils.getProperty(props,"macro." +macro+".default",""),
-					 Utils.getProperty(props,"macro." +macro+".label",Utils.makeLabel(macro)),
-					 Utils.getProperty(props,"macro." +macro+".values","")
-					 ));
-		}
-	    }
-	}
-	return macros;
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Macro> getMacros(Entry entry) throws Exception {
+        List<Macro> macros = null;
+        Hashtable   props  = getRecordProperties(entry);
+        if (props != null) {
+            String m = (String) props.get("requestFields");
+            if (m != null) {
+                macros = new ArrayList<Macro>();
+                for (String macro : StringUtil.split(m, ",", true, true)) {
+                    macros.add(
+                        new Macro(
+                            macro,
+                            Utils.getProperty(
+                                props, "request." + macro + ".type",
+                                "string"), Utils.getProperty(
+                                    props, "request." + macro + ".default",
+                                    ""), Utils.getProperty(
+                                        props, "request." + macro + ".label",
+                                        Utils.makeLabel(
+                                            macro)), Utils.getProperty(
+                                                props, "request." + macro
+                                                    + ".values", "")));
+                }
+            }
+        }
+
+        return macros;
     }
 
     /**
@@ -518,16 +536,17 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public String getPathForRecordEntry(Entry entry, String path,
                                         Hashtable requestProperties)
             throws Exception {
-	List<Macro> macros = getMacros(entry);
-	if (macros!=null) {
-	    for(Macro macro: macros) {
+        List<Macro> macros = getMacros(entry);
+        if (macros != null) {
+            for (Macro macro : macros) {
 
-		String value = Utils.getProperty(requestProperties,"macro_" + macro.name,macro.dflt);
-		System.err.println(macro.name +" = "+ value);
-		path = path.replace("${" + macro.name+ "}",value);
-	    }
-	}
-	//	System.err.println("Path:" + path);
+                String value = Utils.getProperty(requestProperties,
+                                   "macro_" + macro.name, macro.dflt);
+                System.err.println(macro.name + " = " + value);
+                path = path.replace("${" + macro.name + "}", value);
+            }
+        }
+        //      System.err.println("Path:" + path);
         if (path.indexOf("${latitude}") >= 0) {
             if (Utils.stringDefined(
                     (String) requestProperties.get("latitude"))) {
@@ -758,22 +777,56 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return getTypeProperty(prop, dflt);
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Feb 17, '20
+     * @author         Enter your name here...
+     */
     public static class Macro {
-	String name;
-	String dflt;
-	String type;
-	String label;
-	String values;
-	public Macro(String name, String type, String dflt,String label,String values) {
-	    this.name = name;
-	    this.type= type;
-	    this.dflt = dflt;
-	    this.label=label;
-	    this.values= values;
-	}
-	public String toString() {
-	    return name;
-	}
+
+        /** _more_ */
+        String name;
+
+        /** _more_ */
+        String dflt;
+
+        /** _more_ */
+        String type;
+
+        /** _more_ */
+        String label;
+
+        /** _more_ */
+        String values;
+
+        /**
+         * _more_
+         *
+         * @param name _more_
+         * @param type _more_
+         * @param dflt _more_
+         * @param label _more_
+         * @param values _more_
+         */
+        public Macro(String name, String type, String dflt, String label,
+                     String values) {
+            this.name   = name;
+            this.type   = type;
+            this.dflt   = dflt;
+            this.label  = label;
+            this.values = values;
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public String toString() {
+            return name;
+        }
     }
 
 }

@@ -96,7 +96,15 @@ public class JsonVisitor extends BridgeRecordVisitor {
                                  Record record)
             throws Exception {
 
+        boolean debug = false;
+        if (debug) {
+            System.err.println("JsonVisitor.doVisitRecord");
+        }
         if ( !getHandler().jobOK(getProcessId())) {
+            if (debug) {
+                System.err.println("\tjob not OK");
+            }
+
             return false;
         }
         PointRecord pointRecord = (PointRecord) record;
@@ -192,7 +200,12 @@ public class JsonVisitor extends BridgeRecordVisitor {
         pw.append(Json.mapClose());
         cnt++;
 
+        if (debug) {
+            System.err.println("\tdone");
+        }
+
         return true;
+
     }
 
     /**

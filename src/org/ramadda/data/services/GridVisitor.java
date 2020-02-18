@@ -83,6 +83,7 @@ public class GridVisitor extends BridgeRecordVisitor {
     /** are we using altitude as the gridded value */
     boolean usingAltitude;
 
+    /** _more_ */
     boolean usingPointcount;
 
     /** how big an image */
@@ -109,11 +110,13 @@ public class GridVisitor extends BridgeRecordVisitor {
         imageHeight  = llg.getHeight();
         imageWidth   = llg.getWidth();
         if (request.defined(RecordOutputHandler.ARG_PARAMETER)) {
-	    if(request.getString(RecordOutputHandler.ARG_PARAMETER,"").equals("_pointcount_")) {
-		usingPointcount = true;
-	    } else {
-		valueAttr = request.get(RecordOutputHandler.ARG_PARAMETER, -1);
-	    }
+            if (request.getString(RecordOutputHandler.ARG_PARAMETER,
+                                  "").equals("_pointcount_")) {
+                usingPointcount = true;
+            } else {
+                valueAttr = request.get(RecordOutputHandler.ARG_PARAMETER,
+                                        -1);
+            }
 
         }
         usingAltitude = valueAttr == -1;
@@ -162,8 +165,8 @@ public class GridVisitor extends BridgeRecordVisitor {
         double      value;
         if (valueAttr != -1) {
             value = (double) pointRecord.getValue(valueAttr);
-	} else if(usingPointcount) {
-	    value =1;
+        } else if (usingPointcount) {
+            value = 1;
         } else {
             value = (double) pointRecord.getAltitude();
         }

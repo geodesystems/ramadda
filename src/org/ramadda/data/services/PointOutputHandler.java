@@ -657,7 +657,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 if (request.defined(ARG_MAX)) {
                     visitInfo.setMax(request.get(ARG_MAX, 1000));
                 }
-		if (request.defined(ARG_SKIP)) {
+                if (request.defined(ARG_SKIP)) {
                     visitInfo.setSkip(request.get(ARG_SKIP, 0));
                 }
 
@@ -718,7 +718,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 String message =
                     "There was an error processing the request: "
                     + inner.getMessage();
-		inner.printStackTrace();
+                inner.printStackTrace();
                 String       code = "error";
                 StringBuffer json = new StringBuffer();
                 json.append(Json.map("error", Json.quote(message),
@@ -890,36 +890,41 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param request _more_
      * @param entry _more_
      * @param props _more_
+     * @param displayProps _more_
      *
      *
      * @return _more_
      * @throws Exception _more_
      */
-    public String getJsonUrl(Request request, Entry entry, Hashtable props,List<String> displayProps)
+    public String getJsonUrl(Request request, Entry entry, Hashtable props,
+                             List<String> displayProps)
             throws Exception {
         String max = null;
         PointTypeHandler typeHandler =
             (PointTypeHandler) entry.getTypeHandler();
 
-	List<RecordTypeHandler.Macro> macros = typeHandler.getMacros(entry);
-	if (macros!=null) {
-	    String all=null;
-	    for(RecordTypeHandler.Macro macro: macros) {
-		if(all!=null) all+=",";
-		else all = "";
-		all+=macro.name;
-		displayProps.add("macro." + macro.name+".type");
-		displayProps.add(Json.quote(macro.type));
-		displayProps.add("macro." + macro.name+".default");
-		displayProps.add(Json.quote(macro.dflt));
-		displayProps.add("macro." + macro.name+".label");
-		displayProps.add(Json.quote(macro.label));
-		displayProps.add("macro." + macro.name+".values");
-		displayProps.add(Json.quote(macro.values));
-	    }
-	    displayProps.add("macros");
-	    displayProps.add(Json.quote(all));
-	}
+        List<RecordTypeHandler.Macro> macros = typeHandler.getMacros(entry);
+        if (macros != null) {
+            String all = null;
+            for (RecordTypeHandler.Macro macro : macros) {
+                if (all != null) {
+                    all += ",";
+                } else {
+                    all = "";
+                }
+                all += macro.name;
+                displayProps.add("request." + macro.name + ".type");
+                displayProps.add(Json.quote(macro.type));
+                displayProps.add("request." + macro.name + ".default");
+                displayProps.add(Json.quote(macro.dflt));
+                displayProps.add("request." + macro.name + ".label");
+                displayProps.add(Json.quote(macro.label));
+                displayProps.add("request." + macro.name + ".values");
+                displayProps.add(Json.quote(macro.values));
+            }
+            displayProps.add("requestFields");
+            displayProps.add(Json.quote(all));
+        }
 
         String extra     = "";
         String extraArgs = (String) props.get("extraArgs");
@@ -947,9 +952,13 @@ public class PointOutputHandler extends RecordOutputHandler {
             extra += "&latitude=${latitude}&longitude=${longitude}";
         }
 
-	String skip = (props==null?null:(String)props.get("skip"));
-	if(skip!=null)
-	    extra += "&" + RecordFormHandler.ARG_RECORD_SKIP +"=" + skip;
+        String skip = ((props == null)
+                       ? null
+                       : (String) props.get("skip"));
+        if (skip != null) {
+            extra += "&" + RecordFormHandler.ARG_RECORD_SKIP + "=" + skip;
+        }
+
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                 ARG_OUTPUT, OUTPUT_PRODUCT.getId(),
                                 ARG_PRODUCT, OUTPUT_JSON.toString()) + "&"
