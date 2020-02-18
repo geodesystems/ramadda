@@ -191,6 +191,7 @@ var ID_MENU_OUTER = "menu_outer";
 var ID_MENU_INNER = "menu_inner";
 var ID_DISPLAY_PROGRESS = "display_progress";
 var ID_REPOSITORY = "repository";
+var ID_REQUEST_PROPERTIES = "request_properties";
 let ID_PAGE_COUNT = "pagecount";
 let ID_PAGE_PREV = "pageprev";
 let ID_PAGE_NEXT = "pagenext";
@@ -834,6 +835,11 @@ function DisplayThing(argId, argProperties) {
 	    let debug = this.debugGetProperty;
 	    //	    let debug = key== "colorTable";
 	    if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
+	    if(this.dynamicProperties) {
+		if(Utils.isDefined(this.dynamicProperties[key])) {
+		    return this.dynamicProperties[key];
+		}
+	    }
             if(!skipThis && Utils.isDefined(this[key])) {
 		if(debug) console.log("\tgetProperty-1");
                 return this[key];
@@ -4249,19 +4255,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    //			    this.display.setProperty(this.name+".default",value);
 			} else if(this.type=="enumeration") {
 			    let value = this.getValue();
-			    if(Array.isArray(value)) {
+			    if(!Array.isArray(value)) {value=[value];}
+			    if(value.length>0 && value[0]!="") {
+				let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
+				url = url.replace(regexp,"");
 				value.map(v=>{
 				    if(v!="")
 					url = url +"&" + HtmlUtils.urlArg(this.urlarg,v);
 				});
-			    } else {
-				if(value!="")
-				    url = url +"&" + HtmlUtils.urlArg(this.urlarg,value);
 			    }
 			} else {
 			    let value = this.getValue();
 			    this.dflt  = value;
 			    if(value!="") {
+				let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
+				url = url.replace(regexp,"");
 				url = url +"&" + HtmlUtils.urlArg(this.urlarg,value);
 			    }
 			}
@@ -4272,6 +4280,94 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    return macros;
 	},
+	applyRequestProperties: function(props) {
+	    if(!props) return;
+	    this.requestMacros = null;
+	    this.dynamicProperties = props;
+	    this.createRequestProperties();
+	},
+	createRequestProperties: function() {
+	    let requestProps = "";
+	    let macros = this.getRequestMacros();
+	    let macroDateIds = [];
+	    macros.every(macro=>{
+		if(this.getProperty("request." +macro.name +".show",true)) { 
+		    requestProps+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
+		}
+		return true;
+	    });
+
+	    this.jq(ID_REQUEST_PROPERTIES).html(requestProps);
+
+	    let macroChange = (macro,value,what)=>{
+		if(this.settingMacroValue) return;
+		if(macro.triggerReload) {
+		    this.macroChanged();
+		    this.reloadData();
+		}
+		if(!macro.name) return;
+		this.settingMacroValue = true;
+		var args = {
+		    entryId:this.entryId,
+		    property: "macroValue",
+		    id:macro.name,
+		    what:what,
+		    value: value
+		};
+		this.propagateEvent("handleEventPropertyChanged", args);
+		this.settingMacroValue = false;
+	    };
+
+	    //	    console.log("ids:" + macroDateIds);
+	    macroDateIds.every(id=>{
+		HtmlUtils.datePickerInit(id);
+		return true;
+	    });
+	    this.jq(ID_HEADER2).find(".display-request-reload").click(()=>{
+		macroChange({triggerReload:true});
+	    });
+
+	    macros.every(macro=>{
+		$("#" + this.getDomId(macro.getId())+"," +
+		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
+		  "#" + this.getDomId(macro.getId()+"_max")+ "," +
+		  "#" + this.getDomId(macro.getId()+"_from")+ "," +
+		  "#" + this.getDomId(macro.getId()+"_to")).keyup(function(e) {
+		      var keyCode = e.keyCode || e.which;
+		      if (keyCode == 13) {
+			  console.log("return:" + $(this).val());
+			  macroChange(macro, $(this).val());
+		      }
+		  });
+		if(macro.type == "bounds") {
+		    this.jq(macro.getId()).change(function(e) {
+			macroChange(macro,$(this).is(':checked'));
+		    });
+		}
+		if(macro.type=="enumeration") {
+		    this.jq(macro.getId()).change(function(e) {
+			macroChange(macro, $(this).val());
+		    });
+		}
+		this.jq(macro.getId()+"_min").change(function(e) {
+		    //		    macroChange(macro, $(this).val(),"min");
+		});
+		this.jq(macro.getId()+"_max").change(function(e) {
+		    //		    macroChange(macro, $(this).val(),"max");
+		});
+		this.jq(macro.getId()+"_from").change(function(e) {
+		    macroChange(macro, $(this).val(),"from");
+		});
+		this.jq(macro.getId()+"_to").change(function(e) {
+		    macroChange(macro, $(this).val(),"to");
+		});		
+
+		return true;
+	    });
+	},
+
+
+
 	makeFilterWidget:function(label, widget, title) {
 	    if(!label)
 		return HtmlUtils.div(["class","display-filter-widget"],widget);
@@ -4286,6 +4382,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return HtmlUtils.span(attrs,label);
 	},
+
 
         checkSearchBar: function() {
             let _this = this;
@@ -4309,14 +4406,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("pageRequest",false)) {
 		header2 += HtmlUtils.span(["id",this.getDomId(ID_PAGE_COUNT)]);
 	    }
-	    let macros = this.getRequestMacros();
-	    let macroDateIds = [];
-	    macros.every(macro=>{
-		if(this.getProperty("request." +macro.name +".show",true)) { 
-		    header2+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
-		}
-		return true;
-	    });
+	    header2+=HtmlUtils.div(["id",this.getDomId(ID_REQUEST_PROPERTIES),"style","display:inline-block;"]);
+
+
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
 		let fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getProperty("fields", this.getProperty("sumFields"))));
@@ -4689,71 +4781,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;
-	    let macroChange = (macro,value,what)=>{
-		if(this.settingMacroValue) return;
-		if(macro.triggerReload) {
-		    this.macroChanged();
-		    this.reloadData();
-		}
-		if(!macro.name) return;
-		this.settingMacroValue = true;
-		var args = {
-		    entryId:this.entryId,
-		    property: "macroValue",
-		    id:macro.name,
-		    what:what,
-		    value: value
-		};
-		this.propagateEvent("handleEventPropertyChanged", args);
-		this.settingMacroValue = false;
-	    };
 
-	    //	    console.log("ids:" + macroDateIds);
-	    macroDateIds.every(id=>{
-		HtmlUtils.datePickerInit(id);
-		return true;
-	    });
-	    this.jq(ID_HEADER2).find(".display-request-reload").click(()=>{
-		macroChange({triggerReload:true});
-	    });
+	    this.createRequestProperties();
 
-	    macros.every(macro=>{
-		$("#" + this.getDomId(macro.getId())+"," +
-		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
-		  "#" + this.getDomId(macro.getId()+"_max")+ "," +
-		  "#" + this.getDomId(macro.getId()+"_from")+ "," +
-		  "#" + this.getDomId(macro.getId()+"_to")).keyup(function(e) {
-		      var keyCode = e.keyCode || e.which;
-		      if (keyCode == 13) {
-			  console.log("return:" + $(this).val());
-			  macroChange(macro, $(this).val());
-		      }
-		  });
-		if(macro.type == "bounds") {
-		    this.jq(macro.getId()).change(function(e) {
-			macroChange(macro,$(this).is(':checked'));
-		    });
-		}
-		if(macro.type=="enumeration") {
-		    this.jq(macro.getId()).change(function(e) {
-			macroChange(macro, $(this).val());
-		    });
-		}
-		this.jq(macro.getId()+"_min").change(function(e) {
-		    //		    macroChange(macro, $(this).val(),"min");
-		});
-		this.jq(macro.getId()+"_max").change(function(e) {
-		    //		    macroChange(macro, $(this).val(),"max");
-		});
-		this.jq(macro.getId()+"_from").change(function(e) {
-		    macroChange(macro, $(this).val(),"from");
-		});
-		this.jq(macro.getId()+"_to").change(function(e) {
-		    macroChange(macro, $(this).val(),"to");
-		});		
-
-		return true;
-	    });
 
  	    let inputFunc = function(input, input2, value){
                 var id = input.attr("id");
@@ -7664,6 +7694,12 @@ function PointData(name, recordFields, records, url, properties) {
                 var newData = makePointData(data, _this.derived, display);
                 obj.pointData = pointData.initWith(newData);
 
+		if(data.properties) {
+		    display.applyRequestProperties(data.properties);
+		}
+
+
+
 		if(debug)
                     console.log("\tpending:" + obj.pending.length);
                 var tmp = obj.pending;
@@ -8013,6 +8049,9 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 
 
 function makePointData(json, derived, source) {
+
+
+
 
     var fields = [];
     var latitudeIdx = -1;

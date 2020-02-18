@@ -360,6 +360,12 @@ function PointData(name, recordFields, records, url, properties) {
                 var newData = makePointData(data, _this.derived, display);
                 obj.pointData = pointData.initWith(newData);
 
+		if(data.properties) {
+		    display.applyRequestProperties(data.properties);
+		}
+
+
+
 		if(debug)
                     console.log("\tpending:" + obj.pending.length);
                 var tmp = obj.pending;
@@ -709,6 +715,9 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 
 
 function makePointData(json, derived, source) {
+
+
+
 
     var fields = [];
     var latitudeIdx = -1;
