@@ -118,19 +118,16 @@ public class InlinePointTypeHandler extends PointTypeHandler {
          *
          * @return _more_
          *
-         * @throws IOException _more_
+         *
+         * @throws Exception _more_
          */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
-                throws IOException {
-            try {
-		String data = (String)entry.getValue(IDX_DATA);
-		byte[]bytes = data.getBytes();
-		return new BufferedInputStream(new ByteArrayInputStream(bytes));
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
+                throws Exception {
+            String data  = (String) entry.getValue(IDX_DATA);
+            byte[] bytes = data.getBytes();
 
-	}
+            return new BufferedInputStream(new ByteArrayInputStream(bytes));
+        }
     }
 }

@@ -26,17 +26,18 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvUtil;
 
-import ucar.unidata.util.StringUtil;
 import org.w3c.dom.*;
+
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.GregorianCalendar;
 
 
 /**
@@ -67,7 +68,12 @@ public class TmyTypeHandler extends PointTypeHandler {
     }
 
 
-     @Override
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    @Override
     public String getContextNamespace() {
         return "tmy";
     }
@@ -77,6 +83,8 @@ public class TmyTypeHandler extends PointTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
@@ -105,12 +113,13 @@ public class TmyTypeHandler extends PointTypeHandler {
             throws Exception {
         initializeRecordEntry(entry, entry.getFile(), true);
 
-        FileInputStream fis = new FileInputStream(entry.getResource().getPath());
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        String line = br.readLine();
+        FileInputStream fis =
+            new FileInputStream(entry.getResource().getPath());
+        BufferedReader br   = new BufferedReader(new InputStreamReader(fis));
+        String         line = br.readLine();
         //690150,"TWENTYNINE PALMS",CA,-8.0,34.300,-116.167,626
-        List<String> toks = StringUtil.split(line,",");
-        entry.setName(toks.get(1).replaceAll("\"",""));
+        List<String> toks = StringUtil.split(line, ",");
+        entry.setName(toks.get(1).replaceAll("\"", ""));
         entry.setValue(IDX_STATE, toks.get(2));
         entry.setLocation(Double.parseDouble(toks.get(4)),
                           Double.parseDouble(toks.get(5)));
@@ -142,13 +151,14 @@ public class TmyTypeHandler extends PointTypeHandler {
          * @param repository _more_
          * @param entry _more_
          * @param filename _more_
+         * @param context _more_
          *
          * @throws IOException _more_
          */
         public TmyRecordFile(Repository repository, Entry entry,
                              String filename, RecordFileContext context)
                 throws IOException {
-            super(filename,context, null);
+            super(filename, context, null);
             this.repository = repository;
             this.entry      = entry;
         }
@@ -161,41 +171,38 @@ public class TmyTypeHandler extends PointTypeHandler {
          *
          * @return _more_
          *
-         * @throws IOException _more_
+         *
+         * @throws Exception _more_
          */
         public InputStream xxxdoMakeInputStream(boolean buffered)
-                throws IOException {
-            try {
-                String filename = "tmy_" + entry.getId() + "_"
-                                  + entry.getChangeDate() + ".csv";
-                File file = repository.getEntryManager().getCacheFile(entry,
-                                filename);
-                if ( !file.exists()) {
-                    ByteArrayOutputStream bos  = new ByteArrayOutputStream();
-                    FileOutputStream      fos  = new FileOutputStream(file);
-                    //                    int stride                 = entry.getValue(IDX_STRIDE,   7);
-                    String[]              args = new String[] {
-                        "-skip", "1",
-                        //                        "-pattern", "1", "12:00",
-                        "-pattern","1","12:00",
-                        "-change","0", "(..)/(..)/(....)",  "2000-$1-$2",
-                        "-combineinplace", "0,1", " ","Date",
-                        "-columns", "0-3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57,60,63",
-                        "-addheader","makeLabel false date.format _quote_yyyy-MM-dd HH:mm_quote_",
-                        "-print"
-                    };
-                    CsvUtil csvUtil = new CsvUtil(args,
-                                          new BufferedOutputStream(fos),
-                                          null);
-                    csvUtil.setInputStream(super.doMakeInputStream(buffered));
-                    csvUtil.run(null);
-                    fos.close();
-                }
-
-                return new BufferedInputStream(new FileInputStream(file));
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
+                throws Exception {
+            String filename = "tmy_" + entry.getId() + "_"
+                              + entry.getChangeDate() + ".csv";
+            File file = repository.getEntryManager().getCacheFile(entry,
+                            filename);
+            if ( !file.exists()) {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                FileOutputStream      fos = new FileOutputStream(file);
+                //                    int stride                 = entry.getValue(IDX_STRIDE,   7);
+                String[] args = new String[] {
+                    "-skip", "1",
+                    //                        "-pattern", "1", "12:00",
+                    "-pattern", "1", "12:00", "-change", "0",
+                    "(..)/(..)/(....)", "2000-$1-$2", "-combineinplace",
+                    "0,1", " ", "Date", "-columns",
+                    "0-3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57,60,63",
+                    "-addheader",
+                    "makeLabel false date.format _quote_yyyy-MM-dd HH:mm_quote_",
+                    "-print"
+                };
+                CsvUtil csvUtil = new CsvUtil(args,
+                                      new BufferedOutputStream(fos), null);
+                csvUtil.setInputStream(super.doMakeInputStream(buffered));
+                csvUtil.run(null);
+                fos.close();
             }
+
+            return new BufferedInputStream(new FileInputStream(file));
 
         }
 

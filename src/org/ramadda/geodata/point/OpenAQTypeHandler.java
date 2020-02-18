@@ -153,7 +153,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                      + HtmlUtils.arg("date_from", startDate) + "&"
                      + HtmlUtils.arg("location", location);
 
-	//	System.err.println(url);
+        //      System.err.println(url);
         return url;
     }
 
@@ -198,33 +198,29 @@ public class OpenAQTypeHandler extends PointTypeHandler {
          *
          * @return _more_
          *
-         * @throws IOException _more_
+         *
+         * @throws Exception _more_
          */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
-                throws IOException {
-            try {
-                PipedInputStream      in   = new PipedInputStream();
-                PipedOutputStream     out  = new PipedOutputStream(in);
-                ByteArrayOutputStream bos  = new ByteArrayOutputStream();
-                String[]              args = new String[] {
-                    "-columns", "3,5,6,7,8,9", "-combineinplace", "1,3", " ",
-                    "parameter", "-unfurl", "1", "2", "0", "3,4",
-                    "-addheader",
-                    "date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" utc.id date",
-                    "-print"
-                };
-                CsvUtil csvUtil = new CsvUtil(args,
-                                      new BufferedOutputStream(bos), null);
-                csvUtil.setInputStream(super.doMakeInputStream(buffered));
-                csvUtil.run(null);
+                throws Exception {
+            PipedInputStream      in   = new PipedInputStream();
+            PipedOutputStream     out  = new PipedOutputStream(in);
+            ByteArrayOutputStream bos  = new ByteArrayOutputStream();
+            String[]              args = new String[] {
+                "-columns", "3,5,6,7,8,9", "-combineinplace", "1,3", " ",
+                "parameter", "-unfurl", "1", "2", "0", "3,4", "-addheader",
+                "date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" utc.id date",
+                "-print"
+            };
+            CsvUtil csvUtil = new CsvUtil(args,
+                                          new BufferedOutputStream(bos),
+                                          null);
+            csvUtil.setInputStream(super.doMakeInputStream(buffered));
+            csvUtil.run(null);
 
-                return new BufferedInputStream(
-                    new ByteArrayInputStream(bos.toByteArray()));
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-
+            return new BufferedInputStream(
+                new ByteArrayInputStream(bos.toByteArray()));
         }
     }
 }

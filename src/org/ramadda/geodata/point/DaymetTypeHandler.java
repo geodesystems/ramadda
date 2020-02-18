@@ -173,40 +173,34 @@ public class DaymetTypeHandler extends PointTypeHandler {
          *
          * @return _more_
          *
-         * @throws IOException _more_
+         *
+         * @throws Exception _more_
          */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
-                throws IOException {
-            try {
-                String filename = "daymet_" + entry.getId() + "_"
-                                  + entry.getChangeDate() + ".csv";
-                File file = repository.getEntryManager().getCacheFile(entry,
-                                filename);
-                if ( !file.exists()) {
-                    ByteArrayOutputStream bos  = new ByteArrayOutputStream();
-                    FileOutputStream      fos  = new FileOutputStream(file);
-                    int stride                 = entry.getValue(IDX_STRIDE,
-                                                     7);
-                    String[]              args = new String[] {
-                        "-skip", "8", "-decimate", "0", "" + stride,
-                        "-change", "0", "\\.0$", "", "-change", "1", "\\.0$",
-                        "", "-combine", "0,1", "-", "", "-scale", "3", "0",
-                        "0.0393700787", "0", "-format", "3", "#0.00",
-                        "-columns", "9,2-8", "-print"
-                    };
-                    CsvUtil csvUtil = new CsvUtil(args,
-                                          new BufferedOutputStream(fos),
-                                          null);
-                    csvUtil.setInputStream(super.doMakeInputStream(buffered));
-                    csvUtil.run(null);
-                    fos.close();
-                }
-
-                return new BufferedInputStream(new FileInputStream(file));
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
+                throws Exception {
+            String filename = "daymet_" + entry.getId() + "_"
+                              + entry.getChangeDate() + ".csv";
+            File file = repository.getEntryManager().getCacheFile(entry,
+                            filename);
+            if ( !file.exists()) {
+                ByteArrayOutputStream bos    = new ByteArrayOutputStream();
+                FileOutputStream      fos    = new FileOutputStream(file);
+                int                   stride = entry.getValue(IDX_STRIDE, 7);
+                String[]              args   = new String[] {
+                    "-skip", "8", "-decimate", "0", "" + stride, "-change",
+                    "0", "\\.0$", "", "-change", "1", "\\.0$", "", "-combine",
+                    "0,1", "-", "", "-scale", "3", "0", "0.0393700787", "0",
+                    "-format", "3", "#0.00", "-columns", "9,2-8", "-print"
+                };
+                CsvUtil csvUtil = new CsvUtil(args,
+                                      new BufferedOutputStream(fos), null);
+                csvUtil.setInputStream(super.doMakeInputStream(buffered));
+                csvUtil.run(null);
+                fos.close();
             }
+
+            return new BufferedInputStream(new FileInputStream(file));
 
         }
 

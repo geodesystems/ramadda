@@ -33,8 +33,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 
 
 /**
@@ -48,9 +48,17 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     private static int IDX_STATION_ID = IDX++;
+
+    /** _more_ */
     private static int IDX_PERIOD = IDX++;
+
+    /** _more_ */
     private static int IDX_STATE = IDX++;
+
+    /** _more_ */
     private static int IDX_HUC = IDX++;
+
+    /** _more_ */
     private static int IDX_HOMEPAGE = IDX++;
 
     /**
@@ -67,17 +75,38 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
 
     /** _more_ */
-    private static final String URL_TEMPLATE ="https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
+    private static final String URL_TEMPLATE =
+        "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param properties _more_
+     * @param requestProperties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
-        public RecordFile doMakeRecordFile(Entry entry, Hashtable properties,
+    public RecordFile doMakeRecordFile(Entry entry, Hashtable properties,
                                        Hashtable requestProperties)
-        throws Exception {
-        return new UsgsGaugeRecordFile(getPathForRecordEntry(entry, requestProperties), properties);
+            throws Exception {
+        return new UsgsGaugeRecordFile(getPathForRecordEntry(entry,
+                requestProperties), properties);
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Feb 17, '20
+     * @author         Enter your name here...
+     */
     public static class UsgsGaugeRecordFile extends CsvFile {
+
         /**
          * _more_
          *
@@ -85,19 +114,32 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
          * @param repository _more_
          * @param entry _more_
          * @param filename _more_
+         * @param properties _more_
          *
          * @throws IOException _more_
          */
-        public UsgsGaugeRecordFile(String filename,Hashtable properties)
+        public UsgsGaugeRecordFile(String filename, Hashtable properties)
                 throws IOException {
             super(filename, properties);
 
         }
 
+        /**
+         * _more_
+         *
+         * @param record _more_
+         * @param field _more_
+         * @param s _more_
+         *
+         * @return _more_
+         */
         public boolean isMissingValue(Record record, RecordField field,
                                       String s) {
-            if(s.equals("Ice") || s.equals("Ssn")) return true;
-            return super.isMissingValue(record,field,s);
+            if (s.equals("Ice") || s.equals("Ssn")) {
+                return true;
+            }
+
+            return super.isMissingValue(record, field, s);
         }
 
     }
@@ -116,8 +158,10 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {
         String url = URL_TEMPLATE;
-        url = url.replace("${station_id}", "" + entry.getValue(IDX_STATION_ID));
+        url = url.replace("${station_id}",
+                          "" + entry.getValue(IDX_STATION_ID));
         url = url.replace("${period}", "" + entry.getValue(IDX_PERIOD));
+
         return url;
     }
 

@@ -76,22 +76,22 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_DIMENSIONS = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_ORIGINATOR_NAME = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_AFFILIATION = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_INSTRUMENT = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_CAMPAIGN = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_COMMENTS = IDX++;
 
 
@@ -147,9 +147,9 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
         entry.setValue(IDX_INSTRUMENT, f.instrument);
         entry.setValue(IDX_CAMPAIGN, f.campaign);
         entry.setValue(IDX_COMMENTS, f.comments);
-        if (!metadata.hasTimeRange()&& f.startDate!=null) {
-	    entry.setStartAndEndDate(f.startDate.getTime());
-	}
+        if ( !metadata.hasTimeRange() && (f.startDate != null)) {
+            entry.setStartAndEndDate(f.startDate.getTime());
+        }
     }
 
 
@@ -163,49 +163,51 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
     public static class NasaAmesRecordFile extends CsvFile {
 
 
-        /** _more_          */
+        /** _more_ */
         String name;
 
-	int numDimensions;
+        /** _more_ */
+        int numDimensions;
 
-        /** _more_          */
+        /** _more_ */
         String affiliation;
 
-        /** _more_          */
+        /** _more_ */
         String instrument;
 
-        /** _more_          */
+        /** _more_ */
         String campaign;
 
-        /** _more_          */
+        /** _more_ */
         StringBuilder comments = new StringBuilder();
 
-        /** _more_          */
+        /** _more_ */
         Date startDate;
 
-        /** _more_          */
+        /** _more_ */
         private SimpleDateFormat sdf =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-        /** _more_          */
+        /** _more_ */
         public static final int DATEUNIT_HOURS = 1;
 
-        /** _more_          */
+        /** _more_ */
         public static final int DATEUNIT_DAYS = 2;
 
-        /** _more_          */
+        /** _more_ */
         public static final int DATEUNIT_SECONDS = 3;
 
-        /** _more_          */
+        /** _more_ */
         private int dateIdx = -1;
 
-	private boolean doElapsed = false;
+        /** _more_ */
+        private boolean doElapsed = false;
 
-        /** _more_          */
+        /** _more_ */
         private int dateUnit;
 
-        /** _more_          */
+        /** _more_ */
         private long dateBase;
 
         /**
@@ -225,23 +227,23 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
          *
          *
          * @version        $version$, Sun, Dec 22, '19
-         * @author         Enter your name here...    
+         * @author         Enter your name here...
          */
         private static class Var {
 
-            /** _more_          */
+            /** _more_ */
             String id;
 
-            /** _more_          */
+            /** _more_ */
             String label;
 
-            /** _more_          */
+            /** _more_ */
             String unit;
 
-            /** _more_          */
+            /** _more_ */
             String scale;
 
-            /** _more_          */
+            /** _more_ */
             String missing;
 
             /**
@@ -279,7 +281,7 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
              * @return _more_
              */
             public String toString() {
-                return "id:" + id + " label:" + label+" unit:" + unit;
+                return "id:" + id + " label:" + label + " unit:" + unit;
             }
 
         }
@@ -293,13 +295,13 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
          * @return _more_
          */
         private Var parseVar(String tok) {
-	    tok = tok.trim();
+            tok = tok.trim();
             String var   = tok;
             String label = var;
             String unit  = "";
             int    idx   = var.indexOf("(");
             if (idx >= 0) {
-		//		System.err.println("VAR:" + var+ " idx:" + idx);
+                //              System.err.println("VAR:" + var+ " idx:" + idx);
                 var  = tok.substring(0, idx - 1).trim();
                 unit = tok.substring(idx + 1, tok.length() - 1).trim();
             } else {
@@ -312,29 +314,50 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
                     }
                 }
             }
-	    var = var.replaceAll(",","_").replaceAll("_$","").replaceAll(" ","_").trim();
+            var = var.replaceAll(",", "_").replaceAll("_$",
+                                 "").replaceAll(" ", "_").trim();
             String _var = var.toLowerCase();
             if (_var.equals("lat") || _var.equals("gps_latitude")) {
-                var   = "latitude";
+                var = "latitude";
             } else if (_var.equals("lon") || _var.equals("gps_longitude")) {
-                var   = "longitude";
+                var = "longitude";
             }
 
-	    unit = unit.replaceAll(","," - ");
+            unit = unit.replaceAll(",", " - ");
+
             return new Var(Utils.makeID(var), label, unit);
         }
 
-	private String clean(String s) {
-	    int idx = s.indexOf(";");
-	    if(idx>=0) s = s.substring(0,idx);
-	    return s.trim();
-	}
+        /**
+         * _more_
+         *
+         * @param s _more_
+         *
+         * @return _more_
+         */
+        private String clean(String s) {
+            int idx = s.indexOf(";");
+            if (idx >= 0) {
+                s = s.substring(0, idx);
+            }
 
-	public List<String> tokenize(String s) {
-	    s = clean(s);
-	    return StringUtil.split(s, s.indexOf(",")>=0?",":" ",
-				    true, true);
-	}
+            return s.trim();
+        }
+
+        /**
+         * _more_
+         *
+         * @param s _more_
+         *
+         * @return _more_
+         */
+        public List<String> tokenize(String s) {
+            s = clean(s);
+
+            return StringUtil.split(s, (s.indexOf(",") >= 0)
+                                       ? ","
+                                       : " ", true, true);
+        }
 
         /**
          * _more_
@@ -348,10 +371,10 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
 
-	    boolean debug = false;
-            List<String> toks =  tokenize(visitInfo.getRecordIO().readLine());
-            int numHeaderLines = (int)Double.parseDouble(toks.get(0));
-            numDimensions = Integer.parseInt(toks.get(1).substring(0,1));
+            boolean      debug = false;
+            List<String> toks  = tokenize(visitInfo.getRecordIO().readLine());
+            int numHeaderLines = (int) Double.parseDouble(toks.get(0));
+            numDimensions = Integer.parseInt(toks.get(1).substring(0, 1));
             putProperty("delimiter", "commasorspaces");
             putProperty(PROP_SKIPLINES, "" + (numHeaderLines - 1));
             super.prepareToVisit(visitInfo);
@@ -363,61 +386,73 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
             campaign    = header.get(idx++);
             //Skip volume
             header.get(idx++);
-	    List<String> dateToks = tokenize(header.get(idx++));
+            List<String> dateToks = tokenize(header.get(idx++));
             if (dateToks.size() == 6) {
                 startDate =
-                    new SimpleDateFormat("yyyy-MM-dd").parse(dateToks.get(0) + "-"
-                                         + dateToks.get(1) + "-" + dateToks.get(2));
+                    new SimpleDateFormat("yyyy-MM-dd").parse(dateToks.get(0)
+                                         + "-" + dateToks.get(1) + "-"
+                                         + dateToks.get(2));
             }
 
-            List<Var> vars           = new ArrayList<Var>();
-	    //	    String tmps = clean(header.get(idx++));
-	    String intervalSize = 	    header.get(idx++);
-	    if(debug)	    System.err.println("num dimensions:" + numDimensions);
+            List<Var> vars = new ArrayList<Var>();
+            //      String tmps = clean(header.get(idx++));
+            String intervalSize = header.get(idx++);
+            if (debug) {
+                System.err.println("num dimensions:" + numDimensions);
+            }
             for (int i = 0; i < numDimensions; i++) {
-		//		if(debug)System.err.println("\tindependent:" + header.get(idx));
-		Var var = parseVar(clean(header.get(idx++)));
-		if(debug)System.err.println("\tindependent:" + var);
+                //              if(debug)System.err.println("\tindependent:" + header.get(idx));
+                Var var = parseVar(clean(header.get(idx++)));
+                if (debug) {
+                    System.err.println("\tindependent:" + var);
+                }
                 vars.add(var);
             }
 
             List<String> missings = new ArrayList<String>();
-            List<String> scales = new ArrayList<String>();
+            List<String> scales   = new ArrayList<String>();
 
-	    for(int indCnt=0;indCnt<numDimensions;indCnt++) {
-		int numDependents =  (int)Double.parseDouble(clean(header.get(idx++)));
-		if(debug) System.err.println("num dependents:" + numDependents);
-		int dcnt=0;
-		while(dcnt<numDependents) {
-		    if(debug)
-			System.err.println("\tscale:" +header.get(idx));
-		    List<String> tmp = tokenize(header.get(idx++));
-		    dcnt+=tmp.size();
-		    scales.addAll(tmp);
-		}
-		
-		dcnt = 0;
-		while(dcnt++<numDependents) {
-		    if(debug)
-			System.err.println("\tmissing:" +header.get(idx));
-		    List<String> tmp = tokenize(header.get(idx++));
-		    dcnt+=tmp.size();
-		    missings.addAll(tmp);
-		}
-		
-		for (int i = 0; i < numDependents; i++) {
-		    if(debug)
-			System.err.println("\tdependent:" + header.get(idx));
-		    vars.add(parseVar(clean(header.get(idx++))));
-		}
-	    }
+            for (int indCnt = 0; indCnt < numDimensions; indCnt++) {
+                int numDependents =
+                    (int) Double.parseDouble(clean(header.get(idx++)));
+                if (debug) {
+                    System.err.println("num dependents:" + numDependents);
+                }
+                int dcnt = 0;
+                while (dcnt < numDependents) {
+                    if (debug) {
+                        System.err.println("\tscale:" + header.get(idx));
+                    }
+                    List<String> tmp = tokenize(header.get(idx++));
+                    dcnt += tmp.size();
+                    scales.addAll(tmp);
+                }
 
-            int numComments =  (int)Double.parseDouble(clean(header.get(idx++)));
+                dcnt = 0;
+                while (dcnt++ < numDependents) {
+                    if (debug) {
+                        System.err.println("\tmissing:" + header.get(idx));
+                    }
+                    List<String> tmp = tokenize(header.get(idx++));
+                    dcnt += tmp.size();
+                    missings.addAll(tmp);
+                }
+
+                for (int i = 0; i < numDependents; i++) {
+                    if (debug) {
+                        System.err.println("\tdependent:" + header.get(idx));
+                    }
+                    vars.add(parseVar(clean(header.get(idx++))));
+                }
+            }
+
+            int numComments =
+                (int) Double.parseDouble(clean(header.get(idx++)));
             for (int i = 0; i < numComments; i++) {
                 comments.append(header.get(idx++) + "\n");
             }
 
-            numComments =  (int)Double.parseDouble(clean(header.get(idx++)));
+            numComments = (int) Double.parseDouble(clean(header.get(idx++)));
             for (int i = 0; i < numComments - 1; i++) {
                 comments.append(header.get(idx++) + "\n");
             }
@@ -429,21 +464,23 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
                 cnt++;
             }
             cnt = 0;
-	    String varLine = header.get(idx++).replaceAll(" +\\(","(");
-            for (String tok :
-                    StringUtil.split(varLine, " ", true, true)) {
+            String varLine = header.get(idx++).replaceAll(" +\\(", "(");
+            for (String tok : StringUtil.split(varLine, " ", true, true)) {
                 Var v   = parseVar(tok);
                 Var var = vars.get(cnt++);
             }
             String[] fields = new String[vars.size()];
             for (int i = 0; i < vars.size(); i++) {
                 Var var = vars.get(i);
-                if (i==0 && (var.id.indexOf("elapsed")>=0 || var.label.toLowerCase().indexOf("elapsed")>=0)) {
-		    dateIdx  = i;
-		    doElapsed = true;
-		    var.id = "elapsed_time";
-		    //		    var.label = "Elapsed Time";
-		} else if (var.id.equals("time")) {
+                if ((i == 0)
+                        && ((var.id.indexOf("elapsed") >= 0)
+                            || (var.label.toLowerCase().indexOf("elapsed")
+                                >= 0))) {
+                    dateIdx   = i;
+                    doElapsed = true;
+                    var.id    = "elapsed_time";
+                    //              var.label = "Elapsed Time";
+                } else if (var.id.equals("time")) {
                     //hours since 1999-09-12 18:00:00
                     String unit = StringUtil.findPattern(var.unit,
                                       "(.*) since ");
@@ -465,16 +502,16 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
                 }
                 fields[i] = makeField(var.id,
                                       attrLabel(Utils.makeLabel(var.id)),
-                                      attrType("double"),
-				      var.unit!=null?attrUnit(var.unit):null,
-                                      (var.missing != null)
-                                      ? attrMissing(
-                                          Double.parseDouble(var.missing))
-                                      : null, (var.scale != null)
-                        ? " scale=" + var.scale + " "
-                        : null);
-		if(debug)
-		    System.err.println("FIELD:" + fields[i]);
+                                      attrType("double"), (var.unit != null)
+                        ? attrUnit(var.unit)
+                        : null, (var.missing != null)
+                                ? attrMissing(Double.parseDouble(var.missing))
+                                : null, (var.scale != null)
+                                        ? " scale=" + var.scale + " "
+                                        : null);
+                if (debug) {
+                    System.err.println("FIELD:" + fields[i]);
+                }
             }
             putFields(fields);
 
@@ -493,7 +530,7 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
          *
          * @throws Exception _more_
          */
-       public boolean processAfterReading(VisitInfo visitInfo, Record record)
+        public boolean processAfterReading(VisitInfo visitInfo, Record record)
                 throws Exception {
             if ( !super.processAfterReading(visitInfo, record)) {
                 return false;
@@ -504,16 +541,18 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
             }
             TextRecord textRecord = (TextRecord) record;
             double     value      = textRecord.getValue(dateIdx + 1);
-	    if(doElapsed && startDate!=null) {
-		record.setRecordTime(startDate.getTime()+(long)value*1000);
-	    } else {
-		if (dateUnit == DATEUNIT_HOURS) {
-		    value = value * 60 * 60;
-		} else if (dateUnit == DATEUNIT_DAYS) {
-		    value = value * 24 * 60 * 60;
-		}
-		record.setRecordTime(dateBase + ((long) value) * 1000);
-	    }
+            if (doElapsed && (startDate != null)) {
+                record.setRecordTime(startDate.getTime()
+                                     + (long) value * 1000);
+            } else {
+                if (dateUnit == DATEUNIT_HOURS) {
+                    value = value * 60 * 60;
+                } else if (dateUnit == DATEUNIT_DAYS) {
+                    value = value * 24 * 60 * 60;
+                }
+                record.setRecordTime(dateBase + ((long) value) * 1000);
+            }
+
             return true;
         }
     }

@@ -35,9 +35,9 @@ import java.text.SimpleDateFormat;
 
 
 import java.util.Date;
-import java.util.List;
-import java.util.Hashtable;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -74,35 +74,68 @@ public class GsdTypeHandler extends PointTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     * @param topProps _more_
+     *
+     * @return _more_
+     */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
-                                Hashtable props,List<String> topProps) {
+                                Hashtable props, List<String> topProps) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
-            String url = super.getUrlForWiki(request, entry, tag,props,topProps);
-            return url+"&latitude=${latitude}&longitude=${longitude}&model=${model}";
+            String url = super.getUrlForWiki(request, entry, tag, props,
+                                             topProps);
+
+            return url
+                   + "&latitude=${latitude}&longitude=${longitude}&model=${model}";
         }
-        return super.getUrlForWiki(request, entry, tag, props,topProps);
+
+        return super.getUrlForWiki(request, entry, tag, props, topProps);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param requestProperties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public String getPathForRecordEntry(Entry entry,
                                         Hashtable requestProperties)
             throws Exception {
-        String url = URL_TEMPLATE;
-        String lat = (String) requestProperties.get("latitude");
-        String lon = (String) requestProperties.get("longitude");
-        String model = (String)requestProperties.get("model");
-        if(model == null || model.equals("{model}"))
-            model = (String) entry.getValue(IDX_MODEL,"GFS");
-        if(model.length()==0) model  = "GFS";
+        String url   = URL_TEMPLATE;
+        String lat   = (String) requestProperties.get("latitude");
+        String lon   = (String) requestProperties.get("longitude");
+        String model = (String) requestProperties.get("model");
+        if ((model == null) || model.equals("{model}")) {
+            model = (String) entry.getValue(IDX_MODEL, "GFS");
+        }
+        if (model.length() == 0) {
+            model = "GFS";
+        }
 
-        url =  url.replace("{model}",model);
-        url =  url.replace("{lat}",lat!=null?lat:"40");
-        url =  url.replace("{lon}",lon!=null?lon:"-105");
+        url = url.replace("{model}", model);
+        url = url.replace("{lat}", (lat != null)
+                                   ? lat
+                                   : "40");
+        url = url.replace("{lon}", (lon != null)
+                                   ? lon
+                                   : "-105");
         url = super.getPathForRecordEntry(entry, url, requestProperties);
         System.err.println("url:" + url);
+
         return url;
     }
 
