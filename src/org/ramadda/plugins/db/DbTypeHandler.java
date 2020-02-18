@@ -1303,6 +1303,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     private boolean isGroupBy(Request request) {
+	if(request==null) return false;
         return Utils.stringDefined(request.getString(ARG_GROUPBY, ""));
     }
 

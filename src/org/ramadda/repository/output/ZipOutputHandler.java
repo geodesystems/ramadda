@@ -461,10 +461,11 @@ public class ZipOutputHandler extends OutputHandler {
                 }
             }
 
+	    Request tmpRequest = getRepository().getTmpRequest();
             Element entryNode = null;
             if (forExport && (entriesRoot != null)) {
                 entryNode =
-                    getRepository().getXmlOutputHandler().getEntryTag(null,
+                    getRepository().getXmlOutputHandler().getEntryTag(tmpRequest,
                         entry, fileWriter, entriesRoot.getOwnerDocument(),
                         entriesRoot, true, level != 0);
                 //                System.err.println ("exporting:" + XmlUtil.toString(entryNode));
