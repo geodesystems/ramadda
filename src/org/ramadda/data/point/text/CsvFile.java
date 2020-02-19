@@ -22,6 +22,7 @@ import org.ramadda.data.record.*;
 
 import org.ramadda.util.text.CsvUtil;
 
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.awt.*;
@@ -112,39 +113,48 @@ public class CsvFile extends TextFile {
         File file = getCacheFile();
 	if(file!=null)
 	    System.err.println("file:" +file +" " + file.exists()  +" " + file.length() +" being written:" + (filesBeingWritten.get(file)!=null) );
+	if(file!=null) {
+	    int cnt =0;
+	    //Wait at most 10 seconds
+	    while(cnt++<100) {
+		if(filesBeingWritten.get(file)==null) break;
+		Misc.sleep(100);
+	    }
+	}
+
         if ((file == null) || !file.exists()) {
 	    try {
-	    ByteArrayOutputStream bos = null;
-	    OutputStream          fos;
-	    if (file != null) {
-		fos = new FileOutputStream(file);
-		filesBeingWritten.put(file,"");
-	    } else {
-		fos = bos = new ByteArrayOutputStream();
-	    }
-	    String[] args = StringUtil.listToStringArray(
-							 StringUtil.split(csvCommands, ","));
-	    for (int i = 0; i < args.length; i++) {
-		args[i] = args[i].replaceAll("_comma_", ",");
-	    }
-	    CsvUtil csvUtil = new CsvUtil(args,
-					  new BufferedOutputStream(fos), null);
-	    csvUtil.setInputStream(super.doMakeInputStream(buffered));
-	    System.err.println("csvutil run");
-	    csvUtil.run(null);
-	    fos.flush();
-	    fos.close();
-	    if (file == null) {
-		//                    System.err.println("processed:" +new String(bos.toByteArray()));
-		return new ByteArrayInputStream(bos.toByteArray());
-	    }
+		ByteArrayOutputStream bos = null;
+		OutputStream          fos;
+		if (file != null) {
+		    fos = new FileOutputStream(file);
+		    filesBeingWritten.put(file,"");
+		} else {
+		    fos = bos = new ByteArrayOutputStream();
+		}
+		String[] args = StringUtil.listToStringArray(
+							     StringUtil.split(csvCommands, ","));
+		for (int i = 0; i < args.length; i++) {
+		    args[i] = args[i].replaceAll("_comma_", ",");
+		}
+		CsvUtil csvUtil = new CsvUtil(args,
+					      new BufferedOutputStream(fos), null);
+		csvUtil.setInputStream(super.doMakeInputStream(buffered));
+		System.err.println("csvutil run");
+		csvUtil.run(null);
+		fos.flush();
+		fos.close();
+		if (file == null) {
+		    //                    System.err.println("processed:" +new String(bos.toByteArray()));
+		    return new ByteArrayInputStream(bos.toByteArray());
+		}
 	    } finally {
 		if (file != null) {
 		    filesBeingWritten.remove(file);
+		    System.err.println("file done:" +file);
 		}
 	    }
         }
-
         return new BufferedInputStream(new FileInputStream(file));
     }
 
@@ -258,7 +268,6 @@ public class CsvFile extends TextFile {
             if (failureOk) {
                 return new ArrayList<RecordField>();
             }
-
             throw new IllegalArgumentException("Properties must have a "
                     + PROP_FIELDS + " value");
         }

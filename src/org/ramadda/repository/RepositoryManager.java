@@ -777,7 +777,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      * @param message _more_
      * @param exc _more_
      */
-    public void logException(String message, Exception exc) {
+    public void logException(String message, Throwable exc) {
         getRepository().getLogManager().logError(message, exc);
     }
 
