@@ -531,6 +531,9 @@ public class NCLModelPlotDataService extends NCLDataService {
                     "/org/ramadda/geodata/model/resources/ncl/colormaps.txt");
             List<String> cmaps = StringUtil.split(list, "\n", true, true);
             for (String cmap : cmaps) {
+                if (cmap.startsWith("#")) {
+                    continue;
+                }
                 List<String> toks = StringUtil.split(cmap);
                 colormaps.add(new HtmlUtils.Selector(toks.get(1),
                         toks.get(0),

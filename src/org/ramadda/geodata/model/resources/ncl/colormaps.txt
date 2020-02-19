@@ -5,5 +5,7 @@ temp_19lev,Temperature Anomaly,temp_19lev_labelbar.sm.png
 testcmap,Rainbow (white middle),testcmap_labelbar.sm.png
 nrl_sirkes,Blue/White/Yellow/Red,nrl_sirkes_labelbar.sm.png
 BlueWhiteOrangeRed,Blue/White/Orange/Red,BlueWhiteOrangeRed_labelbar.sm.png
+WhiteBlue,White/Blue,WhiteBlue_labelbar.sm.png
+precip_11lev,Precipitation,precip_11lev_labelbar.sm.png
 precip_diff_12lev,Precipitation Difference,precip_diff_12lev_labelbar.sm.png
 precip_anomaly,Precipitation Anomaly,precip_anomaly_labelbar.sm.png
