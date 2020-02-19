@@ -3414,6 +3414,7 @@ public class CsvUtil {
             } else {
                 throw new Exception("Error processing json: no file given");
             }
+	    System.err.println("JSON:" + s);
             tokenizedRows.add(tokenizeJson(s, props));
         } else if (doPattern) {
             tokenizedRows.add(tokenizePattern(files.get(0), tokenizeHeader,

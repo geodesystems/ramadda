@@ -565,6 +565,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             path = path.replace("${longitude}", "-105.2");
         }
 
+
         return path;
     }
 

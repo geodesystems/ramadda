@@ -665,10 +665,10 @@ public abstract class RecordFile {
         }
 
         try {
+	    System.err.println("path:" + path);
             return Utils.doMakeInputStream(path, buffered);
         } catch (IOException ioe) {
             System.err.println("Error fetching data:" + path);
-
             throw ioe;
         }
     }

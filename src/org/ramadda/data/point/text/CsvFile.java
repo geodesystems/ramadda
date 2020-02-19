@@ -125,7 +125,9 @@ public class CsvFile extends TextFile {
                 }
                 CsvUtil csvUtil = new CsvUtil(args,
                                       new BufferedOutputStream(fos), null);
+		System.err.println("csvutil");
                 csvUtil.setInputStream(super.doMakeInputStream(buffered));
+		System.err.println("csvutil run");
                 csvUtil.run(null);
                 fos.close();
                 if (file == null) {
@@ -133,7 +135,7 @@ public class CsvFile extends TextFile {
                     return new ByteArrayInputStream(bos.toByteArray());
                 }
             } catch (Exception exc) {
-                throw new IllegalArgumentException(exc);
+                throw new RuntimeException(exc);
             }
         }
 
