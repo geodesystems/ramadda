@@ -541,7 +541,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             for (Macro macro : macros) {
                 String value = Utils.getProperty(requestProperties,
                                    "request." + macro.name, macro.dflt);
-                path = path.replace("${" + macro.name + "}", value);
+                value = value.replaceAll(" ", "%20");
+                path  = path.replace("${" + macro.name + "}", value);
             }
         }
         //      System.err.println("Path:" + path);
