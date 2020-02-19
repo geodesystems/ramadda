@@ -6728,8 +6728,6 @@ function DisplayAnimation(display, enabled) {
 		return a.getTime() - b.getTime();
 	    });
 	    
-	    console.log("dates:" + this.dates);
-
 	    this.frameIndex = 0;
 	    if(this.startAtEnd) {
 		this.begin = this.dateMax;

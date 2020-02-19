@@ -352,8 +352,8 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
-	    if(display.getProperty("select")) {
-		jsonUrl +="&" + "select" +"=" +display.getProperty("select");
+	    if(display.getProperty("dbSelect")) {
+		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");
 	    }
 
 	    if(display.getProperty("requestArgs")) {
