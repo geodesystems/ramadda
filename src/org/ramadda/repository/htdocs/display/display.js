@@ -4971,8 +4971,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         updateUI: function() {
 	},
 	//Make sure the elements have a title set
-	makeTooltips: function(selector, records, callback) {
-	    var tooltip = this.getProperty("tooltip");
+	makeTooltips: function(selector, records, callback, tooltipArg) {
+	    if(!this.getProperty("showTooltips",true)) {
+		return;
+	    }
+	    var tooltip = tooltipArg || this.getProperty("tooltip");
 	    if(!tooltip) return;
 	    let _this = this;
 	    selector.tooltip({
@@ -4980,7 +4983,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    var record = records[parseFloat($(this).attr('recordIndex'))];
 		    if(callback) callback(true, record);
 		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
-		    return _this.getRecordHtml(record,null,tooltip);
+		    let style = _this.getProperty("tooltipStyle");
+		    let tt =  _this.getRecordHtml(record,null,tooltip);
+		    if(style) tt=HtmlUtils.div(["style",style],tt);
+		    return tt;
 		},
 		close: function(event,ui) {
 		    var record = records[parseFloat($(this).attr('recordIndex'))];

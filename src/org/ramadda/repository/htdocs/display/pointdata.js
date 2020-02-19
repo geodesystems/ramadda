@@ -2228,7 +2228,8 @@ var DataUtils = {
 			let cnt = 0;
 			let ok = false;
 			fieldsToUse.some(f=>{
-			    if(f.isFieldLatitude() || f.isFieldLongitude()) return true;
+			    if(field && !(field.isFieldLatitude() || f.isFieldLongitude()))
+				if(f.isFieldLatitude() || f.isFieldLongitude()) return true;
 			    if(f.isNumeric()) {
 				cnt++;
 				let v  = r.getValue(f.getIndex());

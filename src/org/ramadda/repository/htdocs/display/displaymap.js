@@ -2352,18 +2352,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
 		}
 	    });
-	    if(this.getProperty("showTooltips",true)) {
-		contents.find(".display-mapgrid-cell").tooltip({
-		    content: function() {
-			var record = records[$(this).attr("recordIndex")];
-			if(record) {
-			    return HtmlUtils.div(["style","max-height:400px;overflow-y:auto;"], _this.getRecordHtml(record));
-			}
-			return null;
-		    }
-		});
-	    }
-
+	    this.makeTooltips(contents.find(".display-mapgrid-cell"), records,null,"${default}");
             if (colorBy.index >= 0) {
 		colorBy.displayColorTable();
 	    }
