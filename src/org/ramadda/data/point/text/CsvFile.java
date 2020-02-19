@@ -91,6 +91,8 @@ public class CsvFile extends TextFile {
         super(filename, context, properties);
     }
 
+    private static Hashtable filesBeingWritten = new  Hashtable();
+
     /**
      * _more_
      *
@@ -108,12 +110,15 @@ public class CsvFile extends TextFile {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
-	System.err.println("file:" +file +" " + file.exists()  +" " + file.length());
+	if(file!=null)
+	    System.err.println("file:" +file +" " + file.exists()  +" " + file.length() +" being written:" + (filesBeingWritten.get(file)!=null) );
         if ((file == null) || !file.exists()) {
+	    try {
 	    ByteArrayOutputStream bos = null;
 	    OutputStream          fos;
 	    if (file != null) {
 		fos = new FileOutputStream(file);
+		filesBeingWritten.put(file,"");
 	    } else {
 		fos = bos = new ByteArrayOutputStream();
 	    }
@@ -127,10 +132,16 @@ public class CsvFile extends TextFile {
 	    csvUtil.setInputStream(super.doMakeInputStream(buffered));
 	    System.err.println("csvutil run");
 	    csvUtil.run(null);
+	    fos.flush();
 	    fos.close();
 	    if (file == null) {
 		//                    System.err.println("processed:" +new String(bos.toByteArray()));
 		return new ByteArrayInputStream(bos.toByteArray());
+	    }
+	    } finally {
+		if (file != null) {
+		    filesBeingWritten.remove(file);
+		}
 	    }
         }
 

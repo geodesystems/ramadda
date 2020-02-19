@@ -2579,7 +2579,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     List<Column> getColumnsToUse(Request request, boolean checkCanList) {
         HashSet only   = null;
-        String  select = request.getString("select");
+        String  select = request.getString("dbSelect");
         if ((select != null) && (select.length() > 0)) {
             only = Utils.makeHashSet(
                 SqlUtil.sanitize(StringUtil.split(select, ",", true, true)));
