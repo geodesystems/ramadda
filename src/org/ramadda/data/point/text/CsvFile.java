@@ -111,16 +111,18 @@ public class CsvFile extends TextFile {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
-	if(file!=null)
-	    System.err.println("file:" +file +" " + file.exists()  +" " + file.length() +" being written:" + (filesBeingWritten.get(file)!=null) );
 	if(file!=null) {
-	    int cnt =0;
-	    //Wait at most 10 seconds
-	    while(cnt++<100) {
-		if(filesBeingWritten.get(file)==null) break;
-		Misc.sleep(100);
+	    //	    System.err.println("file:" +file +" " + file.exists()  +" " + file.length() +" being written:" + (filesBeingWritten.get(file)!=null) );
+	    if(file!=null) {
+		int cnt =0;
+		//Wait at most 10 seconds
+		while(cnt++<100) {
+		    if(filesBeingWritten.get(file)==null) break;
+		    Misc.sleep(100);
+		}
 	    }
 	}
+
 
         if ((file == null) || !file.exists()) {
 	    try {
@@ -140,7 +142,6 @@ public class CsvFile extends TextFile {
 		CsvUtil csvUtil = new CsvUtil(args,
 					      new BufferedOutputStream(fos), null);
 		csvUtil.setInputStream(super.doMakeInputStream(buffered));
-		System.err.println("csvutil run");
 		csvUtil.run(null);
 		fos.flush();
 		fos.close();
@@ -151,7 +152,6 @@ public class CsvFile extends TextFile {
 	    } finally {
 		if (file != null) {
 		    filesBeingWritten.remove(file);
-		    System.err.println("file done:" +file);
 		}
 	    }
         }
