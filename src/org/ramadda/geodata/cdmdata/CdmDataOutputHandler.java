@@ -642,7 +642,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         if (dates.size() > 0) {
             all.add("gridTime");
             displayProps.add("request.gridTime.includeAll");
-            displayProps.add("false");
+            displayProps.add("true");
             displayProps.add("request.gridTime.label");
             displayProps.add(Json.quote("Time"));
             displayProps.add("request.gridTime.values");
@@ -1327,6 +1327,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             varNames.addAll(StringUtil.split(v, ",", true, true));
         }
         GridDataset gds = getCdmManager().getGridDataset(entry, path);
+        File f = getRepository().getStorageManager().getTmpFile(request,
+                     "subset.json");
         // initialize the bounds and date range to the defaults
         LatLonRect        llr                 = gds.getBoundingBox();
         CalendarDateRange cdr                 = gds.getCalendarDateRange();
@@ -1377,63 +1379,27 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                             ARG_AREA_EAST, 180.0)));
             //                System.err.println("llr:" + llr);
         }
-        boolean            includeLatLon = request.get(ARG_ADDLATLON, false);
-        List<CalendarDate> allDates      = getGridDates(gds);
-        CalendarDate[]     dates         = new CalendarDate[2];
-        if (cdr != null) {
-            dates[0] = cdr.getStart();
-            dates[1] = cdr.getEnd();
-        }
-        Calendar cal       = null;
-        String   calString = request.getString(ARG_CALENDAR, null);
-        if ( !allDates.isEmpty()) {  // have some dates
-            if (calString == null) {
-                calString = allDates.get(0).getCalendar().toString();
-            }
-            // have to check if defined, because no selection is ""
-            if (request.defined(ARG_FROMDATE)) {
-                String fromDateString = request.getString(ARG_FROMDATE,
-                                            formatDate(request,
-                                                allDates.get(0)));
-                dates[0] = CalendarDate.parseISOformat(calString,
-                        fromDateString);
-            } else {
-                dates[0] = allDates.get(0);
-            }
-            if (request.defined(ARG_TODATE)) {
-                String toDateString = request.getString(ARG_TODATE,
-                                          formatDate(request,
-                                              allDates.get(allDates.size()
-                                                  - 1)));
-                dates[1] = CalendarDate.parseISOformat(calString,
-                        toDateString);
-            } else {
-                dates[1] = allDates.get(allDates.size() - 1);
-            }
-        }
-        //have to have both dates
-        if ((dates[0] != null) && (dates[1] == null)) {
-            dates[0] = null;
-        }
-        if ((dates[1] != null) && (dates[0] == null)) {
-            dates[1] = null;
-        }
-        File f = getRepository().getStorageManager().getTmpFile(request,
-                     "subset.json");
 
-        String  field = request.getString("gridField", "");
-        GeoGrid grid  = (GeoGrid) gds.findGridByName(field);
+        List<CalendarDate> dates = getGridDates(gds);
+        String             field = request.getString("gridField", "");
+        GeoGrid            grid  = (GeoGrid) gds.findGridByName(field);
         if (grid == null) {
             throw new RuntimeException("Could not find grid field:" + field);
         }
 
-        Range tRange = null;
+        int   timeIndex = -1;
+        Range tRange    = null;
         if (request.defined("gridTime")) {
-            int index = request.get("gridTime", -1);
-            if (index >= 0) {
-                tRange = new Range(index, index);
+            timeIndex = request.get("gridTime", -1);
+            if (timeIndex >= 0) {
+                tRange = new Range(timeIndex, timeIndex);
+                CalendarDate date = dates.get(timeIndex);
+                dates = new ArrayList<CalendarDate>();
+                dates.add(date);
             }
         }
+
+
 
         Range zRange = null;
         if (request.defined("gridLevel")) {
@@ -1462,9 +1428,13 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         //grid = grid.subset(new Range(0, 0), null, bounds, 1, stride, stride);
         grid = grid.subset(tRange, zRange, bounds, 1, stride, stride);
 
-        GridCoordSystem gcs   = grid.getCoordinateSystem();
-        CoordinateAxis  xaxis = gcs.getXHorizAxis();
-        CoordinateAxis  yaxis = gcs.getYHorizAxis();
+        Dimension       timeDimension = grid.getTimeDimension();
+
+
+
+        GridCoordSystem gcs           = grid.getCoordinateSystem();
+        CoordinateAxis  xaxis         = gcs.getXHorizAxis();
+        CoordinateAxis  yaxis         = gcs.getYHorizAxis();
         int[] idx1 = gcs.findXYindexFromLatLon(yaxis.getMinValue(),
                          xaxis.getMinValue(), null);
         int[] idx2 = gcs.findXYindexFromLatLon(yaxis.getMaxValue(),
@@ -1477,25 +1447,32 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                 points.add(gcs.getLatLon(lon, lat));
             }
         }
-        Array            a      = grid.readYXData(0, 0);
+        System.err.println("D:" + dates);
+
+        //      System.err.println("T:" + grid.getTimes() +" " + timeDimension.getLength()+ " " + a.getSize());
         FileOutputStream fos    = new FileOutputStream(f);
         PrintWriter      writer = new PrintWriter(fos);
         writer.println("{\"name\":" + Json.quote(entry.getName()) + ",");
         writer.println("\"fields\":");
         List<String> fields = new ArrayList<String>();
+        int          index  = 0;
         fields.add(Json.map("id", Json.quote(field), "label",
-                            Json.quote(field), "index", "0", "type",
-                            Json.quote("double"), "chartable", "true",
-                            "unit", Json.quote(grid.getUnitsString())));
+                            Json.quote(field), "index", "" + (index++),
+                            "type", Json.quote("double"), "chartable",
+                            "true", "unit",
+                            Json.quote(grid.getUnitsString())));
+        //todo: check for times
+        fields.add(Json.map("id", Json.quote("date"), "label",
+                            Json.quote("Date"), "index", "" + (index++),
+                            "type", Json.quote("date")));
+
         fields.add(Json.map("id", Json.quote("latitude"), "label",
-                            Json.quote("Latitude"), "index", "1", "type",
-                            Json.quote("double")));
+                            Json.quote("Latitude"), "index", "" + (index++),
+                            "type", Json.quote("double")));
         fields.add(Json.map("id", Json.quote("longitude"), "label",
-                            Json.quote("Longitude"), "index", "2", "type",
-                            Json.quote("double")));
+                            Json.quote("Longitude"), "index", "" + (index++),
+                            "type", Json.quote("double")));
         writer.println(Json.list(fields));
-
-
         List<String> displayProps = new ArrayList<String>();
         Hashtable    wikiProps    = new Hashtable();
         wikiProps.put("gridField", field);
@@ -1504,19 +1481,26 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         writer.println(Json.map(displayProps));
         writer.println(",\"data\":[");
 
-        for (int i = 0; i < a.getSize(); i++) {
-            if (i > max) {
-                break;
+        int cnt = 0;
+        for (int tIdx = 0; tIdx < dates.size(); tIdx++) {
+            String dateString = dates.get(tIdx).toString();
+            Array  a          = grid.readYXData(tIdx, 0);
+            for (int i = 0; i < a.getSize(); i++) {
+                if (cnt > max) {
+                    break;
+                }
+                if (cnt > 0) {
+                    writer.println(",");
+                }
+                cnt++;
+                LatLonPoint llp = points.get(i);
+                float       v   = a.getFloat(i);
+                writer.println(Json.map("values",
+                                        Json.list("" + (Double.isNaN(v)
+                        ? null
+                        : v), Json.quote(dateString), "" + llp.getLatitude(),
+                              "" + llp.getLongitude())));
             }
-            LatLonPoint llp = points.get(i);
-            float       v   = a.getFloat(i);
-            if (i > 0) {
-                writer.println(",");
-            }
-            writer.println(Json.map("values", Json.list("" + (Double.isNaN(v)
-                    ? null
-                    : v), "" + llp.getLatitude(), "" + llp.getLongitude())));
-
         }
         writer.println("]}");
         writer.close();
