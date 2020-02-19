@@ -520,6 +520,7 @@ function RecordField(props) {
 	    return newField;
 	},
 	toString: function() {
+	    return this.getId();
 	    return "Field:" + this.getId() +" label:" + this.getLabel() +" type:" + this.getType()+" " + this.isNumeric();
 	},
         getIndex: function() {
@@ -591,7 +592,7 @@ function RecordField(props) {
 
         getUnitSuffix: function() {
             if (this.unit && this.unit != "")
-                return " [" + this.unit + "]";
+                return "&nbsp;[" + this.unit + "]";
             return "";
         },
 
@@ -2202,7 +2203,7 @@ var DataUtils = {
 		props:cmd.args,
 		type:type.trim(),
 		field:field,
-		fields:fields||[field],
+		fields:fields?fields:field?[field]:null,
 		allFields:allFields,
 		value:value,
 		label:label,
@@ -2216,19 +2217,23 @@ var DataUtils = {
 		    if(this.type == "match") {
 			return String(value).match(this.value);
 		    } else if(this.type == "nomissing") {
-			this.fields.every(f=>{
-			    return true;
-			});
-			let fieldsToUse = this.fields||(this.field?[this.field]:r.fields);
+			let fieldsToUse =null;
+			if(this.fields) {
+			    fieldsToUse = this.fields;
+			} else if(this.field) {
+			    fieldsToUse = [this.field];
+			} else {
+			    fieldsToUse = r.fields;
+			}
 			let cnt = 0;
 			let ok = false;
 			fieldsToUse.some(f=>{
+			    if(f.isFieldLatitude() || f.isFieldLongitude()) return true;
 			    if(f.isNumeric()) {
 				cnt++;
 				let v  = r.getValue(f.getIndex());
 				ok  =!isNaN(v);
 			    }
-			    if(cnt==0) return true;
 			    return ok;
 			});
 			return ok;

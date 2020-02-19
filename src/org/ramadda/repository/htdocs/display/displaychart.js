@@ -224,6 +224,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     RamaddaUtil.inherit(this, SUPER);
 
 
+
     RamaddaUtil.defineMembers(this, {
         clearCachedData: function() {
             SUPER.clearCachedData();
@@ -234,8 +235,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.getDisplayReady()) {
                 return;
             }
-
-
 	    //	    var t1= new Date();
             this.displayData(reload);
 	    //	    var t2= new Date();
@@ -507,6 +506,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
             var selectedFields = this.getSelectedFields();
+
+
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
 	    
@@ -547,6 +548,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + selectedFields);
             this.lastSelectedFields = selectedFields;
+
 
             var props = {
                 includeIndex: this.includeIndexInData()
@@ -752,7 +754,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
-	    var groupField = this.getFieldById(null,  this.getProperty("group"));
+	    var groupField = this.getFieldById(null,  this.getProperty("groupBy"));
 
 	    if(groupField) {
 		dataList = this.filterData();
@@ -804,6 +806,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var justData = [];
             var tooltipFields = this.getFieldsByIds(null,this.getProperty("tooltipFields", ""));
+//	    addTooltip=false;
             var dataTable = new google.visualization.DataTable();
             var header = this.getDataValues(dataList[0]);
             var sample = this.getDataValues(dataList[1]);
@@ -1385,45 +1388,53 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 	    this.charts = [];
 	    this.chartCount  = -1;
-	    if(this.getProperty("multipleCharts",false)) {
-		var headerPosition = this.getProperty("multipleChartsHeaderPosition","bottom");
+
+
+	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
+		let multiField=this.getFieldById(null,this.getProperty("multiField"));
+		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
 		let map = {};
-		let times = [];
+		let groups = [];
 		let tmp = [];
 		dataList.map((v,idx)=>{if(idx>0) tmp.push(v)});
+		if(!multiField)
 		tmp.sort(function(a,b) {
-                    var record = a.record;
-		    var date1 = record?record.getDate():a.date;
-		    record = b.record;
-		    var date2 = record?record.getDate():b.date;
-		    return date1.getTime()-date2.getTime();
+		    var v1 = a.record?a.record.getDate():a.date;
+		    var v2 = b.record?b.record.getDate():b.date;
+		    return v1.getTime()-v2.getTime();
 		});
 		dataList = Utils.mergeLists([dataList[0]], tmp);
 		dataList.map((v,idx)=>{
 		    if(idx==0) return;
                     var record = v.record;
-		    var date = record?record.getDate():v.date;
+		    var groupValue = record?multiField?record.getValue(multiField.getIndex()):record.getDate():v.date;
 		    let list=null;
-		    list = map[date];
+		    list = map[groupValue];
 		    if(!list) {
 			list = [];
-			map[date] = list;
-			times.push(date);
+			map[groupValue] = list;
+			groups.push(groupValue);
 		    }
 		    list.push(v);
 		})
 		this.jq(ID_CHARTS).html(HtmlUtils.div(["id",this.getDomId(ID_CHARTS_INNER),"style","text-align:center;"]));
-		times.map((date,idx)=>{
+		let multiStyle=this.getProperty("multiStyle","");
+		let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
+		groups.map((groupValue,idx)=>{
 		    this.chartCount  =idx;
 		    let tmpDataList = [];
-		    let list = map[date];
+		    let list = map[groupValue];
 		    tmpDataList.push(dataList[0]);
 		    tmpDataList = Utils.mergeLists(tmpDataList,list);
 		    var innerId = this.getDomId(ID_CHART)+"_" + this.chartCount;
-		    var header = HtmlUtils.div(["class","display-multi-header"], this.formatDate(date));
-		    var top =headerPosition=="top"?header:"";
-		    var bottom = headerPosition=="bottom"?header+"<br>":"";
-		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"], top + this.getChartDiv(innerId) + bottom);
+		    var label = groupValue;
+		    if(groupValue.getTime) label = this.formatDate(groupValue);
+		    label = multiLabelTemplate.replace("${value}",label);
+		    var header = HtmlUtils.div(["class","display-multi-header"], label);
+		    var top =labelPosition=="top"?header:"";
+		    var bottom = labelPosition=="bottom"?header:"";
+		    
+		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"+multiStyle], top + this.getChartDiv(innerId) + bottom);
 		    this.jq(ID_CHARTS_INNER).append(div);
 		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
 		    if(chart) this.charts.push(chart);

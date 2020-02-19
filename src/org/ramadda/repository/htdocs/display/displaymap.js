@@ -1279,7 +1279,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-
+	    console.log("r:" + records.length);
 	    //Only show the indicators for lots of records
 	    let msg = this.getProperty("loadingMessage","Loading map...");
 	    if(msg!="")
@@ -1402,8 +1402,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("heatmapShowToggle",false)) {
 		let cbx = this.jq("heatmaptoggle");
 		let reload =  HtmlUtils.getIconImage("fa-sync",["style","cursor:pointer;","title","Reload heatmap", "id",this.getDomId("heatmapreload")])+"&nbsp;&nbsp;";
-		this.jq(ID_HEADER2_PREFIX).html(reload + HtmlUtils.checkbox("",["id",this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +"&nbsp;" +
-						this.getProperty("heatmapToggleLabel","Toggle Heatmap") +"&nbsp;&nbsp;");
+		this.writeHeader(ID_HEADER2_PREFIX, reload + HtmlUtils.checkbox("",["id",this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +"&nbsp;" +
+				 this.getProperty("heatmapToggleLabel","Toggle Heatmap") +"&nbsp;&nbsp;");
 		let _this = this;
 		this.jq("heatmapreload").click(()=> {
 		    this.haveCalledUpdateUI = false;

@@ -647,8 +647,6 @@ function DisplayThing(argId, argProperties) {
 		}
                 fields = pointData.getRecordFields();
             }
-	    
-
 	    var showDate = this.getProperty("showDate", true);
 	    var showImage = this.getProperty("showImage", true);
             var showGeo = false;
@@ -658,11 +656,15 @@ function DisplayThing(argId, argProperties) {
 	    if(!template)
 		template = this.getProperty("recordTemplate");
 	    if(template) {
-		if(template!="${default}") {
+		if(template!="${default}" && template!="${fields}") {
 		    var row = this.getDataValues(record);
 		    return this.applyRecordTemplate(row, fields, template);
 		}
 	    }
+	    if(template=="${fields}") {
+		fields = this.getFieldsByIds(null,this.getProperty("fields"));
+	    }
+
             var values = "<table>";
             for (var doDerived = 0; doDerived < 2; doDerived++) {
 		//record.getData()
@@ -671,7 +673,7 @@ function DisplayThing(argId, argProperties) {
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
                     var label = field.getLabel();
-                    label = this.formatRecordLabel(label);
+		    label = this.formatRecordLabel(label);
 		    if(!showDate) {
                         if (field.isFieldDate()) {
                             continue;
@@ -682,7 +684,7 @@ function DisplayThing(argId, argProperties) {
                             continue;
                         }
                     }
-                    var value = record.getValue(i);
+                    var value = record.getValue(field.getIndex());
                     if (typeof value == "number") {
 			value = this.formatNumber(value);
 			/**
@@ -711,7 +713,7 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>200) {
 			value  = HtmlUtils.div(["style","max-height:200px; overflow-y:auto;"],value);
 		    }
-                    values += "<tr valign=top><td align=right><b>" + label + ":</b></td><td align=left>" + value + "</td></tr>\n";
+                    values += "<tr valign=top><td nowrap align=right><b>" + label + ":</b></td><td align=left>" + value + "</td></tr>\n";
                 }
             }
 
@@ -1880,7 +1882,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (disabledFields != "") {
                     html += HtmlUtils.div(["style", "border-top:1px #888  solid;"], "<b>No Data Available</b>" + disabledFields);
                 }
-
                 html += HtmlUtils.closeTag(TAG_DIV);
             }
 
@@ -1943,7 +1944,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + this.lastSelectedFields);
             var fixedFields = this.getProperty(PROP_FIELDS);
-            if (fixedFields) fixedFields.length = 0;
+
+	    //NOT NOW as this nukes the fields property
+            //if (fixedFields) fixedFields.length = 0;
+
             this.setDisplayTitle();
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
@@ -1990,7 +1994,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 	    let aliases= {};
-
 	    var tmp = this.getProperty("fieldAliases");
 	    if(tmp) {
 		tmp.split(",").map(tok=>{
@@ -2006,21 +2009,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         console.log("\thave fixed fields:" + fixedFields.length);
                     for (var i = 0; i < fixedFields.length; i++) {
                         var sfield = fixedFields[i];
-			var alias = aliases[sfield];
-                        if (this.debugSelected)
-                            console.log("\t\tfixed field:" + sfield);
-                        for (var j = 0; j < fields.length; j++) {
-                            var field = fields[j];
-                            var id = field.getId();
-                            if (this.debugSelected)
-                                console.log("\t\t\tlooking at:" + id);
-                            if (id == sfield || ("#" + (j + 1)) == sfield || id == alias) {
-                                if (this.debugSelected)
-                                    console.log("\t\t\t\tgot:" + field.getLabel());
-                                df.push(field);
-                                break;
-                            }
-                        }
+			var field = this.getFieldById(fields, sfield);
+                        if(field)df.push(field);
                     }
                 }
             }
@@ -2122,17 +2112,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return records;
 	},
         getFieldById: function(fields, id) {
+
             if (!id) return null;
 	    id = String(id).trim();
             if (!fields) {
-                var pointData = this.getData();
+                let pointData = this.getData();
                 if (pointData == null) return null;
                 fields = pointData.getRecordFields();
             }
-
-            for (var i = 0; i < fields.length; i++) {
-                var field = fields[i];
-                if (field.getId() == id || id == ("#" + i)) {
+	    let aliases= {};
+	    var tmp = this.getProperty("fieldAliases");
+	    if(tmp) {
+		tmp.split(",").map(tok=>{
+		    [name,alias] =   tok.split(":");
+		    aliases[alias] = name;
+		});
+	    }
+	    var alias = aliases[id];
+            for (let i = 0; i < fields.length; i++) {
+                let field = fields[i];
+                if (field.getId() == id || id == ("#" + (i+1)) || field.getId()==alias) {
                     return field;
                 }
             }
@@ -2144,6 +2143,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!ids) return result;
             if ((typeof ids) == "string")
                 ids = ids.split(",");
+            if (!fields) {
+                var pointData = this.getData();
+                if (pointData == null) return null;
+                fields = pointData.getRecordFields();
+            }
             for (var i = 0; i < ids.length; i++) {
                 var f = this.getFieldById(fields, ids[i]);
                 if (f) result.push(f);
@@ -4297,7 +4301,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return true;
 	    });
 
-	    this.jq(ID_REQUEST_PROPERTIES).html(requestProps);
+	    this.writeHeader(ID_REQUEST_PROPERTIES, requestProps);
 
 	    let macroChange = (macro,value,what)=>{
 		if(this.settingMacroValue) return;
@@ -4384,6 +4388,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 
+	writeHeader:function(header,html) {
+	    if(html=="") {
+		this.jq(header).css("display","none");
+	    } else {
+		this.jq(header).css("display","inline-block");
+	    }
+	    this.jq(header).html(html);
+	},
+
         checkSearchBar: function() {
             let _this = this;
 
@@ -4394,21 +4407,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (pointData == null) return;
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
-
 	    
-
 	    let header2="";
 	    if(this.getProperty("showProgress",false)) {
-		header2+= HtmlUtils.div(["id",this.getDomId(ID_DISPLAY_PROGRESS), "style","display:inline-block;margin-right:4px;min-width:20px;"]);
+		header2 += HtmlUtils.div(["id",this.getDomId(ID_DISPLAY_PROGRESS), "style","display:inline-block;margin-right:4px;min-width:20px;"]);
 	    }
-	    header2+=HtmlUtils.span(["id",this.getDomId(ID_HEADER2_PREFIX)]);
+	    header2 += HtmlUtils.div(["id",this.getDomId(ID_HEADER2_PREFIX),"class","display-header-span"],"");
 	    header2 +=  this.getHeader2();
 	    if(this.getProperty("pageRequest",false)) {
 		header2 += HtmlUtils.span(["id",this.getDomId(ID_PAGE_COUNT)]);
 	    }
-	    header2+=HtmlUtils.div(["id",this.getDomId(ID_REQUEST_PROPERTIES),"style","display:inline-block;"]);
-
-
+	    header2+=HtmlUtils.div(["id",this.getDomId(ID_REQUEST_PROPERTIES),"class","display-header-span"],"");
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
 		let fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getProperty("fields", this.getProperty("sumFields"))));
@@ -4777,7 +4786,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-	    header2+=HtmlUtils.span(["xstyle","display:inline-block;","id",this.getDomId(ID_HEADER2_SUFFIX)]);
+	    header2+=HtmlUtils.div(["id",this.getDomId(ID_HEADER2_SUFFIX),"class","display-header-span"],"");
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;
@@ -4836,7 +4845,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		_this.settingFilterValue = true;
 		_this.dataFilterChanged();
 
-		//		    console.log("ID:" + id +" v:" + value +" " + fieldId);
 		var args = {
 		    property: "filterValue",
 		    id:id,
@@ -5020,8 +5028,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jq("sizebyselect").change(function(){
 		    _this.sizeByFieldChanged($(this).val());
 		});
-
-
 
 
 		dateIds.map(id=>{
@@ -5685,9 +5691,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
-
-
-
 	    if(debug) console.log("pointDataLoad:" + this.getId() + " " + this.type +" #records:" + pointData.getRecords().length);
 	    if(debug)
 		console.log("\tclearing last selected fields");
@@ -5912,7 +5915,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         getStandardData: function(fields, args) {
 	    let debug = false;
-	    if(debug) console.log("getStandardData:" + this.type +" " + this.id +" fields:" + fields.length);
+	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
 	    let showUnit  = this.getProperty("showUnit",true);
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
@@ -5920,9 +5923,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
             if (fields == null) {
                 fields = pointData.getRecordFields();
-		if(debug) console.log("fields 1: " + fields.length);
+		if(debug) console.log("\tgetRecordFields: " + fields.length);
             } else {
-		if(debug) console.log("fields 2: " + fields.length);
+//		if(debug) console.log("\tfields 2: " + fields.length);
 	    }
             props = {
                 makeObject: true,
@@ -6875,6 +6878,7 @@ function DisplayAnimation(display, enabled) {
 		return a.getTime() - b.getTime();
 	    });
 	    
+	    console.log("dates:" + this.dates);
 
 	    this.frameIndex = 0;
 	    if(this.startAtEnd) {
@@ -7854,6 +7858,7 @@ function RecordField(props) {
 	    return newField;
 	},
 	toString: function() {
+	    return this.getId();
 	    return "Field:" + this.getId() +" label:" + this.getLabel() +" type:" + this.getType()+" " + this.isNumeric();
 	},
         getIndex: function() {
@@ -7925,7 +7930,7 @@ function RecordField(props) {
 
         getUnitSuffix: function() {
             if (this.unit && this.unit != "")
-                return " [" + this.unit + "]";
+                return "&nbsp;[" + this.unit + "]";
             return "";
         },
 
@@ -9536,7 +9541,7 @@ var DataUtils = {
 		props:cmd.args,
 		type:type.trim(),
 		field:field,
-		fields:fields||[field],
+		fields:fields?fields:field?[field]:null,
 		allFields:allFields,
 		value:value,
 		label:label,
@@ -9550,19 +9555,23 @@ var DataUtils = {
 		    if(this.type == "match") {
 			return String(value).match(this.value);
 		    } else if(this.type == "nomissing") {
-			this.fields.every(f=>{
-			    return true;
-			});
-			let fieldsToUse = this.fields||(this.field?[this.field]:r.fields);
+			let fieldsToUse =null;
+			if(this.fields) {
+			    fieldsToUse = this.fields;
+			} else if(this.field) {
+			    fieldsToUse = [this.field];
+			} else {
+			    fieldsToUse = r.fields;
+			}
 			let cnt = 0;
 			let ok = false;
 			fieldsToUse.some(f=>{
+			    if(f.isFieldLatitude() || f.isFieldLongitude()) return true;
 			    if(f.isNumeric()) {
 				cnt++;
 				let v  = r.getValue(f.getIndex());
 				ok  =!isNaN(v);
 			    }
-			    if(cnt==0) return true;
 			    return ok;
 			});
 			return ok;
@@ -12832,6 +12841,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     RamaddaUtil.inherit(this, SUPER);
 
 
+
     RamaddaUtil.defineMembers(this, {
         clearCachedData: function() {
             SUPER.clearCachedData();
@@ -12842,8 +12852,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!this.getDisplayReady()) {
                 return;
             }
-
-
 	    //	    var t1= new Date();
             this.displayData(reload);
 	    //	    var t2= new Date();
@@ -13115,6 +13123,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
             var selectedFields = this.getSelectedFields();
+
+
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
 	    
@@ -13155,6 +13165,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + selectedFields);
             this.lastSelectedFields = selectedFields;
+
 
             var props = {
                 includeIndex: this.includeIndexInData()
@@ -13360,7 +13371,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
-	    var groupField = this.getFieldById(null,  this.getProperty("group"));
+	    var groupField = this.getFieldById(null,  this.getProperty("groupBy"));
 
 	    if(groupField) {
 		dataList = this.filterData();
@@ -13412,6 +13423,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var justData = [];
             var tooltipFields = this.getFieldsByIds(null,this.getProperty("tooltipFields", ""));
+//	    addTooltip=false;
             var dataTable = new google.visualization.DataTable();
             var header = this.getDataValues(dataList[0]);
             var sample = this.getDataValues(dataList[1]);
@@ -13993,45 +14005,53 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 	    this.charts = [];
 	    this.chartCount  = -1;
-	    if(this.getProperty("multipleCharts",false)) {
-		var headerPosition = this.getProperty("multipleChartsHeaderPosition","bottom");
+
+
+	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
+		let multiField=this.getFieldById(null,this.getProperty("multiField"));
+		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
 		let map = {};
-		let times = [];
+		let groups = [];
 		let tmp = [];
 		dataList.map((v,idx)=>{if(idx>0) tmp.push(v)});
+		if(!multiField)
 		tmp.sort(function(a,b) {
-                    var record = a.record;
-		    var date1 = record?record.getDate():a.date;
-		    record = b.record;
-		    var date2 = record?record.getDate():b.date;
-		    return date1.getTime()-date2.getTime();
+		    var v1 = a.record?a.record.getDate():a.date;
+		    var v2 = b.record?b.record.getDate():b.date;
+		    return v1.getTime()-v2.getTime();
 		});
 		dataList = Utils.mergeLists([dataList[0]], tmp);
 		dataList.map((v,idx)=>{
 		    if(idx==0) return;
                     var record = v.record;
-		    var date = record?record.getDate():v.date;
+		    var groupValue = record?multiField?record.getValue(multiField.getIndex()):record.getDate():v.date;
 		    let list=null;
-		    list = map[date];
+		    list = map[groupValue];
 		    if(!list) {
 			list = [];
-			map[date] = list;
-			times.push(date);
+			map[groupValue] = list;
+			groups.push(groupValue);
 		    }
 		    list.push(v);
 		})
 		this.jq(ID_CHARTS).html(HtmlUtils.div(["id",this.getDomId(ID_CHARTS_INNER),"style","text-align:center;"]));
-		times.map((date,idx)=>{
+		let multiStyle=this.getProperty("multiStyle","");
+		let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
+		groups.map((groupValue,idx)=>{
 		    this.chartCount  =idx;
 		    let tmpDataList = [];
-		    let list = map[date];
+		    let list = map[groupValue];
 		    tmpDataList.push(dataList[0]);
 		    tmpDataList = Utils.mergeLists(tmpDataList,list);
 		    var innerId = this.getDomId(ID_CHART)+"_" + this.chartCount;
-		    var header = HtmlUtils.div(["class","display-multi-header"], this.formatDate(date));
-		    var top =headerPosition=="top"?header:"";
-		    var bottom = headerPosition=="bottom"?header+"<br>":"";
-		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"], top + this.getChartDiv(innerId) + bottom);
+		    var label = groupValue;
+		    if(groupValue.getTime) label = this.formatDate(groupValue);
+		    label = multiLabelTemplate.replace("${value}",label);
+		    var header = HtmlUtils.div(["class","display-multi-header"], label);
+		    var top =labelPosition=="top"?header:"";
+		    var bottom = labelPosition=="bottom"?header:"";
+		    
+		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"+multiStyle], top + this.getChartDiv(innerId) + bottom);
 		    this.jq(ID_CHARTS_INNER).append(div);
 		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
 		    if(chart) this.charts.push(chart);
@@ -24679,7 +24699,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-
+	    console.log("r:" + records.length);
 	    //Only show the indicators for lots of records
 	    let msg = this.getProperty("loadingMessage","Loading map...");
 	    if(msg!="")
@@ -24802,8 +24822,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("heatmapShowToggle",false)) {
 		let cbx = this.jq("heatmaptoggle");
 		let reload =  HtmlUtils.getIconImage("fa-sync",["style","cursor:pointer;","title","Reload heatmap", "id",this.getDomId("heatmapreload")])+"&nbsp;&nbsp;";
-		this.jq(ID_HEADER2_PREFIX).html(reload + HtmlUtils.checkbox("",["id",this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +"&nbsp;" +
-						this.getProperty("heatmapToggleLabel","Toggle Heatmap") +"&nbsp;&nbsp;");
+		this.writeHeader(ID_HEADER2_PREFIX, reload + HtmlUtils.checkbox("",["id",this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +"&nbsp;" +
+				 this.getProperty("heatmapToggleLabel","Toggle Heatmap") +"&nbsp;&nbsp;");
 		let _this = this;
 		this.jq("heatmapreload").click(()=> {
 		    this.haveCalledUpdateUI = false;
