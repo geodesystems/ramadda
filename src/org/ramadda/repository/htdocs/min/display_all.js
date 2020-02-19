@@ -2441,7 +2441,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(date) {
 		    if(date=="all") {
 			this.setDateRange(null,null);
-			
 		    } else {
 			date = new Date(date);
 			if(filterDate == "year") {
@@ -2482,6 +2481,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 	    }
+
+
+	    records = records.filter(record=>{
+                var date = record.getDate();
+		if(!date) return true;
+                return this.dateInRange(date);
+	    });
 
 
 	    if(debug)   console.log("filter Fields:" + this.filterFields.length +" r:" + records.length);
@@ -2562,10 +2568,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//	    console.log(this.type +" filterData:" + JSON.stringify(filters,null,2));
 		for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
 		    var record = records[rowIdx];
-                    var date = record.getDate();
-                    if (!this.dateInRange(date)) {
-			continue;
-		    }
 		    if(this.filterBounds && record.hasLocation()) {
 			var b = this.filterBounds;
 			var lat = record.getLatitude();
@@ -2746,6 +2748,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
 	    }
+
+
 
 
 	    //	    var t2=  new Date();
