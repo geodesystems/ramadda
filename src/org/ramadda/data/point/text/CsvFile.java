@@ -108,34 +108,30 @@ public class CsvFile extends TextFile {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
-	System.err.println("file:" +file +" " + file.exists());
+	System.err.println("file:" +file +" " + file.exists()  +" " + file.length());
         if ((file == null) || !file.exists()) {
-            try {
-                ByteArrayOutputStream bos = null;
-                OutputStream          fos;
-                if (file != null) {
-                    fos = new FileOutputStream(file);
-                } else {
-                    fos = bos = new ByteArrayOutputStream();
-                }
-                String[] args = StringUtil.listToStringArray(
-                                    StringUtil.split(csvCommands, ","));
-                for (int i = 0; i < args.length; i++) {
-                    args[i] = args[i].replaceAll("_comma_", ",");
-                }
-                CsvUtil csvUtil = new CsvUtil(args,
-                                      new BufferedOutputStream(fos), null);
-                csvUtil.setInputStream(super.doMakeInputStream(buffered));
-		System.err.println("csvutil run");
-                csvUtil.run(null);
-                fos.close();
-                if (file == null) {
-                    //                    System.err.println("processed:" +new String(bos.toByteArray()));
-                    return new ByteArrayInputStream(bos.toByteArray());
-                }
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
+	    ByteArrayOutputStream bos = null;
+	    OutputStream          fos;
+	    if (file != null) {
+		fos = new FileOutputStream(file);
+	    } else {
+		fos = bos = new ByteArrayOutputStream();
+	    }
+	    String[] args = StringUtil.listToStringArray(
+							 StringUtil.split(csvCommands, ","));
+	    for (int i = 0; i < args.length; i++) {
+		args[i] = args[i].replaceAll("_comma_", ",");
+	    }
+	    CsvUtil csvUtil = new CsvUtil(args,
+					  new BufferedOutputStream(fos), null);
+	    csvUtil.setInputStream(super.doMakeInputStream(buffered));
+	    System.err.println("csvutil run");
+	    csvUtil.run(null);
+	    fos.close();
+	    if (file == null) {
+		//                    System.err.println("processed:" +new String(bos.toByteArray()));
+		return new ByteArrayInputStream(bos.toByteArray());
+	    }
         }
 
         return new BufferedInputStream(new FileInputStream(file));
