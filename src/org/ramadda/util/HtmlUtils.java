@@ -1529,10 +1529,10 @@ public class HtmlUtils {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static boolean debug1 = false;
 
-    /** _more_          */
+    /** _more_ */
     public static boolean debug2 = false;
 
     /**
@@ -1583,7 +1583,7 @@ public class HtmlUtils {
             }
 
             if (mode == MODE_NAME) {
-                if (c == ' ' || c=='\n') {
+                if ((c == ' ') || (c == '\n')) {
                     mode = MODE_EQUALS;
 
                     continue;
@@ -1603,6 +1603,7 @@ public class HtmlUtils {
             if (mode == MODE_EQUALS) {
                 if (c == '=') {
                     mode = MODE_VALUE;
+
                     continue;
                 }
                 String name = nb.toString().trim();
@@ -2255,6 +2256,24 @@ public class HtmlUtils {
         List<String> a = new ArrayList<String>();
         for (int i = 0; i < args.length; i += 2) {
             a.add(arg(args[i], args[i + 1], encodeArgs));
+        }
+
+        return StringUtil.join("&", a);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     * @param encodeArgs _more_
+     *
+     * @return _more_
+     */
+    public static String args(List<String> args, boolean encodeArgs) {
+        List<String> a = new ArrayList<String>();
+        for (int i = 0; i < args.size(); i += 2) {
+            a.add(arg(args.get(i), args.get(i + 1), encodeArgs));
         }
 
         return StringUtil.join("&", a);
@@ -4547,7 +4566,7 @@ public class HtmlUtils {
 
     /**
      * _more_
-     *as(ttr
+     * as(ttr
      * @param function _more_
      * @param args _more_
      *
@@ -6048,8 +6067,13 @@ public class HtmlUtils {
         return sanitizeString(s).replaceAll("\"", "_");
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Feb 20, '20
+     * @author         Enter your name here...    
+     */
     public static class HT extends HtmlUtils {}
 
 }
-
-
