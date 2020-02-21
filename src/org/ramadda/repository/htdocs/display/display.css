@@ -208,7 +208,7 @@ svg > g > g:last-child { pointer-events: none }
    position:absolute;
    display:inline-block;
    height:100%;
-   border-left:1px solid #ccc;
+   border-left:2px solid #ccc;
    margin-bottom:0.5em;
 }
 
@@ -224,7 +224,7 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-animation-slider .ui-slider-handle:hover {
-cursor:pointer;
+    cursor:pointer;
 }
 
 .ui-corner-all {
@@ -232,16 +232,19 @@ cursor:pointer;
 
 
 .display-animation-slider .ui-slider-handle {
-z-index:200;
-background:#cacaca;
-position:absolute;
- width:10px;
- border: 1px solid #bbb;
- border-radius: 0;
- margin-left:0px;
- height:13px;
- margin-top:6px;
- margin-bottom:0px;
+    z-index:200;
+    //background:#cacaca;
+    background:transparent;
+    position:absolute;
+    width:10px;
+    border: 0px solid #bbb;
+    border-radius: 0;
+    margin-left:-5px;
+    margin-right:10px;
+    height:13px;
+    margin-top:3px;
+    margin-bottom:0px;
+    background: URL(${root}/icons/downdart.gif);
 }
 
 .display-animation-label {
@@ -1924,6 +1927,11 @@ margin:10px;
 .display-legend-color {
     display:inline-block;
     margin-right:4px;
+}
+
+.display-legend-item {
+white-space: nowrap;
+display:inline-block;
 }
 
 .display-legend-label {

@@ -221,9 +221,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
 
             var overrideBounds = false;
-            if (this.getProperty("bounds")) {
+            if (this.getProperty("bounds") ||this.getProperty("gridBounds") ) {
                 overrideBounds = true;
-                var toks = this.getProperty("bounds", "").split(",");
+                var toks = this.getProperty("bounds", this.getProperty("gridBounds","")).split(",");
                 if (toks.length == 4) {
                     if (this.getProperty("showBounds", false)) {
                         var attrs = {};
@@ -1118,6 +1118,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var windowStart = animation.begin.getTime();
             var windowEnd = animation.end.getTime();
             var atLoc = {};
+	    if(this.lines==null) return
             for (var i = 0; i < this.lines.length; i++) {
                 var line = this.lines[i];
                 if (line.date < windowStart || line.date > windowEnd) {
@@ -1243,15 +1244,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	handleNoData: function(pointData,reload) {
 	    this.jq(ID_PAGE_COUNT).html("");
             this.addPoints([],[],[]);
-	    if(this.map)
-		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "No data available"));
+	    this.setMessage("No data available");
 	},
-	startProgress: function() {
-	    let msg = this.getProperty("loadingMessage","Loading map...");
+	setMessage: function(msg) {
 	    if(this.map)
 		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
 	},
+	startProgress: function() {
+	    this.setMessage(this.getProperty("loadingMessage","Loading map..."));
+	},
 	clearProgress: function() {
+	    if(this.errorMessage) {
+		this.errorMessage = null;
+		return;
+	    }
 	    if(this.map)
 		this.map.setProgress("");
 	},
@@ -1279,25 +1285,55 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-	    console.log("r:" + records.length);
 	    //Only show the indicators for lots of records
 	    let msg = this.getProperty("loadingMessage","Loading map...");
 	    if(msg!="")
-		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
+		this.setMessage(msg);
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(pointData, records);
 		    if(callback)callback();
 		} catch(exc) {
 		    console.log(exc)
-		    this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], "" + exc));
+		    console.log(exc.stack);
+		    this.setMessage("" + exc);
 		    return;
 		}
-		this.map.setProgress("");
+		this.clearProgress();
 	    });
 
 	},
 	
+	animationApply: function(animation, skipUpdateUI) {
+ 	    if(!this.heatmapLayers) {
+		SUPER.animationApply.call(this, animation, skipUpdateUI);
+		return;
+	    }
+	    let onDate=null;
+	    console.log("step:" + animation.begin + " " +animation.end);
+    
+	    this.heatmapLayers.every(layer=>{
+		if(!layer.date) return true;
+		if(layer.date.getTime()>= animation.begin.getTime() && layer.date.getTime()<= animation.end.getTime()) {
+		    onDate = layer.date;
+		    layer.setVisibility(true);
+		} else {
+		    layer.setVisibility(false);
+		}
+		return true;
+	    })
+ 	    if(!onDate) {
+		SUPER.animationApply.call(this, animation, skipUpdateUI);
+	    }
+	    if(onDate!="none")
+		this.map.setLabel(HtmlUtils.div([ATTR_CLASS, "display-map-message"], onDate?this.formatDate(onDate):""));
+	},
+        setDateRange: function(min, max) {
+	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
+	    } else {
+		SUPER.setDateRange.call(this, min,max);
+	    }
+	},
 	updateUIInner: function(pointData, records) {
 	    var t1= new Date();
 	    this.haveCalledUpdateUI = true;
@@ -1355,49 +1391,70 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
 	    colorBy = colorBy || this.getColorByInfo(records);
-	    if(this.heatmapLayer)
-		this.map.removeLayer(this.heatmapLayer);
-	    let w = Math.round(this.getProperty("gridWidth",800));
-
-	    if(this.getProperty("heatmapSetWidthFromData")) {
-		let seen = {};
-		let seenCnt = 0;
-		records.every(r=>{
-		    if(!seen[r.getLongitude()]) {seenCnt++;seen[r.getLongitude()] = true;}
-		    return true;
-		});
-		w = seenCnt;
+ 	    if(this.heatmapLayers) {
+		try {
+		    this.heatmapLayers.every(layer=>{
+			this.map.removeLayer(layer);
+			return true;
+		    });
+		} catch(exc) {
+		    console.log(exc);
+		}
+	    }
+	    this.heatmapLayers = [];
+	    if(records.length==0) {
+		this.errorMessage = "No data available";
+		this.setMessage(this.errorMessage);
+		return
 	    }
 
-
-	    let dfltArgs = this.getDefaultGridByArgs();
 	    if(this.reloadHeatmap) {
 		this.reloadHeatmap = false;
 		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
 		records = RecordUtil.subset(records, bounds);
 	    }
-	    bounds = RecordUtil.expandBounds(bounds,0.1);
-	    if(dfltArgs.cellSize==0) {
-		let size = 1;
-		while(w/(bounds.east-bounds.west)/size>1000)size++;
+	    bounds = RecordUtil.expandBounds(bounds,0.05);
+
+	    let dfltArgs = this.getDefaultGridByArgs();
+	    let w = Math.round(this.getProperty("gridWidth",800));
+	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+	    //	    let h = 1.25*Math.round(w/ratio);
+	    let h = Math.round(w/ratio);
+	    let doTimes = this.getProperty("heatmapDoTimes",false);
+	    let times = doTimes?RecordUtil.groupByTime(records):null;
+	    if(times == null || times.max == 0) {
+		doTimes = false;
+		times= {
+		    max:records.length,
+		    times:["none"],
+		    map:{none:records}
+		}
+	    }
+	    let recordCnt = times.max;
+ 	    if(dfltArgs.cellSize==0) {
+		let sqrt = Math.sqrt(recordCnt);
+		let size = Math.round(w/sqrt);
 		dfltArgs.cellSizeX = dfltArgs.cellSizeY = dfltArgs.cellSize = size;
 	    } else if(String(dfltArgs.cellSize).endsWith("%")) {
 		dfltArgs.cellSize =dfltArgs.cellSizeX =  dfltArgs.cellSizeY = Math.floor(parseFloat(dfltArgs.cellSize.substring(0,dfltArgs.cellSize.length-1))/100*w);
 	    }
-
-	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
-	    //Skew the height so we get round circles?
-	    //	    let h = 1.25*Math.round(w/ratio);
-	    let h = Math.floor(w/ratio);
-//	    console.log("dim:" + w +" " + h);
-//	    console.log("dim:" + w +" " +h + " c:" + dfltArgs.cellSize);
-
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
-	    let img = RecordUtil.gridData(this.getId(),records,args);
-	    this.heatmapLayer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), "Heatmap", "", img, true, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
-		isBaseLayer: false
+//	    console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length);
+	    times.times.every((date,idx)=>{
+		let recordsAtTime = times.map[date];
+		let img = RecordUtil.gridData(this.getId(),recordsAtTime,args);
+		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), "Heatmap", "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
+		    isBaseLayer: false,
+		});
+		if(doTimes) {
+		    layer.date = date;
+		}
+		this.heatmapLayers.push(layer);
+		return true;
 	    });
+	    if(times.times[0]!="none")
+		this.map.setLabel(HtmlUtils.div([ATTR_CLASS, "display-map-message"], this.formatDate(times.times[0])));
 	    colorBy.displayColorTable(null,true);
 	    if(this.getProperty("heatmapShowToggle",false)) {
 		let cbx = this.jq("heatmaptoggle");
@@ -1411,7 +1468,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    this.createHeatmap();
 		});
 		this.jq("heatmaptoggle").change(function() {
-		    _this.heatmapLayer.setVisibility($(this).is(':checked'));
+		    if(_this.heatmapLayers)  {
+			let visible = $(this).is(':checked');
+			_this.heatmapLayers.map(layer=>layer.setVisibility(visible));
+		    }
 		});
 	    }
 	},
@@ -2293,7 +2353,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    cellId = cellMap[state.toUpperCase()];
 		}
 		if(!cellId) {
-		    console.log("Could not find cell:" + state);
+//		    console.log("Could not find cell:" + state);
 		    continue;
 		}
 		$("#"+cellId).attr("recordIndex",i);

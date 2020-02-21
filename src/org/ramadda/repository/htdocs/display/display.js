@@ -654,12 +654,13 @@ function DisplayThing(argId, argProperties) {
             if (Utils.isDefined(this[prop])) {
                 return this[prop];
             }
-            prop = "map-" + prop;
-            if (Utils.isDefined(source[prop])) {
-                return source[prop];
+            let prop2 = "map-" + prop;
+            if (Utils.isDefined(source[prop2])) {
+                return source[prop2];
             }
-	    if(source.getProperty)
+	    if(source.getProperty) {
 		return source.getProperty(prop, dflt);
+	    }
 	    return null;
         },
 
@@ -953,10 +954,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let doHeatmap=this.getProperty("doHeatmap",false);
 	    let args =  {
 		display:this,
-		shape:this.getProperty("cellShape","circle"),
+		shape:this.getProperty("cellShape","rect"),
 		color: this.getProperty("cellColor","blue"),
 		stroke: !this.getProperty("cellFilled",true),
-		cellSize: this.getProperty("cellSize",doHeatmap?12:4),
+		cellSize: this.getProperty("cellSize",doHeatmap?0:4),
 		cellSizeH: this.getProperty("cellSizeH"),
 		cell3D:this.getProperty("cell3D",false),
 		cellShowText:this.getProperty("cellShowText",false),
@@ -992,6 +993,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
 	    var _this = this;
 	    var colorBy = this.colorByInfo = {
+		display:this,
                 id: colorByAttr,
 		fields:fields,
 		overrideRange: this.getProperty("overrideColorRange",false),
@@ -1056,6 +1058,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		},
 		setRange: function(minValue,maxValue, force) {
 		    if(!force && this.overrideRange) return;
+
+		    if (this.colorByLog) {
+			if (minValue < 1) {
+			    this.colorByOffset = 1 - minValue;
+			}
+			minValue = this.colorByFunc(minValue + this.colorByOffset);
+			maxValue = this.colorByFunc(maxValue + this.colorByOffset);
+		    }
+
+
 		    this.minValue = minValue;
 		    this.maxValue = maxValue;
 		    this.origMinValue = minValue;
@@ -1280,19 +1292,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(steps) {
 		colorBy.steps = steps.split(",");
 	    }
+
+            colorBy.colorByLog = this.getProperty("colorByLog", false);
+	    colorBy.colorByFunc = Math.log;
             colorBy.setRange(this.getDisplayProp(this, "colorByMin", colorBy.minValue),
 			     this.getDisplayProp(this, "colorByMax", colorBy.maxValue), true);
 
-
-            var colorByLog = this.getProperty("colorByLog", false);
-            colorBy.colorByFunc = Math.log;
-            if (colorByLog) {
-                if (colorBy.minValue < 1) {
-                    colorBy.colorByOffset = 1 - colorBy.minValue;
-                }
-                colorBy.setRange(colorBy.colorByFunc(colorBy.minValue + colorBy.colorByOffset),
-				 colorBy.colorByFunc(colorBy.maxValue + colorBy.colorByOffset));
-            }
             colorBy.range = colorBy.maxValue - colorBy.minValue;
 	    return colorBy;
 	},
@@ -4143,6 +4148,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.requestMacros = null;
 	    this.dynamicProperties = props;
 	    this.createRequestProperties();
+//	    console.log(JSON.stringify(props,null,2));
 	},
 	createRequestProperties: function() {
 	    let requestProps = "";
@@ -5048,7 +5054,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 	},
 	animationApply: function(animation, skipUpdateUI) {
-	    this.setDateRange( animation.begin, animation.end);
+	    this.setDateRange(animation.begin, animation.end);
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
 		//		var t1 = new Date();
@@ -5227,6 +5233,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"animationDateFormat=\"yyyy\"",
 		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
 		"animationMode=\"sliding|frame|cumulative\"",
+		"animationSpeed=\"500\"",
+		"animationLoop=\"true\"",
+		'animationDwell=1000',
 		"animationShowButtons=\"false\"",
 		"animationShowSlider=\"false\"",
 		"animationWidgetShort=\"true\""
@@ -6680,15 +6689,17 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 
 
 function DisplayAnimation(display, enabled) {
-    var ID_RUN = "animrun";
-    var ID_NEXT = "animnext";
-    var ID_PREV= "animprev";
-    var ID_BEGIN= "animbegin";
-    var ID_END= "animend";
-    var ID_SLIDER = "slider";
-    var ID_TICKS = "ticks";
-    var ID_SHOWALL = "showall";
-    var ID_ANIMATION_LABEL = "animationlabel";
+    let ID_RUN = "animrun";
+    let ID_NEXT = "animnext";
+    let ID_PREV= "animprev";
+    let ID_BEGIN= "animbegin";
+    let ID_END= "animend";
+    let ID_SLIDER = "slider";
+    let ID_TICKS = "ticks";
+    let ID_SHOWALL = "showall";
+    let ID_ANIMATION_LABEL = "animationlabel";
+    let MODE_FRAME = "frame";
+    let MODE_SLIDING = "sliding";
     this.display = display;
     $.extend(this,{
 	enabled: enabled,
@@ -6702,7 +6713,7 @@ function DisplayAnimation(display, enabled) {
         dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
-        speed: parseInt(display.getProperty("animationSpeed", 250)),
+        speed: parseInt(display.getProperty("animationSpeed", 500)),
 	getEnabled: function() {
 	    return this.enabled;
 	},
@@ -6742,11 +6753,11 @@ function DisplayAnimation(display, enabled) {
 	    if(this.startAtEnd) {
 		this.begin = this.dateMax;
 		this.end = this.dateMax;
-		if (this.mode == "frame") {
+		if (this.mode == MODE_FRAME) {
 		    this.frameIndex = this.dates.length-1;
 		}		    
 	    }
-	    if (this.mode == "frame") {
+	    if (this.mode == MODE_FRAME) {
 		this.end = this.begin;
 	    }
 
@@ -6782,12 +6793,9 @@ function DisplayAnimation(display, enabled) {
 		this.window = this.dateRange / this.steps;
 	    }
 
-
 	    this.updateLabels();
-	    
-
 	    this.setSliderValues = function(v) {
-		if(this.mode != "frame") {
+		if(this.mode != MODE_FRAME) {
 		    this.begin = new Date(v[0]);
 		    this.end = new Date(v[1]);
 		} else {
@@ -6803,12 +6811,9 @@ function DisplayAnimation(display, enabled) {
 		}
 	    }
 
-
-
-
-	    var sliderValues = _this.mode != "frame"?[_this.begin.getTime(),_this.end.getTime()]:[_this.begin.getTime()];
+	    var sliderValues = _this.mode != MODE_FRAME?[_this.begin.getTime(),_this.end.getTime()]:[_this.begin.getTime()];
 	    this.jq(ID_SLIDER).slider({
-		range: _this.mode != "frame",
+		range: _this.mode != MODE_FRAME,
 		min: _this.dateMin.getTime(),
 		max: _this.dateMax.getTime(),
 		values: sliderValues,
@@ -6826,6 +6831,7 @@ function DisplayAnimation(display, enabled) {
 
 
 	    if(records && this.display.getProperty("animationShowTicks",true)) {
+		let tickStyle = this.display.getProperty("animationTickStyle","");
 		var ticks = "";
 		var min = this.dateMin.getTime();
 		var max = this.dateMax.getTime();
@@ -6833,9 +6839,9 @@ function DisplayAnimation(display, enabled) {
 		for(var i=0;i<records.length;i++) {
 		    var record = records[i];
 		    var date = record.getDate().getTime();
-		    var perc = Math.round((date-min)/(max-min)*100);
+		    var perc = (date-min)/(max-min)*100;
 		    var tt = this.formatAnimationDate(record.getDate());
-		    ticks+=HtmlUtils.div(["id",this.display.getId()+"-"+record.getId(), "class","display-animation-tick","style","left:" + perc+"%;","title",tt,"recordIndex",i],"");
+		    ticks+=HtmlUtils.div(["id",this.display.getId()+"-"+record.getId(), "class","display-animation-tick","style","left:" + perc+"%;"+tickStyle,"title",tt,"recordIndex",i],"");
 		}
 		this.jq(ID_TICKS).html(ticks);
 		this.display.makeTooltips(this.jq(ID_TICKS).find(".display-animation-tick"), records,(open,record) =>{
@@ -6870,7 +6876,8 @@ function DisplayAnimation(display, enabled) {
 	    buttons+=HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-animation-label"]);
             buttons = HtmlUtils.div([ "class","display-animation-buttons"], buttons);
 	    if(display.getProperty("animationShowSlider",true)) {
-		buttons+=   HtmlUtils.div(["class","display-animation-slider","id",this.getDomId(ID_SLIDER)],
+		let style= display.getProperty("animationSliderStyle","");
+		buttons +=   HtmlUtils.div(["class","display-animation-slider","style",style,"id",this.getDomId(ID_SLIDER)],
 					  HtmlUtils.div(["class","display-animation-ticks","id",this.getDomId(ID_TICKS)]));
 	    }
 	    
@@ -6888,9 +6895,9 @@ function DisplayAnimation(display, enabled) {
             });
             this.btnBegin.button().click(() => {
 		this.begin = this.dateMin;
-		if (this.mode == "sliding") {
+		if (this.mode == MODE_SLIDING) {
 		    this.end = new Date(this.dateMin.getTime()+this.window);
-		} else if (this.mode == "frame") {
+		} else if (this.mode == MODE_FRAME) {
 		    this.frameIndex = 0;
 		    this.begin = this.end = this.deltaFrame(0);
 		} else {
@@ -6902,9 +6909,9 @@ function DisplayAnimation(display, enabled) {
             });
             this.btnEnd.button().click(() => {
 		this.end = this.dateMax;
-		if (this.mode == "sliding") {
+		if (this.mode == MODE_SLIDING) {
 		    this.begin = new Date(this.dateMax.getTime()-this.window);
-		} else if (this.mode == "frame") {
+		} else if (this.mode == MODE_FRAME) {
 		    this.frameIndex = this.dates.length+1;
 		    this.begin = this.end = this.deltaFrame(0);
 		} else {
@@ -6914,12 +6921,12 @@ function DisplayAnimation(display, enabled) {
 		this.applyAnimation();
             });
             this.btnPrev.button().click(() => {
-		if (this.mode == "sliding") {
+		if (this.mode == MODE_SLIDING) {
 		    this.begin = new Date(this.begin.getTime()-this.window);
 		    if(this.begin.getTime()<this.dateMin.getTime())
 			this.begin = this.dateMin;
 		    this.end = new Date(this.begin.getTime()+this.window);
-		} else if (this.mode == "frame") {
+		} else if (this.mode == MODE_FRAME) {
 		    this.begin = this.end = this.deltaFrame(-1);
 		} else {
 		    this.end = new Date(this.end.getTime()-this.window);
@@ -6944,22 +6951,39 @@ function DisplayAnimation(display, enabled) {
 		this.applyAnimation();
             });
         },
-
+	atEnd: function() {
+	    return this.end.getTime()>=this.dateMax.getTime();
+	},
 	doNext: function() {
-	    if (this.mode == "sliding") {
+	    let wasAtEnd = this.atEnd();
+	    if (this.mode == MODE_SLIDING) {
 		this.begin = this.end;
 		this.end = new Date(this.end.getTime()+this.window);
-		if(this.end.getTime()>this.dateMax.getTime()) {
+		if(this.atEnd()) {
 		    this.end = this.dateMax;
 		    this.begin = new Date(this.end.getTime()-this.window);
 		    this.inAnimation = false;
 		    this.stopAnimation();
 		}
-	    } else if (this.mode == "frame") {
+	    } else if (this.mode == MODE_FRAME) {
 		this.begin = this.end = this.deltaFrame(1);
+		if(this.running) {
+		    if(wasAtEnd) {
+			if(this.display.getProperty("animationLoop")) {
+			    setTimeout(()=>{
+				this.begin = this.end = this.dateMin;
+				this.frameIndex=0;
+				this.updateUI();
+			    },this.display.getProperty("animationDwell",1000));
+			    return;
+			} else {
+			    this.stopAnimation();
+			}
+		    }
+		}
 	    } else {
 		this.end = new Date(this.end.getTime()+this.window);
-		if(this.end.getTime()>=this.dateMax.getTime()) {
+		if(this.atEnd()) {
 		    this.end = this.dateMax;
 		    this.inAnimation = false;
 		    this.stopAnimation();
@@ -6970,6 +6994,7 @@ function DisplayAnimation(display, enabled) {
 
 	deltaFrame: function(delta) {
 	    this.frameIndex+=delta;
+	    if(!this.dates) return;
 	    if(this.frameIndex>= this.dates.length)
 		this.frameIndex = this.dates.length-1;
 	    else if(this.frameIndex<0)
@@ -6977,21 +7002,17 @@ function DisplayAnimation(display, enabled) {
 	    return this.dates[this.frameIndex];
 	},
 	startAnimation: function() {
-	    //		if (!this.display.points) {
-	    //		    return;
-	    //		}
             if (!this.dateMax) return;
-
 	    if (!this.inAnimation) {
                 this.inAnimation = true;
                 this.label.html("");
-		if (this.mode == "frame") {
+		if (this.mode == MODE_FRAME) {
 		    this.frameIndex =0;
 		    this.begin = this.end = this.deltaFrame(0);
 		    this.display.animationStart();
+		    this.doNext();
 		    return;
 		}
-
 
                 var date = this.dateMin;
                 this.begin = date;
@@ -7045,7 +7066,8 @@ function DisplayAnimation(display, enabled) {
                 if (this.running) {
                     setTimeout(() => {
 			if(!this.running) return;
-			this.doNext()}, this.speed);
+			this.doNext();
+		    }, this.speed);
                 }
             } else {
                 this.running = false;
@@ -7057,7 +7079,7 @@ function DisplayAnimation(display, enabled) {
 
 	updateLabels: function() {
 	    if(this.label) {
-		if (this.mode == "frame" && this.begin == this.end) {
+		if (this.mode == MODE_FRAME && this.begin == this.end) {
 		    this.label.html(this.formatAnimationDate(this.begin));
 		} else {
 		    this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));

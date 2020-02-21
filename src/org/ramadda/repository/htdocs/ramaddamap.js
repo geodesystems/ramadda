@@ -319,6 +319,7 @@ function initMapFunctions(theMap) {
 
 	    $("#" + this.mapDivId).html(HtmlUtils.div(["style","width:100%;height:100%;position:relative;","id",this.mapDivId+"_themap"]));
 	    $("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_progress", "style","z-index:2000;position:absolute;top:10px;left:50px;"],""));
+	    $("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_label", "style","z-index:2000;position:absolute;bottom:10px;left:10px;"],""));
             this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
             //register the location listeners later since the map triggers a number of
 
@@ -357,6 +358,9 @@ function initMapFunctions(theMap) {
 	setProgress: function(msg) {
 	    $("#" + this.mapDivId+"_progress").html(msg);
 	},
+	setLabel: function(msg) {
+	    $("#" + this.mapDivId+"_label").html(msg);
+	},	
         getBounds: function() {
 	    return  this.transformProjBounds(this.map.getExtent());
 	},

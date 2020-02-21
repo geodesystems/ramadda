@@ -1153,7 +1153,7 @@ var Utils = {
         grayscale: {
             colors: ["#000", "#111", "#222", "#333", "#444", "#555", "#666", "#777", "#888", "#999", "#aaa", "#bbb", "#ccc", "#ddd", "#eee", "#fff"]
         },
-        inversegrayscale: {
+        inversegrayscale:{
             colors: ["#fff", "#eee", "#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222", "#111", "#000"]
         },
         rainbow: {

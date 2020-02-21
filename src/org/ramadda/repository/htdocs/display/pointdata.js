@@ -1242,6 +1242,25 @@ var A = {
 }
 
 var RecordUtil = {
+    groupByTime:function(records) {
+	let times= {
+	    max:0,
+	    times:[],
+	    map:{}
+	}
+	records.every(r=>{
+	    let date = r.getDate();
+	    if(!date) return true;
+	    if(!times.map[date]) {
+		times.map[date] = [];
+		times.times.push(date);
+	    }
+	    times.map[date].push(r);
+	    times.max = Math.max(times.max, times.map[date].length);
+	    return true;
+	});
+	return times;
+    },
     expandBounds: function(bounds, perc) {
 	return {
 	    east: Math.min(180,bounds.east +(bounds.east-bounds.west)*perc),
@@ -1274,7 +1293,7 @@ var RecordUtil = {
 	    let row = [];
 	    values.push(row);
 	    for(var colIdx=0;colIdx<cols;colIdx++)  {
-		row.push({v:NaN,count:0,total:0,min:NaN,max:NaN,t:"",t2:""});
+		row.push({v:NaN,count:0,total:0,min:NaN,max:NaN,t:""});
 	    }
 	}
 
@@ -1284,12 +1303,13 @@ var RecordUtil = {
 	    cell.max = cell.count==0?p.v:Math.max(cell.max,p.v);
 	    cell.count++;
 	    cell.total += p.v;
-	    cell.t +=" " + p.r.getId()
-	    cell.t2 +=" " + p.r.getLatitude()
 	});
 
 	let minValue = NaN;
 	let maxValue = NaN;
+	let maxCount=0;
+	let minCount=0;
+
 	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    for(var colIdx=0;colIdx<cols;colIdx++)  {
 		let cell = values[rowIdx][colIdx];
@@ -1308,10 +1328,15 @@ var RecordUtil = {
 		cell.v = v;
 		minValue = isNaN(minValue)?v:Math.min(minValue,v);
 		maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
+		maxCount = Math.max(maxCount, cell.count);
+		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
 	    }
 	}	
+//	console.log(args.operator +" " + minValue +" " + maxValue +" " + minCount +" " + maxCount);
 	values.minValue = minValue;
 	values.maxValue = maxValue;
+	values.minCount = minCount;
+	values.maxCount = maxCount;
 	return values;
     },
     draw3DRect:function(canvas,ctx,x,y,width, height, depth) {
@@ -1373,13 +1398,19 @@ var RecordUtil = {
 
 
     xcnt:0,
-    drawGridCell: function(opts, canvas, ctx, x,y,v,colIdx,rowIdx) {
+    drawGridCell: function(opts, canvas, ctx, x,y,v,colIdx,rowIdx, cell,grid,alphaByCount) {
 	let c =  opts.color|| "#ccc";
 	let perc = 1.0;
 	if(opts.colorBy && v) {
 	    perc = opts.colorBy.getValuePercent(v);
 	    if(opts.colorBy.index>=0) {
 		c=  opts.colorBy.getColor(v);
+	    }
+	}
+	if(alphaByCount && cell && grid) {
+	    if(grid.maxCount!=grid.minCount) {
+		let countPerc = (cell.count-grid.minCount)/(grid.maxCount-grid.minCount);
+		c = Utils.addAlphaToColor(c,countPerc);
 	    }
 	}
 	ctx.fillStyle =c
@@ -1478,67 +1509,56 @@ var RecordUtil = {
 	}
 	return result;
     },
-    averageGrid: function(src) {
-	let kernel = [
-	    [-1,-1,1],
-	    [-1,0,1],
-	    [-1,1,1],
-	    [0,-1,1],
-	    [0,0,1],
-	    [0,1,1],
-	    [1,-1,1],
-	    [1,0,1],
-	    [1,2,1]
-	];
-	return this.applyKernel(src, kernel);
+    blurGrid: function(type, src) {
+	let kernels = {
+	    average1: [
+		[1,1,1],
+		[1,1,1],
+		[1,1,1],
+	    ],
+	    average2:[
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+	    ],
+	    gauss1: [
+		[1,2,1],
+		[2,4,2],
+		[1,2,1],	    
+	    ],
+	    gauss2: [
+		[1,4,6,4,1],
+		[4,16,24,16,4],
+		[6,24,26,24,6],
+		[4,16,24,16,4],
+		[1,4,6,4,1],
+	    ],
+	}
+	let a = kernels[type];
+	if(!a) {
+	    if(type.startsWith("average"))
+		a=kernels.average1;
+	    else if(type.startsWith("gauss"))
+		a=kernels.gauss1;
+	}
+	if(!a) return src;
+	return this.applyKernel(src, this.makeKernel(a));
     },
-    gaussGrid: function(src) {
-	let kernel = [
-	    [-1,-1,1],
-	    [-1,0,2],
-	    [-1,1,1],
-	    [0,-1,2],
-	    [0,0,4],
-	    [0,1,2],
-	    [1,-1,1],
-	    [1,0,2],
-	    [1,2,1]
-	];
-	kernel = [
-	    [-2,-2,1],
-	    [-2,-1,4],
-	    [-2,0,6],
-	    [-2,1,4],
-	    [-2,2,1],
-
-	    [-1,-2,4],
-	    [-1,-1,16],
-	    [-1,0,24],
-	    [-1,1,16],
-	    [-1,2,4],
-
-	    [0,-2,6],
-	    [0,-1,24],
-	    [0,0,36],
-	    [0,1,24],
-	    [0,2,6],
-
-	    [1,-2,4],
-	    [1,-1,16],
-	    [1,0,24],
-	    [1,1,16],
-	    [1,2,4],
-
-	    [2,-2,1],
-	    [2,-1,4],
-	    [2,0,6],
-	    [2,1,4],
-	    [2,2,1],
-	];
-
-	return this.applyKernel(src, kernel);
+    makeKernel: function(kernel) {
+	let a = [];
+	let mid = (kernel.length-1)/2;
+	for(let rowIdx=0;rowIdx<kernel.length;rowIdx++) {
+	    let row = kernel[rowIdx];
+	    let rowOffset = rowIdx-mid;
+	    for(let colIdx=0;colIdx<row.length;colIdx++) {
+		let colOffset = colIdx-mid;
+		a.push([rowOffset,colOffset,kernel[rowIdx][colIdx]]);
+	    }
+	}
+	return a;
     },
-
     getMinMaxGrid: function(src,valueGetter) {
 	let min = NaN;
 	let max = NaN;
@@ -1591,6 +1611,7 @@ var RecordUtil = {
 	if(!args) args = {};
 	if(isNaN(args.cellSize) || args.cellSize == null)
 	    args.cellSize = args.cellSizeX;
+
 	if(isNaN(args.cellSizeX) || args.cellSizeX == null)
 	    args.cellSizeX= args.cellSize;
 	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
@@ -1606,14 +1627,13 @@ var RecordUtil = {
 	    operator:"average"
 	}
 	$.extend(opts,args);
-	//	console.log(JSON.stringify(opts,null,2));
+//	console.log(JSON.stringify(opts,null,2));
 	let id = HtmlUtils.getUniqueId();
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	var ctx = canvas.getContext("2d");
-	//	ctx.strokeStyle= "red";
-	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
-
+//	ctx.strokeStyle= "#000";
+//	ctx.strokeRect(0,0,canvas.width,canvas.height);
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;
@@ -1656,7 +1676,7 @@ var RecordUtil = {
 		let x = scaleX(lat,lon);
 		let y = scaleY(lat,lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
-		let v = idx;
+		let v = 0;
 		if(opts.colorBy && opts.colorBy.index>=0) {
 		    v = record.getValue(opts.colorBy.index);
 		}
@@ -1674,11 +1694,10 @@ var RecordUtil = {
 	    opts.cellSizeY = +opts.cellSizeY;
 
 
-
 	    //TODO: figure out the grid filtering
 	    if(opts.filter && opts.filter!="") {
 		let copy = this.cloneGrid(grid,v=>v.v);
-		let filtered = opts.filter=="average"?this.averageGrid(copy):opts.filter=="gauss"?this.gaussGrid(copy):null;
+		let filtered = this.blurGrid(opts.filter,copy);
 		for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		    let row = grid[rowIdx];
 		    for(var colIdx=0;colIdx<cols;colIdx++)  {
@@ -1690,10 +1709,12 @@ var RecordUtil = {
 
 	    let mm = this.getMinMaxGrid(grid,v=>v.v);
 	    if(opts.colorBy) {
-		opts.colorBy.setRange(mm.min, mm.max);
+		if(!opts.display.getProperty("colorByMin")) 
+		    opts.colorBy.setRange(mm.min, mm.max);
 		opts.colorBy.index=0;
 	    }
 
+	    let countThreshold = opts.display.getProperty("heatmapCountThreshold",0);
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
 		for(var colIdx=0;colIdx<cols;colIdx++)  {
@@ -1702,30 +1723,11 @@ var RecordUtil = {
 		    if(isNaN(v)) continue;
 		    let x = colIdx*opts.cellSizeX;
 		    let y = rowIdx*opts.cellSizeY;
-		    RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx);
+		    if(cell.count>=countThreshold)
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
 		}
 	    }
 	} else {
-	    if(false) {
-		var lats =[];
-		for(i=0;i<=10;i++) {
-		    lats.push(opts.bounds.south+(opts.bounds.north-opts.bounds.south)*(i/10));
-		}
-		var _lon =opts.bounds.east;
-		ctx.strokeStyle="red";
-		lats.map(_lat=>{
-		    var _x = scaleX(_lat,_lon);
-		    var _y = scaleY(_lat,_lon);
-                    opts.display.map.addMarker("", [_lon,_lat], null, "", "");
-		    ctx.moveTo(canvas.width,_y);
-		    ctx.lineTo(canvas.width-40,_y);
-		    ctx.stroke();
-		    ctx.font="12px arial"
-		    ctx.fillStyle = "black";
-		    ctx.fillText(_lat, canvas.width-50,_y);
-		});
-	    }
-
 	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
 	    records.map((record,idx)=>{
 		let lat = record.getLatitude();

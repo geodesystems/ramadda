@@ -279,9 +279,9 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 		let color = colors[i]||"#fff";
 		if(i>0) html+=delim;
 		if(!inBox) {
-		    html+=HtmlUtils.div(["class","display-legend-color","style","background:" + color+";width:" + colorWidth+";"+
+		    html+=HtmlUtils.div(["class","display-legend-item"], HtmlUtils.div(["class","display-legend-color","style","background:" + color+";width:" + colorWidth+";"+
 					 "height:15px;"]) +
-			HtmlUtils.div(["class","display-legend-label"],label);
+					HtmlUtils.div(["class","display-legend-label"],label));
 		} else {
 		    let lc = labelColors?labelColors[i]:labelColor || labelColor;
 		    html+=HtmlUtils.div(["class","display-legend-color","style","margin-left:8px;background:" + color+";"],

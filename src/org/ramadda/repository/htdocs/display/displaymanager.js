@@ -352,6 +352,9 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
+	    if(display.getProperty("doAnimation")) {
+		jsonUrl +="&" + "dbAnimation" +"=" +display.getProperty("doAnimation");
+	    }
 	    if(display.getProperty("dbSelect")) {
 		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");
 	    }
