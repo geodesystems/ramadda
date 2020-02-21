@@ -142,21 +142,35 @@ public class GridTypeHandler extends TypeHandler {
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> topProps) {
+
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)
                 || tag.startsWith("display_")) {
             StringBuilder jsonbuf = new StringBuilder();
-            if (Misc.equals(props.get("forGrid"), "true")) {
-                jsonbuf.append(getRepository().getUrlBase()
-                               + "/grid/gridjson?"
-                               + HtmlUtils.args(new String[] {
+            if (Misc.equals(props.get("doGrid"), "true")
+                    || Misc.equals(props.get("doHeatmap"), "true")) {
+                List<String> args = (List<String>) Misc.toList(new String[] {
                     ARG_ENTRYID, entry.getId(), "max",
                     Utils.getProperty(props, "max", "200000"), "gridStride",
                     Utils.getProperty(props, "gridStride", "1"), "gridBounds",
                     Utils.getProperty(props, "gridBounds", ""), "gridLevel",
                     Utils.getProperty(props, "gridLevel", "1"), "gridField",
                     Utils.getProperty(props, "gridField", "")
-                }, false));
+                });
+                if (props.get("timeStride") != null) {
+                    args.add("timeStride");
+                    args.add(Utils.getProperty(props, "timeStride", "1"));
+                }
+                if (props.get("doAnimation") == null) {
+                    args.add("gridTime");
+                    args.add(Utils.getProperty(props, "gridTime", "0"));
+                } else {
+                    args.add("doAnimation");
+                    args.add("true");
+                }
+                jsonbuf.append(getRepository().getUrlBase()
+                               + "/grid/gridjson?"
+                               + HtmlUtils.args(args, false));
 
 
                 CdmDataOutputHandler cdoh =
@@ -235,6 +249,7 @@ public class GridTypeHandler extends TypeHandler {
         }
 
         return super.getUrlForWiki(request, entry, tag, props, topProps);
+
     }
 
 

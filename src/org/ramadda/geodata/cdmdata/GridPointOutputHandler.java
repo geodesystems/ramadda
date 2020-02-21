@@ -128,7 +128,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * A class for handling CDM data output
  */
-public class GridPointOutputHandler extends OutputHandler implements CdmConstants {
+public class GridPointOutputHandler extends CdmOutputHandler implements CdmConstants {
 
 
     /** Grid as point form Output Type */
@@ -141,163 +141,6 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
     /** Grid as point Output Type */
     public static final OutputType OUTPUT_GRIDASPOINT =
         new OutputType("data.gridaspoint", OutputType.TYPE_FEEDS);
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public CdmDataOutputHandler getCdmDataOutputHandler() {
-        return (CdmDataOutputHandler) getRepository().getOutputHandler(
-            CdmDataOutputHandler.class);
-    }
-
-
-    /**
-     * Get the CdmManager
-     *
-     * @return  the CDM data manager
-     */
-    public CdmManager getCdmManager() {
-        return getCdmDataOutputHandler().getCdmManager();
-    }
-
-
-
-    /** _more_ */
-    private static Properties gridProperties;
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public static Properties getProperties() {
-        if (gridProperties == null) {
-            try {
-                InputStream inputStream =
-                    IOUtil.getInputStream(
-                        "/org/ramadda/geodata/cdmdata/resources/netcdf.properties",
-                        GridPointOutputHandler.class);
-                Properties tmp = new Properties();
-                tmp.load(inputStream);
-                IOUtil.close(inputStream);
-                gridProperties = tmp;
-            } catch (Exception exc) {
-                throw new IllegalArgumentException(exc);
-            }
-        }
-
-        return gridProperties;
-    }
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
-    public static String getAlias(String name) {
-        String n = (String) getProperties().get(name + ".alias");
-        if (n != null) {
-            return n;
-        }
-
-        return name;
-    }
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    public static String getLabel(String name, String dflt) {
-        if (name == null) {
-            return dflt;
-        }
-        String n = (String) getProperties().get(name + ".label");
-        if (n != null) {
-            return n;
-        }
-
-        return dflt;
-    }
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    public static String getUnit(String name, String dflt) {
-        if (name == null) {
-            return dflt;
-        }
-        String n = (String) getProperties().get(name + ".unit");
-        if (n != null) {
-            return n;
-        }
-
-        return dflt;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    public static String getProperty(String name, String dflt) {
-        String n = (String) getProperties().get(name);
-        if (n != null) {
-            return n;
-        }
-
-        return dflt;
-    }
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param what _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    public static String getProperty(String name, String what, String dflt) {
-        String n = (String) getProperties().get(name + "." + what);
-        if (n != null) {
-            return n;
-        }
-
-        return dflt;
-    }
-
-
-    /**
-     * Get the path for the Entry
-     *
-     *
-     * @param request the Request
-     * @param entry   the Entry
-     *
-     * @return   the path
-     *
-     * @throws Exception problem getting the path
-     */
-    public String getPath(Request request, Entry entry) throws Exception {
-        return getCdmManager().getPath(request, entry);
-    }
 
     /**
      * Create a new GridPointOutputHandler
@@ -348,7 +191,6 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             return outputEntry(request, outputType, group);
         }
 
-        //        System.err.println("group:" + group + " " + group.getType());
         return super.outputGroup(request, outputType, group, subGroups,
                                  entries);
     }
