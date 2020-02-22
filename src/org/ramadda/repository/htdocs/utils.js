@@ -2155,6 +2155,67 @@ var HtmlUtils = {
         });
     },
 
+    makeExpandable:function(selector) {
+	let icon =HtmlUtils.getIconImage("fa-expand-arrows-alt");
+        let id = HtmlUtils.getUniqueId();
+	let html= HtmlUtils.div(["id",id,"title","Expand", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:5px;top:2px;"],icon);
+	$(selector).append(html);
+	let btn = $("#"+id);
+	btn.attr("data-expanded","false");
+	let origBackground = $(selector).css("background");
+	$(selector).mouseenter(function() {
+	    btn.css("display","block");
+	});
+	$(selector).mouseleave(function() {
+	    btn.css("display","none");
+	});
+
+	$("#" +id).click(function() {
+	    let icon;
+	    let expanded = $(this).attr("data-expanded")=="true";
+	    if(expanded) {
+		icon  = HtmlUtils.getIconImage("fa-expand-arrows-alt");
+		$(this).attr("title","Expand");
+		$(selector).css("left","").css("right","").css("top","").css("bottom","").css("position","relative").css("height",
+"").css("z-index","").css("background",origBackground?origBackground:"");
+		btn.css("display","none");
+	    } else {
+		let h = $(window).height();
+		icon  = HtmlUtils.getIconImage("fa-compress-arrows-alt");
+		let top = $(selector).offset().top;
+		$(this).attr("title","Contract");
+		$(selector).css("left","5px").css("right","5px").css("top","5px").css("position","fixed").css("z-index","2000").css("background","#fff").css("height",h+"px");
+		btn.css("display","block");
+	    }
+	    $(this).attr("data-expanded",(!expanded)+"");
+	    $(this).html(icon);
+	});
+    },
+    makeDraggable:function(selector) {
+	let ele = $(selector);
+	ele.draggable({
+	    start: function( event, ui ) {
+		if(!$(this).attr("started")) {
+		    $(this).attr("started",true);
+		    let pos = $(this).offset();
+		    let bodyo = $(document.body).offset().top;
+		    let bodyh = $(document.body).height();
+		    $(this).attr("pos_top",pos.top);
+		    $(this).attr("bodyh",bodyh+bodyo);		    
+		    $(document.body).append($(this));
+		} else {
+		    $(this).attr("pos_top",0);
+		    $(this).attr("bodyh",0);		    
+		}
+	    },
+	    drag: function( event, ui ) {
+		let pos = $(this).offset();
+		let pos_top = +$(this).attr("pos_top");
+		let bodyh = +$(this).attr("bodyh");
+		ui.position.top = pos_top + ui.position.top-bodyh;
+	    }
+	});
+    },
     idAttr: function(s) {
         return this.attr("id", s);
     },
