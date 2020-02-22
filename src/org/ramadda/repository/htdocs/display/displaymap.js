@@ -35,6 +35,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     var ID_LONFIELD = "lonfield";
     var ID_MAP = "map";
     var ID_SHAPES = "shapes";
+    var ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
+    var ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
     var SUPER;
     RamaddaUtil.defineMembers(this, {
         showLocationReadout: false,
@@ -1421,7 +1423,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //	    let h = 1.25*Math.round(w/ratio);
 	    let h = Math.round(w/ratio);
 	    let doTimes = this.getProperty("heatmapDoTimes",false);
-	    let times = doTimes?RecordUtil.groupByTime(records):null;
+	    let times = doTimes?RecordUtil.groupByTime(records, this.getProperty("heatmapDateBin")):null;
 	    if(times == null || times.max == 0) {
 		doTimes = false;
 		times= {
@@ -1440,11 +1442,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
-//	    console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length);
+	    console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length);
+	    let labels = [];
+	    let labelPrefix = this.getProperty("heatmapLabelPrefix","Heatmap-");
 	    times.times.every((date,idx)=>{
 		let recordsAtTime = times.map[date];
 		let img = RecordUtil.gridData(this.getId(),recordsAtTime,args);
-		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), "Heatmap", "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
+		let label = date=="none"?"Heatmap": labelPrefix +" " +times.labels[idx];
+		labels.push(label);
+		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
 		});
 		if(doTimes) {
@@ -1453,8 +1459,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.heatmapLayers.push(layer);
 		return true;
 	    });
-	    if(times.times[0]!="none")
-		this.map.setLabel(HtmlUtils.div([ATTR_CLASS, "display-map-message"], this.formatDate(times.times[0])));
+	    let _this = this;
+	    this.heatmapPlayingAnimation = false;
+	    let controls = HtmlUtils.div(["id",this.getDomId(ID_HEATMAP_ANIM_PLAY),"style","display:inline-block;","title","Play/Stop Animation"],
+					 HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));
+	    controls += HtmlUtils.div(["style","display:inline-block;margin-left:5px;margin-right:5px;"], HtmlUtils.select("",["id",this.getDomId(ID_HEATMAP_ANIM_LIST)],labels));
+	    this.writeHeader(ID_HEADER2_PREPREFIX, controls);
+	    this.jq(ID_HEATMAP_ANIM_LIST).change(function() {
+		let index = $(this)[0].selectedIndex;
+		_this.heatmapLayers.map((layer,idx)=>{
+		    layer.setVisibility(index==idx);
+		});
+	    });
+	    this.jq(ID_HEATMAP_ANIM_PLAY).click(function() {
+		this.heatmapPlayingAnimation = !this.heatmapPlayingAnimation;
+		let icon = this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		$(this).html(HtmlUtils.getIconImage(icon,["style","    cursor:pointer;"]));
+	    });
+
+	    if(times.times[0]!="none") {
+		this.map.setLabel(HtmlUtils.div([ATTR_CLASS, "display-map-message"], labelPrefix + times.labels[0]));
+	    }
 	    colorBy.displayColorTable(null,true);
 	    if(this.getProperty("heatmapShowToggle",false)) {
 		let cbx = this.jq("heatmaptoggle");
@@ -1479,7 +1504,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         addPoints: function(records, fields, points,bounds) {
             let colorBy = this.getColorByInfo(records);
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
-
 		this.createHeatmap(records, bounds, colorBy);
 		if(!this.getProperty("heatmapIncludeData"))
 		    return;
@@ -1676,12 +1700,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             sizeBy.range = sizeBy.maxValue - sizeBy.minValue;
 
 	    //	    console.log(JSON.stringify(sizeBy,null,2));
-
-
-
             if (dateMax) {
 		if (this.getProperty("doAnimation", false)) {
-		    this.getAnimation().init(dateMin, dateMax,records);
+		    //TODO: figure out when to call this. We want to update the animation if it was from a filter change
+		    //but not from an animation change. Hummmm.
+		    //this.getAnimation().init(dateMin, dateMax,records);
 		}
             }
 

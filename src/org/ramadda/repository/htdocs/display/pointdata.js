@@ -1242,21 +1242,52 @@ var A = {
 }
 
 var RecordUtil = {
-    groupByTime:function(records) {
+    groupByTime:function(records, dateBin) {
 	let times= {
 	    max:0,
 	    times:[],
-	    map:{}
+	    labels:[],
+	    map:{},
 	}
+	let first = null;
+	console.log("bin:" + dateBin);
 	records.every(r=>{
 	    let date = r.getDate();
-	    if(!date) return true;
-	    if(!times.map[date]) {
-		times.map[date] = [];
-		times.times.push(date);
+	    if(!date) {
+//		console.log("no date");
+		return true;
 	    }
-	    times.map[date].push(r);
-	    times.max = Math.max(times.max, times.map[date].length);
+	    if(!first) first = date;
+	    let key = date;
+	    let label = "";
+	    if(dateBin=="first") {
+		key = first;
+	    } else if(dateBin=="day") {
+		key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
+	    } else if(dateBin=="month") {
+		label=date.getFullYear()+"-" + date.getUTCMonth();
+		key = new Date(label +"-01");
+	    } else if(dateBin=="year") {
+		label = date.getFullYear();
+		key = new Date(date.getFullYear()+"-01-01");
+		console.log("key:" + key);
+	    } else if(dateBin=="decade") {
+		let year = date.getFullYear();
+		year = year-year%10;
+		label = year+"s";
+		key = new Date(year+"-01-01");
+	    } else if(dateBin) {
+		console.log("unknown bin");
+		throw new Error("Unknown date bin:" + dateBin);
+	    }
+	    if(!times.map[key]) {
+		times.map[key] = [];
+		times.times.push(key);
+		times.labels.push(label);
+	    }
+	    times.map[key].push(r);
+	    times.max = Math.max(times.max, times.map[key].length);
+//	    console.log("max:" + times.max);
 	    return true;
 	});
 	return times;
@@ -1697,12 +1728,22 @@ var RecordUtil = {
 	    //TODO: figure out the grid filtering
 	    if(opts.filter && opts.filter!="") {
 		let copy = this.cloneGrid(grid,v=>v.v);
-		let filtered = this.blurGrid(opts.filter,copy);
+		let filtered = copy;
+		let filterPasses = opts.display.getProperty("heatmapFilterPasses",1);
+		for(var i=0;i<filterPasses;i++) {
+		    filtered = this.blurGrid(opts.filter,filtered);
+		}
+		let filterThreshold = opts.display.getProperty("heatmapFilterThreshold",-999);
 		for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		    let row = grid[rowIdx];
 		    for(var colIdx=0;colIdx<cols;colIdx++)  {
 			let cell = row[colIdx];
-			cell.v = filtered[rowIdx][colIdx];
+			let filterValue = filtered[rowIdx][colIdx];
+			if(filterThreshold!=-999) {
+			    if(filterValue<filterThreshold)
+				filterValue = cell.v;
+			}
+			cell.v = filterValue;
 		    }
 		}
 	    }

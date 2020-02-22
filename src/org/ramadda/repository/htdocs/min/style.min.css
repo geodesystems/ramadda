@@ -13,6 +13,10 @@ body {
     padding: 0px;
 }
 
+html, body {
+  height: 100%;
+}
+
 /*Resets for bootstrap*/
 h1 {font-size: 170%;}
 h2 {font-size:150%;}
@@ -281,6 +285,36 @@ a.ramadda-menubar-button:hover {
     display: inline-grid;
     column-gap: 20px;
     row-gap: 20px;
+}
+
+.ramadda-draggable-frame {
+    z-index:500;
+    border:1px solid #ccc;
+    padding:4px;
+}
+
+
+.ramadda-draggable-header {
+    background:#efefef;
+    border:1px solid #ccc;    
+    border-bottom:0px solid #ccc;
+    cursor:grab;
+    padding:4px;
+}
+
+.ramadda-expandable-frame {
+    z-index:500;
+    border:1px solid #ccc;
+    padding:4px;
+}
+
+
+.ramadda-expandable-header {
+    background:#efefef;
+    border:1px solid #ccc;    
+    border-bottom:0px solid #ccc;
+    cursor:grab;
+    padding:4px;
 }
 
 .ramadda-gridboxes-1 {
