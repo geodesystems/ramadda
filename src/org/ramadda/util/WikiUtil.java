@@ -671,6 +671,7 @@ public class WikiUtil {
         String           afterPause      = null;
         String           afterFade       = null;
         boolean          inPropertyTag   = false;
+        String           dragId          = null;
         //      System.err.println("S:"+ s+":");
         s = s.replaceAll("\r", "");
         for (String line :
@@ -1432,6 +1433,81 @@ public class WikiUtil {
             }
 
 
+            if (tline.startsWith("+draggable")) {
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
+                                      > 1)
+                        ? toks.get(1)
+                        : "");
+                dragId = HtmlUtils.getUniqueId("draggable");
+                String header = (String) props.get("header");
+                String clazz  = "ramadda-draggable";
+                if (Misc.equals("true", props.get("framed"))) {
+                    clazz = "ramadda-draggable-frame";
+                }
+                HtmlUtils.open(buff, "div", "id", dragId);
+                if (header != null) {
+                    HtmlUtils.div(buff, header,
+                                  HtmlUtils.attrs("class",
+                                      "ramadda-draggable-header"));
+                }
+                HtmlUtils.open(buff, "div", "class", clazz);
+
+                continue;
+            }
+
+            if (tline.startsWith("-draggable")) {
+                if (dragId != null) {
+                    HtmlUtils.close(buff, "div");
+                    HtmlUtils.close(buff, "div");
+                    //              HtmlUtils.script(buff, "$('#" + dragId +"').draggable();\n");
+                    HtmlUtils.script(buff,
+                                     "HtmlUtils.makeDraggable('#" + dragId
+                                     + "');\n");
+                }
+
+                continue;
+            }
+
+            if (tline.startsWith("+expandable")) {
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
+                                      > 1)
+                        ? toks.get(1)
+                        : "");
+                dragId = HtmlUtils.getUniqueId("expandable");
+                String header = (String) props.get("header");
+                String clazz  = "ramadda-expandable";
+                if (Misc.equals("true", props.get("framed"))) {
+                    clazz = "ramadda-expandable-frame";
+                }
+                HtmlUtils.open(buff, "div", "id", dragId, "style",
+                               "position:relative;");
+                if (header != null) {
+                    HtmlUtils.div(buff, header,
+                                  HtmlUtils.attrs("class",
+                                      "ramadda-expandable-header"));
+                }
+                HtmlUtils.open(buff, "div", "class", clazz);
+
+                continue;
+            }
+
+            if (tline.startsWith("-expandable")) {
+                if (dragId != null) {
+                    HtmlUtils.close(buff, "div");
+                    HtmlUtils.close(buff, "div");
+                    //              HtmlUtils.script(buff, "$('#" + dragId +"').expandable();\n");
+                    HtmlUtils.script(buff,
+                                     "HtmlUtils.makeExpandable('#" + dragId
+                                     + "');\n");
+                }
+
+                continue;
+            }
+
+
+
             if (tline.startsWith("+section")) {
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                 Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
@@ -1755,13 +1831,15 @@ public class WikiUtil {
 
 
             if (tline.equals("+relative")) {
-		buff.append("<div style=\"position:relative;\">\n");
-		continue;
-	    }
-	    if (tline.equals("-relative")) {
-		buff.append("</div>\n");
-		continue;
-	    }
+                buff.append("<div style=\"position:relative;\">\n");
+
+                continue;
+            }
+            if (tline.equals("-relative")) {
+                buff.append("</div>\n");
+
+                continue;
+            }
 
             if (tline.equals("+centerdiv")) {
                 buff.append(
