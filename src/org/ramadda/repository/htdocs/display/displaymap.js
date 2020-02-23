@@ -1259,7 +1259,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.haveCalledUpdateUI) {
 		return;
 	    }
-
             let pointData = this.getPointData();
             let records = this.records =  this.filterData();
             if (records == null) {
@@ -1293,8 +1292,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    let onDate=null;
-	    console.log("step:" + animation.begin + " " +animation.end);
-	    
+//	    console.log("displaymap.animationApply:" + animation.begin + " " +animation.end);
 	    this.heatmapLayers.every(layer=>{
 		if(!layer.date) return true;
 		if(layer.date.getTime()>= animation.begin.getTime() && layer.date.getTime()<= animation.end.getTime()) {
@@ -1393,10 +1391,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	createHeatmap(records, bounds) {
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
-
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
-	    colorBy = colorBy || this.getColorByInfo(records);
  	    if(this.heatmapLayers) {
 		try {
 		    this.heatmapLayers.every(layer=>{
@@ -1425,10 +1421,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
-	    let doGroups = this.getProperty("hm.doTimes",false);
-	    let groups = (groupByField || doGroups)?RecordUtil.groupBy(records, this.getProperty("hm.dateBin"), groupByField):null;
+	    let doTimes = this.getProperty("hm.doTimes",false);
+	    let groups = (groupByField || doTimes)?RecordUtil.groupBy(records, this, this.getProperty("hm.dateBin"), groupByField):null;
 	    if(groups == null || groups.max == 0) {
-		doGroups = false;
+		doTimes = false;
 		groups= {
 		    max:records.length,
 		    values:["none"],
@@ -1458,7 +1454,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    isBaseLayer: false,
 		});
 		layer.heatmapLabel = label;
-		if(doGroups) {
+		if(doTimes) {
 		    if(value.getTime)
 			layer.date = value;
 		}
@@ -1466,7 +1462,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    let _this = this;
-	    if(this.heatmapLayers.length>1) {
+	    if(this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
 		this.heatmapPlayingAnimation = false;
 		let controls = HtmlUtils.div(["id",this.getDomId(ID_HEATMAP_ANIM_PLAY),"style","display:inline-block;","title","Play/Stop Animation"],
 					     HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));

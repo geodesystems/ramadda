@@ -175,7 +175,7 @@ function DisplayAnimation(display, enabled) {
         dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
-        speed: parseInt(display.getProperty("animationSpeed", 500)),
+        speed: parseInt(display.getProperty("animationSpeed", 1000)),
 	getEnabled: function() {
 	    return this.enabled;
 	},
@@ -422,7 +422,7 @@ function DisplayAnimation(display, enabled) {
 	    return this.end.getTime()>=this.dateMax.getTime();
 	},
 	doNext: function() {
-	    let debug = true;
+	    let debug = false;
 	    let wasAtEnd = this.atEnd();
 	    if(debug) console.log("animation.doNext atEnd=" + wasAtEnd);
 	    if (this.mode == MODE_SLIDING) {
@@ -615,8 +615,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
-	colorByMinPerc: this.getProperty(display, "colorByMinPercentile", -1),
-	colorByMaxPerc: this.getProperty(display, "colorByMaxPercentile", -1),
+	colorByMinPerc: this.getProperty("colorByMinPercentile", -1),
+	colorByMaxPerc: this.getProperty("colorByMaxPercentile", -1),
 	colorByOffset: 0,
         pctFields:null,
 	compareFields: display.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
@@ -899,8 +899,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     this.colorByLog = this.getProperty("colorByLog", false);
     this.colorByFunc = Math.log;
-    this.setRange(this.getProperty(this.display, "colorByMin", this.minValue),
-		     this.getProperty(this.display, "colorByMax", this.maxValue), true);
-
+    this.setRange(this.getProperty("colorByMin", this.minValue),
+		  this.getProperty("colorByMax", this.maxValue), true);
     this.range = this.maxValue - this.minValue;
 }

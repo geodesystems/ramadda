@@ -1242,7 +1242,7 @@ var A = {
 }
 
 var RecordUtil = {
-    groupBy:function(records, dateBin, field) {
+    groupBy:function(records, display, dateBin, field) {
 	let groups ={
 	    max:0,
 	    values:[],
@@ -1256,33 +1256,35 @@ var RecordUtil = {
 	    if(field) {
 		key = label = r.getValue(field.getIndex());
 	    } else {
-	    let date = r.getDate();
-	    if(!date) {
-		return true;
-	    }
-	    if(!firstDate) firstDate = date;
-	    key = date;
-	    label = "";
-	    if(dateBin=="first") {
-		key = first;
-	    } else if(dateBin=="day") {
-		key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
-	    } else if(dateBin=="month") {
-		label=date.getFullYear()+"-" + date.getUTCMonth();
-		key = new Date(label +"-01");
-	    } else if(dateBin=="year") {
-		label = date.getFullYear();
-		key = new Date(date.getFullYear()+"-01-01");
-		console.log("key:" + key);
-	    } else if(dateBin=="decade") {
-		let year = date.getFullYear();
-		year = year-year%10;
-		label = year+"s";
-		key = new Date(year+"-01-01");
-	    } else if(dateBin) {
-		console.log("unknown bin");
-		throw new Error("Unknown date bin:" + dateBin);
-	    }
+		let date = r.getDate();
+		if(!date) {
+		    return true;
+		}
+		if(!firstDate) firstDate = date;
+		key = date;
+		label = "";
+		if(dateBin=="first") {
+		    key = first;
+		} else if(dateBin=="day") {
+		    key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
+		} else if(dateBin=="month") {
+		    label=date.getFullYear()+"-" + date.getUTCMonth();
+		    key = new Date(label +"-01");
+		} else if(dateBin=="year") {
+		    label = date.getFullYear();
+		    key = new Date(date.getFullYear()+"-01-01");
+		    console.log("key:" + key);
+		} else if(dateBin=="decade") {
+		    let year = date.getFullYear();
+		    year = year-year%10;
+		    label = year+"s";
+		    key = new Date(year+"-01-01");
+		} else if(dateBin) {
+		    console.log("unknown bin");
+		    throw new Error("Unknown date bin:" + dateBin);
+		} else {
+		    label = display.formatDate(date);
+		}
 	    }
 
 	    if(!groups.map[key]) {
@@ -1342,13 +1344,14 @@ var RecordUtil = {
 	    }
 	}
 
-//	points = RecordUtil.subset(points, bounds);
+	//	points = RecordUtil.subset(points, bounds);
+	let yy = 0;
 	points.map((p,idx)=>{
 	    let cell = values[p.y][p.x];
 	    cell.min = cell.count==0?p.v:Math.min(cell.min,p.v);
 	    cell.max = cell.count==0?p.v:Math.max(cell.max,p.v);
 	    cell.count++;
-	    cell.total += p.v;
+	    cell.total += p.value;
 	});
 
 	let minValue = NaN;
@@ -1372,13 +1375,15 @@ var RecordUtil = {
 		else
 		    v =  cell.total/cell.count;
 		cell.v = v;
-		minValue = isNaN(minValue)?v:Math.min(minValue,v);
-		maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
+		if(!isNaN(v)) {
+		    minValue = isNaN(minValue)?v:Math.min(minValue,v);
+		    maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
+		}
 		maxCount = Math.max(maxCount, cell.count);
 		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
 	    }
 	}	
-//	console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
+	//	console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
 	values.minValue = minValue;
 	values.maxValue = maxValue;
 	values.minCount = minCount;
@@ -1705,13 +1710,13 @@ var RecordUtil = {
 	    operator:"average"
 	}
 	$.extend(opts,args);
-//	console.log(JSON.stringify(opts,null,2));
+	//	console.log(JSON.stringify(opts,null,2));
 	let id = HtmlUtils.getUniqueId();
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	var ctx = canvas.getContext("2d");
-//	ctx.strokeStyle= "#000";
-//	ctx.strokeRect(0,0,canvas.width,canvas.height);
+	//	ctx.strokeStyle= "#000";
+	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;
@@ -1764,18 +1769,18 @@ var RecordUtil = {
 		if(y<0) y=0;
 		if(x>=cols) x=cols-1;
 		if(y>=rows) y=rows-1;
-		points.push({x:x,y:y,v:v,r:record});
+		points.push({x:x,y:y,value:v,r:record});
 	    });
 
 	    let grid = RecordUtil.gridPoints(rows,cols,points,args);
 	    opts.cellSizeX = +opts.cellSizeX;
 	    opts.cellSizeY = +opts.cellSizeY;
 	    this.applyFilter(opts,grid);
-
-	    let mm = this.getMinMaxGrid(grid,v=>v.v);
+	    let mm = this.getMinMaxGrid(grid,v=>v.value);
 	    if(opts.colorBy) {
-		if(!opts.display.getProperty("colorByMin")) 
+		if(!opts.display.getProperty("colorByMin"))  {
 		    opts.colorBy.setRange(mm.min, mm.max);
+		} 
 		opts.colorBy.index=0;
 	    }
 

@@ -175,7 +175,7 @@ function DisplayAnimation(display, enabled) {
         dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
-        speed: parseInt(display.getProperty("animationSpeed", 500)),
+        speed: parseInt(display.getProperty("animationSpeed", 1000)),
 	getEnabled: function() {
 	    return this.enabled;
 	},
@@ -422,7 +422,7 @@ function DisplayAnimation(display, enabled) {
 	    return this.end.getTime()>=this.dateMax.getTime();
 	},
 	doNext: function() {
-	    let debug = true;
+	    let debug = false;
 	    let wasAtEnd = this.atEnd();
 	    if(debug) console.log("animation.doNext atEnd=" + wasAtEnd);
 	    if (this.mode == MODE_SLIDING) {
@@ -615,8 +615,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
-	colorByMinPerc: this.getProperty(display, "colorByMinPercentile", -1),
-	colorByMaxPerc: this.getProperty(display, "colorByMaxPercentile", -1),
+	colorByMinPerc: this.getProperty("colorByMinPercentile", -1),
+	colorByMaxPerc: this.getProperty("colorByMaxPercentile", -1),
 	colorByOffset: 0,
         pctFields:null,
 	compareFields: display.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
@@ -899,9 +899,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     this.colorByLog = this.getProperty("colorByLog", false);
     this.colorByFunc = Math.log;
-    this.setRange(this.getProperty(this.display, "colorByMin", this.minValue),
-		     this.getProperty(this.display, "colorByMax", this.maxValue), true);
-
+    this.setRange(this.getProperty("colorByMin", this.minValue),
+		  this.getProperty("colorByMax", this.maxValue), true);
     this.range = this.maxValue - this.minValue;
 }
 /**
@@ -8637,7 +8636,7 @@ var A = {
 }
 
 var RecordUtil = {
-    groupBy:function(records, dateBin, field) {
+    groupBy:function(records, display, dateBin, field) {
 	let groups ={
 	    max:0,
 	    values:[],
@@ -8651,33 +8650,35 @@ var RecordUtil = {
 	    if(field) {
 		key = label = r.getValue(field.getIndex());
 	    } else {
-	    let date = r.getDate();
-	    if(!date) {
-		return true;
-	    }
-	    if(!firstDate) firstDate = date;
-	    key = date;
-	    label = "";
-	    if(dateBin=="first") {
-		key = first;
-	    } else if(dateBin=="day") {
-		key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
-	    } else if(dateBin=="month") {
-		label=date.getFullYear()+"-" + date.getUTCMonth();
-		key = new Date(label +"-01");
-	    } else if(dateBin=="year") {
-		label = date.getFullYear();
-		key = new Date(date.getFullYear()+"-01-01");
-		console.log("key:" + key);
-	    } else if(dateBin=="decade") {
-		let year = date.getFullYear();
-		year = year-year%10;
-		label = year+"s";
-		key = new Date(year+"-01-01");
-	    } else if(dateBin) {
-		console.log("unknown bin");
-		throw new Error("Unknown date bin:" + dateBin);
-	    }
+		let date = r.getDate();
+		if(!date) {
+		    return true;
+		}
+		if(!firstDate) firstDate = date;
+		key = date;
+		label = "";
+		if(dateBin=="first") {
+		    key = first;
+		} else if(dateBin=="day") {
+		    key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
+		} else if(dateBin=="month") {
+		    label=date.getFullYear()+"-" + date.getUTCMonth();
+		    key = new Date(label +"-01");
+		} else if(dateBin=="year") {
+		    label = date.getFullYear();
+		    key = new Date(date.getFullYear()+"-01-01");
+		    console.log("key:" + key);
+		} else if(dateBin=="decade") {
+		    let year = date.getFullYear();
+		    year = year-year%10;
+		    label = year+"s";
+		    key = new Date(year+"-01-01");
+		} else if(dateBin) {
+		    console.log("unknown bin");
+		    throw new Error("Unknown date bin:" + dateBin);
+		} else {
+		    label = display.formatDate(date);
+		}
 	    }
 
 	    if(!groups.map[key]) {
@@ -8737,13 +8738,14 @@ var RecordUtil = {
 	    }
 	}
 
-//	points = RecordUtil.subset(points, bounds);
+	//	points = RecordUtil.subset(points, bounds);
+	let yy = 0;
 	points.map((p,idx)=>{
 	    let cell = values[p.y][p.x];
 	    cell.min = cell.count==0?p.v:Math.min(cell.min,p.v);
 	    cell.max = cell.count==0?p.v:Math.max(cell.max,p.v);
 	    cell.count++;
-	    cell.total += p.v;
+	    cell.total += p.value;
 	});
 
 	let minValue = NaN;
@@ -8767,13 +8769,15 @@ var RecordUtil = {
 		else
 		    v =  cell.total/cell.count;
 		cell.v = v;
-		minValue = isNaN(minValue)?v:Math.min(minValue,v);
-		maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
+		if(!isNaN(v)) {
+		    minValue = isNaN(minValue)?v:Math.min(minValue,v);
+		    maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
+		}
 		maxCount = Math.max(maxCount, cell.count);
 		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
 	    }
 	}	
-//	console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
+	//	console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
 	values.minValue = minValue;
 	values.maxValue = maxValue;
 	values.minCount = minCount;
@@ -9100,13 +9104,13 @@ var RecordUtil = {
 	    operator:"average"
 	}
 	$.extend(opts,args);
-//	console.log(JSON.stringify(opts,null,2));
+	//	console.log(JSON.stringify(opts,null,2));
 	let id = HtmlUtils.getUniqueId();
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	var ctx = canvas.getContext("2d");
-//	ctx.strokeStyle= "#000";
-//	ctx.strokeRect(0,0,canvas.width,canvas.height);
+	//	ctx.strokeStyle= "#000";
+	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;
@@ -9159,18 +9163,18 @@ var RecordUtil = {
 		if(y<0) y=0;
 		if(x>=cols) x=cols-1;
 		if(y>=rows) y=rows-1;
-		points.push({x:x,y:y,v:v,r:record});
+		points.push({x:x,y:y,value:v,r:record});
 	    });
 
 	    let grid = RecordUtil.gridPoints(rows,cols,points,args);
 	    opts.cellSizeX = +opts.cellSizeX;
 	    opts.cellSizeY = +opts.cellSizeY;
 	    this.applyFilter(opts,grid);
-
-	    let mm = this.getMinMaxGrid(grid,v=>v.v);
+	    let mm = this.getMinMaxGrid(grid,v=>v.value);
 	    if(opts.colorBy) {
-		if(!opts.display.getProperty("colorByMin")) 
+		if(!opts.display.getProperty("colorByMin"))  {
 		    opts.colorBy.setRange(mm.min, mm.max);
+		} 
 		opts.colorBy.index=0;
 	    }
 
@@ -24807,7 +24811,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.haveCalledUpdateUI) {
 		return;
 	    }
-
             let pointData = this.getPointData();
             let records = this.records =  this.filterData();
             if (records == null) {
@@ -24841,8 +24844,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    let onDate=null;
-	    console.log("step:" + animation.begin + " " +animation.end);
-	    
+//	    console.log("displaymap.animationApply:" + animation.begin + " " +animation.end);
 	    this.heatmapLayers.every(layer=>{
 		if(!layer.date) return true;
 		if(layer.date.getTime()>= animation.begin.getTime() && layer.date.getTime()<= animation.end.getTime()) {
@@ -24941,10 +24943,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	createHeatmap(records, bounds) {
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
-
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
-	    colorBy = colorBy || this.getColorByInfo(records);
  	    if(this.heatmapLayers) {
 		try {
 		    this.heatmapLayers.every(layer=>{
@@ -24973,10 +24973,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
-	    let doGroups = this.getProperty("hm.doTimes",false);
-	    let groups = (groupByField || doGroups)?RecordUtil.groupBy(records, this.getProperty("hm.dateBin"), groupByField):null;
+	    let doTimes = this.getProperty("hm.doTimes",false);
+	    let groups = (groupByField || doTimes)?RecordUtil.groupBy(records, this, this.getProperty("hm.dateBin"), groupByField):null;
 	    if(groups == null || groups.max == 0) {
-		doGroups = false;
+		doTimes = false;
 		groups= {
 		    max:records.length,
 		    values:["none"],
@@ -25006,7 +25006,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    isBaseLayer: false,
 		});
 		layer.heatmapLabel = label;
-		if(doGroups) {
+		if(doTimes) {
 		    if(value.getTime)
 			layer.date = value;
 		}
@@ -25014,7 +25014,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    let _this = this;
-	    if(this.heatmapLayers.length>1) {
+	    if(this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
 		this.heatmapPlayingAnimation = false;
 		let controls = HtmlUtils.div(["id",this.getDomId(ID_HEATMAP_ANIM_PLAY),"style","display:inline-block;","title","Play/Stop Animation"],
 					     HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));
