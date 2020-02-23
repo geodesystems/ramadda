@@ -175,7 +175,7 @@ function DisplayAnimation(display, enabled) {
         dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
-        speed: parseInt(display.getProperty("animationSpeed", 1000)),
+        speed: parseInt(display.getProperty("animationSpeed", 500)),
 	getEnabled: function() {
 	    return this.enabled;
 	},
@@ -205,11 +205,12 @@ function DisplayAnimation(display, enabled) {
 	    if(!this.dateMin) return;
 	    this.dates=[];
 	    var seen = {};
-	    records.map(r=>{
+	    records.every(r=>{
 		if(!seen[r.getDate()]) {
 		    seen[r.getDate()] = true;
 		    this.dates.push(r.getDate());
 		}
+		return true;
 	    });
 	    this.dates.sort(function(a,b) {
 		return a.getTime() - b.getTime();
@@ -275,26 +276,35 @@ function DisplayAnimation(display, enabled) {
 		}
 	    });
 
+
 	    if(this.records && this.display.getProperty("animationShowTicks",true)) {
+		if(debug)console.log("animation.init making ticks: #records=" + records.length +" date:" + this.dateMin + " " + this.dateMax);
 		let tickStyle = this.display.getProperty("animationTickStyle","");
 		var ticks = "";
 		var min = this.dateMin.getTime();
 		var max = this.dateMax.getTime();
 		var p = 0;
+		let seenDate={};
 		for(var i=0;i<this.records.length;i++) {
 		    var record = this.records[i];
 		    var date = record.getDate().getTime();
+		    if(seenDate[date]) continue;
+		    seenDate[date] = true;
+		    if(debug)console.log("\ttick:" + record.getDate());
 		    var perc = (date-min)/(max-min)*100;
 		    var tt = this.formatAnimationDate(record.getDate());
 		    ticks+=HtmlUtils.div(["id",this.display.getId()+"-"+record.getId(), "class","display-animation-tick","style","left:" + perc+"%;"+tickStyle,"title",tt,"recordIndex",i],"");
 		}
 		this.jq(ID_TICKS).html(ticks);
+		if(debug)console.log("animation.init done making ticks");
 		this.display.makeTooltips(this.jq(ID_TICKS).find(".display-animation-tick"), this.records,(open,record) =>{
 		    this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
 		});
 	    }
+	    if(debug)console.log("animation.init-3");
 
 	    this.updateLabels();
+	    if(debug)console.log("animation.init-done");
 	},
 	setSliderValues: function(v) {
 	    let debug = true;
@@ -908,7 +918,22 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 */
 
 
-var displayDebug = false;
+let displayDebug = {
+    getProperty:false,
+    handleEventPropertyChanged:false,
+    getSelectedFields:false,
+    filterData:false,
+    checkSearchBar:false,
+    handleNoData:false,
+    pointDataLoaded:false,
+    displayMapUpdateUI:false,
+    displayMapCreateMap:false,
+    displayMapAddPoints:false,
+    loadPointJson:false,
+    groupBy:false,
+    gridPoints:false,
+}
+
 
 //Ids of DOM components
 var ID_BOTTOM = "bottom";
@@ -1590,9 +1615,8 @@ function DisplayThing(argId, argProperties) {
 		console.log("\returning value:" + value);
 	    return value;
 	},
-	debugGetProperty: false,
         getPropertyInner: function(key, dflt,skipThis) {	    
-	    let debug = this.debugGetProperty;
+	    let debug = displayDebug.getProperty;
 	    //	    let debug = key== "colorTable";
 	    if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
 	    if(this.dynamicProperties) {
@@ -1994,7 +2018,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.dataFilterChanged();
 	},
         handleEventPropertyChanged: function(source, prop) {
-	    let debug = false;
+	    let debug = displayDebug.handleEventPropertyChanged;
 	    if(prop.property == "dateRange") {
 		if(this.getProperty("acceptDateRangeChange")) {
 		    this.handleDateRangeChanged(source, prop);
@@ -2372,7 +2396,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
         getSelectedFields: function(dfltList) {
-	    let debug = false;
+	    let debug = displayDebug.getSelectedFields;
 	    if(debug)
 		console.log(this.type +".getSelectedFields");
 	    if(this.getProperty("binDate")) {
@@ -2514,7 +2538,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return df;
         },
         getDefaultSelectedFields: function(fields, dfltList) {
-	    let debug = false;
+	    let debug = displayData.getDefaultSelectedFields;
             if (this.defaultSelectedToAll() && this.allFields != null) {
                 var tmp = [];
                 for (i = 0; i < this.allFields.length; i++) {
@@ -2877,7 +2901,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return DataUtils.getDataFilters(this, v || this.getProperty("dataFilters"));
 	},
 	filterData: function(records, fields, doGroup, skipFirst) {
-	    let debug = false;
+	    let debug = displayDebug.filterData;
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -4621,12 +4645,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    multiple:this.getProperty("request." +macro+".multiple",false),
 		    rows:this.getProperty("request." +macro+".rows",3),
 		    getWidget: function(dateIds) {
+			let debug = false;
 			let visible = this.display.getProperty("request." +this.name +".visible",
 							       this.display.getProperty("macros.visible",true));
 			let style = visible?"":"display:none;";
 			let widget;
 			let label = this.label;
-			//			console.log(label +" " + this.type);
+			if(debug)console.log("getWidget:" + label +" type:" + this.type);
 			if(this.type=="bounds") {
 			    widget = HtmlUtils.checkbox("",["id",this.display.getDomId(this.getId())], false) +HtmlUtils.span(["class","display-request-reload","title","Reload with current bounds"], " In bounds");
 			    label = null;
@@ -4639,6 +4664,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    attrs.push("size");
 				    attrs.push(Math.min(this.rows,values.length));
 				}
+				if(debug)
+				    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
 				widget = HtmlUtils.select("",attrs,this.values,this.dflt,20);
 
 			    }
@@ -4745,7 +4772,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.requestMacros = null;
 	    this.dynamicProperties = props;
 	    this.createRequestProperties();
-//	    console.log(JSON.stringify(props,null,2));
+//	    console.log("request properties:" + JSON.stringify(props,null,2));
 	},
 	createRequestProperties: function() {
 	    let requestProps = "";
@@ -4853,8 +4880,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         checkSearchBar: function() {
+	    let debug = displayDebug.checkSearchBar;
+	    if(debug) console.log("checkSearchBar");
             let _this = this;
-
 	    this.filterFields = [];
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
@@ -4862,7 +4890,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (pointData == null) return;
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
-	    
 	    let header2="";
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HtmlUtils.div(["id",this.getDomId(ID_DISPLAY_PROGRESS), "style","display:inline-block;margin-right:4px;min-width:20px;"]);
@@ -4888,7 +4915,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2+= html;
 
 	    }
-
 	    if(this.getProperty("showChartFieldsMenu")) {
 		let chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {
@@ -4922,7 +4948,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let dataFilterIds = [];
-
 	    this.getDataFilters().map(f=>{
 		if(!f.label) return;
 		let cbxid = this.getDomId("datafilterenabled_" + f.id);
@@ -4930,7 +4955,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 +=  HtmlUtils.checkbox("",["id",cbxid],f.enabled) +" " +
 		    this.makeFilterLabel(f.label +"&nbsp;&nbsp;")
 	    });
-
 
 	    if(this.getProperty("filterDate")) { 
 		let type = this.getProperty("filterDate");
@@ -4968,6 +4992,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 													      "id",selectId],enums,selected))+"&nbsp;";
 	    }
 	    
+
 
             let filterBy = this.getProperty("filterFields","",true).split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
@@ -5246,7 +5271,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;
-
 	    this.createRequestProperties();
 
 
@@ -5513,8 +5537,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var dateMin = null;
 	    var dateMax = null;
 	    var dates = [];
+	    if(debug) console.log("checkSearchBar-getting filtered data");
 	    let filteredRecords  = this.filterData();
-	    filteredRecords.map(record=>{
+	    if(debug) console.log("checkSearchBar-done getting filtered data");
+	    filteredRecords.every(record=>{
 		if (dateMin == null) {
 		    dateMin = record.getDate();
 		    dateMax = record.getDate();
@@ -5528,18 +5554,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    dateMax = date;
 		    }
 		}
+		return true;
 	    });
 
+	    if(debug) console.log("checkSearchBar-11");
             if (dateMax) {
+		if(debug) console.log("checkSearchBar-getAnimation");
 		var animation = this.getAnimation();
 		if(animation.getEnabled()) {
+		    if(debug) console.log("checkSearchBar-calling animation.init");
 		    animation.init(dateMin, dateMax,filteredRecords);
+		    if(debug) console.log("checkSearchBar-done calling animation.init");
 		    if(!this.minDateObj) {
+			if(debug) console.log("checkSearchBar-calling setDateRange");
 			this.setDateRange(animation.begin, animation.end);
+			if(debug) console.log("checkSearchBar-done calling setDateRange");
 		    }
 		}
             }
 
+	    if(debug) console.log("checkSearchBar-done");
 
 
         },
@@ -6093,6 +6127,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.addEntry(entry);
             }
         },
+	setErrorMessage: function(msg) {
+            this.setContents(this.getMessage(msg));
+	},
 	clearProgress: function() {
 	    this.jq(ID_DISPLAY_PROGRESS).html("");
 	},
@@ -6103,7 +6140,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setContents(this.getLoadingMessage());
 	},
 	handleNoData: function(pointData,reload) {
-	    let debug = false;
+	    let debug = displayDebug.handleNoData;
 	    this.jq(ID_PAGE_COUNT).html("");
             if (!reload) {
 		if(debug) console.log("\tno reload");
@@ -6128,7 +6165,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (data && data.errorcode && data.errorcode == "warning") {
                 msg = data.error;
             } else {
-                msg = "<b>Sorry, but an error has occurred:</b>";
+                msg = "<b>An error has occurred:</b>";
                 if (!data) data = "No data returned from server";
                 var error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
@@ -6146,13 +6183,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 error = HtmlUtils.tag("pre", ["style", "max-height:300px;overflow-y:auto;max-width:100%;overflow-x:auto;"], error);
                 msg += error;
             }
-            this.setContents(this.getMessage(msg));
+	    this.setErrorMessage(msg);
         },
         //callback from the pointData.loadData call
         clearCache: function() {},
 
         pointDataLoaded: function(pointData, url, reload) {
-	    let debug = false;
+	    let debug = displayDebug.pointDataLoaded;
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
@@ -6163,15 +6200,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.lastSelectedFields = null;
 	    this.allFields = null;
             if (!reload) {
-		if(debug) console.log("\tno reload");
+		if(debug) console.log("\tcalling addData");
                 this.addData(pointData);
+		if(debug) console.log("\tcalling checkSearchBar");
                 this.checkSearchBar();
+		if(debug) console.log("\done calling checkSearchBar");
             } else {
 		if(!this.dataCollection)
 		    this.dataCollection = new DataCollection();
+		if(debug) console.log("\tcalling setData");
 		this.dataCollection.setData(pointData);
 	    }
+	    if(debug) console.log("\tstep1");
 	    if(this.getProperty("pageRequest")) {
+		if(debug) console.log("\tupdating pageRequest");
 		let count = pointData.getRecords().length;
 		let skip = null;
 		let skipToks = url?url.match(/skip=([0-9]+)/):null;
@@ -6211,6 +6253,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.reloadData();
 		});		
 	    }
+	    if(debug) console.log("\tstep2");
 
 
             if (url != null) {
@@ -6379,7 +6422,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
-	    let debug = false;
+	    let debug = dispayDebug.getStandardData;
 	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
 	    let showUnit  = this.getProperty("showUnit",true);
 	    this.recordToIndex = {};
@@ -7393,17 +7436,10 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 
 
 /**
-   Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2020 Geode Systems LLC
 */
 
-
-
-/*
-  This package supports charting and mapping of georeferenced time series data
-*/
-
-var pointDataCache = {};
-
+let pointDataCache = {};
 
 function DataCollection() {
     RamaddaUtil.defineMembers(this, {
@@ -7458,6 +7494,7 @@ function BasePointData(name, properties) {
             this.recordFields = thatPointData.recordFields;
             this.records = thatPointData.records;
             this.setGroupField();
+	    return this;
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
             return false;
@@ -7696,43 +7733,55 @@ function PointData(name, recordFields, records, url, properties) {
             this.loadPointJson(jsonUrl, display, reload);
         },
         loadPointJson: function(url, display, reload) {
-	    let debug = false;
+	    let debug = displayDebug.loadPointJson;
             var pointData = this;
             this.startLoading();
             var _this = this;
 	    if(debug)
 		console.log("loadPointJson: "+ display.getId());
-            var obj = pointDataCache[url];
-            if (obj == null) {
-                obj = {
+	    //TODO: clear the cache
+            var cacheObject = pointDataCache[url];
+            if (cacheObject == null) {
+                cacheObject = {
                     pointData: null,
-                    pending: []
+                    pending: [],
+		    size:0,
                 };
 		if(debug)
                     console.log("\tcreated new obj in cache: " +url);
-                pointDataCache[url] = obj;
+                pointDataCache[url] = cacheObject;
             }
-            if (obj.pointData != null) {
+            if (cacheObject.pointData != null) {
 		if(debug)
                     console.log("\tfrom cache " +url);
-                display.pointDataLoaded(obj.pointData, url, reload);
+                display.pointDataLoaded(cacheObject.pointData, url, reload);
                 return;
             }
-            obj.pending.push(display);
-            if (obj.pending.length > 1) {
+            cacheObject.pending.push(display);
+            if (cacheObject.pending.length > 1) {
 		if(debug)
-		    console.log("\tWaiting on callback:" + obj.pending.length +" " + url +" d:" + display);
+		    console.log("\tWaiting on callback:" + cacheObject.pending.length +" " + url +" d:" + display);
                 return;
             }
             var fail = function(jqxhr, textStatus, error) {
-                var err = textStatus + ": " + error;
-		console.log("JSON error:" + err);
-                display.pointDataLoadFailed(err);
+                var err = textStatus;
+		if(err) {
+		    if(error)
+			err += ": " + error;
+		} else {
+		    err = error;
+		}
+		console.log("Point data load error:" + (err?err:""));
+		cacheObject.pending.map(display=>{
+                    display.pointDataLoadFailed(err);
+		});
+		delete pointDataCache[url];
                 pointData.stopLoading();
             }
 
             var success=function(data) {
                 if (GuiUtils.isJsonError(data)) {
+		    console.log("is error");
 		    if(debug)
 			console.log("\tloadPointData failed");
                     display.pointDataLoadFailed(data);
@@ -7742,37 +7791,56 @@ function PointData(name, recordFields, records, url, properties) {
 		    if(debug)
 			console.log("\tno data:" + url);
 		    let dummy = new PointData("", [],[]);
-                    var tmp = obj.pending;
-                    obj.pending = [];
+                    var tmp = cacheObject.pending;
+                    cacheObject.pending = [];
                     for (var i = 0; i < tmp.length; i++) {
 			tmp[i].handleNoData(dummy);
 		    }
 		    return;
 		}
 		if(debug)
-		    console.log("\tgot data");
+		    console.log("\tmaking point data");
                 var newData = makePointData(data, _this.derived, display);
-                obj.pointData = pointData.initWith(newData);
-
+		if(debug)
+		    console.log("\tdone making point data");
+                cacheObject.pointData = pointData.initWith(newData);
 		if(data.properties) {
 		    display.applyRequestProperties(data.properties);
 		}
 
-
-
 		if(debug)
-                    console.log("\tpending:" + obj.pending.length);
-                var tmp = obj.pending;
-                obj.pending = [];
+                    console.log("\tpending:" + cacheObject.pending.length);
+                var tmp = cacheObject.pending;
+                cacheObject.pending = [];
                 for (var i = 0; i < tmp.length; i++) {
 		    if(debug)
 			console.log("\tcalling pointDataLoaded:" + tmp[i].getId() +" #:" + pointData.getRecords().length);
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
+
+		if(cacheObject.pointData.records && cacheObject.pointData.records.length) {
+		    cacheObject.size = cacheObject.pointData.records.length*cacheObject.pointData.records[0].getData().length;
+		}
+
+		let size = 0;
+		Object.keys(pointDataCache).map(key=>{
+		    size+=pointDataCache[key].size;
+		});
+		if(debug)
+		    console.log("\tcache size:" + size);
+		//Size is just the number of rows*columns
+		if(size>1000000) {
+		    Object.keys(pointDataCache).map(key=>{
+			if(pointDataCache[key].pending.length==0) {
+			    if(debug)
+				console.log("\tDeleting from cache:" + key);
+			    delete pointDataCache[key];
+			}
+		    });
+		}
                 pointData.stopLoading();
-            }
+	    }
             console.log("load data:" + url);
-            //                console.log("loading point url:" + url);
             Utils.doFetch(url, success,fail,"text");
             //var jqxhr = $.getJSON(url, success).fail(fail);
         }
@@ -8110,10 +8178,8 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 
 
 function makePointData(json, derived, source) {
-
-
-
-
+    let debug  =false;
+    if(debug) console.log("makePointData");
     var fields = [];
     var latitudeIdx = -1;
     var longitudeIdx = -1;
@@ -8187,13 +8253,13 @@ function makePointData(json, derived, source) {
         }
     }
 
-    var pointRecords = [];
-    var rows = [];
+    let pointRecords = [];
     for (var i = 0; i < json.data.length; i++) {
-        var tuple = json.data[i];
-        var values = tuple.values;
+	if(debug && i>0 && (i%10000)==0) console.log("\tprocessed:" + i);
+        let tuple = json.data[i];
+        let values = tuple.values;
         //lat,lon,alt,time,data values
-        var date = null;
+        let date = null;
         if ((typeof tuple.date === 'undefined')) {
             if (dateIdx >= 0) {
                 date = new Date(values[dateIdx]);
@@ -8307,10 +8373,6 @@ function makePointData(json, derived, source) {
             }
         }
 
-
-
-
-
         for (var fieldIdx = 0; fieldIdx < offsetFields.length; fieldIdx++) {
             var field = offsetFields[fieldIdx];
             var offset = field.offset;
@@ -8318,67 +8380,10 @@ function makePointData(json, derived, source) {
             value = (value + offset.offset1) * offset.scale + offset.offset2;
             values[field.getIndex()] = value;
         }
-        rows.push(values);
         var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
     }
 
-
-    /*TODO
-      for (var dIdx = 0; dIdx < derived.length; dIdx++) {
-      var d = derived[dIdx];
-      if (!d.isColumn) continue;
-      var f = d["function"];
-      var funcParams = [];
-      //TODO: allow for no columns and choose all
-      var params = d.columns.split(",");
-      for (var i = 0; i < params.length; i++) {
-      var index = -1;
-      for (var fIdx = 0; fIdx < fields.length; fIdx++) {
-      var f = fields[fIdx];
-      //                console.log("F:" + f.getId() +" " + f.getLabel() );
-      if (f.getId() == params[i] || f.getLabel() == params[i]) {
-      index = f.getIndex();
-      break;
-      }
-      }
-      if (index < 0) {
-      console.log("Could not find column index for field: " + params[i]);
-      continue;
-      }
-      funcParams.push("c" + (i + 1));
-      }
-      var columnData = RecordUtil.slice(rows, index);
-      //        var newData = A.movingAverage(columnData,{step:100});
-      var daFunk = new Function(funcParams, d["function"]);
-      console.log("daFunk - " + daFunk);
-      var newData = daFunk(columnData);
-      console.log("got new:" + newData + " " + (typeof newData));
-      if ((typeof newData) == "number") {
-      for (var rowIdx = 0; rowIdx < pointRecords.length; rowIdx++) {
-      var record = pointRecords[rowIdx];
-      record.push(newData);
-      }
-      } else if (Utils.isDefined(newData.length)) {
-      console.log("newData.length:" + newData.length + " records.length:" + pointRecords.length);
-      for (var rowIdx = 0; rowIdx < newData.length; rowIdx++) {
-      var record = pointRecords[rowIdx];
-      if (!record) {
-      console.log("bad record: " + rowIdx);
-      record.push(NaN);
-      } else {
-      //                    console.log("    date:" + record.getDate() +" v: " + newData[rowIdx]);
-      var v = newData[rowIdx];
-      if (d.decimals >= 0) {
-      v = parseFloat(v.toFixed(d.decimals));
-      }
-      record.push(v);
-      }
-      }
-      }
-      }
-
-      a*/
     if (source != null) {
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
@@ -8404,8 +8409,6 @@ function makePointData(json, derived, source) {
 
         }
     }
-
-
 
     var name = json.name;
     if ((typeof name === 'undefined')) {
@@ -8637,29 +8640,27 @@ var A = {
 
 var RecordUtil = {
     groupBy:function(records, display, dateBin, field) {
+	let debug = displayDebug.groupBy;
+	if(debug) console.log("groupBy");
 	let groups ={
 	    max:0,
 	    values:[],
 	    labels:[],
 	    map:{},
 	}
-	let firstDate = null;
-	records.every(r=>{
+	records.every((r,idx)=>{
 	    let key;
-	    let label;
+	    let label = null;
+	    let date = r.getDate();
+//	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
 		key = label = r.getValue(field.getIndex());
 	    } else {
-		let date = r.getDate();
 		if(!date) {
 		    return true;
 		}
-		if(!firstDate) firstDate = date;
 		key = date;
-		label = "";
-		if(dateBin=="first") {
-		    key = first;
-		} else if(dateBin=="day") {
+		if(dateBin=="day") {
 		    key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
 		} else if(dateBin=="month") {
 		    label=date.getFullYear()+"-" + date.getUTCMonth();
@@ -8667,7 +8668,6 @@ var RecordUtil = {
 		} else if(dateBin=="year") {
 		    label = date.getFullYear();
 		    key = new Date(date.getFullYear()+"-01-01");
-		    console.log("key:" + key);
 		} else if(dateBin=="decade") {
 		    let year = date.getFullYear();
 		    year = year-year%10;
@@ -8676,14 +8676,14 @@ var RecordUtil = {
 		} else if(dateBin) {
 		    console.log("unknown bin");
 		    throw new Error("Unknown date bin:" + dateBin);
-		} else {
-		    label = display.formatDate(date);
 		}
 	    }
-
 	    if(!groups.map[key]) {
+		if(debug) console.log("\tadding group:"  + key);
 		groups.map[key] = [];
 		groups.values.push(key);
+		if(label==null)
+		    label = display.formatDate(date);
 		groups.labels.push(label);
 	    }
 	    groups.map[key].push(r);
@@ -8723,12 +8723,7 @@ var RecordUtil = {
 	return records;
     },
     gridPoints: function(rows,cols,points,args) {
-	let bounds = {
-	    north:37.34582,
-	    west:-77.95234,
-	    south:35.13979,
-	    east:-73.05244
-	}
+	let debug = displayDebug.gridPoints;
 	let values = [];
 	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    let row = [];
@@ -8738,8 +8733,6 @@ var RecordUtil = {
 	    }
 	}
 
-	//	points = RecordUtil.subset(points, bounds);
-	let yy = 0;
 	points.map((p,idx)=>{
 	    let cell = values[p.y][p.x];
 	    cell.min = cell.count==0?p.v:Math.min(cell.min,p.v);
@@ -8777,7 +8770,8 @@ var RecordUtil = {
 		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
 	    }
 	}	
-	//	console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
+	if(debug)
+	    console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
 	values.minValue = minValue;
 	values.maxValue = maxValue;
 	values.minCount = minCount;
@@ -9170,11 +9164,14 @@ var RecordUtil = {
 	    opts.cellSizeX = +opts.cellSizeX;
 	    opts.cellSizeY = +opts.cellSizeY;
 	    this.applyFilter(opts,grid);
-	    let mm = this.getMinMaxGrid(grid,v=>v.value);
+//	    let mm = this.getMinMaxGrid(grid,v=>v.value);
 	    if(opts.colorBy) {
-		if(!opts.display.getProperty("colorByMin"))  {
-		    opts.colorBy.setRange(mm.min, mm.max);
-		} 
+		if(!Utils.isDefined(opts.display.getProperty("colorByMin")))  {
+//		    console.log("setting color by range from grid:" + grid.minValue  +" " + grid.maxValue);
+		    opts.colorBy.setRange(grid.minValue, grid.maxValue);
+		}  else {
+//		    console.log("color by range is already set:" +opts.display.getProperty("colorByMin"));
+		}
 		opts.colorBy.index=0;
 	    }
 
@@ -9208,7 +9205,9 @@ var RecordUtil = {
 		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,v);
 	    });
 	}
-	return canvas.toDataURL("image/png");
+	let img =  canvas.toDataURL("image/png");
+	canvas.parentNode.removeChild(canvas);
+	return img;
     },
     convertGeoToPixel:function(lat, lon,bounds,mapWidth,mapHeight) {
 	var mapLonLeft = bounds.west;
@@ -20317,7 +20316,6 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             if (!this.getProperty("showFooter", true)) {
                 footer = "";
             }
-            displayDebug = false;
             var entriesDivAttrs = [ATTR_ID, this.getDomId(ID_ENTRIES), ATTR_CLASS, this.getClass("content")];
             var innerHeight = this.getProperty("innerHeight", null);
             if (innerHeight == null) {
@@ -23662,6 +23660,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             } else {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             }
+	    this.startProgress();
 
             if (!this.haveCalledUpdateUI) {
                 var callback = function() {
@@ -24777,9 +24776,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.addPoints([],[],[]);
 	    this.setMessage("No data available");
 	},
-	setMessage: function(msg) {
+	setErrorMessage: function(msg) {
 	    if(this.map)
 		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
+	    else
+		SUPER.setErrorMessage.call(this,msg);
+	},
+	setMessage: function(msg) {
+	    if(this.map) {
+		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
+	    }
 	},
 	setMapLabel: function(msg) {
 	    if(this.map)
@@ -24819,10 +24825,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-	    //Only show the indicators for lots of records
-	    let msg = this.getProperty("loadingMessage","Loading map...");
-	    if(msg!="")
-		this.setMessage(msg);
+	    this.setMessage("Creating display...");
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(pointData, records);
@@ -24869,6 +24872,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	updateUIInner: function(pointData, records) {
 	    var t1= new Date();
+	    let debug = displayDebug.displayMapUpdateUI;
+	    if(debug) console.log("displaymap.updateUIInner");
 	    this.haveCalledUpdateUI = true;
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
@@ -24912,9 +24917,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.map.clearSeenMarkers();
 	    var t2= new Date();
+	    if(debug) console.log("displaymap calling addPoints");
             this.addPoints(records,fields,points,pointBounds);
 	    var t3= new Date();
-	    //	    Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
+	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
             this.addLabels(records,fields,points);
             this.applyVectorMap();
 	    this.lastUpdateTime = new Date();
@@ -24941,7 +24947,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},this.getProperty("hm.AnimationSleep",1000));
 	    }
 	},
-	createHeatmap(records, bounds) {
+createHeatmap(records, bounds) {
+	    let debug = displayDebug.displayMapCreateMap;
+	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
@@ -24974,6 +24982,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
 	    let doTimes = this.getProperty("hm.doTimes",false);
+	    if(debug) console.log("\tcalling groupBy");
 	    let groups = (groupByField || doTimes)?RecordUtil.groupBy(records, this, this.getProperty("hm.dateBin"), groupByField):null;
 	    if(groups == null || groups.max == 0) {
 		doTimes = false;
@@ -24983,6 +24992,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    map:{none:records}
 		}
 	    }
+
+	    if(debug) console.log("\tdone calling groupBy");
 	    let recordCnt = groups.max;
  	    if(dfltArgs.cellSize==0) {
 		let sqrt = Math.sqrt(recordCnt);
@@ -24993,14 +25004,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
-//	    console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length);
+	    if(debug)
+		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length);
 	    let labels = [];
-	    let labelPrefix = this.getProperty("hm.labelPrefix","Heatmap-");
+	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
 	    groups.values.every((value,idx)=>{
 //		console.log("group:" + value +" #:" + groups.map[value].length);
 		let recordsAtTime = groups.map[value];
 		let img = RecordUtil.gridData(this.getId(),recordsAtTime,args);
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
+		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
 		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
@@ -25032,9 +25045,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			_this.stepHeatmapAnimation();
 		    }
 		});
-		if(groups.values[0]!="none") {
-		    this.setMapLabel(labelPrefix  + groups.labels[0]);
-		}
+	    }
+	    if(groups.values[0]!="none") {
+		this.setMapLabel(labels[0]);
 	    }
 	    colorBy.displayColorTable(null,true);
 	    if(this.getProperty("hm.showToggle",false)) {
@@ -25058,8 +25071,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
         addPoints: function(records, fields, points,bounds) {
+	    let debug = displayDebug.displayMapAddPoints;
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
+		if(debug) console.log("displaymap creating heatmap");
 		this.createHeatmap(records, bounds);
+		if(debug) console.log("displaymap done creating heatmap");
 		if(!this.getProperty("hm.showPoints"))
 		    return;
 	    }

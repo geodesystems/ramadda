@@ -1,15 +1,8 @@
 /**
-   Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2020 Geode Systems LLC
 */
 
-
-
-/*
-  This package supports charting and mapping of georeferenced time series data
-*/
-
-var pointDataCache = {};
-
+let pointDataCache = {};
 
 function DataCollection() {
     RamaddaUtil.defineMembers(this, {
@@ -64,6 +57,7 @@ function BasePointData(name, properties) {
             this.recordFields = thatPointData.recordFields;
             this.records = thatPointData.records;
             this.setGroupField();
+	    return this;
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
             return false;
@@ -302,43 +296,55 @@ function PointData(name, recordFields, records, url, properties) {
             this.loadPointJson(jsonUrl, display, reload);
         },
         loadPointJson: function(url, display, reload) {
-	    let debug = false;
+	    let debug = displayDebug.loadPointJson;
             var pointData = this;
             this.startLoading();
             var _this = this;
 	    if(debug)
 		console.log("loadPointJson: "+ display.getId());
-            var obj = pointDataCache[url];
-            if (obj == null) {
-                obj = {
+	    //TODO: clear the cache
+            var cacheObject = pointDataCache[url];
+            if (cacheObject == null) {
+                cacheObject = {
                     pointData: null,
-                    pending: []
+                    pending: [],
+		    size:0,
                 };
 		if(debug)
                     console.log("\tcreated new obj in cache: " +url);
-                pointDataCache[url] = obj;
+                pointDataCache[url] = cacheObject;
             }
-            if (obj.pointData != null) {
+            if (cacheObject.pointData != null) {
 		if(debug)
                     console.log("\tfrom cache " +url);
-                display.pointDataLoaded(obj.pointData, url, reload);
+                display.pointDataLoaded(cacheObject.pointData, url, reload);
                 return;
             }
-            obj.pending.push(display);
-            if (obj.pending.length > 1) {
+            cacheObject.pending.push(display);
+            if (cacheObject.pending.length > 1) {
 		if(debug)
-		    console.log("\tWaiting on callback:" + obj.pending.length +" " + url +" d:" + display);
+		    console.log("\tWaiting on callback:" + cacheObject.pending.length +" " + url +" d:" + display);
                 return;
             }
             var fail = function(jqxhr, textStatus, error) {
-                var err = textStatus + ": " + error;
-		console.log("JSON error:" + err);
-                display.pointDataLoadFailed(err);
+                var err = textStatus;
+		if(err) {
+		    if(error)
+			err += ": " + error;
+		} else {
+		    err = error;
+		}
+		console.log("Point data load error:" + (err?err:""));
+		cacheObject.pending.map(display=>{
+                    display.pointDataLoadFailed(err);
+		});
+		delete pointDataCache[url];
                 pointData.stopLoading();
             }
 
             var success=function(data) {
                 if (GuiUtils.isJsonError(data)) {
+		    console.log("is error");
 		    if(debug)
 			console.log("\tloadPointData failed");
                     display.pointDataLoadFailed(data);
@@ -348,37 +354,56 @@ function PointData(name, recordFields, records, url, properties) {
 		    if(debug)
 			console.log("\tno data:" + url);
 		    let dummy = new PointData("", [],[]);
-                    var tmp = obj.pending;
-                    obj.pending = [];
+                    var tmp = cacheObject.pending;
+                    cacheObject.pending = [];
                     for (var i = 0; i < tmp.length; i++) {
 			tmp[i].handleNoData(dummy);
 		    }
 		    return;
 		}
 		if(debug)
-		    console.log("\tgot data");
+		    console.log("\tmaking point data");
                 var newData = makePointData(data, _this.derived, display);
-                obj.pointData = pointData.initWith(newData);
-
+		if(debug)
+		    console.log("\tdone making point data");
+                cacheObject.pointData = pointData.initWith(newData);
 		if(data.properties) {
 		    display.applyRequestProperties(data.properties);
 		}
 
-
-
 		if(debug)
-                    console.log("\tpending:" + obj.pending.length);
-                var tmp = obj.pending;
-                obj.pending = [];
+                    console.log("\tpending:" + cacheObject.pending.length);
+                var tmp = cacheObject.pending;
+                cacheObject.pending = [];
                 for (var i = 0; i < tmp.length; i++) {
 		    if(debug)
 			console.log("\tcalling pointDataLoaded:" + tmp[i].getId() +" #:" + pointData.getRecords().length);
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
+
+		if(cacheObject.pointData.records && cacheObject.pointData.records.length) {
+		    cacheObject.size = cacheObject.pointData.records.length*cacheObject.pointData.records[0].getData().length;
+		}
+
+		let size = 0;
+		Object.keys(pointDataCache).map(key=>{
+		    size+=pointDataCache[key].size;
+		});
+		if(debug)
+		    console.log("\tcache size:" + size);
+		//Size is just the number of rows*columns
+		if(size>1000000) {
+		    Object.keys(pointDataCache).map(key=>{
+			if(pointDataCache[key].pending.length==0) {
+			    if(debug)
+				console.log("\tDeleting from cache:" + key);
+			    delete pointDataCache[key];
+			}
+		    });
+		}
                 pointData.stopLoading();
-            }
+	    }
             console.log("load data:" + url);
-            //                console.log("loading point url:" + url);
             Utils.doFetch(url, success,fail,"text");
             //var jqxhr = $.getJSON(url, success).fail(fail);
         }
@@ -716,10 +741,8 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 
 
 function makePointData(json, derived, source) {
-
-
-
-
+    let debug  =false;
+    if(debug) console.log("makePointData");
     var fields = [];
     var latitudeIdx = -1;
     var longitudeIdx = -1;
@@ -793,13 +816,13 @@ function makePointData(json, derived, source) {
         }
     }
 
-    var pointRecords = [];
-    var rows = [];
+    let pointRecords = [];
     for (var i = 0; i < json.data.length; i++) {
-        var tuple = json.data[i];
-        var values = tuple.values;
+	if(debug && i>0 && (i%10000)==0) console.log("\tprocessed:" + i);
+        let tuple = json.data[i];
+        let values = tuple.values;
         //lat,lon,alt,time,data values
-        var date = null;
+        let date = null;
         if ((typeof tuple.date === 'undefined')) {
             if (dateIdx >= 0) {
                 date = new Date(values[dateIdx]);
@@ -913,10 +936,6 @@ function makePointData(json, derived, source) {
             }
         }
 
-
-
-
-
         for (var fieldIdx = 0; fieldIdx < offsetFields.length; fieldIdx++) {
             var field = offsetFields[fieldIdx];
             var offset = field.offset;
@@ -924,67 +943,10 @@ function makePointData(json, derived, source) {
             value = (value + offset.offset1) * offset.scale + offset.offset2;
             values[field.getIndex()] = value;
         }
-        rows.push(values);
         var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
     }
 
-
-    /*TODO
-      for (var dIdx = 0; dIdx < derived.length; dIdx++) {
-      var d = derived[dIdx];
-      if (!d.isColumn) continue;
-      var f = d["function"];
-      var funcParams = [];
-      //TODO: allow for no columns and choose all
-      var params = d.columns.split(",");
-      for (var i = 0; i < params.length; i++) {
-      var index = -1;
-      for (var fIdx = 0; fIdx < fields.length; fIdx++) {
-      var f = fields[fIdx];
-      //                console.log("F:" + f.getId() +" " + f.getLabel() );
-      if (f.getId() == params[i] || f.getLabel() == params[i]) {
-      index = f.getIndex();
-      break;
-      }
-      }
-      if (index < 0) {
-      console.log("Could not find column index for field: " + params[i]);
-      continue;
-      }
-      funcParams.push("c" + (i + 1));
-      }
-      var columnData = RecordUtil.slice(rows, index);
-      //        var newData = A.movingAverage(columnData,{step:100});
-      var daFunk = new Function(funcParams, d["function"]);
-      console.log("daFunk - " + daFunk);
-      var newData = daFunk(columnData);
-      console.log("got new:" + newData + " " + (typeof newData));
-      if ((typeof newData) == "number") {
-      for (var rowIdx = 0; rowIdx < pointRecords.length; rowIdx++) {
-      var record = pointRecords[rowIdx];
-      record.push(newData);
-      }
-      } else if (Utils.isDefined(newData.length)) {
-      console.log("newData.length:" + newData.length + " records.length:" + pointRecords.length);
-      for (var rowIdx = 0; rowIdx < newData.length; rowIdx++) {
-      var record = pointRecords[rowIdx];
-      if (!record) {
-      console.log("bad record: " + rowIdx);
-      record.push(NaN);
-      } else {
-      //                    console.log("    date:" + record.getDate() +" v: " + newData[rowIdx]);
-      var v = newData[rowIdx];
-      if (d.decimals >= 0) {
-      v = parseFloat(v.toFixed(d.decimals));
-      }
-      record.push(v);
-      }
-      }
-      }
-      }
-
-      a*/
     if (source != null) {
         for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
@@ -1010,8 +972,6 @@ function makePointData(json, derived, source) {
 
         }
     }
-
-
 
     var name = json.name;
     if ((typeof name === 'undefined')) {
@@ -1243,29 +1203,27 @@ var A = {
 
 var RecordUtil = {
     groupBy:function(records, display, dateBin, field) {
+	let debug = displayDebug.groupBy;
+	if(debug) console.log("groupBy");
 	let groups ={
 	    max:0,
 	    values:[],
 	    labels:[],
 	    map:{},
 	}
-	let firstDate = null;
-	records.every(r=>{
+	records.every((r,idx)=>{
 	    let key;
-	    let label;
+	    let label = null;
+	    let date = r.getDate();
+//	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
 		key = label = r.getValue(field.getIndex());
 	    } else {
-		let date = r.getDate();
 		if(!date) {
 		    return true;
 		}
-		if(!firstDate) firstDate = date;
 		key = date;
-		label = "";
-		if(dateBin=="first") {
-		    key = first;
-		} else if(dateBin=="day") {
+		if(dateBin=="day") {
 		    key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
 		} else if(dateBin=="month") {
 		    label=date.getFullYear()+"-" + date.getUTCMonth();
@@ -1273,7 +1231,6 @@ var RecordUtil = {
 		} else if(dateBin=="year") {
 		    label = date.getFullYear();
 		    key = new Date(date.getFullYear()+"-01-01");
-		    console.log("key:" + key);
 		} else if(dateBin=="decade") {
 		    let year = date.getFullYear();
 		    year = year-year%10;
@@ -1282,14 +1239,14 @@ var RecordUtil = {
 		} else if(dateBin) {
 		    console.log("unknown bin");
 		    throw new Error("Unknown date bin:" + dateBin);
-		} else {
-		    label = display.formatDate(date);
 		}
 	    }
-
 	    if(!groups.map[key]) {
+		if(debug) console.log("\tadding group:"  + key);
 		groups.map[key] = [];
 		groups.values.push(key);
+		if(label==null)
+		    label = display.formatDate(date);
 		groups.labels.push(label);
 	    }
 	    groups.map[key].push(r);
@@ -1329,12 +1286,7 @@ var RecordUtil = {
 	return records;
     },
     gridPoints: function(rows,cols,points,args) {
-	let bounds = {
-	    north:37.34582,
-	    west:-77.95234,
-	    south:35.13979,
-	    east:-73.05244
-	}
+	let debug = displayDebug.gridPoints;
 	let values = [];
 	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    let row = [];
@@ -1344,8 +1296,6 @@ var RecordUtil = {
 	    }
 	}
 
-	//	points = RecordUtil.subset(points, bounds);
-	let yy = 0;
 	points.map((p,idx)=>{
 	    let cell = values[p.y][p.x];
 	    cell.min = cell.count==0?p.v:Math.min(cell.min,p.v);
@@ -1383,7 +1333,8 @@ var RecordUtil = {
 		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
 	    }
 	}	
-	//	console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
+	if(debug)
+	    console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
 	values.minValue = minValue;
 	values.maxValue = maxValue;
 	values.minCount = minCount;
@@ -1776,11 +1727,14 @@ var RecordUtil = {
 	    opts.cellSizeX = +opts.cellSizeX;
 	    opts.cellSizeY = +opts.cellSizeY;
 	    this.applyFilter(opts,grid);
-	    let mm = this.getMinMaxGrid(grid,v=>v.value);
+//	    let mm = this.getMinMaxGrid(grid,v=>v.value);
 	    if(opts.colorBy) {
-		if(!opts.display.getProperty("colorByMin"))  {
-		    opts.colorBy.setRange(mm.min, mm.max);
-		} 
+		if(!Utils.isDefined(opts.display.getProperty("colorByMin")))  {
+//		    console.log("setting color by range from grid:" + grid.minValue  +" " + grid.maxValue);
+		    opts.colorBy.setRange(grid.minValue, grid.maxValue);
+		}  else {
+//		    console.log("color by range is already set:" +opts.display.getProperty("colorByMin"));
+		}
 		opts.colorBy.index=0;
 	    }
 
@@ -1814,7 +1768,9 @@ var RecordUtil = {
 		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,v);
 	    });
 	}
-	return canvas.toDataURL("image/png");
+	let img =  canvas.toDataURL("image/png");
+	canvas.parentNode.removeChild(canvas);
+	return img;
     },
     convertGeoToPixel:function(lat, lon,bounds,mapWidth,mapHeight) {
 	var mapLonLeft = bounds.west;

@@ -631,13 +631,14 @@ function initMapFunctions(theMap) {
             }
         },
         checkLayerOrder: function() {
-	    var base = 0;
+	    let base = this.numberOfBaseLayers;
 	    this.nonSelectLayers.every(layer=>{
 		this.map.setLayerIndex(layer, base++);		
 		return true;
 	    });
-	    this.loadedLayers.map(layer=>{
+	    this.loadedLayers.every(layer=>{
 		this.map.setLayerIndex(layer, base++);		
+		return true;
 	    });
 	    if (this.boxes) {
                 this.map.setLayerIndex(this.boxes, base++);
@@ -689,7 +690,6 @@ function initMapFunctions(theMap) {
             }
             var lonlat = new createLonLat(west, north);
             image.lonlat = this.transformLLPoint(lonlat);
-
             image.setVisibility(visible);
             image.id = layerId;
             image.text = this.getPopupText(desc);
@@ -1189,9 +1189,13 @@ function initMapFunctions(theMap) {
     }
 
     theMap.removeKMLLayer = function(layer) {
-        this.map.removeLayer(layer);
+	this.removeLayer(layer);
     }
     theMap.removeLayer = function(layer) {
+	if(this.nonSelectLayers)
+	    this.nonSelectLayers = OpenLayers.Util.removeItem(this.nonSelectLayers, layer);
+	if(this.loadedLayers)
+	    this.loadedLayers = OpenLayers.Util.removeItem(this.loadedLayers, layer);
         this.map.removeLayer(layer);
     }
 
@@ -1617,7 +1621,6 @@ function initMapFunctions(theMap) {
                 map_gray,
                 map_blue,
                 map_black
-
             ];
         }
         var dflt = this.defaultMapLayer || map_osm;
@@ -1633,8 +1636,9 @@ function initMapFunctions(theMap) {
         this.hybridLayer = null;
         this.defaultOLMapLayer = null;
 
+	this.numberOfBaseLayers = 0;
 
-        for (i = 0; i < this.mapLayers.length; i++) {
+        for (let i = 0; i < this.mapLayers.length; i++) {
             mapLayer = this.mapLayers[i];
             if (mapLayer == null) {
                 continue;
@@ -1775,6 +1779,7 @@ function initMapFunctions(theMap) {
                     this.defaultOLMapLayer = newLayer;
                 }
                 this.addLayer(newLayer);
+		this.numberOfBaseLayers++;
             }
 
         }

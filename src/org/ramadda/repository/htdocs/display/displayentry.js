@@ -215,7 +215,6 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             if (!this.getProperty("showFooter", true)) {
                 footer = "";
             }
-            displayDebug = false;
             var entriesDivAttrs = [ATTR_ID, this.getDomId(ID_ENTRIES), ATTR_CLASS, this.getClass("content")];
             var innerHeight = this.getProperty("innerHeight", null);
             if (innerHeight == null) {

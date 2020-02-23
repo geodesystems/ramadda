@@ -175,7 +175,7 @@ function DisplayAnimation(display, enabled) {
         dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
-        speed: parseInt(display.getProperty("animationSpeed", 1000)),
+        speed: parseInt(display.getProperty("animationSpeed", 500)),
 	getEnabled: function() {
 	    return this.enabled;
 	},
@@ -205,11 +205,12 @@ function DisplayAnimation(display, enabled) {
 	    if(!this.dateMin) return;
 	    this.dates=[];
 	    var seen = {};
-	    records.map(r=>{
+	    records.every(r=>{
 		if(!seen[r.getDate()]) {
 		    seen[r.getDate()] = true;
 		    this.dates.push(r.getDate());
 		}
+		return true;
 	    });
 	    this.dates.sort(function(a,b) {
 		return a.getTime() - b.getTime();
@@ -275,26 +276,35 @@ function DisplayAnimation(display, enabled) {
 		}
 	    });
 
+
 	    if(this.records && this.display.getProperty("animationShowTicks",true)) {
+		if(debug)console.log("animation.init making ticks: #records=" + records.length +" date:" + this.dateMin + " " + this.dateMax);
 		let tickStyle = this.display.getProperty("animationTickStyle","");
 		var ticks = "";
 		var min = this.dateMin.getTime();
 		var max = this.dateMax.getTime();
 		var p = 0;
+		let seenDate={};
 		for(var i=0;i<this.records.length;i++) {
 		    var record = this.records[i];
 		    var date = record.getDate().getTime();
+		    if(seenDate[date]) continue;
+		    seenDate[date] = true;
+		    if(debug)console.log("\ttick:" + record.getDate());
 		    var perc = (date-min)/(max-min)*100;
 		    var tt = this.formatAnimationDate(record.getDate());
 		    ticks+=HtmlUtils.div(["id",this.display.getId()+"-"+record.getId(), "class","display-animation-tick","style","left:" + perc+"%;"+tickStyle,"title",tt,"recordIndex",i],"");
 		}
 		this.jq(ID_TICKS).html(ticks);
+		if(debug)console.log("animation.init done making ticks");
 		this.display.makeTooltips(this.jq(ID_TICKS).find(".display-animation-tick"), this.records,(open,record) =>{
 		    this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
 		});
 	    }
+	    if(debug)console.log("animation.init-3");
 
 	    this.updateLabels();
+	    if(debug)console.log("animation.init-done");
 	},
 	setSliderValues: function(v) {
 	    let debug = true;

@@ -110,6 +110,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             } else {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             }
+	    this.startProgress();
 
             if (!this.haveCalledUpdateUI) {
                 var callback = function() {
@@ -1225,9 +1226,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.addPoints([],[],[]);
 	    this.setMessage("No data available");
 	},
-	setMessage: function(msg) {
+	setErrorMessage: function(msg) {
 	    if(this.map)
 		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
+	    else
+		SUPER.setErrorMessage.call(this,msg);
+	},
+	setMessage: function(msg) {
+	    if(this.map) {
+		this.map.setProgress(HtmlUtils.div([ATTR_CLASS, "display-map-message"], msg));
+	    }
 	},
 	setMapLabel: function(msg) {
 	    if(this.map)
@@ -1267,10 +1275,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-	    //Only show the indicators for lots of records
-	    let msg = this.getProperty("loadingMessage","Loading map...");
-	    if(msg!="")
-		this.setMessage(msg);
+	    this.setMessage("Creating display...");
 	    setTimeout(()=>{
 		try {
 		    this.updateUIInner(pointData, records);
@@ -1317,6 +1322,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	updateUIInner: function(pointData, records) {
 	    var t1= new Date();
+	    let debug = displayDebug.displayMapUpdateUI;
+	    if(debug) console.log("displaymap.updateUIInner");
 	    this.haveCalledUpdateUI = true;
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
@@ -1360,9 +1367,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.map.clearSeenMarkers();
 	    var t2= new Date();
+	    if(debug) console.log("displaymap calling addPoints");
             this.addPoints(records,fields,points,pointBounds);
 	    var t3= new Date();
-	    //	    Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
+	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
             this.addLabels(records,fields,points);
             this.applyVectorMap();
 	    this.lastUpdateTime = new Date();
@@ -1389,7 +1397,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},this.getProperty("hm.AnimationSleep",1000));
 	    }
 	},
-	createHeatmap(records, bounds) {
+createHeatmap(records, bounds) {
+	    let debug = displayDebug.displayMapCreateMap;
+	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
@@ -1422,6 +1432,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
 	    let doTimes = this.getProperty("hm.doTimes",false);
+	    if(debug) console.log("\tcalling groupBy");
 	    let groups = (groupByField || doTimes)?RecordUtil.groupBy(records, this, this.getProperty("hm.dateBin"), groupByField):null;
 	    if(groups == null || groups.max == 0) {
 		doTimes = false;
@@ -1431,6 +1442,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    map:{none:records}
 		}
 	    }
+
+	    if(debug) console.log("\tdone calling groupBy");
 	    let recordCnt = groups.max;
  	    if(dfltArgs.cellSize==0) {
 		let sqrt = Math.sqrt(recordCnt);
@@ -1441,14 +1454,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
-//	    console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length);
+	    if(debug)
+		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length);
 	    let labels = [];
-	    let labelPrefix = this.getProperty("hm.labelPrefix","Heatmap-");
+	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
 	    groups.values.every((value,idx)=>{
 //		console.log("group:" + value +" #:" + groups.map[value].length);
 		let recordsAtTime = groups.map[value];
 		let img = RecordUtil.gridData(this.getId(),recordsAtTime,args);
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
+		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
 		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
@@ -1480,9 +1495,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			_this.stepHeatmapAnimation();
 		    }
 		});
-		if(groups.values[0]!="none") {
-		    this.setMapLabel(labelPrefix  + groups.labels[0]);
-		}
+	    }
+	    if(groups.values[0]!="none") {
+		this.setMapLabel(labels[0]);
 	    }
 	    colorBy.displayColorTable(null,true);
 	    if(this.getProperty("hm.showToggle",false)) {
@@ -1506,8 +1521,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 
         addPoints: function(records, fields, points,bounds) {
+	    let debug = displayDebug.displayMapAddPoints;
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
+		if(debug) console.log("displaymap creating heatmap");
 		this.createHeatmap(records, bounds);
+		if(debug) console.log("displaymap done creating heatmap");
 		if(!this.getProperty("hm.showPoints"))
 		    return;
 	    }

@@ -195,6 +195,7 @@ var Utils = {
     },
     doFetch: async function(path, callback, err,what) {
         path =this.replaceRoot(path);
+	let calledErr = false;
         try {
             if(!what) what = "text";
             await $.ajax({
@@ -205,9 +206,14 @@ var Utils = {
                 success: function(data) {
                     Utils.call(callback, data);
                 }
-            }).fail(err);
+            }).fail((p1,p2,p3)=>{
+		calledErr=true;
+		if(err)
+		    err(p1,p2,p3)
+	    });
         } catch (e) {
-            Utils.call(err, e);
+	    if(!calledErr)
+		Utils.call(err, e);
         }
     },
     formatJson: function(json,levelsShown) {

@@ -3,7 +3,22 @@
 */
 
 
-var displayDebug = false;
+let displayDebug = {
+    getProperty:false,
+    handleEventPropertyChanged:false,
+    getSelectedFields:false,
+    filterData:false,
+    checkSearchBar:false,
+    handleNoData:false,
+    pointDataLoaded:false,
+    displayMapUpdateUI:false,
+    displayMapCreateMap:false,
+    displayMapAddPoints:false,
+    loadPointJson:false,
+    groupBy:false,
+    gridPoints:false,
+}
+
 
 //Ids of DOM components
 var ID_BOTTOM = "bottom";
@@ -685,9 +700,8 @@ function DisplayThing(argId, argProperties) {
 		console.log("\returning value:" + value);
 	    return value;
 	},
-	debugGetProperty: false,
         getPropertyInner: function(key, dflt,skipThis) {	    
-	    let debug = this.debugGetProperty;
+	    let debug = displayDebug.getProperty;
 	    //	    let debug = key== "colorTable";
 	    if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
 	    if(this.dynamicProperties) {
@@ -1089,7 +1103,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.dataFilterChanged();
 	},
         handleEventPropertyChanged: function(source, prop) {
-	    let debug = false;
+	    let debug = displayDebug.handleEventPropertyChanged;
 	    if(prop.property == "dateRange") {
 		if(this.getProperty("acceptDateRangeChange")) {
 		    this.handleDateRangeChanged(source, prop);
@@ -1467,7 +1481,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 
         getSelectedFields: function(dfltList) {
-	    let debug = false;
+	    let debug = displayDebug.getSelectedFields;
 	    if(debug)
 		console.log(this.type +".getSelectedFields");
 	    if(this.getProperty("binDate")) {
@@ -1609,7 +1623,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return df;
         },
         getDefaultSelectedFields: function(fields, dfltList) {
-	    let debug = false;
+	    let debug = displayData.getDefaultSelectedFields;
             if (this.defaultSelectedToAll() && this.allFields != null) {
                 var tmp = [];
                 for (i = 0; i < this.allFields.length; i++) {
@@ -1972,7 +1986,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return DataUtils.getDataFilters(this, v || this.getProperty("dataFilters"));
 	},
 	filterData: function(records, fields, doGroup, skipFirst) {
-	    let debug = false;
+	    let debug = displayDebug.filterData;
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -3716,12 +3730,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    multiple:this.getProperty("request." +macro+".multiple",false),
 		    rows:this.getProperty("request." +macro+".rows",3),
 		    getWidget: function(dateIds) {
+			let debug = false;
 			let visible = this.display.getProperty("request." +this.name +".visible",
 							       this.display.getProperty("macros.visible",true));
 			let style = visible?"":"display:none;";
 			let widget;
 			let label = this.label;
-			//			console.log(label +" " + this.type);
+			if(debug)console.log("getWidget:" + label +" type:" + this.type);
 			if(this.type=="bounds") {
 			    widget = HtmlUtils.checkbox("",["id",this.display.getDomId(this.getId())], false) +HtmlUtils.span(["class","display-request-reload","title","Reload with current bounds"], " In bounds");
 			    label = null;
@@ -3734,6 +3749,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    attrs.push("size");
 				    attrs.push(Math.min(this.rows,values.length));
 				}
+				if(debug)
+				    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
 				widget = HtmlUtils.select("",attrs,this.values,this.dflt,20);
 
 			    }
@@ -3840,7 +3857,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.requestMacros = null;
 	    this.dynamicProperties = props;
 	    this.createRequestProperties();
-//	    console.log(JSON.stringify(props,null,2));
+//	    console.log("request properties:" + JSON.stringify(props,null,2));
 	},
 	createRequestProperties: function() {
 	    let requestProps = "";
@@ -3948,8 +3965,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
         checkSearchBar: function() {
+	    let debug = displayDebug.checkSearchBar;
+	    if(debug) console.log("checkSearchBar");
             let _this = this;
-
 	    this.filterFields = [];
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
@@ -3957,7 +3975,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (pointData == null) return;
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
-	    
 	    let header2="";
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HtmlUtils.div(["id",this.getDomId(ID_DISPLAY_PROGRESS), "style","display:inline-block;margin-right:4px;min-width:20px;"]);
@@ -3983,7 +4000,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2+= html;
 
 	    }
-
 	    if(this.getProperty("showChartFieldsMenu")) {
 		let chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {
@@ -4017,7 +4033,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    let dataFilterIds = [];
-
 	    this.getDataFilters().map(f=>{
 		if(!f.label) return;
 		let cbxid = this.getDomId("datafilterenabled_" + f.id);
@@ -4025,7 +4040,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 +=  HtmlUtils.checkbox("",["id",cbxid],f.enabled) +" " +
 		    this.makeFilterLabel(f.label +"&nbsp;&nbsp;")
 	    });
-
 
 	    if(this.getProperty("filterDate")) { 
 		let type = this.getProperty("filterDate");
@@ -4063,6 +4077,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 													      "id",selectId],enums,selected))+"&nbsp;";
 	    }
 	    
+
 
             let filterBy = this.getProperty("filterFields","",true).split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
@@ -4341,7 +4356,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
 	    var theDisplay = this;
-
 	    this.createRequestProperties();
 
 
@@ -4608,8 +4622,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var dateMin = null;
 	    var dateMax = null;
 	    var dates = [];
+	    if(debug) console.log("checkSearchBar-getting filtered data");
 	    let filteredRecords  = this.filterData();
-	    filteredRecords.map(record=>{
+	    if(debug) console.log("checkSearchBar-done getting filtered data");
+	    filteredRecords.every(record=>{
 		if (dateMin == null) {
 		    dateMin = record.getDate();
 		    dateMax = record.getDate();
@@ -4623,18 +4639,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    dateMax = date;
 		    }
 		}
+		return true;
 	    });
 
+	    if(debug) console.log("checkSearchBar-11");
             if (dateMax) {
+		if(debug) console.log("checkSearchBar-getAnimation");
 		var animation = this.getAnimation();
 		if(animation.getEnabled()) {
+		    if(debug) console.log("checkSearchBar-calling animation.init");
 		    animation.init(dateMin, dateMax,filteredRecords);
+		    if(debug) console.log("checkSearchBar-done calling animation.init");
 		    if(!this.minDateObj) {
+			if(debug) console.log("checkSearchBar-calling setDateRange");
 			this.setDateRange(animation.begin, animation.end);
+			if(debug) console.log("checkSearchBar-done calling setDateRange");
 		    }
 		}
             }
 
+	    if(debug) console.log("checkSearchBar-done");
 
 
         },
@@ -5188,6 +5212,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.addEntry(entry);
             }
         },
+	setErrorMessage: function(msg) {
+            this.setContents(this.getMessage(msg));
+	},
 	clearProgress: function() {
 	    this.jq(ID_DISPLAY_PROGRESS).html("");
 	},
@@ -5198,7 +5225,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setContents(this.getLoadingMessage());
 	},
 	handleNoData: function(pointData,reload) {
-	    let debug = false;
+	    let debug = displayDebug.handleNoData;
 	    this.jq(ID_PAGE_COUNT).html("");
             if (!reload) {
 		if(debug) console.log("\tno reload");
@@ -5223,7 +5250,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (data && data.errorcode && data.errorcode == "warning") {
                 msg = data.error;
             } else {
-                msg = "<b>Sorry, but an error has occurred:</b>";
+                msg = "<b>An error has occurred:</b>";
                 if (!data) data = "No data returned from server";
                 var error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
@@ -5241,13 +5268,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 error = HtmlUtils.tag("pre", ["style", "max-height:300px;overflow-y:auto;max-width:100%;overflow-x:auto;"], error);
                 msg += error;
             }
-            this.setContents(this.getMessage(msg));
+	    this.setErrorMessage(msg);
         },
         //callback from the pointData.loadData call
         clearCache: function() {},
 
         pointDataLoaded: function(pointData, url, reload) {
-	    let debug = false;
+	    let debug = displayDebug.pointDataLoaded;
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
@@ -5258,15 +5285,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.lastSelectedFields = null;
 	    this.allFields = null;
             if (!reload) {
-		if(debug) console.log("\tno reload");
+		if(debug) console.log("\tcalling addData");
                 this.addData(pointData);
+		if(debug) console.log("\tcalling checkSearchBar");
                 this.checkSearchBar();
+		if(debug) console.log("\done calling checkSearchBar");
             } else {
 		if(!this.dataCollection)
 		    this.dataCollection = new DataCollection();
+		if(debug) console.log("\tcalling setData");
 		this.dataCollection.setData(pointData);
 	    }
+	    if(debug) console.log("\tstep1");
 	    if(this.getProperty("pageRequest")) {
+		if(debug) console.log("\tupdating pageRequest");
 		let count = pointData.getRecords().length;
 		let skip = null;
 		let skipToks = url?url.match(/skip=([0-9]+)/):null;
@@ -5306,6 +5338,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.reloadData();
 		});		
 	    }
+	    if(debug) console.log("\tstep2");
 
 
             if (url != null) {
@@ -5474,7 +5507,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
-	    let debug = false;
+	    let debug = dispayDebug.getStandardData;
 	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
 	    let showUnit  = this.getProperty("showUnit",true);
 	    this.recordToIndex = {};
