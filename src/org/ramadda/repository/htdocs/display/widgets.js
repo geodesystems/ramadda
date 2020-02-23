@@ -878,7 +878,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		}
 		return;
 	    }
-            if (excludeZero && v === 0) {
+            if (this.excludeZero && v === 0) {
 		return;
             }
 	    if (!isNaN(v) && !(v === null)) {
