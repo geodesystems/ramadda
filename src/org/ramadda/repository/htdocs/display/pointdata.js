@@ -1242,24 +1242,27 @@ var A = {
 }
 
 var RecordUtil = {
-    groupByTime:function(records, dateBin) {
-	let times= {
+    groupBy:function(records, dateBin, field) {
+	let groups ={
 	    max:0,
-	    times:[],
+	    values:[],
 	    labels:[],
 	    map:{},
 	}
-	let first = null;
-	console.log("bin:" + dateBin);
+	let firstDate = null;
 	records.every(r=>{
+	    let key;
+	    let label;
+	    if(field) {
+		key = label = r.getValue(field.getIndex());
+	    } else {
 	    let date = r.getDate();
 	    if(!date) {
-//		console.log("no date");
 		return true;
 	    }
-	    if(!first) first = date;
-	    let key = date;
-	    let label = "";
+	    if(!firstDate) firstDate = date;
+	    key = date;
+	    label = "";
 	    if(dateBin=="first") {
 		key = first;
 	    } else if(dateBin=="day") {
@@ -1280,17 +1283,18 @@ var RecordUtil = {
 		console.log("unknown bin");
 		throw new Error("Unknown date bin:" + dateBin);
 	    }
-	    if(!times.map[key]) {
-		times.map[key] = [];
-		times.times.push(key);
-		times.labels.push(label);
 	    }
-	    times.map[key].push(r);
-	    times.max = Math.max(times.max, times.map[key].length);
-//	    console.log("max:" + times.max);
+
+	    if(!groups.map[key]) {
+		groups.map[key] = [];
+		groups.values.push(key);
+		groups.labels.push(label);
+	    }
+	    groups.map[key].push(r);
+	    groups.max = Math.max(groups.max, groups.map[key].length);
 	    return true;
 	});
-	return times;
+	return groups;
     },
     expandBounds: function(bounds, perc) {
 	return {
@@ -1310,15 +1314,25 @@ var RecordUtil = {
 	bounds = RecordUtil.convertBounds(bounds);
 	//	console.log("subset:" + JSON.stringify(bounds));
 	let cnt = 0;
-	return  records.filter(record=>{
-	    return  record.getLatitude()<= bounds.north &&
-		record.getLatitude()>= bounds.south &&
-		record.getLongitude()>= bounds.west &&
-		record.getLongitude()<= bounds.east;
-	    
+	records =  records.filter((record,idx)=>{
+	    let lat = record.getLatitude?record.getLatitude():record.r?record.r.getLatitude():record.y;
+	    let lon = record.getLongitude?record.getLongitude():record.r?record.r.getLongitude():record.x;
+	    let ok =   lat<= bounds.north &&
+		lat>= bounds.south &&
+		lon>= bounds.west &&
+		lon<= bounds.east;
+	    return ok;
 	});
+	console.log("subset:"+ records.length);
+	return records;
     },
     gridPoints: function(rows,cols,points,args) {
+	let bounds = {
+	    north:37.34582,
+	    west:-77.95234,
+	    south:35.13979,
+	    east:-73.05244
+	}
 	let values = [];
 	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 	    let row = [];
@@ -1328,6 +1342,7 @@ var RecordUtil = {
 	    }
 	}
 
+//	points = RecordUtil.subset(points, bounds);
 	points.map((p,idx)=>{
 	    let cell = values[p.y][p.x];
 	    cell.min = cell.count==0?p.v:Math.min(cell.min,p.v);
@@ -1363,7 +1378,7 @@ var RecordUtil = {
 		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
 	    }
 	}	
-//	console.log(args.operator +" " + minValue +" " + maxValue +" " + minCount +" " + maxCount);
+//	console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
 	values.minValue = minValue;
 	values.maxValue = maxValue;
 	values.minCount = minCount;
@@ -1510,14 +1525,16 @@ var RecordUtil = {
     },
     //This gets the value at row/col if its defined. else 0
     //    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
-    getGridValue:function(src,row,col,mult,cnt) {
+    getGridValue:function(src,row,col,mult,cnt,goodones) {
+	cnt[0]+=mult;
 	if(row>=0 && row<src.length && col>=0 && col<src[row].length) {
 	    if(isNaN(src[row][col])) return 0;
-	    cnt[0]+=mult;
+	    goodones[0]++;
 	    return src[row][col]*mult;
 	}
 	return 0;
     },
+    xcnt:0,
     applyKernel: function(src, kernel) {
 	let result = this.cloneGrid(src,null,0);
 	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
@@ -1525,14 +1542,13 @@ var RecordUtil = {
 	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
 		if(isNaN(row[colIdx])) continue;
 		let cnt =[0];
+		let goodones =[0];
 		let sum = 0;
 		kernel.every(t=>{
-		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],cnt); 
+		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],cnt,goodones); 
 		    return true;
 		});
-		if(cnt[0]>0)
-		    cnt[0] = 9;
-		if(cnt[0]>0)
+		if(goodones[0]>0)
 		    row[colIdx] = sum/cnt[0];
 		else
 		    row[colIdx] = NaN;
@@ -1542,24 +1558,29 @@ var RecordUtil = {
     },
     blurGrid: function(type, src) {
 	let kernels = {
-	    average1: [
+	    average5: [
+		[0,1,0],
+		[1,1,1],
+		[0,1,0],
+	    ],
+	    average9: [
 		[1,1,1],
 		[1,1,1],
 		[1,1,1],
 	    ],
-	    average2:[
+	    average25:[
 		[1,1,1,1,1],
 		[1,1,1,1,1],
 		[1,1,1,1,1],
 		[1,1,1,1,1],
 		[1,1,1,1,1],
 	    ],
-	    gauss1: [
+	    gauss9: [
 		[1,2,1],
 		[2,4,2],
 		[1,2,1],	    
 	    ],
-	    gauss2: [
+	    gauss25: [
 		[1,4,6,4,1],
 		[4,16,24,16,4],
 		[6,24,26,24,6],
@@ -1570,9 +1591,9 @@ var RecordUtil = {
 	let a = kernels[type];
 	if(!a) {
 	    if(type.startsWith("average"))
-		a=kernels.average1;
+		a=kernels.average5;
 	    else if(type.startsWith("gauss"))
-		a=kernels.gauss1;
+		a=kernels.gauss9;
 	}
 	if(!a) return src;
 	return this.applyKernel(src, this.makeKernel(a));
@@ -1589,6 +1610,32 @@ var RecordUtil = {
 	    }
 	}
 	return a;
+    },
+    applyFilter(opts, grid) {
+	if(!opts.filter || opts.filter=="" || opts.filter=="none") {
+	    return;
+	}
+
+
+	let copy = this.cloneGrid(grid,v=>v.v);
+	let filtered = copy;
+	let filterPasses = opts.display.getProperty("hm.filterPasses",1);
+	for(var i=0;i<filterPasses;i++) {
+	    filtered = this.blurGrid(opts.filter,filtered);
+	}
+	let filterThreshold = opts.display.getProperty("hm.filterThreshold",-999);
+	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
+	    let row = grid[rowIdx];
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		let cell = row[colIdx];
+		let filterValue = filtered[rowIdx][colIdx];
+		if(filterThreshold!=-999) {
+		    if(filterValue<filterThreshold)
+			filterValue = cell.v;
+		}
+		cell.v = filterValue;
+	    }
+	}
     },
     getMinMaxGrid: function(src,valueGetter) {
 	let min = NaN;
@@ -1723,30 +1770,7 @@ var RecordUtil = {
 	    let grid = RecordUtil.gridPoints(rows,cols,points,args);
 	    opts.cellSizeX = +opts.cellSizeX;
 	    opts.cellSizeY = +opts.cellSizeY;
-
-
-	    //TODO: figure out the grid filtering
-	    if(opts.filter && opts.filter!="") {
-		let copy = this.cloneGrid(grid,v=>v.v);
-		let filtered = copy;
-		let filterPasses = opts.display.getProperty("heatmapFilterPasses",1);
-		for(var i=0;i<filterPasses;i++) {
-		    filtered = this.blurGrid(opts.filter,filtered);
-		}
-		let filterThreshold = opts.display.getProperty("heatmapFilterThreshold",-999);
-		for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
-		    let row = grid[rowIdx];
-		    for(var colIdx=0;colIdx<cols;colIdx++)  {
-			let cell = row[colIdx];
-			let filterValue = filtered[rowIdx][colIdx];
-			if(filterThreshold!=-999) {
-			    if(filterValue<filterThreshold)
-				filterValue = cell.v;
-			}
-			cell.v = filterValue;
-		    }
-		}
-	    }
+	    this.applyFilter(opts,grid);
 
 	    let mm = this.getMinMaxGrid(grid,v=>v.v);
 	    if(opts.colorBy) {
@@ -1755,7 +1779,7 @@ var RecordUtil = {
 		opts.colorBy.index=0;
 	    }
 
-	    let countThreshold = opts.display.getProperty("heatmapCountThreshold",0);
+	    let countThreshold = opts.display.getProperty("hm.countThreshold",opts.operator=="count"?1:0);
 	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
 		for(var colIdx=0;colIdx<cols;colIdx++)  {

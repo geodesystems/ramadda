@@ -356,7 +356,7 @@ function DisplayThing(argId, argProperties) {
             return this.getProperty("timeZone");
         },
         formatDate: function(date, args) {
-	    if(!date) return "";
+	    if(!date || !date.getTime) return "";
             try {
                 return this.formatDateInner(date, args);
             } catch (e) {
@@ -497,7 +497,8 @@ function DisplayThing(argId, argProperties) {
 		    return null;
 		}
                 fields = pointData.getRecordFields();
-            }
+           }
+	    return record.getLatitude() +" " + record.getLongitude();
 	    var showDate = this.getProperty("showDate", true);
 	    var showImage = this.getProperty("showImage", true);
             var showGeo = false;
@@ -964,8 +965,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		cellShowText:this.getProperty("cellShowText",false),
 		cellFont:this.getProperty("cellFont"),
 		doHeatmap:doHeatmap,
-		operator:this.getProperty("heatmapOperator","average"),
-		filter:this.getProperty("heatmapFilter")
+		operator:this.getProperty("hm.operator","count"),
+		filter:this.getProperty("hm.filter")
 	    };
 	    args.cellSizeX = +this.getProperty("cellSizeX",args.cellSize);
 	    args.cellSizeY = +this.getProperty("cellSizeY",args.cellSize);
@@ -986,11 +987,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 	    return iconMap;
 	},
-	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable) {
+	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
             var pointData = this.getData();
             if (pointData == null) return null;
             var fields = pointData.getRecordFields();
-	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable);
+	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix);
 	},
 	getColorByMap: function(prop) {
 	    return Utils.parseMap(this.getProperty(prop||"colorByMap"));

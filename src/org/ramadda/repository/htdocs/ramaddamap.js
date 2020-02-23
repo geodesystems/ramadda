@@ -143,8 +143,8 @@ function ramaddaMapShareState(source, state) {
 	if(map.mapId==source.mapId) continue;
 	if(linkGroup && linkGroup != map.linkGroup) continue;
 	map.stateIsBeingSet = true;
-	map.setViewToBounds(bounds);
-	map.map.zoomTo(source.map.getZoom());
+	map.map.setCenter(source.map.getCenter(),
+			  source.map.getZoom());
 	map.stateIsBeingSet = false;
     }
 }
@@ -3285,7 +3285,7 @@ function initMapFunctions(theMap) {
 
     theMap.uncircleMarker = function(id) {
         feature = this.features[id + "_circle"];
-        if (feature) {
+        if (feature && this.circles) {
             this.circles.removeFeatures([feature]);
         }
         this.hideFeatureText(feature);
@@ -3374,16 +3374,20 @@ function initMapFunctions(theMap) {
         feature.location = location;
         this.features[id] = feature;
         if (!notReally) {
-            if (this.circles == null) {
-                this.circles = new OpenLayers.Layer.Vector("Shapes");
-		this.circles.layerName = "circles";
-                this.circles.setZIndex(1);
-                this.addVectorLayer(this.circles);
-            }
-	    this.circles.addFeatures([feature]);
+	    this.getMarkersLayer().addFeatures([feature]);
 	}
         return feature;
     }
+
+    theMap.getMarkersLayer = function() {
+        if (this.circles == null) {
+            this.circles = new OpenLayers.Layer.Vector("Shapes");
+	    this.circles.layerName = "circles";
+            this.circles.setZIndex(1);
+            this.addVectorLayer(this.circles);
+        }
+	return this.circles;
+    } 
 
     theMap.removePoint = function(point) {
         if (this.circles)

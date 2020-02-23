@@ -2059,7 +2059,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 props.put(ATTR_TYPE, newType);
                 theTag = theTag.substring(0, 7);
             }
-	    List<String> displayProps = new ArrayList<String>();
+            List<String> displayProps = new ArrayList<String>();
             if (jsonUrl == null) {
                 if (props.get("max") == null) {
                     String max = getProperty(wikiUtil, props, "max", null);
@@ -2068,7 +2068,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                 }
                 jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
-							       entry, theTag, props,displayProps);
+                        entry, theTag, props, displayProps);
             }
             //      System.err.println("jsonurl:" +jsonUrl);
             //Gack - handle the files that are gridded netcdf
@@ -2082,17 +2082,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     getRepository().getTypeHandler("cdm_grid");
                 if (gridType != null) {
                     jsonUrl = gridType.getUrlForWiki(request, entry, theTag,
-						     props,displayProps);
+                            props, displayProps);
                 }
             }
             getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
-                            entry.getName(), jsonUrl, sb, props,displayProps);
+                            entry.getName(), jsonUrl, sb, props,
+                            displayProps);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GROUP)
                    || theTag.equals(WIKI_TAG_GROUP_OLD)) {
             getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
-                            entry.getName(), null, sb, props,null);
+                            entry.getName(), null, sb, props, null);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TIMELINE)) {
@@ -2243,11 +2244,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Hashtable notFirstProps = new Hashtable();
             Hashtable<String, List<String>> multiAttrs =
                 new Hashtable<String, List<String>>();
-            StringBuilder buff     = new StringBuilder();
-            String        tag      = null;
-            int           max      = 0;
-            String        template = null;
-            int           columns  = -1;
+            StringBuilder buff           = new StringBuilder();
+            String        tag            = null;
+            int           max            = 0;
+            String        template       = null;
+            int           columns        = -1;
+            List<String>  headers        = null;
+            String        headerTemplate = null;
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
                 String value = (String) props.get(key);
@@ -2255,6 +2258,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     tag = value;
                 } else if (key.equals("_template")) {
                     template = value;
+                } else if (key.equals("_headers")) {
+                    headers = StringUtil.split(value, ",");
+                } else if (key.equals("_headerTemplate")) {
+                    headerTemplate = value;
                 } else if (key.equals("_columns")) {
                     columns = Integer.parseInt(value);
                 } else if (key.startsWith("_")) {
@@ -2335,6 +2342,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         colCnt = 0;
                     }
                     buff.append("<td width='" + colWidth + "'>");
+                }
+                String header = ((headers != null) && (i < headers.size()))
+                                ? headers.get(i)
+                                : null;
+                if (header != null) {
+                    if (headerTemplate != null) {
+                        header = headerTemplate.replace("${header}", header);
+                    }
+                    buff.append(header);
                 }
                 if (s != null) {
                     buff.append(wikifyEntry(request, entry, wikiUtil, s,
@@ -6138,6 +6154,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @param pointDataUrl _more_
      * @param sb _more_
      * @param props _more_
+     * @param propList _more_
      *
      * @throws Exception _more_
      */
@@ -6145,8 +6162,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                  Entry entry, Entry originalEntry,
                                  String tag, String name,
                                  String pointDataUrl, StringBuilder sb,
-                                 Hashtable props,
-				 List<String>  propList)
+                                 Hashtable props, List<String> propList)
             throws Exception {
 
         String displayType = getProperty(wikiUtil, props, "type",
@@ -6154,20 +6170,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         this.addDisplayImports(request, sb);
 
-	List<String>  topProps = new ArrayList<String>();
-	if(propList==null)
-	    propList= new ArrayList<String>();
-	
-	List<String> tmpProps = new ArrayList<String>();
-	for(int i=0;i<propList.size();i+=2) {
-	    if(props.get(propList.get(i))==null) {
-		tmpProps.add(propList.get(i));
-		tmpProps.add(propList.get(i+1));
-	    }
-	}	
-	propList = tmpProps;
+        List<String> topProps = new ArrayList<String>();
+        if (propList == null) {
+            propList = new ArrayList<String>();
+        }
 
-        StringBuilder js       = new StringBuilder();
+        List<String> tmpProps = new ArrayList<String>();
+        for (int i = 0; i < propList.size(); i += 2) {
+            if (props.get(propList.get(i)) == null) {
+                tmpProps.add(propList.get(i));
+                tmpProps.add(propList.get(i + 1));
+            }
+        }
+        propList = tmpProps;
+
+        StringBuilder js = new StringBuilder();
 
 
         for (String showArg : new String[] { ATTR_SHOWMAP, ATTR_SHOWMENU }) {
@@ -6495,7 +6512,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         for (String arg : new String[] {
-		"eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
+            "eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
             ARG_HEIGHT, ARG_FROMDATE, ARG_TODATE, "column", "row"
         }) {
             String value = getProperty(wikiUtil, props, arg, (String) null);

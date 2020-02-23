@@ -577,15 +577,33 @@ function DisplayAnimation(display, enabled) {
 }
 
 
+function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix) {
+    if(!prop) prop = "colorBy";
+    if ( !propPrefix ) {
+	propPrefix = [""];
+    } else if( !Array.isArray(propPrefix) ) {
+	propPrefix = [propPrefix];
+    }
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable) {
-    var colorByAttr = display.getProperty(prop||"colorBy", null);
-    var excludeZero = display.getProperty(PROP_EXCLUDE_ZERO, false);
+    $.extend(this, {
+	display:display,
+	fieldProp: prop,
+	propPrefix: propPrefix,
+	getProperty: function(prop, dflt) {
+	    for(let i=0;i<this.propPrefix.length;i++) {
+		let v = this.display.getProperty(this.propPrefix[i]+prop);
+		if(v) return v;
+	    }
+	    return dflt;
+	}
+    });
+    var colorByAttr = this.getProperty(prop||"colorBy", null);
     $.extend(this, {
 	display:display,
         id: colorByAttr,
 	fields:fields,
-	overrideRange: display.getProperty("overrideColorRange",false),
+	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
+	overrideRange: this.getProperty("overrideColorRange",false),
 	origRange:null,
 	origMinValue:0,
 	origMaxValue:0,
@@ -597,13 +615,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
-	colorByMinPerc: display.getDisplayProp(display, "colorByMinPercentile", -1),
-	colorByMaxPerc: display.getDisplayProp(display, "colorByMaxPercentile", -1),
+	colorByMinPerc: this.getProperty(display, "colorByMinPercentile", -1),
+	colorByMaxPerc: this.getProperty(display, "colorByMaxPercentile", -1),
 	colorByOffset: 0,
         pctFields:null,
-	compareFields: display.getFieldsByIds(null, display.getProperty("colorByCompareFields", "", true)),
+	compareFields: display.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
 	displayColorTable: function(width,force) {
-	    if(!this.display.getProperty("showColorTable",true)) return;
+	    if(!this.getProperty("showColorTable",true)) return;
 	    if(this.compareFields.length>0) {
 		var legend = "";
 		this.compareFields.map((f,idx)=>{
@@ -626,7 +644,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		    stringValues: this.colorByValues});
 	    } else {
 		var colors = this.colors;
-		if(this.display.getProperty("clipColorTable",true) && this.colorByValues.length) {
+		if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		    var tmp = [];
 		    for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
 			tmp.push(this.colors[i]);
@@ -700,7 +718,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
                 if (this.colorByLog) {
                     v = this.colorByFunc(v);
                 }
-                percent = (v - this.minValue) / this.range;
+
+                percent = this.range?(v - this.minValue) / this.range:0
             }
 
 	    var index=0;
@@ -749,9 +768,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	}
     });
 
-    this.convertAlpha = this.display.getProperty("convertColorAlpha",false);
+    this.convertAlpha = this.getProperty("convertColorAlpha",false);
     if(this.convertAlpha) {
-	if(!Utils.isDefined(this.display.getProperty("alphaSourceMin"))) {
+	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
 	    records.map((record,idx)=>{
 		var tuple = record.getData();
@@ -772,18 +791,18 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    this.alphaSourceMin = min;
 	    this.alphaSourceMax = max;
 	} else {
-	    this.alphaSourceMin = +this.display.getProperty("alphaSourceMin",40);
-	    this.alphaSourceMax = +this.display.getProperty("alphaSourceMax",80);
+	    this.alphaSourceMin = +this.getProperty("alphaSourceMin",40);
+	    this.alphaSourceMax = +this.getProperty("alphaSourceMax",80);
 	}
-	this.alphaTargetMin = +this.display.getProperty("alphaTargetMin",0); 
-	this.alphaTargetMax = +this.display.getProperty("alphaTargetMax",1); 
+	this.alphaTargetMin = +this.getProperty("alphaTargetMin",0); 
+	this.alphaTargetMax = +this.getProperty("alphaTargetMax",1); 
     }
 
 
 
-    this.convertIntensity = this.display.getProperty("convertColorIntensity",false);
+    this.convertIntensity = this.getProperty("convertColorIntensity",false);
     if(this.convertIntensity) {
-	if(!Utils.isDefined(this.display.getProperty("intensitySourceMin"))) {
+	if(!Utils.isDefined(this.getProperty("intensitySourceMin"))) {
 	    var min = 0, max=0;
 	    records.map((record,idx)=>{
 		var tuple = record.getData();
@@ -804,11 +823,11 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    this.intensitySourceMin = min;
 	    this.intensitySourceMax = max;
 	} else {
-	    this.intensitySourceMin = +this.display.getProperty("intensitySourceMin",80);
-	    this.intensitySourceMax = +this.display.getProperty("intensitySourceMax",40);
+	    this.intensitySourceMin = +this.getProperty("intensitySourceMin",80);
+	    this.intensitySourceMax = +this.getProperty("intensitySourceMax",40);
 	}
-	this.intensityTargetMin = +this.display.getProperty("intensityTargetMin",1); 
-	this.intensityTargetMax = +this.display.getProperty("intensityTargetMax",0); 
+	this.intensityTargetMin = +this.getProperty("intensityTargetMin",1); 
+	this.intensityTargetMax = +this.getProperty("intensityTargetMax",0); 
     }
 
     if (this.display.percentFields != null) {
@@ -816,7 +835,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
     var colors = defaultColorTable || this.display.getColorTable(true,colorByAttr +".colorTable");
     if(!colors) {
-	var c = this.display.getProperty(colorByAttr +".colors");
+	var c = this.getProperty(colorByAttr +".colors");
 	if(c)
 	    colors = c.split(",");
     }
@@ -873,15 +892,15 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if (this.display.showPercent) {
         this.setRange(0, 100,true);
     }
-    var steps = this.display.getProperty("colorBySteps");
+    var steps = this.getProperty("colorBySteps");
     if(steps) {
 	this.steps = steps.split(",");
     }
 
-    this.colorByLog = this.display.getProperty("colorByLog", false);
+    this.colorByLog = this.getProperty("colorByLog", false);
     this.colorByFunc = Math.log;
-    this.setRange(this.display.getDisplayProp(this.display, "colorByMin", this.minValue),
-		     this.display.getDisplayProp(this.display, "colorByMax", this.maxValue), true);
+    this.setRange(this.getProperty(this.display, "colorByMin", this.minValue),
+		     this.getProperty(this.display, "colorByMax", this.maxValue), true);
 
     this.range = this.maxValue - this.minValue;
 }
