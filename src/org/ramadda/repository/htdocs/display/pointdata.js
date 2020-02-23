@@ -823,7 +823,6 @@ function makePointData(json, derived, source) {
         let tuple = json.data[i];
 	if(i==0) {
 	    isArray = Array.isArray(tuple);
-	    console.log("isArray:" + isArray);
 	}
 	let values;
 	if(isArray)

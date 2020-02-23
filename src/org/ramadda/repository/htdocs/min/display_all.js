@@ -2538,7 +2538,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return df;
         },
         getDefaultSelectedFields: function(fields, dfltList) {
-	    let debug = displayData.getDefaultSelectedFields;
+	    let debug = displayDebug.getDefaultSelectedFields;
             if (this.defaultSelectedToAll() && this.allFields != null) {
                 var tmp = [];
                 for (i = 0; i < this.allFields.length; i++) {
@@ -8260,7 +8260,6 @@ function makePointData(json, derived, source) {
         let tuple = json.data[i];
 	if(i==0) {
 	    isArray = Array.isArray(tuple);
-	    console.log("isArray:" + isArray);
 	}
 	let values;
 	if(isArray)

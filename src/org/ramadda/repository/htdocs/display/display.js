@@ -1623,7 +1623,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return df;
         },
         getDefaultSelectedFields: function(fields, dfltList) {
-	    let debug = displayData.getDefaultSelectedFields;
+	    let debug = displayDebug.getDefaultSelectedFields;
             if (this.defaultSelectedToAll() && this.allFields != null) {
                 var tmp = [];
                 for (i = 0; i < this.allFields.length; i++) {
