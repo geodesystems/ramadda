@@ -5507,7 +5507,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
-	    let debug = dispayDebug.getStandardData;
+	    let debug = displayDebug.getStandardData;
 	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
 	    let showUnit  = this.getProperty("showUnit",true);
 	    this.recordToIndex = {};
