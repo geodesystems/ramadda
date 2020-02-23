@@ -2195,6 +2195,12 @@ var HtmlUtils = {
 	    }
 	    $(this).attr("data-expanded",(!expanded)+"");
 	    $(this).html(icon);
+            if (window["ramaddaDisplayCheckLayout"]) {
+		ramaddaDisplayCheckLayout();
+            }
+            if (window["ramaddaMapCheckLayout"]) {
+		ramaddaMapCheckLayout();
+            }
 	});
     },
     makeDraggable:function(selector) {

@@ -353,7 +353,8 @@ function DisplayManager(argId, argProperties) {
 	    });
 
 	    if(display.getProperty("doAnimation")) {
-		jsonUrl +="&" + "dbAnimation" +"=" +display.getProperty("doAnimation");
+		//not sure why this is here but it screws up caching of requests
+//		jsonUrl +="&" + "dbAnimation" +"=" +display.getProperty("doAnimation");
 	    }
 	    if(display.getProperty("dbSelect")) {
 		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");
