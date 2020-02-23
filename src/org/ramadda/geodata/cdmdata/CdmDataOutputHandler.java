@@ -1570,14 +1570,22 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 float       v   =
                     (float) scaler.apply((double) a.getFloat(i));
                 if (cnt > 0) {
-                    writer.println(",");
+                    writer.print(",");
                 }
                 cnt++;
+		/*
                 writer.println(Json.map("values",
                                         Json.list("" + (Double.isNaN(v)
                         ? null
                         : v), Json.quote(dateString), "" + llp.getLatitude(),
                               "" + llp.getLongitude())));
+		*/
+                writer.print(Json.list("" + (Double.isNaN(v)
+					       ? null
+					       : v), 
+					 Json.quote(dateString),
+					 "" + llp.getLatitude(),
+					 "" + llp.getLongitude()));		
             }
 	    if (cnt > max) {
 		break;

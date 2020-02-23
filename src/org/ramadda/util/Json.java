@@ -196,7 +196,7 @@ public class Json {
                     continue;
                 }
                 if (cnt > 0) {
-                    row.append(",\n");
+                    row.append(",");
                 }
                 cnt++;
                 row.append(attr(name, value, quoteValue));
@@ -310,7 +310,7 @@ public class Json {
             row.append(listOpen());
             for (int i = 0; i < values.size(); i++) {
                 if (i > 0) {
-                    row.append(",\n");
+                    row.append(",");
                 }
                 if (quoteValue) {
                     row.append(quote(values.get(i).toString()));

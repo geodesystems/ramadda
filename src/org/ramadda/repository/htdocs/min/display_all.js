@@ -8254,13 +8254,22 @@ function makePointData(json, derived, source) {
     }
 
     let pointRecords = [];
+    let isArray = false;
     for (var i = 0; i < json.data.length; i++) {
 	if(debug && i>0 && (i%10000)==0) console.log("\tprocessed:" + i);
         let tuple = json.data[i];
-        let values = tuple.values;
+	if(i==0) {
+	    isArray = Array.isArray(tuple);
+	    console.log("isArray:" + isArray);
+	}
+	let values;
+	if(isArray)
+	    values = tuple;
+	else
+            values = tuple.values;
         //lat,lon,alt,time,data values
         let date = null;
-        if ((typeof tuple.date === 'undefined')) {
+        if (isArray || (typeof tuple.date === 'undefined')) {
             if (dateIdx >= 0) {
                 date = new Date(values[dateIdx]);
             }
@@ -8269,20 +8278,20 @@ function makePointData(json, derived, source) {
                 date = new Date(tuple.date);
             }
         }
-        if ((typeof tuple.latitude === 'undefined')) {
+        if (isArray || (typeof tuple.latitude === 'undefined')) {
             if (latitudeIdx >= 0)
                 tuple.latitude = values[latitudeIdx];
             else
                 tuple.latitude = NaN;
         }
-        if ((typeof tuple.longitude === 'undefined')) {
+        if (isArray || (typeof tuple.longitude === 'undefined')) {
             if (longitudeIdx >= 0)
                 tuple.longitude = values[longitudeIdx];
             else
                 tuple.longitude = NaN;
         }
 
-        if ((typeof tuple.elevation === 'undefined')) {
+        if (isArray || (typeof tuple.elevation === 'undefined')) {
             if (elevationIdx >= 0)
                 tuple.elevation = values[elevationIdx];
             else
