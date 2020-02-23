@@ -1,13 +1,6 @@
 <types  supercategory="Geoscience">
 
 
-  <type name="opendaplink"  description="OPeNDAP Link" handler="org.ramadda.geodata.cdmdata.OpendapLinkTypeHandler" category="Geoscience Data">
-     <property name="icon" value="/cdmdata/opendap.gif"/>
-     <property name="form.date.show" value="true"/>
-     <property name="form.file.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-     <property name="file.url" value="http://www.opendap.org"/>
-  </type>
 
 
   <type name="gridaggregation"  description="Grid Aggregation" handler="org.ramadda.geodata.cdmdata.GridAggregationTypeHandler" category="Geoscience Data">
@@ -34,6 +27,15 @@
         handler="org.ramadda.geodata.cdmdata.GridTypeHandler"
         pattern=".\.grb.*">
      <property name="icon" value="/cdmdata/grid.gif"/>
+  </type>
+
+
+  <type name="opendaplink"  suoer="cdm_grid" description="OPeNDAP Link" handler="org.ramadda.geodata.cdmdata.OpendapLinkTypeHandler" category="Geoscience Data">
+     <property name="icon" value="/cdmdata/opendap.gif"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="file.url" value="http://www.opendap.org"/>
   </type>
 
 

@@ -517,14 +517,13 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             } else {
                 sb.append("You cannot add properties");
             }
-
-            return makeLinksResult(request, "CDL", sb, new State(entry));
+            return makeLinksResult(request, "NetCDF File Metadata", sb, new State(entry));
         }
 
 
         getPageHandler().entrySectionOpen(request, entry, sb, "");
-        sb.append("<center>");
-        if (getRepository().getAccessManager().canDoAction(request, entry,
+	sb.append("<center>");
+	if (getRepository().getAccessManager().canDoAction(request, entry,
                 Permission.ACTION_EDIT)) {
             request.put(ARG_METADATA_ADD, HtmlUtils.VALUE_TRUE);
             sb.append(
@@ -544,7 +543,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                     "&nbsp;|&nbsp;",
                     HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
         }
-        String tail =
+
+	String tail =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry));
 
         sb.append(HtmlUtils.href(HtmlUtils.url(getRepository().URL_ENTRY_SHOW
@@ -552,9 +552,32 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             ARG_ENTRYID, entry.getId(), ARG_OUTPUT, OUTPUT_CDL.getId(),
             CdmConstants.ARG_FORMAT, FORMAT_NCML
         }), "NCML"));
+	sb.append("</center>");
 
-        sb.append("</center>");
+	sb.append("\n<p>\n");
+	sb.append("<table class='ramadda-table stripe'><thead><tr><th>Variable</th><th>Unit</th><th>Dimensions</th><th>#Times</th></tr></thead><tbody>");
+        GridDataset gds  = getCdmManager().getGridDataset(entry, path);
+        List<GridDatatype> grids             = sortGrids(gds);
+	List<VariableSimpleIF> variables = gds.getDataVariables();
+	for (GridDatatype gdt: grids) {
+	    Dimension tdim  =gdt.getTimeDimension();
+	    Dimension xdim  =gdt.getXDimension();
+	    Dimension ydim  =gdt.getYDimension();
+	    Dimension zdim  =gdt.getZDimension();
+	    sb.append("<tr>");
+	    sb.append(HtmlUtils.td(gdt.getShortName()));
+	    sb.append(HtmlUtils.td(gdt.getUnitsString()));
+	    sb.append("<td>");
+	    sb.append(xdim.getLength()+"x"+ydim.getLength() +(zdim!=null?"x"+zdim.getLength():""));
+	    sb.append("</td>");
+	    sb.append(HtmlUtils.td(""+tdim.getLength()));
+	    sb.append("</tr>");
+	}
+	sb.append("</tbody></table>");
+	sb.append("\n");
 
+
+	sb.append("<p><center><h2>CDL</h2></center>");
         NetcdfDataset dataset = getCdmManager().createNetcdfDataset(path);
 
         if (dataset == null) {
@@ -571,7 +594,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
         getPageHandler().entrySectionClose(request, entry, sb);
 
-        return makeLinksResult(request, "CDL", sb, new State(entry));
+        return makeLinksResult(request, "NetCDF File Metadata", sb, new State(entry));
     }
 
 
@@ -617,6 +640,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         GeoGrid     grid = (GeoGrid) gds.findGridByName(field);
         if (grid == null) {
             System.err.println("Cannot find grid field:" + grid);
+	    return;
         }
         GridCoordSystem        gcs       = grid.getCoordinateSystem();
         CoordinateAxis         xaxis     = gcs.getXHorizAxis();
@@ -666,6 +690,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             CoordinateAxis1D zAxis =
                 grid.getCoordinateSystem().getVerticalAxis();
             if (zAxis != null) {
+		String unit = zAxis.getUnitsString();
+		if(unit==null) unit="";
+		else unit = " ["+ unit+"]";
                 double[] zVals = zAxis.getCoordValues();
                 all.add("gridLevel");
                 displayProps.add("request.gridLevel.label");
@@ -680,8 +707,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                     } else {
                         v += ",";
                     }
-                    v += i + ":" + zVals[i];
+                    v += i + ":" + zVals[i]+unit;
                 }
+		v += ",last" + ":" + zVals[zVals.length-1]+unit;
                 displayProps.add(Json.quote(v));
             }
         }
@@ -691,13 +719,15 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         displayProps.add("request.gridStride.label");
         displayProps.add(Json.quote("Stride"));
         displayProps.add("request.gridStride.values");
-        displayProps.add(Json.quote("1,2,3,4,5,6,7,8,10"));
+        displayProps.add(Json.quote("-1:default,1,2,3,4,5,6,7,8,10"));
         String stride = (String) props.get("gridStride");
         if (stride != null) {
             displayProps.add("request.gridStride.default");
             displayProps.add(Json.quote(stride));
         }
         String level = (String) props.get("gridLevel");
+	System.err.println("LEVEL:" + level);
+	System.err.println("PROPS:" + props);
         if (level != null) {
             displayProps.add("request.gridLevel.default");
             displayProps.add(Json.quote(level));
@@ -1330,9 +1360,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      */
     public Result outputGridJson(Request request, Entry entry)
             throws Exception {
-
+	boolean debug = true;
         String      path  = getPath(request, entry);
-
+	if(debug)
+	    System.err.println("outputGridJson path:" + path);
         String      field = request.getString("gridField", (String) null);
         GridDataset gds   = getCdmManager().getGridDataset(entry, path);
         File f = getRepository().getStorageManager().getTmpFile(request,
@@ -1341,6 +1372,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if ((field == null) || (field.length() == 0)) {
             field = gds.getDataVariables().get(0).getShortName();
         }
+
         GeoGrid grid = (GeoGrid) gds.findGridByName(field);
         if (grid == null) {
             throw new RuntimeException("Could not find grid field:" + field);
@@ -1358,16 +1390,37 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             }
         }
 
+
+
+	CoordinateAxis1D zAxis =
+	    grid.getCoordinateSystem().getVerticalAxis();
+	double[] zVals = null;
+	if (zAxis != null) {
+	    zVals = zAxis.getCoordValues();
+	}
         Range zRange = null;
         if (request.defined("gridLevel")) {
-            int index = request.get("gridLevel", -1);
-            if (index >= 0) {
-                zRange = new Range(index, index);
-            }
+	    String gridLevel =  request.getString("gridLevel",(String) null);
+	    if(gridLevel!=null) {
+		if(gridLevel.equals("last") && zVals!=null) {
+		    zRange = new Range(zVals.length-1, zVals.length-1);
+		} else {
+		    int index =new Integer(gridLevel).intValue();
+		    if (index >= 0) {
+			zRange = new Range(index, index);
+		    }
+		}
+	    }
         }
+
+	if(zRange == null) {
+	    zRange = new Range(1,1);
+	}
         int        timeStride = request.get("timeStride", 1);
-        int        gridStride = request.get("gridStride", 1);
+        int        gridStride = request.get("gridStride", -1);
         int        max        = request.get("max", 200000);
+
+
         LatLonRect bounds     = null;
         String     gridBounds = request.getString("gridBounds", null);
         if (gridBounds != null) {
@@ -1384,14 +1437,26 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
 
 
-
-        Dimension timeDimension = grid.getTimeDimension();
+       Dimension timeDimension = grid.getTimeDimension();
         int       numTimes      = timeDimension.getLength();
+        String       unit   = grid.getUnitsString();
+ 	if(debug) {
+	    System.err.println("field:" + field +" unit:" + unit + " timeStride:" + timeStride +" gridStride:" + gridStride +" max:" + max +" bounds:" + bounds +" numTimes:" + numTimes +" zRange:" + zRange +" tRange:" + tRange);
+	}
+
 
         //If a stride was not specified then keep subsetting until we're under the max # points
         if (gridStride > 0) {
-            grid = grid.subset(tRange, zRange, bounds, 1, gridStride,
-                               gridStride);
+            grid = grid.subset(tRange, zRange, bounds, 1, gridStride,  gridStride);
+	    Dimension xDimension = grid.getXDimension();
+	    Dimension yDimension = grid.getYDimension();
+	    int numPoints = xDimension.getLength()
+		* yDimension.getLength() * numTimes
+		/ timeStride;
+	    if(debug)
+		System.err.println("\tnum points:" + numPoints + " per layer:"
+				   + (xDimension.getLength()
+				      * yDimension.getLength()) + " grid stride:" + gridStride);
         } else {
             grid       = grid.subset(tRange, zRange, bounds, 1, 1, 1);
             gridStride = 1;
@@ -1404,9 +1469,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 int numPoints = xDimension.getLength()
                                 * yDimension.getLength() * numTimes
                                 / timeStride;
-                System.err.println("Num points:" + numPoints + " per layer:"
-                                   + (xDimension.getLength()
-                                      * yDimension.getLength()));
+		if(debug)
+		    System.err.println("\tnum points:" + numPoints + " per layer:"
+				       + (xDimension.getLength()
+					  * yDimension.getLength()) + " grid stride:" + gridStrideX);
                 if (numPoints < max) {
                     break;
                 }
@@ -1421,6 +1487,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             }
         }
 
+
+
         GridCoordSystem   gcs    = grid.getCoordinateSystem();
         int               lats   = (int) gcs.getYHorizAxis().getSize();
         int               lons   = (int) gcs.getXHorizAxis().getSize();
@@ -1430,15 +1498,18 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 points.add(gcs.getLatLon(lon, lat));
             }
         }
-        //        System.err.println("D:" + dates);
-        //      System.err.println("T:" + grid.getTimes() +" " + timeDimension.getLength()+ " " + a.getSize());
+
+
+
+	if(debug)
+	    System.err.println("\t# lat/lons:" + points.size() +" #dates:" + dates.size());
+
         FileOutputStream fos    = new FileOutputStream(f);
         PrintWriter      writer = new PrintWriter(fos);
         writer.println("{\"name\":" + Json.quote(entry.getName()) + ",");
         writer.println("\"fields\":");
         List<String> fields = new ArrayList<String>();
         int          index  = 0;
-        String       unit   = grid.getUnitsString();
         fields.add(Json.map("id", Json.quote(field), "label",
                             Json.quote(field), "index", "" + (index++),
                             "type", Json.quote("double"), "chartable",
@@ -1457,7 +1528,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         writer.println(Json.list(fields));
         List<String> displayProps = new ArrayList<String>();
         Hashtable    wikiProps    = new Hashtable();
+	for (Enumeration keys = request.keys(); keys.hasMoreElements(); ) {
+	    String key =(String) keys.nextElement();
+	    wikiProps.put(key,request.getString(key,""));
+	}
         wikiProps.put("gridField", field);
+
         getWikiTagAttrs(request, entry, "display", wikiProps, displayProps);
         String colorTable = getProperty(field, "colortable", null);
         if (colorTable != null) {
@@ -1484,6 +1560,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         for (int tIdx = 0; tIdx < dates.size(); tIdx += timeStride) {
             String dateString = dates.get(tIdx).toString();
             Array  a          = grid.readYXData(tIdx, 0);
+	    if(debug)
+		System.err.println("\treading time index:" + tIdx +" size:" + a.getSize());
             for (int i = 0; i < a.getSize(); i++) {
                 if (cnt > max) {
                     break;
@@ -1501,6 +1579,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                         : v), Json.quote(dateString), "" + llp.getLatitude(),
                               "" + llp.getLongitude())));
             }
+	    if (cnt > max) {
+		break;
+	    }
         }
         writer.println("]}");
         writer.close();

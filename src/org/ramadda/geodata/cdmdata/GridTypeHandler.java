@@ -60,7 +60,7 @@ import java.util.List;
  *
  */
 
-public class GridTypeHandler extends TypeHandler {
+public class GridTypeHandler extends GenericTypeHandler {
 
 
     /**
@@ -171,6 +171,7 @@ public class GridTypeHandler extends TypeHandler {
                 jsonbuf.append(getRepository().getUrlBase()
                                + "/grid/gridjson?"
                                + HtmlUtils.args(args, false));
+
 
 
                 CdmDataOutputHandler cdoh =

@@ -20,39 +20,11 @@ package org.ramadda.geodata.cdmdata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
-
 import org.ramadda.util.HtmlUtils;
 
-import org.ramadda.util.sql.Clause;
+import org.w3c.dom.Element;
 
-
-import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.sql.SqlUtil;
-
-
-import org.w3c.dom.*;
-
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.WikiUtil;
-import ucar.unidata.xml.XmlUtil;
-
-import java.sql.PreparedStatement;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
 
 
 /**
@@ -61,7 +33,8 @@ import java.util.Properties;
  * @author IDV Development Team
  * @version $Revision: 1.3 $
  */
-public class OpendapLinkTypeHandler extends GenericTypeHandler {
+public class OpendapLinkTypeHandler extends GridTypeHandler {
+
 
     /** _more_ */
     public static final String TYPE_OPENDAPLINK = "opendaplink";
@@ -102,6 +75,7 @@ public class OpendapLinkTypeHandler extends GenericTypeHandler {
         return HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_GET)
                              + "/" + fileTail, ARG_ENTRYID, entry.getId());
     }
+
 
     /**
      * _more_
