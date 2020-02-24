@@ -1375,8 +1375,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         int   timeIndex = -1;
         Range tRange    = null;
+	System.err.println("gridTIme:" + request.getString("gridTime", "NA"));
         if (request.defined("gridTime")) {
             timeIndex = request.get("gridTime", -1);
+	    System.err.println("time index:"+ timeIndex);
             if (timeIndex >= 0) {
                 tRange = new Range(timeIndex, timeIndex);
                 CalendarDate date = dates.get(timeIndex);

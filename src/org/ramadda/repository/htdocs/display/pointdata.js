@@ -1472,12 +1472,11 @@ var RecordUtil = {
 		    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
 		else
 		    ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-		ctx.strokeStyle = "black";
-		//		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-		//		ctx.font="8px arial"
-		//		ctx.fillStyle = "black";
-		//		ctx.fillText(v, crx,cry);
-		//		ctx.fillText(v, crx,cry+20);
+		ctx.strokeStyle = "#000";
+//		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+//		ctx.font="8px arial"
+//		ctx.fillStyle = "black";
+//		ctx.fillText(v, crx,cry);
 	    }
 	    
 	}
@@ -1489,10 +1488,10 @@ var RecordUtil = {
     },
     //This gets the value at row/col if its defined. else 0
     //    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
-    getGridValue:function(src,row,col,mult,cnt,goodones) {
-	cnt[0]+=mult;
+    getGridValue:function(src,row,col,mult,total,goodones) {
 	if(row>=0 && row<src.length && col>=0 && col<src[row].length) {
 	    if(isNaN(src[row][col])) return 0;
+	    total[0]+=mult;
 	    goodones[0]++;
 	    return src[row][col]*mult;
 	}
@@ -1504,16 +1503,17 @@ var RecordUtil = {
 	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
 	    let row = result[rowIdx];
 	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
-		if(isNaN(row[colIdx])) continue;
-		let cnt =[0];
+//		if(isNaN(row[colIdx])) continue;
+		if(isNaN(row[colIdx])) row[colIdx] = 0;
+		let total =[0];
 		let goodones =[0];
 		let sum = 0;
 		kernel.every(t=>{
-		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],cnt,goodones); 
+		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],total,goodones); 
 		    return true;
 		});
 		if(goodones[0]>0)
-		    row[colIdx] = sum/cnt[0];
+		    row[colIdx] = sum/total[0];
 		else
 		    row[colIdx] = NaN;
 	    }
@@ -1539,18 +1539,36 @@ var RecordUtil = {
 		[1,1,1,1,1],
 		[1,1,1,1,1],
 	    ],
-	    gauss9: [
-		[1,2,1],
-		[2,4,2],
-		[1,2,1],	    
+	    average49:[
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
 	    ],
-	    gauss25: [
-		[1,4,6,4,1],
-		[4,16,24,16,4],
-		[6,24,26,24,6],
-		[4,16,24,16,4],
-		[1,4,6,4,1],
+	    gauss9:[
+		[0.077847,0.123317,0.077847],
+		[0.123317,0.195346,0.123317],
+		[0.077847,0.123317,0.077847]
 	    ],
+	    gauss25:[
+		[0.003765,0.015019,0.023792,0.015019,0.003765],
+		[0.015019,0.059912,0.094907,0.059912,0.015019],
+		[0.023792,0.094907,0.150342,0.094907,0.023792],
+		[0.015019,0.059912,0.094907,0.059912,0.015019],
+		[0.003765,0.015019,0.023792,0.015019,0.003765],
+	    ],
+	    gauss49: [
+		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067],
+		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
+		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
+		[0.00038771 ,0.01330373 ,0.11098164 ,0.22508352 ,0.11098164 ,0.01330373 ,0.00038771],
+		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
+		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
+		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067]
+		]
 	}
 	let a = kernels[type];
 	if(!a) {
@@ -1575,11 +1593,24 @@ var RecordUtil = {
 	}
 	return a;
     },
+    printGrid: function(grid) {
+	console.log("grid:");
+	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
+	    let row = grid[rowIdx];
+	    let h = "";
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		if(Utils.isDefined(row[colIdx].v))
+		    h+=row[colIdx].v+",";
+		else
+		    h+=row[colIdx]+",";
+	    }
+	    console.log(h);
+	}
+    },
     applyFilter(opts, grid) {
 	if(!opts.filter || opts.filter=="" || opts.filter=="none") {
 	    return;
 	}
-
 
 	let copy = this.cloneGrid(grid,v=>v.v);
 	let filtered = copy;
@@ -1636,18 +1667,6 @@ var RecordUtil = {
 	    }
 	}
 	return dest;
-    },
-
-    printGrid: function(g) {
-	let t = "";
-	for(var rowIdx=0;rowIdx<g.length;rowIdx++)  {
-	    let row = g[rowIdx];
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
-		t+=g[rowIdx][colIdx] + " ";
-	    }
-	    t+="\n";
-	}
-	console.log(t);
     },
     gridData: function(gridId,records,args) {
 	if(!args) args = {};
@@ -1735,11 +1754,11 @@ var RecordUtil = {
 	    opts.cellSizeX = +opts.cellSizeX;
 	    opts.cellSizeY = +opts.cellSizeY;
 	    this.applyFilter(opts,grid);
-//	    let mm = this.getMinMaxGrid(grid,v=>v.value);
+	    //get the new min/max from the filtered grid
+	    let mm = this.getMinMaxGrid(grid,v=>v.v);
 	    if(opts.colorBy) {
 		if(!Utils.isDefined(opts.display.getProperty("colorByMin")))  {
-//		    console.log("setting color by range from grid:" + grid.minValue  +" " + grid.maxValue);
-		    opts.colorBy.setRange(grid.minValue, grid.maxValue);
+		    opts.colorBy.setRange(mm.min,mm.max);
 		}  else {
 //		    console.log("color by range is already set:" +opts.display.getProperty("colorByMin"));
 		}
