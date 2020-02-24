@@ -512,8 +512,7 @@ function DisplayThing(argId, argProperties) {
 		    return null;
 		}
                 fields = pointData.getRecordFields();
-           }
-	    return record.getLatitude() +" " + record.getLongitude();
+            }
 	    var showDate = this.getProperty("showDate", true);
 	    var showImage = this.getProperty("showImage", true);
             var showGeo = false;
