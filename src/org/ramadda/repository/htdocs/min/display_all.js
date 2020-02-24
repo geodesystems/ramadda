@@ -25983,7 +25983,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, table);
 
 
-	    let sparkLineField = this.getFieldById(fields,this.getProperty("sparkLineField"));
+	    let sparkLineField = this.getFieldById(fields,this.getProperty("sparklineField"));
 	    let states = [];
 	    let stateData = {
 	    }
