@@ -2401,7 +2401,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    table +="<tr><td colspan=" + maxx+"><br>" +   HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)]) +"</td></tr>";
 	    table+="</table>";
             var colorBy = this.getColorByInfo(records);
-	    var sparkLinesColorBy = this.getColorByInfo(records,"sparkLinesColorBy");
+	    var sparkLinesColorBy = this.getColorByInfo(records,"sparklineColorBy");
 	    var strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, table);
 
