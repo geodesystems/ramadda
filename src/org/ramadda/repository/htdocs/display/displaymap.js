@@ -1303,10 +1303,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(!layer.date) return true;
 		if(layer.date.getTime()>= animation.begin.getTime() && layer.date.getTime()<= animation.end.getTime()) {
 		    onDate = layer.date;
+		    onLayer = layer;
 		    layer.setVisibility(true);
 		} else {
 		    layer.setVisibility(false);
-		    onLayer = layer;
 		}
 		return true;
 	    })
