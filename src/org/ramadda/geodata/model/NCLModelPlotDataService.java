@@ -829,7 +829,11 @@ public class NCLModelPlotDataService extends NCLDataService {
                                   "").toLowerCase().trim();
             boolean usepolar = mapid.startsWith("nh")
                                || mapid.startsWith("sh")
+                               || mapid.startsWith("arctic")
                                || mapid.startsWith("ant");
+            if (mapid.isEmpty()) { // CUSTOM map
+                usepolar = false;
+            }
             envMap.put("usepolar", Boolean.toString(usepolar));
             if (usepolar) {
                 String center = "0";
