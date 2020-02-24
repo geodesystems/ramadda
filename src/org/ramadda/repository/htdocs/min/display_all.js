@@ -24875,6 +24875,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let onDate=null;
 //	    console.log("displaymap.animationApply:" + animation.begin + " " +animation.end);
+	    let onLayer = null;
 	    this.heatmapLayers.every(layer=>{
 		if(!layer.date) return true;
 		if(layer.date.getTime()>= animation.begin.getTime() && layer.date.getTime()<= animation.end.getTime()) {
@@ -24882,14 +24883,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    layer.setVisibility(true);
 		} else {
 		    layer.setVisibility(false);
+		    onLayer = layer;
 		}
 		return true;
 	    })
  	    if(!onDate) {
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 	    }
-	    if(onDate!="none")
-		this.setMapLabel(onDate?this.formatDate(onDate):"");
+	    if(onLayer!=null)
+		this.setMapLabel(onLayer.heatmapLabel);
 	},
         setDateRange: function(min, max) {
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
