@@ -99,6 +99,8 @@ public class FetchPointTypeHandler extends PointTypeHandler {
     private void doFetch() {
         int errorCnt = 0;
         while (errorCnt < 5) {
+	    //Check every 30 minutes
+            Misc.sleepSeconds(60 * 30);
             try {
                 doFetchInner();
                 errorCnt = 0;
@@ -108,7 +110,6 @@ public class FetchPointTypeHandler extends PointTypeHandler {
                 exc.printStackTrace();
                 errorCnt++;
             }
-            Misc.sleepSeconds(60 * 30);
         }
         System.err.println("FetchPointTypeHandler too many errors");
     }
