@@ -7839,7 +7839,12 @@ function PointData(name, recordFields, records, url, properties) {
 		}
                 pointData.stopLoading();
 	    }
-            console.log("load data:" + url);
+	    let fullUrl = url;
+	    if(!fullUrl.startsWith("http")) {
+		var base = window.location.protocol + "//" + window.location.host;
+		fullUrl = base+fullUrl;
+	    }
+            console.log("load data:" + fullUrl);
             Utils.doFetch(url, success,fail,"text");
             //var jqxhr = $.getJSON(url, success).fail(fail);
         }
