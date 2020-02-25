@@ -7839,7 +7839,12 @@ function PointData(name, recordFields, records, url, properties) {
 		}
                 pointData.stopLoading();
 	    }
-            console.log("load data:" + url);
+	    let fullUrl = url;
+	    if(!fullUrl.startsWith("http")) {
+		var base = window.location.protocol + "//" + window.location.host;
+		fullUrl = base+fullUrl;
+	    }
+            console.log("load data:" + fullUrl);
             Utils.doFetch(url, success,fail,"text");
             //var jqxhr = $.getJSON(url, success).fail(fail);
         }
@@ -24876,6 +24881,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let onDate=null;
 //	    console.log("displaymap.animationApply:" + animation.begin + " " +animation.end);
 	    let onLayer = null;
+	    let offLayers = [];
 	    this.heatmapLayers.every(layer=>{
 		if(!layer.date) return true;
 		if(layer.date.getTime()>= animation.begin.getTime() && layer.date.getTime()<= animation.end.getTime()) {
@@ -24883,10 +24889,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    onLayer = layer;
 		    layer.setVisibility(true);
 		} else {
-		    layer.setVisibility(false);
+		    offLayers.push(layer);
 		}
 		return true;
 	    })
+	    offLayers.map(layer=>{
+		layer.setVisibility(false);
+	    });
  	    if(!onDate) {
 		SUPER.animationApply.call(this, animation, skipUpdateUI);
 	    }
@@ -24957,8 +24966,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	heatmapCnt:0,
 	applyHeatmapAnimation: function(index) {
 	    this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex = index;
+	    let offLayers = [];
 	    this.heatmapLayers.map((layer,idx)=>{
-		layer.setVisibility(index==idx);
+		if(index==idx)
+		    layer.setVisibility(true);
+		else
+		    offLayers.push(layer);
+	    });
+	    offLayers.map(layer=>{
+		layer.setVisibility(false);
 	    });
 	    this.setMapLabel(this.heatmapLayers[index].heatmapLabel);
 
