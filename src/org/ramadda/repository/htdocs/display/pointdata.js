@@ -297,18 +297,22 @@ function PointData(name, recordFields, records, url, properties) {
         },
         loadPointJson: function(url, display, reload) {
 	    let debug = displayDebug.loadPointJson;
-            var pointData = this;
+            let pointData = this;
             this.startLoading();
             var _this = this;
 	    if(debug)
 		console.log("loadPointJson: "+ display.getId());
-	    //TODO: clear the cache
             var cacheObject = pointDataCache[url];
             if (cacheObject == null) {
                 cacheObject = {
                     pointData: null,
                     pending: [],
 		    size:0,
+		    url:url,
+		    toString:function() {
+			return "cache:" + (this.pointData==null?" no data ":" data:" +this.pointData.pdcnt +" " + this.pointData.getRecords().length) +" url:" + this.url;
+		    }
+
                 };
 		if(debug)
                     console.log("\tcreated new obj in cache: " +url);
@@ -316,10 +320,11 @@ function PointData(name, recordFields, records, url, properties) {
             }
             if (cacheObject.pointData != null) {
 		if(debug)
-                    console.log("\tfrom cache " +url);
+                    console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
                 display.pointDataLoaded(cacheObject.pointData, url, reload);
                 return;
             }
+
             cacheObject.pending.push(display);
             if (cacheObject.pending.length > 1) {
 		if(debug)
@@ -365,8 +370,9 @@ function PointData(name, recordFields, records, url, properties) {
 		    console.log("\tmaking point data");
                 var newData = makePointData(data, _this.derived, display);
 		if(debug)
-		    console.log("\tdone making point data");
-                cacheObject.pointData = pointData.initWith(newData);
+		    console.log("\tdone making point data #records:" + newData.getRecords().length);
+                pointData = cacheObject.pointData = newData;
+//                cacheObject.pointData = pointData.initWith(newData);
 		if(data.properties) {
 		    display.applyRequestProperties(data.properties);
 		}
@@ -744,7 +750,6 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 }
 
 
-
 function makePointData(json, derived, source) {
     let debug  =false;
     if(debug) console.log("makePointData");
@@ -999,7 +1004,8 @@ function makePointData(json, derived, source) {
         }
     });
 
-    return new PointData(name, fields, pointRecords);
+    let pd =  new PointData(name, fields, pointRecords);
+    return pd;
 }
 
 
@@ -1913,8 +1919,8 @@ var RecordUtil = {
                     east = Math.max(east, record.getLongitude());
                 }
                 if (record.getLongitude() < -180 || record.getLatitude() > 90) {
-		    if(errorCnt++<50)
-			console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
+//		    if(errorCnt++<50)
+//			console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                 }
 		if(points)
                     points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
