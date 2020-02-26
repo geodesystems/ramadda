@@ -154,8 +154,9 @@ function ramaddaCheckForResize() {
                 redisplayPendingCnt = 0;
                 for (var i = 0; i < window.globalDisplaysList.length; i++) {
                     var display = window.globalDisplaysList[i];
-                    if (display.displayData)
+                    if (display.displayData) {
                         display.displayData();
+		    }
                 }
             } else {
                 //Had a resize event during the previous timeout
@@ -1029,7 +1030,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayParent(cm.getLayoutManager());
         },
         setContents: function(contents) {
-            var style = "";
+            let style = "";
             contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner", "style", style], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
@@ -5075,7 +5076,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
 
-            var contents =  top + "\n" +HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + "\n" +bottom;
+	    let expandedHeight  = this.getProperty("expandedHeight");
+	    if(expandedHeight)
+		style+="height:" +expandedHeight+";";
+            var contents =  top + "\n" +HtmlUtils.div([ATTR_CLASS, "ramadda-expandable-target display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + "\n" +bottom;
             return contents;
         },
 
@@ -6453,24 +6457,11 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         //This keeps checking the width of the chart element if its zero
         //we do this for displaying in tabs
         checkLayout: function() {
-            var _this = this;
-            var d = _this.jq(ID_DISPLAY_CONTENTS);
+            var d = this.jq(ID_DISPLAY_CONTENTS);
             if (this.lastWidth != d.width()) {
-                _this.displayData();
-            }
-            if (true) return;
-
-            if (d.width() == 0) {
-                var cb = function() {
-                    _this.checkWidth(cnt + 1);
-                };
-                setTimeout(cb, 5000);
-            } else {
-                //                    console.log("checkWidth:"+ _this.getTitle() +" calling displayData");
-                _this.displayData();
+                this.displayData();
             }
         },
-
         getWikiAttributes: function(attrs) {
             SUPER.getWikiAttributes.call(this, attrs);
             if (this.lastSelectedFields) {

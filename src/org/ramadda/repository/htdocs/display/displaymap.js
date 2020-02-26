@@ -81,9 +81,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             } else if (height != "") {
                 extraStyle += " height:" + (height) + ";";
             }
-
-
-            html += HtmlUtils.div([ATTR_CLASS, "display-map-map", "style",
+            html += HtmlUtils.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", "style",
 				   extraStyle, ATTR_ID, this.getDomId(ID_MAP)
 				  ]);
             if (this.showLocationReadout) {
@@ -1307,7 +1305,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    onLayer = layer;
 		    layer.setVisibility(true);
 		} else {
-		    offLayers.push(layer);
+		    if(layer.getVisibility()) 
+			offLayers.push(layer);
 		}
 		return true;
 	    })

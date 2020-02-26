@@ -1069,8 +1069,9 @@ function ramaddaCheckForResize() {
                 redisplayPendingCnt = 0;
                 for (var i = 0; i < window.globalDisplaysList.length; i++) {
                     var display = window.globalDisplaysList[i];
-                    if (display.displayData)
+                    if (display.displayData) {
                         display.displayData();
+		    }
                 }
             } else {
                 //Had a resize event during the previous timeout
@@ -1944,7 +1945,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayParent(cm.getLayoutManager());
         },
         setContents: function(contents) {
-            var style = "";
+            let style = "";
             contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner", "style", style], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
@@ -5990,7 +5991,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
 
-            var contents =  top + "\n" +HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + "\n" +bottom;
+	    let expandedHeight  = this.getProperty("expandedHeight");
+	    if(expandedHeight)
+		style+="height:" +expandedHeight+";";
+            var contents =  top + "\n" +HtmlUtils.div([ATTR_CLASS, "ramadda-expandable-target display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + "\n" +bottom;
             return contents;
         },
 
@@ -7368,24 +7372,11 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         //This keeps checking the width of the chart element if its zero
         //we do this for displaying in tabs
         checkLayout: function() {
-            var _this = this;
-            var d = _this.jq(ID_DISPLAY_CONTENTS);
+            var d = this.jq(ID_DISPLAY_CONTENTS);
             if (this.lastWidth != d.width()) {
-                _this.displayData();
-            }
-            if (true) return;
-
-            if (d.width() == 0) {
-                var cb = function() {
-                    _this.checkWidth(cnt + 1);
-                };
-                setTimeout(cb, 5000);
-            } else {
-                //                    console.log("checkWidth:"+ _this.getTitle() +" calling displayData");
-                _this.displayData();
+                this.displayData();
             }
         },
-
         getWikiAttributes: function(attrs) {
             SUPER.getWikiAttributes.call(this, attrs);
             if (this.lastSelectedFields) {
@@ -13239,10 +13230,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return value;
 	},
         displayData: function(reload) {
+	    let isExpanded = this.jq(ID_CHART).attr("isexpanded");
+	    let originalHeight = this.jq(ID_CHART).attr("original-height");
+	    if(isExpanded==="true") {
+		this.setProperty("expandedHeight",this.jq(ID_CHART).css("height"));
+		this.setProperty("isExpanded",true);
+		this.setProperty("originalHeight",originalHeight);
+	    } else {
+		this.setProperty("expandedHeight",null);
+		this.setProperty("isExpanded",false);
+		this.setProperty("originalHeight",null);
+	    }
 	    let debug = false;
             var _this = this;
 	    if(debug)
 		console.log("displayData " + this.getId() +" " + this.type);
+
+
             if (!this.getDisplayReady()) {
 		if(debug)
 		    console.log("\tdisplay not ready");
@@ -13277,9 +13281,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
 
+
             this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
 					   "Building display..."));
-
 
             this.allFields = this.dataCollection.getList()[0].getRecordFields();
             var pointData = this.dataCollection.getList()[0];
@@ -13455,8 +13459,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
                 dataList = newList;
             }
-
-
             try {
                 this.makeGoogleChart(dataList, props, selectedFields);
             } catch (e) {
@@ -14113,6 +14115,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 };
             }
+	    
+	    let expandedHeight  = this.getProperty("expandedHeight");
+	    if(expandedHeight) {
+		chartOptions.height = expandedHeight;
+	    }
 	    if(this.getPropertyShow) {
 		this.getPropertyShow = false;
 		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
@@ -14141,19 +14148,33 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             } else {
                 style += "width:" + "100%;";
             }
-            var height = this.getChartHeight();
-            if (height) {
-                if (height > 0)
-                    style += "height:" + height + "px;";
-                else if (height < 0)
-                    style += "height:" + (-height) + "%;";
-                else
-                    style += "height:" + height + ";";
-            } else {
-                style += "height:" + "100%;";
-            }
+	    let expandedHeight  = this.getProperty("expandedHeight");
+            var height =  this.getChartHeight();
+	    if(expandedHeight) {
+                style += "height:" + expandedHeight+";";
+	    } else {
+		if (height) {
+                    if (height > 0)
+			style += "height:" + height + "px;";
+                    else if (height < 0)
+			style += "height:" + (-height) + "%;";
+                    else
+			style += "height:" + height + ";";
+		} else {
+                    style += "height:" + "100%;";
+		}
+	    }
 	    style += "text-align:center;"
             divAttrs.push(style);
+	    divAttrs.push("class");
+	    divAttrs.push("ramadda-expandable-target");
+
+	    let isExpanded = this.getProperty("isExpanded");
+	    let originalHeight = this.getProperty("originalHeight");
+	    if(isExpanded) {
+		divAttrs.push("isexpanded","true")
+		divAttrs.push("original-height",originalHeight)
+	    }
             return HtmlUtils.div(divAttrs, "");
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
@@ -14164,12 +14185,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.setContents("No google");
                 return;
             }
-
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
 	    this.chartOptions.bar = {groupWidth:"95%"}
             if (!Utils.isDefined(this.chartOptions.height)) {
                 this.chartOptions.height = "100%";
             }
+
 	    this.charts = [];
 	    this.chartCount  = -1;
 
@@ -14404,7 +14425,9 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
 
             var useMultipleAxes = this.getProperty("useMultipleAxes", true);
-            chartOptions.height = this.getProperty("chartHeight", this.getProperty("height", "150"));
+	    let expandedHeight  = this.getProperty("expandedHeight");
+            chartOptions.height = expandedHeight || this.getProperty("chartHeight", this.getProperty("height", "150"));
+
             if (!chartOptions.legend)
                 chartOptions.legend = {};
 
@@ -15143,19 +15166,25 @@ function TableDisplay(displayManager, id, properties) {
             return true;
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
-            chartOptions.height = null;
-            if (this.chartHeight) {
-                chartOptions.height = this.chartHeight;
-            }
-            if (chartOptions.height == null) {
-                var height = this.getProperty("height", null);
-                if (height) {
-                    chartOptions.height = height;
-                }
-            }
-            if (chartOptions.height == null) {
-                chartOptions.height = "300px";
-            }
+	    let expandedHeight  = this.getProperty("expandedHeight");
+	    if(!expandedHeight) {
+		chartOptions.height = null;
+		if (this.chartHeight) {
+                    chartOptions.height = this.chartHeight;
+		}
+		if (chartOptions.height == null) {
+                    var height = this.getProperty("height", null);
+                    if (height) {
+			chartOptions.height = height;
+                    }
+		}
+		if (chartOptions.height == null) {
+                    chartOptions.height = "300px";
+		}
+	    }
+
+
+//	    console.log(JSON.stringify(chartOptions,null,2));
             chartOptions.allowHtml = true;
 	    if(this.getProperty("tableWidth"))
 		chartOptions.width=this.getProperty("tableWidth");
@@ -23671,9 +23700,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             } else if (height != "") {
                 extraStyle += " height:" + (height) + ";";
             }
-
-
-            html += HtmlUtils.div([ATTR_CLASS, "display-map-map", "style",
+            html += HtmlUtils.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", "style",
 				   extraStyle, ATTR_ID, this.getDomId(ID_MAP)
 				  ]);
             if (this.showLocationReadout) {
@@ -24897,7 +24924,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    onLayer = layer;
 		    layer.setVisibility(true);
 		} else {
-		    offLayers.push(layer);
+		    if(layer.getVisibility()) 
+			offLayers.push(layer);
 		}
 		return true;
 	    })
