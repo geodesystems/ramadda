@@ -1266,8 +1266,9 @@ OpenLayers.Bounds = OpenLayers.Class({
             options =  {inclusive: options};
         }
         options = options || {};
+	let self=this;
         if (options.worldBounds) {
-            var self = this.wrapDateLine(options.worldBounds);
+            self = this.wrapDateLine(options.worldBounds);
             bounds = bounds.wrapDateLine(options.worldBounds);
         } else {
             self = this;
@@ -1275,6 +1276,7 @@ OpenLayers.Bounds = OpenLayers.Class({
         if (options.inclusive == null) {
             options.inclusive = true;
         }
+
         var intersects = false;
         var mightTouch = (
             self.left == bounds.right ||
@@ -1442,20 +1444,25 @@ OpenLayers.Bounds = OpenLayers.Class({
 
         var newBounds = this.clone();
     
+
         if (maxExtent) {
             var width = maxExtent.getWidth();
 
             //shift right?
+	    let cnt = 0
             while (newBounds.left < maxExtent.left && 
                    newBounds.right - rightTolerance <= maxExtent.left ) { 
                 newBounds = newBounds.add(width, 0);
+		cnt++
             }
 
             //shift left?
             while (newBounds.left + leftTolerance >= maxExtent.right && 
                    newBounds.right > maxExtent.right ) { 
                 newBounds = newBounds.add(-width, 0);
+		cnt++;
             }
+
            
             // crosses right only? force left
             var newLeft = newBounds.left + leftTolerance;
@@ -36531,21 +36538,28 @@ OpenLayers.Renderer = OpenLayers.Class({
         if(style == null) {
             style = feature.style;
         }
+
+	
         if (feature.geometry) {
             var bounds = feature.geometry.getBounds();
             if(bounds) {
-                var worldBounds;
+		var worldBounds;
                 if (this.map.baseLayer && this.map.baseLayer.wrapDateLine) {
                     worldBounds = this.map.getMaxExtent();
                 }
-                if (!bounds.intersectsBounds(this.extent, {worldBounds: worldBounds})) {
+		//jeffmc: IMPORTANT
+		//jeffmc: always assume the feature intersects the bounds as that call can be very very expensive due to the wrapDateLine call
+		//let intersects = bounds.intersectsBounds(this.extent, {worldBounds: worldBounds});
+		let intersects = true;
+                if (!intersects) {
                     style = {display: "none"};
                 } else {
                     this.calculateFeatureDx(bounds, worldBounds);
                 }
+
+
                 var rendered = this.drawGeometry(feature.geometry, style, feature.id);
                 if(style.display != "none" && style.label && rendered !== false) {
-
                     var location = feature.geometry.getCentroid(); 
                     if(style.labelXOffset || style.labelYOffset) {
                         var xOffset = isNaN(style.labelXOffset) ? 0 : style.labelXOffset;
@@ -40220,7 +40234,6 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
             featuresAdded.push(feature);
             this.features.push(feature);
             this.drawFeature(feature);
-            
             if (notify) {
                 this.events.triggerEvent("featureadded", {
                     feature: feature
@@ -40228,7 +40241,6 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
                 this.onFeatureInsert(feature);
             }
         }
-        
         if(notify) {
             this.events.triggerEvent("featuresadded", {features: featuresAdded});
         }
