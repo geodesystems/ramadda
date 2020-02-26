@@ -196,7 +196,7 @@ public class Json {
                     continue;
                 }
                 if (cnt > 0) {
-                    row.append(",");
+                    row.append(",\n");
                 }
                 cnt++;
                 row.append(attr(name, value, quoteValue));
@@ -317,8 +317,10 @@ public class Json {
                 } else {
                     row.append(values.get(i).toString());
                 }
+		row.append("\n");
             }
             row.append(listClose());
+	    row.append("\n");
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -638,7 +640,7 @@ public class Json {
                         continue;
                     }
                     pw.print(name);
-                    pw.print(",");
+                    pw.println(",");
                 }
                 //                pw.println("latitude,longitude");
                 pw.println("location");
@@ -654,7 +656,7 @@ public class Json {
                     value = "\"" + value + "\"";
                 }
                 pw.print(value);
-                pw.print(",");
+                pw.println(",");
             }
             //            pw.println(centroid[1] + "," + centroid[0]);
             pw.println(centroid[1] + ";" + centroid[0]);
