@@ -31,8 +31,10 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.StringUtil;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Hashtable;
 
 
 /**
@@ -103,10 +105,13 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
+@Override
     public void initializeEntryFromXml(Request request, Entry entry,
-                                       Element node)
+
+                                       Element node,Hashtable<String, File> files
+)
             throws Exception {
-        initializeEntryFromXml(request, entry, node);
+        initializeEntryFromXml(request, entry, node,files);
         georeferenceEntry(request, entry);
     }
 

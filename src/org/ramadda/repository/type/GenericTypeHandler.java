@@ -44,6 +44,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
 
+import org.ramadda.repository.util.FileWriter;
 import java.lang.reflect.*;
 
 import java.sql.PreparedStatement;
@@ -52,6 +53,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -488,11 +490,11 @@ public class GenericTypeHandler extends TypeHandler {
      */
     @Override
     public void initializeEntryFromXml(Request request, Entry entry,
-                                       Element node)
+                                       Element node, Hashtable<String, File> files)
             throws Exception {
         //Always call getEntryValues here so we get create the correct size array
         Object[] values = getEntryValues(entry);
-        super.initializeEntryFromXml(request, entry, node);
+        super.initializeEntryFromXml(request, entry, node,files);
 
         Hashtable<String, Element> nodes    = new Hashtable<String,
                                                   Element>();
@@ -1419,9 +1421,9 @@ public class GenericTypeHandler extends TypeHandler {
      * @throws Exception on badness
      */
     @Override
-    public void addToEntryNode(Request request, Entry entry, Element node)
+    public void addToEntryNode(Request request, Entry entry, FileWriter fileWriter, Element node)
             throws Exception {
-        super.addToEntryNode(request, entry, node);
+        super.addToEntryNode(request, entry, fileWriter, node);
 
 
         if ( !haveDatabaseTable()) {

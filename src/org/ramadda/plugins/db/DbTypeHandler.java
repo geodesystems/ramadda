@@ -39,6 +39,8 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.RssOutputHandler;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
+
+import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.Bounds;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.GoogleChart;
@@ -94,6 +96,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.zip.*;
 
 
 /**
@@ -332,23 +335,34 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @param request _more_
      * @param entry _more_
+     * @param fileWriter _more_
      * @param node _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public void addToEntryNode(Request request, Entry entry, Element node)
+    public void addToEntryNode(Request request, Entry entry,
+                               final FileWriter fileWriter, Element node)
             throws Exception {
-        super.addToEntryNode(request, entry, node);
-        if (getAccessManager().canDoAction(request, entry,
-                                           Permission.ACTION_FILE)) {
-            List<Object[]> valueList = readValues(request,
-                                           Clause.eq(COL_ID, entry.getId()),
-                                           "", -1);
-            Element dbvalues = XmlUtil.create(TAG_DBVALUES, node);
-            XmlUtil.createCDataNode(dbvalues,
-                                    xmlEncoder.toXml(valueList, false));
+        super.addToEntryNode(request, entry, fileWriter, node);
+        if ( !getAccessManager().canDoAction(request, entry,
+                                             Permission.ACTION_FILE)) {
+            return;
         }
+        if ((fileWriter == null)
+                || (fileWriter.getZipOutputStream() == null)) {
+            return;
+        }
+        ZipOutputStream zos      = fileWriter.getZipOutputStream();
+        ZipEntry        zipEntry = new ZipEntry(entry.getId() + ".dbvalues");
+        zos.putNextEntry(zipEntry);
+        PrintWriter pw = new PrintWriter(zos);
+        readValues(request, Clause.eq(COL_ID, entry.getId()), "", -1, pw);
+        pw.flush();
+        zos.closeEntry();
+        Element dbvalues = XmlUtil.create(TAG_DBVALUES, node,
+                                          entry.getId() + ".dbvalues");
+
     }
 
 
@@ -358,42 +372,42 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @param request _more_
      * @param entry _more_
      * @param node _more_
+     * @param files _more_
      *
      * @throws Exception _more_
      */
+    @Override
     public void initializeEntryFromXml(Request request, Entry entry,
-                                       Element node)
+                                       Element node,
+                                       Hashtable<String, File> files)
             throws Exception {
-        super.initializeEntryFromXml(request, entry, node);
-        String values = XmlUtil.getGrandChildText(node, TAG_DBVALUES,
-                            (String) null);
-        if (values == null) {
-            String csv = XmlUtil.getGrandChildText(node, TAG_CSV,
-                             (String) null);
-            if (csv == null) {
-                return;
-            }
-            csv = csv.trim();
-
-            handleBulkUpload(request, entry,
-                             new ByteArrayInputStream(csv.getBytes()));
+        super.initializeEntryFromXml(request, entry, node, files);
+        String valuesFile = XmlUtil.getGrandChildText(node, TAG_DBVALUES,
+                                (String) null);
+        if (valuesFile == null) {
+            return;
+        }
+        File file = files.get(valuesFile);
+        if (file == null) {
+            System.err.println("DbTypeHandler: could not find file:"
+                               + valuesFile);
 
             return;
-
         }
-        List<Object[]> valueList = (List<Object[]>) xmlEncoder.toObject(
-                                       new String(
-                                           Utils.decodeBase64(values)));
-        if (valueList == null) {
-            throw new IllegalArgumentException(
-                "Could not read database value list");
-        }
+        BufferedReader br = new BufferedReader(
+                                new InputStreamReader(
+                                    new FileInputStream(file)));
+        String line;
         String sql = makeInsertOrUpdateSql(entry, null);
         PreparedStatement insertStmt =
             getRepository().getDatabaseManager().getPreparedStatement(sql);
         try {
-            for (Object[] tuple : valueList) {
+            while ((line = br.readLine()) != null) {
+                Object[] tuple = (Object[]) xmlEncoder.toObject(
+                                     new String(Utils.decodeBase64(line)));
                 tuple[IDX_DBID] = getRepository().getGUID();
+                //              System.err.println("READ:" + tuple[3]);
+                //              if(true) continue;
                 tableHandler.setStatement(entry, tuple, insertStmt, true);
                 insertStmt.execute();
             }
@@ -403,6 +417,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             dbChanged(entry);
         }
     }
+
 
 
     /**
@@ -1303,7 +1318,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     private boolean isGroupBy(Request request) {
-	if(request==null) return false;
+        if (request == null) {
+            return false;
+        }
+
         return Utils.stringDefined(request.getString(ARG_GROUPBY, ""));
     }
 
@@ -4606,10 +4624,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         for (Column column : getColumns(true)) {
             //            System.err.println("\tcol:" + column.getName() +" p:" + recordProps.get(column.getName() +".isDisplayProperty"));
-            if (!Misc.equals(
-			     recordProps.get(column.getName() + ".display"),
-			     "true") && !Misc.equals(
-						     column.getProperty("isDisplayProperty"), "true")) {
+            if ( !Misc.equals(
+                    recordProps.get(column.getName() + ".display"),
+                    "true") && !Misc.equals(
+                        column.getProperty("isDisplayProperty"), "true")) {
                 continue;
             }
             if (all != null) {
@@ -5788,6 +5806,26 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private List<Object[]> readValues(Request request, Clause clause,
                                       String limitString, int max)
             throws Exception {
+        return readValues(request, clause, limitString, max, null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param clause _more_
+     * @param limitString _more_
+     * @param max _more_
+     * @param pw _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private List<Object[]> readValues(Request request, Clause clause,
+                                      String limitString, int max,
+                                      PrintWriter pw)
+            throws Exception {
 
         String         extra     = "";
         List<Object[]> result    = new ArrayList<Object[]>();
@@ -5803,7 +5841,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             colNames       = new ArrayList<String>();
             groupByColumns = new ArrayList();
             String       orderBy = null;
-
             List<String> cols    = new ArrayList<String>();
             List<String> labels  = new ArrayList<String>();
             List<String> args = (List<String>) (request.get(ARG_GROUPBY,
@@ -5952,7 +5989,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             values[index] = results.getDouble(index + 1);
                         }
                     }
-                    result.add(values);
+                    if (pw != null) {
+                        pw.println(
+                            Utils.encodeBase64(xmlEncoder.toXml(values)));
+                    } else {
+                        result.add(values);
+                    }
                 } else {
                     //              Object[] values = Column.makeValueArray(selectedColumns);
                     Object[] values = tableHandler.makeEntryValueArray();
@@ -5960,7 +6002,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         valueIdx = column.readValues(myEntry, results,
                                 values, valueIdx);
                     }
-                    result.add(values);
+                    if (pw != null) {
+                        pw.println(
+                            Utils.encodeBase64(xmlEncoder.toXml(values)));
+                    } else {
+                        result.add(values);
+                    }
                 }
             }
         } finally {
@@ -5969,6 +6016,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         return result;
+
 
     }
 
@@ -6579,42 +6627,42 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         System.err.println("\tcolumn:" + c.getName()
                                            + " offset:" + c.getOffset());
                     }
-		    List<String> names = c.getColumnNames();
-		    for(int idx=0;idx<names.size();idx++) {
-			if (cnt > 0) {
-			    s.append(",");
-			}
-			cnt++;
-			Object o = list[c.getOffset()+idx];
-			if (debug && (rowIdx < 3)) {
-			    System.err.println("\tvalue:" + o);
-			}
-			if (o instanceof String) {
-			    String  str         = (String) o;
-			    boolean needToQuote = false;
-			    if (str.indexOf("\n") >= 0) {
-				needToQuote = true;
-			    } else if (str.indexOf(",") >= 0) {
-				needToQuote = true;
-			    }
-			    if (str.indexOf("\"") >= 0) {
-				str         = str.replaceAll("\"", "\"\"");
-				needToQuote = true;
-			    }
-			    if (needToQuote) {
-				s.append('"');
-				s.append(str);
-				s.append('"');
-			    } else {
-				s.append(str);
-			    }
-			} else if (o instanceof Date) {
-			    Date dttm = (Date) o;
-			    s.append(sdf.format(dttm));
-			} else {
-			    s.append(o);
-			}
-		    }
+                    List<String> names = c.getColumnNames();
+                    for (int idx = 0; idx < names.size(); idx++) {
+                        if (cnt > 0) {
+                            s.append(",");
+                        }
+                        cnt++;
+                        Object o = list[c.getOffset() + idx];
+                        if (debug && (rowIdx < 3)) {
+                            System.err.println("\tvalue:" + o);
+                        }
+                        if (o instanceof String) {
+                            String  str         = (String) o;
+                            boolean needToQuote = false;
+                            if (str.indexOf("\n") >= 0) {
+                                needToQuote = true;
+                            } else if (str.indexOf(",") >= 0) {
+                                needToQuote = true;
+                            }
+                            if (str.indexOf("\"") >= 0) {
+                                str         = str.replaceAll("\"", "\"\"");
+                                needToQuote = true;
+                            }
+                            if (needToQuote) {
+                                s.append('"');
+                                s.append(str);
+                                s.append('"');
+                            } else {
+                                s.append(str);
+                            }
+                        } else if (o instanceof Date) {
+                            Date dttm = (Date) o;
+                            s.append(sdf.format(dttm));
+                        } else {
+                            s.append(o);
+                        }
+                    }
                 }
                 s.append("\n");
             }
@@ -6632,7 +6680,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
          * @throws Exception _more_
          */
         private void makeFields(Request request) throws Exception {
-	    boolean debug = false;
+            boolean      debug     = false;
             boolean      doGroupBy = isGroupBy(request);
             List<Column> columns;
             if (doGroupBy) {
@@ -6674,20 +6722,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         makeField(
                             "longitude", attrType(RecordField.TYPE_DOUBLE),
                             attrLabel("Longitude")));
-		} else if (colType.equals(Column.DATATYPE_LATLONBBOX)) {
+                } else if (colType.equals(Column.DATATYPE_LATLONBBOX)) {
                     fields.append(
                         makeField(
                             "north", attrType(RecordField.TYPE_DOUBLE),
                             attrLabel("North")));
                     fields.append(",");
-		    fields.append(
+                    fields.append(
                         makeField(
                             "west", attrType(RecordField.TYPE_DOUBLE),
                             attrLabel("West")));
                     fields.append(",");
-		    fields.append(
+                    fields.append(
                         makeField(
-				  "south", attrType(RecordField.TYPE_DOUBLE),
+                            "south", attrType(RecordField.TYPE_DOUBLE),
                             attrLabel("South")));
                     fields.append(",");
                     fields.append(
@@ -6701,10 +6749,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                             extra));
                 }
             }
-	    if(debug )
-		System.err.println("fields:" +fields.toString());
+            if (debug) {
+                System.err.println("fields:" + fields.toString());
+            }
 
-	    
+
 
             putProperty(PROP_FIELDS, fields.toString());
         }

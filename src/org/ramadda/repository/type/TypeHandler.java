@@ -51,7 +51,6 @@ import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.Element;
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -60,10 +59,8 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import org.ramadda.repository.util.FileWriter;
+import java.io.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1750,10 +1747,10 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void initializeEntryFromXml(Request request, Entry entry,
-                                       Element node)
+                                       Element node, Hashtable<String, File> files)
             throws Exception {
         if (parent != null) {
-            parent.initializeEntryFromXml(request, entry, node);
+            parent.initializeEntryFromXml(request, entry, node,files);
         }
 
 
@@ -1821,10 +1818,10 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addToEntryNode(Request request, Entry entry, Element node)
+    public void addToEntryNode(Request request, Entry entry, FileWriter fileWriter, Element node)
             throws Exception {
         if (parent != null) {
-            parent.addToEntryNode(request, entry, node);
+            parent.addToEntryNode(request, entry, fileWriter, node);
         }
     }
 

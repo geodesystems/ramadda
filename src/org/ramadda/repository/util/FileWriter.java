@@ -54,6 +54,10 @@ public class FileWriter {
         this.zos = zos;
     }
 
+    public ZipOutputStream  getZipOutputStream() {
+	return zos;
+    }
+
     /**
      * _more_
      *

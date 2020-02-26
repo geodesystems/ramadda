@@ -289,7 +289,7 @@ public class XmlOutputHandler extends OutputHandler {
         }
         getMetadataManager().addMetadata(request, entry, fileWriter, doc,
                                          node);
-        entry.getTypeHandler().addToEntryNode(request, entry, node);
+        entry.getTypeHandler().addToEntryNode(request, entry, fileWriter, node);
 
         return node;
     }

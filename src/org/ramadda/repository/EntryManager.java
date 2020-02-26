@@ -6318,7 +6318,7 @@ public class EntryManager extends RepositoryManager {
 
             entry.setXmlNode(node);
             entry.getTypeHandler().initializeEntryFromXml(request, entry,
-                    node);
+							  node, files);
             entries.add(entry);
         }
 

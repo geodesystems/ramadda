@@ -297,9 +297,6 @@ public class ZipOutputHandler extends OutputHandler {
         OutputStream os        = null;
         boolean      doingFile = false;
         File         tmpFile   = null;
-
-
-
         Element      root      = null;
         boolean      ok        = true;
         //First recurse down without a zos to check the size
@@ -316,8 +313,6 @@ public class ZipOutputHandler extends OutputHandler {
                     getPageHandler().showDialogError(
                         "Size of request has exceeded maximum size")));
         }
-
-
 
         //Now set the return file name
         if (prefix.length() == 0) {

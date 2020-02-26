@@ -39,9 +39,11 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.IOUtil;
 
 
+import java.io.File;
 import java.awt.geom.Rectangle2D;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -98,7 +100,8 @@ public class GeoJsonTypeHandler extends GenericTypeHandler implements WikiConsta
      */
     @Override
     public void initializeEntryFromXml(Request request, Entry entry,
-                                       Element node)
+                                       Element node,Hashtable<String, File> files
+)
             throws Exception {
         initializeEntryFromForm(request, entry, null, true);
     }
