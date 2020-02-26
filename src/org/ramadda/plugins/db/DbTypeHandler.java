@@ -5795,7 +5795,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @param request _more_
      * @param clause _more_
-     * @param extra _more_
      * @param limitString _more_
      * @param max _more_
      *
@@ -5940,7 +5939,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Statement stmt = null;
         extra += limitString;
         try {
-            //      SqlUtil.debug = true;
+            //SqlUtil.debug = true;
             if (SqlUtil.debug) {
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
@@ -6014,6 +6013,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 stmt);
         }
+
+        //      System.err.println("#:" + result.size());
 
         return result;
 
@@ -6581,8 +6582,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
          * @param buffered _more_
          *
          * @return _more_
-         *
-         * @throws IOException _more_
          *
          * @throws Exception _more_
          */

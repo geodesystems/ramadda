@@ -297,12 +297,14 @@ function PointData(name, recordFields, records, url, properties) {
         },
         loadPointJson: function(url, display, reload) {
 	    let debug = displayDebug.loadPointJson;
+	    let doCache = true;
             let pointData = this;
             this.startLoading();
             var _this = this;
 	    if(debug)
 		console.log("loadPointJson: "+ display.getId());
             var cacheObject = pointDataCache[url];
+	    if(!doCache) cacheObject = null;
             if (cacheObject == null) {
                 cacheObject = {
                     pointData: null,
