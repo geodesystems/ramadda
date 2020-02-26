@@ -223,6 +223,19 @@ public class CdmOutputHandler extends OutputHandler implements CdmConstants {
     }
 
     /**
+     ** 
+     */
+    public static boolean isVariableKnownAs(String varName, String otherName) {
+	if(Misc.equals(varName, otherName)) return true;
+	String alias = getAlias(varName);
+	if(alias!=null) {
+	    return Misc.equals(alias, otherName);
+	}
+	return false;
+    }
+
+
+    /**
      * _more_
      *
      * @param name _more_
