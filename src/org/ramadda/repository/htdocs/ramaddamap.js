@@ -5,6 +5,11 @@
 var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
 var map_esri_worldimagery = "esri.worldimagery";
+var map_esri_terrain = "esri.terrain";
+var map_esri_shaded = "esri.shaded";
+var map_esri_lightgray = "esri.lightgray";
+var map_esri_darkgray = "esri.darkgray";
+var map_esri_physical = "esri.physical";
 var map_opentopo = "opentopo";
 var map_usgs_topo = "usgs.topo";
 var map_usgs_imagery = "usgs.imagery";
@@ -152,8 +157,6 @@ function ramaddaMapShareState(source, state) {
 function RepositoryMap(mapId, params) {
     if (!params) params = {};
     this.params = params;
-    //    console.log("params:" + JSON.stringify(params));
-
     this.mapId = mapId || "map";
     ramaddaMapAdd(this);
     let theMap = this;
@@ -165,8 +168,8 @@ function RepositoryMap(mapId, params) {
         mapDivId: this.mapId,
         showScaleLine: true,
         showLayerSwitcher: true,
-        showZoomPanControl: true,
-        showZoomOnlyControl: false,
+        showZoomPanControl: false,
+        showZoomOnlyControl: true,
         showLatLonPosition: true,
         enableDragPan: true,
         defaultLocation: mapDefaults.location,
@@ -320,6 +323,9 @@ function initMapFunctions(theMap) {
 	    $("#" + this.mapDivId).html(HtmlUtils.div(["style","width:100%;height:100%;position:relative;","id",this.mapDivId+"_themap"]));
 	    $("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_progress", "style","z-index:2000;position:absolute;top:10px;left:50px;"],""));
 	    $("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_label", "style","z-index:2000;position:absolute;bottom:10px;left:10px;"],""));
+	    if(this.showBookmarks || true) {
+//		$("#" + this.mapDivId+"_themap").append(HtmlUtils.div(["id",this.mapDivId+"_bookmarks", "style","z-index:2000;position:absolute;top:140px;left:20px;"],HtmlUtils.getIconImage("fa-bookmark")));
+	    }
             this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
             //register the location listeners later since the map triggers a number of
 
@@ -1608,6 +1614,11 @@ function initMapFunctions(theMap) {
                 map_osm,
                 map_esri_topo,
                 map_esri_street,
+		map_esri_shaded,
+		map_esri_lightgray,
+		map_esri_darkgray,
+		map_esri_physical,
+		map_esri_terrain,
                 map_opentopo,
                 map_usfs_ownership,
                 map_usgs_topo,
@@ -1683,10 +1694,6 @@ function initMapFunctions(theMap) {
                     layer.ramaddaId = id;
                     this.addLayer(layer);
                 }
-            } else if (mapLayer == map_esri_worldimagery) {
-                //Not working
-                newLayer = this.createXYZLayer("ESRI World Imagery",
-					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
             } else if (mapLayer == map_white) {
                 this.addImageLayer(map_white, "White Background", "", ramaddaBaseUrl + "/images/white.png", false, 90, -180, -90, 180, 50, 50, {
 		    //                this.addImageLayer(map_white, "White Background", "", iurl, false, 90, -180, -90, 180, 50, 50, {
@@ -1720,12 +1727,32 @@ function initMapFunctions(theMap) {
                 newLayer = this.createXYZLayer("USGS Shaded Relief",
 					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSShadedReliefOnly/MapServer/tile/${z}/${y}/${x}",
 					       'USGS - The National Map');
-            } else if (mapLayer == map_esri_topo) {
-                newLayer = this.createXYZLayer("ESRI Topo",
-					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}");
             } else if (mapLayer == map_usfs_ownership) {
                 newLayer = this.createXYZLayer("USFS Ownership",
 					       "https://apps.fs.usda.gov/arcx/rest/services/wo_nfs_gstc/GSTC_TravelAccessBasemap_01/MapServer/tile/${z}/${y}/${x}");
+            } else if (mapLayer == map_esri_worldimagery) {
+                //Not working
+                newLayer = this.createXYZLayer("ESRI World Imagery",
+					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
+
+            } else if (mapLayer == map_esri_topo) {
+                newLayer = this.createXYZLayer("ESRI Topo",
+					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}");
+            } else if (mapLayer == map_esri_darkgray) {
+		newLayer = this.createXYZLayer("ESRI Dark Gray",
+					       "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}");
+	    } else if (mapLayer == map_esri_lightgray) {
+		newLayer = this.createXYZLayer("ESRI Light Gray",
+					       "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}");
+            } else if (mapLayer == map_esri_terrain) {
+		newLayer = this.createXYZLayer("ESRI Terrain",
+					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}");
+            } else if (mapLayer == map_esri_shaded) {
+		newLayer = this.createXYZLayer("ESRI Shaded Relief",
+					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}");
+            } else if (mapLayer == map_esri_physical) {
+		newLayer = this.createXYZLayer("ESRI Physical",
+					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/${z}/${y}/${x}");
             } else if (mapLayer == map_esri_street) {
                 newLayer = this.createXYZLayer("ESRI Streets",
 					       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}");
@@ -1792,8 +1819,6 @@ function initMapFunctions(theMap) {
             visible: false
         });
         this.map.addControl(this.graticule);
-
-        return;
     }
 
 
