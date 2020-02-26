@@ -3379,7 +3379,7 @@ function initMapFunctions(theMap) {
         feature.location = location;
         this.features[id] = feature;
         if (!notReally) {
-	    this.getMarkersLayer().addFeatures([feature]);
+	    this.getMarkersLayer().addFeatures([feature],{silent:true});
 	}
         return feature;
     }

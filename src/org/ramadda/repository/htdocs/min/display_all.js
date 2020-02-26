@@ -23602,7 +23602,7 @@ addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map"
 });
-
+ 
 addGlobalDisplayType({
     type: DISPLAY_MAPGRID,
     label: "Map Grid"
@@ -24998,7 +24998,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},this.getProperty("hm.AnimationSleep",1000));
 	    }
 	},
-createHeatmap(records, bounds) {
+	createHeatmap(records, bounds) {
 	    let debug = displayDebug.displayMapCreateMap;
 	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
@@ -25131,18 +25131,6 @@ createHeatmap(records, bounds) {
 		    return;
 	    }
             let colorBy = this.getColorByInfo(records);
-	    /*
-	    bounds = {
-		north:37.34582,
-		west:-77.95234,
-		south:35.13979,
-		east:-73.05244
-	    }
-	    if(bounds) {
-//		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
-		records = RecordUtil.subset(records, bounds);	    
-		points = RecordUtil.subset(points, bounds);
-	    }*/
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
@@ -25624,7 +25612,6 @@ createHeatmap(records, bounds) {
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
 			}
 		    }
-
 		    if(isPath && lastPoint) {
 			this.lines.push(this.map.addLine("line-" + i, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs));
 		    }
@@ -25647,17 +25634,13 @@ createHeatmap(records, bounds) {
 		}
 	    }
 
-
 	    if (showSegments) {
 		this.map.centerOnMarkers(null, true, null);
 	    }
 
-
 	    if(this.map.circles)
 		this.map.circles.redraw();
 	    this.jq(ID_BOTTOM).append(HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
-	    //	    this.jq(ID_BOTTOM).html(HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)])+
-	    //				    HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
             if (didColorBy) {
 		colorBy.displayColorTable();
             }
