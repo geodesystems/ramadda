@@ -1912,16 +1912,18 @@ public class Column implements DataTypes, Constants, Cloneable {
         DatabaseManager dbm        = getDatabaseManager();
         //      System.err.println("s:" + searchArg);
         if (isType(DATATYPE_LATLON)) {
-            double north = request.get(searchArg + "_north",
-                                       request.get(ARG_AREA_NORTH,
-                                           Double.NaN));
-            double south = request.get(searchArg + "_south",
+            double north = request.get("north", request.get(searchArg + "_north",
+							    request.get(ARG_AREA_NORTH,
+						   Double.NaN)));
+            double south = request.get("south", request.get(searchArg + "_south",
                                        request.get(ARG_AREA_SOUTH,
-                                           Double.NaN));
-            double east = request.get(searchArg + "_east",
-                                      request.get(ARG_AREA_EAST, Double.NaN));
-            double west = request.get(searchArg + "_west",
-                                      request.get(ARG_AREA_WEST, Double.NaN));
+						   Double.NaN)));
+            double east = request.get("east",request.get(searchArg + "_east",
+							 request.get(ARG_AREA_EAST, Double.NaN)));
+            double west = request.get("west", request.get(searchArg + "_west",
+							  request.get(ARG_AREA_WEST, Double.NaN)));
+
+
             if (latLonOk(north)) {
                 where.add(Clause.le(columnName + "_lat", north));
             }
