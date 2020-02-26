@@ -39,8 +39,11 @@ if(window["google"]) {
 
 function haveGoogleChartsLoaded() {
     if (!googleChartsLoaded) {
+	console.log("have google loaded");
         if (Utils.isDefined(google.visualization)) {
+	    console.log("has visualization");
             if (Utils.isDefined(google.visualization.Gauge)) {
+		console.log("has gauge");
                 googleChartsLoaded = true;
             }
         }
@@ -58,7 +61,7 @@ function waitOnGoogleCharts(object, callback) {
             object.googleChartCallbackPending = false;
             callback();
         }
-        setTimeout(func, 500);
+        setTimeout(func, 100);
     }
     return false;
 }
@@ -231,11 +234,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.computedData = null;
         },
         updateUI: function(reload) {
+	    let debug = false;
             SUPER.updateUI.call(this, reload);
+	    if(debug)
+		console.log(this.type+" updateUI")
             if (!this.getDisplayReady()) {
+		if(debug)
+		    console.log("\tdisplay not ready");
                 return;
             }
 	    //	    var t1= new Date();
+	    if(debug)
+		console.log("\tcalling displayData");
             this.displayData(reload);
 	    //	    var t2= new Date();
 	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
@@ -455,6 +465,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return value;
 	},
         displayData: function(reload) {
+	    let debug = false;
+	    if(debug)
+		console.log(this.type +" displayData " + this.getId() +" " + this.type);
+
 	    let isExpanded = this.jq(ID_CHART).attr("isexpanded");
 	    let originalHeight = this.jq(ID_CHART).attr("original-height");
 	    if(isExpanded==="true") {
@@ -466,12 +480,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.setProperty("isExpanded",false);
 		this.setProperty("originalHeight",null);
 	    }
-	    let debug = false;
-            var _this = this;
-	    if(debug)
-		console.log("displayData " + this.getId() +" " + this.type);
-
-
             if (!this.getDisplayReady()) {
 		if(debug)
 		    console.log("\tdisplay not ready");
@@ -482,18 +490,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    console.log("\tin error");
                 return;
             }
-
             if (!haveGoogleChartsLoaded()) {
+		if(debug)
+		    console.log("\tgoogle charts have not loaded callback pending:" +this.googleChartCallbackPending);
                 if (!this.googleChartCallbackPending) {
-		    if(debug)
-			console.log("\tloading google charts still");
                     this.googleChartCallbackPending = true;
-                    var func = function() {
-                        _this.googleChartCallbackPending = false;
-                        _this.displayData();
-                    }
                     this.setContents(this.getLoadingMessage());
-                    setTimeout(func, 500);
+                    setTimeout(()=> {
+                        this.googleChartCallbackPending = false;
+                        this.displayData();
+                    }, 10000);
                 }
                 return;
             }
@@ -690,8 +696,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		console.log("Error making chart:\n" + e +"\n" + e.stack);
                 return;
             }
-            var container = _this.jq(ID_CHART);
-	    if(_this.jq(ID_CHART).is(':visible')) {
+            var container = this.jq(ID_CHART);
+	    if(this.jq(ID_CHART).is(':visible')) {
 		this.lastWidth = container.width();
 	    } else {
 		this.lastWidth = -1;

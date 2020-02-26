@@ -5275,13 +5275,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         //callback from the pointData.loadData call
         clearCache: function() {},
-
         pointDataLoaded: function(pointData, url, reload) {
 	    let debug = displayDebug.pointDataLoaded;
 	    this.clearProgress();
             this.inError = false;
             this.clearCache();
-	    if(debug) console.log("pointDataLoad:" + this.getId() + " " + this.type +" #records:" + pointData.getRecords().length);
+	    if(debug) console.log(this.type+" pointDataLoad:" + this.getId() + " " + this.type +" #records:" + pointData.getRecords().length);
 	    if(debug)
 		console.log("\tclearing last selected fields");
 	    
@@ -5290,16 +5289,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!reload) {
 		if(debug) console.log("\tcalling addData");
                 this.addData(pointData);
-		if(debug) console.log("\tcalling checkSearchBar");
+//		if(debug) console.log("\tcalling checkSearchBar");
                 this.checkSearchBar();
-		if(debug) console.log("\done calling checkSearchBar");
+//		if(debug) console.log("\done calling checkSearchBar");
             } else {
 		if(!this.dataCollection)
 		    this.dataCollection = new DataCollection();
 		if(debug) console.log("\tcalling setData");
 		this.dataCollection.setData(pointData);
 	    }
-	    if(debug) console.log("\tstep1");
+
 	    if(this.getProperty("pageRequest")) {
 		if(debug) console.log("\tupdating pageRequest");
 		let count = pointData.getRecords().length;
@@ -5341,8 +5340,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.reloadData();
 		});		
 	    }
-	    if(debug) console.log("\tstep2");
-
 
             if (url != null) {
                 this.jsonUrl = url;
