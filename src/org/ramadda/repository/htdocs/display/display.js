@@ -4922,6 +4922,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterValues=\"\"",
 		"&lt;field&gt;.filterMultiple=\"true\"",
 		"&lt;field&gt;.filterMultipleSize=\"5\"",
+		"&lt;field&gt;.filterLabel=\"\"",
+		"&lt;field&gt;.showFilterLabel=\"false\"",
 		"&lt;field&gt;.filterByStyle=\"background:white;\"",
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",

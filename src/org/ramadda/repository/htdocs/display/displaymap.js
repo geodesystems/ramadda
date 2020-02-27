@@ -2089,7 +2089,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
 		"label:Map Attributes",
 		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
-		"showLocationSearch=\"true\"",
 		"strokeWidth=1",
 		"strokeColor=\"#000\"",
 		"fillColor=\"\"",
@@ -2101,6 +2100,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"colorByMap=\"value1:color1,...,valueN:colorN\"",
 		'doGridPoints=true',
 		"showClipToBounds=true",
+		"showLocationSearch=\"true\"",
+		'showLocationReadout=false',
+		'showLatLonPosition=false',
+		'doPopup=false',
+		'linked=true',
 		"sizeBy=\"\"",
 		"sizeByLog=\"true\"",
 		"sizeByMap=\"value1:size,...,valueN:size\"",
@@ -2257,9 +2261,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 	    args.highlight = true;
+            if (!this.getProperty("showRecordSelection", true)) {
+		return;
+	    }
+
+
 	    this.handleEventRecordHighlight(source,args);
 	    return;
-            if (!this.getProperty("showRecordSelection", true)) return;
             var record = args.record;
             if (record.hasLocation()) {
                 var latitude = record.getLatitude();

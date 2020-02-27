@@ -5837,6 +5837,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterValues=\"\"",
 		"&lt;field&gt;.filterMultiple=\"true\"",
 		"&lt;field&gt;.filterMultipleSize=\"5\"",
+		"&lt;field&gt;.filterLabel=\"\"",
+		"&lt;field&gt;.showFilterLabel=\"false\"",
 		"&lt;field&gt;.filterByStyle=\"background:white;\"",
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
@@ -25712,7 +25714,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
 		"label:Map Attributes",
 		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
-		"showLocationSearch=\"true\"",
 		"strokeWidth=1",
 		"strokeColor=\"#000\"",
 		"fillColor=\"\"",
@@ -25724,6 +25725,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"colorByMap=\"value1:color1,...,valueN:colorN\"",
 		'doGridPoints=true',
 		"showClipToBounds=true",
+		"showLocationSearch=\"true\"",
+		'showLocationReadout=false',
+		'showLatLonPosition=false',
+		'doPopup=false',
+		'linked=true',
 		"sizeBy=\"\"",
 		"sizeByLog=\"true\"",
 		"sizeByMap=\"value1:size,...,valueN:size\"",
@@ -25880,9 +25886,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 	    args.highlight = true;
+            if (!this.getProperty("showRecordSelection", true)) {
+		return;
+	    }
+
+
 	    this.handleEventRecordHighlight(source,args);
 	    return;
-            if (!this.getProperty("showRecordSelection", true)) return;
             var record = args.record;
             if (record.hasLocation()) {
                 var latitude = record.getLatitude();
