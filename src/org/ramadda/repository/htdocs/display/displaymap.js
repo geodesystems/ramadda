@@ -1408,7 +1408,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 	createHeatmap(records, bounds) {
-	    let debug = displayDebug.displayMapCreateMap;
+	    let debug = displayDebug.displayMapCreateMap || true;
 	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
 	    records = records || this.filterData();
@@ -1434,16 +1434,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
 		records = RecordUtil.subset(records, bounds);
 	    }
-	    bounds = RecordUtil.expandBounds(bounds,0.05);
+	    bounds = RecordUtil.expandBounds(bounds,this.getProperty("hm.boundsScale",0.05));
 
 	    let dfltArgs = this.getDefaultGridByArgs();
 	    let w = Math.round(this.getProperty("gridWidth",800));
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
-	    let doTimes = this.getProperty("hm.doTimes",false);
+	    let groupByDate = this.getProperty("hm.groupByDate",null);
 	    if(debug) console.log("\tcalling groupBy");
-	    let groups = (groupByField || doTimes)?RecordUtil.groupBy(records, this, this.getProperty("hm.dateBin"), groupByField):null;
+	    let groups = (groupByField || groupByDate)?RecordUtil.groupBy(records, this, groupByDate, groupByField):null;
 	    if(groups == null || groups.max == 0) {
 		doTimes = false;
 		groups= {
@@ -1452,8 +1452,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    map:{none:records}
 		}
 	    }
-
-	    if(debug) console.log("\tdone calling groupBy");
+	    if(debug) console.log("\tdone calling groupBy count="+ groups.values.length);
 	    let recordCnt = groups.max;
  	    if(dfltArgs.cellSize==0) {
 		let sqrt = Math.sqrt(recordCnt);
@@ -1479,7 +1478,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    isBaseLayer: false,
 		});
 		layer.heatmapLabel = label;
-		if(doTimes) {
+		if(groupByDate) {
 		    if(value.getTime)
 			layer.date = value;
 		}
@@ -1487,7 +1486,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    let _this = this;
-	    if(this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
+	    if(this.getProperty("hm.showGroups",true) && this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
 		this.heatmapPlayingAnimation = false;
 		let controls = HtmlUtils.div(["id",this.getDomId(ID_HEATMAP_ANIM_PLAY),"style","display:inline-block;","title","Play/Stop Animation"],
 					     HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));
@@ -2092,13 +2091,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"strokeWidth=1",
 		"strokeColor=\"#000\"",
 		"fillColor=\"\"",
-		"radius=\"5\"",
-		'scaleRadius=true',
+		["radius=\"5\"","Size of the map points"],
+		['scaleRadius=true',"Scale the radius based on # points shown"],
 		"shape=\"star|cross|x|square|triangle|circle|lightning|church\"",
-		"colorBy=\"\"",
-		"colorByLog=\"true\"",
-		"colorByMap=\"value1:color1,...,valueN:colorN\"",
-		'doGridPoints=true',
 		"showClipToBounds=true",
 		"showLocationSearch=\"true\"",
 		'showLocationReadout=false',
@@ -2123,28 +2118,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'showMarkersToggle=true',
 		'showMarkersToggleLabel="label"',
 		'markersVisibility=false',
-		'convertColorIntensity=true',
-		'intensitySourceMin=0',
-		'intensitySourceMax=100',
-		'intensityTargetMin=1',
-		'intensityTargetMax=0',
-		'convertColorAlpha=true',
-		'alphaSourceMin=0',
-		'alphaSourceMax=100',
-		'alphaTargetMin=0',
-		'alphaTargetMax=1',
 		'inlinelabel:Heatmap Attributes',
-		'doHeatmap=true',
+		['doHeatmap=true',"Grid the data into an image"],
+		['doGridPoints=true',"Display a image showing shapes or bars"],
+		['hm.showPoints="true"',"Also show the map points"],
+		"cellShape=rect|circle",
+		"cellColor=color",
+		"cellFilled=true",
+		"cellSize=8",
+		["cellSizeH=20","Base height to scale by"],
+		["cell3D=true","Draw 3d bars"],
 		'hm.operator="count|average|min|max"',
-		'hm.filter="average5|average9|average25|gauss9|gauss25"',
-		'hm.AnimationSleep="1000"',
-		'hm.groupBy="field id"',
-		'hm.doTimes="true"',
-		'hm.dateBin="day|month|year|decade"',
+		'hm.animationSleep="1000"',
+		['hm.groupByDate="day|month|year|decade"',"Group heatmap images by date"], 
+		['hm.groupBy="field id"',"Field to group heatmap images"], 
 		'hm.labelPrefix=""',
 		'hm.showToggle=""',
 		'hm.toggleLabel=""',
-		'hm.showPoints="true"',
+		['hm.boundsScale=0.1',"Scale up the map bounds"],
+		['hm.filter="average5|average9|average25|gauss9|gauss25"',"Apply filter to image"],
 		'hm.filterPasses="1"',
 		'hm.filterThreshold="1"',
 		'hm.countThreshold="1"',

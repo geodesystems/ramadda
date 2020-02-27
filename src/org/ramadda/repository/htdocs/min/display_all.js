@@ -614,6 +614,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	fields:fields,
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
+	inverse: this.getProperty("colorByInverse",false),
 	origRange:null,
 	origMinValue:0,
 	origMaxValue:0,
@@ -690,7 +691,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    }
 	},
 	getValuePercent: function(v) {
-            return  (v - this.minValue) / this.range;
+	    let perc =   (v - this.minValue) / this.range;
+	    if(this.inverse) perc = 1-perc;
+	    return perc;
 	},
 	getColor: function(value, pointRecord) {
 	    var percent = 0;
@@ -780,7 +783,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
     if(this.convertAlpha) {
-	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
+if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
 	    records.map((record,idx)=>{
 		var tuple = record.getData();
@@ -1889,7 +1892,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		color: this.getProperty("cellColor","blue"),
 		stroke: !this.getProperty("cellFilled",true),
 		cellSize: this.getProperty("cellSize",doHeatmap?0:4),
-		cellSizeH: this.getProperty("cellSizeH"),
+		cellSizeH: this.getProperty("cellSizeH",20),
 		cell3D:this.getProperty("cell3D",false),
 		cellShowText:this.getProperty("cellShowText",false),
 		cellFont:this.getProperty("cellFont"),
@@ -5826,7 +5829,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"title=\"\"",
 		"titleBackground=\"color\"",
 		"textColor=\"color\"",
-		"backgroundImage=\"\"",
+		["backgroundImage=\"\"","Image url to display in background"],
 		"background=\"color\"",
 		"label:Filter Attributes",
 		"filterFields=\"\"",
@@ -5844,22 +5847,35 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
 		'dataFilters="match|notmatch|nomissing|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
-		'filterDate=year',
-		'filterDateIncludeAll=true',
-		'startDate="yyyy-MM-dd"',
-		'endtDate="yyyy-MM-dd"',
-		'binDate=\day|month|year"',
+		['filterDate=year',"Show a simple pull down menu to select a year to display"],
+		['filterDateIncludeAll=true',"Include all years"],
+		['startDate="yyyy-MM-dd"',"Filter data on date"],
+		['endDate="yyyy-MM-dd"',,"Filter data on date"],
+		'binDate="day|month|year"',
 		'binType="count|average|total"',
 		"label:Color Attributes",
 		"colorTable=\"\"",
-		"colors=\"color1,...,colorN\"",
-		"colorBy=\"\"",
+		["colors=\"color1,...,colorN\"","Comma separate array of colors"],
+		["colorBy=\"\"","Field id to color by"],
 		"colorByFields=\"\"",
-		"colorTableAlpha=\"0.5\"",
-		'colorTableInverse=true',
-		"colorByMin=\"value\"",
-		"colorByMax=\"value\"",
-		'showColorTable=false',
+		["colorByLog=\"true\"","Use a log scale for the color by"],
+		["colorByMap=\"value1:color1,...,valueN:colorN\"","Specify colors for color by text values"],
+		['colorByInverse=true','Inverse the values'],
+		["colorTableAlpha=\"0.5\"","Set transparency on color table values"],
+		['colorTableInverse=true',"Inverse the color table"],
+		["colorByMin=\"value\"","Min scale value"],
+		["colorByMax=\"value\"","Max scale value"],
+		['showColorTable=false',"Display the color table"],
+		'convertColorIntensity=true',
+		'intensitySourceMin=0',
+		'intensitySourceMax=100',
+		'intensityTargetMin=1',
+		'intensityTargetMax=0',
+		'convertColorAlpha=true',
+		'alphaSourceMin=0',
+		'alphaSourceMax=100',
+		'alphaTargetMin=0',
+		'alphaTargetMax=1',
 		"inlinelabel:Animation Attributes",
 		"doAnimation=true",
 		"acceptDateRangeChange=true",
@@ -8685,8 +8701,7 @@ var RecordUtil = {
 		    label = year+"s";
 		    key = new Date(year+"-01-01");
 		} else if(dateBin) {
-		    console.log("unknown bin");
-		    throw new Error("Unknown date bin:" + dateBin);
+		    label = String(key);
 		}
 	    }
 	    if(!groups.map[key]) {
@@ -8899,7 +8914,7 @@ var RecordUtil = {
 	    ctx.stroke();
 	} else {
 	    if(opts.cell3D) {
-		let height = perc*20;
+		let height = perc*(opts.cellSizeH||20);
 		ctx.strokeStyle = "#000";
 		ctx.strokeStyle = "rgba(0,0,0,0)"
 		RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
@@ -9133,8 +9148,8 @@ var RecordUtil = {
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	var ctx = canvas.getContext("2d");
-	//	ctx.strokeStyle= "#000";
-	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
+//	ctx.strokeStyle= "#000";
+//	ctx.strokeRect(0,0,canvas.width,canvas.height);
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;
@@ -25034,7 +25049,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 	createHeatmap(records, bounds) {
-	    let debug = displayDebug.displayMapCreateMap;
+	    let debug = displayDebug.displayMapCreateMap || true;
 	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
 	    records = records || this.filterData();
@@ -25060,16 +25075,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
 		records = RecordUtil.subset(records, bounds);
 	    }
-	    bounds = RecordUtil.expandBounds(bounds,0.05);
+	    bounds = RecordUtil.expandBounds(bounds,this.getProperty("hm.boundsScale",0.05));
 
 	    let dfltArgs = this.getDefaultGridByArgs();
 	    let w = Math.round(this.getProperty("gridWidth",800));
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
-	    let doTimes = this.getProperty("hm.doTimes",false);
+	    let groupByDate = this.getProperty("hm.groupByDate",null);
 	    if(debug) console.log("\tcalling groupBy");
-	    let groups = (groupByField || doTimes)?RecordUtil.groupBy(records, this, this.getProperty("hm.dateBin"), groupByField):null;
+	    let groups = (groupByField || groupByDate)?RecordUtil.groupBy(records, this, groupByDate, groupByField):null;
 	    if(groups == null || groups.max == 0) {
 		doTimes = false;
 		groups= {
@@ -25078,8 +25093,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    map:{none:records}
 		}
 	    }
-
-	    if(debug) console.log("\tdone calling groupBy");
+	    if(debug) console.log("\tdone calling groupBy count="+ groups.values.length);
 	    let recordCnt = groups.max;
  	    if(dfltArgs.cellSize==0) {
 		let sqrt = Math.sqrt(recordCnt);
@@ -25105,7 +25119,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    isBaseLayer: false,
 		});
 		layer.heatmapLabel = label;
-		if(doTimes) {
+		if(groupByDate) {
 		    if(value.getTime)
 			layer.date = value;
 		}
@@ -25113,7 +25127,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    let _this = this;
-	    if(this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
+	    if(this.getProperty("hm.showGroups",true) && this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
 		this.heatmapPlayingAnimation = false;
 		let controls = HtmlUtils.div(["id",this.getDomId(ID_HEATMAP_ANIM_PLAY),"style","display:inline-block;","title","Play/Stop Animation"],
 					     HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));
@@ -25718,13 +25732,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"strokeWidth=1",
 		"strokeColor=\"#000\"",
 		"fillColor=\"\"",
-		"radius=\"5\"",
-		'scaleRadius=true',
+		["radius=\"5\"","Size of the map points"],
+		['scaleRadius=true',"Scale the radius based on # points shown"],
 		"shape=\"star|cross|x|square|triangle|circle|lightning|church\"",
-		"colorBy=\"\"",
-		"colorByLog=\"true\"",
-		"colorByMap=\"value1:color1,...,valueN:colorN\"",
-		'doGridPoints=true',
 		"showClipToBounds=true",
 		"showLocationSearch=\"true\"",
 		'showLocationReadout=false',
@@ -25749,28 +25759,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'showMarkersToggle=true',
 		'showMarkersToggleLabel="label"',
 		'markersVisibility=false',
-		'convertColorIntensity=true',
-		'intensitySourceMin=0',
-		'intensitySourceMax=100',
-		'intensityTargetMin=1',
-		'intensityTargetMax=0',
-		'convertColorAlpha=true',
-		'alphaSourceMin=0',
-		'alphaSourceMax=100',
-		'alphaTargetMin=0',
-		'alphaTargetMax=1',
 		'inlinelabel:Heatmap Attributes',
-		'doHeatmap=true',
+		['doHeatmap=true',"Grid the data into an image"],
+		['doGridPoints=true',"Display a image showing shapes or bars"],
+		['hm.showPoints="true"',"Also show the map points"],
+		"cellShape=rect|circle",
+		"cellColor=color",
+		"cellFilled=true",
+		"cellSize=8",
+		["cellSizeH=20","Base height to scale by"],
+		["cell3D=true","Draw 3d bars"],
 		'hm.operator="count|average|min|max"',
-		'hm.filter="average5|average9|average25|gauss9|gauss25"',
-		'hm.AnimationSleep="1000"',
-		'hm.groupBy="field id"',
-		'hm.doTimes="true"',
-		'hm.dateBin="day|month|year|decade"',
+		'hm.animationSleep="1000"',
+		['hm.groupByDate="day|month|year|decade"',"Group heatmap images by date"], 
+		['hm.groupBy="field id"',"Field to group heatmap images"], 
 		'hm.labelPrefix=""',
 		'hm.showToggle=""',
 		'hm.toggleLabel=""',
-		'hm.showPoints="true"',
+		['hm.boundsScale=0.1',"Scale up the map bounds"],
+		['hm.filter="average5|average9|average25|gauss9|gauss25"',"Apply filter to image"],
 		'hm.filterPasses="1"',
 		'hm.filterThreshold="1"',
 		'hm.countThreshold="1"',

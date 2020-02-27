@@ -1258,8 +1258,7 @@ var RecordUtil = {
 		    label = year+"s";
 		    key = new Date(year+"-01-01");
 		} else if(dateBin) {
-		    console.log("unknown bin");
-		    throw new Error("Unknown date bin:" + dateBin);
+		    label = String(key);
 		}
 	    }
 	    if(!groups.map[key]) {
@@ -1472,7 +1471,7 @@ var RecordUtil = {
 	    ctx.stroke();
 	} else {
 	    if(opts.cell3D) {
-		let height = perc*20;
+		let height = perc*(opts.cellSizeH||20);
 		ctx.strokeStyle = "#000";
 		ctx.strokeStyle = "rgba(0,0,0,0)"
 		RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
@@ -1706,8 +1705,8 @@ var RecordUtil = {
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	var ctx = canvas.getContext("2d");
-	//	ctx.strokeStyle= "#000";
-	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
+//	ctx.strokeStyle= "#000";
+//	ctx.strokeRect(0,0,canvas.width,canvas.height);
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;

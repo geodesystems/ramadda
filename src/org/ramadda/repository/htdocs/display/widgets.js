@@ -614,6 +614,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	fields:fields,
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
+	inverse: this.getProperty("colorByInverse",false),
 	origRange:null,
 	origMinValue:0,
 	origMaxValue:0,
@@ -690,7 +691,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    }
 	},
 	getValuePercent: function(v) {
-            return  (v - this.minValue) / this.range;
+	    let perc =   (v - this.minValue) / this.range;
+	    if(this.inverse) perc = 1-perc;
+	    return perc;
 	},
 	getColor: function(value, pointRecord) {
 	    var percent = 0;
@@ -780,7 +783,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
     if(this.convertAlpha) {
-	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
+if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
 	    records.map((record,idx)=>{
 		var tuple = record.getData();
