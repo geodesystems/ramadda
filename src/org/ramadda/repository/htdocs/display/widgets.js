@@ -602,7 +602,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	getProperty: function(prop, dflt) {
 	    for(let i=0;i<this.propPrefix.length;i++) {
 		let v = this.display.getProperty(this.propPrefix[i]+prop);
-		if(v) return v;
+		if(Utils.isDefined(v)) return v;
 	    }
 	    return dflt;
 	}

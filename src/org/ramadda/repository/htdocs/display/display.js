@@ -4939,6 +4939,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"colorBy=\"\"",
 		"colorByFields=\"\"",
 		"colorTableAlpha=\"0.5\"",
+		'colorTableInverse=true',
 		"colorByMin=\"value\"",
 		"colorByMax=\"value\"",
 		'showColorTable=false',

@@ -602,7 +602,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	getProperty: function(prop, dflt) {
 	    for(let i=0;i<this.propPrefix.length;i++) {
 		let v = this.display.getProperty(this.propPrefix[i]+prop);
-		if(v) return v;
+		if(Utils.isDefined(v)) return v;
 	    }
 	    return dflt;
 	}
@@ -5854,6 +5854,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"colorBy=\"\"",
 		"colorByFields=\"\"",
 		"colorTableAlpha=\"0.5\"",
+		'colorTableInverse=true',
 		"colorByMin=\"value\"",
 		"colorByMax=\"value\"",
 		'showColorTable=false',
@@ -23624,13 +23625,13 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
    Copyright 2008-2019 Geode Systems LLC
 */
 
-var DISPLAY_MAP = "map";
-var DISPLAY_MAPGRID = "mapgrid";
+let DISPLAY_MAP = "map";
+let DISPLAY_MAPGRID = "mapgrid";
 
-var displayMapMarkers = ["marker.png", "marker-blue.png", "marker-gold.png", "marker-green.png"];
-var displayMapCurrentMarker = -1;
-var displayMapUrlToVectorListeners = {};
-var displayMapMarkerIcons = {};
+let displayMapMarkers = ["marker.png", "marker-blue.png", "marker-gold.png", "marker-green.png"];
+let displayMapCurrentMarker = -1;
+let displayMapUrlToVectorListeners = {};
+let displayMapMarkerIcons = {};
 
 addGlobalDisplayType({
     type: DISPLAY_MAP,
@@ -23651,13 +23652,13 @@ function MapFeature(source, points) {
 
 
 function RamaddaMapDisplay(displayManager, id, properties) {
-    var ID_LATFIELD = "latfield";
-    var ID_LONFIELD = "lonfield";
-    var ID_MAP = "map";
-    var ID_SHAPES = "shapes";
-    var ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
-    var ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
-    var SUPER;
+    let ID_LATFIELD = "latfield";
+    let ID_LONFIELD = "lonfield";
+    let ID_MAP = "map";
+    let ID_SHAPES = "shapes";
+    let ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
+    let ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
+    let SUPER;
     RamaddaUtil.defineMembers(this, {
         showLocationReadout: false,
         showBoxes: true,
@@ -23826,8 +23827,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","rgba(0,0,0,0)");
 	    this.map.doPopup = this.getProperty("doPopup",true);
-	    //	    if(!this.map.doPopup)
-	    //		this.map.doSelect = false;
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
