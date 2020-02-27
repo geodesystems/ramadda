@@ -35,6 +35,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     let ID_SHAPES = "shapes";
     let ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
     let ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
+    let ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
     let SUPER;
     RamaddaUtil.defineMembers(this, {
         showLocationReadout: false,
@@ -1408,7 +1409,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 	createHeatmap(records, bounds) {
-	    let debug = displayDebug.displayMapCreateMap || true;
+	    let debug = displayDebug.displayMapCreateMap;
 	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
 	    records = records || this.filterData();
@@ -1488,8 +1489,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    if(this.getProperty("hm.showGroups",true) && this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
 		this.heatmapPlayingAnimation = false;
-		let controls = HtmlUtils.div(["id",this.getDomId(ID_HEATMAP_ANIM_PLAY),"style","display:inline-block;","title","Play/Stop Animation"],
-					     HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));
+		let controls =  "";
+		if(!groupByField) 
+		    controls+=HtmlUtils.div(["id",this.getDomId(ID_HEATMAP_ANIM_PLAY),"style","display:inline-block;","title","Play/Stop Animation"],
+					    HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));
+		controls += HtmlUtils.div(["id",this.getDomId(ID_HEATMAP_ANIM_STEP),"style","display:inline-block;","title","Step"],
+ 					  HtmlUtils.getIconImage("fa-step-forward",["style","    cursor:pointer;"]));
+		    
 		controls += HtmlUtils.div(["style","display:inline-block;margin-left:5px;margin-right:5px;"], HtmlUtils.select("",["id",this.getDomId(ID_HEATMAP_ANIM_LIST)],labels));
 		this.writeHeader(ID_HEADER2_PREPREFIX, controls);
 		this.jq(ID_HEATMAP_ANIM_LIST).change(function() {
@@ -1504,6 +1510,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			_this.stepHeatmapAnimation();
 		    }
 		});
+		this.jq(ID_HEATMAP_ANIM_STEP).click(function() {
+		    _this.heatmapPlayingAnimation = false;
+		    let icon = _this.heatmapPlayingAnimation?"fa-stop":"fa-play";
+		    _this.jq(ID_HEATMAP_ANIM_PLAY).html(HtmlUtils.getIconImage(icon,["style","    cursor:pointer;"]));
+		    _this.stepHeatmapAnimation();
+		});
+
 	    }
 	    if(groups.values[0]!="none") {
 		this.setMapLabel(labels[0]);
