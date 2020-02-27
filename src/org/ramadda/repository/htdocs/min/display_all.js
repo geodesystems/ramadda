@@ -14923,6 +14923,7 @@ function PiechartDisplay(displayManager, id, properties) {
 }
 
 
+//TODO: this is broken because we don't load the sankey package because it loads an old version of d3
 function SankeyDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties));
     addRamaddaDisplay(this);

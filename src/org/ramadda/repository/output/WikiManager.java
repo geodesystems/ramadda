@@ -2251,6 +2251,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             int           columns        = -1;
             List<String>  headers        = null;
             String        headerTemplate = null;
+            List<Entry>   entries        = null;
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
                 String value = (String) props.get(key);
@@ -2258,6 +2259,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     tag = value;
                 } else if (key.equals("_template")) {
                     template = value;
+                } else if (key.equals("_entries")) {
+                    entries = getEntries(request, wikiUtil, entry, value,
+                                         props);
+                    max = Math.max(max, entries.size());
                 } else if (key.equals("_headers")) {
                     headers = StringUtil.split(value, ",");
                 } else if (key.equals("_headerTemplate")) {
@@ -2352,12 +2357,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                     buff.append(header);
                 }
+                Entry theEntry = entry;
+                if ((entries != null) && (i < entries.size())) {
+                    theEntry = entries.get(i);
+                }
                 if (s != null) {
-                    buff.append(wikifyEntry(request, entry, wikiUtil, s,
+                    buff.append(wikifyEntry(request, theEntry, wikiUtil, s,
                                             false, null, null, null));
                 } else {
                     buff.append(getWikiIncludeInner(wikiUtil, request,
-                            originalEntry, entry, tag, _props));
+                            originalEntry, theEntry, tag, _props));
                 }
                 if (columns > 0) {
                     buff.append("</td>");
