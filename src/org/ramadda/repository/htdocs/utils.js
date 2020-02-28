@@ -1661,6 +1661,8 @@ var ATTR_SIZE = "size";
 var ATTR_STYLE = "style";
 var ATTR_ALIGN = "align";
 var ATTR_VALIGN = "valign";
+var SPACE1 = "&nbsp;";
+var SPACE2 = "&nbsp;&nbsp;";
 
 
 var HtmlUtils = {

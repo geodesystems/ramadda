@@ -1453,6 +1453,7 @@ var RecordUtil = {
 		//		if(perc<0.3 || perc>0.7) return;
 		let degrees = (360*perc);
 		//		console.log(v +" " + perc  + v +" deg:" + degrees);
+
 		degrees = degrees*(Math.PI / 360)
 		x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
 		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
@@ -1469,28 +1470,46 @@ var RecordUtil = {
 	    ctx.moveTo(x,y);
 	    ctx.lineTo(x2,y2);
 	    ctx.stroke();
-	} else {
-	    if(opts.cell3D) {
-		let height = perc*(opts.cellSizeH||20);
-		ctx.strokeStyle = "#000";
-		ctx.strokeStyle = "rgba(0,0,0,0)"
-		RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
-	    } else {
-		let crx = x-opts.cellSizeX/2;
-		let cry = y+opts.cellSizeY/2;
-		crx=x;
-		cry=y
-		if(opts.stroke)
-		    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-		else
-		    ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-		ctx.strokeStyle = "#000";
-//		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-//		ctx.font="8px arial"
-//		ctx.fillStyle = "black";
-//		ctx.fillText(v, crx,cry);
+	} else if(opts.cell3D) {
+	    let height = perc*(opts.cellSizeH||20);
+	    ctx.strokeStyle = "#000";
+	    ctx.strokeStyle = "rgba(0,0,0,0)"
+	    RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
+	} else if(opts.shape=="tile"){
+	    let crx = x+opts.cellSizeX/2;
+	    let cry = y+opts.cellSizeY/2;
+ 	    if((rowIdx%2)==0)  {
+		crx = crx+opts.cellSizeX/2;
+		cry = cry-opts.cellSizeY/2;
 	    }
-	    
+	    let sizex = opts.cellSizeX/2;
+	    let sizey = opts.cellSizeY/2;
+	    ctx.beginPath();
+	    let quarter = Math.PI/2;
+	    ctx.moveTo(crx + sizex * Math.cos(quarter), cry + sizey * Math.sin(quarter));
+	    for (let side=0; side < 7; side++) {
+		ctx.lineTo(crx + sizex * Math.cos(quarter+side * 2 * Math.PI / 6), cry + sizey * Math.sin(quarter+side * 2 * Math.PI / 6));
+	    }
+	    ctx.strokeStyle = "#000";
+//	    ctx.fill();
+	    ctx.stroke();
+
+	} else {
+	    let crx = x-opts.cellSizeX/2;
+	    let cry = y+opts.cellSizeY/2;
+	    crx=x;
+	    cry=y
+//	    if(opts.stroke)
+	    ctx.strokeStyle = "#000";
+//	    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+//	    else
+//		ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+	    ctx.strokeStyle = "#000";
+	    //		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+	    //		ctx.font="8px arial"
+	    //		ctx.fillStyle = "black";
+	    //		ctx.fillText(v, crx,cry);
 	}
 	if(opts.cellShowText && v!=null) {
 	    ctx.textAlign = "center";
@@ -1790,6 +1809,23 @@ var RecordUtil = {
 			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
 		}
 	    }
+
+	    opts.shape = "rect";
+	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+		let row = grid[rowIdx];
+		for(var colIdx=0;colIdx<cols;colIdx++)  {
+		    let cell = row[colIdx];
+		    let v = cell.v;
+		    if(isNaN(v)) continue;
+		    let x = colIdx*opts.cellSizeX;
+		    let y = rowIdx*opts.cellSizeY;
+		    if(cell.count>=countThreshold)
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
+		}
+	    }
+	    
+
+
 	} else {
 	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
 	    records.map((record,idx)=>{

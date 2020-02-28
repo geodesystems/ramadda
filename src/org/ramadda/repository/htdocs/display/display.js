@@ -8,6 +8,8 @@ let displayDebug = {
     handleEventPropertyChanged:false,
     getSelectedFields:false,
     filterData:false,
+    getStandardData:false,
+    makeDataTable:false,
     checkSearchBar:false,
     handleNoData:false,
     pointDataLoaded:false,
@@ -17,6 +19,7 @@ let displayDebug = {
     loadPointJson:false,
     groupBy:false,
     gridPoints:false,
+
 }
 
 
@@ -61,6 +64,7 @@ var ID_REQUEST_PROPERTIES = "request_properties";
 let ID_PAGE_COUNT = "pagecount";
 let ID_PAGE_PREV = "pageprev";
 let ID_PAGE_NEXT = "pagenext";
+let ID_FILTER_DATE = "filterdate";
 var CATEGORY_MISC = "Misc";
 
 
@@ -382,7 +386,7 @@ function DisplayThing(argId, argProperties) {
             }
         },
         formatDateInner: function(date, args) {
-	    var fmt = this.getProperty("dateFormat");
+	    var fmt = this.getProperty("dateFormat", this.getProperty("dateFormat2"));
 	    let dttm = Utils.formatDateWithFormat(date,fmt,true);
 	    if(dttm) return dttm;
 
@@ -529,7 +533,7 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
 	    if(template=="${fields}") {
-		fields = this.getFieldsByIds(null,this.getProperty("fields"));
+		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getProperty("fields")));
 	    }
 
             var values = "<table>";
@@ -1765,7 +1769,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var row = record.getData();
                 var value = row[field.getIndex()];
                 values.push(value);
-                if (Utils.isNumber(value)) {
+                if (Utils.isNumber(value) && !isNaN(value)) {
                     min = Math.min(min, value);
                     max = Math.max(max, value);
                 }
@@ -1998,7 +2002,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
-		let date = $("#"+ this.getFilterId("filterDate")).val();
+		let date = $("#"+ this.getFilterId(ID_FILTER_DATE)).val();
 		if(date) {
 		    if(date=="all") {
 			this.setDateRange(null,null);
@@ -2344,6 +2348,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(debug)
 		console.log("filtered:" + records.length);
+
+//	    records.map(r=>{console.log(r.getDate() +" " + r.getData());});
+
+
             return records;
         },
 	drawSparkLine: function(dom,w,h,data, records,min,max,colorBy,attrs) {
@@ -3964,6 +3972,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(header).html(html);
 	},
 
+	stepFilterDateAnimation: function(inputFunc, dir){
+	    let select = $("#" +this.getFilterId(ID_FILTER_DATE));
+	    let index = select[0].selectedIndex;
+	    let length = select.find('option').length;
+	    index+=dir;
+	    if(index>=length) {
+		return;
+		index =0;
+	    } else if(index<0) {
+		return;
+		index = length-1;
+	    }
+	    select[0].selectedIndex = index;
+	    inputFunc(select);
+	    if(this.filterDatePlayingAnimation) {
+		setTimeout(()=>{
+		    this.stepFilterDateAnimation(inputFunc,1);
+		},this.getProperty("filterDateAnimationSleep",1000));
+	    }
+	},
+
+
+
         checkSearchBar: function() {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
@@ -4071,10 +4102,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let style="";
 		if(!this.getProperty("filterDateShow",true))
 		    style +="display:none;";
-		let selectId = this.getFilterId("filterDate");
+		let selectId = this.getFilterId(ID_FILTER_DATE);
+		
+		label =  this.makeFilterLabel("Select " + label+": ");
+		let prefix="";
+		prefix += HtmlUtils.div(["id",this.getDomId("filterDateStepBackward"),"style","display:inline-block;","title","Step Back"],
+ 					HtmlUtils.getIconImage("fa-step-backward",["style","    cursor:pointer;"])) +SPACE1;
+		prefix+=HtmlUtils.div(["id",this.getDomId("filterDatePlay"),"style","display:inline-block;","title","Play/Stop Animation"],
+					    HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));
+		prefix += HtmlUtils.div(["id",this.getDomId("filterDateStepForward"),"style","display:inline-block;","title","Step Forward"],
+ 					HtmlUtils.getIconImage("fa-step-forward",["style","    cursor:pointer;"])) +SPACE1;
+
 		header2 += HtmlUtils.span(["class","display-filter","style",style],
-					  this.makeFilterLabel("Select " + label+": ") + HtmlUtils.select("",["fieldId","filterDate", "style","",
-													      "id",selectId],enums,selected))+"&nbsp;";
+					  prefix +
+					  HtmlUtils.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+"&nbsp;";
 	    }
 	    
 
@@ -4580,9 +4621,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//		HtmlUtils.initSelect(this.jq("sizebyselect"));
 		//		HtmlUtils.initSelect(this.jq("chartfields"));
 
-		$("#" + this.getFilterId("filterDate")).change(function() {
+		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
 		    inputFunc($(this));
 		});
+		this.jq("filterDatePlay").click(function() {
+		    _this.filterDatePlayingAnimation = !_this.filterDatePlayingAnimation;
+		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		    $(this).html(HtmlUtils.getIconImage(icon,["style","    cursor:pointer;"]));
+		    if(_this.filterDatePlayingAnimation) {
+			_this.stepFilterDateAnimation(inputFunc,1);
+		    }
+		});
+		this.jq("filterDateStepBackward").click(function() {
+		    _this.filterDatePlayingAnimation = false;
+		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		    _this.jq("filterDatePlay").html(HtmlUtils.getIconImage(icon,["style","    cursor:pointer;"]));
+		    _this.stepFilterDateAnimation(inputFunc,-1);
+		});
+		this.jq("filterDateStepForward").click(function() {
+		    _this.filterDatePlayingAnimation = false;
+		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		    _this.jq("filterDatePlay").html(HtmlUtils.getIconImage(icon,["style","    cursor:pointer;"]));
+		    _this.stepFilterDateAnimation(inputFunc,1);
+		});
+
                 this.jq("chartfields").change(function(){
 		    _this.setProperty("fields",$(this).val());
 		    _this.updateUI();

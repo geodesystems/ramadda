@@ -2135,7 +2135,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['doHeatmap=true',"Grid the data into an image"],
 		['doGridPoints=true',"Display a image showing shapes or bars"],
 		['hm.showPoints="true"',"Also show the map points"],
-		"cellShape=rect|circle",
+		"cellShape=rect|circle|tile",
 		"cellColor=color",
 		"cellFilled=true",
 		"cellSize=8",

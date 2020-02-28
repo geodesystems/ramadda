@@ -926,6 +926,8 @@ let displayDebug = {
     handleEventPropertyChanged:false,
     getSelectedFields:false,
     filterData:false,
+    getStandardData:false,
+    makeDataTable:false,
     checkSearchBar:false,
     handleNoData:false,
     pointDataLoaded:false,
@@ -935,6 +937,7 @@ let displayDebug = {
     loadPointJson:false,
     groupBy:false,
     gridPoints:false,
+
 }
 
 
@@ -979,6 +982,7 @@ var ID_REQUEST_PROPERTIES = "request_properties";
 let ID_PAGE_COUNT = "pagecount";
 let ID_PAGE_PREV = "pageprev";
 let ID_PAGE_NEXT = "pagenext";
+let ID_FILTER_DATE = "filterdate";
 var CATEGORY_MISC = "Misc";
 
 
@@ -1300,7 +1304,7 @@ function DisplayThing(argId, argProperties) {
             }
         },
         formatDateInner: function(date, args) {
-	    var fmt = this.getProperty("dateFormat");
+	    var fmt = this.getProperty("dateFormat", this.getProperty("dateFormat2"));
 	    let dttm = Utils.formatDateWithFormat(date,fmt,true);
 	    if(dttm) return dttm;
 
@@ -1447,7 +1451,7 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
 	    if(template=="${fields}") {
-		fields = this.getFieldsByIds(null,this.getProperty("fields"));
+		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getProperty("fields")));
 	    }
 
             var values = "<table>";
@@ -2683,7 +2687,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var row = record.getData();
                 var value = row[field.getIndex()];
                 values.push(value);
-                if (Utils.isNumber(value)) {
+                if (Utils.isNumber(value) && !isNaN(value)) {
                     min = Math.min(min, value);
                     max = Math.max(max, value);
                 }
@@ -2916,7 +2920,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
-		let date = $("#"+ this.getFilterId("filterDate")).val();
+		let date = $("#"+ this.getFilterId(ID_FILTER_DATE)).val();
 		if(date) {
 		    if(date=="all") {
 			this.setDateRange(null,null);
@@ -3262,6 +3266,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(debug)
 		console.log("filtered:" + records.length);
+
+//	    records.map(r=>{console.log(r.getDate() +" " + r.getData());});
+
+
             return records;
         },
 	drawSparkLine: function(dom,w,h,data, records,min,max,colorBy,attrs) {
@@ -4882,6 +4890,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(header).html(html);
 	},
 
+	stepFilterDateAnimation: function(inputFunc, dir){
+	    let select = $("#" +this.getFilterId(ID_FILTER_DATE));
+	    let index = select[0].selectedIndex;
+	    let length = select.find('option').length;
+	    index+=dir;
+	    if(index>=length) {
+		return;
+		index =0;
+	    } else if(index<0) {
+		return;
+		index = length-1;
+	    }
+	    select[0].selectedIndex = index;
+	    inputFunc(select);
+	    if(this.filterDatePlayingAnimation) {
+		setTimeout(()=>{
+		    this.stepFilterDateAnimation(inputFunc,1);
+		},this.getProperty("filterDateAnimationSleep",1000));
+	    }
+	},
+
+
+
         checkSearchBar: function() {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
@@ -4989,10 +5020,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let style="";
 		if(!this.getProperty("filterDateShow",true))
 		    style +="display:none;";
-		let selectId = this.getFilterId("filterDate");
+		let selectId = this.getFilterId(ID_FILTER_DATE);
+		
+		label =  this.makeFilterLabel("Select " + label+": ");
+		let prefix="";
+		prefix += HtmlUtils.div(["id",this.getDomId("filterDateStepBackward"),"style","display:inline-block;","title","Step Back"],
+ 					HtmlUtils.getIconImage("fa-step-backward",["style","    cursor:pointer;"])) +SPACE1;
+		prefix+=HtmlUtils.div(["id",this.getDomId("filterDatePlay"),"style","display:inline-block;","title","Play/Stop Animation"],
+					    HtmlUtils.getIconImage("fa-play",["style","    cursor:pointer;"]));
+		prefix += HtmlUtils.div(["id",this.getDomId("filterDateStepForward"),"style","display:inline-block;","title","Step Forward"],
+ 					HtmlUtils.getIconImage("fa-step-forward",["style","    cursor:pointer;"])) +SPACE1;
+
 		header2 += HtmlUtils.span(["class","display-filter","style",style],
-					  this.makeFilterLabel("Select " + label+": ") + HtmlUtils.select("",["fieldId","filterDate", "style","",
-													      "id",selectId],enums,selected))+"&nbsp;";
+					  prefix +
+					  HtmlUtils.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+"&nbsp;";
 	    }
 	    
 
@@ -5498,9 +5539,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//		HtmlUtils.initSelect(this.jq("sizebyselect"));
 		//		HtmlUtils.initSelect(this.jq("chartfields"));
 
-		$("#" + this.getFilterId("filterDate")).change(function() {
+		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
 		    inputFunc($(this));
 		});
+		this.jq("filterDatePlay").click(function() {
+		    _this.filterDatePlayingAnimation = !_this.filterDatePlayingAnimation;
+		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		    $(this).html(HtmlUtils.getIconImage(icon,["style","    cursor:pointer;"]));
+		    if(_this.filterDatePlayingAnimation) {
+			_this.stepFilterDateAnimation(inputFunc,1);
+		    }
+		});
+		this.jq("filterDateStepBackward").click(function() {
+		    _this.filterDatePlayingAnimation = false;
+		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		    _this.jq("filterDatePlay").html(HtmlUtils.getIconImage(icon,["style","    cursor:pointer;"]));
+		    _this.stepFilterDateAnimation(inputFunc,-1);
+		});
+		this.jq("filterDateStepForward").click(function() {
+		    _this.filterDatePlayingAnimation = false;
+		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		    _this.jq("filterDatePlay").html(HtmlUtils.getIconImage(icon,["style","    cursor:pointer;"]));
+		    _this.stepFilterDateAnimation(inputFunc,1);
+		});
+
                 this.jq("chartfields").change(function(){
 		    _this.setProperty("fields",$(this).val());
 		    _this.updateUI();
@@ -8896,6 +8958,7 @@ var RecordUtil = {
 		//		if(perc<0.3 || perc>0.7) return;
 		let degrees = (360*perc);
 		//		console.log(v +" " + perc  + v +" deg:" + degrees);
+
 		degrees = degrees*(Math.PI / 360)
 		x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
 		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
@@ -8912,28 +8975,46 @@ var RecordUtil = {
 	    ctx.moveTo(x,y);
 	    ctx.lineTo(x2,y2);
 	    ctx.stroke();
-	} else {
-	    if(opts.cell3D) {
-		let height = perc*(opts.cellSizeH||20);
-		ctx.strokeStyle = "#000";
-		ctx.strokeStyle = "rgba(0,0,0,0)"
-		RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
-	    } else {
-		let crx = x-opts.cellSizeX/2;
-		let cry = y+opts.cellSizeY/2;
-		crx=x;
-		cry=y
-		if(opts.stroke)
-		    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-		else
-		    ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-		ctx.strokeStyle = "#000";
-//		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-//		ctx.font="8px arial"
-//		ctx.fillStyle = "black";
-//		ctx.fillText(v, crx,cry);
+	} else if(opts.cell3D) {
+	    let height = perc*(opts.cellSizeH||20);
+	    ctx.strokeStyle = "#000";
+	    ctx.strokeStyle = "rgba(0,0,0,0)"
+	    RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
+	} else if(opts.shape=="tile"){
+	    let crx = x+opts.cellSizeX/2;
+	    let cry = y+opts.cellSizeY/2;
+ 	    if((rowIdx%2)==0)  {
+		crx = crx+opts.cellSizeX/2;
+		cry = cry-opts.cellSizeY/2;
 	    }
-	    
+	    let sizex = opts.cellSizeX/2;
+	    let sizey = opts.cellSizeY/2;
+	    ctx.beginPath();
+	    let quarter = Math.PI/2;
+	    ctx.moveTo(crx + sizex * Math.cos(quarter), cry + sizey * Math.sin(quarter));
+	    for (let side=0; side < 7; side++) {
+		ctx.lineTo(crx + sizex * Math.cos(quarter+side * 2 * Math.PI / 6), cry + sizey * Math.sin(quarter+side * 2 * Math.PI / 6));
+	    }
+	    ctx.strokeStyle = "#000";
+//	    ctx.fill();
+	    ctx.stroke();
+
+	} else {
+	    let crx = x-opts.cellSizeX/2;
+	    let cry = y+opts.cellSizeY/2;
+	    crx=x;
+	    cry=y
+//	    if(opts.stroke)
+	    ctx.strokeStyle = "#000";
+//	    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+//	    else
+//		ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+	    ctx.strokeStyle = "#000";
+	    //		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+	    //		ctx.font="8px arial"
+	    //		ctx.fillStyle = "black";
+	    //		ctx.fillText(v, crx,cry);
 	}
 	if(opts.cellShowText && v!=null) {
 	    ctx.textAlign = "center";
@@ -9233,6 +9314,23 @@ var RecordUtil = {
 			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
 		}
 	    }
+
+	    opts.shape = "rect";
+	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+		let row = grid[rowIdx];
+		for(var colIdx=0;colIdx<cols;colIdx++)  {
+		    let cell = row[colIdx];
+		    let v = cell.v;
+		    if(isNaN(v)) continue;
+		    let x = colIdx*opts.cellSizeX;
+		    let y = rowIdx*opts.cellSizeY;
+		    if(cell.count>=countThreshold)
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
+		}
+	    }
+	    
+
+
 	} else {
 	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
 	    records.map((record,idx)=>{
@@ -12829,11 +12927,8 @@ if(window["google"]) {
 
 function haveGoogleChartsLoaded() {
     if (!googleChartsLoaded) {
-	console.log("have google loaded");
         if (Utils.isDefined(google.visualization)) {
-	    console.log("has visualization");
             if (Utils.isDefined(google.visualization.Gauge)) {
-		console.log("has gauge");
                 googleChartsLoaded = true;
             }
         }
@@ -13553,6 +13648,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return false;
 	},
         makeDataTable: function(dataList, props, selectedFields) {
+	    let debug =displayDebug.makeDataTable;
+	    let debugRows = 3;
+	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
+
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
@@ -13622,8 +13721,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
-	    let debug =false;
-	    let debugRows = 3;
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
@@ -13933,17 +14030,21 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     } else {
 			if(annotationTemplate) {
 			    let v = annotationTemplate.replace("${value}",value.f||value);
+			    if(debug && rowIdx<debugRows)
+				console.log("\t annotation" + v);
 			    newRow.push(v);
 			}
 			if(addStyle) {
 			    newRow.push(color);
+			    if(debug && rowIdx<debugRows)
+				console.log("\t color:" + color);
 			    //			    if(debug && rowIdx<debugRows)
 			    //				console.log("\t style:" + color);
 			}
 			if(addTooltip) {
                             newRow.push(tooltip);
-			    //			    if(debug && rowIdx<debugRows)
-			    //				console.log("\t tooltip:");
+			    if(debug && rowIdx<debugRows)
+			    	console.log("\t tooltip:");
 			}
                     }
 		    if(j>0 && fixedValueS) {
@@ -13996,7 +14097,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		}
                 justData.push(newRow);
-		if(debug && rowIdx>debugRows) break;
+//		if(debug && rowIdx>debugRows) break;
 	    }
             dataTable.addRows(justData);
             if (didColorBy) {
@@ -14216,6 +14317,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.chartCount  = -1;
 
 
+            let records = this.getPointData().getRecords();
+	    if(this.getProperty("hAxisFixedRange")) {
+		let x = this.getColumnValues(records, selectedFields[0]);
+		this.chartOptions.hAxis.minValue = x.min;
+		this.chartOptions.hAxis.maxValue = x.max;
+	    }
+	    if(this.getProperty("vAxisFixedRange")) {
+		let y = this.getColumnValues(records, selectedFields[1]);
+		this.chartOptions.vAxis.minValue = y.min;
+		this.chartOptions.vAxis.maxValue = y.max;
+	    }
+
+
+
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
 		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
@@ -14274,6 +14389,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
+//	    console.log(JSON.stringify(this.chartOptions, null, 2));
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
 	    var dataTable = this.makeDataTable(dataList, props, selectedFields);
@@ -14281,7 +14397,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.setContents(this.getMessage("No data available"));
                 return null;
             }
-
 	    if(this.getProperty("animation",false,true)) {
 		this.chartOptions.animation = {
 		    startup: true,
@@ -15281,13 +15396,58 @@ function BubbleDisplay(displayManager, id, properties) {
 					'hAxisTitle=""',
 					'vAxisTitle=""'])},
 
+        getChartDiv: function(chartId) {
+            var divAttrs = [ATTR_ID, chartId];
+            divAttrs.push("style");
+            var style = "";
+	    var width = this.getProperty("chartWidth") || this.getChartWidth();
+	    var height = this.getProperty("chartHeight") || this.getChartHeight();
+            if (width) {
+                if (width > 0)
+                    style += "width:" + width + "px;";
+                else if (width < 0)
+                    style += "width:" + (-width) + "%;";
+                else
+                    style += "width:" + width + ";";
+            } else {
+                style += "width:" + "100%;";
+            }
+            if (height) {
+                if (height > 0)
+                    style += "height:" + height + "px;";
+                else if (height < 0)
+                    style += "height:" + (-height) + "%;";
+                else
+                    style += "height:" + height + ";";
+            } else {
+                style += "height:" + "100%;";
+            }
+	    //	    style += "border:1px solid green;"
+	    style += "padding:5px;"
+            divAttrs.push(style);
+            return HtmlUtils.div(divAttrs, "");
+        },
+
         makeDataTable: function(dataList, props, selectedFields) {
+	    let debug =displayDebug.makeDataTable;
+	    if(debug) {
+		console.log(this.type+" makeDataTable #records:" + dataList.length);
+                var fields = this.getSelectedFields();
+		console.log("\t fields:" + fields);
+	    }
 	    var tmp =[];
 	    var a = this.makeDataArray(dataList);
+	    while(a[0].length<5)
+		a[0].push("");
 	    tmp.push(a[0]);
 	    //Remove nans
 	    for(var i=1;i<a.length;i++) {
 		var tuple = a[i];
+		while(tuple.length<5)
+		    tuple.push(1);
+
+		if(debug && i<5)
+		    console.log("\tdata:" + tuple);
 		var ok = true;
 		for(j=1;j<tuple.length && ok;j++) {
 		    if(isNaN(tuple[j])) ok = false;
@@ -15312,10 +15472,11 @@ function BubbleDisplay(displayManager, id, properties) {
                 left: this.getProperty("chartLeft", this.chartDimensions.left),
                 right: this.getProperty("chartRight", this.chartDimensions.right),
                 top: this.getProperty("chartTop", "10"),
-		bottom: this.getProperty("chartBottom"),
-                width: '98%',
-                height: '90%'
+		bottom: this.getProperty("chartBottom",40),
+//                width: this.getProperty("chartWidth", '98%'),
+                height: this.getProperty("chartHeight", '200')
             });
+            chartOptions.height = "100px";
             chartOptions.sizeAxis = {
 	    }
 
@@ -15339,6 +15500,25 @@ function BubbleDisplay(displayManager, id, properties) {
 	    chartOptions.hAxis = chartOptions.hAxis||{};
             chartOptions.vAxis = chartOptions.vAxis||{};
 
+	    chartOptions.hAxis.minValue = this.getProperty("hAxisMinValue");
+	    chartOptions.hAxis.maxValue = this.getProperty("hAxisMaxValue");
+	    chartOptions.vAxis.minValue = this.getProperty("vAxisMinValue");
+	    chartOptions.vAxis.maxValue = this.getProperty("vAxisMaxValue");
+
+
+            let records = this.getPointData().getRecords();
+	    if(this.getProperty("hAxisFixedRange")) {
+		let x = this.getColumnValues(records, selectedFields[1]);
+		chartOptions.hAxis.minValue = x.min;
+		chartOptions.hAxis.maxValue = x.max;
+	    }
+	    if(this.getProperty("vAxisFixedRange")) {
+		let y = this.getColumnValues(records, selectedFields[2]);
+		chartOptions.vAxis.minValue = y.min;
+		chartOptions.vAxis.maxValue = y.max;
+	    }
+
+
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 	    chartOptions.hAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 
@@ -15348,7 +15528,7 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.hAxis.title = this.getProperty("hAxisTitle", header.length > 1 ? header[1] : null);
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
 
-	    //	    console.log(JSON.stringify(chartOptions.vAxis,null,2));
+	    console.log(JSON.stringify(chartOptions,null,2));
 	    //	    console.log(JSON.stringify(chartOptions.hAxis,null,2));
 
             return new google.visualization.BubbleChart(chartDiv); 
@@ -15865,6 +16045,7 @@ function GaugeDisplay(displayManager, id, properties) {
 function ScatterplotDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
     RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
     $.extend(this, {
         trendLineEnabled: function() {
             return true;
@@ -15985,7 +16166,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
         }
     });
 
-    addRamaddaDisplay(this);
+
 }
 
 
@@ -25776,7 +25957,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['doHeatmap=true',"Grid the data into an image"],
 		['doGridPoints=true',"Display a image showing shapes or bars"],
 		['hm.showPoints="true"',"Also show the map points"],
-		"cellShape=rect|circle",
+		"cellShape=rect|circle|tile",
 		"cellColor=color",
 		"cellFilled=true",
 		"cellSize=8",

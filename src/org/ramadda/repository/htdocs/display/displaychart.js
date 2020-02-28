@@ -39,11 +39,8 @@ if(window["google"]) {
 
 function haveGoogleChartsLoaded() {
     if (!googleChartsLoaded) {
-	console.log("have google loaded");
         if (Utils.isDefined(google.visualization)) {
-	    console.log("has visualization");
             if (Utils.isDefined(google.visualization.Gauge)) {
-		console.log("has gauge");
                 googleChartsLoaded = true;
             }
         }
@@ -763,6 +760,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return false;
 	},
         makeDataTable: function(dataList, props, selectedFields) {
+	    let debug =displayDebug.makeDataTable;
+	    let debugRows = 3;
+	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
+
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
@@ -832,8 +833,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
-	    let debug =false;
-	    let debugRows = 3;
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
@@ -1143,17 +1142,21 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     } else {
 			if(annotationTemplate) {
 			    let v = annotationTemplate.replace("${value}",value.f||value);
+			    if(debug && rowIdx<debugRows)
+				console.log("\t annotation" + v);
 			    newRow.push(v);
 			}
 			if(addStyle) {
 			    newRow.push(color);
+			    if(debug && rowIdx<debugRows)
+				console.log("\t color:" + color);
 			    //			    if(debug && rowIdx<debugRows)
 			    //				console.log("\t style:" + color);
 			}
 			if(addTooltip) {
                             newRow.push(tooltip);
-			    //			    if(debug && rowIdx<debugRows)
-			    //				console.log("\t tooltip:");
+			    if(debug && rowIdx<debugRows)
+			    	console.log("\t tooltip:");
 			}
                     }
 		    if(j>0 && fixedValueS) {
@@ -1206,7 +1209,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		}
                 justData.push(newRow);
-		if(debug && rowIdx>debugRows) break;
+//		if(debug && rowIdx>debugRows) break;
 	    }
             dataTable.addRows(justData);
             if (didColorBy) {
@@ -1426,6 +1429,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.chartCount  = -1;
 
 
+            let records = this.getPointData().getRecords();
+	    if(this.getProperty("hAxisFixedRange")) {
+		let x = this.getColumnValues(records, selectedFields[0]);
+		this.chartOptions.hAxis.minValue = x.min;
+		this.chartOptions.hAxis.maxValue = x.max;
+	    }
+	    if(this.getProperty("vAxisFixedRange")) {
+		let y = this.getColumnValues(records, selectedFields[1]);
+		this.chartOptions.vAxis.minValue = y.min;
+		this.chartOptions.vAxis.maxValue = y.max;
+	    }
+
+
+
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
 		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
@@ -1484,6 +1501,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
+//	    console.log(JSON.stringify(this.chartOptions, null, 2));
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
 	    var dataTable = this.makeDataTable(dataList, props, selectedFields);
@@ -1491,7 +1509,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.setContents(this.getMessage("No data available"));
                 return null;
             }
-
 	    if(this.getProperty("animation",false,true)) {
 		this.chartOptions.animation = {
 		    startup: true,
@@ -2491,13 +2508,58 @@ function BubbleDisplay(displayManager, id, properties) {
 					'hAxisTitle=""',
 					'vAxisTitle=""'])},
 
+        getChartDiv: function(chartId) {
+            var divAttrs = [ATTR_ID, chartId];
+            divAttrs.push("style");
+            var style = "";
+	    var width = this.getProperty("chartWidth") || this.getChartWidth();
+	    var height = this.getProperty("chartHeight") || this.getChartHeight();
+            if (width) {
+                if (width > 0)
+                    style += "width:" + width + "px;";
+                else if (width < 0)
+                    style += "width:" + (-width) + "%;";
+                else
+                    style += "width:" + width + ";";
+            } else {
+                style += "width:" + "100%;";
+            }
+            if (height) {
+                if (height > 0)
+                    style += "height:" + height + "px;";
+                else if (height < 0)
+                    style += "height:" + (-height) + "%;";
+                else
+                    style += "height:" + height + ";";
+            } else {
+                style += "height:" + "100%;";
+            }
+	    //	    style += "border:1px solid green;"
+	    style += "padding:5px;"
+            divAttrs.push(style);
+            return HtmlUtils.div(divAttrs, "");
+        },
+
         makeDataTable: function(dataList, props, selectedFields) {
+	    let debug =displayDebug.makeDataTable;
+	    if(debug) {
+		console.log(this.type+" makeDataTable #records:" + dataList.length);
+                var fields = this.getSelectedFields();
+		console.log("\t fields:" + fields);
+	    }
 	    var tmp =[];
 	    var a = this.makeDataArray(dataList);
+	    while(a[0].length<5)
+		a[0].push("");
 	    tmp.push(a[0]);
 	    //Remove nans
 	    for(var i=1;i<a.length;i++) {
 		var tuple = a[i];
+		while(tuple.length<5)
+		    tuple.push(1);
+
+		if(debug && i<5)
+		    console.log("\tdata:" + tuple);
 		var ok = true;
 		for(j=1;j<tuple.length && ok;j++) {
 		    if(isNaN(tuple[j])) ok = false;
@@ -2522,10 +2584,11 @@ function BubbleDisplay(displayManager, id, properties) {
                 left: this.getProperty("chartLeft", this.chartDimensions.left),
                 right: this.getProperty("chartRight", this.chartDimensions.right),
                 top: this.getProperty("chartTop", "10"),
-		bottom: this.getProperty("chartBottom"),
-                width: '98%',
-                height: '90%'
+		bottom: this.getProperty("chartBottom",40),
+//                width: this.getProperty("chartWidth", '98%'),
+                height: this.getProperty("chartHeight", '200')
             });
+            chartOptions.height = "100px";
             chartOptions.sizeAxis = {
 	    }
 
@@ -2549,6 +2612,25 @@ function BubbleDisplay(displayManager, id, properties) {
 	    chartOptions.hAxis = chartOptions.hAxis||{};
             chartOptions.vAxis = chartOptions.vAxis||{};
 
+	    chartOptions.hAxis.minValue = this.getProperty("hAxisMinValue");
+	    chartOptions.hAxis.maxValue = this.getProperty("hAxisMaxValue");
+	    chartOptions.vAxis.minValue = this.getProperty("vAxisMinValue");
+	    chartOptions.vAxis.maxValue = this.getProperty("vAxisMaxValue");
+
+
+            let records = this.getPointData().getRecords();
+	    if(this.getProperty("hAxisFixedRange")) {
+		let x = this.getColumnValues(records, selectedFields[1]);
+		chartOptions.hAxis.minValue = x.min;
+		chartOptions.hAxis.maxValue = x.max;
+	    }
+	    if(this.getProperty("vAxisFixedRange")) {
+		let y = this.getColumnValues(records, selectedFields[2]);
+		chartOptions.vAxis.minValue = y.min;
+		chartOptions.vAxis.maxValue = y.max;
+	    }
+
+
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 	    chartOptions.hAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
 
@@ -2558,7 +2640,7 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.hAxis.title = this.getProperty("hAxisTitle", header.length > 1 ? header[1] : null);
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
 
-	    //	    console.log(JSON.stringify(chartOptions.vAxis,null,2));
+	    console.log(JSON.stringify(chartOptions,null,2));
 	    //	    console.log(JSON.stringify(chartOptions.hAxis,null,2));
 
             return new google.visualization.BubbleChart(chartDiv); 
@@ -3075,6 +3157,7 @@ function GaugeDisplay(displayManager, id, properties) {
 function ScatterplotDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
     RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
     $.extend(this, {
         trendLineEnabled: function() {
             return true;
@@ -3195,7 +3278,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
         }
     });
 
-    addRamaddaDisplay(this);
+
 }
 
 
