@@ -137,7 +137,7 @@ public class EntryManager extends RepositoryManager {
 
 
     /** _more_ */
-    public static final String SESSION_FOLDERS = "folders";
+    public static final String SESSION_ENTRIES = "entries";
 
     /** _more_ */
     public static final String SESSION_TYPES = "types";
@@ -739,7 +739,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        addSessionFolder(request, entry);
+        addSessionEntry(request, entry);
         if (entry.getIsRemoteEntry()) {
             String redirectUrl = entry.getRemoteServer()
                                  + getRepository().URL_ENTRY_SHOW.getPath();
@@ -2063,10 +2063,10 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public List<Entry> getSessionFolders(Request request) throws Exception {
+    public List<Entry> getSessionEntries(Request request) throws Exception {
         List<String> list =
             (List<String>) getSessionManager().getSessionProperty(request,
-                SESSION_FOLDERS);
+                SESSION_ENTRIES);
         if (list == null) {
             list = new ArrayList<String>();
         }
@@ -2089,27 +2089,25 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void addSessionFolder(Request request, Entry entry)
+    public void addSessionEntry(Request request, Entry entry)
             throws Exception {
         if (request.isAnonymous()) {
             return;
         }
-        if (entry.isGroup()) {
-            List<String> list =
-                (List<String>) getSessionManager().getSessionProperty(
-                    request, SESSION_FOLDERS);
-            if (list == null) {
-                list = new ArrayList<String>();
-            }
-            list.remove(entry.getId());
-            list.add(0, entry.getId());
-            //Cap the size at 5
-            if (list.size() > 5) {
-                list.remove(list.size() - 1);
-            }
-            getSessionManager().putSessionProperty(request, SESSION_FOLDERS,
-                    list);
-        }
+	List<String> list =
+	    (List<String>) getSessionManager().getSessionProperty(
+								  request, SESSION_ENTRIES);
+	if (list == null) {
+	    list = new ArrayList<String>();
+	    getSessionManager().putSessionProperty(request, SESSION_ENTRIES,
+						   list);
+	}
+	list.remove(entry.getId());
+	list.add(0, entry.getId());
+	//Cap the size at 8
+	if (list.size() > 8) {
+	    list.remove(list.size() - 1);
+	}
     }
 
 
@@ -4759,9 +4757,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-        if (isGroup) {
-            addSessionFolder(request, toEntry);
-        }
+	addSessionEntry(request, toEntry);
 
         if ( !getAccessManager().canDoAction(request, toEntry,
                                              Permission.ACTION_NEW)) {
@@ -5110,7 +5106,7 @@ public class EntryManager extends RepositoryManager {
     private Result processEntryMove(Request request, Entry toGroup,
                                     List<Entry> entries)
             throws Exception {
-        addSessionFolder(request, toGroup);
+        addSessionEntry(request, toGroup);
         Connection connection = getDatabaseManager().getConnection();
         connection.setAutoCommit(false);
         Statement statement = connection.createStatement();
@@ -10656,7 +10652,7 @@ public class EntryManager extends RepositoryManager {
             throw new AccessException("Cannot add to entry", request);
         }
 
-        addSessionFolder(request, parent);
+        addSessionEntry(request, parent);
 
         return parent;
     }

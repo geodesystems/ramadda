@@ -14336,12 +14336,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let groups = [];
 		let tmp = [];
 		dataList.map((v,idx)=>{if(idx>0) tmp.push(v)});
-		if(!multiField)
-		tmp.sort(function(a,b) {
-		    var v1 = a.record?a.record.getDate():a.date;
-		    var v2 = b.record?b.record.getDate():b.date;
-		    return v1.getTime()-v2.getTime();
-		});
+		if(!multiField) {
+		    tmp.sort(function(a,b) {
+			var v1 = a.record?a.record.getDate():a.date;
+			var v2 = b.record?b.record.getDate():b.date;
+			return v1.getTime()-v2.getTime();
+		    });
+		}
 		dataList = Utils.mergeLists([dataList[0]], tmp);
 		dataList.map((v,idx)=>{
 		    if(idx==0) return;

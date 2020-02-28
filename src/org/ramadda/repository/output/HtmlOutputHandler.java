@@ -1056,7 +1056,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
         if (addExtra) {
             List<Entry> recents =
-                getEntryManager().getSessionFolders(request);
+                getEntryManager().getSessionEntries(request);
             if (recents.size() > 0) {
                 sb.append(
                     HtmlUtils.open(
