@@ -4757,7 +4757,6 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-	addSessionEntry(request, toEntry);
 
         if ( !getAccessManager().canDoAction(request, toEntry,
                                              Permission.ACTION_NEW)) {
@@ -5106,7 +5105,6 @@ public class EntryManager extends RepositoryManager {
     private Result processEntryMove(Request request, Entry toGroup,
                                     List<Entry> entries)
             throws Exception {
-        addSessionEntry(request, toGroup);
         Connection connection = getDatabaseManager().getConnection();
         connection.setAutoCommit(false);
         Statement statement = connection.createStatement();
@@ -10652,7 +10650,6 @@ public class EntryManager extends RepositoryManager {
             throw new AccessException("Cannot add to entry", request);
         }
 
-        addSessionEntry(request, parent);
 
         return parent;
     }
