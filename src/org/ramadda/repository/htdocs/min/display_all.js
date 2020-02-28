@@ -1035,6 +1035,51 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 
 
 
+function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
+    let margin=4;
+    if(!attrs) attrs = {};
+    let colors = attrs.pieColors||Utils.ColorTables.cats.colors;
+
+    var radius = Math.min(width, height) / 2 - margin
+    var svg = d3.select(dom)
+	.append("svg")
+	.attr("width", width)
+	.attr("height", height)
+	.append("g")
+	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    var data = {};
+    array.forEach(tuple=>{
+	data[tuple[0]] = tuple[1];
+    })
+
+    // set the color scale
+    var color = d3.scaleOrdinal()
+	.domain(data)
+	.range(colors)
+
+    // Compute the position of each group on the pie:
+    var pie = d3.pie()
+	.value(function(d) {return d.value; })
+    var data_ready = pie(d3.entries(data))
+
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    svg
+	.selectAll('whatever')
+	.data(data_ready)
+	.enter()
+	.append('path')
+	.attr('d', d3.arc()
+	      .innerRadius(0)
+	      .outerRadius(radius)
+	     )
+	.attr('fill', function(d){ return(color(d.data.key)) })
+	.attr("stroke", "black")
+	.style("stroke-width", "1px")
+	.style("opacity", 0.7)
+}
+
+
+
 /**
    Copyright 2008-2019 Geode Systems LLC
 */
@@ -31036,15 +31081,17 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Date Table",
-					'columnSelector="day|hour|dow|month|year"',
-					'selectors="day,hour,dow,month,year,fieldid"',
-					'columnSelector="day|hour|dow|month"',
-					'showColumnSelector=false',
-					'rowSelector="day|hour|dow|month"',
-					'showRowSelector=false',
+					'columnSelector="date_day|date_hour|date_dow|date_month|date_year"',
+					'selectors="date_day,date_hour,date_dow,date_month,date_year,date_fieldid"',
+					'columnSelector="date_day|date_hour|date_dow|date_month"',
+					'rowSelector="date_day|date_hour|date_dow|date_month"',
 					'checkedIcon="fa-checked"',
 					'checkedTooltipHeader="${numberChecked}"',
 					'dataCheckers="match|notmatch|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
+					'showColumnSelector=false',
+					'showRowSelector=false',
+					'showValues=false',
+					'showColors=false',
 					'showRowTotals=false',
 					'showColumnTotals=false',
 					'slantHeader=true'
@@ -31059,15 +31106,14 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    let colors = this.getColorTable(true);
 	    if (!colors) colors = Utils.getColorTable("blues",true);
 	    let checkers = this.getDataFilters(this.getProperty("dataCheckers"));
-	    let counts = {};
-	    this.checked= {};
-
+	    let cells = {};
+	    let countFields= this.getFieldsByIds(null, this.getProperty("countFields"));
 
 	    let selectors;
 	    let fieldMap = {};
 	    if(this.getProperty("selectors")) {
 		selectors = [];
-		let labels = {"day":"Day","dow":"Day of Week","hour":"Hour","month":"Month","year":"Year"};
+		let labels = {"date_day":"Day","date_dow":"Day of Week","date_hour":"Hour","date_month":"Month","date_year":"Year"};
 		this.getProperty("selectors").split(",").map(s=>{
 		    let label = labels[s];
 		    if(!label) {
@@ -31081,32 +31127,30 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 			selectors.push([s,label]);
 		});
 	    } else {
-		selectors  =   [["day","Day"],["dow","Day of Week"],["hour","Hour"],["month","Month"],["year","Year"]];
+		selectors  =   [["date_day","Day"],["date_dow","Day of Week"],["date_hour","Hour"],["date_month","Month"],["date_year","Year"]];
 	    }
 
 	    let columnSelector = this.getProperty("columnSelector",selectors[0][0]);
 	    let rowSelector = this.getProperty("rowSelector",selectors[1][0]);
-	    //	    console.log(rowSelector + " " + columnSelector);
-
 	    let getValues =(s=>{
 		let values = [];
 		if(s =="dow") {
 		    Utils.dayNamesShortShort.map((d,i)=>{
 			values.push({id:i,label:d});
 		    });
-		}  else if(s =="hour") {
+		}  else if(s =="date_hour") {
 		    let tmp =["12&nbsp;AM","1","2","3","4","5","6","7","8","9","10","11",
 			      "12&nbsp;PM","1","2","3","4","5","6","7","8","9","10","11"];
 		    for(var i=0;i<24;i++)
 			values.push({id:i,label:tmp[i]});
-		}  else if(s =="day") {
+		}  else if(s =="date_day") {
 		    for(var day=1;day<=31;day++)
 			values.push({id:day,label:String(day)});
-		}  else if(s =="month") {
+		}  else if(s =="date_month") {
 		    Utils.monthNames.map((m,i)=>{
 			values.push({id:i,label:m});
 		    });
-		}  else if(s =="year") {
+		}  else if(s =="date_year") {
 		    let years =[];
 		    let seen = {};
 		    records.map(r=>{
@@ -31124,13 +31168,18 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		    let field = fieldMap[s];
 		    if(field) {
 			let seen = {};
+			let isNumber = false;
 			this.getColumnValues(records, field).values.map(d=>{
+			    isNumber = Utils.isNumber(d);
 			    if(!Utils.isDefined(seen[d])) {
 				seen[d] = true;
 				values.push({id:d,label:String(d)});
 			    }
 			});
 			values.sort((a,b) =>{
+			    if(isNumber) {
+				return a.id-b.id;
+			    }
 			    return a.label.localeCompare(b.label);
 			});
 		    }
@@ -31140,15 +31189,15 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    let columns =getValues(columnSelector);
 	    let rows =getValues(rowSelector);
 	    let getId =((s,r,l)=>{
-		if(s =="dow")  {
+		if(s =="date_dow")  {
 		    return l[r.getDate().getDay()].id;
-		} else if(s =="hour") {
+		} else if(s =="date_hour") {
 		    return l[r.getDate().getUTCHours()].id;
-		} else if(s =="day") {
+		} else if(s =="date_day") {
 		    return  l[r.getDate().getUTCDate()-1].id;
-		} else if(s =="month") {
+		} else if(s =="date_month") {
 		    return  l[r.getDate().getUTCMonth()].id;
-		} else if(s =="year") {
+		} else if(s =="date_year") {
 		    return r.getDate().getUTCFullYear();
 		} else {
 		    let field = fieldMap[s];
@@ -31163,30 +31212,67 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		let row =getId(rowSelector,r,rows);
 		let column =getId(columnSelector,r,columns);
 		let key = row+"-" +column;
+		let cell = cells[key];
+		if(!cell) {
+		    cell = cells[key]={
+			checked:[],
+			row:row,
+			column:column,
+			count:0,
+			records:[],
+			countFields:{}
+		    };
+		    countFields.forEach(f=>{
+			cell.countFields[f.getId()] = {
+			    values:[],
+			    counts:{}
+			};
+		    });
+		}
 		if(checkers && checkers.length>0) {
 		    if(this.checkDataFilters(checkers, r)) {
-			if(!this.checked[key]) this.checked[key] = [];
-			this.checked[key].push(r);
+			cell.checked[key].push(r);
 		    }
 		}
-		if(!Utils.isDefined(counts[key])) {
-		    counts[key]=0;
-		}
-		counts[key]++;
+
+		countFields.forEach(f=>{
+		    //f=>in_or_out
+		    let v = r.getValue(f.getIndex());
+		    //v=incoming or outgoing
+		    let cf = cell.countFields[f.getId()];
+		    if(!cf.counts[v]) {
+			cf.counts[v] = 0;
+			cf.values.push(v);
+		    }
+		    cf.counts[v]++;
+		});
+		cell.count++;
+		cell.records.push(r);
 	    });
 
 
 	    let min = 0;
 	    let max  = 0;
 	    let cnt = 0;
-	    for(a in counts) {
-		min = cnt==0?counts[a]:Math.min(counts[a],min);
-		max = cnt==0?counts[a]:Math.max(counts[a],max);
+	    for(a in cells) {
+		let cell = cells[a];
+		min = cnt==0?cell.count:Math.min(cell.count,min);
+		max = cnt==0?cell.count:Math.max(cell.count,max);
 		cnt++;
+//		console.log("cell: "+ cell.row +" " + cell.column +" #:" + cell.count);
+		countFields.forEach(f=>{
+		    let cf = cell.countFields[f.getId()];
+		    cf.values.sort();
+		    cf.values.forEach(v=>{
+//			console.log("\t" + v +" = " + cf.counts[v] +" " + cell.row +" " + cell.column);
+		    });
+		    
+		});
 	    }
 
-	    let colorBy = this.getColorByInfo(records,null,null,colors);
+
 	    let showValues = this.getProperty("showValues", true);
+	    let showColors = this.getProperty("showColors", true);
 	    let cellCount = columns.length;
 	    let maxRowValue = 0;
 	    let maxColumnValue = 0;
@@ -31196,8 +31282,8 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		let rowTotal = 0;
 		columns.map(column=>{
 		    let key = row.id +"-" +column.id;
-		    if(counts[key]) {
-			rowTotal+=counts[key];
+		    if(cells[key]) {
+			rowTotal+=cells[key].count;
 		    }
 		});
 		rowTotals[row.id] = rowTotal;
@@ -31207,8 +31293,8 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		let columnTotal = 0;
 		rows.map(row=>{
 		    let key = row.id +"-" +column.id;
-		    if(counts[key]) {
-			columnTotal+=counts[key];
+		    if(cells[key]) {
+			columnTotal+=cells[key].count;
 		    }
 		});
 		columnTotals[column.id] = columnTotal;
@@ -31255,20 +31341,25 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		    let inner = "&nbsp;";
 		    let style = "";
 		    let marker = "";
-		    if(counts[key]) {
+		    let cell = cells[key];
+		    let extra = "";
+		    if(cell) {
 			if(showValues) 
-			    inner = counts[key]
-			if(this.checked[key]) {
+			    inner = cell.count
+			extra = HtmlUtils.div(["data-key",key,"class","display-datatable-counts"]);
+			if(cell.checked.length) {
 			    inner= HtmlUtils.getIconImage(this.getProperty("checkedIcon","fa-check"),["title","","data-key",key,"class","display-datatable-checked"]) +" " + inner;
 			}
-                        var percent = (counts[key] - min) / (max - min);
-                        var ctIndex = parseInt(percent * colors.length);
-                        if (ctIndex >= colors.length) ctIndex = colors.length - 1;
-                        else if (ctIndex < 0) ctIndex = 0;
-                        style = "background-color:" + colors[ctIndex] + ";";
+			if(showColors) {
+                            var percent = (cell.count - min) / (max - min);
+                            var ctIndex = parseInt(percent * colors.length);
+                            if (ctIndex >= colors.length) ctIndex = colors.length - 1;
+                            else if (ctIndex < 0) ctIndex = 0;
+                            style = "background-color:" + colors[ctIndex] + ";";
+			}
 		    }
-		    let cell = HtmlUtils.div(["class","display-datatable-value"],inner);
-		    table += "<td class=display-datatable-cell align=right style='" +style +"' width='" + width +"%'>" + cell+"</td>";
+		    let cellHtml = extra+HtmlUtils.div(["class","display-datatable-value"],inner);
+		    table += "<td class=display-datatable-cell align=right style='" +style +"' width='" + width +"%'>" + cellHtml+"</td>";
 		});
 		if(showRowTotals) {
 		    let total = rowTotals[row.id];
@@ -31314,6 +31405,10 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    html+=header;
 	    html+=table;
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
+
+
+
+
 	    let _this = this;
 	    this.jq("rowSelector").change(function() {
 		_this.setProperty("rowSelector",$(this).val());
@@ -31324,16 +31419,43 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		_this.updateUI();
 	    });
 
+	    let pieWidth=30;
+	    if(countFields.length>2)
+		pieWidth=25;
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-counts").each(function() {
+		var key = $(this).attr("data-key");	
+		let cell = cells[key];
+		countFields.forEach(f=>{
+		    let html = f.getLabel()+"<br>";
+		    let cf = cell.countFields[f.getId()];
+		    let data=[];
+		    cf.values.forEach(v=>{
+			data.push([v,cf.counts[v]]);
+			html+= v +":" + cf.counts[v]+"&nbsp;<br>";
+		    });
+		    let id = _this.getDomId(cell.row+"-"+cell.column+"-" + f.getId());
+		    $(this).append(HtmlUtils.div(["class","display-datatable-piechart","id",id,"title","", "style","width:" + pieWidth+"px;height:" + pieWidth+"px;"]));
+		    drawPieChart(_this, "#"+id,pieWidth,pieWidth,data);
+		    $("#" + id).tooltip({
+			content: function() {
+			    return html;
+			}
+		    });
+		});
+	    });
+										   
+
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-checked").tooltip({
 		content: function() {
-		    var key = $(this).attr("data-key");
-		    var checked = _this.checked[key];
+		    var key = $(this).attr("data-key");	
+		    let cell = cells[cell];
+		    var checked = cell.checked.length;
 		    if(checked) {
 			let tooltip = _this.getProperty("tooltip","${default}");
 			if(tooltip =="") return null;
 			let tt = _this.getProperty("checkedTooltipHeader","<b>#Items: ${numberChecked}</b><br>");
 			tt = tt.replace("${numberChecked}", checked.length);
-			_this.checked[key].map(r=>{
+			cell.checked[key].map(r=>{
 			    if(tt!="") tt +="<div class=ramadda-hline>";
 			    tt+= _this.getRecordHtml(r,null,tooltip);
 			});
@@ -31343,7 +31465,9 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 		},
 	    });
-	    this.displayColorTable(colors, "ct", min,max,{});
+	    if(showColors) {
+		this.displayColorTable(colors, "ct", min,max,{});
+	    }
 	},
     })
 }

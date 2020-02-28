@@ -847,6 +847,7 @@ a.ramadda-menubar-button:hover {
 .ui-tooltip {
     border:1px solid #999 !important;
     margin:0px;
+    padding:4px;
     box-shadow: 0px 0px 0px  rgba(0, 0, 0, 0);
 }
 

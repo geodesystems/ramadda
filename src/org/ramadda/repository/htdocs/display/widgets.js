@@ -1035,3 +1035,48 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 
 
 
+function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
+    let margin=4;
+    if(!attrs) attrs = {};
+    let colors = attrs.pieColors||Utils.ColorTables.cats.colors;
+
+    var radius = Math.min(width, height) / 2 - margin
+    var svg = d3.select(dom)
+	.append("svg")
+	.attr("width", width)
+	.attr("height", height)
+	.append("g")
+	.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    var data = {};
+    array.forEach(tuple=>{
+	data[tuple[0]] = tuple[1];
+    })
+
+    // set the color scale
+    var color = d3.scaleOrdinal()
+	.domain(data)
+	.range(colors)
+
+    // Compute the position of each group on the pie:
+    var pie = d3.pie()
+	.value(function(d) {return d.value; })
+    var data_ready = pie(d3.entries(data))
+
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    svg
+	.selectAll('whatever')
+	.data(data_ready)
+	.enter()
+	.append('path')
+	.attr('d', d3.arc()
+	      .innerRadius(0)
+	      .outerRadius(radius)
+	     )
+	.attr('fill', function(d){ return(color(d.data.key)) })
+	.attr("stroke", "black")
+	.style("stroke-width", "1px")
+	.style("opacity", 0.7)
+}
+
+
+

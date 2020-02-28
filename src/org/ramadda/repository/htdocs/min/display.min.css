@@ -1871,6 +1871,7 @@ margin:10px;
     transform-origin: bottom right;
 }
 
+
 .display-datatable-footer {
     border-top: 1px solid #aaa;
 }
@@ -1887,11 +1888,25 @@ margin:10px;
     border:1px solid #efefef;
 }
 
+
 .display-datatable-value {
+    display:inline-block;
     padding-right:5px;
     min-width:5px;
-    width:100%;
     height: 20px;
+}
+
+.display-datatable-piechart {
+    display:inline-block;
+    border: 1px solid transparent;
+}
+
+.display-datatable-piechart:hover {
+    border: 1px solid #ccc;
+}
+
+.display-datatable-counts {
+    display:inline-block;
 }
 
 
