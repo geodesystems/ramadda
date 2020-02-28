@@ -316,6 +316,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getVAxisMaxValue: function() {
             return parseFloat(this.getProperty("vAxisMaxValue", NaN));
         },
+	getHAxisMinValue: function() {
+            return parseFloat(this.getProperty("hAxisMinValue", NaN));
+        },
+        getHAxisMaxValue: function() {
+            return parseFloat(this.getProperty("hAxisMaxValue", NaN));
+        },
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
             var get = this.getGet();
@@ -1250,6 +1256,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 minorGridlines: {},		
                 textStyle: {}
             };
+	    chartOptions.hAxis.minValue = this.getProperty("hAxisMinValue");
+	    chartOptions.hAxis.maxValue = this.getProperty("hAxisMaxValue");
+	    chartOptions.vAxis.minValue = this.getProperty("vAxisMinValue");
+	    chartOptions.vAxis.maxValue = this.getProperty("vAxisMaxValue");
+
             chartOptions.hAxis.titleTextStyle = {};
             chartOptions.vAxis.titleTextStyle = {};
 	    if(this.getProperty("hAxisDateFormat")) {
@@ -1443,6 +1454,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 
+	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
 		let labelPosition = this.getProperty("multiChartsLabelPosition","bottom");
@@ -1472,9 +1484,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    list.push(v);
 		})
 		this.jq(ID_CHARTS).html(HtmlUtils.div(["id",this.getDomId(ID_CHARTS_INNER),"style","text-align:center;"]));
-		let multiStyle=this.getProperty("multiStyle","");
+		let multiStyle="width:200px;" + this.getProperty("multiStyle","");
 		let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
-		groups.map((groupValue,idx)=>{
+		if(multiField) groups.sort();
+		groups.forEach((groupValue,idx)=>{
 		    this.chartCount  =idx;
 		    let tmpDataList = [];
 		    let list = map[groupValue];
@@ -1487,7 +1500,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    var header = HtmlUtils.div(["class","display-multi-header"], label);
 		    var top =labelPosition=="top"?header:"";
 		    var bottom = labelPosition=="bottom"?header:"";
-		    
 		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"+multiStyle], top + this.getChartDiv(innerId) + bottom);
 		    this.jq(ID_CHARTS_INNER).append(div);
 		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
@@ -1590,6 +1602,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	    var t = SUPER.getWikiEditorTags();
 	    var myTags = [
 		"label:Chart Attributes",
+		'indexField=field',
 		"vAxisMinValue=\"\"",
 		"vAxisMaxValue=\"\"", 
 		'tooltipFields=""',
@@ -1598,6 +1611,12 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		'annotationLabelField=""',
 		'indexField="alternate field to use as index"',
 		'forceStrings="if index is a string set to true"',
+		'inlinelabel:Multiples',
+		'doMultiCharts=true',
+		'multiField=field',
+		'multiStyle=""',
+		'multiLabelTemplate="${value}"',
+		'multiChartsLabelPosition=bottom|top|none',
 		'inlinelabel:Chart Layout',
 		"chartHeight=\"\"",
 		"chartWidth=\"\"",
@@ -1641,6 +1660,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		'hAxis.slantedText=""',
 		'hAxis.text.color="#000"',
 		'vAxis.text.color="#000"',
+		'legend.position="top|bottom|none"',
 		'legend.text.color="#000"',
 		'hAxis.ticks=""',
 		'hAxis.ticks=""',
@@ -1881,6 +1901,12 @@ function HistogramDisplay(displayManager, id, properties) {
             if (!isNaN(this.getVAxisMinValue())) {
                 chartOptions.vAxis.minValue = parseFloat(this.getVAxisMinValue());
             }
+            if (!isNaN(this.getHAxisMaxValue())) {
+                chartOptions.hAxis.maxValue = this.getHAxisMaxValue();
+            }
+            if (!isNaN(this.getHAxisMinValue())) {
+                chartOptions.hAxis.minValue = parseFloat(this.getHAxisMinValue());
+            }	    
             return new google.visualization.Histogram(chartDiv);
         },
 

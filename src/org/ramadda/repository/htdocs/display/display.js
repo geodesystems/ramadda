@@ -1705,12 +1705,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getFieldsByIds: function(fields, ids) {
             var result = [];
-            if (!ids) return result;
+            if (!ids) {
+		return result;
+	    }
             if ((typeof ids) == "string")
                 ids = ids.split(",");
             if (!fields) {
                 var pointData = this.getData();
-                if (pointData == null) return null;
+                if (pointData == null) {
+		    return null;
+		}
                 fields = pointData.getRecordFields();
             }
             for (var i = 0; i < ids.length; i++) {
@@ -5440,7 +5444,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
-
             var data = [];
             if (dataList[0].getData) {
                 for (var i = 0; i < dataList.length; i++) {

@@ -2789,17 +2789,18 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		table+="<tr>" + HtmlUtils.td(["class","display-datatable-name","align","right", "width","100"],name);
 		columns.map(column=>{
 		    let key = row.id+"-" +column.id;		    
-		    let inner = "&nbsp;";
+		    let inner = "";
 		    let style = "";
 		    let marker = "";
 		    let cell = cells[key];
-		    let extra = "";
+		    let extra1 = "";
+		    let extra2 = "";
 		    if(cell) {
 			if(showValues) 
-			    inner = cell.count
-			extra = HtmlUtils.div(["data-key",key,"class","display-datatable-counts"]);
+			    inner = HtmlUtils.div(["class","display-datatable-value"],cell.count);
+			extra2 = HtmlUtils.div(["data-key",key,"class","display-datatable-counts"]);
 			if(cell.checked.length) {
-			    inner= HtmlUtils.getIconImage(this.getProperty("checkedIcon","fa-check"),["title","","data-key",key,"class","display-datatable-checked"]) +" " + inner;
+			    extra1= HtmlUtils.getIconImage(this.getProperty("checkedIcon","fa-check"),["title","","data-key",key,"class","display-datatable-checked"]);
 			}
 			if(showColors) {
                             var percent = (cell.count - min) / (max - min);
@@ -2809,7 +2810,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
                             style = "background-color:" + colors[ctIndex] + ";";
 			}
 		    }
-		    let cellHtml = extra+HtmlUtils.div(["class","display-datatable-value"],inner);
+		    let cellHtml = extra1 +extra2+inner;
 		    table += "<td class=display-datatable-cell align=right style='" +style +"' width='" + width +"%'>" + cellHtml+"</td>";
 		});
 		if(showRowTotals) {
@@ -2870,9 +2871,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		_this.updateUI();
 	    });
 
-	    let pieWidth=30;
-	    if(countFields.length>2)
-		pieWidth=25;
+	    let pieWidth=this.getProperty("pieWidth", 30);
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-counts").each(function() {
 		var key = $(this).attr("data-key");	
 		let cell = cells[key];

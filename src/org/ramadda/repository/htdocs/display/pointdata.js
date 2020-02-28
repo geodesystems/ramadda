@@ -2223,7 +2223,63 @@ function CsvUtil() {
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
 
-
+	makeCounts: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let fields  = pointData.getRecordFields();
+	    let countFields;
+	    if(args["countFields"]) {
+		let c = args["countFields"].replace(/_comma_/g,",");
+		countFields = this.display.getFieldsByIds(fields, c);
+	    } else {
+		countFields= fields;
+	    }
+	    var newFields = [];
+	    //queue, hour, incoming, count
+	    countFields.forEach((f,idx)=>{
+		var newField = f.clone();
+		newField.index = idx;
+		newFields.push(newField);
+	    });
+            newFields.push(new RecordField({
+		id:"count",
+		index:newFields.length,
+		label:"Count",
+		type:"double",
+		chartable:true,
+            }));
+	    let countKeys = [];
+	    let counts ={
+	    };
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		var record = records[rowIdx];
+		let key = "";
+		countFields.forEach(f=>{
+		    key +=record.getValue(f.getIndex())+"-";
+		});
+		let count = counts[key];
+		if(!count) {
+		    countKeys.push(key);
+		    count = counts[key]= {
+			count:0,
+			record:record
+		    };
+		}
+		count.count++;
+	    }
+	    let newRecords = [];
+	    countKeys.forEach((key,idx)=>{
+		let count = counts[key];
+		let data =[];
+		countFields.forEach(f=>{
+		    let v = count.record.getValue(f.getIndex());
+		    data.push(v);
+		});
+		data.push(count.count);
+		let newRecord = new  PointRecord(newFields,NaN, NaN, NaN, null, data);
+		newRecords.push(newRecord);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	},
     });
 }
 
