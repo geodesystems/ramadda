@@ -9004,17 +9004,11 @@ var RecordUtil = {
 	    let cry = y+opts.cellSizeY/2;
 	    crx=x;
 	    cry=y
-//	    if(opts.stroke)
-	    ctx.strokeStyle = "#000";
-//	    ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-//	    else
-//		ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-	    ctx.strokeStyle = "#000";
-	    //		ctx.strokeRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
-	    //		ctx.font="8px arial"
-	    //		ctx.fillStyle = "black";
-	    //		ctx.fillText(v, crx,cry);
+	    if(opts.stroke)
+		ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+//	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+	    else
+		ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
 	}
 	if(opts.cellShowText && v!=null) {
 	    ctx.textAlign = "center";
