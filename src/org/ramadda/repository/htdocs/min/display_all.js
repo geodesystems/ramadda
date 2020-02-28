@@ -14134,8 +14134,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             };
             chartOptions.hAxis.titleTextStyle = {};
             chartOptions.vAxis.titleTextStyle = {};
-	    if(this.getProperty("dateFormat")) {
-		chartOptions.hAxis.format = this.getProperty("dateFormat");
+	    if(this.getProperty("hAxisDateFormat")) {
+		chartOptions.hAxis.format = this.getProperty("hAxisDateFormat");
 	    }
 
 	    //	    this.getPropertyShow = true;
