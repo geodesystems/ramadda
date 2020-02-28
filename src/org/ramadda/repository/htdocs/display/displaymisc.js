@@ -2900,12 +2900,11 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    let col = this.getColumnValues(records, field);
 	    let colorBy = this.getColorByInfo(records);
-	    this.drawSparkLine("#"+id,w,h,col.values,records,col.min,col.max,colorBy);
+	    drawSparkLine(this, "#"+id,w,h,col.values,records,col.min,col.max,colorBy);
 	    if(this.getPropertyShow) {
 		this.getPropertyShow = false;
 		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
 	    }
-
 	}
     });
 }

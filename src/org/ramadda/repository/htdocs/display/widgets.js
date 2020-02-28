@@ -916,3 +916,122 @@ if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 		  this.getProperty("colorByMax", this.maxValue), true);
     this.range = this.maxValue - this.minValue;
 }
+
+
+
+function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
+    if(!attrs) attrs = {};
+    const MARGIN       = { top: 5, right: 5, bottom: 5, left: 5 };
+    const INNER_WIDTH  = w - MARGIN.left - MARGIN.right;
+    const INNER_HEIGHT = h - MARGIN.top - MARGIN.bottom;
+    const BAR_WIDTH  = w / data.length;
+    const x    = d3.scaleLinear().domain([0, data.length]).range([0, INNER_WIDTH]);
+    const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
+    const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
+
+    var tt = d3.select("body").append("div")	
+	.attr("class", "sparkline-tooltip")				
+	.style("opacity", 0);
+
+    const svg = d3.select(dom).append('svg')
+	  .attr('width', w)
+	  .attr('height', h)
+	  .append('g')
+	  .attr('transform', 'translate(' + MARGIN.left + ',' + MARGIN.top + ')');
+    const line = d3.line()
+	  .x((d, i) => x(i))
+	  .y(d => y(d));
+
+    let lineColor = attrs.lineColor||display.getProperty("sparklineLineColor","#000");
+    let barColor = attrs.barColor ||display.getProperty("sparklineBarColor","MediumSeaGreen");	    
+    let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor","#000");
+    let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
+    let lineWidth = attrs.lineWidth ||display.getProperty("sparklineLineWidth",1);
+    let defaultShowEndPoints = true;
+    let getColor = (d,i,dflt)=>{
+	if (colorBy && colorBy.index >= 0) {
+	    let record = records[i];
+            let value = record.getData()[colorBy.index];
+	    return  colorBy.getColor(value, record);
+	}
+	return dflt;
+    };
+    if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
+	svg.selectAll('line').data(data).enter().append("line")
+	    .attr('x1', (d,i)=>{return x(i)})
+	    .attr('y1', (d,i)=>{return y(d)})
+	    .attr('x2', (d,i)=>{return x(i+1)})
+	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
+	    .attr("stroke-width", lineWidth)
+            .attr("stroke", (d,i)=>getColor(d,i,lineColor))
+	    .style("cursor", "pointer");
+    }
+
+    if(attrs.showBars|| display.getProperty("sparklineShowBars",false)) {
+	defaultShowEndPoints = false;
+	svg.selectAll('.bar').data(data)
+	    .enter()
+	    .append('rect')
+	    .attr('class', 'bar')
+	    .attr('x', (d, i) => x(i))
+	    .attr('y', d => y(d))
+	    .attr('width', BAR_WIDTH)
+	    .attr('height', d => h-y(d))
+	    .attr('fill', (d,i)=>getColor(d,i,barColor))
+	    .style("cursor", "pointer")
+    }
+
+    if(attrs.showCircles || display.getProperty("sparklineShowCircles",false)) {
+	svg.selectAll('circle').data(data).enter().append("circle")
+	    .attr('r', circleRadius)
+	    .attr('cx', (d,i)=>{return x(i)})
+	    .attr('cy', (d,i)=>{return y(d)})
+	    .attr('fill', (d,i)=>getColor(d,i,circleColor))
+	    .style("cursor", "pointer");
+    }
+
+    if(attrs.showEndpoints || display.getProperty("sparklineShowEndPoints",defaultShowEndPoints)) {
+	svg.append('circle')
+	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
+	    .attr('cx', x(0))
+	    .attr('cy', y(data[0]))
+	    .attr('fill', attrs.endPoint1Color || display.getProperty("sparklineEndPoint1Color") || getColor(data[0],0,display.getProperty("sparklineEndPoint1Color",'steelblue')));
+	svg.append('circle')
+	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
+	    .attr('cx', x(data.length - 1))
+	    .attr('cy', y(data[data.length - 1]))
+	    .attr('fill', attrs.endPoint2Color || display.getProperty("sparklineEndPoint2Color")|| getColor(data[data.length-1],data.length-1,display.getProperty("sparklineEndPoint2Color",'tomato')));
+    }
+    let _display = display;
+    let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
+    svg.on("click", function() {
+	var coords = d3.mouse(display);
+	let record = records[Math.round(x.invert(coords[0]))]
+	if(record)
+	    _display.getDisplayManager().notifyEvent("handleEventRecordSelection", _display, {select:true,record: record});
+    });
+
+
+    if(doTooltip) {
+	svg.on("mouseover", function() {
+	    var coords = d3.mouse(display);
+	    let record = records[Math.round(x.invert(coords[0]))]
+	    let html = _display.getRecordHtml(record);
+	    let ele = $(dom);
+	    let offset = ele.offset().top + ele.height();
+	    let left = ele.offset().left;
+	    tt.transition().duration(200).style("opacity", .9);		
+	    tt.html(html)
+		.style("left", left + "px")		
+		.style("top", offset + "px");	
+	})
+	    .on("mouseout", function(d) {		
+		tt.transition()		
+		    .duration(500)		
+		    .style("opacity", 0);
+	    });
+    }
+}
+
+
+

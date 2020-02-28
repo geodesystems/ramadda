@@ -2473,7 +2473,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let innerId = s.cellId+"_inner";
 		    let innerDiv = HtmlUtils.div(["id", innerId, "style","width:" + w +"px;height:" + (w-vOffset) +"px;position:absolute;left:0px;top:" + vOffset+"px;"],"");
 		    $("#" + s.cellId).append(innerDiv);
-		    this.drawSparkLine("#"+innerId,w,w-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
+		    drawSparkLine(this, "#"+innerId,w,w-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
 		});
 	    }
 

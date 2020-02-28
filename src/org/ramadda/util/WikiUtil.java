@@ -730,13 +730,12 @@ public class WikiUtil {
             if (tline.equals("+pre")) {
                 inPre = true;
                 buff.append("<pre>\n");
-
                 continue;
             }
+
             if (tline.equals("-pre")) {
                 inPre = false;
                 buff.append("</pre>\n");
-
                 continue;
             }
 
@@ -751,14 +750,13 @@ public class WikiUtil {
                 inPre = false;
                 buff.append(tline);
                 buff.append("\n");
-
                 continue;
             }
 
             if (inPre) {
-                buff.append(tline);
+		line = line.replaceAll("//(.*)","//<i>$1</i>");
+                buff.append(line);
                 buff.append("\n");
-
                 continue;
             }
 
