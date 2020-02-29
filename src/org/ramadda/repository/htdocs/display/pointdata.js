@@ -2222,64 +2222,119 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
-
-	makeCounts: function(pointData, args) {
+	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
-	    let countFields;
-	    if(args["countFields"]) {
-		let c = args["countFields"].replace(/_comma_/g,",");
-		countFields = this.display.getFieldsByIds(fields, c);
-	    } else {
-		countFields= fields;
-	    }
-	    var newFields = [];
-	    //queue, hour, incoming, count
-	    countFields.forEach((f,idx)=>{
+	    let op = args["operator"] || "count";
+	    let keyFields =  this.display.getFieldsByIds(fields, (args["keyFields"]||"").replace(/_comma_/g,","));
+	    if(keyFields.length==0) throw new Error("No key fields processing mergeRows:" + args["keyFields"]);
+
+	    let newFields = [];
+	    let seen = {};
+	    keyFields.forEach((f,idx)=>{
+		seen[f.getId()] = true;
 		var newField = f.clone();
-		newField.index = idx;
+		newField.index = newFields.length;
 		newFields.push(newField);
 	    });
-            newFields.push(new RecordField({
-		id:"count",
-		index:newFields.length,
-		label:"Count",
-		type:"double",
-		chartable:true,
-            }));
-	    let countKeys = [];
-	    let counts ={
+	    let tmp =  this.display.getFieldsByIds(fields, (args["valueFields"]||"").replace(/_comma_/g,","));
+	    if(args["valueFields"]==null) tmp=fields;
+	    let valueFields = [];
+	    tmp.forEach(f=>{
+		if(!seen[f.getId()])
+		    valueFields.push(f);
+	    });
+
+	    valueFields.forEach((f,idx)=>{
+		var newField = f.clone();
+		newField.index = newFields.length;
+		if(newField.isNumeric()) {
+		    newField.id = newField.id +"_" + op;
+		    newField.label = Utils.makeLabel(newField.id);
+		}
+		newFields.push(newField);
+	    });
+//	    console.log("key fields:" + keyFields);
+//	    console.log("value fields:" + valueFields);
+	    if(op == "count") {
+		newFields.push(new RecordField({
+		    id:"count",
+		    index:newFields.length,
+		    label:"Count",
+		    type:"double",
+		    chartable:true,
+		}));
+	    }
+	    let keys = [];
+	    let collection ={
 	    };
 	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
 		var record = records[rowIdx];
 		let key = "";
-		countFields.forEach(f=>{
+		keyFields.forEach(f=>{
 		    key +=record.getValue(f.getIndex())+"-";
 		});
-		let count = counts[key];
-		if(!count) {
-		    countKeys.push(key);
-		    count = counts[key]= {
+		let obj = collection[key];
+		if(!obj) {
+		    keys.push(key);
+		    obj = collection[key]= {
 			count:0,
-			record:record
+			sums: [],
+			mins: [],
+			maxs:[],
+			records:[]
 		    };
+		    valueFields.forEach((f,idx)=>{
+			obj.sums.push(0);
+			obj.mins.push(NaN);
+			obj.maxs.push(NaN);
+		    });
 		}
-		count.count++;
+		valueFields.forEach((f,idx)=>{
+		    let v = record.getValue(f.getIndex());
+		    if(f.isNumeric() && !isNaN(v)) {
+			obj.sums[idx]+=v;
+			obj.mins[idx] = isNaN(obj.mins[idx])?v:Math.min(obj.mins[idx],v);
+			obj.maxs[idx] = isNaN(obj.maxs[idx])?v:Math.max(obj.maxs[idx],v);
+		    }
+		});
+		obj.count++;
+		obj.records.push(record);
 	    }
 	    let newRecords = [];
-	    countKeys.forEach((key,idx)=>{
-		let count = counts[key];
+	    keys.forEach((key,idx)=>{
+		let obj = collection[key];
 		let data =[];
-		countFields.forEach(f=>{
-		    let v = count.record.getValue(f.getIndex());
+		let seen = {};
+		keyFields.forEach(f=>{
+		    let v = obj.records[0].getValue(f.getIndex());
 		    data.push(v);
+		    seen[f.getId()]=true;
 		});
-		data.push(count.count);
+		valueFields.forEach((f,idx)=>{
+		    if(seen[f.getId()]) return;
+		    if(!f.isNumeric()) {
+			data.push(obj.records[0].getValue(f.getIndex()));
+		    } else {
+			if(op == "sum") 
+			    data.push(obj.sums[idx]);
+			else if(op == "average") 
+			    data.push(obj.sums[idx]/obj.count);
+			else if(op == "min") 
+			    data.push(obj.mins[idx]);
+			else if(op == "max") 
+			    data.push(obj.maxs[idx]);
+		    }
+		});
+		if(op == "count") {
+		    data.push(obj.count);
+		}
 		let newRecord = new  PointRecord(newFields,NaN, NaN, NaN, null, data);
 		newRecords.push(newRecord);
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
+
     });
 }
 
@@ -2298,7 +2353,33 @@ var DataUtils = {
 		let rest = command.substring(idx+1).trim();
 		command = command.substring(0,idx).trim();
 		if(rest.endsWith(")")) rest = rest.substring(0,rest.length-1);
-		rest.split(",").map(arg=>{
+		let toks = [];
+		let inQuote = false;
+		let tok = "";
+		for(let i=0;i<rest.length;i++) {
+		    let c = rest[i];
+		    if(c=="\'") {
+			if(!inQuote) {
+			    inQuote = true;
+			} else {
+			    inQuote = false;
+			}
+			tok += c;
+			continue;
+		    }
+		    if(c == ",") {
+			if(inQuote) {
+			    tok += c;			    
+			    continue;
+			}
+			toks.push(tok);
+			tok = "";
+			continue;
+		    }
+		    tok += c;			    
+		}
+		toks.push(tok);
+		toks.forEach(arg=>{
 		    arg =arg.trim();
 		    let value = "";
 		    let atoks = arg.match(/(.*)=(.*)/);
@@ -2308,6 +2389,7 @@ var DataUtils = {
 		    }
 		    arg = arg.trim();
 		    value = value.trim();
+//		    console.log("arg:" + arg +" v:" + value);
 		    //Strip off quotes
 		    value = value.replace(/^'/g,"").replace(/'$/g,"");
 		    if(arg!="") {

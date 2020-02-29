@@ -1795,7 +1795,9 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
     $.extend(this, {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    ["inlinelabel:Bar Chart","barWidth=\"10\""])},
+				    [
+					//"inlinelabel:Bar Chart",
+				    ])},
 
         canDoGroupBy: function() {
             return true;
@@ -2667,7 +2669,7 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.hAxis.title = this.getProperty("hAxisTitle", header.length > 1 ? header[1] : null);
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
 
-	    console.log(JSON.stringify(chartOptions,null,2));
+//	    console.log(JSON.stringify(chartOptions,null,2));
 	    //	    console.log(JSON.stringify(chartOptions.hAxis,null,2));
 
             return new google.visualization.BubbleChart(chartDiv); 
