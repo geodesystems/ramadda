@@ -24312,6 +24312,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.map) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             } else {
+		if(this.getProperty("initialLocation")) {
+		    let toks = this.getProperty("initialLocation").split(",");
+		    params.initialLocation = {
+			lat:+toks[0],
+			lon:+toks[1]
+		    }
+		}
 		params.showScaleLine = this.getProperty("showScaleLine",false);
 		params.showLatLonPosition = this.getProperty("showLatLonPosition",true);
 		params.showZoomPanControl = this.getProperty("showZoomPanControl",false);
@@ -26266,25 +26273,29 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		["radius=\"5\"","Size of the map points"],
 		['scaleRadius=true',"Scale the radius based on # points shown"],
 		"shape=\"star|cross|x|square|triangle|circle|lightning|church\"",
+		"markerIcon=\"/icons/...\"",
+		["sizeBy=\"field\"","Field to size points by"],
+		["sizeByLog=\"true\"","Use log scale for size by"],
+		["sizeByMap=\"value1:size,...,valueN:size\"","Define sizes if sizeBy is text"],
+		['sizeByRadiusMin="2"',"Scale size by"],
+		['sizeByRadiusMax="20"',"Scale size by"],
 		"showClipToBounds=true",
 		"showLocationSearch=\"true\"",
 		'showLocationReadout=false',
 		'showLatLonPosition=false',
-		'doPopup=false',
-		'linked=true',
-		"sizeBy=\"\"",
-		"sizeByLog=\"true\"",
-		"sizeByMap=\"value1:size,...,valueN:size\"",
-		'sizeByRadiusMin="2"',
-		'sizeByRadiusMax="20"',
-		"boundsAnimation=\"true\"",
+		['bounds=north,west,south,east',"initial bounds"],
+		['initialLocation=lat,lon',"initial location"],
+		['doPopup=false',"Don't show popups"],
+		['highlight=true',"Show mouse over highlights"],
+		['linked=true',"Link location with other maps"],
+		['linkGroup=some_name',"Map groups to link with"],
 		"centerOnFilterChange=\"true\"",
 		"centerOnHighlight=\"true\"",
+		["boundsAnimation=\"true\"","Animate bounds changes"],
 		'recordHighlightRadius=20',
 		'recordHighlightStrokeWidth=2',
 		'recordHighlightStrokeColor=red',
 		'recordHighlightFillColor=rgba(0,0,0,0)',
-		"markerIcon=\"/icons/...\"",
 		"showSegments=\"true\"",
 		'showRecordSelection=false',
 		'showMarkersToggle=true',

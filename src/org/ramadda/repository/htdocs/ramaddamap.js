@@ -246,7 +246,11 @@ function RepositoryMap(mapId, params) {
         this.onSelect = null;
     }
     if (params.initialLocation) {
-        this.defaultLocation = createLonLat(params.initialLocation[1], params.initialLocation[0]);
+	if(!Array.isArray(params.initialLocation)) {
+            this.defaultLocation = createLonLat(params.initialLocation.lon, params.initialLocation.lat);
+	} else {
+            this.defaultLocation = createLonLat(params.initialLocation[1], params.initialLocation[0]);
+	}
     } else if (Utils.isDefined(params.initialBounds)) {
         if ((typeof params.initialBounds) == "string") {
             params.initialBounds = params.initialBounds.split(",");
