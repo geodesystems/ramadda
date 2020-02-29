@@ -32,7 +32,7 @@
 </type>
 
 
-  <type name="notes_jsonfile"  description="Json File" handler="org.ramadda.plugins.notes.JsonFileTypeHandler" >
+  <type name="notes_jsonfile"  description="Json File" pattern=".*\.json" handler="org.ramadda.plugins.notes.JsonFileTypeHandler" >
      <property name="icon" value="/icons/json.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>

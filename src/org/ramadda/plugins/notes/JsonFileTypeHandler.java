@@ -142,10 +142,14 @@ public class JsonFileTypeHandler extends GenericTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
+	
         if ( !entry.isFile()) {
             return "No Json file available";
         }
         StringBuilder sb = new StringBuilder();
+	HU.importJS(sb, getPageHandler().makeHtdocsUrl("/notes/json.js"));
+
+
         try {
             String id = Utils.getGuid();
             String formatted = Json.format(entry.getResource().getPath(),
@@ -153,7 +157,7 @@ public class JsonFileTypeHandler extends GenericTypeHandler {
             HtmlUtils.open(sb, "div", "id", id);
             HtmlUtils.pre(sb, formatted);
             HtmlUtils.close(sb, "div");
-            sb.append(HtmlUtils.script("ramaddaJsonInit('" + id + "');"));
+            sb.append(HtmlUtils.script("RamaddaJson.init('" + id + "');"));
         } catch (Exception exc) {
             sb.append("Error formatting JSON: " + exc);
             exc.printStackTrace();
