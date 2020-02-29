@@ -86,7 +86,8 @@ public class RepositoryManager implements RepositorySource, Constants,
 
 
 
-
+    /** _more_          */
+    public static final HtmlUtils HU = null;
 
     /**
      * _more_
@@ -822,7 +823,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String makeFormSubmitDialog(Appendable sb, String message) {
         String id = "dialog-message" + (dialogCnt++);
-        String onSubmit = " onsubmit=\"return submitEntryForm('#" + id
+        String onSubmit = " onsubmit=\"return Utils.submitEntryForm('#" + id
                           + "');\" ";
         String loadingImage =
             HtmlUtils.img(getRepository().getIconUrl(ICON_PROGRESS));
@@ -845,7 +846,7 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String makeButtonSubmitDialog(Appendable sb, String message) {
         String id = HtmlUtils.getUniqueId("dialog-message");
-        String onSubmit = " onclick=\"return submitEntryForm('#" + id
+        String onSubmit = " onclick=\"return Utils.submitEntryForm('#" + id
                           + "');\" ";
         String loadingImage =
             HtmlUtils.img(getRepository().getIconUrl(ICON_PROGRESS));

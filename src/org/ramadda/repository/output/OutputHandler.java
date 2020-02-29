@@ -49,29 +49,22 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
+
 import java.io.*;
 
-import java.io.File;
-
-
 import java.net.*;
-
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
-
 import java.util.regex.*;
-
 import java.util.zip.*;
 
 
@@ -1009,14 +1002,20 @@ public class OutputHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
+     * @param seen _more_
      * @param args _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public String getSelectLink(Request request, Entry entry, String... args)
+    public String getSelectLink(Request request, Entry entry, HashSet seen,
+                                String... args)
             throws Exception {
+        if (seen.contains(entry.getId())) {
+            return "";
+        }
+        seen.add(entry.getId());
         String        target     = args[0];
         String        namePrefix = (args.length > 1)
                                    ? args[1]
@@ -2053,7 +2052,7 @@ public class OutputHandler extends RepositoryManager {
                                          boolean onlyIfWeHaveThem)
             throws Exception {
         StringBuilder sb = new StringBuilder();
-	if(getRepository().getCommentsEnabled()) {
+        if (getRepository().getCommentsEnabled()) {
             List<Comment> comments =
                 getRepository().getCommentManager().getComments(request,
                     entry);

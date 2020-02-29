@@ -699,10 +699,10 @@ public class AssociationManager extends RepositoryManager {
             String divId  = "morediv_" + base;
             String linkId = "morelink_" + base;
             String second = text.substring(idx + "<more>".length());
-            String moreLink = "javascript:showMore(" + HtmlUtils.squote(base)
-                              + ")";
-            String lessLink = "javascript:hideMore(" + HtmlUtils.squote(base)
-                              + ")";
+            String moreLink = "javascript:Utils.showMore("
+                              + HtmlUtils.squote(base) + ")";
+            String lessLink = "javascript:Utils.hideMore("
+                              + HtmlUtils.squote(base) + ")";
             text = first + "<br><a " + HtmlUtils.id(linkId) + " href="
                    + HtmlUtils.quote(moreLink)
                    + ">More...</a><div style=\"\" class=\"moreblock\" "
@@ -975,19 +975,23 @@ public class AssociationManager extends RepositoryManager {
                              + HtmlUtils.checkbox(ARG_EXACT, "true",
                                  request.get(ARG_EXACT, false)) + " "
                                      + msg("Match exactly");
-        sb.append(HtmlUtils.formEntry(msgLabel("Name"),
-                                      HtmlUtils.input(ARG_NAME,
-                                          request.getSanitizedString(ARG_NAME, ""),
-                                          HtmlUtils.SIZE_40) + searchExact));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Name"),
+                HtmlUtils.input(
+                    ARG_NAME, request.getSanitizedString(ARG_NAME, ""),
+                    HtmlUtils.SIZE_40) + searchExact));
 
 
         List types = getAssociationManager().getTypes();
         types.add(0, new TwoFacedObject(msg("None"), ""));
         if (types.size() > 1) {
-            sb.append(HtmlUtils.formEntry(msgLabel("Type"),
-                                          HtmlUtils.select(ARG_TYPE, types,
-                                              request.getSanitizedString(ARG_TYPE,
-                                                  ""))));
+            sb.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Type"),
+                    HtmlUtils.select(
+                        ARG_TYPE, types,
+                        request.getSanitizedString(ARG_TYPE, ""))));
         }
 
 

@@ -348,7 +348,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         List<Entry> allEntries = new ArrayList<Entry>();
         List<Entry> entries    = new ArrayList<Entry>();
         List<Entry> groups     = new ArrayList<Entry>();
-	boolean     refinement = request.exists(ARG_SEARCH_REFINE);
+        boolean     refinement = request.exists(ARG_SEARCH_REFINE);
         if ( !request.exists(ARG_MAX)) {
             request.put(ARG_MAX, "50");
         }
@@ -614,16 +614,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      */
     private void makeSearchForm(Request request, Appendable formSB)
             throws Exception {
+
         boolean      showDefault        = true;
         List<String> metadataTypesToUse = metadataTypes;
         if (request.defined(ARG_METADATA)) {
             metadataTypesToUse =
-                StringUtil.split(request.getSanitizedString(ARG_METADATA, ""), ",",
-                                 true, true);
+                StringUtil.split(request.getSanitizedString(ARG_METADATA,
+                    ""), ",", true, true);
         }
         List<String> fieldsList =
-            StringUtil.split(request.getSanitizedString(ARG_FIELDS, ""), ",", true,
-                             true);
+            StringUtil.split(request.getSanitizedString(ARG_FIELDS, ""), ",",
+                             true, true);
 
         HashSet<String> fieldsToShow = null;
 
@@ -649,7 +650,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             formSB.append("<div id=searchpopup class=ramadda-popup></div>");
             formSB.append(
                 HtmlUtils.script(
-                    "ramaddaSearchSuggestInit('searchinput',"
+                    "Utils.searchSuggestInit('searchinput',"
                     + ((theType == null)
                        ? "null"
                        : "'" + theType + "'") + ");"));
@@ -665,10 +666,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
         if (showDefault && showDesc) {
-            formSB.append(HtmlUtils.formEntry(msgLabel("Description"),
-                    HtmlUtils.input(ARG_DESCRIPTION,
-                                    request.getSanitizedString(ARG_DESCRIPTION, ""),
-                                    HtmlUtils.SIZE_15 + " autofocus ")));
+            formSB.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Description"),
+                    HtmlUtils.input(
+                        ARG_DESCRIPTION,
+                        request.getSanitizedString(ARG_DESCRIPTION, ""),
+                        HtmlUtils.SIZE_15 + " autofocus ")));
         }
 
         if (showDefault && showDate) {
@@ -679,10 +683,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         if (showDefault && showArea) {
             String[] nwse = new String[] {
-                                request.getSanitizedString(ARG_AREA_NORTH, ""),
+                                request.getSanitizedString(ARG_AREA_NORTH,
+                                    ""),
                                 request.getSanitizedString(ARG_AREA_WEST, ""),
-                                request.getSanitizedString(ARG_AREA_SOUTH, ""),
-                                request.getSanitizedString(ARG_AREA_EAST, ""), };
+                                request.getSanitizedString(ARG_AREA_SOUTH,
+                                    ""),
+                                request.getSanitizedString(ARG_AREA_EAST,
+                                    ""), };
 
             MapInfo selectMap =
                 getRepository().getMapManager().createMap(request, null,
@@ -698,8 +705,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 String id = field.id;
                 formSB.append(formEntry(request, msgLabel(field.label),
                                         HtmlUtils.input(id,
-                                            request.getSanitizedString(id, ""),
-                                            HtmlUtils.SIZE_20)));
+                                            request.getSanitizedString(id,
+                                                ""), HtmlUtils.SIZE_20)));
             }
         }
 
@@ -761,8 +768,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (request.exists(ARG_USER_ID)) {
             formSB.append(HtmlUtils.formEntry(msgLabel("User"),
                     HtmlUtils.input(ARG_USER_ID,
-                                    request.getSanitizedString(ARG_USER_ID, ""),
-                                    HtmlUtils.SIZE_20)));
+                                    request.getSanitizedString(ARG_USER_ID,
+                                        ""), HtmlUtils.SIZE_20)));
         }
 
         formSB.append(HtmlUtils.formEntry("", buttons.toString()));
@@ -771,6 +778,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         formSB.append(HtmlUtils.formTableClose());
         formSB.append(HtmlUtils.formClose());
         formSB.append("</div>");
+
 
     }
 

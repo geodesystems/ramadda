@@ -773,7 +773,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 ARG_TEXT, value,
                 HtmlUtils.attr("placeholder", msg(" Search text"))
                 + HtmlUtils.id("searchinput") + HtmlUtils.SIZE_50
-                + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>" + HtmlUtils.script("ramaddaSearchSuggestInit('searchinput');");
+                + " autocomplete='off' autofocus ") + "\n<div id=searchpopup class=ramadda-popup></div>" + HtmlUtils.script("Utils.searchSuggestInit('searchinput');");
 
         return textField;
     }

@@ -31,6 +31,8 @@ import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.search.SpecialSearch;
 import org.ramadda.repository.util.DateArgument;
+
+import org.ramadda.repository.util.FileWriter;
 import org.ramadda.repository.util.RequestArgument;
 import org.ramadda.repository.util.SelectInfo;
 
@@ -51,6 +53,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.Element;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
@@ -59,7 +62,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-import org.ramadda.repository.util.FileWriter;
 import java.io.*;
 
 import java.sql.PreparedStatement;
@@ -1743,14 +1745,16 @@ public class TypeHandler extends RepositoryManager {
      * @param request The request
      * @param entry _more_
      * @param node _more_
+     * @param files _more_
      *
      * @throws Exception _more_
      */
     public void initializeEntryFromXml(Request request, Entry entry,
-                                       Element node, Hashtable<String, File> files)
+                                       Element node,
+                                       Hashtable<String, File> files)
             throws Exception {
         if (parent != null) {
-            parent.initializeEntryFromXml(request, entry, node,files);
+            parent.initializeEntryFromXml(request, entry, node, files);
         }
 
 
@@ -1814,11 +1818,13 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fileWriter _more_
      * @param node _more_
      *
      * @throws Exception _more_
      */
-    public void addToEntryNode(Request request, Entry entry, FileWriter fileWriter, Element node)
+    public void addToEntryNode(Request request, Entry entry,
+                               FileWriter fileWriter, Element node)
             throws Exception {
         if (parent != null) {
             parent.addToEntryNode(request, entry, fileWriter, node);
@@ -5075,10 +5081,9 @@ public class TypeHandler extends RepositoryManager {
             sb.append("<div id=searchpopup class=ramadda-popup></div>");
             sb.append(
                 HtmlUtils.script(
-                    "ramaddaSearchSuggestInit('searchinput',"
-                    + ((type == null)
-                       ? "null"
-                       : "'" + type + "'") + ");"));
+                    "Utils.searchSuggestInit('searchinput'," + ((type == null)
+                    ? "null"
+                    : "'" + type + "'") + ");"));
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }

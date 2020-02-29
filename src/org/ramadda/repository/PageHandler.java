@@ -459,7 +459,7 @@ public class PageHandler extends RepositoryManager {
 
         if (showSearch) {
             String searchLink =
-                HtmlUtils.mouseClickHref("ramaddaSearchPopup('searchlink');",
+                HtmlUtils.mouseClickHref("Utils.searchPopup('searchlink');",
                                          searchImg, "");
             extra.append(searchLink);
             extra.append(HtmlUtils.space(2));
