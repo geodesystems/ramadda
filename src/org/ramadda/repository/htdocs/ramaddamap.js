@@ -433,15 +433,13 @@ function initMapFunctions(theMap) {
 
 
 			this.highlightPopup.backgroundColor=this.highlightBackgroundColor||"#fff";
-			this.highlightPopup.autoSize=true;
+			this.highlightPopup.autoSize=false;
 			this.highlightPopup.keepInMap=true;
-			this.highlightPopup.autoSize=true;
 			this.highlightPopup.padding=0;
 			this.map.addPopup(this.highlightPopup);
 		    }
 		}
 	    }
-
 
             var layer = feature.layer;
             if (!(layer.isMapLayer === true)) {

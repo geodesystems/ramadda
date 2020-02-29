@@ -23775,6 +23775,7 @@ function DisplayManager(argId, argProperties) {
             return html;
         },
         hasGeoMacro: function(jsonUrl) {
+	    if(!jsonUrl) return false;
             return jsonUrl.match(/(\${latitude})/g) != null;
         },
         getJsonUrl: function(jsonUrl, display, props) {
@@ -24360,7 +24361,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    });
 
-	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","rgba(0,0,0,0)");
+	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","#fff");
 	    this.map.doPopup = this.getProperty("doPopup",true);
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
@@ -25954,7 +25955,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    };
 	    let highlightGetter = f=>{
 		if(f.record) {
-                    return  this.getRecordHtml(f.record, fields, highlightTemplate);
+                    return  HtmlUtils.div(["style","background:#fff;"],this.getRecordHtml(f.record, fields, highlightTemplate));
 		}
 		return null;
 	    };	    
@@ -26182,6 +26183,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
 		    } else  if(pointIcon) {
+			console.log("R:" + props.pointRadius);
 			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
 		    } else {
 			if(!props.graphicName)

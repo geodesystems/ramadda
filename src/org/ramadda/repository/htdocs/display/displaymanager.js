@@ -344,6 +344,7 @@ function DisplayManager(argId, argProperties) {
             return html;
         },
         hasGeoMacro: function(jsonUrl) {
+	    if(!jsonUrl) return false;
             return jsonUrl.match(/(\${latitude})/g) != null;
         },
         getJsonUrl: function(jsonUrl, display, props) {
