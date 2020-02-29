@@ -3058,7 +3058,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData.entryId = originalPointData.entryId;
 	    }
 
-	    pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
+	    try {
+		pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
+	    } catch(exc) {
+		this.setErrorMessage(exc);
+//		console.log(exc.trace);
+		return null;
+	    }
+
 
 	    return pointData;
 	},
@@ -3132,7 +3139,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 	    }
-
 
 	    records = records.filter(record=>{
                 var date = record.getDate();
@@ -9891,6 +9897,122 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
+	unfurl: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let fields  = pointData.getRecordFields();
+	    let headerField =  this.display.getFieldById(fields, args.headerField||"");
+	    let uniqueField =  this.display.getFieldById(fields, args.uniqueField||"");
+	    let valueFields =  this.display.getFieldsByIds(fields, args.valueFields||"");
+	    let includeFields =  this.display.getFieldsByIds(fields, args.includeFields||"");
+
+	    
+	    if(!headerField) throw new Error("No headerField");
+	    if(!uniqueField) throw new Error("No uniqueField");
+	    if(valueFields.length==0) throw new Error("No value fields");
+	    /*
+		newFields.push(new RecordField({
+		    id:"count",
+		    index:newFields.length,
+		    label:"Count",
+		    type:"double",
+		    chartable:true,
+		}));
+*/
+	    let newColumns = [];
+	    let newColumnMap = {};
+	    let uniqueToRecords = {};
+	    let rowMap = {};
+	    let uniques = [];
+	    let indexMap={};
+	    records.forEach(record=>{
+		let unfurlValue = record.getValue(headerField.getIndex());
+		let uniqueValue = record.getValue(uniqueField.getIndex());
+		if(!newColumnMap[unfurlValue]) {
+                    newColumnMap[unfurlValue] = true;
+                    if (valueFields.length > 1) {
+                        valueFields.forEach(f=>{
+                            let label = unfurlValue + " - "
+                                + f.getLabel();
+                            newColumns.push(label);
+                        });
+                    } else {
+			newColumns.push(unfurlValue);
+		    }
+		}
+                let rowGroup    = rowMap[uniqueValue];
+                if (rowGroup == null) {
+                    rowMap[uniqueValue] =  rowGroup = [];
+                    uniques.push(uniqueValue);
+                }
+                rowGroup.push(record);
+	    });
+
+	    newColumns.sort();
+            newColumns.forEach((v,idx) => {
+                indexMap[v] = idx;
+            });
+
+	    let newRecords = [];
+	    let newFields = [];
+	    newColumns = Utils.mergeLists([uniqueField.getId()], newColumns);
+	    newColumns.forEach((c,idx)=>{
+		let type = (idx==0?"string":"double");
+		newFields.push(new RecordField({
+		    id:c,
+		    index:newFields.length,
+		    label:c,
+		    type:type,
+		    chartable:true,
+		}));
+	    });
+	    uniques.forEach(u=>{
+		let array = [];
+		newColumns.forEach(c=>{
+		    array.push("");
+		});
+                array[0] = u;
+                let  includeCnt = 0;
+                let rowValues  = null;
+                let firstRow   = null;
+                cnt = 0;
+                rowMap[u].forEach(row=>{
+                    if (firstRow == null) {
+                        firstRow = row;
+                    }
+                    let colname = row.getValue(headerField.getIndex());
+                    if (valueFields.length > 1) {
+                        valueFields.forEach(f=>{
+                            let label = colname + " - "  + f.getId();
+                            let idx = indexMap[label];
+                            if (idx == null) {
+				return;
+                            }
+                            let value =  row.getValue(valueIndex);
+                            array[1 + includeFields.length + idx] = value;
+                        });
+		    } else {
+                        let idx = indexMap[colname];
+                        if (idx == null) {
+			    return;
+                        }
+                        let    valueIndex = valueFields[0].getIndex();
+                        let value = row.getValue(valueIndex);
+                        array[1 + includeFields.length + idx] = value;
+                    }
+                    cnt++;
+		});
+
+                includeFields.forEach(f=>{
+                    array[1 + includeCnt] = firstRow.getValue(f.getIndex());
+                    includeCnt++;
+                });
+		let newRecord = new  PointRecord(newFields,NaN, NaN, NaN, null, array);
+		newRecords.push(newRecord);
+                cnt++;
+            });
+ 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	},
+
 
     });
 }
@@ -30274,11 +30396,13 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             var useId = this.getProperty("useId", true);
             var useIdTop = this.getProperty("useIdTop", useId);
             var useIdSide = this.getProperty("useIdSide", useId);
+	    let labelStyle = this.getProperty("labelStyle","");
             for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                 var field1 = fields[fieldIdx];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 var label = useIdTop ? field1.getId() : field1.getLabel();
                 if (short) label = "";
+		label = HtmlUtils.span(["style",labelStyle], label);
                 html += "<td align=center width=" + width + ">" + HtmlUtils.tag("div", ["class", "display-correlation-heading-top"], label) + "</td>";
             }
             html += "</tr>\n";
@@ -30291,7 +30415,9 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 var field1 = fields[fieldIdx1];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 var label = useIdSide ? field1.getId() : field1.getLabel();
-                html += "<tr valign=center><td>" + HtmlUtils.tag("div", ["class", "display-correlation-heading-side"], label.replace(/ /g, "&nbsp;")) + "</td>";
+		label.replace(/ /g, "&nbsp;");
+		label = HtmlUtils.span(["style",labelStyle], label);
+                html += "<tr valign=center><td>" + HtmlUtils.tag("div", ["class", "display-correlation-heading-side"], label) + "</td>";
                 var rowName = field1.getLabel();
                 for (var fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
                     var field2 = fields[fieldIdx2];

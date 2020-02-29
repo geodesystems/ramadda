@@ -1556,11 +1556,13 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             var useId = this.getProperty("useId", true);
             var useIdTop = this.getProperty("useIdTop", useId);
             var useIdSide = this.getProperty("useIdSide", useId);
+	    let labelStyle = this.getProperty("labelStyle","");
             for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                 var field1 = fields[fieldIdx];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 var label = useIdTop ? field1.getId() : field1.getLabel();
                 if (short) label = "";
+		label = HtmlUtils.span(["style",labelStyle], label);
                 html += "<td align=center width=" + width + ">" + HtmlUtils.tag("div", ["class", "display-correlation-heading-top"], label) + "</td>";
             }
             html += "</tr>\n";
@@ -1573,7 +1575,9 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 var field1 = fields[fieldIdx1];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 var label = useIdSide ? field1.getId() : field1.getLabel();
-                html += "<tr valign=center><td>" + HtmlUtils.tag("div", ["class", "display-correlation-heading-side"], label.replace(/ /g, "&nbsp;")) + "</td>";
+		label.replace(/ /g, "&nbsp;");
+		label = HtmlUtils.span(["style",labelStyle], label);
+                html += "<tr valign=center><td>" + HtmlUtils.tag("div", ["class", "display-correlation-heading-side"], label) + "</td>";
                 var rowName = field1.getLabel();
                 for (var fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
                     var field2 = fields[fieldIdx2];

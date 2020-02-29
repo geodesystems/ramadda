@@ -1976,7 +1976,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData.entryId = originalPointData.entryId;
 	    }
 
-	    pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
+	    try {
+		pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
+	    } catch(exc) {
+		this.setErrorMessage(exc);
+//		console.log(exc.trace);
+		return null;
+	    }
+
 
 	    return pointData;
 	},
@@ -2050,7 +2057,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 	    }
-
 
 	    records = records.filter(record=>{
                 var date = record.getDate();

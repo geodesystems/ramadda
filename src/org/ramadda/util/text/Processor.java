@@ -2287,7 +2287,6 @@ rotate -> pass -> pass -> rotate -> pass
             allRows.remove(0);
             Hashtable<String, Integer> indexMap = new Hashtable<String,
                                                       Integer>();
-            int mapCnt = 0;
             for (Row row : allRows) {
                 List   values      = row.getValues();
                 String value       = values.get(unfurlIndex).toString();
@@ -2332,7 +2331,6 @@ rotate -> pass -> pass -> rotate -> pass
             }
             List          header  = headerRow.getValues();
             StringBuilder sb      = new StringBuilder();
-
 
             List<Row>     newRows = new ArrayList<Row>();
             newColumns.add(0, header.get(uniqueIndex).toString());
