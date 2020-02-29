@@ -31429,7 +31429,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 	    let rowSelector = this.getProperty("rowSelector",selectors[1][0]);
 	    let getValues =(s=>{
 		let values = [];
-		if(s =="dow") {
+		if(s =="date_dow") {
 		    Utils.dayNamesShortShort.map((d,i)=>{
 			values.push({id:i,label:d});
 		    });
@@ -31524,9 +31524,10 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 			};
 		    });
 		}
+
 		if(checkers && checkers.length>0) {
 		    if(this.checkDataFilters(checkers, r)) {
-			cell.checked[key].push(r);
+			cell.checked.push(r);
 		    }
 		}
 
