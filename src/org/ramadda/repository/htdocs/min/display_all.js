@@ -31742,15 +31742,15 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-checked").tooltip({
 		content: function() {
-		    var key = $(this).attr("data-key");	
-		    let cell = cells[cell];
-		    var checked = cell.checked.length;
-		    if(checked) {
+		    let key = $(this).attr("data-key");	
+		    let cell = cells[key];
+		    let checked = cell.checked;
+		    if(checked.length) {
 			let tooltip = _this.getProperty("tooltip","${default}");
 			if(tooltip =="") return null;
 			let tt = _this.getProperty("checkedTooltipHeader","<b>#Items: ${numberChecked}</b><br>");
 			tt = tt.replace("${numberChecked}", checked.length);
-			cell.checked[key].map(r=>{
+			checked.map(r=>{
 			    if(tt!="") tt +="<div class=ramadda-hline>";
 			    tt+= _this.getRecordHtml(r,null,tooltip);
 			});
