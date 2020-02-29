@@ -465,7 +465,7 @@ function  RamaddaEarth(id, url, props) {
             }
             var xmlDoc=request.responseXML.documentElement;
             var text = getChildText(xmlDoc);
-            checkTabs(text);
+            Utils.checkTabs(text);
             ramaddaPlacemark.details = text;
             ramaddaPlacemark.placemark.setDescription(text);
             _this.setBalloon(ramaddaPlacemark,text); 

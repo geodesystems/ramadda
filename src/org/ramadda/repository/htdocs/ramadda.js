@@ -2,207 +2,17 @@
  * Copyright (c) 2008-2019 Geode Systems LLC
  */
 
-var doGlobalGraphData = false;
-var globalGraphData;
-
 
 var popupObject;
 var tooltipObject;
 var popupTime;
 var popupId;
-
-document.onmousemove = mouseMove;
-document.onmousedown = mouseDown;
-document.onmouseup = mouseUp;
-
-
 var mouseIsDown = 0;
 var dragSource;
 var draggedEntry;
 var draggedEntryName;
 var draggedEntryIcon;
 var mouseMoveCnt = 0;
-
-
-function hidePopupObject() {
-    if (popupObject) {
-        popupObject.hide();
-        popupObject = null;
-    }
-    popupTime = new Date();
-}
-
-
-function mouseDown(event) {
-    if (popupObject || tooltipObject) {
-	setTimeout(() => {
-		if(tooltipObject) {
-		    tooltipObject.hide();
-		    tooltipObject = null;
-		}
-		if(popupObject) {
-		    var thisId = popupObject.attr("id");
-		    if (checkToHidePopup() && popupObject && thisId == popupObject.attr("id")) {
-			hidePopupObject();
-		    }
-		}
-	    }, 250);
-    }
-    mouseIsDown = 1;
-    mouseMoveCnt = 0;
-    return true;
-}
-
-
-var ramaddSearchLastInput = "";
-
-function ramaddaSearchSuggestInit(id, type, icon) {
-    let searching = false;
-    let input = $("#" + id);
-    ramaddSearchLastInput = input.val();
-    input.keyup(function(e) {
-        var keyCode = e.keyCode || e.which;
-        if (keyCode == 27) {
-            var popup = $("#searchpopup");
-            popup.hide();
-            return;
-        }
-
-        if (keyCode == 13) {
-            var popup = $("#searchpopup");
-            popup.hide();
-            return;
-        }
-
-        e.stopPropagation();
-        if (searching) return;
-
-        var newVal = input.val();
-        if (newVal != ramaddSearchLastInput) {
-            ramaddSearchLastInput = newVal;
-            searching = true;
-            var url = ramaddaBaseUrl + "/search/suggest?string=" + encodeURIComponent(newVal);
-            if (type) url += "&type=" + type;
-
-            var jqxhr = $.getJSON(url, function(data) {
-                var popup = $("#searchpopup");
-                searching = false;
-                if (data.values.length == 0) {
-                    popup.hide();
-                    return;
-                }
-                var html = "";
-                var even = true;
-                for (var i = 0; i < data.values.length; i++) {
-                    var value = data.values[i];
-                    var v = value.replace(/\"/g, "_quote_");
-                    html += HtmlUtils.div(["class", "ramadda-search-suggestion " + (even ? "ramadda-row-even" : "ramadda-row-odd"), "title", v, "suggest", v], value);
-                    even = !even;
-                }
-                popup.html(html);
-                popup.find(".ramadda-search-suggestion").mousedown(function(e) {
-                    e.stopPropagation();
-                });
-                popup.find(".ramadda-search-suggestion").click(function(e) {
-                    popupTime = new Date();
-                    var v = $(this).attr("suggest");
-                    v = v.replace(/_quote_/g, "\"");
-                    ramaddSearchLastInput = v;
-                    input.val(v);
-                    input.focus();
-                    e.stopPropagation();
-                    popup.hide();
-                });
-                popup.show();
-                var my = "left top";
-                var at = "left bottom+1";
-                popup.position({
-                    of: input,
-                    my: my,
-                    at: at,
-                    collision: "fit none"
-                });
-            }).fail(function(jqxhr, textStatus, error) {
-                console.log("fail");
-            });
-
-        }
-    });
-}
-
-
-function ramaddaSearchLink() {
-    var input = $("#popup_search_input");
-    var val = input.val().trim();
-    var url = $(this).attr('url');
-    if (val != "") {
-        url += "?text=" + encodeURIComponent(val);
-    }
-    window.location = url;
-}
-
-function ramaddaSearchPopup(id) {
-    var value = "";
-    if (ramaddSearchLastInput)
-        value = " value='" + ramaddSearchLastInput + "' ";
-    var html = "<form action='" + ramaddaBaseUrl + "/search/do'><input " + value + " autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup ></div>";
-    var linkStyle = "font-size:13px;";
-    html += "\n";
-    var linksId = HtmlUtils.getUniqueId();
-    html += " ";
-    html += HtmlUtils.span(["class", "ramadda-links", "id", linksId],
-        HtmlUtils.leftCenterRight(
-            HtmlUtils.link(ramaddaBaseUrl + "/search/do", "Search", ["title", "Do search", "style", linkStyle]),
-            HtmlUtils.link(ramaddaBaseUrl + "/search/form", "Form", ["title", "Go to form", "style", linkStyle]),
-            HtmlUtils.link(ramaddaBaseUrl + "/search/type", "By Type", ["title", "Go to search by type form", "style", linkStyle])));
-    html = HtmlUtils.div(["style", "padding:5px;"], html);
-    var selectDiv = $("#ramadda-selectdiv");
-    var icon = $("#" + id);
-    popupTime = new Date();
-    popupObject = selectDiv;
-    selectDiv.html(html);
-    $("#" + linksId).find(".ramadda-link").click(ramaddaSearchLink);
-    var input = $("#popup_search_input");
-    input.mousedown(function(evt) {
-        evt.stopPropagation();
-    });
-    selectDiv.show();
-    selectDiv.position({
-        of: icon,
-        my: "right top",
-        at: "right bottom",
-        collision: "none none"
-    });
-    ramaddaSearchSuggestInit('popup_search_input', null, true);
-    input.focus();
-}
-
-
-function mouseUp(event) {
-    event = GuiUtils.getEvent(event);
-    mouseIsDown = 0;
-    draggedEntry = null;
-    GuiUtils.setCursor('default');
-    var obj = GuiUtils.getDomObject('ramadda-floatdiv');
-    if (obj) {
-        var dragSourceObj = GuiUtils.getDomObject(dragSource);
-        if (dragSourceObj) {
-            var tox = GuiUtils.getLeft(dragSourceObj.obj);
-            var toy = GuiUtils.getTop(dragSourceObj.obj);
-            var fromx = parseInt(obj.style.left);
-            var fromy = parseInt(obj.style.top);
-            var steps = 10;
-            var dx = (tox - fromx) / steps;
-            var dy = (toy - fromy) / steps;
-            flyBackAndHide('ramadda-floatdiv', 0, steps, fromx, fromy, dx, dy);
-        } else {
-            hideObject(obj);
-        }
-    }
-    return true;
-}
-
-
 
 
 function flyBackAndHide(id, step, steps, fromx, fromy, dx, dy) {
@@ -235,23 +45,6 @@ function finalHide(id) {
     obj.style.filter = "alpha(opacity=80)";
     obj.style.opacity = "0.8";
 }
-
-function mouseMove(event) {
-    event = GuiUtils.getEvent(event);
-    if (draggedEntry && mouseIsDown) {
-        mouseMoveCnt++;
-        var obj = GuiUtils.getDomObject('ramadda-floatdiv');
-        if (mouseMoveCnt == 6) {
-            GuiUtils.setCursor('move');
-        }
-        if (mouseMoveCnt >= 6 && obj) {
-            moveFloatDiv(GuiUtils.getEventX(event), GuiUtils.getEventY(event));
-        }
-    }
-    return false;
-}
-
-
 
 function moveFloatDiv(x, y) {
     var obj = GuiUtils.getDomObject('ramadda-floatdiv');
@@ -293,9 +86,6 @@ function mouseOutOnEntry(event, entryId, targetId) {
     }
 }
 
-
-
-
 function mouseDownOnEntry(event, entryId, name, sourceIconId, icon) {
     event = GuiUtils.getEvent(event);
     dragSource = sourceIconId;
@@ -335,21 +125,12 @@ function getTooltip() {
     return $("#ramadda-popupdiv");
 }
 
-function handleKeyPress(event) {
-    getTooltip().hide();
-}
 
-
-document.onkeypress = handleKeyPress;
 
 var groups = new Array();
 var groupList = new Array();
 
-
-
-
 function EntryFormList(formId, img, selectId, initialOn) {
-
     this.entryRows = new Array();
     this.lastEntryRowClicked = null;
     groups[formId] = this;
@@ -470,20 +251,18 @@ function EntryFormList(formId, img, selectId, initialOn) {
 
 
 function entryRowCheckboxClicked(event, cbxId) {
-
-    var cbx = GuiUtils.getDomObject(cbxId);
+    let cbx = GuiUtils.getDomObject(cbxId);
     if (!cbx) return;
     cbx = cbx.obj;
     if (!cbx.form) return;
-    var visibilityGroup = groups[cbx.form.id];
-
+    let visibilityGroup = groups[cbx.form.id];
     if (visibilityGroup) {
         visibilityGroup.checkboxClicked(event, cbxId);
     }
 }
 
 function initEntryListForm(formId) {
-    var visibilityGroup = groups[formId];
+    let visibilityGroup = groups[formId];
     if (visibilityGroup) {
         visibilityGroup.on = 0;
         visibilityGroup.setVisbility();
@@ -493,7 +272,6 @@ function initEntryListForm(formId) {
 
 function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails) {
     this.entryId = entryId;
-
     this.onColor = "#FFFFCC";
     this.overColor = "#f6f6f6";
     this.overColor = "#edf5ff";
@@ -574,7 +352,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails) {
         var offset = entryRow.lastClick - leftSide;
         var close = HtmlUtils.getIconImage(icon_close, ["xclass","ramadda-popup-close", "onmousedown", "hideEntryPopup();","id","tooltipclose"]);
         getTooltip().html("<div class=ramadda-popup-inner><div id=\"tooltipwrapper\" ><table><tr valign=top>"+ close +"</td><td>" + text + "</table></div></div>");
-        checkTabs(text);
+        Utils.checkTabs(text);
 
         var pos = entryRow.getRow().offset();
         var eWidth = entryRow.getRow().outerWidth();
@@ -604,26 +382,6 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails) {
 }
 
 
-function checkTabs(html) {
-    while (1) {
-        var re = new RegExp("id=\"(tabId[^\"]+)\"");
-        var m = re.exec(html);
-        if (!m) {
-            break;
-        }
-        var s = m[1];
-        if (s.indexOf("-") < 0) {
-            jQuery(function() {
-                jQuery('#' + s).tabs();
-            });
-        }
-        var idx = html.indexOf("id=\"tabId");
-        if (idx < 0) {
-            break;
-        }
-        html = html.substring(idx + 20);
-    }
-}
 
 
 function hideEntryPopup() {
@@ -746,7 +504,7 @@ function toggleBlockVisibility(id, imgid, showimg, hideimg) {
             $("#" + imgid).attr('src', hideimg);
         }
     }
-    ramaddaUpdateMaps();
+    Utils.ramaddaUpdateMaps();
 }
 
 
@@ -763,7 +521,7 @@ function toggleInlineVisibility(id, imgid, showimg, hideimg) {
     } else {
         if(img) img.obj.src = icon;
     }
-    ramaddaUpdateMaps();
+    Utils.ramaddaUpdateMaps();
 }
 
 
@@ -819,13 +577,12 @@ function handleFolderList(request, uid) {
         }
         if (html) {
             $("#" + uid).html("<div>" + html + "</div>");
-            checkTabs(html);
+            Utils.checkTabs(html);
         }
         if (script) {
             eval(script);
         }
     }
-
     if (changeImages[uid]) {
         $("#img_" + uid).attr('src', icon_folderopen);
     } else {
@@ -863,8 +620,8 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
     this.handleClick = function(event) {
         var srcId = this.id + '_selectlink';
-        this.div = GuiUtils.getDomObject('ramadda-selectdiv');
         hidePopupObject();
+        this.div = GuiUtils.getDomObject('ramadda-selectdiv');
         var selectDiv = $("#ramadda-selectdiv");
         selectDiv.show();
         var src = $("#" + srcId);
@@ -981,8 +738,6 @@ function handleSelect(request, id) {
 }
 
 
-
-
 function getChildText(node) {
     var text = '';
     for (childIdx = 0; childIdx < node.childNodes.length; childIdx++) {
@@ -1002,11 +757,18 @@ function toggleVisibility(id, style) {
 
 function hide(id) {
     $("#" + id).hide();
-    //    hideElementById(id);
 }
 
 function hideElementById(id) {
     hideObject(GuiUtils.getDomObject(id));
+}
+
+function hidePopupObject() {
+    if (popupObject) {
+        popupObject.hide();
+        popupObject = null;
+    }
+    popupTime = new Date();
 }
 
 function checkToHidePopup() {
@@ -1084,31 +846,11 @@ function hideObject(obj) {
 }
 
 
-function hideMore(base) {
-    var link = GuiUtils.getDomObject("morelink_" + base);
-    var div = GuiUtils.getDomObject("morediv_" + base);
-    hideObject(div);
-    showObject(link);
-}
-
-
-function showMore(base) {
-    var link = GuiUtils.getDomObject("morelink_" + base);
-    var div = GuiUtils.getDomObject("morediv_" + base);
-    hideObject(link);
-    showObject(div);
-}
-
-
-
-
 function showObject(obj, display) {
     if (!obj) return 0;
     $("#" + obj.id).show();
     return;
 }
-
-
 
 function toggleVisibilityOnObject(obj, display) {
     if (!obj) return 0;
@@ -1116,122 +858,7 @@ function toggleVisibilityOnObject(obj, display) {
 }
 
 
-
-
-
-
-//This gets called from toggleBlockVisibility
-//It updates any map on the page to fix some sort of offset problem
-function ramaddaUpdateMaps() {
-    if (!(typeof ramaddaMaps === 'undefined')) {
-        for (i = 0; i < ramaddaMaps.length; i++) {
-            var ramaddaMap = ramaddaMaps[i];
-            if (!ramaddaMap.map) continue;
-            ramaddaMap.map.updateSize();
-        }
-    }
-}
-
-
-
-
-var formDialogId;
-
-function closeFormLoadingDialog() {
-    var dialog = $(formDialogId);
-    dialog.dialog('close');
-}
-
-
-
-
-
-function popupFormLoadingDialog(dialogId) {
-    formDialogId = dialogId;
-    var dialog = $(dialogId);
-    dialog.dialog({
-        resizable: false,
-        height: 100,
-        modal: true
-    });
-}
-
-function submitEntryForm(dialogId) {
-    popupFormLoadingDialog(dialogId);
-    return true;
-}
-
-
-function treeViewClick(entryId, url, label, template) {
-    var href = "<a href='" + url + "'> <img src=\"" + ramaddaBaseUrl + "/icons/link.png" + "\" border=0> " + label + "</a>";
-    $("#treeview_header").html(href);
-    if (template)
-        url = url + "&template=" + template;
-    $('#treeview_view').attr("src", url);
-}
-
-
-function treeViewGoTo() {
-    var currentUrl = $('#treeview_view').attr("src");
-    if (currentUrl) {
-        currentUrl = currentUrl.replace("template=", "notemplate=");
-        var tmp = $(location);
-        tmp.attr('href', currentUrl);
-    }
-}
-
-
-
-function ramaddaJsonAllOpen(id) {
-    $("#" + id + " .ramadda-json-button").each(function() {
-        ramaddaJsonSetVisible(id, $(this), "close");
-    });
-}
-
-function ramaddaJsonAllClose(id) {
-    $("#" + id + " .ramadda-json-button").each(function() {
-        ramaddaJsonSetVisible(id, $(this), "open");
-    });
-}
-
-function ramaddaJsonSetVisible(id, button, state, all) {
-    var block = button.next(".ramadda-json-block");
-    var block = button.next().next();
-    if (!state)
-        state = block.attr("block-state");
-    if (state == "close") {
-        if (all) {
-            block.find(".ramadda-json-button").each(function() {
-                ramaddaJsonSetVisible(id, $(this), "close");
-            });
-        }
-        state = "open";
-        block.css("display", "block");
-        button.attr("src", icon_tree_open);
-    } else {
-        if (all) {
-            block.find(".ramadda-json-button").each(function() {
-                ramaddaJsonSetVisible(id, $(this), "open");
-            });
-        }
-        state = "close";
-        button.attr("src", icon_tree_closed);
-        block.css("display", "none");
-    }
-    block.attr("block-state", state);
-}
-
-function ramaddaJsonInit(id) {
-
-    var img = HtmlUtils.image(icon_tree_open, ["class", "ramadda-json-button", "title", "shift-click: toggle all"]);
-    var links = HtmlUtils.onClick("ramaddaJsonAllOpen('" + id + "')", "All Open", []) +
-        "&nbsp;&nbsp;" +
-        HtmlUtils.onClick("ramaddaJsonAllClose('" + id + "')", "All Close", [])
-    $("#" + id).before(links);
-    var block = $("#" + id + " .ramadda-json-block");
-    block.prev(".ramadda-json-openbracket").before(img + " ");
-    $("#" + id + " .ramadda-json-button").click(function(evt) {
-        //           $(this).css("background","red");
-        ramaddaJsonSetVisible(id, $(this), null, evt.shiftKey);
-    });
-}
+document.onmousemove = Utils.handleMouseMove;
+document.onmousedown = Utils.handleMouseDown;
+document.onmouseup = Utils.handleMouseUp;
+document.onkeypress = Utils.handleKeyPress;

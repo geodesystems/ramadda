@@ -3323,7 +3323,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 
-
 	    if(this.getProperty("binDate")) {
 		let what = this.getProperty("binDate");
 		let binType = this.getProperty("binType","total");
@@ -5948,11 +5947,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"width=\"100%\"",
 		"height=\"400\"",
 		"title=\"\"",
+		['displayStyle="css styles"',"Specify styles for display"],
 		"titleBackground=\"color\"",
 		"textColor=\"color\"",
 		["backgroundImage=\"\"","Image url to display in background"],
 		"background=\"color\"",
-		"label:Filter Attributes",
+		"label:Filter Data",
 		"filterFields=\"\"",
 		"hideFilterWidget=true",
 		"acceptFilterEvent=false",
@@ -5967,18 +5967,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		'dataFilters="match|notmatch|nomissing|lessthan|greaterthan|equals|notequals(field=field,value=value,label=label,enabled=false) "', 
+		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
+		['not match value','dataFilters="notmatch(field=field,value=value,label=,enabled=);"','Only show records that dont match'],
+		['no missing values','dataFilters="nomissing(field=field,label=,enabled=);"','Dont show missing values'],
+		['less than','dataFilters="lessthan(field=field,value=value,label=,enabled=);"',''],
+		['greater than','dataFilters="greaterthan(field=field,value=value,label=,enabled=);"',''],
+		['equals','dataFilters="equals(field=field,value=value,label=,enabled=);"',''],
+		['not equals','dataFilters="notequals(field=field,value=value,label=,enabled=); "',''],
 		['filterDate=year',"Show a simple pull down menu to select a year to display"],
 		['filterDateIncludeAll=true',"Include all years"],
 		['startDate="yyyy-MM-dd"',"Filter data on date"],
-		['endDate="yyyy-MM-dd"',,"Filter data on date"],
-		'binDate="day|month|year"',
+		['endDate="yyyy-MM-dd"',"Filter data on date"],
+		"inlinelabel:Convert Data",
+		['binDate="day|month|year"',"Bin the dates"],
 		'binType="count|average|total"',
+		['derived data', 'convertData="derived(field=field_id, function=foo*bar);"','Add derived field'],
+		['merge rows',"mergeRows(keyFields=, operator=count|sum|average, valueFields=);","Merge rows together"],
+		["rotate data", 'rotateData(includeFields=true,includeDate=true,flipColumns=true);',"Rotate data"],
+		["add percent", 'addPercentIncrease(replaceValues=false);',"Add percent increase"],
+		["unfurl", 'unfurl(headerField=,uniqueField=,valueFields=);',"Unfurl"],
 		"label:Color Attributes",
-		"colorTable=\"\"",
-		["colors=\"color1,...,colorN\"","Comma separate array of colors"],
+		["colors=\"color1,...,colorN\"","Comma separated array of colors"],
 		["colorBy=\"\"","Field id to color by"],
-		"colorByFields=\"\"",
+		["colorByFields=\"\"","Show color by fields in a menu"],
 		["colorByLog=\"true\"","Use a log scale for the color by"],
 		["colorByMap=\"value1:color1,...,valueN:colorN\"","Specify colors for color by text values"],
 		['colorByInverse=true','Inverse the values'],
@@ -26266,7 +26277,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
 		"label:Map Attributes",
-		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
 		"strokeWidth=1",
 		"strokeColor=\"#000\"",
 		"fillColor=\"\"",
@@ -26279,38 +26289,39 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		["sizeByMap=\"value1:size,...,valueN:size\"","Define sizes if sizeBy is text"],
 		['sizeByRadiusMin="2"',"Scale size by"],
 		['sizeByRadiusMax="20"',"Scale size by"],
-		"showClipToBounds=true",
-		"showLocationSearch=\"true\"",
-		'showLocationReadout=false',
-		'showLatLonPosition=false',
 		['bounds=north,west,south,east',"initial bounds"],
 		['initialLocation=lat,lon',"initial location"],
+		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
 		['doPopup=false',"Don't show popups"],
 		['highlight=true',"Show mouse over highlights"],
 		['linked=true',"Link location with other maps"],
 		['linkGroup=some_name',"Map groups to link with"],
-		"centerOnFilterChange=\"true\"",
-		"centerOnHighlight=\"true\"",
-		["boundsAnimation=\"true\"","Animate bounds changes"],
+		["centerOnFilterChange=\"true\"","Center map when the data filters change"],
+		["centerOnHighlight=\"true\"","Center map when a record is highlighted"],
+		["boundsAnimation=\"true\"","Animate when map is centered"],
 		'recordHighlightRadius=20',
 		'recordHighlightStrokeWidth=2',
 		'recordHighlightStrokeColor=red',
 		'recordHighlightFillColor=rgba(0,0,0,0)',
-		"showSegments=\"true\"",
+		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
 		'showRecordSelection=false',
 		'showMarkersToggle=true',
 		'showMarkersToggleLabel="label"',
+		"showClipToBounds=true",
+		"showLocationSearch=\"true\"",
+		'showLocationReadout=false',
+		'showLatLonPosition=false',
 		'markersVisibility=false',
 		'inlinelabel:Heatmap Attributes',
 		['doHeatmap=true',"Grid the data into an image"],
 		['doGridPoints=true',"Display a image showing shapes or bars"],
 		['hm.showPoints="true"',"Also show the map points"],
-		"cellShape=rect|circle|tile",
+		"cellShape=rect|circle",
+		["cell3D=true","Draw 3d bars"],
 		"cellColor=color",
 		"cellFilled=true",
 		"cellSize=8",
 		["cellSizeH=20","Base height to scale by"],
-		["cell3D=true","Draw 3d bars"],
 		'hm.operator="count|average|min|max"',
 		'hm.animationSleep="1000"',
 		['hm.groupByDate="day|month|year|decade"',"Group heatmap images by date"], 
@@ -29088,69 +29099,59 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 	    let graphData = null;
 	    let html = HtmlUtils.div(["id", this.getDomId(ID_GRAPH)]);
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-
-	    if(doGlobalGraphData) {
-		if(!globalGraphData) {
-		    setTimeout(()=>{
-			this.updateUI();
-		    },100);
-		}
-		graphData = globalGraphData;
-	    } else {
-		var records = this.filterData();
-		if (!records) {
-                    return;
-		}  
-		let seenNodes = {};
-		let nodes = [];
-		let links = [];
-		let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
-		let labelField = this.getFieldById(null, this.getProperty("labelField"));
-		if(!labelField) {
-		    var strings = this.getFieldsOfType(null, "string");
-		    if(strings.length>0) labelField = strings[0];
-		}
-		let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
-		let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
-		var textTemplate = this.getProperty("tooltip","${default}");
-		if(valueFields.length>0) {
-		    let seenValue = {};
-		    records.map((r,index)=>{
-			var label  = labelField?r.getValue(labelField.getIndex()):index;
-			var tooltip =  this.getRecordHtml(r, null, textTemplate);
-			nodes.push({id:index,label:label,tooltip:tooltip});
-			valueFields.map(f=>{
-			    let value = r.getValue(f.getIndex());
-			    if(!seenValue[value+"_" + f.getId()]) {
-				seenValue[value+"_" + f.getId()] = true;
-				nodes.push({id:value, isValue:true});
-			    }
-			    links.push({source:value, target: index});
-			});
-		    });
-		} else if(sourceField!=null && targetField!=null) {
-		    records.map(r=>{
-			var source = r.getValue(sourceField.getIndex());
-			var target = r.getValue(targetField.getIndex());
-			if(!seenNodes[source]) {
-			    seenNodes[source] = true;
-			    nodes.push({id:source,tooltip:source});
-			}
-			if(!seenNodes[target]) {
-			    seenNodes[target] = true;
-			    nodes.push({id:target,tooltip:target});
-			}
-			links.push({source:source, target: target});
-		    });
-		} else {
-		    this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
-		    return;
-		}
-		graphData = {
-		    nodes: nodes,
-		    links: links
-		};
+	    var records = this.filterData();
+	    if (!records) {
+                return;
+	    }  
+	    let seenNodes = {};
+	    let nodes = [];
+	    let links = [];
+	    let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
+	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    if(!labelField) {
+		var strings = this.getFieldsOfType(null, "string");
+		if(strings.length>0) labelField = strings[0];
 	    }
+	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
+	    let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
+	    var textTemplate = this.getProperty("tooltip","${default}");
+	    if(valueFields.length>0) {
+		let seenValue = {};
+		records.map((r,index)=>{
+		    var label  = labelField?r.getValue(labelField.getIndex()):index;
+		    var tooltip =  this.getRecordHtml(r, null, textTemplate);
+		    nodes.push({id:index,label:label,tooltip:tooltip});
+		    valueFields.map(f=>{
+			let value = r.getValue(f.getIndex());
+			if(!seenValue[value+"_" + f.getId()]) {
+			    seenValue[value+"_" + f.getId()] = true;
+			    nodes.push({id:value, isValue:true});
+			}
+			links.push({source:value, target: index});
+		    });
+		});
+	    } else if(sourceField!=null && targetField!=null) {
+		records.map(r=>{
+		    var source = r.getValue(sourceField.getIndex());
+		    var target = r.getValue(targetField.getIndex());
+		    if(!seenNodes[source]) {
+			seenNodes[source] = true;
+			nodes.push({id:source,tooltip:source});
+		    }
+		    if(!seenNodes[target]) {
+			seenNodes[target] = true;
+			nodes.push({id:target,tooltip:target});
+		    }
+		    links.push({source:source, target: target});
+		});
+	    } else {
+		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
+		return;
+	    }
+	    graphData = {
+		nodes: nodes,
+		links: links
+	    };
 
 	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
 	    const linkColor = this.getProperty("linkColor","#ccc");
@@ -31568,12 +31569,12 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		min = cnt==0?cell.count:Math.min(cell.count,min);
 		max = cnt==0?cell.count:Math.max(cell.count,max);
 		cnt++;
-//		console.log("cell: "+ cell.row +" " + cell.column +" #:" + cell.count);
+		//		console.log("cell: "+ cell.row +" " + cell.column +" #:" + cell.count);
 		countFields.forEach(f=>{
 		    let cf = cell.countFields[f.getId()];
 		    cf.values.sort();
 		    cf.values.forEach(v=>{
-//			console.log("\t" + v +" = " + cf.counts[v] +" " + cell.row +" " + cell.column);
+			//			console.log("\t" + v +" = " + cf.counts[v] +" " + cell.row +" " + cell.column);
 		    });
 		    
 		});
@@ -31751,7 +31752,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		    });
 		});
 	    });
-										   
+	    
 
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-checked").tooltip({
 		content: function() {
@@ -31879,16 +31880,16 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    let minDistace = 0;
 	    let cnt = 0;
 	    let seen = {};
-//	    console.log("find closest");
+	    //	    console.log("find closest");
 	    records.map((r,i) =>{
 		let coords = r[this.getId()+"_coordinates"]
 		let dx = coords.x-e.offsetX;
 		let dy = coords.y-e.offsetY;
 		let d = Math.sqrt(dx*dx+dy*dy);
-//		if(!seen[r.getValue(0)]) {
-//		    console.log("\t" +r.getValue(0) +" cx:" + coords.x +" cy:" + coords.y+" ex:" + e.offsetX +" ey:" + e.offsetY +" dx:" +dx +" dy:" +dy +" d:" + d);
-//		    seen[r.getValue(0)]  =true;
-//		}
+		//		if(!seen[r.getValue(0)]) {
+		//		    console.log("\t" +r.getValue(0) +" cx:" + coords.x +" cy:" + coords.y+" ex:" + e.offsetX +" ey:" + e.offsetY +" dx:" +dx +" dy:" +dy +" d:" + d);
+		//		    seen[r.getValue(0)]  =true;
+		//		}
 		if(i==0) {
 		    closest = r;
 		    minDistance=d;
@@ -31896,7 +31897,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		    if(d<minDistance) {
 			minDistance = d;
 			closest=r;
-//			console.log("\tclosest:" + minDistance +" " + r.getValue(0));
+			//			console.log("\tclosest:" + minDistance +" " + r.getValue(0));
 		    }
 		}
 	    });
@@ -31912,17 +31913,17 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    RecordUtil.getPoints(records, bounds);
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let style = this.getProperty("padding")?"padding:" +this.getProperty("padding")+"px;" : "";
-//	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
+	    //	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
 	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"xstyle","width:100%;height:100%;"+style]);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    let pad = 10;
 	    let w = Math.round(this.jq("inner").width());
 	    let h = Math.round(w/ratio);
             var divid = this.getProperty(PROP_DIVID);
-//	    $("#"+ divid).css("height",h+pad);
+	    //	    $("#"+ divid).css("height",h+pad);
 	    html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:" + w +";height:"+ h+"px;" + style]);
 	    html = HtmlUtils.div(["id",this.getDomId("inner")]);
-//	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
+	    //	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
 	    bounds = RecordUtil.expandBounds(bounds,0.1);

@@ -235,69 +235,59 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 	    let graphData = null;
 	    let html = HtmlUtils.div(["id", this.getDomId(ID_GRAPH)]);
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-
-	    if(doGlobalGraphData) {
-		if(!globalGraphData) {
-		    setTimeout(()=>{
-			this.updateUI();
-		    },100);
-		}
-		graphData = globalGraphData;
-	    } else {
-		var records = this.filterData();
-		if (!records) {
-                    return;
-		}  
-		let seenNodes = {};
-		let nodes = [];
-		let links = [];
-		let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
-		let labelField = this.getFieldById(null, this.getProperty("labelField"));
-		if(!labelField) {
-		    var strings = this.getFieldsOfType(null, "string");
-		    if(strings.length>0) labelField = strings[0];
-		}
-		let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
-		let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
-		var textTemplate = this.getProperty("tooltip","${default}");
-		if(valueFields.length>0) {
-		    let seenValue = {};
-		    records.map((r,index)=>{
-			var label  = labelField?r.getValue(labelField.getIndex()):index;
-			var tooltip =  this.getRecordHtml(r, null, textTemplate);
-			nodes.push({id:index,label:label,tooltip:tooltip});
-			valueFields.map(f=>{
-			    let value = r.getValue(f.getIndex());
-			    if(!seenValue[value+"_" + f.getId()]) {
-				seenValue[value+"_" + f.getId()] = true;
-				nodes.push({id:value, isValue:true});
-			    }
-			    links.push({source:value, target: index});
-			});
-		    });
-		} else if(sourceField!=null && targetField!=null) {
-		    records.map(r=>{
-			var source = r.getValue(sourceField.getIndex());
-			var target = r.getValue(targetField.getIndex());
-			if(!seenNodes[source]) {
-			    seenNodes[source] = true;
-			    nodes.push({id:source,tooltip:source});
-			}
-			if(!seenNodes[target]) {
-			    seenNodes[target] = true;
-			    nodes.push({id:target,tooltip:target});
-			}
-			links.push({source:source, target: target});
-		    });
-		} else {
-		    this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
-		    return;
-		}
-		graphData = {
-		    nodes: nodes,
-		    links: links
-		};
+	    var records = this.filterData();
+	    if (!records) {
+                return;
+	    }  
+	    let seenNodes = {};
+	    let nodes = [];
+	    let links = [];
+	    let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
+	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
+	    if(!labelField) {
+		var strings = this.getFieldsOfType(null, "string");
+		if(strings.length>0) labelField = strings[0];
 	    }
+	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
+	    let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
+	    var textTemplate = this.getProperty("tooltip","${default}");
+	    if(valueFields.length>0) {
+		let seenValue = {};
+		records.map((r,index)=>{
+		    var label  = labelField?r.getValue(labelField.getIndex()):index;
+		    var tooltip =  this.getRecordHtml(r, null, textTemplate);
+		    nodes.push({id:index,label:label,tooltip:tooltip});
+		    valueFields.map(f=>{
+			let value = r.getValue(f.getIndex());
+			if(!seenValue[value+"_" + f.getId()]) {
+			    seenValue[value+"_" + f.getId()] = true;
+			    nodes.push({id:value, isValue:true});
+			}
+			links.push({source:value, target: index});
+		    });
+		});
+	    } else if(sourceField!=null && targetField!=null) {
+		records.map(r=>{
+		    var source = r.getValue(sourceField.getIndex());
+		    var target = r.getValue(targetField.getIndex());
+		    if(!seenNodes[source]) {
+			seenNodes[source] = true;
+			nodes.push({id:source,tooltip:source});
+		    }
+		    if(!seenNodes[target]) {
+			seenNodes[target] = true;
+			nodes.push({id:target,tooltip:target});
+		    }
+		    links.push({source:source, target: target});
+		});
+	    } else {
+		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
+		return;
+	    }
+	    graphData = {
+		nodes: nodes,
+		links: links
+	    };
 
 	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
 	    const linkColor = this.getProperty("linkColor","#ccc");
@@ -2715,12 +2705,12 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		min = cnt==0?cell.count:Math.min(cell.count,min);
 		max = cnt==0?cell.count:Math.max(cell.count,max);
 		cnt++;
-//		console.log("cell: "+ cell.row +" " + cell.column +" #:" + cell.count);
+		//		console.log("cell: "+ cell.row +" " + cell.column +" #:" + cell.count);
 		countFields.forEach(f=>{
 		    let cf = cell.countFields[f.getId()];
 		    cf.values.sort();
 		    cf.values.forEach(v=>{
-//			console.log("\t" + v +" = " + cf.counts[v] +" " + cell.row +" " + cell.column);
+			//			console.log("\t" + v +" = " + cf.counts[v] +" " + cell.row +" " + cell.column);
 		    });
 		    
 		});
@@ -2898,7 +2888,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		    });
 		});
 	    });
-										   
+	    
 
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-datatable-checked").tooltip({
 		content: function() {
@@ -3026,16 +3016,16 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    let minDistace = 0;
 	    let cnt = 0;
 	    let seen = {};
-//	    console.log("find closest");
+	    //	    console.log("find closest");
 	    records.map((r,i) =>{
 		let coords = r[this.getId()+"_coordinates"]
 		let dx = coords.x-e.offsetX;
 		let dy = coords.y-e.offsetY;
 		let d = Math.sqrt(dx*dx+dy*dy);
-//		if(!seen[r.getValue(0)]) {
-//		    console.log("\t" +r.getValue(0) +" cx:" + coords.x +" cy:" + coords.y+" ex:" + e.offsetX +" ey:" + e.offsetY +" dx:" +dx +" dy:" +dy +" d:" + d);
-//		    seen[r.getValue(0)]  =true;
-//		}
+		//		if(!seen[r.getValue(0)]) {
+		//		    console.log("\t" +r.getValue(0) +" cx:" + coords.x +" cy:" + coords.y+" ex:" + e.offsetX +" ey:" + e.offsetY +" dx:" +dx +" dy:" +dy +" d:" + d);
+		//		    seen[r.getValue(0)]  =true;
+		//		}
 		if(i==0) {
 		    closest = r;
 		    minDistance=d;
@@ -3043,7 +3033,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		    if(d<minDistance) {
 			minDistance = d;
 			closest=r;
-//			console.log("\tclosest:" + minDistance +" " + r.getValue(0));
+			//			console.log("\tclosest:" + minDistance +" " + r.getValue(0));
 		    }
 		}
 	    });
@@ -3059,17 +3049,17 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 	    RecordUtil.getPoints(records, bounds);
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
 	    let style = this.getProperty("padding")?"padding:" +this.getProperty("padding")+"px;" : "";
-//	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
+	    //	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:100%;height:100%;"+style]);
 	    let html = HtmlUtils.div(["id",this.getDomId("inner"),"xstyle","width:100%;height:100%;"+style]);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    let pad = 10;
 	    let w = Math.round(this.jq("inner").width());
 	    let h = Math.round(w/ratio);
             var divid = this.getProperty(PROP_DIVID);
-//	    $("#"+ divid).css("height",h+pad);
+	    //	    $("#"+ divid).css("height",h+pad);
 	    html = HtmlUtils.div(["id",this.getDomId("inner"),"style","width:" + w +";height:"+ h+"px;" + style]);
 	    html = HtmlUtils.div(["id",this.getDomId("inner")]);
-//	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
+	    //	    this.jq(ID_DISPLAY_CONTENTS).css("height",h+pad);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    var colorBy = this.getColorByInfo(records);
 	    bounds = RecordUtil.expandBounds(bounds,0.1);

@@ -352,10 +352,18 @@ function wikiInitEditor(info) {
 		    menu = "<div class=wiki-editor-popup><table><tr valign=top><td><div>";
 		tags.map(tag=>{
 		    let tt =null;
+		    let label=null;
 		    if(Array.isArray(tag)) {
-			tt = tag[1];
-			tag = tag[0];
-		    }
+			if(tag.length==3) {
+			    label = tag[0];
+			    tt = tag[2];
+			    tag = tag[1];
+			} else {
+			    tt = tag[1];
+			    tag = tag[0];
+			}
+		    } 
+
 		    if(tag.startsWith("inlinelabel:")) {
 			menu+="<b>" + tag.substring("inlinelabel:".length)+"</b><br>";
 			return;
@@ -369,11 +377,15 @@ function wikiInitEditor(info) {
 		    tag = tag.replace(/=.*$/,"");
 		    let tt2 = t.replace(/"/g,"&quot;");
 		    if(tt) {
-			tt2 = tt2 +" - " + tt;
+//			tt2 = tt2 +" - " + tt;
+			tt2 = tt;
+		    } else {
+			tt2 = "";
 		    }
 		    tag = HtmlUtils.span(["title",tt2],tag);
-
-		    menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",tag)+"<br>\n";
+		    if(label)
+			label = HtmlUtils.span(["title",tt2],label);
+		    menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",label || tag)+"<br>\n";
 		});
 		
 		menu+="</div></td>";
