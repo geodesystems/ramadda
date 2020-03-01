@@ -1575,7 +1575,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.jq("heatmapreload").click(()=> {
 		    this.haveCalledUpdateUI = false;
 		    this.reloadHeatmap = true;
-		    this.createHeatmap();
+		    this.haveCalledUpdateUI = false;
+		    this.updateUI();
+//		    this.createHeatmap(records);
 		});
 		this.jq("heatmaptoggle").change(function() {
 		    if(_this.heatmapLayers)  {

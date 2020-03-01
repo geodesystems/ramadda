@@ -2380,7 +2380,7 @@ public class CsvUtil {
 
                 }
 
-                if (arg.equals("-print")) {
+                if (arg.equals("-print") || arg.equals("-p")) {
                     info.getProcessor().addProcessor(
                         new Processor.Printer(printFields, trim));
 
@@ -3332,7 +3332,7 @@ public class CsvUtil {
 
                 if (arg.equals("-quit")) {
                     String last = args.get(args.size() - 1);
-                    if (last.equals("-print")) {
+                    if (last.equals("-print") || last.equals("-p")) {
                         info.getProcessor().addProcessor(
                             new Processor.Printer(printFields, trim));
 

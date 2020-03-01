@@ -8857,7 +8857,6 @@ var RecordUtil = {
 		lon<= bounds.east;
 	    return ok;
 	});
-	console.log("subset:"+ records.length);
 	return records;
     },
     gridPoints: function(rows,cols,points,args) {
@@ -8975,6 +8974,19 @@ var RecordUtil = {
 
 
     xcnt:0,
+    drawArrow:function(context, fromx, fromy, tox, toy,headlen) {
+	let dx = tox - fromx;
+	let dy = toy - fromy;
+	let angle = Math.atan2(dy, dx);
+	context.moveTo(fromx, fromy);
+	context.lineTo(tox, toy);
+	context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+	context.moveTo(tox, toy);
+	context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+    },
+    
+
+
     drawGridCell: function(opts, canvas, ctx, x,y,v,colIdx,rowIdx, cell,grid,alphaByCount) {
 	let c =  opts.color|| "#ccc";
 	let perc = 1.0;
@@ -9000,7 +9012,7 @@ var RecordUtil = {
 	    else
 		ctx.fill();
 	} else if(opts.shape == "vector") {
-	    let length = 10;
+	    let length = opts.cellSizeH;
 	    let x2=x+length;
 	    let y2=y;
 	    if(opts.colorBy && opts.colorBy.index>=0) {
@@ -9024,7 +9036,17 @@ var RecordUtil = {
 	    ctx.beginPath();
 	    ctx.moveTo(x,y);
 	    ctx.lineTo(x2,y2);
+	    ctx.lineWidth=opts.display.getProperty("lineWidth",1);
 	    ctx.stroke();
+	    let arrowLength = opts.display.getProperty("arrowLength",-1);
+	    if(arrowLength>0) {
+		ctx.beginPath();
+		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
+		ctx.stroke();
+	    }
+
+
+
 	} else if(opts.cell3D) {
 	    let height = perc*(opts.cellSizeH||20);
 	    ctx.strokeStyle = "#000";
@@ -25734,7 +25756,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.jq("heatmapreload").click(()=> {
 		    this.haveCalledUpdateUI = false;
 		    this.reloadHeatmap = true;
-		    this.createHeatmap();
+		    this.haveCalledUpdateUI = false;
+		    this.updateUI();
+//		    this.createHeatmap(records);
 		});
 		this.jq("heatmaptoggle").change(function() {
 		    if(_this.heatmapLayers)  {
