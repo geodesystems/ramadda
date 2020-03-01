@@ -23,6 +23,7 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
 import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
+import org.ramadda.repository.Result;    
 import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
@@ -41,9 +42,11 @@ import org.ramadda.util.Utils;
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+import java.io.InputStream;
 import java.awt.geom.Rectangle2D;
 
 import java.util.ArrayList;
@@ -263,6 +266,14 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             throws Exception {
         return createMap(request, entry, width, height, forSelection, false,
                          props);
+    }
+
+
+    public Result processWms(Request request) throws Exception {
+	String layer = request.getString("layers","white");
+	InputStream inputStream = IOUtil.getInputStream("/org/ramadda/repository/htdocs/images/"  + layer +".png",
+							getClass());
+	return getRepository().makeResult(request, "/wms/white", inputStream,"image",true);
     }
 
 

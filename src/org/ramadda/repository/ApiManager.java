@@ -209,6 +209,8 @@ public class ApiManager extends RepositoryManager {
                 handler = getRepository().getSearchManager();
             } else if (handlerName.equals("entrymanager")) {
                 handler = getRepository().getEntryManager();
+            } else if (handlerName.equals("mapmanager")) {
+                handler = getRepository().getMapManager();		
             } else if (handlerName.equals("wikimanager")) {
                 handler = getRepository().getWikiManager();
             } else if (handlerName.equals("jobmanager")) {

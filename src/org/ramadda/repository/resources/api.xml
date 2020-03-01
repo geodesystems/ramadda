@@ -14,6 +14,8 @@
      <api request="/geocode"          method="processGeocode"/>
   </group>
 
+
+
   <group handler="entrymanager">
       <api request="/entry/show"             method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="fa-home"/>
       <api request="/entry/show/*"           method="processEntryShow"       checkauthmethod="true"/>
@@ -41,6 +43,10 @@
       <api request="/entry/types"             method="processEntryTypes"/>
   </group>
 
+
+  <group handler="mapmanager">
+      <api request="/wms"             method="processWms"/>
+  </group>
 
   <group handler="wikimanager">
       <api request="/wikify"             method="processWikify" />
