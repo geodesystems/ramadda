@@ -2938,8 +2938,8 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 					'sparklineCircleRadius="1"',
 					'sparklineLineWidth="1"',
 					'sparklineShowLines="true"',
-					'sparklineShowBars=""',
-					'sparklineShowCircles=""',
+					'sparklineShowBars=true',
+					'sparklineShowCircles=true',
 					'sparklineShowEndPoints="true"',
 					'sparklineEndPointRadius="2"',
 					'sparklineEndPoint1Color=""',
@@ -2952,23 +2952,6 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	},
         getLoadingMessage: function(msg) {
 	    return "Loading...";
-	},
-        handleEventRecordSelection: function(source, args) {
-	    SUPER.handleEventRecordSelection.call(this, source, args);
-	    if(this.filteredRecords) {
-		this.selectedRecord = null;
-		this.filteredRecords.every(r=>{
-		    if(r.getId() == args.record.getId()) {
-			this.selectedRecord= args.record;
-			return false;
-		    }
-		    return true;
-		});
-		if(this.selectedRecord) {
-
-		    this.updateUI();
-		}
-	    }
 	},
 	updateUI: function() {
 	    let w = this.getProperty("sparklineWidth",60);

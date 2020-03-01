@@ -16,6 +16,7 @@ var map_usgs_imagery = "usgs.imagery";
 var map_usgs_relief = "usgs.relief";
 var map_watercolor = "watercolor";
 var map_weather = "weather";
+var map_lightblue = "lightblue";
 var map_white = "white";
 var map_blue = "blue";
 var map_black = "black";
@@ -50,6 +51,8 @@ OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14
 
 
 var debugBounds = false;
+var getMapDebug = false;
+
 function createLonLat(lon, lat) {
     lon = parseFloat(lon);
     lat = parseFloat(lat);
@@ -90,7 +93,7 @@ var positionMarkerID = "location";
 var mapDefaults = {
     maxLatValue: 85,
     zoomLevels: 40,
-    defaultZoomLevel: 11,
+    defaultZoomLevel: -1,
     maxExtent: createBounds(-20037508, -20037508, 20037508, 20037508),
     sourceProjection: createProjection("EPSG:900913"),
     displayProjection: createProjection("EPSG:4326"),
@@ -251,11 +254,15 @@ function RepositoryMap(mapId, params) {
 	} else {
             this.defaultLocation = createLonLat(params.initialLocation[1], params.initialLocation[0]);
 	}
+	if(debugBounds)
+	    console.log("setting default location:" + this.defaultLocation);
     } else if (Utils.isDefined(params.initialBounds)) {
         if ((typeof params.initialBounds) == "string") {
             params.initialBounds = params.initialBounds.split(",");
         }
         this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
+	if(debugBounds)
+	    console.log("setting default bounds-1:" + this.defaultBounds);
     }
     
 
@@ -386,6 +393,14 @@ function initMapFunctions(theMap) {
             url = url.replace(/\&?map_bounds=[-\d\.]+,[-\d\.]+,[-\d\.]+,[-\d\.]+/g, "");
             if (!url.includes("?")) url += "?";
             url += "&" + bounds;
+
+            var level = this.map.getZoom();
+            url = url.replace(/\&?map_level=[\d]+/g, "");
+            url += "&map_zoomlevel=" + level;
+	    let center =   this.transformProjPoint(this.map.getCenter())
+            url = url.replace(/\&?map_center=[-\d\.]+,[-\d\.]+/g, "");
+            url += "&map_center=" + center.lat+","+ center.lon;
+
             try {
                 if (window.history.replaceState)
                     window.history.replaceState("", "", url);
@@ -721,7 +736,6 @@ function initMapFunctions(theMap) {
                 isBaseLayer: false,
                 srs: "epse:4326",
                 transparent: true
-
             }, {
                 wrapDateLine: mapDefaults.wrapDateline
             });
@@ -1631,9 +1645,10 @@ function initMapFunctions(theMap) {
                 map_watercolor,
                 map_weather,
                 map_white,
+		map_lightblue,
                 map_gray,
                 map_blue,
-                map_black
+                map_black,
             ];
         }
         var dflt = this.defaultMapLayer || map_osm;
@@ -1696,27 +1711,9 @@ function initMapFunctions(theMap) {
                     layer.ramaddaId = id;
                     this.addLayer(layer);
                 }
-            } else if (mapLayer == map_white) {
-                this.addImageLayer(map_white, "White Background", "", ramaddaBaseUrl + "/images/white.png", false, 90, -180, -90, 180, 50, 50, {
-		    //                this.addImageLayer(map_white, "White Background", "", iurl, false, 90, -180, -90, 180, 50, 50, {
-                    isBaseLayer: true
-                });
-                continue;
-            } else if (mapLayer == map_gray) {
-                this.addImageLayer(map_gray, "Gray Background", "", ramaddaBaseUrl + "/images/gray.png", false, 90, -180, -90, 180, 50, 50, {
-                    isBaseLayer: true
-                });
-                continue;
-            } else if (mapLayer == map_blue) {
-                this.addImageLayer(map_blue, "Blue Background", "", ramaddaBaseUrl + "/images/blue.png", false, 90, -180, -90, 180, 50, 50, {
-                    isBaseLayer: true
-                });
-                continue;
-            } else if (mapLayer == map_black) {
-                this.addImageLayer(map_black, "Black Background", "", ramaddaBaseUrl + "/images/black.png", false, 90, -180, -90, 180, 50, 50, {
-                    isBaseLayer: true
-                });
-                continue;
+            } else if (mapLayer == map_white || mapLayer== map_lightblue || mapLayer == map_gray || mapLayer == map_blue || mapLayer == map_black || mapLayer == map_gray) {
+		this.makeSimpleWms(mapLayer);
+		continue;
             } else if (mapLayer == map_usgs_topo) {
                 newLayer = this.createXYZLayer("USGS Topo",
 					       "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}",
@@ -1825,6 +1822,12 @@ function initMapFunctions(theMap) {
 
 
 
+    theMap.makeSimpleWms = function(mapLayer) {
+	let url = "/repository/wms?version=1.1.1&request=GetMap&layers=" + mapLayer +"&FORMAT=image%2Fpng&SRS=EPSG%3A4326&BBOX=-180.0,-80.0,180.0,80.0&width=400&height=400"
+	this.addWMSLayer(Utils.makeLabel(mapLayer) +" background", url, mapLayer, true);
+    }
+
+
     theMap.initSearch = function(inputId) {
         $("#" + inputId).keyup(function(e) {
             if (e.keyCode == 13) {
@@ -1924,6 +1927,8 @@ function initMapFunctions(theMap) {
     }
 
     theMap.getMap = function() {
+	if(getMapDebug)
+	    console.trace();
         return this.map;
     }
     theMap.initMap = function(doRegion) {
@@ -1932,6 +1937,7 @@ function initMapFunctions(theMap) {
             return;
         this.inited = true;
         let theMap = this;
+
 
         if (this.enableDragPan) {
             this.map.addControl(new OpenLayers.Control.Navigation({
@@ -1953,6 +1959,7 @@ function initMapFunctions(theMap) {
             this.map.addControl(new OpenLayers.Control.PanZoom());
         }
         if (this.showZoomOnlyControl && !this.showZoomPanControl) {
+
             this.map.addControl(new OpenLayers.Control.Zoom());
         }
         if (this.showScaleLine) {
@@ -2024,25 +2031,18 @@ function initMapFunctions(theMap) {
             this.hadDefaultBounds = true;
 	}
 
-
-        if (this.defaultLocation && !this.defaultBounds) {
+        if (false && this.defaultLocation && !this.defaultBounds) {
             var center = this.defaultLocation;
             var offset = 10.0;
             this.defaultBounds = createBounds(center.lon - offset, center.lat - offset, center.lon + offset, center.lat + offset);
+	    if(debugBounds)
+		console.log("setting default bounds-2:" + center.lon +" " + center.lat +" bounds:" + this.defaultBounds);
             this.defaultLocation = null;
         }
 
-        if (this.defaultBounds) {
-            var llPoint = this.defaultBounds.getCenterLonLat();
-            var projPoint = this.transformLLPoint(llPoint);
-            this.getMap().setCenter(projPoint);
-	    if(debugBounds)
-		console.log("zoom4:" + this.defaultBounds);
-            this.getMap().zoomToExtent(this.transformLLBounds(this.defaultBounds));
-            this.defaultBounds = null;
-        } else {
-            this.map.zoomToMaxExtent();
-        }
+	this.applyDefaultLocation();
+
+
 
         for (var i = 0; i < this.initialLayers.length; i++) {
             this.addLayer(this.initialLayers[i]);
@@ -2073,6 +2073,32 @@ function initMapFunctions(theMap) {
             //                cbx.prop("checked", cbxall.is(':checked')).trigger("change");
         });
     }
+
+    theMap.applyDefaultLocation = function() {	
+	if(this.defaultLocation) {
+	    if(debugBounds)
+		console.log("default location:" + this.defaultLocation);
+            var projPoint = this.transformLLPoint(this.defaultLocation);
+            this.getMap().setCenter(projPoint);
+	} else  if (this.defaultBounds) {
+            var llPoint = this.defaultBounds.getCenterLonLat();
+            var projPoint = this.transformLLPoint(llPoint);
+            this.getMap().setCenter(projPoint);
+	    if(debugBounds)
+		console.log("zoom4:" + this.defaultBounds);
+            this.getMap().zoomToExtent(this.transformLLBounds(this.defaultBounds));
+            this.defaultBounds = null;
+        } else {
+            this.getMap().zoomToMaxExtent();
+        }
+
+	if(this.initialZoom>=0) {
+	    if(debugBounds)
+		console.log("initial zoom:" + this.initialZoom);
+	    this.getMap().zoomTo(this.initialZoom);
+	}
+    }
+
 
     theMap.removeSearchMarkers = function() {
         if (!this.searchMarkerList) return;
@@ -2140,7 +2166,7 @@ function initMapFunctions(theMap) {
             wait.html(HtmlUtils.image(icon_wait));
             var url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
             if (bounds.is(':checked')) {
-                var b = _this.transformProjBounds(_this.map.getExtent());
+                var b = _this.transformProjBounds(_this.getMap().getExtent());
                 url += "&bounds=" + b.top + "," + b.left + "," + b.bottom + "," + b.right;
             }
             var jqxhr = $.getJSON(url, function(data) {
@@ -2189,7 +2215,7 @@ function initMapFunctions(theMap) {
                     _this.searchMarkerList = [];
                     _this.searchMarkerList.push(_this.addMarker("search", lonlat, icon, "", name, 20, 20));
                     //Only zoom  if its a zoom in
-                    var b = _this.transformProjBounds(_this.map.getExtent());
+                    var b = _this.transformProjBounds(_this.getMap().getExtent());
                     if (Math.abs(b.top - b.bottom) > offset) {
 			if(debugBounds)
 			    console.log("zoom6");
@@ -2209,8 +2235,8 @@ function initMapFunctions(theMap) {
         this.vectorLayers.push(layer);
         if (this.getCanSelect(canSelect)) {
             var _this = this;
-            if (!this.map.featureSelect) {
-                this.map.featureSelect = new OpenLayers.Control.SelectFeature([layer], {
+            if (!this.getMap().featureSelect) {
+                this.getMap().featureSelect = new OpenLayers.Control.SelectFeature([layer], {
                     multiple: false,
                     hover: this.selectOnHover,
                     onSelect: function(feature) {
@@ -2219,25 +2245,25 @@ function initMapFunctions(theMap) {
                 });
                 /*
                   if (this.highlightOnHover) {
-                  this.map.highlightSelect = new OpenLayers.Control.SelectFeature(layer, {
+                  this.getMap().highlightSelect = new OpenLayers.Control.SelectFeature(layer, {
                   multiple: false, 
                   hover: true,
                   highlightOnly: true,
                   renderIntent: "temporary"
                   });
-                  this.map.addControl(this.map.highlightSelect);
-                  this.map.highlightSelect.activate();   
+                  this.getMap().addControl(this.getMap().highlightSelect);
+                  this.getMap().highlightSelect.activate();   
                   }*/
 
                 //for now
-                //this.map.addControl(this.map.featureSelect);
-                //                this.map.featureSelect.activate();
+                //this.getMap().addControl(this.getMap().featureSelect);
+                //                this.getMap().featureSelect.activate();
             } else {
-		this.map.featureSelect.layers.push(layer);
-		//		this.map.featureSelect.layers = Utils.mergeLists(tmp,this.map.featureSelect.layers);
+		this.getMap().featureSelect.layers.push(layer);
+		//		this.getMap().featureSelect.layers = Utils.mergeLists(tmp,this.getMap().featureSelect.layers);
                 /*
-                  if(this.map.highlightSelect) {
-                  this.map.highlightSelect.setLayer(this.vectorLayers);
+                  if(this.getMap().highlightSelect) {
+                  this.getMap().highlightSelect.setLayer(this.vectorLayers);
                   }
                 */
             }
@@ -2262,7 +2288,7 @@ function initMapFunctions(theMap) {
         this.drawControl = new OpenLayers.Control.DrawFeature(
             theMap.drawingLayer, OpenLayers.Handler.Point);
         // theMap.drawControl.activate();
-        this.map.addControl(theMap.drawControl);
+        this.getMap().addControl(theMap.drawControl);
     }
 
     theMap.drawingFeatureAdded = function(feature) {
@@ -2279,7 +2305,7 @@ function initMapFunctions(theMap) {
         this.clickHandler = new OpenLayers.Control.Click();
         this.clickHandler.setLatLonZoomFld(lonfld, latfld, zoomfld, object);
         this.clickHandler.setTheMap(this);
-        this.map.addControl(this.clickHandler);
+        this.getMap().addControl(this.clickHandler);
         this.clickHandler.activate();
     }
 
@@ -2368,7 +2394,7 @@ function initMapFunctions(theMap) {
 				 this.fldEast.obj.value, true);
             if (this.selectorBox) {
                 var boxBounds = this.selectorBox.bounds
-                this.map.setCenter(boxBounds.getCenterLonLat());
+                this.getMap().setCenter(boxBounds.getCenterLonLat());
                 if (zoom) {
 		    if(debugBounds)
 			console.log("zoom7");
@@ -2391,7 +2417,7 @@ function initMapFunctions(theMap) {
     }
 
     theMap.resetExtent = function() {
-        this.map.zoomToMaxExtent();
+        this.getMap().zoomToMaxExtent();
     }
 
     // Assume that north, south, east, and west are in degrees or
@@ -2438,8 +2464,8 @@ function initMapFunctions(theMap) {
     }
 
     theMap.clearSelectedFeatures = function() {
-        if (this.map.controls != null) {
-            var myControls = this.map.controls;
+        if (this.getMap().controls != null) {
+            var myControls = this.getMap().controls;
             for (i = 0; i < myControls.length; i++) {
                 if (myControls[i].displayClass == "olControlSelectFeature") {
                     myControls[i].unselectAll();
@@ -2467,22 +2493,22 @@ function initMapFunctions(theMap) {
             this.markers.redraw();
         }
         if (andCenter) {
-            this.map.setCenter(this.selectorMarker.lonlat);
+            this.getMap().setCenter(this.selectorMarker.lonlat);
         }
         if (zoom) {
             if (zoom.zoomOut) {
-                var level = this.map.getZoom();
+                var level = this.getMap().getZoom();
                 level--;
-                if (this.map.isValidZoomLevel(level)) {
-                    this.map.zoomTo(level);
+                if (this.getMap().isValidZoomLevel(level)) {
+                    this.getMap().zoomTo(level);
                 }
                 return;
             }
             if (zoom.zoomIn) {
-                var level = this.map.getZoom();
+                var level = this.getMap().getZoom();
                 level++;
-                if (this.map.isValidZoomLevel(level)) {
-                    this.map.zoomTo(level);
+                if (this.getMap().isValidZoomLevel(level)) {
+                    this.getMap().zoomTo(level);
                 }
                 return;
             }
@@ -2533,7 +2559,7 @@ function initMapFunctions(theMap) {
         var newBounds = bounds;
         var newLeft = bounds.left;
         var newRight = bounds.right;
-        var extentBounds = this.map.restrictedExtent;
+        var extentBounds = this.getMap().restrictedExtent;
         if (!extentBounds) {
             extentBounds = this.maxExtent;
         }
@@ -2628,9 +2654,9 @@ function initMapFunctions(theMap) {
             },
 
             notice: function(bounds) {
-                var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
+                var ll = this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
                     bounds.left, bounds.bottom));
-                var ur = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
+                var ur = this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
                     bounds.right, bounds.top));
                 ll = theMap.transformProjPoint(ll);
                 ur = theMap.transformProjPoint(ur);
@@ -2667,7 +2693,7 @@ function initMapFunctions(theMap) {
             },
 
             down: function(pt) {
-                this.firstPoint = this.map.getLonLatFromPixel(new OpenLayers.Pixel(
+                this.firstPoint = this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
                     pt.x, pt.y));
                 this.firstPoint = theMap.transformProjPoint(this.firstPoint);
                 theMap.findSelectionFields();
@@ -2716,7 +2742,7 @@ function initMapFunctions(theMap) {
                 }
             },
             move: function(pt) {
-                var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
+                var ll = this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(pt.x, pt.y));
                 ll = theMap.transformProjPoint(ll);
                 dx = ll.lon - this.firstPoint.lon;
                 dy = ll.lat - this.firstPoint.lat;
@@ -2752,7 +2778,7 @@ function initMapFunctions(theMap) {
 	    $("#" + this.displayDiv).html("");
 	}
         if (this.currentPopup) {
-            this.map.removePopup(this.currentPopup);
+            this.getMap().removePopup(this.currentPopup);
             this.currentPopup.destroy();
             this.currentPopup = null;
             this.hiliteBox('');
@@ -2889,7 +2915,7 @@ function initMapFunctions(theMap) {
 		console.log("zoom9");
             this.getMap().zoomToExtent(projBounds);
         } else {
-            this.map.setCenter(mymarker.lonlat);
+            this.getMap().setCenter(mymarker.lonlat);
         }
 
         this.showMarkerPopup(mymarker);
@@ -2910,15 +2936,15 @@ function initMapFunctions(theMap) {
         sz = new OpenLayers.Size();
         sz.h = 120;
         sz.w = 120;
-        width = this.map.viewPortDiv.offsetWidth;
-        height = this.map.viewPortDiv.offsetHeight;
+        width = this.getMap().viewPortDiv.offsetWidth;
+        height = this.getMap().viewPortDiv.offsetHeight;
         position = new OpenLayers.Pixel(width / 2 - sz.w / 2, height / 2 - sz.h / 2);
         this.loadingImage = OpenLayers.Util.createImage("loadingimage",
 							position,
 							sz,
 							ramaddaBaseUrl + '/icons/mapprogress.gif');
         this.loadingImage.style.zIndex = 1010;
-        this.map.viewPortDiv.appendChild(this.loadingImage);
+        this.getMap().viewPortDiv.appendChild(this.loadingImage);
     }
 
 
@@ -2943,8 +2969,10 @@ function initMapFunctions(theMap) {
 
     //bounds are in lat/lon
     theMap.centerOnMarkers = function(dfltBounds, force, justMarkerLayer) {
-	if(debugBounds)
+	if(debugBounds) {
 	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds);
+	    console.trace();
+	}
         this.centerOnMarkersCalled = true;
         this.centerOnMarkersForce = force;
         now = Date.now();
@@ -3031,7 +3059,7 @@ function initMapFunctions(theMap) {
     theMap.animateViewToBounds = function(bounds, ob,steps) {
 	if(!Utils.isDefined(steps)) steps = 1;
 	if(!ob)
-	    ob = this.transformProjBounds(this.map.getExtent());
+	    ob = this.transformProjBounds(this.getMap().getExtent());
 	var numSteps = 10;
 	if(steps>numSteps) {
 	    this.setViewToBounds(bounds);
@@ -3063,6 +3091,9 @@ function initMapFunctions(theMap) {
     theMap.setCenter = function(to) {
         this.getMap().setCenter(this.transformLLPoint(to));
     }
+    theMap.setZoom = function(zoom) {
+        this.getMap().zoomTo(zoom);
+    }    
 
     theMap.zoomToMarkers = function() {
         if (!this.markers)
@@ -3087,6 +3118,15 @@ function initMapFunctions(theMap) {
         this.initialZoom = zoomLevel;
     }
 
+
+    theMap.setInitialZoom = function(zoomLevel) {
+        this.initialZoom = zoomLevel;
+    }
+
+    theMap.setInitialCenter = function(lon,lat) {
+        this.defaultLocation = createLonLat(lon, lat);
+    }    
+    
 
 
     theMap.getPopupText = function(text, marker) {
@@ -3525,7 +3565,7 @@ function initMapFunctions(theMap) {
             var idx = this.loadedLayers.indexOf(marker.entryLayer);
             if (idx >= 0)
                 this.loadedLayers = this.loadedLayers.slice(idx);
-            this.map.removeLayer(marker.entryLayer);
+            this.getMap().removeLayer(marker.entryLayer);
             marker.entryLayer = null;
             return;
         }

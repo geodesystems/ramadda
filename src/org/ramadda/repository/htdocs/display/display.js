@@ -714,7 +714,7 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
             if(!skipThis && Utils.isDefined(this[key])) {
-		if(debug) console.log("\tgetProperty-1");
+		if(debug) console.log("\tgetProperty-1:" + this[key]);
                 return this[key];
             }
             var value = this.properties[key];
@@ -1182,6 +1182,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	},
         handleEventRecordSelection: function(source, args) {
+	    this.selectedRecord= args.record;
+	    if(this.selectedRecord&& this.getProperty("colorThresholdField")) {
+		this.haveCalledUpdateUI = false;
+		this.updateUI();
+	    }
             if (!source.getEntries) {
                 return;
             }
@@ -2011,6 +2016,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.endDateObject = Utils.createDate(endDate);
 	    } 
 
+
+
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
 		let date = $("#"+ this.getFilterId(ID_FILTER_DATE)).val();
@@ -2042,6 +2049,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 	    if(debug)   console.log("R-1:" + records.length);
+	    if(this.getProperty("showLastDate")) {
+		let max = null;
+		let tmp = [];
+		records.forEach(r=>{
+		    if(!r.getTime()) return;
+		    if(!max) max = r.getTime();
+		    else max = r.getTime().getTime()>max.getTime()?r.getTime():max;
+		});
+
+		if(max)
+		    records.forEach(record=>{
+			if(record.getTime().getTime() == max.getTime()) tmp.push(record);
+		    });
+		records  =tmp;
+	    }
+
+
 
 
 	    var filters = {};
