@@ -1394,10 +1394,7 @@ var RecordUtil = {
 	    let y2=y;
 	    if(opts.colorBy && opts.colorBy.index>=0) {
 		let perc = opts.colorBy.getValuePercent(v);
-		//		if(perc<0.3 || perc>0.7) return;
 		let degrees = (360*perc);
-		//		console.log(v +" " + perc  + v +" deg:" + degrees);
-
 		degrees = degrees*(Math.PI / 360)
 		x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
 		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);

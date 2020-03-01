@@ -9017,10 +9017,7 @@ var RecordUtil = {
 	    let y2=y;
 	    if(opts.colorBy && opts.colorBy.index>=0) {
 		let perc = opts.colorBy.getValuePercent(v);
-		//		if(perc<0.3 || perc>0.7) return;
 		let degrees = (360*perc);
-		//		console.log(v +" " + perc  + v +" deg:" + degrees);
-
 		degrees = degrees*(Math.PI / 360)
 		x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
 		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
@@ -24419,9 +24416,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				     .getDomId(ID_LATFIELD), null, this);
             this.map.getMap().events.register("zoomend", "", function() {
                 theDisplay.mapBoundsChanged();
+//		console.log("zoomend");
+		theDisplay.checkHeatmapReload();
+
             });
+	    this.createTime = new Date();
             this.map.getMap().events.register("moveend", "", function() {
                 theDisplay.mapBoundsChanged();
+//		console.log("moveend");
+		theDisplay.checkHeatmapReload();
             });
 
             if (this.getProperty("bounds") ||this.getProperty("gridBounds") ) {
@@ -25496,9 +25499,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.setMessage("Creating display...");
 	    setTimeout(()=>{
 		try {
-		    getMapDebug = true;
 		    this.updateUIInner(pointData, records);
-		    getMapDebug = false;
 		    if(callback)callback();
 		} catch(exc) {
 		    console.log(exc)
@@ -25633,6 +25634,31 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},this.getProperty("hm.AnimationSleep",1000));
 	    }
 	},
+	checkHeatmapReload:function() {
+	    if(!this.getProperty("hm.reloadOnZoom")) return;
+	    let now = new Date ();
+	    //Don't do this the first couple of seconds after we've been created
+	    if(now.getTime()-this.createTime.getTime()<3000) return;
+	    let diff = 0;
+	    if(this.checkHeatmapReloadTime) {
+		diff = now.getTime()-this.checkHeatmapReloadTime.getTime();
+	    }
+	    this.checkHeatmapReloadTime = now;
+	    if(diff<1000) {
+		if(!this.checkHeatmapReloadPending) {
+		    this.checkHeatmapReloadPending = true;
+		    setTimeout(()=>{
+			this.checkHeatmapReloadPending = false;
+			this.checkHeatmapReload();
+		    },1100)
+		}
+		return;
+	    }
+	    this.checkHeatmapReloadTime = null;
+	    this.reloadHeatmap = true;
+	    this.haveCalledUpdateUI = false;
+	    this.updateUI();
+	},
 	createHeatmap(records, bounds) {
 	    let debug = displayDebug.displayMapCreateMap;
 	    if(debug) console.log("createHeatmap");
@@ -25659,6 +25685,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.reloadHeatmap = false;
 		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
 		records = RecordUtil.subset(records, bounds);
+		bounds =  RecordUtil.getBounds(records);
 	    }
 	    bounds = RecordUtil.expandBounds(bounds,this.getProperty("hm.boundsScale",0.05));
 
@@ -25668,7 +25695,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
 	    let groupByDate = this.getProperty("hm.groupByDate",null);
-	    if(debug) console.log("\tcalling groupBy");
+//	    if(debug) console.log("\tcalling groupBy");
 	    let groups = (groupByField || groupByDate)?RecordUtil.groupBy(records, this, groupByDate, groupByField):null;
 	    if(groups == null || groups.max == 0) {
 		doTimes = false;
@@ -25678,7 +25705,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    map:{none:records}
 		}
 	    }
-	    if(debug) console.log("\tdone calling groupBy count="+ groups.values.length);
+//	    if(debug) console.log("\tdone calling groupBy count="+ groups.values.length);
 	    let recordCnt = groups.max;
  	    if(dfltArgs.cellSize==0) {
 		let sqrt = Math.sqrt(recordCnt);
@@ -25690,7 +25717,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
 	    if(debug)
-		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length);
+		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length +" bounds:" + bounds.north + " " + bounds.west +" " + bounds.south +" " + bounds.east);
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
 	    groups.values.every((value,idx)=>{
@@ -25754,11 +25781,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				 this.getProperty("hm.toggleLabel","Toggle Heatmap") +"&nbsp;&nbsp;");
 		let _this = this;
 		this.jq("heatmapreload").click(()=> {
-		    this.haveCalledUpdateUI = false;
 		    this.reloadHeatmap = true;
 		    this.haveCalledUpdateUI = false;
 		    this.updateUI();
-//		    this.createHeatmap(records);
 		});
 		this.jq("heatmaptoggle").change(function() {
 		    if(_this.heatmapLayers)  {
@@ -26342,6 +26367,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['sizeByRadiusMin="2"',"Scale size by"],
 		['sizeByRadiusMax="20"',"Scale size by"],
 		['bounds=north,west,south,east',"initial bounds"],
+		['mapCenters=lat,lon',"initial position"],
+		['zoomLevel=4',"initial zoom"],
+		['fixedPosition=true','Keep the initial position'],
 		['initialLocation=lat,lon',"initial location"],
 		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
 		['doPopup=false',"Don't show popups"],
@@ -26363,6 +26391,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		"showLocationSearch=\"true\"",
 		'showLocationReadout=false',
 		'showLatLonPosition=false',
+		'showLayerSwitcher=false',
+		'showScaleLine=true',
+		'showZoomPanControl=true',
+		'showZoomOnlyControl=false',
+		'enableDragPan=false',
 		'markersVisibility=false',
 		'inlinelabel:Heatmap Attributes',
 		['doHeatmap=true',"Grid the data into an image"],
@@ -26376,6 +26409,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		["cellSizeH=20","Base height to scale by"],
 		'hm.operator="count|average|min|max"',
 		'hm.animationSleep="1000"',
+		'hm.reloadOnZoom=true',
 		['hm.groupByDate="day|month|year|decade"',"Group heatmap images by date"], 
 		['hm.groupBy="field id"',"Field to group heatmap images"], 
 		'hm.labelPrefix=""',
