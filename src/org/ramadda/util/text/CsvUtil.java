@@ -850,8 +850,6 @@ public class CsvUtil {
     /**
      * _more_
      *
-     * @param file _more_
-     *
      * @param s _more_
      * @param props _more_
      *
@@ -1331,8 +1329,10 @@ public class CsvUtil {
                                          boolean addNewLine) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < cols.size(); i++) {
-	    Object o = cols.get(i);
-            String s = (o==null?"":o.toString());
+            Object o = cols.get(i);
+            String s = ((o == null)
+                        ? ""
+                        : o.toString());
             if (i > 0) {
                 sb.append(delimiter);
             }
@@ -1657,6 +1657,7 @@ public class CsvUtil {
         new Cmd("-verify", "# columns",
                 "(throw error if a row has a different number of columns)"),
         new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
+        new Cmd("-tab", "(use tabs)"),
         new Cmd("-widths", "w1,w2,...,wN", "(columns are fixed widths)"),
         new Cmd("-comment", "<string>"),
         new Cmd("-verify", "",
@@ -2252,6 +2253,12 @@ public class CsvUtil {
                     continue;
                 }
 
+
+                if (arg.equals("-tab")) {
+                    info.setDelimiter(delimiter = "tab");
+
+                    continue;
+                }
 
                 if (arg.equals("-delimiter")) {
                     if ( !ensureArg(args, i, 1)) {
