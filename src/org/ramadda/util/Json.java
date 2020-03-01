@@ -182,11 +182,15 @@ public class Json {
      * @param row _more_
      * @param values _more_
      * @param quoteValue _more_
+     *
+     * @return _more_
      */
     public static Appendable map(Appendable row, List<String> values,
-                           boolean quoteValue) {
+                                 boolean quoteValue) {
         try {
-	    if(row == null) row=new StringBuilder();
+            if (row == null) {
+                row = new StringBuilder();
+            }
             row.append(mapOpen());
             int cnt = 0;
             for (int i = 0; i < values.size(); i += 2) {
@@ -205,7 +209,8 @@ public class Json {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
-	return row;
+
+        return row;
     }
 
 
@@ -303,10 +308,15 @@ public class Json {
      * @param row _more_
      * @param values _more_
      * @param quoteValue _more_
+     *
+     * @return _more_
      */
-    public static Appendable list(Appendable row, List values, boolean quoteValue) {
+    public static Appendable list(Appendable row, List values,
+                                  boolean quoteValue) {
         try {
-	    if(row == null) row=new StringBuilder();
+            if (row == null) {
+                row = new StringBuilder();
+            }
             row.append(listOpen());
             for (int i = 0; i < values.size(); i++) {
                 if (i > 0) {
@@ -317,14 +327,15 @@ public class Json {
                 } else {
                     row.append(values.get(i).toString());
                 }
-		row.append("\n");
+                row.append("\n");
             }
             row.append(listClose());
-	    row.append("\n");
+            row.append("\n");
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
-	return row;
+
+        return row;
     }
 
 
@@ -523,6 +534,7 @@ public class Json {
             s = s.replaceAll("\"", "\\\\\"");
             if (s.equals("true") || s.equals("false")) {
                 sb.append(s);
+
                 return;
             }
             //This can mess up and match on what should be a string value, e.g.
@@ -603,14 +615,13 @@ public class Json {
      *
      * @throws Exception _more_
      */
-    public static void geojsonToCsv(String file, PrintStream pw, String colString)
+    public static void geojsonToCsv(String file, PrintStream pw,
+                                    String colString)
             throws Exception {
-        InputStream is = IOUtil.getInputStream(file, Json.class);
-        BufferedReader br = new BufferedReader(
-                                new InputStreamReader(
-                                                      is));
+        InputStream    is   = IOUtil.getInputStream(file, Json.class);
+        BufferedReader br   = new BufferedReader(new InputStreamReader(is));
 
-        HashSet cols = null;
+        HashSet        cols = null;
         if (colString != null) {
             cols = new HashSet();
             for (String tok : StringUtil.split(colString, ",", true, true)) {
@@ -662,6 +673,68 @@ public class Json {
             pw.println(centroid[1] + ";" + centroid[0]);
         }
     }
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param pw _more_
+     * @param prop _more_
+     * @param value _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void geojsonSubsetByProperty(String file, PrintStream pw,
+            String prop, String value)
+            throws Exception {
+        InputStream    is   = IOUtil.getInputStream(file, Json.class);
+        BufferedReader br   = new BufferedReader(new InputStreamReader(is));
+
+        StringBuilder  json = new StringBuilder();
+        String         input;
+        while ((input = br.readLine()) != null) {
+            json.append(input);
+            json.append("\n");
+        }
+        JSONObject obj  = new JSONObject(json.toString());
+        JSONObject crs  = readObject(obj, "crs");
+        String     type = obj.optString("type", "");
+        pw.println("{");
+        pw.print("\"crs\":");
+        pw.print(crs.toString());
+        pw.println(",");
+        pw.print("\"type\":");
+        pw.print(quote(type));
+        pw.println(",");
+        pw.println("\"features\":[");
+        JSONArray features = readArray(obj, "features");
+        int       cnt      = 0;
+        for (int i = 0; i < features.length(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            JSONObject props   = feature.getJSONObject("properties");
+            String[]   names   = JSONObject.getNames(props);
+            boolean    haveIt  = false;
+            for (int j = 0; (j < names.length) && !haveIt; j++) {
+                haveIt = names[j].equals(prop)
+                         && props.optString(names[j], "").equals(value);
+            }
+            if ( !haveIt) {
+                continue;
+            }
+            if (cnt > 0) {
+                pw.println(",");
+            }
+            cnt++;
+            feature.put("id", cnt);
+            pw.print(feature.toString());
+        }
+        pw.println("");
+        pw.println("]}");
+    }
+
 
 
     /**
@@ -1015,16 +1088,17 @@ public class Json {
         while (toks.size() > 0) {
             String tok = toks.get(0);
             toks.remove(0);
-	    int idx1 = tok.indexOf("[");
-	    //is an array
-	    if(idx1>=0) {
-		int idx2 = tok.indexOf("]");		
-		String arrayName = tok.substring(0,idx1);
-		int aidx = Integer.parseInt(tok.substring(idx1+1,idx2));
-		JSONArray a = obj.getJSONArray(arrayName);
-		obj = a.getJSONObject(aidx);
-		continue;
-	    }
+            int idx1 = tok.indexOf("[");
+            //is an array
+            if (idx1 >= 0) {
+                int       idx2      = tok.indexOf("]");
+                String    arrayName = tok.substring(0, idx1);
+                int aidx = Integer.parseInt(tok.substring(idx1 + 1, idx2));
+                JSONArray a         = obj.getJSONArray(arrayName);
+                obj = a.getJSONObject(aidx);
+
+                continue;
+            }
 
 
             obj = obj.getJSONObject(tok);
@@ -1111,10 +1185,18 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        geojsonSubsetByProperty(args[0], System.out, args[1], args[2]);
+        if (true) {
+            return;
+        }
+
+
         geojsonToCsv(args[0], System.out, (args.length > 1)
-                                   ? args[1]
-                                   : null);
-        if(true) return;
+                                          ? args[1]
+                                          : null);
+        if (true) {
+            return;
+        }
 
 
         String  file = args[0];
@@ -1138,8 +1220,8 @@ public class Json {
 
 
         geojsonToCsv(args[0], System.out, (args.length > 1)
-                                   ? args[1]
-                                   : null);
+                                          ? args[1]
+                                          : null);
         //        convertCameras(args);
     }
 
