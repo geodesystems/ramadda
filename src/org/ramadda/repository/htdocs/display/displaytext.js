@@ -978,7 +978,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'${&lt;field&gt;_max}',
 					'${&lt;field&gt;_min}',
 					'${&lt;field&gt;_average}',
-					'highightOnScroll=true'
+					'highightOnScroll=true',
+					'onlyShowSelected=true'
 				    ]);
 	},
 	dataFilterChanged: function() {
@@ -993,6 +994,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if (pointData == null) return;
 	    var records = this.filterData();
 	    if(!records) return;
+	    if(this.getProperty("onlyShowSelected")) {
+		if(!this.selectedRecord) {
+		    this.selectedRecord = records[0];
+		}
+	    }
 	    if(this.getProperty("onlyShowSelected")) {
 		if(!this.selectedRecord) {
 		    this.writeHtml(ID_DISPLAY_CONTENTS, "");

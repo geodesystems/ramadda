@@ -607,11 +607,19 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    return dflt;
 	}
     });
+
+    
+
+
+
     var colorByAttr = this.getProperty(prop||"colorBy", null);
     $.extend(this, {
 	display:display,
         id: colorByAttr,
 	fields:fields,
+	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
+	aboveColor: display.getProperty("colorThresholdAbove","red"),
+	belowColor:display.getProperty("colorThresholdAbove","blue"),
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
 	inverse: this.getProperty("colorByInverse",false),
@@ -694,6 +702,20 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    let perc =   (v - this.minValue) / this.range;
 	    if(this.inverse) perc = 1-perc;
 	    return perc;
+	},
+	getColorFromRecord: function(record, dflt) {
+	    if(this.colorThresholdField && this.display.selectedRecord) {
+		let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
+		let v2=record.getValue(this.colorThresholdField.getIndex());
+		if(v2>v) return this.aboveColor;
+		else return this.belowColor;
+	    }
+
+	    if (this.index >= 0) {
+		let value = record.getData()[this.index];
+		return  this.getColor(value, record);
+	    }
+	    return dflt;
 	},
 	getColor: function(value, pointRecord) {
 	    var percent = 0;
@@ -949,12 +971,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
     let lineWidth = attrs.lineWidth ||display.getProperty("sparklineLineWidth",1);
     let defaultShowEndPoints = true;
     let getColor = (d,i,dflt)=>{
-	if (colorBy && colorBy.index >= 0) {
-	    let record = records[i];
-            let value = record.getData()[colorBy.index];
-	    return  colorBy.getColor(value, record);
-	}
-	return dflt;
+	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
     if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
 	svg.selectAll('line').data(data).enter().append("line")
@@ -963,7 +980,10 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 	    .attr('x2', (d,i)=>{return x(i+1)})
 	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
 	    .attr("stroke-width", lineWidth)
-            .attr("stroke", (d,i)=>getColor(d,i,lineColor))
+            .attr("stroke", (d,i)=>{
+		if(isNaN(d)) return "rgba(0,0,0,0)";
+		return getColor(d,i,lineColor)
+	    })
 	    .style("cursor", "pointer");
     }
 
@@ -983,7 +1003,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 
     if(attrs.showCircles || display.getProperty("sparklineShowCircles",false)) {
 	svg.selectAll('circle').data(data).enter().append("circle")
-	    .attr('r', circleRadius)
+	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
 	    .attr('cx', (d,i)=>{return x(i)})
 	    .attr('cy', (d,i)=>{return y(d)})
 	    .attr('fill', (d,i)=>getColor(d,i,circleColor))
@@ -991,21 +1011,25 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
     }
 
     if(attrs.showEndpoints || display.getProperty("sparklineShowEndPoints",defaultShowEndPoints)) {
+	let fidx=0;
+	while(isNaN(data[fidx]) && fidx<data.length) fidx++;
+	let lidx=data.length-1;
+	while(isNaN(data[lidx]) && fidx>=0) lidx--;	
 	svg.append('circle')
 	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
-	    .attr('cx', x(0))
-	    .attr('cy', y(data[0]))
+	    .attr('cx', x(fidx))
+	    .attr('cy', y(data[fidx]))
 	    .attr('fill', attrs.endPoint1Color || display.getProperty("sparklineEndPoint1Color") || getColor(data[0],0,display.getProperty("sparklineEndPoint1Color",'steelblue')));
 	svg.append('circle')
 	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
-	    .attr('cx', x(data.length - 1))
-	    .attr('cy', y(data[data.length - 1]))
+	    .attr('cx', x(lidx))
+	    .attr('cy', y(data[lidx]))
 	    .attr('fill', attrs.endPoint2Color || display.getProperty("sparklineEndPoint2Color")|| getColor(data[data.length-1],data.length-1,display.getProperty("sparklineEndPoint2Color",'tomato')));
     }
     let _display = display;
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
     svg.on("click", function() {
-	var coords = d3.mouse(display);
+	var coords = d3.mouse(this);
 	let record = records[Math.round(x.invert(coords[0]))]
 	if(record)
 	    _display.getDisplayManager().notifyEvent("handleEventRecordSelection", _display, {select:true,record: record});
@@ -1014,7 +1038,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 
     if(doTooltip) {
 	svg.on("mouseover", function() {
-	    var coords = d3.mouse(display);
+	    var coords = d3.mouse(this);
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    let html = _display.getRecordHtml(record);
 	    let ele = $(dom);

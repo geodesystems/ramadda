@@ -1058,9 +1058,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    var didColorBy = false;
 	    var tuples = [];
-
-
-
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
 		var record =dataList[rowIdx];
                 var row = this.getDataValues(record);
@@ -1310,9 +1307,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.vAxis.ticks  = this.getProperty("vAxis.ticks").split(",").filter(v=>v!="");
 	    }
 
-            if (this.lineWidth) {
-                chartOptions.lineWidth = this.lineWidth;
-            }
+
             if (this.fontSize > 0) {
                 chartOptions.fontSize = this.fontSize;
             }
@@ -1426,6 +1421,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             throw new Error("doMakeGoogleChart undefined");
         },
 	makeGoogleChart: function(dataList, props, selectedFields) {
+	    try {
+		this.doMakeGoogleChartInner(dataList,props,selectedFields);
+	    } catch(err) {
+		this.setErrorMessage(err);
+		console.log("Error:" + err);
+		console.log(err.stack);
+	    }
+	},
+	doMakeGoogleChartInner: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
                 this.setContents("No google");
                 return;
@@ -1447,12 +1451,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.chartOptions.hAxis.maxValue = x.max;
 	    }
 	    if(this.getProperty("vAxisFixedRange")) {
-		let y = this.getColumnValues(records, selectedFields[1]);
+		
+		let y = this.getColumnValues(records, selectedFields[1]||selectedFields[0]);
 		this.chartOptions.vAxis.minValue = y.min;
 		this.chartOptions.vAxis.maxValue = y.max;
 	    }
-
-
 
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {

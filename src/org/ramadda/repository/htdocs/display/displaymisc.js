@@ -2919,7 +2919,8 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 
 function RamaddaSparklineDisplay(displayManager, id, properties) {
-    properties.displayInline = true;
+    if(!properties.groupBy)
+	properties.displayInline = true;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -2952,31 +2953,66 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
         getLoadingMessage: function(msg) {
 	    return "Loading...";
 	},
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    if(this.filteredRecords) {
+		this.selectedRecord = null;
+		this.filteredRecords.every(r=>{
+		    if(r.getId() == args.record.getId()) {
+			this.selectedRecord= args.record;
+			return false;
+		    }
+		    return true;
+		});
+		if(this.selectedRecord) {
+
+		    this.updateUI();
+		}
+	    }
+	},
 	updateUI: function() {
 	    let w = this.getProperty("sparklineWidth",60);
 	    let h = this.getProperty("sparklineHeight",20);
-	    var records = this.filterData();
+	    let records = this.filteredRecords = this.filterData();
 	    if(!records) return;
 	    let field = this.getFieldById(null, this.getProperty("field"));
 	    if(field==null) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
 		return;
 	    }
-	    //	    this.getPropertyShow = true;
-	    let id = this.getDomId("inner");
 	    let showDate = this.getProperty("showDate",false);
-	    html = HtmlUtils.div(["class","display-sparkline-sparkline","id",this.getDomId("inner"),"style","width:" + w+"px;height:" + h+"px;"]);
-	    if(showDate) {
-		html = HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
-		    HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))
-	    }
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    let col = this.getColumnValues(records, field);
+	    let id = this.getDomId("inner");
 	    let colorBy = this.getColorByInfo(records);
-	    drawSparkLine(this, "#"+id,w,h,col.values,records,col.min,col.max,colorBy);
-	    if(this.getPropertyShow) {
-		this.getPropertyShow = false;
-		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
+
+	    let groupByField = this.getFieldById(null,this.getProperty("groupBy"));
+	    let groups = groupByField?RecordUtil.groupBy(records, this, null, groupByField):null;
+
+	    let col = this.getColumnValues(records, field);
+	    if(groups) {
+		let labelPosition = this.getProperty("labelPosition","bottom");
+		html = HtmlUtils.div(["id",this.getDomId("inner")]);
+		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+		groups.values.forEach((value,idx)=>{
+		    let grecords = groups.map[value];
+		    let gid = id+"_"+ +idx;
+		    let c = HtmlUtils.div(["class","display-sparkline-sparkline","id",gid,"style","width:" + w+"px;height:" + h+"px;"]);
+		    let label = HtmlUtils.div(["class","display-sparkline-header"], value);
+		    if(labelPosition == "top")
+			c = label + "<br>" + c;
+		    else if(labelPosition == "bottom")
+			c =  c + "<br>" + label;
+		    $("#"+id).append(HtmlUtils.div(["style","display:inline-block;margin:4px;"],c));
+		    let gcol = this.getColumnValues(grecords, field);
+		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,col.min,col.max,colorBy);
+		});		
+	    } else {
+		html = HtmlUtils.div(["class","display-sparkline-sparkline","id",this.getDomId("inner"),"style","width:" + w+"px;height:" + h+"px;"]);
+		if(showDate) {
+		    html = HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
+			HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))
+		}
+		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+		drawSparkLine(this, "#"+id,w,h,col.values,records,col.min,col.max,colorBy);
 	    }
 	}
     });

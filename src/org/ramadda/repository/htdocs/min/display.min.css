@@ -1967,6 +1967,11 @@ display:inline-block;
 }
 
 
+.display-sparkline-header {
+    display:inline-block;
+    text-align:center;
+    font-weight:bold;
+}    
 
 .display-sparkline-date {
     display:inline-block;

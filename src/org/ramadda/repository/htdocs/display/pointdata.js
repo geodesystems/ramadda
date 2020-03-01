@@ -1012,74 +1012,6 @@ function makePointData(json, derived, source) {
 
 
 
-
-
-
-function makeTestPointData() {
-    var json = {
-        fields: [{
-            index: 0,
-            id: "field1",
-            label: "Field 1",
-            type: "double",
-            missing: "-999.0",
-            unit: "m"
-        },
-
-		 {
-                     index: 1,
-                     id: "field2",
-                     label: "Field 2",
-                     type: "double",
-                     missing: "-999.0",
-                     unit: "c"
-		 },
-		],
-        data: [
-            [-64.77, -64.06, 45, null, [8.0, 1000]],
-            [-65.77, -64.06, 45, null, [9.0, 500]],
-            [-65.77, -64.06, 45, null, [10.0, 250]],
-        ]
-    };
-
-    return makePointData(json);
-
-}
-
-
-
-
-
-
-
-
-
-/*
-  function InteractiveDataWidget (theChart) {
-  this.jsTextArea =  id + "_js_textarea";
-  this.jsSubmit =  id + "_js_submit";
-  this.jsOutputId =  id + "_js_output";
-  var jsInput = "<textarea rows=10 cols=80 id=\"" + this.jsTextArea +"\"/><br><input value=\"Try it out\" type=submit id=\"" + this.jsSubmit +"\">";
-
-  var jsOutput = "<div id=\"" + this.jsOutputId +"\"/>";
-  $("#" + this.jsSubmit).button().click(function(event){
-  var js = "var chart = ramaddaGlobalChart;\n";
-  js += "var data = chart.pointData.getData();\n";
-  js += "var fields= chart.pointData.getRecordFields();\n";
-  js += "var output= \"#" + theChart.jsOutputId  +"\";\n";
-  js += $("#" + theChart.jsTextArea).val();
-  eval(js);
-  });
-  html += "<table width=100%>";
-  html += "<tr valign=top><td width=50%>";
-  html += jsInput;
-  html += "</td><td width=50%>";
-  html += jsOutput;
-  html += "</td></tr></table>";
-*/
-
-
-
 function RecordFilter(properties) {
     if (properties == null) properties = {};
     RamaddaUtil.defineMembers(this, {
@@ -1112,12 +1044,12 @@ function MonthFilter(param) {
 }
 
 
+
 var A = {
     add: function(v1, v2) {
         if (isNaN(v1) || isNaN(v2)) return NaN;
         return v1 + v2;
     },
-
     average: function(values) {
         var sum = 0;
         if (values.length == 0) return 0;

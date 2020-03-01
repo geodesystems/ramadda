@@ -607,11 +607,19 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    return dflt;
 	}
     });
+
+    
+
+
+
     var colorByAttr = this.getProperty(prop||"colorBy", null);
     $.extend(this, {
 	display:display,
         id: colorByAttr,
 	fields:fields,
+	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
+	aboveColor: display.getProperty("colorThresholdAbove","red"),
+	belowColor:display.getProperty("colorThresholdAbove","blue"),
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
 	inverse: this.getProperty("colorByInverse",false),
@@ -694,6 +702,20 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    let perc =   (v - this.minValue) / this.range;
 	    if(this.inverse) perc = 1-perc;
 	    return perc;
+	},
+	getColorFromRecord: function(record, dflt) {
+	    if(this.colorThresholdField && this.display.selectedRecord) {
+		let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
+		let v2=record.getValue(this.colorThresholdField.getIndex());
+		if(v2>v) return this.aboveColor;
+		else return this.belowColor;
+	    }
+
+	    if (this.index >= 0) {
+		let value = record.getData()[this.index];
+		return  this.getColor(value, record);
+	    }
+	    return dflt;
 	},
 	getColor: function(value, pointRecord) {
 	    var percent = 0;
@@ -949,12 +971,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
     let lineWidth = attrs.lineWidth ||display.getProperty("sparklineLineWidth",1);
     let defaultShowEndPoints = true;
     let getColor = (d,i,dflt)=>{
-	if (colorBy && colorBy.index >= 0) {
-	    let record = records[i];
-            let value = record.getData()[colorBy.index];
-	    return  colorBy.getColor(value, record);
-	}
-	return dflt;
+	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
     if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
 	svg.selectAll('line').data(data).enter().append("line")
@@ -963,7 +980,10 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 	    .attr('x2', (d,i)=>{return x(i+1)})
 	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
 	    .attr("stroke-width", lineWidth)
-            .attr("stroke", (d,i)=>getColor(d,i,lineColor))
+            .attr("stroke", (d,i)=>{
+		if(isNaN(d)) return "rgba(0,0,0,0)";
+		return getColor(d,i,lineColor)
+	    })
 	    .style("cursor", "pointer");
     }
 
@@ -983,7 +1003,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 
     if(attrs.showCircles || display.getProperty("sparklineShowCircles",false)) {
 	svg.selectAll('circle').data(data).enter().append("circle")
-	    .attr('r', circleRadius)
+	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
 	    .attr('cx', (d,i)=>{return x(i)})
 	    .attr('cy', (d,i)=>{return y(d)})
 	    .attr('fill', (d,i)=>getColor(d,i,circleColor))
@@ -991,21 +1011,25 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
     }
 
     if(attrs.showEndpoints || display.getProperty("sparklineShowEndPoints",defaultShowEndPoints)) {
+	let fidx=0;
+	while(isNaN(data[fidx]) && fidx<data.length) fidx++;
+	let lidx=data.length-1;
+	while(isNaN(data[lidx]) && fidx>=0) lidx--;	
 	svg.append('circle')
 	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
-	    .attr('cx', x(0))
-	    .attr('cy', y(data[0]))
+	    .attr('cx', x(fidx))
+	    .attr('cy', y(data[fidx]))
 	    .attr('fill', attrs.endPoint1Color || display.getProperty("sparklineEndPoint1Color") || getColor(data[0],0,display.getProperty("sparklineEndPoint1Color",'steelblue')));
 	svg.append('circle')
 	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
-	    .attr('cx', x(data.length - 1))
-	    .attr('cy', y(data[data.length - 1]))
+	    .attr('cx', x(lidx))
+	    .attr('cy', y(data[lidx]))
 	    .attr('fill', attrs.endPoint2Color || display.getProperty("sparklineEndPoint2Color")|| getColor(data[data.length-1],data.length-1,display.getProperty("sparklineEndPoint2Color",'tomato')));
     }
     let _display = display;
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
     svg.on("click", function() {
-	var coords = d3.mouse(display);
+	var coords = d3.mouse(this);
 	let record = records[Math.round(x.invert(coords[0]))]
 	if(record)
 	    _display.getDisplayManager().notifyEvent("handleEventRecordSelection", _display, {select:true,record: record});
@@ -1014,7 +1038,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 
     if(doTooltip) {
 	svg.on("mouseover", function() {
-	    var coords = d3.mouse(display);
+	    var coords = d3.mouse(this);
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    let html = _display.getRecordHtml(record);
 	    let ele = $(dom);
@@ -1564,7 +1588,7 @@ function DisplayThing(argId, argProperties) {
 		} else if(f.isDate) {
 		    if(value) {
 			//Todo - just use the format= attr
-			attrs[f.getId()]= value;
+			attrs[f.getId()]= this.formatDate(value);
 			attrs[f.getId() +"_yyyy}"] =  Utils.formatDateYYYY(value);
 			attrs[f.getId() +"_yyyymmdd"] =  Utils.formatDateYYYYMMDD(value);
 			attrs[f.getId() +"_monthdayyear"] =  Utils.formatDateMonthDayYear(value);
@@ -5345,7 +5369,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    }
 			});
                     }
-		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
+		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel()+":");
+		    var suffix =   this.getProperty(filterField.getId()+".filterSuffix","");
 		    if(!hideFilterWidget) {
 			var tt = label;
 			if(label.length>50) label = label.substring(0,49)+"...";
@@ -5353,9 +5378,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    label = "";
 			}
 			else
-			    label = label+": ";
+			    label = label+" ";
 			widget = HtmlUtils.div(["style","display:inline-block;"],
-					       this.makeFilterLabel(label,tt) + widget);
+					       this.makeFilterLabel(label,tt) + widget+suffix);
 		    }
 		    //                    if(i==0) searchBar += "<br>Display: ";
 		    
@@ -8586,74 +8611,6 @@ function makePointData(json, derived, source) {
 
 
 
-
-
-
-function makeTestPointData() {
-    var json = {
-        fields: [{
-            index: 0,
-            id: "field1",
-            label: "Field 1",
-            type: "double",
-            missing: "-999.0",
-            unit: "m"
-        },
-
-		 {
-                     index: 1,
-                     id: "field2",
-                     label: "Field 2",
-                     type: "double",
-                     missing: "-999.0",
-                     unit: "c"
-		 },
-		],
-        data: [
-            [-64.77, -64.06, 45, null, [8.0, 1000]],
-            [-65.77, -64.06, 45, null, [9.0, 500]],
-            [-65.77, -64.06, 45, null, [10.0, 250]],
-        ]
-    };
-
-    return makePointData(json);
-
-}
-
-
-
-
-
-
-
-
-
-/*
-  function InteractiveDataWidget (theChart) {
-  this.jsTextArea =  id + "_js_textarea";
-  this.jsSubmit =  id + "_js_submit";
-  this.jsOutputId =  id + "_js_output";
-  var jsInput = "<textarea rows=10 cols=80 id=\"" + this.jsTextArea +"\"/><br><input value=\"Try it out\" type=submit id=\"" + this.jsSubmit +"\">";
-
-  var jsOutput = "<div id=\"" + this.jsOutputId +"\"/>";
-  $("#" + this.jsSubmit).button().click(function(event){
-  var js = "var chart = ramaddaGlobalChart;\n";
-  js += "var data = chart.pointData.getData();\n";
-  js += "var fields= chart.pointData.getRecordFields();\n";
-  js += "var output= \"#" + theChart.jsOutputId  +"\";\n";
-  js += $("#" + theChart.jsTextArea).val();
-  eval(js);
-  });
-  html += "<table width=100%>";
-  html += "<tr valign=top><td width=50%>";
-  html += jsInput;
-  html += "</td><td width=50%>";
-  html += jsOutput;
-  html += "</td></tr></table>";
-*/
-
-
-
 function RecordFilter(properties) {
     if (properties == null) properties = {};
     RamaddaUtil.defineMembers(this, {
@@ -8686,12 +8643,12 @@ function MonthFilter(param) {
 }
 
 
+
 var A = {
     add: function(v1, v2) {
         if (isNaN(v1) || isNaN(v2)) return NaN;
         return v1 + v2;
     },
-
     average: function(values) {
         var sum = 0;
         if (values.length == 0) return 0;
@@ -14263,9 +14220,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    var didColorBy = false;
 	    var tuples = [];
-
-
-
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
 		var record =dataList[rowIdx];
                 var row = this.getDataValues(record);
@@ -14515,9 +14469,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		chartOptions.vAxis.ticks  = this.getProperty("vAxis.ticks").split(",").filter(v=>v!="");
 	    }
 
-            if (this.lineWidth) {
-                chartOptions.lineWidth = this.lineWidth;
-            }
+
             if (this.fontSize > 0) {
                 chartOptions.fontSize = this.fontSize;
             }
@@ -14631,6 +14583,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             throw new Error("doMakeGoogleChart undefined");
         },
 	makeGoogleChart: function(dataList, props, selectedFields) {
+	    try {
+		this.doMakeGoogleChartInner(dataList,props,selectedFields);
+	    } catch(err) {
+		this.setErrorMessage(err);
+		console.log("Error:" + err);
+		console.log(err.stack);
+	    }
+	},
+	doMakeGoogleChartInner: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
                 this.setContents("No google");
                 return;
@@ -14652,12 +14613,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.chartOptions.hAxis.maxValue = x.max;
 	    }
 	    if(this.getProperty("vAxisFixedRange")) {
-		let y = this.getColumnValues(records, selectedFields[1]);
+		
+		let y = this.getColumnValues(records, selectedFields[1]||selectedFields[0]);
 		this.chartOptions.vAxis.minValue = y.min;
 		this.chartOptions.vAxis.maxValue = y.max;
 	    }
-
-
 
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
@@ -18842,7 +18802,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'${&lt;field&gt;_max}',
 					'${&lt;field&gt;_min}',
 					'${&lt;field&gt;_average}',
-					'highightOnScroll=true'
+					'highightOnScroll=true',
+					'onlyShowSelected=true'
 				    ]);
 	},
 	dataFilterChanged: function() {
@@ -18857,6 +18818,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if (pointData == null) return;
 	    var records = this.filterData();
 	    if(!records) return;
+	    if(this.getProperty("onlyShowSelected")) {
+		if(!this.selectedRecord) {
+		    this.selectedRecord = records[0];
+		}
+	    }
 	    if(this.getProperty("onlyShowSelected")) {
 		if(!this.selectedRecord) {
 		    this.writeHtml(ID_DISPLAY_CONTENTS, "");
@@ -31783,7 +31749,8 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 
 function RamaddaSparklineDisplay(displayManager, id, properties) {
-    properties.displayInline = true;
+    if(!properties.groupBy)
+	properties.displayInline = true;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -31816,31 +31783,66 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
         getLoadingMessage: function(msg) {
 	    return "Loading...";
 	},
+        handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
+	    if(this.filteredRecords) {
+		this.selectedRecord = null;
+		this.filteredRecords.every(r=>{
+		    if(r.getId() == args.record.getId()) {
+			this.selectedRecord= args.record;
+			return false;
+		    }
+		    return true;
+		});
+		if(this.selectedRecord) {
+
+		    this.updateUI();
+		}
+	    }
+	},
 	updateUI: function() {
 	    let w = this.getProperty("sparklineWidth",60);
 	    let h = this.getProperty("sparklineHeight",20);
-	    var records = this.filterData();
+	    let records = this.filteredRecords = this.filterData();
 	    if(!records) return;
 	    let field = this.getFieldById(null, this.getProperty("field"));
 	    if(field==null) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
 		return;
 	    }
-	    //	    this.getPropertyShow = true;
-	    let id = this.getDomId("inner");
 	    let showDate = this.getProperty("showDate",false);
-	    html = HtmlUtils.div(["class","display-sparkline-sparkline","id",this.getDomId("inner"),"style","width:" + w+"px;height:" + h+"px;"]);
-	    if(showDate) {
-		html = HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
-		    HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))
-	    }
-	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    let col = this.getColumnValues(records, field);
+	    let id = this.getDomId("inner");
 	    let colorBy = this.getColorByInfo(records);
-	    drawSparkLine(this, "#"+id,w,h,col.values,records,col.min,col.max,colorBy);
-	    if(this.getPropertyShow) {
-		this.getPropertyShow = false;
-		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
+
+	    let groupByField = this.getFieldById(null,this.getProperty("groupBy"));
+	    let groups = groupByField?RecordUtil.groupBy(records, this, null, groupByField):null;
+
+	    let col = this.getColumnValues(records, field);
+	    if(groups) {
+		let labelPosition = this.getProperty("labelPosition","bottom");
+		html = HtmlUtils.div(["id",this.getDomId("inner")]);
+		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+		groups.values.forEach((value,idx)=>{
+		    let grecords = groups.map[value];
+		    let gid = id+"_"+ +idx;
+		    let c = HtmlUtils.div(["class","display-sparkline-sparkline","id",gid,"style","width:" + w+"px;height:" + h+"px;"]);
+		    let label = HtmlUtils.div(["class","display-sparkline-header"], value);
+		    if(labelPosition == "top")
+			c = label + "<br>" + c;
+		    else if(labelPosition == "bottom")
+			c =  c + "<br>" + label;
+		    $("#"+id).append(HtmlUtils.div(["style","display:inline-block;margin:4px;"],c));
+		    let gcol = this.getColumnValues(grecords, field);
+		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,col.min,col.max,colorBy);
+		});		
+	    } else {
+		html = HtmlUtils.div(["class","display-sparkline-sparkline","id",this.getDomId("inner"),"style","width:" + w+"px;height:" + h+"px;"]);
+		if(showDate) {
+		    html = HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
+			HtmlUtils.div(["class","display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))
+		}
+		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+		drawSparkLine(this, "#"+id,w,h,col.values,records,col.min,col.max,colorBy);
 	    }
 	}
     });

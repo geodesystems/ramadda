@@ -482,7 +482,7 @@ function DisplayThing(argId, argProperties) {
 		} else if(f.isDate) {
 		    if(value) {
 			//Todo - just use the format= attr
-			attrs[f.getId()]= value;
+			attrs[f.getId()]= this.formatDate(value);
 			attrs[f.getId() +"_yyyy}"] =  Utils.formatDateYYYY(value);
 			attrs[f.getId() +"_yyyymmdd"] =  Utils.formatDateYYYYMMDD(value);
 			attrs[f.getId() +"_monthdayyear"] =  Utils.formatDateMonthDayYear(value);
@@ -4263,7 +4263,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    }
 			});
                     }
-		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
+		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel()+":");
+		    var suffix =   this.getProperty(filterField.getId()+".filterSuffix","");
 		    if(!hideFilterWidget) {
 			var tt = label;
 			if(label.length>50) label = label.substring(0,49)+"...";
@@ -4271,9 +4272,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    label = "";
 			}
 			else
-			    label = label+": ";
+			    label = label+" ";
 			widget = HtmlUtils.div(["style","display:inline-block;"],
-					       this.makeFilterLabel(label,tt) + widget);
+					       this.makeFilterLabel(label,tt) + widget+suffix);
 		    }
 		    //                    if(i==0) searchBar += "<br>Display: ";
 		    
