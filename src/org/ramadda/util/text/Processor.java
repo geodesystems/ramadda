@@ -2330,20 +2330,15 @@ rotate -> pass -> pass -> rotate -> pass
                 indexMap.put(v, new Integer(i));
             }
             List          header  = headerRow.getValues();
-            StringBuilder sb      = new StringBuilder();
-
             List<Row>     newRows = new ArrayList<Row>();
             newColumns.add(0, header.get(uniqueIndex).toString());
             int cnt = 0;
             for (int i : includes) {
                 newColumns.add(1 + cnt, (String) header.get(i));
-                //                System.err.println(" -- " + i + " " + newColumns);
                 cnt++;
             }
-            Object[] array = new Object[newColumns.size()];
-
-
             for (String u : uniques) {
+		Object[] array = new Object[newColumns.size()];
                 for (int i = 0; i < array.length; i++) {
                     array[i] = null;
                 }
@@ -2357,7 +2352,6 @@ rotate -> pass -> pass -> rotate -> pass
                     if (firstRow == null) {
                         firstRow = rowValues;
                     }
-
                     String colname = rowValues.get(unfurlIndex).toString();
                     if (valueIndices.size() > 1) {
                         for (int valueIndex : valueIndices) {
@@ -2381,25 +2375,19 @@ rotate -> pass -> pass -> rotate -> pass
                         array[1 + includes.size() + idx] = value;
                     }
                     cnt++;
-                }
+		}
                 for (int i : includes) {
                     array[1 + includeCnt] = firstRow.get(i);
                     includeCnt++;
                 }
-
-
-
                 if (newRows.size() == 0) {
                     newRows.add(new Row(newColumns));
                 }
                 //                System.err.println(new Row(array));
                 newRows.add(new Row(array));
                 cnt++;
-            }
-
+	    }
             return newRows;
-
-
         }
     }
 
