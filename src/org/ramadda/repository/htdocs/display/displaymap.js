@@ -2232,7 +2232,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'hm.operator="count|average|min|max"',
 		'hm.animationSleep="1000"',
 		'hm.reloadOnZoom=true',
-		['hm.groupByDate="day|month|year|decade"',"Group heatmap images by date"], 
+		['hm.groupByDate="true|day|month|year|decade"',"Group heatmap images by date"], 
 		['hm.groupBy="field id"',"Field to group heatmap images"], 
 		'hm.labelPrefix=""',
 		'hm.showToggle=""',

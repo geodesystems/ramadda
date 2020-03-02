@@ -1190,7 +1190,7 @@ var RecordUtil = {
 		    label = year+"s";
 		    key = new Date(year+"-01-01");
 		} else if(dateBin) {
-		    label = String(key);
+		    label = display.formatDate(key);
 		}
 	    }
 	    if(!groups.map[key]) {
@@ -1392,6 +1392,7 @@ var RecordUtil = {
 	    let length = opts.cellSizeH;
 	    let x2=x+length;
 	    let y2=y;
+	    let arrowLength = opts.display.getProperty("arrowLength",-1);
 	    if(opts.colorBy && opts.colorBy.index>=0) {
 		let perc = opts.colorBy.getValuePercent(v);
 		let degrees = (360*perc);
@@ -1401,18 +1402,19 @@ var RecordUtil = {
 		x2+=x;
 		y2+=y;
 	    }
-	    ctx.save();
-	    ctx.fillStyle="#000";
-	    ctx.beginPath();
-	    ctx.arc(x,y, 1, 0, 2 * Math.PI);
-	    ctx.fill();
-	    ctx.restore();
+	    if(arrowLength<=0) {
+		ctx.save();
+		ctx.fillStyle="#000";
+		ctx.beginPath();
+		ctx.arc(x,y, 1, 0, 2 * Math.PI);
+		ctx.fill();
+		ctx.restore();
+	    }
 	    ctx.beginPath();
 	    ctx.moveTo(x,y);
 	    ctx.lineTo(x2,y2);
 	    ctx.lineWidth=opts.display.getProperty("lineWidth",1);
 	    ctx.stroke();
-	    let arrowLength = opts.display.getProperty("arrowLength",-1);
 	    if(arrowLength>0) {
 		ctx.beginPath();
 		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
@@ -2479,11 +2481,11 @@ var DataUtils = {
 	DataUtils.parseCommands(prop).map(cmd=>{
 	    let filterId = baseId+"_" + (cnt++);
 	    let [type,fieldId,value,enabled,label,expr]  = [cmd.command,cmd.args.field,cmd.args.value,cmd.args.enabled,cmd.args.label,cmd.args.expr];
-
 	    if(!Utils.isDefined(enabled))
 		enabled = true;
-	    else
-		enabled = enabled=="true";
+	    else {
+		enabled = enabled.trim()=="true" || enabled.trim()=="";
+	    }
 	    if(label) {
 		var cbx =  display.jq("datafilterenabled_" + filterId);
 		if(cbx.length) {
@@ -2514,7 +2516,9 @@ var DataUtils = {
 		xcnt:0,
 		isRecordOk: function(r) {
 		    this.xcnt++;
-		    if(!this.enabled) return true;
+		    if(!this.enabled) {
+			return true;
+		    }
 		    let value = this.field?r.getValue(this.field.getIndex()):NaN;
 		    if(this.type == "match") {
 			return String(value).match(this.value);
@@ -2527,18 +2531,19 @@ var DataUtils = {
 			} else {
 			    fieldsToUse = r.fields;
 			}
-			let cnt = 0;
 			let ok = false;
 			fieldsToUse.some(f=>{
 			    if(field && !(field.isFieldLatitude() || f.isFieldLongitude()))
 				if(f.isFieldLatitude() || f.isFieldLongitude()) return true;
 			    if(f.isNumeric()) {
-				cnt++;
 				let v  = r.getValue(f.getIndex());
+//				console.log("V:" + v);
 				ok  =!isNaN(v);
 			    }
 			    return ok;
 			});
+//			if(!ok) 
+//			    console.log("****** V:" +value + " v:" + this.value);
 			return ok;
 		    } else if(this.type == "notmatch") {
 			return  !String(value).match(this.value);
