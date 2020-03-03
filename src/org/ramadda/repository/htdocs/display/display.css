@@ -157,12 +157,12 @@ svg > g > g:last-child { pointer-events: none }
 
 
 .display-correlation {
-  border-collapse: separate;
+    border-collapse: separate;
 }
 
 
 .display-correlation-cell  {
-    border:1px transparent solid;
+    border:1px #efefef solid;
     padding-left: 3px;
     padding-right: 3px;
     height:100%;
@@ -173,8 +173,8 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-correlation-row-cell-highlight  {
-  border-top:2px #000 solid;
-  border-bottom:2px #000 solid;
+  border-top:1px #000 solid;
+  border-bottom:1px #000 solid;
 }    
 
 
@@ -2006,4 +2006,20 @@ display:inline-block;
 .display-sparkline-sparkline {
     display:inline-block;
     font-size:9pt;
+}
+
+.display-dotcolumns-header {
+    font-weight:bold;
+    margin:5px;
+    text-align:center;
+}
+
+
+.display-dotcolumns-rowheader {
+    font-weight:bold;
+    margin:5px;
+}
+
+.display-dotplot-row:hover {
+    background:#efefef;
 }

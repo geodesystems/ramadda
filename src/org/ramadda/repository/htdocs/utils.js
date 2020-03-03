@@ -814,7 +814,16 @@ var Utils = {
 					    for(a in source)
 						title = title.replace("{" + a+"}",source[a]);
 					}
-					value = HtmlUtils.image(value,["width",t.attrs["width"]||"100%","title", title]);
+					let attrs = ["title", title];
+					if(t.attrs["height"]) {
+					    attrs.push("height");
+					    attrs.push(t.attrs["height"]);
+					} else {
+					    attrs.push("width");
+					    attrs.push(t.attrs["width"]||"100%");
+					}
+
+					value = HtmlUtils.image(value,attrs);
 				    }
 				}
 			    }

@@ -283,6 +283,7 @@ public abstract class Converter extends Processor {
             //hack, hack
             String script = "/Users/jeffmc/bin/imagesearch.sh";
             for (int attempt = 0; attempt < 3; attempt++) {
+		String result ="";
                 try {
                     s = s.replace(" ", "%s");
                     String image = imageMap.get(s);
@@ -290,7 +291,7 @@ public abstract class Converter extends Processor {
                         Process p = Runtime.getRuntime().exec(new String[] {
                                         "sh",
                                         script, s });
-                        String result =
+                        result =
                             IO.readInputStream(p.getInputStream()).trim();
                         JSONObject obj    = new JSONObject(result);
                         JSONArray  values = obj.getJSONArray("value");
@@ -313,6 +314,7 @@ public abstract class Converter extends Processor {
 
                     return row;
                 } catch (Exception exc) {
+		    System.err.println ("JSON:" + result);
                     throw new RuntimeException(exc);
                 }
             }

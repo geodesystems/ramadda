@@ -974,6 +974,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					"select=\"max|min|<|>|=|<=|>=|contains\"",
 					"selectField=\"\"",
 					"selectValue=\"\"",
+					'onlyShowSelected=true',
 					'${&lt;field&gt;_total}',
 					'${&lt;field&gt;_max}',
 					'${&lt;field&gt;_min}',
