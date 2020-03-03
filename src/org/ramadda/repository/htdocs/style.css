@@ -971,14 +971,16 @@ ul {
     margin-top:0px;
 }
 
+.ui-slider  {
+    background: rgb(238,238,238);
+}
+
+
 .ramadda-slider-value {
     font-family: Verdana, Arial, sans-serif;
     font-size: 12px;
 }
 
-.ui-slider  {
-    background: rgb(238,238,238);
-}
 
 form {
     margin:0px;

@@ -590,7 +590,7 @@ function DisplayAnimation(display, enabled) {
 function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix) {
     if(!prop) prop = "colorBy";
     if ( !propPrefix ) {
-	propPrefix = [""];
+	propPrefix = ["colorBy",""];
     } else if( !Array.isArray(propPrefix) ) {
 	propPrefix = [propPrefix];
     }
@@ -607,11 +607,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    return dflt;
 	}
     });
-
-    
-
-
-
     var colorByAttr = this.getProperty(prop||"colorBy", null);
     $.extend(this, {
 	display:display,
@@ -622,23 +617,25 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	belowColor:display.getProperty("colorThresholdAbove","blue"),
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
-	inverse: this.getProperty("colorByInverse",false),
+	inverse: this.getProperty("Inverse",false),
 	origRange:null,
 	origMinValue:0,
 	origMaxValue:0,
         minValue: 0,
         maxValue: 0,
+	toMinValue: 0,
+        toMaxValue: 100,
         field: null,
         index: -1,
         isString: false,
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
-	colorByMinPerc: this.getProperty("colorByMinPercentile", -1),
-	colorByMaxPerc: this.getProperty("colorByMaxPercentile", -1),
+	colorByMinPerc: this.getProperty("MinPercentile", -1),
+	colorByMaxPerc: this.getProperty("MaxPercentile", -1),
 	colorByOffset: 0,
         pctFields:null,
-	compareFields: display.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
+	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "", true)),
 	displayColorTable: function(width,force) {
 	    if(!this.getProperty("showColorTable",true)) return;
 	    if(this.compareFields.length>0) {
@@ -703,6 +700,11 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    if(this.inverse) perc = 1-perc;
 	    return perc;
 	},
+	scaleToValue: function(v) {
+	    let perc = this.getValuePercent(v);
+	    return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
+	},
+
 	getColorFromRecord: function(record, dflt) {
 	    if(this.colorThresholdField && this.display.selectedRecord) {
 		let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
@@ -805,7 +807,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
     if(this.convertAlpha) {
-if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
+	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
 	    records.map((record,idx)=>{
 		var tuple = record.getData();
@@ -927,16 +929,19 @@ if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
     if (this.display.showPercent) {
         this.setRange(0, 100,true);
     }
-    var steps = this.getProperty("colorBySteps");
+    var steps = this.getProperty("Steps");
     if(steps) {
 	this.steps = steps.split(",");
     }
 
-    this.colorByLog = this.getProperty("colorByLog", false);
+    this.colorByLog = this.getProperty("Log", false);
     this.colorByFunc = Math.log;
-    this.setRange(this.getProperty("colorByMin", this.minValue),
-		  this.getProperty("colorByMax", this.maxValue), true);
+    this.setRange(this.getProperty("Min", this.minValue),
+		  this.getProperty("Max", this.maxValue), true);
+
     this.range = this.maxValue - this.minValue;
+    this.toMinValue = this.getProperty("ToMin", this.toMinValue);
+    this.toMaxValue = this.getProperty("ToMax", this.toMaxValue);
 }
 
 
@@ -1526,6 +1531,9 @@ function DisplayThing(argId, argProperties) {
         getDomId: function(suffix) {
             return this.getId() + "_" + suffix;
         },
+	gid: function(suffix) {
+            return this.getId() + "_" + suffix;
+        },
         jq: function(componentId) {
             return $("#" + this.getDomId(componentId));
         },
@@ -2023,8 +2031,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return null;
         },
-	addAlpha: function(colors) {
-	    var alpha = this.getProperty("colorTableAlpha");
+	addAlpha: function(colors, alpha) {
+	    if(!colors) return null;
+	    alpha = Utils.isDefined(alpha)?alpha:this.getProperty("colorTableAlpha");
 	    if(!alpha) return colors;
 	    colors=  Utils.cloneList(colors);
 	    var ac = [];
@@ -5643,8 +5652,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 
 		//		HtmlUtils.initSelect(this.jq("colorbyselect"));
-		//		HtmlUtils.initSelect(this.jq("sizebyselect"));
-		//		HtmlUtils.initSelect(this.jq("chartfields"));
+		//		HtmlUtils.initSelect(this.jq("		//		HtmlUtils.initSelect(this.jq("chartfields"));
 
 		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
 		    inputFunc($(this));
@@ -6194,7 +6202,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let expandedHeight  = this.getProperty("expandedHeight");
 	    if(expandedHeight)
 		style+="height:" +expandedHeight+";";
-            var contents =  top + "\n" +HtmlUtils.div([ATTR_CLASS, "ramadda-expandable-target display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + "\n" +bottom;
+	    let contentsAttrs =[ATTR_CLASS, "ramadda-expandable-target display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
+	    if(this.getProperty("expandableHeight")) {
+		contentsAttrs.push("expandable-height");
+		contentsAttrs.push(this.getProperty("expandableHeight"));
+	    }
+	    var contents =  top + "\n" +HtmlUtils.div(contentsAttrs, "") + "\n" +bottom;
             return contents;
         },
 
@@ -9013,18 +9026,33 @@ var RecordUtil = {
 		ctx.fill();
 	} else if(opts.shape == "vector") {
 	    let length = opts.cellSizeH;
+	    if(opts.lengthBy && opts.lengthBy.index>=0) {
+		length = opts.lengthBy.scaleToValue(v);
+	    }
 	    let x2=x+length;
 	    let y2=y;
 	    let arrowLength = opts.display.getProperty("arrowLength",-1);
-	    if(opts.colorBy && opts.colorBy.index>=0) {
-		let perc = opts.colorBy.getValuePercent(v);
+/*
+	    if(opts.angleBy && opts.angleBy.index>=0) {
+		let perc = opts.angleBy.getValuePercent(v);
 		let degrees = (360*perc);
-		degrees = degrees*(Math.PI / 360)
-		x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
-		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
+		let rads = degrees * (Math.PI/360);
+		x2 = length*Math.cos(rads)-0* Math.sin(rads);
+		y2 = 0*Math.cos(rads)-length* Math.sin(rads);
 		x2+=x;
 		y2+=y;
 	    }
+*/
+	    if(opts.colorBy && opts.colorBy.index>=0) {
+                let perc = opts.colorBy.getValuePercent(v);
+                let degrees = (360*perc)-360;
+		degrees = degrees*(Math.PI / 360)
+                x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
+		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
+                x2+=x;
+                y2+=y;
+            }
+	    //Draw the circle if no arrow
 	    if(arrowLength<=0) {
 		ctx.save();
 		ctx.fillStyle="#000";
@@ -9098,7 +9126,6 @@ var RecordUtil = {
 	}
 	return 0;
     },
-    xcnt:0,
     applyKernel: function(src, kernel) {
 	let result = this.cloneGrid(src,null,0);
 	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
@@ -10095,7 +10122,6 @@ var DataUtils = {
 	});
 	return result;
     },
-    xcnt:0,
     getDataFilters: function(display, prop) {
 	let filters = [];
 	if(!prop) return filters;
@@ -10136,9 +10162,7 @@ var DataUtils = {
 		label:label,
 		enabled: enabled,
 		expr:expr,
-		xcnt:0,
 		isRecordOk: function(r) {
-		    this.xcnt++;
 		    if(!this.enabled) {
 			return true;
 		    }
@@ -25667,7 +25691,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	createHeatmap(records, bounds) {
 	    let debug = displayDebug.displayMapCreateMap;
 	    if(debug) console.log("createHeatmap");
-	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
+	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.colorBy","colorBy",""]);
+	    let angleBy = this.getColorByInfo(records, "angleBy",null,null,["hm.angleBy","angleBy",""]);
+	    let lengthBy = this.getColorByInfo(records, "lengthBy",null,null,["hm.lengthBy","lengthBy",""]);
+	    if(angleBy.index<0) angleBy = colorBy;
+	    if(lengthBy.index<0) lengthBy=null;
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
  	    if(this.heatmapLayers) {
@@ -25719,7 +25747,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    } else if(String(dfltArgs.cellSize).endsWith("%")) {
 		dfltArgs.cellSize =dfltArgs.cellSizeX =  dfltArgs.cellSizeY = Math.floor(parseFloat(dfltArgs.cellSize.substring(0,dfltArgs.cellSize.length-1))/100*w);
 	    }
-	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
+	    let args =$.extend({colorBy:colorBy,angleBy:angleBy,lengthBy:lengthBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
 	    if(debug)
 		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length +" bounds:" + bounds.north + " " + bounds.west +" " + bounds.south +" " + bounds.east);
@@ -26406,7 +26434,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['doHeatmap=true',"Grid the data into an image"],
 		['doGridPoints=true',"Display a image showing shapes or bars"],
 		['hm.showPoints="true"',"Also show the map points"],
-		"cellShape=rect|circle",
+		"cellShape=rect|circle|vector",
+		['angleBy=field','field for angle of vectors'],
 		["cell3D=true","Draw 3d bars"],
 		"cellColor=color",
 		"cellFilled=true",
@@ -30405,7 +30434,14 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
 
 
 function RamaddaCorrelationDisplay(displayManager, id, properties) {
-    var ID_BOTTOM = "bottom";
+    let ID_SLIDER_LOW = "sliderlow";
+    let ID_SLIDER_LOW_MIN = "sliderlowmin";
+    let ID_SLIDER_LOW_MAX = "sliderlowmax"
+    let ID_SLIDER_HIGH = "sliderhigh";
+    let ID_SLIDER_HIGH_MIN = "sliderhighmin";
+    let ID_SLIDER_HIGH_MAX = "sliderhighmax"    
+    let ID_TABLE = "table";
+    let ID_BOTTOM = "bottom";
     $.extend(this, {
         colorTable: "red_white_blue",
         colorByMin: "-1",
@@ -30421,6 +30457,26 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					
+					"label:Chart Attributes",
+					'showSelectSlider=false',
+					"range.low.min=\"-1\"",
+					"range.low.max=\"0\"",
+					"range.high.min=\"0\"",
+					"range.high.max=\"1\"",
+					["short=true","Abbreviated display"],
+					["showValue=false","Show the values"],
+					['useId = true',"Use field id instead of label"],
+					['useIdTop=true',"Use field id for top header"],
+					['useIdSide = true',"Use field id for side header"],
+					['labelStyle=""',"CSS style for labels"]
+				    ]);
+
+	},
+
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
             var get = this.getGet();
@@ -30478,6 +30534,81 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 this.setContents(this.getLoadingMessage());
                 return;
             }
+	    let _this  = this;
+	    let html = "";
+	    this.range = {
+		low:{
+		    min:this.getProperty("range.low.min",-1),
+		    max:this.getProperty("range.low.max",0)
+		},
+		high: {
+		    min:this.getProperty("range.high.min",0),
+		    max:this.getProperty("range.high.max",1)
+		}
+	    }
+	    if(this.getProperty("showSelectSlider",true)) {
+		let lowSlider = HU.div(["display","inline-block;"],"Low Range<br>" + 
+				       HU.div(["id",this.gid(ID_SLIDER_LOW_MIN),"style","width:50px;display:inline-block;text-align:right;margin-right:15px;"],this.range.low.min) +
+				       HU.div(["style","heigth:20px;display:inline-block;width:200px;background:#A6A6FF;", "id",this.gid(ID_SLIDER_LOW)]) +
+									     HU.div(["id",this.gid(ID_SLIDER_LOW_MAX),"style","text-align:left;width:50px;display:inline-block;margin-left:15px;"],this.range.low.max));
+		let highSlider = HU.div(["display","inline-block;"], "High Range<br>" + 
+				       HU.div(["id",this.gid(ID_SLIDER_HIGH_MIN),"style","width:50px;display:inline-block;text-align:right;margin-right:15px;"],this.range.high.min) +
+				       HU.div(["style","heigth:20px;display:inline-block;width:200px;background:#FD9596;", "id",this.gid(ID_SLIDER_HIGH)]) +
+									      HU.div(["id",this.gid(ID_SLIDER_HIGH_MAX),"style","text-align:left;width:50px;display:inline-block;margin-left:15px;"],this.range.high.max));
+
+
+		html +=HU.center(HU.hrow(lowSlider, highSlider));
+	    }
+	    html +=HtmlUtils.div(["id",this.getDomId(ID_TABLE)]);
+            this.setContents(html);
+	    this.makeTable();
+	    if(this.getProperty("showSelectSlider",true)) {
+		this.jq(ID_SLIDER_LOW).slider({
+		    range: true,
+		    min: 0,
+		    max: 100,
+		    values:[(this.range.low.min+1)*100,(this.range.low.max+1)*100],
+		    slide: function( event, ui ) {
+			let v1 = -1+ui.values[0]/100;
+			let v2 = -1+ui.values[1]/100;
+			_this.jq(ID_SLIDER_LOW_MIN).html(v1==-1?-1:number_format(v1,3));
+			_this.jq(ID_SLIDER_LOW_MAX).html(v2==0?0:number_format(v2,3));
+		    },
+		    stop: function(event,ui) {
+			_this.range.low.min =   -1+2*ui.values[0]/100;
+			_this.range.low.max  = -1+2*ui.values[1]/100;
+			_this.makeTable();
+		    }
+		});
+		this.jq(ID_SLIDER_HIGH).slider({
+		    range: true,
+		    min: 0,
+		    max: 100,
+		    values:[this.range.high.min*100,this.range.high.max*100],
+		    slide: function( event, ui ) {
+			let v1 = ui.values[0]/100;
+			let v2 = ui.values[1]/100;
+			_this.jq(ID_SLIDER_HIGH_MIN).html(v1==0?0:number_format(v1,3));
+			_this.jq(ID_SLIDER_HIGH_MAX).html(v2==1?1:number_format(v2,3));
+
+		    },
+		    stop: function(event,ui) {
+			_this.range.high.min =  ui.values[0]/100;
+			_this.range.high.max  = ui.values[1]/100;
+			_this.makeTable();
+		    }
+		});
+
+
+		
+	    }
+            this.initTooltip();
+            this.displayManager.propagateEventRecordSelection(this,
+							      this.dataCollection.getList()[0], {
+								  index: 0
+							      });
+        },
+	makeTable: function() {
             var dataList = this.getStandardData(null, {
                 includeIndex: false
             });
@@ -30491,10 +30622,11 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 fieldCnt++;
             }
 
-            var html = HtmlUtils.openTag("table", ["border", "0", "class", "display-correlation", "width", "100%"]);
+            let html = HtmlUtils.openTag("table", ["cellspacing","0","cellpadding", "0", "border", "0", "class", "display-correlation", "width", "100%"]);
             var col1Width = 10 + "%";
             var width = 90 / fieldCnt + "%";
-            html += "\n<tr valign=bottom><td class=display-heading width=" + col1Width + ">&nbsp;</td>";
+            html += HU.openTag("tr",["valign","bottom"]) + HU.td(["class","display-heading","width", col1Width],"&nbsp;");
+
             var short = this.getProperty("short", fieldCnt > 8);
             var showValue = this.getProperty("showValue", !short);
             var useId = this.getProperty("useId", true);
@@ -30506,22 +30638,28 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 var label = useIdTop ? field1.getId() : field1.getLabel();
                 if (short) label = "";
+		label = label.replace(/\/ +/g,"/").replace(/ +\//g,"/");
+		
 		label = HtmlUtils.span(["style",labelStyle], label);
-                html += "<td align=center width=" + width + ">" + HtmlUtils.tag("div", ["class", "display-correlation-heading-top"], label) + "</td>";
+
+                html += HU.td(["colfield", field1.getId(), "align","center","width",width],
+			      HU.tag("div", ["class", "display-correlation-heading display-correlation-heading-top"], label));
             }
             html += "</tr>\n";
 
             var colors = null;
             colorByMin = parseFloat(this.colorByMin);
             colorByMax = parseFloat(this.colorByMax);
-            colors = this.getColorTable(true);
+//            colors =  this.addAlpha(this.getColorTable(true),0.75);
+	    colors =  this.getColorTable(true);
             for (var fieldIdx1 = 0; fieldIdx1 < fields.length; fieldIdx1++) {
                 var field1 = fields[fieldIdx1];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 var label = useIdSide ? field1.getId() : field1.getLabel();
 		label.replace(/ /g, "&nbsp;");
 		label = HtmlUtils.span(["style",labelStyle], label);
-                html += "<tr valign=center><td>" + HtmlUtils.tag("div", ["class", "display-correlation-heading-side"], label) + "</td>";
+                html += HU.openTag("tr", ["valign","center"]);
+		html += HU.td(["rowfield",field1.getId(),"class", "display-correlation-heading"],  HtmlUtils.div(["class", "display-correlation-heading-side"], label));
                 var rowName = field1.getLabel();
                 for (var fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
                     var field2 = fields[fieldIdx2];
@@ -30553,9 +30691,11 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                         sum3 += (v2 - avg2) * (v2 - avg2);
                     }
                     r = sum1 / Math.sqrt(sum2 * sum3);
-
+		    let ok = r<0?
+			(r>=this.range.low.min && r<=this.range.low.max):
+			(r>=this.range.high.min && r<=this.range.high.max);
                     var style = "";
-                    if (colors != null) {
+                    if (ok && colors != null) {
                         var percent = (r - colorByMin) / (colorByMax - colorByMin);
                         var index = parseInt(percent * colors.length);
                         if (index >= colors.length) index = colors.length - 1;
@@ -30565,21 +30705,52 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     var value = r.toFixed(3);
                     var label = value;
                     if (!showValue || short) label = "&nbsp;";
-                    html += "<td class=display-correlation-cell align=right style=\"" + style + "\">" + HtmlUtils.tag("div", ["class", "display-correlation-element", "title", "&rho;(" + rowName + "," + colName + ") = " + value], label) + "</td>";
+		    let cellContents = "";
+		    if(ok) {
+			cellContents = HU.div(["class", "display-correlation-element", "title", "&rho;(" + rowName + "," + colName + ") = " + value], label);
+		    }
+
+                    html += HU.tag("td",["colfield", field2.getId(), "rowfield",field1.getId(), "class","display-correlation-cell","align", "right", "style",style], cellContents);
                 }
                 html += "</tr>";
             }
             html += "<tr><td></td><td colspan = " + (fieldCnt + 1) + ">" + HtmlUtils.div(["id", this.getDomId(ID_BOTTOM)], "") + "</td></tr>";
             html += "</table>";
-            this.setContents(html);
-            this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);
-            this.initTooltip();
-            this.displayManager.propagateEventRecordSelection(this,
-							      this.dataCollection.getList()[0], {
-								  index: 0
-							      });
+	    this.jq(ID_TABLE).html(html);
+	    let _this = this;
+	    let selectedRow;
+	    let selectedCol;
+	    this.jq(ID_TABLE).find("td").click(function() {
+		let rowField = _this.getFieldById(null, $(this).attr("rowfield"));
+		let colField = _this.getFieldById(null, $(this).attr("colfield"));
+		let tds = _this.jq(ID_TABLE).find("td");
+		if(rowField) {
+		    tds.removeClass("display-correlation-row-cell-highlight");
+		    if(rowField != selectedRow) {
+			selectedRow = rowField;
+			_this.jq(ID_TABLE).find(".display-correlation-cell[rowfield='" + rowField.getId()+"']").addClass("display-correlation-row-cell-highlight");
+		    }  else {
+			selectedRow = null;
+		    }
 
-        },
+		}
+		if(colField) {
+		    tds.removeClass("display-correlation-col-cell-highlight");
+		    if(colField != selectedCol) {
+			selectedCol = colField;
+			_this.jq(ID_TABLE).find(".display-correlation-cell[colfield='" + colField.getId()+"']").addClass("display-correlation-col-cell-highlight");
+		    }  else {
+			selectedCol = null;
+		    }
+
+
+
+		}
+
+	    });
+	    this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);
+	}
+
     });
 }
 

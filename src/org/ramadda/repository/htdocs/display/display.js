@@ -420,6 +420,9 @@ function DisplayThing(argId, argProperties) {
         getDomId: function(suffix) {
             return this.getId() + "_" + suffix;
         },
+	gid: function(suffix) {
+            return this.getId() + "_" + suffix;
+        },
         jq: function(componentId) {
             return $("#" + this.getDomId(componentId));
         },
@@ -917,8 +920,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return null;
         },
-	addAlpha: function(colors) {
-	    var alpha = this.getProperty("colorTableAlpha");
+	addAlpha: function(colors, alpha) {
+	    if(!colors) return null;
+	    alpha = Utils.isDefined(alpha)?alpha:this.getProperty("colorTableAlpha");
 	    if(!alpha) return colors;
 	    colors=  Utils.cloneList(colors);
 	    var ac = [];
@@ -4537,8 +4541,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 
 		//		HtmlUtils.initSelect(this.jq("colorbyselect"));
-		//		HtmlUtils.initSelect(this.jq("sizebyselect"));
-		//		HtmlUtils.initSelect(this.jq("chartfields"));
+		//		HtmlUtils.initSelect(this.jq("		//		HtmlUtils.initSelect(this.jq("chartfields"));
 
 		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
 		    inputFunc($(this));
@@ -5088,7 +5091,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let expandedHeight  = this.getProperty("expandedHeight");
 	    if(expandedHeight)
 		style+="height:" +expandedHeight+";";
-            var contents =  top + "\n" +HtmlUtils.div([ATTR_CLASS, "ramadda-expandable-target display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + "\n" +bottom;
+	    let contentsAttrs =[ATTR_CLASS, "ramadda-expandable-target display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
+	    if(this.getProperty("expandableHeight")) {
+		contentsAttrs.push("expandable-height");
+		contentsAttrs.push(this.getProperty("expandableHeight"));
+	    }
+	    var contents =  top + "\n" +HtmlUtils.div(contentsAttrs, "") + "\n" +bottom;
             return contents;
         },
 

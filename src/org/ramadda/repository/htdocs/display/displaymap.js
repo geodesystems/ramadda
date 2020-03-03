@@ -1484,7 +1484,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	createHeatmap(records, bounds) {
 	    let debug = displayDebug.displayMapCreateMap;
 	    if(debug) console.log("createHeatmap");
-	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.",""]);
+	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.colorBy","colorBy",""]);
+	    let angleBy = this.getColorByInfo(records, "angleBy",null,null,["hm.angleBy","angleBy",""]);
+	    let lengthBy = this.getColorByInfo(records, "lengthBy",null,null,["hm.lengthBy","lengthBy",""]);
+	    if(angleBy.index<0) angleBy = colorBy;
+	    if(lengthBy.index<0) lengthBy=null;
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
  	    if(this.heatmapLayers) {
@@ -1536,7 +1540,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    } else if(String(dfltArgs.cellSize).endsWith("%")) {
 		dfltArgs.cellSize =dfltArgs.cellSizeX =  dfltArgs.cellSizeY = Math.floor(parseFloat(dfltArgs.cellSize.substring(0,dfltArgs.cellSize.length-1))/100*w);
 	    }
-	    let args =$.extend({colorBy:colorBy,w:w,h:h,bounds:bounds,forMercator:true},
+	    let args =$.extend({colorBy:colorBy,angleBy:angleBy,lengthBy:lengthBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
 	    if(debug)
 		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length +" bounds:" + bounds.north + " " + bounds.west +" " + bounds.south +" " + bounds.east);
@@ -2223,7 +2227,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['doHeatmap=true',"Grid the data into an image"],
 		['doGridPoints=true',"Display a image showing shapes or bars"],
 		['hm.showPoints="true"',"Also show the map points"],
-		"cellShape=rect|circle",
+		"cellShape=rect|circle|vector",
+		['angleBy=field','field for angle of vectors'],
 		["cell3D=true","Draw 3d bars"],
 		"cellColor=color",
 		"cellFilled=true",

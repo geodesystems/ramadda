@@ -590,7 +590,7 @@ function DisplayAnimation(display, enabled) {
 function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix) {
     if(!prop) prop = "colorBy";
     if ( !propPrefix ) {
-	propPrefix = [""];
+	propPrefix = ["colorBy",""];
     } else if( !Array.isArray(propPrefix) ) {
 	propPrefix = [propPrefix];
     }
@@ -607,11 +607,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    return dflt;
 	}
     });
-
-    
-
-
-
     var colorByAttr = this.getProperty(prop||"colorBy", null);
     $.extend(this, {
 	display:display,
@@ -622,23 +617,25 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	belowColor:display.getProperty("colorThresholdAbove","blue"),
 	excludeZero:this.getProperty(PROP_EXCLUDE_ZERO, false),
 	overrideRange: this.getProperty("overrideColorRange",false),
-	inverse: this.getProperty("colorByInverse",false),
+	inverse: this.getProperty("Inverse",false),
 	origRange:null,
 	origMinValue:0,
 	origMaxValue:0,
         minValue: 0,
         maxValue: 0,
+	toMinValue: 0,
+        toMaxValue: 100,
         field: null,
         index: -1,
         isString: false,
         stringMap: null,
 	colorByMap: {},
 	colorByValues:[],
-	colorByMinPerc: this.getProperty("colorByMinPercentile", -1),
-	colorByMaxPerc: this.getProperty("colorByMaxPercentile", -1),
+	colorByMinPerc: this.getProperty("MinPercentile", -1),
+	colorByMaxPerc: this.getProperty("MaxPercentile", -1),
 	colorByOffset: 0,
         pctFields:null,
-	compareFields: display.getFieldsByIds(null, this.getProperty("colorByCompareFields", "", true)),
+	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "", true)),
 	displayColorTable: function(width,force) {
 	    if(!this.getProperty("showColorTable",true)) return;
 	    if(this.compareFields.length>0) {
@@ -703,6 +700,11 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    if(this.inverse) perc = 1-perc;
 	    return perc;
 	},
+	scaleToValue: function(v) {
+	    let perc = this.getValuePercent(v);
+	    return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
+	},
+
 	getColorFromRecord: function(record, dflt) {
 	    if(this.colorThresholdField && this.display.selectedRecord) {
 		let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
@@ -805,7 +807,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
     if(this.convertAlpha) {
-if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
+	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
 	    var min = 0, max=0;
 	    records.map((record,idx)=>{
 		var tuple = record.getData();
@@ -927,16 +929,19 @@ if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
     if (this.display.showPercent) {
         this.setRange(0, 100,true);
     }
-    var steps = this.getProperty("colorBySteps");
+    var steps = this.getProperty("Steps");
     if(steps) {
 	this.steps = steps.split(",");
     }
 
-    this.colorByLog = this.getProperty("colorByLog", false);
+    this.colorByLog = this.getProperty("Log", false);
     this.colorByFunc = Math.log;
-    this.setRange(this.getProperty("colorByMin", this.minValue),
-		  this.getProperty("colorByMax", this.maxValue), true);
+    this.setRange(this.getProperty("Min", this.minValue),
+		  this.getProperty("Max", this.maxValue), true);
+
     this.range = this.maxValue - this.minValue;
+    this.toMinValue = this.getProperty("ToMin", this.toMinValue);
+    this.toMaxValue = this.getProperty("ToMax", this.toMaxValue);
 }
 
 

@@ -1925,7 +1925,7 @@ var SPACE1 = "&nbsp;";
 var SPACE2 = "&nbsp;&nbsp;";
 
 
-var HtmlUtils = {
+var HU = HtmlUtils = {
     tabLoaded: function(event, ui) {
         if (window["ramaddaDisplayCheckLayout"]) {
             ramaddaDisplayCheckLayout();
@@ -2165,6 +2165,14 @@ var HtmlUtils = {
 				this.td(["align", "right", "width", rightWidth], right)));
     },
 
+    hrow: function() {
+	let row = "";
+	Array.from(arguments).forEach(h=>{
+	    row+=HtmlUtils.div(["style", "display:inline-block"],h);
+	})
+	return row;
+    },
+
     leftRightTable: function(left, right, leftWidth, rightWidth, attrs) {
         if (!attrs) attrs = {};
         if (!attrs.valign) attrs.valign = "top";
@@ -2231,6 +2239,9 @@ var HtmlUtils = {
     },
     image: function(path, attrs) {
         return "<img " + this.attrs(["src", path, "border", "0"]) + " " + this.attrs(attrs) + "/>";
+    },
+    table: function(attrs, inner) {
+	return HtmlUtis.tag("table",attrs,inner);
     },
     tr: function(attrs, inner) {
         return this.tag("tr", attrs, inner);
@@ -3002,4 +3013,5 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
     return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 }
+
 

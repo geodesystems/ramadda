@@ -1390,18 +1390,33 @@ var RecordUtil = {
 		ctx.fill();
 	} else if(opts.shape == "vector") {
 	    let length = opts.cellSizeH;
+	    if(opts.lengthBy && opts.lengthBy.index>=0) {
+		length = opts.lengthBy.scaleToValue(v);
+	    }
 	    let x2=x+length;
 	    let y2=y;
 	    let arrowLength = opts.display.getProperty("arrowLength",-1);
-	    if(opts.colorBy && opts.colorBy.index>=0) {
-		let perc = opts.colorBy.getValuePercent(v);
+/*
+	    if(opts.angleBy && opts.angleBy.index>=0) {
+		let perc = opts.angleBy.getValuePercent(v);
 		let degrees = (360*perc);
-		degrees = degrees*(Math.PI / 360)
-		x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
-		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
+		let rads = degrees * (Math.PI/360);
+		x2 = length*Math.cos(rads)-0* Math.sin(rads);
+		y2 = 0*Math.cos(rads)-length* Math.sin(rads);
 		x2+=x;
 		y2+=y;
 	    }
+*/
+	    if(opts.colorBy && opts.colorBy.index>=0) {
+                let perc = opts.colorBy.getValuePercent(v);
+                let degrees = (360*perc)-360;
+		degrees = degrees*(Math.PI / 360)
+                x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
+		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
+                x2+=x;
+                y2+=y;
+            }
+	    //Draw the circle if no arrow
 	    if(arrowLength<=0) {
 		ctx.save();
 		ctx.fillStyle="#000";
@@ -1475,7 +1490,6 @@ var RecordUtil = {
 	}
 	return 0;
     },
-    xcnt:0,
     applyKernel: function(src, kernel) {
 	let result = this.cloneGrid(src,null,0);
 	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
@@ -2472,7 +2486,6 @@ var DataUtils = {
 	});
 	return result;
     },
-    xcnt:0,
     getDataFilters: function(display, prop) {
 	let filters = [];
 	if(!prop) return filters;
@@ -2513,9 +2526,7 @@ var DataUtils = {
 		label:label,
 		enabled: enabled,
 		expr:expr,
-		xcnt:0,
 		isRecordOk: function(r) {
-		    this.xcnt++;
 		    if(!this.enabled) {
 			return true;
 		    }
