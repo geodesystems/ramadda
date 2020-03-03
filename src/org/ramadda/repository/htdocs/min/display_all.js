@@ -29024,7 +29024,7 @@ var DISPLAY_DATATABLE = "datatable";
 var DISPLAY_PERCENTCHANGE = "percentchange";
 var DISPLAY_SPARKLINE = "sparkline";
 var DISPLAY_POINTIMAGE = "pointimage";
-var DISPLAY_DOTCOLUMNS = "dotcolumns";
+var DISPLAY_FIELDTABLE = "fieldtable";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -29112,8 +29112,8 @@ addGlobalDisplayType({
 
 
 addGlobalDisplayType({
-    type: DISPLAY_DOTCOLUMNS,
-    label: "Dot Columns",
+    type: DISPLAY_FIELDTABLE,
+    label: "Field Table",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -32249,22 +32249,24 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 }
 
 
-function RamaddaDotcolumnsDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DOTCOLUMNS, properties);
+function RamaddaFieldtableDisplay(displayManager, id, properties) {
+    let ID_TABLE = "fieldtable";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_FIELDTABLE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
-					"label:Dot Columns",
+					"label:Field Table",
 					'field=""',
 					'labelField=field',
 					'columnWidth=150',
 					'tableHeight=300',
-					'dotSize=16',
-					'dotFill=#64CDCC',
-					'dotStroke=#000'
+					'markerShape=circle|rect|triangle|bar|arrow|dart|bar',
+					'markerSize=16',
+					'markerFill=#64CDCC',
+					'markerStroke=#000'
 				    ])},
         needsData: function() {
             return true;
@@ -32277,32 +32279,34 @@ function RamaddaDotcolumnsDisplay(displayManager, id, properties) {
 		fields = this.getFieldsOfType(null, "numeric");
 	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
 	    if(!labelField) labelField = this.getFieldsOfType(null, "string")[0];
-	    let html = HU.openTag("table",["class", "", "border",0,"id",this.getDomId("dottable")]);
+	    let html = HU.openTag("table",["class", "", "border",0,"id",this.getDomId(ID_TABLE)]);
 	    html += HU.openTag("thead");
 	    let width = this.getProperty("columnWidth",150)
 	    html += HU.openTag("tr",[]);
 	    html+=HU.td(["width",width],
-			HU.div(["class","display-dotcolumns-header"],labelField?labelField.getLabel():""));
+			HU.div(["class","display-fieldtable-header"],labelField?labelField.getLabel():""));
 	    let columns = {};
 	    fields.forEach(f=>{
 		columns[f.getId()] = this.getColumnValues(records, f);
 	    });
 
 	    fields.forEach(f=>{
-		html+=HU.th(["width",width],HU.div(["class","display-dotcolumns-header"],f.getLabel()));
+		html+=HU.th(["width",width],HU.div(["class","display-fieldtable-header"],f.getLabel()));
 	    });
 	    html += HU.closeTag("tr");
 	    html += HU.closeTag("thead");
 	    html += HU.openTag("tbody");
 
 
+	    let shape = this.getProperty("markerShape","bar");
 	    let canvasInfo = [];
 	    let cnt = 0;
-	    let cw = this.getProperty("dotSize",16);
+	    let cw = this.getProperty("markerSize",16);
+
 	    records.forEach((r,idx)=>{
 		let label  = labelField?r.getValue(labelField.getIndex()):"#"+(idx+1);
-		html += HU.openTag("tr",["valign","center","recordIndex",idx,"class","display-dotplot-row"]);
-		html+=HU.td(["style","vertical-align:center","align","right"],HU.div(["class","display-dotcolumns-rowheader"],label));
+		html += HU.openTag("tr",["valign","center","recordIndex",idx,"class","display-fieldtable-row"]);
+		html+=HU.td(["style","vertical-align:center","align","right"],HU.div(["class","display-fieldtable-rowheader"],label));
 		fields.forEach(f=>{
 		    let v = r.getValue(f.getIndex());
 		    let c = columns[f.getId()];
@@ -32310,18 +32314,26 @@ function RamaddaDotcolumnsDisplay(displayManager, id, properties) {
 		    if(isNaN(v) || c.min == c.max) return;
 		    let perc = 100*(v-c.min)/(c.max-c.min);
 		    let cid = this.getDomId("cid" + (cnt++));
-		    canvasInfo.push({
+		    let cinfo = {
 			id: cid,
 			v: v,
 			percent: perc,
 			field:f,
 			record:r
-		    });
-		    let inner = HU.tag("canvas",["title","Value:" + v +"   Range:" + c.min +" - " + c.max,"style","position:absolute;" + "top:0%;left:" + perc+"%;" +
-						 "margin-top:-" + (cw/2)+"px;", "width",cw,"height",cw,"id",cid]);
+		    };
+		    canvasInfo.push(cinfo);
+		    let canvasWidth = cw;
+		    let left =  perc+"%";
+		    if(shape == "bar") {
+			canvasWidth = perc*width;
+			left = 0;
+		    }
+		    let cstyle = "position:absolute;" + "top:0%;left:" +left+";" + "margin-top:-" + (cw/2)+"px;";
+		    let inner = HU.tag("canvas",["title","Value:" + v +"   Range:" + c.min +" - " + c.max,"style",cstyle, 
+						 "width",canvasWidth,"height",cw,"id",cid]);
 		    contents +=HU.div(["style","position:absolute;left:0px;right:" + cw+"px;"],
 				      inner);
-		    html+=HU.td(["style","vertical-align:middle;","align","right","title", "Range:" + c.min +" - " + c.max],HU.div(["style","position:relative;width:"+width+"px;" + "height:1px;margin-left:10px; margin-right:10px;border:1px solid #ccc;"],contents));
+		    html+=HU.td(["data-order", v, "style","vertical-align:middle;","align","right","title", "Range:" + c.min +" - " + c.max],HU.div(["style","position:relative;width:"+width+"px;" + "height:1px;margin-left:10px; margin-right:10px;border:1px solid #ccc;"],contents));
 		    
 		});
 		html += HU.closeTag("tr");
@@ -32329,28 +32341,65 @@ function RamaddaDotcolumnsDisplay(displayManager, id, properties) {
 	    html += HU.closeTag("tbody");
 	    html+=HU.closeTag("table");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    let opts = {};
+	    let opts = {
+		ordering:true
+	    };
 	    if(this.getProperty("tableHeight")) {
 		opts.scrollY = this.getProperty("tableHeight");
 	    }
-            HtmlUtils.formatTable("#" + this.getDomId("dottable"), opts);
+            HtmlUtils.formatTable("#" + this.getDomId(ID_TABLE), opts);
 	    let _this = this;
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-dotplot-row").click(function() {
+	    this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row").click(function() {
 		let record = records[$(this).attr("recordIndex")];
 		if(record)
 		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
 	    });
-	    let dotFill = this.getProperty("dotFill","#64CDCC");
-	    let dotStroke = this.getProperty("dotStroke","#000");
+	    let markerFill = this.getProperty("markerFill","#64CDCC");
+	    let markerStroke = this.getProperty("markerStroke","#000");
 	    canvasInfo.forEach(c=>{
 		let canvas = document.getElementById(c.id);
 		var ctx = canvas.getContext("2d");
-		ctx.strokeStyle =dotStroke;
-		ctx.fillStyle=dotFill;
-		ctx.beginPath();
-		ctx.arc(cw/2, cw/2, cw/2, 0, 2 * Math.PI);
-		ctx.fill();
-		ctx.stroke();
+		ctx.strokeStyle =markerStroke;
+		ctx.fillStyle=markerFill;
+
+		if(shape=="circle") {
+		    ctx.beginPath();
+		    ctx.arc(cw/2, cw/2, cw/2, 0, 2 * Math.PI);
+		    ctx.fill();
+		    ctx.stroke();
+		} else if(shape=="rect") {
+		    ctx.fillRect(0,0,cw,cw);
+		    ctx.strokeRect(0,0,cw,cw);
+		} else if(shape=="bar") {
+		    ctx.fillRect(0,0,c.percent/100*width,cw);
+		    ctx.strokeRect(0,0,c.percent/100*width,cw);
+		} else if(shape=="line") {
+		    ctx.fillRect(cw/2-2,0,4,cw);
+		} else if(shape=="triangle") {
+		    ctx.beginPath();
+		    ctx.moveTo(cw/2,0);
+		    ctx.lineTo(cw,cw);
+		    ctx.lineTo(0,cw);
+		    ctx.lineTo(cw/2,0);
+		    ctx.fill();
+		    ctx.stroke();
+		} else if(shape=="dart") {
+		    ctx.beginPath();
+		    ctx.moveTo(1,0);
+		    ctx.lineTo(cw-1,0);
+		    ctx.lineTo(cw/2,cw/2);
+		    ctx.lineTo(1,0);
+		    ctx.fill();
+		    ctx.stroke();
+		} else if(shape=="arrow") {
+		    ctx.beginPath();
+		    ctx.moveTo(0,0);
+		    ctx.lineTo(cw/2,cw/2);
+		    ctx.lineTo(cw-1,0);
+		    ctx.stroke();
+
+		}
+
 		
 	    });
 

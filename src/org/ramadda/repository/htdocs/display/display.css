@@ -2008,18 +2008,18 @@ display:inline-block;
     font-size:9pt;
 }
 
-.display-dotcolumns-header {
+.display-fieldtable-header {
     font-weight:bold;
     margin:5px;
     text-align:center;
 }
 
 
-.display-dotcolumns-rowheader {
+.display-fieldtable-rowheader {
     font-weight:bold;
     margin:5px;
 }
 
-.display-dotplot-row:hover {
+.display-fieldtable-row:hover {
     background:#efefef;
 }
