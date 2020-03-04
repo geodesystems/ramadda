@@ -600,18 +600,35 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	fieldProp: prop,
 	propPrefix: propPrefix,
 	getProperty: function(prop, dflt) {
+	    if(this.debug) console.log("getProperty:" + prop);
 	    for(let i=0;i<this.propPrefix.length;i++) {
 		let v = this.display.getProperty(this.propPrefix[i]+prop);
+		if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
 		if(Utils.isDefined(v)) return v;
 	    }
 	    return dflt;
 	}
     });
-    var colorByAttr = this.getProperty(prop||"colorBy", null);
+
+
+    let colorByAttr = this.getProperty(prop||"colorBy", null);
+    let theField = null;
+    //if its a field
+    this.hasField = null;
+    if(prop.getId) {
+	theField = prop;
+	this.hasField = theField;
+	this.field = theField;
+	propPrefix = [theField.getId()+".",""];
+	colorByAttr =theField.getId();
+	this.propPrefix.unshift(theField.getId()+".colorBy");
+    }
+
     $.extend(this, {
 	display:display,
         id: colorByAttr,
 	fields:fields,
+        field: theField,
 	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
 	belowColor:display.getProperty("colorThresholdAbove","blue"),
@@ -625,8 +642,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         maxValue: 0,
 	toMinValue: 0,
         toMaxValue: 100,
-        field: null,
-        index: -1,
         isString: false,
         stringMap: null,
 	colorByMap: {},
@@ -636,7 +651,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colorByOffset: 0,
         pctFields:null,
 	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "", true)),
-	displayColorTable: function(width,force) {
+	displayColorTable: function(width,force, domId) {
 	    if(!this.getProperty("showColorTable",true)) return;
 	    if(this.compareFields.length>0) {
 		var legend = "";
@@ -644,7 +659,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		    legend += HtmlUtils.div(["style","display:inline-block;width: 15px;height: 15px; background:" + this.colors[idx]+";"]) +" " +
 			f.getLabel() +" ";
 		});
-		this.display.jq(ID_COLORTABLE).html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
+		let dom = this.display.jq(domId || ID_COLORTABLE);
+		dom.html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
 	    }
 	    if(!force && this.index<0) return;
 	    if(this.stringMap) {
@@ -654,7 +670,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		    this.colorByValues.push(i);
 		    colors.push(this.stringMap[i]);
 		}
-		this.display.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
 		    colorByInfo:this,
 		    width:width,
 		    stringValues: this.colorByValues});
@@ -666,7 +682,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 			tmp.push(this.colors[i]);
 		    colors = tmp;
 		}
-		this.display.displayColorTable(colors, ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
 		    colorByInfo:this,
 		    width:width,
 		    stringValues: this.colorByValues
@@ -871,11 +887,22 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         this.pctFields = this.display.percentFields.split(",");
     }
     var colors = defaultColorTable || this.display.getColorTable(true,colorByAttr +".colorTable");
+    
+    if(!colors && this.hasField) {
+	colors = this.display.getColorTable(true,"colorTable");
+    }
+
     if(!colors) {
 	var c = this.getProperty(colorByAttr +".colors");
 	if(c)
 	    colors = c.split(",");
     }
+
+    if(this.hasField && !colors) {
+	this.index = -1;
+	return;
+    }
+
     if(!colors)
 	colors = this.display.getColorTable(true);
     this.colors = colors;
@@ -891,18 +918,21 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         this.colors = Utils.ColorTables.grayscale.colors;
     }
 
-    for (var i = 0; i < fields.length; i++) {
-        var field = fields[i];
-        if (field.getId() == this.id || ("#" + (i + 1)) == this.id) {
-            this.field = field;
-	    if (field.isString()) this.isString = true;
-        }
+    if(!this.field) {
+	for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            if (field.getId() == this.id || ("#" + (i + 1)) == this.id) {
+		this.field = field;
+            }
+	}
     }
+    if(this.field)
+	if (this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
     if(this.index>=0) {
 	var cnt = 0;
-	records.map(record=>{
+	records.forEach(record=>{
             var tuple = record.getData();
             var v = tuple[this.index];
             if (this.isString) {

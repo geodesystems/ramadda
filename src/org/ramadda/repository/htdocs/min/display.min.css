@@ -2023,3 +2023,7 @@ display:inline-block;
 .display-fieldtable-row:hover {
     background:#efefef;
 }
+
+table.dataTable tfoot td {
+    border-top-width:0px;
+}

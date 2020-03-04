@@ -1322,6 +1322,7 @@ var Utils = {
         if (!ct) return;
 	var html = this.getColorTableDisplay(ct,min,max,args);
         $("#" + domId).html(html);
+
     },
     getColorTableDisplay: function(ct,  min, max, args) {
         if (!ct) return null;
@@ -1350,6 +1351,7 @@ var Utils = {
             html += "<td width=1%>" + this.formatNumber(min) + "&nbsp;</td>";
         var step = (max - min) / ct.length;
         for (var i = 0; i < ct.length; i++) {
+	    if(i>10) break;
             var extra = "";
             var attrs = ["style", "background:" + ct[i] + ";" + "width:100%;height:" + options.height + ";min-width:1px;"];
 	    let val = min + step * i;

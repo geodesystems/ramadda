@@ -3316,8 +3316,13 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 
 	    let shape = this.getProperty("markerShape","bar");
 	    let canvasInfo = [];
+	    let colorBys = {};
 	    let cnt = 0;
 	    let cw = this.getProperty("markerSize",16);
+
+	    fields.forEach(f=>{
+		colorBys[f.getId()] = this.getColorByInfo(records,f);
+	    });
 
 	    records.forEach((r,idx)=>{
 		let label  = labelField?r.getValue(labelField.getIndex()):"#"+(idx+1);
@@ -3335,7 +3340,8 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 			v: v,
 			percent: perc,
 			field:f,
-			record:r
+			record:r,
+			colorBy: colorBys[f.getId()]
 		    };
 		    canvasInfo.push(cinfo);
 		    let canvasWidth = cw;
@@ -3354,7 +3360,18 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 		});
 		html += HU.closeTag("tr");
 	    });
+
 	    html += HU.closeTag("tbody");
+
+	    html += HU.openTag("tfoot");
+	    html+=HU.openTag("tr");
+	    html+=HU.td([],"");
+	    fields.forEach((f,idx)=>{
+		html+=HU.td([],HU.div(["style","max-width:" + width+"px;overflow-x:auto;","id", this.getDomId("footer-" + idx)],""));
+	    });
+	    html+=HU.closeTag("tr");
+	    html += HU.closeTag("tfoot");
+
 	    html+=HU.closeTag("table");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 	    let opts = {
@@ -3363,6 +3380,16 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 	    if(this.getProperty("tableHeight")) {
 		opts.scrollY = this.getProperty("tableHeight");
 	    }
+	    if(this.getProperty("showColorTable")) {
+		fields.forEach((f,idx)=>{
+		    let colorBy = colorBys[f.getId()];
+		    if(colorBy.index<0) return;
+		    let domId = "footer-" + idx;
+		    colorBy.displayColorTable(null,false,domId);
+		});
+	    }
+
+
             HtmlUtils.formatTable("#" + this.getDomId(ID_TABLE), opts);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row").click(function() {
@@ -3376,7 +3403,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 		let canvas = document.getElementById(c.id);
 		var ctx = canvas.getContext("2d");
 		ctx.strokeStyle =markerStroke;
-		ctx.fillStyle=markerFill;
+		ctx.fillStyle=c.colorBy.getColorFromRecord(c.record, markerFill);
 
 		if(shape=="circle") {
 		    ctx.beginPath();
@@ -3415,11 +3442,8 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 		    ctx.stroke();
 
 		}
-
-		
+	
 	    });
-
-
 
 	}
     });
