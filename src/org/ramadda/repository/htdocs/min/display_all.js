@@ -5820,10 +5820,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         updateUI: function() {
 	},
-	addFieldClickHandler: function(jq) {
-	    if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
+	addFieldClickHandler: function(jq, records, addHighlight) {
+	    let _this = this;
+	    if(records) {
+		if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
+		jq.find("[recordIndex]").click(function() {
+		    if(addHighlight) {
+			$(this).parent().find(".display-row-highlight").removeClass("display-row-highlight");
+			$(this).addClass("display-row-highlight");
+		    }
+		    let record = records[$(this).attr("recordIndex")];
+		    if(record)
+			_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		});
+	    }
+
 	    if(this.getProperty("propagateValueClick",true)) {
 		let _this = this;
+		if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
 		jq.find("[field-id]").click(function() {
 		    let fieldId = $(this).attr("field-id");
 		    let value = $(this).attr("field-value");
@@ -19224,7 +19238,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
                     }
 		    let s = template.trim();
 		    let row = this.getDataValues(record);
-		    s= this.applyRecordTemplate(row,fields,s,props);
+		    if(s=="${default}") {
+			s = this.getRecordHtml(record,fields,s);
+		    } else {
+			s= this.applyRecordTemplate(row,fields,s,props);
+		    }
 
 		    let macros = Utils.tokenizeMacros(s);
 		    let rowAttrs = {};
@@ -31551,7 +31569,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	    if(!this.getProperty("tooltip"))
 		this.setProperty("tooltip","${default}");
 	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-colorboxes-box"),records);
-	    this.addFieldClickHandler();
+	    this.addFieldClickHandler(null, records);
 	}
     })
 }
@@ -32431,16 +32449,9 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 		});
 	    }
 
-
             HtmlUtils.formatTable("#" + this.getDomId(ID_TABLE), opts);
-	    let _this = this;
-
-	    this.addFieldClickHandler();
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row").click(function() {
-		let record = records[$(this).attr("recordIndex")];
-		if(record)
-		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
-	    });
+	    let rows = this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row");
+	    this.addFieldClickHandler(rows, records);
 	    let markerFill = this.getProperty("markerFill","#64CDCC");
 	    let markerStroke = this.getProperty("markerStroke","#000");
 	    canvasInfo.forEach(c=>{

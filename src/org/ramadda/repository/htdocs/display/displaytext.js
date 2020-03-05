@@ -1280,7 +1280,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
                     }
 		    let s = template.trim();
 		    let row = this.getDataValues(record);
-		    s= this.applyRecordTemplate(row,fields,s,props);
+		    if(s=="${default}") {
+			s = this.getRecordHtml(record,fields,s);
+		    } else {
+			s= this.applyRecordTemplate(row,fields,s,props);
+		    }
 
 		    let macros = Utils.tokenizeMacros(s);
 		    let rowAttrs = {};

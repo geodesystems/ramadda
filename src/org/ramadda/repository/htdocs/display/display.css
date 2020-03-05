@@ -6,6 +6,12 @@
 }
 
 
+
+.display-row-highlight  {
+    background:#efefef !important;
+}
+
+
 /* fixes the tooltip clicker bug */
 .google-visualization-tooltip {
     pointer-events: none;
@@ -171,6 +177,8 @@ svg > g > g:last-child { pointer-events: none }
 .display-correlation-cell:hover  {
     cursor:pointer;
 }
+
+
 
 .display-correlation-row-cell-highlight  {
   border-top:1px #000 solid;
@@ -1849,6 +1857,7 @@ margin:10px;
 
 
 .display-colorboxes-box {
+    cursor:pointer;
     border: 1px solid #ddd;
     border-radius: 4px;
     display:inline-block;

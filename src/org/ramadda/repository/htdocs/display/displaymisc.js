@@ -2519,7 +2519,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	    if(!this.getProperty("tooltip"))
 		this.setProperty("tooltip","${default}");
 	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-colorboxes-box"),records);
-	    this.addFieldClickHandler();
+	    this.addFieldClickHandler(null, records);
 	}
     })
 }
@@ -3399,16 +3399,9 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 		});
 	    }
 
-
             HtmlUtils.formatTable("#" + this.getDomId(ID_TABLE), opts);
-	    let _this = this;
-
-	    this.addFieldClickHandler();
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row").click(function() {
-		let record = records[$(this).attr("recordIndex")];
-		if(record)
-		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
-	    });
+	    let rows = this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row");
+	    this.addFieldClickHandler(rows, records);
 	    let markerFill = this.getProperty("markerFill","#64CDCC");
 	    let markerStroke = this.getProperty("markerStroke","#000");
 	    canvasInfo.forEach(c=>{
