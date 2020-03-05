@@ -676,6 +676,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		    stringValues: this.colorByValues});
 	    } else {
 		var colors = this.colors;
+
 		if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		    var tmp = [];
 		    for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
@@ -976,11 +977,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
 
 
-function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
+function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, margin) {
     if(!attrs) attrs = {};
-    const MARGIN       = { top: 5, right: 5, bottom: 5, left: 5 };
-    const INNER_WIDTH  = w - MARGIN.left - MARGIN.right;
-    const INNER_HEIGHT = h - MARGIN.top - MARGIN.bottom;
+    if(!margin)
+	margin = { top: 5, right: 5, bottom: 5, left: 5 };
+    margin       = { top: 0, right: 0, bottom: 0, left: 0 };
+    const INNER_WIDTH  = w - margin.left - margin.right;
+    const INNER_HEIGHT = h - margin.top - margin.bottom;
     const BAR_WIDTH  = w / data.length;
     const x    = d3.scaleLinear().domain([0, data.length]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
@@ -994,7 +997,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 	  .attr('width', w)
 	  .attr('height', h)
 	  .append('g')
-	  .attr('transform', 'translate(' + MARGIN.left + ',' + MARGIN.top + ')');
+	  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     const line = d3.line()
 	  .x((d, i) => x(i))
 	  .y(d => y(d));
@@ -1008,7 +1011,9 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
     let getColor = (d,i,dflt)=>{
 	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
-    if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
+    let showBars = attrs.showBars|| display.getProperty("sparklineShowBars",false);
+
+    if(!showBars && (attrs.showLines|| display.getProperty("sparklineShowLines",true))) {
 	svg.selectAll('line').data(data).enter().append("line")
 	    .attr('x1', (d,i)=>{return x(i)})
 	    .attr('y1', (d,i)=>{return y(d)})
@@ -1022,7 +1027,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 	    .style("cursor", "pointer");
     }
 
-    if(attrs.showBars|| display.getProperty("sparklineShowBars",false)) {
+    if(showBars) {
 	defaultShowEndPoints = false;
 	svg.selectAll('.bar').data(data)
 	    .enter()
@@ -1065,16 +1070,20 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
     svg.on("click", function() {
 	var coords = d3.mouse(this);
-	let record = records[Math.round(x.invert(coords[0]))]
-	if(record)
-	    _display.getDisplayManager().notifyEvent("handleEventRecordSelection", _display, {select:true,record: record});
+	if(records) {
+	    let record = records[Math.round(x.invert(coords[0]))]
+	    if(record)
+		_display.getDisplayManager().notifyEvent("handleEventRecordSelection", _display, {select:true,record: record});
+	}
     });
 
 
     if(doTooltip) {
 	svg.on("mouseover", function() {
+	    if(!records) return;
 	    var coords = d3.mouse(this);
 	    let record = records[Math.round(x.invert(coords[0]))]
+	    if(!record) return;
 	    let html = _display.getRecordHtml(record);
 	    let ele = $(dom);
 	    let offset = ele.offset().top + ele.height();
@@ -1095,8 +1104,8 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 
 
 function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
-    let margin=4;
     if(!attrs) attrs = {};
+    let margin = Utils.isDefined(attrs.margin)?attrs.margin:4;
     let colors = attrs.pieColors||Utils.ColorTables.cats.colors;
 
     var radius = Math.min(width, height) / 2 - margin
@@ -8870,9 +8879,14 @@ var RecordUtil = {
 	    let key;
 	    let label = null;
 	    let date = r.getDate();
+//	    console.log (field +" " + r.getLatitude());
 //	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
-		key = label = r.getValue(field.getIndex());
+		if(field=="latlon") {
+		    key = label = r.getLatitude() +"/" + r.getLongitude(); 
+		} else {
+		    key = label = r.getValue(field.getIndex());
+		}
 	    } else {
 		if(!date) {
 		    return true;
@@ -24408,7 +24422,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         createMap: function() {
-            var theDisplay = this;
+            let _this = this;
             var params = {
                 "defaultMapLayer": this.getProperty("defaultMapLayer",
 						    map_default_layer),
@@ -24478,9 +24492,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.setDefaultCanSelect(false);
             }
             this.map.initMap(false);
-
             this.map.addRegionSelectorControl(function(bounds) {
-                theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
+                _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
 	    this.map.addFeatureSelectHandler(feature=>{
 		if(feature.record && !this.map.doPopup) {
@@ -24514,17 +24527,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.map.doPopup = this.getProperty("doPopup",true);
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
-            this.map.getMap().events.register("zoomend", "", function() {
-                theDisplay.mapBoundsChanged();
-//		console.log("zoomend");
-		theDisplay.checkHeatmapReload();
 
+            this.map.getMap().events.register("updatesize", "", ()=>{
+		_this.updateHtmlLayers();
+            });
+
+
+
+            this.map.getMap().events.register("zoomend", "", ()=>{
+                _this.mapBoundsChanged();
+		_this.checkHeatmapReload();
+		_this.updateHtmlLayers();
             });
 	    this.createTime = new Date();
-            this.map.getMap().events.register("moveend", "", function() {
-                theDisplay.mapBoundsChanged();
-//		console.log("moveend");
-		theDisplay.checkHeatmapReload();
+	    this.xcnt = 0;
+            this.map.getMap().events.register("moveend", "", ()=> {
+                _this.mapBoundsChanged();
+		_this.checkHeatmapReload();
             });
 
             if (this.getProperty("bounds") ||this.getProperty("gridBounds") ) {
@@ -24544,7 +24563,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    
 	    var boundsAnimation = this.getProperty("boundsAnimation");
-	    let _this = this;
+
 	    if(boundsAnimation) {
 		this.didAnimationBounds = false;
                 let animationBounds = boundsAnimation.split(",");
@@ -24589,17 +24608,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
             if (this.showDataLayers()) {
-                if (theDisplay.kmlLayer != null) {
-                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + theDisplay.kmlLayer;
-                    theDisplay.addBaseMapLayer(url, true);
+                if (_this.kmlLayer != null) {
+                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.kmlLayer;
+                    _this.addBaseMapLayer(url, true);
                 }
-                if (theDisplay.geojsonLayer != null) {
-                    url = theDisplay.getRamadda().getEntryDownloadUrl(theDisplay.geojsonLayer);
-                    theDisplay.addBaseMapLayer(url, false);
+                if (_this.geojsonLayer != null) {
+                    url = _this.getRamadda().getEntryDownloadUrl(_this.geojsonLayer);
+                    _this.addBaseMapLayer(url, false);
                 }
             }
 
         },
+
         getBounds: function() {
 	    return this.map.getBounds();
 	},
@@ -25898,6 +25918,82 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	updateHtmlLayers: function() {
+	    if(this.htmlLayerInfo) {
+		this.createHtmlLayer(this.htmlLayerInfo.records, this.htmlLayerInfo.fields);
+	    }
+	},
+	updateHtmlLayer:function() {
+	    if(!this.htmlLayer) return;
+	    if(!this.htmlLayerId) {
+		this.htmlLayerId =this.getUniqueId("htmllayer");
+		let vp  = this.map.getMap().getViewport();
+		vp = $(vp).children()[0];
+		$(vp).css("display","relative");
+		$(vp).append(HU.div(["id",this.htmlLayerId]));
+	    }
+	    $("#"+ this.htmlLayerId).html(this.htmlLayer);
+	},
+        createHtmlLayer: function(records, fields) {
+	    let htmlLayerField = this.getFieldById(fields,this.getProperty("htmlLayerField"));
+	    this.htmlLayerInfo = {
+		records:records,
+		fields:fields,
+	    };
+	    this.htmlLayer = "";
+	    let w = this.getProperty("htmlLayerWidth",30);
+	    let h = this.getProperty("htmlLayerHeight",15);
+	    if(this.getProperty("htmlLayerScale")) {
+		let zooms = [];		
+		this.getProperty("htmlLayerScale").split(",").forEach(t=>{
+		    zooms.push(t.split(":"));
+		});
+		//3:0.5,4:1,5:2
+		let zoom = this.map.map.getZoom();
+		let scale = 1.0;
+		if(zooms.length==1 && zooms[0].length==1) {
+		    scale=zooms[0][0];
+		} else {
+		    zooms.every(t=>{
+			scale=t[1];
+			if(t[0] >= zoom) {
+			    return false;
+			}
+			return true;
+		    });
+		}
+		w*=scale;h*=scale;
+//		console.log("z:" + zoom + " z2:" +scale +" " +w);
+	    }
+	    let style = this.getProperty("htmlLayerStyle","")
+	    let infos = [];
+	    let allData = this.getColumnValues(records, htmlLayerField);
+	    let groups = RecordUtil.groupBy(records, this, false,"latlon");
+	    groups.values.forEach((value,idx)=>{
+		let recordsAtTime = groups.map[value];
+		let data = [];
+		recordsAtTime.forEach((r,idx)=>{
+		    data.push(r.getValue(htmlLayerField.getIndex()));
+		});
+		let record = recordsAtTime[0];
+		let px = this.map.getMap().getPixelFromLonLat(this.map.transformLLPoint(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude())));
+		let id = this.getId() +"_sl"+ idx;
+		let html = HU.div(["id",id, "style",style +"line-height:0px;z-index:1000;position:absolute;left:" + (px.x-w/2) +"px;top:" + (px.y-h/2)+"px;width:" + w+"px;height:" + h+"px;"]);
+		this.htmlLayer += html;
+		infos.push({
+		    id:id,
+		    data:data,
+		    records: recordsAtTime
+		});
+	    });
+	    this.updateHtmlLayer();
+            let colorBy = this.getColorByInfo(records);
+	    infos.forEach((info,idx)=>{
+//		drawPieChart(this, "#"+ info.id,w-2,h-2,info.data,info.records,allData.min,allData.max,colorBy,{margin:0});
+		drawSparkLine(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
+	    });
+	    colorBy.displayColorTable(null,true);
+	},
         addPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
@@ -25906,6 +26002,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug) console.log("displaymap done creating heatmap");
 		if(!this.getProperty("hm.showPoints"))
 		    return;
+	    }
+	    if(this.getProperty("htmlLayerField")) {
+		this.createHtmlLayer(records, fields);
+		return;
 	    }
             let colorBy = this.getColorByInfo(records);
 	    let cidx=0
@@ -26471,7 +26571,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['sizeByRadiusMin="2"',"Scale size by"],
 		['sizeByRadiusMax="20"',"Scale size by"],
 		['bounds=north,west,south,east',"initial bounds"],
-		['mapCenters=lat,lon',"initial position"],
+		['mapCenter=lat,lon',"initial position"],
 		['zoomLevel=4',"initial zoom"],
 		['fixedPosition=true','Keep the initial position'],
 		['initialLocation=lat,lon',"initial location"],

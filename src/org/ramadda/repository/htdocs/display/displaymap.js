@@ -130,7 +130,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         createMap: function() {
-            var theDisplay = this;
+            let _this = this;
             var params = {
                 "defaultMapLayer": this.getProperty("defaultMapLayer",
 						    map_default_layer),
@@ -200,9 +200,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.setDefaultCanSelect(false);
             }
             this.map.initMap(false);
-
             this.map.addRegionSelectorControl(function(bounds) {
-                theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
+                _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
 	    this.map.addFeatureSelectHandler(feature=>{
 		if(feature.record && !this.map.doPopup) {
@@ -236,17 +235,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.map.doPopup = this.getProperty("doPopup",true);
             this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
 				     .getDomId(ID_LATFIELD), null, this);
-            this.map.getMap().events.register("zoomend", "", function() {
-                theDisplay.mapBoundsChanged();
-//		console.log("zoomend");
-		theDisplay.checkHeatmapReload();
 
+            this.map.getMap().events.register("updatesize", "", ()=>{
+		_this.updateHtmlLayers();
+            });
+
+
+
+            this.map.getMap().events.register("zoomend", "", ()=>{
+                _this.mapBoundsChanged();
+		_this.checkHeatmapReload();
+		_this.updateHtmlLayers();
             });
 	    this.createTime = new Date();
-            this.map.getMap().events.register("moveend", "", function() {
-                theDisplay.mapBoundsChanged();
-//		console.log("moveend");
-		theDisplay.checkHeatmapReload();
+	    this.xcnt = 0;
+            this.map.getMap().events.register("moveend", "", ()=> {
+                _this.mapBoundsChanged();
+		_this.checkHeatmapReload();
             });
 
             if (this.getProperty("bounds") ||this.getProperty("gridBounds") ) {
@@ -266,7 +271,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    
 	    var boundsAnimation = this.getProperty("boundsAnimation");
-	    let _this = this;
+
 	    if(boundsAnimation) {
 		this.didAnimationBounds = false;
                 let animationBounds = boundsAnimation.split(",");
@@ -311,17 +316,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
             if (this.showDataLayers()) {
-                if (theDisplay.kmlLayer != null) {
-                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + theDisplay.kmlLayer;
-                    theDisplay.addBaseMapLayer(url, true);
+                if (_this.kmlLayer != null) {
+                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.kmlLayer;
+                    _this.addBaseMapLayer(url, true);
                 }
-                if (theDisplay.geojsonLayer != null) {
-                    url = theDisplay.getRamadda().getEntryDownloadUrl(theDisplay.geojsonLayer);
-                    theDisplay.addBaseMapLayer(url, false);
+                if (_this.geojsonLayer != null) {
+                    url = _this.getRamadda().getEntryDownloadUrl(_this.geojsonLayer);
+                    _this.addBaseMapLayer(url, false);
                 }
             }
 
         },
+
         getBounds: function() {
 	    return this.map.getBounds();
 	},
@@ -1620,6 +1626,82 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 
+	updateHtmlLayers: function() {
+	    if(this.htmlLayerInfo) {
+		this.createHtmlLayer(this.htmlLayerInfo.records, this.htmlLayerInfo.fields);
+	    }
+	},
+	updateHtmlLayer:function() {
+	    if(!this.htmlLayer) return;
+	    if(!this.htmlLayerId) {
+		this.htmlLayerId =this.getUniqueId("htmllayer");
+		let vp  = this.map.getMap().getViewport();
+		vp = $(vp).children()[0];
+		$(vp).css("display","relative");
+		$(vp).append(HU.div(["id",this.htmlLayerId]));
+	    }
+	    $("#"+ this.htmlLayerId).html(this.htmlLayer);
+	},
+        createHtmlLayer: function(records, fields) {
+	    let htmlLayerField = this.getFieldById(fields,this.getProperty("htmlLayerField"));
+	    this.htmlLayerInfo = {
+		records:records,
+		fields:fields,
+	    };
+	    this.htmlLayer = "";
+	    let w = this.getProperty("htmlLayerWidth",30);
+	    let h = this.getProperty("htmlLayerHeight",15);
+	    if(this.getProperty("htmlLayerScale")) {
+		let zooms = [];		
+		this.getProperty("htmlLayerScale").split(",").forEach(t=>{
+		    zooms.push(t.split(":"));
+		});
+		//3:0.5,4:1,5:2
+		let zoom = this.map.map.getZoom();
+		let scale = 1.0;
+		if(zooms.length==1 && zooms[0].length==1) {
+		    scale=zooms[0][0];
+		} else {
+		    zooms.every(t=>{
+			scale=t[1];
+			if(t[0] >= zoom) {
+			    return false;
+			}
+			return true;
+		    });
+		}
+		w*=scale;h*=scale;
+//		console.log("z:" + zoom + " z2:" +scale +" " +w);
+	    }
+	    let style = this.getProperty("htmlLayerStyle","")
+	    let infos = [];
+	    let allData = this.getColumnValues(records, htmlLayerField);
+	    let groups = RecordUtil.groupBy(records, this, false,"latlon");
+	    groups.values.forEach((value,idx)=>{
+		let recordsAtTime = groups.map[value];
+		let data = [];
+		recordsAtTime.forEach((r,idx)=>{
+		    data.push(r.getValue(htmlLayerField.getIndex()));
+		});
+		let record = recordsAtTime[0];
+		let px = this.map.getMap().getPixelFromLonLat(this.map.transformLLPoint(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude())));
+		let id = this.getId() +"_sl"+ idx;
+		let html = HU.div(["id",id, "style",style +"line-height:0px;z-index:1000;position:absolute;left:" + (px.x-w/2) +"px;top:" + (px.y-h/2)+"px;width:" + w+"px;height:" + h+"px;"]);
+		this.htmlLayer += html;
+		infos.push({
+		    id:id,
+		    data:data,
+		    records: recordsAtTime
+		});
+	    });
+	    this.updateHtmlLayer();
+            let colorBy = this.getColorByInfo(records);
+	    infos.forEach((info,idx)=>{
+//		drawPieChart(this, "#"+ info.id,w-2,h-2,info.data,info.records,allData.min,allData.max,colorBy,{margin:0});
+		drawSparkLine(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
+	    });
+	    colorBy.displayColorTable(null,true);
+	},
         addPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
@@ -1628,6 +1710,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug) console.log("displaymap done creating heatmap");
 		if(!this.getProperty("hm.showPoints"))
 		    return;
+	    }
+	    if(this.getProperty("htmlLayerField")) {
+		this.createHtmlLayer(records, fields);
+		return;
 	    }
             let colorBy = this.getColorByInfo(records);
 	    let cidx=0
@@ -2193,7 +2279,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['sizeByRadiusMin="2"',"Scale size by"],
 		['sizeByRadiusMax="20"',"Scale size by"],
 		['bounds=north,west,south,east',"initial bounds"],
-		['mapCenters=lat,lon',"initial position"],
+		['mapCenter=lat,lon',"initial position"],
 		['zoomLevel=4',"initial zoom"],
 		['fixedPosition=true','Keep the initial position'],
 		['initialLocation=lat,lon',"initial location"],

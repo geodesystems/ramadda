@@ -676,6 +676,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		    stringValues: this.colorByValues});
 	    } else {
 		var colors = this.colors;
+
 		if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		    var tmp = [];
 		    for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
@@ -976,11 +977,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
 
 
-function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
+function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, margin) {
     if(!attrs) attrs = {};
-    const MARGIN       = { top: 5, right: 5, bottom: 5, left: 5 };
-    const INNER_WIDTH  = w - MARGIN.left - MARGIN.right;
-    const INNER_HEIGHT = h - MARGIN.top - MARGIN.bottom;
+    if(!margin)
+	margin = { top: 5, right: 5, bottom: 5, left: 5 };
+    margin       = { top: 0, right: 0, bottom: 0, left: 0 };
+    const INNER_WIDTH  = w - margin.left - margin.right;
+    const INNER_HEIGHT = h - margin.top - margin.bottom;
     const BAR_WIDTH  = w / data.length;
     const x    = d3.scaleLinear().domain([0, data.length]).range([0, INNER_WIDTH]);
     const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
@@ -994,7 +997,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 	  .attr('width', w)
 	  .attr('height', h)
 	  .append('g')
-	  .attr('transform', 'translate(' + MARGIN.left + ',' + MARGIN.top + ')');
+	  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     const line = d3.line()
 	  .x((d, i) => x(i))
 	  .y(d => y(d));
@@ -1008,7 +1011,9 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
     let getColor = (d,i,dflt)=>{
 	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
-    if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
+    let showBars = attrs.showBars|| display.getProperty("sparklineShowBars",false);
+
+    if(!showBars && (attrs.showLines|| display.getProperty("sparklineShowLines",true))) {
 	svg.selectAll('line').data(data).enter().append("line")
 	    .attr('x1', (d,i)=>{return x(i)})
 	    .attr('y1', (d,i)=>{return y(d)})
@@ -1022,7 +1027,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 	    .style("cursor", "pointer");
     }
 
-    if(attrs.showBars|| display.getProperty("sparklineShowBars",false)) {
+    if(showBars) {
 	defaultShowEndPoints = false;
 	svg.selectAll('.bar').data(data)
 	    .enter()
@@ -1065,16 +1070,20 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
     let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
     svg.on("click", function() {
 	var coords = d3.mouse(this);
-	let record = records[Math.round(x.invert(coords[0]))]
-	if(record)
-	    _display.getDisplayManager().notifyEvent("handleEventRecordSelection", _display, {select:true,record: record});
+	if(records) {
+	    let record = records[Math.round(x.invert(coords[0]))]
+	    if(record)
+		_display.getDisplayManager().notifyEvent("handleEventRecordSelection", _display, {select:true,record: record});
+	}
     });
 
 
     if(doTooltip) {
 	svg.on("mouseover", function() {
+	    if(!records) return;
 	    var coords = d3.mouse(this);
 	    let record = records[Math.round(x.invert(coords[0]))]
+	    if(!record) return;
 	    let html = _display.getRecordHtml(record);
 	    let ele = $(dom);
 	    let offset = ele.offset().top + ele.height();
@@ -1095,8 +1104,8 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs) {
 
 
 function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
-    let margin=4;
     if(!attrs) attrs = {};
+    let margin = Utils.isDefined(attrs.margin)?attrs.margin:4;
     let colors = attrs.pieColors||Utils.ColorTables.cats.colors;
 
     var radius = Math.min(width, height) / 2 - margin

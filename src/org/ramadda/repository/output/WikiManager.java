@@ -6468,7 +6468,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 topProps.add(key.toString());
                 topProps.add(Json.quote(value.toString()));
             }
-            sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
+            sb.append(HU.div("", HU.id(mainDivId)));
             sb.append("\n");
             request.putExtraProperty("added displaymanager", "true");
             topProps.addAll(propList);
@@ -6506,7 +6506,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             anotherDivId = HtmlUtils.getUniqueId("displaydiv");
         }
         anotherDivId = anotherDivId.replace("$entryid", entry.getId());
-        sb.append(HtmlUtils.div("", HtmlUtils.id(anotherDivId)));
+        HU.div(sb, "", HtmlUtils.id(anotherDivId)
+				+ HU.style("position:relative;"));
         Utils.add(propList, "divid", Json.quote(anotherDivId));
         //        }
         props.remove("layoutHere");

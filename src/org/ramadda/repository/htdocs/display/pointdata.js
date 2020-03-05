@@ -1168,9 +1168,14 @@ var RecordUtil = {
 	    let key;
 	    let label = null;
 	    let date = r.getDate();
+//	    console.log (field +" " + r.getLatitude());
 //	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
-		key = label = r.getValue(field.getIndex());
+		if(field=="latlon") {
+		    key = label = r.getLatitude() +"/" + r.getLongitude(); 
+		} else {
+		    key = label = r.getValue(field.getIndex());
+		}
 	    } else {
 		if(!date) {
 		    return true;

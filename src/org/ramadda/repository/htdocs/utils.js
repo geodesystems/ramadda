@@ -1351,7 +1351,6 @@ var Utils = {
             html += "<td width=1%>" + this.formatNumberComma(min) + "&nbsp;</td>";
         var step = (max - min) / ct.length;
         for (var i = 0; i < ct.length; i++) {
-	    if(i>10) break;
             var extra = "";
             var attrs = ["style", "background:" + ct[i] + ";" + "width:100%;height:" + options.height + ";min-width:1px;"];
 	    let val = min + step * i;
@@ -1366,6 +1365,7 @@ var Utils = {
         }
         html += "</tr></table>";
         html += HtmlUtils.closeTag("div");
+
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
         if (stringValues && stringValues.length) {
             var tdw = 100 / ct.length + "%";

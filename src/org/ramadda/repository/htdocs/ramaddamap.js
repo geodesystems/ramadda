@@ -100,7 +100,8 @@ var mapDefaults = {
     units: "m",
     doSphericalMercator: true,
     wrapDateline: true,
-    location: createLonLat(-100, 40)
+//    location: createLonLat(-100, 40)
+    location: createLonLat(0, 0)
 }
 
 
@@ -384,10 +385,13 @@ function initMapFunctions(theMap) {
         locationChanged: function() {
 	    var latlon = this.getBounds();
 	    var bits = 100000;
-	    latlon.top = Math.round(latlon.top*bits)/bits;
-	    latlon.left = Math.round(latlon.left*bits)/bits;
-	    latlon.bottom = Math.round(latlon.bottom*bits)/bits;
-	    latlon.right = Math.round(latlon.right*bits)/bits;
+	    let r = (v=>{
+		return Math.round(v*bits)/bits;
+	    });
+	    latlon.top = r(latlon.top);
+	    latlon.left = r(latlon.left);
+	    latlon.bottom = r(latlon.bottom);
+	    latlon.right = r(latlon.right);
             var bounds = "map_bounds=" + latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right;
             var url = "" + window.location;
             url = url.replace(/\&?map_bounds=[-\d\.]+,[-\d\.]+,[-\d\.]+,[-\d\.]+/g, "");
@@ -395,11 +399,11 @@ function initMapFunctions(theMap) {
             url += "&" + bounds;
 
             var level = this.map.getZoom();
-            url = url.replace(/\&?map_level=[\d]+/g, "");
-            url += "&map_zoomlevel=" + level;
+            url = url.replace(/\&?zoomLevel=[\d]+/g, "");
+            url += "&zoomLevel=" + level;
 	    let center =   this.transformProjPoint(this.map.getCenter())
-            url = url.replace(/\&?map_center=[-\d\.]+,[-\d\.]+/g, "");
-            url += "&map_center=" + center.lat+","+ center.lon;
+            url = url.replace(/\&?mapCenter=[-\d\.]+,[-\d\.]+/g, "");
+            url += "&mapCenter=" + r(center.lat)+","+ r(center.lon);
 
             try {
                 if (window.history.replaceState)
@@ -644,7 +648,7 @@ function initMapFunctions(theMap) {
 	    return null;
 	},
         addLayer: function(layer,nonSelectable) {
-            if (this.map != null) {
+	    if (this.map != null) {
                 this.map.addLayer(layer);
 		if(nonSelectable)
 		    this.nonSelectLayers.push(layer);
