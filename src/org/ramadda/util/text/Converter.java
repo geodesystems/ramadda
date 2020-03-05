@@ -23,6 +23,7 @@ import org.ramadda.util.GeoUtils;
 
 
 import org.ramadda.util.IO;
+import org.ramadda.util.Json;
 import org.ramadda.util.Place;
 import org.ramadda.util.Utils;
 
@@ -30,6 +31,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
+
+import java.net.URL;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -154,8 +157,8 @@ public abstract class Converter extends Processor {
                 }
             }
 
-//	    System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
-//	    System.err.println("COLS:" + result);
+            //          System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
+            //          System.err.println("COLS:" + result);
             return new Row(result);
         }
 
@@ -283,7 +286,7 @@ public abstract class Converter extends Processor {
             //hack, hack
             String script = "/Users/jeffmc/bin/imagesearch.sh";
             for (int attempt = 0; attempt < 3; attempt++) {
-		String result ="";
+                String result = "";
                 try {
                     s = s.replace(" ", "%s");
                     String image = imageMap.get(s);
@@ -314,13 +317,114 @@ public abstract class Converter extends Processor {
 
                     return row;
                 } catch (Exception exc) {
-		    System.err.println ("JSON:" + result);
+                    System.err.println("JSON:" + result);
+
                     throw new RuntimeException(exc);
                 }
             }
             row.add("");
 
             return row;
+        }
+
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class DescSearch extends Converter {
+
+        /* */
+
+        /** _more_ */
+        private String suffix;
+
+        /**
+         *
+         *
+         *
+         *
+         * @param cols _more_
+         * @param suffix _more_
+         */
+        public DescSearch(List<String> cols, String suffix) {
+            super(cols);
+            this.suffix = suffix;
+        }
+
+
+        /**
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if (rowCnt++ == 0) {
+                row.add("description");
+
+                return row;
+            }
+
+            try {
+                List<Integer> indices = getIndices(info);
+                String        s       = "";
+                for (Integer idx : indices) {
+                    s += row.getString(idx) + " ";
+                }
+                s += suffix;
+                s = s.replaceAll(" ", "%20");
+                String baseUrl = "https://en.wikipedia.org/w/api.php";
+                String url =
+                    baseUrl
+                    + "?action=query&srlimit=1&list=search&format=json&srsearch="
+                    + s;
+                String     result = IO.readUrl(url);
+                JSONObject obj    = new JSONObject(result);
+                JSONArray  values = Json.readArray(obj, "query.search");
+                if (values.length() == 0) {
+                    System.err.println("No results for query:" + s);
+                    row.add("");
+
+                    return row;
+                }
+                JSONObject value   = values.getJSONObject(0);
+                String     snippet = value.optString("snippet", "");
+                String     title   = value.optString("title", "");
+                title = title.replaceAll(" ", "%20");
+                url = baseUrl + "?action=parse&prop=text&page=" + title
+                      + "&format=json";
+                result = IO.readUrl(url);
+                obj    = new JSONObject(result);
+                obj    = Json.readObject(obj, "parse.text");
+                String contents = obj.optString("*", "");
+                String p = StringUtil.findPattern(contents,
+                               "(?s)/table>(.*?)<div id=\"toc\"");
+                if (p != null) {
+                    String p2 = StringUtil.findPattern(contents,
+                                    "(?s).*?<p>(.*?)</p>");
+                    if (p2 != null) {
+                        p = p2;
+                    } else {
+                        p = snippet;
+                    }
+                }
+                if (p == null) {
+                    p = snippet;
+                }
+                row.add(p);
+
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
         }
 
     }
@@ -836,8 +940,8 @@ public abstract class Converter extends Processor {
             List values = new ArrayList<String>();
             String dfltFormat = CsvUtil.getDbProp(props, "default", "format",
                                     null);
-	    String dfltUnit = CsvUtil.getDbProp(props, "default", "unit",
-						null);
+            String dfltUnit = CsvUtil.getDbProp(props, "default", "unit",
+                                  null);
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
                 String[] toks;
@@ -909,8 +1013,7 @@ public abstract class Converter extends Processor {
                     attrs.append(" description=\"" + desc + "\" ");
                 }
                 if (unit == null) {
-                    unit = CsvUtil.getDbProp(props, id, i, "unit",
-                                             dfltUnit);
+                    unit = CsvUtil.getDbProp(props, id, i, "unit", dfltUnit);
                 }
                 if (unit != null) {
                     attrs.append("unit=\"" + unit + "\" ");
@@ -930,7 +1033,8 @@ public abstract class Converter extends Processor {
                 } else if (id.equals("url")) {
                     type = "url";
 
-                } else if (id.equals("state") || id.equals("country") || id.equals("category")) {
+                } else if (id.equals("state") || id.equals("country")
+                           || id.equals("category")) {
                     type = "enumeration";
 
                 } else if (id.equals("latitude") || id.equals("longitude")) {
@@ -1440,7 +1544,7 @@ public abstract class Converter extends Processor {
                     } else {
                         s = s.replaceAll(pattern, value);
                     }
-		    //		    System.err.println("P:"  + pattern +" os:" + os +" s:" + s);
+                    //              System.err.println("P:"  + pattern +" os:" + os +" s:" + s);
                     row.set(index, s);
                 }
             }
@@ -1905,24 +2009,36 @@ public abstract class Converter extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Mar 4, '20
+     * @author         Enter your name here...    
+     */
     public static class Truncater extends Converter {
 
 
         /** _more_ */
         private int col;
 
-	private int length;
+        /** _more_          */
+        private int length;
 
         /** _more_ */
         private String suffix;
 
 
         /**
+         *
+         * @param col _more_
+         * @param length _more_
+         * @param suffix _more_
          */
         public Truncater(int col, int length, String suffix) {
-            this.col     = col;
+            this.col    = col;
             this.length = length;
-            this.suffix    = suffix;
+            this.suffix = suffix;
         }
 
 
@@ -1936,9 +2052,12 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-	    String value = row.get(col).toString();
-	    if(value.length()>length) value = value.substring(0,length-1)+suffix;
+            String value = row.get(col).toString();
+            if (value.length() > length) {
+                value = value.substring(0, length - 1) + suffix;
+            }
             row.set(col, value);
+
             return row;
         }
 
@@ -2170,8 +2289,12 @@ public abstract class Converter extends Processor {
                 return null;
             }
             for (int i = 0; i < row.size(); i++) {
-                String s  = i<row.size()?row.getString(i):"";
-                String ss = i<firstRow.size()?firstRow.getString(i):"";
+                String s  = (i < row.size())
+                            ? row.getString(i)
+                            : "";
+                String ss = (i < firstRow.size())
+                            ? firstRow.getString(i)
+                            : "";
                 ss = ss + delimiter + s;
                 firstRow.set(i, ss);
             }
@@ -2737,14 +2860,13 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        public Geocoder(List<String> cols, 
-                        String prefix, String suffix)
+        public Geocoder(List<String> cols, String prefix, String suffix)
                 throws Exception {
             super(cols);
             this.prefix     = prefix;
             this.suffix     = suffix;
             this.writeForDb = false;
-            doAddress = true;
+            doAddress       = true;
         }
 
         /**

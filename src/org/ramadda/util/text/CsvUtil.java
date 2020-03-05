@@ -1614,6 +1614,8 @@ public class CsvUtil {
             "(read the id,value from file and substitute the value in the dest file col idx)"),
         new Cmd("-break", "<label1> <label2> <columns",
                 "(break apart column values and make new rows)"),
+        new Cmd("-desc", "<col idx> suffix",
+                "(add a description from wikipedia)"),
         new Cmd("-image", "<col idx> suffix", "(search for an image)"),
         new Cmd("-gender", "<column>",
                 "(figure out the gender of the name in the column)"),
@@ -2622,6 +2624,18 @@ public class CsvUtil {
                     String       suffix = args.get(++i);
                     info.getProcessor().addProcessor(
                         new Converter.ImageSearch(cols, suffix));
+
+                    continue;
+                }
+
+                if (arg.equals("-desc")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols   = getCols(args.get(++i));
+                    String       suffix = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.DescSearch(cols, suffix));
 
                     continue;
                 }
