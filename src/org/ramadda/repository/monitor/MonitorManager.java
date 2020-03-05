@@ -183,8 +183,12 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
             try {
                 //Uggh
-                xml = xml.replace("org.ramadda.repository.monitor.LdmAction",
-                                  "org.ramadda.geodata.cdmdata.LdmAction");
+                xml = xml.replaceAll(
+                    "org.ramadda.repository.monitor.LdmAction",
+                    "org.ramadda.geodata.cdmdata.LdmAction");
+                xml = xml.replaceAll(
+                    "org.ramadda.repository.monitor.TwitterAction",
+                    "org.ramadda.repository.monitor.NoopAction");
                 xml = xml.replace("hipchat.HipchatAction",
                                   "atlassian.HipchatAction");
                 EntryMonitor monitor =
