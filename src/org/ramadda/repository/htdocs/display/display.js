@@ -3966,6 +3966,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+	    let selectFields = this.getProperty("selectFields");
+	    let selectFieldProps = [];
+	    if(selectFields) {
+		selectFields.split(";").forEach(t=>{
+		    //htmlLayerField:Sparkline Field:field1,field2
+		    let [prop,label,fields]  = t.split(":");
+		    if(fields==null) {
+			fields = label;
+			label = Utils.makeLabel(prop);
+		    }
+		    let selectFields = this.getFieldsByIds(null,fields);
+		    let enums = [];
+		    selectFields.map(field=>{
+			if(field.isFieldGeo()) return;
+			enums.push([field.getId(),field.getLabel()]);
+		    });
+		    header2 += HtmlUtils.span(["class","display-filter"],
+					      this.makeFilterLabel(label+": ") + 
+					      HtmlUtils.select("",["style","", "id",this.getDomId("fieldselect_" + prop)],enums,this.getProperty(prop,"")))+"&nbsp;";
+
+		    selectFieldProps.push(prop);
+		});
+	    }
+
 	    if(this.colorByFields.length>0) {
 		let enums = [];
 		this.colorByFields.map(field=>{
@@ -4571,6 +4595,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    _this.setProperty("fields",$(this).val());
 		    _this.updateUI();
 		});
+
+
+		selectFieldProps.forEach(prop=>{
+                    this.jq("fieldselect_" + prop).change(function(){
+			_this.fieldSelectedChanged(prop,$(this).val());
+		    });
+		});
+
+
+
                 this.jq("colorbyselect").change(function(){
 		    _this.colorByFieldChanged($(this).val());
 		});
@@ -4664,6 +4698,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
+	},
+	fieldSelectedChanged: function(prop,val) {
+	    this.setProperty(prop,val);
+	    this.haveCalledUpdateUI = false;
+	    this.updateUI();
 	},
 	colorByFieldChanged:function(field) {
 	    this.setProperty("colorBy", field);
@@ -4949,6 +4988,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.includeAll=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
+		'selectFields=prop:label:field1,...fieldN;prop:....',
 		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
 		['not match value','dataFilters="notmatch(field=field,value=value,label=,enabled=);"','Only show records that dont match'],
 		['no missing values','dataFilters="nomissing(field=field,label=,enabled=);"','Dont show missing values'],

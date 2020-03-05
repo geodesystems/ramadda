@@ -1644,6 +1644,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         createHtmlLayer: function(records, fields) {
 	    let htmlLayerField = this.getFieldById(fields,this.getProperty("htmlLayerField"));
+	    this.setProperty("colorBy",htmlLayerField.getId());
 	    this.htmlLayerInfo = {
 		records:records,
 		fields:fields,
