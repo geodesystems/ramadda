@@ -3401,7 +3401,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 
             HtmlUtils.formatTable("#" + this.getDomId(ID_TABLE), opts);
 	    let rows = this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row");
-	    this.addFieldClickHandler(rows, records);
+	    this.addFieldClickHandler(null, records,true);
 	    let markerFill = this.getProperty("markerFill","#64CDCC");
 	    let markerStroke = this.getProperty("markerStroke","#000");
 	    canvasInfo.forEach(c=>{

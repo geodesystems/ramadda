@@ -4683,7 +4683,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let _this = this;
 	    if(records) {
 		if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
-		jq.find("[recordIndex]").click(function() {
+		let func = function() {
 		    if(addHighlight) {
 			$(this).parent().find(".display-row-highlight").removeClass("display-row-highlight");
 			$(this).addClass("display-row-highlight");
@@ -4691,13 +4691,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    let record = records[$(this).attr("recordIndex")];
 		    if(record)
 			_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
-		});
+		};
+		let children = jq.find("[recordIndex]");
+		if(!children.length) children = jq;
+		children.click(func);
 	    }
 
 	    if(this.getProperty("propagateValueClick",true)) {
 		let _this = this;
 		if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
 		jq.find("[field-id]").click(function() {
+		    
 		    let fieldId = $(this).attr("field-id");
 		    let value = $(this).attr("field-value");
 		    var args = {
