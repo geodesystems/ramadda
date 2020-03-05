@@ -2271,7 +2271,7 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
     let ID_TABLE = "table";
     let ID_HEADER = "coocheader";
     let ID_SORTBY = "sortby";
-    var SUPER;
+    let SUPER;
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
 							 DISPLAY_COOCCURENCE, properties));
     addRamaddaDisplay(this);
@@ -2294,9 +2294,26 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 					'topSpace=50px'
 					
 				    ])},
+	getHeader2:function() {
+	    let html = SUPER.getHeader2.call(this);
+	    let weightField = this.getFieldById(null, this.getProperty("colorBy","weight"));
+	    if(weightField && this.getProperty("showSortBy",true)) {
+		let enums = [["name","Name"],["weight","Weight"]];
+		html +=  HtmlUtils.div(["style","display:inline-block"], "Sort by: " + HtmlUtils.select("",["id",this.getDomId(ID_SORTBY)],enums,this.getProperty("sortBy","")))+SPACE2;
+	
+	    }
+	    return html;
 
+	}, 
+	initHeader2:function() {
+	    let _this = this;
+	    this.jq(ID_SORTBY).change(function() {
+		_this.setProperty("sortBy",$(this).val());
+		_this.updateUI();
+	    });
+	},
         updateUI: function() {
-	    var records = this.filterData();
+	    let records = this.filterData();
 	    if (!records) {
                 return;
 	    }  
@@ -2308,27 +2325,14 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
 	    let targetField = this.getFieldById(null, this.getProperty("targetField","target"));
 	    let weightField = this.getFieldById(null, this.getProperty("colorBy","weight"));
-	    if(weightField && this.getProperty("showSortBy",true)) {
-		var enums = [["name","Name"],["weight","Weight"]];
-		var header =  HtmlUtils.div(["style","margin-left:100px;"], "Sort by: " + HtmlUtils.select("",["id",this.getDomId(ID_SORTBY),],enums,this.getProperty("sortBy","")));
-		this.jq(ID_HEADER).html(header);
-		let _this = this;
-		this.jq(ID_SORTBY).change(function() {
-		    _this.setProperty("sortBy",$(this).val());
-		    _this.updateUI();
-		});
-		
-	    }
 
 	    if(sourceField==null || targetField==null) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No source/target fields specified");
 		return;
 	    }
-	    var colors = this.getColorTable();
+	    let colors = this.getColorTable();
 	    if(!colors) colors = Utils.getColorTable("blues",true);
-	    var colorBy = this.getColorByInfo(records,null,null,colors);
-
-
+	    let colorBy = this.getColorByInfo(records,null,null,colors);
 	    let names = {};
 	    let nameList = [];
 	    let sources = [];
@@ -2340,14 +2344,13 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 	    let missing = -999999;
 
 	    records.map(r=>{
-		var source = r.getValue(sourceField.getIndex());
-		var target = r.getValue(targetField.getIndex());
-		var weight = missing;
+		let source = r.getValue(sourceField.getIndex());
+		let target = r.getValue(targetField.getIndex());
+		let weight = missing;
 		if(weightField) {
 		    weight = r.getValue(weightField.getIndex());
 		    maxWeight = Math.max(maxWeight, weight);
 		}
-
 		sources.push({name:source,weight:weight});
 		targets.push({name:target,weight:weight});
 		if(!directed) {
