@@ -1348,7 +1348,7 @@ var Utils = {
 	
         var html = HtmlUtils.openTag("div", divargs) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
         if (options.showRange)
-            html += "<td width=1%>" + this.formatNumber(min) + "&nbsp;</td>";
+            html += "<td width=1%>" + this.formatNumberComma(min) + "&nbsp;</td>";
         var step = (max - min) / ct.length;
         for (var i = 0; i < ct.length; i++) {
 	    if(i>10) break;
@@ -1357,12 +1357,12 @@ var Utils = {
 	    let val = min + step * i;
             if (options.showRange) {
                 attrs.push("title");
-                attrs.push(this.formatNumber(val));
+                attrs.push(this.formatNumberComma(val));
             }
             html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
         }
         if (options.showRange) {
-            html += "<td width=1%>&nbsp;" + this.formatNumber(max) + "</td>";
+            html += "<td width=1%>&nbsp;" + this.formatNumberComma(max) + "</td>";
         }
         html += "</tr></table>";
         html += HtmlUtils.closeTag("div");

@@ -4679,6 +4679,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         updateUI: function() {
 	},
+	addFieldClickHandler: function(jq) {
+	    if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
+	    if(this.getProperty("propagateValueClick",true)) {
+		let _this = this;
+		jq.find("[field-id]").click(function() {
+		    let fieldId = $(this).attr("field-id");
+		    let value = $(this).attr("field-value");
+		    var args = {
+			property: "filterValue",
+			id:fieldId,
+			fieldId: fieldId,
+			value: value
+		    };
+		    _this.propagateEvent("handleEventPropertyChanged", args);
+		});
+	    }
+
+	},
 	//Make sure the elements have a title set
 	makeTooltips: function(selector, records, callback, tooltipArg) {
 	    if(!this.getProperty("showTooltips",true)) {

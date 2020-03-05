@@ -1844,7 +1844,7 @@ margin:10px;
 }
 
 .display-colorboxes-header {
-    
+    cursor:pointer;
 }
 
 
@@ -2018,6 +2018,7 @@ display:inline-block;
 .display-fieldtable-rowheader {
     font-weight:bold;
     margin:5px;
+    cursor:pointer;
 }
 
 .display-fieldtable-row:hover {

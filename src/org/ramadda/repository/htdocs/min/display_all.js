@@ -5820,6 +5820,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         updateUI: function() {
 	},
+	addFieldClickHandler: function(jq) {
+	    if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
+	    if(this.getProperty("propagateValueClick",true)) {
+		let _this = this;
+		jq.find("[field-id]").click(function() {
+		    let fieldId = $(this).attr("field-id");
+		    let value = $(this).attr("field-value");
+		    var args = {
+			property: "filterValue",
+			id:fieldId,
+			fieldId: fieldId,
+			value: value
+		    };
+		    _this.propagateEvent("handleEventPropertyChanged", args);
+		});
+	    }
+
+	},
 	//Make sure the elements have a title set
 	makeTooltips: function(selector, records, callback, tooltipArg) {
 	    if(!this.getProperty("showTooltips",true)) {
@@ -31486,7 +31504,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	    var colorBy = this.getColorByInfo(records,null,null,colors);
 	    let catMap =  {};
 	    let cats = [];
-	    records.map(r=>{
+	    records.forEach(r=>{
 		let category = r.getValue(categoryField.getIndex());
 		let value = colorBy.index>=0?r.getValue(colorBy.index):0;
 		let list = catMap[category] && catMap[category].list;
@@ -31506,9 +31524,11 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 		return catMap[b].max - catMap[a].max;
 	    });
 
-	    cats.map(cat=>{
+	    cats.forEach(cat=>{
 		let length = catMap[cat].list.length;
-		let row = "<tr valign=top><td align=right class=display-colorboxes-header>" +cat+ "("+length+")</td><td width=${tableWidth}>";
+		let label = HU.span(["field-id",categoryField.getId(),
+				    "field-value",cat], cat);
+		let row = "<tr valign=top><td align=right class=display-colorboxes-header>" +label+ "("+length+")</td><td width=${tableWidth}>";
 		if(colorBy.index) {
 		    catMap[cat].list.sort((a,b)=>{
 			return b.getData()[colorBy.index]-a.getData()[colorBy.index];
@@ -31531,6 +31551,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 	    if(!this.getProperty("tooltip"))
 		this.setProperty("tooltip","${default}");
 	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-colorboxes-box"),records);
+	    this.addFieldClickHandler();
 	}
     })
 }
@@ -32340,8 +32361,15 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 
 	    records.forEach((r,idx)=>{
 		let label  = labelField?r.getValue(labelField.getIndex()):"#"+(idx+1);
+		let hdrAttrs = ["class","display-fieldtable-rowheader"];
+		if(labelField) {
+		    hdrAttrs.push("field-id");
+		    hdrAttrs.push(labelField.getId());
+		    hdrAttrs.push("field-value");
+		    hdrAttrs.push(r.getValue(labelField.getIndex()));
+		}
 		html += HU.openTag("tr",["valign","center","recordIndex",idx,"class","display-fieldtable-row"]);
-		html+=HU.td(["style","vertical-align:center","align","right"],HU.div(["class","display-fieldtable-rowheader"],label));
+		html+=HU.td(["style","vertical-align:center","align","right"],HU.div(hdrAttrs,label));
 		fields.forEach(f=>{
 		    let v = r.getValue(f.getIndex());
 		    let c = columns[f.getId()];
@@ -32406,6 +32434,8 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 
             HtmlUtils.formatTable("#" + this.getDomId(ID_TABLE), opts);
 	    let _this = this;
+
+	    this.addFieldClickHandler();
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-fieldtable-row").click(function() {
 		let record = records[$(this).attr("recordIndex")];
 		if(record)
