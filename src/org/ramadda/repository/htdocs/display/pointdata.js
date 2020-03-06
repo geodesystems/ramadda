@@ -1414,7 +1414,7 @@ var RecordUtil = {
 */
 	    if(opts.colorBy && opts.colorBy.index>=0) {
                 let perc = opts.colorBy.getValuePercent(v);
-                let degrees = (360*perc)-360;
+                let degrees = (180*perc)+90;
 		degrees = degrees*(Math.PI / 360)
                 x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
 		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);

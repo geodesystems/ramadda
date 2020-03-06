@@ -559,18 +559,9 @@ function DisplayThing(argId, argProperties) {
                         }
                     }
                     var value = record.getValue(field.getIndex());
+		    let fieldValue = value;
                     if (typeof value == "number") {
 			value = this.formatNumber(value);
-			/**
-                           var sv = value + "";
-                           //total hack to decimals format numbers
-                           if (sv.indexOf('.') >= 0) {
-                           var decimals = 1;
-                           //?
-                           if (Math.abs(value) < 1.5) decimals = 3;
-                           value = number_format(value, decimals, '.', '');
-                           } 
-			**/
                     } 
                     if (field.isFieldDate()) {
 			value = this.formatDate(value);
@@ -579,7 +570,6 @@ function DisplayThing(argId, argProperties) {
 			if(!showImage) continue;
 			value = HtmlUtils.image(value,["width","200"]);
 		    }
-
 		    if(field.getType() == "url") {
 			value = HtmlUtils.href(value,value);
 		    }
@@ -587,7 +577,8 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>200) {
 			value  = HtmlUtils.div(["style","max-height:200px; overflow-y:auto;"],value);
 		    }
-                    values += "<tr valign=top><td nowrap align=right><b>" + label + ":</b></td><td align=left>" + value + "</td></tr>\n";
+                    values += "<tr valign=top><td nowrap align=right><b>" + label + ":</b></td>" + 
+			HU.tag("td", ["field-id",field.getId(),"field-value",fieldValue, "align","left"], value) + "</tr>\n";
                 }
             }
 
@@ -926,7 +917,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!alpha) return colors;
 	    colors=  Utils.cloneList(colors);
 	    var ac = [];
-	    colors.map((c)=>{
+	    colors.forEach((c)=>{
 		ac.push(Utils.addAlphaToColor(c,alpha));
 	    });
 	    return ac;
@@ -1526,7 +1517,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("binDate")) {
 		var binType = this.getProperty("binType","total");
 		let fields = [];
-		this.lastSelectedFields.map(field=>{
+		this.lastSelectedFields.forEach(field=>{
 		    if(!field.isNumeric()) {
 			fields.push(field);
 		    } else {
@@ -1570,7 +1561,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let aliases= {};
 	    var tmp = this.getProperty("fieldAliases");
 	    if(tmp) {
-		tmp.split(",").map(tok=>{
+		tmp.split(",").forEach(tok=>{
 		    [name,alias] =   tok.split(":");
 		    aliases[alias] = name;
 		});
@@ -1697,7 +1688,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let aliases= {};
 	    var tmp = this.getProperty("fieldAliases");
 	    if(tmp) {
-		tmp.split(",").map(tok=>{
+		tmp.split(",").forEach(tok=>{
 		    [name,alias] =   tok.split(":");
 		    aliases[alias] = name;
 		});
@@ -1768,7 +1759,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	getDateValues: function(records) {
 	    var dates = [];
-	    records.map(r=>{
+	    records.forEach(r=>{
 		dates.push(r.getDate());
 	    });
 	    return dates;
@@ -1813,7 +1804,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!value) value = FILTER_ALL;
 	    if(!Array.isArray(value)) value = value.split(",");
 	    var tmp = [];
-	    value.map(v=>tmp.push(v.trim()));
+	    value.forEach(v=>tmp.push(v.trim()));
 	    value = tmp;
 	    //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
@@ -4740,7 +4731,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let _this = this;
 		if(!jq) jq = this.jq(ID_DISPLAY_CONTENTS);
 		jq.find("[field-id]").click(function() {
-		    
 		    let fieldId = $(this).attr("field-id");
 		    let value = $(this).attr("field-value");
 		    var args = {

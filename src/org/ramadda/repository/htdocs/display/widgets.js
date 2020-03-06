@@ -594,10 +594,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     } else if( !Array.isArray(propPrefix) ) {
 	propPrefix = [propPrefix];
     }
-
     $.extend(this, {
 	display:display,
 	fieldProp: prop,
+	fieldValue:display.getProperty(prop),
 	propPrefix: propPrefix,
 	getProperty: function(prop, dflt) {
 	    if(this.debug) console.log("getProperty:" + prop);
@@ -623,6 +623,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colorByAttr =theField.getId();
 	this.propPrefix.unshift(theField.getId()+".colorBy");
     }
+
 
     $.extend(this, {
 	display:display,
@@ -734,6 +735,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		let value = record.getData()[this.index];
 		return  this.getColor(value, record);
 	    }
+	    if(this.fieldValue == "year") {
+		let value = record.getDate().getUTCFullYear();
+		return this.getColor(value, record);
+	    }
 	    return dflt;
 	},
 	getColor: function(value, pointRecord) {
@@ -821,6 +826,20 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    return result || color;
 	}
     });
+
+    if(this.fieldValue == "year") {
+	let seen= {};
+	this.dates = [];
+	records.forEach(r=>{
+	    let year = r.getDate().getUTCFullYear();
+	    if(!seen[year]) {
+		seen[year] = true;
+		this.dates.push(year);
+	    }
+	});
+	this.dates.sort();
+	this.setRange(this.dates[0],this.dates[this.dates.length-1]);
+    }
 
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
     if(this.convertAlpha) {

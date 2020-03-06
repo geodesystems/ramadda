@@ -3457,3 +3457,79 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
     });
 }
 
+
+
+function RamaddaDotstackDisplay(displayManager, id, properties) {
+    let ID_TABLE = "dotstack";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotstack", properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Dot Stack",
+					'categoryField=field',
+				    ])},
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+	    var records = this.filterData();
+	    if(!records) return;
+	    let idToIndex = {};
+	    records.forEach((r,idx)=>{
+		idToIndex[r.getId()] = idx;
+	    });
+	    let categoryField = this.getFieldById(null, this.getProperty("categoryField"));
+	    let html = "";
+	    let groups = RecordUtil.groupBy(records, this, null, categoryField);
+	    var colorBy = this.getColorByInfo(records);
+	    let w = this.getProperty("boxWidth",4);
+	    let cols = this.getProperty("boxColumns",10);
+	    let xcnt = 0;
+	    groups.values.sort((a,b)=>{
+		return groups.map[b].length-groups.map[a].length;
+	    });
+
+	    groups.values.forEach((value,idx)=>{
+		let rows = [];
+		let row = [];
+		rows.push(row);
+		let grecords = groups.map[value];
+		let col=0;
+		grecords.forEach(r=>{
+		    if(row.length>cols) {
+			row=[];
+			rows.push(row);
+		    }
+		    let c = colorBy.getColorFromRecord(r,"blue");
+		    let box = HU.div(
+			["title","", "recordIndex",idToIndex[r.getId()],"class", "display-dotstack-dot","style","width:" + w+"px;height:" + w +"px;background:" + 
+				      c+";"],"");
+		    row.push(box);
+		});
+		html += HU.openTag("div",["class","display-dotstack-block"]);
+		html+=HU.div([],this.getProperty("labelTemplate","${count}").replace("${count}", grecords.length));
+
+
+		html += "<table>";
+		for(var i=rows.length-1;i>=0;i--) {
+		    html += HU.tr([],HU.tds([],rows[i]));
+		}
+		html += "</table>";
+		html +=value;
+		html += HU.closeTag("div");
+	    });
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-dotstack-dot"),records,null,"${default}");
+	    if(this.getProperty("tableHeight")) {
+		opts.scrollY = this.getProperty("tableHeight");
+	    }
+	    if(this.getProperty("showColorTable")) {
+		colorBy.displayColorTable(null,false,domId);
+	    }
+	}
+    });
+}
+

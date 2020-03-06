@@ -2037,3 +2037,18 @@ display:inline-block;
 table.dataTable tfoot td {
     border-top-width:0px;
 }
+
+
+.display-dotstack-dot {
+    margin:1px;
+}
+
+.display-dotstack-block {
+    text-align:center;
+    display:inline-block;
+    border-bottom:1px solid #000;
+    padding-left:8px;
+    padding-right:8px;
+    margin:10px;
+
+}
