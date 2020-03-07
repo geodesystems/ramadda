@@ -528,7 +528,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
             var selectedFields = this.getSelectedFields();
-
+	    
 
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
@@ -551,6 +551,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     selectedFields = this.getSelectedFields();
 		    if(debug)
 			console.log("\tgetSelectedFields again:" + selectedFields);
+		    
+                    selectedFields = this.getSelectedFields();
+		    if(selectedFields.length==0) {
+			this.allFields.every(f=>{
+			    if(f.isNumeric() && !f.isFieldGeo()) {
+				selectedFields = [f];
+				return false;
+			    }
+			    return true;
+			});
+
+		    }
                 }
             }
 
