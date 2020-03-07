@@ -375,35 +375,46 @@ function DisplayThing(argId, argProperties) {
         getTimeZone: function() {
             return this.getProperty("timeZone");
         },
-        formatDate: function(date, args) {
+        formatDate: function(date, args, useToStringIfNeeded) {
 	    if(!date || !date.getTime) return "";
             try {
-                return this.formatDateInner(date, args);
+                return this.formatDateInner(date, args, useToStringIfNeeded);
             } catch (e) {
                 console.log("Error formatting date:" + e);
                 if (!date.getTime && date.v) date = date.v;
                 return "" + date;
             }
         },
-        formatDateInner: function(date, args) {
-	    var fmt = this.getProperty("dateFormat", this.getProperty("dateFormat2"));
-	    let dttm = Utils.formatDateWithFormat(date,fmt,true);
-	    if(dttm) return dttm;
-
+	xcnt:0,
+	dateFormat:null,
+        formatDateInner: function(date, args,useToStringIfNeeded) {
+	    if(!this.dateFormat)
+		this.dateFormat =  this.getProperty("dateFormat", this.getProperty("dateFormat2"));
+	    this.xcnt++;
+	    if(!this.dateFormat && useToStringIfNeeded) {
+//		if(this.xcnt<20)  console.log("doing date.tostring:" + date);
+		return String(date);
+	    }
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
+//	    if(this.xcnt<20)console.log("fmt:" + this.dateFormat +"  " + useToStringIfNeeded);
+	    if(this.dateFormat) {
+		let dttm = Utils.formatDateWithFormat(date,this.dateFormat,true);
+		if(dttm) {
+		    return dttm;
+		}
+	    }
             if (!date.toLocaleDateString) {
                 return "" + date;
             }
-            if (!args) args = {};
             var suffix;
-            if (!Utils.isDefined(args.suffix))
+            if (args && !Utils.isDefined(args.suffix))
                 suffix = args.suffix;
             else
                 suffix = this.getProperty("dateSuffix");
             var timeZone = this.getTimeZone();
             if (!suffix && timeZone) suffix = timeZone;
-            return Utils.formatDate(date, args.options, {
+            return Utils.formatDate(date, args?args.options:null, {
                 timeZone: timeZone,
                 suffix: suffix
             });
@@ -4573,6 +4584,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"label:Filter Data",
 		"filterFields=\"\"",
 		"hideFilterWidget=true",
+		'showFilterHighlight=true',
 		"acceptFilterEvent=false",
 		'filterFieldsToPropagate=""',
 		"&lt;field&gt;.filterValue=\"\"",

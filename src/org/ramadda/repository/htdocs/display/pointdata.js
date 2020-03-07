@@ -374,7 +374,12 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 		if(debug)
 		    console.log("\tmaking point data");
+		let t1 = new Date();
                 var newData = makePointData(data, _this.derived, display);
+		let t2 = new Date();
+		if(debug)
+		    Utils.displayTimes("makePointData",[t1,t2],true);
+
 		if(debug)
 		    console.log("\tdone making point data #records:" + newData.getRecords().length);
                 pointData = cacheObject.pointData = newData;
@@ -669,23 +674,26 @@ function RecordField(props) {
 
 
 
-
 /*
   The main data record. This holds a lat/lon/elevation, time and an array of data
   The data array corresponds to the RecordField fields
 */
 function PointRecord(fields,lat, lon, elevation, time, data) {
     this.isPointRecord = true;
-    RamaddaUtil.defineMembers(this, {
+    $.extend(this, {
 	fields:fields,
         latitude: lat,
         longitude: lon,
         elevation: elevation,
         recordTime: time,
         data: data,
-	highlightForDisplay:{},
 	id: HtmlUtils.getUniqueId(),
-	clone: function() {
+    });
+}
+
+
+PointRecord.prototype =  {
+    clone: function() {
 	    var newRecord = {};
 	    $.extend(newRecord,this);
 	    newRecord.data = [];
@@ -693,14 +701,17 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 	    return newRecord;
 	},
 	isHighlight: function(display) {
+	    if(!this.highlightForDisplay) this.highlightForDisplay={};
 	    return this.highlightForDisplay[display];
 	},
 	setHighlight:function(display, value) {
+	    if(!this.highlightForDisplay) this.highlightForDisplay={};
 	    if(!value || this.highlightForDisplay[display] == null) {
 		this.highlightForDisplay[display] = value;
 	    }
 	},
 	clearHighlight:function(display) {
+	    if(!this.highlightForDisplay) this.highlightForDisplay={};
 	    delete this.highlightForDisplay[display];
 	},
 	toString: function() {
@@ -764,8 +775,7 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
         getDate: function() {
             return this.recordTime;
         }
-    });
-}
+};
 
 
 function makePointData(json, derived, source) {
@@ -846,9 +856,9 @@ function makePointData(json, derived, source) {
 
     let pointRecords = [];
     let isArray = false;
-    for (var i = 0; i < json.data.length; i++) {
+    let hasGeo = false;
+    json.data.forEach((tuple,i)=>{
 	if(debug && i>0 && (i%10000)==0) console.log("\tprocessed:" + i);
-        let tuple = json.data[i];
 	if(i==0) {
 	    isArray = Array.isArray(tuple);
 	}
@@ -880,26 +890,14 @@ function makePointData(json, derived, source) {
             else
                 tuple.longitude = NaN;
         }
-
-        if (isArray || (typeof tuple.elevation === 'undefined')) {
-            if (elevationIdx >= 0)
-                tuple.elevation = values[elevationIdx];
-            else
-                tuple.elevation = NaN;
-        }
-	
         for (var j = 0; j < dateIndexes.length; j++) {
             values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
         }
-
-        //        console.log("before:" + values);
-        var h = values[2];
         for (var col = 0; col < values.length; col++) {
             if(values[col]==null) {
                 values[col] = NaN;
             } 
         }
-
 
         if (derived) {
             for (var dIdx = 0; dIdx < derived.length; dIdx++) {
@@ -970,7 +968,7 @@ function makePointData(json, derived, source) {
                     values.push(NaN);
                 }
             }
-        }
+	}
 
         for (var fieldIdx = 0; fieldIdx < offsetFields.length; fieldIdx++) {
             var field = offsetFields[fieldIdx];
@@ -981,7 +979,8 @@ function makePointData(json, derived, source) {
         }
         var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
-    }
+    });
+
 
     if (source != null) {
         for (var i = 0; i < fields.length; i++) {
@@ -1662,11 +1661,11 @@ var RecordUtil = {
 	    labels:[],
 	    map:{},
 	}
-	records.every((r,idx)=>{
-	    let key;
-	    let label = null;
+
+	let key;
+	let label;
+	records.forEach((r,idx)=>{
 	    let date = r.getDate();
-	    //	    console.log (field +" " + r.getLatitude());
 	    //	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
 		if(field=="latlon") {
@@ -1676,37 +1675,41 @@ var RecordUtil = {
 		}
 	    } else {
 		if(!date) {
-		    return true;
+		    return;
 		}
 		key = date;
-		if(dateBin=="day") {
-		    key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
-		} else if(dateBin=="month") {
-		    label=date.getFullYear()+"-" + date.getUTCMonth();
-		    key = new Date(label +"-01");
-		} else if(dateBin=="year") {
-		    label = date.getFullYear();
-		    key = new Date(date.getFullYear()+"-01-01");
-		} else if(dateBin=="decade") {
-		    let year = date.getFullYear();
-		    year = year-year%10;
-		    label = year+"s";
-		    key = new Date(year+"-01-01");
-		} else if(dateBin) {
-		    label = display.formatDate(key);
+		if(dateBin===true) {
+		    //do the label later
+		} else {
+		    if(dateBin=="day") {
+			key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
+		    } else if(dateBin=="month") {
+			label=date.getFullYear()+"-" + date.getUTCMonth();
+			key = new Date(label +"-01");
+		    } else if(dateBin=="year") {
+			label = date.getFullYear();
+			key = new Date(date.getFullYear()+"-01-01");
+		    } else if(dateBin=="decade") {
+			let year = date.getFullYear();
+			year = year-year%10;
+			label = year+"s";
+			key = new Date(year+"-01-01");
+		    } else if(dateBin) {
+			label = String(key);
+		    }
 		}
 	    }
-	    if(!groups.map[key]) {
+	    let array = groups.map[key];
+	    if(!array) {
 		if(debug) console.log("\tadding group:"  + key);
-		groups.map[key] = [];
+		array = groups.map[key] = [];
 		groups.values.push(key);
 		if(label==null)
-		    label = display.formatDate(date);
+		    label = display.formatDate(date,null,true);
 		groups.labels.push(label);
 	    }
-	    groups.map[key].push(r);
-	    groups.max = Math.max(groups.max, groups.map[key].length);
-	    return true;
+	    array.push(r);
+	    groups.max = Math.max(groups.max, array.length);
 	});
 	return groups;
     },

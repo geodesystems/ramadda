@@ -523,7 +523,6 @@ var Utils = {
 	    if(returnNullIfNotFound) return null;
 	    fmt = "yyyymmdd";
 	}
-	fmt = fmt.toLowerCase();
         if (fmt == "yyyy") {
             return Utils.formatDateYYYY(date);
         } else if (fmt == "yyyymmdd") {

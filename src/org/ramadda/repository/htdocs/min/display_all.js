@@ -1569,35 +1569,46 @@ function DisplayThing(argId, argProperties) {
         getTimeZone: function() {
             return this.getProperty("timeZone");
         },
-        formatDate: function(date, args) {
+        formatDate: function(date, args, useToStringIfNeeded) {
 	    if(!date || !date.getTime) return "";
             try {
-                return this.formatDateInner(date, args);
+                return this.formatDateInner(date, args, useToStringIfNeeded);
             } catch (e) {
                 console.log("Error formatting date:" + e);
                 if (!date.getTime && date.v) date = date.v;
                 return "" + date;
             }
         },
-        formatDateInner: function(date, args) {
-	    var fmt = this.getProperty("dateFormat", this.getProperty("dateFormat2"));
-	    let dttm = Utils.formatDateWithFormat(date,fmt,true);
-	    if(dttm) return dttm;
-
+	xcnt:0,
+	dateFormat:null,
+        formatDateInner: function(date, args,useToStringIfNeeded) {
+	    if(!this.dateFormat)
+		this.dateFormat =  this.getProperty("dateFormat", this.getProperty("dateFormat2"));
+	    this.xcnt++;
+	    if(!this.dateFormat && useToStringIfNeeded) {
+//		if(this.xcnt<20)  console.log("doing date.tostring:" + date);
+		return String(date);
+	    }
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
+//	    if(this.xcnt<20)console.log("fmt:" + this.dateFormat +"  " + useToStringIfNeeded);
+	    if(this.dateFormat) {
+		let dttm = Utils.formatDateWithFormat(date,this.dateFormat,true);
+		if(dttm) {
+		    return dttm;
+		}
+	    }
             if (!date.toLocaleDateString) {
                 return "" + date;
             }
-            if (!args) args = {};
             var suffix;
-            if (!Utils.isDefined(args.suffix))
+            if (args && !Utils.isDefined(args.suffix))
                 suffix = args.suffix;
             else
                 suffix = this.getProperty("dateSuffix");
             var timeZone = this.getTimeZone();
             if (!suffix && timeZone) suffix = timeZone;
-            return Utils.formatDate(date, args.options, {
+            return Utils.formatDate(date, args?args.options:null, {
                 timeZone: timeZone,
                 suffix: suffix
             });
@@ -5767,6 +5778,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"label:Filter Data",
 		"filterFields=\"\"",
 		"hideFilterWidget=true",
+		'showFilterHighlight=true',
 		"acceptFilterEvent=false",
 		'filterFieldsToPropagate=""',
 		"&lt;field&gt;.filterValue=\"\"",
@@ -7760,7 +7772,12 @@ function PointData(name, recordFields, records, url, properties) {
 		}
 		if(debug)
 		    console.log("\tmaking point data");
+		let t1 = new Date();
                 var newData = makePointData(data, _this.derived, display);
+		let t2 = new Date();
+		if(debug)
+		    Utils.displayTimes("makePointData",[t1,t2],true);
+
 		if(debug)
 		    console.log("\tdone making point data #records:" + newData.getRecords().length);
                 pointData = cacheObject.pointData = newData;
@@ -8055,23 +8072,26 @@ function RecordField(props) {
 
 
 
-
 /*
   The main data record. This holds a lat/lon/elevation, time and an array of data
   The data array corresponds to the RecordField fields
 */
 function PointRecord(fields,lat, lon, elevation, time, data) {
     this.isPointRecord = true;
-    RamaddaUtil.defineMembers(this, {
+    $.extend(this, {
 	fields:fields,
         latitude: lat,
         longitude: lon,
         elevation: elevation,
         recordTime: time,
         data: data,
-	highlightForDisplay:{},
 	id: HtmlUtils.getUniqueId(),
-	clone: function() {
+    });
+}
+
+
+PointRecord.prototype =  {
+    clone: function() {
 	    var newRecord = {};
 	    $.extend(newRecord,this);
 	    newRecord.data = [];
@@ -8079,14 +8099,17 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 	    return newRecord;
 	},
 	isHighlight: function(display) {
+	    if(!this.highlightForDisplay) this.highlightForDisplay={};
 	    return this.highlightForDisplay[display];
 	},
 	setHighlight:function(display, value) {
+	    if(!this.highlightForDisplay) this.highlightForDisplay={};
 	    if(!value || this.highlightForDisplay[display] == null) {
 		this.highlightForDisplay[display] = value;
 	    }
 	},
 	clearHighlight:function(display) {
+	    if(!this.highlightForDisplay) this.highlightForDisplay={};
 	    delete this.highlightForDisplay[display];
 	},
 	toString: function() {
@@ -8150,8 +8173,7 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
         getDate: function() {
             return this.recordTime;
         }
-    });
-}
+};
 
 
 function makePointData(json, derived, source) {
@@ -8232,9 +8254,9 @@ function makePointData(json, derived, source) {
 
     let pointRecords = [];
     let isArray = false;
-    for (var i = 0; i < json.data.length; i++) {
+    let hasGeo = false;
+    json.data.forEach((tuple,i)=>{
 	if(debug && i>0 && (i%10000)==0) console.log("\tprocessed:" + i);
-        let tuple = json.data[i];
 	if(i==0) {
 	    isArray = Array.isArray(tuple);
 	}
@@ -8266,26 +8288,14 @@ function makePointData(json, derived, source) {
             else
                 tuple.longitude = NaN;
         }
-
-        if (isArray || (typeof tuple.elevation === 'undefined')) {
-            if (elevationIdx >= 0)
-                tuple.elevation = values[elevationIdx];
-            else
-                tuple.elevation = NaN;
-        }
-	
         for (var j = 0; j < dateIndexes.length; j++) {
             values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
         }
-
-        //        console.log("before:" + values);
-        var h = values[2];
         for (var col = 0; col < values.length; col++) {
             if(values[col]==null) {
                 values[col] = NaN;
             } 
         }
-
 
         if (derived) {
             for (var dIdx = 0; dIdx < derived.length; dIdx++) {
@@ -8356,7 +8366,7 @@ function makePointData(json, derived, source) {
                     values.push(NaN);
                 }
             }
-        }
+	}
 
         for (var fieldIdx = 0; fieldIdx < offsetFields.length; fieldIdx++) {
             var field = offsetFields[fieldIdx];
@@ -8367,7 +8377,8 @@ function makePointData(json, derived, source) {
         }
         var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
-    }
+    });
+
 
     if (source != null) {
         for (var i = 0; i < fields.length; i++) {
@@ -9048,11 +9059,11 @@ var RecordUtil = {
 	    labels:[],
 	    map:{},
 	}
-	records.every((r,idx)=>{
-	    let key;
-	    let label = null;
+
+	let key;
+	let label;
+	records.forEach((r,idx)=>{
 	    let date = r.getDate();
-	    //	    console.log (field +" " + r.getLatitude());
 	    //	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
 		if(field=="latlon") {
@@ -9062,37 +9073,41 @@ var RecordUtil = {
 		}
 	    } else {
 		if(!date) {
-		    return true;
+		    return;
 		}
 		key = date;
-		if(dateBin=="day") {
-		    key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
-		} else if(dateBin=="month") {
-		    label=date.getFullYear()+"-" + date.getUTCMonth();
-		    key = new Date(label +"-01");
-		} else if(dateBin=="year") {
-		    label = date.getFullYear();
-		    key = new Date(date.getFullYear()+"-01-01");
-		} else if(dateBin=="decade") {
-		    let year = date.getFullYear();
-		    year = year-year%10;
-		    label = year+"s";
-		    key = new Date(year+"-01-01");
-		} else if(dateBin) {
-		    label = display.formatDate(key);
+		if(dateBin===true) {
+		    //do the label later
+		} else {
+		    if(dateBin=="day") {
+			key = new Date(label=date.getFullYear()+"-" + date.getUTCMonth() +"-" +date.getUTCDay())
+		    } else if(dateBin=="month") {
+			label=date.getFullYear()+"-" + date.getUTCMonth();
+			key = new Date(label +"-01");
+		    } else if(dateBin=="year") {
+			label = date.getFullYear();
+			key = new Date(date.getFullYear()+"-01-01");
+		    } else if(dateBin=="decade") {
+			let year = date.getFullYear();
+			year = year-year%10;
+			label = year+"s";
+			key = new Date(year+"-01-01");
+		    } else if(dateBin) {
+			label = String(key);
+		    }
 		}
 	    }
-	    if(!groups.map[key]) {
+	    let array = groups.map[key];
+	    if(!array) {
 		if(debug) console.log("\tadding group:"  + key);
-		groups.map[key] = [];
+		array = groups.map[key] = [];
 		groups.values.push(key);
 		if(label==null)
-		    label = display.formatDate(date);
+		    label = display.formatDate(date,null,true);
 		groups.labels.push(label);
 	    }
-	    groups.map[key].push(r);
-	    groups.max = Math.max(groups.max, groups.map[key].length);
-	    return true;
+	    array.push(r);
+	    groups.max = Math.max(groups.max, array.length);
 	});
 	return groups;
     },
@@ -26059,8 +26074,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
 	    let groupByDate = this.getProperty("hm.groupByDate",null);
-//	    if(debug) console.log("\tcalling groupBy");
+	    if(debug) console.log("\tcalling groupBy");
+	    let t1 = new Date();
 	    let groups = (groupByField || groupByDate)?RecordUtil.groupBy(records, this, groupByDate, groupByField):null;
+	    let t2 = new Date();
+//	    Utils.displayTimes("make groups",[t1,t2],true);
+	    if(debug) console.log("\tdone calling groupBy");
 	    if(groups == null || groups.max == 0) {
 		doTimes = false;
 		groups= {
@@ -26085,8 +26104,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
 	    groups.values.every((value,idx)=>{
-//		console.log("group:" + value +" #:" + groups.map[value].length);
 		let recordsAtTime = groups.map[value];
+		if(debug)
+		    console.log("group:" + value +" #:" + groups.map[value].length);
 		let img = RecordUtil.gridData(this.getId(),recordsAtTime,args);
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");

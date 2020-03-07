@@ -1527,8 +1527,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
 	    let groupByDate = this.getProperty("hm.groupByDate",null);
-//	    if(debug) console.log("\tcalling groupBy");
+	    if(debug) console.log("\tcalling groupBy");
+	    let t1 = new Date();
 	    let groups = (groupByField || groupByDate)?RecordUtil.groupBy(records, this, groupByDate, groupByField):null;
+	    let t2 = new Date();
+//	    Utils.displayTimes("make groups",[t1,t2],true);
+	    if(debug) console.log("\tdone calling groupBy");
 	    if(groups == null || groups.max == 0) {
 		doTimes = false;
 		groups= {
@@ -1553,8 +1557,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
 	    groups.values.every((value,idx)=>{
-//		console.log("group:" + value +" #:" + groups.map[value].length);
 		let recordsAtTime = groups.map[value];
+		if(debug)
+		    console.log("group:" + value +" #:" + groups.map[value].length);
 		let img = RecordUtil.gridData(this.getId(),recordsAtTime,args);
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");

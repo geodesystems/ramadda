@@ -1507,6 +1507,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 		public void run() {
 		    PrintWriter      writer = new PrintWriter(out);
 		    try {
+
 			runInner(writer);
 		    } catch(Exception exc) {
 			writer.println("Error:" + exc);
@@ -1564,6 +1565,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 		    writer.println(",\"data\":[");
 		    int                   cnt    = 0;
 		    DoubleFunction<Float> scaler = getScaler(unit);
+		    long t1 = System.currentTimeMillis();
 		    for (int tIdx = 0; tIdx < theDates.size(); tIdx += timeStride) {
 			String dateString = theDates.get(tIdx).toString();
 			Array  a          = theGrid.readYXData(tIdx, 0);
@@ -1591,6 +1593,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 			    break;
 			}
 		    }
+		    long t2 = System.currentTimeMillis();
+		    //		    System.err.println("time:" + (t2-t1));
 		    writer.println("]}");
 		    writer.close();
 		    getCdmManager().returnGridDataset(path, gds);
