@@ -1117,8 +1117,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [minValue,maxValue];
 		}
  	    } else if(filterField.getType()=="date"){
-		var date1 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date1")).val();
-		var date2 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date2")).val();
+		var date1 = $("#" + this.display.getDomId("filterby_" + filterField.getId()+"_date1")).val();
+		var date2 = $("#" + this.display.getDomId("filterby_" + filterField.getId()+"_date2")).val();
 		if(date1!=null && date1.trim()!="") 
 		    date1 =  Utils.parseDate(date1);
 		else
