@@ -589,7 +589,6 @@ function DisplayAnimation(display, enabled) {
 
 function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix) {
     if(!prop) prop = "colorBy";
-
     if ( !propPrefix ) {
 	propPrefix = ["colorBy",""];
     } else if( !Array.isArray(propPrefix) ) {
@@ -618,7 +617,12 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.hasField = null;
     if(prop.getId) {
 	theField = prop;
-	this.hasField = theField;
+    } else {
+	theField = display.getFieldById(null, colorByAttr);
+    }
+
+    if(theField) {
+	this.hasField = theField!=null;
 	this.field = theField;
 	propPrefix = [theField.getId()+".",""];
 	colorByAttr =theField.getId();
@@ -924,14 +928,17 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    colors = c.split(",");
     }
 
+
+    if(!colors)
+	colors = this.display.getColorTable(true);
+    this.colors = colors;
+
     if(this.hasField && !colors) {
 	this.index = -1;
 	return;
     }
 
-    if(!colors)
-	colors = this.display.getColorTable(true);
-    this.colors = colors;
+
 
     if (!this.colors && this.display.colors && this.display.colors.length > 0) {
         this.colors = source.colors;
@@ -953,9 +960,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
             }
 	}
     }
-    if(this.field)
-	if (this.field.isString()) this.isString = true;
+
+    if(this.field && this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
+
 
 
     this.stringMap = this.display.getColorByMap(colorByMapProp);

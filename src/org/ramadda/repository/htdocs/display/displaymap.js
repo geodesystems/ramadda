@@ -2220,7 +2220,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
 		    } else  if(pointIcon) {
-			console.log("R:" + props.pointRadius);
 			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
 		    } else {
 			if(!props.graphicName)

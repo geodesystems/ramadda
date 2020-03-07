@@ -589,7 +589,6 @@ function DisplayAnimation(display, enabled) {
 
 function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix) {
     if(!prop) prop = "colorBy";
-
     if ( !propPrefix ) {
 	propPrefix = ["colorBy",""];
     } else if( !Array.isArray(propPrefix) ) {
@@ -618,7 +617,12 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.hasField = null;
     if(prop.getId) {
 	theField = prop;
-	this.hasField = theField;
+    } else {
+	theField = display.getFieldById(null, colorByAttr);
+    }
+
+    if(theField) {
+	this.hasField = theField!=null;
 	this.field = theField;
 	propPrefix = [theField.getId()+".",""];
 	colorByAttr =theField.getId();
@@ -924,14 +928,17 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    colors = c.split(",");
     }
 
+
+    if(!colors)
+	colors = this.display.getColorTable(true);
+    this.colors = colors;
+
     if(this.hasField && !colors) {
 	this.index = -1;
 	return;
     }
 
-    if(!colors)
-	colors = this.display.getColorTable(true);
-    this.colors = colors;
+
 
     if (!this.colors && this.display.colors && this.display.colors.length > 0) {
         this.colors = source.colors;
@@ -953,9 +960,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
             }
 	}
     }
-    if(this.field)
-	if (this.field.isString()) this.isString = true;
+
+    if(this.field && this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
+
 
 
     this.stringMap = this.display.getColorByMap(colorByMapProp);
@@ -8396,16 +8404,16 @@ function BaseFilter(display,properties) {
 function BoundsFilter(display, properties) {
     RamaddaUtil.inherit(this, new BaseFilter(display, properties));
     $.extend(this, {
-	isRecordOk: function(display, record, values) {
-	if(this.display.filterBounds && record.hasLocation()) {
-	    var b = this.display.filterBounds;
-	    var lat = record.getLatitude();
-	    var lon = record.getLongitude();
-	    if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
-		return false;
-	}
-        return true;
-    },
+	isRecordOk: function(record) {
+	    if(this.display.filterBounds && record.hasLocation()) {
+		var b = this.display.filterBounds;
+		var lat = record.getLatitude();
+		var lon = record.getLongitude();
+		if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
+		    return false;
+	    }
+            return true;
+	},
     });
 }
 
@@ -18093,6 +18101,10 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		    obj.icon = r.getValue(imageField.getIndex());
 		data.push(obj);
 	    });
+	    if(data.length==0) {
+		this.setContents(this.getMessage("No data"));
+		return;
+	    }
 //	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),bubbleTestData);
 	    let colors =  this.getColorTable(true);
 	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),data,
@@ -26645,7 +26657,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
 		    } else  if(pointIcon) {
-			console.log("R:" + props.pointRadius);
 			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
 		    } else {
 			if(!props.graphicName)

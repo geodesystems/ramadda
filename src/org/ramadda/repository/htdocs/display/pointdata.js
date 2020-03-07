@@ -1048,16 +1048,16 @@ function BaseFilter(display,properties) {
 function BoundsFilter(display, properties) {
     RamaddaUtil.inherit(this, new BaseFilter(display, properties));
     $.extend(this, {
-	isRecordOk: function(display, record, values) {
-	if(this.display.filterBounds && record.hasLocation()) {
-	    var b = this.display.filterBounds;
-	    var lat = record.getLatitude();
-	    var lon = record.getLongitude();
-	    if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
-		return false;
-	}
-        return true;
-    },
+	isRecordOk: function(record) {
+	    if(this.display.filterBounds && record.hasLocation()) {
+		var b = this.display.filterBounds;
+		var lat = record.getLatitude();
+		var lon = record.getLongitude();
+		if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
+		    return false;
+	    }
+            return true;
+	},
     });
 }
 

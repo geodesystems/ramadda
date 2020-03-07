@@ -1332,6 +1332,10 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		    obj.icon = r.getValue(imageField.getIndex());
 		data.push(obj);
 	    });
+	    if(data.length==0) {
+		this.setContents(this.getMessage("No data"));
+		return;
+	    }
 //	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),bubbleTestData);
 	    let colors =  this.getColorTable(true);
 	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),data,
