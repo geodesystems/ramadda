@@ -1662,9 +1662,10 @@ var RecordUtil = {
 	    map:{},
 	}
 
-	let key;
-	let label;
+
 	records.forEach((r,idx)=>{
+	    let key;
+	    let label = null;
 	    let date = r.getDate();
 	    //	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
