@@ -2053,3 +2053,8 @@ table.dataTable tfoot td {
     margin:10px;
 
 }
+
+
+.google-visualization-table-td, .google-visualization-table-table th, .google-visualization-table-table td {
+    padding:0px;
+}

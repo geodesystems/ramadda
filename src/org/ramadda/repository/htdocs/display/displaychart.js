@@ -777,6 +777,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	getFormatNumbers: function() {
 	    return false;
 	},
+        getDataTableValueGetter: function() {
+	    return (v)=>{return v;}
+	},
+
+
+
         makeDataTable: function(dataList, props, selectedFields) {
 	    let debug =displayDebug.makeDataTable;
 	    let debugRows = 3;
@@ -787,6 +793,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
+	    let valueGetter = this.getDataTableValueGetter();
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -1082,7 +1089,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    hasColorByValue  = true;
 		    colorByValue = value;
                     didColorBy = true;
-		    color =  colorBy.getColor(value, theRecord);
+		    color =  colorBy.getColorFromRecord(theRecord);
                 }
 
                 row = row.slice(0);
@@ -1121,7 +1128,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tooltip = tt;
 		}
 		tooltip = HtmlUtils.div(["style","padding:8px;"],tooltip);
-
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
 		    console.log("row:");
@@ -1131,9 +1137,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(forceStrings) {
 			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
 		    }
-
 		    if(j>0 && fixedValueS) {
-			newRow.push(fixedValueN);
+			newRow.push(valueGetter(fixedValueN, theRecord));
 			if(debug && rowIdx<debugRows)
 			    console.log("\t fixed:" + fixedValueN);
 		    } else {
@@ -1149,7 +1154,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    console.log("\t value:" + value +" " + (typeof value));
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";
-			newRow.push(value);
+			newRow.push(valueGetter(value, theRecord));
 		    }
                     if (j == 0 && props.includeIndex) {
 			/*note to self - an inline comment breaks the minifier 
@@ -1530,9 +1535,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
 //	    console.log(JSON.stringify(this.chartOptions, null, 2));
+	    var dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
-	    var dataTable = this.makeDataTable(dataList, props, selectedFields);
             if (!dataTable) {
                 this.setContents(this.getMessage("No data available"));
                 return null;
@@ -2458,6 +2463,27 @@ function TableDisplay(displayManager, id, properties) {
         defaultSelectedToAll: function() {
             return true;
         },
+        getDataTableValueGetter: function() {
+	    let unhighlightColor = this.getProperty("unhighlightColor","#fff");
+	    let highlightColor = this.getProperty("highlightColor","#FFFFCC");
+	    return  (v,record)=>{
+		let f = v;
+		if(v.f) {
+		    f = v.f;
+		    v = v.v;
+		}
+		if(!this.highlightFilter || !record) {
+		    f = HU.div(["style","padding:4px;"],f)
+		} else {
+		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
+		    f = HU.div(["style","padding:4px;background:" + c+";"],f)
+		}
+		return {
+		    v:v,
+		    f:f
+		};
+	    }
+	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
 	    let expandedHeight  = this.getProperty("expandedHeight");
 	    if(!expandedHeight) {
@@ -2584,7 +2610,7 @@ function BubbleDisplay(displayManager, id, properties) {
             return HtmlUtils.div(divAttrs, "");
         },
 
-        makeDataTable: function(dataList, props, selectedFields) {
+        makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let debug =displayDebug.makeDataTable;
 	    if(debug) {
 		console.log(this.type+" makeDataTable #records:" + dataList.length);
@@ -2597,18 +2623,36 @@ function BubbleDisplay(displayManager, id, properties) {
 		a[0].push("");
 	    tmp.push(a[0]);
 	    //Remove nans
+	    this.didUnhighlight = false;
+	    let minColorValue = Number.MAX_SAFE_INTEGER;
+	    for(var i=1;i<a.length;i++) {
+		var tuple = a[i];
+		while(tuple.length<5) {
+		    tuple.push(1);
+		}
+		minColorValue = Math.min(minColorValue, tuple[3]);
+	    }
+
+
 	    for(var i=1;i<a.length;i++) {
 		var tuple = a[i];
 		while(tuple.length<5)
 		    tuple.push(1);
-
 		if(debug && i<5)
 		    console.log("\tdata:" + tuple);
 		var ok = true;
 		for(j=1;j<tuple.length && ok;j++) {
 		    if(isNaN(tuple[j])) ok = false;
 		}
-		if(ok)
+		//If highlighting and have color then set to NaN
+		if(this.highlightFilter) {
+		    let unhighlightColor = this.getProperty("unhighlightColor","#eee");
+		    if(dataList[i].record && !dataList[i].record.isHighlight(this)) {
+			this.didUnhighlight = true;
+			tuple[3] =minColorValue-0.111;
+		    }
+		}
+		if(ok) 
 		    tmp.push(tuple);
 	    }
             return google.visualization.arrayToDataTable(tmp);
@@ -2623,7 +2667,6 @@ function BubbleDisplay(displayManager, id, properties) {
             if (chartOptions.colors) {
                 chartOptions.colors = Utils.getColorTable("rainbow", true);
             }
-
 	    $.extend(chartOptions.chartArea, {
                 left: this.getProperty("chartLeft", this.chartDimensions.left),
                 right: this.getProperty("chartRight", this.chartDimensions.right),
@@ -2642,8 +2685,13 @@ function BubbleDisplay(displayManager, id, properties) {
                 }
             }
 	    var colorTable = this.getColorTable(true);
-	    if(colorTable)
+	    if(colorTable) {
 		chartOptions.colorAxis.colors = colorTable;
+		if(this.didUnhighlight) {
+		    chartOptions.colorAxis.colors = [...chartOptions.colorAxis.colors];
+		    chartOptions.colorAxis.colors.unshift(this.getProperty("unhighlightColor","#eee"));
+		}
+	    }
 
             chartOptions.bubble = {
                 textStyle: {
@@ -2651,6 +2699,7 @@ function BubbleDisplay(displayManager, id, properties) {
                 },
                 stroke: "#666"
             };
+
 
             header = this.getDataValues(dataList[0]);
 	    chartOptions.hAxis = chartOptions.hAxis||{};
@@ -2685,7 +2734,6 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
 
 //	    console.log(JSON.stringify(chartOptions,null,2));
-	    //	    console.log(JSON.stringify(chartOptions.hAxis,null,2));
 
             return new google.visualization.BubbleChart(chartDiv); 
         }

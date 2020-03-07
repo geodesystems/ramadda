@@ -64,6 +64,7 @@ var ID_REQUEST_PROPERTIES = "request_properties";
 let ID_PAGE_COUNT = "pagecount";
 let ID_PAGE_PREV = "pageprev";
 let ID_PAGE_NEXT = "pagenext";
+let ID_FILTER_HIGHLIGHT = "filterhighlight";
 let ID_FILTER_DATE = "filterdate";
 var CATEGORY_MISC = "Misc";
 
@@ -856,6 +857,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    });
         },
+	getUnhighlightColor: function() {
+	    return this.getProperty("unhighlightColor","#eee");
+	},
 	getColorList:function() {
 	    if(this.colorList && this.colorList.length>0) {
 		return this.colorList;
@@ -1985,6 +1989,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	filterData: function(records, fields, doGroup, skipFirst) {
 	    let debug = displayDebug.filterData;
+	    let highlight = this.highlightFilter;
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -2043,10 +2048,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+	    records.forEach(r=>{
+		r.clearHighlight(this);
+	    });
+
 	    records = records.filter(record=>{
                 var date = record.getDate();
 		if(!date) return true;
-                return this.dateInRange(date);
+		return this.dateInRange(date);
 	    });
 	    if(debug)   console.log("filter Fields:" + this.filters.length +" r:" + records.length);
 
@@ -2062,8 +2071,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(skipFirst && rowIdx==0) {
 			ok = true;
 		    }
-		    if(ok) {
-			newData.push(records[rowIdx]);
+		    if(highlight) {
+			newData.push(record);
+			record.setHighlight(this, ok);
+		    } else {
+			if(ok) {
+			    newData.push(record);
+			}
 		    }
 		});
 
@@ -3834,6 +3848,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+	    if(this.getProperty("showFilterHighlight")) {
+		this.highlightFilter = false;
+		let enums =[["filter","Filter"],["highlight","Highlight"]];
+		header2 += HtmlUtils.select("",[ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums) + SPACE2;
+	    }
+
+
 	    let dataFilterIds = [];
 	    this.getDataFilters().map(f=>{
 		if(!f.label) return;
@@ -4141,6 +4162,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		//		HtmlUtils.initSelect(this.jq("colorbyselect"));
 		//		HtmlUtils.initSelect(this.jq("		//		HtmlUtils.initSelect(this.jq("chartfields"));
+
+		this.jq(ID_FILTER_HIGHLIGHT).change(function() {
+		    _this.highlightFilter = $(this).val()=="highlight";
+		    _this.haveCalledUpdateUI = false;
+		    _this.updateUI();
+		    
+		});
+
+
+
 
 		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
 		    inputFunc($(this));

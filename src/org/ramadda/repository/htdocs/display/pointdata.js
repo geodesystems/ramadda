@@ -693,13 +693,15 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 	    return newRecord;
 	},
 	isHighlight: function(display) {
-	    return highlightForDisplay[highlight];
+	    return this.highlightForDisplay[display];
 	},
-	setHighlight:function(display) {
-	    highlightForDisplay[display] = true;
+	setHighlight:function(display, value) {
+	    if(!value || this.highlightForDisplay[display] == null) {
+		this.highlightForDisplay[display] = value;
+	    }
 	},
 	clearHighlight:function(display) {
-	    highlightForDisplay[display] = false;
+	    delete this.highlightForDisplay[display];
 	},
 	toString: function() {
 	    return "data:"  + data;

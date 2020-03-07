@@ -1752,7 +1752,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
             let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
+	    let unhighlightFillColor = this.getUnhighlightColor();
+	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#ccc");
+	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
 	    if(this.getProperty("scaleRadius")) {
+	
 		let seen ={};
 		let numLocs = 0;
 		points.every(p=>{
@@ -2109,6 +2113,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    hasColorByValue  = true;
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
+
+		if(this.highlightFilter) {
+		    if(!record.isHighlight(this)) {
+			props.fillColor =  unhighlightFillColor;
+			props.strokeColor =  unhighlightStrokeColor;
+			if(unhighlightRadius>0)
+			    props.pointRadius = unhighlightRadius;
+		    }
+		}
+
+
+
 
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];

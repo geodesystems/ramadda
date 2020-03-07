@@ -731,6 +731,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	},
 
 	getColorFromRecord: function(record, dflt) {
+	    if(this.display.highlightFilter && !record.isHighlight(this.display)) {
+		return this.display.getProperty("unhighlightColor","#eee");
+	    }
+
 	    if(this.colorThresholdField && this.display.selectedRecord) {
 		let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
 		let v2=record.getValue(this.colorThresholdField.getIndex());
@@ -752,6 +756,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    return this.index>=0;
 	},
 	getColor: function(value, pointRecord) {
+	    if(this.display.highlightFilter && pointRecord && !pointRecord.isHighlight(this.display)) {
+		return this.display.getUnhighlightColor();
+	    }
+
 	    var percent = 0;
             if (this.showPercent) {
                 var total = 0;

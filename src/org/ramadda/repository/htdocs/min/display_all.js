@@ -731,6 +731,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	},
 
 	getColorFromRecord: function(record, dflt) {
+	    if(this.display.highlightFilter && !record.isHighlight(this.display)) {
+		return this.display.getProperty("unhighlightColor","#eee");
+	    }
+
 	    if(this.colorThresholdField && this.display.selectedRecord) {
 		let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
 		let v2=record.getValue(this.colorThresholdField.getIndex());
@@ -752,6 +756,10 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	    return this.index>=0;
 	},
 	getColor: function(value, pointRecord) {
+	    if(this.display.highlightFilter && pointRecord && !pointRecord.isHighlight(this.display)) {
+		return this.display.getUnhighlightColor();
+	    }
+
 	    var percent = 0;
             if (this.showPercent) {
                 var total = 0;
@@ -1250,6 +1258,7 @@ var ID_REQUEST_PROPERTIES = "request_properties";
 let ID_PAGE_COUNT = "pagecount";
 let ID_PAGE_PREV = "pageprev";
 let ID_PAGE_NEXT = "pagenext";
+let ID_FILTER_HIGHLIGHT = "filterhighlight";
 let ID_FILTER_DATE = "filterdate";
 var CATEGORY_MISC = "Misc";
 
@@ -2042,6 +2051,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    });
         },
+	getUnhighlightColor: function() {
+	    return this.getProperty("unhighlightColor","#eee");
+	},
 	getColorList:function() {
 	    if(this.colorList && this.colorList.length>0) {
 		return this.colorList;
@@ -3171,6 +3183,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	filterData: function(records, fields, doGroup, skipFirst) {
 	    let debug = displayDebug.filterData;
+	    let highlight = this.highlightFilter;
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -3229,10 +3242,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+	    records.forEach(r=>{
+		r.clearHighlight(this);
+	    });
+
 	    records = records.filter(record=>{
                 var date = record.getDate();
 		if(!date) return true;
-                return this.dateInRange(date);
+		return this.dateInRange(date);
 	    });
 	    if(debug)   console.log("filter Fields:" + this.filters.length +" r:" + records.length);
 
@@ -3248,8 +3265,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(skipFirst && rowIdx==0) {
 			ok = true;
 		    }
-		    if(ok) {
-			newData.push(records[rowIdx]);
+		    if(highlight) {
+			newData.push(record);
+			record.setHighlight(this, ok);
+		    } else {
+			if(ok) {
+			    newData.push(record);
+			}
 		    }
 		});
 
@@ -5020,6 +5042,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+	    if(this.getProperty("showFilterHighlight")) {
+		this.highlightFilter = false;
+		let enums =[["filter","Filter"],["highlight","Highlight"]];
+		header2 += HtmlUtils.select("",[ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums) + SPACE2;
+	    }
+
+
 	    let dataFilterIds = [];
 	    this.getDataFilters().map(f=>{
 		if(!f.label) return;
@@ -5327,6 +5356,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		//		HtmlUtils.initSelect(this.jq("colorbyselect"));
 		//		HtmlUtils.initSelect(this.jq("		//		HtmlUtils.initSelect(this.jq("chartfields"));
+
+		this.jq(ID_FILTER_HIGHLIGHT).change(function() {
+		    _this.highlightFilter = $(this).val()=="highlight";
+		    _this.haveCalledUpdateUI = false;
+		    _this.updateUI();
+		    
+		});
+
+
+
 
 		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
 		    inputFunc($(this));
@@ -8040,13 +8079,15 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 	    return newRecord;
 	},
 	isHighlight: function(display) {
-	    return highlightForDisplay[highlight];
+	    return this.highlightForDisplay[display];
 	},
-	setHighlight:function(display) {
-	    highlightForDisplay[display] = true;
+	setHighlight:function(display, value) {
+	    if(!value || this.highlightForDisplay[display] == null) {
+		this.highlightForDisplay[display] = value;
+	    }
 	},
 	clearHighlight:function(display) {
-	    highlightForDisplay[display] = false;
+	    delete this.highlightForDisplay[display];
 	},
 	toString: function() {
 	    return "data:"  + data;
@@ -14223,6 +14264,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	getFormatNumbers: function() {
 	    return false;
 	},
+        getDataTableValueGetter: function() {
+	    return (v)=>{return v;}
+	},
+
+
+
         makeDataTable: function(dataList, props, selectedFields) {
 	    let debug =displayDebug.makeDataTable;
 	    let debugRows = 3;
@@ -14233,6 +14280,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
+	    let valueGetter = this.getDataTableValueGetter();
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -14528,7 +14576,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    hasColorByValue  = true;
 		    colorByValue = value;
                     didColorBy = true;
-		    color =  colorBy.getColor(value, theRecord);
+		    color =  colorBy.getColorFromRecord(theRecord);
                 }
 
                 row = row.slice(0);
@@ -14567,7 +14615,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tooltip = tt;
 		}
 		tooltip = HtmlUtils.div(["style","padding:8px;"],tooltip);
-
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
 		    console.log("row:");
@@ -14577,9 +14624,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(forceStrings) {
 			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
 		    }
-
 		    if(j>0 && fixedValueS) {
-			newRow.push(fixedValueN);
+			newRow.push(valueGetter(fixedValueN, theRecord));
 			if(debug && rowIdx<debugRows)
 			    console.log("\t fixed:" + fixedValueN);
 		    } else {
@@ -14595,7 +14641,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    console.log("\t value:" + value +" " + (typeof value));
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";
-			newRow.push(value);
+			newRow.push(valueGetter(value, theRecord));
 		    }
                     if (j == 0 && props.includeIndex) {
 			/*note to self - an inline comment breaks the minifier 
@@ -14976,9 +15022,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
 //	    console.log(JSON.stringify(this.chartOptions, null, 2));
+	    var dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
-	    var dataTable = this.makeDataTable(dataList, props, selectedFields);
             if (!dataTable) {
                 this.setContents(this.getMessage("No data available"));
                 return null;
@@ -15904,6 +15950,27 @@ function TableDisplay(displayManager, id, properties) {
         defaultSelectedToAll: function() {
             return true;
         },
+        getDataTableValueGetter: function() {
+	    let unhighlightColor = this.getProperty("unhighlightColor","#fff");
+	    let highlightColor = this.getProperty("highlightColor","#FFFFCC");
+	    return  (v,record)=>{
+		let f = v;
+		if(v.f) {
+		    f = v.f;
+		    v = v.v;
+		}
+		if(!this.highlightFilter || !record) {
+		    f = HU.div(["style","padding:4px;"],f)
+		} else {
+		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
+		    f = HU.div(["style","padding:4px;background:" + c+";"],f)
+		}
+		return {
+		    v:v,
+		    f:f
+		};
+	    }
+	},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
 	    let expandedHeight  = this.getProperty("expandedHeight");
 	    if(!expandedHeight) {
@@ -16030,7 +16097,7 @@ function BubbleDisplay(displayManager, id, properties) {
             return HtmlUtils.div(divAttrs, "");
         },
 
-        makeDataTable: function(dataList, props, selectedFields) {
+        makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let debug =displayDebug.makeDataTable;
 	    if(debug) {
 		console.log(this.type+" makeDataTable #records:" + dataList.length);
@@ -16043,18 +16110,36 @@ function BubbleDisplay(displayManager, id, properties) {
 		a[0].push("");
 	    tmp.push(a[0]);
 	    //Remove nans
+	    this.didUnhighlight = false;
+	    let minColorValue = Number.MAX_SAFE_INTEGER;
+	    for(var i=1;i<a.length;i++) {
+		var tuple = a[i];
+		while(tuple.length<5) {
+		    tuple.push(1);
+		}
+		minColorValue = Math.min(minColorValue, tuple[3]);
+	    }
+
+
 	    for(var i=1;i<a.length;i++) {
 		var tuple = a[i];
 		while(tuple.length<5)
 		    tuple.push(1);
-
 		if(debug && i<5)
 		    console.log("\tdata:" + tuple);
 		var ok = true;
 		for(j=1;j<tuple.length && ok;j++) {
 		    if(isNaN(tuple[j])) ok = false;
 		}
-		if(ok)
+		//If highlighting and have color then set to NaN
+		if(this.highlightFilter) {
+		    let unhighlightColor = this.getProperty("unhighlightColor","#eee");
+		    if(dataList[i].record && !dataList[i].record.isHighlight(this)) {
+			this.didUnhighlight = true;
+			tuple[3] =minColorValue-0.111;
+		    }
+		}
+		if(ok) 
 		    tmp.push(tuple);
 	    }
             return google.visualization.arrayToDataTable(tmp);
@@ -16069,7 +16154,6 @@ function BubbleDisplay(displayManager, id, properties) {
             if (chartOptions.colors) {
                 chartOptions.colors = Utils.getColorTable("rainbow", true);
             }
-
 	    $.extend(chartOptions.chartArea, {
                 left: this.getProperty("chartLeft", this.chartDimensions.left),
                 right: this.getProperty("chartRight", this.chartDimensions.right),
@@ -16088,8 +16172,13 @@ function BubbleDisplay(displayManager, id, properties) {
                 }
             }
 	    var colorTable = this.getColorTable(true);
-	    if(colorTable)
+	    if(colorTable) {
 		chartOptions.colorAxis.colors = colorTable;
+		if(this.didUnhighlight) {
+		    chartOptions.colorAxis.colors = [...chartOptions.colorAxis.colors];
+		    chartOptions.colorAxis.colors.unshift(this.getProperty("unhighlightColor","#eee"));
+		}
+	    }
 
             chartOptions.bubble = {
                 textStyle: {
@@ -16097,6 +16186,7 @@ function BubbleDisplay(displayManager, id, properties) {
                 },
                 stroke: "#666"
             };
+
 
             header = this.getDataValues(dataList[0]);
 	    chartOptions.hAxis = chartOptions.hAxis||{};
@@ -16131,7 +16221,6 @@ function BubbleDisplay(displayManager, id, properties) {
             chartOptions.vAxis.title = this.getProperty("vAxisTitle", header.length > 2 ? header[2] : null);
 
 //	    console.log(JSON.stringify(chartOptions,null,2));
-	    //	    console.log(JSON.stringify(chartOptions.hAxis,null,2));
 
             return new google.visualization.BubbleChart(chartDiv); 
         }
@@ -26195,7 +26284,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
             let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
+	    let unhighlightFillColor = this.getUnhighlightColor();
+	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#ccc");
+	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
 	    if(this.getProperty("scaleRadius")) {
+	
 		let seen ={};
 		let numLocs = 0;
 		points.every(p=>{
@@ -26552,6 +26645,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    hasColorByValue  = true;
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
+
+		if(this.highlightFilter) {
+		    if(!record.isHighlight(this)) {
+			props.fillColor =  unhighlightFillColor;
+			props.strokeColor =  unhighlightStrokeColor;
+			if(unhighlightRadius>0)
+			    props.pointRadius = unhighlightRadius;
+		    }
+		}
+
+
+
 
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];

@@ -1906,6 +1906,7 @@ var GuiUtils = {
 };
 
 
+var ID = "id";
 var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
