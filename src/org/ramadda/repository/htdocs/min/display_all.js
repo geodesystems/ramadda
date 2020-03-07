@@ -5079,7 +5079,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let filterBy = this.getProperty("filterFields","",true).split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
-	    let dateIds = [];
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
@@ -5185,7 +5184,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if(this.filters.length>0) {
 		this.filters.forEach(f=>{
 		    if(f.initDateWidget)
-			f.initDateWidget();
+			f.initDateWidget(inputFunc);
 		});
 
 
@@ -5372,14 +5371,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
                 this.jq("sizebyselect").change(function(){
 		    _this.sizeByFieldChanged($(this).val());
-		});
-
-
-		dateIds.map(id=>{
-		    $("#" + id).change(function(){
-			inputFunc($(this));
-		    });
-
 		});
 
 
@@ -7734,7 +7725,7 @@ function PointData(name, recordFields, records, url, properties) {
 		if(debug)
 		    console.log("\tdone making point data #records:" + newData.getRecords().length);
                 pointData = cacheObject.pointData = newData;
-//                cacheObject.pointData = pointData.initWith(newData);
+		//                cacheObject.pointData = pointData.initWith(newData);
 		if(data.properties) {
 		    display.applyRequestProperties(data.properties);
 		}
@@ -8456,8 +8447,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.display.getProperty(key, dflt);
 	},
 	prepareToFilter: function() {
-//	    if (prefix) pattern = prefix + value;
-//	    if (suffix) pattern = value + suffix;
+	    //	    if (prefix) pattern = prefix + value;
+	    //	    if (suffix) pattern = value + suffix;
 	    var value=null;
 	    var _values =[];
 	    var values=null;
@@ -8595,13 +8586,16 @@ function RecordFilter(display,filterFieldId, properties) {
 	    //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
-	initDateWidget: function() {
+	initDateWidget: function(inputFunc) {
 	    if(!this.hideFilterWidget) {
 		for(var i=0;i<this.dateIds.length;i++) {
-		    HtmlUtils.datePickerInit(this.dateIds[i]);
+		    let id = this.dateIds[i];
+		    HtmlUtils.datePickerInit(id);
+		    $("#" + id).change(function(){
+			inputFunc($(this));
+		    });
 		}
 	    }
-    
 	},
 	getWidget: function(fieldMap, bottom,records) {
 	    let debug = false;
@@ -8620,7 +8614,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    };
             let widget;
 	    let widgetId = this.getFilterId(filterField.getId());
-         if(filterField.getType() == "enumeration") {
+            if(filterField.getType() == "enumeration") {
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
 		let filterValues = this.getProperty(filterField.getId()+".filterValues");
@@ -8773,7 +8767,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			buttons+=HtmlUtils.div(["class","display-filter-item-label","id",this.display.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
 		    }
 		    bottom[0]+= HtmlUtils.div(["data-value",dfltValue,"class","display-filter-items","id",widgetId,"isButton","true", "fieldId",
-					    					    filterField.getId()], buttons);
+					       filterField.getId()], buttons);
 		    if(debug) console.log("\treturn 1");
 		    return "";
 		} else if(this.getProperty(filterField.getId() +".filterCheckbox")) {
@@ -8842,7 +8836,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			seen[value] = true;
 			values.push(value);
 		    }	
-	});
+		});
             }
 	    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel()+":");
 	    var suffix =   this.getProperty(filterField.getId()+".filterSuffix","");
@@ -9017,8 +9011,8 @@ var RecordUtil = {
 	    let key;
 	    let label = null;
 	    let date = r.getDate();
-//	    console.log (field +" " + r.getLatitude());
-//	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
+	    //	    console.log (field +" " + r.getLatitude());
+	    //	    if(debug && idx>0 && (idx%10000)==0) console.log("\trecord:" + idx);
 	    if(field) {
 		if(field=="latlon") {
 		    key = label = r.getLatitude() +"/" + r.getLongitude(); 
@@ -9250,17 +9244,17 @@ var RecordUtil = {
 	    let x2=x+length;
 	    let y2=y;
 	    let arrowLength = opts.display.getProperty("arrowLength",-1);
-/*
-	    if(opts.angleBy && opts.angleBy.index>=0) {
-		let perc = opts.angleBy.getValuePercent(v);
-		let degrees = (360*perc);
-		let rads = degrees * (Math.PI/360);
-		x2 = length*Math.cos(rads)-0* Math.sin(rads);
-		y2 = 0*Math.cos(rads)-length* Math.sin(rads);
-		x2+=x;
-		y2+=y;
-	    }
-*/
+	    /*
+	      if(opts.angleBy && opts.angleBy.index>=0) {
+	      let perc = opts.angleBy.getValuePercent(v);
+	      let degrees = (360*perc);
+	      let rads = degrees * (Math.PI/360);
+	      x2 = length*Math.cos(rads)-0* Math.sin(rads);
+	      y2 = 0*Math.cos(rads)-length* Math.sin(rads);
+	      x2+=x;
+	      y2+=y;
+	      }
+	    */
 	    if(opts.colorBy && opts.colorBy.index>=0) {
                 let perc = opts.colorBy.getValuePercent(v);
                 let degrees = (180*perc)+90;
@@ -9313,7 +9307,7 @@ var RecordUtil = {
 		ctx.lineTo(crx + sizex * Math.cos(quarter+side * 2 * Math.PI / 6), cry + sizey * Math.sin(quarter+side * 2 * Math.PI / 6));
 	    }
 	    ctx.strokeStyle = "#000";
-//	    ctx.fill();
+	    //	    ctx.fill();
 	    ctx.stroke();
 
 	} else {
@@ -9323,7 +9317,7 @@ var RecordUtil = {
 	    cry=y
 	    if(opts.stroke)
 		ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-//	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+	    //	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
 	    else
 		ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
 	}
@@ -9349,7 +9343,7 @@ var RecordUtil = {
 	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
 	    let row = result[rowIdx];
 	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
-//		if(isNaN(row[colIdx])) continue;
+		//		if(isNaN(row[colIdx])) continue;
 		if(isNaN(row[colIdx])) row[colIdx] = 0;
 		let total =[0];
 		let goodones =[0];
@@ -9414,7 +9408,7 @@ var RecordUtil = {
 		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
 		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
 		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067]
-		]
+	    ]
 	}
 	let a = kernels[type];
 	if(!a) {
@@ -9539,8 +9533,8 @@ var RecordUtil = {
 	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
 	let canvas = document.getElementById(id);
 	var ctx = canvas.getContext("2d");
-//	ctx.strokeStyle= "#000";
-//	ctx.strokeRect(0,0,canvas.width,canvas.height);
+	//	ctx.strokeStyle= "#000";
+	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;
@@ -9606,7 +9600,7 @@ var RecordUtil = {
 		if(!Utils.isDefined(opts.display.getProperty("colorByMin")))  {
 		    opts.colorBy.setRange(mm.min,mm.max);
 		}  else {
-//		    console.log("color by range is already set:" +opts.display.getProperty("colorByMin"));
+		    //		    console.log("color by range is already set:" +opts.display.getProperty("colorByMin"));
 		}
 		opts.colorBy.index=0;
 	    }
@@ -9771,8 +9765,8 @@ var RecordUtil = {
                     east = Math.max(east, record.getLongitude());
                 }
                 if (record.getLongitude() < -180 || record.getLatitude() > 90) {
-//		    if(errorCnt++<50)
-//			console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
+		    //		    if(errorCnt++<50)
+		    //			console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                 }
 		if(points)
                     points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
@@ -10075,8 +10069,8 @@ function CsvUtil() {
 		}
 		newFields.push(newField);
 	    });
-//	    console.log("key fields:" + keyFields);
-//	    console.log("value fields:" + valueFields);
+	    //	    console.log("key fields:" + keyFields);
+	    //	    console.log("value fields:" + valueFields);
 	    if(op == "count") {
 		newFields.push(new RecordField({
 		    id:"count",
@@ -10168,14 +10162,14 @@ function CsvUtil() {
 	    if(!uniqueField) throw new Error("No uniqueField");
 	    if(valueFields.length==0) throw new Error("No value fields");
 	    /*
-		newFields.push(new RecordField({
-		    id:"count",
-		    index:newFields.length,
-		    label:"Count",
-		    type:"double",
-		    chartable:true,
-		}));
-*/
+	      newFields.push(new RecordField({
+	      id:"count",
+	      index:newFields.length,
+	      label:"Count",
+	      type:"double",
+	      chartable:true,
+	      }));
+	    */
 	    let newColumns = [];
 	    let newColumnMap = {};
 	    let uniqueToRecords = {};
@@ -10326,7 +10320,7 @@ var DataUtils = {
 		    }
 		    arg = arg.trim();
 		    value = value.trim();
-//		    console.log("arg:" + arg +" v:" + value);
+		    //		    console.log("arg:" + arg +" v:" + value);
 		    //Strip off quotes
 		    value = value.replace(/^'/g,"").replace(/'$/g,"");
 		    if(arg!="") {
@@ -10402,13 +10396,13 @@ var DataUtils = {
 				if(f.isFieldLatitude() || f.isFieldLongitude()) return true;
 			    if(f.isNumeric()) {
 				let v  = r.getValue(f.getIndex());
-//				console.log("V:" + v);
+				//				console.log("V:" + v);
 				ok  =!isNaN(v);
 			    }
 			    return ok;
 			});
-//			if(!ok) 
-//			    console.log("****** V:" +value + " v:" + this.value);
+			//			if(!ok) 
+			//			    console.log("****** V:" +value + " v:" + this.value);
 			return ok;
 		    } else if(this.type == "notmatch") {
 			return  !String(value).match(this.value);

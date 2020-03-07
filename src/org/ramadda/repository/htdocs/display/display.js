@@ -3893,7 +3893,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             let filterBy = this.getProperty("filterFields","",true).split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
-	    let dateIds = [];
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
@@ -3999,7 +3998,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if(this.filters.length>0) {
 		this.filters.forEach(f=>{
 		    if(f.initDateWidget)
-			f.initDateWidget();
+			f.initDateWidget(inputFunc);
 		});
 
 
@@ -4186,14 +4185,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
                 this.jq("sizebyselect").change(function(){
 		    _this.sizeByFieldChanged($(this).val());
-		});
-
-
-		dateIds.map(id=>{
-		    $("#" + id).change(function(){
-			inputFunc($(this));
-		    });
-
 		});
 
 
