@@ -19303,9 +19303,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		footerTemplate = this.applyRecordTemplate(row,fields,footerTemplate);
 	    }
 
-	    if(this.filterFields) {
-		for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
-		    var f = this.filterFields[filterIdx];
+	    if(this.filters) {
+		for(var filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
+		    let filter = this.filters[filterIdx];
+		    if(!filter.field)continue;
+		    let f = filter.field;
 		    if(f.isNumeric()) {
 			var min = $("#" + this.getDomId("filterby_" + f.getId()+"_min")).val().trim();
 			var max = $("#" + this.getDomId("filterby_" + f.getId()+"_max")).val().trim();
@@ -20621,7 +20623,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (pattern && pattern.length == 0) pattern = null;
 	    if(pattern) pattern = pattern.replace(/"/g,"&quot;");
 	    var input = "";
-	    if(!this.filterFields || this.filterFields.length==0) 
+	    if(!this.filters || this.filters.length==0) 
 		input = " " + HtmlUtils.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", "id", this.getDomId(ID_SEARCH)]);
 	    this.showShrink = this.getProperty("showShrink",false);
 	    if(this.showShrink) {
