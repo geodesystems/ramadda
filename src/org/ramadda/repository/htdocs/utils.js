@@ -487,6 +487,17 @@ var Utils = {
 
         return date.getUTCFullYear() + "-" + m + "-" + d+" " + hhmm;
     },
+    formatDateYYYYMMDDHH: function(date, options, args) {
+	if(isNaN(date.getUTCMonth())) return "Unknown";
+	var m = (date.getUTCMonth() + 1);
+	if(m<10) m = "0" + m;
+	var d = date.getUTCDate();
+	if(d<10) d = "0" +d;
+	var h = date.getHours()+1;
+	if(h<10) h = "0" + h;
+        return date.getUTCFullYear() + "-" + m + "-" + d+" " + hh;
+    },
+
     formatDateYYYYMM: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
 	var m = (date.getUTCMonth() + 1);
@@ -527,6 +538,8 @@ var Utils = {
             return Utils.formatDateYYYY(date);
         } else if (fmt == "yyyymmdd") {
             return Utils.formatDateYYYYMMDD(date);
+	} else if (fmt == "yyyymmddhh") { 
+	    return Utils.formatDateYYYYMMDDHH(date);
 	} else if (fmt == "yyyymmddhhmm") { 
 	    return Utils.formatDateYYYYMMDDHHMM(date);
 	} else if (fmt == "yyyymm") {
