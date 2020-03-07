@@ -2041,6 +2041,7 @@ table.dataTable tfoot td {
 
 .display-dotstack-dot {
     margin:1px;
+    cursor:pointer;
 }
 
 .display-dotstack-block {

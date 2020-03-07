@@ -75,7 +75,6 @@ var PROP_FIELDS = "fields";
 var PROP_LAYOUT_HERE = "layoutHere";
 var PROP_HEIGHT = "height";
 var PROP_WIDTH = "width";
-var FILTER_ALL = "-all-";
 var HIGHLIGHT_COLOR = "yellow";
 
 function initRamaddaDisplays() {
@@ -628,7 +627,7 @@ function DisplayThing(argId, argProperties) {
             this.properties[key] = null;
         },
         setProperty: function(key, value) {
-            this[key] = value;
+//            this[key] = value;
             this.properties[key] = value;
         },
         getSelfProperty: function(key, dflt) {
@@ -651,6 +650,12 @@ function DisplayThing(argId, argProperties) {
 	},
         formatNumberInner: function(number) {
             if (!this.getProperty("format", true)) return number;
+	    let scale = this.getProperty("formatNumberScale");
+            if (Utils.isDefined(scale))
+		number = number*scale;
+	    let decimals = this.getProperty("formatNumberDecimals");
+            if (Utils.isDefined(decimals))
+		return number_format(number, decimals);
             if (this.getProperty("formatNumberComma", false)) 
 		return Utils.formatNumberComma(number);
             return Utils.formatNumber(number);
@@ -700,20 +705,20 @@ function DisplayThing(argId, argProperties) {
 	},
         getPropertyInner: function(key, dflt,skipThis) {	    
 	    let debug = displayDebug.getProperty;
-	    //	    let debug = key== "colorTable";
+	    //let debug = key== "colorBy";
 	    if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
 	    if(this.dynamicProperties) {
 		if(Utils.isDefined(this.dynamicProperties[key])) {
 		    return this.dynamicProperties[key];
 		}
 	    }
-            if(!skipThis && Utils.isDefined(this[key])) {
-		if(debug) console.log("\tgetProperty-1:" + this[key]);
-                return this[key];
-            }
+//            if(!skipThis && Utils.isDefined(this[key])) {
+//		if(debug) console.log("\tgetProperty-1:" + this[key]);
+//                return this[key];
+//            }
             var value = this.properties[key];
             if (value != null) {
-		if(debug) console.log("\tgetProperty-2");
+		if(debug) console.log("\tgetProperty-2:" + value);
                 return value;
             }
 	    var fromParent=null;
@@ -1787,28 +1792,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         requiresGrouping:  function() {
             return false;
         },
-	getFilterFieldValues:function(field) {
-	    var element =$("#" + this.getDomId("filterby_" + field.getId()));
-	    var value=null;
-	    if(element.attr("isCheckbox")) {
-		if(element.is(':checked')) {
-		    value = element.attr("onValue");
-		} else {
-		    value = element.attr("offValue");
-		}
-	    } else if(element.attr("isButton")) {
-		value = element.attr("data-value");
-	    } else {
-		value = element.val();
-	    }
-	    if(!value) value = FILTER_ALL;
-	    if(!Array.isArray(value)) value = value.split(",");
-	    var tmp = [];
-	    value.forEach(v=>tmp.push(v.trim()));
-	    value = tmp;
-	    //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
-	    return value;
-	},
 	makeTree: function(records) {
 	    if(records==null)  {
 		var pointData = this.getData();
@@ -2012,7 +1995,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    } 
 
 
-
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
 		let date = $("#"+ this.getFilterId(ID_FILTER_DATE)).val();
@@ -2061,169 +2043,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-
-
-	    var filters = {};
-	    var allIsUsed = false;
-	    for(var i=0;i<this.filterFields.length;i++) {
-		var filterField = this.filterFields[i];
-		if(filterField.isString()) {
-		    var values = this.getFilterFieldValues(filterField);
-		    if(!values && !Array.isArray(values)) values = [values];
-		    if(values.includes(FILTER_ALL)) {
-			allIsUsed = true;
-			break;
-		    }
-		}
-	    }
-
 	    records = records.filter(record=>{
                 var date = record.getDate();
 		if(!date) return true;
                 return this.dateInRange(date);
 	    });
+	    if(debug)   console.log("filter Fields:" + this.filters.length +" r:" + records.length);
 
-
-	    if(debug)   console.log("filter Fields:" + this.filterFields.length +" r:" + records.length);
-
-	    if(this.filterFields.length) {
+	    if(this.filters.length) {
 		let newData = [];
-		for(var i=0;i<this.filterFields.length;i++) {
-		    var filterField = this.filterFields[i];
-		    var prefix = this.getProperty(filterField.getId() +".filterPrefix");
-		    var suffix = this.getProperty(filterField.getId() +".filterSuffix");
-		    if (prefix) pattern = prefix + value;
-		    if (suffix) pattern = value + suffix;
-		    var value=null;
-		    var values=null;
-		    var _values =[];
-		    var matchers =[];
-		    var values=null;
-		    if(filterField.isNumeric()) {
-			var minField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_min"));
-			var maxField = $("#" + this.getDomId("filterby_" + filterField.getId()+"_max"));
-			var minValue = parseFloat(minField.val().trim());
-			var maxValue = parseFloat(maxField.val().trim());
-			var dfltMinValue = parseFloat(minField.attr("data-min"));
-			var dfltMaxValue = parseFloat(maxField.attr("data-max"));
-			//		    console.log(this.type +" filterData:" + filterField.getId() +" " +minValue +" " + maxValue);
-
-			if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
-			    value = [minValue,maxValue];
-			}
- 		    } else if(filterField.getType()=="date"){
-			var date1 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date1")).val();
-			var date2 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date2")).val();
-			if(date1!=null && date1.trim()!="") 
-			    date1 =  Utils.parseDate(date1);
-			else
-			    date1=null;
-			if(date2!=null && date2.trim()!="") 
-			    date2 =  Utils.parseDate(date2);
-			else
-			    date2=null;
-			if(date1!=null || date2!=null)
-			    value = [date1,date2]; 
-		    }  else {
-			values = this.getFilterFieldValues(filterField);
-			if(!values && !Array.isArray(values)) values = [values];
-			if(values.length==0) continue;
-			var tmp = [];
-			values.map(v=>{
-			    tmp.push(v.replace(/_comma_/g,","));
-			});
-			values = tmp;
-			values.map(v=>{
-			    _values.push((""+v).toLowerCase());
-			    try {
-				matchers.push(new TextMatcher(v));
-			    } catch(skipIt){}
-			});
-		    }
-		    var filterStartsWith = this.getProperty(filterField.getId() +".filterStartsWith",false);
-		    var anyValues = value!=null;
-		    if(!anyValues && values) {
-			values.map(v=>{if(v.length>0 && v!= FILTER_ALL)anyValues = true});
-		    }
-		    if(anyValues) {
-			filters[filterField.getId()] = {
-			    value:value,
-			    values:values,
-			    matchers:matchers,
-			    _values:_values,
-			    anyValues:anyValues,
-			    startsWith:filterStartsWith,
-			    
-			};
-
-		    }
-		}
-
-		//	    console.log(this.type +" filterData:" + JSON.stringify(filters,null,2));
-		for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
-		    var record = records[rowIdx];
-		    if(this.filterBounds && record.hasLocation()) {
-			var b = this.filterBounds;
-			var lat = record.getLatitude();
-			var lon = record.getLongitude();
-			if(lat>b.top || lat<b.bottom || lon <b.left || lon>b.right)
-			    continue;
-		    }
-		    var row = this.getDataValues(record);
+		this.filters.forEach(f=>f.prepareToFilter());
+		records.forEach((record,rowIdx)=>{
 		    var ok = true;
-		    for(var i=0;i<this.filterFields.length && ok;i++) {
-			var filterField = this.filterFields[i];
-			var filter = filters[filterField.getId()];
-			if(filter==null) continue;
-			var rowValue = row[filterField.getIndex()];
-			if(filterField.getType() == "enumeration") {
-			    ok = filter.values.includes(""+rowValue);
-			} else if(filterField.isNumeric()) {
-			    if(isNaN(filter.value[0]) && isNaN(filter.value[0])) continue;
-			    if(!isNaN(filter.value[0]) && rowValue<filter.value[0]) ok = false;
-			    else if(!isNaN(filter.value[1]) && rowValue>filter.value[1]) ok = false;
-			} else if(filterField.getType()=="date"){
-			    if(filter.value &&  Array.isArray(filter.value)) {
-				if(rowValue == null) {
-				    ok = false;
-				}  else  {
-				    var date1 = filter.value[0];
-				    var date2 = filter.value[1];
-				    var dttm = rowValue.getTime();
-				    if(isNaN(dttm)) ok = false;
-				    else if(date1 && dttm<date1.getTime())
-					ok = false;
-				    else if(date2 && dttm>date2.getTime())
-					ok = false;
-				}
-			    }
-			} else {
-			    var startsWith = filter.startsWith;
-			    ok = false;
-			    roWValue  = String(rowValue).toLowerCase();
-			    for(var j=0;j<filter._values.length;j++) {
-				var fv = _values[j];
-				if(startsWith) {
-				    if(rowValue.toString().startsWith(fv)) {
-					ok = true;
-					break;
-				    }
-				} else  if(rowValue.toString().indexOf(fv)>=0) {
-				    ok = true;
-				    break;
-				}
-			    }
-			    
-			    if(!ok && !startsWith) {
-				for(ri=0;ri<filter.matchers.length;ri++) {
-				    var matcher = filter.matchers[ri];
-				    if(matcher.matches(rowValue.toString())) {
-					ok = true;
-					break;
-				    }
-				}
-			    }
-			}
+		    for(var i=0;i<this.filters.length && ok;i++) {
+			var filter= this.filters[i];
+			ok = filter.isRecordOk(record);
 		    }
 		    if(skipFirst && rowIdx==0) {
 			ok = true;
@@ -2231,7 +2065,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(ok) {
 			newData.push(records[rowIdx]);
 		    }
-		}
+		});
+
 		records = newData;
 	    }
 
@@ -3912,7 +3747,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
             let _this = this;
-	    this.filterFields = [];
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
 	    let pointData = this.getData();
@@ -4063,269 +3897,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let fieldMap = {};
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
+	    this.filters = [];
+	    this.filters.push(new BoundsFilter(this));
             if(filterBy.length>0) {
-		let searchBar = "";
-		let bottom = "";
-		let widgetStyle = "";
-		if(hideFilterWidget)
-		    widgetStyle = "display:none;";
                 for(let i=0;i<filterBy.length;i++) {
-                    let filterField  = this.getFieldById(fields,filterBy[i]);
-		    if(!filterField) continue;
-		    fieldMap[filterField.getId()] = {
-			field: filterField,
-			values:[],
-		    };
-		    
-                    if(!filterField) continue;
-		    displayType = this.getProperty(filterField.getId() +".filterDisplay","menu");
-                    this.filterFields.push(filterField);
-                    let widget;
-		    let widgetId = this.getFilterId(filterField.getId());
-                    if(filterField.getType() == "enumeration") {
-			let dfltValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
-			let filterValues = this.getProperty(filterField.getId()+".filterValues");
-                        let enums = null;
-			if (filterValues) {
-			    let toks;
-			    if ((typeof filterValues) == "string") {
-				filterValues = Utils.getMacro(filterValues);
-				toks = filterValues.split(",");
-			    } else {
-				toks = filterValues;
-			    }
-			    enums=[];
-			    toks.map(tok=>{
-				let tmp = tok.split(":");
-				if(tmp.length>1) {
-				    tok = [tmp[0],tmp[1]];
-
-				} else if(tok == FILTER_ALL) {
-				    tok = [tmp[0],"All"];
-				}
-				enums.push({value:tok});
-			    })
-			}
-
-			let includeAll = this.getProperty(filterField.getId() +".includeAll",true);
-			if(enums == null) {
-			    let allName = this.getProperty(filterField.getId() +".allName","All");
-			    enums = [];
-			    if(includeAll) {
-				enums.push({value:[FILTER_ALL,allName]});
-			    }
-
-			    let seen = {};
-			    let dflt = filterField.getEnumeratedValues();
-			    if(dflt) {
-				for(let v in dflt) {
-				    seen[v] = true;
-				    enums.push({value:[v,dflt[v]]});
-				}
-			    }
-
-			    let enumValues = [];
-			    let imageField=this.getFieldOfType(null, "image");
-			    let valuesAreNumbers = true;
-			    records.map(record=>{
-				let value = this.getDataValues(record)[filterField.getIndex()];
-				if(!seen[value]) {
-				    seen[value]  = true;
-				    let obj = {};
-				    if(imageField)
-					obj.image = this.getDataValues(record)[imageField.getIndex()];
-				    if((+value+"") != value) valuesAreNumbers = false;
-				    let label = value;
-				    if(label.length>30) {
-					label=  label.substring(0,29)+"...";
-				    }
-				    if(typeof value == "string")
-					value = value.replace(/\'/g,"&apos;");
-				    let tuple = [value, label];
-				    obj.value = tuple;
-				    enumValues.push(obj);
-				}
-			    });
-
-			    enumValues.sort((a,b)  =>{
-				a= a.value;
-				b = b.value;
-				if(valuesAreNumbers) {
-				    return +a - +b;
-				}
-				
-				return (""+a[1]).localeCompare(""+b[1]);
-			    });
-			    for(let j=0;j<enumValues.length;j++) {
-				let v = enumValues[j];
-				enums.push(v);
-			    }
-			}
-			let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
-			if(this.getProperty(filterField.getId() +".filterMultiple",false)) {
-			    attrs.push("multiple");
-			    attrs.push("");
-			    attrs.push("size");
-			    attrs.push(this.getProperty(filterField.getId() +".filterMultipleSize","3"));
-			    dfltValue = dfltValue.split(",");
-			}
-			if(displayType!="menu") {
-			    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
-			    let buttons = "";
-			    let colorMap = Utils.parseMap(this.getProperty(filterField.getId() +".filterColorByMap"));
-			    let useImage = displayType == "image";
-			    let imageAttrs = [];
-			    let imageMap = Utils.getNameValue(this.getProperty(filterField.getId() +".filterImages"));
-			    if(useImage) {
-				let w = this.getProperty(filterField.getId() +".filterImageWidth");
-				let h = this.getProperty(filterField.getId() +".filterImageHeight");
-				if(h) {
-				    imageAttrs.push("height");
-				    imageAttrs.push(h);
-				}
-				if(w) {
-				    imageAttrs.push("width");
-				    imageAttrs.push(w);
-				}
-				if(!h && !w) {
-				    imageAttrs.push("width");
-				    imageAttrs.push("50");
-				}
-
-				imageAttrs.push("style");
-				imageAttrs.push(this.getProperty(filterField.getId() +".filterImageStyle","border-radius:50%;"));
-			    }
-			    for(let j=0;j<enums.length;j++) {
-				var extra = "";
-				var v = enums[j].value;
-				var color = colorMap?colorMap[v]:null;
-				var label;
-				if(Array.isArray(v)) {
-				    label = v[1];
-				    v = v[0];
-				} else {
-				    label = v;
-				}
-				var style = this.getProperty(filterField.getId() +".filterItemStyle","");
-				if(color) {
-				    style += " background-color:" + color +"; ";
-				}
-				
-				var clazz = " display-filter-item display-filter-item-" + displayType +" ";
-				if(v == dfltValue) {
-				    clazz+=  " display-filter-item-" + displayType +"-selected ";
-				} else {
-				}
-				if(v == FILTER_ALL) {
-				    extra = " display-filter-item-all ";
-				}
-				if(useImage) {
-				    var image=null;
-				    if(imageMap) image = imageMap[v];
-				    if(!image || image=="") image = enums[j].image;
-				    if(image) {
-					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz,"style",style, "data-value",v,"title",label],
-							       HtmlUtils.image(image,imageAttrs));
-				    } else {
-					buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz,"style",style,"data-value",v,"title",label],label);
-				    }
-				} else {
-				    buttons+=HtmlUtils.div(["fieldId",filterField.getId(),"class",clazz, "style",style,"data-value",v],label);
-				}
-				buttons+="\n";
-			    }
-
-			    if(useImage && this.getProperty(filterField.getId() +".filterShowButtonsLabel")) {
-				buttons+=HtmlUtils.div(["class","display-filter-item-label","id",this.getDomId("filterby_" + filterField.getId() +"_label")],"&nbsp;");
-			    }
-			    bottom+= HtmlUtils.div(["data-value",dfltValue,"class","display-filter-items","id",widgetId,"isButton","true", "fieldId",
-						    filterField.getId()], buttons);
-			    continue;
-			} else if(this.getProperty(filterField.getId() +".filterCheckbox")) {
-			    attrs.push("isCheckbox");
-			    attrs.push(true);
-			    var tmp = [];
-			    enums.map(e=>tmp.push(e.value));
-			    var checked = tmp.includes(dfltValue);
-			    if(tmp.length>0) {
-				attrs.push("onValue");
-				attrs.push(tmp[0]);
-			    }
-			    if(tmp.length>1) {
-				attrs.push("offValue");
-				attrs.push(tmp[1]);
-			    }
-			    widget = HtmlUtils.checkbox("",attrs,checked);
-			    //			    console.log(widget);
-			} else {
-			    var tmp = [];
-			    enums.map(e=>tmp.push(e.value));
-                            widget = HtmlUtils.select("",attrs,tmp,dfltValue);
-			}
-		    } else if(filterField.isNumeric()) {
-			var min=0;
-			var max=0;
-			var cnt=0;
-			records.map(record=>{
-			    var value = this.getDataValues(record)[filterField.getIndex()];
-			    if(isNaN(value))return;
-			    if(cnt==0) {min=value;max=value;}
-			    else {
-				min = Math.min(min, value);
-				max = Math.max(max, value);
-			    }
-			    cnt++;
-			});
-			var dfltValueMin = this.getProperty(filterField.getId() +".filterValueMin",min);
-			var dfltValueMax = this.getProperty(filterField.getId() +".filterValueMax",max);
-
-                        widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",5,"fieldId",filterField.getId()]);
-			widget += " - ";
-                        widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",5,"fieldId",filterField.getId()]);
-		    } else if(filterField.getType() == "date") {
-                        widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +" - " +
-			    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",filterField.getId()]);
-			dateIds.push(widgetId+"_date1");
-			dateIds.push(widgetId+"_date2");
-                    } else {
-			var dfltValue = this.getProperty(filterField.getId() +".filterValue","");
-			var attrs =["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId(),"class","display-filter-input"];
-			var placeholder = this.getProperty(filterField.getId() +".filterPlaceholder");
-			if(placeholder) {
-			    attrs.push("placeholder");
-			    attrs.push(placeholder);
-			}
-                        widget =HtmlUtils.input("",dfltValue,attrs);
-			var values=fieldMap[filterField.getId()].values;
-			var seen = {};
-			records.map(record=>{
-			    var value = this.getDataValues(record)[filterField.getIndex()];
-			    if(!seen[value]) {
-				seen[value] = true;
-				values.push(value);
-			    }
-			});
-                    }
-		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel()+":");
-		    var suffix =   this.getProperty(filterField.getId()+".filterSuffix","");
-		    if(!hideFilterWidget) {
-			var tt = label;
-			if(label.length>50) label = label.substring(0,49)+"...";
-			if(!this.getProperty(filterField.getId() +".showFilterLabel",true)) {
-			    label = "";
-			}
-			else
-			    label = label+" ";
-			widget = HtmlUtils.div(["style","display:inline-block;"],
-					       this.makeFilterLabel(label,tt) + widget+suffix);
+		    if(filterBy[i]!="") {
+			this.filters.push(new RecordFilter(this, filterBy[i]));
 		    }
-		    //                    if(i==0) searchBar += "<br>Display: ";
-		    
-                    searchBar+=widget +(hideFilterWidget?"":"&nbsp;&nbsp;");
-                }
-
-		var style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
-		let filterBar = searchBar+bottom;
+		}
+		let searchBar = "";
+		let bottom = [""];
+		this.filters.forEach(filter=>{
+		    let widget = filter.getWidget(fieldMap, bottom,records);
+		    searchBar +=widget;
+		});
+		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
+		let filterBar = searchBar+bottom[0];
 		if(filterBar!="") {
 		    header2+=HtmlUtils.span(["class","display-filter","style",style,"id",this.getDomId(ID_FILTERBAR)],searchBar+bottom);
 		}
@@ -4409,12 +3996,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
-            if(filterBy.length>0) {
-		if(!hideFilterWidget) {
-		    for(var i=0;i<dateIds.length;i++) {
-			HtmlUtils.datePickerInit(dateIds[i]);
-		    }
-		}
+            if(this.filters.length>0) {
+		this.filters.forEach(f=>{
+		    if(f.initDateWidget)
+			f.initDateWidget();
+		});
 
 
 		this.jq(ID_FILTERBAR).find(".display-filter-items").each(function(){
@@ -4506,7 +4092,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 
 		});
-
 
 
                 this.jq(ID_FILTERBAR).find(".display-filter-range").mousedown(function(){
@@ -5788,12 +5373,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    //		    console.log(" skipping due to zero: " + values);
                     continue;
                 }
-                if (this.filters != null) {
-                    if (!this.applyFilters(record, values)) {
-                        console.log(" skipping due to filters");
-                        continue;
-                    }
-                }
                 //TODO: when its all null values we get some errors
                 if (groupByIndex >= 0) {
 		    var value = record.getValue(groupByIndex);
@@ -6016,7 +5595,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         applyFilters: function(record, values) {
             for (var i = 0; i < this.filters.length; i++) {
-                if (!this.filters[i].recordOk(this, record, values)) {
+                if (!this.filters[i].isRecordOk(record)) {
                     return false;
                 }
             }

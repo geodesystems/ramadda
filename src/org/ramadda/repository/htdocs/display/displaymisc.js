@@ -1314,6 +1314,8 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 if (isNaN(value) || value === null) {
 		    if(!includeNaN) continue;
 		    value = "NA";
+		} else {
+		    value = this.formatNumber(value);
 		}
 		html += "<tr valign=top class='display-ranking-row' what='" + obj.originalRow + "'><td> #" + (rowIdx + 1) + "</td><td>&nbsp;" + label + "</td><td align=right>&nbsp;" +
                     value + "</td></tr>";
@@ -3412,7 +3414,6 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 		var ctx = canvas.getContext("2d");
 		ctx.strokeStyle =markerStroke;
 		ctx.fillStyle=c.colorBy.getColorFromRecord(c.record, markerFill);
-
 		if(shape=="circle") {
 		    ctx.beginPath();
 		    ctx.arc(cw/2, cw/2, cw/2, 0, 2 * Math.PI);
@@ -3522,7 +3523,9 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 		html += HU.closeTag("div");
 	    });
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-dotstack-dot"),records,null,"${default}");
+	    let dots = this.jq(ID_DISPLAY_CONTENTS).find(".display-dotstack-dot");
+	    this.addFieldClickHandler(dots,records,false);
+	    this.makeTooltips(dots,records,null,"${default}");
 	    if(this.getProperty("tableHeight")) {
 		opts.scrollY = this.getProperty("tableHeight");
 	    }

@@ -1644,7 +1644,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         createHtmlLayer: function(records, fields) {
 	    let htmlLayerField = this.getFieldById(fields,this.getProperty("htmlLayerField"));
-	    this.setProperty("colorBy",htmlLayerField.getId());
 	    this.htmlLayerInfo = {
 		records:records,
 		fields:fields,
@@ -1652,6 +1651,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.htmlLayer = "";
 	    let w = this.getProperty("htmlLayerWidth",30);
 	    let h = this.getProperty("htmlLayerHeight",15);
+	    let shape = this.getProperty("htmlLayerShape","barchart");
+	    if(shape=="barchart")
+		this.setProperty("colorBy",htmlLayerField.getId());
 	    if(this.getProperty("htmlLayerScale")) {
 		let zooms = [];		
 		this.getProperty("htmlLayerScale").split(",").forEach(t=>{
@@ -1678,6 +1680,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let infos = [];
 	    let allData = this.getColumnValues(records, htmlLayerField);
 	    let groups = RecordUtil.groupBy(records, this, false,"latlon");
+	    let container = $($(this.map.getMap().getViewport()).children()[0]);
+	    let cleft = +container.css("left").replace("px","");
+	    let ctop = +container.css("top").replace("px","");
 	    groups.values.forEach((value,idx)=>{
 		let recordsAtTime = groups.map[value];
 		let data = [];
@@ -1686,8 +1691,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		let record = recordsAtTime[0];
 		let px = this.map.getMap().getPixelFromLonLat(this.map.transformLLPoint(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude())));
+
+
+
 		let id = this.getId() +"_sl"+ idx;
-		let html = HU.div(["id",id, "style",style +"line-height:0px;z-index:1000;position:absolute;left:" + (px.x-w/2) +"px;top:" + (px.y-h/2)+"px;width:" + w+"px;height:" + h+"px;"]);
+		let html = HU.div(["id",id, "style",style +"line-height:0px;z-index:1000;position:absolute;left:" + (px.x-w/2-cleft) +"px;top:" + (px.y-h/2-ctop)+"px;width:" + w+"px;height:" + h+"px;"]);
 		this.htmlLayer += html;
 		infos.push({
 		    id:id,
@@ -1698,10 +1706,31 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.updateHtmlLayer();
             let colorBy = this.getColorByInfo(records);
 	    infos.forEach((info,idx)=>{
-//		drawPieChart(this, "#"+ info.id,w-2,h-2,info.data,info.records,allData.min,allData.max,colorBy,{margin:0});
-		drawSparkLine(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
+		if(shape == "pie") {
+		    let id = HtmlUtils.getUniqueId("pie");
+		    $("#" + info.id).html('<canvas title='  + info.data[0] + ' style="cursor:pointer;" id="' + id +'" width="' + w+'" height="' + h +'"></canvas>');
+		    let canvas = document.getElementById(id);
+		    let color = colorBy&& colorBy.index>=0?colorBy.getColor(info.data[0]):this.getProperty("fillColor", "#619FCA");
+		    var ctx = canvas.getContext("2d");
+		    ctx.beginPath();
+		    ctx.moveTo(w/2,h/2);
+		    ctx.arc(w/2,h/2, w/2-2, 0-Math.PI/2, info.data[0]*2 * Math.PI-Math.PI/2);
+		    ctx.lineTo(w/2,h/2);
+		    ctx.closePath();
+		    ctx.strokeStyle= this.getProperty("strokeColor","#888");
+		    ctx.fillStyle= color;
+		    ctx.fill();
+		    ctx.stroke();
+		    ctx.beginPath();
+		    ctx.arc(w/2,h/2, w/2-2, 0, 2 * Math.PI);
+		    ctx.closePath();
+		    ctx.stroke();
+		} else {
+		    drawSparkLine(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
+		}
 	    });
-	    colorBy.displayColorTable(null,true);
+	    if(colorBy.hasField())
+		colorBy.displayColorTable(null,true);
 	},
         addPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;

@@ -589,6 +589,7 @@ function DisplayAnimation(display, enabled) {
 
 function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix) {
     if(!prop) prop = "colorBy";
+
     if ( !propPrefix ) {
 	propPrefix = ["colorBy",""];
     } else if( !Array.isArray(propPrefix) ) {
@@ -623,6 +624,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colorByAttr =theField.getId();
 	this.propPrefix.unshift(theField.getId()+".colorBy");
     }
+
+
 
 
     $.extend(this, {
@@ -740,6 +743,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 		return this.getColor(value, record);
 	    }
 	    return dflt;
+	},
+	hasField: function() {
+	    return this.index>=0;
 	},
 	getColor: function(value, pointRecord) {
 	    var percent = 0;
@@ -938,6 +944,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         this.colors = Utils.ColorTables.grayscale.colors;
     }
 
+
     if(!this.field) {
 	for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
@@ -949,6 +956,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(this.field)
 	if (this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
+
+
     this.stringMap = this.display.getColorByMap(colorByMapProp);
     if(this.index>=0) {
 	var cnt = 0;
