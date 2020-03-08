@@ -136,7 +136,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						    map_default_layer),
 		showLayerSwitcher: this.getProperty("showLayerSwitcher", true),
 		showScaleLine: this.getProperty("showScaleLine",false),
-		showLatLonPosition: this.getProperty("showLatLonPosition",true),
+		showLatLonPosition: this.getProperty("showLatLonPosition",false),
 		showZoomPanControl: this.getProperty("showZoomPanControl",false),
 		showZoomOnlyControl: this.getProperty("showZoomOnlyControl",true),
 		enableDragPan: this.getProperty("enableDragPan",true)
@@ -1643,7 +1643,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let vp  = this.map.getMap().getViewport();
 		vp = $(vp).children()[0];
 		$(vp).css("display","relative");
-		$(vp).append(HU.div(["id",this.htmlLayerId]));
+		$(vp).append(HU.div([CLASS,"display-map-htmllayer", ID,this.htmlLayerId]));
 	    }
 	    $("#"+ this.htmlLayerId).html(this.htmlLayer);
 	},
@@ -1679,7 +1679,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    });
 		}
 		w*=scale;h*=scale;
-//		console.log("z:" + zoom + " z2:" +scale +" " +w);
 	    }
 	    let style = this.getProperty("htmlLayerStyle","")
 	    let infos = [];
@@ -1688,22 +1687,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let container = $($(this.map.getMap().getViewport()).children()[0]);
 	    let cleft = +container.css("left").replace("px","");
 	    let ctop = +container.css("top").replace("px","");
+	    let hoverW = w*3;
+	    let hoverH = h*3;
+	    let layerRecords = [];
 	    groups.values.forEach((value,idx)=>{
 		let recordsAtTime = groups.map[value];
 		let data = [];
+		layerRecords.push(recordsAtTime[0]);
 		recordsAtTime.forEach((r,idx)=>{
 		    data.push(r.getValue(htmlLayerField.getIndex()));
 		});
 		let record = recordsAtTime[0];
 		let px = this.map.getMap().getPixelFromLonLat(this.map.transformLLPoint(new OpenLayers.LonLat(record.getLongitude(),record.getLatitude())));
-
-
-
 		let id = this.getId() +"_sl"+ idx;
-		let html = HU.div(["id",id, "style",style +"line-height:0px;z-index:1000;position:absolute;left:" + (px.x-w/2-cleft) +"px;top:" + (px.y-h/2-ctop)+"px;width:" + w+"px;height:" + h+"px;"]);
+		let hid = id +"_hover";
+		let html = 
+		    HU.div([ID,id,  CLASS,'display-map-html-item',STYLE,style +'line-height:0px;z-index:1000;position:absolute;left:' + (px.x-w/2-cleft) +'px;top:' + (px.y-h/2-ctop)+'px;']) +
+		    HU.div([ID,hid, "recordIndex", idx,TITLE,"", CLASS,'display-map-html-hitem', STYLE,style +'display:none;line-height:0px;z-index:1001;position:absolute;left:' + (px.x-hoverW/2-cleft) +'px;top:' + (px.y-hoverH/2-ctop)+'px;']);
 		this.htmlLayer += html;
 		infos.push({
 		    id:id,
+		    hoverId: hid,
 		    data:data,
 		    records: recordsAtTime
 		});
@@ -1712,28 +1716,60 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let colorBy = this.getColorByInfo(records);
 	    infos.forEach((info,idx)=>{
 		if(shape == "pie") {
-		    let id = HtmlUtils.getUniqueId("pie");
-		    $("#" + info.id).html('<canvas title='  + info.data[0] + ' style="cursor:pointer;" id="' + id +'" width="' + w+'" height="' + h +'"></canvas>');
-		    let canvas = document.getElementById(id);
-		    let color = colorBy&& colorBy.index>=0?colorBy.getColor(info.data[0]):this.getProperty("fillColor", "#619FCA");
-		    var ctx = canvas.getContext("2d");
-		    ctx.beginPath();
-		    ctx.moveTo(w/2,h/2);
-		    ctx.arc(w/2,h/2, w/2-2, 0-Math.PI/2, info.data[0]*2 * Math.PI-Math.PI/2);
-		    ctx.lineTo(w/2,h/2);
-		    ctx.closePath();
-		    ctx.strokeStyle= this.getProperty("strokeColor","#888");
-		    ctx.fillStyle= color;
-		    ctx.fill();
-		    ctx.stroke();
-		    ctx.beginPath();
-		    ctx.arc(w/2,h/2, w/2-2, 0, 2 * Math.PI);
-		    ctx.closePath();
-		    ctx.stroke();
+		    [0,1].forEach((cid,idx)=>{
+			let id = HtmlUtils.getUniqueId("pie");
+			let cw = idx==0?w:hoverW;
+			let ch = idx==0?h:hoverH;
+			let pie = HU.tag('canvas',["X"+TITLE, this.formatNumber(info.data[0]),STYLE,'cursor:pointer;',ID,id ,WIDTH,cw,HEIGHT, ch]);
+			if(idx==0)
+			    $("#" + info.id).html(pie);
+			else
+			    $("#" + info.hoverId).html(pie);
+			let canvas = document.getElementById(id);
+			let color = colorBy&& colorBy.index>=0?colorBy.getColor(info.data[0]):this.getProperty("fillColor", "#619FCA");
+			var ctx = canvas.getContext("2d");
+			if(idx==1) {
+			    ctx.fillStyle= '#fff';
+			    ctx.beginPath();
+			    ctx.moveTo(cw/2,ch/2);
+			    ctx.arc(cw/2,ch/2, cw/2-2, 0-Math.PI/2, 2*Math.PI);
+			    ctx.closePath();
+			    ctx.fill();
+			}
+			ctx.beginPath();
+			ctx.moveTo(cw/2,ch/2);
+			ctx.arc(cw/2,ch/2, cw/2-2, 0-Math.PI/2, info.data[0]*2 * Math.PI-Math.PI/2);
+			ctx.lineTo(cw/2,ch/2);
+			ctx.closePath();
+			ctx.strokeStyle= this.getProperty("strokeColor","#888");
+			ctx.fillStyle= color;
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.arc(cw/2,ch/2, cw/2-2, 0, 2 * Math.PI);
+			ctx.closePath();
+			ctx.stroke();
+		    });
 		} else {
 		    drawSparkLine(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
+		    $('#' + info.hoverId).css('background','#fff').css('border','1px solid #ccc');
+		    drawSparkLine(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,allData.min,allData.max,colorBy);		    
 		}
 	    });
+	    let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-map-html-item");
+	    let hitems = this.jq(ID_DISPLAY_CONTENTS).find(".display-map-html-hitem");
+	    this.makeTooltips(hitems, layerRecords);
+
+	    items.mouseenter(function() {
+		$(this).css('display','none');
+		$("#"+$(this).attr(ID)+"_hover").fadeIn(1000);
+		
+	    });
+	    hitems.mouseleave(function() {
+		$("#"+ $(this).attr(ID).replace('_hover','')).css('display','block');
+		$(this).css('display','none');
+	    });
+
 	    if(colorBy.hasField())
 		colorBy.displayColorTable(null,true);
 	},

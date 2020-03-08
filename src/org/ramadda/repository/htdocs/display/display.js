@@ -572,8 +572,8 @@ function DisplayThing(argId, argProperties) {
                     var value = record.getValue(field.getIndex());
 		    let fieldValue = value;
                     if (typeof value == "number") {
-			value = this.formatNumber(value);
-                    } 
+			value = this.formatNumber(value, field.getId());
+		    } 
                     if (field.isFieldDate()) {
 			value = this.formatDate(value);
 		    }
@@ -651,24 +651,26 @@ function DisplayThing(argId, argProperties) {
         initTooltip: function() {
             //don't do this for now                $( document ).tooltip();
         },
-        formatNumber: function(number) {
+        formatNumber: function(number, propPrefix) {
+	    if(!this.getProperty([propPrefix+".doFormatNumber","doFormatNumber"],true)) {
+		return number;
+	    }
 	    if(isNaN(number)) {
 		return "--";
 	    }
-	    let f = this.formatNumberInner(number);
-	    let fmt = this.getProperty("numberTemplate");
+	    let f = this.formatNumberInner(number, propPrefix);
+	    let fmt = this.getProperty([propPrefix+".numberTemplate","numberTemplate"]);
 	    if(fmt) f = fmt.replace("${number}", f);
 	    return f;
 	},
-        formatNumberInner: function(number) {
-            if (!this.getProperty("format", true)) return number;
-	    let scale = this.getProperty("formatNumberScale");
+        formatNumberInner: function(number,propPrefix) {
+	    let scale = this.getProperty([propPrefix+".formatNumberScale","formatNumberScale"]);
             if (Utils.isDefined(scale))
 		number = number*scale;
-	    let decimals = this.getProperty("formatNumberDecimals");
+	    let decimals = this.getProperty([propPrefix+".formatNumberDecimals","formatNumberDecimals"]);
             if (Utils.isDefined(decimals))
 		return number_format(number, decimals);
-            if (this.getProperty("formatNumberComma", false)) 
+            if (this.getProperty([propPrefix+".formatNumberComma","formatNumberComma"], false)) 
 		return Utils.formatNumberComma(number);
             return Utils.formatNumber(number);
 
@@ -695,14 +697,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return null;
         },
-
-
         getProperty: function(key, dflt,skipThis) {
-	    if(this.getPropertyShow) {
-		//console.log("'" + key + "=\"" (dflt||"") +"\"',");
-		if(!this.getPropertyOutput) this.getPropertyOutput = "";
-		this.getPropertyOutput+="'" + key + "=\"" +(dflt||"") +"\"',\n"
-	    }
 	    var value =  this.getPropertyInner(key,null,skipThis);
 	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
@@ -715,48 +710,52 @@ function DisplayThing(argId, argProperties) {
 		console.log("\returning value:" + value);
 	    return value;
 	},
-        getPropertyInner: function(key, dflt,skipThis) {	    
+        getPropertyInner: function(keys, dflt,skipThis) {	    
 	    let debug = displayDebug.getProperty;
-	    //let debug = key== "colorBy";
-	    if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
-	    if(this.dynamicProperties) {
-		if(Utils.isDefined(this.dynamicProperties[key])) {
-		    return this.dynamicProperties[key];
+	    if(!Array.isArray(keys)) keys = [keys];
+	    for(let i=0;i<keys.length;i++) {
+		let key = keys[i];
+		if(debug) console.log("getProperty:" + key +" dflt:" + dflt);
+		if(this.dynamicProperties) {
+		    if(Utils.isDefined(this.dynamicProperties[key])) {
+			return this.dynamicProperties[key];
+		    }
+		}
+		var value = this.properties[key];
+		if (value != null) {
+		    if(debug) console.log("\tgetProperty-2:" + value);
+                    return value;
 		}
 	    }
-//            if(!skipThis && Utils.isDefined(this[key])) {
-//		if(debug) console.log("\tgetProperty-1:" + this[key]);
-//                return this[key];
-//            }
-            var value = this.properties[key];
-            if (value != null) {
-		if(debug) console.log("\tgetProperty-2:" + value);
-                return value;
-            }
-	    var fromParent=null;
-	    
-            if (this.displayParent != null) {
-                fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
-            }
-            if (!fromParent && this.getDisplayManager) {
-                fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
-            }
-	    if(fromParent) {
-		if(debug) console.log("\tgetProperty-3");
-		return fromParent;
+	    for(let i=0;i<keys.length;i++) {
+		let key = keys[i];
+		var fromParent=null;
+		if (this.displayParent != null) {
+                    fromParent =  this.displayParent.getPropertyInner("inherit."+key, skipThis);
+		}
+		if (!fromParent && this.getDisplayManager) {
+                    fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
+		}
+		if(fromParent) {
+		    if(debug) console.log("\tgetProperty-3");
+		    return fromParent;
+		}
 	    }
-            if (this.displayParent != null) {
+	    if (this.displayParent != null) {
 		if(debug) console.log("\tgetProperty calling parent");
-                return this.displayParent.getPropertyInner(key, skipThis);
+                return this.displayParent.getPropertyInner(keys, skipThis);
             }
             if (this.getDisplayManager) {
 		if(debug) console.log("\tgetProperty-5");
-                return   this.getDisplayManager().getPropertyInner(key);
+                return   this.getDisplayManager().getPropertyInner(keys);
             }
-            value = getGlobalDisplayProperty(key);
-            if (value) {
-		if(debug) console.log("\tgetProperty-6:" + value);
-		return value;
+	    for(let i=0;i<keys.length;i++) {
+		let key = keys[i];
+		value = getGlobalDisplayProperty(key);
+		if (value) {
+		    if(debug) console.log("\tgetProperty-6:" + value);
+		    return value;
+		}
 	    }
 	    if(debug) console.log("\tgetProperty-6 dflt:" + dflt);
             return dflt;
@@ -4581,6 +4580,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"textColor=\"color\"",
 		["backgroundImage=\"\"","Image url to display in background"],
 		"background=\"color\"",
+		'inlinelabel:Formatting',
+		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
+		'doFormatNumber=false',
+ 		'formatNumberDecimals=0',
+		'formatNumberScale=100',
+		'numberTemplate="${number}%"',
+		'&lt;field_id&gt;.&lt;format&gt;="..."',
 		"label:Filter Data",
 		"filterFields=\"\"",
 		"hideFilterWidget=true",

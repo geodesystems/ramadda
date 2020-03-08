@@ -1921,6 +1921,12 @@ var GuiUtils = {
 
 
 var ID = "id";
+var STYLE = "style";
+var TITLE = "title";
+var CLASS = "class";
+var WIDTH = "width";
+var HEIGHT = "height";
+var DIV = "div";
 var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
