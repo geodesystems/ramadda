@@ -5122,16 +5122,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
                     return false;
                 }
-
+		
 		if (this.startDateObject != null && date.getTime() < this.startDateObject.getTime()) {
 		    if(debug) {
-			console.log("    startDate:\n\t" + date.getTime() +"\n\t" + this.startDateObj.getTime());
+			console.log("    startDate:\n\t" + date.getTime() +"\n\t" + this.startDateObject.getTime());
 		    }
                     return false;
                 }
                 if (this.endDateObject != null && date.getTime() > this.endDateObject.getTime()) {
 		    if(debug) {
-			console.log("    endDate:\n\t" + date.getTime() +"\n\t" + this.endDateObj.getTime());
+			console.log("    endDate:\n\t" + date.getTime() +"\n\t" + this.endDateObject.getTime());
 		    }
                     return false;
                 }

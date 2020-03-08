@@ -413,16 +413,18 @@ var Utils = {
 	let toks = d.trim().match(regexp);
 	if(toks) {
 	    let mult = parseFloat(toks[1]+toks[2]);
-	    let what = toks[2];
-	    let date = new Date().getTime();
+	    let what = toks[3];
+	    let now = new Date();
+	    let date = now.getTime();
 	    if(what == "minute")
 		return new Date(date+mult*1000*60);
 	    if(what == "hour")
 		return new Date(date+mult*1000*60*60);
 	    if(what == "day")
 		return new Date(date+mult*1000*60*60*24);
-	    if(what == "week")
+	    if(what == "week") {
 		return new Date(date+mult*1000*60*60*24*7);
+	    }
 	    if(what == "month")
 		return new Date(date+mult*1000*60*60*24*7*31);
 	    return new Date(date+mult*1000*60*60*24*365);

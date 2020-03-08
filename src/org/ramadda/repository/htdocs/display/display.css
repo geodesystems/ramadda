@@ -833,6 +833,13 @@ height:100%;
    border:#ccc 1px solid;
 }
 
+.google-visualization-table-td, .google-visualization-table-table td {
+    padding:0px;
+}
+
+
+
+
 .display-stats-header {
       background:#E4E9F4;
       background-color: #efefef;
@@ -2055,6 +2062,3 @@ table.dataTable tfoot td {
 }
 
 
-.google-visualization-table-td, .google-visualization-table-table th, .google-visualization-table-table td {
-    padding:0px;
-}
