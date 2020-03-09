@@ -353,9 +353,9 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
-	    if(display.getProperty("doAnimation")) {
+	    if(display.getAnimationEnabled()) {
 		//not sure why this is here but it screws up caching of requests
-//		jsonUrl +="&" + "dbAnimation" +"=" +display.getProperty("doAnimation");
+		//		jsonUrl +="&" + "dbAnimation" +"=" 'true'
 	    }
 	    if(display.getProperty("dbSelect")) {
 		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");

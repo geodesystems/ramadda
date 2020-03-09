@@ -172,7 +172,7 @@ function DisplayAnimation(display, enabled) {
         dateMin: null,
         dateMax: null,
         dateRange: 0,
-        dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
+        dateFormat: display.getProperty("animationDateFormat", display.getProperty("dateFormat", "yyyyMMdd")),
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
         speed: parseInt(display.getProperty("animationSpeed", 500)),
@@ -448,7 +448,7 @@ function DisplayAnimation(display, enabled) {
 		this.begin = this.end = this.deltaFrame(1);
 		if(this.running) {
 		    if(wasAtEnd) {
-			if(this.display.getProperty("animationLoop")) {
+			if(this.display.getProperty("animationLoop",true)) {
 			    setTimeout(()=>{
 				this.begin = this.end = this.dateMin;
 				this.frameIndex=0;

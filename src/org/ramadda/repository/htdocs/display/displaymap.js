@@ -214,7 +214,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(this.lastHighlightedRecord) {
 			var args = {highlight:false,record: this.lastHighlightedRecord};
 			this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
-			if (this.getProperty("doAnimation", false)) {
+			if (this.getAnimationEnabled()) {
 			    this.getAnimation().handleEventRecordHighlight(this, args);
 			}
 			this.lastHighlightedRecord = null;
@@ -224,7 +224,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    var args = {highlight:highlight,record: feature.record};
 		    this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
-		    if (this.getProperty("doAnimation", false)) {
+		    if (this.getAnimationEnabled()) {
 			this.getAnimation().handleEventRecordHighlight(this, args);
 		    }
 		}
@@ -1576,7 +1576,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    let _this = this;
-	    if(this.getProperty("hm.showGroups",true) && this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
+	    if(this.getProperty("hm.showGroups",true) && this.heatmapLayers.length>1 && !this.getAnimationEnabled()) {
 		this.heatmapPlayingAnimation = false;
 		let controls =  "";
 		if(!groupByField) 
@@ -1978,7 +1978,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    //	    console.log(JSON.stringify(sizeBy,null,2));
             if (dateMax) {
-		if (this.getProperty("doAnimation", false)) {
+		if (this.getAnimationEnabled()) {
 		    //TODO: figure out when to call this. We want to update the animation if it was from a filter change
 		    //but not from an animation change. Hummmm.
 		    //this.getAnimation().init(dateMin, dateMax,records);

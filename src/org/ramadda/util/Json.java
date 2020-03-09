@@ -298,7 +298,6 @@ public class Json {
     public static String list(List values, boolean quoteValue) {
         StringBuffer row = new StringBuffer();
         list(row, values, quoteValue);
-
         return row.toString();
     }
 

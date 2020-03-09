@@ -798,13 +798,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
+	getAnimationEnabled: function() {
+	    return this.getProperty("doAnimation", false)|| this.getProperty("animationMode","none")!="none";
+	},
 	getAnimation: function() {
 	    if(!this.animationControl) {
-		this.animationControl = new DisplayAnimation(this,this.getProperty("doAnimation", false));
+		this.animationControl = new DisplayAnimation(this,this.getAnimationEnabled());
 	    }
 	    return this.animationControl;
 	},
-
         propagateEvent: function(func, data) {
             var dm = this.getDisplayManager();
             dm[func](this, data);

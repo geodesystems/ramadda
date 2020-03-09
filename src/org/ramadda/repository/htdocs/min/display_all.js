@@ -172,7 +172,7 @@ function DisplayAnimation(display, enabled) {
         dateMin: null,
         dateMax: null,
         dateRange: 0,
-        dateFormat: display.getProperty("animationDateFormat", "yyyyMMdd"),
+        dateFormat: display.getProperty("animationDateFormat", display.getProperty("dateFormat", "yyyyMMdd")),
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
         speed: parseInt(display.getProperty("animationSpeed", 500)),
@@ -448,7 +448,7 @@ function DisplayAnimation(display, enabled) {
 		this.begin = this.end = this.deltaFrame(1);
 		if(this.running) {
 		    if(wasAtEnd) {
-			if(this.display.getProperty("animationLoop")) {
+			if(this.display.getProperty("animationLoop",true)) {
 			    setTimeout(()=>{
 				this.begin = this.end = this.dateMin;
 				this.frameIndex=0;
@@ -1984,13 +1984,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
+	getAnimationEnabled: function() {
+	    return this.getProperty("doAnimation", false)|| this.getProperty("animationMode","none")!="none";
+	},
 	getAnimation: function() {
 	    if(!this.animationControl) {
-		this.animationControl = new DisplayAnimation(this,this.getProperty("doAnimation", false));
+		this.animationControl = new DisplayAnimation(this,this.getAnimationEnabled());
 	    }
 	    return this.animationControl;
 	},
-
         propagateEvent: function(func, data) {
             var dm = this.getDisplayManager();
             dm[func](this, data);
@@ -24188,9 +24190,9 @@ function DisplayManager(argId, argProperties) {
 		return true;
 	    });
 
-	    if(display.getProperty("doAnimation")) {
+	    if(display.getAnimationEnabled()) {
 		//not sure why this is here but it screws up caching of requests
-//		jsonUrl +="&" + "dbAnimation" +"=" +display.getProperty("doAnimation");
+		//		jsonUrl +="&" + "dbAnimation" +"=" 'true'
 	    }
 	    if(display.getProperty("dbSelect")) {
 		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");
@@ -24776,7 +24778,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(this.lastHighlightedRecord) {
 			var args = {highlight:false,record: this.lastHighlightedRecord};
 			this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
-			if (this.getProperty("doAnimation", false)) {
+			if (this.getAnimationEnabled()) {
 			    this.getAnimation().handleEventRecordHighlight(this, args);
 			}
 			this.lastHighlightedRecord = null;
@@ -24786,7 +24788,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    var args = {highlight:highlight,record: feature.record};
 		    this.getDisplayManager().notifyEvent("handleEventRecordHighlight", this, args);
-		    if (this.getProperty("doAnimation", false)) {
+		    if (this.getAnimationEnabled()) {
 			this.getAnimation().handleEventRecordHighlight(this, args);
 		    }
 		}
@@ -26138,7 +26140,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return true;
 	    });
 	    let _this = this;
-	    if(this.getProperty("hm.showGroups",true) && this.heatmapLayers.length>1 && !this.getProperty("doAnimation")) {
+	    if(this.getProperty("hm.showGroups",true) && this.heatmapLayers.length>1 && !this.getAnimationEnabled()) {
 		this.heatmapPlayingAnimation = false;
 		let controls =  "";
 		if(!groupByField) 
@@ -26540,7 +26542,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    //	    console.log(JSON.stringify(sizeBy,null,2));
             if (dateMax) {
-		if (this.getProperty("doAnimation", false)) {
+		if (this.getAnimationEnabled()) {
 		    //TODO: figure out when to call this. We want to update the animation if it was from a filter change
 		    //but not from an animation change. Hummmm.
 		    //this.getAnimation().init(dateMin, dateMax,records);
