@@ -24703,7 +24703,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		showLatLonPosition: this.getProperty("showLatLonPosition",false),
 		showZoomPanControl: this.getProperty("showZoomPanControl",false),
 		showZoomOnlyControl: this.getProperty("showZoomOnlyControl",true),
-		enableDragPan: this.getProperty("enableDragPan",true)
+		enableDragPan: this.getProperty("enableDragPan",true),
+		highlightColor: this.getProperty("highlightColor","blue")
            };
             var displayDiv = this.getProperty("displayDiv", null);
             if (displayDiv) {

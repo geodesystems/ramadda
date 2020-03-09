@@ -177,6 +177,7 @@ function RepositoryMap(mapId, params) {
         showLatLonPosition: true,
         enableDragPan: true,
         defaultLocation: mapDefaults.location,
+	highlightColor:"blue",
         initialZoom: mapDefaults.defaultZoomLevel,
         latlonReadout: null,
         map: null,
@@ -551,16 +552,22 @@ function initMapFunctions(theMap) {
             this.selectedFeature = feature;
             layer.selectedFeature = feature;
             layer.selectedFeature.isSelected = true;
-            let style = {
-		pointRadius: 8,
-		stroke: true,
-		strokeColor: "blue",
-		strokeWidth: 0,
+	    let style = $.extend({},feature.style);
+	    $.extend(style, {
+		strokeColor:this.highlightColor,
+		fillColor: this.highlightColor,
 		strokeOpacity: 0.75,
-		fill: true,
-		fillColor: "blue",
 		fillOpacity: 0.75,
+		fill: true,
+	    });
+
+	    if(Utils.isDefined(style.pointRadius)) {
+		style.pointRadius = Math.round(style.pointRadius*1.5);
 	    }
+
+
+
+
 	    if(feature.style) {
 		if(feature.style.externalGraphic) {
 		    style = $.extend({},feature.style);
@@ -569,9 +576,9 @@ function initMapFunctions(theMap) {
 		    style.graphicXOffset = -style.graphicWidth/ 2;
 		    style.graphicYOffset = -style.graphicHeight/ 2;
 		} else {
-		    if(Utils.isDefined(feature.style.pointRadius)) {
-			style.pointRadius = feature.style.pointRadius;
-		    }
+//		    if(Utils.isDefined(feature.style.pointRadius)) {
+//			style.pointRadius = feature.style.pointRadius;
+//		    }
 		}
 		
 	    }
