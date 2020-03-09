@@ -46,6 +46,7 @@ import org.ramadda.util.Json;
 
 import org.ramadda.util.KmlUtil;
 import org.ramadda.util.SelectionRectangle;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
@@ -476,6 +477,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      */
     public Result outputCdl(final Request request, Entry entry)
             throws Exception {
+
         String path     = getPath(request, entry);
         String dodspath = getAbsoluteOpendapUrl(request, entry);
         if (request.getString(CdmConstants.ARG_FORMAT,
@@ -517,13 +519,15 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             } else {
                 sb.append("You cannot add properties");
             }
-            return makeLinksResult(request, "NetCDF File Metadata", sb, new State(entry));
+
+            return makeLinksResult(request, "NetCDF File Metadata", sb,
+                                   new State(entry));
         }
 
 
         getPageHandler().entrySectionOpen(request, entry, sb, "");
-	sb.append("<center>");
-	if (getRepository().getAccessManager().canDoAction(request, entry,
+        sb.append("<center>");
+        if (getRepository().getAccessManager().canDoAction(request, entry,
                 Permission.ACTION_EDIT)) {
             request.put(ARG_METADATA_ADD, HtmlUtils.VALUE_TRUE);
             sb.append(
@@ -544,7 +548,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                     HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)));
         }
 
-	String tail =
+        String tail =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry));
 
         sb.append(HtmlUtils.href(HtmlUtils.url(getRepository().URL_ENTRY_SHOW
@@ -552,32 +556,36 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             ARG_ENTRYID, entry.getId(), ARG_OUTPUT, OUTPUT_CDL.getId(),
             CdmConstants.ARG_FORMAT, FORMAT_NCML
         }), "NCML"));
-	sb.append("</center>");
+        sb.append("</center>");
 
-	sb.append("\n<p>\n");
-	sb.append("<table class='ramadda-table stripe'><thead><tr><th>Variable</th><th>Unit</th><th>Dimensions</th><th>#Times</th></tr></thead><tbody>");
-        GridDataset gds  = getCdmManager().getGridDataset(entry, path);
-        List<GridDatatype> grids             = sortGrids(gds);
-	List<VariableSimpleIF> variables = gds.getDataVariables();
-	for (GridDatatype gdt: grids) {
-	    Dimension tdim  =gdt.getTimeDimension();
-	    Dimension xdim  =gdt.getXDimension();
-	    Dimension ydim  =gdt.getYDimension();
-	    Dimension zdim  =gdt.getZDimension();
-	    sb.append("<tr>");
-	    sb.append(HtmlUtils.td(gdt.getShortName()));
-	    sb.append(HtmlUtils.td(gdt.getUnitsString()));
-	    sb.append("<td>");
-	    sb.append(xdim.getLength()+"x"+ydim.getLength() +(zdim!=null?"x"+zdim.getLength():""));
-	    sb.append("</td>");
-	    sb.append(HtmlUtils.td(""+tdim.getLength()));
-	    sb.append("</tr>");
-	}
-	sb.append("</tbody></table>");
-	sb.append("\n");
+        sb.append("\n<p>\n");
+        sb.append(
+            "<table class='ramadda-table stripe'><thead><tr><th>Variable</th><th>Unit</th><th>Dimensions</th><th>#Times</th></tr></thead><tbody>");
+        GridDataset gds = getCdmManager().getGridDataset(entry, path);
+        List<GridDatatype>     grids     = sortGrids(gds);
+        List<VariableSimpleIF> variables = gds.getDataVariables();
+        for (GridDatatype gdt : grids) {
+            Dimension tdim = gdt.getTimeDimension();
+            Dimension xdim = gdt.getXDimension();
+            Dimension ydim = gdt.getYDimension();
+            Dimension zdim = gdt.getZDimension();
+            sb.append("<tr>");
+            sb.append(HtmlUtils.td(gdt.getShortName()));
+            sb.append(HtmlUtils.td(gdt.getUnitsString()));
+            sb.append("<td>");
+            sb.append(xdim.getLength() + "x" + ydim.getLength()
+                      + ((zdim != null)
+                         ? "x" + zdim.getLength()
+                         : ""));
+            sb.append("</td>");
+            sb.append(HtmlUtils.td("" + tdim.getLength()));
+            sb.append("</tr>");
+        }
+        sb.append("</tbody></table>");
+        sb.append("\n");
 
 
-	sb.append("<p><center><h2>CDL</h2></center>");
+        sb.append("<p><center><h2>CDL</h2></center>");
         NetcdfDataset dataset = getCdmManager().createNetcdfDataset(path);
 
         if (dataset == null) {
@@ -594,7 +602,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
         getPageHandler().entrySectionClose(request, entry, sb);
 
-        return makeLinksResult(request, "NetCDF File Metadata", sb, new State(entry));
+        return makeLinksResult(request, "NetCDF File Metadata", sb,
+                               new State(entry));
+
     }
 
 
@@ -640,7 +650,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         GeoGrid     grid = (GeoGrid) gds.findGridByName(field);
         if (grid == null) {
             System.err.println("Cannot find grid field:" + grid);
-	    return;
+
+            return;
         }
         GridCoordSystem        gcs       = grid.getCoordinateSystem();
         CoordinateAxis         xaxis     = gcs.getXHorizAxis();
@@ -666,8 +677,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         displayProps.add("request.gridField.values");
         displayProps.add(Json.quote(vars));
 
-        if ((dates.size() > 0) && (props.get("doAnimation") == null)
-                && (request.getString("doAnimation", null) == null)) {
+        boolean animationEnabled =
+            Utils.getProperty(props, "doAnimation", "false").equals("true")
+            || !Utils.getProperty(props, "animationMode",
+                                  "none").equals("none");
+        if ((dates.size() > 0) && animationEnabled) {
             all.add("gridTime");
             displayProps.add("request.gridTime.includeAll");
             displayProps.add("false");
@@ -690,9 +704,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             CoordinateAxis1D zAxis =
                 grid.getCoordinateSystem().getVerticalAxis();
             if (zAxis != null) {
-		String unit = zAxis.getUnitsString();
-		if(unit==null) unit="";
-		else unit = " ["+ unit+"]";
+                String unit = zAxis.getUnitsString();
+                if (unit == null) {
+                    unit = "";
+                } else {
+                    unit = " [" + unit + "]";
+                }
                 double[] zVals = zAxis.getCoordValues();
                 all.add("gridLevel");
                 displayProps.add("request.gridLevel.label");
@@ -707,9 +724,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                     } else {
                         v += ",";
                     }
-                    v += i + ":" + zVals[i]+unit;
+                    v += i + ":" + zVals[i] + unit;
                 }
-		v += ",last" + ":" + zVals[zVals.length-1]+unit;
+                v += ",last" + ":" + zVals[zVals.length - 1] + unit;
                 displayProps.add(Json.quote(v));
             }
         }
@@ -1357,28 +1374,31 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
      */
     public Result outputGridJson(final Request request, final Entry entry)
             throws Exception {
-	final boolean debug = true;
-        String      path  = getPath(request, entry);
-	if(debug)
-	    System.err.println("outputGridJson path:" + path);
-        String      gridField = request.getString("gridField", (String) null);
-        final GridDataset gds   = getCdmManager().getGridDataset(entry, path);
+
+        final boolean debug = true;
+        String        path  = getPath(request, entry);
+        if (debug) {
+            System.err.println("outputGridJson path:" + path);
+        }
+        String gridField = request.getString("gridField", (String) null);
+        final GridDataset  gds   = getCdmManager().getGridDataset(entry,
+                                       path);
         List<CalendarDate> dates = getGridDates(gds);
         if ((gridField == null) || (gridField.length() == 0)) {
             gridField = gds.getDataVariables().get(0).getShortName();
         }
-	final String field = gridField;
-        GeoGrid grid = (GeoGrid) gds.findGridByName(field);
+        final String field = gridField;
+        GeoGrid      grid  = (GeoGrid) gds.findGridByName(field);
         if (grid == null) {
             throw new RuntimeException("Could not find grid field:" + field);
         }
-
-        int   timeIndex = -1;
-        Range tRange    = null;
-	System.err.println("gridTIme:" + request.getString("gridTime", "NA"));
+        final String fieldLabel = grid.getDescription();
+        int          timeIndex  = -1;
+        Range        tRange     = null;
+        System.err.println("gridTIme:" + request.getString("gridTime", "NA"));
         if (request.defined("gridTime")) {
             timeIndex = request.get("gridTime", -1);
-	    System.err.println("time index:"+ timeIndex);
+            System.err.println("time index:" + timeIndex);
             if (timeIndex >= 0) {
                 tRange = new Range(timeIndex, timeIndex);
                 CalendarDate date = dates.get(timeIndex);
@@ -1389,32 +1409,31 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
 
 
-	CoordinateAxis1D zAxis =
-	    grid.getCoordinateSystem().getVerticalAxis();
-	double[] zVals = null;
-	if (zAxis != null) {
-	    zVals = zAxis.getCoordValues();
-	}
+        CoordinateAxis1D zAxis = grid.getCoordinateSystem().getVerticalAxis();
+        double[]         zVals = null;
+        if (zAxis != null) {
+            zVals = zAxis.getCoordValues();
+        }
         Range zRange = null;
         if (request.defined("gridLevel")) {
-	    String gridLevel =  request.getString("gridLevel",(String) null);
-	    if(gridLevel!=null) {
-		if(gridLevel.equals("last") && zVals!=null) {
-		    zRange = new Range(zVals.length-1, zVals.length-1);
-		} else {
-		    int index =new Integer(gridLevel).intValue();
-		    if (index >= 0) {
-			zRange = new Range(index, index);
-		    }
-		}
-	    }
+            String gridLevel = request.getString("gridLevel", (String) null);
+            if (gridLevel != null) {
+                if (gridLevel.equals("last") && (zVals != null)) {
+                    zRange = new Range(zVals.length - 1, zVals.length - 1);
+                } else {
+                    int index = new Integer(gridLevel).intValue();
+                    if (index >= 0) {
+                        zRange = new Range(index, index);
+                    }
+                }
+            }
         }
 
-	if(zRange == null) {
-	    zRange = new Range(1,1);
-	}
-        final int        max        = request.get("max", 200000);
-        final int        timeStride = request.get("timeStride", 1);
+        if (zRange == null) {
+            zRange = new Range(1, 1);
+        }
+        final int  max        = request.get("max", 200000);
+        final int  timeStride = request.get("timeStride", 1);
         int        gridStride = request.get("gridStride", -1);
 
 
@@ -1435,26 +1454,32 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         }
 
 
-	Dimension timeDimension = grid.getTimeDimension();
+        Dimension timeDimension = grid.getTimeDimension();
         int       numTimes      = timeDimension.getLength();
-        String       unit   = grid.getUnitsString();
- 	if(debug) {
-	    System.err.println("field:" + field +" unit:" + unit + " timeStride:" + timeStride +" gridStride:" + gridStride +" max:" + max +" bounds:" + bounds +" numTimes:" + numTimes +" zRange:" + zRange +" tRange:" + tRange);
-	}
+        String    unit          = grid.getUnitsString();
+        if (debug) {
+            System.err.println("field:" + field + " unit:" + unit
+                               + " timeStride:" + timeStride + " gridStride:"
+                               + gridStride + " max:" + max + " bounds:"
+                               + bounds + " numTimes:" + numTimes
+                               + " zRange:" + zRange + " tRange:" + tRange);
+        }
 
 
         //If a stride was not specified then keep subsetting until we're under the max # points
         if (gridStride > 0) {
-            grid = grid.subset(tRange, zRange, bounds, 1, gridStride,  gridStride);
-	    Dimension xDimension = grid.getXDimension();
-	    Dimension yDimension = grid.getYDimension();
-	    int numPoints = xDimension.getLength()
-		* yDimension.getLength() * numTimes
-		/ timeStride;
-	    if(debug)
-		System.err.println("\tnum points:" + numPoints + " per layer:"
-				   + (xDimension.getLength()
-				      * yDimension.getLength()) + " grid stride:" + gridStride);
+            grid = grid.subset(tRange, zRange, bounds, 1, gridStride,
+                               gridStride);
+            Dimension xDimension = grid.getXDimension();
+            Dimension yDimension = grid.getYDimension();
+            int numPoints = xDimension.getLength() * yDimension.getLength()
+                            * numTimes / timeStride;
+            if (debug) {
+                System.err.println(
+                    "\tnum points:" + numPoints + " per layer:"
+                    + (xDimension.getLength() * yDimension.getLength())
+                    + " grid stride:" + gridStride);
+            }
         } else {
             grid       = grid.subset(tRange, zRange, bounds, 1, 1, 1);
             gridStride = 1;
@@ -1467,10 +1492,12 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 int numPoints = xDimension.getLength()
                                 * yDimension.getLength() * numTimes
                                 / timeStride;
-		if(debug)
-		    System.err.println("\tnum points:" + numPoints + " per layer:"
-				       + (xDimension.getLength()
-					  * yDimension.getLength()) + " grid stride:" + gridStrideX);
+                if (debug) {
+                    System.err.println(
+                        "\tnum points:" + numPoints + " per layer:"
+                        + (xDimension.getLength() * yDimension.getLength())
+                        + " grid stride:" + gridStrideX);
+                }
                 if (numPoints < max) {
                     break;
                 }
@@ -1487,9 +1514,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
 
 
-        GridCoordSystem   gcs    = grid.getCoordinateSystem();
-        int               lats   = (int) gcs.getYHorizAxis().getSize();
-        int               lons   = (int) gcs.getXHorizAxis().getSize();
+        GridCoordSystem         gcs    = grid.getCoordinateSystem();
+        int                     lats   = (int) gcs.getYHorizAxis().getSize();
+        int                     lons   = (int) gcs.getXHorizAxis().getSize();
         final List<LatLonPoint> points = new ArrayList<LatLonPoint>();
         for (int lat = 0; lat < lats; lat++) {
             for (int lon = 0; lon < lons; lon++) {
@@ -1497,116 +1524,159 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             }
         }
 
-	if(debug)
-	    System.err.println("\t# lat/lons:" + points.size() +" #dates:" + dates.size());
-	PipedInputStream in = new PipedInputStream();
-	final PipedOutputStream out = new PipedOutputStream(in);
-	final  List<CalendarDate> theDates = dates;
-	final GeoGrid theGrid  = grid;
-	Misc.run(new Runnable() {
-		public void run() {
-		    PrintWriter      writer = new PrintWriter(out);
-		    try {
+        if (debug) {
+            System.err.println("\t# lat/lons:" + points.size() + " #dates:"
+                               + dates.size());
+        }
+        PipedInputStream         in       = new PipedInputStream();
+        final PipedOutputStream  out      = new PipedOutputStream(in);
+        final List<CalendarDate> theDates = dates;
+        final GeoGrid            theGrid  = grid;
+        Misc.run(new Runnable() {
+            public void run() {
+                PrintWriter writer = new PrintWriter(out);
+                try {
 
-			runInner(writer);
-		    } catch(Exception exc) {
-			writer.println("Error:" + exc);
-			System.err.println("Error:" + exc);
-			exc.printStackTrace();
-		    }
-		}
-		public void runInner(PrintWriter writer) throws Exception {
-		    writer.println("{\"name\":" + Json.quote(entry.getName()) + ",");
-		    writer.println("\"fields\":");
-		    List<String> fields = new ArrayList<String>();
-		    int          index  = 0;
-		    fields.add(Json.map("id", Json.quote(field), "label",
-					Json.quote(field), "index", "" + (index++),
-					"type", Json.quote("double"), "chartable",
-					"true", "unit", Json.quote(getUnit(unit))));
-		    //todo: check for times
-		    fields.add(Json.map("id", Json.quote("date"), "label",
-					Json.quote("Date"), "index", "" + (index++),
-					"type", Json.quote("date")));
-		    
-		    fields.add(Json.map("id", Json.quote("latitude"), "label",
-					Json.quote("Latitude"), "index", "" + (index++),
-					"type", Json.quote("double")));
-		    fields.add(Json.map("id", Json.quote("longitude"), "label",
-					Json.quote("Longitude"), "index", "" + (index++),
-					"type", Json.quote("double")));
-		    writer.println(Json.list(fields));
-		    List<String> displayProps = new ArrayList<String>();
-		    Hashtable    wikiProps    = new Hashtable();
-		    for (Enumeration keys = request.keys(); keys.hasMoreElements(); ) {
-			String key =(String) keys.nextElement();
-			wikiProps.put(key,request.getString(key,""));
-		    }
-		    wikiProps.put("gridField", field);
-		    getWikiTagAttrs(request, entry, "display", wikiProps, displayProps);
-		    String colorTable = getProperty(field, "colortable", null);
-		    if (colorTable != null) {
-			displayProps.add("colorTable");
-			displayProps.add(Json.quote(colorTable));
-		    }
-		    String colorTableMin = getProperty(field, "colortable.min", null);
-		    if (colorTableMin != null) {
-			displayProps.add("colorByMin");
-			displayProps.add(Json.quote(colorTableMin));
-		    }
-		    String colorTableMax = getProperty(field, "colortable.max", null);
-		    if (colorTableMax != null) {
-			displayProps.add("colorByMax");
-			displayProps.add(Json.quote(colorTableMax));
-		    }
+                    runInner(writer);
+                } catch (Exception exc) {
+                    writer.println("Error:" + exc);
+                    System.err.println("Error:" + exc);
+                    exc.printStackTrace();
+                }
+            }
+            public void runInner(PrintWriter writer) throws Exception {
+                writer.println("{\"name\":" + Json.quote(entry.getName())
+                               + ",");
+                writer.println("\"fields\":");
+                List<String> fields = new ArrayList<String>();
+                int          index  = 0;
+                fields.add(Json.map("id", Json.quote(field), "label",
+                                    Json.quote(fieldLabel), "index",
+                                    "" + (index++), "type",
+                                    Json.quote("double"), "chartable",
+                                    "true", "unit",
+                                    Json.quote(getUnit(unit))));
+                //todo: check for times
+                fields.add(Json.map("id", Json.quote("date"), "label",
+                                    Json.quote("Date"), "index",
+                                    "" + (index++), "type",
+                                    Json.quote("date")));
 
-		    writer.println(",\"properties\":");
-		    writer.println(Json.map(displayProps));
-		    writer.println(",\"data\":[");
-		    int                   cnt    = 0;
-		    DoubleFunction<Float> scaler = getScaler(unit);
-		    long t1 = System.currentTimeMillis();
-		    for (int tIdx = 0; tIdx < theDates.size(); tIdx += timeStride) {
-			String dateString = theDates.get(tIdx).toString();
-			Array  a          = theGrid.readYXData(tIdx, 0);
-			if(debug)
-			    System.err.println("\treading time index:" + tIdx +" size:" + a.getSize());
-			for (int i = 0; i < a.getSize(); i++) {
-			    if (cnt > max) {
-				break;
-			    }
-			    LatLonPoint llp = points.get(i);
-			    float       v   =
-				(float) scaler.apply((double) a.getFloat(i));
-			    if (cnt > 0) {
-				writer.print(",");
-			    }
-			    cnt++;
-			    writer.print(Json.list("" + (Double.isNaN(v)
-							 ? null
-							 : v), 
-						   Json.quote(dateString),
-						   "" + llp.getLatitude(),
-						   "" + llp.getLongitude()));		
-			}
-			if (cnt > max) {
-			    break;
-			}
-		    }
-		    long t2 = System.currentTimeMillis();
-		    //		    System.err.println("time:" + (t2-t1));
-		    writer.println("]}");
-		    writer.close();
-		    getCdmManager().returnGridDataset(path, gds);
-		}});
-        Result result = new Result(entry.getName() + ".json",
-                                   in,
+                fields.add(Json.map("id", Json.quote("latitude"), "label",
+                                    Json.quote("Latitude"), "index",
+                                    "" + (index++), "type",
+                                    Json.quote("double")));
+                fields.add(Json.map("id", Json.quote("longitude"), "label",
+                                    Json.quote("Longitude"), "index",
+                                    "" + (index++), "type",
+                                    Json.quote("double")));
+                writer.println(Json.list(fields));
+                List<String> displayProps = new ArrayList<String>();
+                Hashtable    wikiProps    = new Hashtable();
+                for (Enumeration keys = request.keys();
+                        keys.hasMoreElements(); ) {
+                    String key = (String) keys.nextElement();
+                    wikiProps.put(key, request.getString(key, ""));
+                }
+                wikiProps.put("gridField", field);
+                getWikiTagAttrs(request, entry, "display", wikiProps,
+                                displayProps);
+                String colorTable = getProperty(field, "colortable", null);
+                if (colorTable != null) {
+                    displayProps.add("colorTable");
+                    displayProps.add(Json.quote(colorTable));
+                }
+                String colorTableMin = getProperty(field, "colortable.min",
+                                           null);
+                if (colorTableMin != null) {
+                    displayProps.add("colorByMin");
+                    displayProps.add(Json.quote(colorTableMin));
+                }
+                String colorTableMax = getProperty(field, "colortable.max",
+                                           null);
+                if (colorTableMax != null) {
+                    displayProps.add("colorByMax");
+                    displayProps.add(Json.quote(colorTableMax));
+                }
+
+                writer.println(",\"properties\":");
+                writer.println(Json.map(displayProps));
+                writer.println(",\"data\":[");
+                int                   cnt    = 0;
+                DoubleFunction<Float> scaler = getScaler(unit);
+                long                  t1     = System.currentTimeMillis();
+                for (int tIdx = 0; (tIdx < theDates.size()) && (cnt < max);
+                        tIdx += timeStride) {
+                    Array a = theGrid.readYXData(tIdx, 0);
+                    if (debug) {
+                        System.err.println("\treading time index:" + tIdx
+                                           + " size:" + a.getSize());
+                    }
+                    cnt += writeJson(writer, cnt, max, a, Json.quote(theDates.get(tIdx).toString()), points,
+                                     scaler);
+                }
+                writer.println("]}");
+                writer.close();
+                System.err.println("time:"
+                                   + (System.currentTimeMillis() - t1));
+                getCdmManager().returnGridDataset(path, gds);
+            }
+        });
+
+        Result result = new Result(entry.getName() + ".json", in,
                                    "application/json");
         result.setReturnFilename(entry.getName() + ".json");
+
         return result;
+
     }
 
 
+    /**
+     * _more_
+     *
+     * @param writer _more_
+     * @param cnt _more_
+     * @param max _more_
+     * @param a _more_
+     * @param dateString _more_
+     * @param points _more_
+     * @param scaler _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private int writeJson(PrintWriter writer, int cnt, int max, Array a,
+                          String dateString, List<LatLonPoint> points,
+                          DoubleFunction<Float> scaler)
+            throws Exception {
+        synchronized (writer) {
+            int written = 0;
+            for (int i = 0; (i < a.getSize()) && (cnt < max); i++) {
+                written++;
+                LatLonPoint llp = points.get(i);
+                float       v   =
+                    (float) scaler.apply((double) a.getFloat(i));
+                if (cnt++ > 0) {
+                    writer.print(",");
+                }
+                writer.print("[");
+                writer.print((Double.isNaN(v)
+                              ? null
+                              : v));
+                writer.print(",");
+                writer.print(dateString);
+                writer.print(",");
+                writer.print(llp.getLatitude());
+                writer.print(",");
+                writer.print(llp.getLongitude());
+                writer.print("]");
+            }
+
+            return written;
+        }
+    }
 
 
     /**
