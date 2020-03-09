@@ -3551,5 +3551,70 @@ public class Utils extends IO {
     }
 
 
+  public static List<String> splitWithQuotes(String s) {
+    ArrayList<String> list = new ArrayList();
+    if (s == null) {
+      return list;
+    }
+    s = s.replaceAll("\\\\\"","_quote_");
+    while (true) {
+      s = s.trim();
+      int qidx1 = s.indexOf("\"");
+      int qidx2 = s.indexOf("\"", qidx1 + 1);
+      int sidx1 = 0;
+      int sidx2 = s.indexOf(" ", sidx1 + 1);
+      if ((qidx1 < 0) && (sidx2 < 0)) {
+        if (s.length() > 0) {
+          list.add(s);
+        }
+        break;
+      }
+      if ((qidx1 >= 0) && ((sidx2 == -1) || (qidx1 < sidx2))) {
+        if (qidx1 >= qidx2) {
+          //Malformed string. Add the rest of the line and break
+          if (qidx1 == 0) {
+            s = s.substring(qidx1 + 1);
+          } else if (qidx1 > 0) {
+            s = s.substring(0, qidx1);
+          }
+          if (s.length() > 0) {
+            list.add(s);
+          }
+          break;
+        }
+        if (qidx2 < 0) {
+          //Malformed string. Add the rest of the line and break
+          s = s.substring(1);
+          list.add(s);
+          break;
+        }
+        String tok = s.substring(qidx1 + 1, qidx2);
+        if (tok.length() > 0) {
+          list.add(tok);
+        }
+        s = s.substring(qidx2 + 1);
+        //                System.err.println ("qtok:" + tok);
+      } else {
+        if (sidx2 < 0) {
+          list.add(s);
+          break;
+        }
+        String tok = s.substring(sidx1, sidx2);
+        if (tok.length() > 0) {
+          list.add(tok);
+        }
+        s = s.substring(sidx2);
+        //                System.err.println ("stok:" + tok);
+      }
+    }
+    List<String> tmp = new ArrayList<String>();
+    for(String tmps: list) {
+	tmp.add(tmps.replaceAll("_quote_","\""));
+    }
+    return tmp;
+  }
+
+
+
 
 }

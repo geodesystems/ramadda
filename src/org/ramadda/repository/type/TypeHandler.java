@@ -5072,7 +5072,7 @@ public class TypeHandler extends RepositoryManager {
                 extra = "";
             }
 
-            sb.append(formEntry(request, msgLabel("xxx Text"),
+            sb.append(formEntry(request, msgLabel("Text"),
                                 HtmlUtils.input(ARG_TEXT, name,
                                     HtmlUtils.id("searchinput")
                                     + HtmlUtils.SIZE_50
@@ -6212,11 +6212,7 @@ public class TypeHandler extends RepositoryManager {
                                         Tables.METADATA.COL_ATTR3,
                                         Tables.METADATA.COL_ATTR4*/
             };
-
-
-
-            List<String> nameToks = StringUtil.splitWithQuotes(textTok);
-
+            List<String> nameToks = Utils.splitWithQuotes(textTok);
             for (String nameTok : nameToks) {
                 boolean nameDoLike = doLike;
                 boolean doNot      = nameTok.startsWith("!");
@@ -6229,7 +6225,6 @@ public class TypeHandler extends RepositoryManager {
                     nameTok    = nameTok.substring(1);
                     nameDoLike = false;
                 }
-
 
                 if (nameDoLike) {
                     nameTok = "%" + nameTok + "%";
