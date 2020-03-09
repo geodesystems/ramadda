@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -29,24 +29,24 @@ function AreaWidget(display) {
 
             var areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area", "border", "0", "cellpadding", "0", "cellspacing", "0"]);
             areaForm += HtmlUtils.tr([],
-                HtmlUtils.td(["align", "center"],
-                    HtmlUtils.leftCenterRight(mylocation,
-                        HtmlUtils.input(ID_NORTH, "", ["placeholder", " N", ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
-                            this.display.getDomId(ID_NORTH), ATTR_TITLE, "North"
-                        ]), link, "20%", "60%", "20%")));
+				     HtmlUtils.td(["align", "center"],
+						  HtmlUtils.leftCenterRight(mylocation,
+									    HtmlUtils.input(ID_NORTH, "", ["placeholder", " N", ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
+													   this.display.getDomId(ID_NORTH), ATTR_TITLE, "North"
+													  ]), link, "20%", "60%", "20%")));
 
             areaForm += HtmlUtils.tr([], HtmlUtils.td([],
-                HtmlUtils.input(ID_WEST, "", ["placeholder", " W", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
-                    this.display.getDomId(ID_WEST), ATTR_TITLE, "West"
-                ]) +
-                HtmlUtils.input(ID_EAST, "", ["placeholder", " E", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
-                    this.display.getDomId(ID_EAST), ATTR_TITLE, "East"
-                ])));
+						      HtmlUtils.input(ID_WEST, "", ["placeholder", " W", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+										    this.display.getDomId(ID_WEST), ATTR_TITLE, "West"
+										   ]) +
+						      HtmlUtils.input(ID_EAST, "", ["placeholder", " E", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+										    this.display.getDomId(ID_EAST), ATTR_TITLE, "East"
+										   ])));
             areaForm += HtmlUtils.tr([],
-                HtmlUtils.td(["align", "center"],
-                    HtmlUtils.leftCenterRight(erase, HtmlUtils.input(ID_SOUTH, "", ["placeholder", " S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
-                        this.display.getDomId(ID_SOUTH), ATTR_TITLE, "South"
-                    ]), cbx)));
+				     HtmlUtils.td(["align", "center"],
+						  HtmlUtils.leftCenterRight(erase, HtmlUtils.input(ID_SOUTH, "", ["placeholder", " S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+														  this.display.getDomId(ID_SOUTH), ATTR_TITLE, "South"
+														 ]), cbx)));
 
             areaForm += HtmlUtils.closeTag(TAG_TABLE);
             return areaForm;
@@ -111,9 +111,9 @@ function AreaWidget(display) {
                 settings.setAreaContains(false);
             }
             settings.setBounds(this.display.getFieldValue(this.display.getDomId(ID_NORTH), null),
-                this.display.getFieldValue(this.display.getDomId(ID_WEST), null),
-                this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null),
-                this.display.getFieldValue(this.display.getDomId(ID_EAST), null));
+			       this.display.getFieldValue(this.display.getDomId(ID_WEST), null),
+			       this.display.getFieldValue(this.display.getDomId(ID_SOUTH), null),
+			       this.display.getFieldValue(this.display.getDomId(ID_EAST), null));
         },
     });
 }
@@ -138,11 +138,11 @@ function DateRangeWidget(display) {
         },
         getHtml: function() {
             var html = HtmlUtils.input(ID_DATE_START, "", ["class", "display-date-input", "placeholder", " start date", ATTR_ID,
-                    display.getDomId(ID_DATE_START), "size", "10"
-                ]) + " - " +
+							   display.getDomId(ID_DATE_START), "size", "10"
+							  ]) + " - " +
                 HtmlUtils.input(ID_DATE_END, "", ["class", "display-date-input", "placeholder", " end date", ATTR_ID,
-                    display.getDomId(ID_DATE_END), "size", "10"
-                ]);
+						  display.getDomId(ID_DATE_END), "size", "10"
+						 ]);
             return html;
         }
     });
@@ -355,7 +355,7 @@ function DisplayAnimation(display, enabled) {
 	    if(display.getProperty("animationShowSlider",true)) {
 		let style= display.getProperty("animationSliderStyle","");
 		buttons +=   HtmlUtils.div(["class","display-animation-slider","style",style,"id",this.getDomId(ID_SLIDER)],
-					  HtmlUtils.div(["class","display-animation-ticks","id",this.getDomId(ID_TICKS)]));
+					   HtmlUtils.div(["class","display-animation-ticks","id",this.getDomId(ID_TICKS)]));
 	    }
 	    
 
@@ -599,17 +599,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	fieldProp: prop,
 	fieldValue:display.getProperty(prop),
 	propPrefix: propPrefix,
-	getProperty: function(prop, dflt) {
-	    if(this.debug) console.log("getProperty:" + prop);
-	    for(let i=0;i<this.propPrefix.length;i++) {
-		let v = this.display.getProperty(this.propPrefix[i]+prop);
-		if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
-		if(Utils.isDefined(v)) return v;
-	    }
-	    return dflt;
-	}
     });
-
 
     let colorByAttr = this.getProperty(prop||"colorBy", null);
     let theField = null;
@@ -628,9 +618,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colorByAttr =theField.getId();
 	this.propPrefix.unshift(theField.getId()+".colorBy");
     }
-
-
-
 
     $.extend(this, {
 	display:display,
@@ -659,192 +646,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colorByOffset: 0,
         pctFields:null,
 	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "", true)),
-	displayColorTable: function(width,force, domId) {
-	    if(!this.getProperty("showColorTable",true)) return;
-	    if(this.compareFields.length>0) {
-		var legend = "";
-		this.compareFields.map((f,idx)=>{
-		    legend += HtmlUtils.div(["style","display:inline-block;width: 15px;height: 15px; background:" + this.colors[idx]+";"]) +" " +
-			f.getLabel() +" ";
-		});
-		let dom = this.display.jq(domId || ID_COLORTABLE);
-		dom.html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
-	    }
-	    if(!force && this.index<0) return;
-	    if(this.stringMap) {
-		var colors = [];
-		this.colorByValues= [];
-		for (var i in this.stringMap) {
-		    this.colorByValues.push(i);
-		    colors.push(this.stringMap[i]);
-		}
-		this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
-		    colorByInfo:this,
-		    width:width,
-		    stringValues: this.colorByValues});
-	    } else {
-		var colors = this.colors;
-
-		if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
-		    var tmp = [];
-		    for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
-			tmp.push(this.colors[i]);
-		    colors = tmp;
-		}
-		this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
-		    colorByInfo:this,
-		    width:width,
-		    stringValues: this.colorByValues
-		});
-	    }
-	},
-	resetRange: function() {
-	    if(this.origRange)
-		this.setRange(this.origRange[0],this.origRange[1]);
-	},
-	setRange: function(minValue,maxValue, force) {
-	    if(!force && this.overrideRange) return;
-	    if (this.colorByLog) {
-		if (minValue < 1) {
-		    this.colorByOffset = 1 - minValue;
-		}
-		minValue = this.colorByFunc(minValue + this.colorByOffset);
-		maxValue = this.colorByFunc(maxValue + this.colorByOffset);
-	    }
-	    this.minValue = minValue;
-	    this.maxValue = maxValue;
-	    this.origMinValue = minValue;
-	    this.origMaxValue = maxValue;
-	    this.range = maxValue - minValue;
-	    if(!this.origRange) {
-		this.origRange = [minValue, maxValue];
-	    }
-	},
-	getValuePercent: function(v) {
-	    let perc =   (v - this.minValue) / this.range;
-	    if(this.inverse) perc = 1-perc;
-	    return perc;
-	},
-	scaleToValue: function(v) {
-	    let perc = this.getValuePercent(v);
-	    return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
-	},
-
-	getColorFromRecord: function(record, dflt) {
-	    if(this.display.highlightFilter && !record.isHighlight(this.display)) {
-		return this.display.getProperty("unhighlightColor","#eee");
-	    }
-
-	    if(this.colorThresholdField && this.display.selectedRecord) {
-		let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
-		let v2=record.getValue(this.colorThresholdField.getIndex());
-		if(v2>v) return this.aboveColor;
-		else return this.belowColor;
-	    }
-
-	    if (this.index >= 0) {
-		let value = record.getData()[this.index];
-		return  this.getColor(value, record);
-	    }
-	    if(this.fieldValue == "year") {
-		let value = record.getDate().getUTCFullYear();
-		return this.getColor(value, record);
-	    }
-	    return dflt;
-	},
-	hasField: function() {
-	    return this.index>=0;
-	},
-	getColor: function(value, pointRecord) {
-	    if(this.display.highlightFilter && pointRecord && !pointRecord.isHighlight(this.display)) {
-		return this.display.getUnhighlightColor();
-	    }
-
-	    var percent = 0;
-            if (this.showPercent) {
-                var total = 0;
-                var data = pointRecord.getData();
-                for (var j = 0; j < data.length; j++) {
-                    var ok = this.fields[j].isNumeric() && !this.fields[j].isFieldGeo();
-                            if (ok && this.pctFields != null) {
-                                ok = this.pctFields.indexOf(this.fields[j].getId()) >= 0 ||
-                                    this.pctFields.indexOf("#" + (j + 1)) >= 0;
-                            }
-                    if (ok) {
-                        total += data[j];
-                    }
-                }
-                if (total != 0) {
-                    percent = percent = value / total * 100;
-                    percent = (percent - this.minValue) / (this.maxValue - this.minValue);
-                }
-            } else {
-                var v = value;
-		if(this.stringMap) {
-		    var color = this.stringMap[value];
-		    if(!Utils.isDefined(color)) {
-			return this.stringMap["default"];
-		    }
-		    return color;
-		}
-                if (this.isString) {
-                    color = this.colorByMap[v];
-		    if(color) return color;
-                }
-                v += this.colorByOffset;
-                if (this.colorByLog) {
-                    v = this.colorByFunc(v);
-                }
-
-                percent = this.range?(v - this.minValue) / this.range:0
-            }
-
-	    var index=0;
-	    if(this.steps) {
-		for(;index<this.steps.length;index++) {
-		    if(v<=this.steps[index]) {
-			break;
-		    }
-		}
-		this.xcnt++;
-	    } else {
-		index = parseInt(percent * this.colors.length);
-	    }
-            if (index >= this.colors.length) index = this.colors.length - 1;
-            else if (index < 0) index = 0;
-	    if(this.stringMap) {
-		var color = this.stringMap[value];
-		if(!Utils.isDefined(color)) {
-		    return this.stringMap["default"];
-		}
-		return color;
-	    } else {
-		return this.colors[index];
-	    }
-	    return null;
-	},
-	convertColor: function(color, colorByValue) {
-	    color = this.convertColorIntensity(color, colorByValue);
-	    color = this.convertColorAlpha(color, colorByValue);
-	    return color;
-	},
-	convertColorIntensity: function(color, colorByValue) {
-	    if(!this.convertIntensity) return color;
-	    percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
-	    intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
-	    var result =  Utils.pSBC(intensity,color);
-	    //		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
-	    return result || color;
-	},
-	convertColorAlpha: function(color, colorByValue) {
-	    if(!this.convertAlpha) return color;
-	    percent = (colorByValue-this.alphaSourceMin)/(this.alphaSourceMax-this.alphaSourceMin);
-	    alpha=this.alphaTargetMin+percent*(this.alphaTargetMax-this.alphaTargetMin);
-	    var result =  Utils.addAlphaToColor(color, alpha);
-	    return result || color;
-	}
     });
-
     if(this.fieldValue == "year") {
 	let seen= {};
 	this.dates = [];
@@ -942,8 +744,8 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.colors = colors;
 
     if(this.hasField && !colors) {
-	this.index = -1;
-	return;
+//	this.index = -1;
+//	return;
     }
 
 
@@ -959,7 +761,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         this.colors = Utils.ColorTables.grayscale.colors;
     }
 
-
     if(!this.field) {
 	for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
@@ -971,9 +772,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     if(this.field && this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
-
-
-
     this.stringMap = this.display.getColorByMap(colorByMapProp);
     if(this.index>=0) {
 	var cnt = 0;
@@ -1020,6 +818,202 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 }
 
 
+ColorByInfo.prototype = {
+    getProperty: function(prop, dflt) {
+	if(this.debug) console.log("getProperty:" + prop);
+	for(let i=0;i<this.propPrefix.length;i++) {
+	    let v = this.display.getProperty(this.propPrefix[i]+prop);
+	    if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
+	    if(Utils.isDefined(v)) return v;
+	}
+	return dflt;
+    },
+
+    displayColorTable: function(width,force, domId) {
+	if(!this.getProperty("showColorTable",true)) return;
+	if(this.compareFields.length>0) {
+	    var legend = "";
+	    this.compareFields.map((f,idx)=>{
+		legend += HtmlUtils.div(["style","display:inline-block;width: 15px;height: 15px; background:" + this.colors[idx]+";"]) +" " +
+		    f.getLabel() +" ";
+	    });
+	    let dom = this.display.jq(domId || ID_COLORTABLE);
+	    dom.html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
+	}
+	if(!force && this.index<0) return;
+	if(this.stringMap) {
+	    var colors = [];
+	    this.colorByValues= [];
+	    for (var i in this.stringMap) {
+		this.colorByValues.push(i);
+		colors.push(this.stringMap[i]);
+	    }
+	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		colorByInfo:this,
+		width:width,
+		stringValues: this.colorByValues});
+	} else {
+	    var colors = this.colors;
+
+	    if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
+		var tmp = [];
+		for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
+		    tmp.push(this.colors[i]);
+		colors = tmp;
+	    }
+	    this.display.displayColorTable(colors, domId || ID_COLORTABLE, this.origMinValue, this.origMaxValue, {
+		colorByInfo:this,
+		width:width,
+		stringValues: this.colorByValues
+	    });
+	}
+    },
+    resetRange: function() {
+	if(this.origRange)
+	    this.setRange(this.origRange[0],this.origRange[1]);
+    },
+    setRange: function(minValue,maxValue, force) {
+	if(!force && this.overrideRange) return;
+	if (this.colorByLog) {
+	    if (minValue < 1) {
+		this.colorByOffset = 1 - minValue;
+	    }
+	    minValue = this.colorByFunc(minValue + this.colorByOffset);
+	    maxValue = this.colorByFunc(maxValue + this.colorByOffset);
+	}
+	this.minValue = minValue;
+	this.maxValue = maxValue;
+	this.origMinValue = minValue;
+	this.origMaxValue = maxValue;
+	this.range = maxValue - minValue;
+	if(!this.origRange) {
+	    this.origRange = [minValue, maxValue];
+	}
+    },
+    getValuePercent: function(v) {
+	let perc =   (v - this.minValue) / this.range;
+	if(this.inverse) perc = 1-perc;
+	return perc;
+    },
+    scaleToValue: function(v) {
+	let perc = this.getValuePercent(v);
+	return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
+    },
+
+    getColorFromRecord: function(record, dflt) {
+	if(this.display.highlightFilter && !record.isHighlight(this.display)) {
+	    return this.display.getProperty("unhighlightColor","#eee");
+	}
+
+	if(this.colorThresholdField && this.display.selectedRecord) {
+	    let v=this.display.selectedRecord.getValue(this.colorThresholdField.getIndex());
+	    let v2=record.getValue(this.colorThresholdField.getIndex());
+	    if(v2>v) return this.aboveColor;
+	    else return this.belowColor;
+	}
+
+	if (this.index >= 0) {
+	    let value = record.getData()[this.index];
+	    return  this.getColor(value, record);
+	}
+	if(this.fieldValue == "year") {
+	    let value = record.getDate().getUTCFullYear();
+	    return this.getColor(value, record);
+	}
+	return dflt;
+    },
+    hasField: function() {
+	return this.index>=0;
+    },
+    getColor: function(value, pointRecord) {
+	if(this.display.highlightFilter && pointRecord && !pointRecord.isHighlight(this.display)) {
+	    return this.display.getUnhighlightColor();
+	}
+
+	var percent = 0;
+        if (this.showPercent) {
+            var total = 0;
+            var data = pointRecord.getData();
+            for (var j = 0; j < data.length; j++) {
+                var ok = this.fields[j].isNumeric() && !this.fields[j].isFieldGeo();
+                if (ok && this.pctFields != null) {
+                    ok = this.pctFields.indexOf(this.fields[j].getId()) >= 0 ||
+                        this.pctFields.indexOf("#" + (j + 1)) >= 0;
+                }
+                if (ok) {
+                    total += data[j];
+                }
+            }
+            if (total != 0) {
+                percent = percent = value / total * 100;
+                percent = (percent - this.minValue) / (this.maxValue - this.minValue);
+            }
+        } else {
+            var v = value;
+	    if(this.stringMap) {
+		var color = this.stringMap[value];
+		if(!Utils.isDefined(color)) {
+		    return this.stringMap["default"];
+		}
+		return color;
+	    }
+            if (this.isString) {
+                color = this.colorByMap[v];
+		if(color) return color;
+            }
+            v += this.colorByOffset;
+            if (this.colorByLog) {
+                v = this.colorByFunc(v);
+            }
+
+            percent = this.range?(v - this.minValue) / this.range:0
+        }
+
+	var index=0;
+	if(this.steps) {
+	    for(;index<this.steps.length;index++) {
+		if(v<=this.steps[index]) {
+		    break;
+		}
+	    }
+	    this.xcnt++;
+	} else {
+	    index = parseInt(percent * this.colors.length);
+	}
+        if (index >= this.colors.length) index = this.colors.length - 1;
+        else if (index < 0) index = 0;
+	if(this.stringMap) {
+	    var color = this.stringMap[value];
+	    if(!Utils.isDefined(color)) {
+		return this.stringMap["default"];
+	    }
+	    return color;
+	} else {
+	    return this.colors[index];
+	}
+	return null;
+    },
+    convertColor: function(color, colorByValue) {
+	color = this.convertColorIntensity(color, colorByValue);
+	color = this.convertColorAlpha(color, colorByValue);
+	return color;
+    },
+    convertColorIntensity: function(color, colorByValue) {
+	if(!this.convertIntensity) return color;
+	percent = (colorByValue-this.intensitySourceMin)/(this.intensitySourceMax-this.intensitySourceMin);
+	intensity=this.intensityTargetMin+percent*(this.intensityTargetMax-this.intensityTargetMin);
+	var result =  Utils.pSBC(intensity,color);
+	//		    console.log(color +" " + result +" intensity:" + intensity +" min:" + this.intensityTargetM
+	return result || color;
+    },
+    convertColorAlpha: function(color, colorByValue) {
+	if(!this.convertAlpha) return color;
+	percent = (colorByValue-this.alphaSourceMin)/(this.alphaSourceMax-this.alphaSourceMin);
+	alpha=this.alphaTargetMin+percent*(this.alphaTargetMax-this.alphaTargetMin);
+	var result =  Utils.addAlphaToColor(color, alpha);
+	return result || color;
+    }
+}
 
 function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, margin) {
     if(!attrs) attrs = {};

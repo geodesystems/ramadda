@@ -1842,6 +1842,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let dfltSegmentWidth = segmentWidth;
             let showPoints = this.getProperty("showPoints", true);
             let lineColor = this.getProperty("lineColor", "green");
+	    let lineCap = this.getProperty('lineCap', 'round');
 	    let pointIcon = this.getProperty("pointIcon");
 	    if(pointIcon) this.pointsAreMarkers = true;
             let iconField = this.getFieldById(fields, this.getProperty("iconField"));
@@ -1864,7 +1865,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    shapeBy.map[tuple[0]] = tuple[1];
 		})
 	    }
-
 
 	    //	    console.log("records:" + records.length +" color by range:" + colorBy.minValue + " " + colorBy.maxValue);
             let sizeBy = {
@@ -2025,7 +2025,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let showSegments = this.getProperty("showSegments", false);
 	    let tooltip = this.getProperty("tooltip");
 	    let highlight = this.getProperty("highlight");
-	    let highlightTemplate = this.getProperty("highlightTemplate",tooltip);
+	    let highlightTemplate = this.getProperty("highlightTemplate");
+	    if(highlightTemplate)
+		highlight=true;
+	       
+	    let highlightWidth = this.getProperty("highlightWidth",200);
+	    let highlightHeight = this.getProperty("highlightHeight",-1);
+	    let highlightSize = null;
+	    if(highlightHeight>0) {
+	    	highlightSize = new OpenLayers.Size(highlightWidth,highlightHeight);
+	    }
+
 	    let addedPoints = [];
 
 	    let textGetter = f=>{
@@ -2036,7 +2046,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    };
 	    let highlightGetter = f=>{
 		if(f.record) {
-                    return  HtmlUtils.div(["style","background:#fff;"],this.getRecordHtml(f.record, fields, highlightTemplate));
+                    return   HtmlUtils.div(["style","background:#fff;"],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
 		}
 		return null;
 	    };	    
@@ -2118,6 +2128,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
                         if (sizeSegments) {
                             segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+			    segmentWidth=props.pointRadius;
 			    if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
                         }
                     }
@@ -2221,10 +2232,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         attrs.strokeColor = props.fillColor;
                     else
                         attrs.strokeColor = lineColor;
+		    attrs.strokeLinecap = lineCap;
+		    attrs.strokeColor =   colorBy.getColorFromRecord(record, attrs.strokeColor);
                     attrs.strokeWidth = segmentWidth;
 		    let line = this.map.addLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs);
 		    line.record = record;
 		    line.textGetter = textGetter;
+		    if(highlight) {
+			line.highlightTextGetter = highlightGetter;
+			line.highlightSize = highlightSize;
+		    }
+		    line.record = record;
                     this.lines.push(line);
                     if (showEndPoints) {
                         let pointProps = {};
@@ -2292,8 +2310,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     let date = record.getDate();
 		    if(mapPoint) {
-			if(highlight)
+			if(highlight) {
 			    mapPoint.highlightTextGetter = highlightGetter;
+			    mapPoint.highlightSize = highlightSize;
+			}
 			mapPoint.record = record;
 			mapPoint.textGetter = textGetter;
 			mapPoint.hasColorByValue = hasColorByValue;

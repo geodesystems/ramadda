@@ -449,8 +449,7 @@ function initMapFunctions(theMap) {
 			text =HtmlUtils.div(["style","padding:2px;"],text);
 			this.highlightPopup = new OpenLayers.Popup("popup",
 								   projPoint,
-								   null,
-								   //feature.highlightSize,
+								   feature.highlightSize,
 								   text,
 								   false);
 
@@ -3530,7 +3529,6 @@ function initMapFunctions(theMap) {
         }
 
         if (!this.lines) {
-
             this.lines = new OpenLayers.Layer.Vector("Lines", {
                 style: base_style
             });

@@ -1383,7 +1383,7 @@ var Utils = {
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
         if (stringValues && stringValues.length) {
             var tdw = 100 / ct.length + "%";
-            html += "<div style='width:100%;vertical-align:top;'>"
+            html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
 	    let colCnt =0;
 	    let bin ={};
             for (var i = 0; i < stringValues.length; i++) {
