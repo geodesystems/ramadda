@@ -44,10 +44,10 @@ public class RepositoryUtil {
     //Make sure to change the fields in the top-level build.properties
 
     /** _more_ */
-    public static final double MAJOR_VERSION = 3.0;
+    private static final double MAJOR_VERSION = 3.0;
 
     /** _more_ */
-    public static final int MINOR_VERSION = 34;
+    private static final int MINOR_VERSION = 35;
 
 
     //When we make any real change to the css or javascript change this version
@@ -56,13 +56,13 @@ public class RepositoryUtil {
     //that gets replaced with  this. Repository checks incoming paths and strips this off
 
     /** _more_ */
-    public static final String HTDOCS_VERSION =
+    private static final String HTDOCS_VERSION =
         "htdocs_v" + Double.toString(MAJOR_VERSION).replace(".", "_") + "_"
         + MINOR_VERSION;
 
 
     /** _more_ */
-    public static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
+    private static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
 
 
     /** _more_ */
