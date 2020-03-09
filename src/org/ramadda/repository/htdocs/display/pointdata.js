@@ -715,7 +715,7 @@ PointRecord.prototype =  {
 	    delete this.highlightForDisplay[display];
 	},
 	toString: function() {
-	    return "data:"  + data;
+	    return "data:"  + this.data;
 	},
 	getId: function() {
 	    return this.id;

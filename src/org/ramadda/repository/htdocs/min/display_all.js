@@ -8113,7 +8113,7 @@ PointRecord.prototype =  {
 	    delete this.highlightForDisplay[display];
 	},
 	toString: function() {
-	    return "data:"  + data;
+	    return "data:"  + this.data;
 	},
 	getId: function() {
 	    return this.id;
@@ -25414,7 +25414,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
             this.selectedMarker = marker;
         },
-        applyVectorMap: function(force) {
+        applyVectorMap: function(force, textGetter) {
+	    if(!textGetter) textGetter  = this.textGetter;
 	    let debug = false;
 	    if(debug) console.log("applyVectorMap");
             if (!force && this.vectorMapApplied) {
@@ -25525,6 +25526,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    matchedFeatures.push(matchedFeature); 
 		}
 		matchedFeature.circles.push(circle);
+		matchedFeature.record = record;
+		matchedFeature.textGetter=textGetter;
 		if(doCount) {
 		    matchedFeature.pointCount++;
 		    maxCnt = maxCnt==-1?matchedFeature.pointCount:Math.max(maxCnt, matchedFeature.pointCount);
@@ -25749,7 +25752,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.map.markers.redraw();
 
 
-            this.applyVectorMap(true);
+            this.applyVectorMap(true, this.textGetter);
 	},
         showAllPoints: function() {
 	    if(this.lines) {
@@ -25995,7 +25998,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    var t3= new Date();
 	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3], true);
             this.addLabels(records,fields,points);
-            this.applyVectorMap(true);
+            this.applyVectorMap(true, this.textGetter);
 	    this.lastUpdateTime = new Date();
 	},
 	heatmapCnt:0,
@@ -26601,8 +26604,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    let addedPoints = [];
-
-	    let textGetter = f=>{
+	    let textGetter = this.textGetter = f=>{
 		if(f.record) {
                     return  this.getRecordHtml(f.record, fields, tooltip);
 		}

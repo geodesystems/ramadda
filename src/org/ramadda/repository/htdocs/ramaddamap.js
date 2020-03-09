@@ -548,7 +548,6 @@ function initMapFunctions(theMap) {
             }
 	    if(!this.doSelect) return;
 
-
             this.selectedFeature = feature;
             layer.selectedFeature = feature;
             layer.selectedFeature.isSelected = true;
@@ -561,12 +560,10 @@ function initMapFunctions(theMap) {
 		fill: true,
 	    });
 
+
 	    if(Utils.isDefined(style.pointRadius)) {
 		style.pointRadius = Math.round(style.pointRadius*1.5);
 	    }
-
-
-
 
 	    if(feature.style) {
 		if(feature.style.externalGraphic) {
@@ -1132,6 +1129,10 @@ function initMapFunctions(theMap) {
             }
         },
         getFeatureText: function(layer, feature) {
+	    if(feature.textGetter) {
+		return  feature.textGetter(feature);
+	    }
+
             var style = feature.style || feature.originalStyle || layer.style;
             var p = feature.attributes;
             var out = feature.popupText;
@@ -3608,8 +3609,9 @@ function initMapFunctions(theMap) {
 	if(this.shareSelected &&  window["ramaddaDisplaySetSelectedEntry"]) {
 	    ramaddaDisplaySetSelectedEntry(id);
 	}
-	if(!this.doPopup) return;
-
+	if(!this.doPopup) {
+	    return;
+	}
 
         this.hiliteBox(id);
         var theMap = this;
@@ -3619,8 +3621,10 @@ function initMapFunctions(theMap) {
         let markertext;
 	if(marker.textGetter) {
 	    markertext =marker.textGetter(marker);
+	    console.log("popup:" + markertext);
 	} else {
 	    markertext =marker.text;
+	    console.log("popup 2:" + markertext);
 	}
 	if(this.displayDiv) {
 	    $("#" + this.displayDiv).html(markertext);
