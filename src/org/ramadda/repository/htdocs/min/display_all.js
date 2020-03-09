@@ -758,6 +758,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         this.colors = Utils.ColorTables.grayscale.colors;
     }
 
+
     if(!this.field) {
 	for (var i = 0; i < fields.length; i++) {
             var field = fields[i];
@@ -9706,6 +9707,22 @@ var RecordUtil = {
 		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,v);
 	    });
 	}
+
+	let alpha = opts.display.getProperty("colorTableAlpha",-1);
+	//add in the color table alpha
+	if(alpha>0) {
+	    var image = ctx.getImageData(0, 0, opts.w, opts.h);
+	    var imageData = image.data,
+		length = imageData.length;
+	    for(var i=3; i < length; i+=4){  
+		if(imageData[i]) {
+		    imageData[i] = alpha*255;
+		}
+	    }
+	    image.data = imageData;
+	    ctx.putImageData(image, 0, 0);
+	}
+
 	let img =  canvas.toDataURL("image/png");
 	canvas.parentNode.removeChild(canvas);
 	return img;
@@ -26102,6 +26119,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
 	    groups.values.every((value,idx)=>{
+		if(idx>0) return;
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);

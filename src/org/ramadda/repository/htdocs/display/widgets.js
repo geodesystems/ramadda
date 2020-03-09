@@ -758,6 +758,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
         this.colors = Utils.ColorTables.grayscale.colors;
     }
 
+
     if(!this.field) {
 	for (var i = 0; i < fields.length; i++) {
             var field = fields[i];

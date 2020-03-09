@@ -1557,6 +1557,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
 	    groups.values.every((value,idx)=>{
+		if(idx>0) return;
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);

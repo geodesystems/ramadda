@@ -2311,6 +2311,22 @@ var RecordUtil = {
 		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,v);
 	    });
 	}
+
+	let alpha = opts.display.getProperty("colorTableAlpha",-1);
+	//add in the color table alpha
+	if(alpha>0) {
+	    var image = ctx.getImageData(0, 0, opts.w, opts.h);
+	    var imageData = image.data,
+		length = imageData.length;
+	    for(var i=3; i < length; i+=4){  
+		if(imageData[i]) {
+		    imageData[i] = alpha*255;
+		}
+	    }
+	    image.data = imageData;
+	    ctx.putImageData(image, 0, 0);
+	}
+
 	let img =  canvas.toDataURL("image/png");
 	canvas.parentNode.removeChild(canvas);
 	return img;
