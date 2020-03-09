@@ -603,8 +603,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     let colorByAttr = this.getProperty(prop||"colorBy", null);
     let theField = null;
-    //if its a field
-    this.hasField = null;
     if(prop.getId) {
 	theField = prop;
     } else {
@@ -612,7 +610,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
     if(theField) {
-	this.hasField = theField!=null;
 	this.field = theField;
 	propPrefix = [theField.getId()+".",""];
 	colorByAttr =theField.getId();
@@ -728,7 +725,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
     var colors = defaultColorTable || this.display.getColorTable(true,colorByAttr +".colorTable");
     
-    if(!colors && this.hasField) {
+    if(!colors && this.hasField()) {
 	colors = this.display.getColorTable(true,"colorTable");
     }
 
@@ -743,7 +740,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colors = this.display.getColorTable(true);
     this.colors = colors;
 
-    if(this.hasField && !colors) {
+    if(this.hasField() && !colors) {
 //	this.index = -1;
 //	return;
     }
@@ -26317,7 +26314,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		$("#"+ $(this).attr(ID).replace('_hover','')).css('display','block');
 		$(this).css('display','none');
 	    });
-
 	    if(colorBy.hasField())
 		colorBy.displayColorTable(null,true);
 	},
@@ -26937,7 +26933,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['zoomLevel=4',"initial zoom"],
 		['fixedPosition=true','Keep the initial position'],
 		['initialLocation=lat,lon',"initial location"],
-		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
+		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
 		['doPopup=false',"Don't show popups"],
 		['highlight=true',"Show mouse over highlights"],
 		['linked=true',"Link location with other maps"],

@@ -603,8 +603,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 
     let colorByAttr = this.getProperty(prop||"colorBy", null);
     let theField = null;
-    //if its a field
-    this.hasField = null;
     if(prop.getId) {
 	theField = prop;
     } else {
@@ -612,7 +610,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
     if(theField) {
-	this.hasField = theField!=null;
 	this.field = theField;
 	propPrefix = [theField.getId()+".",""];
 	colorByAttr =theField.getId();
@@ -728,7 +725,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
     var colors = defaultColorTable || this.display.getColorTable(true,colorByAttr +".colorTable");
     
-    if(!colors && this.hasField) {
+    if(!colors && this.hasField()) {
 	colors = this.display.getColorTable(true,"colorTable");
     }
 
@@ -743,7 +740,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colors = this.display.getColorTable(true);
     this.colors = colors;
 
-    if(this.hasField && !colors) {
+    if(this.hasField() && !colors) {
 //	this.index = -1;
 //	return;
     }

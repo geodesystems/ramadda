@@ -1769,7 +1769,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		$("#"+ $(this).attr(ID).replace('_hover','')).css('display','block');
 		$(this).css('display','none');
 	    });
-
 	    if(colorBy.hasField())
 		colorBy.displayColorTable(null,true);
 	},
@@ -2389,7 +2388,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		['zoomLevel=4',"initial zoom"],
 		['fixedPosition=true','Keep the initial position'],
 		['initialLocation=lat,lon',"initial location"],
-		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
+		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
 		['doPopup=false',"Don't show popups"],
 		['highlight=true',"Show mouse over highlights"],
 		['linked=true',"Link location with other maps"],
