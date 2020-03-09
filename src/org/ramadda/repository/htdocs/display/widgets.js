@@ -162,8 +162,8 @@ function DisplayAnimation(display, enabled) {
     let ID_ANIMATION_LABEL = "animationlabel";
     let MODE_FRAME = "frame";
     let MODE_SLIDING = "sliding";
-    this.display = display;
     $.extend(this,{
+	display:display,
 	enabled: enabled,
         running: false,
         inAnimation: false,
@@ -172,7 +172,7 @@ function DisplayAnimation(display, enabled) {
         dateMin: null,
         dateMax: null,
         dateRange: 0,
-        dateFormat: display.getProperty("animationDateFormat", display.getProperty("dateFormat", "yyyyMMdd")),
+        dateFormat: display.getProperty("animationDateFormat", display.getProperty("dateFormat", "yyyymmdd")),
         mode: display.getProperty("animationMode", "cumulative"),
         startAtEnd: display.getProperty("animationStartAtEnd", false),
         speed: parseInt(display.getProperty("animationSpeed", 500)),
@@ -567,20 +567,8 @@ function DisplayAnimation(display, enabled) {
 
 
 	},
-        formatAnimationDate: function(d) {
-            if (this.dateFormat == "yyyy") {
-                return Utils.formatDateYYYY(d);
-            } else if (this.dateFormat == "yyyyMMdd") {
-                return Utils.formatDateYYYYMMDD(d);
-	    } else if (this.dateFormat == "monthdayyear") {
-                return Utils.formatDateMonthDayYear(d);
-	    } else if (this.dateFormat == "mdy") {
-                return Utils.formatDateMDY(d);
-	    } else if (this.dateFormat == "hhmm") {
-                return Utils.formatDateHHMM(d);
-            } else {
-                return Utils.formatDate(d);
-            }
+        formatAnimationDate: function(date) {
+	    return Utils.formatDateWithFormat(date,this.dateFormat,true);
         },
 
     });
