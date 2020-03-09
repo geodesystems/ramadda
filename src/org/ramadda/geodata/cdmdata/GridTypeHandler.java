@@ -161,7 +161,7 @@ public class GridTypeHandler extends GenericTypeHandler {
                     args.add("timeStride");
                     args.add(Utils.getProperty(props, "timeStride", "1"));
                 }
-                if (props.get("doAnimation") == null) {
+                if (Misc.equals(Utils.getProperty(props, "doAnimation","false"),"true")) {
                     args.add("gridTime");
                     args.add(Utils.getProperty(props, "gridTime", "0"));
                 } else {

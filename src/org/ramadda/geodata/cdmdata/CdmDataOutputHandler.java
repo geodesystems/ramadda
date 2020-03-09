@@ -677,11 +677,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         displayProps.add("request.gridField.values");
         displayProps.add(Json.quote(vars));
 
-        boolean animationEnabled =
-            Utils.getProperty(props, "doAnimation", "false").equals("true")
-            || !Utils.getProperty(props, "animationMode",
-                                  "none").equals("none");
-        if ((dates.size() > 0) && animationEnabled) {
+        boolean animationEnabled = Utils.getProperty(props, "doAnimation", "false").equals("true");
+        if (dates.size() > 0 && animationEnabled) {
             all.add("gridTime");
             displayProps.add("request.gridTime.includeAll");
             displayProps.add("false");
@@ -1609,8 +1606,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                         tIdx += timeStride) {
                     Array a = theGrid.readYXData(tIdx, 0);
                     if (debug) {
-                        System.err.println("\treading time index:" + tIdx
-                                           + " size:" + a.getSize());
+			System.err.println("\treading time index:" + tIdx + " size:" + a.getSize());
                     }
                     cnt += writeJson(writer, cnt, max, a, Json.quote(theDates.get(tIdx).toString()), points,
                                      scaler);

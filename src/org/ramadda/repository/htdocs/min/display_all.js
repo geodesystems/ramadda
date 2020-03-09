@@ -1985,7 +1985,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.getDisplayManager().getLayoutManager();
         },
 	getAnimationEnabled: function() {
-	    return this.getProperty("doAnimation", false)|| this.getProperty("animationMode","none")!="none";
+	    return this.getProperty("doAnimation", false);
 	},
 	getAnimation: function() {
 	    if(!this.animationControl) {
