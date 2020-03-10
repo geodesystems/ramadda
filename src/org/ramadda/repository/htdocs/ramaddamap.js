@@ -2978,95 +2978,6 @@ function initMapFunctions(theMap) {
 	}
     }
 
-    //bounds are in lat/lon
-    theMap.centerOnMarkers = function(dfltBounds, force, justMarkerLayer) {
-	if(debugBounds) {
-	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds);
-	    console.trace();
-	}
-        this.centerOnMarkersCalled = true;
-        this.centerOnMarkersForce = force;
-        now = Date.now();
-        var bounds = null;
-        if (dfltBounds) {
-            if (dfltBounds.left < -180 || dfltBounds.left > 180 ||
-                dfltBounds.right < -180 || dfltBounds.right > 180 ||
-                dfltBounds.bottom < -90 || dfltBounds.bottom > 90 ||
-                dfltBounds.top < -90 || dfltBounds.top > 90) {
-                dfltBounds = createBounds(-180, -90, 180, 90);
-            }
-        }
-        this.dfltBounds = dfltBounds;
-        if (!force) {
-            if (this.markers) {
-                // markers are in projection coordinates
-                var dataBounds = this.markers.getDataExtent();
-		if(debugBounds)
-		    console.log("centerOnMarkers using markers.getDataExtent");
-                bounds = this.transformProjBounds(dataBounds);
-            }
-            if (!justMarkerLayer) {
-                if (this.lines) {
-                    var dataBounds = this.lines.getDataExtent();
-                    var fromLine = this.transformProjBounds(dataBounds);
-                    if (bounds)
-                        bounds.extend(fromLine);
-                    else
-                        bounds = fromLine;
-		    if(debugBounds)
-			console.log("centerOnMarkers using lines.getDataExtent");
-                }
-                for (var layer in this.getMap().layers) {
-                    layer = this.getMap().layers[layer];
-                    if (!layer.getDataExtent) {
-			continue;
-		    }
-                    if (layer.isBaseLayer || !layer.getVisibility()) {
-			continue;
-		    }
-                    var dataBounds = layer.getDataExtent();
-                    if (dataBounds) {
-                        var latlon = this.transformProjBounds(dataBounds);
-                        if (bounds)
-                            bounds.extend(latlon);
-                        else
-                            bounds = latlon;
-			if(debugBounds)
-			    console.log("centerOnMarkers using layer.getDataExtent: " + latlon +" layer=" + layer.name +" " + layer.ramaddaId);
-                    }
-                }
-            }
-        }
-
-
-        if (!bounds) {
-	    if(debugBounds)
-		console.log("centerOnMarkers using dfltBounds");
-            bounds = dfltBounds;
-        }
-        if (!bounds) {
-	    if(debugBounds)
-		console.log("centerOnMarkers: no bounds");
-            return;
-        }
-
-        if (!this.getMap()) {
-            this.defaultBounds = bounds;
-	    if(debugBounds)
-		console.log("centerOnMarkers: no map");
-            return;
-        }
-        if (bounds.getHeight() > 160) {
-            bounds.top = 80;
-            bounds.bottom = -80;
-	    if(debugBounds)
-		console.log("centerOnMarkers resetting height");
-        }
-	if(debugBounds)
-	    console.log("calling setViewToBounds: " + bounds);
-        this.setViewToBounds(bounds);
-    }
-
     theMap.animateViewToBounds = function(bounds, ob,steps) {
 	if(!Utils.isDefined(steps)) steps = 1;
 	if(!ob)
@@ -3085,7 +2996,7 @@ function initMapFunctions(theMap) {
 	    ob.top+(bounds.top-ob.top)*p);
 	this.setViewToBounds(newBounds);
 	setTimeout(()=>this.animateViewToBounds(bounds, ob, steps),125);
-    },
+    }
 
     theMap.setViewToBounds = function(bounds) {
         projBounds = this.transformLLBounds(bounds);
@@ -3619,10 +3530,8 @@ function initMapFunctions(theMap) {
         let markertext;
 	if(marker.textGetter) {
 	    markertext =marker.textGetter(marker);
-	    console.log("popup:" + markertext);
 	} else {
 	    markertext =marker.text;
-	    console.log("popup 2:" + markertext);
 	}
 	if(this.displayDiv) {
 	    $("#" + this.displayDiv).html(markertext);
@@ -3963,3 +3872,94 @@ function ramaddaFindFeature(layer, point) {
     }
     return null;
 }
+
+
+RepositoryMap.prototype = {
+    centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
+	if(debugBounds) {
+	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds);
+	}
+        this.centerOnMarkersCalled = true;
+        this.centerOnMarkersForce = force;
+        now = Date.now();
+        var bounds = null;
+        if (dfltBounds) {
+            if (dfltBounds.left < -180 || dfltBounds.left > 180 ||
+                dfltBounds.right < -180 || dfltBounds.right > 180 ||
+                dfltBounds.bottom < -90 || dfltBounds.bottom > 90 ||
+                dfltBounds.top < -90 || dfltBounds.top > 90) {
+                dfltBounds = createBounds(-180, -90, 180, 90);
+            }
+        }
+        this.dfltBounds = dfltBounds;
+        if (!force) {
+            if (this.markers) {
+                // markers are in projection coordinates
+                var dataBounds = this.markers.getDataExtent();
+		if(debugBounds)
+		    console.log("centerOnMarkers using markers.getDataExtent");
+                bounds = this.transformProjBounds(dataBounds);
+            }
+            if (!justMarkerLayer) {
+                if (this.lines) {
+                    var dataBounds = this.lines.getDataExtent();
+                    var fromLine = this.transformProjBounds(dataBounds);
+                    if (bounds)
+                        bounds.extend(fromLine);
+                    else
+                        bounds = fromLine;
+		    if(debugBounds)
+			console.log("centerOnMarkers using lines.getDataExtent");
+                }
+                for (var layer in this.getMap().layers) {
+                    layer = this.getMap().layers[layer];
+                    if (!layer.getDataExtent) {
+			continue;
+		    }
+                    if (layer.isBaseLayer || !layer.getVisibility()) {
+			continue;
+		    }
+                    var dataBounds = layer.getDataExtent();
+                    if (dataBounds) {
+                        var latlon = this.transformProjBounds(dataBounds);
+                        if (bounds)
+                            bounds.extend(latlon);
+                        else
+                            bounds = latlon;
+			if(debugBounds)
+			    console.log("centerOnMarkers using layer.getDataExtent: " + latlon +" layer=" + layer.name +" " + layer.ramaddaId);
+                    }
+                }
+            }
+        }
+
+
+        if (!bounds) {
+	    if(debugBounds)
+		console.log("centerOnMarkers using dfltBounds");
+            bounds = dfltBounds;
+        }
+        if (!bounds) {
+	    if(debugBounds)
+		console.log("centerOnMarkers: no bounds");
+            return;
+        }
+
+        if (!this.getMap()) {
+            this.defaultBounds = bounds;
+	    if(debugBounds)
+		console.log("centerOnMarkers: no map");
+            return;
+        }
+        if (bounds.getHeight() > 160) {
+            bounds.top = 80;
+            bounds.bottom = -80;
+	    if(debugBounds)
+		console.log("centerOnMarkers resetting height");
+        }
+	if(debugBounds)
+	    console.log("calling setViewToBounds: " + bounds);
+        this.setViewToBounds(bounds);
+    },
+}
+

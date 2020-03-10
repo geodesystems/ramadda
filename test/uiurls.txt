@@ -337,3 +337,6 @@ https://geodesystems.com:443/repository/entry/show?entryid=559878f4-9175-4832-87
 https://geodesystems.com:443/repository/entry/show?entryid=00176a3c-bfeb-4893-b7d3-a112246c4a6b
 https://geodesystems.com:443/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=e0009bf8-03ac-4569-8f3d-0a4d1fc67e39
+https://geodesystems.com/repository/a/worlddata
+https://geodesystems.com/repository/entry/show?entryid=5336af69-fde9-4fbf-8197-8dc6a0df08ea
+https://geodesystems.com/repository/a/oldest_people

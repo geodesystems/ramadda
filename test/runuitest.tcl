@@ -22,8 +22,7 @@ foreach url $urls {
     }
 
 	
-    if [regexp points.json $url] continue;
-    if [regexp output=json $url] continue;
+    if [regexp output= $url] continue;
     if {![regexp https $url]} continue;
     if {[info exists seen($url)]} continue;
     set sleep 5

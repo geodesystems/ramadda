@@ -135,7 +135,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						    map_default_layer),
 		showLayerSwitcher: this.getProperty("showLayerSwitcher", true),
 		showScaleLine: this.getProperty("showScaleLine",false),
-		showLatLonPosition: this.getProperty("showLatLonPosition",true),
+		showLatLonPosition: this.getProperty("showLatLonPosition",false),
 		showZoomPanControl: this.getProperty("showZoomPanControl",false),
 		showZoomOnlyControl: this.getProperty("showZoomOnlyControl",true),
 		enableDragPan: this.getProperty("enableDragPan",true),
@@ -1415,7 +1415,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             let fields = pointData.getRecordFields();
             let showSegments = this.getProperty("showSegments", false);
-
 	    if(records.length!=0) {
 		if (!isNaN(pointBounds.north)) {
 		    this.initBounds = pointBounds;
@@ -2338,7 +2337,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    if (showSegments) {
-		this.map.centerOnMarkers(null, true, null);
+		this.map.centerOnMarkers();
 	    }
 
 	    if(this.map.circles)
@@ -2707,7 +2706,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
             var colorBy = this.getColorByInfo(records);
 	    var sparkLinesColorBy = this.getColorByInfo(records,"sparklineColorBy");
 	    var strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
-	    this.writeHtml(ID_DISPLAY_CONTENTS, table);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.center(table));
 
 
 	    let sparkLineField = this.getFieldById(fields,this.getProperty("sparklineField"));
