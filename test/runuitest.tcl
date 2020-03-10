@@ -4,8 +4,12 @@ set ullr {0,0,2000,1000}
 set cnt 0
 set html "<div style='margin:20px;'>"
 foreach url $urls {
-    if [regexp points.json $url] continue
-    if {![regexp https $url]} continue
+    set url [string trim $url]
+    if {$url==""} continue;
+    if [regexp points.json $url] continue;
+    if {![regexp https $url]} continue;
+    if {[info exists seen($url)]} continue;
+    set seen($url) 1
     incr cnt
     set image image$cnt.png
     puts  "capturing $url"
