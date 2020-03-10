@@ -1,13 +1,4 @@
 https://geodesystems.com:443/repository/entry/show?entryid=1cdae7f3-4469-4085-bb57-4bab71533c49
-https://geodesystems.com:443/repository/entry/show?entryid=9b8b50bf-b260-48ca-ac00-c872af049626&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=df463bdf-4dbc-4471-8c17-60c31a150152&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=5a68a295-13f0-4005-8ea6-4b4bf4735096&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=3445e9b7-5b48-4f2e-b351-e916f60a452a&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=857cbea0-789a-4627-a4f7-e2389debd039&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=1872ffae-3648-45c9-8e2d-d8f3f2fb9f5c&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=026fac19-f562-4d5c-ad87-9b4b26623f70&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=c9ca1d83-0400-471e-9a66-2fb17f07df9b&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=ba2981cb-deb3-49d1-a3cf-cc8aa576d656&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=892170dc-e19f-4c74-817a-1f9b6fadb248
 https://geodesystems.com:443/repository/entry/show?entryid=892170dc-e19f-4c74-817a-1f9b6fadb248&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=dc6015ef-85ba-4502-a274-ef6b6b9d059e&max=5000&output=points.product&product=points.json
@@ -90,7 +81,7 @@ https://geodesystems.com:443/repository/entry/show?entryid=7df13bbc-86f4-4dd4-b6
 https://geodesystems.com:443/repository/entry/show?entryid=292d572d-63df-4c40-8264-1e2d82deab16
 https://geodesystems.com:443/repository/entry/show?entryid=292d572d-63df-4c40-8264-1e2d82deab16&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=073e9afe-f9f4-40da-942c-16a4fcd24e96&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=bd4f71c4-d262-4e30-9231-e00e9b9cb0f4
+20:https://geodesystems.com:443/repository/entry/show?entryid=bd4f71c4-d262-4e30-9231-e00e9b9cb0f4
 https://geodesystems.com:443/repository/entry/show?entryid=9114a74e-ec17-46c2-8160-658cd35d27d4
 https://geodesystems.com:443/repository/entry/show?entryid=9114a74e-ec17-46c2-8160-658cd35d27d4&latitude=%2524%257Blatitude%257D&longitude=%2524%257Blongitude%257D&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=cec5ea2e-b384-4eb9-9bc7-6a0ff6637f40

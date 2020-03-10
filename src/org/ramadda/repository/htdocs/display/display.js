@@ -3915,7 +3915,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		prefix += HU.div([ID,this.getDomId("filterDateStepBackward"),STYLE,HU.css("display","inline-block"),TITLE,"Step Back"],
  				 HU.getIconImage("fa-step-backward",[STYLE,HU.css("cursor","pointer")])) +SPACE1;
 		prefix+=HU.div([ID,this.getDomId("filterDatePlay"),STYLE,HU.css("display","inline-block"),TITLE,"Play/Stop Animation"],
-			       HU.getIconImage("fa-play",[STYLE,HU.css("cursor","pointer")]));
+			       HU.getIconImage("fa-play",[STYLE,HU.css("cursor","pointer")])) + SPACE1;
 		prefix += HU.div([ID,this.getDomId("filterDateStepForward"),STYLE,HU.css("display","inline-block"),TITLE,"Step Forward"],
  				 HU.getIconImage("fa-step-forward",[STYLE,HU.css("cursor","pointer")])) +SPACE1;
 
@@ -4030,12 +4030,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
-            if(this.filters.length>0) {
-		this.filters.forEach(f=>{
-		    if(f.initDateWidget)
-			f.initDateWidget(inputFunc);
-		});
-
+	    this.filters.forEach(f=>{
+		if(f.initDateWidget)
+		    f.initDateWidget(inputFunc);
+	    });
 
 		this.jq(ID_FILTERBAR).find(".display-filter-items").each(function(){
 		    let parent = $(this);
@@ -4185,8 +4183,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 
 
-
-
 		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
 		    inputFunc($(this));
 		});
@@ -4247,7 +4243,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.jq(ID_FILTERBAR).find("input:checkbox").change(function() {
 		    inputFunc($(this));
 		});
-            }
+
 
 	    var dateMin = null;
 	    var dateMax = null;
@@ -4519,7 +4515,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
             }
             left = HU.div([ID, this.getDomId(ID_TOP_LEFT)], left);
-            let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "XXXX");
+            let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
             html += HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "");
             html += HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
             html += HU.leftRightTable(left, right, {

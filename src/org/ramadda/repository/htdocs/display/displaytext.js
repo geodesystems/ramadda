@@ -218,6 +218,21 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Wordlcloud Attributes",
+					'termField=',
+					'tokenize=true',
+					'handleClick="true"',
+					'showFieldLabel="true"',
+					'tokenize="true"',
+					'tableFields=',
+					'showRecords="true"',
+					'combined="false"',
+					'shape="rectangle"'
+				    ])},
+
         getContentsStyle: function() {
             return "";
         },
@@ -467,13 +482,13 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
 
             if (showRecords) {
-                this.writeHtml(ID_DISPLAY_BOTTOM, html);
+                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(html));
             } else {
                 var prefix = "";
                 if (!tokenize) {
                     prefix = (field?field.getLabel():"Word") + "=" + word
                 }
-                this.writeHtml(ID_DISPLAY_BOTTOM, prefix + HU.div([ID, this.getDomId("table"), STYLE, HU.css('height','300px')], ""));
+                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(prefix + HU.div([ID, this.getDomId("table"), STYLE, HU.css('height','300px')], "")));
                 var dataTable = google.visualization.arrayToDataTable(data);
                 this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
                 this.chart.draw(dataTable, {
@@ -2615,7 +2630,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var regexpMaps = {};
 	    var filterFieldMap = {};
 	    if(this.filters) {
-		this.filters.map(f=>{if(f.field && f.field.isString)filterFieldMap[f.field.getId()]=true;});
+		this.filters.map(f=>{if(f.field && f.field.isString)filterFieldMap[f.field.getId()]=f;});
 	    }
 	    var templates = {};
 	    fields.map(f=>{
@@ -2641,7 +2656,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     var f = fields[col];
 		    if(rowIdx==0) {
 			if(filterFieldMap[f.getId()]) {
-			    var value = this.getFilterFieldValues(f);
+			    let filter = filterFieldMap[f.getId()];
+			    var value = filter.getFieldValues();
 			    if(value) {
 				if(!Array.isArray(value)) {
 				    value = [value];

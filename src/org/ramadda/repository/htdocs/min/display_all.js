@@ -5089,7 +5089,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		prefix += HU.div([ID,this.getDomId("filterDateStepBackward"),STYLE,HU.css("display","inline-block"),TITLE,"Step Back"],
  				 HU.getIconImage("fa-step-backward",[STYLE,HU.css("cursor","pointer")])) +SPACE1;
 		prefix+=HU.div([ID,this.getDomId("filterDatePlay"),STYLE,HU.css("display","inline-block"),TITLE,"Play/Stop Animation"],
-			       HU.getIconImage("fa-play",[STYLE,HU.css("cursor","pointer")]));
+			       HU.getIconImage("fa-play",[STYLE,HU.css("cursor","pointer")])) + SPACE1;
 		prefix += HU.div([ID,this.getDomId("filterDateStepForward"),STYLE,HU.css("display","inline-block"),TITLE,"Step Forward"],
  				 HU.getIconImage("fa-step-forward",[STYLE,HU.css("cursor","pointer")])) +SPACE1;
 
@@ -5204,12 +5204,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
-            if(this.filters.length>0) {
-		this.filters.forEach(f=>{
-		    if(f.initDateWidget)
-			f.initDateWidget(inputFunc);
-		});
-
+	    this.filters.forEach(f=>{
+		if(f.initDateWidget)
+		    f.initDateWidget(inputFunc);
+	    });
 
 		this.jq(ID_FILTERBAR).find(".display-filter-items").each(function(){
 		    let parent = $(this);
@@ -5359,8 +5357,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 
 
-
-
 		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
 		    inputFunc($(this));
 		});
@@ -5421,7 +5417,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.jq(ID_FILTERBAR).find("input:checkbox").change(function() {
 		    inputFunc($(this));
 		});
-            }
+
 
 	    var dateMin = null;
 	    var dateMax = null;
@@ -5693,7 +5689,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
             }
             left = HU.div([ID, this.getDomId(ID_TOP_LEFT)], left);
-            let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "XXXX");
+            let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
             html += HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "");
             html += HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
             html += HU.leftRightTable(left, right, {
@@ -18445,6 +18441,21 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Wordlcloud Attributes",
+					'termField=',
+					'tokenize=true',
+					'handleClick="true"',
+					'showFieldLabel="true"',
+					'tokenize="true"',
+					'tableFields=',
+					'showRecords="true"',
+					'combined="false"',
+					'shape="rectangle"'
+				    ])},
+
         getContentsStyle: function() {
             return "";
         },
@@ -18694,13 +18705,13 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
 
             if (showRecords) {
-                this.writeHtml(ID_DISPLAY_BOTTOM, html);
+                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(html));
             } else {
                 var prefix = "";
                 if (!tokenize) {
                     prefix = (field?field.getLabel():"Word") + "=" + word
                 }
-                this.writeHtml(ID_DISPLAY_BOTTOM, prefix + HU.div([ID, this.getDomId("table"), STYLE, HU.css('height','300px')], ""));
+                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(prefix + HU.div([ID, this.getDomId("table"), STYLE, HU.css('height','300px')], "")));
                 var dataTable = google.visualization.arrayToDataTable(data);
                 this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
                 this.chart.draw(dataTable, {
@@ -20842,7 +20853,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var regexpMaps = {};
 	    var filterFieldMap = {};
 	    if(this.filters) {
-		this.filters.map(f=>{if(f.field && f.field.isString)filterFieldMap[f.field.getId()]=true;});
+		this.filters.map(f=>{if(f.field && f.field.isString)filterFieldMap[f.field.getId()]=f;});
 	    }
 	    var templates = {};
 	    fields.map(f=>{
@@ -20868,7 +20879,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     var f = fields[col];
 		    if(rowIdx==0) {
 			if(filterFieldMap[f.getId()]) {
-			    var value = this.getFilterFieldValues(f);
+			    let filter = filterFieldMap[f.getId()];
+			    var value = filter.getFieldValues();
 			    if(value) {
 				if(!Array.isArray(value)) {
 				    value = [value];
