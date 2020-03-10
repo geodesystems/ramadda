@@ -1401,8 +1401,6 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getTemplate(Request request) {
         Entry currentEntry = null;
-	/*
-	  Don't do this for now as it seems the last entry might be shared across sessions?
         if (request != null) {
             try {
                 currentEntry = getSessionManager().getLastEntry(request);
@@ -1410,7 +1408,6 @@ public class PageHandler extends RepositoryManager {
                 throw new RuntimeException(exc);
             }
         }
-	*/
         return getTemplate(request, currentEntry);
     }
 
@@ -1425,6 +1422,7 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getTemplate(Request request, Entry entry) {
         HtmlTemplate template = getTemplateInner(request, entry);
+/*
         if ((template != null) && !getAdmin().isRegistered()) {
             if ( !(template.getId().equals("mapheader")
                     || template.getId().equals("mobile")
@@ -1439,7 +1437,7 @@ public class PageHandler extends RepositoryManager {
                 }
             }
         }
-
+*/
         return template;
     }
 
