@@ -1421,39 +1421,10 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public HtmlTemplate getTemplate(Request request, Entry entry) {
-        HtmlTemplate template = getTemplateInner(request, entry);
-/*
-        if ((template != null) && !getAdmin().isRegistered()) {
-            if ( !(template.getId().equals("mapheader")
-                    || template.getId().equals("mobile")
-                    || template.getId().equals("empty"))) {
-                if ( !getRepository().getProperty("ramadda.override",
-                        false)) {
-                    if (mapTemplate != null) {
-                        return mapTemplate;
-                    }
-
-                    return getTemplates().get(0);
-                }
-            }
-        }
-*/
-        return template;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    private HtmlTemplate getTemplateInner(Request request, Entry entry) {
         //this forces the possible reload of the templates
         getTemplates();
         if (request == null) {
+	    System.err.println("getTemplate-1:" + defaultTemplate);
             return defaultTemplate;
         }
         boolean isMobile = request.isMobile();
@@ -1462,6 +1433,7 @@ public class PageHandler extends RepositoryManager {
         if (Utils.stringDefined(templateId)) {
             HtmlTemplate template = templateMap.get(templateId);
             if (template != null) {
+		System.err.println("getTemplate-2:" + template);
                 return template;
             }
 	    templateId = null;
@@ -1484,6 +1456,7 @@ public class PageHandler extends RepositoryManager {
                                         false)) {
                                 request.put(ARG_TEMPLATE, template.getId());
 
+				System.err.println("getTemplate-3:" + template);
                                 return template;
                             }
                         } else {
@@ -1500,10 +1473,9 @@ public class PageHandler extends RepositoryManager {
 
         if (isMobile && (mobileTemplate != null)) {
             request.put(ARG_TEMPLATE, mobileTemplate.getId());
-
+		System.err.println("getTemplate-4:" + mobileTemplate);
             return mobileTemplate;
         }
-
 
         User user = request.getUser();
         if ((templateId == null) && (user != null) && !user.getAnonymous()) {
@@ -1513,9 +1485,11 @@ public class PageHandler extends RepositoryManager {
         if (templateId != null) {
             HtmlTemplate template = templateMap.get(templateId);
             if (template != null) {
+		System.err.println("getTemplate-5:" + template);
                 return template;
             }
         }
+	System.err.println("getTemplate-5:" + defaultTemplate);
 
         return defaultTemplate;
     }

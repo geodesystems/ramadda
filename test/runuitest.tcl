@@ -20,18 +20,15 @@ foreach url $urls {
 	append html "<h2>$label</h2>\n"
 	continue
     }
-
 	
     if [regexp output= $url] continue;
     if {![regexp https $url]} continue;
     if {[info exists seen($url)]} continue;
-    set sleep 5
+    set sleep 10
     if {[regexp {^([0-9]+):(.*)$} $url match prefix rest]} {
 	set url $rest
 	set sleep $prefix
     }
-    puts "sleep: $sleep"
-
     set seen($url) 1
     incr cnt
     set image image$cnt.png
@@ -41,10 +38,7 @@ foreach url $urls {
     set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
     exec osascript -e $cmd
     exec sleep $sleep
-
-
     exec osascript $loc/capture.scpt
-#    exec convert -interlace NONE -resize 1000x1000 capture.png thumb${cnt}.png
     exec cp capture.png thumb${cnt}.png
     append html "<a href=$url>$url<br><img width=600 border=0 src=thumb${cnt}.png></a><p>\n"
 }
