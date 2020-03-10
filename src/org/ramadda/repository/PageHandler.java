@@ -1411,7 +1411,6 @@ public class PageHandler extends RepositoryManager {
             }
         }
 	*/
-
         return getTemplate(request, currentEntry);
     }
 
@@ -1467,10 +1466,11 @@ public class PageHandler extends RepositoryManager {
             if (template != null) {
                 return template;
             }
+	    templateId = null;
         }
 
         //Check for metadata template definition
-        if ( !Utils.stringDefined(templateId) && (entry != null)) {
+        if (entry != null) {
             try {
                 List<Metadata> metadataList =
                     getMetadataManager().findMetadata(request, entry,

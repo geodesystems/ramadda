@@ -41,8 +41,11 @@ foreach url $urls {
     set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
     exec osascript -e $cmd
     exec sleep $sleep
-    exec screencapture -x -R${ullr} $image
-    exec convert -interlace NONE -resize 1000x1000 $image thumb${cnt}.png
+
+
+    exec osascript $loc/capture.scpt
+#    exec convert -interlace NONE -resize 1000x1000 capture.png thumb${cnt}.png
+    exec cp capture.png thumb${cnt}.png
     append html "<a href=$url>$url<br><img width=600 border=0 src=thumb${cnt}.png></a><p>\n"
 }
 
