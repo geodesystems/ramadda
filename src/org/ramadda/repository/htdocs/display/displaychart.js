@@ -7,7 +7,6 @@ var CATEGORY_CHARTS = "Charts";
 var CATEGORY_OTHER = "Other Charts";
 
 var DISPLAY_LINECHART = "linechart";
-
 var DISPLAY_AREACHART = "areachart";
 var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
@@ -27,9 +26,7 @@ var ID_CHART = "chart";
 var ID_CHARTS = "charts";
 var ID_CHARTS_INNER = "chartsinner";
 
-
 var googleChartsLoaded = false;
-
 function googleChartsHaveLoaded() {
     googleChartsLoaded = true;
 }
@@ -317,7 +314,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
             var get = this.getGet();
-            //                menuItems.push(HtmlUtils.onClick(get+".setColor();", "Set color"));
+            //                menuItems.push(HU.onClick(get+".setColor();", "Set color"));
 
             var min = "0";
             if (!isNaN(this.getVAxisMinValue())) {
@@ -328,15 +325,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 max = "" + this.getVAxisMaxValue();
             }
 
-            var tmp = HtmlUtils.formTable();
-            tmp += HtmlUtils.formEntry("Axis Range:", HtmlUtils.input("", min, ["size", "7", ATTR_ID, this.getDomId("vaxismin")]) + " - " +
-				       HtmlUtils.input("", max, ["size", "7", ATTR_ID, this.getDomId("vaxismax")]));
-            tmp += HtmlUtils.formEntry("Date Range:", HtmlUtils.input("", this.minDate, ["size", "10", ATTR_ID, this.getDomId("mindate")]) + " - " +
-				       HtmlUtils.input("", this.maxDate, ["size", "10", ATTR_ID, this.getDomId("maxdate")]));
+            var tmp = HU.formTable();
+            tmp += HU.formEntry("Axis Range:", HU.input("", min, ["size", "7", ATTR_ID, this.getDomId("vaxismin")]) + " - " +
+				       HU.input("", max, ["size", "7", ATTR_ID, this.getDomId("vaxismax")]));
+            tmp += HU.formEntry("Date Range:", HU.input("", this.minDate, ["size", "10", ATTR_ID, this.getDomId("mindate")]) + " - " +
+				       HU.input("", this.maxDate, ["size", "10", ATTR_ID, this.getDomId("maxdate")]));
 
 
-            tmp += HtmlUtils.formEntry("Colors:",
-				       HtmlUtils.input("", this.getColorList().join(","), ["size", "35", ATTR_ID, this.getDomId(ID_COLORS)]));
+            tmp += HU.formEntry("Colors:",
+				       HU.input("", this.getColorList().join(","), ["size", "35", ATTR_ID, this.getDomId(ID_COLORS)]));
             tmp += "</table>";
             menuItems.push(tmp);
 
@@ -393,16 +390,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         getDialogContents: function(tabTitles, tabContents) {
             var height = "600";
-            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS), "style", "overflow-y: auto;    max-height:" + height + "px;"], " FIELDS ");
+            var html = HU.div([ATTR_ID, this.getDomId(ID_FIELDS), STYLE, HU.css('overflow-y','auto','max-height', height + "px")], " FIELDS ");
 
             if (this.trendLineEnabled()) {
-                html += HtmlUtils.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
+                html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
-                html += HtmlUtils.checkbox(this.getDomId(ID_TRENDS_CBX),
+                html += HU.checkbox(this.getDomId(ID_TRENDS_CBX),
 					   [],
 					   this.getProperty("showTrendLines", false)) + "  " + "Show trend line";
                 html += " ";
-                html += HtmlUtils.checkbox(this.getDomId(ID_PERCENT_CBX),
+                html += HU.checkbox(this.getDomId(ID_PERCENT_CBX),
 					   [],
 					   this.showPercent) + "  " + "Show percent of displayed total" + "<br>";
                 html += "<br>";
@@ -508,7 +505,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-            this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
+            this.setContents(HU.div([ATTR_CLASS, "display-message"],
 					   "Building display..."));
 
             this.allFields = this.dataCollection.getList()[0].getRecordFields();
@@ -620,7 +617,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             if (dataList.length == 0) {
-                this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
+                this.setContents(HU.div([ATTR_CLASS, "display-message"],
 					       "No data available"));
                 return;
             }
@@ -865,7 +862,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(maxHeaderLength>0 && headerLabel.length>maxHeaderLength) {
 		    let orig = headerLabel;
 		    headerLabel = headerLabel.substring(0,maxHeaderLength-1)+"...";
-		    headerLabel = HtmlUtils.span(["title",orig], headerLabel);
+		    headerLabel = HU.span([TITLE,orig], headerLabel);
 		}
 		if(maxHeaderWidth>0 || headerStyle) {
 		    let orig = headerLabel;
@@ -876,7 +873,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			style+="max-width:" + maxHeaderWidth +"px;overflow-x:auto;";
 		    if(headerStyle)
 			style+=headerStyle;
-		    headerLabel = HtmlUtils.div(["title",orig,"style",style], headerLabel);
+		    headerLabel = HU.div([TITLE,orig,STYLE,style], headerLabel);
 		} 
 
                 if (j == 0 && props.includeIndex) {
@@ -1004,14 +1001,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    annotation.index = isDate?index.getTime():index;
 		    var legendLabel = desc;
 		    if(url!=null) {
-			legendLabel = HtmlUtils.href(url, legendLabel,["target","_annotation"]);
+			legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
 		    }
-		    legend+= HtmlUtils.b(label)+":" + legendLabel+" ";
+		    legend+= HU.b(label)+":" + legendLabel+" ";
 		}
 		if(this.getProperty("showAnnotationsLegend")) {
 		    //Pad the left to align with  the chart axis
 		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
-					    HtmlUtils.div(["class", "display-chart-legend"],legend)
+					    HU.div([CLASS, "display-chart-legend"],legend)
 					    +"</td></tr></table>");
 		}
 		for(var aidx=0;aidx<annotationsList.length;aidx++) {
@@ -1109,8 +1106,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         value = this.formatNumber(value);
 		    }
 		    value = "" + value;
-		    value = value.replace(/ /g, "&nbsp;");
-		    tooltip += "<b>" + label + "</b>:&nbsp;" + value;
+		    value = value.replace(/ /g, SPACE);
+		    tooltip += HU.b(label) + ":" + SPACE + value;
                 }
 
 		var tt = this.getProperty("tooltip");
@@ -1119,7 +1116,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tt = tt.replace("${default}",tooltip);
 		    tooltip = tt;
 		}
-		tooltip = HtmlUtils.div(["style","padding:8px;"],tooltip);
+		tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
 		    console.log("row:");
@@ -1372,7 +1369,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.getPropertyShow = false;
 		Utils.makeDownloadFile("props.txt",this.getPropertyOutput);
 	    }
-            this.setContents(HtmlUtils.div(["id",this.getDomId(ID_CHARTS)]));
+            this.setContents(HU.div([ID,this.getDomId(ID_CHARTS)]));
             return chartOptions;
         },
         getChartHeight: function() {
@@ -1383,7 +1380,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         getChartDiv: function(chartId) {
             var divAttrs = [ATTR_ID, chartId];
-            divAttrs.push("style");
+            divAttrs.push(STYLE);
             var style = "";
             var width = this.getChartWidth();
             if (width) {
@@ -1418,7 +1415,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    style += "text-align:center;"
             divAttrs.push(style);
-	    divAttrs.push("class");
+	    divAttrs.push(CLASS);
 	    divAttrs.push("ramadda-expandable-target");
 
 	    let isExpanded = this.getProperty("isExpanded");
@@ -1427,7 +1424,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		divAttrs.push("isexpanded","true")
 		divAttrs.push("original-height",originalHeight)
 	    }
-            return HtmlUtils.div(divAttrs, "");
+            return HU.div(divAttrs, "");
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             throw new Error("doMakeGoogleChart undefined");
@@ -1500,7 +1497,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		    list.push(v);
 		})
-		this.jq(ID_CHARTS).html(HtmlUtils.div(["id",this.getDomId(ID_CHARTS_INNER),"style","text-align:center;"]));
+		this.jq(ID_CHARTS).html(HU.div([ID,this.getDomId(ID_CHARTS_INNER),STYLE,HU.css('text-align','center')]));
 		let multiStyle="width:200px;" + this.getProperty("multiStyle","");
 		let multiLabelTemplate=this.getProperty("multiLabelTemplate","${value}");
 		if(multiField) groups.sort();
@@ -1514,10 +1511,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    var label = groupValue;
 		    if(groupValue.getTime) label = this.formatDate(groupValue);
 		    label = multiLabelTemplate.replace("${value}",label);
-		    var header = HtmlUtils.div(["class","display-multi-header"], label);
+		    var header = HU.div([CLASS,"display-multi-header"], label);
 		    var top =labelPosition=="top"?header:"";
 		    var bottom = labelPosition=="bottom"?header:"";
-		    var div = HtmlUtils.div(["class","display-multi-div", "style","display:inline-block;"+multiStyle], top + this.getChartDiv(innerId) + bottom);
+		    var div = HU.div([CLASS,"display-multi-div", STYLE,HU.css('display','inline-block')+ multiStyle], top + this.getChartDiv(innerId) + bottom);
 		    this.jq(ID_CHARTS_INNER).append(div);
 		    let chart = this.makeGoogleChartInner(tmpDataList, innerId, props, selectedFields);
 		    if(chart) this.charts.push(chart);
@@ -1545,7 +1542,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    duration:parseFloat(this.getProperty("animationDuration",1000,true)),
 		    easing:this.getProperty("animationEasing","linear",true)
 		};
-		HtmlUtils.callWhenScrolled(this.getDomId(ID_CHART),()=>{
+		HU.callWhenScrolled(this.getDomId(ID_CHART),()=>{
 		    if(!this.animationCalled) {
 			this.animationCalled = true;
 			this.mapCharts(chart=>{
@@ -1968,11 +1965,11 @@ function PiechartDisplay(displayManager, id, properties) {
 	    this.uniqueValues.map((v,idx)=>{
 		if(colorCnt>=colors.length) colorCnt = 0;
 		var color  = colors[colorCnt];
-		legend += HtmlUtils.div(["style","display: inline-block;width:8px;height:8px;background:" + color+";"]) +"&nbsp;" + v +"&nbsp;&nbsp; ";
+		legend += HU.div([STYLE,HU.css('display','inline-block','width','8px','height','8px','background', color)]) +SPACE + v +SPACE2;
 		colorCnt++;
 	    });
 	    if(this.jq(ID_PIE_LEGEND).length==0) {
-		this.jq(ID_HEADER2).append(HtmlUtils.div(["id",this.getDomId(ID_PIE_LEGEND)]));
+		this.jq(ID_HEADER2).append(HU.div([ID,this.getDomId(ID_PIE_LEGEND)]));
 	    }
 	    this.jq(ID_PIE_LEGEND).html(legend);
 
@@ -2009,7 +2006,7 @@ function PiechartDisplay(displayManager, id, properties) {
         },
         getChartDiv: function(chartId) {
             var divAttrs = [ATTR_ID, chartId];
-            divAttrs.push("style");
+            divAttrs.push(STYLE);
             var style = "";
 	    var width = this.getProperty("chartWidth") || this.getChartWidth();
 	    var height = this.getProperty("chartHeight") || this.getChartHeight();
@@ -2036,7 +2033,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	    //	    style += "border:1px solid green;"
 	    style += "padding:5px;"
             divAttrs.push(style);
-            return HtmlUtils.div(divAttrs, "");
+            return HU.div(divAttrs, "");
         },
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.tooltip = {
@@ -2470,10 +2467,10 @@ function TableDisplay(displayManager, id, properties) {
 		    v = v.v;
 		}
 		if(!this.highlightFilter || !record) {
-		    f = HU.div(["style","padding:4px;"],f)
+		    f = HU.div([STYLE,HU.css('padding','4px')],f)
 		} else {
 		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
-		    f = HU.div(["style","padding:4px;background:" + c+";"],f)
+		    f = HU.div([STYLE,HU.css('padding','4px','background', c)],f)
 		}
 		return {
 		    v:v,
@@ -2577,7 +2574,7 @@ function BubbleDisplay(displayManager, id, properties) {
 
         getChartDiv: function(chartId) {
             var divAttrs = [ATTR_ID, chartId];
-            divAttrs.push("style");
+            divAttrs.push(STYLE);
             var style = "";
 	    var width = this.getProperty("chartWidth") || this.getChartWidth();
 	    var height = this.getProperty("chartHeight") || this.getChartHeight();
@@ -2604,7 +2601,7 @@ function BubbleDisplay(displayManager, id, properties) {
 	    //	    style += "border:1px solid green;"
 	    style += "padding:5px;"
             divAttrs.push(style);
-            return HtmlUtils.div(divAttrs, "");
+            return HU.div(divAttrs, "");
         },
 
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
@@ -2960,8 +2957,8 @@ function TreemapDisplay(displayManager, id, properties) {
                 for (var f = 0; f < tooltipFields.length; f++) {
                     var v = row[tooltipFields[f].getIndex()];
                     var field = tooltipFields[f];
-                    v = HtmlUtils.onClick(call + ".valueClicked('" + field.getId() + "','" + v + "')", v, []);
-                    tt += "<b>" + field.getLabel() + "</b>" + ": " + v + "<br>";
+                    v = HU.onClick(call + ".valueClicked('" + field.getId() + "','" + v + "')", v, []);
+                    tt += HU.b(field.getLabel()) + ": " + v + "<br>";
                 }
                 tt += "</div></div>";
                 tmptt.push(tt);
@@ -3141,10 +3138,10 @@ function CalendarDisplay(displayManager, id, properties) {
                 var dttm = this.formatDate(this.getDataValues(dataList[i])[0], {
                     options: options
                 });
-                dttm = dttm.replace(/ /g, "&nbsp;");
+                dttm = dttm.replace(/ /g, SPACE);
                 var tooltip = "<center><b>" + dttm + "</b></center>" +
                     "<b>" + header[1].replace(/ /g, "&nbsp;") + "</b>:&nbsp;" + this.formatNumber(value);
-                tooltip = HtmlUtils.tag("div", ["style", "padding:5px;"], tooltip);
+                tooltip = HU.div([STYLE, HU.css('padding','5px')], tooltip);
                 list.push([this.getDataValues(dataList[i])[0], value, tooltip]);
             }
             dataTable.addRows(list);

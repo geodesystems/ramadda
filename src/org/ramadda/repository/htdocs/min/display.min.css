@@ -5,7 +5,9 @@
 .display input {
 }
 
-
+.display-anim-button {
+    cursor:pointer;
+}
 
 .display-row-highlight  {
     background:#efefef !important;

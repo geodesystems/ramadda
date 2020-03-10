@@ -1954,6 +1954,7 @@ var ATTR_SIZE = "size";
 var ATTR_STYLE = "style";
 var ATTR_ALIGN = "align";
 var ATTR_VALIGN = "valign";
+var SPACE = "&nbsp;";
 var SPACE1 = "&nbsp;";
 var SPACE2 = "&nbsp;&nbsp;";
 
@@ -2279,6 +2280,13 @@ var HU = HtmlUtils = {
     tr: function(attrs, inner) {
         return this.tag("tr", attrs, inner);
     },
+    css: function(...attrs) {
+	let css = "";
+	for(let i=0;i<attrs.length;i+=2) {
+	    css +=attrs[i]+":" + attrs[i]+";";
+	}
+	return css;
+    },
     td: function(attrs, inner) {
         return this.tag("td", attrs, inner);
     },
@@ -2402,6 +2410,10 @@ var HU = HtmlUtils = {
         var html = "<" + tagName + " " + this.attrs(attrs) + ">";
         return html;
     },
+    open: function(tagName, attrs) {
+        var html = "<" + tagName + " " + this.attrs(attrs) + ">";
+        return html;
+    },
     openRow: function() {
         return this.openTag("div", ["class", "row"]);
     },
@@ -2418,6 +2430,9 @@ var HU = HtmlUtils = {
     },
 
     closeTag: function(tagName) {
+        return "</" + tagName + ">\n";
+    },
+    close: function(tagName) {
         return "</" + tagName + ">\n";
     },
     urlArg: function(name, value) {
