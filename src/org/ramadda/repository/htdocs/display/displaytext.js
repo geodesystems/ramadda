@@ -1,4 +1,4 @@
-/*
+*
   Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -2611,8 +2611,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var patternMatch = new TextMatcher(pattern);
 	    var regexpMaps = {};
 	    var filterFieldMap = {};
-	    if(this.filterFields) {
-		this.filterFields.map(f=>{if(f.isString)filterFieldMap[f.getId()]=true;});
+	    if(this.filters) {
+		this.filters.map(f=>{if(f.field && f.field.isString)filterFieldMap[f.field.getId()]=true;});
 	    }
 	    var templates = {};
 	    fields.map(f=>{

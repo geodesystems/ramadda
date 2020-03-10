@@ -1107,9 +1107,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	    var _values =[];
 	    var values=null;
 	    var matchers =[];
-	    if(filterField.isNumeric()) {
-		var minField = $("#" + this.display.getDomId("filterby_" + filterField.getId()+"_min"));
-		var maxField = $("#" + this.display.getDomId("filterby_" + filterField.getId()+"_max"));
+	    if(this.field.isNumeric()) {
+		var minField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_min"));
+		var maxField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_max"));
 		var minValue = parseFloat(minField.val().trim());
 		var maxValue = parseFloat(maxField.val().trim());
 		var dfltMinValue = parseFloat(minField.attr("data-min"));
@@ -1117,9 +1117,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(minValue!= dfltMinValue || maxValue!= dfltMaxValue) {
 		    value = [minValue,maxValue];
 		}
- 	    } else if(filterField.getType()=="date"){
-		var date1 = $("#" + this.display.getDomId("filterby_" + filterField.getId()+"_date1")).val();
-		var date2 = $("#" + this.display.getDomId("filterby_" + filterField.getId()+"_date2")).val();
+ 	    } else if(this.field.getType()=="date"){
+		var date1 = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_date1")).val();
+		var date2 = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_date2")).val();
 		if(date1!=null && date1.trim()!="") 
 		    date1 =  Utils.parseDate(date1);
 		else
