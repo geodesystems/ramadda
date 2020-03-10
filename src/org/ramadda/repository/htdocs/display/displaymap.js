@@ -1242,6 +1242,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	requiresGeoLocation: function() {
 	    return true;
 	},
+	addFilters: function(filters) {
+	    SUPER.addFilters.call(this, filters);
+	    filters.push(new BoundsFilter(this));
+	},
 	getHeader2:function() {
 	    let html = SUPER.getHeader2.call(this);
 	    if(this.getProperty("showClipToBounds")) {

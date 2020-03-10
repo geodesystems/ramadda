@@ -1,4 +1,4 @@
-*
+/*
   Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -2491,7 +2491,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 					'maxLines=1000',
 					'pattern="initial search pattern"',
 					'fromField=""',
-					'linesDescriptor=""'
+					'linesDescriptor=""',
+					'asHtml=false',
+					'breakLines=true',
+					'includeEmptyLines=false',
 				    ]);
 	},
 
@@ -2508,9 +2511,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
 	    if(pattern) pattern = pattern.replace(/"/g,"&quot;");
-	    var input = "";
+	    let input = "";
 	    if(!this.filters || this.filters.length==0) 
-		input = " " + HU.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", ID, this.getDomId(ID_SEARCH)]);
+		input += " " + HU.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", ID, this.getDomId(ID_SEARCH)]);
 	    this.showShrink = this.getProperty("showShrink",false);
 	    if(this.showShrink) {
 		input += " " + HU.checkbox("shrink",[ID,this.getDomId(ID_SHRINK)], this.getProperty("initialShrink", true)) +" Shrink ";

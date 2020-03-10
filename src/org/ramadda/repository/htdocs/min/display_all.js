@@ -4943,6 +4943,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
+	addFilters: function(filters) {
+	},
         checkSearchBar: function() {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
@@ -5104,7 +5106,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
 	    this.filters = [];
-	    this.filters.push(new BoundsFilter(this));
+	    this.addFilters(this.filters);
             if(filterBy.length>0) {
                 for(let i=0;i<filterBy.length;i++) {
 		    if(filterBy[i]!="") {
@@ -5691,7 +5693,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
             }
             left = HU.div([ID, this.getDomId(ID_TOP_LEFT)], left);
-            let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
+            let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "XXXX");
             html += HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "");
             html += HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
             html += HU.leftRightTable(left, right, {
@@ -18223,7 +18225,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	}
     })
 }
-*
+/*
   Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -20716,7 +20718,10 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 					'maxLines=1000',
 					'pattern="initial search pattern"',
 					'fromField=""',
-					'linesDescriptor=""'
+					'linesDescriptor=""',
+					'asHtml=false',
+					'breakLines=true',
+					'includeEmptyLines=false',
 				    ]);
 	},
 
@@ -20733,9 +20738,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
 	    if(pattern) pattern = pattern.replace(/"/g,"&quot;");
-	    var input = "";
+	    let input = "";
 	    if(!this.filters || this.filters.length==0) 
-		input = " " + HU.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", ID, this.getDomId(ID_SEARCH)]);
+		input += " " + HU.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", ID, this.getDomId(ID_SEARCH)]);
 	    this.showShrink = this.getProperty("showShrink",false);
 	    if(this.showShrink) {
 		input += " " + HU.checkbox("shrink",[ID,this.getDomId(ID_SHRINK)], this.getProperty("initialShrink", true)) +" Shrink ";
@@ -25777,6 +25782,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	requiresGeoLocation: function() {
 	    return true;
+	},
+	addFilters: function(filters) {
+	    SUPER.addFilters.call(this, filters);
+	    filters.push(new BoundsFilter(this));
 	},
 	getHeader2:function() {
 	    let html = SUPER.getHeader2.call(this);

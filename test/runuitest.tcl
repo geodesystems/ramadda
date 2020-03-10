@@ -21,7 +21,7 @@ foreach url $urls {
     exec sleep 5
     exec screencapture -x -R${ullr} $image
     exec convert -interlace NONE -resize 800x800 $image thumb${cnt}.png
-    append html "<a href=$url><img width=600 border=0 src=thumb${cnt}.png></a><p>\n"
+    append html "<a href=$url>$url<br><img width=600 border=0 src=thumb${cnt}.png></a><p>\n"
 }
 
 append html "</div>"

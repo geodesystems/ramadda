@@ -3769,6 +3769,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
+	addFilters: function(filters) {
+	},
         checkSearchBar: function() {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
@@ -3930,7 +3932,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    //Have this here so it can be used in the menu change events later. May cause problems if more than  one
 	    let displayType = "";
 	    this.filters = [];
-	    this.filters.push(new BoundsFilter(this));
+	    this.addFilters(this.filters);
             if(filterBy.length>0) {
                 for(let i=0;i<filterBy.length;i++) {
 		    if(filterBy[i]!="") {
@@ -4517,7 +4519,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
             }
             left = HU.div([ID, this.getDomId(ID_TOP_LEFT)], left);
-            let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
+            let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "XXXX");
             html += HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "");
             html += HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
             html += HU.leftRightTable(left, right, {
