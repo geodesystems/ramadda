@@ -2555,7 +2555,11 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var style = this.getProperty("displayInnerStyle","");
             var html = HU.div([ID, this.getDomId(ID_TEXT), STYLE, "padding:4px;border:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;" + style]);
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    let t1 = new Date();
             this.showText();
+	    let t2 = new Date();
+	    Utils.displayTimes("T",[t1,t2]);
+
         },
         handleEventPropertyChanged: function(source, prop) {
             if (prop.property == "pattern") {
@@ -2643,6 +2647,9 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    if(this.showShrink) {
 		corpus+="<tr><td>" + HU.getIconImage("fa-caret-down") +"</td></tr>";
 	    }
+	    let templateFields = this.getFields();
+	    let templateProps = this.getTemplateProps(templateFields);	    
+	    let templateMacros = Utils.tokenizeMacros(labelTemplate?labelTemplate:"");
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
 		var record = records[rowIdx];
 		if(!Utils.isDefined(record.lineNumber)) {
@@ -2722,11 +2729,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		}
                 line = patternMatch.highlight(line);
                 displayedLineCnt++;
-
                 if (displayedLineCnt > maxLines) break;
-
-		var lineAttrs = [TITLE," ",CLASS, " display-raw-line ","recordIndex",rowIdx]
-
+		let lineAttrs = [TITLE," ",CLASS, " display-raw-line ","recordIndex",rowIdx]
 		if(bubble) line = HU.div([CLASS,"ramadda-bubble"],line);
 		if(fromField) line+=HU.div([CLASS,"ramadda-bubble-from"],  ""+row[fromField.getIndex()]);
 
@@ -2740,7 +2744,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		}
 		line = HU.div(lineAttrs,line);
                 if (labelTemplate) {
-		    var label =  this.getRecordHtml(record, null, labelTemplate);
+		    let row = this.getDataValues(record);
+		    let label = this.applyRecordTemplate(row, templateFields,labelTemplate, templateProps,templateMacros);
 		    var num = record.lineNumber;
 		    if(!Utils.isDefined(num)) {
 			num - lineCnt;

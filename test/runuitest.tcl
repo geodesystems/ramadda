@@ -44,7 +44,7 @@ foreach url $urls {
 	exec osascript $loc/capture.scpt
 	exec cp capture.png $thumb
     }
-    append html "<a href=$url>$url<br><img width=600 border=0 src=thumb${cnt}.png></a><p>\n"
+    append html "<a href=$url>$url<br><img width=1200 border=0 src=thumb${cnt}.png></a><p>\n"
 }
 
 append html "</div>"

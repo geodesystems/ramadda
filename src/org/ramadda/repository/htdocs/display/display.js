@@ -450,11 +450,12 @@ function DisplayThing(argId, argProperties) {
 	    }
 	},
 	xcnt:0,	
-	applyRecordTemplate: function(row, fields, template, props) {
+	applyRecordTemplate: function(row, fields, template, props,macros) {
+	    fields = this.getFields(fields);
 	    if(!props) {
 		props = this.getTemplateProps(fields);
 	    }
-	    let macros = Utils.tokenizeMacros(template);
+	    if(!macros) macros = Utils.tokenizeMacros(template);
 	    let attrs = {};
 	    if(props.iconMap && props.iconField) {
 		var value = row[props.iconField.getIndex()];
@@ -495,13 +496,7 @@ function DisplayThing(argId, argProperties) {
 		    continue;
 		} else if(f.isDate) {
 		    if(value) {
-			//Todo - just use the format= attr
-			attrs[f.getId()]= this.formatDate(value);
-			attrs[f.getId() +"_yyyy}"] =  Utils.formatDateYYYY(value);
-			attrs[f.getId() +"_yyyymmdd"] =  Utils.formatDateYYYYMMDD(value);
-			attrs[f.getId() +"_monthdayyear"] =  Utils.formatDateMonthDayYear(value);
-			attrs[f.getId() +"_monthday"] =  Utils.formatDateMonthDay(value);
-			attrs[f.getId() +"_mdy"] =  Utils.formatDateMDY(value);
+			attrs[f.getId()]= value;
 		    }
 		    continue;
 		}
@@ -524,14 +519,18 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return macros.apply(attrs);
 	},
-        getRecordHtml: function(record, fields, template) {
+	getFields: function(fields) {
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) {
 		    return null;
 		}
                 fields = pointData.getRecordFields();
-            }
+	    }
+	    return fields;
+	},
+        getRecordHtml: function(record, fields, template) {
+	    fields = this.getFields(fields);
 	    var showDate = this.getProperty("showDate", true);
 	    var showImage = this.getProperty("showImage", true);
             var showGeo = false;
