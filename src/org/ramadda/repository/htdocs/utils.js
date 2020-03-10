@@ -2283,7 +2283,7 @@ var HU = HtmlUtils = {
     css: function(...attrs) {
 	let css = "";
 	for(let i=0;i<attrs.length;i+=2) {
-	    css +=attrs[i]+":" + attrs[i]+";";
+	    css +=attrs[i]+":" + attrs[i+1]+";";
 	}
 	return css;
     },
