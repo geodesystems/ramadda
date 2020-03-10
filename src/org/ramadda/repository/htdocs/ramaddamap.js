@@ -3509,9 +3509,7 @@ function initMapFunctions(theMap) {
             this.lines.removeFeatures([line]);
         }
     }
-
     var cnt = 0;
-
     theMap.addPolygon = function(id, name, points, attrs, marker) {
         var _this = this;
         var location;

@@ -1242,7 +1242,6 @@ let ID_FILTER_HIGHLIGHT = "filterhighlight";
 let ID_FILTER_DATE = "filterdate";
 var CATEGORY_MISC = "Misc";
 
-
 var PROP_DISPLAY_FILTER = "displayFilter";
 var PROP_EXCLUDE_ZERO = "excludeZero";
 var PROP_DIVID = "divid";
@@ -13698,14 +13697,6 @@ var PROP_CHART_MAX = "chartMax";
 var DFLT_WIDTH = "600px";
 var DFLT_HEIGHT = "200px";
 
-
-
-
-
-
-
-
-
 /*
   Create a chart
   id - the id of this chart. Has to correspond to a div tag id 
@@ -14858,7 +14849,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!isNaN(range[1])) {
                 chartOptions.vAxis.maxValue = range[1];
             }
-
             this.chartDimensions = {
                 width: "90%",
                 left: "10%",
@@ -14903,12 +14893,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var style = "";
             var width = this.getChartWidth();
             if (width) {
-                if (width > 0)
-                    style += "width:" + width + "px;";
-                else if (width < 0)
-                    style += "width:" + (-width) + "%;";
-                else
-                    style += "width:" + width + ";";
+		if(width.endsWith("%")) {
+                    style += "width:" + width + ";"
+		} else {
+                    if (width > 0)
+			style += "width:" + width + "px;";
+                    else if (width < 0)
+			style += "width:" + (-width) + "%;";
+                    else
+			style += "width:" + width + ";";
+		}
             } else {
                 style += "width:" + "100%;";
             }
@@ -14980,6 +14974,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.chartOptions.vAxis.minValue = y.min;
 		this.chartOptions.vAxis.maxValue = y.max;
 	    }
+
+//	    console.log(JSON.stringify(chartOptions, null,2));
 
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
@@ -24688,7 +24684,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						    map_default_layer),
 		showLayerSwitcher: this.getProperty("showLayerSwitcher", true),
 		showScaleLine: this.getProperty("showScaleLine",false),
-		showLatLonPosition: this.getProperty("showLatLonPosition",false),
+		showLatLonPosition: this.getProperty("showLatLonPosition",true),
 		showZoomPanControl: this.getProperty("showZoomPanControl",false),
 		showZoomOnlyControl: this.getProperty("showZoomOnlyControl",true),
 		enableDragPan: this.getProperty("enableDragPan",true),
@@ -25133,6 +25129,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.highlightMarker) {
 		this.map.removePoint(this.highlightMarker);
 		this.map.removeMarker(this.highlightMarker);
+		this.map.removePolygon(this.highlightMarker);		
 		this.highlightMarker = null;
 	    }
 	    if(highlight) {
@@ -25148,6 +25145,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getProperty("recordHighlightUseMarker",false)) {
 		    var size = parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",24)));
 		    this.highlightMarker = this.map.addMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
+		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
+		    let points = [];
+                    points.push(new OpenLayers.Geometry.Point(lon,0));
+		    points.push(new OpenLayers.Geometry.Point(lon,80));
+                    this.highlightMarker = this.map.addPolygon(id, "highlight", points, attrs, null);
 		} else {
 		    this.highlightMarker =  this.map.addPoint("highlight", point, attrs);
 		}
@@ -33009,6 +33011,7 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 	    records.forEach((r,idx)=>{
 		idToIndex[r.getId()] = idx;
 	    });
+	    let hor = this.getProperty("orientation","horizontal") == "horizontal";
 	    let categoryField = this.getFieldById(null, this.getProperty("categoryField"));
 	    let html = "";
 	    let groups = RecordUtil.groupBy(records, this, null, categoryField);
@@ -33033,13 +33036,12 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 		    }
 		    let c = colorBy.getColorFromRecord(r,"blue");
 		    let box = HU.div(
-			["title","", "recordIndex",idToIndex[r.getId()],"class", "display-dotstack-dot","style","width:" + w+"px;height:" + w +"px;background:" + 
+			[TITLE,"", "recordIndex",idToIndex[r.getId()],CLASS, "display-dotstack-dot","style","width:" + w+"px;height:" + w +"px;background:" + 
 				      c+";"],"");
 		    row.push(box);
 		});
-		html += HU.openTag("div",["class","display-dotstack-block"]);
+		html += HU.openTag("div",[CLASS,"display-dotstack-block"]);
 		html+=HU.div([],this.getProperty("labelTemplate","${count}").replace("${count}", grecords.length));
-
 
 		html += "<table>";
 		for(var i=rows.length-1;i>=0;i--) {

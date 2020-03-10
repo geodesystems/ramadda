@@ -68,7 +68,6 @@ let ID_FILTER_HIGHLIGHT = "filterhighlight";
 let ID_FILTER_DATE = "filterdate";
 var CATEGORY_MISC = "Misc";
 
-
 var PROP_DISPLAY_FILTER = "displayFilter";
 var PROP_EXCLUDE_ZERO = "excludeZero";
 var PROP_DIVID = "divid";

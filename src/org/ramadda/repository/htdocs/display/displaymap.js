@@ -136,7 +136,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 						    map_default_layer),
 		showLayerSwitcher: this.getProperty("showLayerSwitcher", true),
 		showScaleLine: this.getProperty("showScaleLine",false),
-		showLatLonPosition: this.getProperty("showLatLonPosition",false),
+		showLatLonPosition: this.getProperty("showLatLonPosition",true),
 		showZoomPanControl: this.getProperty("showZoomPanControl",false),
 		showZoomOnlyControl: this.getProperty("showZoomOnlyControl",true),
 		enableDragPan: this.getProperty("enableDragPan",true),
@@ -581,6 +581,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.highlightMarker) {
 		this.map.removePoint(this.highlightMarker);
 		this.map.removeMarker(this.highlightMarker);
+		this.map.removePolygon(this.highlightMarker);		
 		this.highlightMarker = null;
 	    }
 	    if(highlight) {
@@ -596,6 +597,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getProperty("recordHighlightUseMarker",false)) {
 		    var size = parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",24)));
 		    this.highlightMarker = this.map.addMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
+		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
+		    let points = [];
+                    points.push(new OpenLayers.Geometry.Point(lon,0));
+		    points.push(new OpenLayers.Geometry.Point(lon,80));
+                    this.highlightMarker = this.map.addPolygon(id, "highlight", points, attrs, null);
 		} else {
 		    this.highlightMarker =  this.map.addPoint("highlight", point, attrs);
 		}

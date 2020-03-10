@@ -3482,6 +3482,7 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 	    records.forEach((r,idx)=>{
 		idToIndex[r.getId()] = idx;
 	    });
+	    let hor = this.getProperty("orientation","horizontal") == "horizontal";
 	    let categoryField = this.getFieldById(null, this.getProperty("categoryField"));
 	    let html = "";
 	    let groups = RecordUtil.groupBy(records, this, null, categoryField);
@@ -3506,13 +3507,12 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 		    }
 		    let c = colorBy.getColorFromRecord(r,"blue");
 		    let box = HU.div(
-			["title","", "recordIndex",idToIndex[r.getId()],"class", "display-dotstack-dot","style","width:" + w+"px;height:" + w +"px;background:" + 
+			[TITLE,"", "recordIndex",idToIndex[r.getId()],CLASS, "display-dotstack-dot","style","width:" + w+"px;height:" + w +"px;background:" + 
 				      c+";"],"");
 		    row.push(box);
 		});
-		html += HU.openTag("div",["class","display-dotstack-block"]);
+		html += HU.openTag("div",[CLASS,"display-dotstack-block"]);
 		html+=HU.div([],this.getProperty("labelTemplate","${count}").replace("${count}", grecords.length));
-
 
 		html += "<table>";
 		for(var i=rows.length-1;i>=0;i--) {

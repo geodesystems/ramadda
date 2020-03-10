@@ -1268,7 +1268,8 @@ public class WikiUtil {
                             "right" }) {
                         String v = getAttribute(tline, side);
                         if (v != null) {
-                            styles.append("margin-" + side + ":" + v + "px;");
+			    if(!v.endsWith("px")) v = v +"px";
+                            styles.append("margin-" + side + ":" + v + ";");
                         }
                     }
 

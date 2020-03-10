@@ -191,14 +191,6 @@ var PROP_CHART_MAX = "chartMax";
 var DFLT_WIDTH = "600px";
 var DFLT_HEIGHT = "200px";
 
-
-
-
-
-
-
-
-
 /*
   Create a chart
   id - the id of this chart. Has to correspond to a div tag id 
@@ -1351,7 +1343,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!isNaN(range[1])) {
                 chartOptions.vAxis.maxValue = range[1];
             }
-
             this.chartDimensions = {
                 width: "90%",
                 left: "10%",
@@ -1396,12 +1387,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var style = "";
             var width = this.getChartWidth();
             if (width) {
-                if (width > 0)
-                    style += "width:" + width + "px;";
-                else if (width < 0)
-                    style += "width:" + (-width) + "%;";
-                else
-                    style += "width:" + width + ";";
+		if(width.endsWith("%")) {
+                    style += "width:" + width + ";"
+		} else {
+                    if (width > 0)
+			style += "width:" + width + "px;";
+                    else if (width < 0)
+			style += "width:" + (-width) + "%;";
+                    else
+			style += "width:" + width + ";";
+		}
             } else {
                 style += "width:" + "100%;";
             }
@@ -1473,6 +1468,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.chartOptions.vAxis.minValue = y.min;
 		this.chartOptions.vAxis.maxValue = y.max;
 	    }
+
+//	    console.log(JSON.stringify(chartOptions, null,2));
 
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
