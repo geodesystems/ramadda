@@ -789,6 +789,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
         Result result = processEntryShow(request, entry);
         Result r      = addEntryHeader(request, entry, result);
 
@@ -966,6 +967,7 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryShow(Request request, Entry entry)
             throws Exception {
+	System.err.println("https://geodesystems.com"+ request.getServerPort()+request.getUrl());
         Result result = null;
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
