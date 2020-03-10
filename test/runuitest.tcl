@@ -24,7 +24,7 @@ foreach url $urls {
     if [regexp output= $url] continue;
     if {![regexp https $url]} continue;
     if {[info exists seen($url)]} continue;
-    set sleep 10
+    set sleep 15
     if {[regexp {^([0-9]+):(.*)$} $url match prefix rest]} {
 	set url $rest
 	set sleep $prefix
@@ -32,14 +32,18 @@ foreach url $urls {
     set seen($url) 1
     incr cnt
     set image image$cnt.png
-    puts  "capturing $url"
-#Bring Firefox to the front and tell it to reload the main page
-    exec osascript -e {activate application "Safari"}
-    set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
-    exec osascript -e $cmd
-    exec sleep $sleep
-    exec osascript $loc/capture.scpt
-    exec cp capture.png thumb${cnt}.png
+    set thumb thumb${cnt}.png
+
+    if {![file exists $thumb]} {
+	puts  "capturing $url"
+	#Bring Firefox to the front and tell it to reload the main page
+	exec osascript -e {activate application "Safari"}
+	set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
+	exec osascript -e $cmd
+	exec sleep $sleep
+	exec osascript $loc/capture.scpt
+	exec cp capture.png $thumb
+    }
     append html "<a href=$url>$url<br><img width=600 border=0 src=thumb${cnt}.png></a><p>\n"
 }
 
