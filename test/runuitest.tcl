@@ -1,0 +1,24 @@
+set loc [file dirname [file normalize [info script]]]
+set urls [read [open $loc/uiurls.txt r]]
+set ullr {0,0,2000,1000}
+set cnt 0
+set html "<div style='margin:20px;'>"
+foreach url $urls {
+    if [regexp points.json $url] continue
+    if {![regexp https $url]} continue
+    incr cnt
+    set image image$cnt.png
+    puts  "capturing $url"
+#Bring Firefox to the front and tell it to reload the main page
+    exec osascript -e {activate application "Safari"}
+#    set cmd "tell application \"Safari\" to open location \"$url\""
+    set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
+    exec osascript -e $cmd
+    exec sleep 5
+    exec screencapture -x -R${ullr} $image
+    exec convert -interlace NONE -resize 800x800 $image thumb${cnt}.png
+    append html "<a href=$url><img width=600 border=0 src=thumb${cnt}.png></a><p>\n"
+}
+
+append html "</div>"
+puts [open uiimages.html w] $html

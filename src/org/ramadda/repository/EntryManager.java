@@ -967,7 +967,6 @@ public class EntryManager extends RepositoryManager {
      */
     public Result processEntryShow(Request request, Entry entry)
             throws Exception {
-	System.err.println("https://" + request.getServerName()+":"+ request.getServerPort()+request.getUrl());
         Result result = null;
         OutputHandler outputHandler =
             getRepository().getOutputHandler(request);
@@ -989,6 +988,8 @@ public class EntryManager extends RepositoryManager {
                 result = processGroupShow(request, outputHandler, outputType,
                                           entry);
             } else {
+		if(!request.get(ARG_EMBEDDED, false))
+		    System.err.println("https://" + request.getServerName()+":"+ request.getServerPort()+request.getUrl());
                 OutputType dfltOutputType = getDefaultOutputType(request,
                                                 entry, null, null);
                 if (dfltOutputType != null) {
@@ -1023,7 +1024,8 @@ public class EntryManager extends RepositoryManager {
                                    OutputHandler outputHandler,
                                    OutputType outputType, Entry group)
             throws Exception {
-	System.err.println("https://" + request.getServerName()+":"+ request.getServerPort()+request.getUrl());
+	if(!request.get(ARG_EMBEDDED, false))
+	    System.err.println("https://" + request.getServerName()+":"+ request.getServerPort()+request.getUrl());
         boolean      doLatest    = request.get(ARG_LATEST, false);
         TypeHandler  typeHandler = group.getTypeHandler();
         List<Clause> where       = typeHandler.assembleWhereClause(request);
