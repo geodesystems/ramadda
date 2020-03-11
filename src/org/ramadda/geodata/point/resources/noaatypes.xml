@@ -123,7 +123,7 @@ commentLineStart=#
 </center>
 <br>
 {{image src="::*" message="" width="300"}}
-{{map}}
+{{map zoomLevel=3}}
 -col
 -row
 -section

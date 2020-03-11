@@ -1284,6 +1284,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 	if(linkGroup!=null) {
 	    map.getMapProps().put("linkGroup", HtmlUtils.quote(linkGroup));
 	}
+	if(props.get("zoomLevel")!=null)
+	    map.getMapProps().put("zoomLevel",props.get("zoomLevel"));
+	if(props.get("mapCenter")!=null)
+	    map.getMapProps().put("mapCenter",Json.quote((String)props.get("mapCenter")));
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,

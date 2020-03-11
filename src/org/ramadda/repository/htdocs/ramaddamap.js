@@ -164,6 +164,12 @@ function RepositoryMap(mapId, params) {
     this.mapId = mapId || "map";
     ramaddaMapAdd(this);
     let theMap = this;
+    if(params.mapCenter) {
+	[lat,lon] =  params.mapCenter.split(",");
+	params.initialLocation = {lon:lon,lat:lat};
+    }
+
+
     $.extend(this, {
         name: "map",
         sourceProjection: mapDefaults.sourceProjection,
@@ -178,7 +184,7 @@ function RepositoryMap(mapId, params) {
         enableDragPan: true,
         defaultLocation: mapDefaults.location,
 	highlightColor:"blue",
-        initialZoom: mapDefaults.defaultZoomLevel,
+        initialZoom: Utils.isDefined(params.zoomLevel)?params.zoomLevel:mapDefaults.defaultZoomLevel,
         latlonReadout: null,
         map: null,
         showBounds: true,
@@ -256,6 +262,7 @@ function RepositoryMap(mapId, params) {
 	} else {
             this.defaultLocation = createLonLat(params.initialLocation[1], params.initialLocation[0]);
 	}
+	
 	if(debugBounds)
 	    console.log("setting default location:" + this.defaultLocation);
     } else if (Utils.isDefined(params.initialBounds)) {

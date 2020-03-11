@@ -22,7 +22,7 @@ fields=raw_text[chartable=true type=string],station_id[type=string],observation_
 {{display type="text" layoutHere="false" }}
 -col
 +col-md-4
-{{display type="map"  height="350"  layoutHere="true" }}
+{{map  zoomLevel=3 height="350"  layoutHere="true" }}
 -col
 -row
 ]]>
