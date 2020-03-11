@@ -254,7 +254,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		_this.checkHeatmapReload();
             });
 
-            if (this.getProperty("bounds") ||this.getProperty("gridBounds") ) {
+	    let hasLoc = Utils.isDefined(this.getProperty("zoomLevel"))   ||
+		Utils.isDefined(this.getProperty("mapCenter"));
+            if (!hasLoc && (this.getProperty("bounds") ||this.getProperty("gridBounds")) ) {
 		this.hadInitialPosition = true;
                 var toks = this.getProperty("bounds", this.getProperty("gridBounds","")).split(",");
                 if (toks.length == 4) {

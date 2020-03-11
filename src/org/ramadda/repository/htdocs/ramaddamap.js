@@ -50,7 +50,7 @@ OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
 OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
 
 
-var debugBounds = false;
+var debugBounds = true;
 var getMapDebug = false;
 
 function createLonLat(lon, lat) {
@@ -3943,7 +3943,7 @@ RepositoryMap.prototype = {
 
         if (!bounds) {
 	    if(debugBounds)
-		console.log("centerOnMarkers using dfltBounds");
+		console.log("centerOnMarkers using dfltBounds: " + dfltBounds);
             bounds = dfltBounds;
         }
         if (!bounds) {
