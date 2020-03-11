@@ -50,7 +50,7 @@ OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
 OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
 
 
-var debugBounds = true;
+var debugBounds = false;
 var getMapDebug = false;
 
 function createLonLat(lon, lat) {
