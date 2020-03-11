@@ -2488,7 +2488,7 @@ var HU = HtmlUtils = {
     makeExpandable:function(selector) {
 	let icon =HtmlUtils.getIconImage("fa-expand-arrows-alt");
         let id = HtmlUtils.getUniqueId();
-	let html= HtmlUtils.div(["id",id,"title","Expand", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:5px;top:0px;margin-top:0px;"],icon);
+	let html= HtmlUtils.div(["id",id,"title","Expand", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:10px;top:0px;margin-top:0px;"],icon);
 	$(selector).append(html);
 	let btn = $("#"+id);
 	btn.attr("data-expanded","false");
@@ -2520,6 +2520,7 @@ var HU = HtmlUtils = {
 		$(this).attr("title","Contract");
 		$(selector).css("left","5px").css("right","5px").css("top","5px").css("position","fixed").css("z-index","2000").css("background","#fff").css("height",h+"px");
 		$(selector).find(".ramadda-expandable-target").each(function() {
+		    console.log("exp");
 		    $(this).attr("original-height",$(this).css("height"));
 		    let height = $(this).attr("expandable-height");
 		    $(this).attr("isexpanded","true");

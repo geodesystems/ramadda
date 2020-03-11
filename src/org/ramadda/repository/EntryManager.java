@@ -956,6 +956,7 @@ public class EntryManager extends RepositoryManager {
 
 
     private void printRequest(Request request, Entry entry) throws Exception {
+	if(true) return;
 	if(!request.get(ARG_EMBEDDED, false) && request.getString("output",null) == null) {
 	    System.err.println("/entry " +entry.getName());
 	    System.err.println("https://" + request.getServerName()+":"+ request.getServerPort()+request.getUrl());

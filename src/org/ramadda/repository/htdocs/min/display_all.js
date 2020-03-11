@@ -14882,7 +14882,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         getChartDiv: function(chartId) {
             var divAttrs = [ATTR_ID, chartId];
-            divAttrs.push(STYLE);
             var style = "";
             var width = this.getChartWidth();
             if (width) {
@@ -14916,10 +14915,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 	    }
 	    style += "text-align:center;"
+            divAttrs.push(STYLE);
             divAttrs.push(style);
-	    divAttrs.push(CLASS);
-	    divAttrs.push("ramadda-expandable-target");
-
 	    let isExpanded = this.getProperty("isExpanded");
 	    let originalHeight = this.getProperty("originalHeight");
 	    if(isExpanded) {
