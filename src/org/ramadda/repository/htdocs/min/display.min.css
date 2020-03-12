@@ -4,6 +4,16 @@
     width:100%;
 }
 
+
+.display-contents {
+/*  text-align:left;*/
+/*  background:#fff;*/
+}
+.display-contents-inner {
+height:100%;
+}
+
+
 .display {
 }
 
@@ -763,19 +773,13 @@ color: #000;
 
 
 
-.display-contents {
-  text-align:left;
-/*  background:#fff;*/
-}
 
 .display-cell {
   padding:10px;
   max-width:100%;
 }
 
-.display-contents-inner {
-height:100%;
-}
+
 
 
 .display-text {
