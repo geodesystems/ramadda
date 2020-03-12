@@ -17,7 +17,7 @@ set csv [getUrl https://geodesystems.com/repository/entry/show?entryid=049a8297-
 foreach line [split $csv "\n"] {
     foreach     {name id} [split $line ,] break
     puts "ID:$id L:$line"
-    set csv [getUrl https://geodesystems.com/repository/entry/show?entryid=${id}&output=default.csv&fields=name,id]
+    set csv [getUrl https://geodesystems.com/repository/entry/show?entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false]
 #    puts "$csv"
     foreach line2 [split $csv "\n"] {
 	foreach     {name id} [split $line2 ,] break
