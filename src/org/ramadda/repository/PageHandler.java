@@ -1012,7 +1012,7 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    private synchronized List<HtmlTemplate> getTemplates() {
+    public synchronized List<HtmlTemplate> getTemplates() {
 
         List<HtmlTemplate> theTemplates = htmlTemplates;
         if ( !cacheTemplates || (theTemplates == null)) {
