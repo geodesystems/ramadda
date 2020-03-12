@@ -1350,7 +1350,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let pointData = this.getPointData();
             let records = this.records =  this.filterData();
             if (records == null) {
-                err = new Error();
                 return;
             }
 
@@ -2674,6 +2673,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    if (pointData == null) return;
 	    var records = this.filterData();
 	    if(!records) return;
+
 
             var fields = this.getData().getNonGeoFields();
 	    var localeField = this.getFieldById(fields,this.getProperty("localeField","state"));

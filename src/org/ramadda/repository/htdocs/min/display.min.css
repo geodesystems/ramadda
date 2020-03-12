@@ -2066,3 +2066,32 @@ table.dataTable tfoot td {
 
 
 
+.display-dotbar-dot {
+    cursor:pointer;
+    height: 16px;
+    width: 16px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    border:1px solid transparent;
+}
+
+.display-dotbar-dot:hover {
+    border:1px solid #000;
+    z-index:60;
+}
+
+
+.display-dotbar-dot-highlight {
+    border:1px solid #000;
+    background:red  !important;
+    z-index:50;
+}
+
+
+.display-dotbar-dot-select {
+    border-radius: 0%;
+    border:2px solid #000;
+    background:red  !important;
+    z-index:50;
+}

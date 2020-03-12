@@ -575,7 +575,7 @@ function DisplayAnimation(display, enabled) {
 }
 
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix) {
+function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField) {
     if(!prop) prop = "colorBy";
     if ( !propPrefix ) {
 	propPrefix = ["colorBy",""];
@@ -590,11 +590,12 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     });
 
     let colorByAttr = this.getProperty(prop||"colorBy", null);
-    let theField = null;
-    if(prop.getId) {
-	theField = prop;
-    } else {
-	theField = display.getFieldById(null, colorByAttr);
+    if(theField==null) {
+	if(prop.getId) {
+	    theField = prop;
+	} else {
+	    theField = display.getFieldById(null, colorByAttr);
+	}
     }
 
     if(theField) {

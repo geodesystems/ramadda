@@ -575,7 +575,7 @@ function DisplayAnimation(display, enabled) {
 }
 
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix) {
+function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField) {
     if(!prop) prop = "colorBy";
     if ( !propPrefix ) {
 	propPrefix = ["colorBy",""];
@@ -590,11 +590,12 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     });
 
     let colorByAttr = this.getProperty(prop||"colorBy", null);
-    let theField = null;
-    if(prop.getId) {
-	theField = prop;
-    } else {
-	theField = display.getFieldById(null, colorByAttr);
+    if(theField==null) {
+	if(prop.getId) {
+	    theField = prop;
+	} else {
+	    theField = display.getFieldById(null, colorByAttr);
+	}
     }
 
     if(theField) {
@@ -19236,7 +19237,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'${&lt;field&gt;_min}',
 					'${&lt;field&gt;_average}',
 					'highightOnScroll=true',
-					'onlyShowSelected=true'
 				    ]);
 	},
 	dataFilterChanged: function() {
@@ -19253,7 +19253,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(!records) return;
 	    if(this.getProperty("onlyShowSelected")) {
 		if(!this.selectedRecord) {
-		    this.selectedRecord = records[0];
+		    if(this.getProperty("showFirst",true)) {
+			this.selectedRecord = records[0];
+		    }
 		}
 	    }
 	    if(this.getProperty("onlyShowSelected")) {
@@ -25934,7 +25936,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let pointData = this.getPointData();
             let records = this.records =  this.filterData();
             if (records == null) {
-                err = new Error();
                 return;
             }
 
@@ -27258,6 +27259,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    if (pointData == null) return;
 	    var records = this.filterData();
 	    if(!records) return;
+
 
             var fields = this.getData().getNonGeoFields();
 	    var localeField = this.getFieldById(fields,this.getProperty("localeField","state"));
@@ -30779,7 +30781,8 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
         },
         updateUI: function(pointData) {
             SUPER.updateUI.call(this, pointData);
-            if (!this.hasData()) {
+            let records = this.records =  this.filterData();
+            if (records == null) {
                 this.setContents(this.getLoadingMessage());
                 return;
             }
@@ -30855,15 +30858,29 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		tmp = tmp2;
 	    }
             var cnt = 0;
-            tmp.sort((a, b) => {
-                var t1 = this.getDataValues(a);
-                var t2 = this.getDataValues(b);
-                var v1 = t1[sortField.getIndex()];
-                var v2 = t2[sortField.getIndex()];
-		
-                if (v1 < v2) return this.sortAscending?-1:1;
-                if (v1 > v2) return this.sortAscending?1:-1;
+	    let highlight = this.getProperty("filterHighlight",false);
+	    let sorter = (a,b)=>{
+		let r1 = a.record;
+		let r2 = b.record;
+		let h1 = r1.isHighlight(this);
+		let h2 = r2.isHighlight(this);
+		if(highlight) {
+		    if(h1 && !h2) return 1;
+		    if(!h1 && h2) return -1;
+		}
+                let t1 = this.getDataValues(a);
+                let t2 = this.getDataValues(b);
+                let v1 = t1[sortField.getIndex()];
+                let v2 = t2[sortField.getIndex()];
+                if (v1 < v2) return -1;
+                if (v1 > v2) return 1;
                 return 0;
+	    };
+            tmp.sort((a, b) => {
+		let v = sorter(a,b);
+		if(v==0) return 0;
+		if(this.sortAscending) return v;
+		return  -v;
             });
 
 
@@ -33097,6 +33114,112 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showColorTable")) {
 		colorBy.displayColorTable(null,false,domId);
 	    }
+	}
+    });
+}
+
+
+
+function RamaddaDotbarDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotbar", properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
+				    [
+					"label:Dot Bar",
+					'',
+				    ])},
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+	    var records = this.filterData();
+	    if(!records) return;
+	    let keyField = this.getFieldById(null,this.getProperty("keyField"));
+	    let fields = this.getFieldsByIds(null,this.getProperty("fields"));
+ 	    if(fields.length==0) {
+		fields = this.getPointData().getRecordFields();
+	    }
+	    let dotSize = this.getProperty("dotSize",16);
+	    let barWidth = this.getProperty("barWidth",800);
+	    let cols = {};
+	    let html = "<table width=100% border=0>";
+	    let t1 = new Date();
+	    let selectedRecord;
+	    fields.forEach((f,idx)=>{
+		if(!f.isFieldNumeric()) return;
+		let cb = new  ColorByInfo(this,  fields, records, null,null, null, null,f);
+		let cid = this.getDomId("dots"+idx);
+		let column = this.getColumnValues(records, f);
+		html += "<tr valign=center><td width=10% align=right>" + f.getLabel().replace(/ /g,SPACE)+"</td>";
+		html += HU.td(["align","right","width","5%"],HU.div([STYLE, "margin-right:5px;"],this.formatNumber(column.min)));
+		html +="<td>";
+		html+= HU.open("div",[STYLE, HU.css('width','100%','position','relative','margin-top','4px')]);
+		html+=SPACE;
+		records.forEach((r,idx2)=>{
+		    let v = r.getValue(f.getIndex());
+		    let c = cb.getColor(v,r);
+		    if(column.min == column.max) return;
+		    let perc = (v-column.min)/(column.max-column.min);
+		    let clazz = "display-dotbar-dot";
+		    if(keyField && this.selectedKey) {
+			if(this.selectedKey == r.getValue(keyField.getIndex())) {
+			    selectedRecord = r;
+			    clazz += " display-dotbar-dot-select";
+			}
+		    } else if(idx2==this.selectedIndex) {
+			selectedRecord = r;
+			clazz += " display-dotbar-dot-select";
+		    }
+		    perc *=100;
+		    html +=  HU.span([RECORD_INDEX,idx2,CLASS,clazz,STYLE,HU.css("background",c,"position",'absolute','left', perc+'%'), RECORD_INDEX,idx2, TITLE,""]); 
+		});
+		html += "</div></td>";
+		html += HU.td(['width', (dotSize*2)]);
+		html += HU.td(["align","left", "width","5%"],this.formatNumber(column.max));
+		html+="</tr>";
+	    });
+	    let t2 = new Date();
+	    html+="</table>";
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html); 
+	    let t3 = new Date();
+	    let dots = this.jq(ID_DISPLAY_CONTENTS).find(".display-dotbar-dot");
+	    let t4 = new Date();
+	    let _this = this;
+	    dots.mouseleave(function() {
+		dots.removeClass("display-dotbar-dot-highlight");
+	    });
+	    dots.mouseover(function() {
+		let idx = $(this).attr(RECORD_INDEX);
+		dots.removeClass("display-dotbar-dot-highlight");
+		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-highlight");
+	    });
+	    dots.click(function() {
+		let idx = $(this).attr(RECORD_INDEX);
+		let record = records[idx];
+		if(!record) return;
+		dots.removeClass("display-dotbar-dot-select");
+		_this.selectedIndex =  idx;
+		if(keyField)
+		    _this.selectedKey = record.getValue(keyField.getIndex());
+		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
+		_this.hadClick = true;
+		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+	    });
+
+r	    //Do this later so other displays get this after they apply their data filter change
+	    if(selectedRecord){
+		setTimeout(()=>{
+		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: selectedRecord});
+		},10);
+	    }
+
+	    this.makeTooltips(dots,records,null);
+	    let t5 = new Date();
+//	    Utils.displayTimes("t",[t1,t2,t3,t4,t5]);
+
 	}
     });
 }
