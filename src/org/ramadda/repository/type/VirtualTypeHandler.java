@@ -160,9 +160,10 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
         String idString = (String) mainEntry.getValue(0, "").replace(",",
                               "_COMMA_");
+	String by = request.getString(ARG_ORDERBY, (String) null);
+	boolean descending = !request.get(ARG_ASCENDING, false);
+	idString +="by:" + by +" desc:" + descending;
         List<String> fromCache = cachedIds.get(idString);
-
-
         if (fromCache == null) {
             fromCache = new ArrayList<String>();
             //Don't cache for now
@@ -183,7 +184,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                                       false, "");
 
 
-            String by = request.getString(ARG_ORDERBY, (String) null);
+
 
             if (by == null) {
                 Metadata sortMetadata =
@@ -198,11 +199,13 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                 by = SORTBY_FROMDATE;
             }
 
-            boolean descending = !request.get(ARG_ASCENDING, false);
+
+	    //	    System.err.println("by:" + by + " desc:" + descending);
             if (by.equals(SORTBY_NAME)) {
                 entries = getEntryManager().getEntryUtil().sortEntriesOnName(
                     entries, descending);
                 //        } else if (by.equals(SORTBY_SIZE)) {
+		//		System.err.println("by name:" + entries);
             } else {
                 entries = getEntryManager().getEntryUtil().sortEntriesOnDate(
                     entries, descending);
@@ -214,7 +217,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         }
         ids.addAll(fromCache);
         mainEntry.setChildIds(ids);
-
         return ids;
     }
 
