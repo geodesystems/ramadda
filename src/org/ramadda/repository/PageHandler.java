@@ -1040,6 +1040,7 @@ public class PageHandler extends RepositoryManager {
             String defaultId =
                 getRepository().getProperty(PROP_HTML_TEMPLATE_DEFAULT,
                                             DEFAULT_TEMPLATE);
+	    System.err.println("getTemplates defaultId=" + defaultId);
             List<String> templatePaths =
                 new ArrayList<String>(
                     getRepository().getPluginManager().getTemplateFiles());
@@ -1113,9 +1114,11 @@ public class PageHandler extends RepositoryManager {
                     if (defaultTemplate == null) {
                         if (defaultId == null) {
                             defaultTemplate = template;
-                        } else {
+			    System.err.println("\tset-1:" + defaultTemplate);
+                       } else {
                             if (Misc.equals(defaultId, template.getId())) {
                                 defaultTemplate = template;
+				System.err.println("\tset-2:" + defaultTemplate);
                             }
                         }
                         if (mobileId == null) {
@@ -1135,6 +1138,7 @@ public class PageHandler extends RepositoryManager {
             }
             if (defaultTemplate == null) {
                 defaultTemplate = theTemplates.get(0);
+		System.err.println("\tset-3:" + defaultTemplate);
             }
             if (mobileTemplate == null) {
                 mobileTemplate = defaultTemplate;

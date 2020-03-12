@@ -15,7 +15,7 @@ set ::tcnt 0
 
 
 
-set csv [getUrl https://geodesystems.com/repository/entry/show?orderby=name&entryid=049a8297-58d7-4646-b689-b188ac274640&output=default.csv&fields=name,id&showheader=false]
+set csv [getUrl https://geodesystems.com/repository/entry/show?orderby=name&entryid=11ff9695-7b5e-4b5c-b6df-3f058bbea5dc&output=default.csv&fields=name,id&showheader=false]
 foreach line [split $csv "\n"] {
     set line [string trim $line]
     if {$line==""} continue;
@@ -32,7 +32,6 @@ foreach line [split $csv "\n"] {
 	incr ::cnt
 	if {$::cnt2>2} break
 	incr ::cnt2
-
 	foreach     {name id} [split $line2 ,] break
 	puts stderr "\tprocessing $name"
 	set image image$::cnt.png
