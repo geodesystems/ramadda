@@ -1,5 +1,4 @@
 proc getUrl {url} {
-    puts $url
     catch {exec rm tmp.csv}
     catch {exec curl $url > tmp.csv} err
     set fp [open tmp.csv]
@@ -12,23 +11,35 @@ proc getUrl {url} {
 set ::html "<div style='margin:20px;'>"
 set ::loc [file dirname [file normalize [info script]]]
 set ::cnt 0
+set ::tcnt 0
 
-set csv [getUrl https://geodesystems.com/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640&output=default.csv&fields=name,id&showheader=false]
+
+
+set csv [getUrl https://geodesystems.com/repository/entry/show?orderby=name&entryid=049a8297-58d7-4646-b689-b188ac274640&output=default.csv&fields=name,id&showheader=false]
 foreach line [split $csv "\n"] {
+    set line [string trim $line]
+    if {$line==""} continue;
+    incr ::tcnt
     foreach     {name id} [split $line ,] break
-    puts "ID:$id L:$line"
-    set csv [getUrl https://geodesystems.com/repository/entry/show?entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false]
-#    puts "$csv"
+    if {$name=="Features" || $name=="Latest"} continue;
+    puts stderr "processing $name"
+    set csv [getUrl https://geodesystems.com/repository/entry/show?orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false]
+    append ::html "<h2>$name</h2>"
+    set  ::cnt2 0
     foreach line2 [split $csv "\n"] {
-	foreach     {name id} [split $line2 ,] break
-	puts "\tchild:$name ID:$id"
-	exit
+	set line2 [string trim $line2]
+	if {$line2==""} continue;
 	incr ::cnt
+	if {$::cnt2>2} break
+	incr ::cnt2
+
+	foreach     {name id} [split $line2 ,] break
+	puts stderr "\tprocessing $name"
 	set image image$::cnt.png
 	set thumb thumb${::cnt}.png
 	set url "https://geodesystems.com/repository/entry/show?entryid=${id}"
+	set sleep 5
 	if {![file exists $thumb]} {
-	    puts  "capturing $url"
 	    #Bring Firefox to the front and tell it to reload the main page
 	    exec osascript -e {activate application "Safari"}
 	    set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
@@ -37,7 +48,7 @@ foreach line [split $csv "\n"] {
 	    exec osascript $::loc/capture.scpt
 	    exec cp capture.png $thumb
 	}
-	append ::html "<a href=$url>$url<br><img width=1200 border=0 src=thumb${cnt}.png></a><p>\n"
+	append ::html "<a href=$url>$name<br><img width=1200 border=0 src=thumb${cnt}.png></a><p>\n"
     }
 }
 append ::html "</div>"

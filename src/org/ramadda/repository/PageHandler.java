@@ -1421,10 +1421,11 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public HtmlTemplate getTemplate(Request request, Entry entry) {
+	boolean debug = true;
         //this forces the possible reload of the templates
         getTemplates();
         if (request == null) {
-	    //	    System.err.println("getTemplate-1:" + defaultTemplate);
+	    if(debug)System.err.println("getTemplate-1:" + defaultTemplate);
             return defaultTemplate;
         }
         boolean isMobile = request.isMobile();
@@ -1433,7 +1434,7 @@ public class PageHandler extends RepositoryManager {
         if (Utils.stringDefined(templateId)) {
             HtmlTemplate template = templateMap.get(templateId);
             if (template != null) {
-		//		System.err.println("getTemplate-2:" + template);
+		if(debug) System.err.println("getTemplate-2:" + template);
                 return template;
             }
 	    templateId = null;
@@ -1453,11 +1454,11 @@ public class PageHandler extends RepositoryManager {
 			    request.put(ARG_TEMPLATE, template.getId());
 			    if (isMobile) {
 				if (template.getTemplateProperty("mobile",false)) {
-				    //				    System.err.println("getTemplate metadata:" + template);
+				    if(debug) System.err.println("getTemplate metadata:" + template);
 				    return template;
 				}
 			    } else {
-				//				System.err.println("getTemplate metadata:" + template);
+				if(debug) System.err.println("getTemplate metadata:" + template);
 				return template;
 			    }
 			}
@@ -1470,15 +1471,16 @@ public class PageHandler extends RepositoryManager {
 
         if (isMobile && mobileTemplate != null) {
             request.put(ARG_TEMPLATE, mobileTemplate.getId());
-	    //	    System.err.println("getTemplate mobile:" + mobileTemplate);
+	    if(debug) System.err.println("getTemplate mobile:" + mobileTemplate);
             return mobileTemplate;
         }
 
         User user = request.getUser();
         if ((templateId == null) && (user != null) && !user.getAnonymous()) {
             templateId = user.getTemplate();
-	    //	    if (templateId != null) 
-	    //		System.err.println("getTemplate from user:" + templateId);
+	    if (templateId != null) 
+		if(debug)
+		    System.err.println("getTemplate from user:" + templateId);
         }
 
         if (templateId != null) {
@@ -1487,7 +1489,7 @@ public class PageHandler extends RepositoryManager {
                 return template;
             }
         }
-	//	System.err.println("getTemplate default:" + defaultTemplate);
+	if(debug)	System.err.println("getTemplate default:" + defaultTemplate);
 
         return defaultTemplate;
     }
