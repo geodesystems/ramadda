@@ -3575,17 +3575,28 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		    if(column.min == column.max) return;
 		    let perc = (v-column.min)/(column.max-column.min);
 		    let clazz = "display-dotbar-dot";
+		    let selected = false;
+		    let style = "";
 		    if(keyField && this.selectedKey) {
 			if(this.selectedKey == r.getValue(keyField.getIndex())) {
-			    selectedRecord = r;
-			    clazz += " display-dotbar-dot-select";
+			    selected = true;
 			}
 		    } else if(idx2==this.selectedIndex) {
+			selected = true;
+		    }
+		    if(selected) {
 			selectedRecord = r;
 			clazz += " display-dotbar-dot-select";
+		    } else {
+			if(this.highlightFilter) {
+			    if(!r.isHighlight(this)) {
+				style = "z-index:10;border:1px solid #aaa;";
+				console.log("Z");
+			    }
+			}
 		    }
 		    perc *=100;
-		    html +=  HU.span([RECORD_INDEX,idx2,CLASS,clazz,STYLE,HU.css("background",c,"position",'absolute','left', perc+'%'), RECORD_INDEX,idx2, TITLE,""]); 
+		    html +=  HU.span([RECORD_INDEX,idx2,CLASS,clazz,STYLE,HU.css("background",c,"position",'absolute','left', perc+'%')+style, RECORD_INDEX,idx2, TITLE,""]); 
 		});
 		html += "</div></td>";
 		html += HU.td(['width', (dotSize*2)]);
