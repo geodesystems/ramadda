@@ -3620,7 +3620,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
 	    });
 
-r	    //Do this later so other displays get this after they apply their data filter change
+	    //Do this later so other displays get this after they apply their data filter change
 	    if(selectedRecord){
 		setTimeout(()=>{
 		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: selectedRecord});
