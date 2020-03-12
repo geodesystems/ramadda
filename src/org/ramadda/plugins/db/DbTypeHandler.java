@@ -4848,6 +4848,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             newRequest.put(ARG_EMBEDDED, "true");
             StringBuilder sb = new StringBuilder();
             addStyleSheet(sb);
+            String zoom = (String) props.get("zoomLevel");
+            if (zoom != null) {
+                newRequest.put("zoomLevel", zoom);
+            }
+	    String mapCenter = (String) props.get("mapCenter");
+            if (mapCenter != null) {
+                newRequest.put("mapCenter", mapCenter);
+            }
+
+
             String layer = (String) props.get("layer");
             if (layer != null) {
                 newRequest.put("mapLayer", layer);
