@@ -33129,7 +33129,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Dot Bar",
-					'',
+					'keyField=',
 				    ])},
         needsData: function() {
             return true;
@@ -33143,7 +33143,6 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		fields = this.getPointData().getRecordFields();
 	    }
 	    let dotSize = this.getProperty("dotSize",16);
-	    let barWidth = this.getProperty("barWidth",800);
 	    let cols = {};
 	    let html = "<table width=100% border=0>";
 	    let t1 = new Date();

@@ -150,8 +150,9 @@ public class CsvOutputHandler extends OutputHandler {
 
         String  delimiter      = request.getString(ARG_DELIMITER, ",");
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
-        boolean showFullHeader = request.get(ARG_FULLHEADER, false);
-        boolean escapeCommas  = request.get("escapecommas", false)||showFullHeader;
+        boolean showFullHeader = request.get(ARG_FULLHEADER, false);\
+	boolean showHeader = request.get("showheader", false);
+        boolean escapeCommas  = request.get("escapecommas", true)||showFullHeader;
 	
         String  filler         = request.getString("filler", " ");
 
@@ -208,7 +209,8 @@ type = "integer";
 
 	    if(sb.length()>0)
 		sb.append(",");
-	    addHeader(sb,field,label,type,escapeCommas, showFullHeader);
+	    if(showheader)
+		addHeader(sb,field,label,type,escapeCommas, showFullHeader);
         }
 	sb.append("\n");
 
