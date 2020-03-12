@@ -15,7 +15,7 @@ set ::tcnt 0
 
 
 
-set ::limit 10000
+set ::limit 3
 set csv [getUrl https://geodesystems.com/repository/entry/show?ascending=true&orderby=name&entryid=11ff9695-7b5e-4b5c-b6df-3f058bbea5dc&output=default.csv&fields=name,id&showheader=false]
 foreach line [split $csv "\n"] {
     set line [string trim $line]
