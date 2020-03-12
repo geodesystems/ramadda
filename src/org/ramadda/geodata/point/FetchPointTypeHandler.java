@@ -167,6 +167,12 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         }
         boolean          addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
         String           contents = readContents(entry);
+	if(contents ==null) return;
+	if(!contents.startsWith("#")) {
+	    if(contents.length()>500)
+		contents = contents.substring(0,499);
+	    System.err.println("Fetch: received error:" + contents); 
+	}
         SimpleDateFormat sdf      = new SimpleDateFormat(DATE_FORMAT);
         String           dttm     = "," + sdf.format(new Date());
         BufferedWriter writer = new BufferedWriter(
@@ -204,7 +210,6 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         String url = (String) entry.getValue(IDX_SOURCE_URL);
         url = url.replace("points.json", "points.csv");
         url += "&fullheader=true";
-
         return IO.readContents(url);
     }
 

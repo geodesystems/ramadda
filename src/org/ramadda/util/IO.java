@@ -515,7 +515,6 @@ public class IO {
         InputStream is = getInputStream(u);
         String      s  = IOUtil.readContents(is);
         IOUtil.close(is);
-
         return s;
     }
 
@@ -533,7 +532,13 @@ public class IO {
         URLConnection connection = url.openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
         connection.setRequestProperty("Host", url.getHost());
-
+	if(connection instanceof HttpURLConnection) {
+	    HttpURLConnection huc = (HttpURLConnection) connection;
+	    int response = huc.getResponseCode();
+	    if(response!=huc.HTTP_ACCEPTED) {
+		throw new IOException("Error code:" + response +" " + huc.getResponseMessage());
+	    }
+	}
         return connection.getInputStream();
     }
 
