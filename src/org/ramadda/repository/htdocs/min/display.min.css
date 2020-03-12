@@ -1,4 +1,8 @@
 
+.display-container {
+    display:inline-block;
+}
+
 .display {
 }
 
@@ -51,12 +55,12 @@ svg > g > g:last-child { pointer-events: none }
   -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
 
-.display-filter-input, .display-filter textarea, .display-filter input, .display-filter select,  {
-  font-size:90% !important;
+.display-filter-input, .display-filter textarea, .display-filter input, .display-filter select  {
+  font-size:80% !important;
 }
 
 .display-filter-popup-item {
-  font-size:90% !important;
+  font-size:80% !important;
   cursor:pointer;
 }
 
@@ -574,10 +578,6 @@ svg > g > g:last-child { pointer-events: none }
 .display-metadatalist-item {
     max-width: 200px;
 }
-
-.display-container {
-}
-
 
 .display-loading {
     color: #aaa;

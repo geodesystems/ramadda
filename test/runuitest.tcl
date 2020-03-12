@@ -16,7 +16,7 @@ set ::tcnt 0
 
 
 set ::limit 10000
-set csv [getUrl https://geodesystems.com/repository/entry/show?ascending=false&orderby=name&entryid=11ff9695-7b5e-4b5c-b6df-3f058bbea5dc&output=default.csv&fields=name,id&showheader=false]
+set csv [getUrl https://geodesystems.com/repository/entry/show?ascending=true&orderby=name&entryid=11ff9695-7b5e-4b5c-b6df-3f058bbea5dc&output=default.csv&fields=name,id&showheader=false]
 foreach line [split $csv "\n"] {
     set line [string trim $line]
     if {$line==""} continue;
@@ -27,7 +27,6 @@ foreach line [split $csv "\n"] {
     set csv [getUrl https://geodesystems.com/repository/entry/show?ascending=true&orderby=name&entryid=${id}&output=default.csv&fields=name,id&showheader=false&showheader=false]
     append ::html "<h2>$name</h2>"
     set  ::cnt2 0
-    continue
     foreach line2 [split $csv "\n"] {
 	set line2 [string trim $line2]
 	if {$line2==""} continue;
@@ -42,12 +41,22 @@ foreach line [split $csv "\n"] {
 	set sleep 15
 	if {![file exists $thumb]} {
 	    #Bring Firefox to the front and tell it to reload the main page
-	    exec osascript -e {activate application "Safari"}
 	    set cmd "tell application \"Safari\" to set the URL of the front document to \"$url\""    
-	    exec osascript -e $cmd
-	    exec sleep $sleep
-	    exec osascript $::loc/capture.scpt
-	    exec cp capture.png $thumb
+	    if {[catch {
+		exec foobar
+		exec osascript -e {activate application "Safari"}
+		exec osascript -e $cmd
+		exec sleep $sleep
+		exec osascript $::loc/capture.scpt
+		exec cp capture.png $thumb
+
+	    } err]} {
+		puts stderr "Error: $err"
+		set ::html "Error: $err<hr>$::html"
+		append ::html "</div>"
+		puts [open uiimages.html w] $::html
+		exit
+	    }
 	}
 	append ::html "<a href=$url>$name<br><img width=1200 border=0 src=thumb${cnt}.png></a><p>\n"
     }

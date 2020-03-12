@@ -1383,7 +1383,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var divAttrs = [ATTR_ID, chartId];
             var style = "";
             var width = this.getChartWidth();
-            if (width) {
+            if (false && width) {
 		if(width.endsWith("%")) {
                     style += "width:" + width + ";"
 		} else {
@@ -1395,7 +1395,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			style += "width:" + width + ";";
 		}
             } else {
-                style += "width:" + "100%;";
+//                style += "width:" + "100%;";
             }
 	    let expandedHeight  = this.getProperty("expandedHeight");
             var height =  this.getChartHeight();
@@ -1413,7 +1413,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     style += "height:" + "100%;";
 		}
 	    }
-	    style += "text-align:center;"
+//	    style += "text-align:center;"
             divAttrs.push(STYLE);
             divAttrs.push(style);
 	    let isExpanded = this.getProperty("isExpanded");

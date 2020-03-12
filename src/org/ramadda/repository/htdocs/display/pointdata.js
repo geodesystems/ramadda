@@ -1483,11 +1483,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		var dfltValueMin = this.getProperty(filterField.getId() +".filterValueMin",min);
 		var dfltValueMax = this.getProperty(filterField.getId() +".filterValueMax",max);
 
-                widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",5,"fieldId",filterField.getId()]);
-		widget += " - ";
-                widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",5,"fieldId",filterField.getId()]);
+                widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",filterField.getId()]);
+		widget += "-";
+                widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",filterField.getId()]);
 	    } else if(filterField.getType() == "date") {
-                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +" - " +
+                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +"-" +
 		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",filterField.getId()]);
 		this.dateIds.push(widgetId+"_date1");
 		this.dateIds.push(widgetId+"_date2");

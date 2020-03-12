@@ -186,8 +186,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** Cache resoruces property */
     public static final String PROP_CACHERESOURCES = "ramadda.cacheresources";
 
-
-
     /** Entry edit URLs */
     protected List<RequestUrl> entryEditUrls;
 
@@ -3983,7 +3981,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
             InputStream inputStream = new ByteArrayInputStream(bytes);
-
             return makeResult(request, path, inputStream, mimeType, true);
         }
 

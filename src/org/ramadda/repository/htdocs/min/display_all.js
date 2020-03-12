@@ -1173,6 +1173,7 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 
 
 
+
 /**
    Copyright 2008-2019 Geode Systems LLC
 */
@@ -4719,9 +4720,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			} else if(this.type=="numeric") {
 			    let minId = this.display.getDomId(this.getId()+"_min");
 			    let maxId = this.display.getDomId(this.getId()+"_max");			    
-			    widget = HU.input("","",[STYLE, style, ID,minId,"size","5",CLASS,"display-filter-input"],this.dflt_min) +
+			    widget = HU.input("","",[STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input"],this.dflt_min) +
 				" - " +
-				HU.input("","",[STYLE, style, ID,maxId,"size","5",CLASS,"display-filter-input"],this.dflt_max)
+				HU.input("","",[STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input"],this.dflt_max)
 			    label = label+" range";
 			} else if(this.type=="date") {
 			    let fromId = this.display.getDomId(this.getId()+"_from");
@@ -4735,7 +4736,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			} else {
 			    let size = "10";
 			    if(this.type=="number")
-				size = "5";
+				size = "4";
 			    widget = HU.input("",this.dflt,[STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
 			}
 			if(!widget) return "";
@@ -5700,7 +5701,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let right = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
             html += HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "");
             html += HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
-            html += HU.leftRightTable(left, right, {
+            html += HU.leftRightTable(left, right, null, null, {
                 valign: "bottom"
             });
             html += HU.div([ID,this.getDomId(ID_HEADER3),CLASS,"display-header3"], "");
@@ -8876,11 +8877,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		var dfltValueMin = this.getProperty(filterField.getId() +".filterValueMin",min);
 		var dfltValueMax = this.getProperty(filterField.getId() +".filterValueMax",max);
 
-                widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",5,"fieldId",filterField.getId()]);
-		widget += " - ";
-                widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",5,"fieldId",filterField.getId()]);
+                widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",filterField.getId()]);
+		widget += "-";
+                widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",filterField.getId()]);
 	    } else if(filterField.getType() == "date") {
-                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +" - " +
+                widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +"-" +
 		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",filterField.getId()]);
 		this.dateIds.push(widgetId+"_date1");
 		this.dateIds.push(widgetId+"_date2");
@@ -14915,7 +14916,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var divAttrs = [ATTR_ID, chartId];
             var style = "";
             var width = this.getChartWidth();
-            if (width) {
+            if (false && width) {
 		if(width.endsWith("%")) {
                     style += "width:" + width + ";"
 		} else {
@@ -14927,7 +14928,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			style += "width:" + width + ";";
 		}
             } else {
-                style += "width:" + "100%;";
+//                style += "width:" + "100%;";
             }
 	    let expandedHeight  = this.getProperty("expandedHeight");
             var height =  this.getChartHeight();
@@ -14945,7 +14946,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     style += "height:" + "100%;";
 		}
 	    }
-	    style += "text-align:center;"
+//	    style += "text-align:center;"
             divAttrs.push(STYLE);
             divAttrs.push(style);
 	    let isExpanded = this.getProperty("isExpanded");
