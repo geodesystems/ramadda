@@ -209,7 +209,7 @@ type = "integer";
 
 	    if(sb.length()>0)
 		sb.append(",");
-	    if(showheader)
+	    if(showHeader)
 		addHeader(sb,field,label,type,escapeCommas, showFullHeader);
         }
 	sb.append("\n");

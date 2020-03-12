@@ -13,7 +13,7 @@ set ::html "<div style='margin:20px;'>"
 set ::loc [file dirname [file normalize [info script]]]
 set ::cnt 0
 
-set csv [getUrl https://geodesystems.com/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640&output=default.csv&fields=name,id]
+set csv [getUrl https://geodesystems.com/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640&output=default.csv&fields=name,id&showheader=false]
 foreach line [split $csv "\n"] {
     foreach     {name id} [split $line ,] break
     puts "ID:$id L:$line"
