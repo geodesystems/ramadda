@@ -74,6 +74,7 @@ import java.util.TimeZone;
 public class PageHandler extends RepositoryManager {
 
 
+    private static boolean debugTemplates = false; 
     /** _more_ */
     public static final String DEFAULT_TEMPLATE = "fixedmapheader";
 
@@ -1011,7 +1012,7 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<HtmlTemplate> getTemplates() {
+    private synchronized List<HtmlTemplate> getTemplates() {
 
         List<HtmlTemplate> theTemplates = htmlTemplates;
         if ( !cacheTemplates || (theTemplates == null)) {
@@ -1040,7 +1041,8 @@ public class PageHandler extends RepositoryManager {
             String defaultId =
                 getRepository().getProperty(PROP_HTML_TEMPLATE_DEFAULT,
                                             DEFAULT_TEMPLATE);
-	    System.err.println("getTemplates defaultId=" + defaultId);
+	    if(debugTemplates)
+		System.err.println("getTemplates defaultId=" + defaultId);
             List<String> templatePaths =
                 new ArrayList<String>(
                     getRepository().getPluginManager().getTemplateFiles());
@@ -1114,11 +1116,13 @@ public class PageHandler extends RepositoryManager {
                     if (defaultTemplate == null) {
                         if (defaultId == null) {
                             defaultTemplate = template;
-			    System.err.println("\tset-1:" + defaultTemplate);
+			    if(debugTemplates)
+				System.err.println("\tset-1:" + defaultTemplate);
                        } else {
                             if (Misc.equals(defaultId, template.getId())) {
                                 defaultTemplate = template;
-				System.err.println("\tset-2:" + defaultTemplate);
+				if(debugTemplates)
+				    System.err.println("\tset-2:" + defaultTemplate);
                             }
                         }
                         if (mobileId == null) {
@@ -1138,7 +1142,8 @@ public class PageHandler extends RepositoryManager {
             }
             if (defaultTemplate == null) {
                 defaultTemplate = theTemplates.get(0);
-		System.err.println("\tset-3:" + defaultTemplate);
+		if(debugTemplates)
+		    System.err.println("\tset-3:" + defaultTemplate);
             }
             if (mobileTemplate == null) {
                 mobileTemplate = defaultTemplate;
@@ -1425,11 +1430,10 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public HtmlTemplate getTemplate(Request request, Entry entry) {
-	boolean debug = true;
         //this forces the possible reload of the templates
         getTemplates();
         if (request == null) {
-	    if(debug)System.err.println("getTemplate-1:" + defaultTemplate);
+	    if(debugTemplates)System.err.println("getTemplate-1:" + defaultTemplate);
             return defaultTemplate;
         }
         boolean isMobile = request.isMobile();
@@ -1438,7 +1442,7 @@ public class PageHandler extends RepositoryManager {
         if (Utils.stringDefined(templateId)) {
             HtmlTemplate template = templateMap.get(templateId);
             if (template != null) {
-		if(debug) System.err.println("getTemplate-2:" + template);
+		if(debugTemplates) System.err.println("getTemplate-2:" + template);
                 return template;
             }
 	    templateId = null;
@@ -1458,11 +1462,11 @@ public class PageHandler extends RepositoryManager {
 			    request.put(ARG_TEMPLATE, template.getId());
 			    if (isMobile) {
 				if (template.getTemplateProperty("mobile",false)) {
-				    if(debug) System.err.println("getTemplate metadata:" + template);
+				    if(debugTemplates) System.err.println("getTemplate metadata:" + template);
 				    return template;
 				}
 			    } else {
-				if(debug) System.err.println("getTemplate metadata:" + template);
+				if(debugTemplates) System.err.println("getTemplate metadata:" + template);
 				return template;
 			    }
 			}
@@ -1475,7 +1479,7 @@ public class PageHandler extends RepositoryManager {
 
         if (isMobile && mobileTemplate != null) {
             request.put(ARG_TEMPLATE, mobileTemplate.getId());
-	    if(debug) System.err.println("getTemplate mobile:" + mobileTemplate);
+	    if(debugTemplates) System.err.println("getTemplate mobile:" + mobileTemplate);
             return mobileTemplate;
         }
 
@@ -1483,7 +1487,7 @@ public class PageHandler extends RepositoryManager {
         if ((templateId == null) && (user != null) && !user.getAnonymous()) {
             templateId = user.getTemplate();
 	    if (templateId != null) 
-		if(debug)
+		if(debugTemplates)
 		    System.err.println("getTemplate from user:" + templateId);
         }
 
@@ -1493,7 +1497,7 @@ public class PageHandler extends RepositoryManager {
                 return template;
             }
         }
-	if(debug)	System.err.println("getTemplate default:" + defaultTemplate);
+	if(debugTemplates)	System.err.println("getTemplate default:" + defaultTemplate);
 
         return defaultTemplate;
     }

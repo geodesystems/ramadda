@@ -15,6 +15,7 @@ set ::tcnt 0
 
 
 
+set ::limit 10000
 set csv [getUrl https://geodesystems.com/repository/entry/show?orderby=name&entryid=11ff9695-7b5e-4b5c-b6df-3f058bbea5dc&output=default.csv&fields=name,id&showheader=false]
 foreach line [split $csv "\n"] {
     set line [string trim $line]
@@ -29,15 +30,15 @@ foreach line [split $csv "\n"] {
     foreach line2 [split $csv "\n"] {
 	set line2 [string trim $line2]
 	if {$line2==""} continue;
-	incr ::cnt
-	if {$::cnt2>2} break
+	if {$::cnt2>$::limit} break
 	incr ::cnt2
+	incr ::cnt
 	foreach     {name id} [split $line2 ,] break
 	puts stderr "\tprocessing $name"
 	set image image$::cnt.png
 	set thumb thumb${::cnt}.png
 	set url "https://geodesystems.com/repository/entry/show?entryid=${id}"
-	set sleep 5
+	set sleep 15
 	if {![file exists $thumb]} {
 	    #Bring Firefox to the front and tell it to reload the main page
 	    exec osascript -e {activate application "Safari"}
