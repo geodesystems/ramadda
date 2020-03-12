@@ -4235,7 +4235,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             props.put("zoomLevel", request.getString("zoomLevel", ""));
         }	
         if (request.defined("mapCenter")) {
-            props.put("initialCenter", request.getString("mapCenter", ""));
+            props.put("mapCenter", request.getString("mapCenter", ""));
         }
 
         MapInfo map = getRepository().getMapManager().createMap(request,
