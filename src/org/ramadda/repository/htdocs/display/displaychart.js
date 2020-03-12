@@ -219,9 +219,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             SUPER.clearCachedData();
             this.computedData = null;
         },
-        updateUI: function(reload) {
+        updateUI: function(args) {
+	    if(!args) args = {};
 	    let debug = false;
-            SUPER.updateUI.call(this, reload);
+            SUPER.updateUI.call(this, args);
 	    if(debug)
 		console.log(this.type+" updateUI")
             if (!this.getDisplayReady()) {
@@ -232,7 +233,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //	    var t1= new Date();
 	    if(debug)
 		console.log("\tcalling displayData");
-            this.displayData(reload);
+            this.displayData(args.reload);
 	    //	    var t2= new Date();
 	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
         },

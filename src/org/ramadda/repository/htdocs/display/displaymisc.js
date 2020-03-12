@@ -1933,8 +1933,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             SUPER.fieldSelectionChanged.call(this);
             this.updateUI();
         },
-        updateUI: function(reload) {
-            SUPER.updateUI.call(this,reload);
+        updateUI: function(args) {
+            SUPER.updateUI.call(this,args);
             if (!this.hasData()) {
                 this.setContents(this.getLoadingMessage());
                 return;

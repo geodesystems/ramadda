@@ -704,6 +704,24 @@ PointRecord.prototype =  {
 	    if(!this.highlightForDisplay) this.highlightForDisplay={};
 	    return this.highlightForDisplay[display];
 	},
+    getDisplayProperty: function(display,prop,dflt) {
+	if(!this.displayProperties) this.displayProperties={};
+	let props = this.displayProperties[display];
+	if(!props) {
+	    props = this.displayProperties[display] = {};
+	}
+	return props[prop] || dflt;
+    },
+    setDisplayProperty: function(display,prop,value) {
+	if(!this.displayProperties) this.displayProperties={};
+	let props = this.displayProperties[display];
+	if(!props) {
+	    props = this.displayProperties[display] = {};
+	}
+	props[prop] =value;
+    },
+
+	
 	setHighlight:function(display, value) {
 	    if(!this.highlightForDisplay) this.highlightForDisplay={};
 	    if(!value || this.highlightForDisplay[display] == null) {

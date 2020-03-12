@@ -1023,6 +1023,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix) {
             var pointData = this.getData();
             if (pointData == null) return null;
+	    if(this.getProperty("colorByAllRecords")) {
+		records = pointData.getRecords();
+	    }
             var fields = pointData.getRecordFields();
 	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix);
 	},
@@ -1164,7 +1167,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    widgetId+="_date2";
 		}
 		this.settingFilterValue = true;
-		if(Utils.isDefined(prop.value2)) {
+		if(prop.fieldId == "_highlight") {
+		    this.jq(ID_FILTER_HIGHLIGHT).val(prop.value);
+		    this.highlightFilter = prop.value=="highlight";
+		} else 	if(Utils.isDefined(prop.value2)) {
 		    $("#" +widgetId+"_min").val(prop.value);
 		    $("#" +widgetId+"_min").attr("data-value", prop.value);
 		    $("#" +widgetId+"_max").val(prop.value2);
@@ -3860,11 +3866,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					  this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
 
-
+	    this.highlightFilter = this.getProperty("filterHighlight",false);
 	    if(this.getProperty("showFilterHighlight")) {
-		this.highlightFilter = false;
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
-		header2 += HU.select("",[ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums) + SPACE2;
+		header2 += HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!this.highlightFilter?"filter":"highlight") + SPACE2;
 	    }
 
 
@@ -4161,6 +4166,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    max.val(ui.values[1]);
 			    min.attr("data-value",min.val());
 			    max.attr("data-value",max.val());
+			    if(_this.getProperty("filterSliderImmediate")) {
+				inputFunc(min,max);
+			    }
 			},
 			stop: function() {
 			    var popup = getTooltip();
@@ -4177,8 +4185,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.jq(ID_FILTER_HIGHLIGHT).change(function() {
 		    _this.highlightFilter = $(this).val()=="highlight";
 		    _this.haveCalledUpdateUI = false;
-		    _this.updateUI();
-		    
+		    inputFunc($(this));
+//		    _this.dataFilterChanged();
 		});
 
 
@@ -4588,10 +4596,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		'&lt;field_id&gt;.&lt;format&gt;="..."',
 		"label:Filter Data",
 		"filterFields=\"\"",
-		"hideFilterWidget=true",
-		'showFilterHighlight=true',
-		"acceptFilterEvent=false",
 		'filterFieldsToPropagate=""',
+		"hideFilterWidget=true",
+		['filterHighlight=true',"Highlight the records"],
+		['showFilterHighlight=false',"show/hide the filter highlight widget"],
+		"acceptFilterEvent=false",
+		['filterSliderImmediate=true',"Apply the change while sliding"],
 		"&lt;field&gt;.filterValue=\"\"",
 		"&lt;field&gt;.filterValues=\"\"",
 		"&lt;field&gt;.filterMultiple=\"true\"",
@@ -4634,6 +4644,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["colorByMin=\"value\"","Min scale value"],
 		["colorByMax=\"value\"","Max scale value"],
 		['showColorTable=false',"Display the color table"],
+		['colorByAllRecords=true',"use all records for color range"],
 		'convertColorIntensity=true',
 		'intensitySourceMin=0',
 		'intensitySourceMax=100',
@@ -5068,7 +5079,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 	    this.haveCalledUpdateUI = false;
 	    if(debug) console.log("\tcalling updateUI");
-            this.updateUI(reload);
+            this.updateUI({reload:reload});
             if (!reload) {
                 this.lastPointData = pointData;
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
