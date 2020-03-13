@@ -18,11 +18,13 @@ package org.ramadda.geodata.model;
 
 
 import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
+import org.ramadda.repository.ApiMethod;
 import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
+import org.ramadda.repository.RequestHandler;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.job.JobManager;
@@ -670,6 +672,23 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         String       longname = grid.getDescription();
         if ((longname == null) || longname.isEmpty()) {
             longname = grid.getName();
+        }
+        String formula =
+            request.getString(ClimateModelApiHandler.ARG_FORMULA, "");
+        if ( !formula.isEmpty()) {
+            ApiMethod api = request.getApiMethod();
+            if (api != null) {
+                RequestHandler handler = api.getRequestHandler();
+                if ((handler != null)
+                        && (handler instanceof ClimateModelApiHandler)) {
+                    String formulaName =
+                        ((ClimateModelApiHandler) handler).getFormulaName(
+                            formula);
+                    if (formulaName != null) {
+                        longname = formulaName;
+                    }
+                }
+            }
         }
         varsb.append(longname);
         if (grid.getZDimension() != null) {

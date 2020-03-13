@@ -197,7 +197,8 @@ public class CDOArealStatisticsService extends CDODataService {
         GridDatatype grid  = dataset.getGrids().get(0);
         String       units = grid.getUnitsString();
         boolean hasPrecipUnits = (SimpleUnit.isCompatible(units, "kg m-2 s-1")
-                                  || SimpleUnit.isCompatible(units, "mm/day")
+                                  //|| SimpleUnit.isCompatible(units, "mm/day")
+                                  || units.equals("mm/day")
                                   || units.equals("mm"));  // for cpc global precip
 
         boolean     isAnom = first.getValue(3).toString().equals("anom");

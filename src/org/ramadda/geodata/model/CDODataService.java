@@ -1058,7 +1058,7 @@ public abstract class CDODataService extends Service {
             Entry       oneOfThem = opEntries.get(0);
             if (oneOfThem.getTypeHandler()
                     instanceof ClimateModelFileTypeHandler) {
-                if (opEntries.size() == 1) {
+                if (opEntries.size() == 1 || request.defined(ClimateModelApiHandler.ARG_FORMULA)) {
                     newOps.add(so);
                 } else {
                     // Aggregate by time via ncml
@@ -1302,6 +1302,7 @@ public abstract class CDODataService extends Service {
             ServiceInput input, String argPrefix, String name, String type)
             throws Exception {
 
+        boolean isFormula = request.defined(ClimateModelApiHandler.ARG_FORMULA);
         // The first time we adjust without reducing daily entries so we have something
         // for the climatology if necessary
         ServiceInput climInput = adjustInput(request, input, false);
@@ -1316,9 +1317,15 @@ public abstract class CDODataService extends Service {
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
 
 
-        List<List<ServiceOperand>> sortedOps =
+        
+        List<List<ServiceOperand>> sortedOps = null;
+        if (isFormula) {
+            sortedOps = new ArrayList<List<ServiceOperand>>();
+            sortedOps.add(climInput.getOperands());
+        } else {
             ModelUtil.sortOperandsByCollection(request,
                 climInput.getOperands());
+        }
         Entry freqSample = sortedOps.get(0).get(0).getEntries().get(0);
         boolean isMonthly = getFrequency(request, freqSample).equals(
                                 CDOOutputHandler.FREQUENCY_MONTHLY);

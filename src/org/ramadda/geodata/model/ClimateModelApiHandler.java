@@ -108,6 +108,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
     /** named time periods */
     private List<NamedTimePeriod> namedTimePeriods;
 
+    /** List of formulas */
+    private List<Formula> formulas;
+
     /** Default starting year for climatology */
     public static final String DEFAULT_CLIMATE_START_YEAR = "1981";
 
@@ -122,6 +125,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
     /** ensemble field index */
     public static final int ENS_FIELD_INDEX = 2;
+
+    /** var field index */
+    public static final int VAR_FIELD_INDEX = 3;
+
+    /** formula arg */
+    public static final String ARG_FORMULA = "formula";
 
     /**
      * Constructor
@@ -644,11 +653,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     continue;
                 }
                 List<List<Entry>> sordidEntries =
-                    groupEntriesByColumn(request, entries);
+                    ModelUtil.groupEntriesByColumn(request, entries);
                 if (type.equals(ARG_ACTION_MULTI_COMPARE)
                         || type.equals(ARG_ACTION_MULTI_TIMESERIES)
                         || type.equals(ARG_ACTION_ENS_COMPARE)
-                        || type.equals(ARG_ACTION_CORRELATION)) {
+                        || type.equals(ARG_ACTION_CORRELATION)
+                        || request.defined(ARG_FORMULA)) {
                     for (List<Entry> e : sordidEntries) {
                         ServiceOperand op =
                             new ServiceOperand(e.get(0).getName(), e);
@@ -657,11 +667,23 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         operands.add(op);
                     }
                 } else {
+                    List<Entry>   allEntries = new ArrayList();
                     /* Should only be one, but just in case, get the first */
                     Entry e = sordidEntries.get(0).get(0);
                     ServiceOperand op = new ServiceOperand(e.getName(),
-                                            sordidEntries.get(0));
-                    //System.out.println(collection);
+                            sordidEntries.get(0));
+                    /* Should only be one, unless a formula like vectors 
+                    StringBuilder opName     = new StringBuilder();
+                    for (List<Entry> eList : sordidEntries) {
+                        for (Entry e : eList) {
+                            opName.append(e.getName());
+                            opName.append(";");
+                            allEntries.add(e);
+                        }
+                    }
+                    ServiceOperand op = new ServiceOperand(opName.toString(),
+                                            allEntries);
+                    */
                     op.putProperty(ARG_COLLECTION, collection);
                     operands.add(op);
                 }
@@ -1146,6 +1168,20 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         if (hasOperands) {  // add in the process boxes
 
+
+            //Variable has been selected.  See if it's a formula
+            if (type.equals(ARG_ACTION_COMPARE)) {
+                String varArg = getFieldSelectArg(ARG_COLLECTION1,
+                                    VAR_FIELD_INDEX);
+                String variable = request.getString(varArg, "");
+                if (isFormula(variable)) {
+                    if (request.defined(ARG_FORMULA)) {
+                        request.remove(ARG_FORMULA);
+                    }
+                    request.put(ARG_FORMULA, variable);
+                }
+            }
+
             List<String> processTabs   = new ArrayList<String>();
             List<String> processHelp   = new ArrayList<String>();
             List<String> processTitles = new ArrayList<String>();
@@ -1238,43 +1274,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         return new Result("Model Comparison", sb2);
 
     }
-
-
-
-    /**
-     * Group the entries by those with the same column values
-     * @param request the request
-     * @param entries the entries
-     * @return a list of lists of grouped entries
-     */
-    private List<List<Entry>> groupEntriesByColumn(Request request,
-            List<Entry> entries) {
-        Hashtable<String, List<Entry>> table = new Hashtable<String,
-                                                   List<Entry>>();
-        for (Entry entry : entries) {
-            String valuesKey = ModelUtil.makeValuesKey(entry.getValues(),
-                                   true);
-            List<Entry> myEntries = table.get(valuesKey);
-            if (myEntries == null) {
-                myEntries = new ArrayList<Entry>();
-            }
-            myEntries.add(entry);
-            table.put(valuesKey, myEntries);
-        }
-        List<List<Entry>> newEntries =
-            new ArrayList<List<Entry>>(table.size());
-        for (String entryKey : table.keySet()) {
-            List<Entry> sameEntries = table.get(entryKey);
-            if (sameEntries.isEmpty()) {
-                continue;
-            } else {
-                newEntries.add(sameEntries);
-            }
-        }
-
-        return newEntries;
-    }
-
 
     /**
      * Get the time series entry
@@ -1456,7 +1455,17 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 for (Object o : v) {
                     String s = o.toString();
                     if (s.length() > 0) {
-                        ors.add(Clause.eq(column.getName(), s));
+                        if (column.getName().equals("variable")
+                                && isFormula(s)) {
+                            request.put(ARG_FORMULA, s);
+                            List<String> esses =
+                                Formula.getFormulaOperands(s);
+                            for (String ess : esses) {
+                                ors.add(Clause.eq(column.getName(), ess));
+                            }
+                        } else {
+                            ors.add(Clause.eq(column.getName(), s));
+                        }
                     }
                 }
                 if ( !ors.isEmpty()) {
@@ -1643,6 +1652,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (myColumn.isEnumeration()) {
             List<TwoFacedObject> tfos = typeHandler.getValueList(entry,
                                             values, myColumn);
+            if (myColumn.getName().equals("variable")
+                    && type.equals(ARG_ACTION_COMPARE)) {
+                addVariableFormulas(tfos);
+            }
             if (showBlank) {
                 tfos.add(0, new TwoFacedObject(""));
             }
@@ -1659,6 +1672,54 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         return new Result("", sb, Json.MIMETYPE);
 
+    }
+
+    /**
+     * Add any formulas to the variable list
+     * @param tfos  list of variables
+     *
+     * @throws Exception problem reading formulas
+     */
+    private void addVariableFormulas(List<TwoFacedObject> tfos)
+            throws Exception {
+        List<Formula>        formulas = getFormulas();
+        List<TwoFacedObject> vars     = new ArrayList<TwoFacedObject>();
+        for (Formula form : formulas) {
+            vars.add(new TwoFacedObject(form.getName(),
+                                        form.getExpression()));
+        }
+        for (TwoFacedObject var : vars) {
+            String       formula  = var.getId().toString();
+            List<String> operands = Formula.getFormulaOperands(formula);
+            boolean      haveOps  = false;
+            for (Object op : operands) {
+                haveOps = TwoFacedObject.contains(tfos, op.toString());
+            }
+            if (haveOps) {
+                //tfos.add(new TwoFacedObject(var.getLabel(), StringUtil.join("," , operands)));
+                tfos.add(var);
+            }
+        }
+    }
+
+    /**
+     * Is this a formula?
+     *
+     * @param exp problem reading formulas
+     *
+     * @return true or false
+     *
+     * @throws Exception can't read formulas
+     */
+    private boolean isFormula(String exp) throws Exception {
+        List<Formula> formulas = getFormulas();
+        for (Formula form : formulas) {
+            if (form.getExpression().equals(exp)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -1843,6 +1904,73 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         }
     }
 
+    /**
+     * Get the formulas
+     *
+     * @return  the formulas
+     *
+     * @throws Exception problems
+     */
+    public List<Formula> getFormulas() throws Exception {
+        if (formulas == null) {
+            loadFormulas();
+        }
+
+        return formulas;
+    }
+
+    /**
+     * Load the formulas
+     *
+     * @throws Exception problem reading files
+     */
+    protected void loadFormulas() throws Exception {
+        if (formulas != null) {
+            return;
+        }
+        formulas = new ArrayList<Formula>();
+        List<String> formulaFiles = new ArrayList<String>();
+        List<String> allFiles     = getPluginManager().getAllFiles();
+        for (String f : allFiles) {
+            if (f.endsWith("formulas.txt")) {
+                formulaFiles.add(f);
+            }
+        }
+
+        for (String path : formulaFiles) {
+            String contents =
+                getStorageManager().readUncheckedSystemResource(path,
+                    (String) null);
+            if (contents == null) {
+                getLogManager().logInfoAndPrint("RAMADDA: could not read:"
+                        + path);
+
+                continue;
+            }
+            //Name;exp
+            List<String> lines = StringUtil.split(contents, "\n", true, true);
+            // get rid of comment
+            if (lines.get(0).startsWith("#")) {
+                lines.remove(0);
+            }
+            for (String line : lines) {
+                // skip comments
+                if (line.startsWith("#")) {
+                    continue;
+                }
+                List<String> toks = StringUtil.split(line, ";");
+                if (toks.size() != 2) {
+                    throw new IllegalArgumentException("Bad formula line:"
+                            + line + "\nFile:" + path);
+                }
+
+
+                formulas.add(new Formula(toks.get(0), toks.get(1)));
+            }
+
+        }
+    }
+
 
     /**
      * Add a help file
@@ -1874,6 +2002,27 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         addHelp(sb, helpFile);
 
         return sb.toString();
+    }
+
+
+    /**
+     * Get the formula name from the formula expression
+     *
+     * @param exp the expression
+     *
+     * @return the name or null
+     *
+     * @throws Exception problem reading formulas
+     */
+    public String getFormulaName(String exp) throws Exception {
+        List<Formula> forms = getFormulas();
+        for (Formula form : forms) {
+            if (form.getExpression().equals(exp)) {
+                return form.getName();
+            }
+        }
+
+        return null;
     }
 
 

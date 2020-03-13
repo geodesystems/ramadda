@@ -26,6 +26,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.service.ServiceOperand;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.File;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -221,6 +223,40 @@ public class ModelUtil {
         String climKey = model + " " + exp;
 
         return climKey;
+    }
+
+    /**
+     * Group the entries by those with the same column values
+     * @param request the request
+     * @param entries the entries
+     * @return a list of lists of grouped entries
+     */
+    public static List<List<Entry>> groupEntriesByColumn(Request request,
+            List<Entry> entries) {
+        Hashtable<String, List<Entry>> table = new Hashtable<String,
+                                                   List<Entry>>();
+        for (Entry entry : entries) {
+            String valuesKey = makeValuesKey(entry.getValues(),
+                                   true);
+            List<Entry> myEntries = table.get(valuesKey);
+            if (myEntries == null) {
+                myEntries = new ArrayList<Entry>();
+            }
+            myEntries.add(entry);
+            table.put(valuesKey, myEntries);
+        }
+        List<List<Entry>> newEntries =
+            new ArrayList<List<Entry>>(table.size());
+        for (String entryKey : table.keySet()) {
+            List<Entry> sameEntries = table.get(entryKey);
+            if (sameEntries.isEmpty()) {
+                continue;
+            } else {
+                newEntries.add(sameEntries);
+            }
+        }
+
+        return newEntries;
     }
 
     /**
