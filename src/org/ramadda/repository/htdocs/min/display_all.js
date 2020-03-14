@@ -8592,6 +8592,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	},
 	isRecordOk:function(record) {
+	    
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) return ok;
 	    var rowValue = record.getValue(this.field.getIndex());
@@ -8621,6 +8622,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		var startsWith = this.startsWith;
 		ok = false;
 		roWValue  = String(rowValue).toLowerCase();
+
 		for(var j=0;j<this.mySearch._values.length;j++) {
 		    var fv = this.mySearch._values[j];
 		    if(startsWith) {
@@ -8662,7 +8664,13 @@ function RecordFilter(display,filterFieldId, properties) {
 		value = element.val();
 	    }
 	    if(!value) value = FILTER_ALL;
-	    if(!Array.isArray(value)) value = value.split(",");
+	    if(!Array.isArray(value)) {
+		if(!this.field.isFieldEnumeration()) {
+		    value = value.split(",");
+		} else {
+		    value = [value];
+		}
+	    }
 	    var tmp = [];
 	    value.forEach(v=>tmp.push(v.trim()));
 	    value = tmp;
@@ -8730,6 +8738,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    let seen = {};
 		    let dflt = filterField.getEnumeratedValues();
+
 		    if(dflt) {
 			for(let v in dflt) {
 			    seen[v] = true;
@@ -8741,6 +8750,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    let valuesAreNumbers = true;
 		    records.map(record=>{
 			let value = this.display.getDataValues(record)[filterField.getIndex()];
+			
 			if(!seen[value]) {
 			    seen[value]  = true;
 			    let obj = {};
