@@ -1477,7 +1477,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.chartOptions.vAxis.maxValue = y.max;
 	    }
 
-	    console.log(JSON.stringify(chartOptions, null,2));
+//	    console.log(JSON.stringify(chartOptions, null,2));
 
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
