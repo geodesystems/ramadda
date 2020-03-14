@@ -210,6 +210,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         String url = (String) entry.getValue(IDX_SOURCE_URL);
         url = url.replace("points.json", "points.csv");
         url += "&fullheader=true";
+	System.err.println("U:" + url);
         return IO.readContents(url);
     }
 
@@ -225,8 +226,10 @@ public class FetchPointTypeHandler extends PointTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,boolean fromImport)
             throws Exception {
-	super.initializeNewEntry(request, entry, fromImport);
-	if(fromImport) return;
+	if(fromImport) {
+	    super.initializeNewEntry(request, entry, fromImport);
+	    return;
+	}
         File tmpFile = getStorageManager().getTmpFile(request, "csv");
         boolean          addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
         String           contents = readContents(entry);
@@ -256,6 +259,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         tmpFile = getStorageManager().moveToStorage(request, tmpFile);
         Resource resource = new Resource(tmpFile, Resource.TYPE_STOREDFILE);
         entry.setResource(resource);
+	super.initializeNewEntry(request, entry, fromImport);
 
     }
 

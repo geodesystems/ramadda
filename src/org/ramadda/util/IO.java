@@ -535,7 +535,8 @@ public class IO {
 	if(connection instanceof HttpURLConnection) {
 	    HttpURLConnection huc = (HttpURLConnection) connection;
 	    int response = huc.getResponseCode();
-	    if(response!=huc.HTTP_ACCEPTED) {
+	    System.err.println("S:" + (""+response).substring(0,1));
+	    if(!(""+response).substring(0,1).equals("2")) {
 		throw new IOException("Error code:" + response +" " + huc.getResponseMessage());
 	    }
 	}
