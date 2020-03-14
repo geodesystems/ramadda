@@ -134,10 +134,11 @@ public class CsvFile extends TextFile {
 		} else {
 		    fos = bos = new ByteArrayOutputStream();
 		}
+		csvCommands = csvCommands.replaceAll("\\\\,","_comma_");
 		String[] args = StringUtil.listToStringArray(
 							     StringUtil.split(csvCommands, ","));
 		for (int i = 0; i < args.length; i++) {
-		    args[i] = args[i].replaceAll("_comma_", ",").replaceAll("_space_"," ");
+		    args[i] = args[i].replaceAll("_comma_", ",").replaceAll("_space_"," ").replaceAll("_blank_","");
 		}
 		CsvUtil csvUtil = new CsvUtil(args,
 					      new BufferedOutputStream(fos), null);

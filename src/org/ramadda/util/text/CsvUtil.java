@@ -312,9 +312,22 @@ public class CsvUtil {
         String       prepend       = null;
         textReader = new TextReader(destDir, outputFile, outputStream);
 
+
+	boolean printArgs =  false;
         List<String> extra = new ArrayList<String>();
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
+	    if(arg.equals("-printargs")) {
+		System.out.print("java  org.ramadda.util.text.CsvUtil ");
+		printArgs = true;
+		continue;
+	    }
+	    if(printArgs) {
+		if(!arg.startsWith("\"") && !arg.startsWith("-"))
+		    System.out.print("\"" + arg +"\" ");
+		else
+		    System.out.print(arg +" ");
+	    }
             if (arg.equals("-help")) {
                 usage("", null);
 
@@ -391,6 +404,13 @@ public class CsvUtil {
         if ( !parseArgs(extra, textReader, files, rows)) {
             return;
         }
+	if(printArgs) {
+	    for(String f: files)
+		System.out.print(f+" ");
+	    if(files.size()==0)
+		System.out.print(" ${1} ");
+	    System.out.println("");
+	}
         if (rows.size() > 0) {
             textReader.setRows(rows.get(0));
         }
@@ -883,7 +903,7 @@ public class CsvUtil {
 	    String s2 = s.substring(m.end());
 	    if(s.length()==s2.length()) break;
 	    s = s2;
-					    
+	    //	    if(rows.size()>2) return rows;
         }
         return rows;
     }
@@ -1671,6 +1691,9 @@ public class CsvUtil {
         new Cmd("-generate", "<label> <start> <step>", "(add row values)"),
         new Cmd("-decimals", "<col #> <how many decimals to round to>", ""),
         new Cmd(
+            "-func", "<name1,name2,...> <javascript expression>",
+            "(apply the function. use column names or _colN)"),
+        new Cmd(
             "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
             "(apply the operator to the given columns and create new one)"),
         new Cmd("-round", "<columns>", "round the values"),
@@ -1689,6 +1712,8 @@ public class CsvUtil {
                 "<col indices> <prefix, e.g., state: or county:> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
         new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
+        new Cmd("-population",
+                "<col indices> <prefix, e.g., state: or county:> <suffix> ","add in population from address"),
         new Cmd(true, "Other Commands"), new Cmd("-sort", "<column sort>"),
         new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
@@ -2729,6 +2754,7 @@ public class CsvUtil {
 
                     continue;
                 }
+
                 if (arg.equals("-geocodeaddressdb")) {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
@@ -2753,6 +2779,19 @@ public class CsvUtil {
                             col, filename, Integer.parseInt(args.get(++i)),
                             Integer.parseInt(args.get(++i)),
                             Integer.parseInt(args.get(++i)), true));
+
+                    continue;
+                }
+
+                if (arg.equals("-population")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols   = getCols(args.get(++i));
+                    String       prefix = args.get(++i).trim();
+                    String       suffix = args.get(++i).trim();
+                    info.getProcessor().addProcessor(
+                        new Converter.Populator(cols, prefix, suffix));
 
                     continue;
                 }
@@ -3146,6 +3185,17 @@ public class CsvUtil {
 
                     continue;
                 }
+
+                if (arg.equals("-func")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+						     new Converter.ColumnFunc(args.get(++i),args.get(++i)));
+
+                    continue;
+                }
+
 
 
                 if (arg.equals("-mercator")) {

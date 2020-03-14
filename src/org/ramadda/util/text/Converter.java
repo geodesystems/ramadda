@@ -31,14 +31,16 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-
+import javax.script.*;
 import java.net.URL;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -61,9 +63,6 @@ import java.util.regex.Pattern;
  * @author         Jeff McWhirter
  */
 public abstract class Converter extends Processor {
-
-
-
 
 
     /**
@@ -848,8 +847,6 @@ public abstract class Converter extends Processor {
      */
     public static class HeaderMaker extends Converter {
 
-        /* */
-
         /** _more_ */
         private int count = 0;
 
@@ -868,27 +865,16 @@ public abstract class Converter extends Processor {
         /** _more_ */
         boolean defaultChartable = true;
 
-
-        /* */
-
         /** _more_ */
         boolean makeLabel = true;
 
-        /* */
-
         /** _more_ */
         boolean toStdOut = false;
-
-        /* */
 
         /** _more_ */
         Row firstRow;
 
         /**
-         *
-         *
-         *
-         *
          *
          * @param props _more_
          */
@@ -905,10 +891,6 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
-         *
-         *
          * @param info _more_
          * @param row _more_
          * @param line _more_
@@ -917,9 +899,9 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-
             rowCnt++;
             if (rowCnt > 2) {
+		//		System.err.println("hdr rest:" + row);
                 return row;
             }
             if (firstRow == null) {
@@ -1110,12 +1092,13 @@ public abstract class Converter extends Processor {
             if (toStdOut) {
                 System.out.println(StringUtil.join(",", values));
                 info.stopRunning();
-
                 return firstRow;
             }
+	    //	    System.err.println("hdr first:" + firstRow);
+	    //	    System.err.println("hdr row:" + row);
             firstRow.setValues(values);
+	    row.setSkipTo(this);
             info.setExtraRow(row);
-            row.setSkipTo(this);
             Row tmp = firstRow;
             firstRow = null;
             if (debug) {
@@ -1391,6 +1374,113 @@ public abstract class Converter extends Processor {
 
 
 
+
+
+
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Jan 17, '18
+     * @author         Enter your name here...
+     */
+    public static class ColumnFunc extends Converter {
+
+	String code;
+
+        ScriptEngine engine;
+
+	String names;
+
+	Row headerRow;
+
+        /**
+         *
+         */
+        public ColumnFunc(String names, String code) {
+	    this.names = names;
+	    this.code = code;
+	    try {
+		jdk.nashorn.api.scripting.ClassFilter cf = new jdk.nashorn.api.scripting.ClassFilter() {
+			public boolean exposeToScripts(String s) {
+			    return false;
+			}
+		    };
+		engine = new jdk.nashorn.api.scripting.NashornScriptEngineFactory().getScriptEngine(new String[] { "--no-java" },null, cf);
+		String testScript =
+		    "print(java.lang.System.getProperty(\"java.home\"));" +
+		    "print(\"Create file variable\");" +
+		    "var File = Java.type(\"java.io.File\");";
+		//		engine.eval(testScript);
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+	
+	}
+
+        /**
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+	    //	    System.err.println("func row:" + row);
+	    rowCnt++;
+            if (rowCnt == 1) {
+		headerRow = new Row(row);
+		for(String s: StringUtil.split(names,",",true,true))
+		    row.add(s);
+		return row;
+            }
+	    try {
+		List hdr = headerRow.getValues();
+		for(int i=0;i<hdr.size();i++) {
+		    if(i>=row.size()) continue;
+		    Object o = row.get(i);
+		    String var = hdr.get(i).toString();
+		    var = Utils.makeID(var.toLowerCase());
+		    //		    System.err.println(var +"=" + o);
+		    engine.put(var,o);
+		    engine.put("_col" + i,o);
+		}
+		engine.put("_header",hdr);
+		engine.put("_values",row.getValues());
+		engine.put("_rowidx",rowCnt-1);
+			   
+		// evaluate JavaScript code
+		Object o = engine.eval(code);
+		if(o==null) return null;
+		if(o instanceof jdk.nashorn.api.scripting.ScriptObjectMirror) {
+		    jdk.nashorn.api.scripting.ScriptObjectMirror som = (jdk.nashorn.api.scripting.ScriptObjectMirror)o;
+		    if(som.isArray()) {
+			Collection<Object> values = som.values();
+			for(Object v: values) 
+			    row.add(v);
+		    } else {
+			row.add(o);
+		    }
+		} else {
+		    row.add(o);
+		}
+		//		System.err.println("func row:" + row);
+		return row;
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+        }
+
+    }
 
 
 
@@ -3054,7 +3144,6 @@ public abstract class Converter extends Processor {
                     row.add(lonLabel);
                 }
                 doneHeader = true;
-
                 return row;
             }
 
@@ -3124,7 +3213,120 @@ public abstract class Converter extends Processor {
                 row.add(new Double(lat));
                 row.add(new Double(lon));
             }
+            return row;
+        }
 
+    }
+
+
+    public static class Populator extends Converter {
+
+        /* */
+
+        /** _more_ */
+        private HashSet seen = new HashSet();
+
+        /** _more_ */
+        private int badCnt = 0;
+
+        /* */
+
+        /** _more_ */
+        private int nameIndex;
+
+        /* */
+
+        /** _more_ */
+        private int latIndex;
+
+        /* */
+
+        /** _more_ */
+        private int lonIndex;
+
+        /* */
+
+        /** _more_ */
+        private Hashtable<String, double[]> map;
+
+        /* */
+
+        /** _more_ */
+        private boolean doneHeader = false;
+
+        /** _more_ */
+        private String prefix;
+
+        /* */
+
+        /** _more_ */
+        private String suffix;
+
+
+
+	/*
+         * @param cols _more_
+         * @param prefix _more_
+         * @param suffix _more_
+         *
+         * @throws Exception _more_
+         */
+        public Populator(List<String> cols, String prefix, String suffix)
+                throws Exception {
+            super(cols);
+            this.prefix     = prefix;
+            this.suffix     = suffix;
+        }
+
+
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            List values = row.getValues();
+            if ( !doneHeader) {
+		row.add("Population");
+		doneHeader = true;
+		//		System.err.println("pop row:" + row);
+                return row;
+            }
+
+            List<Integer> indices = getIndices(info);
+            StringBuilder key     = new StringBuilder();
+            if ((prefix != null) && (prefix.length() > 0)) {
+                key.append(prefix);
+                key.append(" ");
+            }
+            boolean didOne = false;
+            for (int i : indices) {
+                Object value = values.get(i);
+                if (didOne) {
+                    key.append(", ");
+                }
+                didOne = true;
+                key.append(value);
+            }
+
+            if ((suffix != null) && (suffix.length() > 0)) {
+                key.append(" ");
+                key.append(suffix);
+            }
+
+	    Place place =  GeoUtils.getLocationFromAddress(key.toString());
+	    if(place!=null) row.add(new Integer(place.getPopulation()));
+	    else row.add(new Integer(0));
+	    //	    System.err.println("pop row:" + row);
             return row;
         }
 
@@ -4609,10 +4811,14 @@ public abstract class Converter extends Processor {
      *
      * @param args _more_
      */
-    public static void main(String[] args) {
-        String s = "hello (there) and (here) end";
-        s = s.replaceAll("\\(.*?\\)", "");
-        System.err.println(s);
+    public static void main(String[] args) throws Exception {
+        String s = "1*x+y";
+	ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("nashorn");
+    	engine.put("x",1);
+	engine.put("y",2);
+        // evaluate JavaScript code
+        System.err.println(engine.eval(s));
     }
 
 

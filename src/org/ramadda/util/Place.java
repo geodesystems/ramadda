@@ -1,18 +1,18 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2008-2019 Geode Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.ramadda.util;
 
@@ -50,33 +50,34 @@ public class Place {
     public static final Resource[] RESOURCES = {
         //name,id,fips,lat,lon,opt state index,suffix
         new Resource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 0, 0, 0,
-                1, 2 }, ""),
+								      1, 2 }, ""),
         new Resource(RESOURCE_ROOT + "/countries.txt", new int[] { 3, 0, -1,
-                1, 2, }, ""),
+								   1, 2, }, ""),
         new Resource(RESOURCE_ROOT + "/states.txt", new int[] { 1, 0, 2, 3,
-                4, }, ""), new Resource(RESOURCE_ROOT + "/counties.txt",
-                                        new int[] {
-            3, 1, 1, 10, 11, -1, 0
-        }, ""), new Resource(RESOURCE_ROOT + "/subdivisions.txt", new int[] {
-            3, 1, 1, 11, 12, -1, 0
-        }, ""),
+								4, }, ""),
+	new Resource(RESOURCE_ROOT + "/counties.txt", new int[] {
+		3, 1, 1, 10, 11, -1, 0
+	    }, "",4),
+	new Resource(RESOURCE_ROOT + "/subdivisions.txt", new int[] {
+		3, 1, 1, 11, 12, -1, 0
+	    }, ""),
         //new Resource(RESOURCE_ROOT +"/districts.txt",new int[]{},""),
         new Resource(RESOURCE_ROOT + "/places.txt", new int[] {
-            3, 1, 1, 12, 13, -1, 0
-        }, ""),
+		3, 1, 1, 12, 13, -1, 0
+	    }, ""),
         //name,id,fips,lat,lon,opt state index,suffix
         new Resource(RESOURCE_ROOT + "/cities.txt", new int[] {
-            1, 1, 0, 3, 4, 2, 2
-        }, ""),
+		1, 1, 0, 3, 4, 2, 2
+	    }, ""),
         //#GEOID        NAME    UATYPE  POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
         //        new Resource(RESOURCE_ROOT + "/urbanareas.txt", new int[] { 1, 0, 0,
         //                9, 10 }, "urban:"),
         //#GEOID        POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
         new Resource(RESOURCE_ROOT + "/zipcodes.txt", new int[] { 0, 0, 0, 3,
-                4 }, "zip:"),
+								  4 }, "zip:"),
         //#USPS GEOID   POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
         new Resource(RESOURCE_ROOT + "/tracts.txt", new int[] { 1, 1, 1, 8,
-                9 }, "")
+								9 }, "")
     };
 
     //        { 0, 1, 0, 7, 8 }
@@ -109,6 +110,10 @@ public class Place {
         /** _more_ */
         List<Place> places = new ArrayList<Place>();
 
+	
+	int populationIndex;
+
+	int population = 0;
 
         /** _more_          */
         Hashtable<String, Place> map = new Hashtable<String, Place>();
@@ -123,11 +128,16 @@ public class Place {
          * @param prefix _more_
          */
         public Resource(String file, int[] indices, String prefix) {
+	    this(file, indices, prefix,-1);
+	}
+
+        public Resource(String file, int[] indices, String prefix,int populationIndex) {	    
             this.base    = new File(file).getName();
             this.id      = IOUtil.stripExtension(this.base);
             this.file    = file;
             this.indices = indices;
             this.prefix  = prefix;
+	    this.populationIndex = populationIndex;
         }
 
 	public void loadResource() throws Exception {
@@ -139,8 +149,8 @@ public class Place {
 	    BufferedReader br = new BufferedReader(
 						   new InputStreamReader(
 									 IO.getInputStream(
-											       this.file,
-											       Place.class)));
+											   this.file,
+											   Place.class)));
 	    int    cnt     = 0;
 	    String line    = null;
 	    int[]  indices = this.indices;
@@ -157,7 +167,8 @@ public class Place {
 		place.processLine(StringUtil.split(line, "\t",
 						   false, false), indices[0], indices[1],
 				  indices[2], indices[3], indices[4],
-				  suffix);
+				  suffix,populationIndex);
+
 		if ((indices.length >= 6) && (indices[5] >= 0)) {
 		    place.fips = place.fips.substring(indices[5]);
 		}
@@ -230,10 +241,10 @@ public class Place {
         public Place getPlace(String key) {
             key = key.toLowerCase();
 	    /*
-	    for (Enumeration keys = this.map.keys(); keys.hasMoreElements(); ) {
-		String k = (String) keys.nextElement();
-		System.out.println("key:" + k+":");
-	    }
+	      for (Enumeration keys = this.map.keys(); keys.hasMoreElements(); ) {
+	      String k = (String) keys.nextElement();
+	      System.out.println("key:" + k+":");
+	      }
 	    */
             return this.map.get(key);
         }
@@ -255,7 +266,7 @@ public class Place {
 
     /** _more_ */
     private static Hashtable<String, Place> placesMap = new Hashtable<String,
-                                                            Place>();
+	Place>();
 
     /** _more_ */
     private static Hashtable<String, Resource> resourceMap =
@@ -303,6 +314,7 @@ public class Place {
     /** _more_ */
     private double longitude = Double.NaN;
 
+    private int population;
 
     /**
      * _more_
@@ -336,24 +348,26 @@ public class Place {
      * @param lonIndex _more_
      * @param suffixIndex _more_
      */
-    public void processLine(List<String> toks, int nameIndex, int idIndex,
-                            int fipsIndex, int latIndex, int lonIndex,
-                            int suffixIndex) {
+    private void processLine(List<String> toks, int nameIndex, int idIndex,
+			     int fipsIndex, int latIndex, int lonIndex,
+			     int suffixIndex, int popIndex) {
         //        System.err.println("line:" + toks.size() +"  " + toks);
         if (fipsIndex >= toks.size()) {
             return;
         }
         String fips = (fipsIndex < 0)
-                      ? ""
-                      : toks.get(fipsIndex);
+	    ? ""
+	    : toks.get(fipsIndex);
         suffix = (suffixIndex >= 0)
-                 ? toks.get(suffixIndex)
-                 : null;
+	    ? toks.get(suffixIndex)
+	    : null;
         setName(toks.get(nameIndex));
         setId(toks.get(idIndex));
         setFips(fips);
         setLatitude(Double.parseDouble(toks.get(latIndex).trim()));
         setLongitude(Double.parseDouble(toks.get(lonIndex).trim()));
+	if(popIndex>0) 
+	    setPopulation(new Integer(toks.get(popIndex).trim()));
         //        System.out.println(fips);
     }
 
@@ -440,7 +454,7 @@ public class Place {
      */
     public String toString() {
         return " name:" + name + " id:" + id + " fips:" + fips + " lat:"
-               + latitude + " lon:" + longitude;
+	    + latitude + " lon:" + longitude;
     }
 
     /**
@@ -510,6 +524,25 @@ public class Place {
     }
 
 
+    /**
+       Set the Population property.
+
+       @param value The new value for Population
+    **/
+    public void setPopulation (int value) {
+	population = value;
+    }
+
+    /**
+       Get the Population property.
+
+       @return The Population
+    **/
+    public int getPopulation () {
+	return population;
+    }
+
+
 
 
     /**
@@ -576,7 +609,7 @@ public class Place {
      * @throws Exception _more_
      */
     public static List<Place> getPlacesForResource(String id)
-            throws Exception {
+	throws Exception {
         Resource resource = getResource(id);
         if (resource == null) {
             return null;
@@ -663,7 +696,7 @@ public class Place {
      */
     public static List<Place> search(String s, int max, Bounds bounds,
                                      boolean startsWith)
-            throws Exception {
+	throws Exception {
         getPlaces("alllocations");
         List<Place> result = new ArrayList<Place>();
         s = s.toLowerCase();
@@ -673,8 +706,8 @@ public class Place {
                 continue;
             }
             if ((bounds != null)
-                    && !bounds.contains(place.getLatitude(),
-                                        place.getLongitude())) {
+		&& !bounds.contains(place.getLatitude(),
+				    place.getLongitude())) {
                 continue;
             }
             boolean match = (startsWith
@@ -702,7 +735,7 @@ public class Place {
      * @throws Exception _more_
      */
     public static Place getPlace(String id, String resource)
-            throws Exception {
+	throws Exception {
         getPlaces(resource);
         Place place = placesMap.get(id);
         if (place != null) {
@@ -742,8 +775,8 @@ public class Place {
             return;
         }
         List<Place> places = getPlacesForResource((args.length > 0)
-                ? args[0]
-                : null);
+						  ? args[0]
+						  : null);
         //        List<Place> places = getPlaces();
         if (places == null) {
             System.err.println("no resource:");

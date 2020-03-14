@@ -58,7 +58,7 @@ public abstract class Processor extends CsvOperator {
     /**
      * _more_
      */
-    public Processor() {}
+   public Processor() {}
 
 
     /**
@@ -201,28 +201,23 @@ public abstract class Processor extends CsvOperator {
         sb.append(" chartable=\"true\" ");
         sb.append(" type=\"" + type + "\" ");
         sb.append(extra);
-        sb.append("  ]");
+	sb.append("  ]");
     }
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param info _more_
-     * @param row _more_
-     * @param line _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Row processRow(TextReader info, Row row, String line)
-            throws Exception {
-        info.setCurrentOperator(null);
 
+    public Row processRow(TextReader info, Row row, String line) throws Exception {
+        info.setCurrentOperator(null);
         return row;
+    }
+
+    public List<Row> processRowReturnList(TextReader info, Row row, String line)
+            throws Exception {
+	List<Row> l = new ArrayList<Row>();
+	Row r = processRow(info, row, line);
+	if(r!=null) l.add(r);
+        return l;
     }
 
     /**
@@ -332,6 +327,7 @@ public abstract class Processor extends CsvOperator {
                     Processor processor = processors.get(i);
                     if (skipTo != null) {
                         if (skipTo == processor) {
+			    System.err.println("clearing skip to");
                             skipTo = null;
                         }
 
@@ -349,12 +345,14 @@ public abstract class Processor extends CsvOperator {
             }
 
             boolean firstRow = rowCnt++ == 0;
+	    List<Row> rows = new ArrayList<Row>();
+	    rows.add(row);
             for (Processor processor : firstProcessors) {
                 if (skipTo != null) {
                     if (skipTo == processor) {
+			//			System.err.println("skipping:" + processor);
                         skipTo = null;
                     }
-
                     continue;
                 }
                 if (firstRow) {
@@ -366,8 +364,10 @@ public abstract class Processor extends CsvOperator {
                     System.out.println("row: " + row);
                 }
                 info.setCurrentOperator(processor);
-                row = processor.processRow(info, row, line);
-                info.setCurrentOperator(this);
+		//		System.err.println("calling:" +  processor.getClass().getName() +" with :" + row);
+		row = processor.processRow(info, row, line);
+		//		System.err.println("got:" +   row);
+		info.setCurrentOperator(this);
                 if (row == null) {
                     return null;
                 }
@@ -410,8 +410,19 @@ rotate -> pass -> pass -> rotate -> pass
                 }
             }
 
+            Object  skipTo      = row.getSkipTo();
+
             for (Processor processor : firstProcessors) {
                 //              System.out.println("before: " + processor.getClass().getName().replace("org.ramadda.util.text.","") +" row:" + row.myx +" size:" + row.size());
+
+                if (skipTo != null) {
+                    if (skipTo == processor) {
+			//			System.err.println("skipping:" + processor);
+                        skipTo = null;
+                    }
+                    continue;
+                }
+
 
                 row = processor.processRow(info, row, line);
                 if (row == null) {
