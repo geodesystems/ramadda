@@ -165,7 +165,7 @@ public class GpxTypeHandler extends PointTypeHandler {
 
         if (tag.equals("gpx.stats")) {
             StringBuilder sb = new StringBuilder();
-            //            initializeNewEntry(request, entry);
+            //            initializeNewEntry(request, entry,false);
             //            getEntryManager().updateEntry(request, entry);
             double distance = (Double) entry.getValue(IDX_DISTANCE,
                                   new Double(0));
@@ -179,7 +179,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             //            System.err.println("distance:" + distance +" totalTime:" + totalTime );
             if (Double.isNaN(distance) || (distance == -1)
                     || (totalTime == -1)) {
-                initializeNewEntry(request, entry);
+                initializeNewEntry(request, entry,false);
                 distance = (Double) entry.getValue(IDX_DISTANCE,
                         new Double(0));
                 totalTime = (Double) entry.getValue(IDX_TOTAL_TIME,
@@ -240,7 +240,7 @@ public class GpxTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
         extractInfo(request, entry, true);
     }

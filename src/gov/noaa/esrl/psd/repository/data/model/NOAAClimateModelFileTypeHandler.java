@@ -51,9 +51,9 @@ public class NOAAClimateModelFileTypeHandler extends ClimateModelFileTypeHandler
      * @throws Exception  problems during initialization
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
-        super.initializeNewEntry(request, entry);
+        super.initializeNewEntry(request, entry, fromImport);
         Object[] values = getEntryValues(entry);
         if ((values[1] != null) && !values[1].toString().isEmpty()) {
             //System.err.println("already have  values set");

@@ -70,7 +70,7 @@ public class DoradeRadarTypeHandler extends RadarTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
         Object[]   values = entry.getTypeHandler().getEntryValues(entry);
         File       f      = entry.getFile();

@@ -75,14 +75,14 @@ public class MbTypeHandler extends GenericTypeHandler {
      * @throws Exception On badness
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
         Object[] values = getEntryValues(entry);
         String suffix =
             IOUtil.getFileExtension(entry.getResource().getPath());
         suffix    = suffix.replace(".mb", "");
         values[0] = suffix;
-        super.initializeNewEntry(request, entry);
+        super.initializeNewEntry(request, entry,fromImport);
     }
 
 

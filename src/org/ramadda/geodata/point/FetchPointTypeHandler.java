@@ -222,8 +222,11 @@ public class FetchPointTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeNewEntry(Request request, Entry entry)
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,boolean fromImport)
             throws Exception {
+	super.initializeNewEntry(request, entry, fromImport);
+	if(fromImport) return;
         File tmpFile = getStorageManager().getTmpFile(request, "csv");
         boolean          addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
         String           contents = readContents(entry);

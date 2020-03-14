@@ -74,10 +74,10 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
 
-        super.initializeNewEntry(request, entry);
+        super.initializeNewEntry(request, entry, fromImport);
 
         //Read the xml
         String url = entry.getResource().getPath();

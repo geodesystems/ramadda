@@ -8025,7 +8025,7 @@ public class EntryManager extends RepositoryManager {
                 //for xml imports. 
                 //                if ( !fromImport) {
                 theNewEntry.getTypeHandler().initializeNewEntry(request,
-                        theNewEntry);
+								theNewEntry, fromImport);
                 //                }
                 String name = theNewEntry.getName();
                 if (name.trim().length() == 0) {

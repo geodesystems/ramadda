@@ -75,6 +75,7 @@ public class PageHandler extends RepositoryManager {
 
 
     private static boolean debugTemplates = false; 
+
     /** _more_ */
     public static final String DEFAULT_TEMPLATE = "fixedmapheader";
 
@@ -990,7 +991,6 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
-
         return mobileTemplate;
     }
 
@@ -1013,15 +1013,15 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public synchronized List<HtmlTemplate> getTemplates() {
-
         List<HtmlTemplate> theTemplates = htmlTemplates;
-        if ( !cacheTemplates || (theTemplates == null)) {
+        if ( !cacheTemplates || theTemplates == null) {
             String mobileId =
                 getRepository().getProperty("ramadda.template.mobile",
                                             (String) null);
             HtmlTemplate theMobileTemplate = null;
-            defaultTemplate = null;
-            mobileTemplate  = null;
+	    //use locals here in case of race conditions
+	    HtmlTemplate _defaultTemplate = null;
+	    HtmlTemplate _mobileTemplate  = null;
             String imports = "";
             try {
                 imports = getStorageManager().readSystemResource(
@@ -1098,37 +1098,37 @@ public class PageHandler extends RepositoryManager {
                         mapTemplate = template;
                     }
 
-                    if (mobileTemplate == null) {
+                    if (_mobileTemplate == null) {
                         if (mobileId != null) {
                             if (template.getId().equals(mobileId)) {
-                                mobileTemplate = template;
+                                _mobileTemplate = template;
                             }
                         } else if (template.getTemplateProperty("mobile",
                                 false)) {
                             //Don't do this for now
-                            //                      mobileTemplate = template;
+                            //                      _mobileTemplate = template;
                         }
                     }
                     if ((theMobileTemplate == null)
                             && template.getId().equals("mobile")) {
                         theMobileTemplate = template;
                     }
-                    if (defaultTemplate == null) {
+                    if (_defaultTemplate == null) {
                         if (defaultId == null) {
-                            defaultTemplate = template;
+                            _defaultTemplate = template;
 			    if(debugTemplates)
-				System.err.println("\tset-1:" + defaultTemplate);
+				System.err.println("\tset-1:" + _defaultTemplate);
                        } else {
                             if (Misc.equals(defaultId, template.getId())) {
-                                defaultTemplate = template;
+                                _defaultTemplate = template;
 				if(debugTemplates)
-				    System.err.println("\tset-2:" + defaultTemplate);
+				    System.err.println("\tset-2:" + _defaultTemplate);
                             }
                         }
                         if (mobileId == null) {
                             if (template.getTemplateProperty("mobile",
                                     false)) {
-                                mobileTemplate = template;
+                                _mobileTemplate = template;
                             }
                         }
                     }
@@ -1137,18 +1137,20 @@ public class PageHandler extends RepositoryManager {
                     //noop
                 }
             }
-            if (mobileTemplate == null) {
-                mobileTemplate = theMobileTemplate;
+            if (_mobileTemplate == null) {
+                _mobileTemplate = theMobileTemplate;
             }
-            if (defaultTemplate == null) {
-                defaultTemplate = theTemplates.get(0);
+            if (_defaultTemplate == null) {
+                _defaultTemplate = theTemplates.get(0);
 		if(debugTemplates)
-		    System.err.println("\tset-3:" + defaultTemplate);
+		    System.err.println("\tset-3:" + _defaultTemplate);
             }
-            if (mobileTemplate == null) {
-                mobileTemplate = defaultTemplate;
+            if (_mobileTemplate == null) {
+                _mobileTemplate = _defaultTemplate;
             }
             //            if (getRepository().getCacheResources()) {
+	    defaultTemplate = _defaultTemplate;
+	    mobileTemplate = _mobileTemplate;
             htmlTemplates = theTemplates;
             //            }
         }

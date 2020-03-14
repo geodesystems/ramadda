@@ -194,9 +194,9 @@ public class OpusTypeHandler extends SolutionTypeHandler {
      * @throws Exception On badness
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
-        super.initializeNewEntry(request, entry);
+        super.initializeNewEntry(request, entry,fromImport);
         initializeOpusEntry(entry);
     }
 

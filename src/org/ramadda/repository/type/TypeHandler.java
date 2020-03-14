@@ -1888,7 +1888,7 @@ public class TypeHandler extends RepositoryManager {
         //Recreate the entry. This will fill in any extra entry type db tables
         entry = getEntryManager().getEntry(request, entry.getId());
         //Then initialize it, e.g., point data type will read the file and set the entry values, etc.
-        initializeNewEntry(request, entry);
+        initializeNewEntry(request, entry, false);
         //        Object[] values =  getEntryValues(entry);
         //        System.err.println("type:" + this);
         //        for(int i=0;i<values.length;i++) {
@@ -1993,7 +1993,7 @@ public class TypeHandler extends RepositoryManager {
                                              boolean firstCall)
             throws Exception {
         if (firstCall) {
-            initializeNewEntry(request, entry);
+            initializeNewEntry(request, entry, false);
         }
         if (this.parent != null) {
             this.parent.initializeEntryFromHarvester(request, entry, false);
@@ -3395,11 +3395,11 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry,boolean fromImport)
             throws Exception {
 
         if (parent != null) {
-            parent.initializeNewEntry(request, entry);
+            parent.initializeNewEntry(request, entry,fromImport);
         }
 
 

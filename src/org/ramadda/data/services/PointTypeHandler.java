@@ -147,7 +147,7 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @throws Exception On badness
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
 
         if (entry.getXmlNode() != null) {
@@ -155,7 +155,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
 
         if (anySuperTypesOfThisType()) {
-            super.initializeNewEntry(request, entry);
+            super.initializeNewEntry(request, entry,fromImport);
 
             return;
         }

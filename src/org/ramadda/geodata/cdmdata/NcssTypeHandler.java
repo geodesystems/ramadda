@@ -229,7 +229,7 @@ public class NcssTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
 
         String url = entry.getResource().getPath();

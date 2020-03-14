@@ -174,7 +174,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {}
 
 

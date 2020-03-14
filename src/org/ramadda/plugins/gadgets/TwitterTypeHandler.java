@@ -62,7 +62,7 @@ public class TwitterTypeHandler extends GenericTypeHandler {
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry) throws Exception {
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport) throws Exception {
         JSONObject obj = Json.readUrl(URL+entry.getResource().getPath());
         String html = obj.optString("html","");
         String name =  StringUtil.findPattern(html,"(Tweets\\s+by\\s+[^<]+)<");

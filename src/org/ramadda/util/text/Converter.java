@@ -924,7 +924,6 @@ public abstract class Converter extends Processor {
             }
             if (firstRow == null) {
                 firstRow = row;
-
                 return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
@@ -1123,16 +1122,8 @@ public abstract class Converter extends Processor {
                 writer.println("");
                 info.stopRunning();
             }
-
             return tmp;
-
-
-
-
-
         }
-
-
     }
 
 

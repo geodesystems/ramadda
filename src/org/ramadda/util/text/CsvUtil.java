@@ -846,6 +846,49 @@ public class CsvUtil {
     }
 
 
+    public List<Row> tokenizeHtmlPattern(String file, String cols,
+					 String start, String end, String pattern)
+            throws Exception {
+
+        List<Row> rows = new ArrayList<Row>();
+	if(cols.length()>0) {
+	    rows.add(new Row(StringUtil.split(cols,",")));
+	}
+        String    s    = IO.readContents(file);
+	if(start.length()!=0) {
+	    s = StringUtil.findPattern(s, start+"(.*)");
+	    if(s==null) {
+		throw new IllegalArgumentException("Missing start pattern:" + start);
+	    }
+	}
+	if(end.length()!=0) {
+	    s = StringUtil.findPattern(s, "(.*)" + end);
+	    if(s==null) {
+		throw new IllegalArgumentException("Missing end pattern:" + end);
+	    }
+	}
+
+	Pattern p = Pattern.compile(pattern);
+	while(true) {
+	    Matcher m = p.matcher(s);
+	    if (!m.find()) {
+		break;
+	    }
+	    Row     row         = new Row();
+	    rows.add(row);
+	    for (int i = 1; i <= m.groupCount(); i++) {
+		String tok = m.group(i).trim();
+		row.add(tok);
+	    }
+	    String s2 = s.substring(m.end());
+	    if(s.length()==s2.length()) break;
+	    s = s2;
+					    
+        }
+        return rows;
+    }
+    
+
 
     /**
      * _more_
@@ -1667,6 +1710,9 @@ public class CsvUtil {
         new Cmd(
             "-html", "\"name value properties\"",
             "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
+        new Cmd(
+            "-htmlpattern", "cols startPattern endPattern pattern",
+            "(parse the input html file)"),
         new Cmd("-json",
                 "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
                 "(parse the input as json)"),
@@ -1878,6 +1924,11 @@ public class CsvUtil {
         String       tokenPattern    = null;
 
         boolean      doHtml          = false;
+	boolean      doHtml2          = false;
+	String startPattern = null;
+	String endPattern = null;
+	String htmlPattern = null;
+	String htmlCols = null;
         String       htmlProps       = null;
         boolean      doJson          = false;
         String       jsonProps       = null;
@@ -1904,6 +1955,18 @@ public class CsvUtil {
 
                     continue;
                 }
+                if (arg.equals("-htmlpattern")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    doHtml2    = true;
+		    htmlCols  = args.get(++i);
+                    startPattern = args.get(++i);
+		    endPattern = args.get(++i);
+                    htmlPattern = args.get(++i);
+                    continue;
+                }
+
                 if (arg.equals("-text")) {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
@@ -3420,6 +3483,8 @@ public class CsvUtil {
         if (doHtml) {
             Hashtable<String, String> props = parseProps(htmlProps);
             tokenizedRows.add(tokenizeHtml(files.get(0), props));
+	} else if (doHtml2) {
+            tokenizedRows.add(tokenizeHtmlPattern(files.get(0), htmlCols, startPattern, endPattern, htmlPattern));
         } else if (doText) {
             tokenizedRows.add(tokenizeText(files.get(0), textHeader,
                                            chunkPattern, tokenPattern));

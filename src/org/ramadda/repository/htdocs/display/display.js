@@ -4771,21 +4771,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return style;
         },
+	getContentsClass: function() {
+	    return "ramadda-expandable-target display-contents-inner display-" + this.type;
+	},
         getContentsDiv: function() {
             var style = this.getContentsStyle();
             style += this.getProperty("contentsStyle", "");
             var image = this.getProperty("backgroundImage");
             if (image) {
                 image = HU.getEntryImage(this.entryId, image);
-                style += "background-attachment:auto;background-size:100% auto; background-image: url('" + image + "'); ";
+                style += HU.css("background-attachment","auto","background-size","100% auto","background-image","url('" + image + "')");
             }
             var background = this.getProperty("background");
             if (background)
-                style += "background: " + background + ";";
+                style += HU.css("background", background);
             var topBottomStyle = "";
             var width = this.getWidthForStyle();
             if (width) {
-                topBottomStyle += " width:" + width + ";";
+                topBottomStyle += HU.css("width", width);
             }
             var top = HU.div([STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HU.div([STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
@@ -4793,11 +4796,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let expandedHeight  = this.getProperty("expandedHeight");
 	    if(expandedHeight)
 		style+="height:" +expandedHeight+";";
-	    let contentsAttrs =[ATTR_CLASS, "ramadda-expandable-target display-contents-inner display-" + this.type, STYLE, style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
+	    let contentsAttrs =[ATTR_CLASS, this.getContentsClass(), STYLE, style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
 	    if(this.getProperty("expandableHeight")) {
 		contentsAttrs.push("expandable-height");
 		contentsAttrs.push(this.getProperty("expandableHeight"));
 	    }
+
 	    var contents =  top + "\n" +HU.div(contentsAttrs, "") + "\n" +bottom;
             return contents;
         },

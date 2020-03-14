@@ -68,9 +68,9 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
      * @throws Exception On badness
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+	public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
-        super.initializeNewEntry(request, entry);
+        super.initializeNewEntry(request, entry, fromImport);
         // override to set the missing value from the file/url
         String   loc    = fixUrl(entry.getResource().getPath());
 

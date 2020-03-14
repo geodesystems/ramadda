@@ -795,7 +795,20 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
     this.colorByLog = this.getProperty("Log", false);
-    this.colorByFunc = Math.log;
+    this.colorByLog10 = this.getProperty("Log10", false);
+    this.colorByLog2 = this.getProperty("Log2", false);
+    if(this.colorByLog) {
+	console.log("log");
+	this.colorByFunc = Math.log;
+    }   else if(this.colorByLog10) {
+	this.colorByFunc = Math.log10;
+	console.log("10");
+    }   else if(this.colorByLog2) {
+	console.log("2");
+	this.colorByFunc = Math.log2;
+    }
+
+
     this.setRange(this.getProperty("Min", this.minValue),
 		  this.getProperty("Max", this.maxValue), true);
 
@@ -861,17 +874,17 @@ ColorByInfo.prototype = {
     },
     setRange: function(minValue,maxValue, force) {
 	if(!force && this.overrideRange) return;
-	if (this.colorByLog) {
-	    if (minValue < 1) {
-		this.colorByOffset = 1 - minValue;
+	this.origMinValue = minValue;
+	this.origMaxValue = maxValue;
+	if (this.colorByFunc) {
+	    if (minValue < 0) {
+		this.colorByOffset =  -minValue;
 	    }
 	    minValue = this.colorByFunc(minValue + this.colorByOffset);
 	    maxValue = this.colorByFunc(maxValue + this.colorByOffset);
 	}
 	this.minValue = minValue;
 	this.maxValue = maxValue;
-	this.origMinValue = minValue;
-	this.origMaxValue = maxValue;
 	this.range = maxValue - minValue;
 	if(!this.origRange) {
 	    this.origRange = [minValue, maxValue];
@@ -949,7 +962,7 @@ ColorByInfo.prototype = {
 		if(color) return color;
             }
             v += this.colorByOffset;
-            if (this.colorByLog) {
+            if (this.colorByFunc) {
                 v = this.colorByFunc(v);
             }
 
@@ -5946,21 +5959,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return style;
         },
+	getContentsClass: function() {
+	    return "ramadda-expandable-target display-contents-inner display-" + this.type;
+	},
         getContentsDiv: function() {
             var style = this.getContentsStyle();
             style += this.getProperty("contentsStyle", "");
             var image = this.getProperty("backgroundImage");
             if (image) {
                 image = HU.getEntryImage(this.entryId, image);
-                style += "background-attachment:auto;background-size:100% auto; background-image: url('" + image + "'); ";
+                style += HU.css("background-attachment","auto","background-size","100% auto","background-image","url('" + image + "')");
             }
             var background = this.getProperty("background");
             if (background)
-                style += "background: " + background + ";";
+                style += HU.css("background", background);
             var topBottomStyle = "";
             var width = this.getWidthForStyle();
             if (width) {
-                topBottomStyle += " width:" + width + ";";
+                topBottomStyle += HU.css("width", width);
             }
             var top = HU.div([STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HU.div([STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
@@ -5968,11 +5984,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let expandedHeight  = this.getProperty("expandedHeight");
 	    if(expandedHeight)
 		style+="height:" +expandedHeight+";";
-	    let contentsAttrs =[ATTR_CLASS, "ramadda-expandable-target display-contents-inner display-" + this.type, STYLE, style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
+	    let contentsAttrs =[ATTR_CLASS, this.getContentsClass(), STYLE, style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
 	    if(this.getProperty("expandableHeight")) {
 		contentsAttrs.push("expandable-height");
 		contentsAttrs.push(this.getProperty("expandableHeight"));
 	    }
+
 	    var contents =  top + "\n" +HU.div(contentsAttrs, "") + "\n" +bottom;
             return contents;
         },
@@ -13752,6 +13769,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             SUPER.clearCachedData();
             this.computedData = null;
         },
+	//Override so we don't include the expandable class
+	getContentsClass: function() {
+	    return "display-contents-inner display-" + this.type;
+	},
+
         updateUI: function(args) {
 	    if(!args) args = {};
 	    let debug = false;
@@ -14918,43 +14940,50 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var width = this.getChartWidth();
             if (false && width) {
 		if(width.endsWith("%")) {
-                    style += "width:" + width + ";"
+                    style += HU.css("width", width);
 		} else {
                     if (width > 0)
-			style += "width:" + width + "px;";
+			style += HU.css("width", width + "px");
                     else if (width < 0)
-			style += "width:" + (-width) + "%;";
+			style += HU.css("width" , (-width) + "%");
                     else
-			style += "width:" + width + ";";
+			style += HU.css("width", width);
 		}
             } else {
-//                style += "width:" + "100%;";
+//                style += HU.css("width","100%");
             }
 	    let expandedHeight  = this.getProperty("expandedHeight");
             var height =  this.getChartHeight();
 	    if(expandedHeight) {
-                style += "height:" + expandedHeight+";";
+                style += HU.css("height", expandedHeight);
 	    } else {
 		if (height) {
                     if (height > 0)
-			style += "height:" + height + "px;";
+			style += HU.css("height", height + "px");
                     else if (height < 0)
-			style += "height:" + (-height) + "%;";
+			style += HU.css("height", (-height) + "%");
                     else
-			style += "height:" + height + ";";
+			style += HU.css("height", height);
 		} else {
-                    style += "height:" + "100%;";
+                    style += HU.css("height", "100%");
 		}
 	    }
-//	    style += "text-align:center;"
+	    //	    style += HU.css("text-align","center");
             divAttrs.push(STYLE);
             divAttrs.push(style);
+	    divAttrs.push(CLASS);
+	    divAttrs.push("ramadda-expandable-target");
 	    let isExpanded = this.getProperty("isExpanded");
 	    let originalHeight = this.getProperty("originalHeight");
 	    if(isExpanded) {
 		divAttrs.push("isexpanded","true")
 		divAttrs.push("original-height",originalHeight)
 	    }
+	    if(this.getProperty("expandableHeight")) {
+		divAttrs.push("expandable-height");
+		divAttrs.push(this.getProperty("expandableHeight"));
+	    }
+
             return HU.div(divAttrs, "");
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {

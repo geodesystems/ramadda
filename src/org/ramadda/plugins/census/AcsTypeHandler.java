@@ -425,9 +425,9 @@ public class AcsTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
-        super.initializeNewEntry(request, entry);
+        super.initializeNewEntry(request, entry,fromImport);
         setAcsEntryName(request, entry, false);
     }
 

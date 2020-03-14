@@ -705,7 +705,7 @@ public class CatalogHarvester extends Harvester {
 
         entries.add(entry);
         typeHandler.initializeNewEntry(getRepository().getTmpRequest(),
-                                       entry);
+                                       entry,false);
         List<Metadata> metadataList = new ArrayList<Metadata>();
         CatalogOutputHandler.collectMetadata(repository, metadataList, node);
         metadataList.add(makeImportMetadata(entry.getId(), catalogUrlPath));

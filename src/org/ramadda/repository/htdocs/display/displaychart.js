@@ -219,6 +219,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             SUPER.clearCachedData();
             this.computedData = null;
         },
+	//Override so we don't include the expandable class
+	getContentsClass: function() {
+	    return "display-contents-inner display-" + this.type;
+	},
+
         updateUI: function(args) {
 	    if(!args) args = {};
 	    let debug = false;
@@ -1385,43 +1390,50 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var width = this.getChartWidth();
             if (false && width) {
 		if(width.endsWith("%")) {
-                    style += "width:" + width + ";"
+                    style += HU.css("width", width);
 		} else {
                     if (width > 0)
-			style += "width:" + width + "px;";
+			style += HU.css("width", width + "px");
                     else if (width < 0)
-			style += "width:" + (-width) + "%;";
+			style += HU.css("width" , (-width) + "%");
                     else
-			style += "width:" + width + ";";
+			style += HU.css("width", width);
 		}
             } else {
-//                style += "width:" + "100%;";
+//                style += HU.css("width","100%");
             }
 	    let expandedHeight  = this.getProperty("expandedHeight");
             var height =  this.getChartHeight();
 	    if(expandedHeight) {
-                style += "height:" + expandedHeight+";";
+                style += HU.css("height", expandedHeight);
 	    } else {
 		if (height) {
                     if (height > 0)
-			style += "height:" + height + "px;";
+			style += HU.css("height", height + "px");
                     else if (height < 0)
-			style += "height:" + (-height) + "%;";
+			style += HU.css("height", (-height) + "%");
                     else
-			style += "height:" + height + ";";
+			style += HU.css("height", height);
 		} else {
-                    style += "height:" + "100%;";
+                    style += HU.css("height", "100%");
 		}
 	    }
-//	    style += "text-align:center;"
+	    //	    style += HU.css("text-align","center");
             divAttrs.push(STYLE);
             divAttrs.push(style);
+	    divAttrs.push(CLASS);
+	    divAttrs.push("ramadda-expandable-target");
 	    let isExpanded = this.getProperty("isExpanded");
 	    let originalHeight = this.getProperty("originalHeight");
 	    if(isExpanded) {
 		divAttrs.push("isexpanded","true")
 		divAttrs.push("original-height",originalHeight)
 	    }
+	    if(this.getProperty("expandableHeight")) {
+		divAttrs.push("expandable-height");
+		divAttrs.push(this.getProperty("expandableHeight"));
+	    }
+
             return HU.div(divAttrs, "");
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {

@@ -604,40 +604,33 @@ public class GeoUtils {
         }
 
         if (doCounty) {
-            //      if(_address.indexOf("arundel")<0) return null;
             resource = Place.getResource("counties");
             int index = _address.indexOf(",");
             if (index < 0) {
 		return resource.getPlace(_address);
 	    }
-            if (index >= 0) {
-                getStatesMap();
-                List<String> toks   = StringUtil.splitUpTo(_address, ",", 2);
-                String       county = toks.get(0);
-                String       state  = toks.get(1);
-                //              System.out.println("address:" + _address);
-		if(place!=null) return place;
-
-                place = resource.getPlace(county + "," + state);
-		//		resource.debug();
-		//		System.out.println("try:" +county+"," + state +": place:" + place);
-                if (place == null) {
-		    //		    System.out.println("state before:" +county+":" + state+":");
-                    state = (String) statesMap.get(state);
-		    //		    System.out.println("state after:" +county+"," + state);
-                    if (state != null) {
-                        place = resource.getPlace(county + "," + state);
-			//			System.out.println("try 2:" +county+"," + state +" place:" + place);
-			if(place==null) {
-			    place = resource.getPlace(county + " county," + state);
-			}
-			if(place==null) {
-			    place = resource.getPlace(county + " city," + state);
-			}
-			if(place==null) {
-			    place = resource.getPlace(county + " parish," + state);
-			}
-                    }
+	    getStatesMap();
+	    List<String> toks   = StringUtil.splitUpTo(_address, ",", 2);
+	    String       county = toks.get(0).trim();
+	    String       state  = toks.get(1).trim();
+	    //	    System.out.println("start:" + state  +" c:" + county);
+	    if(place!=null) return place;
+	    place = resource.getPlace(county + "," + state);
+	    if (place == null) {
+		state = (String) statesMap.get(state);
+		//		System.out.println("state after:" +county+"," + state);
+		if (state != null) {
+		    place = resource.getPlace(county + "," + state);
+		    //		    System.out.println("try 2:" +county+"," + state +" place:" + place);
+		    if(place==null) {
+			place = resource.getPlace(county + " county," + state);
+		    }
+		    if(place==null) {
+			place = resource.getPlace(county + " city," + state);
+		    }
+		    if(place==null) {
+			place = resource.getPlace(county + " parish," + state);
+		    }
                 }
                 if (place == null) {
                     //              System.err.println("No place:" + address);

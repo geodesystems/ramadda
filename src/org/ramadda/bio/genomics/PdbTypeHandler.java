@@ -76,10 +76,10 @@ public class PdbTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
 
-        super.initializeNewEntry(request, entry);
+        super.initializeNewEntry(request, entry,fromImport);
 
         //If the file for the entry does not exist then return
         if ( !entry.isFile()) {

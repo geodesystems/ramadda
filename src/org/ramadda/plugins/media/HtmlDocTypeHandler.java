@@ -77,9 +77,9 @@ public class HtmlDocTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry)
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
-        super.initializeNewEntry(request, entry);
+        super.initializeNewEntry(request, entry,fromImport);
         File file = entry.getFile();
         if ( !file.exists()) {
             return;

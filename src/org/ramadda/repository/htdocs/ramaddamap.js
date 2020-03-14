@@ -646,9 +646,11 @@ RepositoryMap.prototype = {
     setViewToBounds: function(bounds) {
         projBounds = this.transformLLBounds(bounds);
         if (projBounds.getWidth() == 0) {
-	    if(debugBounds) console.log("setViewToBounds");
+	    if(debugBounds) console.log("setViewToBounds center");
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
+//	    console.log(bounds.getCenterLonLat());
+//	    this.getMap().setCenter(projBounds.getCenterLonLat());
             this.zoomToExtent(projBounds);
         }
     },

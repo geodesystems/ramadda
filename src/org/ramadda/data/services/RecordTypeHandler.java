@@ -362,7 +362,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public void initializeCopiedEntry(Entry entry, Entry originalEntry)
             throws Exception {
         super.initializeCopiedEntry(entry, originalEntry);
-        initializeNewEntry(null, entry);
+        initializeNewEntry(null, entry,false);
     }
 
 

@@ -795,7 +795,20 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
     this.colorByLog = this.getProperty("Log", false);
-    this.colorByFunc = Math.log;
+    this.colorByLog10 = this.getProperty("Log10", false);
+    this.colorByLog2 = this.getProperty("Log2", false);
+    if(this.colorByLog) {
+	console.log("log");
+	this.colorByFunc = Math.log;
+    }   else if(this.colorByLog10) {
+	this.colorByFunc = Math.log10;
+	console.log("10");
+    }   else if(this.colorByLog2) {
+	console.log("2");
+	this.colorByFunc = Math.log2;
+    }
+
+
     this.setRange(this.getProperty("Min", this.minValue),
 		  this.getProperty("Max", this.maxValue), true);
 
@@ -861,17 +874,17 @@ ColorByInfo.prototype = {
     },
     setRange: function(minValue,maxValue, force) {
 	if(!force && this.overrideRange) return;
-	if (this.colorByLog) {
-	    if (minValue < 1) {
-		this.colorByOffset = 1 - minValue;
+	this.origMinValue = minValue;
+	this.origMaxValue = maxValue;
+	if (this.colorByFunc) {
+	    if (minValue < 0) {
+		this.colorByOffset =  -minValue;
 	    }
 	    minValue = this.colorByFunc(minValue + this.colorByOffset);
 	    maxValue = this.colorByFunc(maxValue + this.colorByOffset);
 	}
 	this.minValue = minValue;
 	this.maxValue = maxValue;
-	this.origMinValue = minValue;
-	this.origMaxValue = maxValue;
 	this.range = maxValue - minValue;
 	if(!this.origRange) {
 	    this.origRange = [minValue, maxValue];
@@ -949,7 +962,7 @@ ColorByInfo.prototype = {
 		if(color) return color;
             }
             v += this.colorByOffset;
-            if (this.colorByLog) {
+            if (this.colorByFunc) {
                 v = this.colorByFunc(v);
             }
 
