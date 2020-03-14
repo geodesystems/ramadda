@@ -24963,13 +24963,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var hasBounds = this.getProperty("bounds") != null ||
 		    Utils.isDefined(this.getProperty("zoomLevel"))   ||
 		    Utils.isDefined(this.getProperty("mapCenter"));
+		let attrs =   {
+                    strokeColor: this.getProperty("vectorLayerStrokeColor","#000"),
+		    fillColor:this.getProperty("vectorLayerFillColor","#ccc"),
+		    fillOpacity:this.getProperty("vectorLayerFillOpacity",0.25),
+                    strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
+		}
                 if (isKml)
-                    this.map.addKMLLayer(this.kmlLayerName, url, this.doDisplayMap(), selectFunc, null, null,
+                    this.map.addKMLLayer(this.kmlLayerName, url, this.doDisplayMap(), selectFunc, null, attrs,
 					 function(map, layer) {
 					     theDisplay.baseMapLoaded(layer, url);
 					 }, !hasBounds);
                 else
-                    this.map.addGeoJsonLayer(this.geojsonLayerName, url, this.doDisplayMap(), selectFunc, null, null,
+                    this.map.addGeoJsonLayer(this.geojsonLayerName, url, this.doDisplayMap(), selectFunc, null, attrs,
 					     function(map, layer) {
 						 theDisplay.baseMapLoaded(layer, url);
 					     }, !hasBounds);
@@ -27046,6 +27052,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'recordHighlightStrokeWidth=2',
 		'recordHighlightStrokeColor=red',
 		'recordHighlightFillColor=rgba(0,0,0,0)',
+                'vectorLayerStrokeColor=#000',
+		'vectorLayerFillColor=#ccc',
+		'vectorLayerFillOpacity=0.25',
+                'vectorLayerStrokeWidth=1',
 		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
 		'showRecordSelection=false',
 		'showMarkersToggle=true',
