@@ -219,8 +219,11 @@ public class CsvVisitor extends RecordVisitor {
             if (getter == null) {
                 if (field.isTypeString()) {
                     String svalue = record.getStringValue(field.getParamId());
-                    svalue = svalue.replaceAll(COLUMN_DELIMITER,
-                            encodedDelimiter);
+		    if(svalue.indexOf(COLUMN_DELIMITER)>0) {
+			//			svalue = svalue.replaceAll(COLUMN_DELIMITER,
+			//						   encodedDelimiter);
+			svalue = "\"" + svalue+"\"";
+		    }
                     pw.append(svalue);
                 } else {
                     double value = record.getValue(field.getParamId());
@@ -230,8 +233,10 @@ public class CsvVisitor extends RecordVisitor {
                 //                System.err.println("field: "+ field.getName() + " " +getter.getClass().getName());
                 String svalue = getter.getStringValue(record, field,
                                     visitInfo);
-                svalue = svalue.replaceAll(COLUMN_DELIMITER,
-                                           encodedDelimiter);
+		if(svalue.indexOf(COLUMN_DELIMITER)>0) {
+		    //svalue = svalue.replaceAll(COLUMN_DELIMITER, encodedDelimiter);
+		    svalue = "\"" + svalue+"\"";
+		}
                 pw.append(svalue);
             }
         }
