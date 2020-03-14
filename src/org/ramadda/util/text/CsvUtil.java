@@ -875,19 +875,25 @@ public class CsvUtil {
 	    rows.add(new Row(StringUtil.split(cols,",")));
 	}
 
+	//	System.err.println(start);
 	if(start.length()!=0) {
-	    s = StringUtil.findPattern(s, ".*?" + start+"(.*)");
-	    if(s==null) {
+	    int index = s.indexOf(start);
+	    if(index>=0) {
+		s= s.substring(index);
+	    } else {
 		throw new IllegalArgumentException("Missing start pattern:" + start);
 	    }
 	}
+	//	System.out.println("***** START:"+s);
 	if(end.length()!=0) {
-	    s = StringUtil.findPattern(s, "(.*)" + end);
-	    if(s==null) {
+	    int index = s.indexOf(end);
+	    if(index>=0) {
+		s= s.substring(0,index-1);
+	    } else {
 		throw new IllegalArgumentException("Missing end pattern:" + end);
 	    }
 	}
-	//	System.out.println(s);
+	//	System.out.println("***** FINAL:"+s);
 	Pattern p = Pattern.compile(pattern);
 	while(true) {
 	    Matcher m = p.matcher(s);
