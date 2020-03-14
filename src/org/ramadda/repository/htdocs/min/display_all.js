@@ -14866,7 +14866,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.hAxis.textStyle, "hAxis.text.bold", "bold", textBold);
             this.setPropertyOn(chartOptions.vAxis.textStyle, "vAxis.text.bold", "bold", textBold);
 
-	    chartOptions.vAxis.text  = this.getProperty("vAxis.text", this.getProperty("vAxisText"));
+	    chartOptions.vAxis.title  = this.getProperty("vAxis.text", this.getProperty("vAxisText"));
+	    chartOptions.hAxis.title  = this.getProperty("hAxis.text", this.getProperty("hAxisText"));	    
 	    chartOptions.hAxis.slantedText = this.getProperty("hAxis.slantedText",this.getProperty("slantedText",false));
             this.setPropertyOn(chartOptions.hAxis.titleTextStyle, "hAxis.text.color", "color", textColor);
             this.setPropertyOn(chartOptions.vAxis.titleTextStyle, "vAxis.text.color", "color", textColor);
@@ -15036,7 +15037,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.chartOptions.vAxis.maxValue = y.max;
 	    }
 
-//	    console.log(JSON.stringify(chartOptions, null,2));
+	    console.log(JSON.stringify(chartOptions, null,2));
 
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
