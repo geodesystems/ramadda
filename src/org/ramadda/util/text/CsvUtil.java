@@ -1633,6 +1633,8 @@ public class CsvUtil {
         new Cmd("-changerow",
                 "<row #s> <col #s> <pattern> <substitution string>",
                 "(Change the values in the row/cols)"),
+        new Cmd("-endswith", "<col #s> <string>","(Ensure that each column ends with the string)"),
+        new Cmd("-trim", "<col #s>"),
         new Cmd("-convertdate", "<column> <format1> <format2>"),
         new Cmd(
             "-extractdate",
@@ -2424,11 +2426,6 @@ public class CsvUtil {
                     continue;
                 }
 
-                if (arg.equals("-trim")) {
-                    trim = true;
-
-                    continue;
-                }
 
                 if (arg.equals("-output")) {
                     if ( !ensureArg(args, i, 1)) {
@@ -2770,6 +2767,32 @@ public class CsvUtil {
                     info.getProcessor().addProcessor(
                         new Converter.ColumnChanger(
                             cols, pattern, args.get(++i)));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-endswith")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols    = getCols(args.get(++i));
+                    String       s= args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnEndsWith(
+						     cols, s));
+
+                    continue;
+                }
+		
+		if (arg.equals("-trim")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> cols    = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnTrimmer(
+						    cols));
 
                     continue;
                 }

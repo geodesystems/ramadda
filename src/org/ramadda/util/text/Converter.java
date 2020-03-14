@@ -1546,6 +1546,105 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class ColumnEndsWith extends Converter {
+
+        /** _more_ */
+        private String value;
+
+        /**
+         *
+         *
+         *
+         *
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         */
+        public ColumnEndsWith(List<String> cols, 
+                             String value) {
+            super(cols);
+            this.value = value;
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+                if ( !info.getAllData()) {
+                    return row;
+                }
+            }
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index >= 0) && (index < row.size())) {
+                    String s  = row.getString(index).trim();
+		    if(!s.endsWith(value)) s = s+value;
+                    row.set(index, s);
+                }
+            }
+
+            return row;
+        }
+
+    }
+    
+    public static class ColumnTrimmer extends Converter {
+
+        /**
+         */
+        public ColumnTrimmer(List<String> cols) {
+            super(cols);
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+		return row;
+            }
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index >= 0) && (index < row.size())) {
+                    String s  = row.getString(index);
+		    //This is not an underscore but something else that shows up in web pages
+		    s = s.replaceAll(" ","");
+                    s  = s.trim();
+                    row.set(index, s);
+                }
+            }
+
+            return row;
+        }
+
+    }
+    
+
 
     /**
      * Class description

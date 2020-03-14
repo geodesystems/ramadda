@@ -24950,7 +24950,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    return this.map.getBounds();
 	},
         addBaseMapLayer: function(url, isKml) {
-	    if(!this.getProperty("showBaseMap",true)) return;
             var theDisplay = this;
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo == null) {
@@ -27069,7 +27068,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'showScaleLine=true',
 		'showZoomPanControl=true',
 		'showZoomOnlyControl=false',
-		'showBaseMap=false',
+		'showLayers=false',
 		'enableDragPan=false',
 		'markersVisibility=false',
 		'inlinelabel:Heatmap Attributes',
