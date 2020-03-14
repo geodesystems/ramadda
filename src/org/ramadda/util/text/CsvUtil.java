@@ -846,7 +846,7 @@ public class CsvUtil {
     }
 
 
-    public List<Row> tokenizeHtmlPattern(String file, String cols,
+    public List<Row> tokenizeHtmlPattern(String s, String cols,
 					 String start, String end, String pattern)
             throws Exception {
 
@@ -854,9 +854,9 @@ public class CsvUtil {
 	if(cols.length()>0) {
 	    rows.add(new Row(StringUtil.split(cols,",")));
 	}
-        String    s    = IO.readContents(file);
+
 	if(start.length()!=0) {
-	    s = StringUtil.findPattern(s, start+"(.*)");
+	    s = StringUtil.findPattern(s, ".*?" + start+"(.*)");
 	    if(s==null) {
 		throw new IllegalArgumentException("Missing start pattern:" + start);
 	    }
@@ -867,7 +867,7 @@ public class CsvUtil {
 		throw new IllegalArgumentException("Missing end pattern:" + end);
 	    }
 	}
-
+	//	System.out.println(s);
 	Pattern p = Pattern.compile(pattern);
 	while(true) {
 	    Matcher m = p.matcher(s);
@@ -1956,7 +1956,7 @@ public class CsvUtil {
                     continue;
                 }
                 if (arg.equals("-htmlpattern")) {
-                    if ( !ensureArg(args, i, 3)) {
+                    if ( !ensureArg(args, i, 4)) {
                         return false;
                     }
                     doHtml2    = true;
@@ -3475,7 +3475,6 @@ public class CsvUtil {
                 }
             } catch (Exception exc) {
                 System.err.println("Error processing arg:" + arg);
-
                 throw exc;
             }
         }
@@ -3484,7 +3483,15 @@ public class CsvUtil {
             Hashtable<String, String> props = parseProps(htmlProps);
             tokenizedRows.add(tokenizeHtml(files.get(0), props));
 	} else if (doHtml2) {
-            tokenizedRows.add(tokenizeHtmlPattern(files.get(0), htmlCols, startPattern, endPattern, htmlPattern));
+	    String s = null;
+	    if(files.size()>0) {
+		s    = IO.readContents(files.get(0));
+	    } else if(inputStream!=null) {
+		s = IO.readInputStream(inputStream);
+	    } else {
+		throw new IllegalArgumentException("No file given");
+	    }
+            tokenizedRows.add(tokenizeHtmlPattern(s, htmlCols, startPattern, endPattern, htmlPattern));
         } else if (doText) {
             tokenizedRows.add(tokenizeText(files.get(0), textHeader,
                                            chunkPattern, tokenPattern));
