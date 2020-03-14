@@ -313,21 +313,23 @@ public class CsvUtil {
         textReader = new TextReader(destDir, outputFile, outputStream);
 
 
-	boolean printArgs =  false;
-        List<String> extra = new ArrayList<String>();
+        boolean      printArgs = false;
+        List<String> extra     = new ArrayList<String>();
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-	    if(arg.equals("-printargs")) {
-		System.out.print("java  org.ramadda.util.text.CsvUtil ");
-		printArgs = true;
-		continue;
-	    }
-	    if(printArgs) {
-		if(!arg.startsWith("\"") && !arg.startsWith("-"))
-		    System.out.print("\"" + arg +"\" ");
-		else
-		    System.out.print(arg +" ");
-	    }
+            if (arg.equals("-printargs")) {
+                System.out.print("java  org.ramadda.util.text.CsvUtil ");
+                printArgs = true;
+
+                continue;
+            }
+            if (printArgs) {
+                if ( !arg.startsWith("\"") && !arg.startsWith("-")) {
+                    System.out.print("\"" + arg + "\" ");
+                } else {
+                    System.out.print(arg + " ");
+                }
+            }
             if (arg.equals("-help")) {
                 usage("", null);
 
@@ -404,13 +406,15 @@ public class CsvUtil {
         if ( !parseArgs(extra, textReader, files, rows)) {
             return;
         }
-	if(printArgs) {
-	    for(String f: files)
-		System.out.print(f+" ");
-	    if(files.size()==0)
-		System.out.print(" ${1} ");
-	    System.out.println("");
-	}
+        if (printArgs) {
+            for (String f : files) {
+                System.out.print(f + " ");
+            }
+            if (files.size() == 0) {
+                System.out.print(" ${1} ");
+            }
+            System.out.println("");
+        }
         if (rows.size() > 0) {
             textReader.setRows(rows.get(0));
         }
@@ -866,54 +870,72 @@ public class CsvUtil {
     }
 
 
-    public List<Row> tokenizeHtmlPattern(String s, String cols,
-					 String start, String end, String pattern)
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param cols _more_
+     * @param start _more_
+     * @param end _more_
+     * @param pattern _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Row> tokenizeHtmlPattern(String s, String cols, String start,
+                                         String end, String pattern)
             throws Exception {
 
         List<Row> rows = new ArrayList<Row>();
-	if(cols.length()>0) {
-	    rows.add(new Row(StringUtil.split(cols,",")));
-	}
-
-	//	System.err.println(start);
-	if(start.length()!=0) {
-	    int index = s.indexOf(start);
-	    if(index>=0) {
-		s= s.substring(index);
-	    } else {
-		throw new IllegalArgumentException("Missing start pattern:" + start);
-	    }
-	}
-	//	System.out.println("***** START:"+s);
-	if(end.length()!=0) {
-	    int index = s.indexOf(end);
-	    if(index>=0) {
-		s= s.substring(0,index-1);
-	    } else {
-		throw new IllegalArgumentException("Missing end pattern:" + end);
-	    }
-	}
-	//	System.out.println("***** FINAL:"+s);
-	Pattern p = Pattern.compile(pattern);
-	while(true) {
-	    Matcher m = p.matcher(s);
-	    if (!m.find()) {
-		break;
-	    }
-	    Row     row         = new Row();
-	    rows.add(row);
-	    for (int i = 1; i <= m.groupCount(); i++) {
-		String tok = m.group(i).trim();
-		row.add(tok);
-	    }
-	    String s2 = s.substring(m.end());
-	    if(s.length()==s2.length()) break;
-	    s = s2;
-	    //	    if(rows.size()>2) return rows;
+        if (cols.length() > 0) {
+            rows.add(new Row(StringUtil.split(cols, ",")));
         }
+
+        //      System.err.println(start);
+        if (start.length() != 0) {
+            int index = s.indexOf(start);
+            if (index >= 0) {
+                s = s.substring(index);
+            } else {
+                throw new IllegalArgumentException("Missing start pattern:"
+                        + start);
+            }
+        }
+        //      System.out.println("***** START:"+s);
+        if (end.length() != 0) {
+            int index = s.indexOf(end);
+            if (index >= 0) {
+                s = s.substring(0, index - 1);
+            } else {
+                throw new IllegalArgumentException("Missing end pattern:"
+                        + end);
+            }
+        }
+	//	System.out.println("***** FINAL:"+s);
+        Pattern p = Pattern.compile(pattern);
+        while (true) {
+            Matcher m = p.matcher(s);
+            if ( !m.find()) {
+                break;
+            }
+            Row row = new Row();
+            rows.add(row);
+            for (int i = 1; i <= m.groupCount(); i++) {
+                String tok = m.group(i).trim();
+                row.add(tok);
+            }
+            String s2 = s.substring(m.end());
+            if (s.length() == s2.length()) {
+                break;
+            }
+            s = s2;
+            //      if(rows.size()>2) return rows;
+        }
+
         return rows;
     }
-    
+
 
 
     /**
@@ -1659,7 +1681,8 @@ public class CsvUtil {
         new Cmd("-changerow",
                 "<row #s> <col #s> <pattern> <substitution string>",
                 "(Change the values in the row/cols)"),
-        new Cmd("-endswith", "<col #s> <string>","(Ensure that each column ends with the string)"),
+        new Cmd("-endswith", "<col #s> <string>",
+                "(Ensure that each column ends with the string)"),
         new Cmd("-trim", "<col #s>"),
         new Cmd("-convertdate", "<column> <format1> <format2>"),
         new Cmd(
@@ -1696,9 +1719,8 @@ public class CsvUtil {
         new Cmd("-rowaverage", "", "(average the row values)"),
         new Cmd("-generate", "<label> <start> <step>", "(add row values)"),
         new Cmd("-decimals", "<col #> <how many decimals to round to>", ""),
-        new Cmd(
-            "-func", "<name1,name2,...> <javascript expression>",
-            "(apply the function. use column names or _colN)"),
+        new Cmd("-func", "<name1,name2,...> <javascript expression>",
+                "(apply the function. use column names or _colN)"),
         new Cmd(
             "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
             "(apply the operator to the given columns and create new one)"),
@@ -1719,7 +1741,8 @@ public class CsvUtil {
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
         new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
         new Cmd("-population",
-                "<col indices> <prefix, e.g., state: or county:> <suffix> ","add in population from address"),
+                "<col indices> <prefix, e.g., state: or county:> <suffix> ",
+                "add in population from address"),
         new Cmd(true, "Other Commands"), new Cmd("-sort", "<column sort>"),
         new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
@@ -1743,9 +1766,8 @@ public class CsvUtil {
         new Cmd(
             "-html", "\"name value properties\"",
             "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
-        new Cmd(
-            "-htmlpattern", "cols startPattern endPattern pattern",
-            "(parse the input html file)"),
+        new Cmd("-htmlpattern", "cols startPattern endPattern pattern",
+                "(parse the input html file)"),
         new Cmd("-json",
                 "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
                 "(parse the input as json)"),
@@ -1957,11 +1979,11 @@ public class CsvUtil {
         String       tokenPattern    = null;
 
         boolean      doHtml          = false;
-	boolean      doHtml2          = false;
-	String startPattern = null;
-	String endPattern = null;
-	String htmlPattern = null;
-	String htmlCols = null;
+        boolean      doHtml2         = false;
+        String       startPattern    = null;
+        String       endPattern      = null;
+        String       htmlPattern     = null;
+        String       htmlCols        = null;
         String       htmlProps       = null;
         boolean      doJson          = false;
         String       jsonProps       = null;
@@ -1992,11 +2014,12 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 4)) {
                         return false;
                     }
-                    doHtml2    = true;
-		    htmlCols  = args.get(++i);
+                    doHtml2      = true;
+                    htmlCols     = args.get(++i);
                     startPattern = args.get(++i);
-		    endPattern = args.get(++i);
-                    htmlPattern = args.get(++i);
+                    endPattern   = args.get(++i);
+                    htmlPattern  = args.get(++i);
+
                     continue;
                 }
 
@@ -2821,23 +2844,21 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-                    List<String> cols    = getCols(args.get(++i));
-                    String       s= args.get(++i);
+                    List<String> cols = getCols(args.get(++i));
+                    String       s    = args.get(++i);
                     info.getProcessor().addProcessor(
-                        new Converter.ColumnEndsWith(
-						     cols, s));
+                        new Converter.ColumnEndsWith(cols, s));
 
                     continue;
                 }
-		
-		if (arg.equals("-trim")) {
+
+                if (arg.equals("-trim")) {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    List<String> cols    = getCols(args.get(++i));
+                    List<String> cols = getCols(args.get(++i));
                     info.getProcessor().addProcessor(
-                        new Converter.ColumnTrimmer(
-						    cols));
+                        new Converter.ColumnTrimmer(cols));
 
                     continue;
                 }
@@ -3197,7 +3218,8 @@ public class CsvUtil {
                         return false;
                     }
                     info.getProcessor().addProcessor(
-						     new Converter.ColumnFunc(args.get(++i),args.get(++i)));
+                        new Converter.ColumnFunc(
+                            args.get(++i), args.get(++i)));
 
                     continue;
                 }
@@ -3554,6 +3576,7 @@ public class CsvUtil {
                 }
             } catch (Exception exc) {
                 System.err.println("Error processing arg:" + arg);
+
                 throw exc;
             }
         }
@@ -3561,16 +3584,17 @@ public class CsvUtil {
         if (doHtml) {
             Hashtable<String, String> props = parseProps(htmlProps);
             tokenizedRows.add(tokenizeHtml(files.get(0), props));
-	} else if (doHtml2) {
-	    String s = null;
-	    if(files.size()>0) {
-		s    = IO.readContents(files.get(0));
-	    } else if(inputStream!=null) {
-		s = IO.readInputStream(inputStream);
-	    } else {
-		throw new IllegalArgumentException("No file given");
-	    }
-            tokenizedRows.add(tokenizeHtmlPattern(s, htmlCols, startPattern, endPattern, htmlPattern));
+        } else if (doHtml2) {
+            String s = null;
+            if (files.size() > 0) {
+                s = IO.readContents(files.get(0));
+            } else if (inputStream != null) {
+                s = IO.readInputStream(inputStream);
+            } else {
+                throw new IllegalArgumentException("No file given");
+            }
+            tokenizedRows.add(tokenizeHtmlPattern(s, htmlCols, startPattern,
+                    endPattern, htmlPattern));
         } else if (doText) {
             tokenizedRows.add(tokenizeText(files.get(0), textHeader,
                                            chunkPattern, tokenPattern));

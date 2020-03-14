@@ -47,8 +47,11 @@ public class Row {
     /** _more_ */
     private Object skipTo;
 
+    /** _more_ */
     static int cnt = 0;
-    private String id  =""+(cnt++);
+
+    /** _more_ */
+    private String id = "" + (cnt++);
 
     /**
      * _more_
@@ -57,9 +60,14 @@ public class Row {
         values = new ArrayList();
     }
 
+    /**
+     * _more_
+     *
+     * @param r _more_
+     */
     public Row(Row r) {
         values = new ArrayList(r.getValues());
-    }    
+    }
 
     /**
      * _more_
@@ -147,7 +155,7 @@ public class Row {
      * @return _more_
      */
     public String toString() {
-        return " id:" + id+" v:" + values.toString();
+        return " id:" + id + " v:" + values.toString();
     }
 
     /**

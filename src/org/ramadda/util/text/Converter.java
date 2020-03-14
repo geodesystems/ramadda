@@ -31,7 +31,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-import javax.script.*;
+
 import java.net.URL;
 
 import java.text.DateFormat;
@@ -53,6 +53,8 @@ import java.util.regex.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.script.*;
 
 
 /**
@@ -899,13 +901,15 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
+
             rowCnt++;
             if (rowCnt > 2) {
-		//		System.err.println("hdr rest:" + row);
+                //              System.err.println("hdr rest:" + row);
                 return row;
             }
             if (firstRow == null) {
                 firstRow = row;
+
                 return null;
             }
             boolean justFields  = Misc.equals(props.get("justFields"),
@@ -1092,12 +1096,13 @@ public abstract class Converter extends Processor {
             if (toStdOut) {
                 System.out.println(StringUtil.join(",", values));
                 info.stopRunning();
+
                 return firstRow;
             }
-	    //	    System.err.println("hdr first:" + firstRow);
-	    //	    System.err.println("hdr row:" + row);
+            //      System.err.println("hdr first:" + firstRow);
+            //      System.err.println("hdr row:" + row);
             firstRow.setValues(values);
-	    row.setSkipTo(this);
+            row.setSkipTo(this);
             info.setExtraRow(row);
             Row tmp = firstRow;
             firstRow = null;
@@ -1105,7 +1110,9 @@ public abstract class Converter extends Processor {
                 writer.println("");
                 info.stopRunning();
             }
+
             return tmp;
+
         }
     }
 
@@ -1390,37 +1397,48 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnFunc extends Converter {
 
-	String code;
+        /** _more_ */
+        String code;
 
+        /** _more_ */
         ScriptEngine engine;
 
-	String names;
+        /** _more_ */
+        String names;
 
-	Row headerRow;
+        /** _more_ */
+        Row headerRow;
 
         /**
          *
+         *
+         * @param names _more_
+         * @param code _more_
          */
         public ColumnFunc(String names, String code) {
-	    this.names = names;
-	    this.code = code;
-	    try {
-		jdk.nashorn.api.scripting.ClassFilter cf = new jdk.nashorn.api.scripting.ClassFilter() {
-			public boolean exposeToScripts(String s) {
-			    return false;
-			}
-		    };
-		engine = new jdk.nashorn.api.scripting.NashornScriptEngineFactory().getScriptEngine(new String[] { "--no-java" },null, cf);
-		String testScript =
-		    "print(java.lang.System.getProperty(\"java.home\"));" +
-		    "print(\"Create file variable\");" +
-		    "var File = Java.type(\"java.io.File\");";
-		//		engine.eval(testScript);
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	
-	}
+            this.names = names;
+            this.code  = code;
+            try {
+                jdk.nashorn.api.scripting.ClassFilter cf =
+                    new jdk.nashorn.api.scripting.ClassFilter() {
+                    public boolean exposeToScripts(String s) {
+                        return false;
+                    }
+                };
+                engine =
+                    new jdk.nashorn.api.scripting.NashornScriptEngineFactory()
+                        .getScriptEngine(new String[] { "--no-java" }, null,
+                                         cf);
+                String testScript =
+                    "print(java.lang.System.getProperty(\"java.home\"));"
+                    + "print(\"Create file variable\");"
+                    + "var File = Java.type(\"java.io.File\");";
+                //              engine.eval(testScript);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+
+        }
 
         /**
          *
@@ -1435,49 +1453,59 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-	    //	    System.err.println("func row:" + row);
-	    rowCnt++;
+            //      System.err.println("func row:" + row);
+            rowCnt++;
             if (rowCnt == 1) {
-		headerRow = new Row(row);
-		for(String s: StringUtil.split(names,",",true,true))
-		    row.add(s);
-		return row;
+                headerRow = new Row(row);
+                for (String s : StringUtil.split(names, ",", true, true)) {
+                    row.add(s);
+                }
+
+                return row;
             }
-	    try {
-		List hdr = headerRow.getValues();
-		for(int i=0;i<hdr.size();i++) {
-		    if(i>=row.size()) continue;
-		    Object o = row.get(i);
-		    String var = hdr.get(i).toString();
-		    var = Utils.makeID(var.toLowerCase());
-		    //		    System.err.println(var +"=" + o);
-		    engine.put(var,o);
-		    engine.put("_col" + i,o);
-		}
-		engine.put("_header",hdr);
-		engine.put("_values",row.getValues());
-		engine.put("_rowidx",rowCnt-1);
-			   
-		// evaluate JavaScript code
-		Object o = engine.eval(code);
-		if(o==null) return null;
-		if(o instanceof jdk.nashorn.api.scripting.ScriptObjectMirror) {
-		    jdk.nashorn.api.scripting.ScriptObjectMirror som = (jdk.nashorn.api.scripting.ScriptObjectMirror)o;
-		    if(som.isArray()) {
-			Collection<Object> values = som.values();
-			for(Object v: values) 
-			    row.add(v);
-		    } else {
-			row.add(o);
-		    }
-		} else {
-		    row.add(o);
-		}
-		//		System.err.println("func row:" + row);
-		return row;
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
+            try {
+                List hdr = headerRow.getValues();
+                for (int i = 0; i < hdr.size(); i++) {
+                    if (i >= row.size()) {
+                        continue;
+                    }
+                    Object o   = row.get(i);
+                    String var = hdr.get(i).toString();
+                    var = Utils.makeID(var.toLowerCase());
+                    //              System.err.println(var +"=" + o);
+                    engine.put(var, o);
+                    engine.put("_col" + i, o);
+                }
+                engine.put("_header", hdr);
+                engine.put("_values", row.getValues());
+                engine.put("_rowidx", rowCnt - 1);
+
+                // evaluate JavaScript code
+                Object o = engine.eval(code);
+                if (o == null) {
+                    return null;
+                }
+                if (o instanceof jdk.nashorn.api.scripting
+                        .ScriptObjectMirror) {
+                    jdk.nashorn.api.scripting.ScriptObjectMirror som =
+                        (jdk.nashorn.api.scripting.ScriptObjectMirror) o;
+                    if (som.isArray()) {
+                        Collection<Object> values = som.values();
+                        for (Object v : values) {
+                            row.add(v);
+                        }
+                    } else {
+                        row.add(o);
+                    }
+                } else {
+                    row.add(o);
+                }
+
+                //              System.err.println("func row:" + row);
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
         }
 
     }
@@ -1636,22 +1664,23 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Mar 14, '20
+     * @author         Enter your name here...
+     */
     public static class ColumnEndsWith extends Converter {
 
         /** _more_ */
         private String value;
 
         /**
-         *
-         *
-         *
-         *
          * @param cols _more_
-         * @param pattern _more_
          * @param value _more_
          */
-        public ColumnEndsWith(List<String> cols, 
-                             String value) {
+        public ColumnEndsWith(List<String> cols, String value) {
             super(cols);
             this.value = value;
         }
@@ -1680,8 +1709,10 @@ public abstract class Converter extends Processor {
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index >= 0) && (index < row.size())) {
-                    String s  = row.getString(index).trim();
-		    if(!s.endsWith(value)) s = s+value;
+                    String s = row.getString(index).trim();
+                    if ( !s.endsWith(value)) {
+                        s = s + value;
+                    }
                     row.set(index, s);
                 }
             }
@@ -1690,10 +1721,19 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Mar 14, '20
+     * @author         Enter your name here...
+     */
     public static class ColumnTrimmer extends Converter {
 
         /**
+         *
+         * @param cols _more_
          */
         public ColumnTrimmer(List<String> cols) {
             super(cols);
@@ -1715,16 +1755,16 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-		return row;
+                return row;
             }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index >= 0) && (index < row.size())) {
-                    String s  = row.getString(index);
-		    //This is not an underscore but something else that shows up in web pages
-		    s = s.replaceAll(" ","");
-                    s  = s.trim();
+                    String s = row.getString(index);
+                    //This is not an underscore but something else that shows up in web pages
+                    s = s.replaceAll(" ", "");
+                    s = s.trim();
                     row.set(index, s);
                 }
             }
@@ -1733,7 +1773,7 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
+
 
 
     /**
@@ -2194,7 +2234,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Wed, Mar 4, '20
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Truncater extends Converter {
 
@@ -2202,7 +2242,7 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private int col;
 
-        /** _more_          */
+        /** _more_ */
         private int length;
 
         /** _more_ */
@@ -3144,6 +3184,7 @@ public abstract class Converter extends Processor {
                     row.add(lonLabel);
                 }
                 doneHeader = true;
+
                 return row;
             }
 
@@ -3213,12 +3254,20 @@ public abstract class Converter extends Processor {
                 row.add(new Double(lat));
                 row.add(new Double(lon));
             }
+
             return row;
         }
 
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Mar 14, '20
+     * @author         Enter your name here...
+     */
     public static class Populator extends Converter {
 
         /* */
@@ -3264,7 +3313,17 @@ public abstract class Converter extends Processor {
 
 
 
-	/*
+        /*
+         * @param cols _more_
+         * @param prefix _more_
+         * @param suffix _more_
+         *
+         * @throws Exception _more_
+         */
+
+        /**
+         * _more_
+         *
          * @param cols _more_
          * @param prefix _more_
          * @param suffix _more_
@@ -3274,8 +3333,8 @@ public abstract class Converter extends Processor {
         public Populator(List<String> cols, String prefix, String suffix)
                 throws Exception {
             super(cols);
-            this.prefix     = prefix;
-            this.suffix     = suffix;
+            this.prefix = prefix;
+            this.suffix = suffix;
         }
 
 
@@ -3296,9 +3355,10 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             List values = row.getValues();
             if ( !doneHeader) {
-		row.add("Population");
-		doneHeader = true;
-		//		System.err.println("pop row:" + row);
+                row.add("Population");
+                doneHeader = true;
+
+                //              System.err.println("pop row:" + row);
                 return row;
             }
 
@@ -3323,10 +3383,14 @@ public abstract class Converter extends Processor {
                 key.append(suffix);
             }
 
-	    Place place =  GeoUtils.getLocationFromAddress(key.toString());
-	    if(place!=null) row.add(new Integer(place.getPopulation()));
-	    else row.add(new Integer(0));
-	    //	    System.err.println("pop row:" + row);
+            Place place = GeoUtils.getLocationFromAddress(key.toString());
+            if (place != null) {
+                row.add(new Integer(place.getPopulation()));
+            } else {
+                row.add(new Integer(0));
+            }
+
+            //      System.err.println("pop row:" + row);
             return row;
         }
 
@@ -4810,13 +4874,15 @@ public abstract class Converter extends Processor {
      *
      *
      * @param args _more_
+     *
+     * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String s = "1*x+y";
-	ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("nashorn");
-    	engine.put("x",1);
-	engine.put("y",2);
+        String              s       = "1*x+y";
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine        engine  = manager.getEngineByName("nashorn");
+        engine.put("x", 1);
+        engine.put("y", 2);
         // evaluate JavaScript code
         System.err.println(engine.eval(s));
     }
