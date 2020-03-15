@@ -1270,6 +1270,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    chartOptions.vAxis.minValue = this.getProperty("vAxisMinValue");
 	    chartOptions.vAxis.maxValue = this.getProperty("vAxisMaxValue");
 
+
+	    chartOptions.vAxis.logScale = this.getProperty("vAxisLogScale");
+	    chartOptions.hAxis.logScale = this.getProperty("hAxisLogScale");
+
             chartOptions.hAxis.titleTextStyle = {};
             chartOptions.vAxis.titleTextStyle = {};
 	    if(this.getProperty("hAxisDateFormat")) {
@@ -1630,6 +1634,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		'indexField=field',
 		"vAxisMinValue=\"\"",
 		"vAxisMaxValue=\"\"", 
+		'vAxisLogScale=true',
+		'hAxisLogScale=true',
 		'tooltipFields=""',
 		'annotations="date,label,desc;date,label,desc; e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;"',
 		'annotationFields=""',	
