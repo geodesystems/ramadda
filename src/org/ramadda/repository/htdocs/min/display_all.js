@@ -1187,6 +1187,131 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 
 
 
+
+function SizeBy(display,records) {
+    this.display = display;
+    if(!records) records = display.filterData();
+    let pointData = this.display.getPointData();
+    let fields = pointData.getRecordFields();
+
+    $.extend(this, {
+        id: this.display.getProperty("sizeBy"),
+        minValue: 0,
+        maxValue: 0,
+        field: null,
+        index: -1,
+        isString: false,
+        stringMap: {},
+    });
+
+
+    let sizeByMap = this.display.getProperty("sizeByMap");
+    if (sizeByMap) {
+        let toks = sizeByMap.split(",");
+        for (let i = 0; i < toks.length; i++) {
+            let toks2 = toks[i].split(":");
+            if (toks2.length > 1) {
+                this.stringMap[toks2[0]] = toks2[1];
+            }
+        }
+    }
+
+    for (let i = 0; i < fields.length; i++) {
+        let field = fields[i];
+        if (field.getId() == this.id || ("#" + (i + 1)) == this.id) {
+            this.field = field;
+	    if (field.isString()) this.isString = true;
+        }
+    }
+
+    this.index = this.field != null ? this.field.getIndex() : -1;
+    if (!this.isString) {
+        for (let i = 0; i < records.length; i++) {
+            let pointRecord = records[i];
+            let tuple = pointRecord.getData();
+            let v = tuple[this.index];
+//	    console.log("V:" + v);
+	    if (!isNaN(v) && !(v === null)) {
+		if (i == 0 || v > this.maxValue) this.maxValue = v;
+		if (i == 0 || v < this.minValue) this.minValue = v;
+	    }
+        }
+    }
+
+    this.radiusMin = parseFloat(this.display.getProperty("sizeByRadiusMin", -1));
+    this.radiusMax = parseFloat(this.display.getProperty("sizeByRadiusMax", -1));
+    this.offset = 0;
+    this.sizeByLog = this.display.getProperty("sizeByLog", false);
+    if (this.sizeByLog) {
+	this.func = Math.log;
+        if (this.minValue < 1) {
+            this.sizeByOffset = 1 - this.minValue;
+        }
+        this.minValue = this.func(this.minValue + this.offset);
+        this.maxValue = this.func(this.maxValue + this.offset);
+    }
+    this.range = this.maxValue - this.minValue;
+}
+
+SizeBy.prototype = {
+    getSize: function(values, dflt, func) {
+        if (this.index <= 0) {
+	    return dflt;
+	}
+        let value = values[this.index];
+	let size = this.getSizeFromValue(value,func);
+//	console.log("G: " + value +  " s:" + size);
+	return size;
+    },
+
+    getSizeFromValue: function(value,func) {	
+        if (this.isString) {
+	    let size;
+            if (Utils.isDefined(this.stringMap[value])) {
+                let v = parseInt(this.stringMap[value]);
+                size = v;
+            } else if (Utils.isDefined(this.stringMap["*"])) {
+                let v = parseInt(this.stringMap["*"]);
+                size = v;
+            } 
+	    if(func) func(NaN,size);
+	    return size;
+        } else {
+            let denom = this.range;
+            let v = value + this.offset;
+            if (this.func) v = this.func(v);
+            let percent = (denom == 0 ? NaN : (v - this.minValue) / denom);
+	    let size;
+            if (this.radiusMax >= 0 && this.radiusMin >= 0) {
+                size =  Math.round(this.radiusMin + percent * (this.radiusMax - this.radiusMin));
+            } else {
+                size = 6 + parseInt(15 * percent);
+            }
+	    if(func) func(percent, size);
+	    return size;
+        }
+    },
+    getLegend: function(cnt,bg) {
+	let html = "";
+	if(this.index<0) return "";
+	let hor = this.display.getProperty("sizeByLegendOrientation","horizontal") == "horizontal";
+	for(let i=cnt;i>=0;i--) {
+	    let v = this.minValue+ i/cnt*this.range;
+	    let size  =this.getSizeFromValue(v);
+	    v = this.display.formatNumber(v);
+	    let dim = size*2+"px";
+	    html += HU.div([CLASS,"display-size-legend-item"], HU.center(HU.div([STYLE,HU.css("height", dim,"width",dim,
+										    "background-color",bg||"#bbb",
+										    "border-radius","50%"
+											     )])) + v);
+
+	    if(!hor) html+="<br>";
+	}
+	return HU.div(["class","display-size-legend"], html);
+    }
+
+}
+
 /**
    Copyright 2008-2019 Geode Systems LLC
 */
@@ -24637,6 +24762,8 @@ let displayMapCurrentMarker = -1;
 let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
 
+
+
 addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map"
@@ -24659,6 +24786,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     let ID_LATFIELD = "latfield";
     let ID_LONFIELD = "lonfield";
     let ID_MAP = "map";
+    let ID_SIDE = "side";
     let ID_SHAPES = "shapes";
     let ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
     let ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
@@ -24686,6 +24814,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         mapEntryInfos: {},
         initDisplay: function() {
             SUPER.initDisplay.call(this);
+	    if(!HU.documentReady) {
+		console.log("not ready");
+		$( document ).ready(()=> {
+		    console.log("ready");
+		    if(this.map) {
+			console.log("update size");
+			setTimeout(()=>{
+				   this.map.getMap().updateSize();
+			},50);
+		    }
+		});
+	    }
             var _this = this;
             var html = "";
             var extraStyle = "min-height:200px;";
@@ -24709,8 +24849,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             } else if (height != "") {
                 extraStyle += " height:" + (height) + ";";
             }
-            html += HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
-			    extraStyle, ATTR_ID, this.getDomId(ID_MAP)]);
+	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
+			     extraStyle, ATTR_ID, this.getDomId(ID_MAP)]);
+
+	    let side = HU.div([ID,this.getDomId(ID_SIDE)],"");
+            html +=  HU.table(["width","100%"],HU.tr([],HU.td(["width","99%"],map) +HU.td([],side)));
+
             if (this.showLocationReadout) {
                 html += HU.open(TAG_DIV, [ATTR_CLASS,
 					     "display-map-latlon"
@@ -24816,7 +24960,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
                 this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
                 this.lastWidth = this.jq(ID_MAP).width();
-
             }
 
 	    if(!this.getProperty("markersVisibility", true)) {
@@ -24954,6 +25097,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     _this.addBaseMapLayer(url, false);
                 }
             }
+
+
 
         },
 
@@ -26529,43 +26674,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		})
 	    }
 
-	    //	    console.log("records:" + records.length +" color by range:" + colorBy.minValue + " " + colorBy.maxValue);
-            let sizeBy = {
-                id: this.getDisplayProp(source, "sizeBy", null),
-                minValue: 0,
-                maxValue: 0,
-                field: null,
-                index: -1,
-                isString: false,
-                stringMap: {},
-            };
-
-            let sizeByMap = this.getProperty("sizeByMap");
-            if (sizeByMap) {
-                let toks = sizeByMap.split(",");
-                for (let i = 0; i < toks.length; i++) {
-                    let toks2 = toks[i].split(":");
-                    if (toks2.length > 1) {
-                        sizeBy.stringMap[toks2[0]] = toks2[1];
-                    }
-                }
-            }
-
-
-
-
+	    let sizeBy = new SizeBy(this, records);
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
                 if (field.getId() == shapeBy.id || ("#" + (i + 1)) == shapeBy.id) {
                     shapeBy.field = field;
 		    if (field.isString()) shapeBy.isString = true;
                 }
-                if (field.getId() == sizeBy.id || ("#" + (i + 1)) == sizeBy.id) {
-                    sizeBy.field = field;
-		    if (field.isString()) sizeBy.isString = true;
-                }
             }
-
+            shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
 
 
             if (this.getProperty("showColorByMenu", false) && colorBy.field && !this.madeColorByMenu) {
@@ -26589,8 +26706,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 });
             }
 
-            sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
-            shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
+
 
 	    let dateMin = null;
 	    let dateMax = null;
@@ -26614,33 +26730,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             dateMax = date;
                     }
                 }
-                let tuple = pointRecord.getData();
-                if (!sizeBy.isString) {
-                    let v = tuple[sizeBy.index];
-		    if (!isNaN(v) && !(v === null)) {
-			if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
-			if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
-		    }
-		    
-                }
 	    }
 
 
-            sizeBy.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", -1));
-            sizeBy.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", -1));
-            let sizeByOffset = 0;
-            let sizeByLog = this.getProperty("sizeByLog", false);
-            let sizeByFunc = Math.log;
-            if (sizeByLog) {
-                if (sizeBy.minValue < 1) {
-                    sizeByOffset = 1 - sizeBy.minValue;
-                }
-                sizeBy.minValue = sizeByFunc(sizeBy.minValue + sizeByOffset);
-                sizeBy.maxValue = sizeByFunc(sizeBy.maxValue + sizeByOffset);
-            }
-            sizeBy.range = sizeBy.maxValue - sizeBy.minValue;
-
-	    //	    console.log(JSON.stringify(sizeBy,null,2));
             if (dateMax) {
 		if (this.getAnimationEnabled()) {
 		    //TODO: figure out when to call this. We want to update the animation if it was from a filter change
@@ -26761,43 +26853,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 		    }
 		}
-                if (sizeBy.index >= 0) {
-                    let value = values[sizeBy.index];
-                    if (sizeBy.isString) {
-                        if (Utils.isDefined(sizeBy.stringMap[value])) {
-                            let v = parseInt(sizeBy.stringMap[value]);
-                            segmentWidth = dfltSegmentWidth + v;
-                            props.pointRadius = v;
-                        } else if (Utils.isDefined(sizeBy.stringMap["*"])) {
-                            let v = parseInt(sizeBy.stringMap["*"]);
-                            segmentWidth = dfltSegmentWidth + v;
-                            props.pointRadius = v;
-                        } else {
-                            segmentWidth = dfltSegmentWidth;
-                        }
-                    } else {
-                        let denom = sizeBy.range;
-                        let v = value + sizeByOffset;
-                        if (sizeByLog) v = sizeByFunc(v);
-                        let percent = (denom == 0 ? NaN : (v - sizeBy.minValue) / denom);
-                        if (sizeBy.radiusMax >= 0 && sizeBy.radiusMin >= 0) {
-                            props.pointRadius = Math.round(sizeBy.radiusMin + percent * (sizeBy.radiusMax - sizeBy.radiusMin));
-                        } else {
-                            props.pointRadius = 6 + parseInt(15 * percent);
-                        }
-                        if (sizeEndPoints) {
-                            endPointSize = dfltEndPointSize + parseInt(10 * percent);
-                        }
-                        if (sizeSegments) {
-                            segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
-			    segmentWidth=props.pointRadius;
-			    if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
-                        }
+
+                segmentWidth = dfltSegmentWidth;
+		let sizeByFunc = function(percent, size) {
+                    if (sizeEndPoints &&!isNaN(percent)) {
+			endPointSize = dfltEndPointSize + parseInt(10 * percent);
                     }
-                }
-
-
+                    if (sizeSegments) {
+			if(isNaN(percent)) {
+			    segmentWidth = dfltSegmentWidth + size;
+			} else {
+			    segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+			    segmentWidth=size;
+			    if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
+			}
+                    }
+		};
+                props.pointRadius = sizeBy.getSize(values, props.pointRadius,sizeByFunc);
 		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
+
 		let hasColorByValue = false;
 		let colorByValue;
 		let colorByColor;
@@ -26995,6 +27069,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(this.map.circles)
 		this.map.circles.redraw();
+
+	    if(this.getProperty("showSizeByLegend")) {
+		let hor = this.getProperty("sizeByLegendOrientation","horizontal") == "horizontal";
+		let legend = sizeBy.getLegend(5,fillColor);
+		if(legend !="") {
+		    if(hor) {
+			this.jq(ID_BOTTOM).append(sizeBy.getLegend(5,fillColor));
+		    } else {
+			this.jq(ID_SIDE).append(legend);
+			this.map.getMap().updateSize();
+		    }
+		}
+	    }
 	    this.jq(ID_BOTTOM).append(HU.div([ID,this.getDomId(ID_SHAPES)]));
             if (didColorBy) {
 		colorBy.displayColorTable();
@@ -27046,6 +27133,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		["sizeByMap=\"value1:size,...,valueN:size\"","Define sizes if sizeBy is text"],
 		['sizeByRadiusMin="2"',"Scale size by"],
 		['sizeByRadiusMax="20"',"Scale size by"],
+		'showSizeByLegend=true',
+		'sizeByLegendOrientation=vertical',
 		['bounds=north,west,south,east',"initial bounds"],
 		['mapCenter=lat,lon',"initial position"],
 		['zoomLevel=4',"initial zoom"],
@@ -29920,6 +30009,17 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		links: links
 	    };
 
+	    /*
+	    links = [];
+	    gGraphData.edges.forEach(e=>{
+		links.push({source:e.from,target:e.to});
+	    });
+
+	    graphData = {
+		nodes:gGraphData.nodes,
+		links: links
+	    }
+	    */
 	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
 	    const linkColor = this.getProperty("linkColor","#ccc");
 	    const drawCircle = this.getProperty("drawCircle",false);

@@ -279,6 +279,17 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 		links: links
 	    };
 
+	    /*
+	    links = [];
+	    gGraphData.edges.forEach(e=>{
+		links.push({source:e.from,target:e.to});
+	    });
+
+	    graphData = {
+		nodes:gGraphData.nodes,
+		links: links
+	    }
+	    */
 	    const nodeBackground = this.getProperty("nodeBackground",'rgba(255, 255, 255, 0.8)');
 	    const linkColor = this.getProperty("linkColor","#ccc");
 	    const drawCircle = this.getProperty("drawCircle",false);

@@ -1186,3 +1186,128 @@ function drawPieChart(display, dom,width,height,array,min,max,colorBy,attrs) {
 
 
 
+
+
+function SizeBy(display,records) {
+    this.display = display;
+    if(!records) records = display.filterData();
+    let pointData = this.display.getPointData();
+    let fields = pointData.getRecordFields();
+
+    $.extend(this, {
+        id: this.display.getProperty("sizeBy"),
+        minValue: 0,
+        maxValue: 0,
+        field: null,
+        index: -1,
+        isString: false,
+        stringMap: {},
+    });
+
+
+    let sizeByMap = this.display.getProperty("sizeByMap");
+    if (sizeByMap) {
+        let toks = sizeByMap.split(",");
+        for (let i = 0; i < toks.length; i++) {
+            let toks2 = toks[i].split(":");
+            if (toks2.length > 1) {
+                this.stringMap[toks2[0]] = toks2[1];
+            }
+        }
+    }
+
+    for (let i = 0; i < fields.length; i++) {
+        let field = fields[i];
+        if (field.getId() == this.id || ("#" + (i + 1)) == this.id) {
+            this.field = field;
+	    if (field.isString()) this.isString = true;
+        }
+    }
+
+    this.index = this.field != null ? this.field.getIndex() : -1;
+    if (!this.isString) {
+        for (let i = 0; i < records.length; i++) {
+            let pointRecord = records[i];
+            let tuple = pointRecord.getData();
+            let v = tuple[this.index];
+//	    console.log("V:" + v);
+	    if (!isNaN(v) && !(v === null)) {
+		if (i == 0 || v > this.maxValue) this.maxValue = v;
+		if (i == 0 || v < this.minValue) this.minValue = v;
+	    }
+        }
+    }
+
+    this.radiusMin = parseFloat(this.display.getProperty("sizeByRadiusMin", -1));
+    this.radiusMax = parseFloat(this.display.getProperty("sizeByRadiusMax", -1));
+    this.offset = 0;
+    this.sizeByLog = this.display.getProperty("sizeByLog", false);
+    if (this.sizeByLog) {
+	this.func = Math.log;
+        if (this.minValue < 1) {
+            this.sizeByOffset = 1 - this.minValue;
+        }
+        this.minValue = this.func(this.minValue + this.offset);
+        this.maxValue = this.func(this.maxValue + this.offset);
+    }
+    this.range = this.maxValue - this.minValue;
+}
+
+SizeBy.prototype = {
+    getSize: function(values, dflt, func) {
+        if (this.index <= 0) {
+	    return dflt;
+	}
+        let value = values[this.index];
+	let size = this.getSizeFromValue(value,func);
+//	console.log("G: " + value +  " s:" + size);
+	return size;
+    },
+
+    getSizeFromValue: function(value,func) {	
+        if (this.isString) {
+	    let size;
+            if (Utils.isDefined(this.stringMap[value])) {
+                let v = parseInt(this.stringMap[value]);
+                size = v;
+            } else if (Utils.isDefined(this.stringMap["*"])) {
+                let v = parseInt(this.stringMap["*"]);
+                size = v;
+            } 
+	    if(func) func(NaN,size);
+	    return size;
+        } else {
+            let denom = this.range;
+            let v = value + this.offset;
+            if (this.func) v = this.func(v);
+            let percent = (denom == 0 ? NaN : (v - this.minValue) / denom);
+	    let size;
+            if (this.radiusMax >= 0 && this.radiusMin >= 0) {
+                size =  Math.round(this.radiusMin + percent * (this.radiusMax - this.radiusMin));
+            } else {
+                size = 6 + parseInt(15 * percent);
+            }
+	    if(func) func(percent, size);
+	    return size;
+        }
+    },
+    getLegend: function(cnt,bg) {
+	let html = "";
+	if(this.index<0) return "";
+	let hor = this.display.getProperty("sizeByLegendOrientation","horizontal") == "horizontal";
+	for(let i=cnt;i>=0;i--) {
+	    let v = this.minValue+ i/cnt*this.range;
+	    let size  =this.getSizeFromValue(v);
+	    v = this.display.formatNumber(v);
+	    let dim = size*2+"px";
+	    html += HU.div([CLASS,"display-size-legend-item"], HU.center(HU.div([STYLE,HU.css("height", dim,"width",dim,
+										    "background-color",bg||"#bbb",
+										    "border-radius","50%"
+											     )])) + v);
+
+	    if(!hor) html+="<br>";
+	}
+	return HU.div(["class","display-size-legend"], html);
+    }
+
+}

@@ -5,6 +5,16 @@
 }
 
 
+.display-size-legend {
+    text-align:center;
+}
+
+.display-size-legend-item {
+    text-align:center;
+    display:inline-block;
+    margin-right:8px;
+}
+
 .display-contents {
 /*  text-align:left;*/
 /*  background:#fff;*/

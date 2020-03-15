@@ -10,6 +10,8 @@ let displayMapCurrentMarker = -1;
 let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
 
+
+
 addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map"
@@ -32,6 +34,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     let ID_LATFIELD = "latfield";
     let ID_LONFIELD = "lonfield";
     let ID_MAP = "map";
+    let ID_SIDE = "side";
     let ID_SHAPES = "shapes";
     let ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
     let ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
@@ -59,6 +62,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         mapEntryInfos: {},
         initDisplay: function() {
             SUPER.initDisplay.call(this);
+	    if(!HU.documentReady) {
+		console.log("not ready");
+		$( document ).ready(()=> {
+		    console.log("ready");
+		    if(this.map) {
+			console.log("update size");
+			setTimeout(()=>{
+				   this.map.getMap().updateSize();
+			},50);
+		    }
+		});
+	    }
             var _this = this;
             var html = "";
             var extraStyle = "min-height:200px;";
@@ -82,8 +97,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             } else if (height != "") {
                 extraStyle += " height:" + (height) + ";";
             }
-            html += HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
-			    extraStyle, ATTR_ID, this.getDomId(ID_MAP)]);
+	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
+			     extraStyle, ATTR_ID, this.getDomId(ID_MAP)]);
+
+	    let side = HU.div([ID,this.getDomId(ID_SIDE)],"");
+            html +=  HU.table(["width","100%"],HU.tr([],HU.td(["width","99%"],map) +HU.td([],side)));
+
             if (this.showLocationReadout) {
                 html += HU.open(TAG_DIV, [ATTR_CLASS,
 					     "display-map-latlon"
@@ -189,7 +208,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
                 this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
                 this.lastWidth = this.jq(ID_MAP).width();
-
             }
 
 	    if(!this.getProperty("markersVisibility", true)) {
@@ -327,6 +345,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     _this.addBaseMapLayer(url, false);
                 }
             }
+
+
 
         },
 
@@ -1902,43 +1922,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		})
 	    }
 
-	    //	    console.log("records:" + records.length +" color by range:" + colorBy.minValue + " " + colorBy.maxValue);
-            let sizeBy = {
-                id: this.getDisplayProp(source, "sizeBy", null),
-                minValue: 0,
-                maxValue: 0,
-                field: null,
-                index: -1,
-                isString: false,
-                stringMap: {},
-            };
-
-            let sizeByMap = this.getProperty("sizeByMap");
-            if (sizeByMap) {
-                let toks = sizeByMap.split(",");
-                for (let i = 0; i < toks.length; i++) {
-                    let toks2 = toks[i].split(":");
-                    if (toks2.length > 1) {
-                        sizeBy.stringMap[toks2[0]] = toks2[1];
-                    }
-                }
-            }
-
-
-
-
+	    let sizeBy = new SizeBy(this, records);
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
                 if (field.getId() == shapeBy.id || ("#" + (i + 1)) == shapeBy.id) {
                     shapeBy.field = field;
 		    if (field.isString()) shapeBy.isString = true;
                 }
-                if (field.getId() == sizeBy.id || ("#" + (i + 1)) == sizeBy.id) {
-                    sizeBy.field = field;
-		    if (field.isString()) sizeBy.isString = true;
-                }
             }
-
+            shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
 
 
             if (this.getProperty("showColorByMenu", false) && colorBy.field && !this.madeColorByMenu) {
@@ -1962,8 +1954,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 });
             }
 
-            sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
-            shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
+
 
 	    let dateMin = null;
 	    let dateMax = null;
@@ -1987,33 +1978,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             dateMax = date;
                     }
                 }
-                let tuple = pointRecord.getData();
-                if (!sizeBy.isString) {
-                    let v = tuple[sizeBy.index];
-		    if (!isNaN(v) && !(v === null)) {
-			if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
-			if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
-		    }
-		    
-                }
 	    }
 
 
-            sizeBy.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", -1));
-            sizeBy.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax", -1));
-            let sizeByOffset = 0;
-            let sizeByLog = this.getProperty("sizeByLog", false);
-            let sizeByFunc = Math.log;
-            if (sizeByLog) {
-                if (sizeBy.minValue < 1) {
-                    sizeByOffset = 1 - sizeBy.minValue;
-                }
-                sizeBy.minValue = sizeByFunc(sizeBy.minValue + sizeByOffset);
-                sizeBy.maxValue = sizeByFunc(sizeBy.maxValue + sizeByOffset);
-            }
-            sizeBy.range = sizeBy.maxValue - sizeBy.minValue;
-
-	    //	    console.log(JSON.stringify(sizeBy,null,2));
             if (dateMax) {
 		if (this.getAnimationEnabled()) {
 		    //TODO: figure out when to call this. We want to update the animation if it was from a filter change
@@ -2134,43 +2101,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 		    }
 		}
-                if (sizeBy.index >= 0) {
-                    let value = values[sizeBy.index];
-                    if (sizeBy.isString) {
-                        if (Utils.isDefined(sizeBy.stringMap[value])) {
-                            let v = parseInt(sizeBy.stringMap[value]);
-                            segmentWidth = dfltSegmentWidth + v;
-                            props.pointRadius = v;
-                        } else if (Utils.isDefined(sizeBy.stringMap["*"])) {
-                            let v = parseInt(sizeBy.stringMap["*"]);
-                            segmentWidth = dfltSegmentWidth + v;
-                            props.pointRadius = v;
-                        } else {
-                            segmentWidth = dfltSegmentWidth;
-                        }
-                    } else {
-                        let denom = sizeBy.range;
-                        let v = value + sizeByOffset;
-                        if (sizeByLog) v = sizeByFunc(v);
-                        let percent = (denom == 0 ? NaN : (v - sizeBy.minValue) / denom);
-                        if (sizeBy.radiusMax >= 0 && sizeBy.radiusMin >= 0) {
-                            props.pointRadius = Math.round(sizeBy.radiusMin + percent * (sizeBy.radiusMax - sizeBy.radiusMin));
-                        } else {
-                            props.pointRadius = 6 + parseInt(15 * percent);
-                        }
-                        if (sizeEndPoints) {
-                            endPointSize = dfltEndPointSize + parseInt(10 * percent);
-                        }
-                        if (sizeSegments) {
-                            segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
-			    segmentWidth=props.pointRadius;
-			    if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
-                        }
+
+                segmentWidth = dfltSegmentWidth;
+		let sizeByFunc = function(percent, size) {
+                    if (sizeEndPoints &&!isNaN(percent)) {
+			endPointSize = dfltEndPointSize + parseInt(10 * percent);
                     }
-                }
-
-
+                    if (sizeSegments) {
+			if(isNaN(percent)) {
+			    segmentWidth = dfltSegmentWidth + size;
+			} else {
+			    segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+			    segmentWidth=size;
+			    if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
+			}
+                    }
+		};
+                props.pointRadius = sizeBy.getSize(values, props.pointRadius,sizeByFunc);
 		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
+
 		let hasColorByValue = false;
 		let colorByValue;
 		let colorByColor;
@@ -2368,6 +2317,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(this.map.circles)
 		this.map.circles.redraw();
+
+	    if(this.getProperty("showSizeByLegend")) {
+		let hor = this.getProperty("sizeByLegendOrientation","horizontal") == "horizontal";
+		let legend = sizeBy.getLegend(5,fillColor);
+		if(legend !="") {
+		    if(hor) {
+			this.jq(ID_BOTTOM).append(sizeBy.getLegend(5,fillColor));
+		    } else {
+			this.jq(ID_SIDE).append(legend);
+			this.map.getMap().updateSize();
+		    }
+		}
+	    }
 	    this.jq(ID_BOTTOM).append(HU.div([ID,this.getDomId(ID_SHAPES)]));
             if (didColorBy) {
 		colorBy.displayColorTable();
@@ -2419,6 +2381,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		["sizeByMap=\"value1:size,...,valueN:size\"","Define sizes if sizeBy is text"],
 		['sizeByRadiusMin="2"',"Scale size by"],
 		['sizeByRadiusMax="20"',"Scale size by"],
+		'showSizeByLegend=true',
+		'sizeByLegendOrientation=vertical',
 		['bounds=north,west,south,east',"initial bounds"],
 		['mapCenter=lat,lon',"initial position"],
 		['zoomLevel=4',"initial zoom"],

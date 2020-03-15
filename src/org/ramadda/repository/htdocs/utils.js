@@ -2275,7 +2275,7 @@ var HU = HtmlUtils = {
         return "<img " + this.attrs(["src", path, "border", "0"]) + " " + this.attrs(attrs) + "/>";
     },
     table: function(attrs, inner) {
-	return HtmlUtis.tag("table",attrs,inner);
+	return HU.tag("table",attrs,inner);
     },
     tr: function(attrs, inner) {
         return this.tag("tr", attrs, inner);
@@ -3063,3 +3063,6 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 }
 
 
+$( document ).ready(function() {
+    HU.documentReady = true;
+});

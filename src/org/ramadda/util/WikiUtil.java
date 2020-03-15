@@ -1624,6 +1624,8 @@ public class WikiUtil {
                 continue;
             }
 
+
+
             if (tline.startsWith("-scroll")) {
                 buff.append("\n");
                 inScroll = false;
@@ -1632,6 +1634,12 @@ public class WikiUtil {
 
                 continue;
             }
+
+            if (tline.startsWith(":script")) {
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                HtmlUtils.importJS(buff, toks.get(1));
+		continue;
+	    }
 
             if (tline.startsWith("+panel")) {
                 buff.append("\n");
