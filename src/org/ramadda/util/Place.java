@@ -54,7 +54,7 @@ public class Place {
         new Resource(RESOURCE_ROOT + "/countries.txt", new int[] { 3, 0, -1,
 								   1, 2, }, ""),
         new Resource(RESOURCE_ROOT + "/states.txt", new int[] { 1, 0, 2, 3,
-								4, }, ""),
+								4, }, "",5),
 	new Resource(RESOURCE_ROOT + "/counties.txt", new int[] {
 		3, 1, 1, 10, 11, -1, 0
 	    }, "",4),

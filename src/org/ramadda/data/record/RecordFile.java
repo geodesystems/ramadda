@@ -20,6 +20,7 @@ package org.ramadda.data.record;
 import org.ramadda.data.record.filter.*;
 
 
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 
@@ -656,7 +657,7 @@ public abstract class RecordFile {
      * @throws Exception _more_
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
-        //        System.err.println("****  RecordFile reading:" + filename);
+	//	System.err.println("****  RecordFile reading:" + filename);
         String path = getNormalizedFilename();
         //A hack for snotel data
         if (path.startsWith("http://www.wcc.nrcs.usda.gov")) {
@@ -666,7 +667,8 @@ public abstract class RecordFile {
 
         try {
 	    //	    System.err.println("path:" + path);
-            return Utils.doMakeInputStream(path, buffered);
+	    //            return Utils.doMakeInputStream(path, buffered);
+	    return IO.doMakeInputStream(path, buffered);
         } catch (IOException ioe) {
             System.err.println("Error fetching data:" + path);
             throw ioe;
