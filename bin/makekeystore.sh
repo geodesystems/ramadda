@@ -44,18 +44,20 @@ CERTBOT=${BIN_DIR}/certbot-auto
 
 case $1 in
     ""|"renew")
-	${CERTBOT} --debug renew
+##	${CERTBOT} --dry-run --debug renew 
+	${CERTBOT} --debug renew 
 	;;
     "new")
+##	${CERTBOT}  --dry-run --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
 	${CERTBOT}  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
 	;;
 esac
 
 
 
-#Check for the -0001 dir. Note sure why certbot makes this
-LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0001"
-if [! -d "$LETSENCRYPT_DIR" ]; then
+#Check for the -0003 dir. Note sure why certbot makes this
+LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0003"
+if [ ! -d "$LETSENCRYPT_DIR" ]; then
     LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}"
 fi
 
@@ -67,7 +69,7 @@ echo "$PASSWORD
 $PASSWORD
 $PASSWORD
 " | keytool -importkeystore -srckeystore ${SRCKEYSTORE} -destkeystore ${KEYSTORE} -deststoretype pkcs12
-rm -f ${SRCKEYSTORE}
+#rm -f ${SRCKEYSTORE}
 
 cp ${KEYSTORE} ${RAMADDA_HOME}
 
