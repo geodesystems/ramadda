@@ -35,6 +35,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     let ID_LONFIELD = "lonfield";
     let ID_MAP = "map";
     let ID_SIDE = "side";
+    let ID_COLORTABLE_SIDE = "colortableside";
     let ID_SHAPES = "shapes";
     let ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
     let ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
@@ -100,7 +101,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
 			     extraStyle, ATTR_ID, this.getDomId(ID_MAP)]);
 
-	    let side = HU.div([ID,this.getDomId(ID_SIDE)],"");
+	    let side = HU.div([ID,this.getDomId(ID_SIDE)],HU.div([ID,this.getDomId(ID_COLORTABLE_SIDE)]));
             html +=  HU.table(["width","100%"],HU.tr([],HU.td(["width","99%"],map) +HU.td([],side)));
 
             if (this.showLocationReadout) {
@@ -1073,7 +1074,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    feature.dataIndex = j;
 		    feature.popupText = HU.div([],feature.pointCount +SPACE + labelSuffix);
 		}
-		this.displayColorTable(colors, ID_BOTTOM, minCnt,maxCnt,{});
+		if(this.getProperty("colorTableOrientation","horizontal") == "horizontal") {
+		    this.displayColorTable(colors, ID_COLORTABLE, minCnt,maxCnt,{});
+		} else {
+		    this.displayColorTable(colors, ID_COLORTABLE_SIDE, minCnt,maxCnt,{});
+		}
+
 	    } else {
 		if(prune) {
 		    for (var i = 0; i < features.length; i++) {
@@ -1432,6 +1438,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		SUPER.setDateRange.call(this, min,max);
 	    }
 	},
+	showColorTable: function(colorBy) {
+	    colorBy.displayColorTable(null,true,
+				      this.getProperty("colorTableOrientation","horizontal") == "horizontal"?ID_COLORTABLE:ID_COLORTABLE_SIDE);
+	    this.map.getMap().updateSize();
+	},
 	updateUIInner: function(args, pointData, records) {
 	    var t1= new Date();
 	    let debug = displayDebug.displayMapUpdateUI;
@@ -1667,7 +1678,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(groups.values[0]!="none") {
 		this.setMapLabel(labels[0]);
 	    }
-	    colorBy.displayColorTable(null,true);
+	    this.showColorTable(colorBy);
 	    if(this.getProperty("hm.showToggle",false)) {
 		let cbx = this.jq("heatmaptoggle");
 		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.getDomId("heatmapreload")])+"&nbsp;&nbsp;";
@@ -1826,8 +1837,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		$("#"+ $(this).attr(ID).replace('_hover','')).css('display','block');
 		$(this).css('display','none');
 	    });
-	    if(colorBy.hasField())
-		colorBy.displayColorTable(null,true);
+	    if(colorBy.hasField()) {
+		this.showColorTable(colorBy);
+	    }
 	},
         addPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;
@@ -2332,7 +2344,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.jq(ID_BOTTOM).append(HU.div([ID,this.getDomId(ID_SHAPES)]));
             if (didColorBy) {
-		colorBy.displayColorTable();
+		this.showColorTable(colorBy);
             }
 
 	    if(iconField&& iconMap) {

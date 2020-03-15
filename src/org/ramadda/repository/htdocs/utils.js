@@ -1337,7 +1337,6 @@ var Utils = {
         if (!ct) return;
 	var html = this.getColorTableDisplay(ct,min,max,args);
         $("#" + domId).html(html);
-
     },
     getColorTableDisplay: function(ct,  min, max, args) {
         if (!ct) return null;
@@ -1347,40 +1346,74 @@ var Utils = {
 	    ct = ct[ct.length-1];
         var options = {
             height: "15px",
-            showRange: true
+            showRange: true,
+	    showColorTableDots:false,
+	    decimals:-1,
+	    horizontal:true
         }
-        if (args) $.extend(options, args);
+	if (args) $.extend(options, args);
         var stringValues = options.stringValues;
         if (stringValues && stringValues.length)
             options.showRange = false;
         min = parseFloat(min);
         max = parseFloat(max);
-	let divargs = ["class", "display-colortable"];
+	let divargs = [CLASS, " display-colortable " +(options.showColorTableDots?"display-colortable-dots":"")];
 	if(!isNaN(options.width)) {
-	    divargs.push("style");
+	    divargs.push(STYLE);
 	    divargs.push("width:" + options.width+"px;");
 	}
 	
-        var html = HtmlUtils.openTag("div", divargs) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
-        if (options.showRange)
-            html += "<td width=1%>" + this.formatNumberComma(min) + "&nbsp;</td>";
-        var step = (max - min) / ct.length;
-        for (var i = 0; i < ct.length; i++) {
-            var extra = "";
-            var attrs = ["style", "background:" + ct[i] + ";" + "width:100%;height:" + options.height + ";min-width:1px;"];
-	    let val = min + step * i;
-            if (options.showRange) {
-                attrs.push("title");
-                attrs.push(this.formatNumberComma(val));
-            }
-            html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
-        }
-        if (options.showRange) {
-            html += "<td width=1%>&nbsp;" + this.formatNumberComma(max) + "</td>";
-        }
-        html += "</tr></table>";
-        html += HtmlUtils.closeTag("div");
+        var html = HtmlUtils.openTag("div", divargs);
+	if(!options.showColorTableDots) html+= "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
+	let formatter = n=>{
+	    if(options.decimals>=0)
+		return number_format(n,options.decimals);
+	    return this.formatNumberComma(n);
+	};
 
+        if (options.showRange) {
+	    if(!options.showColorTableDots) {
+		html += "<td width=1%>" + formatter(min) + "&nbsp;</td>";
+	    }   else {
+	    }
+	}
+        var step = (max - min) / ct.length;
+	let nums = [];
+	if(!options.showColorTableDots || options.horizontal) {
+            for (var i = 0; i < ct.length; i++) nums.push(i);
+	} else {
+            for (var i = ct.length-1; i>=0;i--) nums.push(i);
+	}
+        nums.forEach(i=>{
+            var extra = "";
+	    let val = min + step * i;
+	    var attrs = [];
+	    if(options.showColorTableDots) {
+		let val2 = min + step * (i+1);
+		let label = formatter(val)+ "-" + formatter(val2);
+		let delim = SPACE;
+		if(!options.horizontal)
+		    delim="<br>";
+		html += HtmlUtils.span([CLASS,"display-colortable-dot-item",TITLE,label], HtmlUtils.div([ "data-value",val,"class", "display-colortable-dot", "style", HU.css("background", ct[i])]) + delim + label);
+		if(!options.horizontal)
+		    html +="<br>";
+	    } else {
+		if (options.showRange) {
+                    attrs.push("title");
+                    attrs.push(formatter(val));
+		}
+		attrs.push(STYLE);
+		attrs.push(HU.css("background", ct[i], "width","100%","height", options.height,"min-width","1px"));
+		html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
+	    }
+        });
+	if(!options.showColorTableDots) {
+            if (options.showRange) {
+		html += "<td width=1%>&nbsp;" + this.formatNumberComma(max) + "</td>";
+            }
+            html += "</tr></table>";
+	}
+        html += HtmlUtils.closeTag("div");
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
         if (stringValues && stringValues.length) {
             var tdw = 100 / ct.length + "%";

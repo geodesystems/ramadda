@@ -828,6 +828,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this[func].apply(this, [source, data]);
         },
         displayColorTable: function(ct, domId, min, max, args) {
+	    if(!args) args = {};
+	    args.showColorTableDots = this.getProperty("showColorTableDots");
+	    args.decimals = this.getProperty("colorTableDotsDecimals",-1);
+	    args.horizontal= this.getProperty("colorTableOrientation","horizontal") == "horizontal";
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
 	    if(!args || !args.colorByInfo) return;
 	    this.jq(domId).find(".display-colortable-slice").css("cursor","pointer");
@@ -4645,6 +4649,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["colorByMin=\"value\"","Min scale value"],
 		["colorByMax=\"value\"","Max scale value"],
 		['showColorTable=false',"Display the color table"],
+		'showColorTableDots=true',
+		'colorTableDotsDecimals=0',
+		'colorTableOrientation=vertical',
 		['colorByAllRecords=true',"use all records for color range"],
 		'convertColorIntensity=true',
 		'intensitySourceMin=0',

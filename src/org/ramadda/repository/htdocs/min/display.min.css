@@ -1361,6 +1361,23 @@ color: #000;
    padding-left:0px;
 }
 
+.display-colortable-dots {
+    text-align:center;
+}
+
+.display-colortable-dot-item {
+    margin-right:8px;
+    display: inline-block;
+}
+.display-colortable-dot {
+    height: 16px;
+    width: 16px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    border:1px solid #ccc;
+}
+
 .display-chart-legend {
     font-size: 10pt;
 }

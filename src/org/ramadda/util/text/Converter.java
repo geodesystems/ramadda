@@ -1015,7 +1015,7 @@ public abstract class Converter extends Processor {
                 } else if (id.equals("year")) {
                     type   = "date";
                     format = "yyyy";
-                } else if (id.equals("url")) {
+                } else if (id.equals("url") || id.endsWith("_url")) {
                     type = "url";
 
                 } else if (id.equals("state") || id.equals("country")
