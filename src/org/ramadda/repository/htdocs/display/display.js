@@ -832,6 +832,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.showColorTableDots = this.getProperty("showColorTableDots");
 	    args.decimals = this.getProperty("colorTableDotsDecimals",-1);
 	    args.horizontal= this.getProperty("colorTableOrientation","horizontal") == "horizontal";
+	    args.stride = this.getProperty("showColorTableStride",1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
 	    if(!args || !args.colorByInfo) return;
 	    this.jq(domId).find(".display-colortable-slice").css("cursor","pointer");
@@ -4657,6 +4658,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		'showColorTableDots=true',
 		'colorTableDotsDecimals=0',
 		'colorTableOrientation=vertical',
+		['showColorTableStride=1','How many colors should be shown'],
 		['colorByAllRecords=true',"use all records for color range"],
 		'convertColorIntensity=true',
 		'intensitySourceMin=0',

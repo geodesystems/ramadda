@@ -493,6 +493,8 @@ public class WikiUtil {
         wikify(mainBuffer, text, handler, new String[] {});
     }
 
+
+
     /**
      * _more_
      *
@@ -1835,7 +1837,23 @@ public class WikiUtil {
                 continue;
             }
 
-
+            if (tline.equals("+absolute")) {
+		Hashtable props = lineToProps(tline);
+		String style = (String) props.get("style");
+		if(style==null) style="";
+		style+="position:absolute;";
+		for(String side: new String[]{"top","left","bottom","right"}) {
+		    String sv = (String) props.get(side);
+		    if(sv!=null)
+			style+=side+":" + sv+";";
+		}
+		HtmlUtils.open(buff, "div",HtmlUtils.style(style));
+                continue;
+            }
+            if (tline.equals("-absolute")) {
+                buff.append("</div>\n");
+                continue;
+            }
 
             if (tline.equals("+relative")) {
                 buff.append("<div style=\"position:relative;\">\n");

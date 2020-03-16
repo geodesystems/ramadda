@@ -1271,7 +1271,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    chartOptions.vAxis.maxValue = this.getProperty("vAxisMaxValue");
 
 
-	    chartOptions.vAxis.logScale = this.getProperty("vAxisLogScale");
+	    chartOptions.vAxis.logScale = this.getProperty("vAxisLogScale",this.getProperty("logScale"));
 	    chartOptions.hAxis.logScale = this.getProperty("hAxisLogScale");
 
             chartOptions.hAxis.titleTextStyle = {};

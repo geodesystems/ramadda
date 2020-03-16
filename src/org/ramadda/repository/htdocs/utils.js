@@ -1343,7 +1343,8 @@ var Utils = {
             showRange: true,
 	    showColorTableDots:false,
 	    decimals:-1,
-	    horizontal:true
+	    horizontal:true,
+	    stride:1
         }
 	if (args) $.extend(options, args);
         var stringValues = options.stringValues;
@@ -1373,10 +1374,11 @@ var Utils = {
 	}
         var step = (max - min) / ct.length;
 	let nums = [];
+	
 	if(!options.showColorTableDots || options.horizontal) {
-            for (var i = 0; i < ct.length; i++) nums.push(i);
+            for (var i = 0; i < ct.length; i+=options.stride) nums.push(i);
 	} else {
-            for (var i = ct.length-1; i>=0;i--) nums.push(i);
+            for (var i = ct.length-1; i>=0;i=i-options.stride) nums.push(i);
 	}
         nums.forEach(i=>{
             var extra = "";
