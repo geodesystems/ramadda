@@ -1016,12 +1016,14 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
 
             var cellHeight = this.getProperty("cellHeight", null);
             var extraTdStyle = "";
-            if (this.getProperty("showBorder", "false") == "true") {
-                extraTdStyle = "border-bottom:1px #666 solid;";
+            if (this.getProperty("showBorder")) {
+                extraTdStyle = HU.css("border-bottom","1px #666 solid");
             }
+
             var extraCellStyle = "";
             if (cellHeight)
-                extraCellStyle += "height:" + cellHeight + "px; max-height:" + cellHeight + "px; min-height:" + cellHeight + "px;";
+                extraCellStyle += HU.css("height", cellHeight + "px","max-height", cellHeight + "px","min-height", cellHeight + "px");
+
             var allFields = this.dataCollection.getList()[0].getRecordFields();
             var fields = this.getSelectedFields([]);
 
@@ -1103,7 +1105,6 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
 
 
 
-
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
                 var row = this.getDataValues(dataList[rowIdx]);
                 var index = row[0];
@@ -1114,7 +1115,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                 var rowLabel = index;
                 html += "<tr valign='center'>\n";
                 if (showIndex) {
-                    html += HU.td([CLASS, "display-heatmap-heading-side", STYLE, extraCellStyle], rowLabel);
+                    html += HU.td([CLASS, "display-heatmap-heading-side", STYLE, extraCellStyle + extraTdStyle], rowLabel);
                 }
                 var colCnt = 0;
                 for (var colIdx = 0; colIdx < fields.length; colIdx++) {
@@ -1150,8 +1151,8 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                     } else {
                         number = Utils.formatNumber(value)
                     }
-                    if (!showValue) number = "";
-                    html += HU.td(["valign", "center", "align", "right", STYLE, style + extraCellStyle + extraTdStyle, CLASS, "display-heatmap-cell"], HU.div([TITLE, title, STYLE, extraCellStyle + "color:" + textColor], number));
+                    if (!showValue) number = ""; 
+                   html += HU.td(["valign", "center", "align", "right", STYLE, style + extraCellStyle + extraTdStyle, CLASS, "display-heatmap-cell"], HU.div([TITLE, title, STYLE, extraCellStyle + "color:" + textColor], number));
                     colCnt++;
                 }
                 html += "</tr>";

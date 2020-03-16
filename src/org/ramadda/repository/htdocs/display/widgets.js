@@ -3,7 +3,7 @@
 */
 
 
-
+var testcnt = 0;
 
 function AreaWidget(display) {
     var ID_CONTAINS = "contains";
@@ -798,16 +798,30 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.colorByLog10 = this.getProperty("Log10", false);
     this.colorByLog2 = this.getProperty("Log2", false);
     if(this.colorByLog) {
-	console.log("log");
 	this.colorByFunc = Math.log;
     }   else if(this.colorByLog10) {
 	this.colorByFunc = Math.log10;
-	console.log("10");
     }   else if(this.colorByLog2) {
-	console.log("2");
 	this.colorByFunc = Math.log2;
     }
 
+/*
+    if(testcnt==1) {
+	this.colorByFunc = Math.log;
+	console.log("log");
+    } else if(testcnt==2) {
+	this.colorByFunc = Math.log10;
+	console.log("log10");
+    } else if(testcnt==3) {
+	this.colorByFunc = Math.log2;
+	console.log("log2");
+    } else {
+	this.colorByFunc = null;
+	console.log("none");
+    }
+    testcnt++;
+    if(testcnt>3) testcnt = 0;
+*/
 
     this.setRange(this.getProperty("Min", this.minValue),
 		  this.getProperty("Max", this.maxValue), true);
@@ -879,9 +893,13 @@ ColorByInfo.prototype = {
 	if (this.colorByFunc) {
 	    if (minValue < 0) {
 		this.colorByOffset =  -minValue;
+	    } else if(minValue == 0) {
+		this.colorByOffset =  1;
 	    }
-	    minValue = this.colorByFunc(minValue + this.colorByOffset);
-	    maxValue = this.colorByFunc(maxValue + this.colorByOffset);
+//	    if(minValue>0)
+		minValue = this.colorByFunc(minValue + this.colorByOffset);
+//	    if(maxValue>0)
+		maxValue = this.colorByFunc(maxValue + this.colorByOffset);
 	}
 	this.minValue = minValue;
 	this.maxValue = maxValue;
@@ -889,6 +907,7 @@ ColorByInfo.prototype = {
 	if(!this.origRange) {
 	    this.origRange = [minValue, maxValue];
 	}
+//	console.log("min/max:" + this.minValue +" " + this.maxValue);
     },
     getValuePercent: function(v) {
 	let perc =   (v - this.minValue) / this.range;
@@ -961,12 +980,14 @@ ColorByInfo.prototype = {
                 color = this.colorByMap[v];
 		if(color) return color;
             }
+	    let tmp = v;
             v += this.colorByOffset;
-            if (this.colorByFunc) {
+            if (this.colorByFunc && v>0) {
                 v = this.colorByFunc(v);
             }
-
             percent = this.range?(v - this.minValue) / this.range:0
+//	    if(tmp>3 && tmp<6)
+//		console.log("ov:" + tmp  +" v:" + v + " perc:" + percent);
         }
 
 	var index=0;

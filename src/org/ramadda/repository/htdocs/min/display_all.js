@@ -3,7 +3,7 @@
 */
 
 
-
+var testcnt = 0;
 
 function AreaWidget(display) {
     var ID_CONTAINS = "contains";
@@ -798,16 +798,30 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.colorByLog10 = this.getProperty("Log10", false);
     this.colorByLog2 = this.getProperty("Log2", false);
     if(this.colorByLog) {
-	console.log("log");
 	this.colorByFunc = Math.log;
     }   else if(this.colorByLog10) {
 	this.colorByFunc = Math.log10;
-	console.log("10");
     }   else if(this.colorByLog2) {
-	console.log("2");
 	this.colorByFunc = Math.log2;
     }
 
+/*
+    if(testcnt==1) {
+	this.colorByFunc = Math.log;
+	console.log("log");
+    } else if(testcnt==2) {
+	this.colorByFunc = Math.log10;
+	console.log("log10");
+    } else if(testcnt==3) {
+	this.colorByFunc = Math.log2;
+	console.log("log2");
+    } else {
+	this.colorByFunc = null;
+	console.log("none");
+    }
+    testcnt++;
+    if(testcnt>3) testcnt = 0;
+*/
 
     this.setRange(this.getProperty("Min", this.minValue),
 		  this.getProperty("Max", this.maxValue), true);
@@ -879,9 +893,13 @@ ColorByInfo.prototype = {
 	if (this.colorByFunc) {
 	    if (minValue < 0) {
 		this.colorByOffset =  -minValue;
+	    } else if(minValue == 0) {
+		this.colorByOffset =  1;
 	    }
-	    minValue = this.colorByFunc(minValue + this.colorByOffset);
-	    maxValue = this.colorByFunc(maxValue + this.colorByOffset);
+//	    if(minValue>0)
+		minValue = this.colorByFunc(minValue + this.colorByOffset);
+//	    if(maxValue>0)
+		maxValue = this.colorByFunc(maxValue + this.colorByOffset);
 	}
 	this.minValue = minValue;
 	this.maxValue = maxValue;
@@ -889,6 +907,7 @@ ColorByInfo.prototype = {
 	if(!this.origRange) {
 	    this.origRange = [minValue, maxValue];
 	}
+//	console.log("min/max:" + this.minValue +" " + this.maxValue);
     },
     getValuePercent: function(v) {
 	let perc =   (v - this.minValue) / this.range;
@@ -961,12 +980,14 @@ ColorByInfo.prototype = {
                 color = this.colorByMap[v];
 		if(color) return color;
             }
+	    let tmp = v;
             v += this.colorByOffset;
-            if (this.colorByFunc) {
+            if (this.colorByFunc && v>0) {
                 v = this.colorByFunc(v);
             }
-
             percent = this.range?(v - this.minValue) / this.range:0
+//	    if(tmp>3 && tmp<6)
+//		console.log("ov:" + tmp  +" v:" + v + " perc:" + percent);
         }
 
 	var index=0;
@@ -5105,6 +5126,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
 	    let header2="";
+//	    header2 +=HU.div([ID,this.getDomId("test")],"test");
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
@@ -5277,6 +5299,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    header2+=HU.div([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,"display-header-span"],"");
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
+	    this.jq("test").button().click(()=>{
+		this.haveCalledUpdateUI = false;
+		this.updateUI();
+	    });
 	    var theDisplay = this;
 	    this.createRequestProperties();
 
@@ -24829,11 +24855,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         initDisplay: function() {
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
-		console.log("not ready");
 		$( document ).ready(()=> {
-		    console.log("ready");
 		    if(this.map) {
-			console.log("update size");
 			setTimeout(()=>{
 				   this.map.getMap().updateSize();
 			},50);
@@ -25839,10 +25862,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    feature.dataIndex = j;
 		    feature.popupText = HU.div([],feature.pointCount +SPACE + labelSuffix);
 		}
-		if(this.getProperty("colorTableOrientation","horizontal") == "horizontal") {
 		    this.displayColorTable(colors, ID_COLORTABLE, minCnt,maxCnt,{});
+		if(this.getProperty("colorTableOrientation","horizontal") == "horizontal") {
 		} else {
-		    this.displayColorTable(colors, ID_COLORTABLE_SIDE, minCnt,maxCnt,{});
+//		    this.displayColorTable(colors, ID_COLORTABLE_SIDE, minCnt,maxCnt,{});
 		}
 
 	    } else {
@@ -27289,7 +27312,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
             this.map.labelLayer.addFeatures(features);
 	    this.labelFeatures = features;
-	    $("#" + this.map.labelLayer.id).css("z-index",1000);
+	    $("#" + this.map.labelLayer.id).css("z-index",900);
         },
 
 
@@ -30771,12 +30794,14 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
 
             var cellHeight = this.getProperty("cellHeight", null);
             var extraTdStyle = "";
-            if (this.getProperty("showBorder", "false") == "true") {
-                extraTdStyle = "border-bottom:1px #666 solid;";
+            if (this.getProperty("showBorder")) {
+                extraTdStyle = HU.css("border-bottom","1px #666 solid");
             }
+
             var extraCellStyle = "";
             if (cellHeight)
-                extraCellStyle += "height:" + cellHeight + "px; max-height:" + cellHeight + "px; min-height:" + cellHeight + "px;";
+                extraCellStyle += HU.css("height", cellHeight + "px","max-height", cellHeight + "px","min-height", cellHeight + "px");
+
             var allFields = this.dataCollection.getList()[0].getRecordFields();
             var fields = this.getSelectedFields([]);
 
@@ -30858,7 +30883,6 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
 
 
 
-
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
                 var row = this.getDataValues(dataList[rowIdx]);
                 var index = row[0];
@@ -30869,7 +30893,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                 var rowLabel = index;
                 html += "<tr valign='center'>\n";
                 if (showIndex) {
-                    html += HU.td([CLASS, "display-heatmap-heading-side", STYLE, extraCellStyle], rowLabel);
+                    html += HU.td([CLASS, "display-heatmap-heading-side", STYLE, extraCellStyle + extraTdStyle], rowLabel);
                 }
                 var colCnt = 0;
                 for (var colIdx = 0; colIdx < fields.length; colIdx++) {
@@ -30905,8 +30929,8 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                     } else {
                         number = Utils.formatNumber(value)
                     }
-                    if (!showValue) number = "";
-                    html += HU.td(["valign", "center", "align", "right", STYLE, style + extraCellStyle + extraTdStyle, CLASS, "display-heatmap-cell"], HU.div([TITLE, title, STYLE, extraCellStyle + "color:" + textColor], number));
+                    if (!showValue) number = ""; 
+                   html += HU.td(["valign", "center", "align", "right", STYLE, style + extraCellStyle + extraTdStyle, CLASS, "display-heatmap-cell"], HU.div([TITLE, title, STYLE, extraCellStyle + "color:" + textColor], number));
                     colCnt++;
                 }
                 html += "</tr>";

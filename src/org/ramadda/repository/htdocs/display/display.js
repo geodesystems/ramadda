@@ -3792,6 +3792,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let fields= pointData.getRecordFields();
             let records = pointData.getRecords();
 	    let header2="";
+//	    header2 +=HU.div([ID,this.getDomId("test")],"test");
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
@@ -3964,6 +3965,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    header2+=HU.div([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,"display-header-span"],"");
 	    this.jq(ID_HEADER2).html(header2);
 	    this.initHeader2();
+	    this.jq("test").button().click(()=>{
+		this.haveCalledUpdateUI = false;
+		this.updateUI();
+	    });
 	    var theDisplay = this;
 	    this.createRequestProperties();
 

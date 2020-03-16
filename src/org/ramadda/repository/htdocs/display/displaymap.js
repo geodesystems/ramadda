@@ -64,11 +64,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         initDisplay: function() {
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
-		console.log("not ready");
 		$( document ).ready(()=> {
-		    console.log("ready");
 		    if(this.map) {
-			console.log("update size");
 			setTimeout(()=>{
 				   this.map.getMap().updateSize();
 			},50);
@@ -1074,10 +1071,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    feature.dataIndex = j;
 		    feature.popupText = HU.div([],feature.pointCount +SPACE + labelSuffix);
 		}
-		if(this.getProperty("colorTableOrientation","horizontal") == "horizontal") {
 		    this.displayColorTable(colors, ID_COLORTABLE, minCnt,maxCnt,{});
+		if(this.getProperty("colorTableOrientation","horizontal") == "horizontal") {
 		} else {
-		    this.displayColorTable(colors, ID_COLORTABLE_SIDE, minCnt,maxCnt,{});
+//		    this.displayColorTable(colors, ID_COLORTABLE_SIDE, minCnt,maxCnt,{});
 		}
 
 	    } else {
@@ -2524,7 +2521,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
             this.map.labelLayer.addFeatures(features);
 	    this.labelFeatures = features;
-	    $("#" + this.map.labelLayer.id).css("z-index",1000);
+	    $("#" + this.map.labelLayer.id).css("z-index",900);
         },
 
 

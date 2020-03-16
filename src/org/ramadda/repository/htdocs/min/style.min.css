@@ -465,8 +465,14 @@ a.ramadda-menubar-button:hover {
     position:relative;
 }
 
+.olPopup, .olFramedCloudPopupContent {
+    z-index:1000 !important;
+}
+
+
 .olPopupContent {
     padding:0px !important;
+    z-index:1000 !important;
 }
 
 .ramadda-map {
