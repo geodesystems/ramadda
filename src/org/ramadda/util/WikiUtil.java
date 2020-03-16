@@ -1837,15 +1837,17 @@ public class WikiUtil {
                 continue;
             }
 
-            if (tline.equals("+absolute")) {
+            if (tline.startsWith("+absolute")) {
 		Hashtable props = lineToProps(tline);
 		String style = (String) props.get("style");
 		if(style==null) style="";
 		style+="position:absolute;";
 		for(String side: new String[]{"top","left","bottom","right"}) {
 		    String sv = (String) props.get(side);
-		    if(sv!=null)
-			style+=side+":" + sv+";";
+		    if(sv!=null) {
+			if(!sv.endsWith(";")) sv+=";";
+			style+=side+":" + sv;
+		    }
 		}
 		HtmlUtils.open(buff, "div",HtmlUtils.style(style));
                 continue;
