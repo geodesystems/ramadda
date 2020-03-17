@@ -1119,6 +1119,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.display.getProperty(key, dflt);
 	},
 	prepareToFilter: function() {
+	    if(!this.field) return;
 	    //	    if (prefix) pattern = prefix + value;
 	    //	    if (suffix) pattern = value + suffix;
 	    var value=null;
@@ -1327,7 +1328,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    let seen = {};
 		    let dflt = filterField.getEnumeratedValues();
-
 		    if(dflt) {
 			for(let v in dflt) {
 			    seen[v] = true;
@@ -1337,9 +1337,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    let enumValues = [];
 		    let imageField=this.display.getFieldOfType(null, "image");
 		    let valuesAreNumbers = true;
-		    records.map(record=>{
+		    records.map((record,idx)=>{
 			let value = this.display.getDataValues(record)[filterField.getIndex()];
-			
 			if(!seen[value]) {
 			    seen[value]  = true;
 			    let obj = {};
@@ -1357,14 +1356,16 @@ function RecordFilter(display,filterFieldId, properties) {
 			    enumValues.push(obj);
 			}
 		    });
-		    enumValues.sort((a,b)  =>{
-			a= a.value;
-			b = b.value;
-			if(valuesAreNumbers) {
-			    return +a - +b;
-			}
-			return (""+a[1]).localeCompare(""+b[1]);
-		    });
+		    if(this.getProperty(filterField.getId() +".filterSort",true)) {
+			enumValues.sort((a,b)  =>{
+			    a= a.value;
+			    b = b.value;
+			    if(valuesAreNumbers) {
+				return +a - +b;
+			    }
+			    return (""+a[1]).localeCompare(""+b[1]);
+			});
+		    }
 		    for(let j=0;j<enumValues.length;j++) {
 			let v = enumValues[j];
 			enums.push(v);
@@ -2521,6 +2522,7 @@ function CsvUtil() {
 	process: function(display, pointData, cmds) {
 	    this.display = display;
 	    let commands = DataUtils.parseCommands(cmds);
+
 	    commands.map(cmd=>{
 		if(this[cmd.command]) {
 		    let orig = pointData;
@@ -2744,8 +2746,10 @@ function CsvUtil() {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
 	    let op = args["operator"] || "count";
+
 	    let keyFields =  this.display.getFieldsByIds(fields, (args["keyFields"]||"").replace(/_comma_/g,","));
 	    if(keyFields.length==0) throw new Error("No key fields processing mergeRows:" + args["keyFields"]);
+	    let altFields =  this.display.getFieldsByIds(fields, (args["altFields"]||"").replace(/_comma_/g,","));
 
 	    let newFields = [];
 	    let seen = {};
@@ -2786,11 +2790,18 @@ function CsvUtil() {
 	    let keys = [];
 	    let collection ={
 	    };
+
 	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
 		var record = records[rowIdx];
 		let key = "";
 		keyFields.forEach(f=>{
-		    key +=record.getValue(f.getIndex())+"-";
+		    let v = record.getValue(f.getIndex());
+		    if(v=="" && altFields.length>0) {
+			altFields.forEach(f2=>{
+			    v+=record.getValue(f1.getIndex()) +"-";
+			});
+		    }
+		    key +=v+"-";
 		});
 		let obj = collection[key];
 		if(!obj) {
@@ -2820,10 +2831,24 @@ function CsvUtil() {
 		obj.records.push(record);
 	    }
 	    let newRecords = [];
+	    let cnt = 0;
 	    keys.forEach((key,idx)=>{
 		let obj = collection[key];
 		let data =[];
 		let seen = {};
+		let date = obj.records[0].getDate();
+		let bounds = RecordUtil.getBounds(obj.records);
+		let lat =  bounds.south+(bounds.north-bounds.south)/2;
+		let lon =  bounds.west+(bounds.east-bounds.west)/2;
+		if(key.indexOf("US")>=0) {
+		    cnt++;
+		    if(cnt==1) {
+//			console.log(obj.records.length +" " +bounds.west +" " + bounds.east +" " + lat  +" " +lon);
+			obj.records.forEach(r=>{
+//			    console.log(r.getValue(0) + " " + r.getLatitude() +" " + r.getLongitude())
+			});
+		    }
+		}
 		keyFields.forEach(f=>{
 		    let v = obj.records[0].getValue(f.getIndex());
 		    data.push(v);
@@ -2847,9 +2872,10 @@ function CsvUtil() {
 		if(op == "count") {
 		    data.push(obj.count);
 		}
-		let newRecord = new  PointRecord(newFields,NaN, NaN, NaN, null, data);
+		let newRecord = new  PointRecord(newFields,lat,lon, NaN, date, data);
 		newRecords.push(newRecord);
 	    });
+
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
 	unfurl: function(pointData, args) {
@@ -2989,9 +3015,19 @@ var DataUtils = {
 		if(rest.endsWith(")")) rest = rest.substring(0,rest.length-1);
 		let toks = [];
 		let inQuote = false;
+		let escape = false;
 		let tok = "";
 		for(let i=0;i<rest.length;i++) {
 		    let c = rest[i];
+		    if(c=="\\") {
+			escape=true;
+			continue;
+		    }
+		    if(escape) {
+			tok += c;
+			escape=false;
+			continue;
+		    }
 		    if(c=="\'") {
 			if(!inQuote) {
 			    inQuote = true;

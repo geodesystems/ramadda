@@ -372,8 +372,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     },
 
     trigger: function(e) {
-        var xy = this.getMap().getLonLatFromViewPortPx(e.xy);
-        var lonlat = this.transformProjPoint(xy)
+        var xy = this.theMap.getMap().getLonLatFromViewPortPx(e.xy);
+        var lonlat = this.theMap.transformProjPoint(xy)
         if (this.listeners != null) {
             for (var i = 0; i < this.listeners.length; i++) {
                 this.listeners[i](lonlat);

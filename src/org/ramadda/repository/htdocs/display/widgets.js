@@ -3,6 +3,19 @@
 */
 
 
+/*
+let func = Math.log10;
+var min = func(16000);
+var max = func(81000);
+
+console.log("range:" + min +" " + max);
+[1,16000,32000,48000,64000,81000].forEach(v=>{
+    let fv = func(v);
+    let percent =  (fv - min) / (max-min);
+    console.log("v:" + v + " fv:" + fv +" p:" + percent);
+});
+*/
+
 var testcnt = 0;
 
 function AreaWidget(display) {
@@ -949,7 +962,7 @@ ColorByInfo.prototype = {
 	    return this.display.getUnhighlightColor();
 	}
 
-	var percent = 0;
+	var percent = 0.5;
         if (this.showPercent) {
             var total = 0;
             var data = pointRecord.getData();
@@ -964,7 +977,7 @@ ColorByInfo.prototype = {
                 }
             }
             if (total != 0) {
-                percent = percent = value / total * 100;
+                percent =  value / total * 100;
                 percent = (percent - this.minValue) / (this.maxValue - this.minValue);
             }
         } else {
@@ -985,7 +998,7 @@ ColorByInfo.prototype = {
             if (this.colorByFunc && v>0) {
                 v = this.colorByFunc(v);
             }
-            percent = this.range?(v - this.minValue) / this.range:0
+            percent = this.range?(v - this.minValue) / this.range:0.5;
 //	    if(tmp>3 && tmp<6)
 //		console.log("ov:" + tmp  +" v:" + v + " perc:" + percent);
         }
@@ -1246,32 +1259,41 @@ function SizeBy(display,records) {
     }
 
     this.index = this.field != null ? this.field.getIndex() : -1;
-    if (!this.isString) {
-        for (let i = 0; i < records.length; i++) {
-            let pointRecord = records[i];
-            let tuple = pointRecord.getData();
-            let v = tuple[this.index];
-//	    console.log("V:" + v);
-	    if (!isNaN(v) && !(v === null)) {
-		if (i == 0 || v > this.maxValue) this.maxValue = v;
-		if (i == 0 || v < this.minValue) this.minValue = v;
-	    }
-        }
+    if (!this.isString && this.field) {
+	let col = this.display.getColumnValues(records, this.field);
+	this.minValue = col.min;
+	this.maxValue =  col.max;
+	if(Utils.isDefined(this.display.getProperty("sizeByMin"))) {
+	    this.minValue = +this.display.getProperty("sizeByMin",0)
+	}
+	if(Utils.isDefined(this.display.getProperty("sizeByMax"))) {
+	    this.maxValue = +this.display.getProperty("sizeByMax",0)
+	}
     }
 
+    if(this.display.getProperty("sizeBySteps")) {
+	this.steps = [];
+	this.display.getProperty("sizeBySteps").split(",").forEach(tuple=>{
+	    let [value,size] = tuple.split(":");
+	    this.steps.push({value:+value,size:+size});
+	});
+    }
     this.radiusMin = parseFloat(this.display.getProperty("sizeByRadiusMin", -1));
     this.radiusMax = parseFloat(this.display.getProperty("sizeByRadiusMax", -1));
     this.offset = 0;
     this.sizeByLog = this.display.getProperty("sizeByLog", false);
+    this.origMinValue =   this.minValue;
+    this.origMaxValue =   this.maxValue; 
+
+    this.maxValue = Math.max(this.minValue,this.maxValue);
     if (this.sizeByLog) {
 	this.func = Math.log;
         if (this.minValue < 1) {
-            this.sizeByOffset = 1 - this.minValue;
+            this.offset = 1 - this.minValue;
         }
         this.minValue = this.func(this.minValue + this.offset);
         this.maxValue = this.func(this.maxValue + this.offset);
     }
-    this.range = this.maxValue - this.minValue;
 }
 
 SizeBy.prototype = {
@@ -1285,7 +1307,14 @@ SizeBy.prototype = {
 	return size;
     },
 
-    getSizeFromValue: function(value,func) {	
+    getSizeFromValue: function(value,func, debug) {	
+	if(this.steps) {
+	    if(value<=this.steps[0].value) return this.steps[0].size;
+	    for(let i=1;i<this.steps.length;i++) {
+		if(value>this.steps[i-1].value && value<=this.steps[i].value ) return this.steps[i].size;
+	    }
+	    return this.steps[this.steps.length-1].size;
+	}
         if (this.isString) {
 	    let size;
             if (Utils.isDefined(this.stringMap[value])) {
@@ -1295,10 +1324,11 @@ SizeBy.prototype = {
                 let v = parseInt(this.stringMap["*"]);
                 size = v;
             } 
+	    if(isNaN(size)) size =  this.radiusMin;
 	    if(func) func(NaN,size);
 	    return size;
         } else {
-            let denom = this.range;
+            let denom = this.maxValue - this.minValue;
             let v = value + this.offset;
             if (this.func) v = this.func(v);
             let percent = (denom == 0 ? NaN : (v - this.minValue) / denom);
@@ -1308,25 +1338,40 @@ SizeBy.prototype = {
             } else {
                 size = 6 + parseInt(15 * percent);
             }
+	    if(debug) console.log("value:" + value +" v:" + v +" size:" + size);
+	    if(isNaN(size)) size =  this.radiusMin;
 	    if(func) func(percent, size);
 	    return size;
         }
     },
-    getLegend: function(cnt,bg) {
+    getLegend: function(cnt,bg,vert) {
 	let html = "";
 	if(this.index<0) return "";
-	let hor = this.display.getProperty("sizeByLegendOrientation","horizontal") == "horizontal";
-	for(let i=cnt;i>=0;i--) {
-	    let v = this.minValue+ i/cnt*this.range;
-	    let size  =this.getSizeFromValue(v);
-	    v = this.display.formatNumber(v);
-	    let dim = size*2+"px";
-	    html += HU.div([CLASS,"display-size-legend-item"], HU.center(HU.div([STYLE,HU.css("height", dim,"width",dim,
-										    "background-color",bg||"#bbb",
-										    "border-radius","50%"
-											     )])) + v);
+	if(this.steps) {
+	    this.steps.forEach(step=>{
+		let dim = step.size*2+"px";
+		let v = step.value;
+		html += HU.div([CLASS,"display-size-legend-item"], HU.center(HU.div([STYLE,HU.css("height", dim,"width",dim,
+												  "background-color",bg||"#bbb",
+												  "border-radius","50%"
+												 )])) + v);
 
-	    if(!hor) html+="<br>";
+		if(vert) html+="<br>";
+	    });
+	} else {
+	    for(let i=0;i<=cnt;i++) {
+		let v = this.origMinValue+ i/cnt*(this.origMaxValue-this.origMinValue);
+		let size  =this.getSizeFromValue(v,null,false);
+		if(isNaN(size) || size==0) continue;
+		v = this.display.formatNumber(v);
+		let dim = size*2+"px";
+		html += HU.div([CLASS,"display-size-legend-item"], HU.center(HU.div([STYLE,HU.css("height", dim,"width",dim,
+												  "background-color",bg||"#bbb",
+												  "border-radius","50%"
+												 )])) + v);
+
+		if(vert) html+="<br>";
+	    }
 	}
 	return HU.div(["class","display-size-legend"], html);
     }

@@ -34,7 +34,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     let ID_LATFIELD = "latfield";
     let ID_LONFIELD = "lonfield";
     let ID_MAP = "map";
-    let ID_SIDE = "side";
+    let ID_SIZEBY_LEGEND = "sizebylegend";
     let ID_COLORTABLE_SIDE = "colortableside";
     let ID_SHAPES = "shapes";
     let ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
@@ -42,7 +42,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     let ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
     let SUPER;
     RamaddaUtil.defineMembers(this, {
-        showLocationReadout: false,
+
         showBoxes: true,
         showPercent: false,
         percentFields: null,
@@ -61,6 +61,94 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         features: [],
         myMarkers: {},
         mapEntryInfos: {},
+	getWikiEditorTags: function() {
+	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
+		"label:Map Attributes",
+		"strokeWidth=1",
+		"strokeColor=\"#000\"",
+		"fillColor=\"\"",
+		["radius=\"5\"","Size of the map points"],
+		['scaleRadius=true',"Scale the radius based on # points shown"],
+		"shape=\"star|cross|x|square|triangle|circle|lightning|church\"",
+		"markerIcon=\"/icons/...\"",
+		["sizeBy=\"field\"","Field to size points by"],
+		["sizeByLog=\"true\"","Use log scale for size by"],
+		["sizeByMap=\"value1:size,...,valueN:size\"","Define sizes if sizeBy is text"],
+		['sizeByRadiusMin="2"',"Scale size by"],
+		['sizeByRadiusMax="20"',"Scale size by"],
+		'sizeByLegendSide=bottom|top|left|right',
+		'sizeByLegendStyle=""',
+		['sizeBySteps="value1:size1,v2:s2,..."','Use steps for sizes'],
+		['bounds=north,west,south,east',"initial bounds"],
+		['mapCenter=lat,lon',"initial position"],
+		['zoomLevel=4',"initial zoom"],
+		['fixedPosition=true','Keep the initial position'],
+		['initialLocation=lat,lon',"initial location"],
+		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
+		['doPopup=false',"Don't show popups"],
+		['highlight=true',"Show mouse over highlights"],
+		['linked=true',"Link location with other maps"],
+		['linkGroup=some_name',"Map groups to link with"],
+		["centerOnFilterChange=\"true\"","Center map when the data filters change"],
+		["centerOnHighlight=\"true\"","Center map when a record is highlighted"],
+		["boundsAnimation=\"true\"","Animate when map is centered"],
+		'recordHighlightRadius=20',
+		'recordHighlightStrokeWidth=2',
+		'recordHighlightStrokeColor=red',
+		'recordHighlightFillColor=rgba(0,0,0,0)',
+                'vectorLayerStrokeColor=#000',
+		'vectorLayerFillColor=#ccc',
+		'vectorLayerFillOpacity=0.25',
+                'vectorLayerStrokeWidth=1',
+		'iconField=""',
+		'iconSize="16"',
+		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
+		'showRecordSelection=false',
+		'showMarkersToggle=true',
+		'showMarkersToggleLabel="label"',
+		"showClipToBounds=true",
+		"showLocationSearch=\"true\"",
+		'showLatLonPosition=false',
+		'showLayerSwitcher=false',
+		'showScaleLine=true',
+		'showZoomPanControl=true',
+		'showZoomOnlyControl=false',
+		'showLayers=false',
+		'enableDragPan=false',
+		'markersVisibility=false',
+		'inlinelabel:Heatmap Attributes',
+		['doHeatmap=true',"Grid the data into an image"],
+		['doGridPoints=true',"Display a image showing shapes or bars"],
+		'htmlLayerField=""',
+		'htmlLayerWidth=30',
+		'htmlLayerHeight=15',
+		'htmlLayerStyle="css style"',
+		['htmlLayerScale="2:0.75,3:1,4:2,5:3,6:4,7:6"',"zoomlevel:scale,..."],
+		['hm.showPoints="true"',"Also show the map points"],
+		"cellShape=rect|circle|vector",
+		['angleBy=field','field for angle of vectors'],
+		["cell3D=true","Draw 3d bars"],
+		"cellColor=color",
+		"cellFilled=true",
+		"cellSize=8",
+		["cellSizeH=20","Base height to scale by"],
+		'hm.operator="count|average|min|max"',
+		'hm.animationSleep="1000"',
+		'hm.reloadOnZoom=true',
+		['hm.groupByDate="true|day|month|year|decade"',"Group heatmap images by date"], 
+		['hm.groupBy="field id"',"Field to group heatmap images"], 
+		'hm.labelPrefix=""',
+		'hm.showToggle=""',
+		'hm.toggleLabel=""',
+		['hm.boundsScale=0.1',"Scale up the map bounds"],
+		['hm.filter="average5|average9|average25|gauss9|gauss25"',"Apply filter to image"],
+		'hm.filterPasses="1"',
+		'hm.filterThreshold="1"',
+		'hm.countThreshold="1"',
+	    ]);
+	},
+
+
         initDisplay: function() {
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
@@ -74,20 +162,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
             var _this = this;
             var html = "";
-            var extraStyle = "min-height:200px;";
-            var width = this.getWidth();
-            if (Utils.isDefined(width)) {
-                if (width > 0) {
-                    extraStyle += "width:" + width + "px; ";
-                } else if (width < 0) {
-                    extraStyle += "width:" + (-width) + "%;";
-                } else if (width != "") {
-                    extraStyle += "width:" + width + ";";
-                }
-            }
-
+            var extraStyle="";
             var height = this.getProperty("height", 300);
-            // var height = this.getProperty("height",-1);
             if (height > 0) {
                 extraStyle += " height:" + height + "px; ";
             } else if (height < 0) {
@@ -98,33 +174,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
 			     extraStyle, ATTR_ID, this.getDomId(ID_MAP)]);
 
-	    let side = HU.div([ID,this.getDomId(ID_SIDE)],HU.div([ID,this.getDomId(ID_COLORTABLE_SIDE)]));
-            html +=  HU.table(["width","100%"],HU.tr([],HU.td(["width","99%"],map) +HU.td([],side)));
-
-            if (this.showLocationReadout) {
-                html += HU.open(TAG_DIV, [ATTR_CLASS,
-					     "display-map-latlon"
-					    ]);
-                html += HU.open("form");
-                html += "Latitude: " +
-                    HU.input(this.getDomId(ID_LATFIELD), "", ["size",
-							      "7", ATTR_ID, this.getDomId(ID_LATFIELD)
-							     ]);
-                html += "  ";
-                html += "Longitude: " +
-                    HU.input(this.getDomId(ID_LONFIELD), "", ["size",
-							      "7", ATTR_ID, this.getDomId(ID_LONFIELD)
-							     ]);
-                html += HU.close("form");
-                html += HU.close(TAG_DIV);
-            }
-            this.setContents(html);
+            this.setContents(map);
 
             if (!this.map) {
                 this.createMap();
             } else {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             }
+
+	    let legendSide = this.getProperty("sizeByLegendSide");
+	    if(legendSide) {
+		let legend = HU.div([ID,this.getDomId(ID_SIZEBY_LEGEND)]);
+		if(legendSide=="top") {
+		    this.jq(ID_TOP).append(legend);
+		} else if(legendSide=="left") {
+		    this.jq(ID_LEFT).append(legend);
+		} else if(legendSide=="right") {
+		    this.jq(ID_RIGHT).append(legend);
+		} else if(legendSide=="bottom") {
+		    this.jq(ID_BOTTOM).append(legend);
+		} else {
+		    console.log("Unknown legend side:" + legendSide);
+		}
+	    }
+
 
 	    this.startProgress();
             if (!this.haveCalledUpdateUI) {
@@ -592,8 +665,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 					       .clonePoints(feature.points), null);
         },
         getContentsDiv: function() {
-            return HU.div([ATTR_CLASS, "display-contents", ID,
+            let html =  HU.div([ATTR_CLASS, "display-contents", ID,
 			   this.getDomId(ID_DISPLAY_CONTENTS)], "");
+	    return html;
         },
 	highlightMarker:null,
         handleEventRecordHighlight: function(source, args) {
@@ -1071,12 +1145,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    feature.dataIndex = j;
 		    feature.popupText = HU.div([],feature.pointCount +SPACE + labelSuffix);
 		}
-		    this.displayColorTable(colors, ID_COLORTABLE, minCnt,maxCnt,{});
-		if(this.getProperty("colorTableOrientation","horizontal") == "horizontal") {
-		} else {
-//		    this.displayColorTable(colors, ID_COLORTABLE_SIDE, minCnt,maxCnt,{});
-		}
-
+		this.displayColorTable(colors, ID_COLORTABLE, minCnt,maxCnt,{});
 	    } else {
 		if(prune) {
 		    for (var i = 0; i < features.length; i++) {
@@ -1436,8 +1505,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 	showColorTable: function(colorBy) {
-	    colorBy.displayColorTable(null,true,
-				      this.getProperty("colorTableOrientation","horizontal") == "horizontal"?ID_COLORTABLE:ID_COLORTABLE_SIDE);
+	    colorBy.displayColorTable(null,true);
 	    this.map.getMap().updateSize();
 	},
 	updateUIInner: function(args, pointData, records) {
@@ -1931,7 +1999,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		})
 	    }
 
-	    let sizeBy = new SizeBy(this, records);
+	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];
                 if (field.getId() == shapeBy.id || ("#" + (i + 1)) == shapeBy.id) {
@@ -2127,6 +2195,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
 		};
                 props.pointRadius = sizeBy.getSize(values, props.pointRadius,sizeByFunc);
+
+
+		if(props.pointRadius<0) continue;
 		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
 
 		let hasColorByValue = false;
@@ -2327,20 +2398,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.map.circles)
 		this.map.circles.redraw();
 
-	    if(this.getProperty("showSizeByLegend")) {
-		let hor = this.getProperty("sizeByLegendOrientation","horizontal") == "horizontal";
-		let legend = sizeBy.getLegend(5,fillColor);
+	    let legendSide = this.getProperty("sizeByLegendSide");
+	    if(legendSide) {
+		let legend = sizeBy.getLegend(5,fillColor,legendSide=="left" || legendSide=="right");
 		if(legend !="") {
-		    if(hor) {
-			this.jq(ID_BOTTOM).append(sizeBy.getLegend(5,fillColor));
-		    } else {
-			this.jq(ID_SIDE).append(legend);
-			this.map.getMap().updateSize();
-		    }
+		    let style = this.getProperty("sizeByLegendStyle");
+		    if(style) legend = HU.div([STYLE,style],legend);
+		    this.jq(ID_SIZEBY_LEGEND).html(legend);
+		    this.map.getMap().updateSize();
 		}
 	    }
 	    this.jq(ID_BOTTOM).append(HU.div([ID,this.getDomId(ID_SHAPES)]));
-            if (didColorBy) {
+		    if (didColorBy) {
 		this.showColorTable(colorBy);
             }
 
@@ -2375,92 +2444,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
         },
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
-		"label:Map Attributes",
-		"strokeWidth=1",
-		"strokeColor=\"#000\"",
-		"fillColor=\"\"",
-		["radius=\"5\"","Size of the map points"],
-		['scaleRadius=true',"Scale the radius based on # points shown"],
-		"shape=\"star|cross|x|square|triangle|circle|lightning|church\"",
-		"markerIcon=\"/icons/...\"",
-		["sizeBy=\"field\"","Field to size points by"],
-		["sizeByLog=\"true\"","Use log scale for size by"],
-		["sizeByMap=\"value1:size,...,valueN:size\"","Define sizes if sizeBy is text"],
-		['sizeByRadiusMin="2"',"Scale size by"],
-		['sizeByRadiusMax="20"',"Scale size by"],
-		'showSizeByLegend=true',
-		'sizeByLegendOrientation=vertical',
-		['bounds=north,west,south,east',"initial bounds"],
-		['mapCenter=lat,lon',"initial position"],
-		['zoomLevel=4',"initial zoom"],
-		['fixedPosition=true','Keep the initial position'],
-		['initialLocation=lat,lon',"initial location"],
-		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
-		['doPopup=false',"Don't show popups"],
-		['highlight=true',"Show mouse over highlights"],
-		['linked=true',"Link location with other maps"],
-		['linkGroup=some_name',"Map groups to link with"],
-		["centerOnFilterChange=\"true\"","Center map when the data filters change"],
-		["centerOnHighlight=\"true\"","Center map when a record is highlighted"],
-		["boundsAnimation=\"true\"","Animate when map is centered"],
-		'recordHighlightRadius=20',
-		'recordHighlightStrokeWidth=2',
-		'recordHighlightStrokeColor=red',
-		'recordHighlightFillColor=rgba(0,0,0,0)',
-                'vectorLayerStrokeColor=#000',
-		'vectorLayerFillColor=#ccc',
-		'vectorLayerFillOpacity=0.25',
-                'vectorLayerStrokeWidth=1',
-		'iconField=""',
-		'iconSize="16"',
-		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
-		'showRecordSelection=false',
-		'showMarkersToggle=true',
-		'showMarkersToggleLabel="label"',
-		"showClipToBounds=true",
-		"showLocationSearch=\"true\"",
-		'showLocationReadout=false',
-		'showLatLonPosition=false',
-		'showLayerSwitcher=false',
-		'showScaleLine=true',
-		'showZoomPanControl=true',
-		'showZoomOnlyControl=false',
-		'showLayers=false',
-		'enableDragPan=false',
-		'markersVisibility=false',
-		'inlinelabel:Heatmap Attributes',
-		['doHeatmap=true',"Grid the data into an image"],
-		['doGridPoints=true',"Display a image showing shapes or bars"],
-		'htmlLayerField=""',
-		'htmlLayerWidth=30',
-		'htmlLayerHeight=15',
-		'htmlLayerStyle="css style"',
-		['htmlLayerScale="2:0.75,3:1,4:2,5:3,6:4,7:6"',"zoomlevel:scale,..."],
-		['hm.showPoints="true"',"Also show the map points"],
-		"cellShape=rect|circle|vector",
-		['angleBy=field','field for angle of vectors'],
-		["cell3D=true","Draw 3d bars"],
-		"cellColor=color",
-		"cellFilled=true",
-		"cellSize=8",
-		["cellSizeH=20","Base height to scale by"],
-		'hm.operator="count|average|min|max"',
-		'hm.animationSleep="1000"',
-		'hm.reloadOnZoom=true',
-		['hm.groupByDate="true|day|month|year|decade"',"Group heatmap images by date"], 
-		['hm.groupBy="field id"',"Field to group heatmap images"], 
-		'hm.labelPrefix=""',
-		'hm.showToggle=""',
-		'hm.toggleLabel=""',
-		['hm.boundsScale=0.1',"Scale up the map bounds"],
-		['hm.filter="average5|average9|average25|gauss9|gauss25"',"Apply filter to image"],
-		'hm.filterPasses="1"',
-		'hm.filterThreshold="1"',
-		'hm.countThreshold="1"',
-	    ]);
-	},
 
         addLabels:function(records, fields, points) {
             let labelTemplate = this.getProperty("labelTemplate");

@@ -55,6 +55,8 @@ public class RepositoryUtil {
     //The imports.html header has a ${htdocs_version} macro in it
     //that gets replaced with  this. Repository checks incoming paths and strips this off
 
+    private static int requestCnt = 0;
+
     /** _more_ */
     private static final String HTDOCS_VERSION =
         "htdocs_v" + Double.toString(MAJOR_VERSION).replace(".", "_") + "_"
@@ -89,7 +91,7 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getHtdocsVersion() {
-        return HTDOCS_VERSION;
+        return HTDOCS_VERSION;//+"_"+(requestCnt++);
     }
 
     /**
@@ -98,7 +100,7 @@ public class RepositoryUtil {
      * @return _more_
      */
     public static String getHtdocsVersionSlash() {
-        return HTDOCS_VERSION_SLASH;
+        return HTDOCS_VERSION_SLASH+"_";//+(requestCnt++);
     }
 
 

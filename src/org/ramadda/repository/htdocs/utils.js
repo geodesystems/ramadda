@@ -1391,6 +1391,7 @@ var Utils = {
 	    showColorTableDots:false,
 	    decimals:-1,
 	    horizontal:true,
+	    colorWidth:"20px",
 	    stride:1
         }
 	if (args) $.extend(options, args);
@@ -1415,7 +1416,10 @@ var Utils = {
 
         if (options.showRange) {
 	    if(!options.showColorTableDots) {
-		html += "<td width=1%>" + formatter(min) + "&nbsp;</td>";
+		if(args.horizontal) 
+		    html += "<td width=1%>" + formatter(min) + "&nbsp;</td>";
+		else
+		    html += formatter(min) + "<br>"
 	    }   else {
 	    }
 	}
@@ -1447,14 +1451,21 @@ var Utils = {
 		}
 		attrs.push(STYLE);
 		attrs.push(HU.css("background", ct[i], "width","100%","height", options.height,"min-width","1px"));
-		html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
+		if(args.horizontal) 
+		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
+		else
+		    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i], WIDTH, args.colorWidthrcolorw)], HtmlUtils.div(attrs, ""));
 	    }
         });
 	if(!options.showColorTableDots) {
             if (options.showRange) {
-		html += "<td width=1%>&nbsp;" + this.formatNumberComma(max) + "</td>";
+		if(args.horizontal) 
+		    html += "<td width=1%>" + formatter(max) + "&nbsp;</td>";
+		else
+		    html += formatter(max) + "<br>"
             }
-            html += "</tr></table>";
+	    if(args.horizontal) 
+		html += "</tr></table>";
 	}
         html += HtmlUtils.closeTag("div");
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
@@ -2346,7 +2357,7 @@ var HU = HtmlUtils = {
         if (centerWidth == null) centerWidth = "33%";
         if (rightWidth == null) rightWidth = "33%";
 
-        return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
+        return this.tag("table", ["border", 0, "width", "100%", "cellspacing", "0", "cellpadding", "0"],
 			this.tr(["valign", attrs.valign],
 				this.td(["align", "left", "width", leftWidth], left) +
 				this.td(["align", "center", "width", centerWidth], center) +
@@ -2446,6 +2457,12 @@ var HU = HtmlUtils = {
     },
     h3: function(h) {
 	return HU.tag("h3",[],h);
+    },
+    getDimension(d) {
+	if(!d) return null;
+	d = String(d);
+	if(d.endsWith("%") || d.endsWith("px")) return d;
+	return d+"px";
     },
     td: function(attrs, inner) {
         return this.tag("td", attrs, inner);

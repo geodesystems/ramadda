@@ -752,7 +752,6 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
 
 
 function RamaddaTsneDisplay(displayManager, id, properties) {
-    var ID_BOTTOM = "bottom";
     var ID_CANVAS = "tsnecanvas";
     var ID_DETAILS = "tsnedetails";
     var ID_RUN = "tsnerun";
@@ -1503,7 +1502,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
     let ID_SLIDER_HIGH_MIN = "sliderhighmin";
     let ID_SLIDER_HIGH_MAX = "sliderhighmax"    
     let ID_TABLE = "table";
-    let ID_BOTTOM = "bottom";
+    let ID_LASTROW = "lastrow";
     $.extend(this, {
         colorTable: "red_white_blue",
         colorByMin: "-1",
@@ -1776,7 +1775,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 }
                 html += "</tr>";
             }
-            html += "<tr><td></td><td colspan = " + (fieldCnt + 1) + ">" + HU.div([ID, this.getDomId(ID_BOTTOM)], "") + "</td></tr>";
+            html += "<tr><td></td><td colspan = " + (fieldCnt + 1) + ">" + HU.div([ID, this.getDomId(ID_LASTROW)], "") + "</td></tr>";
             html += "</table>";
 	    this.jq(ID_TABLE).html(html);
 	    let _this = this;
@@ -1810,9 +1809,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 		}
 
 	    });
-	    this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);
+	    this.displayColorTable(colors, ID_LASTROW, colorByMin, colorByMax);
 	}
-
     });
 }
 
@@ -3593,23 +3591,36 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		fields = this.getPointData().getRecordFields();
 	    }
 	    let dotSize = this.getProperty("dotSize",16);
+	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
+	    let size = dotSize;
 	    let cols = {};
-	    let html = "<table width=100% border=0>";
+	    let html = "<table width=100%>";
 	    let t1 = new Date();
 	    let selectedRecord;
 	    fields.forEach((f,idx)=>{
 		if(!f.isFieldNumeric()) return;
+		let maxHeight = dotSize;
+		records.forEach(r=>{
+		    if(sizeBy.field) {
+			maxHeight=Math.max(maxHeight, 2*sizeBy.getSize(r.getData(), dotSize));
+		    }
+		});
+
 		let cb = new  ColorByInfo(this,  fields, records, null,null, null, null,f);
 		let cid = this.getDomId("dots"+idx);
 		let column = this.getColumnValues(records, f);
 		html += "<tr valign=center><td width=10% align=right>" + f.getLabel().replace(/ /g,SPACE)+"</td>";
-		html += HU.td(["align","right","width","5%"],HU.div([STYLE, "margin-right:5px;"],this.formatNumber(column.min)));
+		html += HU.td(["align","right","width","5%"],HU.div([STYLE, "margin-right:10px;"],this.formatNumber(column.min)));
 		html +="<td>";
-		html+= HU.open("div",[STYLE, HU.css('width','100%','position','relative','margin-top','4px')]);
+		html+= HU.open("div",[STYLE, HU.css('height',HU.getDimension(maxHeight), 'width','100%','position','relative','margin-top','4px')]);
+		html+=HU.div([STYLE,HU.css('position','absolute','left','0px','right','0px','top','50%','border-top','1px solid #ccc')]);
+
 		html+=SPACE;
 		records.forEach((r,idx2)=>{
 		    let v = r.getValue(f.getIndex());
 		    let c = cb.getColor(v,r);
+		    let darkC = Utils.pSBC(-0.25,c);
+		    let dotBorder = "2px solid " + darkC;
 		    if(column.min == column.max) return;
 		    let perc = (v-column.min)/(column.max-column.min);
 		    let clazz = "display-dotbar-dot";
@@ -3634,11 +3645,19 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 			}
 		    }
 		    perc *=100;
-		    html +=  HU.span([RECORD_INDEX,idx2,CLASS,clazz,STYLE,HU.css("background",c,"position",'absolute','left', perc+'%')+style, RECORD_INDEX,idx2, TITLE,""]); 
+		    let size = dotSize;
+		    if(sizeBy.field) {
+			size  = 2*sizeBy.getSize(r.getData(), dotSize);
+			if(size<0) return;
+			style+=HU.css("height",HU.getDimension(size),"width",HU.getDimension(size));
+		    }
+		    let top = maxHeight/2-size/2;
+		    html +=  HU.span([RECORD_INDEX,idx2,CLASS,clazz,STYLE,HU.css('border',dotBorder, "background",c,"position",'absolute','top',HU.getDimension(top),'left', perc+'%')+style, RECORD_INDEX,idx2, TITLE,""]); 
 		});
+
 		html += "</div></td>";
 		html += HU.td(['width', (dotSize*2)]);
-		html += HU.td(["align","left", "width","5%"],this.formatNumber(column.max));
+		html += HU.td(["align","left", "width","5%"],HU.div([STYLE,HU.css('margin-left','10px')],this.formatNumber(column.max)));
 		html+="</tr>";
 	    });
 	    let t2 = new Date();
