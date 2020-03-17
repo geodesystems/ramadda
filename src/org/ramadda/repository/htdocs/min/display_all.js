@@ -27206,6 +27206,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'vectorLayerFillColor=#ccc',
 		'vectorLayerFillOpacity=0.25',
                 'vectorLayerStrokeWidth=1',
+		'iconField=""',
+		'iconSize="16"',
 		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
 		'showRecordSelection=false',
 		'showMarkersToggle=true',
@@ -29787,6 +29789,7 @@ var DISPLAY_TREE = "tree";
 var DISPLAY_ORGCHART = "orgchart";
 var DISPLAY_TIMELINE = "timeline";
 var DISPLAY_BLANK = "blank";
+var DISPLAY_MESSAGE = "message";
 var DISPLAY_RECORDS = "records";
 var DISPLAY_TSNE = "tsne";
 var DISPLAY_HEATMAP = "heatmap";
@@ -29926,6 +29929,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_BLANK,
     label: "Blank",
+    requiresData: true,
+    forUser: true,
+    category: "Misc"
+});
+addGlobalDisplayType({
+    type: DISPLAY_MESSAGE,
+    label: "Message",
     requiresData: true,
     forUser: true,
     category: "Misc"
@@ -30501,6 +30511,20 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 		    colorBy.displayColorTable();
 		}
 	    }
+	}});
+}
+
+
+function RamaddaMessageDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MESSAGE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        needsData: function() {
+            return false;
+        },
+	updateUI: function() {
+	    this.writeHtml(ID_DISPLAY_CONTENTS, this.getMessage(this.getProperty("message","No data available")));
 	}});
 }
 

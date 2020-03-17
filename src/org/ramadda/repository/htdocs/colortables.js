@@ -130,37 +130,6 @@ var scales = {
     ]
 };
 
-function getColor(scale,perc) {
-    for(let i=0;i<scale.length-1;i++) {
-	let p1 = scale[i];
-	let p2 = scale[i+1];
-	if(perc>=p1[0] && perc<=p2[0]) {
-	    let c1=scale[i][1];
-	    let c2=scale[i+1][1];
-	    let perc2 = (perc-p1[0])/(p2[0]-p1[0]);
-	    let m1 = c1.match(/rgb\((.*) *, *(.*) *, *(.*)\)/);
-	    let m2 = c2.match(/rgb\((.*) *, *(.*) *, *(.*)\)/);
-	    if(m1&&m2) {
-		let cc1=Math.round(+m1[1]+perc2*(+m2[1]- +m1[1]));
-		let cc2=Math.round(+m1[2]+perc2*(+m2[2]- +m1[2]));
-		let cc3=Math.round(+m1[3]+perc2*(+m2[3]- +m1[3]));
-		return "rgb(" + cc1+"," + cc2 +"," + cc3+")";
-	    }
-	    m1 = c1.match(/#(..)(..)(..)/);
-	    m2 = c2.match(/#(..)(..)(..)/);
-	    let pad = v=>{return v.length==1?"0"+v:v}
-	    if(m1&&m2) {
-		m1 = m1.map(v=>parseInt(v,16));
-		m2 = m2.map(v=>parseInt(v,16));
-		let cc1=Math.round(+m1[1]+perc2*(+m2[1]- +m1[1]));
-		let cc2=Math.round(+m1[2]+perc2*(+m2[2]- +m1[2]));
-		let cc3=Math.round(+m1[3]+perc2*(+m2[3]- +m1[3]));
-		return "#" + pad(cc1.toString(16))+ pad(cc2.toString(16)) + pad(cc3.toString(16));
-	    }
-	    return null;
-	}
-    }
-}
 
 
 $( document ).ready(function() {

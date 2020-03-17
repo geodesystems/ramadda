@@ -333,6 +333,10 @@ function wikiInitEditor(info) {
 		    }
 		    extra = "<td><div class=wiki-editor-popup-header>Color Table</div><div class=wiki-editor-popup-items>"
 		    for (a in Utils.ColorTables) {
+			if(Utils.ColorTables[a].label) {
+			    extra+=HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
+			    continue;
+			}
 			var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
 			    showRange: false,
 			    height: "20px"

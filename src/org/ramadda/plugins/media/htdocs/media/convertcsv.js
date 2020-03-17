@@ -257,6 +257,8 @@ function csvCall(cmds,args) {
 			    csvMakeHeaderMenu(field+".type","string","string")+ " "+
 			    csvMakeHeaderMenu(field+".type","double","double")+" "+
 			    csvMakeHeaderMenu(field+".type","date","date")+
+			    csvMakeHeaderMenu(field+".type","url","url")+
+			    csvMakeHeaderMenu(field+".type","image","image")+
 			    "<br>";
                         html+="</div>";
                         var popup = $("#csv_popup");

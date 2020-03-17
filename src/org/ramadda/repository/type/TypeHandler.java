@@ -4439,7 +4439,7 @@ public class TypeHandler extends RepositoryManager {
                                                         .space(1) + msg(
                                                             "Download");
                         String formContent = HtmlUtils.input(ARG_URL, url,
-                                                 size) + BLANK + download;
+                                                 size) + "&nbsp;" + download;
                         tabTitles.add(urlLabel);
                         tabContent.add(HtmlUtils.inset(formContent, 8));
                     }

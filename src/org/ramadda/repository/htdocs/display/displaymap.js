@@ -2413,6 +2413,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'vectorLayerFillColor=#ccc',
 		'vectorLayerFillOpacity=0.25',
                 'vectorLayerStrokeWidth=1',
+		'iconField=""',
+		'iconSize="16"',
 		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
 		'showRecordSelection=false',
 		'showMarkersToggle=true',
