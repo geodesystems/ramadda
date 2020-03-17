@@ -604,9 +604,7 @@ svg > g > g:last-child { pointer-events: none }
     color: #aaa;
 }
 
-
-
-.display-message {
+.display-output-message {
     border-radius: 2px;
     display:inline-block;
     text-align:left;

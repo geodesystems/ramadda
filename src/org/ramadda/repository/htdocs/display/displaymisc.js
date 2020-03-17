@@ -742,7 +742,11 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
             return false;
         },
 	updateUI: function() {
-	    this.writeHtml(ID_DISPLAY_CONTENTS, this.getMessage(this.getProperty("message","No data available")));
+	    if(this.getProperty("decorate",true)) {
+		this.setContents(this.getMessage(this.getProperty("message","No data available")));
+	    } else {
+		this.setContents(this.getProperty("message","No data available"));
+	    }
 	}});
 }
 

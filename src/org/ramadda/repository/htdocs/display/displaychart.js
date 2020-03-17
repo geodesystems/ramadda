@@ -511,7 +511,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-            this.setContents(HU.div([ATTR_CLASS, "display-message"],
+            this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
 					   "Building display..."));
 
             this.allFields = this.dataCollection.getList()[0].getRecordFields();
@@ -623,7 +623,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             if (dataList.length == 0) {
-                this.setContents(HU.div([ATTR_CLASS, "display-message"],
+                this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
 					       "No data available"));
                 return;
             }

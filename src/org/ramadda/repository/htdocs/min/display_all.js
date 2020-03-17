@@ -2615,7 +2615,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.data.loadData(this,true);
 	},
         getMessage: function(msg) {
-            return HU.div([ATTR_CLASS, "display-message"], msg);
+            return HU.div([ATTR_CLASS, "display-output-message"], msg);
         },
         getFieldValue: function(id, dflt) {
             var jq = $("#" + id);
@@ -6149,8 +6149,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		contentsAttrs.push("expandable-height");
 		contentsAttrs.push(this.getProperty("expandableHeight"));
 	    }
-
 	    var contents =  top + "\n" +HU.div(contentsAttrs, "") + "\n" +bottom;
+	    console.log(contents);
             return contents;
         },
 
@@ -14231,7 +14231,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
-            this.setContents(HU.div([ATTR_CLASS, "display-message"],
+            this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
 					   "Building display..."));
 
             this.allFields = this.dataCollection.getList()[0].getRecordFields();
@@ -14343,7 +14343,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
             if (dataList.length == 0) {
-                this.setContents(HU.div([ATTR_CLASS, "display-message"],
+                this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
 					       "No data available"));
                 return;
             }
@@ -17680,7 +17680,7 @@ function RamaddaD3Display(displayManager, id, properties) {
             //Note: if we write to the SVG dom element then we lose the svg object that got created in initDisplay
             //Not sure how to show a message to the user
             if (!this.hasData()) {
-                //this.writeHtml(ID_SVG, HtmlUtils.div([ATTR_CLASS,"display-message"], this.getLoadingMessage()));
+                //this.writeHtml(ID_SVG, HtmlUtils.div([ATTR_CLASS,"display-output-message"], this.getLoadingMessage()));
                 return;
             }
             test = this;
@@ -30524,7 +30524,11 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
             return false;
         },
 	updateUI: function() {
-	    this.writeHtml(ID_DISPLAY_CONTENTS, this.getMessage(this.getProperty("message","No data available")));
+	    if(this.getProperty("decorate",true)) {
+		this.setContents(this.getMessage(this.getProperty("message","No data available")));
+	    } else {
+		this.setContents(this.getProperty("message","No data available"));
+	    }
 	}});
 }
 

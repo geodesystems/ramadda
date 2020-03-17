@@ -572,7 +572,7 @@ function RamaddaD3Display(displayManager, id, properties) {
             //Note: if we write to the SVG dom element then we lose the svg object that got created in initDisplay
             //Not sure how to show a message to the user
             if (!this.hasData()) {
-                //this.writeHtml(ID_SVG, HtmlUtils.div([ATTR_CLASS,"display-message"], this.getLoadingMessage()));
+                //this.writeHtml(ID_SVG, HtmlUtils.div([ATTR_CLASS,"display-output-message"], this.getLoadingMessage()));
                 return;
             }
             test = this;

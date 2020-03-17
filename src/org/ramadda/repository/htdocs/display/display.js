@@ -1281,7 +1281,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.data.loadData(this,true);
 	},
         getMessage: function(msg) {
-            return HU.div([ATTR_CLASS, "display-message"], msg);
+            return HU.div([ATTR_CLASS, "display-output-message"], msg);
         },
         getFieldValue: function(id, dflt) {
             var jq = $("#" + id);
@@ -4815,8 +4815,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		contentsAttrs.push("expandable-height");
 		contentsAttrs.push(this.getProperty("expandableHeight"));
 	    }
-
 	    var contents =  top + "\n" +HU.div(contentsAttrs, "") + "\n" +bottom;
+	    console.log(contents);
             return contents;
         },
 
