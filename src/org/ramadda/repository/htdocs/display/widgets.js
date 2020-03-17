@@ -1297,6 +1297,9 @@ function SizeBy(display,records) {
 }
 
 SizeBy.prototype = {
+    getMaxSize:function() {
+	return this.getSizeFromValue(this.origMaxValue);
+    },
     getSize: function(values, dflt, func) {
         if (this.index <= 0) {
 	    return dflt;

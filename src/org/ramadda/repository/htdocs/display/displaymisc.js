@@ -3597,14 +3597,12 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    let html = "<table width=100%>";
 	    let t1 = new Date();
 	    let selectedRecord;
+	    let maxHeight = dotSize;
+	    if(sizeBy.field)
+		maxHeight=2*sizeBy.getMaxSize();
 	    fields.forEach((f,idx)=>{
 		if(!f.isFieldNumeric()) return;
-		let maxHeight = dotSize;
-		records.forEach(r=>{
-		    if(sizeBy.field) {
-			maxHeight=Math.max(maxHeight, 2*sizeBy.getSize(r.getData(), dotSize));
-		    }
-		});
+
 
 		let cb = new  ColorByInfo(this,  fields, records, null,null, null, null,f);
 		let cid = this.getDomId("dots"+idx);
@@ -3686,9 +3684,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
 		_this.hadClick = true;
 		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
-	    });
-
-	    //Do this later so other displays get this after they apply their data filter change
+	    });	    //Do this later so other displays get this after they apply their data filter change
 	    if(selectedRecord){
 		setTimeout(()=>{
 		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: selectedRecord});
