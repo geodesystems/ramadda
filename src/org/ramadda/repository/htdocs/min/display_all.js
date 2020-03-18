@@ -2177,6 +2177,111 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         entries: [],
         wikiAttrs: [TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
 
+	getWikiEditorTags: function() {
+	    return  [
+		"label:Display Attributes",
+		"showMenu=\"true\"",	      
+		"showTitle=\"true\"",
+		"layoutHere=\"true\"",
+		"width=\"100%\"",
+		"height=\"400\"",
+		'tooltip=${default}',
+		['displayStyle="css styles"',"Specify styles for display"],
+		"title=\"\"",
+		"titleBackground=\"color\"",
+		"textColor=\"color\"",
+		["backgroundImage=\"\"","Image url to display in background"],
+		"background=\"color\"",
+		'showProgress=true',
+		'inlinelabel:Formatting',
+		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
+		'doFormatNumber=false',
+ 		'formatNumberDecimals=0',
+		'formatNumberScale=100',
+		'numberTemplate="${number}%"',
+		'&lt;field_id&gt;.&lt;format&gt;="..."',
+		"label:Filter Data",
+		"filterFields=\"\"",
+		'filterFieldsToPropagate=""',
+		"hideFilterWidget=true",
+		['filterHighlight=true',"Highlight the records"],
+		['showFilterHighlight=false',"show/hide the filter highlight widget"],
+		"acceptFilterEvent=false",
+		['filterSliderImmediate=true',"Apply the change while sliding"],
+		"&lt;field&gt;.filterValue=\"\"",
+		"&lt;field&gt;.filterValues=\"\"",
+		"&lt;field&gt;.filterMultiple=\"true\"",
+		"&lt;field&gt;.filterMultipleSize=\"5\"",
+		"&lt;field&gt;.filterLabel=\"\"",
+		"&lt;field&gt;.showFilterLabel=\"false\"",
+		"&lt;field&gt;.filterByStyle=\"background:white;\"",
+		"&lt;field&gt;.includeAll=false",
+		"&lt;field&gt;.filterSort=false",
+		"&lt;field&gt;.filterStartsWith=\"true\"",
+		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
+		'selectFields=prop:label:field1,...fieldN;prop:....',
+		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
+		['not match value','dataFilters="notmatch(field=field,value=value,label=,enabled=);"','Only show records that dont match'],
+		['no missing values','dataFilters="nomissing(field=field,label=,enabled=);"','Dont show missing values'],
+		['less than','dataFilters="lessthan(field=field,value=value,label=,enabled=);"',''],
+		['greater than','dataFilters="greaterthan(field=field,value=value,label=,enabled=);"',''],
+		['equals','dataFilters="equals(field=field,value=value,label=,enabled=);"',''],
+		['not equals','dataFilters="notequals(field=field,value=value,label=,enabled=); "',''],
+		['filterDate=year',"Show a simple pull down menu to select a year to display"],
+		['filterDateIncludeAll=true',"Include all years"],
+		['startDate="yyyy-MM-dd"',"Filter data on date"],
+		['endDate="yyyy-MM-dd"',"Filter data on date"],
+		"inlinelabel:Convert Data",
+		['binDate="day|month|year"',"Bin the dates"],
+		'binType="count|average|total"',
+		['derived data', 'convertData="derived(field=new_field_id, function=foo*bar);"','Add derived field'],
+		['merge rows','convertData="mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);"',"Merge rows together"],
+		["rotate data", 'convertData="rotateData(includeFields=true,includeDate=true,flipColumns=true);"',"Rotate data"],
+		["add percent", 'convertData="addPercentIncrease(replaceValues=false);"',"Add percent increase"],
+		["unfurl", 'convertData="unfurl(headerField=,uniqueField=,valueFields=);"',"Unfurl"],
+		"label:Color Attributes",
+		["colors=\"color1,...,colorN\"","Comma separated array of colors"],
+		["colorBy=\"\"","Field id to color by"],
+		["colorByFields=\"\"","Show color by fields in a menu"],
+		["colorByLog=\"true\"","Use a log scale for the color by"],
+		["colorByMap=\"value1:color1,...,valueN:colorN\"","Specify colors for color by text values"],
+		['colorByInverse=true','Inverse the values'],
+		["colorTableAlpha=\"0.5\"","Set transparency on color table values"],
+		['colorTableInverse=true',"Inverse the color table"],
+		["colorByMin=\"value\"","Min scale value"],
+		["colorByMax=\"value\"","Max scale value"],
+		['showColorTable=false',"Display the color table"],
+		'showColorTableDots=true',
+		'colorTableDotsDecimals=0',
+		'colorTableSide=bottom|right|left|top',
+		['showColorTableStride=1','How many colors should be shown'],
+		['colorByAllRecords=true',"use all records for color range"],
+		'convertColorIntensity=true',
+		'intensitySourceMin=0',
+		'intensitySourceMax=100',
+		'intensityTargetMin=1',
+		'intensityTargetMax=0',
+		'convertColorAlpha=true',
+		'alphaSourceMin=0',
+		'alphaSourceMax=100',
+		'alphaTargetMin=0',
+		'alphaTargetMax=1',
+		"inlinelabel:Animation Attributes",
+		"doAnimation=true",
+		"acceptDateRangeChange=true",
+		"animationDateFormat=\"yyyy\"",
+		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
+		"animationMode=\"sliding|frame|cumulative\"",
+		"animationSpeed=\"500\"",
+		"animationLoop=\"true\"",
+		'animationDwell=1000',
+		"animationShowButtons=\"false\"",
+		"animationShowSlider=\"false\"",
+		"animationWidgetShort=\"true\""
+
+	    ];
+        },
+
         getDisplayManager: function() {
             return this.displayManager;
         },
@@ -5988,109 +6093,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 toolbar += HU.onClick(calls[i], inner);
             }
             return toolbar;
-        },
-	getWikiEditorTags: function() {
-	    return  [
-		"label:Display Attributes",
-		"showMenu=\"true\"",	      
-		"showTitle=\"true\"",
-		"layoutHere=\"true\"",
-		"width=\"100%\"",
-		"height=\"400\"",
-		"title=\"\"",
-		['displayStyle="css styles"',"Specify styles for display"],
-		"titleBackground=\"color\"",
-		"textColor=\"color\"",
-		["backgroundImage=\"\"","Image url to display in background"],
-		"background=\"color\"",
-		'showProgress=true',
-		'inlinelabel:Formatting',
-		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
-		'doFormatNumber=false',
- 		'formatNumberDecimals=0',
-		'formatNumberScale=100',
-		'numberTemplate="${number}%"',
-		'&lt;field_id&gt;.&lt;format&gt;="..."',
-		"label:Filter Data",
-		"filterFields=\"\"",
-		'filterFieldsToPropagate=""',
-		"hideFilterWidget=true",
-		['filterHighlight=true',"Highlight the records"],
-		['showFilterHighlight=false',"show/hide the filter highlight widget"],
-		"acceptFilterEvent=false",
-		['filterSliderImmediate=true',"Apply the change while sliding"],
-		"&lt;field&gt;.filterValue=\"\"",
-		"&lt;field&gt;.filterValues=\"\"",
-		"&lt;field&gt;.filterMultiple=\"true\"",
-		"&lt;field&gt;.filterMultipleSize=\"5\"",
-		"&lt;field&gt;.filterLabel=\"\"",
-		"&lt;field&gt;.showFilterLabel=\"false\"",
-		"&lt;field&gt;.filterByStyle=\"background:white;\"",
-		"&lt;field&gt;.includeAll=false",
-		"&lt;field&gt;.filterSort=false",
-		"&lt;field&gt;.filterStartsWith=\"true\"",
-		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		'selectFields=prop:label:field1,...fieldN;prop:....',
-		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
-		['not match value','dataFilters="notmatch(field=field,value=value,label=,enabled=);"','Only show records that dont match'],
-		['no missing values','dataFilters="nomissing(field=field,label=,enabled=);"','Dont show missing values'],
-		['less than','dataFilters="lessthan(field=field,value=value,label=,enabled=);"',''],
-		['greater than','dataFilters="greaterthan(field=field,value=value,label=,enabled=);"',''],
-		['equals','dataFilters="equals(field=field,value=value,label=,enabled=);"',''],
-		['not equals','dataFilters="notequals(field=field,value=value,label=,enabled=); "',''],
-		['filterDate=year',"Show a simple pull down menu to select a year to display"],
-		['filterDateIncludeAll=true',"Include all years"],
-		['startDate="yyyy-MM-dd"',"Filter data on date"],
-		['endDate="yyyy-MM-dd"',"Filter data on date"],
-		"inlinelabel:Convert Data",
-		['binDate="day|month|year"',"Bin the dates"],
-		'binType="count|average|total"',
-		['derived data', 'convertData="derived(field=new_field_id, function=foo*bar);"','Add derived field'],
-		['merge rows','convertData="mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);"',"Merge rows together"],
-		["rotate data", 'convertData="rotateData(includeFields=true,includeDate=true,flipColumns=true);"',"Rotate data"],
-		["add percent", 'convertData="addPercentIncrease(replaceValues=false);"',"Add percent increase"],
-		["unfurl", 'convertData="unfurl(headerField=,uniqueField=,valueFields=);"',"Unfurl"],
-		"label:Color Attributes",
-		["colors=\"color1,...,colorN\"","Comma separated array of colors"],
-		["colorBy=\"\"","Field id to color by"],
-		["colorByFields=\"\"","Show color by fields in a menu"],
-		["colorByLog=\"true\"","Use a log scale for the color by"],
-		["colorByMap=\"value1:color1,...,valueN:colorN\"","Specify colors for color by text values"],
-		['colorByInverse=true','Inverse the values'],
-		["colorTableAlpha=\"0.5\"","Set transparency on color table values"],
-		['colorTableInverse=true',"Inverse the color table"],
-		["colorByMin=\"value\"","Min scale value"],
-		["colorByMax=\"value\"","Max scale value"],
-		['showColorTable=false',"Display the color table"],
-		'showColorTableDots=true',
-		'colorTableDotsDecimals=0',
-		'colorTableSide=bottom|right|left|top',
-		['showColorTableStride=1','How many colors should be shown'],
-		['colorByAllRecords=true',"use all records for color range"],
-		'convertColorIntensity=true',
-		'intensitySourceMin=0',
-		'intensitySourceMax=100',
-		'intensityTargetMin=1',
-		'intensityTargetMax=0',
-		'convertColorAlpha=true',
-		'alphaSourceMin=0',
-		'alphaSourceMax=100',
-		'alphaTargetMin=0',
-		'alphaTargetMax=1',
-		"inlinelabel:Animation Attributes",
-		"doAnimation=true",
-		"acceptDateRangeChange=true",
-		"animationDateFormat=\"yyyy\"",
-		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
-		"animationMode=\"sliding|frame|cumulative\"",
-		"animationSpeed=\"500\"",
-		"animationLoop=\"true\"",
-		'animationDwell=1000',
-		"animationShowButtons=\"false\"",
-		"animationShowSlider=\"false\"",
-		"animationWidgetShort=\"true\""
-
-	    ];
         },
         makeDialog: function(text) {
             var html = "";
@@ -33487,13 +33489,11 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		html +="<td>";
 		html+= HU.open("div",[STYLE, HU.css('height',HU.getDimension(maxHeight), 'width','100%','position','relative','margin-top','4px')]);
 		html+=HU.div([STYLE,HU.css('position','absolute','left','0px','right','0px','top','50%','border-top','1px solid #ccc')]);
-
 		html+=SPACE;
 		records.forEach((r,idx2)=>{
 		    let v = r.getValue(f.getIndex());
 		    let c = cb.getColor(v,r);
 		    let darkC = Utils.pSBC(-0.25,c);
-		    let dotBorder = "2px solid " + darkC;
 		    if(column.min == column.max) return;
 		    let perc = (v-column.min)/(column.max-column.min);
 		    let clazz = "display-dotbar-dot";
@@ -33506,6 +33506,11 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		    } else if(idx2==this.selectedIndex) {
 			selected = true;
 		    }
+		    let dotBorder = "2px solid " + darkC;
+		    if(this.selectedIndex>=0 && !selected) {
+			dotBorder = "1px solid " + darkC;
+			c = "rgba(200,200,200,0.2)";
+		    }
 		    if(selected) {
 			selectedRecord = r;
 			clazz += " display-dotbar-dot-select";
@@ -33513,7 +33518,6 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 			if(this.highlightFilter) {
 			    if(!r.isHighlight(this)) {
 				style = "z-index:10;border:1px solid #aaa;";
-				console.log("Z");
 			    }
 			}
 		    }
@@ -33553,19 +33557,24 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		let record = records[idx];
 		if(!record) return;
 		dots.removeClass("display-dotbar-dot-select");
+		if(_this.selectedIndex ==  idx) {
+		    _this.selectedIndex =  -1;
+		    _this.updateUI();
+		    return;
+		}
 		_this.selectedIndex =  idx;
 		if(keyField)
 		    _this.selectedKey = record.getValue(keyField.getIndex());
 		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
 		_this.hadClick = true;
 		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		_this.updateUI();
 	    });	    //Do this later so other displays get this after they apply their data filter change
 	    if(selectedRecord){
 		setTimeout(()=>{
 		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: selectedRecord});
 		},10);
 	    }
-
 	    this.makeTooltips(dots,records,null);
 	    let t5 = new Date();
 //	    Utils.displayTimes("t",[t1,t2,t3,t4,t5]);

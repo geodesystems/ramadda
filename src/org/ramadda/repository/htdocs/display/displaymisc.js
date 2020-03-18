@@ -3612,13 +3612,11 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		html +="<td>";
 		html+= HU.open("div",[STYLE, HU.css('height',HU.getDimension(maxHeight), 'width','100%','position','relative','margin-top','4px')]);
 		html+=HU.div([STYLE,HU.css('position','absolute','left','0px','right','0px','top','50%','border-top','1px solid #ccc')]);
-
 		html+=SPACE;
 		records.forEach((r,idx2)=>{
 		    let v = r.getValue(f.getIndex());
 		    let c = cb.getColor(v,r);
 		    let darkC = Utils.pSBC(-0.25,c);
-		    let dotBorder = "2px solid " + darkC;
 		    if(column.min == column.max) return;
 		    let perc = (v-column.min)/(column.max-column.min);
 		    let clazz = "display-dotbar-dot";
@@ -3631,6 +3629,11 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		    } else if(idx2==this.selectedIndex) {
 			selected = true;
 		    }
+		    let dotBorder = "2px solid " + darkC;
+		    if(this.selectedIndex>=0 && !selected) {
+			dotBorder = "1px solid " + darkC;
+			c = "rgba(200,200,200,0.2)";
+		    }
 		    if(selected) {
 			selectedRecord = r;
 			clazz += " display-dotbar-dot-select";
@@ -3638,7 +3641,6 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 			if(this.highlightFilter) {
 			    if(!r.isHighlight(this)) {
 				style = "z-index:10;border:1px solid #aaa;";
-				console.log("Z");
 			    }
 			}
 		    }
@@ -3678,19 +3680,24 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		let record = records[idx];
 		if(!record) return;
 		dots.removeClass("display-dotbar-dot-select");
+		if(_this.selectedIndex ==  idx) {
+		    _this.selectedIndex =  -1;
+		    _this.updateUI();
+		    return;
+		}
 		_this.selectedIndex =  idx;
 		if(keyField)
 		    _this.selectedKey = record.getValue(keyField.getIndex());
 		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
 		_this.hadClick = true;
 		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		_this.updateUI();
 	    });	    //Do this later so other displays get this after they apply their data filter change
 	    if(selectedRecord){
 		setTimeout(()=>{
 		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: selectedRecord});
 		},10);
 	    }
-
 	    this.makeTooltips(dots,records,null);
 	    let t5 = new Date();
 //	    Utils.displayTimes("t",[t1,t2,t3,t4,t5]);
