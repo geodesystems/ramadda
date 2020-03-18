@@ -2120,6 +2120,6 @@ table.dataTable tfoot td {
 
 
 .display-dotbar-dot-select {
-    border:1px solid #000;
+    border:1px solid #000 !important;
     z-index:50;
 }

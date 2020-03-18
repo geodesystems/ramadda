@@ -794,9 +794,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         selectedCbx: [],
         entries: [],
         wikiAttrs: [TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
-
+	_properties:[],
+	_wikiTags:[],
+	defineProperties:function(props) {
+	    props.forEach(p=>{
+		if(!p.p && p.label) {
+		    this._wikiTags.push('label:' + p.label);
+		    return;
+		}
+		if(!p.p && p.inlineLabel) {
+		    this._wikiTags.push('inlinelabel:' + p.inlineLabel);
+		    return;
+		}		
+		let w = [p.p+'="' + (p.wikiValue?p.wikiValue:p.d?p.d:"")+'"'];
+		if(p.tt)
+		    w.push(p.tt);
+		this._wikiTags.push(w);
+		if(!Utils.isDefined(p.doGetter) || p.doGetter) {
+		    let funcName =  'getProperty' + p.p.substring(0, 1).toUpperCase() + p.p.substring(1);
+		    this[funcName] = (dflt)=>{
+			if(!Utils.isDefined(dflt)) dflt = p.d;
+			return this.getProperty(p.p,dflt);
+		    };
+		}
+	    });
+	},
 	getWikiEditorTags: function() {
-	    return  [
+	    let l =   [
 		"label:Display Attributes",
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
@@ -896,9 +920,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"animationShowButtons=\"false\"",
 		"animationShowSlider=\"false\"",
 		"animationWidgetShort=\"true\""
-
 	    ];
+	    return  Utils.mergeLists(l,this._wikiTags);
         },
+
+	defineSizeByProperties: function() {
+	    this.defineProperties([
+		{inlineLabel:'Size By'},
+	    	{p:'sizeBy',wikiValue:'field',tt:'Field to size points by'},
+		{p:'sizeByLog',wikiValue:true,tt:'Use log scale for size by'},
+		{p:'sizeByMap', wikiValue:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
+		{p:'sizeByRadiusMin',wikiValue:'2',tt:'Scale size by'},
+		{p:'sizeByRadiusMax',wikiValue:'20',tt:'Scale size by'},
+		{p:'sizeByLegendSide',wikiValue:'bottom|top|left|right'},,
+		{p:'sizeByLegendStyle'},
+		{p:'sizeBySteps',wikiValue:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
+	    ]);
+	},
 
         getDisplayManager: function() {
             return this.displayManager;

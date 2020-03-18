@@ -254,17 +254,30 @@ function wikiInitEditor(info) {
 	var t = editor.getValue();
 	var s = "";
 	var lines = t.split("\n");
-	/*
-	  hello
-	  {{there ... |
-	  }} how are you
-	*/
 	var inTag = false;
 	var charCnt=0;
 	for(i=0;i<lines.length;i++) {
 	    var line  = lines[i];
 
 	}
+	
+	let dmenu = "";
+	let toggleLabel ="";
+	let blockCnt=0;
+	let handleBlock = ()=> {
+	    toggleLabel = HU.div([CLASS,"wiki-editor-popup-header"], toggleLabel);
+	    if(dmenu=="") return;
+	    blockCnt++;
+	    if(blockCnt>4) {
+		menu += HU.close('div');
+		menu += HU.open('div',[CLASS,'wiki-editor-popup-section']);
+		blockCnt=1;
+	    }
+	    dmenu = HU.div([CLASS,"wiki-editor-popup-items"],dmenu);
+	    menu +=HU.toggleBlock(toggleLabel, dmenu);
+	    dmenu = "";
+	};
+
 
 	var index = editor.session.doc.positionToIndex(cursor);
 	var text =editor.getValue();
@@ -331,7 +344,7 @@ function wikiInitEditor(info) {
 		    } catch(e) {
 			console.log("Error getting tags for:" + type +" error:" + e  + " stack:" +e.stack);
 		    }
-		    extra = "<td><div class=wiki-editor-popup-header>Color Table</div><div class=wiki-editor-popup-items>"
+		    extra = "<div class=wiki-editor-popup-items>"
 		    for (a in Utils.ColorTables) {
 			if(Utils.ColorTables[a].label) {
 			    extra+=HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
@@ -345,16 +358,15 @@ function wikiInitEditor(info) {
 			var call = "insertText(" + HtmlUtils.squote(info.id) +","+HtmlUtils.squote("colorTable=" + a)+")";
 			extra+=HtmlUtils.onClick(call,ct);
 		    }
-		    extra+="</div></div></td>";
+		    extra+="</div>";
+		    extra = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], "Color Table"),extra);
 		}
 		if(wikiAttributes[tag]) {
 		    wikiAttributes[tag].map(a=>tags.push(a));
 		}
 
 
-		if(tags.length>0)
-		    menu = "<div class=wiki-editor-popup><table><tr valign=top><td><div>";
-		tags.map(tag=>{
+		let processTag =tag=>{
 		    let tt =null;
 		    let label=null;
 		    if(Array.isArray(tag)) {
@@ -367,14 +379,20 @@ function wikiInitEditor(info) {
 			    tag = tag[0];
 			}
 		    } 
+		    if(tag.inline)  tag = "inlinelabel:" + tag.inline;
+		    if(tag.inlineLabel)  tag = "inlinelabel:" + tag.inlineLabel;
+		    if(tag.label) tag="label:" + tag.label;
+		    if(!tag.startsWith) console.log(tag);
+
 
 		    if(tag.startsWith("inlinelabel:")) {
-			menu+="<b>" + tag.substring("inlinelabel:".length)+"</b><br>";
+			handleBlock();
+			toggleLabel = tag.substring("inlinelabel:".length);
 			return;
 		    }
 		    if(tag.startsWith("label:")) {
-			if(menu!="") menu += "</div></td>";
-			menu+="<td><div class=wiki-editor-popup-header> " + tag.substring(6)+ "</div><div class=wiki-editor-popup-items>";
+			handleBlock();
+			toggleLabel = tag.substring(6);
 			return;
 		    }
 		    var t = " " + tag.replace(/\"/g,"&quot;")+" ";
@@ -389,22 +407,35 @@ function wikiInitEditor(info) {
 		    tag = HtmlUtils.span(["title",tt2],tag);
 		    if(label)
 			label = HtmlUtils.span(["title",tt2],label);
-		    menu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",label || tag)+"<br>\n";
-		});
+		    dmenu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",label || tag)+"<br>\n";
+		};
 		
-		menu+="</div></td>";
+		if(tags.length>0) {
+		    menu = HU.open('div',[CLASS,'wiki-editor-popup']);
+		    menu = HU.open('div',[CLASS,'wiki-editor-popup-section']);
+		}
+
+		tags.forEach(t=>{
+		    if(t.list) {
+			t.list.forEach(processTag);
+		    } else {
+			processTag(t);
+		    }
+		});
+		handleBlock();
 		if(extra) {
 		    menu+=extra;
 		}
-		menu += "</tr></table></div>";
+		menu += "</div>";
+		menu += "</div>";
 	    }
 	}
 	
 
-	tooltipObject = getTooltip();
-	tooltipObject.html(menu);
-	tooltipObject.show();
-	tooltipObject.position({
+	popupObject = getTooltip();
+	popupObject.html(menu);
+	popupObject.show();
+	popupObject.position({
 	    of: $(window),
             my: "left top",
             at: "left+" +e.x +" top+" + (e.y),

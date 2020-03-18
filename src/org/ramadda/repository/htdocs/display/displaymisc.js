@@ -3572,29 +3572,29 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotbar", properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Dot Bar'},
+	{p:'keyField'},
+	{p:'dotSize',d:16}
+    ]);
+    this.defineSizeByProperties();
     $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Dot Bar",
-					'keyField=',
-				    ])},
         needsData: function() {
             return true;
         },
 	updateUI: function() {
 	    var records = this.filterData();
 	    if(!records) return;
-	    let keyField = this.getFieldById(null,this.getProperty("keyField"));
+	    let keyField = this.getFieldById(null,this.getPropertyKeyField());
 	    let fields = this.getFieldsByIds(null,this.getProperty("fields"));
  	    if(fields.length==0) {
 		fields = this.getPointData().getRecordFields();
 	    }
-	    let dotSize = this.getProperty("dotSize",16);
+	    let dotSize = this.getPropertyDotSize();
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
 	    let size = dotSize;
 	    let cols = {};
-	    let html = "<table width=100%>";
+	    let html = HU.open('table',['width','100%']);
 	    let t1 = new Date();
 	    let selectedRecord;
 	    let maxHeight = dotSize;
@@ -3607,10 +3607,11 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		let cb = new  ColorByInfo(this,  fields, records, null,null, null, null,f);
 		let cid = this.getDomId("dots"+idx);
 		let column = this.getColumnValues(records, f);
-		html += "<tr valign=center><td width=10% align=right>" + f.getLabel().replace(/ /g,SPACE)+"</td>";
-		html += HU.td(["align","right","width","5%"],HU.div([STYLE, "margin-right:10px;"],this.formatNumber(column.min)));
-		html +="<td>";
-		html+= HU.open("div",[STYLE, HU.css('height',HU.getDimension(maxHeight), 'width','100%','position','relative','margin-top','4px')]);
+		html += HU.open(TR, [VALIGN,'center']);
+		html += HU.td([WIDTH,'10%', ALIGN,'right'],  HU.div([STYLE,HU.css('margin-right','8px')], f.getLabel().replace(/ /g,SPACE)));
+		html += HU.td([ALIGN,'right',WIDTH,'5%'],HU.div([STYLE, 'margin-right:10px;'],this.formatNumber(column.min)));
+		html +='<td>';
+		html+= HU.open(DIV,[STYLE, HU.css(HEIGHT,HU.getDimension(maxHeight), WIDTH,'100%','position','relative','margin-top','4px')]);
 		html+=HU.div([STYLE,HU.css('position','absolute','left','0px','right','0px','top','50%','border-top','1px solid #ccc')]);
 		html+=SPACE;
 		records.forEach((r,idx2)=>{
@@ -3619,7 +3620,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		    let darkC = Utils.pSBC(-0.25,c);
 		    if(column.min == column.max) return;
 		    let perc = (v-column.min)/(column.max-column.min);
-		    let clazz = "display-dotbar-dot";
+		    let clazz = 'display-dotbar-dot';
 		    let selected = false;
 		    let style = "";
 		    if(keyField && this.selectedKey) {
@@ -3630,9 +3631,13 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 			selected = true;
 		    }
 		    let dotBorder = "2px solid " + darkC;
-		    if(this.selectedIndex>=0 && !selected) {
-			dotBorder = "1px solid " + darkC;
-			c = "rgba(200,200,200,0.2)";
+		    if(this.selectedIndex>=0) {
+			if(!selected) {
+			    dotBorder = "1px solid " + darkC;
+			    c = "rgba(200,200,200,0.2)";
+			} else {
+			    dotBorder = "1px solid #000";
+			}
 		    }
 		    if(selected) {
 			selectedRecord = r;

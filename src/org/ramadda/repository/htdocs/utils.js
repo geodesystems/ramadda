@@ -684,13 +684,15 @@ var Utils = {
         s = s.trim();
         return this.camelCase(s.replace(/_/g," "));
     },
-    camelCase: function(s) {
+    camelCase: function(s,firstLower) {
         if (!s) return s;
         var r = "";
         toks = s.split(" ");
         for (var i = 0; i < toks.length; i++) {
             tok = toks[i];
-            converted = tok.substring(0, 1).toUpperCase();
+	    let converted = tok.substring(0, 1);
+	    if(i>>0 || !firstLower)
+		converted = converted.toUpperCase();
             if (tok.length > 1)
                 converted += tok.substring(1).toLowerCase();
             if (r != "") r += " ";
@@ -1162,6 +1164,10 @@ var Utils = {
 		}
 		if(popupObject) {
 		    var thisId = popupObject.attr("id");
+		    if(dontHideObject) {
+			dontHideObject= false;
+			return;
+		    }
 		    if (checkToHidePopup() && popupObject && thisId == popupObject.attr("id")) {
 			hidePopupObject();
 		    }
@@ -1403,11 +1409,12 @@ var Utils = {
 	let divargs = [CLASS, " display-colortable " +(options.showColorTableDots?"display-colortable-dots":"")];
 	if(!isNaN(options.width)) {
 	    divargs.push(STYLE);
-	    divargs.push("width:" + options.width+"px;");
+	    divargs.push(HU.css(WIDTH, HU.getDimension(options.width)));
 	}
 	
         var html = HtmlUtils.openTag("div", divargs);
-	if(!options.showColorTableDots) html+= "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
+	if(!options.showColorTableDots)
+	    html+= "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
 	let formatter = n=>{
 	    if(options.decimals>=0)
 		return number_format(n,options.decimals);
@@ -1416,7 +1423,7 @@ var Utils = {
 
         if (options.showRange) {
 	    if(!options.showColorTableDots) {
-		if(args.horizontal) 
+		if(options.horizontal) 
 		    html += "<td width=1%>" + formatter(min) + "&nbsp;</td>";
 		else
 		    html += formatter(min) + "<br>"
@@ -1446,25 +1453,25 @@ var Utils = {
 		    html +="<br>";
 	    } else {
 		if (options.showRange) {
-                    attrs.push("title");
+                    attrs.push(TITLE);
                     attrs.push(formatter(val));
 		}
 		attrs.push(STYLE);
-		attrs.push(HU.css("background", ct[i], "width","100%","height", options.height,"min-width","1px"));
-		if(args.horizontal) 
-		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
+		attrs.push(HU.css("background", ct[i], WIDTH,"100%",HEIGHT, options.height,"min-width","1px"));
+		if(options.horizontal) 
+		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i]), WIDTH, "1"], HtmlUtils.div(attrs, ""));
 		else
-		    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i], WIDTH, args.colorWidthrcolorw)], HtmlUtils.div(attrs, ""));
+ 		    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i], WIDTH, options.colorWidth)], HtmlUtils.div(attrs, ""));
 	    }
         });
 	if(!options.showColorTableDots) {
             if (options.showRange) {
-		if(args.horizontal) 
-		    html += "<td width=1%>" + formatter(max) + "&nbsp;</td>";
+		if(options.horizontal) 
+		    html += HU.td([WIDTH,'1%'], formatter(max) + SPACE);
 		else
 		    html += formatter(max) + "<br>"
             }
-	    if(args.horizontal) 
+	    if(options.horizontal) 
 		html += "</tr></table>";
 	}
         html += HtmlUtils.closeTag("div");
@@ -2091,8 +2098,12 @@ var STYLE = "style";
 var TITLE = "title";
 var CLASS = "class";
 var WIDTH = "width";
+var ALIGN = "align";
+var VALIGN = "valign";
 var HEIGHT = "height";
 var DIV = "div";
+var TR = 'tr';
+var TD= 'td';
 var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";

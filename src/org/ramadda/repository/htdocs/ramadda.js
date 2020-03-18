@@ -3,7 +3,9 @@
  */
 
 
+
 var popupObject;
+var dontHideObject=false;
 var tooltipObject;
 var popupTime;
 var popupId;
@@ -491,6 +493,7 @@ function checkboxClicked(event, cbxPrefix, id) {
 
 
 function toggleBlockVisibility(id, imgid, showimg, hideimg) {
+    dontHideObject = true;
     if (toggleVisibility(id, 'block')) {
         if(StringUtil.startsWith(showimg,"fa-")) {
             $("#" + imgid).html(HtmlUtils.getIconImage(showimg,[]));

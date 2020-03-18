@@ -3993,6 +3993,7 @@ h3.ui-accordion-header a {
 .wiki-editor-popup {
     font-size:80%;
     margin:5px;
+    vertical-align:top;
 }
 
 .wiki-editor-popup-toolbar {
@@ -4001,16 +4002,21 @@ h3.ui-accordion-header a {
 }
 
 .wiki-editor-popup-header {
+    display:inline-block;
     font-weight:bold;
-    margin-left:5px;
-    margin-right:5px;
+    width:190px;
+}
+
+.wiki-editor-popup-section {
+    vertical-align:top;
+    display:inline-block;
 }
 
 .wiki-editor-popup-items {
-    margin-left:5px;
+    margin-left:20px;
     max-width:200px;
     overflow-x:auto;
-    max-height:300px;
+    max-height:200px;
     overflow-y:auto;
 }
 

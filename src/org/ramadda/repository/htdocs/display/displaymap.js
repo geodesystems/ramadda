@@ -42,7 +42,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     let ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
     let SUPER;
     RamaddaUtil.defineMembers(this, {
-
         showBoxes: true,
         showPercent: false,
         percentFields: null,
@@ -56,6 +55,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
 							 DISPLAY_MAP, properties));
     addRamaddaDisplay(this);
+
+    this.defineProperties([
+	{label:'Map Attributes'},
+	{p:'strokeWidth',d:1},
+	{p:'strokeColor',d:'#000'},
+	{p:"fillColor",d:""},
+	{p:"fillOpacity",d:0.8},
+	{p:'radius',d:5,tt:"Size of the map points"},
+	{p:'scaleRadius',wikiValue:"true",tt:'Scale the radius based on # points shown'},
+	{p:'shape',d:'circle',wikiValue:'star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
+	{p:'markerIcon',wikiValue:"/icons/..."},
+	{p:'bounds',wikiValue:'north,west,south,east',tt:'initial bounds'},
+	{p:'mapCenter',wikiValue:'lat,lon',tt:"initial position"},
+	{p:'zoomLevel',wikiValue:4,tt:"initial zoom"},
+	{p:'fixedPosition',wikiValue:true,tt:'Keep the initial position'},
+	{p:'initialLocation', wikiValue:'lat,lon',tt:"initial location"},
+	{p:'defaultMapLayer',wikiValue:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
+	
+    ]);
+    this.defineSizeByProperties();
     RamaddaUtil.defineMembers(this, {
         mapBoundsSet: false,
         features: [],
@@ -63,28 +82,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         mapEntryInfos: {},
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
-		"label:Map Attributes",
-		"strokeWidth=1",
-		"strokeColor=\"#000\"",
-		"fillColor=\"\"",
-		["radius=\"5\"","Size of the map points"],
-		['scaleRadius=true',"Scale the radius based on # points shown"],
-		"shape=\"star|cross|x|square|triangle|circle|lightning|church\"",
-		"markerIcon=\"/icons/...\"",
-		["sizeBy=\"field\"","Field to size points by"],
-		["sizeByLog=\"true\"","Use log scale for size by"],
-		["sizeByMap=\"value1:size,...,valueN:size\"","Define sizes if sizeBy is text"],
-		['sizeByRadiusMin="2"',"Scale size by"],
-		['sizeByRadiusMax="20"',"Scale size by"],
-		'sizeByLegendSide=bottom|top|left|right',
-		'sizeByLegendStyle=""',
-		['sizeBySteps="value1:size1,v2:s2,..."','Use steps for sizes'],
-		['bounds=north,west,south,east',"initial bounds"],
-		['mapCenter=lat,lon',"initial position"],
-		['zoomLevel=4',"initial zoom"],
-		['fixedPosition=true','Keep the initial position'],
-		['initialLocation=lat,lon',"initial location"],
-		'defaultMapLayer ="ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor"',
+		{inlineLabel:'Other map attributes'},
 		['doPopup=false',"Don't show popups"],
 		['highlight=true',"Show mouse over highlights"],
 		['linked=true',"Link location with other maps"],
@@ -221,8 +219,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         createMap: function() {
             let _this = this;
             var params = {
-                "defaultMapLayer": this.getProperty("defaultMapLayer",
-						    map_default_layer),
+                "defaultMapLayer": this.getPropertyDefaultMapLayer(map_default_layer),
 		showLayerSwitcher: this.getProperty("showLayerSwitcher", true),
 		showScaleLine: this.getProperty("showScaleLine",false),
 		showLatLonPosition: this.getProperty("showLatLonPosition",false),
@@ -685,7 +682,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(highlight) {
 		var point = new OpenLayers.LonLat(lon,lat);
                 var attrs = {
-                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",6)+8)),
+                    pointRadius: parseFloat(this.getProperty("recordHighlightRadius", +this.getPropertyRadius(6)+8)),
                     stroke: true,
                     strokeColor: this.getProperty("recordHighlightStrokeColor", "#000"),
                     strokeWidth: parseFloat(this.getProperty("recordHighlightStrokeWidth", 2)),
@@ -693,7 +690,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillOpacity: parseFloat(this.getProperty("recordHighlightFillOpacity", 0.5)),
                 };
 		if(this.getProperty("recordHighlightUseMarker",false)) {
-		    var size = parseFloat(this.getProperty("recordHighlightRadius", +this.getProperty("radius",24)));
+		    var size = +this.getProperty("recordHighlightRadius", +this.getPropertyRadius(24));
 		    this.highlightMarker = this.map.addMarker("pt-" + i, point, null, "pt-" + i,null,null,size);
 		} else 	if(this.getProperty("recordHighlightVerticalLine",false)) {
 		    let points = [];
@@ -1859,7 +1856,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			else
 			    $("#" + info.hoverId).html(pie);
 			let canvas = document.getElementById(id);
-			let color = colorBy&& colorBy.index>=0?colorBy.getColor(info.data[0]):this.getProperty("fillColor", "#619FCA");
+			let color = colorBy&& colorBy.index>=0?colorBy.getColor(info.data[0]):this.getPropertyFillColor("#619FCA");
 			var ctx = canvas.getContext("2d");
 			if(idx==1) {
 			    ctx.fillStyle= '#fff';
@@ -1925,12 +1922,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let polygonColorTable = this.getColorTable(true, "polygonColorTable",null);
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
-            let radius = parseFloat(this.getDisplayProp(source, "radius", 8));
+            let radius = +this.getPropertyRadius(8);
 	    let unhighlightFillColor = this.getUnhighlightColor();
 	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#ccc");
 	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
-	    if(this.getProperty("scaleRadius")) {
-		
+	    if(this.getPropertyScaleRadius()) {
 		let seen ={};
 		let numLocs = 0;
 		points.every(p=>{
@@ -1949,8 +1945,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
 	    }
-            let strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
-            let strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
+            let strokeWidth = +this.getPropertyStrokeWidth();
+            let strokeColor = this.getPropertyStrokeColor();
             let sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
             let isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
@@ -2099,8 +2095,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		strokeWidth: this.getProperty("pathWidth",1)
 	    };
 
-	    let fillColor = this.getProperty("fillColor");
-	    let fillOpacity =  this.getProperty("fillOpacity",0.8);
+	    let fillColor = this.getPropertyFillColor();
+	    let fillOpacity =  this.getPropertyFillOpacity();
 	    let isPath = this.getProperty("isPath", false);
 	    let showSegments = this.getProperty("showSegments", false);
 	    let tooltip = this.getProperty("tooltip");
@@ -2362,7 +2358,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
 		    } else {
 			if(!props.graphicName)
-			    props.graphicName = this.getProperty("shape","circle");
+			    props.graphicName = this.getShape();
 			if(radius>0) {
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
 			}
