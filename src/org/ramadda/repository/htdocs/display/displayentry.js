@@ -4,27 +4,23 @@ Copyright 2008-2019 Geode Systems LLC
 
 
 
-var DISPLAY_ENTRYLIST = "entrylist";
-var DISPLAY_TESTLIST = "testlist";
-var DISPLAY_ENTRYDISPLAY = "entrydisplay";
-var DISPLAY_ENTRY_GALLERY = "entrygallery";
-var DISPLAY_ENTRY_GRID = "entrygrid";
-var DISPLAY_OPERANDS = "operands";
-var DISPLAY_METADATA = "metadata";
-var DISPLAY_ENTRYTIMELINE = "entrytimeline";
-var DISPLAY_REPOSITORIES = "repositories";
-var DISPLAY_ENTRYTITLE = "entrytitle";
-
-var ID_RESULTS = "results";
-var ID_ENTRIES = "entries";
-var ID_DETAILS = "details";
-var ID_DETAILS_INNER = "detailsinner";
-var ID_PROVIDERS = "providers";
-var ID_SEARCH_SETTINGS = "searchsettings";
-
-
-var ATTR_ENTRYID = "entryid";
-var ID_TREE_LINK = "treelink";
+const DISPLAY_ENTRYLIST = "entrylist";
+const DISPLAY_TESTLIST = "testlist";
+const DISPLAY_ENTRYDISPLAY = "entrydisplay";
+const DISPLAY_ENTRY_GALLERY = "entrygallery";
+const DISPLAY_ENTRY_GRID = "entrygrid";
+const DISPLAY_OPERANDS = "operands";
+const DISPLAY_METADATA = "metadata";
+const DISPLAY_ENTRYTIMELINE = "entrytimeline";
+const DISPLAY_REPOSITORIES = "repositories";
+const DISPLAY_ENTRYTITLE = "entrytitle";
+const ID_RESULTS = "results";
+const ID_ENTRIES = "entries";
+const ID_DETAILS_INNER = "detailsinner";
+const ID_PROVIDERS = "providers";
+const ID_SEARCH_SETTINGS = "searchsettings";
+const ATTR_ENTRYID = "entryid";
+const ID_TREE_LINK = "treelink";
 
 addGlobalDisplayType({
     type: DISPLAY_ENTRYLIST,

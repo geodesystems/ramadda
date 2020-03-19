@@ -1380,13 +1380,12 @@ SizeBy.prototype = {
     }
 
 }
-
 /**
-   Copyright 2008-2019 Geode Systems LLC
+   Copyright 2008-2020 Geode Systems LLC
 */
 
 
-let displayDebug = {
+var displayDebug = {
     getProperty:false,
     handleEventPropertyChanged:false,
     getSelectedFields:false,
@@ -1407,62 +1406,64 @@ let displayDebug = {
 
 
 //Ids of DOM components
-var ID_BOTTOM = "bottom";
-var ID_COLORTABLE = "colortable";
-var ID_LEGEND = "legend";
-var ID_FIELDS = "fields";
-var ID_HEADER = "header";
-var ID_HEADER1 = "header1";
-var ID_HEADER2 = "header2";
-var ID_HEADER2_PREFIX = "header2prefix";
-var ID_HEADER2_PREPREFIX = "header2preprefix";
-var ID_HEADER2_SUFFIX = "header2suffix";
-var ID_HEADER3 = "header3";
-var ID_FILTERBAR = "filterbar";
-var ID_TITLE = ATTR_TITLE;
-var ID_TITLE_EDIT = "title_edit";
-var ID_LEFT = "left";
-var ID_RIGHT = "right";
-var ID_TOP = "top";
-var ID_TOP_RIGHT = "topright";
-var ID_TOP_LEFT = "topleft";
-var ID_DETAILS = "details";
-var ID_DISPLAY_CONTENTS = "contents";
-var ID_DISPLAY_TOP = "top";
-var ID_DISPLAY_BOTTOM = "bottom";
-var ID_GROUP_CONTENTS = "group_contents";
-var ID_DETAILS_MAIN = "detailsmain";
-var ID_GROUPBY_FIELDS= "groupdbyfields";
-var ID_TOOLBAR = "toolbar";
-var ID_TOOLBAR_INNER = "toolbarinner";
-var ID_LIST = "list";
-var ID_DIALOG = "dialog";
-var ID_DIALOG_TABS = "dialog_tabs";
-var ID_FOOTER = "footer";
-var ID_FOOTER_LEFT = "footer_left";
-var ID_FOOTER_RIGHT = "footer_right";
-var ID_MENU_BUTTON = "menu_button";
-var ID_MENU_OUTER = "menu_outer";
-var ID_MENU_INNER = "menu_inner";
-var ID_DISPLAY_PROGRESS = "display_progress";
-var ID_REPOSITORY = "repository";
-var ID_REQUEST_PROPERTIES = "request_properties";
-let ID_PAGE_COUNT = "pagecount";
-let ID_PAGE_PREV = "pageprev";
-let ID_PAGE_NEXT = "pagenext";
-let ID_FILTER_HIGHLIGHT = "filterhighlight";
-let ID_FILTER_DATE = "filterdate";
-var CATEGORY_MISC = "Misc";
-
-var PROP_DISPLAY_FILTER = "displayFilter";
-var PROP_EXCLUDE_ZERO = "excludeZero";
-var PROP_DIVID = "divid";
-var PROP_FIELDS = "fields";
-var PROP_LAYOUT_HERE = "layoutHere";
-var PROP_HEIGHT = "height";
-var PROP_WIDTH = "width";
-var HIGHLIGHT_COLOR = "yellow";
-var RECORD_INDEX = "recordIndex";
+const ID_BOTTOM = "bottom";
+const ID_COLORTABLE = "colortable";
+const ID_LEGEND = "legend";
+const ID_FIELDS = "fields";
+const ID_HEADER = "header";
+const ID_HEADER1 = "header1";
+const ID_HEADER2 = "header2";
+const ID_HEADER2_PREFIX = "header2prefix";
+const ID_HEADER2_PREPREFIX = "header2preprefix";
+const ID_HEADER2_SUFFIX = "header2suffix";
+const ID_HEADER3 = "header3";
+const ID_FILTERBAR = "filterbar";
+const ID_TITLE = ATTR_TITLE;
+const ID_TITLE_EDIT = "title_edit";
+const ID_LEFT = "left";
+const ID_RIGHT = "right";
+const ID_TOP = "top";
+const ID_TOP_RIGHT = "topright";
+const ID_TOP_LEFT = "topleft";
+const ID_DETAILS = "details";
+const ID_DISPLAY_CONTENTS = "contents";
+const ID_DISPLAY_TOP = "top";
+const ID_DISPLAY_BOTTOM = "bottom";
+const ID_GROUP_CONTENTS = "group_contents";
+const ID_DETAILS_MAIN = "detailsmain";
+const ID_GROUPBY_FIELDS= "groupdbyfields";
+const ID_TOOLBAR = "toolbar";
+const ID_TOOLBAR_INNER = "toolbarinner";
+const ID_LIST = "list";
+const ID_DIALOG = "dialog";
+const ID_DIALOG_TABS = "dialog_tabs";
+const ID_FOOTER = "footer";
+const ID_FOOTER_LEFT = "footer_left";
+const ID_FOOTER_RIGHT = "footer_right";
+const ID_MENU_BUTTON = "menu_button";
+const ID_MENU_OUTER = "menu_outer";
+const ID_MENU_INNER = "menu_inner";
+const ID_DISPLAY_PROGRESS = "display_progress";
+const ID_REPOSITORY = "repository";
+const ID_REQUEST_PROPERTIES = "request_properties";
+const ID_PAGE_COUNT = "pagecount";
+const ID_PAGE_PREV = "pageprev";
+const ID_PAGE_NEXT = "pagenext";
+const ID_FILTER_HIGHLIGHT = "filterhighlight";
+const ID_FILTER_DATE = "filterdate";
+const CATEGORY_MISC = "Misc";
+const ID_ENTRIES_MENU = "entries_menu";
+const ID_ENTRIES_PREV = "entries_prev";
+const ID_ENTRIES_NEXT = "entries_next";
+const PROP_DISPLAY_FILTER = "displayFilter";
+const PROP_EXCLUDE_ZERO = "excludeZero";
+const PROP_DIVID = "divid";
+const PROP_FIELDS = "fields";
+const PROP_LAYOUT_HERE = "layoutHere";
+const PROP_HEIGHT = "height";
+const PROP_WIDTH = "width";
+const HIGHLIGHT_COLOR = "yellow";
+const RECORD_INDEX = "recordIndex";
 
 function initRamaddaDisplays() {
     ramaddaCheckForResize();
@@ -1514,20 +1515,16 @@ async function ramaddaDisplaySetSelectedEntry(entryId) {
 
 function ramaddaDisplayCheckLayout() {
     if(!window.globalDisplaysList) return;
-    for (var i = 0; i < window.globalDisplaysList.length; i++) {
+    for (let i = 0; i < window.globalDisplaysList.length; i++) {
         if (window.globalDisplaysList[i].checkLayout) {
             window.globalDisplaysList[i].checkLayout();
         }
     }
-
-
 }
 
-
-
 function ramaddaCheckForResize() {
-    var redisplayPending = false;
-    var redisplayPendingCnt = 0;
+    let redisplayPending = false;
+    let redisplayPendingCnt = 0;
     //A hack to redraw the chart after the window is resized
     $(window).resize(function() {
         if (window.globalDisplaysList == null) {
@@ -1558,16 +1555,12 @@ function ramaddaCheckForResize() {
     });
 }
 
-
-
-
 function getRamaddaDisplay(id) {
     if (window.globalDisplays == null) {
         return null;
     }
     return window.globalDisplays[id];
 }
-
 
 function removeRamaddaDisplay(id) {
     var display = getRamaddaDisplay(id);
@@ -1583,17 +1576,13 @@ function displayGetFunctionValue(v) {
 
 
 
-const ID_ENTRIES_MENU = "entries_menu";
-const ID_ENTRIES_PREV = "entries_prev";
-const ID_ENTRIES_NEXT = "entries_next";
-
+/**
+   Base class for all displays oriented things
+*/
 function DisplayThing(argId, argProperties) {
-
-
     if (argProperties == null) {
         argProperties = {};
     }
-
     //check for booleans as strings
     for (var i in argProperties) {
         if (typeof argProperties[i] == "string") {
@@ -1771,19 +1760,15 @@ function DisplayThing(argId, argProperties) {
                 return "" + date;
             }
         },
-	xcnt:0,
 	dateFormat:null,
         formatDateInner: function(date, args,useToStringIfNeeded) {
 	    if(!this.dateFormat)
 		this.dateFormat =  this.getProperty("dateFormat", this.getProperty("dateFormat2"));
-	    this.xcnt++;
 	    if(!this.dateFormat && useToStringIfNeeded) {
-//		if(this.xcnt<20)  console.log("doing date.tostring:" + date);
 		return String(date);
 	    }
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
-//	    if(this.xcnt<20)console.log("fmt:" + this.dateFormat +"  " + useToStringIfNeeded);
 	    if(this.dateFormat) {
 		let dttm = Utils.formatDateWithFormat(date,this.dateFormat,true);
 		if(dttm) {
@@ -1835,7 +1820,6 @@ function DisplayThing(argId, argProperties) {
 		colorByMap: this.getColorByMap()
 	    }
 	},
-	xcnt:0,	
 	applyRecordTemplate: function(row, fields, template, props,macros) {
 	    fields = this.getFields(fields);
 	    if(!props) {
@@ -2024,7 +2008,7 @@ function DisplayThing(argId, argProperties) {
             this.properties[key] = null;
         },
         setProperty: function(key, value) {
-//            this[key] = value;
+	    //            this[key] = value;
             this.properties[key] = value;
         },
         getSelfProperty: function(key, dflt) {
@@ -2151,22 +2135,12 @@ function DisplayThing(argId, argProperties) {
 
 
 
-
+/**
+   Base class for all displays 
+*/
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
-
-
-
-    RamaddaUtil.initMembers(this, {
-    });
-
     let SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
-    this.getSuper = function() {
-        return SUPER;
-    }
-
-
-
     RamaddaUtil.defineMembers(this, {
         displayReady: Utils.getPageLoaded(),
         type: argType,
@@ -2204,6 +2178,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getWikiEditorTags: function() {
 	    let l =   [
 		"label:Display Attributes",
+		['fields=""','Many displays need a comma separated list of field ids'],
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
 		"layoutHere=\"true\"",
@@ -2824,8 +2799,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getFooter: function() {
             return HU.div([ATTR_ID, this.getDomId(ID_FOOTER), ATTR_CLASS, "display-footer"],
-				 HU.leftRight(HU.div([ATTR_ID, this.getDomId(ID_FOOTER_LEFT), ATTR_CLASS, "display-footer-left"], ""),
-						     HU.div([ATTR_ID, this.getDomId(ID_FOOTER_RIGHT), ATTR_CLASS, "display-footer-right"], "")));
+			  HU.leftRight(HU.div([ATTR_ID, this.getDomId(ID_FOOTER_LEFT), ATTR_CLASS, "display-footer-left"], ""),
+				       HU.div([ATTR_ID, this.getDomId(ID_FOOTER_RIGHT), ATTR_CLASS, "display-footer-right"], "")));
         },
         shouldSkipField: function(field) {
             if (this.skipFields && !this.skipFieldsList) {
@@ -2916,15 +2891,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             html += HU.open(TAG_DIV, [ATTR_CLASS, "display-fields"]);
                             var on = this.groupBy == null || this.groupBy == "";
                             html += HU.tag(TAG_DIV, [ATTR_TITLE, "none"],
-						  HU.radio("none", this.getDomId("groupby"), groupByClass, "none", !on) + " None");
+					   HU.radio("none", this.getDomId("groupby"), groupByClass, "none", !on) + " None");
                         }
                         cnt++;
                         var on = this.groupBy == field.getId();
                         var idBase = "groupby_" + collectionIdx + "_" + i;
                         field.radioId = this.getDomId(idBase);
                         html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-					      HU.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) + " " + field.getUnitLabel() + " (" + field.getId() + ")"
-					     );
+				       HU.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) + " " + field.getUnitLabel() + " (" + field.getId() + ")"
+				      );
                     }
                     if (cnt > 0) {
                         html += HU.close(TAG_DIV);
@@ -3002,8 +2977,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             }
 
                             html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-						  widget + " " + label
-						 );
+					   widget + " " + label
+					  );
                         }
                         //                        html+= "<br>";
                     }
@@ -3527,7 +3502,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		pointData = new CsvUtil().process(this, pointData, this.getProperty("convertData"));
 	    } catch(exc) {
 		this.setErrorMessage(exc);
-//		console.log(exc.trace);
+		//		console.log(exc.trace);
 		return null;
 	    }
 
@@ -3790,7 +3765,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(debug)
 		console.log("filtered:" + records.length);
 
-//	    records.map(r=>{console.log(r.getDate() +" " + r.getData());});
+	    //	    records.map(r=>{console.log(r.getDate() +" " + r.getData());});
 
 
             return records;
@@ -4038,8 +4013,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var metadata = entry.getMetadata();
             if (entry.isImage()) {
                 var img = HU.tag(TAG_IMG, ["src", entry.getResourceUrl(), /*ATTR_WIDTH,"100%",*/
-						  ATTR_CLASS, "display-entry-image"
-						 ]);
+					   ATTR_CLASS, "display-entry-image"
+					  ]);
 
                 html += HU.href(entry.getResourceUrl(), img) + "<br>";
             } else {
@@ -4081,8 +4056,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (entry.getFilesize() > 0) {
                 html += HU.formEntry("File:", entry.getFilename() + " " +
-					    HU.href(entry.getResourceUrl(), HU.image(ramaddaBaseUrl + "/icons/download.png")) + " " +
-					    entry.getFormattedFilesize());
+				     HU.href(entry.getResourceUrl(), HU.image(ramaddaBaseUrl + "/icons/download.png")) + " " +
+				     entry.getFormattedFilesize());
             }
             for (var colIdx = 0; colIdx < columns.length; colIdx++) {
                 var column = columns[colIdx];
@@ -4182,10 +4157,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var entryIdForDom = entry.getIdForDom() + domIdSuffix;
                 var entryId = entry.getId();
                 var arrow = HU.image(icon_tree_closed, [ATTR_BORDER, "0",
-							       "tree-open", "false",
-							       ATTR_ID,
-							       this.getDomId(ID_TREE_LINK + entryIdForDom)
-							      ]);
+							"tree-open", "false",
+							ATTR_ID,
+							this.getDomId(ID_TREE_LINK + entryIdForDom)
+						       ]);
                 var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId + "');";
                 var toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
                 var open = HU.onClick(toggleCall, arrow);
@@ -4215,9 +4190,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var line = HU.div([CLASS, (even ? "ramadda-row-even" : "ramadda-row-odd"), ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
 
                 html += HU.tag(TAG_DIV, [ATTR_ID,
-						this.getDomId("entry_" + entryIdForDom),
-						ATTR_ENTRYID, entryId, ATTR_CLASS, "display-entrylist-entry" + rowClass
-					       ], line);
+					 this.getDomId("entry_" + entryIdForDom),
+					 ATTR_ENTRYID, entryId, ATTR_CLASS, "display-entrylist-entry" + rowClass
+					], line);
                 html += "\n";
             }
             return html;
@@ -4406,12 +4381,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //                                                HU.image(ramaddaBaseUrl +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HU.sqt(entry.getId()) + ");"],
-						HU.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+					 HU.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
             if (entry.getType().getId() == "geo_shapefile" || entry.getType().getId() == "geo_geojson") {
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HU.sqt(entry.getId()) + ");"],
-						HU.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+					 HU.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
 
@@ -4419,24 +4394,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (jsonUrl != null) {
                 jsonUrl = jsonUrl.replace(/\'/g, "_");
                 toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".createDisplay(" + HU.sqt(entry.getFullId()) + "," +
-							HU.sqt("table") + "," + HU.sqt(jsonUrl) + "," + props+");"
-						       ],
-						HU.getIconImage("fa-table", [ATTR_TITLE, "Create Tabular Display"])));
+						 HU.sqt("table") + "," + HU.sqt(jsonUrl) + "," + props+");"
+						],
+					 HU.getIconImage("fa-table", [ATTR_TITLE, "Create Tabular Display"])));
 
                 var x;
                 toolbarItems.push(x = HU.tag(TAG_A, ["onclick", get + ".createDisplay(" + HU.sqt(entry.getFullId()) + "," +
- 							    HU.sqt("linechart") + "," + HU.sqt(jsonUrl) + "," + props +");"
-							   ],
-						    HU.getIconImage("fa-chart-line", [ATTR_TITLE, "Create Chart"])));
+ 						     HU.sqt("linechart") + "," + HU.sqt(jsonUrl) + "," + props +");"
+						    ],
+					     HU.getIconImage("fa-chart-line", [ATTR_TITLE, "Create Chart"])));
 		//		console.log("X:" + x);
             }
             toolbarItems.push(HU.tag(TAG_A, ["onclick", get + ".createDisplay(" + HU.sqt(entry.getFullId()) + "," +
-						    HU.sqt("entrydisplay") + "," + HU.sqt(jsonUrl) + "," + props +");"
-						   ],
-					    HU.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
+					     HU.sqt("entrydisplay") + "," + HU.sqt(jsonUrl) + "," + props +");"
+					    ],
+				     HU.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
             if (entry.getFilesize() > 0) {
                 toolbarItems.push(HU.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl()],
-						HU.image(ramaddaBaseUrl + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
+					 HU.image(ramaddaBaseUrl + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
 
             }
 
@@ -4463,9 +4438,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             toolbarItems = tmp;
             return HU.div([ATTR_CLASS, "display-entry-toolbar", ATTR_ID,
-				  this.getEntryToolbarId(entry.getIdForDom())
-				 ],
-				 HU.join(toolbarItems, ""));
+			   this.getEntryToolbarId(entry.getIdForDom())
+			  ],
+			  HU.join(toolbarItems, ""));
         },
         getEntryToolbarId: function(entryId) {
             var id = entryId.replace(/:/g, "_");
@@ -4598,8 +4573,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntryMenuButton: function(entry) {
             var menuButton = HU.onClick(this.getGet() + ".showEntryMenu(event, '" + entry.getId() + "');",
-					       HU.image(ramaddaBaseUrl + "/icons/menu.png",
-							       [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
+					HU.image(ramaddaBaseUrl + "/icons/menu.png",
+						 [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
             return menuButton;
         },
         setRamadda: function(e) {
@@ -4727,7 +4702,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (this.jsonUrl != null) {
                 fileMenuItems.push(HU.tag(TAG_LI, [], "Data: " + HU.onClick(get + ".fetchUrl('json');", "JSON") +
-						 HU.onClick(get + ".fetchUrl('csv');", "CSV")));
+					  HU.onClick(get + ".fetchUrl('csv');", "CSV")));
             }
 
 	    var props = "{showMenu:true,showTitle:true}";
@@ -4780,7 +4755,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             var menu = HU.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER + entry.getIdForDom()), ATTR_CLASS, "sf-menu"],
-				     topMenus);
+			      topMenus);
             callback(menu);
         },
         showEntryMenu: async function(event, entryId) {
@@ -4965,24 +4940,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },	
         checkLayout: function() {},
         displayData: function() {},
-        createUI: function() {
-            var divid = this.getProperty(PROP_DIVID);
-            if (divid != null) {
-                var html = this.getHtml();
-		let div = $("#" + divid);
-		if(this.getProperty("displayInline")) {
-		    div.css("display","inline-block");
-		    div.css("vertical-align","bottom");
-		}
-		let width = this.getWidth();
-		if (width) {
-                    div.css("width",HU.getDimension(width));
-		}
-		div.html(html);
-            } else {
-                console.log("error: no div defined for display:" + this.getType());
-            }
-        },
         setDisplayReady: function() {
 	    var callUpdate = !this.displayReady;
             this.displayReady = true;
@@ -5006,13 +4963,292 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.checkSearchBar();
 	    this.updateUI();
         },
-	getFilterId: function(id) {
-	    return  this.getDomId("filterby_" + id);
+        createUI: function() {
+            var divid = this.getProperty(PROP_DIVID);
+            if (divid != null) {
+                var html = this.getHtml();
+		let div = $("#" + divid);
+		let inline = this.getProperty("displayInline");
+		if(inline) {
+		    div.css("display","inline-block");
+		    div.css("vertical-align","bottom");
+		} 
+		let width = this.getWidth();
+		if(width)
+                    div.css("width",HU.getDimension(width));
+		div.html(html);
+            } else {
+                console.log("error: no div defined for display:" + this.getType());
+            }
+        },
+        /*
+          This creates the default layout for a display
+          Its a table:
+          <td>title id=ID_HEADER</td><td>align-right popup menu</td>
+          <td colspan=2><div id=ID_DISPLAY_CONTENTS></div></td>
+          the getDisplayContents method by default returns:
+          <div id=ID_DISPLAY_CONTENTS></div>
+          but can be overwritten by sub classes
+
+          After getHtml is called the DisplayManager will add the html to the DOM then call
+          initDisplay
+          That needs to call setContents with the html contents of the display
+        */
+        getHtml: function() {
+            let get = this.getGet();
+            let button = "";
+
+            if (this.getShowMenu()) {
+                button = HU.onClick(get + ".showDialog();",
+				    HU.image(ramaddaBaseUrl + "/icons/downdart.png",
+					     [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
+		button+=" ";
+            }
+	    if(this.getProperty("showProgress",false)) {
+		//		button += HU.image(icon_progress,[ID,this.getDomId(ID_DISPLAY_PROGRESS)]);
+	    }
+            let title = "";
+            if (this.getShowTitle()) {
+                title = this.getTitle(false).trim();
+            }
+
+            let topLeft = "";
+            if (button != "" || title != "") {
+                let titleDiv = this.getTitleHtml(title);
+                if (button == "") {
+                    topLeft = titleDiv;
+                } else {
+                    topLeft = HU.div(["class","display-header"], button + "&nbsp;" + titleDiv);
+                }
+            }
+            topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT)], topLeft);
+            let topCenter = HU.div([ID, this.getDomId(ID_TOP)], "");
+            let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
+	    let top =  HU.leftRightTable(topLeft, topRight, null, null, {
+                valign: "bottom"
+            });
+            let header =
+		HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "") +
+		HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "") +
+		HU.div([ID,this.getDomId(ID_HEADER3),CLASS,"display-header3"], "");
+
+	    top =  header + topCenter + top;
+
+
+	    let colorTable = HU.div([ID,this.getDomId(ID_COLORTABLE)]);
+	    let rightInner="";
+	    let leftInner="";
+
+	    let bottom = HU.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)]);
+	    let legend = HU.div([ID,this.getDomId(ID_LEGEND)]);
+
+	    let ctSide = this.getProperty("colorTableSide","bottom");
+	    if(ctSide=="top") {
+		top+=colorTable;
+	    } else if(ctSide=="right") {
+		rightInner += colorTable;
+	    } else if(ctSide=="left") {
+		leftInner += colorTable;
+	    } else {
+		bottom+=colorTable;
+	    }
+	    bottom+=legend;
+	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT)],leftInner);
+	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
+
+
+	    let sideWidth = "1%";
+            let contents = this.getContentsDiv();
+            let table =   HU.open("table", ["width","100%","border",0]);
+	    table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
+	    table+= HU.tr([],HU.td(["width",sideWidth],left) + HU.td(["width","99%"],contents) +HU.td(["width",sideWidth],right));
+	    table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],bottom) +HU.td(["width",sideWidth]));
+	    table+=HU.close("table");
+
+            let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
+            let style = this.getProperty("displayStyle", "");
+            html += HU.div([CLASS, "display-contents", STYLE, style],table);
+            return html;
+        },
+        getWidthForStyle: function(dflt) {
+            var width = this.getProperty("width", -1);
+            if (width == -1) return dflt;
+	    return HU.getDimension(width);
+        },
+        getHeightForStyle: function(dflt) {
+            var height = this.getProperty("height", -1);
+            if (height == -1) return dflt;
+            if (height.match("^[0-9]+$"))
+                height = height + "px";
+            return height;
+        },
+        getContentsStyle: function() {
+            var style = "";
+            var height = this.getHeightForStyle();
+            if (height) {
+                style += " height:" + height + ";overflow-y:auto;";
+            }
+	    //            var width = this.getWidthForStyle();
+	    //            if (width) {
+	    //                style += " width:" + width + ";";
+	    //            }
+            return style;
+        },
+	getContentsClass: function() {
+	    return "ramadda-expandable-target display-contents-inner display-" + this.type;
 	},
+        getContentsDiv: function() {
+            let style = this.getContentsStyle();
+            style += this.getProperty("contentsStyle", "");
+            let image = this.getProperty("backgroundImage");
+            if (image) {
+                image = HU.getEntryImage(this.entryId, image);
+                style += HU.css("background-attachment","auto","background-size","100% auto","background-image","url('" + image + "')");
+            }
+            let background = this.getProperty("background");
+            if (background)
+                style += HU.css("background", background);
+            let topBottomStyle = "";
+	    //            let width = this.getWidthForStyle();
+	    //            if (width) {
+	    //                topBottomStyle += HU.css("width", width);
+	    //            }
+            let top = HU.div([STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
+            let bottom = HU.div([STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
+	    let expandedHeight  = this.getProperty("expandedHeight");
+	    if(expandedHeight)
+		style+="height:" +expandedHeight+";";
+	    let contentsAttrs =[ATTR_CLASS, this.getContentsClass(), STYLE, style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
+	    if(this.getProperty("expandableHeight")) {
+		contentsAttrs.push("expandable-height");
+		contentsAttrs.push(this.getProperty("expandableHeight"));
+	    }
+	    let contents =  top + "\n" +HU.div(contentsAttrs, "") + "\n" +bottom;
+            return contents;
+        },
+
+        //Gets called before the displays are laid out
+        prepareToLayout: function() {
+            //Force setting the property from the input dom (which is about to go away)
+            this.getColumn();
+            this.getWidth();
+            this.getHeight();
+            this.getName();
+            this.getEventSource();
+        },
+        getColumn: function() {
+            return this.getFormValue("column", 0);
+        },
+        getRow: function() {
+            return this.getFormValue("row", 0);
+        },
+        getWidth: function(dflt) {
+            return this.getFormValue("width", dflt);
+        },
+        getHeight: function() {
+            return this.getFormValue("height", 0);
+        },
+        getDisplayTitle: function(title) {
+            if (!title) title = this.title != null ? this.title : "";
+            var text = title;
+            var fields = this.lastSelectedFields;
+            if (fields && fields.length > 0)
+                text = text.replace("{field}", fields[0].getLabel());
+            else
+                text = text.replace("{field}", "");
+            return text;
+        },
+
+        setDisplayTitle: function(title) {
+            if (!Utils.stringDefined(title)) {
+                title = this.getTitle(false).trim();
+            }
+            var text = this.getTitleHtml(title);
+            if (this.getShowTitle()) {
+                this.jq(ID_TITLE).show();
+            } else {
+                this.jq(ID_TITLE).hide();
+            }
+            this.writeHtml(ID_TITLE, text);
+        },
+        getTitle: function(showMenuButton) {
+            var prefix = "";
+            if (showMenuButton && this.hasEntries()) {
+                prefix = this.getEntryMenuButton(this.getEntries()[0]) + " ";
+            }
+            var title = this.getProperty(ATTR_TITLE);
+            if (title != null) {
+                return prefix + title;
+            }
+            if (this.dataCollection == null) {
+                return prefix;
+            }
+            var dataList = this.dataCollection.getList();
+            title = "";
+            for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
+                var pointData = dataList[collectionIdx];
+                if (collectionIdx > 0) title += "/";
+                title += pointData.getName();
+            }
+
+            return prefix + title;
+        },
+        getIsLayoutFixed: function() {
+            return this.getProperty(PROP_LAYOUT_HERE, true);
+        },
+
+        makeToolbar: function(props) {
+            var toolbar = "";
+            var get = this.getGet();
+            var addLabel = props.addLabel;
+            var images = [];
+            var calls = [];
+            var labels = [];
+            if (!this.getIsLayoutFixed()) {
+                calls.push("removeRamaddaDisplay('" + this.getId() + "')");
+                images.push("fa-cut");
+		labels.push("Delete display");
+            }
+            calls.push(get + ".copyDisplay();");
+	    images.push("fa-copy");
+            labels.push("Copy Display");
+            if (this.jsonUrl != null) {
+                calls.push(get + ".fetchUrl('json');");
+                images.push(ramaddaBaseUrl + "/icons/json.png");
+                labels.push("Download JSON");
+
+                calls.push(get + ".fetchUrl('csv');");
+                images.push(ramaddaBaseUrl + "/icons/csv.png");
+                labels.push("Download CSV");
+            }
+            for (var i = 0; i < calls.length; i++) {
+                var inner = HU.getIconImage(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
+                if (addLabel) inner += " " + labels[i] + "<br>";
+                toolbar += HU.onClick(calls[i], inner);
+            }
+            return toolbar;
+        },
+
 	getHeader2:function() {
 	    return "";
 	},
 	initHeader2:function() {
+	},
+	writeHeader:function(header,html) {
+	    if(html=="") {
+		this.jq(header).css("display","none");
+	    } else {
+		this.jq(header).css("display","inline-block");
+	    }
+	    this.jq(header).html(html);
+	},
+
+        updateUI: function() {
+	},
+
+
+	getFilterId: function(id) {
+	    return  this.getDomId("filterby_" + id);
 	},
 	getRequestMacros: function() {
 	    if(!this.requestMacros) {
@@ -5026,168 +5262,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let e1 = this.getProperty("extraFields1","");
 	    let e2 = this.getProperty("extraFields2","");
 	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
-	    list.every(macro=>{
-		if(macro=="") return true;
-		let values = null;
-		let enums = this.getProperty("request." +macro+".values");
-		if(enums) {
-		    values =[]	
-		    if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
-			values.push(["","All"]);
-		    }
-		    if(this.getProperty("request." + macro+".includeNone",false)) {
-			values.push(["","None"]);
-		    }
-		    enums.split(",").every(tok=>{
-			[id,label] = tok.split(":");
-			values.push([id,label||id]);
-			return true;
-		    });
-		}
-		let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
-		let dflt =this.getProperty("request." +macro+".default",null);
-		if(dflt == null) {
-		    if(values && values.length>0  && macroType=="enumeration") {
-			dflt = values[0][0];
-		    } else {
-			dflt = "";
-		    }
-		}
-		macros.push({
-		    display:this,
-		    name: macro,
-		    values:values,
-		    urlarg: this.getProperty("request." +macro+".urlarg",macro),
-		    type:macroType,
-		    triggerReload:this.getProperty("request." +macro+".triggerReload",true),
-		    dflt:dflt,
-		    dflt_from:this.getProperty("request." +macro+"_from.default",""),		    
-		    dflt_to:this.getProperty("request." +macro+"_to.default",""),
-		    dflt_min:this.getProperty("request." +macro+"_min.default",""),		    
-		    dflt_max:this.getProperty("request." +macro+"_max.default",""),
-		    label:this.getProperty("request." +macro+".label",Utils.makeLabel(macro)),
-		    multiple:this.getProperty("request." +macro+".multiple",false),
-		    rows:this.getProperty("request." +macro+".rows",3),
-		    getWidget: function(dateIds) {
-			let debug = false;
-			let visible = this.display.getProperty("request." +this.name +".visible",
-							       this.display.getProperty("macros.visible",true));
-			let style = visible?"":"display:none;";
-			let widget;
-			let label = this.label;
-			if(debug)console.log("getWidget:" + label +" type:" + this.type);
-			if(this.type=="bounds") {
-			    widget = HU.checkbox("",[ID,this.display.getDomId(this.getId())], false) +HU.span([CLASS,"display-request-reload",TITLE,"Reload with current bounds"], " In bounds");
-			    label = null;
-			} else if(this.type=="enumeration") {
- 			    if(values && values.length>0) {
-				let attrs = [STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
-				if(this.multiple) {
-				    attrs.push("multiple");
-				    attrs.push(null);
-				    attrs.push("size");
-				    attrs.push(Math.min(this.rows,values.length));
-				}
-				if(debug)
-				    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
-				    
-				widget = HU.select("",attrs,this.values,this.dflt,20);
-			    }
-			} else if(this.type=="numeric") {
-			    let minId = this.display.getDomId(this.getId()+"_min");
-			    let maxId = this.display.getDomId(this.getId()+"_max");			    
-			    widget = HU.input("","",[STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input"],this.dflt_min) +
-				" - " +
-				HU.input("","",[STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input"],this.dflt_max)
-			    label = label+" range";
-			} else if(this.type=="date") {
-			    let fromId = this.display.getDomId(this.getId()+"_from");
-			    let toId = this.display.getDomId(this.getId()+"_to");
-			    dateIds.push(fromId);
-			    dateIds.push(toId);
-			    widget = HU.datePicker("",this.dflt_from,[CLASS,"display-filter-input",STYLE, style, "name","",ID,fromId]) +
-				" - " +
-				HU.datePicker("",this.dflt_to,[CLASS,"display-filter-input",STYLE, style, "name","",ID,toId])
-			    label = label+" range";
-			} else {
-			    let size = "10";
-			    if(this.type=="number")
-				size = "4";
-			    widget = HU.input("",this.dflt,[STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
-			}
-			if(!widget) return "";
-			return (visible?this.display.makeFilterWidget(label,widget):widget);
-		    },
-		    getId: function() {
-			return "macro_" + this.name;
-		    },
-		    getValue: function() {
-			let widget = this.display.jq(this.getId());
-			let value = this.dflt;
-			if(widget.length!=0) value =  widget.val();
-			this.display.setProperty("request." + this.name+".default",value);
-			return value;
-		    },
-		    apply: function(url) {
-			if(this.type == "bounds") {
-			    if(this.display.getBounds && this.display.jq(this.getId()).is(':checked')) {
-				let bounds = this.display.getBounds();
-				if(bounds) {
-				    bounds = RecordUtil.convertBounds(bounds);
-				    ["north","south","east","west"].map(b=>{
-					url+="&" + b+"=" +bounds[b];
-				    });
-				    
-				}
-			    }
-			} else if(this.type=="numeric") {
-			    let min = this.display.jq(this.getId()+"_min").val()||"";
-			    let max = this.display.jq(this.getId()+"_max").val()||"";
-			    this.dflt_min = min;
-			    this.dflt_max = max;
-			    if(min!="")
-				url = url +"&" + HU.urlArg(this.urlarg+"_from",min);
-			    if(max!="")
-				url = url +"&" + HU.urlArg(this.urlarg+"_to",max);
-			    this.display.setProperty("request." +this.name+"_min.default",min);
-			    this.display.setProperty("request." +this.name+"_max.default",max);
-
-			} else if(this.type=="date") {
-			    let from = this.display.jq(this.getId()+"_from").val()||"";
-			    let to = this.display.jq(this.getId()+"_to").val()||"";
-			    this.dflt_from = from;
-			    this.dflt_to = to;
-			    this.display.setProperty("request." +this.name+"_from.default",from);
-			    this.display.setProperty("request." +this.name+"_to.default",to);
-			    if(from!="")
-				url = url +"&" + HU.urlArg(this.urlarg+"_fromdate",from);
-			    if(to!="")
-				url = url +"&" + HU.urlArg(this.urlarg+"_todate",to);
-			    //			    this.display.setProperty(this.name+".default",value);
-			} else if(this.type=="enumeration") {
-			    let value = this.getValue();
-			    if(!Array.isArray(value)) {value=[value];}
-			    if(value.length>0 && value[0]!="") {
-				let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
-				url = url.replace(regexp,"");
-				value.map(v=>{
-				    if(v!="")
-					url = url +"&" + HU.urlArg(this.urlarg,v);
-				});
-			    }
-			} else {
-			    let value = this.getValue();
-			    this.dflt  = value;
-			    if(value!="") {
-				let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
-				url = url.replace(regexp,"");
-				url = url +"&" + HU.urlArg(this.urlarg,value);
-			    }
-			}
-			return  url;
-		    }
-		});
-		return true;
+	    list.forEach(macro=>{
+		if(macro=="") return;
+		macros.push(new RequestMacro(this, macro));
 	    });
 	    return macros;
 	},
@@ -5196,7 +5273,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.requestMacros = null;
 	    this.dynamicProperties = props;
 	    this.createRequestProperties();
-	    console.log("request properties:" + JSON.stringify(props,null,2));
 	},
 	createRequestProperties: function() {
 	    let requestProps = "";
@@ -5227,8 +5303,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.propagateEvent("handleEventPropertyChanged", args);
 		this.settingMacroValue = false;
 	    };
-
-	    //	    console.log("ids:" + macroDateIds);
 	    macroDateIds.every(id=>{
 		HU.datePickerInit(id);
 		return true;
@@ -5236,7 +5310,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(ID_HEADER2).find(".display-request-reload").click(()=>{
 		macroChange({triggerReload:true});
 	    });
-
 	    macros.every(macro=>{
 		$("#" + this.getDomId(macro.getId())+"," +
 		  "#" + this.getDomId(macro.getId()+"_min")+ "," +
@@ -5274,14 +5347,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return true;
 	    });
 	},
-
-
-
 	makeFilterWidget:function(label, widget, title) {
 	    if(!label)
 		return HU.div([CLASS,"display-filter-widget"],widget);
 	    return HU.div([CLASS,"display-filter-widget"],this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ") +
-				 widget);
+			  widget);
 	},
 	makeFilterLabel: function(label,tt) {
 	    let attrs = [CLASS,"display-filter-label"];
@@ -5290,16 +5360,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		attrs.push(tt);
 	    }
 	    return HU.span(attrs,label);
-	},
-
-
-	writeHeader:function(header,html) {
-	    if(html=="") {
-		this.jq(header).css("display","none");
-	    } else {
-		this.jq(header).css("display","inline-block");
-	    }
-	    this.jq(header).html(html);
 	},
 
 	stepFilterDateAnimation: function(inputFunc, dir){
@@ -5323,8 +5383,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	},
 
-
-
 	addFilters: function(filters) {
 	},
         checkSearchBar: function() {
@@ -5339,7 +5397,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let records = pointData.getRecords();
 	    records = this.sortRecords(records);
 	    let header2="";
-//	    header2 +=HU.div([ID,this.getDomId("test")],"test");
+	    //	    header2 +=HU.div([ID,this.getDomId("test")],"test");
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
@@ -5372,7 +5430,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			enums.push([field.getId(),field.getLabel()]);
 		    });
 		    header2 += HU.span([CLASS,"display-filter"],
-					      this.makeFilterLabel("Display: ") + HU.select("",[ID,this.getDomId("chartfields")],enums,this.getProperty("fields","")))+"&nbsp;";
+				       this.makeFilterLabel("Display: ") + HU.select("",[ID,this.getDomId("chartfields")],enums,this.getProperty("fields","")))+"&nbsp;";
 		}
 	    }
 
@@ -5394,8 +5452,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			enums.push([field.getId(),field.getLabel()]);
 		    });
 		    header2 += HU.span([CLASS,"display-filter"],
-					      this.makeFilterLabel(label+": ") + 
-					      HU.select("",[ID,this.getDomId("fieldselect_" + prop)],enums,this.getProperty(prop,"")))+"&nbsp;";
+				       this.makeFilterLabel(label+": ") + 
+				       HU.select("",[ID,this.getDomId("fieldselect_" + prop)],enums,this.getProperty(prop,"")))+"&nbsp;";
 
 		    selectFieldProps.push(prop);
 		});
@@ -5408,7 +5466,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    enums.push([field.getId(),field.getLabel()]);
 		});
 		header2 += HU.span([CLASS,"display-filter"],
-					  this.makeFilterLabel("Color by: ") + HU.select("",[ID,this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+"&nbsp;";
+				   this.makeFilterLabel("Color by: ") + HU.select("",[ID,this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+"&nbsp;";
 	    }
 	    if(this.sizeByFields.length>0) {
 		let enums = [];
@@ -5416,7 +5474,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    enums.push([field.getId(),field.getLabel()]);
 		});
 		header2 += HU.span([CLASS,"display-filter"],
-					  this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
+				   this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
 
 	    this.highlightFilter = this.getProperty("filterHighlight",false);
@@ -5479,8 +5537,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  				 HU.getIconImage("fa-step-forward",[STYLE,HU.css("cursor","pointer")])) +SPACE1;
 
 		header2 += HU.span([CLASS,"display-filter",STYLE,style],
-					  prefix +
-					  HU.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+"&nbsp;";
+				   prefix +
+				   HU.select("",["fieldId","filterDate", ATTR_ID,selectId],enums,selected))+"&nbsp;";
 	    }
 	    
 
@@ -5598,219 +5656,209 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    f.initDateWidget(inputFunc);
 	    });
 
-		this.jq(ID_FILTERBAR).find(".display-filter-items").each(function(){
-		    let parent = $(this);
-		    $(this).find(".display-filter-item").click(function(event){
-			var isAll = $(this).hasClass("display-filter-item-all");
-			var selectClazz = "display-filter-item-" + displayType +"-selected"
-			var wasSelected = $(this).hasClass(selectClazz);
-			var fieldId = $(this).attr("fieldId");
-			var multiples = _this.getProperty(fieldId +".filterMultiple",false);
-			if(!event.metaKey || isAll || !multiples) {
-			    parent.find(".display-filter-item").removeClass(selectClazz);
-			} else {
-			    parent.find(".display-filter-item-all").removeClass(selectClazz);
-			}
-			if(wasSelected  && event.metaKey) {
-			    $(this).removeClass(selectClazz);
-			} else {
-			    $(this).addClass(selectClazz);
-			}
-			var values = [];
-			parent.find("." + selectClazz).each(function() {
-			    values.push($(this).attr("data-value").replace(/,/g,"_comma_"));
-			});
-			if(values.length==0) {
-			    parent.find(".display-filter-item-all").addClass(selectClazz);
-			    values.push(FILTER_ALL);
-			}
-			var value =  Utils.join(values,",");
-			parent.attr("data-value", value);
-			$("#"+parent.attr(ID) +"_label").html(values.includes(FILTER_ALL)?"&nbsp;":value);
-			inputFunc(parent,null, values);
+	    this.jq(ID_FILTERBAR).find(".display-filter-items").each(function(){
+		let parent = $(this);
+		$(this).find(".display-filter-item").click(function(event){
+		    var isAll = $(this).hasClass("display-filter-item-all");
+		    var selectClazz = "display-filter-item-" + displayType +"-selected"
+		    var wasSelected = $(this).hasClass(selectClazz);
+		    var fieldId = $(this).attr("fieldId");
+		    var multiples = _this.getProperty(fieldId +".filterMultiple",false);
+		    if(!event.metaKey || isAll || !multiples) {
+			parent.find(".display-filter-item").removeClass(selectClazz);
+		    } else {
+			parent.find(".display-filter-item-all").removeClass(selectClazz);
+		    }
+		    if(wasSelected  && event.metaKey) {
+			$(this).removeClass(selectClazz);
+		    } else {
+			$(this).addClass(selectClazz);
+		    }
+		    var values = [];
+		    parent.find("." + selectClazz).each(function() {
+			values.push($(this).attr("data-value").replace(/,/g,"_comma_"));
 		    });
-
-		});
-		this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
-		    var keyCode = e.keyCode || e.which;
-		    if (keyCode == 13) {return;}
-		    hidePopupObject();
-		    var input = $(this);
-		    var val = $(this).val().trim();
-		    if(val=="") return;
-                    var fieldId = $(this).attr("fieldId");
-		    var field = fieldMap[fieldId].field;
-		    var values = fieldMap[fieldId].values;
-		    var items=[];
-		    var regexp=null;
-		    try {
-			val = val.replace(/\./g,"\\.");
-			regexp = new RegExp("(" + val+")",'i');
-		    } catch(ignore) {
-			//todo
+		    if(values.length==0) {
+			parent.find(".display-filter-item-all").addClass(selectClazz);
+			values.push(FILTER_ALL);
 		    }
-		    for(var i=0;i<values.length;i++) {
-			var text= values[i].toString();
-			var match  = regexp?text.match(regexp):text.indexOf(val)>=0;
-			if(match) {
-			    items.push([match[1], values[i]]);
-			}
-			if(items.length>30) break;
-		    }
-		    if(items.length>0) {
-			var html = "";
-			var itemCnt = 0;
-			items.map(item=>{
-			    var match = item[0];
-			    item =  item[1];
-			    if(item.length>50) return;
-			    var label = item.replace(regexp,"<span style='background:" + HIGHLIGHT_COLOR +";'>" + match +"</span>");
-			    item = item.replace(/\'/g,"\'");
-			    html+=HU.div([CLASS,"display-filter-popup-item","item",item],label)+"\n";
-			    itemCnt++;
-			});	
-			if(itemCnt>0) {
-			    popupObject = getTooltip();
-			    popupObject.html(HU.div([CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
-			    popupObject.show();
-			    popupObject.position({
-				of: $(this),
-				my: "left top",
-				at: "left bottom",
-			    });
-			    $(".display-filter-popup-item").click(function(){
-				hidePopupObject();
-				input.val($(this).attr("item"));
-				inputFunc(input);
-			    });
-			}
-		    }
-
+		    var value =  Utils.join(values,",");
+		    parent.attr("data-value", value);
+		    $("#"+parent.attr(ID) +"_label").html(values.includes(FILTER_ALL)?"&nbsp;":value);
+		    inputFunc(parent,null, values);
 		});
 
+	    });
+	    this.jq(ID_FILTERBAR).find(".display-filter-input").keyup(function(e) {
+		var keyCode = e.keyCode || e.which;
+		if (keyCode == 13) {return;}
+		hidePopupObject();
+		var input = $(this);
+		var val = $(this).val().trim();
+		if(val=="") return;
+                var fieldId = $(this).attr("fieldId");
+		var field = fieldMap[fieldId].field;
+		var values = fieldMap[fieldId].values;
+		var items=[];
+		var regexp=null;
+		try {
+		    val = val.replace(/\./g,"\\.");
+		    regexp = new RegExp("(" + val+")",'i');
+		} catch(ignore) {
+		    //todo
+		}
+		for(var i=0;i<values.length;i++) {
+		    var text= values[i].toString();
+		    var match  = regexp?text.match(regexp):text.indexOf(val)>=0;
+		    if(match) {
+			items.push([match[1], values[i]]);
+		    }
+		    if(items.length>30) break;
+		}
+		if(items.length>0) {
+		    var html = "";
+		    var itemCnt = 0;
+		    items.map(item=>{
+			var match = item[0];
+			item =  item[1];
+			if(item.length>50) return;
+			var label = item.replace(regexp,"<span style='background:" + HIGHLIGHT_COLOR +";'>" + match +"</span>");
+			item = item.replace(/\'/g,"\'");
+			html+=HU.div([CLASS,"display-filter-popup-item","item",item],label)+"\n";
+			itemCnt++;
+		    });	
+		    if(itemCnt>0) {
+			popupObject = getTooltip();
+			popupObject.html(HU.div([CLASS, "ramadda-popup-inner ramadda-snippet-popup"], html));
+			popupObject.show();
+			popupObject.position({
+			    of: $(this),
+			    my: "left top",
+			    at: "left bottom",
+			});
+			$(".display-filter-popup-item").click(function(){
+			    hidePopupObject();
+			    input.val($(this).attr("item"));
+			    inputFunc(input);
+			});
+		    }
+		}
 
-                this.jq(ID_FILTERBAR).find(".display-filter-range").mousedown(function(){
-		    var id = $(this).attr(ID);
-		    id = id.replace(/_min$/,"").replace(/_max$/,"");
-		    var min = $("#" + id+"_min");
-		    var max = $("#" + id+"_max");
-		    range = {min: parseFloat(min.attr("data-min")),
-			     max: parseFloat(max.attr("data-max"))};
-		    var minValue = parseFloat(min.val());
-		    var maxValue = parseFloat(max.val());
-		    var html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
-		    var popup = getTooltip();
-		    popup.html(html);
-		    popup.show();
-		    popup.position({
-			of: min,
-			my: "left top",
-			at: "left bottom+2",
-			collision: "fit fit"
-                    });
+	    });
 
-		    if(isNaN(minValue)) minValue = range.min;	
-		    if(isNaN(maxValue)) maxValue = range.max;
-		    var step = 1;
-		    if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
-			step = (range.max-range.min)/100000;
-		    $( "#filter-range" ).slider({
-			range: true,
-			min: range.min,
-			max: range.max,
-			step: step,
-			values: [minValue, maxValue],
-			slide: function( event, ui ) {
-			    min.val(ui.values[0]);
-			    max.val(ui.values[1]);
-			    min.attr("data-value",min.val());
-			    max.attr("data-value",max.val());
-			    if(_this.getProperty("filterSliderImmediate")) {
-				inputFunc(min,max);
-			    }
-			},
-			stop: function() {
-			    var popup = getTooltip();
-			    popup.hide();
-			    theDisplay.checkFilterField(max);
+
+            this.jq(ID_FILTERBAR).find(".display-filter-range").mousedown(function(){
+		var id = $(this).attr(ID);
+		id = id.replace(/_min$/,"").replace(/_max$/,"");
+		var min = $("#" + id+"_min");
+		var max = $("#" + id+"_max");
+		range = {min: parseFloat(min.attr("data-min")),
+			 max: parseFloat(max.attr("data-max"))};
+		var minValue = parseFloat(min.val());
+		var maxValue = parseFloat(max.val());
+		var html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
+		var popup = getTooltip();
+		popup.html(html);
+		popup.show();
+		popup.position({
+		    of: min,
+		    my: "left top",
+		    at: "left bottom+2",
+		    collision: "fit fit"
+                });
+
+		if(isNaN(minValue)) minValue = range.min;	
+		if(isNaN(maxValue)) maxValue = range.max;
+		var step = 1;
+		if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
+		    step = (range.max-range.min)/100000;
+		$( "#filter-range" ).slider({
+		    range: true,
+		    min: range.min,
+		    max: range.max,
+		    step: step,
+		    values: [minValue, maxValue],
+		    slide: function( event, ui ) {
+			min.val(ui.values[0]);
+			max.val(ui.values[1]);
+			min.attr("data-value",min.val());
+			max.attr("data-value",max.val());
+			if(_this.getProperty("filterSliderImmediate")) {
 			    inputFunc(min,max);
 			}
-		    });
-		});
-
-		//		HU.initSelect(this.jq("colorbyselect"));
-		//		HU.initSelect(this.jq("		//		HU.initSelect(this.jq("chartfields"));
-
-		this.jq(ID_FILTER_HIGHLIGHT).change(function() {
-		    _this.highlightFilter = $(this).val()=="highlight";
-		    _this.haveCalledUpdateUI = false;
-		    inputFunc($(this));
-//		    _this.dataFilterChanged();
-		});
-
-
-		$("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
-		    inputFunc($(this));
-		});
-		this.jq("filterDatePlay").click(function() {
-		    _this.filterDatePlayingAnimation = !_this.filterDatePlayingAnimation;
-		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
-		    $(this).html(HU.getIconImage(icon,[STYLE,HU.css("cursor","pointer")]));
-		    if(_this.filterDatePlayingAnimation) {
-			_this.stepFilterDateAnimation(inputFunc,1);
+		    },
+		    stop: function() {
+			var popup = getTooltip();
+			popup.hide();
+			theDisplay.checkFilterField(max);
+			inputFunc(min,max);
 		    }
 		});
-		this.jq("filterDateStepBackward").click(function() {
-		    _this.filterDatePlayingAnimation = false;
-		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
-		    _this.jq("filterDatePlay").html(HU.getIconImage(icon,[STYLE,HU.css("cursor","pointer")]));
-		    _this.stepFilterDateAnimation(inputFunc,-1);
-		});
-		this.jq("filterDateStepForward").click(function() {
-		    _this.filterDatePlayingAnimation = false;
-		    let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
-		    _this.jq("filterDatePlay").html(HU.getIconImage(icon,[STYLE,HU.css("cursor","pointer")]));
+	    });
+
+	    this.jq(ID_FILTER_HIGHLIGHT).change(function() {
+		_this.highlightFilter = $(this).val()=="highlight";
+		_this.haveCalledUpdateUI = false;
+		inputFunc($(this));
+	    });
+
+
+	    $("#" + this.getFilterId(ID_FILTER_DATE)).change(function() {
+		inputFunc($(this));
+	    });
+	    this.jq("filterDatePlay").click(function() {
+		_this.filterDatePlayingAnimation = !_this.filterDatePlayingAnimation;
+		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		$(this).html(HU.getIconImage(icon,[STYLE,HU.css("cursor","pointer")]));
+		if(_this.filterDatePlayingAnimation) {
 		    _this.stepFilterDateAnimation(inputFunc,1);
+		}
+	    });
+	    this.jq("filterDateStepBackward").click(function() {
+		_this.filterDatePlayingAnimation = false;
+		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[STYLE,HU.css("cursor","pointer")]));
+		_this.stepFilterDateAnimation(inputFunc,-1);
+	    });
+	    this.jq("filterDateStepForward").click(function() {
+		_this.filterDatePlayingAnimation = false;
+		let icon = _this.filterDatePlayingAnimation?"fa-stop":"fa-play";
+		_this.jq("filterDatePlay").html(HU.getIconImage(icon,[STYLE,HU.css("cursor","pointer")]));
+		_this.stepFilterDateAnimation(inputFunc,1);
+	    });
+
+            this.jq("chartfields").change(function(){
+		_this.setProperty("fields",$(this).val());
+		_this.updateUI();
+	    });
+
+
+	    selectFieldProps.forEach(prop=>{
+                this.jq("fieldselect_" + prop).change(function(){
+		    _this.fieldSelectedChanged(prop,$(this).val());
 		});
+	    });
 
-                this.jq("chartfields").change(function(){
-		    _this.setProperty("fields",$(this).val());
-		    _this.updateUI();
-		});
+            this.jq("colorbyselect").change(function(){
+		_this.colorByFieldChanged($(this).val());
+	    });
+            this.jq("sizebyselect").change(function(){
+		_this.sizeByFieldChanged($(this).val());
+	    });
 
-
-		selectFieldProps.forEach(prop=>{
-                    this.jq("fieldselect_" + prop).change(function(){
-			_this.fieldSelectedChanged(prop,$(this).val());
-		    });
-		});
-
-
-
-                this.jq("colorbyselect").change(function(){
-		    _this.colorByFieldChanged($(this).val());
-		});
-                this.jq("sizebyselect").change(function(){
-		    _this.sizeByFieldChanged($(this).val());
-		});
-
-
-
-                this.jq(ID_FILTERBAR).find("input").keyup(function(e){
-		    var keyCode = e.keyCode || e.which;
-		    if (keyCode == 13) {
-			inputFunc($(this));
-		    }
-		});
-		//		HU.initSelect(this.jq(ID_FILTERBAR).find("select"));
-		this.jq(ID_FILTERBAR).find("input:radio,select").change(function() {
+            this.jq(ID_FILTERBAR).find("input").keyup(function(e){
+		var keyCode = e.keyCode || e.which;
+		if (keyCode == 13) {
 		    inputFunc($(this));
-		});
-		this.jq(ID_FILTERBAR).find("input:checkbox").change(function() {
-		    inputFunc($(this));
-		});
-
-
+		}
+	    });
+	    this.jq(ID_FILTERBAR).find("input:radio,select").change(function() {
+		inputFunc($(this));
+	    });
+	    this.jq(ID_FILTERBAR).find("input:checkbox").change(function() {
+		inputFunc($(this));
+	    });
+	    
 	    var dateMin = null;
 	    var dateMax = null;
 	    var dates = [];
@@ -5851,8 +5899,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 	    if(debug) console.log("checkSearchBar-done");
-
-
         },
 	checkFilterField: function(f) {
 	    var min = f.attr("data-min");
@@ -5890,8 +5936,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	dataFilterChanged: function() {
 	    this.updateUI();
 	},
-        updateUI: function() {
-	},
 	addFieldClickHandler: function(jq, records, addHighlight) {
 	    let _this = this;
 	    if(records) {
@@ -5927,7 +5971,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	},
-	//Make sure the elements have a title set
 	makeTooltips: function(selector, records, callback, tooltipArg) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
@@ -5998,7 +6041,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	},
 	animationStart: function(animation) {
-	    
 	},
 	animationApply: function(animation, skipUpdateUI) {
 	    this.setDateRange(animation.begin, animation.end);
@@ -6015,130 +6057,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		maxDate: animation.end
 	    });
 	},
-        /*
-          This creates the default layout for a display
-          Its a table:
-          <td>title id=ID_HEADER</td><td>align-right popup menu</td>
-          <td colspan=2><div id=ID_DISPLAY_CONTENTS></div></td>
-          the getDisplayContents method by default returns:
-          <div id=ID_DISPLAY_CONTENTS></div>
-          but can be overwritten by sub classes
-
-          After getHtml is called the DisplayManager will add the html to the DOM then call
-          initDisplay
-          That needs to call setContents with the html contents of the display
-        */
-        cnt: 0,
-        getHtml: function() {
-
-            let get = this.getGet();
-            let button = "";
-
-            if (this.getShowMenu()) {
-                button = HU.onClick(get + ".showDialog();",
-					   HU.image(ramaddaBaseUrl + "/icons/downdart.png",
-							   [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
-		button+=" ";
-            }
-	    if(this.getProperty("showProgress",false)) {
-		//		button += HU.image(icon_progress,[ID,this.getDomId(ID_DISPLAY_PROGRESS)]);
-	    }
-            let title = "";
-            if (this.getShowTitle()) {
-                title = this.getTitle(false).trim();
-            }
-
-            let topLeft = "";
-            if (button != "" || title != "") {
-                this.cnt++;
-                let titleDiv = this.getTitleHtml(title);
-                if (button == "") {
-                    topLeft = titleDiv;
-                } else {
-                    topLeft = HU.div(["class","display-header"], button + "&nbsp;" + titleDiv);
-                }
-            }
-            topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT)], topLeft);
-            let topCenter = HU.div([ID, this.getDomId(ID_TOP)], "");
-            let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
-	    let top =  HU.leftRightTable(topLeft, topRight, null, null, {
-                valign: "bottom"
-            });
-            let header =
-		HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "") +
-		HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "") +
-		HU.div([ID,this.getDomId(ID_HEADER3),CLASS,"display-header3"], "");
-
-	    top =  header + topCenter + top;
-
-
-	    let colorTable = HU.div([ID,this.getDomId(ID_COLORTABLE)]);
-	    let rightInner="";
-	    let leftInner="";
-
-	    let bottom = HU.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)]);
-	    let legend = HU.div([ID,this.getDomId(ID_LEGEND)]);
-
-	    let ctSide = this.getProperty("colorTableSide","bottom");
-	    if(ctSide=="top") {
-		top+=colorTable;
-	    } else if(ctSide=="right") {
-		rightInner += colorTable;
-	    } else if(ctSide=="left") {
-		leftInner += colorTable;
-	    } else {
-		bottom+=colorTable;
-	    }
-	    bottom+=legend;
-	    let left = HU.div([ATTR_ID, this.getDomId(ID_LEFT)],leftInner);
-	    let right = HU.div([ATTR_ID, this.getDomId(ID_RIGHT)],rightInner);
-
-
-	    let sideWidth = "1%";
-            let contents = this.getContentsDiv();
-            let table =   HU.open("table", ["width","100%","border",0]);
-	    table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
-	    table+= HU.tr([],HU.td(["width",sideWidth],left) + HU.td(["width","99%"],contents) +HU.td(["width",sideWidth],right));
-	    table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],bottom) +HU.td(["width",sideWidth]));
-	    table+=HU.close("table");
-
-            let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
-            let style = this.getProperty("displayStyle", "");
-            html += HU.div([CLASS, "display-contents", STYLE, style],table);
-            return html;
-        },
-
-        makeToolbar: function(props) {
-            var toolbar = "";
-            var get = this.getGet();
-            var addLabel = props.addLabel;
-            var images = [];
-            var calls = [];
-            var labels = [];
-            if (!this.getIsLayoutFixed()) {
-                calls.push("removeRamaddaDisplay('" + this.getId() + "')");
-                images.push("fa-cut");
-		labels.push("Delete display");
-            }
-            calls.push(get + ".copyDisplay();");
-	    images.push("fa-copy");
-            labels.push("Copy Display");
-            if (this.jsonUrl != null) {
-                calls.push(get + ".fetchUrl('json');");
-                images.push(ramaddaBaseUrl + "/icons/json.png");
-                labels.push("Download JSON");
-
-                calls.push(get + ".fetchUrl('csv');");
-                images.push(ramaddaBaseUrl + "/icons/csv.png");
-                labels.push("Download CSV");
-            }
-            for (var i = 0; i < calls.length; i++) {
-                var inner = HU.getIconImage(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
-                if (addLabel) inner += " " + labels[i] + "<br>";
-                toolbar += HU.onClick(calls[i], inner);
-            }
-            return toolbar;
-        },
         makeDialog: function(text) {
             var html = "";
             html += HU.div([ATTR_ID, this.getDomId(ID_HEADER), ATTR_CLASS, "display-header"]);
@@ -6161,7 +6079,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		for (var i = 0; i < tabTitles.length; i++) {
                     var id = this.getDomId("tabs") + i;
                     tabLinks += HU.tag("li", [], HU.tag("a", ["href", "#" + id],
-								      tabTitles[i]));
+							tabTitles[i]));
                     tabLinks += "\n";
                     var contents = HU.div([ATTR_CLASS, "display-dialog-tab"], tabContents[i]);
                     tabs += HU.div([ID, id], contents);
@@ -6213,62 +6131,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.popup(this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
             this.initDialog();
         },
-        getWidthForStyle: function(dflt) {
-            var width = this.getProperty("width", -1);
-            if (width == -1) return dflt;
-	    return HU.getDimension(width);
-        },
-        getHeightForStyle: function(dflt) {
-            var height = this.getProperty("height", -1);
-            if (height == -1) return dflt;
-            if (height.match("^[0-9]+$"))
-                height = height + "px";
-            return height;
-        },
-        getContentsStyle: function() {
-            var style = "";
-            var height = this.getHeightForStyle();
-            if (height) {
-                style += " height:" + height + ";overflow-y:auto;";
-            }
-//            var width = this.getWidthForStyle();
-//            if (width) {
-//                style += " width:" + width + ";";
-//            }
-            return style;
-        },
-	getContentsClass: function() {
-	    return "ramadda-expandable-target display-contents-inner display-" + this.type;
-	},
-        getContentsDiv: function() {
-            let style = this.getContentsStyle();
-            style += this.getProperty("contentsStyle", "");
-            let image = this.getProperty("backgroundImage");
-            if (image) {
-                image = HU.getEntryImage(this.entryId, image);
-                style += HU.css("background-attachment","auto","background-size","100% auto","background-image","url('" + image + "')");
-            }
-            let background = this.getProperty("background");
-            if (background)
-                style += HU.css("background", background);
-            let topBottomStyle = "";
-//            let width = this.getWidthForStyle();
-//            if (width) {
-//                topBottomStyle += HU.css("width", width);
-//            }
-            let top = HU.div([STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
-            let bottom = HU.div([STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
-	    let expandedHeight  = this.getProperty("expandedHeight");
-	    if(expandedHeight)
-		style+="height:" +expandedHeight+";";
-	    let contentsAttrs =[ATTR_CLASS, this.getContentsClass(), STYLE, style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)];
-	    if(this.getProperty("expandableHeight")) {
-		contentsAttrs.push("expandable-height");
-		contentsAttrs.push(this.getProperty("expandableHeight"));
-	    }
-	    let contents =  top + "\n" +HU.div(contentsAttrs, "") + "\n" +bottom;
-            return contents;
-        },
         copyDisplay: function() {
             let newOne = {};
             $.extend(true, newOne, this);
@@ -6279,75 +6141,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         removeDisplay: function() {
             this.getDisplayManager().removeDisplay(this);
 	    if(this.dialogElement)  this.dialogElement.remove();
-        },
-        //Gets called before the displays are laid out
-        prepareToLayout: function() {
-            //Force setting the property from the input dom (which is about to go away)
-            this.getColumn();
-            this.getWidth();
-            this.getHeight();
-            this.getName();
-            this.getEventSource();
-        },
-        getColumn: function() {
-            return this.getFormValue("column", 0);
-        },
-        getRow: function() {
-            return this.getFormValue("row", 0);
-        },
-        getWidth: function() {
-            return this.getFormValue("width", 0);
-        },
-        getHeight: function() {
-            return this.getFormValue("height", 0);
-        },
-        getDisplayTitle: function(title) {
-            if (!title) title = this.title != null ? this.title : "";
-            var text = title;
-            var fields = this.lastSelectedFields;
-            if (fields && fields.length > 0)
-                text = text.replace("{field}", fields[0].getLabel());
-            else
-                text = text.replace("{field}", "");
-            return text;
-        },
-
-        setDisplayTitle: function(title) {
-            if (!Utils.stringDefined(title)) {
-                title = this.getTitle(false).trim();
-            }
-            var text = this.getTitleHtml(title);
-            if (this.getShowTitle()) {
-                this.jq(ID_TITLE).show();
-            } else {
-                this.jq(ID_TITLE).hide();
-            }
-            this.writeHtml(ID_TITLE, text);
-        },
-        getTitle: function(showMenuButton) {
-            var prefix = "";
-            if (showMenuButton && this.hasEntries()) {
-                prefix = this.getEntryMenuButton(this.getEntries()[0]) + " ";
-            }
-            var title = this.getProperty(ATTR_TITLE);
-            if (title != null) {
-                return prefix + title;
-            }
-            if (this.dataCollection == null) {
-                return prefix;
-            }
-            var dataList = this.dataCollection.getList();
-            title = "";
-            for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
-                var pointData = dataList[collectionIdx];
-                if (collectionIdx > 0) title += "/";
-                title += pointData.getName();
-            }
-
-            return prefix + title;
-        },
-        getIsLayoutFixed: function() {
-            return this.getProperty(PROP_LAYOUT_HERE, true);
         },
         doingQuickEntrySearch: false,
         doQuickEntrySearch: function(request, callback) {
@@ -6475,9 +6268,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!reload) {
 		if(debug) console.log("\tcalling addData");
                 this.addData(pointData);
-//		if(debug) console.log("\tcalling checkSearchBar");
+		//		if(debug) console.log("\tcalling checkSearchBar");
                 this.checkSearchBar();
-//		if(debug) console.log("\done calling checkSearchBar");
+		//		if(debug) console.log("\done calling checkSearchBar");
             } else {
 		if(!this.dataCollection)
 		    this.dataCollection = new DataCollection();
@@ -6555,7 +6348,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getDateFormatter: function() {
             var date_formatter = null;
-            if (this.googleLoaded()) {
+            if (this.isGoogleLoaded()) {
                 var df = this.getProperty("dateFormat", null);
                 if (df) {
                     var tz = 0;
@@ -6600,7 +6393,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
  		       date.getUTCDate()!=this.minDateObj.getUTCDate())  {
 			return false;
 		    }
- 
+		    
 		} else {
                     if (this.minDateObj != null && date.getTime() < this.minDateObj.getTime()) {
 			if(debug) {
@@ -6712,7 +6505,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 fields = pointData.getRecordFields();
 		if(debug) console.log("\tgetRecordFields: " + fields.length);
             } else {
-//		if(debug) console.log("\tfields 2: " + fields.length);
+		//		if(debug) console.log("\tfields 2: " + fields.length);
 	    }
             props = {
                 makeObject: true,
@@ -7069,14 +6862,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
             return dataList;
         },
-        googleLoaded: function() {
+        isGoogleLoaded: function() {
             if ((typeof google === 'undefined') || (typeof google.visualization === 'undefined') || (typeof google.visualization.DateFormat === 'undefined')) {
                 return false;
             }
             return true;
         },
         initDateFormats: function() {
-            if (!this.googleLoaded()) {
+            if (!this.isGoogleLoaded()) {
                 //                    console.log("google hasn't loaded");
                 return false;
             }
@@ -7152,18 +6945,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 function DisplayGroup(argDisplayManager, argId, argProperties, type) {
-    var LAYOUT_TABLE = "table";
-    var LAYOUT_HTABLE = "htable";
-    var LAYOUT_TABS = "tabs";
-    var LAYOUT_COLUMNS = "columns";
-    var LAYOUT_ROWS = "rows";
-    if (!type) type = "group";
-    let SUPER = new RamaddaDisplay(argDisplayManager, argId, type, argProperties);
+    const LAYOUT_TABLE = "table";
+    const LAYOUT_HTABLE = "htable";
+    const LAYOUT_TABS = "tabs";
+    const LAYOUT_COLUMNS = "columns";
+    const LAYOUT_ROWS = "rows";
+    let SUPER = new RamaddaDisplay(argDisplayManager, argId, type||"group", argProperties);
     RamaddaUtil.inherit(this, SUPER);
-    RamaddaUtil.defineMembers(this, {
-        layout: this.getProperty(PROP_LAYOUT_TYPE, LAYOUT_TABLE)
-    });
-
     RamaddaUtil.defineMembers(this, {
         displays: [],
         layout: this.getProperty(PROP_LAYOUT_TYPE, LAYOUT_TABLE),
@@ -7180,7 +6968,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 			 "divid",
 			 "$entryid_maindiv"
 			];
-            var wiki = "";
+            let wiki = "";
             wiki += "<div id=\"{{entryid}}_maindiv\"></div>\n\n";
             wiki += "{{group " + HU.attrs(attrs) + "}}\n\n"
             return wiki;
@@ -7188,7 +6976,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 
         walkTree: function(func, data) {
             for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
+                let display = this.displays[i];
                 if (display.walkTree != null) {
                     display.walkTree(func, data);
                 } else {
@@ -7198,12 +6986,12 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         collectEntries: function(entries) {
             if (entries == null) entries = [];
-            for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
+            for (let i = 0; i < this.displays.length; i++) {
+                let display = this.displays[i];
                 if (display.collectEntries != null) {
                     display.collectEntries(entries);
                 } else {
-                    var displayEntries = display.getEntries();
+                    let displayEntries = display.getEntries();
                     if (displayEntries != null && displayEntries.length > 0) {
                         entries.push({
                             source: display,
@@ -7219,8 +7007,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
 
         getPosition: function() {
-            for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
+            for (let i = 0; i < this.displays.length; i++) {
+                let display = this.displays[i];
                 if (display.getPosition) {
                     return display.getPosition();
                 }
@@ -7230,14 +7018,14 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             return this.displays;
         },
         notifyEvent: function(func, source, data) {
-            var displays = this.getDisplays();
-            for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
+            let displays = this.getDisplays();
+            for (let i = 0; i < this.displays.length; i++) {
+                let display = this.displays[i];
                 if (display == source) {
                     continue;
                 }
 		if(!display.getProperty("accept." + func, true)) continue;
-                var eventSource = display.getEventSource();
+                let eventSource = display.getEventSource();
                 if (eventSource != null && eventSource.length > 0) {
                     if (eventSource != source.getId() && eventSource != source.getName()) {
                         continue;
@@ -7247,8 +7035,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             }
         },
         getDisplaysToLayout: function() {
-            var result = [];
-            for (var i = 0; i < this.displays.length; i++) {
+            let result = [];
+            for (let i = 0; i < this.displays.length; i++) {
                 if (this.displays[i].getIsLayoutFixed()) {
 		    continue;
 		}
@@ -7258,7 +7046,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         pageHasLoaded: function(display) {
 	    //Maybe we don't need to do this since the displays get called globally
-	    //            for (var i = 0; i < this.displays.length; i++) {
+	    //            for (let i = 0; i < this.displays.length; i++) {
 	    //                this.displays[i].setDisplayReady(true);
 	    //            }
             this.doLayout();
@@ -7277,32 +7065,32 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.doLayout();
         },
         removeDisplay: function(display) {
-            var index = this.displays.indexOf(display);
+            let index = this.displays.indexOf(display);
             if (index >= 0) {
                 this.displays.splice(index, 1);
             }
             this.doLayout();
         },
         doLayout: function() {
-	    var html = "";
-            var colCnt = 100;
-            var displaysToLayout = this.getDisplaysToLayout();
-            var displaysToPrepare = this.displays;
+	    let html = "";
+            let colCnt = 100;
+            let displaysToLayout = this.getDisplaysToLayout();
+            let displaysToPrepare = this.displays;
 	    displaysToPrepare.map(display=>{
                 if (display.prepareToLayout != null) {
                     display.prepareToLayout();
                 }
             });
 
-            var weightIdx = 0;
-            var weights = null;
+            let weightIdx = 0;
+            let weights = null;
             if (typeof this.weights != "undefined") {
                 weights = this.weights.split(",");
             }
 
-            for (var i=0; i < displaysToLayout.length; i++) {
-                var divId = HU.getUniqueId("divid_");
-                var div =  HU.div([CLASS, " display-wrapper",ID,divId],"");
+            for (let i=0; i < displaysToLayout.length; i++) {
+                let divId = HU.getUniqueId("divid_");
+                let div =  HU.div([CLASS, " display-wrapper",ID,divId],"");
                 displaysToLayout[i].setProperty(PROP_DIVID,divId);
                 displaysToLayout[i].layoutDiv=div;
             }
@@ -7310,13 +7098,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 if  (displaysToLayout.length== 1) {
                     html += displaysToLayout[0].layoutDiv;
                 } else {
-                    var weight = 12 / this.columns;
-                    var i = 0;
-                    var map = {};
+                    let weight = 12 / this.columns;
+                    let i = 0;
+                    let map = {};
                     for (; i < displaysToLayout.length; i++) {
-                        var d = displaysToLayout[i];
+                        let d = displaysToLayout[i];
                         if (Utils.isDefined(d.column) && Utils.isDefined(d.row) && d.columns >= 0 && d.row >= 0) {
-                            var key = d.column + "_" + d.row;
+                            let key = d.column + "_" + d.row;
                             if (map[key] == null) map[key] = [];
                             map[key].push(d);
                         }
@@ -7332,7 +7120,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                             html += HU.open("div", [CLASS, "row"]);
                             colCnt = 0;
                         }
-                        var weightToUse = weight;
+                        let weightToUse = weight;
                         if (weights != null) {
                             if (weightIdx >= weights.length) {
                                 weightIdx = 0;
@@ -7352,11 +7140,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 if  (displaysToLayout.length== 1) {
                     html += displaysToLayout[0].layoutDiv;
                 } else {
-                    var percent = Math.round((100 / this.columns))+"%";
-                    var i = 0;
+                    let percent = Math.round((100 / this.columns))+"%";
+                    let i = 0;
 		    html+="<table width=100%>\n";
-		    var colCnt = 100;
-                    for (var i =0;i < displaysToLayout.length; i++) {
+		    let colCnt = 100;
+                    for (let i =0;i < displaysToLayout.length; i++) {
                         colCnt++;
                         if (colCnt >= this.columns) {
                             if (i > 0) {
@@ -7374,14 +7162,14 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     }
                 }
             } else if (this.layout == LAYOUT_TABS) {
-                var tabId = HU.getUniqueId("tabs_");
+                let tabId = HU.getUniqueId("tabs_");
                 html += HU.open(TAG_DIV, [ID, tabId, CLASS, "ui-tabs"]);
                 html += HU.open(TAG_UL, []);
-                var hidden = "";
-                var cnt = 0;
-                for (var i = 0; i < displaysToLayout.length; i++) {
-                    var display = displaysToLayout[i];
-                    var label = display.getTitle(false);
+                let hidden = "";
+                let cnt = 0;
+                for (let i = 0; i < displaysToLayout.length; i++) {
+                    let display = displaysToLayout[i];
+                    let label = display.getTitle(false);
                     if (label.length > 20) {
                         label = label.substring(0, 19) + "...";
                     }
@@ -7393,23 +7181,23 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 html += hidden;
                 html += HU.close(TAG_DIV);
             } else if (this.layout == LAYOUT_ROWS) {
-                var rows = [];
-                for (var i = 0; i < displaysToLayout.length; i++) {
-                    var display = displaysToLayout[i];
-                    var row = display.getRow();
+                let rows = [];
+                for (let i = 0; i < displaysToLayout.length; i++) {
+                    let display = displaysToLayout[i];
+                    let row = display.getRow();
                     if (("" + row).length == 0) row = 0;
                     while (rows.length <= row) {
                         rows.push([]);
                     }
                     rows[row].push(display.layoutDiv);
                 }
-                for (var i = 0; i < rows.length; i++) {
-                    var cols = rows[i];
-                    var width = Math.round(100 / cols.length) + "%";
+                for (let i = 0; i < rows.length; i++) {
+                    let cols = rows[i];
+                    let width = Math.round(100 / cols.length) + "%";
                     html += HU.open(TAG_TABLE, ["border", "0", "width", "100%", "cellpadding", "0", "cellspacing", "0"]);
                     html += HU.open(TAG_TR, ["valign", "top"]);
-                    for (var col = 0; col < cols.length; col++) {
-                        var cell = cols[col];
+                    for (let col = 0; col < cols.length; col++) {
+                        let cell = cols[col];
                         cell = HU.div([CLASS, "display-cell"], cell);
                         html += HU.tag(TAG_TD, ["width", width], cell);
                     }
@@ -7417,10 +7205,10 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     html += HU.close(TAG_TABLE);
                 }
             } else if (this.layout == LAYOUT_COLUMNS) {
-                var cols = [];
-                for (var i = 0; i < displaysToLayout.length; i++) {
-                    var display = displaysToLayout[i];
-                    var column = display.getColumn();
+                let cols = [];
+                for (let i = 0; i < displaysToLayout.length; i++) {
+                    let display = displaysToLayout[i];
+                    let column = display.getColumn();
                     //                        console.log("COL:" + column);
                     if (("" + column).length == 0) column = 0;
                     while (cols.length <= column) {
@@ -7430,15 +7218,15 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     //                        cols[column].push("HTML");
                 }
                 html += HU.open(TAG_DIV, [CLASS, "row"]);
-                var width = Math.round(100 / cols.length) + "%";
-                var weight = 12 / cols.length;
-                for (var i = 0; i < cols.length; i++) {
-                    var rows = cols[i];
-                    var contents = "";
-                    for (var j = 0; j < rows.length; j++) {
+                let width = Math.round(100 / cols.length) + "%";
+                let weight = 12 / cols.length;
+                for (let i = 0; i < cols.length; i++) {
+                    let rows = cols[i];
+                    let contents = "";
+                    for (let j = 0; j < rows.length; j++) {
                         contents += rows[j];
                     }
-                    var weightToUse = weight;
+                    let weightToUse = weight;
                     if (weights != null) {
                         if (weightIdx >= weights.length) {
                             weightIdx = 0;
@@ -7479,11 +7267,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.doLayout();
         },
         askMinZAxis: function() {
-            var v = prompt("Minimum axis value", "0");
+            let v = prompt("Minimum axis value", "0");
             if (v != null) {
                 v = parseFloat(v);
-                for (var i = 0; i < this.displays.length; i++) {
-                    var display = this.displays[i];
+                for (let i = 0; i < this.displays.length; i++) {
+                    let display = this.displays[i];
                     if (display.setMinZAxis) {
                         display.setMinZAxis(v);
                     }
@@ -7492,11 +7280,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
 
         askMaxZAxis: function() {
-            var v = prompt("Maximum axis value", "0");
+            let v = prompt("Maximum axis value", "0");
             if (v != null) {
                 v = parseFloat(v);
-                for (var i = 0; i < this.displays.length; i++) {
-                    var display = this.displays[i];
+                for (let i = 0; i < this.displays.length; i++) {
+                    let display = this.displays[i];
                     if (display.setMaxZAxis) {
                         display.setMaxZAxis(v);
                     }
@@ -7505,12 +7293,12 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
 
         askMinDate: function() {
-            var d = this.minDate;
+            let d = this.minDate;
             if (!d) d = "1950-0-0";
             this.minDate = prompt("Minimum date", d);
             if (this.minDate != null) {
-                for (var i = 0; i < this.displays.length; i++) {
-                    var display = this.displays[i];
+                for (let i = 0; i < this.displays.length; i++) {
+                    let display = this.displays[i];
                     if (display.setMinDate) {
                         display.setMinDate(this.minDate);
                     }
@@ -7519,12 +7307,12 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
 
         askMaxDate: function() {
-            var d = this.maxDate;
+            let d = this.maxDate;
             if (!d) d = "2020-0-0";
             this.maxDate = prompt("Maximum date", d);
             if (this.maxDate != null) {
-                for (var i = 0; i < this.displays.length; i++) {
-                    var display = this.displays[i];
+                for (let i = 0; i < this.displays.length; i++) {
+                    let display = this.displays[i];
                     if (display.setMaxDate) {
                         display.setMaxDate(this.maxDate);
                     }
@@ -7534,23 +7322,23 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 
 
         titlesOff: function() {
-            for (var i = 0; i < this.displays.length; i++) {
+            for (let i = 0; i < this.displays.length; i++) {
                 this.displays[i].setShowTitle(false);
             }
         },
         titlesOn: function() {
-            for (var i = 0; i < this.displays.length; i++) {
+            for (let i = 0; i < this.displays.length; i++) {
                 this.displays[i].setShowTitle(true);
             }
         },
         detailsOff: function() {
-            for (var i = 0; i < this.displays.length; i++) {
+            for (let i = 0; i < this.displays.length; i++) {
                 this.displays[i].setShowDetails(false);
             }
             this.doLayout();
         },
         detailsOn: function() {
-            for (var i = 0; i < this.displays.length; i++) {
+            for (let i = 0; i < this.displays.length; i++) {
                 this.displays[i].setShowDetails(true);
             }
             this.doLayout();
@@ -7561,7 +7349,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.doLayout();
         },
         moveDisplayUp: function(display) {
-            var index = this.displays.indexOf(display);
+            let index = this.displays.indexOf(display);
             if (index <= 0) {
                 return;
             }
@@ -7570,7 +7358,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.doLayout();
         },
         moveDisplayDown: function(display) {
-            var index = this.displays.indexOf(display);
+            let index = this.displays.indexOf(display);
             if (index >= this.displays.length) {
                 return;
             }
@@ -7580,7 +7368,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
 
         moveDisplayTop: function(display) {
-            var index = this.displays.indexOf(display);
+            let index = this.displays.indexOf(display);
             if (index >= this.displays.length) {
                 return;
             }
@@ -7600,23 +7388,12 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 /*
  */
 function RamaddaFieldsDisplay(displayManager, id, type, properties) {
-    let _this = this;
-    this.TYPE = "RamaddaFieldsDisplay";
     let SUPER = new RamaddaDisplay(displayManager, id, type, properties);
     RamaddaUtil.inherit(this, this.RamaddaDisplay = SUPER);
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
             return true;
         },
-	getWikiEditorTags: function() {
-	    var t = SUPER.getWikiEditorTags();
-	    var myTags = [
-		"fields=\"\"",
-	    ];
-	    myTags.map(tag=>t.push(tag));
-	    return t;
-	},
-
         handleEventMapClick: function(source, args) {
             if (!this.dataCollection) return;
             var pointData = this.dataCollection.getList();
@@ -10882,6 +10659,179 @@ var DataUtils = {
 	return filters;
     },
 }
+
+
+function RequestMacro(display, macro) {
+    this.display = display;
+    let values = null;
+    let enums = this.getProperty("request." +macro+".values");
+    if(enums) {
+	values =[]	
+	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
+	    values.push(["","All"]);
+	}
+	if(this.getProperty("request." + macro+".includeNone",false)) {
+	    values.push(["","None"]);
+	}
+	enums.split(",").every(tok=>{
+	    [id,label] = tok.split(":");
+	    values.push([id,label||id]);
+	    return true;
+	});
+    }
+    let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
+    let dflt =this.getProperty("request." +macro+".default",null);
+    if(dflt == null) {
+	if(values && values.length>0  && macroType=="enumeration") {
+	    dflt = values[0][0];
+	} else {
+	    dflt = "";
+	}
+    }
+    $.extend(this,{
+	name: macro,
+	values:values,
+	urlarg: this.getProperty("request." +macro+".urlarg",macro),
+	type:macroType,
+	triggerReload:this.getProperty("request." +macro+".triggerReload",true),
+	dflt:dflt,
+	dflt_from:this.getProperty("request." +macro+"_from.default",""),		    
+	dflt_to:this.getProperty("request." +macro+"_to.default",""),
+	dflt_min:this.getProperty("request." +macro+"_min.default",""),		    
+	dflt_max:this.getProperty("request." +macro+"_max.default",""),
+	label:this.getProperty("request." +macro+".label",Utils.makeLabel(macro)),
+	multiple:this.getProperty("request." +macro+".multiple",false),
+	rows:this.getProperty("request." +macro+".rows",3),
+    });
+}
+
+
+RequestMacro.prototype = {
+    getProperty: function(prop, dflt)   {
+	return this.display.getProperty(prop, dflt);
+    },
+    getWidget: function(dateIds) {
+	let debug = false;
+	let visible = this.display.getProperty("request." +this.name +".visible",
+					       this.display.getProperty("macros.visible",true));
+	let style = visible?"":"display:none;";
+	let widget;
+	let label = this.label;
+	if(debug)console.log("getWidget:" + label +" type:" + this.type);
+	if(this.type=="bounds") {
+	    widget = HU.checkbox("",[ID,this.display.getDomId(this.getId())], false) +HU.span([CLASS,"display-request-reload",TITLE,"Reload with current bounds"], " In bounds");
+	    label = null;
+	} else if(this.type=="enumeration") {
+ 	    if(this.values && this.values.length>0) {
+		let attrs = [STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
+		if(this.multiple) {
+		    attrs.push("multiple");
+		    attrs.push(null);
+		    attrs.push("size");
+		    attrs.push(Math.min(this.rows,this.values.length));
+		}
+		if(debug)
+		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
+		
+		widget = HU.select("",attrs,this.values,this.dflt,20);
+	    }
+	} else if(this.type=="numeric") {
+	    let minId = this.display.getDomId(this.getId()+"_min");
+	    let maxId = this.display.getDomId(this.getId()+"_max");			    
+	    widget = HU.input("","",[STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input"],this.dflt_min) +
+		" - " +
+		HU.input("","",[STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input"],this.dflt_max)
+	    label = label+" range";
+	} else if(this.type=="date") {
+	    let fromId = this.display.getDomId(this.getId()+"_from");
+	    let toId = this.display.getDomId(this.getId()+"_to");
+	    dateIds.push(fromId);
+	    dateIds.push(toId);
+	    widget = HU.datePicker("",this.dflt_from,[CLASS,"display-filter-input",STYLE, style, "name","",ID,fromId]) +
+		" - " +
+		HU.datePicker("",this.dflt_to,[CLASS,"display-filter-input",STYLE, style, "name","",ID,toId])
+	    label = label+" range";
+	} else {
+	    let size = "10";
+	    if(this.type=="number")
+		size = "4";
+	    widget = HU.input("",this.dflt,[STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
+	}
+	if(!widget) return "";
+	return (visible?this.display.makeFilterWidget(label,widget):widget);
+    },
+    getId: function() {
+	return "macro_" + this.name;
+    },
+    getValue: function() {
+	let widget = this.display.jq(this.getId());
+	let value = this.dflt;
+	if(widget.length!=0) value =  widget.val();
+	this.display.setProperty("request." + this.name+".default",value);
+	return value;
+    },
+    apply: function(url) {
+	if(this.type == "bounds") {
+	    if(this.display.getBounds && this.display.jq(this.getId()).is(':checked')) {
+		let bounds = this.display.getBounds();
+		if(bounds) {
+		    bounds = RecordUtil.convertBounds(bounds);
+		    ["north","south","east","west"].map(b=>{
+			url+="&" + b+"=" +bounds[b];
+		    });
+		    
+		}
+	    }
+	} else if(this.type=="numeric") {
+	    let min = this.display.jq(this.getId()+"_min").val()||"";
+	    let max = this.display.jq(this.getId()+"_max").val()||"";
+	    this.dflt_min = min;
+	    this.dflt_max = max;
+	    if(min!="")
+		url = url +"&" + HU.urlArg(this.urlarg+"_from",min);
+	    if(max!="")
+		url = url +"&" + HU.urlArg(this.urlarg+"_to",max);
+	    this.display.setProperty("request." +this.name+"_min.default",min);
+	    this.display.setProperty("request." +this.name+"_max.default",max);
+
+	} else if(this.type=="date") {
+	    let from = this.display.jq(this.getId()+"_from").val()||"";
+	    let to = this.display.jq(this.getId()+"_to").val()||"";
+	    this.dflt_from = from;
+	    this.dflt_to = to;
+	    this.display.setProperty("request." +this.name+"_from.default",from);
+	    this.display.setProperty("request." +this.name+"_to.default",to);
+	    if(from!="")
+		url = url +"&" + HU.urlArg(this.urlarg+"_fromdate",from);
+	    if(to!="")
+		url = url +"&" + HU.urlArg(this.urlarg+"_todate",to);
+	    //			    this.display.setProperty(this.name+".default",value);
+	} else if(this.type=="enumeration") {
+	    let value = this.getValue();
+	    if(!Array.isArray(value)) {value=[value];}
+	    if(value.length>0 && value[0]!="") {
+		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
+		url = url.replace(regexp,"");
+		value.map(v=>{
+		    if(v!="")
+			url = url +"&" + HU.urlArg(this.urlarg,v);
+		});
+	    }
+	} else {
+	    let value = this.getValue();
+	    this.dflt  = value;
+	    if(value!="") {
+		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
+		url = url.replace(regexp,"");
+		url = url +"&" + HU.urlArg(this.urlarg,value);
+	    }
+	}
+	return  url;
+    }
+
+}
+
+
 
 
 /**
@@ -21503,27 +21453,23 @@ Copyright 2008-2019 Geode Systems LLC
 
 
 
-var DISPLAY_ENTRYLIST = "entrylist";
-var DISPLAY_TESTLIST = "testlist";
-var DISPLAY_ENTRYDISPLAY = "entrydisplay";
-var DISPLAY_ENTRY_GALLERY = "entrygallery";
-var DISPLAY_ENTRY_GRID = "entrygrid";
-var DISPLAY_OPERANDS = "operands";
-var DISPLAY_METADATA = "metadata";
-var DISPLAY_ENTRYTIMELINE = "entrytimeline";
-var DISPLAY_REPOSITORIES = "repositories";
-var DISPLAY_ENTRYTITLE = "entrytitle";
-
-var ID_RESULTS = "results";
-var ID_ENTRIES = "entries";
-var ID_DETAILS = "details";
-var ID_DETAILS_INNER = "detailsinner";
-var ID_PROVIDERS = "providers";
-var ID_SEARCH_SETTINGS = "searchsettings";
-
-
-var ATTR_ENTRYID = "entryid";
-var ID_TREE_LINK = "treelink";
+const DISPLAY_ENTRYLIST = "entrylist";
+const DISPLAY_TESTLIST = "testlist";
+const DISPLAY_ENTRYDISPLAY = "entrydisplay";
+const DISPLAY_ENTRY_GALLERY = "entrygallery";
+const DISPLAY_ENTRY_GRID = "entrygrid";
+const DISPLAY_OPERANDS = "operands";
+const DISPLAY_METADATA = "metadata";
+const DISPLAY_ENTRYTIMELINE = "entrytimeline";
+const DISPLAY_REPOSITORIES = "repositories";
+const DISPLAY_ENTRYTITLE = "entrytitle";
+const ID_RESULTS = "results";
+const ID_ENTRIES = "entries";
+const ID_DETAILS_INNER = "detailsinner";
+const ID_PROVIDERS = "providers";
+const ID_SEARCH_SETTINGS = "searchsettings";
+const ATTR_ENTRYID = "entryid";
+const ID_TREE_LINK = "treelink";
 
 addGlobalDisplayType({
     type: DISPLAY_ENTRYLIST,
@@ -33037,43 +32983,42 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 
 function RamaddaSparklineDisplay(displayManager, id, properties) {
+    const ID_INNER = "inner";
     if(!properties.groupBy)
 	properties.displayInline = true;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Sparkline Attributes'},
+	{p:'showDate',wikiValue:'true'},
+	{p:'sparklineWidth',d:60},
+	{p:'sparklineHeight',d:20},
+	{p:'sparklineLineColor',wikiValue:'#000'},
+	{p:'sparklineBarColor',wikiValue:'MediumSeaGreen'},
+	{p:'sparklineCircleColor',wikiValue:'#000'},
+	{p:'sparklineCircleRadius',wikiValue:'1'},
+	{p:'sparklineLineWidth',wikiValue:'1'},
+	{p:'sparklineShowLines',wikiValue:'true'},
+	{p:'sparklineShowBars',wikiValue:'true'},
+	{p:'sparklineShowCircles',wikiValue:'true'},
+	{p:'sparklineShowEndPoints',wikiValue:'true'},
+	{p:'sparklineEndPointRadius',wikiValue:'2'},
+	{p:'sparklineEndPoint1Color',wikiValue:''},
+	{p:'sparklineEndPoint1Color',wikiValue:'steelblue'},
+	{p:'sparklineEndPointRadius',wikiValue:'2'},
+	{p:'sparklineEndPoint2Color',wikiValue:''},
+	{p:'sparklineEndPoint2Color',wikiValue:'tomato'},
+    ]);
+
     $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Sparkline Attributes",
-					'showDate=true',
-					'sparklineWidth=60',
-					'sparklineHeight=20',
-					'sparklineLineColor="#000"',
-					'sparklineBarColor="MediumSeaGreen"',
-					'sparklineCircleColor="#000"',
-					'sparklineCircleRadius="1"',
-					'sparklineLineWidth="1"',
-					'sparklineShowLines="true"',
-					'sparklineShowBars=true',
-					'sparklineShowCircles=true',
-					'sparklineShowEndPoints="true"',
-					'sparklineEndPointRadius="2"',
-					'sparklineEndPoint1Color=""',
-					'sparklineEndPoint1Color="steelblue"',
-					'sparklineEndPointRadius="2"',
-					'sparklineEndPoint2Color=""',
-					'sparklineEndPoint2Color="tomato"',
-					'sparklineDoTooltip="true"',
-				    ]);
-	},
+	//Overwrite so we just have undecorated text
         getLoadingMessage: function(msg) {
 	    return "Loading...";
 	},
 	updateUI: function() {
-	    let w = this.getProperty("sparklineWidth",60);
-	    let h = this.getProperty("sparklineHeight",20);
+	    let w = this.getPropertySparklineWidth(60);
+	    let h = this.getPropertySparklineHeight(20);
 	    let records = this.filteredRecords = this.filterData();
 	    if(!records) return;
 	    let field = this.getFieldById(null, this.getProperty("field"));
@@ -33081,17 +33026,15 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
 		return;
 	    }
-	    let showDate = this.getProperty("showDate",false);
-	    let id = this.getDomId("inner");
+	    let showDate = this.getPropertyShowDate();
+	    let id = this.getDomId(ID_INNER);
 	    let colorBy = this.getColorByInfo(records);
-
 	    let groupByField = this.getFieldById(null,this.getProperty("groupBy"));
 	    let groups = groupByField?RecordUtil.groupBy(records, this, null, groupByField):null;
-
 	    let col = this.getColumnValues(records, field);
 	    if(groups) {
 		let labelPosition = this.getProperty("labelPosition","bottom");
-		html = HU.div([ID,this.getDomId("inner")]);
+		html = HU.div([ID,this.getDomId(ID_INNER)]);
 		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 		groups.values.forEach((value,idx)=>{
 		    let grecords = groups.map[value];
@@ -33107,7 +33050,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,col.min,col.max,colorBy);
 		});		
 	    } else {
-		html = HU.div([CLASS,"display-sparkline-sparkline",ID,this.getDomId("inner"),STYLE,"width:" + w+"px;height:" + h+"px;"]);
+		html = HU.div([CLASS,"display-sparkline-sparkline",ID,this.getDomId(ID_INNER),STYLE,"width:" + w+"px;height:" + h+"px;"]);
 		if(showDate) {
 		    html = HU.div([CLASS,"display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
 			HU.div([CLASS,"display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))

@@ -3192,3 +3192,176 @@ var DataUtils = {
 }
 
 
+function RequestMacro(display, macro) {
+    this.display = display;
+    let values = null;
+    let enums = this.getProperty("request." +macro+".values");
+    if(enums) {
+	values =[]	
+	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
+	    values.push(["","All"]);
+	}
+	if(this.getProperty("request." + macro+".includeNone",false)) {
+	    values.push(["","None"]);
+	}
+	enums.split(",").every(tok=>{
+	    [id,label] = tok.split(":");
+	    values.push([id,label||id]);
+	    return true;
+	});
+    }
+    let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
+    let dflt =this.getProperty("request." +macro+".default",null);
+    if(dflt == null) {
+	if(values && values.length>0  && macroType=="enumeration") {
+	    dflt = values[0][0];
+	} else {
+	    dflt = "";
+	}
+    }
+    $.extend(this,{
+	name: macro,
+	values:values,
+	urlarg: this.getProperty("request." +macro+".urlarg",macro),
+	type:macroType,
+	triggerReload:this.getProperty("request." +macro+".triggerReload",true),
+	dflt:dflt,
+	dflt_from:this.getProperty("request." +macro+"_from.default",""),		    
+	dflt_to:this.getProperty("request." +macro+"_to.default",""),
+	dflt_min:this.getProperty("request." +macro+"_min.default",""),		    
+	dflt_max:this.getProperty("request." +macro+"_max.default",""),
+	label:this.getProperty("request." +macro+".label",Utils.makeLabel(macro)),
+	multiple:this.getProperty("request." +macro+".multiple",false),
+	rows:this.getProperty("request." +macro+".rows",3),
+    });
+}
+
+
+RequestMacro.prototype = {
+    getProperty: function(prop, dflt)   {
+	return this.display.getProperty(prop, dflt);
+    },
+    getWidget: function(dateIds) {
+	let debug = false;
+	let visible = this.display.getProperty("request." +this.name +".visible",
+					       this.display.getProperty("macros.visible",true));
+	let style = visible?"":"display:none;";
+	let widget;
+	let label = this.label;
+	if(debug)console.log("getWidget:" + label +" type:" + this.type);
+	if(this.type=="bounds") {
+	    widget = HU.checkbox("",[ID,this.display.getDomId(this.getId())], false) +HU.span([CLASS,"display-request-reload",TITLE,"Reload with current bounds"], " In bounds");
+	    label = null;
+	} else if(this.type=="enumeration") {
+ 	    if(this.values && this.values.length>0) {
+		let attrs = [STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
+		if(this.multiple) {
+		    attrs.push("multiple");
+		    attrs.push(null);
+		    attrs.push("size");
+		    attrs.push(Math.min(this.rows,this.values.length));
+		}
+		if(debug)
+		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
+		
+		widget = HU.select("",attrs,this.values,this.dflt,20);
+	    }
+	} else if(this.type=="numeric") {
+	    let minId = this.display.getDomId(this.getId()+"_min");
+	    let maxId = this.display.getDomId(this.getId()+"_max");			    
+	    widget = HU.input("","",[STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input"],this.dflt_min) +
+		" - " +
+		HU.input("","",[STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input"],this.dflt_max)
+	    label = label+" range";
+	} else if(this.type=="date") {
+	    let fromId = this.display.getDomId(this.getId()+"_from");
+	    let toId = this.display.getDomId(this.getId()+"_to");
+	    dateIds.push(fromId);
+	    dateIds.push(toId);
+	    widget = HU.datePicker("",this.dflt_from,[CLASS,"display-filter-input",STYLE, style, "name","",ID,fromId]) +
+		" - " +
+		HU.datePicker("",this.dflt_to,[CLASS,"display-filter-input",STYLE, style, "name","",ID,toId])
+	    label = label+" range";
+	} else {
+	    let size = "10";
+	    if(this.type=="number")
+		size = "4";
+	    widget = HU.input("",this.dflt,[STYLE, style, ID,this.display.getDomId(this.getId()),"size",size,CLASS,"display-filter-input"]);
+	}
+	if(!widget) return "";
+	return (visible?this.display.makeFilterWidget(label,widget):widget);
+    },
+    getId: function() {
+	return "macro_" + this.name;
+    },
+    getValue: function() {
+	let widget = this.display.jq(this.getId());
+	let value = this.dflt;
+	if(widget.length!=0) value =  widget.val();
+	this.display.setProperty("request." + this.name+".default",value);
+	return value;
+    },
+    apply: function(url) {
+	if(this.type == "bounds") {
+	    if(this.display.getBounds && this.display.jq(this.getId()).is(':checked')) {
+		let bounds = this.display.getBounds();
+		if(bounds) {
+		    bounds = RecordUtil.convertBounds(bounds);
+		    ["north","south","east","west"].map(b=>{
+			url+="&" + b+"=" +bounds[b];
+		    });
+		    
+		}
+	    }
+	} else if(this.type=="numeric") {
+	    let min = this.display.jq(this.getId()+"_min").val()||"";
+	    let max = this.display.jq(this.getId()+"_max").val()||"";
+	    this.dflt_min = min;
+	    this.dflt_max = max;
+	    if(min!="")
+		url = url +"&" + HU.urlArg(this.urlarg+"_from",min);
+	    if(max!="")
+		url = url +"&" + HU.urlArg(this.urlarg+"_to",max);
+	    this.display.setProperty("request." +this.name+"_min.default",min);
+	    this.display.setProperty("request." +this.name+"_max.default",max);
+
+	} else if(this.type=="date") {
+	    let from = this.display.jq(this.getId()+"_from").val()||"";
+	    let to = this.display.jq(this.getId()+"_to").val()||"";
+	    this.dflt_from = from;
+	    this.dflt_to = to;
+	    this.display.setProperty("request." +this.name+"_from.default",from);
+	    this.display.setProperty("request." +this.name+"_to.default",to);
+	    if(from!="")
+		url = url +"&" + HU.urlArg(this.urlarg+"_fromdate",from);
+	    if(to!="")
+		url = url +"&" + HU.urlArg(this.urlarg+"_todate",to);
+	    //			    this.display.setProperty(this.name+".default",value);
+	} else if(this.type=="enumeration") {
+	    let value = this.getValue();
+	    if(!Array.isArray(value)) {value=[value];}
+	    if(value.length>0 && value[0]!="") {
+		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
+		url = url.replace(regexp,"");
+		value.map(v=>{
+		    if(v!="")
+			url = url +"&" + HU.urlArg(this.urlarg,v);
+		});
+	    }
+	} else {
+	    let value = this.getValue();
+	    this.dflt  = value;
+	    if(value!="") {
+		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
+		url = url.replace(regexp,"");
+		url = url +"&" + HU.urlArg(this.urlarg,value);
+	    }
+	}
+	return  url;
+    }
+
+}
+
+
+
+

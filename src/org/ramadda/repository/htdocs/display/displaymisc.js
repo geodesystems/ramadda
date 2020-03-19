@@ -3110,43 +3110,42 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 
 
 function RamaddaSparklineDisplay(displayManager, id, properties) {
+    const ID_INNER = "inner";
     if(!properties.groupBy)
 	properties.displayInline = true;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Sparkline Attributes'},
+	{p:'showDate',wikiValue:'true'},
+	{p:'sparklineWidth',d:60},
+	{p:'sparklineHeight',d:20},
+	{p:'sparklineLineColor',wikiValue:'#000'},
+	{p:'sparklineBarColor',wikiValue:'MediumSeaGreen'},
+	{p:'sparklineCircleColor',wikiValue:'#000'},
+	{p:'sparklineCircleRadius',wikiValue:'1'},
+	{p:'sparklineLineWidth',wikiValue:'1'},
+	{p:'sparklineShowLines',wikiValue:'true'},
+	{p:'sparklineShowBars',wikiValue:'true'},
+	{p:'sparklineShowCircles',wikiValue:'true'},
+	{p:'sparklineShowEndPoints',wikiValue:'true'},
+	{p:'sparklineEndPointRadius',wikiValue:'2'},
+	{p:'sparklineEndPoint1Color',wikiValue:''},
+	{p:'sparklineEndPoint1Color',wikiValue:'steelblue'},
+	{p:'sparklineEndPointRadius',wikiValue:'2'},
+	{p:'sparklineEndPoint2Color',wikiValue:''},
+	{p:'sparklineEndPoint2Color',wikiValue:'tomato'},
+    ]);
+
     $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Sparkline Attributes",
-					'showDate=true',
-					'sparklineWidth=60',
-					'sparklineHeight=20',
-					'sparklineLineColor="#000"',
-					'sparklineBarColor="MediumSeaGreen"',
-					'sparklineCircleColor="#000"',
-					'sparklineCircleRadius="1"',
-					'sparklineLineWidth="1"',
-					'sparklineShowLines="true"',
-					'sparklineShowBars=true',
-					'sparklineShowCircles=true',
-					'sparklineShowEndPoints="true"',
-					'sparklineEndPointRadius="2"',
-					'sparklineEndPoint1Color=""',
-					'sparklineEndPoint1Color="steelblue"',
-					'sparklineEndPointRadius="2"',
-					'sparklineEndPoint2Color=""',
-					'sparklineEndPoint2Color="tomato"',
-					'sparklineDoTooltip="true"',
-				    ]);
-	},
+	//Overwrite so we just have undecorated text
         getLoadingMessage: function(msg) {
 	    return "Loading...";
 	},
 	updateUI: function() {
-	    let w = this.getProperty("sparklineWidth",60);
-	    let h = this.getProperty("sparklineHeight",20);
+	    let w = this.getPropertySparklineWidth(60);
+	    let h = this.getPropertySparklineHeight(20);
 	    let records = this.filteredRecords = this.filterData();
 	    if(!records) return;
 	    let field = this.getFieldById(null, this.getProperty("field"));
@@ -3154,17 +3153,15 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
 		return;
 	    }
-	    let showDate = this.getProperty("showDate",false);
-	    let id = this.getDomId("inner");
+	    let showDate = this.getPropertyShowDate();
+	    let id = this.getDomId(ID_INNER);
 	    let colorBy = this.getColorByInfo(records);
-
 	    let groupByField = this.getFieldById(null,this.getProperty("groupBy"));
 	    let groups = groupByField?RecordUtil.groupBy(records, this, null, groupByField):null;
-
 	    let col = this.getColumnValues(records, field);
 	    if(groups) {
 		let labelPosition = this.getProperty("labelPosition","bottom");
-		html = HU.div([ID,this.getDomId("inner")]);
+		html = HU.div([ID,this.getDomId(ID_INNER)]);
 		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
 		groups.values.forEach((value,idx)=>{
 		    let grecords = groups.map[value];
@@ -3180,7 +3177,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,col.min,col.max,colorBy);
 		});		
 	    } else {
-		html = HU.div([CLASS,"display-sparkline-sparkline",ID,this.getDomId("inner"),STYLE,"width:" + w+"px;height:" + h+"px;"]);
+		html = HU.div([CLASS,"display-sparkline-sparkline",ID,this.getDomId(ID_INNER),STYLE,"width:" + w+"px;height:" + h+"px;"]);
 		if(showDate) {
 		    html = HU.div([CLASS,"display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
 			HU.div([CLASS,"display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))

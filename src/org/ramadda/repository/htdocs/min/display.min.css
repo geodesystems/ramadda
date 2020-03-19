@@ -1,43 +1,17 @@
-
 .display-container {
     display:inline-block;
-    width:100%;
-}
-
-
-.display-size-legend {
-    text-align:center;
-}
-
-.display-size-legend-item {
-    text-align:center;
-    display:inline-block;
-    margin-right:8px;
 }
 
 .display-contents {
-/*  text-align:left;*/
-/*  background:#fff;*/
 }
+
 .display-contents-inner {
-height:100%;
-}
-
-
-.display {
-}
-
-.display input {
-}
-
-.display-anim-button {
-    cursor:pointer;
+    height:100%;
 }
 
 .display-row-highlight  {
     background:#efefef !important;
 }
-
 
 /* fixes the tooltip clicker bug */
 .google-visualization-tooltip {
@@ -135,6 +109,15 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
+.display-size-legend {
+    text-align:center;
+}
+
+.display-size-legend-item {
+    text-align:center;
+    display:inline-block;
+    margin-right:8px;
+}
 
 
 .display-page-button {
@@ -256,6 +239,10 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
+.display-anim-button {
+    cursor:pointer;
+}
+
 .display-animation-tick {
    width:4px;
    z-index:100;
@@ -287,7 +274,6 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-animation-slider .ui-slider-handle {
     z-index:200;
-    //background:#cacaca;
     background:transparent;
     position:absolute;
     width:10px;
@@ -1998,8 +1984,6 @@ margin:10px;
 .display-datatable-summary-row {
     padding-left:4px;
     padding-right:4px;    
-//    height:13px;
-//    min-height:3px;
 }
 
 
