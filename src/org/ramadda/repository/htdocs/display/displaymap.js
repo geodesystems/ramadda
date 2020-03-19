@@ -153,7 +153,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		$( document ).ready(()=> {
 		    if(this.map) {
 			setTimeout(()=>{
-				   this.map.getMap().updateSize();
+			    this.callingUpdateSize = true;
+			    this.map.getMap().updateSize();
+			    this.callingUpdateSize = false;
 			},50);
 		    }
 		});
@@ -323,7 +325,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				     .getDomId(ID_LATFIELD), null, this);
 
             this.map.getMap().events.register("updatesize", "", ()=>{
-		_this.updateHtmlLayers();
+		if(!this.callingUpdateSize) {
+		    _this.updateHtmlLayers();
+		}
             });
 
 
@@ -1503,7 +1507,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	showColorTable: function(colorBy) {
 	    colorBy.displayColorTable(null,true);
+	    this.callingUpdateSize = true;
 	    this.map.getMap().updateSize();
+	    this.callingUpdateSize = false;
 	},
 	updateUIInner: function(args, pointData, records) {
 	    var t1= new Date();
@@ -1820,6 +1826,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let hoverW = w*3;
 	    let hoverH = h*3;
 	    let layerRecords = [];
+
 	    groups.values.forEach((value,idx)=>{
 		let recordsAtTime = groups.map[value];
 		let data = [];
@@ -2401,7 +2408,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let style = this.getProperty("sizeByLegendStyle");
 		    if(style) legend = HU.div([STYLE,style],legend);
 		    this.jq(ID_SIZEBY_LEGEND).html(legend);
+		    this.callingUpdateSize = true;
 		    this.map.getMap().updateSize();
+		    this.callingUpdateSize = false;
 		}
 	    }
 	    this.jq(ID_BOTTOM).append(HU.div([ID,this.getDomId(ID_SHAPES)]));
