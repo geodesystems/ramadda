@@ -27308,7 +27308,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
 		    } else {
 			if(!props.graphicName)
-			    props.graphicName = this.getShape();
+			    props.graphicName = this.getPropertyShape();
 			if(radius>0) {
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
 			}
