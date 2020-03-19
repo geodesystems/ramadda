@@ -72,7 +72,75 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'fixedPosition',wikiValue:true,tt:'Keep the initial position'},
 	{p:'initialLocation', wikiValue:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',wikiValue:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
-	
+	{p:'doPopup', wikiValue:'false',tt:"Don't show popups"},
+	{p:'linked',wikiValue:true,tt:"Link location with other maps"},
+	{p:'linkGroup',wikiValue:'some_name',tt:"Map groups to link with"},
+	{p:'highlight',wikiValue:'true',tt:"Show mouse over highlights"},
+	{p:'centerOnFilterChange',wikiValue:true,tt:'Center map when the data filters change'},
+	{p:'centerOnHighlight',wikiValue:true,tt:'Center map when a record is highlighted'},
+	{p:'boundsAnimation',wikiValue:true,tt:'Animate when map is centered'},
+	{p:'iconField',wikiValue:'""',tt:'Field id for the image icon url'},
+	{p:'iconSize',wikiValue:16},
+	{label:'Other map attributes'},
+	{p:'showRecordSelection',wikiValue:'false'},
+	{p:'recordHighlightRadius',wikiValue:'20',tt:'Radius to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeWidth',wikiValue:'2',tt:'Stroke to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeColor',wikiValue:'red',tt:'Color to use to show other displays highlighted record'},
+	{p:'recordHighlightFillColor',wikiValue:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
+	{p:'unhighlightColor',wikiValue:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
+	{p:'unhighlightStrokeWidth',wikiValue:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
+	{p:'unhighlightStrokeColor',wikiValue:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
+	{p:'unhighlightRadius',wikiValue:'1',tt:'Radius for when records are highlighted with the filters'},
+	{p:'vectorLayerStrokeColor',wikiValue:'#000'},
+	{p:'vectorLayerFillColor',wikiValue:'#ccc'},
+	{p:'vectorLayerFillOpacity',wikiValue:'0.25'},
+	{p:'vectorLayerStrokeWidth',wikiValue:'1'},
+	{p:'showMarkersToggle',wikiValue:'true',tt:'Show the toggle checkbox for the marker layer'},
+	{p:'showMarkersToggleLabel',wikiValue:'label',tt:'Label to use for checkbox'},
+	{p:'showClipToBounds',wikiValue:'true',tt:'Show the clip bounds checkbox'},
+	{p:'showMarkers',wikiValue:'false',tt: 'Hide the markers'},
+	{p:'showLocationSearch',wikiValue:'true'},
+	{p:'showLatLonPosition',wikiValue:'false'},
+	{p:'showLayerSwitcher',wikiValue:'false'},
+	{p:'showScaleLine',wikiValue:'true'},
+	{p:'showZoomPanControl',wikiValue:'true'},
+	{p:'showZoomOnlyControl',wikiValue:'false'},
+	{p:'showLayers',wikiValue:'false'},
+	{p:'enableDragPan',wikiValue:'false'},
+	{p:'showSegments',wikiValue:'true',tt:'If data has 2 lat/lon locations draw a line'},
+	{p:'latField1',tt:'Field id for segments'},
+	{p:'lonField1',tt:'Field id for segments'},
+	{p:'latField2',tt:'Field id for segments'},
+	{p:'lonField2',tt:'Field id for segments'},
+	{label:'Heatmap Attributes'},
+	{p:'doHeatmap',wikiValue:'true',tt:'Grid the data into an image'},
+	{p:'doGridPoints',wikiValue:'true',tt:'Display a image showing shapes or bars'},
+	{p:'htmlLayerField'},
+	{p:'htmlLayerWidth',wikiValue:'30'},
+	{p:'htmlLayerHeight',wikiValue:'15'},
+	{p:'htmlLayerStyle',wikiValue:'css style'},
+	{p:'htmlLayerScale',wikiValue:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
+	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
+	{p:'cellShape',wikiValue:'rect|circle|vector'},
+	{p:'angleBy',wikiValue:'field',tt:'field for angle of vectors'},
+	{p:'cell3D',wikiValue:'true',tt:'Draw 3d bars'},
+	{p:'cellColor',wikiValue:'color'},
+	{p:'cellFilled',wikiValue:true},
+	{p:'cellSize',wikiValue:'8'},
+	{p:'cellSizeH',wikiValue:'20',tt:'Base height to scale by'},
+	{p:'hm.operator',wikiValue:'count|average|min|max'},
+	{p:'hm.animationSleep',wikiValue:'1000'},
+	{p:'hm.reloadOnZoom',wikiValue:'true'},
+	{p:'hm.groupByDate',wikiValue:'true|day|month|year|decade',tt:'Group heatmap images by date'}, 
+	{p:'hm.groupBy',wikiValue:'field id',tt:'Field to group heatmap images'}, 
+	{p:'hm.labelPrefix'},
+	{p:'hm.showToggle'},
+	{p:'hm.toggleLabel'},
+	{p:'hm.boundsScale',wikiValue:'0.1',tt:'Scale up the map bounds'},
+	{p:'hm.filter',wikiValue:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
+	{p:'hm.filterPasses',wikiValue:'1'},
+	{p:'hm.filterThreshold',wikiValue:'1'},
+	{p:'hm.countThreshold',wikiValue:'1'},
     ]);
     this.defineSizeByProperties();
     RamaddaUtil.defineMembers(this, {
@@ -80,31 +148,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         features: [],
         myMarkers: {},
         mapEntryInfos: {},
-	getWikiEditorTags: function() {
+	xxgetWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
 		{inlineLabel:'Other map attributes'},
-		['doPopup=false',"Don't show popups"],
-		['highlight=true',"Show mouse over highlights"],
-		['linked=true',"Link location with other maps"],
-		['linkGroup=some_name',"Map groups to link with"],
-		["centerOnFilterChange=\"true\"","Center map when the data filters change"],
-		["centerOnHighlight=\"true\"","Center map when a record is highlighted"],
-		["boundsAnimation=\"true\"","Animate when map is centered"],
-		'recordHighlightRadius=20',
-		'recordHighlightStrokeWidth=2',
-		'recordHighlightStrokeColor=red',
-		'recordHighlightFillColor=rgba(0,0,0,0)',
+		'showRecordSelection=false',
+		['recordHighlightRadius=20','Radius to use to show other displays highlighted record'],
+		['recordHighlightStrokeWidth=2','Stroke to use to show other displays highlighted record'],
+		['recordHighlightStrokeColor=red','Color to use to show other displays highlighted record'],
+		['recordHighlightFillColor=rgba(0,0,0,0)','Fill color to use to show other displays highlighted record'],
+		['unhighlightColor=#ccc','Fill color when records are unhighlighted with the filters'],
+		['unhighlightStrokeWidth=1','Stroke width for when records are unhighlighted with the filters'],
+		['unhighlightStrokeColor=#aaa','Stroke color for when records are unhighlighted with the filters'],
+		['unhighlightRadius=1','Radius for when records are highlighted with the filters'],
                 'vectorLayerStrokeColor=#000',
 		'vectorLayerFillColor=#ccc',
 		'vectorLayerFillOpacity=0.25',
                 'vectorLayerStrokeWidth=1',
-		'iconField=""',
-		'iconSize="16"',
-		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
-		'showRecordSelection=false',
-		'showMarkersToggle=true',
-		'showMarkersToggleLabel="label"',
-		"showClipToBounds=true",
+		['showMarkersToggle=true','Show the toggle checkbox for the marker layer'],
+		['showMarkersToggleLabel="label"','Label to use for checkbox'],
+		["showClipToBounds=true",'Show the clip bounds checkbox'],
+		['showMarkers=false', 'Hide the markers'],
 		"showLocationSearch=\"true\"",
 		'showLatLonPosition=false',
 		'showLayerSwitcher=false',
@@ -113,7 +176,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'showZoomOnlyControl=false',
 		'showLayers=false',
 		'enableDragPan=false',
-		'markersVisibility=false',
+		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
+		['latField1=','Field id for segments']
+		['lonField1=','Field id for segments'],
+		['latField2=','Field id for segments'],
+		['lonField2=','Field id for segments'],
 		'inlinelabel:Heatmap Attributes',
 		['doHeatmap=true',"Grid the data into an image"],
 		['doGridPoints=true',"Display a image showing shapes or bars"],
@@ -280,7 +347,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.lastWidth = this.jq(ID_MAP).width();
             }
 
-	    if(!this.getProperty("markersVisibility", true)) {
+	    if(!this.getProperty("showMarkers", this.getProperty("markersVisibility", true))) {
 		this.map.getMarkersLayer().setVisibility(false);
 	    }
 
@@ -1912,6 +1979,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         addPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;
+	    let highlightRecords = this.getProperty("filterHighlight",false);
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
 		if(debug) console.log("displaymap creating heatmap");
 		this.createHeatmap(records, bounds);
@@ -1931,7 +1999,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let source = this;
             let radius = +this.getPropertyRadius(8);
 	    let unhighlightFillColor = this.getUnhighlightColor();
-	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#ccc");
+	    let unhighlightStrokeWidth = this.getProperty("unhighlightStrokeWidth",0);
+	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#aaa");
 	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
 	    if(this.getPropertyScaleRadius()) {
 		let seen ={};
@@ -2233,13 +2302,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
 
-		if(this.highlightFilter) {
-		    if(!record.isHighlight(this)) {
-			props.fillColor =  unhighlightFillColor;
-			props.strokeColor =  unhighlightStrokeColor;
-			if(unhighlightRadius>0)
-			    props.pointRadius = unhighlightRadius;
-		    }
+		if(highlightRecords && !record.isHighlight(this)) {
+		    props.fillColor =  unhighlightFillColor;
+		    props.strokeColor =  unhighlightStrokeColor;
+		    props.strokeWidth=unhighlightStrokeWidth;
+		    if(unhighlightRadius>0)
+			props.pointRadius = unhighlightRadius;
 		}
 
 

@@ -677,21 +677,16 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         displayProps.add("request.gridField.values");
         displayProps.add(Json.quote(vars));
 
-        boolean animationEnabled = Utils.getProperty(props, "doAnimation", "false").equals("true");
-        if (dates.size() > 0 && animationEnabled) {
+        if (dates.size() > 0) {
             all.add("gridTime");
             displayProps.add("request.gridTime.includeAll");
             displayProps.add("false");
             displayProps.add("request.gridTime.label");
             displayProps.add(Json.quote("Time"));
             displayProps.add("request.gridTime.values");
-            String v = null;
+            String v = "-1" + ":" + "All";
             for (int i = 0; i < dates.size(); i++) {
-                if (v == null) {
-                    v = "";
-                } else {
-                    v += ",";
-                }
+		v += ",";
                 v += i + ":" + dates.get(i);
             }
             displayProps.add(Json.quote(v));
@@ -1392,10 +1387,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         final String fieldLabel = grid.getDescription();
         int          timeIndex  = -1;
         Range        tRange     = null;
-        System.err.println("gridTIme:" + request.getString("gridTime", "NA"));
         if (request.defined("gridTime")) {
             timeIndex = request.get("gridTime", -1);
-            System.err.println("time index:" + timeIndex);
             if (timeIndex >= 0) {
                 tRange = new Range(timeIndex, timeIndex);
                 CalendarDate date = dates.get(timeIndex);

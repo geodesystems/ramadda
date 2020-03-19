@@ -694,16 +694,16 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 
 PointRecord.prototype =  {
     clone: function() {
-	    var newRecord = {};
-	    $.extend(newRecord,this);
-	    newRecord.data = [];
-	    this.data.map((v,idx)=>{newRecord.data[idx] = v;});
-	    return newRecord;
-	},
-	isHighlight: function(display) {
-	    if(!this.highlightForDisplay) this.highlightForDisplay={};
-	    return this.highlightForDisplay[display];
-	},
+	var newRecord = {};
+	$.extend(newRecord,this);
+	newRecord.data = [];
+	this.data.map((v,idx)=>{newRecord.data[idx] = v;});
+	return newRecord;
+    },
+    isHighlight: function(display) {
+	if(!this.highlightForDisplay) this.highlightForDisplay={};
+	return this.highlightForDisplay[display];
+    },
     getDisplayProperty: function(display,prop,dflt) {
 	if(!this.displayProperties) this.displayProperties={};
 	let props = this.displayProperties[display];
@@ -720,79 +720,77 @@ PointRecord.prototype =  {
 	}
 	props[prop] =value;
     },
-
-	
-	setHighlight:function(display, value) {
-	    if(!this.highlightForDisplay) this.highlightForDisplay={};
-	    if(!value || this.highlightForDisplay[display] == null) {
-		this.highlightForDisplay[display] = value;
-	    }
-	},
-	clearHighlight:function(display) {
-	    if(!this.highlightForDisplay) this.highlightForDisplay={};
-	    delete this.highlightForDisplay[display];
-	},
-	toString: function() {
-	    return "data:"  + this.data;
-	},
-	getId: function() {
-	    return this.id;
-	},
-        getData: function() {
-            return this.data;
-        },
-        allZeros: function() {
-            var tuple = this.getData();
-            var allZeros = false;
-            var nums = 0;
-            var nonZero = 0;
-            for (var j = 0; j < tuple.length; j++) {
-                if (typeof tuple[j] == "number") {
-                    nums++;
-                    if (!isNaN(tuple[j]) && tuple[j] != 0) {
-                        nonZero++;
-                        break;
-                    }
+    setHighlight:function(display, value) {
+	if(!this.highlightForDisplay) this.highlightForDisplay={};
+	if(!value || this.highlightForDisplay[display] == null) {
+	    this.highlightForDisplay[display] = value;
+	}
+    },
+    clearHighlight:function(display) {
+	if(!this.highlightForDisplay) this.highlightForDisplay={};
+	delete this.highlightForDisplay[display];
+    },
+    toString: function() {
+	return "data:"  + this.data;
+    },
+    getId: function() {
+	return this.id;
+    },
+    getData: function() {
+        return this.data;
+    },
+    allZeros: function() {
+        var tuple = this.getData();
+        var allZeros = false;
+        var nums = 0;
+        var nonZero = 0;
+        for (var j = 0; j < tuple.length; j++) {
+            if (typeof tuple[j] == "number") {
+                nums++;
+                if (!isNaN(tuple[j]) && tuple[j] != 0) {
+                    nonZero++;
+                    break;
                 }
             }
-            if (nums > 0 && nonZero == 0) {
-                return true;
-            }
-            return false;
-        },
-        getValue: function(index) {
-            return this.data[index];
-        },
-	setValue: function(index,value) {
-            this.data[index] = value;
-        },
-        push: function(v) {
-            this.data.push(v);
-        },
-        hasDate: function() {
-	    return this.getDate()!=null;
-	},
-        hasLocation: function() {
-            return this.latitude !=null && !isNaN(this.latitude);
-        },
-        hasElevation: function() {
-            return this.elevation !=null && !isNaN(this.elevation);
-        },
-        getLatitude: function() {
-            return this.latitude;
-        },
-        getLongitude: function() {
-            return this.longitude;
-        },
-        getTime: function() {
-            return this.recordTime;
-        },
-        getElevation: function() {
-            return this.elevation;
-        },
-        getDate: function() {
-            return this.recordTime;
         }
+        if (nums > 0 && nonZero == 0) {
+            return true;
+        }
+        return false;
+    },
+    getValue: function(index) {
+        return this.data[index];
+    },
+    setValue: function(index,value) {
+        this.data[index] = value;
+    },
+    push: function(v) {
+        this.data.push(v);
+    },
+    hasDate: function() {
+	return this.getDate()!=null;
+    },
+    hasLocation: function() {
+        return this.latitude !=null && !isNaN(this.latitude);
+    },
+    hasElevation: function() {
+        return this.elevation !=null && !isNaN(this.elevation);
+    },
+    getLatitude: function() {
+        return this.latitude;
+    },
+    getLongitude: function() {
+        return this.longitude;
+    },
+    getTime: function() {
+        return this.recordTime;
+    },
+    getElevation: function() {
+        return this.elevation;
+    },
+    getDate: function() {
+        return this.recordTime;
+    }
 };
 
 
@@ -1129,6 +1127,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.field.isNumeric()) {
 		var minField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_min"));
 		var maxField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_max"));
+		if(!minField.val() || !maxField.val()) return;
 		var minValue = parseFloat(minField.val().trim());
 		var maxValue = parseFloat(maxField.val().trim());
 		var dfltMinValue = parseFloat(minField.attr("data-min"));
@@ -2843,9 +2842,9 @@ function CsvUtil() {
 		if(key.indexOf("US")>=0) {
 		    cnt++;
 		    if(cnt==1) {
-//			console.log(obj.records.length +" " +bounds.west +" " + bounds.east +" " + lat  +" " +lon);
+			//			console.log(obj.records.length +" " +bounds.west +" " + bounds.east +" " + lat  +" " +lon);
 			obj.records.forEach(r=>{
-//			    console.log(r.getValue(0) + " " + r.getLatitude() +" " + r.getLongitude())
+			    //			    console.log(r.getValue(0) + " " + r.getLatitude() +" " + r.getLongitude())
 			});
 		    }
 		}
@@ -3241,14 +3240,17 @@ RequestMacro.prototype = {
     getProperty: function(prop, dflt)   {
 	return this.display.getProperty(prop, dflt);
     },
+    isVisible: function() {
+	return  this.getProperty("request." +this.name +".visible",
+				 this.getProperty("macros.visible",true));
+    },
     getWidget: function(dateIds) {
 	let debug = false;
-	let visible = this.display.getProperty("request." +this.name +".visible",
-					       this.display.getProperty("macros.visible",true));
+	let visible = this.isVisible();
 	let style = visible?"":"display:none;";
 	let widget;
 	let label = this.label;
-	if(debug)console.log("getWidget:" + label +" type:" + this.type);
+	if(debug)console.log(this.getId() +".getWidget:" + label +" type:" + this.type);
 	if(this.type=="bounds") {
 	    widget = HU.checkbox("",[ID,this.display.getDomId(this.getId())], false) +HU.span([CLASS,"display-request-reload",TITLE,"Reload with current bounds"], " In bounds");
 	    label = null;
@@ -3299,6 +3301,7 @@ RequestMacro.prototype = {
 	let value = this.dflt;
 	if(widget.length!=0) value =  widget.val();
 	this.display.setProperty("request." + this.name+".default",value);
+	//	console.log(this.getId() +".getValue=" + value);
 	return value;
     },
     apply: function(url) {

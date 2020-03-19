@@ -161,13 +161,8 @@ public class GridTypeHandler extends GenericTypeHandler {
                     args.add("timeStride");
                     args.add(Utils.getProperty(props, "timeStride", "1"));
                 }
-                if (Misc.equals(Utils.getProperty(props, "doAnimation","false"),"true")) {
-                    args.add("gridTime");
-                    args.add(Utils.getProperty(props, "gridTime", "0"));
-                } else {
-                    args.add("doAnimation");
-                    args.add("true");
-                }
+		args.add("gridTime");
+		args.add(Utils.getProperty(props, "gridTime", "0"));
                 jsonbuf.append(getRepository().getUrlBase()
                                + "/grid/gridjson?"
                                + HtmlUtils.args(args, false));

@@ -2354,7 +2354,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		html += HU.div([CLASS,"ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
 		html += HU.div([CLASS,"ramadda-menu-item","what","setmax"],"Set range max to " + Utils.formatNumber(val));
 		html += HU.div([CLASS,"ramadda-menu-item","what","reset"],"Reset range");
+		if(_this.getProperty("colorByLog")) {
+		    html += HU.div([CLASS,"ramadda-menu-item","what","togglelog"],"Use linear scale");
+		} else {
+		    html += HU.div([CLASS,"ramadda-menu-item","what","togglelog"],"Use log scale");
+		}
+		html += HU.div([CLASS,"ramadda-menu-item","what","reset"],"Reset range");
+		html += Utils.getColorTablePopup();
 		popup.html(html);
+		$(popup).find(".ramadda-colortable-select").click(function() {
+		    let ct = $(this).attr("colortable");
+		    if(ct) {
+			_this.setProperty("colorTable",ct);
+			_this.forceUpdateUI();
+		    }		    
+		});
 		popup.show();
 		popup.position({
                     of: $(this),
@@ -2368,6 +2382,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.setProperty("colorByMin",_this.originalColorRange[0]);
 			_this.setProperty("colorByMax",_this.originalColorRange[1]);
 			_this.setProperty("overrideColorRange", false);
+		    } else if(what == "togglelog") {
+			if(!_this.getProperty("colorByLog")) 
+			    _this.setProperty("colorByLog",true);
+			else
+			    _this.setProperty("colorByLog",false);
  		    } else if(what == "setmin") {
 			_this.setProperty("colorByMin",val);
 			_this.setProperty("overrideColorRange", true);
@@ -2375,8 +2394,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.setProperty("colorByMax",val);
 			_this.setProperty("overrideColorRange", true);
 		    }
-		    _this.haveCalledUpdateUI = false;
-		    _this.updateUI();
+		    _this.forceUpdateUI();
 		});
 	    });
         },
@@ -2682,7 +2700,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.settingFilterValue = true;
 		if(prop.fieldId == "_highlight") {
 		    this.jq(ID_FILTER_HIGHLIGHT).val(prop.value);
-		    this.highlightFilter = prop.value=="highlight";
+		    this.setProperty("filterHighlight", prop.value=="highlight");
 		} else 	if(Utils.isDefined(prop.value2)) {
 		    $("#" +widgetId+"_min").val(prop.value);
 		    $("#" +widgetId+"_min").attr("data-value", prop.value);
@@ -3524,7 +3542,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	filterData: function(records, fields, doGroup, skipFirst) {
 	    let debug = displayDebug.filterData;
-	    let highlight = this.highlightFilter;
+	    let highlight =  this.getProperty("filterHighlight",false);
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -3614,6 +3632,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			newData.push(record);
 			record.setHighlight(this, ok);
 		    } else {
+			record.clearHighlight(this);
 			if(ok) {
 			    newData.push(record);
 			}
@@ -4963,6 +4982,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.checkSearchBar();
 	    this.updateUI();
         },
+        getMainDiv: function() {
+	    return $("#" + this.getProperty(PROP_DIVID));
+	},
         createUI: function() {
             var divid = this.getProperty(PROP_DIVID);
             if (divid != null) {
@@ -5243,6 +5265,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(header).html(html);
 	},
 
+        forceUpdateUI: function() {
+	    this.haveCalledUpdateUI = false;
+	    this.updateUI();
+	},
         updateUI: function() {
 	},
 
@@ -5262,8 +5288,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let e1 = this.getProperty("extraFields1","");
 	    let e2 = this.getProperty("extraFields2","");
 	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
+//	    console.log(this.getId() +" " +this.type +" requestFields: "+p);
 	    list.forEach(macro=>{
 		if(macro=="") return;
+//		console.log("\tmacro:" + macro);
 		macros.push(new RequestMacro(this, macro));
 	    });
 	    return macros;
@@ -5278,11 +5306,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let requestProps = "";
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
-	    macros.every(macro=>{
-		if(this.getProperty("request." +macro.name +".show",true)) { 
+	    macros.forEach(macro=>{
+		if(macro.isVisible()) {
 		    requestProps+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
 		}
-		return true;
 	    });
 	    this.writeHeader(ID_REQUEST_PROPERTIES, requestProps);
 	    let macroChange = (macro,value,what)=>{
@@ -5476,7 +5503,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 += HU.span([CLASS,"display-filter"],
 				   this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
-
 	    this.highlightFilter = this.getProperty("filterHighlight",false);
 	    if(this.getProperty("showFilterHighlight")) {
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
@@ -5797,7 +5823,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 	    this.jq(ID_FILTER_HIGHLIGHT).change(function() {
-		_this.highlightFilter = $(this).val()=="highlight";
+		_this.setProperty("filterHighlight", $(this).val()=="highlight");
 		_this.haveCalledUpdateUI = false;
 		inputFunc($(this));
 	    });
@@ -7241,6 +7267,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 html += "Unknown layout:" + this.layout;
             }
 
+	    //If we don't  have any displays to show then hide us
+
+	    if(!this.getShowMenu() && displaysToLayout.length==0) {
+		$("#" + this.getId()).hide();
+	    } else {
+		$("#" + this.getId()).show();
+	    }
             this.writeHtml(ID_DISPLAYS, html);
             if (this.layout == LAYOUT_TABS) {
                 $("#" + tabId).tabs({activate: HtmlUtil.tabLoaded});
@@ -8163,16 +8196,16 @@ function PointRecord(fields,lat, lon, elevation, time, data) {
 
 PointRecord.prototype =  {
     clone: function() {
-	    var newRecord = {};
-	    $.extend(newRecord,this);
-	    newRecord.data = [];
-	    this.data.map((v,idx)=>{newRecord.data[idx] = v;});
-	    return newRecord;
-	},
-	isHighlight: function(display) {
-	    if(!this.highlightForDisplay) this.highlightForDisplay={};
-	    return this.highlightForDisplay[display];
-	},
+	var newRecord = {};
+	$.extend(newRecord,this);
+	newRecord.data = [];
+	this.data.map((v,idx)=>{newRecord.data[idx] = v;});
+	return newRecord;
+    },
+    isHighlight: function(display) {
+	if(!this.highlightForDisplay) this.highlightForDisplay={};
+	return this.highlightForDisplay[display];
+    },
     getDisplayProperty: function(display,prop,dflt) {
 	if(!this.displayProperties) this.displayProperties={};
 	let props = this.displayProperties[display];
@@ -8189,79 +8222,77 @@ PointRecord.prototype =  {
 	}
 	props[prop] =value;
     },
-
-	
-	setHighlight:function(display, value) {
-	    if(!this.highlightForDisplay) this.highlightForDisplay={};
-	    if(!value || this.highlightForDisplay[display] == null) {
-		this.highlightForDisplay[display] = value;
-	    }
-	},
-	clearHighlight:function(display) {
-	    if(!this.highlightForDisplay) this.highlightForDisplay={};
-	    delete this.highlightForDisplay[display];
-	},
-	toString: function() {
-	    return "data:"  + this.data;
-	},
-	getId: function() {
-	    return this.id;
-	},
-        getData: function() {
-            return this.data;
-        },
-        allZeros: function() {
-            var tuple = this.getData();
-            var allZeros = false;
-            var nums = 0;
-            var nonZero = 0;
-            for (var j = 0; j < tuple.length; j++) {
-                if (typeof tuple[j] == "number") {
-                    nums++;
-                    if (!isNaN(tuple[j]) && tuple[j] != 0) {
-                        nonZero++;
-                        break;
-                    }
+    setHighlight:function(display, value) {
+	if(!this.highlightForDisplay) this.highlightForDisplay={};
+	if(!value || this.highlightForDisplay[display] == null) {
+	    this.highlightForDisplay[display] = value;
+	}
+    },
+    clearHighlight:function(display) {
+	if(!this.highlightForDisplay) this.highlightForDisplay={};
+	delete this.highlightForDisplay[display];
+    },
+    toString: function() {
+	return "data:"  + this.data;
+    },
+    getId: function() {
+	return this.id;
+    },
+    getData: function() {
+        return this.data;
+    },
+    allZeros: function() {
+        var tuple = this.getData();
+        var allZeros = false;
+        var nums = 0;
+        var nonZero = 0;
+        for (var j = 0; j < tuple.length; j++) {
+            if (typeof tuple[j] == "number") {
+                nums++;
+                if (!isNaN(tuple[j]) && tuple[j] != 0) {
+                    nonZero++;
+                    break;
                 }
             }
-            if (nums > 0 && nonZero == 0) {
-                return true;
-            }
-            return false;
-        },
-        getValue: function(index) {
-            return this.data[index];
-        },
-	setValue: function(index,value) {
-            this.data[index] = value;
-        },
-        push: function(v) {
-            this.data.push(v);
-        },
-        hasDate: function() {
-	    return this.getDate()!=null;
-	},
-        hasLocation: function() {
-            return this.latitude !=null && !isNaN(this.latitude);
-        },
-        hasElevation: function() {
-            return this.elevation !=null && !isNaN(this.elevation);
-        },
-        getLatitude: function() {
-            return this.latitude;
-        },
-        getLongitude: function() {
-            return this.longitude;
-        },
-        getTime: function() {
-            return this.recordTime;
-        },
-        getElevation: function() {
-            return this.elevation;
-        },
-        getDate: function() {
-            return this.recordTime;
         }
+        if (nums > 0 && nonZero == 0) {
+            return true;
+        }
+        return false;
+    },
+    getValue: function(index) {
+        return this.data[index];
+    },
+    setValue: function(index,value) {
+        this.data[index] = value;
+    },
+    push: function(v) {
+        this.data.push(v);
+    },
+    hasDate: function() {
+	return this.getDate()!=null;
+    },
+    hasLocation: function() {
+        return this.latitude !=null && !isNaN(this.latitude);
+    },
+    hasElevation: function() {
+        return this.elevation !=null && !isNaN(this.elevation);
+    },
+    getLatitude: function() {
+        return this.latitude;
+    },
+    getLongitude: function() {
+        return this.longitude;
+    },
+    getTime: function() {
+        return this.recordTime;
+    },
+    getElevation: function() {
+        return this.elevation;
+    },
+    getDate: function() {
+        return this.recordTime;
+    }
 };
 
 
@@ -8598,6 +8629,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.field.isNumeric()) {
 		var minField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_min"));
 		var maxField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_max"));
+		if(!minField.val() || !maxField.val()) return;
 		var minValue = parseFloat(minField.val().trim());
 		var maxValue = parseFloat(maxField.val().trim());
 		var dfltMinValue = parseFloat(minField.attr("data-min"));
@@ -10312,9 +10344,9 @@ function CsvUtil() {
 		if(key.indexOf("US")>=0) {
 		    cnt++;
 		    if(cnt==1) {
-//			console.log(obj.records.length +" " +bounds.west +" " + bounds.east +" " + lat  +" " +lon);
+			//			console.log(obj.records.length +" " +bounds.west +" " + bounds.east +" " + lat  +" " +lon);
 			obj.records.forEach(r=>{
-//			    console.log(r.getValue(0) + " " + r.getLatitude() +" " + r.getLongitude())
+			    //			    console.log(r.getValue(0) + " " + r.getLatitude() +" " + r.getLongitude())
 			});
 		    }
 		}
@@ -10710,14 +10742,17 @@ RequestMacro.prototype = {
     getProperty: function(prop, dflt)   {
 	return this.display.getProperty(prop, dflt);
     },
+    isVisible: function() {
+	return  this.getProperty("request." +this.name +".visible",
+				 this.getProperty("macros.visible",true));
+    },
     getWidget: function(dateIds) {
 	let debug = false;
-	let visible = this.display.getProperty("request." +this.name +".visible",
-					       this.display.getProperty("macros.visible",true));
+	let visible = this.isVisible();
 	let style = visible?"":"display:none;";
 	let widget;
 	let label = this.label;
-	if(debug)console.log("getWidget:" + label +" type:" + this.type);
+	if(debug)console.log(this.getId() +".getWidget:" + label +" type:" + this.type);
 	if(this.type=="bounds") {
 	    widget = HU.checkbox("",[ID,this.display.getDomId(this.getId())], false) +HU.span([CLASS,"display-request-reload",TITLE,"Reload with current bounds"], " In bounds");
 	    label = null;
@@ -10768,6 +10803,7 @@ RequestMacro.prototype = {
 	let value = this.dflt;
 	if(widget.length!=0) value =  widget.val();
 	this.display.setProperty("request." + this.name+".default",value);
+	//	console.log(this.getId() +".getValue=" + value);
 	return value;
     },
     apply: function(url) {
@@ -24252,7 +24288,6 @@ var ID_DISPLAYS = "displays";
 
 function DisplayManager(argId, argProperties) {
 
-
     var ID_MENU_BUTTON = "menu_button";
     var ID_MENU_CONTAINER = "menu_container";
     var ID_MENU_OUTER = "menu_outer";
@@ -24517,19 +24552,16 @@ function DisplayManager(argId, argProperties) {
             return jsonUrl.match(/(\${latitude})/g) != null;
         },
         getJsonUrl: function(jsonUrl, display, props) {
-	    display.getRequestMacros().every(m=>{
+	    display.getRequestMacros().forEach(m=>{
 		jsonUrl = m.apply(jsonUrl);
-		return true;
 	    });
-
 	    if(display.getAnimationEnabled()) {
-		//not sure why this is here but it screws up caching of requests
-		//		jsonUrl +="&" + "dbAnimation" +"=" 'true'
+		//Not now. Only needed for gridded data
+		//jsonUrl +='&doAnimation=true'
 	    }
-	    if(display.getProperty("dbSelect")) {
+	    if(display.getProperty('dbSelect')) {
 		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");
 	    }
-
 	    if(display.getProperty("requestArgs")) {
 		let args = display.getProperty("requestArgs").split(",");
 		for(let i=0;i<args.length;i+=2) {
@@ -24707,8 +24739,7 @@ function DisplayManager(argId, argProperties) {
 
     addDisplayManager(this);
 
-
-    var displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+    var displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
     var html = HtmlUtils.openTag(TAG_DIV);
     html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
@@ -24733,11 +24764,7 @@ function DisplayManager(argId, argProperties) {
     $("#" + this.getId()).html(html)
     this.initializeEntriesMenu();
 
-    if (this.showmap) {
-        this.createDisplay('map');
-    }
     var theDisplayManager = this;
-
     $("#" + this.getDomId(ID_MENU_BUTTON)).button({
         icons: {
             primary: "ui-icon-gear",
@@ -24968,7 +24995,75 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'fixedPosition',wikiValue:true,tt:'Keep the initial position'},
 	{p:'initialLocation', wikiValue:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',wikiValue:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
-	
+	{p:'doPopup', wikiValue:'false',tt:"Don't show popups"},
+	{p:'linked',wikiValue:true,tt:"Link location with other maps"},
+	{p:'linkGroup',wikiValue:'some_name',tt:"Map groups to link with"},
+	{p:'highlight',wikiValue:'true',tt:"Show mouse over highlights"},
+	{p:'centerOnFilterChange',wikiValue:true,tt:'Center map when the data filters change'},
+	{p:'centerOnHighlight',wikiValue:true,tt:'Center map when a record is highlighted'},
+	{p:'boundsAnimation',wikiValue:true,tt:'Animate when map is centered'},
+	{p:'iconField',wikiValue:'""',tt:'Field id for the image icon url'},
+	{p:'iconSize',wikiValue:16},
+	{label:'Other map attributes'},
+	{p:'showRecordSelection',wikiValue:'false'},
+	{p:'recordHighlightRadius',wikiValue:'20',tt:'Radius to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeWidth',wikiValue:'2',tt:'Stroke to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeColor',wikiValue:'red',tt:'Color to use to show other displays highlighted record'},
+	{p:'recordHighlightFillColor',wikiValue:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
+	{p:'unhighlightColor',wikiValue:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
+	{p:'unhighlightStrokeWidth',wikiValue:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
+	{p:'unhighlightStrokeColor',wikiValue:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
+	{p:'unhighlightRadius',wikiValue:'1',tt:'Radius for when records are highlighted with the filters'},
+	{p:'vectorLayerStrokeColor',wikiValue:'#000'},
+	{p:'vectorLayerFillColor',wikiValue:'#ccc'},
+	{p:'vectorLayerFillOpacity',wikiValue:'0.25'},
+	{p:'vectorLayerStrokeWidth',wikiValue:'1'},
+	{p:'showMarkersToggle',wikiValue:'true',tt:'Show the toggle checkbox for the marker layer'},
+	{p:'showMarkersToggleLabel',wikiValue:'label',tt:'Label to use for checkbox'},
+	{p:'showClipToBounds',wikiValue:'true',tt:'Show the clip bounds checkbox'},
+	{p:'showMarkers',wikiValue:'false',tt: 'Hide the markers'},
+	{p:'showLocationSearch',wikiValue:'true'},
+	{p:'showLatLonPosition',wikiValue:'false'},
+	{p:'showLayerSwitcher',wikiValue:'false'},
+	{p:'showScaleLine',wikiValue:'true'},
+	{p:'showZoomPanControl',wikiValue:'true'},
+	{p:'showZoomOnlyControl',wikiValue:'false'},
+	{p:'showLayers',wikiValue:'false'},
+	{p:'enableDragPan',wikiValue:'false'},
+	{p:'showSegments',wikiValue:'true',tt:'If data has 2 lat/lon locations draw a line'},
+	{p:'latField1',tt:'Field id for segments'},
+	{p:'lonField1',tt:'Field id for segments'},
+	{p:'latField2',tt:'Field id for segments'},
+	{p:'lonField2',tt:'Field id for segments'},
+	{label:'Heatmap Attributes'},
+	{p:'doHeatmap',wikiValue:'true',tt:'Grid the data into an image'},
+	{p:'doGridPoints',wikiValue:'true',tt:'Display a image showing shapes or bars'},
+	{p:'htmlLayerField'},
+	{p:'htmlLayerWidth',wikiValue:'30'},
+	{p:'htmlLayerHeight',wikiValue:'15'},
+	{p:'htmlLayerStyle',wikiValue:'css style'},
+	{p:'htmlLayerScale',wikiValue:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
+	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
+	{p:'cellShape',wikiValue:'rect|circle|vector'},
+	{p:'angleBy',wikiValue:'field',tt:'field for angle of vectors'},
+	{p:'cell3D',wikiValue:'true',tt:'Draw 3d bars'},
+	{p:'cellColor',wikiValue:'color'},
+	{p:'cellFilled',wikiValue:true},
+	{p:'cellSize',wikiValue:'8'},
+	{p:'cellSizeH',wikiValue:'20',tt:'Base height to scale by'},
+	{p:'hm.operator',wikiValue:'count|average|min|max'},
+	{p:'hm.animationSleep',wikiValue:'1000'},
+	{p:'hm.reloadOnZoom',wikiValue:'true'},
+	{p:'hm.groupByDate',wikiValue:'true|day|month|year|decade',tt:'Group heatmap images by date'}, 
+	{p:'hm.groupBy',wikiValue:'field id',tt:'Field to group heatmap images'}, 
+	{p:'hm.labelPrefix'},
+	{p:'hm.showToggle'},
+	{p:'hm.toggleLabel'},
+	{p:'hm.boundsScale',wikiValue:'0.1',tt:'Scale up the map bounds'},
+	{p:'hm.filter',wikiValue:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
+	{p:'hm.filterPasses',wikiValue:'1'},
+	{p:'hm.filterThreshold',wikiValue:'1'},
+	{p:'hm.countThreshold',wikiValue:'1'},
     ]);
     this.defineSizeByProperties();
     RamaddaUtil.defineMembers(this, {
@@ -24976,31 +25071,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         features: [],
         myMarkers: {},
         mapEntryInfos: {},
-	getWikiEditorTags: function() {
+	xxgetWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
 		{inlineLabel:'Other map attributes'},
-		['doPopup=false',"Don't show popups"],
-		['highlight=true',"Show mouse over highlights"],
-		['linked=true',"Link location with other maps"],
-		['linkGroup=some_name',"Map groups to link with"],
-		["centerOnFilterChange=\"true\"","Center map when the data filters change"],
-		["centerOnHighlight=\"true\"","Center map when a record is highlighted"],
-		["boundsAnimation=\"true\"","Animate when map is centered"],
-		'recordHighlightRadius=20',
-		'recordHighlightStrokeWidth=2',
-		'recordHighlightStrokeColor=red',
-		'recordHighlightFillColor=rgba(0,0,0,0)',
+		'showRecordSelection=false',
+		['recordHighlightRadius=20','Radius to use to show other displays highlighted record'],
+		['recordHighlightStrokeWidth=2','Stroke to use to show other displays highlighted record'],
+		['recordHighlightStrokeColor=red','Color to use to show other displays highlighted record'],
+		['recordHighlightFillColor=rgba(0,0,0,0)','Fill color to use to show other displays highlighted record'],
+		['unhighlightColor=#ccc','Fill color when records are unhighlighted with the filters'],
+		['unhighlightStrokeWidth=1','Stroke width for when records are unhighlighted with the filters'],
+		['unhighlightStrokeColor=#aaa','Stroke color for when records are unhighlighted with the filters'],
+		['unhighlightRadius=1','Radius for when records are highlighted with the filters'],
                 'vectorLayerStrokeColor=#000',
 		'vectorLayerFillColor=#ccc',
 		'vectorLayerFillOpacity=0.25',
                 'vectorLayerStrokeWidth=1',
-		'iconField=""',
-		'iconSize="16"',
-		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
-		'showRecordSelection=false',
-		'showMarkersToggle=true',
-		'showMarkersToggleLabel="label"',
-		"showClipToBounds=true",
+		['showMarkersToggle=true','Show the toggle checkbox for the marker layer'],
+		['showMarkersToggleLabel="label"','Label to use for checkbox'],
+		["showClipToBounds=true",'Show the clip bounds checkbox'],
+		['showMarkers=false', 'Hide the markers'],
 		"showLocationSearch=\"true\"",
 		'showLatLonPosition=false',
 		'showLayerSwitcher=false',
@@ -25009,7 +25099,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		'showZoomOnlyControl=false',
 		'showLayers=false',
 		'enableDragPan=false',
-		'markersVisibility=false',
+		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
+		['latField1=','Field id for segments']
+		['lonField1=','Field id for segments'],
+		['latField2=','Field id for segments'],
+		['lonField2=','Field id for segments'],
 		'inlinelabel:Heatmap Attributes',
 		['doHeatmap=true',"Grid the data into an image"],
 		['doGridPoints=true',"Display a image showing shapes or bars"],
@@ -25176,7 +25270,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.lastWidth = this.jq(ID_MAP).width();
             }
 
-	    if(!this.getProperty("markersVisibility", true)) {
+	    if(!this.getProperty("showMarkers", this.getProperty("markersVisibility", true))) {
 		this.map.getMarkersLayer().setVisibility(false);
 	    }
 
@@ -26808,6 +26902,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         addPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;
+	    let highlightRecords = this.getProperty("filterHighlight",false);
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
 		if(debug) console.log("displaymap creating heatmap");
 		this.createHeatmap(records, bounds);
@@ -26827,7 +26922,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let source = this;
             let radius = +this.getPropertyRadius(8);
 	    let unhighlightFillColor = this.getUnhighlightColor();
-	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#ccc");
+	    let unhighlightStrokeWidth = this.getProperty("unhighlightStrokeWidth",0);
+	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#aaa");
 	    let unhighlightRadius = this.getProperty("unhighlightRadius",-1);
 	    if(this.getPropertyScaleRadius()) {
 		let seen ={};
@@ -27129,13 +27225,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
 
-		if(this.highlightFilter) {
-		    if(!record.isHighlight(this)) {
-			props.fillColor =  unhighlightFillColor;
-			props.strokeColor =  unhighlightStrokeColor;
-			if(unhighlightRadius>0)
-			    props.pointRadius = unhighlightRadius;
-		    }
+		if(highlightRecords && !record.isHighlight(this)) {
+		    props.fillColor =  unhighlightFillColor;
+		    props.strokeColor =  unhighlightStrokeColor;
+		    props.strokeWidth=unhighlightStrokeWidth;
+		    if(unhighlightRadius>0)
+			props.pointRadius = unhighlightRadius;
 		}
 
 
@@ -30580,6 +30675,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 
 function RamaddaBlankDisplay(displayManager, id, properties) {
+    if(!properties.width) properties.width='100%';
     properties.showMenu = false;
     properties.showTitle = false;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLANK, properties);
@@ -30594,7 +30690,6 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    if(records) {
 		var colorBy = this.getColorByInfo(records);
-		console.log(colorBy.index);
 		if(colorBy.index>=0) {
 		    records.map(record=>{
 			color =  colorBy.getColor(record.getData()[colorBy.index], record);

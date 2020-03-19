@@ -16,29 +16,18 @@
 
 package org.ramadda.util;
 
-
 import org.ramadda.util.HtmlUtils;
-
 import ucar.unidata.util.Misc;
-
-
 import ucar.unidata.util.StringUtil;
-
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
 import java.util.regex.*;
-
 import java.util.regex.*;
-
-
 
 /**
  */
@@ -137,6 +126,7 @@ public class WikiUtil {
      * @param code _more_
      */
     public void appendJavascript(String code) {
+	if(code==null || code.trim().length()==0) return;
         js.append(code);
         js.append("\n");
     }

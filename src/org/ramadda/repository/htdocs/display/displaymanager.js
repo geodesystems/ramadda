@@ -83,7 +83,6 @@ var ID_DISPLAYS = "displays";
 
 function DisplayManager(argId, argProperties) {
 
-
     var ID_MENU_BUTTON = "menu_button";
     var ID_MENU_CONTAINER = "menu_container";
     var ID_MENU_OUTER = "menu_outer";
@@ -348,19 +347,16 @@ function DisplayManager(argId, argProperties) {
             return jsonUrl.match(/(\${latitude})/g) != null;
         },
         getJsonUrl: function(jsonUrl, display, props) {
-	    display.getRequestMacros().every(m=>{
+	    display.getRequestMacros().forEach(m=>{
 		jsonUrl = m.apply(jsonUrl);
-		return true;
 	    });
-
 	    if(display.getAnimationEnabled()) {
-		//not sure why this is here but it screws up caching of requests
-		//		jsonUrl +="&" + "dbAnimation" +"=" 'true'
+		//Not now. Only needed for gridded data
+		//jsonUrl +='&doAnimation=true'
 	    }
-	    if(display.getProperty("dbSelect")) {
+	    if(display.getProperty('dbSelect')) {
 		jsonUrl +="&" + "dbSelect" +"=" +display.getProperty("select");
 	    }
-
 	    if(display.getProperty("requestArgs")) {
 		let args = display.getProperty("requestArgs").split(",");
 		for(let i=0;i<args.length;i+=2) {
@@ -538,8 +534,7 @@ function DisplayManager(argId, argProperties) {
 
     addDisplayManager(this);
 
-
-    var displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+    var displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
     var html = HtmlUtils.openTag(TAG_DIV);
     html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
@@ -564,11 +559,7 @@ function DisplayManager(argId, argProperties) {
     $("#" + this.getId()).html(html)
     this.initializeEntriesMenu();
 
-    if (this.showmap) {
-        this.createDisplay('map');
-    }
     var theDisplayManager = this;
-
     $("#" + this.getDomId(ID_MENU_BUTTON)).button({
         icons: {
             primary: "ui-icon-gear",

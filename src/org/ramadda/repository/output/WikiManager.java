@@ -5789,12 +5789,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (js.length() > 0) {
             StringBuilder sb = new StringBuilder();
             sb.append(content);
-            sb.append("\n<!--begin wiki javascript-->\n");
             sb.append(HtmlUtils.script(js));
-            sb.append("\n<!--end wiki javascript-->\n");
             content = sb.toString();
         }
-
         return content;
     }
 
@@ -6547,16 +6544,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (request.getExtraProperty("added plotly") == null) {
             HtmlUtils.importJS(
                 sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
-            //            HtmlUtils.importJS(sb, "https://cdn.plot.ly/plotly-latest.min.js");
-            /*
-            if (getRepository().getMinifiedOk()) {
-                HtmlUtils.importJS(sb,
-                                   getHtdocsUrl("/min/displayplotly.min.js"));
-            } else {
-                HtmlUtils.importJS(sb,
-                                   getHtdocsUrl("/display/displayplotly.js"));
-            }
-            */
             request.putExtraProperty("added plotly", "true");
         }
 

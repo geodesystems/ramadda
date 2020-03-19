@@ -7,16 +7,15 @@ async function  wikiPreview(entry, id, inPlace) {
     var editor = HtmlUtils.getAceEditor(id);
     var t = editor.getValue();
     let area = $("#" + id);
-    
     if(!inPlace) {
 	let width =$(window).width()-100;
 	$("#wikieditpreview")
 	    .css("z-index",1000)
-	    .css("left",area.position().left-100)
+	    .css("left","5px")//area.position().left-100)
+	    .css("right","5px")//area.position().left-100)
 	    .css("top",area.position().top-10)
-	    .css("min-width","400px")
-	    .css("width",width +"px")
-	    .css("max-width",width+"px")
+//	    .css("min-width","400px")
+//	    .css("width","98%")
 	    .css("overflow-x","auto")
 
     }
@@ -28,7 +27,7 @@ async function  wikiPreview(entry, id, inPlace) {
 	if(inPlace) {
 	    $("#wikieditpreviewinner").html(html);
 	} else {
-	    html = HtmlUtils.div(["id","wikieditpreviewinner", "style","height:500px;overflow-y:auto;border:1px solid #ccc;background:white;"], html);
+	    html = HtmlUtils.div([ID,"wikieditpreviewinner", STYLE,"width:100%;height:500px;overflow-y:auto;border:1px solid #ccc;background:white;"], html);
 	    html = bar + html;
 	    $("#wikieditpreview").draggable();
 	    //TODO: this doesn't work
@@ -263,15 +262,15 @@ function wikiInitEditor(info) {
 	
 	let dmenu = "";
 	let toggleLabel ="";
-	let blockCnt=0;
+	let blockCnt=-1;
 	let handleBlock = ()=> {
-	    toggleLabel = HU.div([CLASS,"wiki-editor-popup-header"], toggleLabel);
 	    if(dmenu=="") return;
+	    toggleLabel = HU.div([CLASS,"wiki-editor-popup-header"], toggleLabel);
 	    blockCnt++;
-	    if(blockCnt>4) {
+	    if(blockCnt>3) {
 		menu += HU.close('div');
 		menu += HU.open('div',[CLASS,'wiki-editor-popup-section']);
-		blockCnt=1;
+		blockCnt=0;
 	    }
 	    dmenu = HU.div([CLASS,"wiki-editor-popup-items"],dmenu);
 	    menu +=HU.toggleBlock(toggleLabel, dmenu);
@@ -281,7 +280,6 @@ function wikiInitEditor(info) {
 
 	var index = editor.session.doc.positionToIndex(cursor);
 	var text =editor.getValue();
-	//	    console.log("cursor index:" + index +" text:" + text.substring(index-4,index));
 	var tmp = index;
 	var left = -1;
 	var right = -1;
@@ -344,22 +342,7 @@ function wikiInitEditor(info) {
 		    } catch(e) {
 			console.log("Error getting tags for:" + type +" error:" + e  + " stack:" +e.stack);
 		    }
-		    extra = "<div class=wiki-editor-popup-items>"
-		    for (a in Utils.ColorTables) {
-			if(Utils.ColorTables[a].label) {
-			    extra+=HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
-			    continue;
-			}
-			var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
-			    showRange: false,
-			    height: "20px"
-			});
-			ct = HtmlUtils.div(["style","width:150px;","title",a],ct);
-			var call = "insertText(" + HtmlUtils.squote(info.id) +","+HtmlUtils.squote("colorTable=" + a)+")";
-			extra+=HtmlUtils.onClick(call,ct);
-		    }
-		    extra+="</div>";
-		    extra = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], "Color Table"),extra);
+		    extra = Utils.getColorTablePopup();
 		}
 		if(wikiAttributes[tag]) {
 		    wikiAttributes[tag].map(a=>tags.push(a));

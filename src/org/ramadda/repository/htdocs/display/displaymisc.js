@@ -707,6 +707,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 
 function RamaddaBlankDisplay(displayManager, id, properties) {
+    if(!properties.width) properties.width='100%';
     properties.showMenu = false;
     properties.showTitle = false;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLANK, properties);
@@ -721,7 +722,6 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    if(records) {
 		var colorBy = this.getColorByInfo(records);
-		console.log(colorBy.index);
 		if(colorBy.index>=0) {
 		    records.map(record=>{
 			color =  colorBy.getColor(record.getData()[colorBy.index], record);

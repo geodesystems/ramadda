@@ -1380,6 +1380,30 @@ var Utils = {
             cnt++;
         }
     },
+    getColorTablePopup: function(info) {
+	let popup = "<div class=wiki-editor-popup-items>"
+	for (a in Utils.ColorTables) {
+	    if(Utils.ColorTables[a].label) {
+		popup+=HU.div(["style","text-decoration: underline;font-weight:bold"],Utils.ColorTables[a].label);
+		continue;
+	    }
+	    var ct = Utils.getColorTableDisplay(Utils.ColorTables[a],  0, 1, {
+		showRange: false,
+		height: "20px"
+	    });
+	    ct = HtmlUtils.div([STYLE,HU.css('width','150px'),TITLE,a,CLASS, "ramadda-colortable-select","colortable",a],ct);
+	    if(info) {
+		var call = "insertText(" + HtmlUtils.squote(info.id) +","+HtmlUtils.squote("colorTable=" + a)+")";
+		popup+=HtmlUtils.onClick(call,ct);
+	    } else {
+		popup+=ct;
+	    }
+	}
+	popup+="</div>";
+	popup = HU.toggleBlock(HU.div([CLASS,"wiki-editor-popup-header"], "Color Table"),popup);
+	return popup;
+    },
+
     displayColorTable: function(ct, domId, min, max, args) {
         if (!ct) return;
 	var html = this.getColorTableDisplay(ct,min,max,args);
@@ -1412,9 +1436,11 @@ var Utils = {
 	    divargs.push(HU.css(WIDTH, HU.getDimension(options.width)));
 	}
 	
-        var html = HtmlUtils.openTag("div", divargs);
-	if(!options.showColorTableDots)
-	    html+= "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
+        let html = HtmlUtils.open(DIV, divargs);
+	if(!options.showColorTableDots) {
+	    html+= HU.open('table',['cellpadding',0,'cellspacing',0,'width','100%','border',0]);
+	    html +='<tr>';
+	}
 	let formatter = n=>{
 	    if(options.decimals>=0)
 		return number_format(n,options.decimals);
@@ -1474,8 +1500,8 @@ var Utils = {
 	    if(options.horizontal) 
 		html += "</tr></table>";
 	}
-        html += HtmlUtils.closeTag("div");
-        html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
+        html += HtmlUtils.close(DIV);
+        html += HtmlUtils.open(DIV, [CLASS, "display-colortable-extra"]);
         if (stringValues && stringValues.length) {
             var tdw = 100 / ct.length + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
@@ -1502,7 +1528,7 @@ var Utils = {
 	    //            html += "</tr></table>"
 	    html+="</div>"
         }
-	//      html += HtmlUtils.closeTag("div");
+	html += HtmlUtils.close(DIV);
 	return html;
     },
 

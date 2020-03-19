@@ -972,7 +972,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		html += HU.div([CLASS,"ramadda-menu-item","what","setmin"],"Set range min to " + Utils.formatNumber(val));
 		html += HU.div([CLASS,"ramadda-menu-item","what","setmax"],"Set range max to " + Utils.formatNumber(val));
 		html += HU.div([CLASS,"ramadda-menu-item","what","reset"],"Reset range");
+		if(_this.getProperty("colorByLog")) {
+		    html += HU.div([CLASS,"ramadda-menu-item","what","togglelog"],"Use linear scale");
+		} else {
+		    html += HU.div([CLASS,"ramadda-menu-item","what","togglelog"],"Use log scale");
+		}
+		html += HU.div([CLASS,"ramadda-menu-item","what","reset"],"Reset range");
+		html += Utils.getColorTablePopup();
 		popup.html(html);
+		$(popup).find(".ramadda-colortable-select").click(function() {
+		    let ct = $(this).attr("colortable");
+		    if(ct) {
+			_this.setProperty("colorTable",ct);
+			_this.forceUpdateUI();
+		    }		    
+		});
 		popup.show();
 		popup.position({
                     of: $(this),
@@ -986,6 +1000,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.setProperty("colorByMin",_this.originalColorRange[0]);
 			_this.setProperty("colorByMax",_this.originalColorRange[1]);
 			_this.setProperty("overrideColorRange", false);
+		    } else if(what == "togglelog") {
+			if(!_this.getProperty("colorByLog")) 
+			    _this.setProperty("colorByLog",true);
+			else
+			    _this.setProperty("colorByLog",false);
  		    } else if(what == "setmin") {
 			_this.setProperty("colorByMin",val);
 			_this.setProperty("overrideColorRange", true);
@@ -993,8 +1012,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.setProperty("colorByMax",val);
 			_this.setProperty("overrideColorRange", true);
 		    }
-		    _this.haveCalledUpdateUI = false;
-		    _this.updateUI();
+		    _this.forceUpdateUI();
 		});
 	    });
         },
@@ -1300,7 +1318,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.settingFilterValue = true;
 		if(prop.fieldId == "_highlight") {
 		    this.jq(ID_FILTER_HIGHLIGHT).val(prop.value);
-		    this.highlightFilter = prop.value=="highlight";
+		    this.setProperty("filterHighlight", prop.value=="highlight");
 		} else 	if(Utils.isDefined(prop.value2)) {
 		    $("#" +widgetId+"_min").val(prop.value);
 		    $("#" +widgetId+"_min").attr("data-value", prop.value);
@@ -2142,7 +2160,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	filterData: function(records, fields, doGroup, skipFirst) {
 	    let debug = displayDebug.filterData;
-	    let highlight = this.highlightFilter;
+	    let highlight =  this.getProperty("filterHighlight",false);
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -2232,6 +2250,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			newData.push(record);
 			record.setHighlight(this, ok);
 		    } else {
+			record.clearHighlight(this);
 			if(ok) {
 			    newData.push(record);
 			}
@@ -3581,6 +3600,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.checkSearchBar();
 	    this.updateUI();
         },
+        getMainDiv: function() {
+	    return $("#" + this.getProperty(PROP_DIVID));
+	},
         createUI: function() {
             var divid = this.getProperty(PROP_DIVID);
             if (divid != null) {
@@ -3861,6 +3883,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.jq(header).html(html);
 	},
 
+        forceUpdateUI: function() {
+	    this.haveCalledUpdateUI = false;
+	    this.updateUI();
+	},
         updateUI: function() {
 	},
 
@@ -3880,8 +3906,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let e1 = this.getProperty("extraFields1","");
 	    let e2 = this.getProperty("extraFields2","");
 	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
+//	    console.log(this.getId() +" " +this.type +" requestFields: "+p);
 	    list.forEach(macro=>{
 		if(macro=="") return;
+//		console.log("\tmacro:" + macro);
 		macros.push(new RequestMacro(this, macro));
 	    });
 	    return macros;
@@ -3896,11 +3924,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let requestProps = "";
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
-	    macros.every(macro=>{
-		if(this.getProperty("request." +macro.name +".show",true)) { 
+	    macros.forEach(macro=>{
+		if(macro.isVisible()) {
 		    requestProps+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
 		}
-		return true;
 	    });
 	    this.writeHeader(ID_REQUEST_PROPERTIES, requestProps);
 	    let macroChange = (macro,value,what)=>{
@@ -4094,7 +4121,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 += HU.span([CLASS,"display-filter"],
 				   this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
-
 	    this.highlightFilter = this.getProperty("filterHighlight",false);
 	    if(this.getProperty("showFilterHighlight")) {
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
@@ -4415,7 +4441,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 	    this.jq(ID_FILTER_HIGHLIGHT).change(function() {
-		_this.highlightFilter = $(this).val()=="highlight";
+		_this.setProperty("filterHighlight", $(this).val()=="highlight");
 		_this.haveCalledUpdateUI = false;
 		inputFunc($(this));
 	    });
@@ -5859,6 +5885,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 html += "Unknown layout:" + this.layout;
             }
 
+	    //If we don't  have any displays to show then hide us
+
+	    if(!this.getShowMenu() && displaysToLayout.length==0) {
+		$("#" + this.getId()).hide();
+	    } else {
+		$("#" + this.getId()).show();
+	    }
             this.writeHtml(ID_DISPLAYS, html);
             if (this.layout == LAYOUT_TABS) {
                 $("#" + tabId).tabs({activate: HtmlUtil.tabLoaded});
