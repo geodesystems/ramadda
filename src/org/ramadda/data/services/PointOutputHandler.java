@@ -915,8 +915,10 @@ public class PointOutputHandler extends RecordOutputHandler {
                 all += macro.name;
                 displayProps.add("request." + macro.name + ".type");
                 displayProps.add(Json.quote(macro.type));
-                displayProps.add("request." + macro.name + ".default");
-                displayProps.add(Json.quote(macro.dflt));
+		if(macro.dflt!=null) {
+		    displayProps.add("request." + macro.name + ".default");
+		    displayProps.add(Json.quote(macro.dflt));
+		}		    
                 displayProps.add("request." + macro.name + ".label");
                 displayProps.add(Json.quote(macro.label));
                 displayProps.add("request." + macro.name + ".values");

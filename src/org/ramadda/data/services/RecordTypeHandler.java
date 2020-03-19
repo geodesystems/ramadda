@@ -445,7 +445,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             if (macros != null) {
                 for (Macro macro : macros) {
                     String v = request.getString("request." + macro.name,
-                                   macro.dflt);
+						 macro.dflt!=null?macro.dflt:"");
                     v      = v.replaceAll("\\.", "_").replaceAll("/", "_");
                     suffix += "_" + v;
                 }
@@ -509,7 +509,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                 props, "request." + macro + ".type",
                                 "string"), Utils.getProperty(
                                     props, "request." + macro + ".default",
-                                    ""), Utils.getProperty(
+                                    null), Utils.getProperty(
                                         props, "request." + macro + ".label",
                                         Utils.makeLabel(
                                             macro)), Utils.getProperty(
@@ -540,12 +540,12 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         if (macros != null) {
             for (Macro macro : macros) {
                 String value = Utils.getProperty(requestProperties,
-                                   "request." + macro.name, macro.dflt);
+						 "request." + macro.name, macro.dflt!=null?macro.dflt:"");
                 value = value.replaceAll(" ", "%20");
                 path  = path.replace("${" + macro.name + "}", value);
             }
         }
-        //      System.err.println("Path:" + path);
+	//	System.err.println("Path:" + path);
         if (path.indexOf("${latitude}") >= 0) {
             if (Utils.stringDefined(
                     (String) requestProperties.get("latitude"))) {

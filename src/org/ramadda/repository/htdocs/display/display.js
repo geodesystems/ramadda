@@ -3650,7 +3650,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let enums = this.getProperty("request." +macro+".values");
 		if(enums) {
 		    values =[]	
-		    if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",!enums.startsWith(":")))) {
+		    if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
 			values.push(["","All"]);
 		    }
 		    if(this.getProperty("request." + macro+".includeNone",false)) {
@@ -3663,6 +3663,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    });
 		}
 		let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
+		let dflt =this.getProperty("request." +macro+".default",null);
+		if(dflt == null) {
+		    if(values && values.length>0  && macroType=="enumeration") {
+			dflt = values[0][0];
+		    } else {
+			dflt = "";
+		    }
+		}
 		macros.push({
 		    display:this,
 		    name: macro,
@@ -3670,7 +3678,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    urlarg: this.getProperty("request." +macro+".urlarg",macro),
 		    type:macroType,
 		    triggerReload:this.getProperty("request." +macro+".triggerReload",true),
-		    dflt:this.getProperty("request." +macro+".default",""),
+		    dflt:dflt,
 		    dflt_from:this.getProperty("request." +macro+"_from.default",""),		    
 		    dflt_to:this.getProperty("request." +macro+"_to.default",""),
 		    dflt_min:this.getProperty("request." +macro+"_min.default",""),		    
@@ -3690,7 +3698,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    widget = HU.checkbox("",[ID,this.display.getDomId(this.getId())], false) +HU.span([CLASS,"display-request-reload",TITLE,"Reload with current bounds"], " In bounds");
 			    label = null;
 			} else if(this.type=="enumeration") {
- 			    if(values) {
+ 			    if(values && values.length>0) {
 				let attrs = [STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
 				if(this.multiple) {
 				    attrs.push("multiple");
@@ -3700,8 +3708,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				}
 				if(debug)
 				    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
+				    
 				widget = HU.select("",attrs,this.values,this.dflt,20);
-
 			    }
 			} else if(this.type=="numeric") {
 			    let minId = this.display.getDomId(this.getId()+"_min");
@@ -3806,7 +3814,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.requestMacros = null;
 	    this.dynamicProperties = props;
 	    this.createRequestProperties();
-//	    console.log("request properties:" + JSON.stringify(props,null,2));
+	    console.log("request properties:" + JSON.stringify(props,null,2));
 	},
 	createRequestProperties: function() {
 	    let requestProps = "";
@@ -3855,7 +3863,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		  "#" + this.getDomId(macro.getId()+"_to")).keyup(function(e) {
 		      var keyCode = e.keyCode || e.which;
 		      if (keyCode == 13) {
-			  console.log("return:" + $(this).val());
 			  macroChange(macro, $(this).val());
 		      }
 		  });
