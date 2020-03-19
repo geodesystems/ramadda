@@ -933,7 +933,7 @@ ColorByInfo.prototype = {
     },
 
     getColorFromRecord: function(record, dflt) {
-	if(this.display.highlightFilter && !record.isHighlight(this.display)) {
+	if(this.display.getFilterHighlight() && !record.isHighlight(this.display)) {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
 
@@ -958,7 +958,7 @@ ColorByInfo.prototype = {
 	return this.index>=0;
     },
     getColor: function(value, pointRecord) {
-	if(this.display.highlightFilter && pointRecord && !pointRecord.isHighlight(this.display)) {
+	if(this.display.getFilterHighlight() && pointRecord && !pointRecord.isHighlight(this.display)) {
 	    return this.display.getUnhighlightColor();
 	}
 
@@ -3540,9 +3540,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getDataFilters: function(v) {
 	    return DataUtils.getDataFilters(this, v || this.getProperty("dataFilters"));
 	},
+	getFilterHighlight: function() {
+	    return this.getProperty("filterHighlight",false);
+	},
 	filterData: function(records, fields, doGroup, skipFirst) {
 	    let debug = displayDebug.filterData;
-	    let highlight =  this.getProperty("filterHighlight",false);
+	    let highlight =  this.getFilterHighlight();
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -5503,10 +5506,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 += HU.span([CLASS,"display-filter"],
 				   this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
-	    this.highlightFilter = this.getProperty("filterHighlight",false);
+	    let  highlight = this.getFilterHighlight();
 	    if(this.getProperty("showFilterHighlight")) {
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
-		header2 += HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!this.highlightFilter?"filter":"highlight") + SPACE2;
+		header2 += HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
 	    }
 
 
@@ -16346,7 +16349,7 @@ function TableDisplay(displayManager, id, properties) {
 		    f = v.f;
 		    v = v.v;
 		}
-		if(!this.highlightFilter || !record) {
+		if(!this.getFilterHighlight() || !record) {
 		    f = HU.div([STYLE,HU.css('padding','4px')],f)
 		} else {
 		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
@@ -16519,7 +16522,7 @@ function BubbleDisplay(displayManager, id, properties) {
 		    if(isNaN(tuple[j])) ok = false;
 		}
 		//If highlighting and have color then set to NaN
-		if(this.highlightFilter) {
+		if(this.getFilterHighlight()) {
 		    let unhighlightColor = this.getProperty("unhighlightColor","#eee");
 		    if(dataList[i].record && !dataList[i].record.isHighlight(this)) {
 			this.didUnhighlight = true;
@@ -25010,6 +25013,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightStrokeWidth',wikiValue:'2',tt:'Stroke to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeColor',wikiValue:'red',tt:'Color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillColor',wikiValue:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
+	{p:'recordHighlightFillOpacity',wikiValue:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
+	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
 	{p:'unhighlightColor',wikiValue:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeWidth',wikiValue:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',wikiValue:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
@@ -26902,7 +26907,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         addPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;
-	    let highlightRecords = this.getProperty("filterHighlight",false);
+	    let highlightRecords = this.getFilterHighlight();
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
 		if(debug) console.log("displaymap creating heatmap");
 		this.createHeatmap(records, bounds);
@@ -31275,7 +31280,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		tmp = tmp2;
 	    }
             var cnt = 0;
-	    let highlight = this.getProperty("filterHighlight",false);
+	    let highlight = this.getFilterHighlight();
 	    let sorter = (a,b)=>{
 		let r1 = a.record;
 		let r2 = b.record;
@@ -33608,7 +33613,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 			selectedRecord = r;
 			clazz += " display-dotbar-dot-select";
 		    } else {
-			if(this.highlightFilter) {
+			if(this.getFilterHighlight()) {
 			    if(!r.isHighlight(this)) {
 				style = "z-index:10;border:1px solid #aaa;";
 			    }

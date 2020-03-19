@@ -87,6 +87,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'recordHighlightStrokeWidth',wikiValue:'2',tt:'Stroke to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeColor',wikiValue:'red',tt:'Color to use to show other displays highlighted record'},
 	{p:'recordHighlightFillColor',wikiValue:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
+	{p:'recordHighlightFillOpacity',wikiValue:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
+	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
 	{p:'unhighlightColor',wikiValue:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeWidth',wikiValue:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',wikiValue:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
@@ -1979,7 +1981,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
         addPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;
-	    let highlightRecords = this.getProperty("filterHighlight",false);
+	    let highlightRecords = this.getFilterHighlight();
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
 		if(debug) console.log("displaymap creating heatmap");
 		this.createHeatmap(records, bounds);

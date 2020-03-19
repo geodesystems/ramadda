@@ -1307,7 +1307,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		tmp = tmp2;
 	    }
             var cnt = 0;
-	    let highlight = this.getProperty("filterHighlight",false);
+	    let highlight = this.getFilterHighlight();
 	    let sorter = (a,b)=>{
 		let r1 = a.record;
 		let r2 = b.record;
@@ -3640,7 +3640,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 			selectedRecord = r;
 			clazz += " display-dotbar-dot-select";
 		    } else {
-			if(this.highlightFilter) {
+			if(this.getFilterHighlight()) {
 			    if(!r.isHighlight(this)) {
 				style = "z-index:10;border:1px solid #aaa;";
 			    }

@@ -933,7 +933,7 @@ ColorByInfo.prototype = {
     },
 
     getColorFromRecord: function(record, dflt) {
-	if(this.display.highlightFilter && !record.isHighlight(this.display)) {
+	if(this.display.getFilterHighlight() && !record.isHighlight(this.display)) {
 	    return this.display.getProperty("unhighlightColor","#eee");
 	}
 
@@ -958,7 +958,7 @@ ColorByInfo.prototype = {
 	return this.index>=0;
     },
     getColor: function(value, pointRecord) {
-	if(this.display.highlightFilter && pointRecord && !pointRecord.isHighlight(this.display)) {
+	if(this.display.getFilterHighlight() && pointRecord && !pointRecord.isHighlight(this.display)) {
 	    return this.display.getUnhighlightColor();
 	}
 

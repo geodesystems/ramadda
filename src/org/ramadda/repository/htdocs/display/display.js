@@ -2158,9 +2158,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getDataFilters: function(v) {
 	    return DataUtils.getDataFilters(this, v || this.getProperty("dataFilters"));
 	},
+	getFilterHighlight: function() {
+	    return this.getProperty("filterHighlight",false);
+	},
 	filterData: function(records, fields, doGroup, skipFirst) {
 	    let debug = displayDebug.filterData;
-	    let highlight =  this.getProperty("filterHighlight",false);
+	    let highlight =  this.getFilterHighlight();
 	    var startDate = this.getProperty("startDate");
 	    var endDate = this.getProperty("endDate");
 	    if(startDate) {
@@ -4121,10 +4124,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 += HU.span([CLASS,"display-filter"],
 				   this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+"&nbsp;";
 	    }
-	    this.highlightFilter = this.getProperty("filterHighlight",false);
+	    let  highlight = this.getFilterHighlight();
 	    if(this.getProperty("showFilterHighlight")) {
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
-		header2 += HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!this.highlightFilter?"filter":"highlight") + SPACE2;
+		header2 += HU.select("",["fieldId","_highlight", ID,this.getDomId(ID_FILTER_HIGHLIGHT)],enums,!highlight?"filter":"highlight") + SPACE2;
 	    }
 
 

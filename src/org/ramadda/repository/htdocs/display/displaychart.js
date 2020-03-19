@@ -2483,7 +2483,7 @@ function TableDisplay(displayManager, id, properties) {
 		    f = v.f;
 		    v = v.v;
 		}
-		if(!this.highlightFilter || !record) {
+		if(!this.getFilterHighlight() || !record) {
 		    f = HU.div([STYLE,HU.css('padding','4px')],f)
 		} else {
 		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
@@ -2656,7 +2656,7 @@ function BubbleDisplay(displayManager, id, properties) {
 		    if(isNaN(tuple[j])) ok = false;
 		}
 		//If highlighting and have color then set to NaN
-		if(this.highlightFilter) {
+		if(this.getFilterHighlight()) {
 		    let unhighlightColor = this.getProperty("unhighlightColor","#eee");
 		    if(dataList[i].record && !dataList[i].record.isHighlight(this)) {
 			this.didUnhighlight = true;
