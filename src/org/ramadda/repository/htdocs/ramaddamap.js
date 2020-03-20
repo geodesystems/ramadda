@@ -736,6 +736,9 @@ RepositoryMap.prototype = {
                 _this.getMap().events.register("moveend", "", function() {
                     _this.locationChanged();
                 });
+		_this.getMap().events.register("move", "", function() {
+                    _this.locationChanged();
+                });
             };
             setTimeout(callback, 2000);
 

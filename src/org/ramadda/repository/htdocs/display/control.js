@@ -247,6 +247,7 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
 
 
 function RamaddaLegendDisplay(displayManager, id, properties) {
+    if(!properties.width) properties.width='100%';
     let SUPER =  new RamaddaDisplay(displayManager, id, DISPLAY_LEGEND, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);

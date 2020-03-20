@@ -6831,7 +6831,7 @@ public class TypeHandler extends RepositoryManager {
             if (s.length() == 0) {
                 label = "&lt;blank&gt;";
             }
-            tfos.add(new TwoFacedObject(s, label));
+            tfos.add(new TwoFacedObject(label,s));
         }
 
         return tfos;

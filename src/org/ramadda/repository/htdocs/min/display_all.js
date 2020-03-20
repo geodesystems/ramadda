@@ -10702,16 +10702,18 @@ function RequestMacro(display, macro) {
     let enums = this.getProperty("request." +macro+".values");
     if(enums) {
 	values =[]	
-	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
+	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",true))) {
 	    values.push(["","All"]);
 	}
 	if(this.getProperty("request." + macro+".includeNone",false)) {
 	    values.push(["","None"]);
 	}
-	enums.split(",").every(tok=>{
-	    [id,label] = tok.split(":");
+	enums.split(",").forEach(tok=>{
+	    let toks = tok.split(":");
+	    let id = toks[0];
+	    if(id == "") id= "_blank_";
+	    let label = toks[1];
 	    values.push([id,label||id]);
-	    return true;
 	});
     }
     let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
@@ -11122,6 +11124,7 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
 
 
 function RamaddaLegendDisplay(displayManager, id, properties) {
+    if(!properties.width) properties.width='100%';
     let SUPER =  new RamaddaDisplay(displayManager, id, DISPLAY_LEGEND, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);

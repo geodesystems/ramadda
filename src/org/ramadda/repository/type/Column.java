@@ -2051,6 +2051,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             if ((values != null) && (values.size() > 0)) {
                 List<Clause> subClauses = new ArrayList<Clause>();
                 for (String value : values) {
+		    if(value.equals("_blank_")) value = "";
                     if (value.equals(TypeHandler.ALL)) {
                         continue;
                     }

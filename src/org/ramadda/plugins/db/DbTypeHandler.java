@@ -5014,7 +5014,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     private List<TwoFacedObject> getEnumValues(Request request, Entry entry,
             Column column) {
-
         try {
             if (column.getType().equals(Column.DATATYPE_ENUMERATION)) {
                 List<TwoFacedObject> enums = column.getValues();
@@ -5022,8 +5021,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     return enums;
                 }
             }
-
-            return tableHandler.getEnumValues(request, column, entry);
+	    List<TwoFacedObject> enums = tableHandler.getEnumValues(request, column, entry);
+	    return enums;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
