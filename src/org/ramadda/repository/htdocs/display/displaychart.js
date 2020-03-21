@@ -1436,7 +1436,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		divAttrs.push("expandable-height");
 		divAttrs.push(this.getProperty("expandableHeight"));
 	    }
-
             return HU.div(divAttrs, "");
         },
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
@@ -1473,10 +1472,21 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.chartOptions.hAxis.maxValue = x.max;
 	    }
 	    if(this.getProperty("vAxisFixedRange")) {
-		
-		let y = this.getColumnValues(records, selectedFields[1]||selectedFields[0]);
-		this.chartOptions.vAxis.minValue = y.min;
-		this.chartOptions.vAxis.maxValue = y.max;
+		let min = Number.MAX_VALUE;
+		let max = Number.MIN_VALUE;		
+		selectedFields.forEach(f=>{
+		    if(f.isFieldNumeric()) {
+			let y = this.getColumnValues(records, f);
+			if(!isNaN(y.min))
+			    min  = Math.min(min, y.min);
+			if(!isNaN(y.max))
+			    max  = Math.max(max, y.max);
+		    }
+		});
+		if(min!=Number.MAX_VALUE) {
+		    this.chartOptions.vAxis.minValue = min;
+		    this.chartOptions.vAxis.maxValue = max;
+		}
 	    }
 
 //	    console.log(JSON.stringify(chartOptions, null,2));
