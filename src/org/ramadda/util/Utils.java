@@ -237,6 +237,14 @@ public class Utils extends IO {
         return new StringBuilder();
     }
 
+
+    public static String appendList(String l, String c) {
+	if(l==null) l = "";
+	else if(l.length()>0) l+=",";
+	l+=c;
+	return l;
+    }
+
     /**
      * _more_
      *

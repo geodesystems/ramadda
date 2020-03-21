@@ -505,16 +505,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                     macros.add(
                         new Macro(
                             macro,
-                            Utils.getProperty(
-                                props, "request." + macro + ".type",
-                                "string"), Utils.getProperty(
-                                    props, "request." + macro + ".default",
-                                    null), Utils.getProperty(
-                                        props, "request." + macro + ".label",
-                                        Utils.makeLabel(
-                                            macro)), Utils.getProperty(
-                                                props, "request." + macro
-                                                    + ".values", "")));
+			    props));
                 }
             }
         }
@@ -539,9 +530,16 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         List<Macro> macros = getMacros(entry);
         if (macros != null) {
             for (Macro macro : macros) {
-                String value = Utils.getProperty(requestProperties,
-						 "request." + macro.name, macro.dflt!=null?macro.dflt:"");
-                value = value.replaceAll(" ", "%20");
+		Object prop = requestProperties.get("request." + macro.name);
+		if(prop==null) prop = macro.dflt!=null?macro.dflt:"";
+		String value;
+		//Handle lists different?
+		if(prop instanceof List) {
+		    value = prop.toString();
+		} else {
+		    value = prop.toString();
+		}
+		value = value.replaceAll(" ", "%20");
                 path  = path.replace("${" + macro.name + "}", value);
             }
         }
@@ -801,6 +799,14 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         /** _more_ */
         String values;
 
+	boolean multiple = false;
+
+	String delimiter;
+
+    	String template;
+	String multitemplate;
+	String nonetemplate; 
+	String rows;
         /**
          * _more_
          *
@@ -810,13 +816,18 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
          * @param label _more_
          * @param values _more_
          */
-        public Macro(String name, String type, String dflt, String label,
-                     String values) {
-            this.name   = name;
-            this.type   = type;
-            this.dflt   = dflt;
-            this.label  = label;
-            this.values = values;
+        public Macro(String macro, Hashtable props) {
+            this.name   = macro;
+	    type = Utils.getProperty(props, "request." + macro + ".type", "string");
+	    dflt = Utils.getProperty(props, "request." + macro + ".default",null);
+	    label = Utils.getProperty(props, "request." + macro + ".label", Utils.makeLabel(macro));
+	    values = Utils.getProperty(props, "request." + macro + ".values", "");
+	    multiple= Utils.getProperty(props,"request." + macro +".multiple",false);
+	    delimiter=Utils.getProperty(props,"request." + macro +".delimiter",null);
+	    template = Utils.getProperty(props,"request." + macro +".template",null);
+	    multitemplate = Utils.getProperty(props,"request." + macro +".multitemplate",null);
+	    nonetemplate = Utils.getProperty(props,"request." + macro +".nonetemplate",null);
+	    rows = Utils.getProperty(props,"request." + macro +".rows",null);
         }
 
         /**

@@ -776,13 +776,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return (v)=>{return v;}
 	},
 
-
-
         makeDataTable: function(dataList, props, selectedFields) {
 	    let debug =displayDebug.makeDataTable;
 	    let debugRows = 3;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
-
+	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();

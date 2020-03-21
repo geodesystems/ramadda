@@ -2073,6 +2073,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		})
 	    }
 
+
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
             for (let i = 0; i < fields.length; i++) {
                 let field = fields[i];

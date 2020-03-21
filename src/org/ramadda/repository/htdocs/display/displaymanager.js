@@ -351,7 +351,7 @@ function DisplayManager(argId, argProperties) {
 		jsonUrl = m.apply(jsonUrl);
 	    });
 	    if(display.getAnimationEnabled()) {
-		//Not now. Only needed for gridded data
+		//Not now. Once was needed for gridded data
 		//jsonUrl +='&doAnimation=true'
 	    }
 	    if(display.getProperty('dbSelect')) {

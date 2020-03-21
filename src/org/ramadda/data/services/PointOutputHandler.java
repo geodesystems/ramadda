@@ -921,6 +921,30 @@ public class PointOutputHandler extends RecordOutputHandler {
 		}		    
                 displayProps.add("request." + macro.name + ".label");
                 displayProps.add(Json.quote(macro.label));
+		if(macro.multiple) {
+		    displayProps.add("request." + macro.name + ".multiple");
+		    displayProps.add("true");
+		}
+		if(macro.delimiter!=null) {
+		    displayProps.add("request." + macro.name + ".delimiter");
+		    displayProps.add(Json.quote(macro.delimiter));
+		}
+		if(macro.template!=null) {
+		    displayProps.add("request." + macro.name + ".template");
+		    displayProps.add(Json.quote(macro.template));
+		}
+		if(macro.multitemplate!=null) {
+		    displayProps.add("request." + macro.name + ".multitemplate");
+		    displayProps.add(Json.quote(macro.multitemplate));
+		}
+		if(macro.nonetemplate!=null) {
+		    displayProps.add("request." + macro.name + ".nonetemplate");
+		    displayProps.add(Json.quote(macro.nonetemplate));
+		}
+		if(macro.rows!=null) {
+		    displayProps.add("request." + macro.name + ".rows");
+		    displayProps.add(Json.quote(macro.rows));
+		}		
                 displayProps.add("request." + macro.name + ".values");
                 displayProps.add(Json.quote(macro.values));
 		displayProps.add("request." + macro.name + ".urlarg");

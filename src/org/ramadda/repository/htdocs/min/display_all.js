@@ -2178,7 +2178,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getWikiEditorTags: function() {
 	    let l =   [
 		"label:Display Attributes",
-		['fields=""','Many displays need a comma separated list of field ids'],
+		['fields=""','comma separated list of field ids or indices - #1,#2,etc or *'],
+		['fieldsNumeric=true','Only get numeric fields'],
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
 		"layoutHere=\"true\"",
@@ -3129,13 +3130,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (fixedFields != null && fixedFields.length > 0) {
                     if (this.debugSelected)
                         console.log("\thave fixed fields:" + fixedFields.length);
+		    let selected = [];
                     for (var i = 0; i < fixedFields.length; i++) {
                         var sfield = fixedFields[i];
+			if(sfield =="*") {
+			    selected  =fields;
+			    break;
+			}
 			var field = this.getFieldById(fields, sfield);
-                        if(field)df.push(field);
+                        if(field) {
+			    selected.push(field);
+			}
                     }
-                }
-            }
+		    if(this.getProperty("fieldsNumeric")) {
+			selected = selected.filter(f=>f.isNumeric());
+		    }		    
+		    df = selected;
+		}
+	    }
 
             if (fixedFields != null && fixedFields.length > 0) {
                 if (this.debugSelected)
@@ -3197,7 +3209,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log("\treturning this.allFields:" + tmp);
                 return tmp;
             }
-
             if (dfltList != null) {
 		if(debug)
 		    console.log("\treturning dfltList:" + dfltList);
@@ -5291,10 +5302,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let e1 = this.getProperty("extraFields1","");
 	    let e2 = this.getProperty("extraFields2","");
 	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
-//	    console.log(this.getId() +" " +this.type +" requestFields: "+p);
+	    if(p!="")
+		console.log("requestFields=" + p);
 	    list.forEach(macro=>{
 		if(macro=="") return;
-//		console.log("\tmacro:" + macro);
 		macros.push(new RequestMacro(this, macro));
 	    });
 	    return macros;
@@ -5333,9 +5344,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.propagateEvent("handleEventPropertyChanged", args);
 		this.settingMacroValue = false;
 	    };
-	    macroDateIds.every(id=>{
+
+	    let sliderFunc = function() {
+//		macroChangeinputFunc
+	    };
+
+	    macroDateIds.forEach(id=>{
 		HU.datePickerInit(id);
-		return true;
 	    });
 	    this.jq(ID_HEADER2).find(".display-request-reload").click(()=>{
 		macroChange({triggerReload:true});
@@ -5415,6 +5430,59 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	addFilters: function(filters) {
 	},
+	initializeRangeSlider:function(jq, inputFunc, immediate) {
+	    let _this = this;
+	    jq.mousedown(function(){
+		let id = $(this).attr(ID);
+		id = id.replace(/_min$/,"").replace(/_max$/,"");
+		let min = $("#" + id+"_min");
+		let max = $("#" + id+"_max");
+		let range = {
+		    min: parseFloat(min.attr("data-min")),
+		    max: parseFloat(max.attr("data-max"))};
+		let minValue = parseFloat(min.val());
+		let maxValue = parseFloat(max.val());
+		let html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
+		let popup = getTooltip();
+		popup.html(html);
+		popup.show();
+		popup.position({
+		    of: min,
+		    my: "left top",
+		    at: "left bottom+2",
+		    collision: "fit fit"
+                });
+
+		if(isNaN(minValue)) minValue = range.min;	
+		if(isNaN(maxValue)) maxValue = range.max;
+		var step = 1;
+		if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
+		    step = (range.max-range.min)/100000;
+		$( "#filter-range" ).slider({
+		    range: true,
+		    min: range.min,
+		    max: range.max,
+		    step: step,
+		    values: [minValue, maxValue],
+		    slide: function( event, ui ) {
+			min.val(ui.values[0]);
+			max.val(ui.values[1]);
+			min.attr("data-value",min.val());
+			max.attr("data-value",max.val());
+			if(immediate) {
+			    inputFunc(min,max);
+			}
+		    },
+		    stop: function() {
+			var popup = getTooltip();
+			popup.hide();
+			theDisplay.checkFilterField(max);
+			inputFunc(min,max);
+		    }
+		});
+	    });
+	},
+
         checkSearchBar: function() {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
@@ -5776,54 +5844,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
-            this.jq(ID_FILTERBAR).find(".display-filter-range").mousedown(function(){
-		var id = $(this).attr(ID);
-		id = id.replace(/_min$/,"").replace(/_max$/,"");
-		var min = $("#" + id+"_min");
-		var max = $("#" + id+"_max");
-		range = {min: parseFloat(min.attr("data-min")),
-			 max: parseFloat(max.attr("data-max"))};
-		var minValue = parseFloat(min.val());
-		var maxValue = parseFloat(max.val());
-		var html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
-		var popup = getTooltip();
-		popup.html(html);
-		popup.show();
-		popup.position({
-		    of: min,
-		    my: "left top",
-		    at: "left bottom+2",
-		    collision: "fit fit"
-                });
-
-		if(isNaN(minValue)) minValue = range.min;	
-		if(isNaN(maxValue)) maxValue = range.max;
-		var step = 1;
-		if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
-		    step = (range.max-range.min)/100000;
-		$( "#filter-range" ).slider({
-		    range: true,
-		    min: range.min,
-		    max: range.max,
-		    step: step,
-		    values: [minValue, maxValue],
-		    slide: function( event, ui ) {
-			min.val(ui.values[0]);
-			max.val(ui.values[1]);
-			min.attr("data-value",min.val());
-			max.attr("data-value",max.val());
-			if(_this.getProperty("filterSliderImmediate")) {
-			    inputFunc(min,max);
-			}
-		    },
-		    stop: function() {
-			var popup = getTooltip();
-			popup.hide();
-			theDisplay.checkFilterField(max);
-			inputFunc(min,max);
-		    }
-		});
-	    });
+	    this.initializeRangeSlider(this.jq(ID_FILTERBAR).find(".display-filter-range"), inputFunc, this.getProperty("filterSliderImmediate"));
 
 	    this.jq(ID_FILTER_HIGHLIGHT).change(function() {
 		_this.setProperty("filterHighlight", $(this).val()=="highlight");
@@ -10702,7 +10723,7 @@ function RequestMacro(display, macro) {
     let enums = this.getProperty("request." +macro+".values");
     if(enums) {
 	values =[]	
-	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",true))) {
+	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
 	    values.push(["","All"]);
 	}
 	if(this.getProperty("request." + macro+".includeNone",false)) {
@@ -10711,12 +10732,12 @@ function RequestMacro(display, macro) {
 	enums.split(",").forEach(tok=>{
 	    let toks = tok.split(":");
 	    let id = toks[0];
-	    if(id == "") id= "_blank_";
 	    let label = toks[1];
 	    values.push([id,label||id]);
 	});
     }
     let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
+//    console.log(macro +" type:" + macroType +" v:" + values);
     let dflt =this.getProperty("request." +macro+".default",null);
     if(dflt == null) {
 	if(values && values.length>0  && macroType=="enumeration") {
@@ -10725,6 +10746,10 @@ function RequestMacro(display, macro) {
 	    dflt = "";
 	}
     }
+    if(dflt && macroType=="enumeration") {
+	dflt = dflt.split(",");
+    }
+
     $.extend(this,{
 	name: macro,
 	values:values,
@@ -10738,6 +10763,10 @@ function RequestMacro(display, macro) {
 	dflt_max:this.getProperty("request." +macro+"_max.default",""),
 	label:this.getProperty("request." +macro+".label",Utils.makeLabel(macro)),
 	multiple:this.getProperty("request." +macro+".multiple",false),
+	template:this.getProperty("request." +macro+".template"),
+	multitemplate:this.getProperty("request." +macro+".multitemplate"),
+	nonetemplate:this.getProperty("request." +macro+".nonetemplate"),		
+	delimiter:this.getProperty("request." +macro+".delimiter"),
 	rows:this.getProperty("request." +macro+".rows",3),
     });
 }
@@ -10764,23 +10793,35 @@ RequestMacro.prototype = {
 	} else if(this.type=="enumeration") {
  	    if(this.values && this.values.length>0) {
 		let attrs = [STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
+		let values = this.values;
+		if(this.dflt) {
+		    let first = [];
+		    let rest = [];
+		    values.forEach(v=>{
+			if(this.dflt.indexOf(v[0])>=0)  first.push(v);
+			else rest.push(v);
+		    });
+		    values = Utils.mergeLists(first,rest);
+		}
+
+
 		if(this.multiple) {
 		    attrs.push("multiple");
 		    attrs.push(null);
 		    attrs.push("size");
-		    attrs.push(Math.min(this.rows,this.values.length));
+		    attrs.push(Math.min(this.rows,values.length));
 		}
 		if(debug)
 		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
 		
-		widget = HU.select("",attrs,this.values,this.dflt,20);
+		widget = HU.select("",attrs,values,this.dflt,20);
 	    }
 	} else if(this.type=="numeric") {
 	    let minId = this.display.getDomId(this.getId()+"_min");
 	    let maxId = this.display.getDomId(this.getId()+"_max");			    
-	    widget = HU.input("","",[STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input"],this.dflt_min) +
+	    widget = HU.input("","",["data-min", this.dflt_min, STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_min) +
 		" - " +
-		HU.input("","",[STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input"],this.dflt_max)
+		HU.input("","",["data-max", this.dflt_max, STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_max)
 	    label = label+" range";
 	} else if(this.type=="date") {
 	    let fromId = this.display.getDomId(this.getId()+"_from");
@@ -10806,7 +10847,9 @@ RequestMacro.prototype = {
     getValue: function() {
 	let widget = this.display.jq(this.getId());
 	let value = this.dflt;
-	if(widget.length!=0) value =  widget.val();
+	if(widget.length!=0) {
+	    value =  widget.val();
+	}
 	this.display.setProperty("request." + this.name+".default",value);
 	//	console.log(this.getId() +".getValue=" + value);
 	return value;
@@ -10850,13 +10893,31 @@ RequestMacro.prototype = {
 	} else if(this.type=="enumeration") {
 	    let value = this.getValue();
 	    if(!Array.isArray(value)) {value=[value];}
-	    if(value.length>0 && value[0]!="") {
+	    if(value[0] == "_all_" || value[0] == "_none_") return url;
+	    if(value.length>0) {
 		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
 		url = url.replace(regexp,"");
-		value.map(v=>{
-		    if(v!="")
-			url = url +"&" + HU.urlArg(this.urlarg,v);
+		let values = [];
+		value.forEach(v=>{
+		    if(this.template) v = this.template.replace(/\${value}/,v);
+		    values.push(v);
 		});
+		if(this.delimiter) {
+		    let arg = "";
+		    values.forEach((v,idx)=>{
+			if(idx>0) arg+=this.delimiter;
+			arg+=v;
+		    });
+		    if(this.multitemplate && values.length>1) {
+			arg =this.multitemplate.replace(/\${value}/,arg);
+		    }
+		    url = url +"&" + HU.urlArg(this.urlarg,arg);
+		} else {
+		    values.forEach(v=>{
+			url = url +"&" + HU.urlArg(this.urlarg,v);
+		    });
+		}
+	    } else {
 	    }
 	} else {
 	    let value = this.getValue();
@@ -14645,13 +14706,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return (v)=>{return v;}
 	},
 
-
-
         makeDataTable: function(dataList, props, selectedFields) {
 	    let debug =displayDebug.makeDataTable;
 	    let debugRows = 3;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
-
+	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let addTooltip = this.getAddToolTip();
     	    let addStyle= this.getAddStyle();
@@ -24562,7 +24621,7 @@ function DisplayManager(argId, argProperties) {
 		jsonUrl = m.apply(jsonUrl);
 	    });
 	    if(display.getAnimationEnabled()) {
-		//Not now. Only needed for gridded data
+		//Not now. Once was needed for gridded data
 		//jsonUrl +='&doAnimation=true'
 	    }
 	    if(display.getProperty('dbSelect')) {
@@ -27001,6 +27060,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    shapeBy.map[tuple[0]] = tuple[1];
 		})
 	    }
+
 
 	    let sizeBy = new SizeBy(this, this.getProperty("sizeByAllRecords",true)?this.getData().getRecords():records);
             for (let i = 0; i < fields.length; i++) {

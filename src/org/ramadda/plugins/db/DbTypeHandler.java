@@ -3730,11 +3730,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         List<Column> groupByColumns = new ArrayList<Column>();
         List<String> args = (List<String>) (request.get(ARG_GROUPBY,
-                                new ArrayList()));
+							new ArrayList()));
         for (int i = 0; i < args.size(); i++) {
             String col    = args.get(i);
-            Column column = getColumn(col).cloneColumn();
-            groupByColumns.add(column);
+            Column column = getColumn(col);
+	    if(column == null) {
+		System.err.println("DbTypeHandler: could not find column:" + col);
+		continue;
+	    }
+            groupByColumns.add(column.cloneColumn());
         }
         if (includeAgg) {
             List<Column> aggColumns = new ArrayList<Column>();
@@ -4583,6 +4587,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     }
 
 
+    private void addProp(String key, String value, Hashtable props, List<String> displayProps) {
+	if(props.get(key) == null &&!displayProps.contains(key)) {
+	    displayProps.add(key);
+	    displayProps.add(value);
+	}
+    }
+
     /**
      * _more_
      *
@@ -4619,7 +4630,45 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        String    all         = null;
+        String    all         = "";
+	String prefix = "request.";
+        DbInfo        dbInfo = getDbInfo();
+	List<Column> columns =  dbInfo.getColumnsToUse();
+
+	String groupBy = null;
+	String aggBy = null;
+	Column firstColumn = null;
+	boolean includeNumericAggs = true;
+        for (Column column : columns) {
+            if (column.getCanSearch()) {
+		if(firstColumn==null) firstColumn=column;
+		groupBy=Utils.appendList(groupBy, column.getName()+":" + column.getLabel());
+		if(column.isNumeric()) {
+		    aggBy=Utils.appendList(aggBy, column.getName()+":" + column.getLabel());
+		}
+	    }
+	}
+
+
+	if(aggBy==null && firstColumn!=null) {
+	    includeNumericAggs = false;
+	    aggBy=Utils.appendList(aggBy, firstColumn.getName()+":" + firstColumn.getLabel());
+	}
+
+	if(!Misc.equals("false", props.get("showGroupBy")) && groupBy!=null) {
+	    groupBy = ":None," + groupBy;
+	    all =Utils.appendList(all, "group_by");
+	    all =Utils.appendList(all, "group_agg");
+	    all = Utils.appendList(all,"group_agg_type");
+	    addProp(prefix+"group_by.values", Json.quote(groupBy), props, displayProps);
+	    addProp(prefix+"group_agg.values", Json.quote(aggBy), props, displayProps);
+	    addProp(prefix+"group_agg.label", Json.quote("Aggregate"), props, displayProps);
+	    addProp(prefix+"group_agg.multiple", "true", props, displayProps);
+	    addProp(prefix+"group_agg_type.values", Json.quote(!includeNumericAggs?"count:Count": "sum:Sum,max:Max,count:Count,min:Min,avg:Average"), props, displayProps);
+	    addProp(prefix+"group_agg_type.label", Json.quote("Type"), props, displayProps);
+	}
+
+
         Hashtable recordProps = null;
         try {
             recordProps = getRecordProperties(entry);
@@ -4628,19 +4677,28 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         //      System.err.println("getWiki:" + recordProps);
 
-        for (Column column : getColumns(true)) {
-            //            System.err.println("\tcol:" + column.getName() +" p:" + recordProps.get(column.getName() +".isDisplayProperty"));
-            if ( !Misc.equals(
-                    recordProps.get(column.getName() + ".display"),
-                    "true") && !Misc.equals(
-                        column.getProperty("isDisplayProperty"), "true")) {
-                continue;
+
+
+
+	boolean includeAll = true;
+        for (Column column : columns) {
+	    if (column.getCanSearch() && recordProps.get(column.getName() + ".display")!=null ||
+	       column.getProperty("isDisplayProperty")!=null) {
+		includeAll = false;
+		break;
             }
-            if (all != null) {
-                all += ",";
-            } else {
-                all = "";
-            }
+	}
+
+	for (Column column : columns) {
+	    if (!column.getCanSearch()) continue;
+	    if(!includeAll) {
+		if ( !Misc.equals(
+				  recordProps.get(column.getName() + ".display"),
+				  "true") && !Misc.equals(
+							  column.getProperty("isDisplayProperty"), "true")) {
+		    continue;
+		}
+	    }
             String type = column.isEnumeration()
                           ? "enumeration"
                           : column.isNumeric()
@@ -4649,20 +4707,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                               ? "date"
                               : "string";
 
-            all += column.getName();
-            if ( !displayProps.contains("request." + column.getName()
-                                        + ".label")) {
-                displayProps.add("request." + column.getName() + ".label");
-                displayProps.add(Json.quote(column.getLabel()));
-            }
-            displayProps.add("request." + column.getName() + ".urlarg");
-            displayProps.add(Json.quote(column.getSearchArg()));
-            displayProps.add("request." + column.getName() + ".type");
-            displayProps.add(Json.quote(type));
-            if (column.isEnumeration()
-                    && !displayProps.contains("request." + column.getName()
-                        + ".values")) {
-                String enums = null;
+	    
+	    all = Utils.appendList(all,column.getName());
+	    addProp(prefix + column.getName() + ".label",Json.quote(column.getLabel()),props, displayProps);
+	    addProp(prefix + column.getName() + ".urlarg",Json.quote(column.getSearchArg()),props, displayProps);
+	    addProp(prefix + column.getName() + ".type",Json.quote(type),props, displayProps);
+            if (column.isEnumeration()) {
+                String enums = "_all_:All";
                 List<TwoFacedObject> tfos = getEnumValues(request, entry,
                                                 column);
                 for (TwoFacedObject tfo : tfos) {
@@ -4674,16 +4725,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     enums += tfo.getId() + ":" + tfo.getLabel();
                 }
                 if (enums != null) {
-                    displayProps.add("request." + column.getName()
-                                     + ".values");
-                    displayProps.add(Json.quote(enums));
+		    addProp(prefix + column.getName() + ".values",Json.quote(enums),props,displayProps);
+		    addProp(prefix + column.getName() + ".default",Json.quote("_all_"), props, displayProps);
                 }
+
             }
         }
 
-
-        displayProps.add("requestFields");
-        displayProps.add(Json.quote(all));
+	addProp("requestFields",Json.quote(all),props,displayProps);
 
         return super.getUrlForWiki(request, entry, tag, props, displayProps);
     }

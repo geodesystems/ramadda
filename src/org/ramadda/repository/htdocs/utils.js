@@ -2958,7 +2958,9 @@ var HU = HtmlUtils = {
 		label = label.substring(0,maxWidth)+"...";
             var extra = "";
 	    if(selected && Array.isArray(selected)) {
-		if(selected.indexOf(item)>=0) extra=" selected ";
+		if(selected.indexOf(item)>=0) {
+		    extra=" selected ";
+		}
 	    } else {
 		if(selected === item) extra=" selected ";
 	    }

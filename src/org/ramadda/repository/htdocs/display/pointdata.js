@@ -3197,7 +3197,7 @@ function RequestMacro(display, macro) {
     let enums = this.getProperty("request." +macro+".values");
     if(enums) {
 	values =[]	
-	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",true))) {
+	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
 	    values.push(["","All"]);
 	}
 	if(this.getProperty("request." + macro+".includeNone",false)) {
@@ -3206,12 +3206,12 @@ function RequestMacro(display, macro) {
 	enums.split(",").forEach(tok=>{
 	    let toks = tok.split(":");
 	    let id = toks[0];
-	    if(id == "") id= "_blank_";
 	    let label = toks[1];
 	    values.push([id,label||id]);
 	});
     }
     let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
+//    console.log(macro +" type:" + macroType +" v:" + values);
     let dflt =this.getProperty("request." +macro+".default",null);
     if(dflt == null) {
 	if(values && values.length>0  && macroType=="enumeration") {
@@ -3220,6 +3220,10 @@ function RequestMacro(display, macro) {
 	    dflt = "";
 	}
     }
+    if(dflt && macroType=="enumeration") {
+	dflt = dflt.split(",");
+    }
+
     $.extend(this,{
 	name: macro,
 	values:values,
@@ -3233,6 +3237,10 @@ function RequestMacro(display, macro) {
 	dflt_max:this.getProperty("request." +macro+"_max.default",""),
 	label:this.getProperty("request." +macro+".label",Utils.makeLabel(macro)),
 	multiple:this.getProperty("request." +macro+".multiple",false),
+	template:this.getProperty("request." +macro+".template"),
+	multitemplate:this.getProperty("request." +macro+".multitemplate"),
+	nonetemplate:this.getProperty("request." +macro+".nonetemplate"),		
+	delimiter:this.getProperty("request." +macro+".delimiter"),
 	rows:this.getProperty("request." +macro+".rows",3),
     });
 }
@@ -3259,23 +3267,35 @@ RequestMacro.prototype = {
 	} else if(this.type=="enumeration") {
  	    if(this.values && this.values.length>0) {
 		let attrs = [STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,"display-filter-input"];
+		let values = this.values;
+		if(this.dflt) {
+		    let first = [];
+		    let rest = [];
+		    values.forEach(v=>{
+			if(this.dflt.indexOf(v[0])>=0)  first.push(v);
+			else rest.push(v);
+		    });
+		    values = Utils.mergeLists(first,rest);
+		}
+
+
 		if(this.multiple) {
 		    attrs.push("multiple");
 		    attrs.push(null);
 		    attrs.push("size");
-		    attrs.push(Math.min(this.rows,this.values.length));
+		    attrs.push(Math.min(this.rows,values.length));
 		}
 		if(debug)
 		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
 		
-		widget = HU.select("",attrs,this.values,this.dflt,20);
+		widget = HU.select("",attrs,values,this.dflt,20);
 	    }
 	} else if(this.type=="numeric") {
 	    let minId = this.display.getDomId(this.getId()+"_min");
 	    let maxId = this.display.getDomId(this.getId()+"_max");			    
-	    widget = HU.input("","",[STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input"],this.dflt_min) +
+	    widget = HU.input("","",["data-min", this.dflt_min, STYLE, style, ID,minId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_min) +
 		" - " +
-		HU.input("","",[STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input"],this.dflt_max)
+		HU.input("","",["data-max", this.dflt_max, STYLE, style, ID,maxId,"size",4,CLASS,"display-filter-input display-filter-range"],this.dflt_max)
 	    label = label+" range";
 	} else if(this.type=="date") {
 	    let fromId = this.display.getDomId(this.getId()+"_from");
@@ -3301,7 +3321,9 @@ RequestMacro.prototype = {
     getValue: function() {
 	let widget = this.display.jq(this.getId());
 	let value = this.dflt;
-	if(widget.length!=0) value =  widget.val();
+	if(widget.length!=0) {
+	    value =  widget.val();
+	}
 	this.display.setProperty("request." + this.name+".default",value);
 	//	console.log(this.getId() +".getValue=" + value);
 	return value;
@@ -3345,13 +3367,31 @@ RequestMacro.prototype = {
 	} else if(this.type=="enumeration") {
 	    let value = this.getValue();
 	    if(!Array.isArray(value)) {value=[value];}
-	    if(value.length>0 && value[0]!="") {
+	    if(value[0] == "_all_" || value[0] == "_none_") return url;
+	    if(value.length>0) {
 		let regexp = new RegExp(this.urlarg+"=[^$&]*",'g');
 		url = url.replace(regexp,"");
-		value.map(v=>{
-		    if(v!="")
-			url = url +"&" + HU.urlArg(this.urlarg,v);
+		let values = [];
+		value.forEach(v=>{
+		    if(this.template) v = this.template.replace(/\${value}/,v);
+		    values.push(v);
 		});
+		if(this.delimiter) {
+		    let arg = "";
+		    values.forEach((v,idx)=>{
+			if(idx>0) arg+=this.delimiter;
+			arg+=v;
+		    });
+		    if(this.multitemplate && values.length>1) {
+			arg =this.multitemplate.replace(/\${value}/,arg);
+		    }
+		    url = url +"&" + HU.urlArg(this.urlarg,arg);
+		} else {
+		    values.forEach(v=>{
+			url = url +"&" + HU.urlArg(this.urlarg,v);
+		    });
+		}
+	    } else {
 	    }
 	} else {
 	    let value = this.getValue();

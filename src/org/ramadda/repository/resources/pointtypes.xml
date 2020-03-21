@@ -45,7 +45,7 @@
   <type name="type_point"  description="" handler="org.ramadda.data.services.PointTypeHandler"  category="Point Data" foruser="false">
      <property name="icon" value="/point/points.gif"/>
      <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
-     <column name="properties" type="string" size="4056" columns="-1" rows="8"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false"/>
+     <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false"/>
   </type>
 
 

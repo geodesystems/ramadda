@@ -796,7 +796,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getWikiEditorTags: function() {
 	    let l =   [
 		"label:Display Attributes",
-		['fields=""','Many displays need a comma separated list of field ids'],
+		['fields=""','comma separated list of field ids or indices - #1,#2,etc or *'],
+		['fieldsNumeric=true','Only get numeric fields'],
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
 		"layoutHere=\"true\"",
@@ -1747,13 +1748,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (fixedFields != null && fixedFields.length > 0) {
                     if (this.debugSelected)
                         console.log("\thave fixed fields:" + fixedFields.length);
+		    let selected = [];
                     for (var i = 0; i < fixedFields.length; i++) {
                         var sfield = fixedFields[i];
+			if(sfield =="*") {
+			    selected  =fields;
+			    break;
+			}
 			var field = this.getFieldById(fields, sfield);
-                        if(field)df.push(field);
+                        if(field) {
+			    selected.push(field);
+			}
                     }
-                }
-            }
+		    if(this.getProperty("fieldsNumeric")) {
+			selected = selected.filter(f=>f.isNumeric());
+		    }		    
+		    df = selected;
+		}
+	    }
 
             if (fixedFields != null && fixedFields.length > 0) {
                 if (this.debugSelected)
@@ -1815,7 +1827,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    console.log("\treturning this.allFields:" + tmp);
                 return tmp;
             }
-
             if (dfltList != null) {
 		if(debug)
 		    console.log("\treturning dfltList:" + dfltList);
@@ -3909,10 +3920,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let e1 = this.getProperty("extraFields1","");
 	    let e2 = this.getProperty("extraFields2","");
 	    let list = Utils.mergeLists(e1.split(","),p.split(","),e2.split(","));
-//	    console.log(this.getId() +" " +this.type +" requestFields: "+p);
+	    if(p!="")
+		console.log("requestFields=" + p);
 	    list.forEach(macro=>{
 		if(macro=="") return;
-//		console.log("\tmacro:" + macro);
 		macros.push(new RequestMacro(this, macro));
 	    });
 	    return macros;
@@ -3951,9 +3962,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.propagateEvent("handleEventPropertyChanged", args);
 		this.settingMacroValue = false;
 	    };
-	    macroDateIds.every(id=>{
+
+	    let sliderFunc = function() {
+//		macroChangeinputFunc
+	    };
+
+	    macroDateIds.forEach(id=>{
 		HU.datePickerInit(id);
-		return true;
 	    });
 	    this.jq(ID_HEADER2).find(".display-request-reload").click(()=>{
 		macroChange({triggerReload:true});
@@ -4033,6 +4048,59 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	addFilters: function(filters) {
 	},
+	initializeRangeSlider:function(jq, inputFunc, immediate) {
+	    let _this = this;
+	    jq.mousedown(function(){
+		let id = $(this).attr(ID);
+		id = id.replace(/_min$/,"").replace(/_max$/,"");
+		let min = $("#" + id+"_min");
+		let max = $("#" + id+"_max");
+		let range = {
+		    min: parseFloat(min.attr("data-min")),
+		    max: parseFloat(max.attr("data-max"))};
+		let minValue = parseFloat(min.val());
+		let maxValue = parseFloat(max.val());
+		let html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
+		let popup = getTooltip();
+		popup.html(html);
+		popup.show();
+		popup.position({
+		    of: min,
+		    my: "left top",
+		    at: "left bottom+2",
+		    collision: "fit fit"
+                });
+
+		if(isNaN(minValue)) minValue = range.min;	
+		if(isNaN(maxValue)) maxValue = range.max;
+		var step = 1;
+		if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
+		    step = (range.max-range.min)/100000;
+		$( "#filter-range" ).slider({
+		    range: true,
+		    min: range.min,
+		    max: range.max,
+		    step: step,
+		    values: [minValue, maxValue],
+		    slide: function( event, ui ) {
+			min.val(ui.values[0]);
+			max.val(ui.values[1]);
+			min.attr("data-value",min.val());
+			max.attr("data-value",max.val());
+			if(immediate) {
+			    inputFunc(min,max);
+			}
+		    },
+		    stop: function() {
+			var popup = getTooltip();
+			popup.hide();
+			theDisplay.checkFilterField(max);
+			inputFunc(min,max);
+		    }
+		});
+	    });
+	},
+
         checkSearchBar: function() {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
@@ -4394,54 +4462,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
-            this.jq(ID_FILTERBAR).find(".display-filter-range").mousedown(function(){
-		var id = $(this).attr(ID);
-		id = id.replace(/_min$/,"").replace(/_max$/,"");
-		var min = $("#" + id+"_min");
-		var max = $("#" + id+"_max");
-		range = {min: parseFloat(min.attr("data-min")),
-			 max: parseFloat(max.attr("data-max"))};
-		var minValue = parseFloat(min.val());
-		var maxValue = parseFloat(max.val());
-		var html = HU.div([ID,"filter-range",STYLE,HU.css("width","200px")],"");
-		var popup = getTooltip();
-		popup.html(html);
-		popup.show();
-		popup.position({
-		    of: min,
-		    my: "left top",
-		    at: "left bottom+2",
-		    collision: "fit fit"
-                });
-
-		if(isNaN(minValue)) minValue = range.min;	
-		if(isNaN(maxValue)) maxValue = range.max;
-		var step = 1;
-		if(parseInt(range.max)!=range.max || parseInt(range.min) != range.min) 
-		    step = (range.max-range.min)/100000;
-		$( "#filter-range" ).slider({
-		    range: true,
-		    min: range.min,
-		    max: range.max,
-		    step: step,
-		    values: [minValue, maxValue],
-		    slide: function( event, ui ) {
-			min.val(ui.values[0]);
-			max.val(ui.values[1]);
-			min.attr("data-value",min.val());
-			max.attr("data-value",max.val());
-			if(_this.getProperty("filterSliderImmediate")) {
-			    inputFunc(min,max);
-			}
-		    },
-		    stop: function() {
-			var popup = getTooltip();
-			popup.hide();
-			theDisplay.checkFilterField(max);
-			inputFunc(min,max);
-		    }
-		});
-	    });
+	    this.initializeRangeSlider(this.jq(ID_FILTERBAR).find(".display-filter-range"), inputFunc, this.getProperty("filterSliderImmediate"));
 
 	    this.jq(ID_FILTER_HIGHLIGHT).change(function() {
 		_this.setProperty("filterHighlight", $(this).val()=="highlight");

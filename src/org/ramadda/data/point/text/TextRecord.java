@@ -332,6 +332,9 @@ public class TextRecord extends DataRecord {
         return ((TextFile) getRecordFile()).isLineValidData(line);
     }
 
+
+
+
     /**
      * _more_
      *
@@ -488,7 +491,6 @@ public class TextRecord extends DataRecord {
                 if (field.isTypeDate()) {
                     tok                    = tok.replaceAll("\"", "");
                     objectValues[fieldCnt] = parseDate(field, tok);
-
                     continue;
                 }
                 if (tok == null) {
@@ -562,7 +564,7 @@ public class TextRecord extends DataRecord {
             if (sfmt.equals("SSS")) {
                 return new Date(new Long(tok));
             } else if (sfmt.equals("yyyy")) {
-                //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
+               //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
                 return yearFormat.parse(tok + "-06");
                 //
             }
@@ -571,22 +573,25 @@ public class TextRecord extends DataRecord {
         Date date   = null;
         int  offset = field.getUtcOffset();
         try {
-            date = getDateFormat(field).parse(tok);
-            //            System.err.println ("Date:" + tok +" parsed:" + date);
+	    date = getDateFormat(field).parse(tok);
         } catch (java.text.ParseException ignore) {
-            //Check for year
-            if (tok.length() == 4) {
-                date = DateUtil.parse(tok);
-            }
-            if (date == null) {
-                //Try tacking on UTC
-                try {
-                    date = getDateFormat(field).parse(tok + " UTC");
-                } catch (java.text.ParseException ignoreThisOne) {
-                    throw ignore;
-                }
-            }
-        }
+	    //Try to guess
+	    date = Utils.extractDate(tok);
+	    if(date == null) {
+		//Check for year
+		if (tok.length() == 4) {
+		    date = DateUtil.parse(tok);
+		}
+		if (date == null) {
+		    //Try tacking on UTC
+		    try {
+			date = getDateFormat(field).parse(tok + " UTC");
+		    } catch (java.text.ParseException ignoreThisOne) {
+			throw ignore;
+		    }
+		}
+	    }
+	}
         if (offset != 0) {
             long millis = date.getTime();
             millis += (-offset * 1000 * 3600);

@@ -142,6 +142,7 @@ public class CsvFile extends TextFile {
 		}
 		CsvUtil csvUtil = new CsvUtil(args,
 					      new BufferedOutputStream(fos), null);
+		System.err.println("CsvFile fetching url:" + getNormalizedFilename());
 		csvUtil.setInputStream(super.doMakeInputStream(buffered));
 		csvUtil.run(null);
 		fos.flush();
