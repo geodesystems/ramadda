@@ -2688,7 +2688,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return;
 		}
 
-
 		macro.setValue(prop);
 
 
