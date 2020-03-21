@@ -2666,20 +2666,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    if(prop.property == "macroValue") {
+		if(prop.entryId!= this.entryId) return;
 		if(!this.getProperty("acceptRequestChangeEvent",true)) {
 		    return;
 		}
-		if(prop.entryId!= this.entryId) return;
-		if(prop.what == "min")
-		    this.jq("macro_" + prop.id+"_min").val(prop.value);
-		else if(prop.what == "max")
-		    this.jq("macro_" + prop.id+"_max").val(prop.value);
-		else if(prop.what == "from")
-		    this.jq("macro_" + prop.id+"_from").val(prop.value);
-		else if(prop.what == "to")
-		    this.jq("macro_" + prop.id+"_to").val(prop.value);
-		else
-		    this.jq("macro_" + prop.id).val(prop.value);
+		let macros = this.getRequestMacros();
+		let macro = null;
+		macros.every(m=>{
+		    if(m.isMacro(prop.id)) {
+			macro = m;
+			return false;
+		    }
+		    return true;
+		});
+
+		if(!macro) {
+		    return;
+		}
+
+		if(!this.getProperty("request." + macro.name + ".acceptChangeEvent",true)) {
+		    return;
+		}
+
+
+		macro.setValue(prop);
+
+
+
 		if(debug)
 		    console.log(this.getId() +" event-reloading");
 		this.reloadData();
@@ -2804,7 +2817,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	reloadData: function() {
 	    this.startProgress();
 	    this.haveCalledUpdateUI = false;
-	    this.data.loadData(this,true);
+	    if(this.getProperty("okToLoadData",true)) 
+		this.data.loadData(this,true);
 	},
         getMessage: function(msg) {
             return HU.div([ATTR_CLASS, "display-output-message"], msg);
@@ -4845,6 +4859,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("orientation","horizontal")== "horizontal";
         },
         loadInitialData: function() {
+	    if(!this.getProperty("okToLoadData",true)) return;
             if (!this.needsData() || this.properties.data == null) {
                 return;
             }
@@ -5321,8 +5336,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let macros = this.getRequestMacros();
 	    let macroDateIds = [];
 	    macros.forEach(macro=>{
+		requestProps+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
 		if(macro.isVisible()) {
-		    requestProps+=macro.getWidget(macroDateIds) +"&nbsp;&nbsp;";
+		    requestProps+=SPACE2;
 		}
 	    });
 	    this.writeHeader(ID_REQUEST_PROPERTIES, requestProps);
@@ -10841,6 +10857,9 @@ RequestMacro.prototype = {
 	if(!widget) return "";
 	return (visible?this.display.makeFilterWidget(label,widget):widget);
     },
+    isMacro: function(id) {
+	return id == this.name;
+    },
     getId: function() {
 	return "macro_" + this.name;
     },
@@ -10853,6 +10872,22 @@ RequestMacro.prototype = {
 	this.display.setProperty("request." + this.name+".default",value);
 	//	console.log(this.getId() +".getValue=" + value);
 	return value;
+    },
+    setValue: function(prop) {
+	let id = this.getId();
+	if(prop.what == "min")
+	    this.display.jq(i+"_min").val(prop.value);
+	else if(prop.what == "max")
+	    this.display.jq(id+"_max").val(prop.value);
+	else if(prop.what == "from")
+	    this.display.jq(id+"_from").val(prop.value);
+	else if(prop.what == "to")
+	    this.display.jq(id+"_to").val(prop.value);
+	else {
+	    console.log(this.type +" macroChanged:" + prop.value +" " + this.display.jq(id).length);
+	    this.display.jq(id).val(prop.value);
+	    console.log("after:" + this.display.jq(id).val());
+	}
     },
     apply: function(url) {
 	if(this.type == "bounds") {

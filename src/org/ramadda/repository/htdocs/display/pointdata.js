@@ -3315,6 +3315,9 @@ RequestMacro.prototype = {
 	if(!widget) return "";
 	return (visible?this.display.makeFilterWidget(label,widget):widget);
     },
+    isMacro: function(id) {
+	return id == this.name;
+    },
     getId: function() {
 	return "macro_" + this.name;
     },
@@ -3327,6 +3330,22 @@ RequestMacro.prototype = {
 	this.display.setProperty("request." + this.name+".default",value);
 	//	console.log(this.getId() +".getValue=" + value);
 	return value;
+    },
+    setValue: function(prop) {
+	let id = this.getId();
+	if(prop.what == "min")
+	    this.display.jq(i+"_min").val(prop.value);
+	else if(prop.what == "max")
+	    this.display.jq(id+"_max").val(prop.value);
+	else if(prop.what == "from")
+	    this.display.jq(id+"_from").val(prop.value);
+	else if(prop.what == "to")
+	    this.display.jq(id+"_to").val(prop.value);
+	else {
+	    console.log(this.type +" macroChanged:" + prop.value +" " + this.display.jq(id).length);
+	    this.display.jq(id).val(prop.value);
+	    console.log("after:" + this.display.jq(id).val());
+	}
     },
     apply: function(url) {
 	if(this.type == "bounds") {
