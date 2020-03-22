@@ -1450,6 +1450,31 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		console.log(err.stack);
 	    }
 	},
+	    setAxisRanges: function(chartOptions, selectedFields, records) {
+		if(this.getProperty("hAxisFixedRange")) {
+		    let x = this.getColumnValues(records, selectedFields[0]);
+		    chartOptions.hAxis.minValue = x.min;
+		    chartOptions.hAxis.maxValue = x.max;
+		}
+
+		if(this.getProperty("vAxisFixedRange")) {
+		    let min = Number.MAX_VALUE;
+		    let max = Number.MIN_VALUE;		
+		    selectedFields.forEach(f=>{
+			if(f.isFieldNumeric()) {
+			    let y = this.getColumnValues(records, f);
+			    if(!isNaN(y.min))
+				min  = Math.min(min, y.min);
+			    if(!isNaN(y.max))
+				max  = Math.max(max, y.max);
+			}
+		    });
+		    if(min!=Number.MAX_VALUE) {
+			chartOptions.vAxis.minValue = min;
+			chartOptions.vAxis.maxValue = max;
+		    }
+		}
+	    },
 	doMakeGoogleChartInner: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
                 this.setContents("No google");
@@ -1464,33 +1489,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.charts = [];
 	    this.chartCount  = -1;
 
-
             let records = this.getPointData().getRecords();
-	    if(this.getProperty("hAxisFixedRange")) {
-		let x = this.getColumnValues(records, selectedFields[0]);
-		this.chartOptions.hAxis.minValue = x.min;
-		this.chartOptions.hAxis.maxValue = x.max;
-	    }
-	    if(this.getProperty("vAxisFixedRange")) {
-		let min = Number.MAX_VALUE;
-		let max = Number.MIN_VALUE;		
-		selectedFields.forEach(f=>{
-		    if(f.isFieldNumeric()) {
-			let y = this.getColumnValues(records, f);
-			if(!isNaN(y.min))
-			    min  = Math.min(min, y.min);
-			if(!isNaN(y.max))
-			    max  = Math.max(max, y.max);
-		    }
-		});
-		if(min!=Number.MAX_VALUE) {
-		    this.chartOptions.vAxis.minValue = min;
-		    this.chartOptions.vAxis.maxValue = max;
-		}
-	    }
-
+	    this.setAxisRanges(this.chartOptions, selectedFields, records);
 //	    console.log(JSON.stringify(chartOptions, null,2));
-
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
@@ -3273,6 +3274,21 @@ function ScatterplotDisplay(displayManager, id, properties) {
         trendLineEnabled: function() {
             return true;
         },
+	setAxisRanges: function(chartOptions, selectedFields, records) {
+	    if(this.getProperty("hAxisFixedRange")) {
+		let x = this.getColumnValues(records, selectedFields[0]);
+		if(chartOptions.hAxis) chartOptions.hAxis = {};
+		chartOptions.hAxis.minValue = x.min;
+		chartOptions.hAxis.maxValue = x.max;
+	    }
+
+	    if(this.getProperty("vAxisFixedRange")) {
+		if(chartOptions.vAxis) chartOptions.vAxis = {};
+		let x = this.getColumnValues(records, selectedFields[1]);
+		chartOptions.vAxis.minValue = x.min;
+		chartOptions.vAxis.maxValue = x.max;
+	    }
+	},
         makeChartOptions: function(dataList, props, selectedFields) {
             var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             chartOptions.curveType = null;
