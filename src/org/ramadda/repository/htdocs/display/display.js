@@ -3179,9 +3179,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
                     detailsInner.html(HU.image(icon_progress));
-                    var theDisplay = this;
+                    let _this = this;
                     var callback = function(entries) {
-                        theDisplay.displayChildren(entry, entries, suffix, handlerId);
+                        _this.displayChildren(entry, entries, suffix, handlerId);
                     };
                     var entries = entry.getChildrenEntries(callback);
                 } else {
@@ -4109,7 +4109,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    stop: function() {
 			var popup = getTooltip();
 			popup.hide();
-			theDisplay.checkFilterField(max);
+			_this.checkFilterField(max);
 			inputFunc(min,max);
 		    }
 		});
@@ -4306,10 +4306,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.haveCalledUpdateUI = false;
 		this.updateUI();
 	    });
-	    var theDisplay = this;
 	    this.createRequestProperties();
-
-
  	    let inputFunc = function(input, input2, value){
                 var id = input.attr(ID);
 		if(!input2) {
@@ -4838,11 +4835,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.searchSettings) {
                 searchSettings.clearAndAddType(this.searchSettings.entryType);
             }
-            var theDisplay = this;
+	    let _this = this;
             var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON);
             var handler = {
                 entryListChanged: function(entryList) {
-                    theDisplay.doneQuickEntrySearch(entryList, callback);
+                    _this.doneQuickEntrySearch(entryList, callback);
                 }
             };
             var entryList = new EntryList(this.getRamadda(), jsonUrl, handler, true);
