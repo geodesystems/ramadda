@@ -1957,8 +1957,8 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>200) {
 			value  = HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto")],value);
 		    }
-                    values += "<tr valign=top><td nowrap align=right><b>" + label + ":</b></td>" + 
-			HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], value) + "</tr>\n";
+                    values += "<tr valign=top><td xnowrap align=right><b>" + label + ":</b></td>" + 
+			HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,"margin-left:5px"], value)) + "</tr>\n";
                 }
             }
 
