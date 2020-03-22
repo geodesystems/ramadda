@@ -588,8 +588,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 					'startDateField=""',
 					'endDateField=""',
 					'textTemplate=""',
+					'imageField=',
+					'groupField=',
+					'urlField=',
 					'timeTo="year|day|hour|second"',
 					'hideBanner="true"',
+					'startAtSlide=0',
 					'startAtEnd=true',
 					'navHeight=250'
 				    ]);
@@ -619,6 +623,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.timelineReady = false;
 	    var opts = {
 		start_at_end: this.getProperty("startAtEnd",false),
+		start_at_slide: this.getProperty("startAtSlide",0),
 		//		default_bg_color: {r:0, g:0, b:0},
 		timenav_height: this.getProperty("navHeight",150),
 		//		menubar_height:100,
@@ -644,6 +649,9 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 	    var startDateField = this.getFieldById(null,this.getProperty("startDateField"));
 	    var endDateField = this.getFieldById(null,this.getProperty("endDateField"));
+	    let imageField = this.getFieldById(null,this.getProperty("imageField"));
+	    let groupField = this.getFieldById(null,this.getProperty("groupField"));
+	    let urlField = this.getFieldById(null,this.getProperty("urlField"));
 	    var textTemplate = this.getProperty("textTemplate","${default}");
 	    var timeTo = this.getProperty("timeTo","day");
 	    this.recordToIndex = {};
@@ -658,6 +666,19 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		    headline: titleField? tuple[titleField.getIndex()]:" record:" + (i+1),
 		    text:text
 		};
+		if(groupField) {
+		    event.group = record.getValue(groupField.getIndex());
+		}
+
+		if(imageField) {
+		    event.media = {
+			url:record.getValue(imageField.getIndex())
+		    };
+		    if(urlField) {
+			event.media.link = record.getValue(urlField.getIndex());
+			event.media.link_target = "_timelinemedia";
+		    }
+		}
 		if(startDateField)
 		    event.start_date = tuple[startDateField.getIndex()];
 		else
@@ -665,6 +686,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		if(endDateField) {
 		    event.end_date = tuple[endDateField.getIndex()];
 		}
+//		console.log(JSON.stringify(event));
 		events.push(event);
 	    }
 	    this.timeline = new TL.Timeline(timelineId,json,opts);
