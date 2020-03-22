@@ -10759,7 +10759,7 @@ function RequestMacro(display, macro) {
 	}
     }
     if(dflt && macroType=="enumeration") {
-	dflt = dflt.split(",");
+	if(dflt.split)	dflt = dflt.split(",");
     }
 
     $.extend(this,{
