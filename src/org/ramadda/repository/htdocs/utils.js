@@ -2128,8 +2128,13 @@ var ALIGN = "align";
 var VALIGN = "valign";
 var HEIGHT = "height";
 var DIV = "div";
+var TABLE = "table";
+var THEAD = "thead";
+var TBODY = "tbody";
+var TFOOT = "tfoot";
 var TR = 'tr';
 var TD= 'td';
+var BR= 'br';
 var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
@@ -2624,8 +2629,9 @@ var HU = HtmlUtils = {
         var html = "<" + tagName + " " + this.attrs(attrs) + ">";
         return html;
     },
-    open: function(tagName, attrs) {
+    open: function(tagName, attrs, extra) {
         var html = "<" + tagName + " " + this.attrs(attrs) + ">";
+	if(extra) html+= extra;
         return html;
     },
     openRow: function() {
@@ -2646,8 +2652,10 @@ var HU = HtmlUtils = {
     closeTag: function(tagName) {
         return "</" + tagName + ">\n";
     },
-    close: function(tagName) {
-        return "</" + tagName + ">\n";
+    close: function(...args) {
+	let html = "";
+	args.forEach(a=>{html+= "</" + a + ">\n";});
+	return html;
     },
     urlArg: function(name, value) {
         return name + "=" + encodeURIComponent(value);

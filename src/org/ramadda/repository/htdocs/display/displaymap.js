@@ -234,12 +234,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var extraStyle="";
             var height = this.getProperty("height", 300);
             if (height > 0) {
-                extraStyle += " height:" + height + "px; ";
+                extraStyle += HU.css(HEIGHT, height + 'px');
             } else if (height < 0) {
-                extraStyle += " height:" + (-height) + "%; ";
+                extraStyle += HU.css(HEIGHT,(-height) + '%');
             } else if (height != "") {
-                extraStyle += " height:" + (height) + ";";
-            }
+                extraStyle +=HU.css(HEIGHT, (height));
+	    }
 	    let map =HU.div([ATTR_CLASS, "display-map-map ramadda-expandable-target", STYLE,
 			     extraStyle, ATTR_ID, this.getDomId(ID_MAP)]);
 
@@ -1450,7 +1450,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("showMarkersToggle")) {
 		let dflt = this.getProperty("markersVisibility", true);
 		html += HU.checkbox("",[ID,this.getDomId("showMarkersToggle")],dflt) +" " +
-		    this.getProperty("showMarkersToggleLabel","Show Markers") +"&nbsp;&nbsp;";
+		    this.getProperty("showMarkersToggleLabel","Show Markers") +SPACE2;
 	    }
 	    return html;
 	},
@@ -1818,9 +1818,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.showColorTable(colorBy);
 	    if(this.getProperty("hm.showToggle",false)) {
 		let cbx = this.jq("heatmaptoggle");
-		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.getDomId("heatmapreload")])+"&nbsp;&nbsp;";
-		this.writeHeader(ID_HEADER2_PREFIX, reload + HU.checkbox("",[ID,this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +"&nbsp;" +
-				 this.getProperty("hm.toggleLabel","Toggle Heatmap") +"&nbsp;&nbsp;");
+		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.getDomId("heatmapreload")])+SPACE2;
+		this.writeHeader(ID_HEADER2_PREFIX, reload + HU.checkbox("",[ID,this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +SPACE +
+				 this.getProperty("hm.toggleLabel","Toggle Heatmap") +SPACE2);
 		let _this = this;
 		this.jq("heatmapreload").click(()=> {
 		    this.reloadHeatmap = true;
@@ -2741,13 +2741,13 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		map[this.getDomId("cell_" +o.x+ "_"+o.y)] = o;
 	    });
 
-	    var table ="<table border=0 cellspacing=0 cellpadding=0>";
+	    var table =HU.open(TABLE);
 	    var w = this.getProperty("cellSize","40");
 	    var showLabel  = this.getProperty("showCellLabel",true);
 	    var cellStyle  = this.getProperty("cellStyle","");
 	    var cellMap = {};
 	    for(var y=1;y<=maxy;y++) {
-		table+="<tr>";
+		table+=HU.open(TR);
 		for(var x=1;x<=maxx;x++) {
 		    var id = this.getDomId("cell_" +x+ "_"+y);
 		    var o = map[id];
@@ -2765,10 +2765,10 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    var td = HU.td([],"<div " + extra +" style='" + style +"'>" + c+"</div>");
 		    table+=td;
 		}
-		table+="</tr>";
+		table+=HU.close(TR);
 	    }
 	    table +=HU.tr([],HU.td(["colspan", maxx],"<br>" +   HU.div([ID,this.getDomId(ID_COLORTABLE)])));
-	    table+="</table>";
+	    table+=HU.close(TABLE);
             var colorBy = this.getColorByInfo(records);
 	    var sparkLinesColorBy = this.getColorByInfo(records,"sparklineColorBy");
 	    var strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
@@ -2836,7 +2836,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let vOffset = 15;
 		    let s = stateData[state];
 		    let innerId = s.cellId+"_inner";
-		    let innerDiv = HU.div([ID, innerId, STYLE,"width:" + w +"px;height:" + (w-vOffset) +"px;position:absolute;left:0px;top:" + vOffset+"px;"],"");
+		    let innerDiv = HU.div([ID, innerId, STYLE,HU.css(WIDTH, w +'px',HEIGHT, (w-vOffset) +'px','position','absolute','left','0px','top', vOffset+'px')],"");
 		    $("#" + s.cellId).append(innerDiv);
 		    drawSparkLine(this, "#"+innerId,w,w-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
 		});
