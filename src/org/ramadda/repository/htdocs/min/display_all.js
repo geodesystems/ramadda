@@ -5023,7 +5023,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    div.css("display","inline-block");
 		    div.css("vertical-align","bottom");
 		} 
-		let width = this.getWidth();
+		let width = this.getWidth("100%");
 		if(width)
                     div.css("width",HU.getDimension(width));
 		div.html(html);
