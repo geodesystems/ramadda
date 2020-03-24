@@ -2281,7 +2281,7 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    private static StringBuilder append(char c, StringBuilder sb,
+    private static StringBuilder append(Object c, StringBuilder sb,
                                         List<StringBuilder> lines) {
         if (sb == null) {
             sb = new StringBuilder();
@@ -2292,6 +2292,7 @@ public class Utils extends IO {
         return sb;
     }
 
+    public static final String MULTILINE_END = "_multilineend_";
     /**
      * _more_
      *
@@ -2385,17 +2386,15 @@ public class Utils extends IO {
                     sb = null;
                     if (c == '\n') {
                         //Add in the new line if we're not in a block
-                        append('\n', sb, lines);
+                        append(MULTILINE_END, sb, lines);
                     }
                 } else {
                     sb = append(c, sb, lines);
                 }
-
                 continue;
             }
             sb = append(c, sb, lines);
         }
-
         return lines;
     }
 
@@ -2689,7 +2688,7 @@ public class Utils extends IO {
      */
     public static void main(String[] args) throws Exception {
         String cmd = "-addheader {} -print";
-        cmd = "-change 0 \"[^0-9]+\" \"\"";
+        cmd = "-addheader {\n\n}";
         for (Object tok : parseMultiLineCommandLine(cmd)) {
             System.err.println("\ttok:"
                                + tok.toString().replaceAll("\n", "_NL_"));

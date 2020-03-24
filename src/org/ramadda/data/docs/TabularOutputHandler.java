@@ -416,9 +416,8 @@ public class TabularOutputHandler extends OutputHandler {
             List<String>       current = null;
             for (StringBuilder sb : lines) {
                 String s = sb.toString();
-                if (s.equals("\n")) {
+		if (s.equals(Utils.MULTILINE_END)) {
                     current = null;
-
                     continue;
                 }
                 if (current == null) {
@@ -478,9 +477,8 @@ public class TabularOutputHandler extends OutputHandler {
                         && !args.contains("-db")) {
                     args.add("-print");
                 }
-
 		currentArgs = args;
-
+		System.err.println("args:" + args);
                 File runDir = null;
                 for (int j = 0; true; j++) {
                     runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
@@ -512,7 +510,7 @@ public class TabularOutputHandler extends OutputHandler {
                 getSessionManager().putSessionProperty(request, "csvutil",
                         csvUtil);
                 for (Entry e : entries) {
-                    outputConvertProcessInner(request, e, csvUtil, destDir,
+                    outputConvertProcessInner(request, process, e, csvUtil, destDir,
                             runDir, args, newFiles);
                     if ( !csvUtil.getOkToRun()) {
                         break;
@@ -644,7 +642,7 @@ public class TabularOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public void outputConvertProcessInner(Request request, Entry entry,
+    public void outputConvertProcessInner(Request request, boolean process, Entry entry,
                                           CsvUtil csvUtil, File destDir,
                                           File runDir, List<String> args,
                                           List<String> newFiles)

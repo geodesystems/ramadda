@@ -355,6 +355,61 @@ function csvStop() {
 
 
 
+function csvDialogClose() {
+    $("#csvdialog").hide();
+}
+function csvAddCommand(cmd) {
+    let desc = cmd.description.replace(/^\(/,"").replace(/\)$/,"");
+    let label = Utils.camelCase(cmd.command.replace(/^-/,""));
+    let closeImage = HtmlUtils.getIconImage(icon_close, []);
+    let close = "<a href=\"javascript:csvDialogClose();\">" + closeImage+"</a>";
+    let header = HtmlUtils.div(["style","text-align:right;","class","ramadda-popup-header"],close);
+    let inner = HU.center(HU.h2(label)) + HU.center(desc);
+    inner+=HU.formTable();
+    cmd.args.forEach((a,idx)=>{
+	if(a.rows) {
+	    inner+=HU.formEntryTop(Utils.makeLabel(a.id),HU.textarea("","",["rows",a.rows,ID,"csvcommand" + idx,"size",10]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
+	} else {
+	    let size = 10;
+	    if(a.size) size = a.size;
+	    inner+=HU.formEntry(Utils.makeLabel(a.id),HU.input("","",[ID,"csvcommand" + idx,"size",size]) +" " + a.description);
+	}
+    });
+    inner+=HU.formTableClose();
+    inner += HU.div([STYLE,HU.css("display","inline-block"), ID,"csvaddcommand"],"Add Command") +SPACE2+HU.div([STYLE,HU.css("display","inline-block"), ID,"csvcancelcommand"],"Cancel");
+    let html = header +HU.div([STYLE,"margin:8px;"],inner);
+
+    let dialog = $("#csvdialog");
+    dialog.draggable();
+    dialog.html(html);
+    dialog.show();
+    dialog.position({
+        of: $("#csv_command_select"),
+        my: "left top",
+        at: "left bottom+",
+        collision: "fit fit"
+    });
+    $("#csvcommand0").focus();
+    $("#csvaddcommand").button().click(()=>{
+	let args = "";
+	cmd.args.forEach((a,idx)=>{
+	    let v = $("#csvcommand" +idx).val().trim();
+	    if(v.indexOf("\n")>0) {
+		v = "{"+v+"}";
+	    } else    if(v=="" || v.indexOf(" ")>=0 || v.indexOf(",")>=0) v = "\"" + v +"\"";
+	    args+=v +" ";
+	});
+	csvInsertText(cmd.command +" " + args) ;
+	csvDialogClose()
+    });
+    $("#csvcancelcommand").button().click(()=>{
+	csvDialogClose()
+    });    
+
+
+
+}
+
 function csvInsertCommand(cmds) {
     if(!cmds) return;
     cmds = cmds.replace(/_quote_/g,"\"");
@@ -472,13 +527,16 @@ form="";
 //form+=HtmlUtil.input("","",["size","120", "id","convertcsv_input"]);
 form+=HtmlUtil.span(["id","convertcsv_input_container"],"");
 html = "";
+html+=HU.div([STYLE,HU.css('position','relative')],
+	     HU.div([ID,"csvdialog",CLASS,"ramadda-popup"]));
 html += "<style type='text/css'>.ramadda-csv-table  {font-size:10pt;}\n ";
 html += ".ace_editor {height:200px;}\n";
+html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
 html += ".ace_csv_comment {color:#B7410E;}\n";
 html += ".ace_csv_command {color:blue;}\n";
 html += "</style>";
 
-maxRows="Rows: " + HtmlUtil.input("","30",["size","5", "id","convertcsv_maxrows"]);
+maxRows="Rows: " + HtmlUtil.input("","30",["size","2", "id","convertcsv_maxrows"]);
 fileSelect = HtmlUtil.href("javascript:void(0);",HtmlUtils.getIconImage("fa-file"),["title", "Select file", "style", "color:black", "onClick", "selectInitialClick(event,'convertcsv_file1','convertcsv_input','true','entry:entryid','" + convertCsvEntry+"');",  "id","convertcsv_file1_selectlink"]);
 
 html+="<table border=0 width=100%><tr><td>";
@@ -506,9 +564,9 @@ left+=HtmlUtil.href("javascript:csvDisplay('-print')","CSV",["title","Display CS
 left+=HtmlUtil.href("javascript:csvDisplay('-raw')","Raw",["title", "Don't process. Just show the raw data", "class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('',true)","Process",["title","Process entire file", "class","convert_button"])+" ";
 var right = "";
-right+=HtmlUtil.href("javascript:csvClearCommand()","Clear Output",["class","convert_button"])+" ";
-right+=HtmlUtil.href("javascript:csvCall('',{listOutput:true})","List Files",["class","convert_button"])+" ";
-right+=HtmlUtil.href("javascript:csvCall('',{clearOutput:true})","Remove Files",["class","convert_button"])+" ";
+right+=HtmlUtil.href("javascript:csvClearCommand()",HU.getIconImage("fa-eraser", [TITLE,"Clear Output"])) +SPACE2;
+right+=HtmlUtil.href("javascript:csvCall('',{listOutput:true})",HU.getIconImage("fa-list",[TITLE,"List Files"])) +SPACE2;
+right+=HtmlUtil.href("javascript:csvCall('',{clearOutput:true})",HU.getIconImage("fa-trash",[TITLE, "Remove Files"])) +SPACE2;
 html+=HtmlUtil.leftRightTable(left,right);
 html += "</form>";
 
@@ -516,6 +574,16 @@ html +="<div style='margin-top:5px;'></div>";
 html +=  HtmlUtil.div(["id", "convertcsv_output","style"," max-height: 500px;  overflow-y: auto;"],"<pre>\n</pre>");
 html += HtmlUtil.div(["id", "convertcsv_scratch"],"");
 $("#convertcsv_div").html(html);
+$("#convertcsv_runok").click(function() {
+    let active =  $(this).is(':checked');
+    if(csvEditor) {
+	if(active)
+	    csvEditor.container.classList.remove("ace_editor_disabled")
+	else
+	    csvEditor.container.classList.add("ace_editor_disabled")
+    } 
+
+});
 csvFlipInput(convertCsvLastInput);
 $(".convert_button").button();
 $(document).click(function(e) {
@@ -561,7 +629,12 @@ var jqxhr = $.getJSON( helpUrl, function(data) {
 	    if(desc && desc!="") {
 		tooltip =desc+"\n";
 	    }
-            tooltip += command + " " + cmd.args;
+            tooltip += command;
+	    cmd.args.forEach(a=>{
+		let desc = a.desc;
+		if(desc!="") desc = " "  + desc;
+		tooltip +=" <" +a.id  +desc+ "> ";
+	    });
             tooltip = tooltip.replace(/\"/g,"&quot;").replace(/\(/g,"").replace(/\)/g,"");
             var label = command;
             label = Utils.camelCase(label.replace("-",""));
@@ -575,7 +648,7 @@ var jqxhr = $.getJSON( helpUrl, function(data) {
         $("#csv_command_select").change(function(evt) {
             var cmd = csvCommandsMap[$("#csv_command_select").val()];
 	    if(!cmd)return;
-            csvInsertCommand(cmd.command +" " + cmd.args);
+            csvAddCommand(cmd);
         });
     }
     

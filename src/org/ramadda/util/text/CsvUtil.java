@@ -17,37 +17,27 @@
 package org.ramadda.util.text;
 
 
-import org.json.*;
 
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
-
 import org.ramadda.util.XlsUtil;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
-
+import org.json.*;
 import java.io.*;
-
 import java.text.DateFormat;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
 import java.util.regex.*;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -56,7 +46,6 @@ import java.util.regex.Pattern;
  */
 
 public class CsvUtil {
-
 
     /** a hack for debugging */
     private String theLine;
@@ -112,7 +101,7 @@ public class CsvUtil {
     /** _more_ */
     private List<String> changeTo = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private StringBuilder js = new StringBuilder();
 
     /**
@@ -1509,6 +1498,48 @@ public class CsvUtil {
      * Class description
      *
      *
+     * @version        $version$, Tue, Mar 24, '20
+     * @author         Enter your name here...    
+     */
+    public static class Arg {
+
+        /** _more_          */
+        String id;
+
+        /** _more_          */
+        String desc;
+
+	String[]props;
+	
+        /**
+         * _more_
+         *
+         * @param id _more_
+         */
+        public Arg(String id) {
+            this(id, "");
+        }
+
+        /**
+         * _more_
+         *
+         * @param id _more_
+         * @param desc _more_
+         */
+        public Arg(String id, String desc, String...props) {
+	    if(desc.length()==0 && id.equals("columns")) desc = "e.g. 0,1,2,7-10,12";
+	    if(desc.length()==0 && id.equals("rows")) desc = "e.g. 0,1,2,7-10,12";
+            this.id   = id;
+            this.desc = desc;
+	    this.props = props;
+        }
+    }
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Wed, Feb 20, '19
      * @author         Enter your name here...
      */
@@ -1521,7 +1552,7 @@ public class CsvUtil {
         String cmd;
 
         /** _more_ */
-        String args;
+        List<Arg> args = new ArrayList<Arg>();
 
         /** _more_ */
         String desc;
@@ -1537,28 +1568,6 @@ public class CsvUtil {
             this.desc     = category;
         }
 
-        /**
-         * _more_
-         *
-         * @param cmd _more_
-         */
-        public Cmd(String cmd) {
-            this.cmd  = cmd;
-            this.args = "";
-            this.desc = "";
-        }
-
-        /**
-         * _more_
-         *
-         * @param cmd _more_
-         * @param args _more_
-         */
-        public Cmd(String cmd, String args) {
-            this.cmd  = cmd;
-            this.args = args;
-            this.desc = "";
-        }
 
         /**
          * _more_
@@ -1567,10 +1576,15 @@ public class CsvUtil {
          * @param args _more_
          * @param desc _more_
          */
-        public Cmd(String cmd, String args, String desc) {
+        public Cmd(String cmd, String desc, Object... args) {
             this.cmd  = cmd;
-            this.args = args;
             this.desc = desc;
+            for (Object obj : args) {
+                if ( !(obj instanceof Arg)) {
+                    obj = new Arg(obj.toString(), "");
+                }
+                this.args.add((Arg) obj);
+            }
         }
 
         /**
@@ -1590,219 +1604,250 @@ public class CsvUtil {
          * @return _more_
          */
         public String getLine() {
-            return cmd + " " + args + " " + desc;
-        }
+            StringBuilder sb = new StringBuilder();
+            if (args != null) {
+                for (Arg arg : args) {
+                    sb.append("<" + arg.id + ((arg.desc.length() > 0)
+                            ? " " + arg.desc
+                            : "") + "> ");
+                }
+            }
 
+            return cmd + " " + sb + " (" + desc + ")";
+        }
     }
 
     /** _more_ */
     private static final Cmd[] commands = {
-        new Cmd("-help", "", "(print this help)"),
-        new Cmd("-help:<topic search string>", "",
-                "(print help that matches topic)"),
+        new Cmd("-help", "print this help)"),
+        new Cmd("-help:<topic search string>",
+                "print help that matches topic"),
         new Cmd(true, "Slice and Dice"),
         new Cmd(
-            "-columns", "<e.g., 0,1,2,7-10,12>",
-            "(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
+            "-columns",
+            "Only include the given columns",
+            new Arg("columns")),
         new Cmd(
-            "-notcolumns", "<e.g., 0,1,2,7-10,12>",
-            "(A comma separated list of columns #s or column range, 0-based. Don't include the given columns)"),
-        new Cmd("-skip", "<how many rows to skip>"),
-        new Cmd("-start", "<start pattern>"),
-        new Cmd("-stop", "<stop pattern>"),
-        new Cmd("-min", "<min # columns>"),
-        new Cmd("-max", "<max # columns>"),
-        new Cmd("-rawlines", "<how many lines to pass through unprocesed>"),
-        new Cmd("-cut", "<one or more rows. -1 to the end>"),
-        new Cmd("-include", "<one or more rows, -1 to the end>",
-                "(Only include given rows)"),
-        new Cmd("-mergerows", "<2 or more rows> <delimiter> <close>"),
-        new Cmd("-countvalue", "<col #> <count>"),
-        new Cmd("-copy", "<col #> <name>"),
-        new Cmd("-delete", "<col #>", "(remove the columns)"),
-        new Cmd("-insert", "<col #> <value>", "(insert a new column value)"),
-        new Cmd("-insert", "<col #> <comma separated values>"),
-        new Cmd("-shift", "<rows> <col #> <count>",
-                "(Shift columns over by count for given rows)"),
-        new Cmd("-addcell", "<row #>  <col #>  <value>"),
-        new Cmd("-deletecell", "<row #> <col #>"), new Cmd("-rotate"),
-        new Cmd("-flip", "",
-                "(reverse the order of the rows except the header)"),
-        new Cmd(
-            "-unfurl",
-            "<col to get new column header#> <value columns> <unique col>  <other columns>",
-            "(make columns from data values)"),
-        new Cmd("-furl", "<cols> <header label> <value label>",
-                "(use values in header to make new row)"),
-        new Cmd("-explode", "<col #> ",
-                "(make separate files based on value of column)"),
-        new Cmd("-concat", "<col #s>  <delimiter>",
-                "(create a new column from the given columns)"),
-        //        new Cmd("-bin", "<unique col #s>  <value columns>","()"),
-        new Cmd("-split",
-                "<column> <delimiter> <comma separated new column names>",
-                "(split the column)"),
-        new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",
-                "(create a new column from the values in the given column)"),
-        new Cmd("-join",
-                "<key columns> <value columns> <file> <src key columns>",
-                "Join the 2 files together"),
+            "-notcolumns",
+            "Don't include the given columns",
+            new Arg("columns")),
+        new Cmd("-skip", "Skip number of rows",
+                new Arg("rows", "e.g.,2-3,5,8")),
+        new Cmd("-start", "Start at pattern in source file", "start pattern"),
+        new Cmd("-stop", "End at pattern in source file", "stop pattern"),
+        new Cmd("-cut", "Delete rows",
+                new Arg("rows", "one or more rows. -1 to the end")),
+        new Cmd("-include", "Only include given rows",
+                new Arg("rows", "one or more rows, -1 to the end")),
+        new Cmd("-mergerows", "", new Arg("rows", "2 or more rows"),
+                new Arg("delimiter"), new Arg("close")),
+        new Cmd("-countvalue", "", new Arg("column"), new Arg("count")),
+        new Cmd("-copy", "", new Arg("column"), "name"),
+        new Cmd("-delete", "Remove the columns", new Arg("columns")),
+        new Cmd("-insert", "Insert new column values", new Arg("column"),
+                new Arg("values", "comma separated values")),
+        new Cmd("-shift", "Shift columns over by count for given rows",
+                "rows", new Arg("column"), "count"),
+        new Cmd("-addcell", "", new Arg("row"), new Arg("column"), "value"),
+        new Cmd("-deletecell", "", new Arg("row"), new Arg("column")),
+        new Cmd("-rotate", ""),
+        new Cmd("-flip", "Reverse the order of the rows except the header"),
+        new Cmd("-unfurl", "Make columns from data values",
+                new Arg("columns", "column to get new column header#"),
+                new Arg("value columns", ""), "unique col", "other columns"),
+        new Cmd("-furl", "Use values in header to make new row", "cols",
+                "header label", "value label"),
+        new Cmd("-explode", "Mke separate files based on value of column",
+                new Arg("column")),
+        new Cmd("-concat", "Create a new column from the given columns",
+                new Arg("columns"), "delimiter"),
+        //        new Cmd("-bin", "", "unique col #s","value columns"),
+        new Cmd("-split", "Split the column", new Arg("column"), "delimiter",
+                new Arg("names", "comma separated new column names")),
+        new Cmd("-splat",
+                "create a new column from the values in the given column",
+                "key col", new Arg("column"), "delimiter",
+                new Arg("name", "new column name")),
+        new Cmd("-join", "Join the 2 files together", "key columns",
+                new Arg("value_columns", "value columns"), "file",
+                new Arg("source_columns", "source key columns")),
         new Cmd(true, "Filter"),
-        new Cmd("-unique", "<columns>", "(pass through unique values)"),
-        new Cmd("-dups", "<columns>", "(pass through duplicate values)"),
-        new Cmd("-pattern", "<col #> <regexp pattern>",
-                "(extract rows that match the pattern)"),
-        new Cmd("-notpattern", "<col #> <regexp pattern>",
-                "(extract rows that don't match the pattern)"),
-        new Cmd("-maxvalue", "<key column> <value column>"),
-        new Cmd("-gt|-ge|-lt|-le", "<col #> <value>",
-                "(extract rows that pass the expression)"),
-        new Cmd("-before", "<column> <format> <date> <format2>"),
-        new Cmd("-after", "<column> <format> <date> <format2>"),
-        new Cmd("-decimate", "<# of start rows to include> <skip factor>",
-                "(only include every <skip factor> row)"),
-        new Cmd("-skipline", " <pattern>",
-                "(skip any line that matches the pattern)"),
+        new Cmd("-rawlines", "",
+                new Arg("lines",
+                        "how many lines to pass through unprocesed")),
+        new Cmd("-min", "", "min # columns"),
+        new Cmd("-max", "", "max # columns"),
+        new Cmd("-unique", "pass through unique values", new Arg("columns")),
+        new Cmd("-dups", "pass through duplicate values", new Arg("columns")),
+        new Cmd("-pattern", "extract rows that match the pattern",
+                new Arg("column"), "regexp pattern"),
+        new Cmd("-notpattern", "extract rows that don't match the pattern",
+                new Arg("column"), "regexp pattern"),
+        new Cmd("-maxvalue", "", "key column", "value column"),
+        new Cmd("-gt|-ge|-lt|-le", "extract rows that pass the expression",
+                new Arg("column"), new Arg("value")),
+        new Cmd("-before", "", new Arg("column"), new Arg("format"),
+                new Arg("date"), new Arg("format2")),
+        new Cmd("-after", "", new Arg("column"), new Arg("format"),
+                new Arg("date"), new Arg("format2")),
+        new Cmd("-decimate", "only include every <skip factor> row",
+                new Arg("rows", "# of start rows to include"),
+                new Arg("skip", "skip factor")),
+        new Cmd("-skipline", "skip any line that matches the pattern",
+                new Arg("pattern")),
         new Cmd(true, "Change Values"),
+        new Cmd("-change", "", new Arg("columns"), new Arg("pattern"),
+                new Arg("substitution string")),
+        new Cmd("-changerow", "Change the values in the row/cols",
+                new Arg("rows"), new Arg("columns"), new Arg("pattern"),
+                new Arg("substitution string")),
+        new Cmd("-set", "write the value into the cells", new Arg("columns"),
+                new Arg("rows"), new Arg("value")),
         new Cmd(
             "-macro",
-            "<pattern> <template> <column label> (Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header)"),
-        new Cmd("-set", "<col #s> <row #s> <value>",
-                "(write the value into the cells)"),
+            "Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header",
+            new Arg("pattern"), new Arg("template"), new Arg("column label")),
         new Cmd(
-            "-setcol", "<match col #> <pattern> <write col #> <value>",
-            "(write the value into the write col for rows that match the pattern)"),
+            "-setcol",
+            "write the value into the write col for rows that match the pattern",
+            new Arg("column", "match col #"), new Arg("pattern"),
+            new Arg("write col #"), new Arg("value")),
         new Cmd(
-            "-priorprefix", "<col #> <pattern> <delimiter>",
-            "(append prefix from the previous element to rows that match pattern)"),
-        new Cmd("-letter", "", "(add 'A','B', ... as column)"),
-        new Cmd("-case", "<lower|upper|camel> <col #>",
-                "(change case of column)"),
-        new Cmd("-width", "<columns>  <size>",
-                "(limit the string size of the columns)"),
+            "-priorprefix",
+            "append prefix from the previous element to rows that match pattern",
+            new Arg("column"), new Arg("pattern"), new Arg("delimiter")),
+        new Cmd("-letter", "add 'A','B', ... as column"),
+        new Cmd("-case", "change case of column",
+                new Arg("lower|upper|camel"), new Arg("column")),
+        new Cmd("-width", "limit the string size of the columns",
+                new Arg("columns"), new Arg("size")),
         new Cmd(
-            "-prepend", "<text>",
-            "(add the text to the beginning of the file. use _nl_ to insert newlines)"),
-        new Cmd("-pad", "<col #> <pad string>",
-                "(pad out or cut columns to achieve the count)"),
-        new Cmd("-prefix", "<col #> <prefix>", "(add prefix to column)"),
-        new Cmd("-suffix", "<col #> <suffix>", "(add suffix to column)"),
-        new Cmd("-change", "<col #s> <pattern> <substitution string>"),
-        new Cmd("-changerow",
-                "<row #s> <col #s> <pattern> <substitution string>",
-                "(Change the values in the row/cols)"),
-        new Cmd("-endswith", "<col #s> <string>",
-                "(Ensure that each column ends with the string)"),
-        new Cmd("-trim", "<col #s>"),
-        new Cmd("-convertdate", "<column> <format1> <format2>"),
+            "-prepend",
+            "add the text to the beginning of the file. use _nl_ to insert newlines",
+            new Arg("text")),
+        new Cmd("-pad", "pad out or cut columns to achieve the count",
+                new Arg("column"), new Arg("pad string")),
+        new Cmd("-prefix", "add prefix to column", new Arg("column"),
+                new Arg("prefix")),
+        new Cmd("-suffix", "add suffix to column", new Arg("column"),
+                "suffix"),
+        new Cmd("-js", "define Javascript to use later", "javascript"),
+        new Cmd("-func", "apply the function. use column names or _colN",
+                "name1,name2,...", "javascript expression"),
+        new Cmd("-endswith", "Ensure that each column ends with the string",
+                new Arg("column"), new Arg("string")),
+        new Cmd("-trim", "", new Arg("columns")),
+        new Cmd("-convertdate", "", "column", "format1", "format2"),
         new Cmd(
-            "-extractdate",
-            "<date column> <format> <tz> <era|year|month|day_of_month|day_of_week|week_of_month|day_of_week_in_month|am_pm|hour|hour_of_day|minute|second|millisecond>"),
-        new Cmd("-formatdate",
-                "<col #s> <intial date format> <target date format>"),
-        new Cmd("-truncate", "<column> <max length> <suffix>"),
-        new Cmd(
-            "-extract",
-            "<col #> <pattern> <replace with use 'none' for no replacement> <New column name>",
-            "(extract text from column and make a new column)"),
-        new Cmd("-map", "<col #> <new columns name> <value newvalue ...>",
-                "(change values in column to new values)"),
-        new Cmd("-combine", "<col #s> <delimiter> <new column name>",
-                "(combine columns with the delimiter. deleting columns)"),
-        new Cmd("-combineinplace", "<col #s> <delimiter> <new column name>",
-                "(combine columns with the delimiter.)"),
-        new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
+            "-extractdate", "", "date column", "format", "tz",
+            "era|year|month|day_of_month|day_of_week|week_of_month|day_of_week_in_month|am_pm|hour|hour_of_day|minute|second|millisecond"),
+        new Cmd("-formatdate", "", new Arg("columns"), "intial date format",
+                "target date format"),
+        new Cmd("-truncate", "", "column", "max length", "suffix"),
+        new Cmd("-extract", "extract text from column and make a new column",
+                new Arg("column"), "pattern",
+                "replace with use 'none' for no replacement",
+                "new column name"),
+        new Cmd("-map", "change values in column to new values",
+                new Arg("column"), "new columns name", "value newvalue ..."),
+        new Cmd("-combine",
+                "combine columns with the delimiter. deleting columns",
+                new Arg("column"), "delimiter", "new column name"),
+        new Cmd("-combineinplace", "combine columns with the delimiter.",
+                new Arg("column"), "delimiter", "new column name"),
+        new Cmd("-format", "", "columns", "decimal format, e.g. '##0.00'"),
         new Cmd(
             "-denormalize",
-            "<from csv file> <from id idx> <from value idx> <to idx>    <new col name> <mode replace add>",
-            "(read the id,value from file and substitute the value in the dest file col idx)"),
-        new Cmd("-break", "<label1> <label2> <columns",
-                "(break apart column values and make new rows)"),
-        new Cmd("-desc", "<col idx> suffix",
-                "(add a description from wikipedia)"),
-        new Cmd("-image", "<col idx> suffix", "(search for an image)"),
-        new Cmd("-gender", "<column>",
-                "(figure out the gender of the name in the column)"),
+            "read the id,value from file and substitute the value in the dest file col idx",
+            "from csv file", "from id idx", "from value idx", "to idx",
+            "new col name", "mode replace add"),
+        new Cmd("-break", "break apart column values and make new rows",
+                "label1", "label2", "columns"),
+        new Cmd("-desc", "add a description from wikipedia",
+                new Arg("column"), "suffix"),
+        new Cmd("-image", "search for an image", new Arg("column"), "suffix"),
+        new Cmd("-gender", "figure out the gender of the name in the column",
+                "column"),
         new Cmd(true, "Numeric"),
-        new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
-                "(set value={value+delta1}*scale+delta2)"),
-        new Cmd("-rowaverage", "", "(average the row values)"),
-        new Cmd("-generate", "<label> <start> <step>", "(add row values)"),
-        new Cmd("-decimals", "<col #> <how many decimals to round to>", ""),
-        new Cmd("-js", "<javascript>", "(define Javascript to use later)"),
-        new Cmd("-func", "<name1,name2,...> <javascript expression>",
-                "(apply the function. use column names or _colN)"),
+        new Cmd("-scale", "set value={value+delta1}*scale+delta2",
+                new Arg("column"), "delta1", "scale", "delta2"),
+        new Cmd("-rowaverage", "average the row values", ""),
+        new Cmd("-generate", "add row values", "label", "start", "step"),
+        new Cmd("-decimals", "", new Arg("column"),
+                "how many decimals to round to"),
+        new Cmd("-operator",
+                "apply the operator to the given columns and create new one",
+                new Arg("columns"), "new col name", "operator +,-,*,/"),
+        new Cmd("-round", "round the values", "columns"),
         new Cmd(
-            "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
-            "(apply the operator to the given columns and create new one)"),
-        new Cmd("-round", "<columns>", "round the values"),
-        new Cmd(
-            "-sum", "<key columns> <value columns> <carry over columns>",
-            "sum values keying on name column value. If no value columns specified then do a count"),
-        new Cmd("-percent", "<columns to add>"),
-        new Cmd("-increase", "<column> <how far back>",
-                "(calculate percent increase)"),
-        new Cmd("-average", "<columns> <period> <label>",
-                "(calculate a moving average)"),
+            "-sum",
+            "sum values keying on name column value. If no value columns specified then do a count",
+            "key columns", "value columns", "carry over columns"),
+        new Cmd("-percent", "", "columns to add"),
+        new Cmd("-increase", "calculate percent increase", "column",
+                "how far back"),
+        new Cmd("-average", "calculate a moving average", "columns",
+                "period", "label"),
         new Cmd(true, "Geocode"),
-        new Cmd("-geocode",
-                "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
-        new Cmd("-geocodeaddress",
-                "<col indices> <prefix, e.g., state: or county:> <suffix> "),
-        new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
-        new Cmd("-mercator", "<col #s>", "(convert x/y to lon/lat)"),
-        new Cmd("-population",
-                "<col indices> <prefix, e.g., state: or county:> <suffix> ",
-                "add in population from address"),
-        new Cmd(true, "Other Commands"), new Cmd("-sort", "<column sort>"),
-        new Cmd("-count", "", "(show count)"),
-        new Cmd("-maxrows", "<max rows to print>"),
-        new Cmd("-changeline", "<from> <to>", "(change the line)"),
-        new Cmd("-changeraw", "<from> <to>", "(change input text)"),
+        new Cmd("-geocode", "", new Arg("column"), "csv file", "name idx",
+                "lat idx", "lon idx"),
+        new Cmd("-geocodeaddress", "", new Arg("columns"),
+                "prefix, e.g., state: or county:", "suffix> "),
+        new Cmd("-geocodeaddressdb", "", new Arg("columns"), "prefix",
+                "suffix> "),
+        new Cmd("-mercator", "convert x/y to lon/lat", new Arg("columns")),
+        new Cmd("-population", "add in population from address",
+                new Arg("columns"), "prefix, e.g., state: or county:",
+                "suffix> "),
+        new Cmd(true, "Other Commands"), new Cmd("-sort", "", "column sort"),
+        new Cmd("-count", "show count"),
+        new Cmd("-maxrows", "", "max rows to print"),
+        new Cmd("-changeline", "change the line", "from", "to"),
+        new Cmd("-changeraw", "change input text", "from", "to"),
         new Cmd(
-            "-strict", "",
-            "(be strict on columns. any rows that are not the size of the other rows are dropped)"),
+            "-strict",
+            "be strict on columns. any rows that are not the size of the other rows are dropped"),
         new Cmd(
-            "-flag", "",
-            " (be strict on columns. any rows that are not the size of the other rows are shown)"),
-        new Cmd("-verify", "# columns",
-                "(throw error if a row has a different number of columns)"),
-        new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
-        new Cmd("-tab", "(use tabs)"),
-        new Cmd("-widths", "w1,w2,...,wN", "(columns are fixed widths)"),
-        new Cmd("-comment", "<string>"),
-        new Cmd("-verify", "",
-                "(verify that all of the rows have the same # of columns)"),
+            "-flag",
+            "be strict on columns. any rows that are not the size of the other rows are shown"),
+        new Cmd("-verify",
+                "throw error if a row has a different number of columns",
+                "# columns"),
+        new Cmd("-delimiter", "specify an alternative delimiter"),
+        new Cmd("-tab", "use tabs"),
+        new Cmd("-widths", "columns are fixed widths", "w1,w2,...,wN"),
+        new Cmd("-comment", "", "string"),
+        new Cmd("-verify",
+                "verify that all of the rows have the same # of columns"),
         new Cmd(true, "Input"),
         new Cmd(
-            "-html", "\"name value properties\"",
-            "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
-        new Cmd("-htmlpattern", "cols startPattern endPattern pattern",
-                "(parse the input html file)"),
-        new Cmd("-json",
-                "\"arrayPath obj1.arr[index].obj2 objectPath obj3\"",
-                "(parse the input as json)"),
+            "-html",
+            "parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to",
+            "\"name value properties\""),
+        new Cmd("-htmlpattern", "parse the input html file",
+                "cols startPattern endPattern pattern"),
+        new Cmd("-json", "parse the input as json",
+                "arrayPath e.g., obj1.arr[index].obj2",
+                "objectPath e.g. obj3"),
+        new Cmd("-text", "extract rows from the text",
+                new Arg("comma seperated header"), new Arg("chunk pattern"),
+                new Arg("token pattern")),
+        new Cmd("-tokenize", "tokenize the input from the pattern",
+                new Arg("header","header1,header2..."), new Arg("pattern")),
+        new Cmd("-prune", "prune out the first N bytes",
+                "number of leading bytes to remove"),
+        new Cmd(true, "Output"), new Cmd("-print", "print to stdout"),
+        new Cmd("-raw", "print the file raw"),
+        new Cmd("-record", "print records"),
+        new Cmd("-printheader", "print the first line"),
+        new Cmd("-pointheader", "generate the RAMADDA point properties"),
+        new Cmd("-addheader", "add the RAMADDA point properties",
+                new Arg("properties","name1 value1 ... nameN valueN","rows","6")),
         new Cmd(
-            "-text",
-            "\"comma seperated header\" \"chunk pattern\" \"token pattern\"",
-            "(extract rows from the text)"),
-        new Cmd("-tokenize", " \"header1,header2...\" \"pattern\"",
-                "(tokenize the input from the pattern)"),
-        new Cmd("-prune", "<number of leading bytes to remove>",
-                "(prune out the first N bytes)"),
-        new Cmd(true, "Output"), new Cmd("-print", "", "(print to stdout)"),
-        new Cmd("-raw", "", "(print the file raw)"),
-        new Cmd("-record", "", " (print records)"),
-        new Cmd("-printheader", "", "(print the first line)"),
-        new Cmd("-pointheader", "",
-                "(generate the RAMADDA point properties)"),
-        new Cmd("-addheader", "\"name1 value1 ... nameN valueN\"",
-                "(add the RAMADDA point properties)"),
-        new Cmd(
-            "-db", "\"props\"",
-            "(generate the RAMADDA db xml from the header, props are a set of name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t\t<column name>.id <new id for column> <column name>.label <new label>\n\t\t<column name>.type <string|enumeration|double|int|date>\n\t\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs>"),
-        new Cmd("-run", "<name of process directory>"),
-        new Cmd("-cat", " <*.csv>", "(one or more csv files)"),
+            "-db",
+            "generate the RAMADDA db xml from the header, props are a set of name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t\t<column name>.id <new id for column> <column name>.label <new label>\n\t\t<column name>.type <string|enumeration|double|int|date>\n\t\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", new Arg("props","","rows","6")),
+        new Cmd("-run", "", "name of process directory"),
+        new Cmd("-cat", "one or more csv files", "*.csv"),
     };
 
 
@@ -1881,8 +1926,29 @@ public class CsvUtil {
                     pw.println(Json.mapAndQuote("isCategory", "true",
                             "description", c.desc));
                 } else {
-                    pw.println(Json.mapAndQuote("command", c.cmd, "args",
-                            c.args, "description", c.desc));
+                    String argList = "[]";
+                    if (c.args != null) {
+                        List tmp = new ArrayList();
+                        for (Arg arg : c.args) {
+			    List<String> attrs = new ArrayList<String>();
+			    attrs.add("id");
+			    attrs.add(Json.quote(arg.id));
+			    attrs.add("description");
+			    attrs.add(Json.quote(arg.desc));
+			    if(arg.props!=null) {
+				for(int i=0;i<arg.props.length;i+=2) {
+				    attrs.add(arg.props[i]);
+				    attrs.add(Json.quote(arg.props[i+1]));
+				}
+			    }
+                            tmp.add(Json.map(attrs));
+
+                        }
+                        argList = Json.list(tmp);
+                    }
+                    pw.println(Json.map("command", Json.quote(c.cmd), "args",
+                                        argList, "description",
+                                        Json.quote(c.desc)));
                 }
             } else {
                 if (c.category) {
@@ -3743,9 +3809,10 @@ public class CsvUtil {
      */
     private Hashtable<String, String> parseProps(String s) {
         s = s.replaceAll("_quote_", "\"");
+	s=s.replaceAll("\n" ," ");
         List<String> toks = Utils.parseCommandLine(s);
-        //        System.err.println("s:" + s);
-        //        System.err.println("toks:" + toks);
+	//	System.err.println("s:" + s);
+	//	System.err.println("toks:" + toks);
         Hashtable<String, String> props = new Hashtable<String, String>();
         for (int j = 0; j < toks.size(); j += 2) {
             if (j >= toks.size() - 1) {
