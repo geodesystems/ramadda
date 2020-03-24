@@ -4786,7 +4786,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 
-
             if (fileMenuItems.length > 0)
                 menus.push("<a>File</a>" + HU.tag(TAG_UL, [], HU.join(fileMenuItems)));
             if (viewMenuItems.length > 0)
@@ -18721,21 +18720,21 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
     })
 }
 /*
-  Copyright 2008-2019 Geode Systems LLC
+  Copyright 2008-2020 Geode Systems LLC
 */
 
-var DISPLAY_WORDCLOUD = "wordcloud";
-var DISPLAY_TEXTSTATS = "textstats";
-var DISPLAY_FREQUENCY = "frequency";
-var DISPLAY_TEXTANALYSIS = "textanalysis";
-var DISPLAY_TEXTRAW = "textraw";
-var DISPLAY_TEXT = "text";
-var DISPLAY_CARDS = "cards";
-var DISPLAY_BLOCKS = "blocks";
-var DISPLAY_TEMPLATE = "template";
-var DISPLAY_SLIDES = "slides";
-var DISPLAY_IMAGES = "images";
-var DISPLAY_TOPFIELDS = "topfields";
+const DISPLAY_WORDCLOUD = "wordcloud";
+const DISPLAY_TEXTSTATS = "textstats";
+const DISPLAY_FREQUENCY = "frequency";
+const DISPLAY_TEXTANALYSIS = "textanalysis";
+const DISPLAY_TEXTRAW = "textraw";
+const DISPLAY_TEXT = "text";
+const DISPLAY_CARDS = "cards";
+const DISPLAY_BLOCKS = "blocks";
+const DISPLAY_TEMPLATE = "template";
+const DISPLAY_SLIDES = "slides";
+const DISPLAY_IMAGES = "images";
+const DISPLAY_TOPFIELDS = "topfields";
 
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
@@ -19564,18 +19563,18 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     return 0;
                 });
                 var width = group.members.length==0?"100%":100/group.members.length;
-                html +="<table width=100% border=0><tr valign=top>";
+                html +=HU.open(TABLE,[WIDTH,'100%','border',0]) +HU.open(TR,['valign','top']);
                 for(var i=0;i<group.members.length;i++) {
                     var child = group.members[i];
 		    var prefix="";
 		    if(child.field)
 			prefix = child.field.getLabel()+": ";
-                    html+="<td width=" + width+"%>";
+                    html+=HU.open(TD,[WIDTH, width+"%"]);
 		    html+=HU.div([CLASS,"display-cards-header"],prefix+child.id +" (" + child.getCount()+")");
 		    html+= this.makeGroupHtml(child);
-                    html+="</td>";
+                    html+=HU.close(TD);
                 }
-                html +="</tr></table>";
+                html +=HU.close(TR, TABLE);
             } else {
                 html+=Utils.join(group.members,"");
             }
@@ -20041,14 +20040,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			s = s.replace(/<\/td>/g,"</div></td>");
 			contents += s;
 		    }  else {
-			contents += tag +s +"</div>"
+			contents += tag +s +HU.close(DIV);
 		    }
 		    if(cols>0) {
-			contents+='</div>\n';
+			contents+=HU.close(DIV);
 		    }
 		}
 		if(cols>0) {
-		    contents += '</div>\n';
+		    contents += HU.close(DIV);
 		}
 	    }
 	    if(selected.length>0) 
@@ -20635,7 +20634,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     min = (i == 0 ? tmp[i].count : Math.min(min, tmp[i].count));
                 }
                 if (this.getProperty("showFieldLabel", true))
-                    html += "<b>" + fi.field.getLabel() + "</b><br>";
+                    html += HU.b(fi.field.getLabel()) + "<br>";
                 var td1Width = "20%";
                 var td2Width = "10%";
                 if (this.getProperty("showSummary", true)) {
@@ -20973,10 +20972,8 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 					 tdv + tdc + tdp + tdb
 					);
 		}
-		html += HU.closeTag("tbody");
-		html += HU.closeTag("table");
-		html += HU.closeTag("div");
-		bannerHtml += "</div>";
+		html += HU.close(TBODY,TABLE,DIV);
+		bannerHtml += HU.close(TD);
 	    }
 
 	    if(doBanner) html = HU.div([CLASS,"display-frequency-banner"], bannerHtml);
@@ -21188,8 +21185,8 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             var minCount = parseInt(this.getProperty("minCount", 0));
             var table = HU.openTag("table", ["width", "100%", CLASS, "stripe hover ramadda-table"]) + HU.openTag("thead", []);
             table += HU.tr([], HU.th([], title) + HU.th([], "&nbsp;"));
-            table += HU.closeTag("thead");
-            table += HU.openTag("tbody");
+            table += HU.close(THEAD);
+            table += HU.open(TBODY);
             var cnt = 0;
             for (var i = 0; i < l.length; i++) {
                 if (l[i].count < minCount) continue;
@@ -21198,7 +21195,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 table += HU.tr([], row);
                 if (cnt++ > maxWords) break;
             }
-            table += HU.closeTag("tbody") + HU.closeTag("table");
+            table += HU.close(TBODY,TABLE);
             return table;
         }
     });
@@ -21368,7 +21365,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    var rowScale = this.showShrink?this.getProperty("rowScale",0.3):null;
 
 	    if(this.showShrink) {
-		corpus+="<tr><td>" + HU.getIconImage("fa-caret-down") +"</td></tr>";
+		corpus+=HU.tr([],HU.td([],HU.getIconImage("fa-caret-down")));
 	    }
 	    let templateFields = this.getFields();
 	    let templateProps = this.getTemplateProps(templateFields);	    
@@ -21477,12 +21474,11 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    label = label.replace(/ /g,"&nbsp;");
 		    var r =  "";
 		    if(this.showShrink) {
-			r+= HU.td(["width", "5px",STYLE,"background:#ccc;"],  HU.getIconImage("fa-caret-right",null, [STYLE,"line-height:0px;"]));
+			r+= HU.td([WIDTH, "5px",STYLE,HU.css('background','#ccc')],  HU.getIconImage("fa-caret-right",null, [STYLE,"line-height:0px;"]));
 		    }
-		    r+= HU.td(["width", labelWidth], "<a name=line_" + lineCnt + "></a>" +
+		    r+= HU.td([WIDTH, labelWidth], "<a name=line_" + lineCnt + "></a>" +
 				     "<a href=#line_" + lineCnt + ">" + label + "</a>&nbsp;  ") +
 			HU.td([], line);
-		    
 		    corpus += HU.tr(rowAttrs, r);
                 } else {
                     corpus += line;
@@ -21499,12 +21495,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 }
             }
             if (addLineNumbers) {
-                corpus += "</table>";
+                corpus += HU.close(TABLE);
             }
-            corpus+= HU.closeTag("div");
+            corpus+= HU.close(DIV);
 
             if (!asHtml)
-                corpus = HU.tag("pre", [], corpus);
+                corpus = HU.tag(PRE, [], corpus);
             this.writeHtml(ID_TEXT, corpus);
 	    colorBy.displayColorTable();
 	    var linesWord = " "+ this.getProperty("linesDescriptor","lines");
@@ -21536,7 +21532,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		rows.mousemove(open);
 		rows.mouseout(close);
 	    }
-	    var lines =this.jq(ID_TEXT).find(".display-raw-line");
+	    let lines =this.jq(ID_TEXT).find(".display-raw-line");
 	    lines.click(function() {
 		var idx = $(this).attr("recordIndex");
 		var record = _this.indexToRecord[idx];

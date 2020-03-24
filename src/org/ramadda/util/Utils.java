@@ -238,11 +238,23 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param l _more_
+     * @param c _more_
+     *
+     * @return _more_
+     */
     public static String appendList(String l, String c) {
-	if(l==null) l = "";
-	else if(l.length()>0) l+=",";
-	l+=c;
-	return l;
+        if (l == null) {
+            l = "";
+        } else if (l.length() > 0) {
+            l += ",";
+        }
+        l += c;
+
+        return l;
     }
 
     /**
@@ -2290,117 +2302,101 @@ public class Utils extends IO {
     public static List<StringBuilder> parseMultiLineCommandLine(
             String commandString) {
 
-        List<StringBuilder> lines = new ArrayList<StringBuilder>();
-        //        System.err.println(commandString);
-        StringBuilder sb         = null;
-        boolean       prevEscape = false;
-        int           bracketCnt = 0;
+        List<StringBuilder> lines      = new ArrayList<StringBuilder>();
+        StringBuilder       sb         = null;
+        boolean             inEscape   = false;
+        boolean             inBracket  = false;
+        boolean             inQuote    = false;
+        int                 bracketCnt = 0;
+        int                 quoteCnt   = 0;
         for (int i = 0; i < commandString.length(); i++) {
             char c = commandString.charAt(i);
             if (c == '\r') {
                 continue;
             }
-            boolean inEscape = prevEscape;
-            prevEscape = false;
-            if (c == '{') {
-                if (inEscape) {
-                    sb = append(c, sb, lines);
-
-                    continue;
-                }
-                //                if(bracketCnt>0) 
-                sb = append(c, sb, lines);
-                bracketCnt++;
-
-                continue;
-            }
-            if (c == '}') {
-                if (inEscape) {
-                    sb = append(c, sb, lines);
-
-                    continue;
-                }
-                bracketCnt--;
-                if (bracketCnt < 0) {
-                    throw new IllegalArgumentException("Unopened bracket:"
-                            + commandString);
-                }
-                //                if(bracketCnt>0) 
-                sb = append(c, sb, lines);
-
-                continue;
-            }
-
-            if (c == '\n') {
-                if ( !inEscape && (bracketCnt == 0)) {
-                    sb = null;
-                } else {
-                    sb = append(' ', sb, lines);
-                }
-
-                continue;
-            }
-
             if (inEscape) {
-                sb = append(c, sb, lines);
+                sb       = append(c, sb, lines);
+                inEscape = false;
 
                 continue;
             }
             if (c == '\\') {
-                prevEscape = true;
+                inEscape = true;
+
+                continue;
+            }
+            if (c == '{') {
+                if (inQuote) {
+                    sb = append(c, sb, lines);
+                } else {
+                    if ( !inBracket) {
+                        sb = null;
+                    } else {
+                        sb = append(c, sb, lines);
+                    }
+                    inBracket = true;
+                    bracketCnt++;
+                }
+
+                continue;
+            }
+            if (c == '}') {
+                if (inQuote) {
+                    sb = append(c, sb, lines);
+                } else {
+                    bracketCnt--;
+                    if (bracketCnt < 0) {
+                        throw new IllegalArgumentException(
+                            "Unopened bracket:" + commandString);
+                    }
+                    if (bracketCnt > 0) {
+                        sb = append(c, sb, lines);
+                    } else {
+                        if (sb == null) {
+                            append(' ', sb, lines);
+                        }
+                        inBracket = false;
+                        sb        = null;
+                    }
+                }
+
+                continue;
+            }
+            if (c == '\"') {
+                if (inBracket) {
+                    sb = append(c, sb, lines);
+                } else {
+                    if ( !inQuote) {
+                        inQuote = true;
+                    } else {
+                        if (sb == null) {
+                            append(' ', sb, lines);
+                        }
+                        sb      = null;
+                        inQuote = false;
+                    }
+                }
+
+                continue;
+            }
+
+            if ((c == '\n') || (c == ' ')) {
+                if ( !inQuote && !inBracket) {
+                    sb = null;
+                    if (c == '\n') {
+                        //Add in the new line if we're not in a block
+                        append('\n', sb, lines);
+                    }
+                } else {
+                    sb = append(c, sb, lines);
+                }
 
                 continue;
             }
             sb = append(c, sb, lines);
-
-            if (c == '{') {
-                bracketCnt++;
-            } else if (c == '}') {
-                bracketCnt--;
-            }
         }
-        //        System.err.println(lines);
-        if (true) {
-            return lines;
-        }
-
-        /*
-
-          List<String> toks = StringUtil.split(commandString, "\n", true,
-          true);
-          boolean priorLineContinues = false;
-          for (int i = 0; i < toks.size(); i++) {
-          String  line       = toks.get(i);
-          if(bracketCnt==0) {
-          StringBuilder sb = new StringBuilder();
-          for(int j=0;j<line.length();j++) {
-          char c = line.charAt(j);
-          if(c == '{') {
-          bracketCnt++;
-          } else if(c == '}') {
-          bracketCnt--;
-          }
-          }
-          }
-          boolean appendNext = false;
-          if (line.endsWith("\\")) {
-          appendNext = true;
-          line       = line.substring(0, line.length() - 1);
-          } else {
-          appendNext = false;
-          }
-          if (priorLineContinues) {
-          lines.get(lines.size() - 1).append(" ");
-          lines.get(lines.size() - 1).append(line);
-          } else {
-          lines.add(new StringBuilder(line));
-          }
-          priorLineContinues = appendNext;
-          }
-        */
 
         return lines;
-
     }
 
 
@@ -2692,11 +2688,13 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String s = "<th >Alabama</th><td >4,887,871</td>";
-        tokenizePattern(s, "(<td|<th)", "(</td|</th)");
-        //      tokenizeChunk(s, "<td", "</td");
+        String cmd = "-addheader {} -print";
+        cmd = "-change 0 \"[^0-9]+\" \"\"";
+        for (Object tok : parseMultiLineCommandLine(cmd)) {
+            System.err.println("\ttok:"
+                               + tok.toString().replaceAll("\n", "_NL_"));
+        }
     }
-
 
     /**
      * _more_
@@ -3559,68 +3557,80 @@ public class Utils extends IO {
     }
 
 
-  public static List<String> splitWithQuotes(String s) {
-    ArrayList<String> list = new ArrayList();
-    if (s == null) {
-      return list;
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static List<String> splitWithQuotes(String s) {
+        ArrayList<String> list = new ArrayList();
+        if (s == null) {
+            return list;
+        }
+        s = s.replaceAll("\\\\\"", "_quote_");
+        while (true) {
+            s = s.trim();
+            int qidx1 = s.indexOf("\"");
+            int qidx2 = s.indexOf("\"", qidx1 + 1);
+            int sidx1 = 0;
+            int sidx2 = s.indexOf(" ", sidx1 + 1);
+            if ((qidx1 < 0) && (sidx2 < 0)) {
+                if (s.length() > 0) {
+                    list.add(s);
+                }
+
+                break;
+            }
+            if ((qidx1 >= 0) && ((sidx2 == -1) || (qidx1 < sidx2))) {
+                if (qidx1 >= qidx2) {
+                    //Malformed string. Add the rest of the line and break
+                    if (qidx1 == 0) {
+                        s = s.substring(qidx1 + 1);
+                    } else if (qidx1 > 0) {
+                        s = s.substring(0, qidx1);
+                    }
+                    if (s.length() > 0) {
+                        list.add(s);
+                    }
+
+                    break;
+                }
+                if (qidx2 < 0) {
+                    //Malformed string. Add the rest of the line and break
+                    s = s.substring(1);
+                    list.add(s);
+
+                    break;
+                }
+                String tok = s.substring(qidx1 + 1, qidx2);
+                if (tok.length() > 0) {
+                    list.add(tok);
+                }
+                s = s.substring(qidx2 + 1);
+                //                System.err.println ("qtok:" + tok);
+            } else {
+                if (sidx2 < 0) {
+                    list.add(s);
+
+                    break;
+                }
+                String tok = s.substring(sidx1, sidx2);
+                if (tok.length() > 0) {
+                    list.add(tok);
+                }
+                s = s.substring(sidx2);
+                //                System.err.println ("stok:" + tok);
+            }
+        }
+        List<String> tmp = new ArrayList<String>();
+        for (String tmps : list) {
+            tmp.add(tmps.replaceAll("_quote_", "\""));
+        }
+
+        return tmp;
     }
-    s = s.replaceAll("\\\\\"","_quote_");
-    while (true) {
-      s = s.trim();
-      int qidx1 = s.indexOf("\"");
-      int qidx2 = s.indexOf("\"", qidx1 + 1);
-      int sidx1 = 0;
-      int sidx2 = s.indexOf(" ", sidx1 + 1);
-      if ((qidx1 < 0) && (sidx2 < 0)) {
-        if (s.length() > 0) {
-          list.add(s);
-        }
-        break;
-      }
-      if ((qidx1 >= 0) && ((sidx2 == -1) || (qidx1 < sidx2))) {
-        if (qidx1 >= qidx2) {
-          //Malformed string. Add the rest of the line and break
-          if (qidx1 == 0) {
-            s = s.substring(qidx1 + 1);
-          } else if (qidx1 > 0) {
-            s = s.substring(0, qidx1);
-          }
-          if (s.length() > 0) {
-            list.add(s);
-          }
-          break;
-        }
-        if (qidx2 < 0) {
-          //Malformed string. Add the rest of the line and break
-          s = s.substring(1);
-          list.add(s);
-          break;
-        }
-        String tok = s.substring(qidx1 + 1, qidx2);
-        if (tok.length() > 0) {
-          list.add(tok);
-        }
-        s = s.substring(qidx2 + 1);
-        //                System.err.println ("qtok:" + tok);
-      } else {
-        if (sidx2 < 0) {
-          list.add(s);
-          break;
-        }
-        String tok = s.substring(sidx1, sidx2);
-        if (tok.length() > 0) {
-          list.add(tok);
-        }
-        s = s.substring(sidx2);
-        //                System.err.println ("stok:" + tok);
-      }
-    }
-    List<String> tmp = new ArrayList<String>();
-    for(String tmps: list) {
-	tmp.add(tmps.replaceAll("_quote_","\""));
-    }
-    return tmp;
-  }
 
 
 

@@ -1,17 +1,21 @@
 
 
 var csvDbPopupTime;
+var csvEditor;
 
 function csvGetInput(force) {
     val= "";
     if($("#convertcsv_runok").is(':checked') || force) {
-        val =$('#convertcsv_input').val();
+	if(csvEditor)
+	    val = csvEditor.getValue();
+        else
+	    val =$('#convertcsv_input').val();
     }
     if(val == null) return "";
     return val.trim();
 }
 
-function csvDisplay(what, download,html) {
+function csvDisplay(what, process,html) {
     var command ="";
     lines = csvGetInput().split("\n");
     for(var i=0;i<lines.length;i++){
@@ -22,10 +26,10 @@ function csvDisplay(what, download,html) {
     }
     command = command.trim();
     if(what == null) {
-        csvCall(command  +" ", {download:download,html:html});
+        csvCall(command  +" ", {process:process,html:html});
     }  else {
 	if(what == "-raw") command = "";
-        csvCall(command, {download:download, csvoutput:what,html:html});
+        csvCall(command, {process:process, csvoutput:what,html:html});
     }
 }
 
@@ -86,17 +90,18 @@ function csvCall(cmds,args) {
     var doExplode = false;
     //Strip out the comments and anything after -quit
     for(var i=0;i<lines.length;i++) {
-        var line = lines[i].trim();
-        if(line.startsWith("#")) continue;
-        if(line.startsWith("-quit")) break;
-        if(line.startsWith("-explode")) {
+        var line = lines[i];
+	var tline = lines[i].trim();
+        if(tline.startsWith("#")) continue;
+        if(tline.startsWith("-quit")) break;
+        if(tline.startsWith("-explode")) {
             doExplode = true;
         }
         cleanCmds+=line+"\n";
     }
     cmds = cleanCmds;
     var rawInput = csvGetInput();
-    if((!args.download && !doExplode) || args.html) {
+    if((!args.process && !doExplode) || args.html) {
         //        maxRows = args.maxRows;
         //        if(!Utils.isDefined(maxRows))
         maxRows = $("#convertcsv_maxrows").val().trim();
@@ -114,8 +119,8 @@ function csvCall(cmds,args) {
 
     var url = csvGetUrl(cmds,rawInput);
 
-    if(args.download)
-        url += "&download=true";
+    if(args.process)
+        url += "&process=true";
     if($("#csvsave").is(':checked')) {
         url += "&save=true";        
     }
@@ -169,7 +174,7 @@ function csvCall(cmds,args) {
 		});
                 HtmlUtils.formatTable(".ramadda-table");
             } else {
-   
+  
                 var isDb = result.startsWith("<tables");
 		var isHeader = result.startsWith("#fields=");
 
@@ -358,6 +363,13 @@ function csvInsertCommand(cmds) {
 }
 
 function csvInsertText(text) {
+    if (csvEditor) {
+        var cursor = csvEditor.getCursorPosition();
+        csvEditor.insert(text);
+        csvEditor.focus();
+	return;
+    }
+
     var input = $('#convertcsv_input');
     var start = input.prop('selectionStart');
     var end = input.prop('selectionEnd');
@@ -400,15 +412,54 @@ function csvFlipInput(text) {
         val = csvGetInput(true);
     }
     if(val == null) val ="";
+    let inputId = "convertcsv_input";
     if (csvInputType == "textarea") {
         val = val.replace(/\n/g, " ");
-        html=HtmlUtil.input("",val,["size","120", "id","convertcsv_input"]) +" " + HtmlUtil.onClick("csvFlipInput()","Expand",[]);
+        html=HtmlUtil.input("",val,["size","120", "id",inputId]) +" " + HtmlUtil.onClick("csvFlipInput()","Expand",[]);
         csvInputType = "input";
     } else {
-        html=HtmlUtil.textarea("",val,["style","width:100%;xxfont-size:11pt;", "id","convertcsv_input", "rows", "10"]);
+        html=HtmlUtil.textarea("",val,["style","width:100%;xxfont-size:11pt;", "id",inputId, "rows", "5"]);
         csvInputType = "textarea";
     }
-    $("#convertcsv_input_container").html(html);
+
+    $("#convertcsv_input_container").append(html);
+    csvEditor = ace.edit(inputId);
+    csvEditor.setBehavioursEnabled(true);
+    csvEditor.setDisplayIndentGuides(false);
+    csvEditor.setKeyboardHandler("emacs");
+    csvEditor.setShowPrintMargin(false);
+    csvEditor.getSession().setUseWrapMode(true);
+    var options = {
+        autoScrollEditorIntoView: true,
+        copyWithEmptySelection: true,
+    };
+    csvEditor.setOptions(options);
+    csvEditor.session.setMode("ace/mode/csvconvert");
+    csvEditor.commands.addCommand({
+	name: "keyt",
+	exec: function() {
+	    csvDisplay('-table',null,true);
+	},
+	bindKey: {mac: "ctrl-t", win: "ctrl-t"}
+    })
+    csvEditor.commands.addCommand({
+	name: "keyh",
+	exec: function() {
+	    csvDisplay('-printheader',null,true);
+	},
+	bindKey: {mac: "ctrl-h", win: "ctrl-h"}
+    })
+
+
+    $("#convertcsv_input_container").keydown(function(e) {
+	if(e.ctrlKey) {
+	    let key = String.fromCharCode(event.keyCode ? event.keyCode : event.which).toLowerCase();	
+	    if(key == 't')
+		csvDisplay('-table',null,true);
+	    else if(key == 'h')
+		csvDisplay('-printheader',null,true);
+	}
+    });
 }
 
 
@@ -416,7 +467,11 @@ form="";
 //form+=HtmlUtil.input("","",["size","120", "id","convertcsv_input"]);
 form+=HtmlUtil.span(["id","convertcsv_input_container"],"");
 html = "";
-html += "<style type='text/css'>.ramadda-csv-table  {font-size:10pt;} </style>";
+html += "<style type='text/css'>.ramadda-csv-table  {font-size:10pt;}\n ";
+html += ".ace_editor {height:200px;}\n";
+html += ".ace_csv_comment {color:#B7410E;}\n";
+html += ".ace_csv_command {color:blue;}\n";
+html += "</style>";
 
 maxRows="Rows: " + HtmlUtil.input("","30",["size","5", "id","convertcsv_maxrows"]);
 fileSelect = HtmlUtil.href("javascript:void(0);",HtmlUtils.getIconImage("fa-file"),["title", "Select file", "style", "color:black", "onClick", "selectInitialClick(event,'convertcsv_file1','convertcsv_input','true','entry:entryid','" + convertCsvEntry+"');",  "id","convertcsv_file1_selectlink"]);
@@ -439,12 +494,11 @@ html += "<form>";
 html += form;
 html +="<div style='margin-top:5px;'></div>";
 var left = "";
-left+=HtmlUtil.href("javascript:csvDisplay('-printheader',null,true)","Header",["title", "Print the header", "class","convert_button"])+" ";
-left+=HtmlUtil.href("javascript:csvDisplay('-table',null,true)","Table",["title","Display output as a table", "class","convert_button"])+" ";
+left+=HtmlUtil.href("javascript:csvDisplay('-printheader',null,true)","Header",["title", "Print the header (ctrl-h)", "class","convert_button"])+" ";
+left+=HtmlUtil.href("javascript:csvDisplay('-table',null,true)","Table",["title","Display output as table (ctrl-t)", "class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('-record')","Records",["title","Display output as records", "class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('-print')","CSV",["title","Display CSV output","class","convert_button"])+" ";
-left+=HtmlUtil.href("javascript:csvDisplay('-raw')","Raw",["title", "Display raw output", "class","convert_button"])+" ";
-left+=HtmlUtil.href("javascript:csvDisplay()","Test Run",["title","Run the commands", "class","convert_button"])+" ";
+left+=HtmlUtil.href("javascript:csvDisplay('-raw')","Raw",["title", "Don't process. Just show the raw data", "class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('',true)","Process",["title","Process entire file", "class","convert_button"])+" ";
 var right = "";
 right+=HtmlUtil.href("javascript:csvClearCommand()","Clear Output",["class","convert_button"])+" ";
@@ -510,6 +564,7 @@ var jqxhr = $.getJSON( helpUrl, function(data) {
             select +=HtmlUtil.tag("option",["value", command,"title",tooltip],"&nbsp;&nbsp;&nbsp;" + label);
         });
         select += "</select>&nbsp;&nbsp;";
+
         $("#csv_commands").html(select);
         //                $(".ramadda-pulldown").selectBoxIt({});                                 
         $("#csv_command_select").change(function(evt) {

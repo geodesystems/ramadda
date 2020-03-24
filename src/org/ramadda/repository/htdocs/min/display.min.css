@@ -819,6 +819,12 @@ color: #000;
 }
 
 .display-table-inner {
+    text-align:center;
+
+}
+
+.google-visualization-table {
+    text-align:left;
 }
 
 .google-visualization-table-table th {

@@ -1404,7 +1404,7 @@ public abstract class Converter extends Processor {
         ScriptEngine engine;
 
         /** _more_ */
-        String names;
+        List<String> names;
 
         /** _more_ */
         Row headerRow;
@@ -1412,12 +1412,17 @@ public abstract class Converter extends Processor {
         /**
          *
          *
+         *
+         * @param js _more_
          * @param names _more_
          * @param code _more_
          */
-        public ColumnFunc(String names, String code) {
-            this.names = names;
-            this.code  = code;
+        public ColumnFunc(String js, String names, String code) {
+            this.names = StringUtil.split(names, ",", true, true);
+            if (code.indexOf("return ") >= 0) {
+                code = "function _tmp() {" + code + "}\n_tmp()";
+            }
+            this.code = code;
             try {
                 jdk.nashorn.api.scripting.ClassFilter cf =
                     new jdk.nashorn.api.scripting.ClassFilter() {
@@ -1429,6 +1434,9 @@ public abstract class Converter extends Processor {
                     new jdk.nashorn.api.scripting.NashornScriptEngineFactory()
                         .getScriptEngine(new String[] { "--no-java" }, null,
                                          cf);
+                if (js.trim().length() > 0) {
+                    engine.eval(js);
+                }
                 String testScript =
                     "print(java.lang.System.getProperty(\"java.home\"));"
                     + "print(\"Create file variable\");"
@@ -1457,7 +1465,7 @@ public abstract class Converter extends Processor {
             rowCnt++;
             if (rowCnt == 1) {
                 headerRow = new Row(row);
-                for (String s : StringUtil.split(names, ",", true, true)) {
+                for (String s : names) {
                     row.add(s);
                 }
 
@@ -1472,8 +1480,8 @@ public abstract class Converter extends Processor {
                     Object o   = row.get(i);
                     String var = hdr.get(i).toString();
                     var = Utils.makeID(var.toLowerCase());
-                    //              System.err.println(var +"=" + o);
-                    engine.put(var, o);
+                    engine.put("_" + var, o);
+                    engine.put("_" + var + "_idx", i);
                     engine.put("_col" + i, o);
                 }
                 engine.put("_header", hdr);
@@ -1482,6 +1490,17 @@ public abstract class Converter extends Processor {
 
                 // evaluate JavaScript code
                 Object o = engine.eval(code);
+                if (names.size() == 0) {
+                    if (o == null) {
+                        return row;
+                    }
+                    String s = o.toString();
+                    if (s.equals("false")) {
+                        return null;
+                    }
+
+                    return row;
+                }
                 if (o == null) {
                     return null;
                 }

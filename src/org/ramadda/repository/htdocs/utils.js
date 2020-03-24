@@ -1,7 +1,6 @@
 /**
- * Copyright (c) 2008-2019 Geode Systems LLC
- */
-
+ * Copyright (c) 2008-2020 Geode Systems LLC
+*/
 
 
 var root = ramaddaBaseUrl;
@@ -10,20 +9,16 @@ var icon_close = "fa-window-close";
 var icon_rightarrow = ramaddaBaseUrl + "/icons/grayrightarrow.gif";
 var icon_downdart = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_rightdart = ramaddaBaseUrl + "/icons/rightdart.gif";
-//var icon_downdart = ramaddaBaseUrl + "/icons/application_side_contract.png";
-//var icon_rightdart = ramaddaBaseUrl + "/icons/application_side_expand.png";
 var icon_progress = ramaddaBaseUrl + "/icons/progress.gif";
 var icon_wait = ramaddaBaseUrl + "/icons/wait.gif";
 var icon_information = ramaddaBaseUrl + "/icons/information.png";
 var icon_folderclosed = ramaddaBaseUrl + "/icons/folderclosed.png";
 var icon_folderopen = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
-
 var icon_tree_open = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
 var icon_tree_closed = ramaddaBaseUrl + "/icons/togglearrowright.gif";
 var icon_zoom = ramaddaBaseUrl + "/icons/magnifier.png";
 var icon_zoom_in = ramaddaBaseUrl + "/icons/magnifier_zoom_in.png";
 var icon_zoom_out = ramaddaBaseUrl + "/icons/magnifier_zoom_out.png";
-
 var icon_menuarrow = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_blank = ramaddaBaseUrl + "/icons/blank.gif";
 var icon_menu = ramaddaBaseUrl + "/icons/menu.png";
@@ -49,9 +44,6 @@ function getHandler(id) {
     }
     return window.globalHandlers[id];
 }
-
-
-
 
 var Utils = {
     pageLoaded: false,
@@ -2135,9 +2127,11 @@ var TFOOT = "tfoot";
 var TR = 'tr';
 var TD= 'td';
 var BR= 'br';
+var PRE = "pre";
 var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
+
 var TAG_IMG = "img";
 var TAG_INPUT = "input";
 var TAG_LI = "li";
@@ -2271,6 +2265,7 @@ var HU = HtmlUtils = {
         info.formId = formId;
         info.hidden = hidden;
 	info.editor.setBehavioursEnabled(false);
+	info.editor.setDisplayIndentGuides(false);
         info.editor.setKeyboardHandler("emacs");
         info.editor.setShowPrintMargin(false);
         info.editor.getSession().setUseWrapMode(true);

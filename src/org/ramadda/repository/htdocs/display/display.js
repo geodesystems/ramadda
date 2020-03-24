@@ -3404,7 +3404,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 
-
             if (fileMenuItems.length > 0)
                 menus.push("<a>File</a>" + HU.tag(TAG_UL, [], HU.join(fileMenuItems)));
             if (viewMenuItems.length > 0)

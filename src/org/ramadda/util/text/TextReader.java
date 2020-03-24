@@ -19,8 +19,6 @@ package org.ramadda.util.text;
 
 import org.ramadda.util.Utils;
 
-
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -29,7 +27,6 @@ import java.io.*;
 import java.io.File;
 
 import java.text.DateFormat;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
@@ -38,7 +35,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
 import java.util.regex.*;
 
 
@@ -194,6 +190,7 @@ public class TextReader implements Cloneable {
 
     /** _more_ */
     private CsvOperator currentOperator;
+
 
     /**
      * _more_
@@ -734,6 +731,7 @@ public class TextReader implements Cloneable {
 
 
 
+
     /**
      * _more_
      *
@@ -836,6 +834,15 @@ public class TextReader implements Cloneable {
         files.add(file);
 
         return file;
+    }
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     */
+    public void addFile(String file) {
+        files.add(file);
     }
 
     /**

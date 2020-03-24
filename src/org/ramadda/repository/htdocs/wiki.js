@@ -54,6 +54,7 @@ function insertText(id, value) {
         return;
     }
 
+
     var editor = HtmlUtils.getAceEditor(id);
     var textComp = GuiUtils.getDomObject(id);
     if (textComp || editor) {

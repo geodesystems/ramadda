@@ -3523,7 +3523,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else {
             msg = "Error:" + inner.getMessage();
         }
-
         return makeErrorResult(request, msg);
     }
 

@@ -112,6 +112,8 @@ public class CsvUtil {
     /** _more_ */
     private List<String> changeTo = new ArrayList<String>();
 
+    /** _more_          */
+    private StringBuilder js = new StringBuilder();
 
     /**
      * _more_
@@ -191,6 +193,7 @@ public class CsvUtil {
      */
     public void initWith(CsvUtil csvUtil) {
         this.comment = csvUtil.comment;
+        this.js      = csvUtil.js;
         //        this.delimiter = csvUtil.delimiter;
     }
 
@@ -273,7 +276,11 @@ public class CsvUtil {
      */
     public OutputStream getOutputStream() throws Exception {
         if (this.outputStream == null) {
-            this.outputStream = new FileOutputStream(this.outputFile);
+            if (textReader != null) {
+                textReader.getDestDir();
+                textReader.addFile(outputFile.toString());
+            }
+            this.outputStream = new FileOutputStream(outputFile);
         }
 
         return this.outputStream;
@@ -317,6 +324,9 @@ public class CsvUtil {
         List<String> extra     = new ArrayList<String>();
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
+            arg = arg.trim();
+            //      System.out.println("ARG:" + arg);
+            //      if(true) continue;
             if (arg.equals("-printargs")) {
                 System.out.print("java  org.ramadda.util.text.CsvUtil ");
                 printArgs = true;
@@ -912,7 +922,7 @@ public class CsvUtil {
                         + end);
             }
         }
-	//	System.out.println("***** FINAL:"+s);
+        //      System.out.println("***** FINAL:"+s);
         Pattern p = Pattern.compile(pattern);
         while (true) {
             Matcher m = p.matcher(s);
@@ -1719,6 +1729,7 @@ public class CsvUtil {
         new Cmd("-rowaverage", "", "(average the row values)"),
         new Cmd("-generate", "<label> <start> <step>", "(add row values)"),
         new Cmd("-decimals", "<col #> <how many decimals to round to>", ""),
+        new Cmd("-js", "<javascript>", "(define Javascript to use later)"),
         new Cmd("-func", "<name1,name2,...> <javascript expression>",
                 "(apply the function. use column names or _colN)"),
         new Cmd(
@@ -1889,6 +1900,7 @@ public class CsvUtil {
             pw.println("]}");
         }
         pw.flush();
+        pw.close();
     }
 
 
@@ -3213,13 +3225,23 @@ public class CsvUtil {
                     continue;
                 }
 
+                if (arg.equals("-js")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    js.append(args.get(++i));
+                    js.append("\n");
+
+                    continue;
+                }
+
                 if (arg.equals("-func")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
                     info.getProcessor().addProcessor(
                         new Converter.ColumnFunc(
-                            args.get(++i), args.get(++i)));
+                            js.toString(), args.get(++i), args.get(++i)));
 
                     continue;
                 }
@@ -3549,6 +3571,7 @@ public class CsvUtil {
 
 
                 boolean didone = false;
+                /*
                 for (String op : new String[] { "<=", ">=", "<", ">", "=" }) {
                     idx = arg.indexOf(op);
                     if (idx >= 0) {
@@ -3565,6 +3588,7 @@ public class CsvUtil {
                         break;
                     }
                 }
+                */
 
 
                 if (didone) {
@@ -3572,7 +3596,10 @@ public class CsvUtil {
                 }
 
                 if (addFiles) {
+                    System.err.println("File:" + arg);
                     files.add(arg);
+                } else {
+                    throw new IllegalArgumentException("Unknown arg:" + arg);
                 }
             } catch (Exception exc) {
                 System.err.println("Error processing arg:" + arg);

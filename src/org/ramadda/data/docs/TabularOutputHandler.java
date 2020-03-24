@@ -18,12 +18,10 @@ package org.ramadda.data.docs;
 
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.*;
 
@@ -34,40 +32,33 @@ import org.ramadda.service.*;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.GoogleChart;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
-
 import org.ramadda.util.XlsUtil;
-
 import org.ramadda.util.text.CsvUtil;
 import org.ramadda.util.text.Filter;
 import org.ramadda.util.text.Processor;
 import org.ramadda.util.text.SearchField;
 import org.ramadda.util.text.TextReader;
 
-
 import org.w3c.dom.*;
 
+
 import ucar.unidata.ui.ImageUtils;
-
-
-
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
-
 import java.awt.image.*;
 
 import java.io.*;
-import java.io.File;
 
 import java.net.*;
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -248,18 +239,20 @@ public class TabularOutputHandler extends OutputHandler {
                 (String) entry.getValue(TabularTypeHandler.IDX_CONVERT);
         }
         if (lastInput != null) {
-	    //A hack but escaping the escapes in java is a pain
+            //A hack but escaping the escapes in java is a pain
             lastInput = lastInput.replaceAll("\r\n", "_escnl_");
-	    lastInput = lastInput.replaceAll("\r", "_escnl_");
-	    lastInput = lastInput.replaceAll("\n", "_escnl_");
-	    lastInput = lastInput.replaceAll("\"", "_escquote_");
-	    lastInput = lastInput.replaceAll("\\\\", "_escslash_");
+            lastInput = lastInput.replaceAll("\r", "_escnl_");
+            lastInput = lastInput.replaceAll("\n", "_escnl_");
+            lastInput = lastInput.replaceAll("\"", "_escquote_");
+            lastInput = lastInput.replaceAll("\\\\", "_escslash_");
             js.append("var convertCsvLastInput =\"" + lastInput + "\";\n");
         } else {
             js.append("var convertCsvLastInput =null;\n");
         }
         HtmlUtils.script(sb, js.toString());
         sb.append(HtmlUtils.div("", HtmlUtils.id("convertcsv_div")));
+        HtmlUtils.importJS(
+            sb, getRepository().getHtdocsUrl("/lib/ace/src-min/ace.js"));
         HtmlUtils.importJS(sb,
                            getRepository().getUrlBase()
                            + "/media/convertcsv.js");
@@ -378,7 +371,7 @@ public class TabularOutputHandler extends OutputHandler {
             return new Result(s, "application/json");
         }
 
-        boolean download  = request.get("download", false);
+        boolean process   = request.get("process", false);
         boolean save      = request.get("save", false);
         String  lastInput = request.getString("lastinput", (String) null);
         if (lastInput != null) {
@@ -394,61 +387,69 @@ public class TabularOutputHandler extends OutputHandler {
 
 
 
+	List currentArgs= null;
         try {
             String processEntryId =
                 getStorageManager().getProcessDirEntryId(destDir.getName());
 
-            List<String> newFiles   = new ArrayList<String>();
-            String       lastResult = "";
-            Entry        theEntry   = entry;
-            String commandString    = request.getString("commands", "");
+            List<String>  newFiles      = new ArrayList<String>();
+            Entry         theEntry      = entry;
+            String        commandString = request.getString("commands", "");
 
-            List<StringBuilder> lines =
-                Utils.parseMultiLineCommandLine(commandString);
-
-            if ( !download) {
-                StringBuilder sb = new StringBuilder();
-                for (StringBuilder lineSB : lines) {
-                    String line = lineSB.toString().trim();
-                    if (line.length() == 0) {
-                        continue;
-                    }
-                    if (line.startsWith("#")) {
-                        continue;
-                    }
-                    sb.append(line);
-                    sb.append(" ");
+            StringBuilder tmp           = new StringBuilder();
+            //      System.err.println("commandString:" + commandString);
+            for (String line : StringUtil.split(commandString, "\n")) {
+                String tline = line.trim();
+                if (tline.startsWith("-quit")) {
+                    break;
                 }
-                lines = new ArrayList<StringBuilder>();
-                lines.add(sb);
+                if ( !tline.startsWith("#")) {
+                    tmp.append(line);
+                    tmp.append("\n");
+                }
             }
+            //      System.err.println("args:" + tmp);
+            List<StringBuilder> lines =
+                Utils.parseMultiLineCommandLine(tmp.toString());
 
-            if (lines.size() == 0) {
-                lines.add(new StringBuilder());
+            List<List<String>> llines  = new ArrayList<List<String>>();
+            List<String>       current = null;
+            for (StringBuilder sb : lines) {
+                String s = sb.toString();
+                if (s.equals("\n")) {
+                    current = null;
+
+                    continue;
+                }
+                if (current == null) {
+                    current = new ArrayList<String>();
+                    llines.add(current);
+                }
+                current.add(s);
+            }
+            if (llines.size() == 0) {
+                List<String> l = new ArrayList<String>();
+                llines.add(l);
             }
             if (request.defined("csvoutput")) {
-                lines.get(lines.size() - 1).append(" "
-                          + request.getString("csvoutput"));
+                llines.get(llines.size()
+                           - 1).add(request.getString("csvoutput"));
             }
             CsvUtil prevCsvUtil = null;
 
-
-            for (StringBuilder lineSB : lines) {
-                String line = lineSB.toString();
-                if (line.startsWith("#")) {
-                    continue;
-                }
-
-                List<String> args1 = Utils.parseCommandLine(line);
-                if (line.startsWith("-stop")) {
-                    break;
-                }
-                String runDirPrefix = request.getString("rundir", "run");
-                //                System.err.println("line:"+ line);
-                //                System.err.println("args:"+ args1);
-                List<String> args = new ArrayList<String>();
-                for (int i = 0; i < args1.size(); i++) {
-                    String arg = args1.get(i);
+            for (int i = 0; i < llines.size(); i++) {
+                List<String> args1 = llines.get(i);
+                //            for (StringBuilder lineSB : lines) {
+                //                String line = lineSB.toString();
+                //if(line.startsWith("#")) {
+                //  continue;
+                //}
+                //                List<String> args1 = Utils.parseCommandLine(line);
+                String       runDirPrefix = request.getString("rundir",
+                                                "run");
+                List<String> args         = new ArrayList<String>();
+                for (int j = 0; j < args1.size(); j++) {
+                    String arg = args1.get(j);
                     if (arg.startsWith("entry:")) {
                         Entry fileEntry =
                             getEntryManager().getEntry(request,
@@ -463,25 +464,28 @@ public class TabularOutputHandler extends OutputHandler {
                         }
                         arg = fileEntry.getFile().toString();
                     } else if (arg.equals("-run")) {
-                        runDirPrefix = args1.get(++i);
+                        runDirPrefix = args1.get(++j);
 
                         continue;
                     }
                     args.add(arg);
                 }
-                if (download) {
-                    if ( !args.contains("-print")
-                            && !args.contains("-explode")
-                            && !args.contains("-db")) {
-                        args.add("-print");
-                    }
+                if ( !args.contains("-print") && !args.contains("-explode")
+                        && !args.contains("-printheader")
+                        && !args.contains("-raw")
+                        && !args.contains("-record")
+                        && !args.contains("-table")
+                        && !args.contains("-db")) {
+                    args.add("-print");
                 }
 
+		currentArgs = args;
+
                 File runDir = null;
-                for (int i = 0; true; i++) {
-                    runDir = new File(IOUtil.joinDir(destDir, ((i == 0)
+                for (int j = 0; true; j++) {
+                    runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
                             ? runDirPrefix
-                            : (runDirPrefix + i))));
+                            : (runDirPrefix + j))));
                     if ( !runDir.exists()) {
                         //                        runDir.mkdir();
                         break;
@@ -496,11 +500,10 @@ public class TabularOutputHandler extends OutputHandler {
                 } else {
                     entries.add(theEntry);
                 }
-                if (download) {
+                if (process) {
                     request.put("applysiblings", "true");
                 }
                 newFiles = new ArrayList<String>();
-                //                System.err.println("args:" + args + " entries:"+ entries);
                 CsvUtil csvUtil = new CsvUtil(args, runDir);
                 if (prevCsvUtil != null) {
                     csvUtil.initWith(prevCsvUtil);
@@ -509,21 +512,20 @@ public class TabularOutputHandler extends OutputHandler {
                 getSessionManager().putSessionProperty(request, "csvutil",
                         csvUtil);
                 for (Entry e : entries) {
-                    lastResult = outputConvertProcessInner(request, e,
-                            csvUtil, destDir, runDir, args, newFiles);
+                    outputConvertProcessInner(request, e, csvUtil, destDir,
+                            runDir, args, newFiles);
                     if ( !csvUtil.getOkToRun()) {
                         break;
                     }
                 }
                 if ( !csvUtil.getOkToRun()) {
-                    lastResult = "stopped";
-                    String s = new String(
-					  Utils.encodeBase64(lastResult));
+                    String r = "stopped";
+                    String s = new String(Utils.encodeBase64(r));
                     s = Json.mapAndQuote("result", s);
 
                     return new Result(s, "application/json");
                 }
-                //                System.err.println(" new files:" + newFiles);
+
                 if (newFiles.size() > 0) {
                     File f = new File(newFiles.get(0));
                     String id =
@@ -536,69 +538,90 @@ public class TabularOutputHandler extends OutputHandler {
                 }
             }
 
+            String lastResult = "";
             if (newFiles.size() > 0) {
-                StringBuffer html = new StringBuffer();
-                for (String newFile : newFiles) {
-                    File f = new File(newFile);
-                    /*
-                    File dir = f.getParentFile();
-                    String xml = "<entry name=\"foo\"><description><![CDATA[Hello]]></description></entry>";
-                    IOUtil.writeFile(IOUtil.joinDir(dir,"." + f.getName() +".ramadda.xml"), xml);
-                    System.err.println(IOUtil.joinDir(dir,"." + f.getName() +".ramadda.xml"));
-                    */
+                if ( !process) {
+                    lastResult = IO.readContents(newFiles.get(0));
+                } else {
+                    StringBuffer html = new StringBuffer();
+                    for (String newFile : newFiles) {
+                        File f = new File(newFile);
+                        /*
+                          File dir = f.getParentFile();
+                          String xml = "<entry name=\"foo\"><description><![CDATA[Hello]]></description></entry>";
+                          IOUtil.writeFile(IOUtil.joinDir(dir,"." + f.getName() +".ramadda.xml"), xml);
+                          System.err.println(IOUtil.joinDir(dir,"." + f.getName() +".ramadda.xml"));
+                        */
 
-                    String id =
-                        getEntryManager().getProcessFileTypeHandler()
-                            .getSynthId(getEntryManager().getProcessEntry(),
-                                        getStorageManager().getProcessDir()
-                                            .toString(), f);
-                    String url =
-                        HtmlUtils.url(
-                            request.getAbsoluteUrl(
-                                getRepository().URL_ENTRY_SHOW), ARG_ENTRYID,
-                                    id);
+                        String id =
+                            getEntryManager().getProcessFileTypeHandler()
+                                .getSynthId(getEntryManager()
+                                    .getProcessEntry(), getStorageManager()
+                                    .getProcessDir().toString(), f);
+                        String url =
+                            HtmlUtils
+                                .url(request
+                                    .getAbsoluteUrl(getRepository()
+                                        .URL_ENTRY_SHOW), ARG_ENTRYID, id);
 
-
-                    if (newFile.endsWith(".csv")) {
+                        if (newFile.endsWith(".csv")) {
+                            //                        url += "&output=" + OUTPUT_CONVERT_FORM;
+                        }
+                        html.append(HtmlUtils.href(url, f.getName(),
+                                "target=_output"));
+                        String getUrl =
+                            HtmlUtils.url(
+                                request.makeUrl(
+                                    getRepository().URL_ENTRY_GET) + "/"
+                                        + f.getName(), ARG_ENTRYID, id);
+                        html.append("  ");
+                        html.append(HtmlUtils.href(getUrl, "Download"));
+                        if (request.getUser().getAdmin()) {
+                            html.append(" File on server: "
+                                        + HtmlUtils.input("", f));
+                        }
+                        //If they are creating point data then add an add entry link
+                        //                    if (newFile.endsWith(".csv") && args.contains("-addheader")) {
                         //                        url += "&output=" + OUTPUT_CONVERT_FORM;
+                        //                    }
+                        html.append("<br>");
                     }
-                    html.append(HtmlUtils.href(url, f.getName(), "target=_output"));
-                    String getUrl =   HtmlUtils.url(
-                                                    request.makeUrl(getRepository().URL_ENTRY_GET) + "/"
-                                                    + f.getName(), ARG_ENTRYID, id);
-                    html.append("  ");
-                    html.append(HtmlUtils.href(getUrl,"Download"));
-                    if(request.getUser().getAdmin()) {
-                        html.append(" File on server: " +HtmlUtils.input("",f));
-                    }
-                    //If they are creating point data then add an add entry link
-                    //                    if (newFile.endsWith(".csv") && args.contains("-addheader")) {
-                    //                        url += "&output=" + OUTPUT_CONVERT_FORM;
-                    //                    }
-                    html.append("<br>");
-                }
-                String urlParent =
-                    HtmlUtils.url(
-                        request.getAbsoluteUrl(
-                            getRepository().URL_ENTRY_SHOW), ARG_ENTRYID,
-                                getStorageManager().getEncodedProcessDirEntryId(destDir.getName()));
-                html.append(HtmlUtils.href(urlParent, "View All",
-                                           "target=_output"));
-                String s = Json.mapAndQuote("url",
-                                            html.toString().replaceAll("\"",
-                                                "\\\""));
+                    String urlParent =
+                        HtmlUtils
+                            .url(request
+                                .getAbsoluteUrl(
+                                    getRepository()
+                                        .URL_ENTRY_SHOW), ARG_ENTRYID,
+                                            getStorageManager()
+                                                .getEncodedProcessDirEntryId(
+                                                    destDir.getName()));
+                    html.append(HtmlUtils.href(urlParent, "View All",
+                            "target=_output"));
+                    String s = Json.mapAndQuote("url",
+                                   html.toString().replaceAll("\"", "\\\""));
 
-                return new Result(s, "application/json");
+                    return new Result(s, "application/json");
+                }
             }
-            String s = new String(Utils.encodeBase64(lastResult==null?"":lastResult));
+            String s = new String(Utils.encodeBase64((lastResult == null)
+                    ? ""
+                    : lastResult));
             s = Json.mapAndQuote("result", s);
 
             return new Result(s, "application/json");
         } catch (Exception exc) {
-            String s = new String(
-				  Utils.encodeBase64(exc.toString()));
+            Throwable inner = LogUtil.getInnerException(exc);
+            String    s     = inner.getMessage();
+            if (s == null) {
+                s = "Error" + inner;
+            }
+	    if(currentArgs!=null) {
+		//		s +="<br>Line:" + StringUtil.join(" ", currentArgs);
+		s +="<br>Line:" + currentArgs;
+	    }
+            s = new String(Utils.encodeBase64(s));
             s = Json.mapAndQuote("error", s);
-            exc.printStackTrace();
+            inner.printStackTrace();
 
             return new Result(s, "application/json");
 
@@ -621,35 +644,24 @@ public class TabularOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public String outputConvertProcessInner(Request request, Entry entry,
-                                            CsvUtil csvUtil, File destDir,
-                                            File runDir, List<String> args,
-                                            List<String> newFiles)
+    public void outputConvertProcessInner(Request request, Entry entry,
+                                          CsvUtil csvUtil, File destDir,
+                                          File runDir, List<String> args,
+                                          List<String> newFiles)
             throws Exception {
 
         try {
             List<String> files = new ArrayList<String>();
             files.add(entry.getResource().getPath());
-            OutputStream          os       = null;
-            ByteArrayOutputStream bos      = null;
-            File                  f        = null;
-            boolean               download = request.get("download", false);
-            if (download) {
-                f = getStorageManager().makeTmpFile(
-                    runDir,
-                    IOUtil.stripExtension(
-                        getStorageManager().getFileTail(
-                            entry.getResource().getPath())) + ".csv");
-            } else {
-                os = bos = new ByteArrayOutputStream();
-            }
-
-            //        System.err.println("file:" + f + " os:" + os);
-            csvUtil.setOutputStream(os);
+            File f = getStorageManager().makeTmpFile(
+                         runDir,
+                         IOUtil.stripExtension(
+                             getStorageManager().getFileTail(
+                                 entry.getResource().getPath())) + ".csv");
             csvUtil.setOutputFile(f);
             csvUtil.run(files);
             if ( !csvUtil.getOkToRun()) {
-                return "stopped";
+                return;
             }
             newFiles.addAll(csvUtil.getNewFiles());
             if (csvUtil.getNukeDb()) {
@@ -670,12 +682,6 @@ public class TabularOutputHandler extends OutputHandler {
                     }
                 }
             }
-            IOUtil.close(os);
-            if (download) {
-                return null;
-            }
-
-            return new String(bos.toByteArray());
         } finally {
             getSessionManager().removeSessionProperty(request, "csvutil");
         }
@@ -855,16 +861,12 @@ public class TabularOutputHandler extends OutputHandler {
                                       - 1);
         final int endCol  = Utils.getArg("-endcol", args, 1000) - 1;
         final int maxCols = Utils.getArg("-maxcols", args, 1000);
-
         final int maxRows = Utils.getArg("-maxrows", args, 50);
         final int startRow = Math.max(0, Utils.getArg("-startrow", args, 1)
                                       - 1);
         final int endRow = Utils.getArg("-endrow", args, startRow + 1000) - 1;
-
         //        System.err.println ("max rows:" + maxRows + "  startRow: " + startRow +" end row:" + endRow);
-
         final StringBuilder html           = new StringBuilder("");
-
         final StringBuilder sb             = new StringBuilder("");
         final String        colDelimiter   = doFile
                                              ? ","
@@ -1599,54 +1601,54 @@ public class TabularOutputHandler extends OutputHandler {
     }
 
     /*
-        Entry entry = null;
-        for (Entry e : input.getEntries()) {
-            if (isTabular(e)) {
-                entry = e;
+      Entry entry = null;
+      for (Entry e : input.getEntries()) {
+      if (isTabular(e)) {
+      entry = e;
 
-                break;
-            }
-        }
-        if (entry == null) {
-            throw new IllegalArgumentException("No tabular entry found");
-        }
+      break;
+      }
+      }
+      if (entry == null) {
+      throw new IllegalArgumentException("No tabular entry found");
+      }
 
-        HashSet<Integer> sheetsToShow = getSheetsToShow((String) args.get(0));
-        String name = getStorageManager().getFileTail(entry);
-        if ( !Utils.stringDefined(name)) {
-            name = entry.getName();
-        }
-        name = IOUtil.stripExtension(name);
+      HashSet<Integer> sheetsToShow = getSheetsToShow((String) args.get(0));
+      String name = getStorageManager().getFileTail(entry);
+      if ( !Utils.stringDefined(name)) {
+      name = entry.getName();
+      }
+      name = IOUtil.stripExtension(name);
 
-        File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                           name + ".csv"));
+      File newFile = new File(IOUtil.joinDir(input.getProcessDir(),
+      name + ".csv"));
 
-        String file = "";
-        InputStream inputStream = new BufferedInputStream(
-                                                          getStorageManager().getFileInputStream(file));
-        final TextReader info =
-            new TextReader(new BufferedInputStream(inputStream), new FileOutputStream(newFile));
-
-
-        TabularVisitor visitor = new TabularVisitor() {
-            public boolean visit(TabularVisitInfo info, String sheetName,
-                                 List<List<Object>> rows) {
-                return true;
-            }
-        };
-
-        TabularVisitInfo visitInfo =
-            new TabularVisitInfo(
-                request, entry, getSkipRows(request, entry),
-                getRowCount(request, entry, Integer.MAX_VALUE), sheetsToShow);
+      String file = "";
+      InputStream inputStream = new BufferedInputStream(
+      getStorageManager().getFileInputStream(file));
+      final TextReader info =
+      new TextReader(new BufferedInputStream(inputStream), new FileOutputStream(newFile));
 
 
-        visit(request, entry, visitInfo, visitor);
+      TabularVisitor visitor = new TabularVisitor() {
+      public boolean visit(TabularVisitInfo info, String sheetName,
+      List<List<Object>> rows) {
+      return true;
+      }
+      };
+
+      TabularVisitInfo visitInfo =
+      new TabularVisitInfo(
+      request, entry, getSkipRows(request, entry),
+      getRowCount(request, entry, Integer.MAX_VALUE), sheetsToShow);
 
 
-        return true;
+      visit(request, entry, visitInfo, visitor);
 
-    }
+
+      return true;
+
+      }
     */
 
     /**
