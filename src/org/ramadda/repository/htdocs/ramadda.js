@@ -650,6 +650,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 function selectClick(id, entryId, value) {
     selector = selectors[id];
     var handler = getHandler(id);
+    if(!handler) handler = getHandler(selector.elementId);
     if (handler) {
         handler.selectClick(selector.selecttype, id, entryId, value);
         selectCancel();

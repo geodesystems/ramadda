@@ -450,6 +450,11 @@ function csvFlipInput(text) {
 	bindKey: {mac: "ctrl-h", win: "ctrl-h"}
     })
 
+    addHandler({
+        selectClick: function(selecttype, id, entryId, value) {
+	    csvInsertText("entry:" + entryId);
+	}
+    },inputId);
 
     $("#convertcsv_input_container").keydown(function(e) {
 	if(e.ctrlKey) {
