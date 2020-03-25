@@ -25,6 +25,7 @@ function csvDisplay(what, process,html) {
         command +="\n";
     }
     command = command.trim();
+    if(what!="-raw" && command.indexOf("-template ")>=0) what = "";
     if(what == null) {
         csvCall(command  +" ", {process:process,html:html});
     }  else {
