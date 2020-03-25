@@ -470,11 +470,12 @@ public class TabularOutputHandler extends OutputHandler {
                     args.add(arg);
                 }
                 if ( !args.contains("-print") && !args.contains("-explode")
-                        && !args.contains("-printheader")
-                        && !args.contains("-raw")
-                        && !args.contains("-record")
-                        && !args.contains("-table")
-                        && !args.contains("-db")) {
+		     && !args.contains("-printheader")
+		     && !args.contains("-template")
+		     && !args.contains("-raw")
+		     && !args.contains("-record")
+		     && !args.contains("-table")
+		     && !args.contains("-db")) {
                     args.add("-print");
                 }
 		currentArgs = args;

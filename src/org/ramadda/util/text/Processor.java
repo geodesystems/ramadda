@@ -1067,6 +1067,15 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         private String template;
 
+        /** _more_          */
+        private String prefix;
+
+        /** _more_          */
+        private String delimiter;
+
+        /** _more_          */
+        private String suffix;
+
         /** _more_ */
         private boolean addPointHeader = false;
 
@@ -1077,10 +1086,18 @@ rotate -> pass -> pass -> rotate -> pass
         /**
          * ctor
          *
+         *
+         * @param prefix _more_
          * @param template _more_
+         * @param delimiter _more_
+         * @param suffix _more_
          */
-        public Printer(String template) {
-            this.template = template;
+        public Printer(String prefix, String template, String delimiter,
+                       String suffix) {
+            this.prefix    = prefix;
+            this.template  = template;
+            this.delimiter = delimiter;
+            this.suffix    = suffix;
         }
 
         /**
@@ -1173,6 +1190,25 @@ rotate -> pass -> pass -> rotate -> pass
         }
 
 
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+            if (suffix != null) {
+                info.getWriter().print(suffix);
+            }
+
+            return rows;
+        }
+
 
 
         /**
@@ -1187,7 +1223,13 @@ rotate -> pass -> pass -> rotate -> pass
          */
         private void handleRow(TextReader info, PrintWriter writer, Row row)
                 throws Exception {
-            boolean first         = rowCnt++ == 0;
+            boolean first = rowCnt++ == 0;
+            if (first && (prefix != null)) {
+                writer.print(prefix);
+            }
+            if ( !first && (delimiter != null)) {
+                writer.print(delimiter);
+            }
             String  theTemplate   = template;
             List    values        = row.getValues();
             boolean escapeColumns = true;
@@ -1241,6 +1283,8 @@ rotate -> pass -> pass -> rotate -> pass
         }
 
 
+
+
         /**
          * _more_
          *
@@ -1254,6 +1298,10 @@ rotate -> pass -> pass -> rotate -> pass
         public void writeCsv(TextReader info, PrintWriter writer,
                              List<Row> rows)
                 throws Exception {
+            if (prefix != null) {
+                writer.print(prefix);
+            }
+
             if (addPointHeader) {
                 Row header = rows.get(0);
                 rows.remove(0);
@@ -1265,9 +1313,14 @@ rotate -> pass -> pass -> rotate -> pass
             }
 
             for (int i = 0; i < rows.size(); i++) {
+                if ((i > 0) && (delimiter != null)) {
+                    writer.print(delimiter);
+                }
                 Row row = rows.get(i);
                 handleRow(info, writer, row);
-
+            }
+            if (suffix != null) {
+                writer.print(suffix);
             }
         }
 
