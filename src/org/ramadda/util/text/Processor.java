@@ -221,7 +221,6 @@ public abstract class Processor extends CsvOperator {
     public Row processRow(TextReader info, Row row, String line)
             throws Exception {
         info.setCurrentOperator(null);
-
         return row;
     }
 
@@ -2590,17 +2589,15 @@ rotate -> pass -> pass -> rotate -> pass
     public static class Dups extends RowCollector {
 
         /** _more_ */
-        private List<String> toks;
-
-
+        private List<String> columns;
 
         /**
          * _more_
          *
-         * @param toks _more_
+         * @param columns _more_
          */
-        public Dups(List<String> toks) {
-            this.toks = toks;
+        public Dups(List<String> columns) {
+            this.columns = columns;
         }
 
 
@@ -2619,11 +2616,10 @@ rotate -> pass -> pass -> rotate -> pass
                 throws Exception {
             List<Row>     newRows = new ArrayList<Row>();
             List<Row>     allRows = getRows();
-            List<Integer> cols    = Utils.toInt(toks);
+            List<Integer> cols    = Utils.toInt(columns);
             newRows.add(allRows.get(0));
             Hashtable<String, Row> seen     = new Hashtable<String, Row>();
             HashSet                seenKeys = new HashSet();
-
             for (int i = 1; i < allRows.size(); i++) {
                 Row    row = allRows.get(i);
                 String key = "";
@@ -2632,7 +2628,6 @@ rotate -> pass -> pass -> rotate -> pass
                 }
                 if (seenKeys.contains(key)) {
                     newRows.add(row);
-
                     continue;
                 }
                 Row seenRow = seen.get(key);

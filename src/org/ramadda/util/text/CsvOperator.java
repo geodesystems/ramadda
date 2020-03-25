@@ -129,8 +129,7 @@ public abstract class CsvOperator {
      */
     public String getDescription() {
         String className = getClass().getName();
-
-        return className.replace("org.ramadda.util.text.", "");
+        return className.replace("org.ramadda.util.text.", "").replaceAll("^[^\\$]+\\$","");
     }
 
 

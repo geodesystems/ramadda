@@ -16,11 +16,6 @@
 
 package org.ramadda.util.text;
 
-
-import org.json.*;
-
-
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
@@ -31,12 +26,12 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-import java.io.*;
+import org.json.*;
 
+import java.io.*;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -70,6 +65,9 @@ public class CsvUtil {
     /** _more_ */
     private TextReader textReader;
 
+    private String currentArg;
+    private Row currentRow;
+    
     /** _more_ */
     private String errorDescription;
 
@@ -297,7 +295,29 @@ public class CsvUtil {
      * @throws Exception _more_
      */
     public void run(List<String> files) throws Exception {
+	try {
+	    runInner(files);
+	} catch(Exception exc) {
+	    CsvOperator op = (textReader == null)
+		? null
+		: textReader.getCurrentOperator();
+	    System.err.println("error tr:" + textReader);
+	    System.err.println("error op:" + op);
+            if (op != null) {
+                errorDescription = "Error processing text with operator: "
+                                   + op.getDescription();
+            } else if(currentArg!=null) {
+                errorDescription = "Error processing argument:" + currentArg;
+	    }
+	    if(currentRow!=null) {
+		errorDescription+= "\nRow:"+ currentRow.getValues()+"\n";
 
+	    }
+	    throw exc;
+	}
+    }
+
+    private void runInner(List<String> files) throws Exception {
         if (files == null) {
             files = new ArrayList<String>();
         }
@@ -312,7 +332,6 @@ public class CsvUtil {
 
         String       prepend       = null;
         textReader = new TextReader(destDir, outputFile, outputStream);
-
 
         boolean      printArgs = false;
         List<String> extra     = new ArrayList<String>();
@@ -408,8 +427,10 @@ public class CsvUtil {
 
         List<List<Row>> rows = new ArrayList<List<Row>>();
         if ( !parseArgs(extra, textReader, files, rows)) {
+	    currentArg = null;
             return;
         }
+	currentArg = null;
         if (printArgs) {
             for (String f : files) {
                 System.out.print(f + " ");
@@ -1240,6 +1261,7 @@ public class CsvUtil {
             CsvOperator op = (textReader == null)
                              ? null
                              : textReader.getCurrentOperator();
+	    System.err.println("error:" + op);
             if (op != null) {
                 errorDescription = "Error processing text with operator: "
                                    + op.getDescription();
@@ -1375,7 +1397,9 @@ public class CsvUtil {
         }
         if (textReader.getProcessor() != null) {
             textReader.setCurrentOperator(null);
+	    currentRow = row;
             row = textReader.getProcessor().processRow(textReader, row, line);
+	    currentRow = null;
             if ( !textReader.getOkToRun()) {
                 return false;
             }
@@ -1639,36 +1663,32 @@ public class CsvUtil {
         new Cmd("-notcolumns", "Don't include the given columns",
                 new Arg("columns")),
         new Cmd("-skip", "Skip number of rows",
-                new Arg("rows", "e.g.,2-3,5,8")),
-        new Cmd("-start", "Start at pattern in source file", "start pattern"),
-        new Cmd("-stop", "End at pattern in source file", "stop pattern"),
+                new Arg("rows", "How many rows to skip")),
         new Cmd("-cut", "Delete rows",
-                new Arg("rows", "one or more rows. -1 to the end")),
-        new Cmd("-include", "Only include specified rows",
-                new Arg("rows", "one or more rows, -1 to the end")),
+                new Arg("rows", "One or more rows. -1 to the end. e.g., 0-3,5,10,-1")),
+        new Cmd("-include", "Only include specified rows", new Arg("rows", "one or more rows, -1 to the end")),
         new Cmd("-copy", "Copy column", new Arg("column"), "name"),
         new Cmd("-delete", "Remove the columns", new Arg("columns")),
-        new Cmd("-insert", "Insert new column values", new Arg("column"),
-                new Arg("values", "comma separated values")),
+        new Cmd("-insert", "Insert new column values", new Arg("column","Columns # to insert after"),
+		new Arg("values", "Single value or comma separated for multiple rows")),
         new Cmd("-shift", "Shift columns over by count for given rows",
-                "rows", new Arg("column"), new Arg("count")),
-        new Cmd("-addcell", "", new Arg("row"), new Arg("column"), "value"),
-        new Cmd("-deletecell", "", new Arg("row"), new Arg("column")),
+                new Arg("rows"), new Arg("column","Column to start at"), new Arg("count")),
+        new Cmd("-addcell", "Add a new cell at row/column", new Arg("row"), new Arg("column"), "value"),
+        new Cmd("-deletecell", "Delete cell at row/column", new Arg("row"), new Arg("column")),
         new Cmd("-mergerows", "", new Arg("rows", "2 or more rows"),
                 new Arg("delimiter"), new Arg("close")),
-        new Cmd("-rotate", ""),
+        new Cmd("-rotate", "Rotate the data"),
         new Cmd("-flip", "Reverse the order of the rows except the header"),
         new Cmd("-unfurl", "Make columns from data values",
                 new Arg("columns", "column to get new column header#"),
                 new Arg("value columns", ""), "unique col", "other columns"),
         new Cmd("-furl", "Use values in header to make new row", "cols",
                 "header label", "value label"),
-        new Cmd("-explode", "Mke separate files based on value of column",
+        new Cmd("-explode", "Make separate files based on value of column",
                 new Arg("column")),
         new Cmd("-concat", "Create a new column from the given columns",
                 new Arg("columns"), "delimiter"),
-        //        new Cmd("-bin", "", "unique col #s","value columns"),
-        new Cmd("-split", "Split the column", new Arg("column"), "delimiter",
+        new Cmd("-split", "Split the column", new Arg("column"), new Arg("delimiter","What to split on"),
                 new Arg("names", "comma separated new column names")),
         new Cmd("-splat",
                 "Create a new column from the values in the given column",
@@ -1678,11 +1698,13 @@ public class CsvUtil {
                 new Arg("value_columns", "value columns"), "file",
                 new Arg("source_columns", "source key columns")),
         new Cmd(true, "Filter"),
+        new Cmd("-start", "Start at pattern in source file", "start pattern"),
+        new Cmd("-stop", "End at pattern in source file", "stop pattern"),
         new Cmd("-rawlines", "",
                 new Arg("lines",
                         "How many lines to pass through unprocesed")),
-        new Cmd("-min", "", "min # columns"),
-        new Cmd("-max", "", "max # columns"),
+        new Cmd("-min", "Only pass thorough lines that have at least this number of columns", "min # columns"),
+        new Cmd("-max", "Only pass through lines that have no more than this number of columns", "max # columns"),
         new Cmd("-unique", "Pass through unique values", new Arg("columns")),
         new Cmd("-dups", "Pass through duplicate values", new Arg("columns")),
         new Cmd("-pattern", "Pass through rows that match the pattern",
@@ -1691,7 +1713,15 @@ public class CsvUtil {
                 "Pass through rows that don't match the pattern",
                 new Arg("column"), "regexp pattern"),
         new Cmd("-maxvalue", "", "key column", "value column"),
-        new Cmd("-gt|-ge|-lt|-le", "extract rows that pass the expression",
+        new Cmd("-eq", "extract rows that pass the expression",
+                new Arg("column"), new Arg("value")),
+        new Cmd("-gt", "extract rows that pass the expression",
+                new Arg("column"), new Arg("value")),
+	new Cmd("-ge", "extract rows that pass the expression",
+                new Arg("column"), new Arg("value")),
+        new Cmd("-lt", "extract rows that pass the expression",
+                new Arg("column"), new Arg("value")),
+        new Cmd("-le", "extract rows that pass the expression",
                 new Arg("column"), new Arg("value")),
         new Cmd("-before", "", new Arg("column"), new Arg("format"),
                 new Arg("date"), new Arg("format2")),
@@ -1741,9 +1771,9 @@ public class CsvUtil {
                 new Arg("prefix")),
         new Cmd("-suffix", "Add suffix to column", new Arg("column"),
                 "suffix"),
-        new Cmd("-js", "Define Javascript to use later", "javascript"),
-        new Cmd("-func", "Apply the function. use column names or _colN",
-                "newcol1,newcol,...", "javascript expression"),
+        new Cmd("-js", "Define Javascript to use later", new Arg("javascript","","rows","6")),
+        new Cmd("-func", "Apply the function. Use column names or _colN",
+                new Arg("new column names", "col1,col2,..."), new Arg("javascript", "javascript expression","size","60")),
         new Cmd("-endswith", "Ensure that each column ends with the string",
                 new Arg("column"), new Arg("string")),
         new Cmd("-trim", "", new Arg("columns")),
@@ -2100,6 +2130,7 @@ public class CsvUtil {
 
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
+	    currentArg = arg;
             try {
                 if (arg.equals("-html")) {
                     if ( !ensureArg(args, i, 1)) {
@@ -2401,9 +2432,9 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    List<String> toks = getCols(args.get(++i));
+                    List<String> cols = getCols(args.get(++i));
                     info.getProcessor().addProcessor(
-                        new Processor.Dups(toks));
+                        new Processor.Dups(cols));
 
                     continue;
                 }
@@ -3571,7 +3602,20 @@ public class CsvUtil {
                     continue;
                 }
 
-                if (arg.equals("-lt")) {
+                if (arg.equals("-eq")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    handlePattern(info, filterToAddTo,
+                                  new Filter.ValueFilter(args.get(++i),
+                                      Filter.ValueFilter.OP_EQUALS,
+                                      Double.parseDouble(args.get(++i))));
+
+                    continue;
+                }
+
+
+		if (arg.equals("-lt")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
@@ -3694,7 +3738,6 @@ public class CsvUtil {
                 }
             } catch (Exception exc) {
                 System.err.println("Error processing arg:" + arg);
-
                 throw exc;
             }
         }

@@ -387,7 +387,8 @@ public class TabularOutputHandler extends OutputHandler {
 
 
 
-	List currentArgs= null;
+        List    currentArgs = null;
+        CsvUtil csvUtil     = null;
         try {
             String processEntryId =
                 getStorageManager().getProcessDirEntryId(destDir.getName());
@@ -409,15 +410,20 @@ public class TabularOutputHandler extends OutputHandler {
                 }
             }
             //      System.err.println("args:" + tmp);
-            List<StringBuilder> lines =
+
+            List<StringBuilder> toks =
                 Utils.parseMultiLineCommandLine(tmp.toString());
 
             List<List<String>> llines  = new ArrayList<List<String>>();
             List<String>       current = null;
-            for (StringBuilder sb : lines) {
+            for (StringBuilder sb : toks) {
                 String s = sb.toString();
-		if (s.equals(Utils.MULTILINE_END)) {
-                    current = null;
+                //If we are doing the full process then keep the line separation
+                if (s.equals(Utils.MULTILINE_END)) {
+                    if (process) {
+                        current = null;
+                    }
+
                     continue;
                 }
                 if (current == null) {
@@ -437,13 +443,7 @@ public class TabularOutputHandler extends OutputHandler {
             CsvUtil prevCsvUtil = null;
 
             for (int i = 0; i < llines.size(); i++) {
-                List<String> args1 = llines.get(i);
-                //            for (StringBuilder lineSB : lines) {
-                //                String line = lineSB.toString();
-                //if(line.startsWith("#")) {
-                //  continue;
-                //}
-                //                List<String> args1 = Utils.parseCommandLine(line);
+                List<String> args1        = llines.get(i);
                 String       runDirPrefix = request.getString("rundir",
                                                 "run");
                 List<String> args         = new ArrayList<String>();
@@ -470,16 +470,16 @@ public class TabularOutputHandler extends OutputHandler {
                     args.add(arg);
                 }
                 if ( !args.contains("-print") && !args.contains("-explode")
-		     && !args.contains("-printheader")
-		     && !args.contains("-template")
-		     && !args.contains("-raw")
-		     && !args.contains("-record")
-		     && !args.contains("-table")
-		     && !args.contains("-db")) {
+                        && !args.contains("-printheader")
+                        && !args.contains("-template")
+                        && !args.contains("-raw")
+                        && !args.contains("-record")
+                        && !args.contains("-table")
+                        && !args.contains("-db")) {
                     args.add("-print");
                 }
-		currentArgs = args;
-		System.err.println("args:" + args);
+                currentArgs = args;
+                System.err.println("args:" + args);
                 File runDir = null;
                 for (int j = 0; true; j++) {
                     runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
@@ -503,7 +503,7 @@ public class TabularOutputHandler extends OutputHandler {
                     request.put("applysiblings", "true");
                 }
                 newFiles = new ArrayList<String>();
-                CsvUtil csvUtil = new CsvUtil(args, runDir);
+                csvUtil  = new CsvUtil(args, runDir);
                 if (prevCsvUtil != null) {
                     csvUtil.initWith(prevCsvUtil);
                 }
@@ -511,8 +511,8 @@ public class TabularOutputHandler extends OutputHandler {
                 getSessionManager().putSessionProperty(request, "csvutil",
                         csvUtil);
                 for (Entry e : entries) {
-                    outputConvertProcessInner(request, process, e, csvUtil, destDir,
-                            runDir, args, newFiles);
+                    outputConvertProcessInner(request, process, e, csvUtil,
+                            destDir, runDir, args, newFiles);
                     if ( !csvUtil.getOkToRun()) {
                         break;
                     }
@@ -611,13 +611,17 @@ public class TabularOutputHandler extends OutputHandler {
         } catch (Exception exc) {
             Throwable inner = LogUtil.getInnerException(exc);
             String    s     = inner.getMessage();
-            if (s == null) {
-                s = "Error" + inner;
+            //Better messaging
+            if (inner instanceof NumberFormatException) {
+                s = "Number format error " + s.replace("For", "for");
             }
-	    if(currentArgs!=null) {
-		//		s +="<br>Line:" + StringUtil.join(" ", currentArgs);
-		s +="<br>Line:" + currentArgs;
-	    }
+            if ((csvUtil != null)
+                    && (csvUtil.getErrorDescription() != null)) {
+                s = csvUtil.getErrorDescription() + " " + s;
+            }
+            if (s == null) {
+                s = "Error: " + inner;
+            }
             s = new String(Utils.encodeBase64(s));
             s = Json.mapAndQuote("error", s);
             inner.printStackTrace();
@@ -625,14 +629,14 @@ public class TabularOutputHandler extends OutputHandler {
             return new Result(s, "application/json");
 
         }
-
     }
 
     /**
      * _more_
      *
      * @param request _more_
-     *         @param entry _more_
+     * @param process _more_
+     * @param entry _more_
      * @param csvUtil _more_
      * @param destDir _more_
      * @param runDir _more_
@@ -643,9 +647,10 @@ public class TabularOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public void outputConvertProcessInner(Request request, boolean process, Entry entry,
-                                          CsvUtil csvUtil, File destDir,
-                                          File runDir, List<String> args,
+    public void outputConvertProcessInner(Request request, boolean process,
+                                          Entry entry, CsvUtil csvUtil,
+                                          File destDir, File runDir,
+                                          List<String> args,
                                           List<String> newFiles)
             throws Exception {
 

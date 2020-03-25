@@ -74,11 +74,13 @@ public class MsDocTypeHandler extends GenericTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
         super.initializeNewEntry(request, entry, fromImport);
         initializeDocEntry(request, entry);

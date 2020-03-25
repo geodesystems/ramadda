@@ -157,12 +157,8 @@ public abstract class Converter extends Processor {
                     result.add(s);
                 }
             }
-
-            //          System.out.println("i:" + indices +" before:" + row.size() + " result:" + result);
-            //          System.err.println("COLS:" + result);
             return new Row(result);
         }
-
     }
 
 
@@ -179,9 +175,6 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
-         *
          * @param cols _more_
          */
         public ColumnNotSelector(List<String> cols) {
@@ -189,12 +182,7 @@ public abstract class Converter extends Processor {
         }
 
 
-
         /**
-         *
-         *
-         *
-         *
          *
          * @param info _more_
          * @param row _more_
@@ -4236,12 +4224,8 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnInserter extends Converter {
 
-        /* */
-
         /** _more_ */
         private int col;
-
-        /* */
 
         /** _more_ */
         private List<String> values;
@@ -4260,11 +4244,6 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param info _more_
          * @param row _more_
          * @param line _more_
@@ -4280,7 +4259,7 @@ public abstract class Converter extends Processor {
                 v = values.get(values.size() - 1);
             }
             rowCnt++;
-            if (col < 0) {
+            if (col < 0 || col>row.getValues().size()) {
                 row.getValues().add(v);
             } else {
                 row.getValues().add(col, v);
