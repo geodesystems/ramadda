@@ -21,6 +21,7 @@ function csvDisplay(what, process,html) {
     for(var i=0;i<lines.length;i++){
         line = lines[i].trim();
         if(line =="") continue;
+	if(line.startsWith("#")) continue;
         command +=line;
         command +="\n";
     }
@@ -115,8 +116,8 @@ function csvCall(cmds,args) {
     if(!doExplode &&  cmds.indexOf("-count")<0  && cmds.indexOf("-db") <0 && !haveOutput)  
         args.csvoutput = "-print";
 
-    var showHtml = args.csvoutput == ("-table");
-    var printHeader = args.csvoutput == ("-printheader");
+    var showHtml = args.csvoutput == "-table";
+    var printHeader = args.csvoutput == "-printheader";
 
     var url = csvGetUrl(cmds,rawInput);
 
@@ -173,7 +174,7 @@ function csvCall(cmds,args) {
 		    var index = $(this).attr("index").replace("#","").trim();
 		    csvInsertText(index+",");
 		});
-                HtmlUtils.formatTable(".ramadda-table");
+                HtmlUtils.formatTable(".ramadda-table",{scrollY:200});
             } else {
   
                 var isDb = result.startsWith("<tables");
@@ -377,7 +378,7 @@ function csvAddCommand(cmd) {
 	}
     });
     inner+=HU.formTableClose();
-    inner += HU.div([STYLE,HU.css("display","inline-block"), ID,"csvaddcommand"],"Add Command") +SPACE2+HU.div([STYLE,HU.css("display","inline-block"), ID,"csvcancelcommand"],"Cancel");
+    inner += HU.div([STYLE,HU.css("margin-top","5px")], HU.center(HU.div([STYLE,HU.css("display","inline-block"), ID,"csvaddcommand"],"Add Command") +SPACE2+HU.div([STYLE,HU.css("display","inline-block"), ID,"csvcancelcommand"],"Cancel")));
     let html = header +HU.div([STYLE,"margin:8px;"],inner);
 
     let dialog = $("#csvdialog");
@@ -455,7 +456,7 @@ function csvRunCommand(force) {
 var         csvInputType = "input";
 
 function csvFlipInput(text) {
-    html = "";
+    let html = "";
     var val = null;
     if(text!=null) {
         text = text.replace(/_escnl_/g,"\n");
@@ -471,14 +472,18 @@ function csvFlipInput(text) {
     let inputId = "convertcsv_input";
     if (csvInputType == "textarea") {
         val = val.replace(/\n/g, " ");
-        html=HtmlUtil.input("",val,["size","120", "id",inputId]) +" " + HtmlUtil.onClick("csvFlipInput()","Expand",[]);
+        html+=HtmlUtil.input("",val,["size","120", "id",inputId]) +" " + HtmlUtil.onClick("csvFlipInput()","Expand",[]);
         csvInputType = "input";
     } else {
-        html=HtmlUtil.textarea("",val,["style","width:100%;xxfont-size:11pt;", "id",inputId, "rows", "5"]);
+        html+=HtmlUtil.textarea("",val,["style","width:100%;", "id",inputId, "rows", "5"]);
         csvInputType = "textarea";
     }
 
+
+
+
     $("#convertcsv_input_container").append(html);
+   
     csvEditor = ace.edit(inputId);
     csvEditor.setBehavioursEnabled(true);
     csvEditor.setDisplayIndentGuides(false);
@@ -530,8 +535,8 @@ form+=HtmlUtil.span(["id","convertcsv_input_container"],"");
 html = "";
 html+=HU.div([STYLE,HU.css('position','relative')],
 	     HU.div([ID,"csvdialog",CLASS,"ramadda-popup"]));
-html += "<style type='text/css'>.ramadda-csv-table  {font-size:10pt;}\n ";
-html += ".ace_editor {height:200px;}\n";
+html += "<style type='text/css'>.convert_button {padding:2px;padding-left:5px;padding-right:5px;}\n.ramadda-csv-table  {font-size:10pt;}\n ";
+html += ".ace_editor {margin-bottom:5px;height:200px;}\n";
 html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
 html += ".ace_csv_comment {color:#B7410E;}\n";
 html += ".ace_csv_command {color:blue;}\n";
@@ -555,8 +560,8 @@ html += HtmlUtil.checkbox("",["id","convertcsv_runok"],true) +" Do commands";
 html += "&nbsp;&nbsp;";
 html +="</td></tr></table>";
 html += "<form>";
+
 html += form;
-html +="<div style='margin-top:5px;'></div>";
 var left = "";
 left+=HtmlUtil.href("javascript:csvDisplay('-printheader',null,true)","Header",["title", "Print the header (ctrl-h)", "class","convert_button"])+" ";
 left+=HtmlUtil.href("javascript:csvDisplay('-table',null,true)","Table",["title","Display output as table (ctrl-t)", "class","convert_button"])+" ";

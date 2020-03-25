@@ -468,7 +468,6 @@ public class Filter extends Processor {
                 return false;
             }
             map.put(v, new Integer(count.intValue() + 1));
-
             return true;
         }
 

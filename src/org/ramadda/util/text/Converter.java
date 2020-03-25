@@ -2485,9 +2485,6 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
-         *
          * @param rows _more_
          * @param delimiter _more_
          * @param close _more_
@@ -2501,10 +2498,6 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
          *
          * @param info _more_
          * @param row _more_
@@ -2543,10 +2536,8 @@ public abstract class Converter extends Processor {
                 }
                 row      = firstRow;
                 firstRow = null;
-
                 return row;
             }
-
             return null;
         }
 

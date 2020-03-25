@@ -1644,19 +1644,18 @@ public class CsvUtil {
         new Cmd("-stop", "End at pattern in source file", "stop pattern"),
         new Cmd("-cut", "Delete rows",
                 new Arg("rows", "one or more rows. -1 to the end")),
-        new Cmd("-include", "Only include given rows",
+        new Cmd("-include", "Only include specified rows",
                 new Arg("rows", "one or more rows, -1 to the end")),
-        new Cmd("-mergerows", "", new Arg("rows", "2 or more rows"),
-                new Arg("delimiter"), new Arg("close")),
-        new Cmd("-countvalue", "", new Arg("column"), new Arg("count")),
-        new Cmd("-copy", "", new Arg("column"), "name"),
+        new Cmd("-copy", "Copy column", new Arg("column"), "name"),
         new Cmd("-delete", "Remove the columns", new Arg("columns")),
         new Cmd("-insert", "Insert new column values", new Arg("column"),
                 new Arg("values", "comma separated values")),
         new Cmd("-shift", "Shift columns over by count for given rows",
-                "rows", new Arg("column"), "count"),
+                "rows", new Arg("column"), new Arg("count")),
         new Cmd("-addcell", "", new Arg("row"), new Arg("column"), "value"),
         new Cmd("-deletecell", "", new Arg("row"), new Arg("column")),
+        new Cmd("-mergerows", "", new Arg("rows", "2 or more rows"),
+                new Arg("delimiter"), new Arg("close")),
         new Cmd("-rotate", ""),
         new Cmd("-flip", "Reverse the order of the rows except the header"),
         new Cmd("-unfurl", "Make columns from data values",
@@ -1698,6 +1697,7 @@ public class CsvUtil {
                 new Arg("date"), new Arg("format2")),
         new Cmd("-after", "", new Arg("column"), new Arg("format"),
                 new Arg("date"), new Arg("format2")),
+        new Cmd("-countvalue", "No more than count unique values", new Arg("column"), new Arg("count")),
         new Cmd("-decimate", "only include every <skip factor> row",
                 new Arg("rows", "# of start rows to include"),
                 new Arg("skip", "skip factor")),
@@ -2664,7 +2664,7 @@ public class CsvUtil {
                 }
 
                 if (arg.equals("-mergerows")) {
-                    if ( !ensureArg(args, i, 1)) {
+                    if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
                     String r = args.get(++i);
@@ -3568,7 +3568,6 @@ public class CsvUtil {
                     int    cnt = Integer.parseInt(args.get(++i));
                     handlePattern(info, filterToAddTo,
                                   new Filter.CountValue(col, cnt));
-
                     continue;
                 }
 
