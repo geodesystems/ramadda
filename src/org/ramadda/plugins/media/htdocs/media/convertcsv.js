@@ -2,7 +2,8 @@
 
 var csvDbPopupTime;
 var csvEditor;
-
+var csvHeader;
+var csvCommandsMap;
 function csvGetInput(force) {
     val= "";
     if($("#convertcsv_runok").is(':checked') || force) {
@@ -174,15 +175,59 @@ function csvCall(cmds,args) {
 		    var index = $(this).attr("index").replace("#","").trim();
 		    csvInsertText(index+",");
 		});
-                HtmlUtils.formatTable(".ramadda-table",{scrollY:200});
+                HtmlUtils.formatTable(".ramadda-table");
             } else {
   
+		var isJson = result.trim().startsWith("{") && result.trim().endsWith("}")
+		var isXml = result.trim().startsWith("<") && result.trim().endsWith(">")
                 var isDb = result.startsWith("<tables");
 		var isHeader = result.startsWith("#fields=");
 
-		if(printHeader) {
+		if(isJson) {
+		    try {
+			result= JSON.parse(result.trim());
+			result = Utils.formatJson(result,5);
+			$("#convertcsv_output").html(HU.pre(result));
+			return
+		    } catch(err) {
+			console.log("Err:" + err);
+		    }
+		} else if(isXml) {
+		    let parser = new DOMParser();
+		    let xmlDoc = parser.parseFromString(result,"text/xml");
+		    let html ="";
+		    let func;
+		    func = function(node, path, padding) {
+			for(let i=0;i<padding;i++)
+			    html +="  ";
+			if(padding>5) {
+			    html+="...\n";
+			    return;
+			}
+			if(node.nodeName=="#text") {
+			    html +="text:" + node.nodeValue+"\n";
+			    return;
+			} 
+			if(path!="") path+=".";
+			path+=node.nodeName;
+			html +="&lt;" + HU.span(["data-path",path, TITLE,"Add path selector",STYLE,HU.css("cursor","pointer","text-decoration","underline"), CLASS,"convertcvs-xmlnode"],node.nodeName)+"&gt;" + "\n";
+			node.childNodes.forEach(child=>{
+			    func(child,path,padding+1);
+			});
+			for(let i=0;i<padding;i++)
+			    html +="  ";
+			html +="&lt;/" + node.nodeName+"&gt;" + "\n";
+		    }
+		    xmlDoc.childNodes.forEach(n=>{
+			func(n,"",0);
+		    });
+		    $("#convertcsv_output").html(HU.pre(html));
+		    $("#convertcsv_output").find(".convertcvs-xmlnode").click(function(){
+			csvInsertText($(this).attr("data-path"));
+		    });
+		    return;
+		} else 		if(printHeader) {
 		    result = result.replace(/(#[0-9]+) /g,"<a href='#' index='$1' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$1</a> ");
-		    console.log("result:" + result);
 		} else if(isHeader) {
 		    var toks = result.split("\n");
 		    var line = toks[0];
@@ -191,8 +236,10 @@ function csvCall(cmds,args) {
 		    //			line = line.replace(/([^\[]+)(\[.*\])/g,"X$1$2");
 		    var tmp ="";
 		    toks = line.split("\n");
+		    csvHeader = [];
 		    for(var i=0;i<toks.length;i++) {
 			var l = toks[i];
+			csvHeader.push(l);
 			l = l.replace(/^(.*?)\[/,"<span class=csv_addheader_field field='$1' title='Add to input'>$1</span>[");
 			tmp+=l +"\n";
 		    }
@@ -261,8 +308,8 @@ function csvCall(cmds,args) {
                         var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
                         html +="type=" + 
 			    csvMakeHeaderMenu(field+".type","enumeration","enumeration")+ "  "+
-			    csvMakeHeaderMenu(field+".type","string","string")+ " "+
-			    csvMakeHeaderMenu(field+".type","double","double")+" "+
+			    csvMakeHeaderMenu(field+".type","string","string")+ " "+	
+		    csvMakeHeaderMenu(field+".type","double","double")+" "+
 			    csvMakeHeaderMenu(field+".type","date","date")+
 			    csvMakeHeaderMenu(field+".type","url","url")+
 			    csvMakeHeaderMenu(field+".type","image","image")+
@@ -360,7 +407,14 @@ function csvStop() {
 function csvDialogClose() {
     $("#csvdialog").hide();
 }
-function csvAddCommand(cmd) {
+
+function csvAddCommand(cmd, args) {
+    let opts = {
+	add:true,
+	values:null,
+	callback:null
+    };
+    if(args) $.extend(opts, args);
     let desc = cmd.description.replace(/^\(/,"").replace(/\)$/,"");
     let label = Utils.camelCase(cmd.command.replace(/^-/,""));
     let closeImage = HtmlUtils.getIconImage(icon_close, []);
@@ -369,16 +423,17 @@ function csvAddCommand(cmd) {
     let inner = HU.center(HU.h2(label)) + HU.center(desc);
     inner+=HU.formTable();
     cmd.args.forEach((a,idx)=>{
+	let v = opts.values&& idx<opts.values.length?opts.values[idx]:"";
 	if(a.rows) {
-	    inner+=HU.formEntryTop(Utils.makeLabel(a.id),HU.textarea("","",["rows",a.rows,ID,"csvcommand" + idx,"size",10]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
+	    inner+=HU.formEntryTop(Utils.makeLabel(a.id),HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,"csvcommand" + idx,"size",10]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
 	} else {
 	    let size = 10;
 	    if(a.size) size = a.size;
-	    inner+=HU.formEntry(Utils.makeLabel(a.id),HU.input("","",[ID,"csvcommand" + idx,"size",size]) +" " + a.description);
+	    inner+=HU.formEntry(Utils.makeLabel(a.id),HU.input("",v,[ID,"csvcommand" + idx,"size",size]) +" " + a.description);
 	}
     });
     inner+=HU.formTableClose();
-    inner += HU.div([STYLE,HU.css("margin-top","5px")], HU.center(HU.div([STYLE,HU.css("display","inline-block"), ID,"csvaddcommand"],"Add Command") +SPACE2+HU.div([STYLE,HU.css("display","inline-block"), ID,"csvcancelcommand"],"Cancel")));
+    inner += HU.div([STYLE,HU.css("margin-top","5px")], HU.center(HU.div([STYLE,HU.css("display","inline-block"), ID,"csvaddcommand"],opts.add?"Add Command":"Change Command") +SPACE2+HU.div([STYLE,HU.css("display","inline-block"), ID,"csvcancelcommand"],"Cancel")));
     let html = header +HU.div([STYLE,"margin:8px;"],inner);
 
     let dialog = $("#csvdialog");
@@ -391,18 +446,35 @@ function csvAddCommand(cmd) {
         at: "left bottom+",
         collision: "fit fit"
     });
-    $("#csvcommand0").focus();
-    $("#csvaddcommand").button().click(()=>{
+    let submit = () =>{
 	let args = "";
+	let values =[];
 	cmd.args.forEach((a,idx)=>{
 	    let v = $("#csvcommand" +idx).val().trim();
 	    if(v.indexOf("\n")>0) {
 		v = "{"+v+"}";
-	    } else    if(v=="" || v.indexOf(" ")>=0 || v.indexOf(",")>=0) v = "\"" + v +"\"";
+	    } else  
+		if(v=="" || v.indexOf(" ")>=0 || v.indexOf(",")>=0) v = "\"" + v +"\"";
+	    values.push(v);
 	    args+=v +" ";
 	});
-	csvInsertText(cmd.command +" " + args) ;
+	if(opts.callback) {
+	    opts.callback(values,args);
+	} else {
+	    csvInsertText(cmd.command +" " + args) ;
+	}
 	csvDialogClose()
+    }
+    
+    dialog.find("input").keypress(function(event) {
+	var keycode = (event.keyCode ? event.keyCode : event.which);
+	if(keycode == '13'){
+	    submit();
+	}
+    });
+    $("#csvcommand0").focus();
+    $("#csvaddcommand").button().click(()=>{
+	submit();
     });
     $("#csvcancelcommand").button().click(()=>{
 	csvDialogClose()
@@ -511,6 +583,138 @@ function csvFlipInput(text) {
 	bindKey: {mac: "ctrl-h", win: "ctrl-h"}
     })
 
+    csvEditor.container.addEventListener("contextmenu", function(e) {
+	e.preventDefault();
+	let cursor = csvEditor.getCursorPosition();
+	let index = csvEditor.session.doc.positionToIndex(cursor);
+	let text =csvEditor.getValue();
+	let menu = "";
+	let tmp = index;
+	let left = -1;
+	let right = -1;
+	let lastWasChar=false;
+	while(tmp>=0) {
+	    let c = text[tmp];
+	    if (c == "-") {
+		if(lastWasChar) {
+		    left = tmp;
+		    break;
+		}
+	    }
+	    lastWasChar = String(c).match(/[a-zA-Z]/);
+//	    if(c==" " || c=="\n" || c =="\"" || c=="{" || c=="}") break;
+	    tmp--;
+	}
+
+	if(left>=0) {
+	    tmp = left;
+	    while(tmp<text.length) {
+		right  = tmp;
+		let c = text[tmp];
+		if (c == " " || c=="\n") {
+		    break;
+		}
+		tmp++;
+	    }
+	    if(right<0) return;
+	    let command = csvCommandsMap[text.substring(left,right)];
+	    if(!command) return;
+	    let values = [];
+	    let tok = null;
+	    let append = (c)=>{
+		if(tok == null) tok = c;
+		else tok+=c;
+	    }
+	    let end = (c)=>{
+		if(tok != null) values.push(tok);
+		tok = null;
+	    }
+	    let inQuote = false;
+	    let bracketCnt = 0;
+	    let inEscape = false;
+	    while(right<text.length && values.length<command.args.length) {
+		let c = text[right++];
+		if(c=="\\") {
+		    if(inEscape)
+			append(c);
+		    else
+			inEscape = true;
+		    continue;
+		}
+		if(inEscape) {
+		    append(c);
+		    inEscape = false;
+		    continue;
+		}
+
+		if(bracketCnt==0) {
+		    if(c=="{") {
+			if(inQuote) {
+			    append(c);
+			} else {
+			    bracketCnt++;
+			}
+			continue;
+		    }
+		    if(c=="\"") {
+			inQuote = !inQuote;
+			if(!inQuote) {
+			    end();
+			}
+			continue;
+		    }
+		    if(c==" " || c=="\n") {
+			end();
+		    } else {
+			append(c);
+		    }
+		    continue;
+		} else {
+		    if(c=="}") {
+			bracketCnt--;
+			if(bracketCnt==0) {
+			    bracketCnt=0;
+			    end();
+			} else if(bracketCnt<0) {
+			    bracketCnt=0;			    
+			} else {
+			    append(c);
+			}
+		    } else if(c=="{") {
+			append(c);
+			bracketCnt++;
+		    } else  {
+			append(c);
+		    }
+		}
+	    }		
+	    end();
+	    let callback = (values,args)=>{
+		text = text.substring(0,left) + command.command +" " +args + text.substring(right);
+		let idx = left+command.command.length +1 + args.length;
+		csvEditor.setValue(text);
+		csvEditor.clearSelection();
+		let cursor = csvEditor.session.doc.indexToPosition(idx);
+		csvEditor.selection.moveTo(cursor.row, cursor.column);
+		csvEditor.focus();
+		
+	    };
+	    csvAddCommand(command, {add:false,values:values,callback:callback});
+	}
+
+	popupObject = getTooltip();
+	popupObject.html(menu);
+	popupObject.show();
+	popupObject.position({
+	    of: $(window),
+            my: "left top",
+            at: "left+" +e.x +" top+" + (e.y),
+            collision: "fit fit"
+	});
+    });
+
+
+
     addHandler({
         selectClick: function(selecttype, id, entryId, value) {
 	    csvInsertText("entry:" + entryId);
@@ -616,7 +820,7 @@ var jqxhr = $.getJSON( helpUrl, function(data) {
         return;
     }
     if(Utils.isDefined(data.result)) {
-        var csvCommandsMap = {}
+        csvCommandsMap = {}
         var result = window.atob(data.result);
         var select = "<select id=csv_command_select class=ramadda-pulldown>";
         select +=HtmlUtil.tag("option",[],"Commands");

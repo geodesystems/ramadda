@@ -25101,7 +25101,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'Map Attributes'},
 	{p:'strokeWidth',d:1},
 	{p:'strokeColor',d:'#000'},
-	{p:"fillColor",d:""},
+	{p:"fillColor",d:"blue"},
 	{p:"fillOpacity",d:0.8},
 	{p:'radius',d:5,tt:"Size of the map points"},
 	{p:'scaleRadius',wikiValue:"true",tt:'Scale the radius based on # points shown'},
@@ -27214,6 +27214,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		strokeColor: this.getProperty("pathColor",lineColor),
 		strokeWidth: this.getProperty("pathWidth",1)
 	    };
+
 
 	    let fillColor = this.getPropertyFillColor();
 	    let fillOpacity =  this.getPropertyFillOpacity();

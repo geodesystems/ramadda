@@ -479,7 +479,7 @@ public class TabularOutputHandler extends OutputHandler {
                     args.add("-print");
                 }
                 currentArgs = args;
-                System.err.println("args:" + args);
+                //                System.err.println("args:" + args);
                 File runDir = null;
                 for (int j = 0; true; j++) {
                     runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
@@ -642,8 +642,6 @@ public class TabularOutputHandler extends OutputHandler {
      * @param runDir _more_
      * @param args _more_
      * @param newFiles _more_
-     *
-     * @return _more_
      *
      * @throws Exception _more_
      */

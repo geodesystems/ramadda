@@ -311,7 +311,7 @@ var Utils = {
             return {value:HtmlUtils.span(["class","json-function"], json.name +"(" + args+") {...}")};
         }
         var isArray  = Array.isArray(json);
-        var label = isArray?" Array " + HtmlUtils.span(["class","json-number"],"["  + json.length +"]"):"Object";
+        var label = isArray?HtmlUtils.span(["class","json-number"],"["  + json.length +"]"):"";
         var  html = HtmlUtils.openTag("div");
         var labels = [];
         var indices = [];

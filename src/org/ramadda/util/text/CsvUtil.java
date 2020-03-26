@@ -27,6 +27,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import org.json.*;
+import org.w3c.dom.*;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -301,8 +302,6 @@ public class CsvUtil {
 	    CsvOperator op = (textReader == null)
 		? null
 		: textReader.getCurrentOperator();
-	    System.err.println("error tr:" + textReader);
-	    System.err.println("error op:" + op);
             if (op != null) {
                 errorDescription = "Error processing text with operator: "
                                    + op.getDescription();
@@ -973,15 +972,13 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    public List<Row> tokenizeJson(String s, Hashtable<String, String> props)
+    public List<Row> tokenizeJson(String s, String arrayPath, String objectPath)
             throws Exception {
 
         List<Row> rows       = new ArrayList<Row>();
 
 
         JSONArray array      = null;
-        String    arrayPath  = props.get("arrayPath");
-        String    objectPath = props.get("objectPath");
         try {
             JSONObject obj = new JSONObject(s);
             if (arrayPath != null) {
@@ -1088,6 +1085,75 @@ public class CsvUtil {
 
 
     }
+
+    public List<Row> tokenizeXml(String s, String arrayPath, String objectPath)
+            throws Exception {
+
+	Element  root  = XmlUtil.getRoot(s);
+        List<Row> rows       = new ArrayList<Row>();
+	Row header = new Row();
+	rows.add(header);
+	List<Element> nodes= (List<Element>)Utils.findDescendantsFromPath(root,arrayPath);
+	int cnt  =0;
+	int colCnt = 0;
+	Hashtable<String,Integer> colMap = new Hashtable<String,Integer>();
+	for(Element parent: nodes) {
+	    NodeList children = XmlUtil.getElements(parent);
+	    for (int i = 0; i < children.getLength(); i++) {
+		Element child = (Element)children.item(i);
+		NodeList gchildren = XmlUtil.getElements(child);
+		//go one level down
+		String tag = child.getTagName();
+		if(gchildren.getLength()>0) {
+		    for (int gi = 0; gi < gchildren.getLength(); gi++) {
+			Element gchild = (Element)gchildren.item(gi);
+			String gtag = tag+"."+gchild.getTagName();
+			Integer idx = colMap.get(gtag);
+			if(idx==null) {
+			    colMap.put(gtag,colCnt++);
+			    header.add(gchild.getTagName());
+			}
+		    }
+		} else {
+		    Integer idx = colMap.get(tag);
+		    if(idx==null) {
+			colMap.put(child.getTagName(),colCnt++);
+			header.add(child.getTagName());
+		    }
+		}
+	    }
+	}
+
+	for(Element parent: nodes) {
+	    NodeList children = XmlUtil.getElements(parent);
+	    Row row = new Row();
+	    rows.add(row);
+	    for(int i=0;i<colCnt;i++)
+		row.add("");
+	    for (int i = 0; i < children.getLength(); i++) {
+		Element child = (Element)children.item(i);
+		NodeList gchildren = XmlUtil.getElements(child);
+		//go one level down
+		String tag = child.getTagName();
+		if(gchildren.getLength()>0) {
+		    for (int gi = 0; gi < gchildren.getLength(); gi++) {
+			Element gchild = (Element)gchildren.item(gi);
+			String gtag = tag+"."+gchild.getTagName();
+			Integer idx = colMap.get(gtag);
+			String text =XmlUtil.getChildText(gchild);
+			row.set(idx,text);
+		    }
+		} else {
+		    Integer idx = colMap.get(child.getTagName());
+		    String text =XmlUtil.getChildText(child);
+		    row.set(idx,text);
+		}
+	    }
+	    cnt++;
+	}
+        return rows;
+    }
+
 
     /**
      * _more_
@@ -1870,8 +1936,10 @@ public class CsvUtil {
                 new Arg("columns"), new Arg("startPattern"),
                 new Arg("endPattern"), new Arg("pattern")),
         new Cmd("-json", "Parse the input as json",
-                new Arg("arrayPath", "e.g., obj1.arr[index].obj2"),
-                new Arg("objectPath", "e.g. obj3")),
+                new Arg("arrayPath", "Path to the array e.g., obj1.arr[index].obj2","size","30"),
+                new Arg("objectPath", "comma separated paths to the objects e.g. geometry,features","size","30")),
+        new Cmd("-xml", "Parse the input as xml",
+                new Arg("arrayPath", "Path to the array e.g., obj1.arr[index].obj2","size","60")),
         new Cmd("-text", "Extract rows from the text",
                 new Arg("comma separated header"), new Arg("chunk pattern"),
                 new Arg("token pattern")),
@@ -1881,10 +1949,10 @@ public class CsvUtil {
                 new Arg("bytes", "number of leading bytes to remove")),
         new Cmd(true, "Output"), new Cmd("-print", "Output the rows"),
         new Cmd("-template", "Apply the template to make the output",
-                new Arg("prefix"),
-                new Arg("template", "Use ${0},${1}, etc for values"),
-                new Arg("delimiter", "Output between rows"),
-                new Arg("suffix")),
+                new Arg("prefix","","size","40"),
+                new Arg("template", "Use ${0},${1}, etc for values","rows","6"),
+                new Arg("delimiter", "Output between rows","size","40"),
+                new Arg("suffix","","size","40")),
         new Cmd("-raw", "Print the file raw"),
         new Cmd("-record", "Print records"),
         new Cmd("-printheader", "Print the first line"),
@@ -2116,7 +2184,10 @@ public class CsvUtil {
         String       htmlCols        = null;
         String       htmlProps       = null;
         boolean      doJson          = false;
-        String       jsonProps       = null;
+	String jsonArrayPath=null, jsonObjectPath=null;
+        boolean      doXml          = false;
+	String xmlArrayPath=null, xmlObjectPath=null;	
+
         boolean      doPattern       = false;
         List<String> tokenizeHeader  = null;
         String       tokenizePattern = null;
@@ -2166,14 +2237,23 @@ public class CsvUtil {
                     continue;
                 }
                 if (arg.equals("-json")) {
-                    if ( !ensureArg(args, i, 1)) {
+                    if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
                     doJson    = true;
-                    jsonProps = args.get(++i);
-
+		    jsonArrayPath = args.get(++i);
+                    jsonObjectPath = args.get(++i);
                     continue;
                 }
+                if (arg.equals("-xml")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    doXml    = true;
+		    xmlArrayPath = args.get(++i);
+		    //                    xmlObjectPath = args.get(++i);
+                    continue;
+                }		
 
                 if (arg.equals("-tokenize")) {
                     if ( !ensureArg(args, i, 2)) {
@@ -3730,8 +3810,11 @@ public class CsvUtil {
                     continue;
                 }
 
+		if(arg.length()==0) {
+		    throw new IllegalArgumentException("Unknown argument:" + arg);
+		}
                 if (addFiles) {
-                    System.err.println("File:" + arg);
+                    System.err.println("adding file:" + arg);
                     files.add(arg);
                 } else {
                     throw new IllegalArgumentException("Unknown arg:" + arg);
@@ -3760,7 +3843,6 @@ public class CsvUtil {
             tokenizedRows.add(tokenizeText(files.get(0), textHeader,
                                            chunkPattern, tokenPattern));
         } else if (doJson) {
-            Hashtable<String, String> props = parseProps(jsonProps);
             //xxxx
             String s = null;
             if (files.size() > 0) {
@@ -3770,7 +3852,21 @@ public class CsvUtil {
             } else {
                 throw new Exception("Error processing json: no file given");
             }
-            tokenizedRows.add(tokenizeJson(s, props));
+            tokenizedRows.add(tokenizeJson(s, jsonArrayPath, jsonObjectPath));
+        } else if (doXml) {
+            //xxxx
+            String s = null;
+            if (files.size() > 0) {
+                s = IO.readContents(files.get(0));
+		//		System.err.println("xml file:" + files.get(0));
+		//		System.err.println("xml:" + s.substring(0,100));
+            } else if (inputStream != null) {
+                s = IO.readInputStream(inputStream);
+            } else {
+                throw new Exception("Error processing xml: no file given");
+            }
+            tokenizedRows.add(tokenizeXml(s, xmlArrayPath, xmlObjectPath));
+
         } else if (doPattern) {
             tokenizedRows.add(tokenizePattern(files.get(0), tokenizeHeader,
                     tokenizePattern));

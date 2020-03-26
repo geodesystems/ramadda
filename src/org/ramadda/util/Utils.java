@@ -2292,7 +2292,9 @@ public class Utils extends IO {
         return sb;
     }
 
+    /** _more_          */
     public static final String MULTILINE_END = "_multilineend_";
+
     /**
      * _more_
      *
@@ -2391,10 +2393,12 @@ public class Utils extends IO {
                 } else {
                     sb = append(c, sb, lines);
                 }
+
                 continue;
             }
             sb = append(c, sb, lines);
         }
+
         return lines;
     }
 
@@ -3632,6 +3636,57 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     * @param path _more_
+     *
+     * @return _more_
+     */
+    public static List findDescendantsFromPath(Element parent, String path) {
+        List results = new ArrayList();
+        List tags    = StringUtil.split(path, ".");
+        //In case the path starts with the root node
+        if (parent.getTagName().equals(tags.get(0))) {
+            tags.remove(0);
+        }
+        findDescendantsFromPath(parent, tags, 0, results, "\t");
+
+        return results;
+    }
+
+    /**
+     * _more_
+     *
+     * @param parent _more_
+     * @param tags _more_
+     * @param tagIdx _more_
+     * @param results _more_
+     * @param tab _more_
+     */
+    public static void findDescendantsFromPath(Element parent, List tags,
+            int tagIdx, List results, String tab) {
+        String  tag     = (String) tags.get(tagIdx);
+        boolean lastTag = (tagIdx == tags.size() - 1);
+
+        //      System.err.println (tab+XmlUtil.getLocalName(parent) + " looking for:" + tag + " idx:" + tagIdx+ " lastTag:" + lastTag);
+        NodeList elements = XmlUtil.getElements(parent);
+        tab = tab + "\t";
+        for (int i = 0; i < elements.getLength(); i++) {
+            Element child = (Element) elements.item(i);
+            //      System.err.println (tab+">child:" + XmlUtil.getLocalName(child));
+            if (tag.equals(XmlUtil.TAG_WILDCARD)
+                    || XmlUtil.isTag(child, tag)) {
+                if (lastTag) {
+                    results.add(child);
+                } else {
+                    findDescendantsFromPath(child, tags, tagIdx + 1, results,
+                                            tab);
+                }
+            }
+        }
+    }
 
 
 }

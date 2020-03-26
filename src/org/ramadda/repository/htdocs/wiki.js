@@ -343,7 +343,7 @@ function wikiInitEditor(info) {
 		    } catch(e) {
 			console.log("Error getting tags for:" + type +" error:" + e  + " stack:" +e.stack);
 		    }
-		    extra = Utils.getColorTablePopup();
+		    extra = Utils.getColorTablePopup(info);
 		}
 		if(wikiAttributes[tag]) {
 		    wikiAttributes[tag].map(a=>tags.push(a));
