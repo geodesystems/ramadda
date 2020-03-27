@@ -191,13 +191,20 @@ function csvCall(cmds,args) {
 			console.log("Err:" + err);
 		    }
 		} else if(isXml) {
-		    let html =Utils.formatXml(result);
-		    $("#convertcsv_output").html(HU.pre(html));
-		    $("#convertcsv_output").find(".ramadda-xmlnode").click(function(){
-			csvInsertText($(this).attr("data-path"));
-		    });
-		    return;
-		} else 		if(printHeader) {
+		    try {
+			let html =Utils.formatXml(result.trim());
+			$("#convertcsv_output").html(HU.pre(html));
+			$("#convertcsv_output").find(".ramadda-xmlnode").click(function(){
+			    csvInsertText($(this).attr("data-path"));
+			});
+			return;
+		    } catch (err) {
+			console.log("err");
+			console.log("Couldn't display as xml:" + err);
+
+		    }
+		}
+ 		if(printHeader) {
 		    result = result.replace(/(#[0-9]+) /g,"<a href='#' index='$1' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$1</a> ");
 		} else if(isHeader) {
 		    var toks = result.split("\n");

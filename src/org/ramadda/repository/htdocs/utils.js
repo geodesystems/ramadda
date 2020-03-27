@@ -284,6 +284,12 @@ var Utils = {
 	    html +="&lt;/" + node.nodeName+"&gt;" + "\n";
 	}
 	xmlDoc.childNodes.forEach(n=>{
+	    if(n.nodeName == "parsererror") {
+		throw new Error("Parse error:" + n);
+	    }
+	});
+
+	xmlDoc.childNodes.forEach(n=>{
 	    func(n,"",0);
 	});
 	return html;
