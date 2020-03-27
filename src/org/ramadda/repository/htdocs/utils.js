@@ -255,6 +255,40 @@ var Utils = {
 		Utils.call(err, e);
         }
     },
+    formatXml: function(xml,args) {
+	let opts = {};
+	if(args) $.extend(opts,args);
+	let parser = new DOMParser();
+	let xmlDoc = parser.parseFromString(xml,"text/xml");
+	let html ="";
+	let func;
+	func = function(node, path, padding) {
+	    for(let i=0;i<padding;i++)
+		html +="  ";
+	    if(padding>5) {
+		html+="...\n";
+		return;
+	    }
+	    if(node.nodeName=="#text") {
+		html +="text:" + node.nodeValue+"\n";
+		return;
+	    } 
+	    if(path!="") path+=".";
+	    path+=node.nodeName;
+	    html +="&lt;" + HU.span(["data-path",path, TITLE,"Add path selector",STYLE,HU.css("cursor","pointer","text-decoration","underline"), CLASS,"ramadda-xmlnode"],node.nodeName)+"&gt;" + "\n";
+	    node.childNodes.forEach(child=>{
+		func(child,path,padding+1);
+	    });
+	    for(let i=0;i<padding;i++)
+		html +="  ";
+	    html +="&lt;/" + node.nodeName+"&gt;" + "\n";
+	}
+	xmlDoc.childNodes.forEach(n=>{
+	    func(n,"",0);
+	});
+	return html;
+    },
+
     formatJson: function(json,levelsShown) {
         var blob =  this.formatJsonInner(json, 0,levelsShown);
         return this.formatJsonBlob(blob,null, 0,levelsShown);
@@ -265,7 +299,6 @@ var Utils = {
         if (inner.is(":visible")) {
             inner.hide();
             image.attr("src",icon_tree_closed);
-
         } else {
             inner.show();
             image.attr("src",icon_tree_open);

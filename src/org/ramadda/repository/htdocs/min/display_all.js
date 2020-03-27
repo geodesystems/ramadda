@@ -33920,13 +33920,18 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
             this.currentSheet = sheetIdx;
             var sheet = this.sheets[sheetIdx];
+	    let rows;
             if (sheet) {
-                var rows = sheet.rows.slice(0);
+                rows = sheet.rows.slice(0);
                 if (rows.length > 0) {
                     this.header = rows[0];
                 }
             }
 
+	    if(!rows) {
+		this.displayHtml(this.getMessage("No data"));
+		return;
+	    }
             var html = "";
             var _this = this;
             var args = {
@@ -34456,7 +34461,8 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
         }
     });
 
-}/**
+}
+/**
    Copyright 2008-2019 Geode Systems LLC
 */
 
