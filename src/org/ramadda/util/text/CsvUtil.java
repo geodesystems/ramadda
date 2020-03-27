@@ -336,7 +336,6 @@ public class CsvUtil {
         List<String> extra     = new ArrayList<String>();
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-            arg = arg.trim();
             //      System.out.println("ARG:" + arg);
             //      if(true) continue;
             if (arg.equals("-printargs")) {
@@ -820,7 +819,6 @@ public class CsvUtil {
                 }
                 Row     row         = new Row();
                 boolean checkHeader = true;
-                System.err.println("row");
                 while (true) {
                     toks = Utils.tokenizePattern(tr, "(<td|<th)",
                             "(</td|</th)");
@@ -974,10 +972,7 @@ public class CsvUtil {
      */
     public List<Row> tokenizeJson(String s, String arrayPath, String objectPath)
             throws Exception {
-
         List<Row> rows       = new ArrayList<Row>();
-
-
         JSONArray array      = null;
         try {
             JSONObject obj = new JSONObject(s);
@@ -997,7 +992,7 @@ public class CsvUtil {
             //            List<JSONObject> jrows = new ArrayList<JSONObject>();
             List       jrows = new ArrayList();
             JSONObject jrow  = array.getJSONObject(i);
-            if (objectPath != null) {
+            if (Utils.stringDefined(objectPath)) {
                 for (String tok :
                         StringUtil.split(objectPath, ",", true, true)) {
                     if (tok.equals("*")) {

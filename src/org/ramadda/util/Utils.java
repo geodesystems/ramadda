@@ -2692,7 +2692,7 @@ public class Utils extends IO {
      */
     public static void main(String[] args) throws Exception {
         String cmd = "-addheader {} -print";
-        cmd = "-addheader {\n\n}";
+        cmd = "-change { +}";
         for (Object tok : parseMultiLineCommandLine(cmd)) {
             System.err.println("\ttok:"
                                + tok.toString().replaceAll("\n", "_NL_"));

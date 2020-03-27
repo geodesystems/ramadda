@@ -364,7 +364,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     tmp.append("\n");
                 }
             }
-            //      System.err.println("args:" + tmp);
 
             List<StringBuilder> toks =
                 Utils.parseMultiLineCommandLine(tmp.toString());
@@ -434,6 +433,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     args.add("-print");
                 }
                 currentArgs = args;
+		//		for(String arg: args)
+		//		    System.err.println("arg:" + arg+":");
+
                 //                System.err.println("args:" + args);
                 File runDir = null;
                 for (int j = 0; true; j++) {
