@@ -39,7 +39,7 @@ function csvDisplay(what, process,html) {
 function csvGetUrl(cmds,rawInput) {
     var input = "";
     if(rawInput) input = "&lastinput=" + encodeURIComponent(rawInput);
-    var url = ramaddaBaseUrl + "/entry/show?output=csv_convert_process&entryid=" + convertCsvEntry+"&commands=" + encodeURIComponent(cmds) + input;
+    var url = ramaddaBaseUrl + "/entry/show?output=convert_process&entryid=" + convertCsvEntry+"&commands=" + encodeURIComponent(cmds) + input;
     return url;
 }
 
@@ -177,12 +177,10 @@ function csvCall(cmds,args) {
 		});
                 HtmlUtils.formatTable(".ramadda-table");
             } else {
-  
 		var isJson = result.trim().startsWith("{") && result.trim().endsWith("}")
 		var isXml = result.trim().startsWith("<") && result.trim().endsWith(">")
                 var isDb = result.startsWith("<tables");
 		var isHeader = result.startsWith("#fields=");
-
 		if(isJson) {
 		    try {
 			result= JSON.parse(result.trim());
@@ -193,36 +191,9 @@ function csvCall(cmds,args) {
 			console.log("Err:" + err);
 		    }
 		} else if(isXml) {
-		    let parser = new DOMParser();
-		    let xmlDoc = parser.parseFromString(result,"text/xml");
-		    let html ="";
-		    let func;
-		    func = function(node, path, padding) {
-			for(let i=0;i<padding;i++)
-			    html +="  ";
-			if(padding>5) {
-			    html+="...\n";
-			    return;
-			}
-			if(node.nodeName=="#text") {
-			    html +="text:" + node.nodeValue+"\n";
-			    return;
-			} 
-			if(path!="") path+=".";
-			path+=node.nodeName;
-			html +="&lt;" + HU.span(["data-path",path, TITLE,"Add path selector",STYLE,HU.css("cursor","pointer","text-decoration","underline"), CLASS,"convertcvs-xmlnode"],node.nodeName)+"&gt;" + "\n";
-			node.childNodes.forEach(child=>{
-			    func(child,path,padding+1);
-			});
-			for(let i=0;i<padding;i++)
-			    html +="  ";
-			html +="&lt;/" + node.nodeName+"&gt;" + "\n";
-		    }
-		    xmlDoc.childNodes.forEach(n=>{
-			func(n,"",0);
-		    });
+		    let html =Utils.formatXml(result);
 		    $("#convertcsv_output").html(HU.pre(html));
-		    $("#convertcsv_output").find(".convertcvs-xmlnode").click(function(){
+		    $("#convertcsv_output").find(".ramadda-xmlnode").click(function(){
 			csvInsertText($(this).attr("data-path"));
 		    });
 		    return;
@@ -394,7 +365,7 @@ function csvCall(cmds,args) {
 
 
 function csvStop() {
-    var url = ramaddaBaseUrl + "/entry/show?output=csv_convert_process&entryid=" + convertCsvEntry+"&stop=true";
+    var url = ramaddaBaseUrl + "/entry/show?output=convert_process&entryid=" + convertCsvEntry+"&stop=true";
     console.log(url);
     var jqxhr = $.getJSON( url, function(data) {
     })
@@ -424,12 +395,16 @@ function csvAddCommand(cmd, args) {
     inner+=HU.formTable();
     cmd.args.forEach((a,idx)=>{
 	let v = opts.values&& idx<opts.values.length?opts.values[idx]:"";
+	let label = a.label || Utils.makeLabel(a.id);
 	if(a.rows) {
-	    inner+=HU.formEntryTop(Utils.makeLabel(a.id),HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,"csvcommand" + idx,"size",10]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
+	    inner+=HU.formEntryTop(label,HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,"csvcommand" + idx,"size",10]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
+	} else if(a.values) {
+	    
+	    inner+=HU.formEntry(label,HU.select("",[ID,"csvcommand" + idx],a.values.split(",")) +" " + a.description);
 	} else {
 	    let size = 10;
 	    if(a.size) size = a.size;
-	    inner+=HU.formEntry(Utils.makeLabel(a.id),HU.input("",v,[ID,"csvcommand" + idx,"size",size]) +" " + a.description);
+	    inner+=HU.formEntry(label,HU.input("",v,[ID,"csvcommand" + idx,"size",size]) +" " + a.description);
 	}
     });
     inner+=HU.formTableClose();
