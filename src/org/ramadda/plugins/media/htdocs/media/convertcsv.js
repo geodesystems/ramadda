@@ -175,7 +175,7 @@ function csvCall(cmds,args) {
 		    var index = $(this).attr("index").replace("#","").trim();
 		    csvInsertText(index+",");
 		});
-                HtmlUtils.formatTable(".ramadda-table");
+                HtmlUtils.formatTable(".ramadda-table",{ordering:true});
             } else {
 		var isJson = result.trim().startsWith("{") && result.trim().endsWith("}")
 		var isXml = result.trim().startsWith("<") && result.trim().endsWith(">")
@@ -422,10 +422,18 @@ function csvAddCommand(cmd, args) {
     dialog.draggable();
     dialog.html(html);
     dialog.show();
+    let target = $("#csv_command_select");
+    let at = "left bottom";
+    if(opts.event) {
+	at = "left " + "top+" + (opts.event.offsetY+10);
+	target = $(opts.event.target);
+    }
+
+
     dialog.position({
-        of: $("#csv_command_select"),
+        of: target,
         my: "left top",
-        at: "left bottom+",
+        at: at,
         collision: "fit fit"
     });
     let submit = () =>{
@@ -459,6 +467,9 @@ function csvAddCommand(cmd, args) {
 	submit();
     });
     $("#csvcancelcommand").button().click(()=>{
+	if(opts.callback) {
+	    opts.callback(null);
+	}
 	csvDialogClose()
     });    
 
@@ -575,6 +586,7 @@ function csvFlipInput(text) {
 	let left = -1;
 	let right = -1;
 	let lastWasChar=false;
+	let lastWasHash=false;
 	while(tmp>=0) {
 	    let c = text[tmp];
 	    if (c == "-") {
@@ -583,9 +595,13 @@ function csvFlipInput(text) {
 		    break;
 		}
 	    }
+	    if(c=="\n" && lastWasHash) {
+		break;
+	    }
 	    lastWasChar = String(c).match(/[a-zA-Z]/);
 //	    if(c==" " || c=="\n" || c =="\"" || c=="{" || c=="}") break;
 	    tmp--;
+	    lastWasHash = (c=="#") ;
 	}
 
 	if(left>=0) {
@@ -641,11 +657,12 @@ function csvFlipInput(text) {
 		    if(c=="\"") {
 			inQuote = !inQuote;
 			if(!inQuote) {
+			    if(tok==null) tok="";
 			    end();
 			}
 			continue;
 		    }
-		    if(c==" " || c=="\n") {
+		    if(!inQuote && (c==" " || c=="\n")) {
 			end();
 		    } else {
 			append(c);
@@ -671,7 +688,17 @@ function csvFlipInput(text) {
 		}
 	    }		
 	    end();
+	    let c1 = csvEditor.session.doc.indexToPosition(left);
+	    let c2 = csvEditor.session.doc.indexToPosition(right);
+	    //Need to do this to prevent global conflicts
+	    var Range = ace.require('ace/range').Range;
+	    let r = new  Range(c1.row, c1.column, c2.row, c2.column);
+	    csvEditor.selection.setRange(new Range(c1.row, c1.column, c2.row, c2.column));
 	    let callback = (values,args)=>{
+		if(!values) {
+		    csvEditor.clearSelection();
+		    return;
+		}
 		text = text.substring(0,left) + command.command +" " +args + text.substring(right);
 		let idx = left+command.command.length +1 + args.length;
 		csvEditor.setValue(text);
@@ -681,9 +708,12 @@ function csvFlipInput(text) {
 		csvEditor.focus();
 		
 	    };
-	    csvAddCommand(command, {add:false,values:values,callback:callback});
+	    csvAddCommand(command, {add:false,values:values,callback:callback,
+				    event:e});
 	}
 
+
+	return;
 	popupObject = getTooltip();
 	popupObject.html(menu);
 	popupObject.show();

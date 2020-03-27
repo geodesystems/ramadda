@@ -1925,8 +1925,8 @@ public class CsvUtil {
         new Cmd(true, "Input"),
         new Cmd(
             "-html",
-            "Parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to",
-            new Arg("properties", "name value properties")),
+            "Parse the table in the input html file",
+            new Arg("properties", "name value properties - <br>&nbsp;&nbsp;skip &lt;tables to skip&gt; pattern &lt;pattern to skip to&gt;")),
         new Cmd("-htmlpattern", "Parse the input html file",
                 new Arg("columns"), new Arg("startPattern"),
                 new Arg("endPattern"), new Arg("pattern")),
