@@ -329,10 +329,10 @@ public class ConvertibleOutputHandler extends OutputHandler {
         boolean process   = request.get("process", false);
         boolean save      = request.get("save", false);
         String  lastInput = request.getString("lastinput", (String) null);
-        if (lastInput != null) {
+        if (save && lastInput != null) {
             getSessionManager().putSessionProperty(request,
                     "csv.lastinput." + entry.getId(), lastInput);
-            if (save && getAccessManager().canEditEntry(request, entry)
+            if (getAccessManager().canEditEntry(request, entry)
                     && entry.getTypeHandler().isType("type_convertible")) {
                 entry.setValue(ConvertibleTypeHandler.IDX_COMMANDS,
                                lastInput);
@@ -436,7 +436,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 		//		for(String arg: args)
 		//		    System.err.println("arg:" + arg+":");
 
-                //                System.err.println("args:" + args);
+		//		System.err.println("args:" + args);
                 File runDir = null;
                 for (int j = 0; true; j++) {
                     runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
@@ -467,7 +467,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 prevCsvUtil = csvUtil;
                 getSessionManager().putSessionProperty(request, "csvutil",
                         csvUtil);
+		//		System.err.println("RUN:");
                 for (Entry e : entries) {
+		    //		    System.err.println("\tentry:" + e);
                     outputConvertProcessInner(request, process, e, csvUtil,
                             destDir, runDir, args, newFiles);
                     if ( !csvUtil.getOkToRun()) {
@@ -617,7 +619,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
                          IOUtil.stripExtension(
                              getStorageManager().getFileTail(
                                  entry.getResource().getPath())) + ".csv");
+
             csvUtil.setOutputFile(f);
+	    //	    System.err.println("\tcalling csvUtil.run");
             csvUtil.run(files);
             if ( !csvUtil.getOkToRun()) {
                 return;

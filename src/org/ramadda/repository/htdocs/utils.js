@@ -1935,6 +1935,7 @@ var GuiUtils = {
         }
         Utils.closeFormLoadingDialog();
     },
+
     isJsonError: function(data) {
         if (data == null) {
             this.handleError("Null JSON data", null, false);
@@ -2499,6 +2500,35 @@ var HU = HtmlUtils = {
 		$("#" + textId).focus();
 	    }
 	})
+    },
+    makeDraggableDialog:function(target, inner, args) {
+	let opts = {
+	    at:"left bottom",
+	    my: "left top",
+	    callback:null,
+	    remove:false
+	}
+	if(args) $.extend(opts,args);
+	let id = HtmlUtils.getUniqueId();
+	let closeImage = HtmlUtils.getIconImage(icon_close, [ID,id+"_close",STYLE,HU.css('cursor','pointer')]);
+	let header = HtmlUtils.div([STYLE,HU.css("text-align","right"),CLASS,"ramadda-popup-header"],closeImage);
+	let html = header +HU.div([STYLE,"margin:8px;"],inner);
+	$(document.body).append(HU.div([ID,id,CLASS,"ramadda-popup"],html));
+	let dialog =  $("#" + id);
+	dialog.show();
+	dialog.draggable();
+	dialog.position({
+            of: target,
+            my: opts.my,
+            at: opts.at,
+            collision: "fit fit"
+	});	
+	$("#" + id +"_close").click(function() {
+	    dialog.hide();
+	    if(opts.callback) opts.callback(dialog);
+	    if(opts.remove) dialog.remove();
+	});
+	return dialog;
     },
     pre: function(attrs, inner) {
         return this.tag("pre", attrs, inner);
