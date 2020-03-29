@@ -2580,6 +2580,15 @@ var HU = HtmlUtils = {
         }
         return html;
     },
+    onReturnEvent: function(selector,func) {
+	if((typeof selector) == "string") selector = $(selector);
+	selector.keyup(function(event) {
+	    var keycode = (event.keyCode ? event.keyCode : event.which);
+	    if(keycode == 13) {
+		func($(this),event);
+	    }
+	});
+    },
     formatTable: function(id, args) {
 	var table;
         $(id).each(function() {
