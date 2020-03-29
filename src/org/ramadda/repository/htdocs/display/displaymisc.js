@@ -2,26 +2,26 @@
   Copyright 2008-2019 Geode Systems LLC
 */
 
-var DISPLAY_GRAPH = "graph";
-var DISPLAY_TREE = "tree";
-var DISPLAY_ORGCHART = "orgchart";
-var DISPLAY_TIMELINE = "timeline";
-var DISPLAY_BLANK = "blank";
-var DISPLAY_MESSAGE = "message";
-var DISPLAY_RECORDS = "records";
-var DISPLAY_TSNE = "tsne";
-var DISPLAY_HEATMAP = "heatmap";
-var DISPLAY_CROSSTAB = "crosstab";
-var DISPLAY_CORRELATION = "correlation";
-var DISPLAY_RANKING = "ranking";
-var DISPLAY_STATS = "stats";
-var DISPLAY_COOCCURENCE = "cooccurence";
-var DISPLAY_BOXTABLE = "boxtable";
-var DISPLAY_DATATABLE = "datatable";
-var DISPLAY_PERCENTCHANGE = "percentchange";
-var DISPLAY_SPARKLINE = "sparkline";
-var DISPLAY_POINTIMAGE = "pointimage";
-var DISPLAY_FIELDTABLE = "fieldtable";
+const DISPLAY_GRAPH = "graph";
+const DISPLAY_TREE = "tree";
+const DISPLAY_ORGCHART = "orgchart";
+const DISPLAY_TIMELINE = "timeline";
+const DISPLAY_BLANK = "blank";
+const DISPLAY_MESSAGE = "message";
+const DISPLAY_RECORDS = "records";
+const DISPLAY_TSNE = "tsne";
+const DISPLAY_HEATMAP = "heatmap";
+const DISPLAY_CROSSTAB = "crosstab";
+const DISPLAY_CORRELATION = "correlation";
+const DISPLAY_RANKING = "ranking";
+const DISPLAY_STATS = "stats";
+const DISPLAY_COOCCURENCE = "cooccurence";
+const DISPLAY_BOXTABLE = "boxtable";
+const DISPLAY_DATATABLE = "datatable";
+const DISPLAY_PERCENTCHANGE = "percentchange";
+const DISPLAY_SPARKLINE = "sparkline";
+const DISPLAY_POINTIMAGE = "pointimage";
+const DISPLAY_FIELDTABLE = "fieldtable";
 
 addGlobalDisplayType({
     type: DISPLAY_RANKING,
@@ -189,9 +189,8 @@ addGlobalDisplayType({
 
 function RamaddaGraphDisplay(displayManager, id, properties) {
     const ID_GRAPH = "graph";
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
-							 DISPLAY_GRAPH, properties));
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_GRAPH, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     if(!window["ForceGraph"]) {
 	Utils.importJS("https://unpkg.com/force-graph");
@@ -379,7 +378,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 
 
 function RamaddaTreeDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TREE, properties);
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TREE, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -491,8 +490,8 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 
 
 function OrgchartDisplay(displayManager, id, properties) {
-    let ID_ORGCHART = "orgchart";
-    let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ORGCHART, properties);
+    const ID_ORGCHART = "orgchart";
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ORGCHART, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -565,8 +564,8 @@ function OrgchartDisplay(displayManager, id, properties) {
 
 
 function RamaddaTimelineDisplay(displayManager, id, properties) {
-    var ID_TIMELINE = "timeline";
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
+    const ID_TIMELINE = "timeline";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     
@@ -732,7 +731,7 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
     if(!properties.width) properties.width='100%';
     properties.showMenu = false;
     properties.showTitle = false;
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLANK, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLANK, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -756,7 +755,7 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 
 
 function RamaddaMessageDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MESSAGE, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MESSAGE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -774,12 +773,12 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
 
 
 function RamaddaTsneDisplay(displayManager, id, properties) {
-    var ID_CANVAS = "tsnecanvas";
-    var ID_DETAILS = "tsnedetails";
-    var ID_RUN = "tsnerun";
-    var ID_RESET = "tsnereset";
-    var ID_STEP = "tsnestep";
-    var ID_SEARCH = "tsnesearch";
+    const ID_CANVAS = "tsnecanvas";
+    const ID_DETAILS = "tsnedetails";
+    const ID_RUN = "tsnerun";
+    const ID_RESET = "tsnereset";
+    const ID_STEP = "tsnestep";
+    const ID_SEARCH = "tsnesearch";
     $.extend(this, {
         colorTable: "red_white_blue",
         colorByMin: "-1",
@@ -787,7 +786,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
         height: "500px;"
     });
 
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TSNE, properties);
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TSNE, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
 
@@ -971,7 +970,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
     $.extend(this, {
         colorTable: "red_white_blue",
     });
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HEATMAP, properties);
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HEATMAP, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -1210,13 +1209,13 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
 
 
 function RamaddaRankingDisplay(displayManager, id, properties) {
-    var ID_TABLE = "rankingtable";
+    const ID_TABLE = "rankingtable";
     $.extend(this, {
 	height: "500px",
         sortAscending:false,
     });
     if(properties.sortAscending) this.sortAscending = "true" == properties.sortAscending;
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RANKING, properties);
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RANKING, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
 
@@ -1392,8 +1391,8 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 
 
 function RamaddaCrosstabDisplay(displayManager, id, properties) {
-    var ID_TABLE = "crosstab";
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CROSSTAB, properties);
+    const ID_TABLE = "crosstab";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CROSSTAB, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -1514,21 +1513,21 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
 
 
 function RamaddaCorrelationDisplay(displayManager, id, properties) {
-    let ID_SLIDER_LOW = "sliderlow";
-    let ID_SLIDER_LOW_MIN = "sliderlowmin";
-    let ID_SLIDER_LOW_MAX = "sliderlowmax"
-    let ID_SLIDER_HIGH = "sliderhigh";
-    let ID_SLIDER_HIGH_MIN = "sliderhighmin";
-    let ID_SLIDER_HIGH_MAX = "sliderhighmax"    
-    let ID_TABLE = "table";
-    let ID_LASTROW = "lastrow";
+    const ID_SLIDER_LOW = "sliderlow";
+    const ID_SLIDER_LOW_MIN = "sliderlowmin";
+    const ID_SLIDER_LOW_MAX = "sliderlowmax"
+    const ID_SLIDER_HIGH = "sliderhigh";
+    const ID_SLIDER_HIGH_MIN = "sliderhighmin";
+    const ID_SLIDER_HIGH_MAX = "sliderhighmax"    
+    const ID_TABLE = "table";
+    const ID_LASTROW = "lastrow";
     $.extend(this, {
         colorTable: "red_white_blue",
         colorByMin: "-1",
         colorByMax: "1",
     });
 
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CORRELATION, properties);
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CORRELATION, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
 
@@ -1838,7 +1837,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 
 
 function RamaddaRecordsDisplay(displayManager, id, properties, type) {
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RECORDS, properties);
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RECORDS, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -1926,7 +1925,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
         showType: dflt,
         showText: dflt,
     });
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, type || DISPLAY_STATS, properties);
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, type || DISPLAY_STATS, properties);
     RamaddaUtil.inherit(this, SUPER);
 
     if (!type)
@@ -2317,12 +2316,11 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 
 
 function RamaddaCooccurenceDisplay(displayManager, id, properties) {
-    let ID_TABLE = "table";
-    let ID_HEADER = "coocheader";
-    let ID_SORTBY = "sortby";
-    let SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
-							 DISPLAY_COOCCURENCE, properties));
+    const ID_TABLE = "table";
+    const ID_HEADER = "coocheader";
+    const ID_SORTBY = "sortby";
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_COOCCURENCE, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
@@ -2487,11 +2485,10 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 
 
 function RamaddaBoxtableDisplay(displayManager, id, properties) {
-    let ID_HEADER = "coocheader";
-    let ID_SORTBY = "sortby";
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
-							 DISPLAY_BOXTABLE, properties));
+    const ID_HEADER = "coocheader";
+    const ID_SORTBY = "sortby";
+    const SUPER =  = new RamaddaDisplay(displayManager, id, DISPLAY_BOXTABLE, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
@@ -2576,7 +2573,7 @@ function RamaddaBoxtableDisplay(displayManager, id, properties) {
 
 
 function RamaddaPercentchangeDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PERCENTCHANGE, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PERCENTCHANGE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -2718,9 +2715,8 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 
 
 function RamaddaDatatableDisplay(displayManager, id, properties) {
-    let SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
-							 DISPLAY_DATATABLE, properties));
+    const SUPER = = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties));
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
@@ -3125,7 +3121,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
     const ID_INNER = "inner";
     if(!properties.groupBy)
 	properties.displayInline = true;
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineProperties([
@@ -3206,7 +3202,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 function RamaddaPointimageDisplay(displayManager, id, properties) {
     if(!properties.width) properties.width="200";
     properties.displayInline = true;
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_POINTIMAGE, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_POINTIMAGE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -3313,8 +3309,8 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 
 
 function RamaddaFieldtableDisplay(displayManager, id, properties) {
-    let ID_TABLE = "fieldtable";
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_FIELDTABLE, properties);
+    const ID_TABLE = "fieldtable";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_FIELDTABLE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -3498,7 +3494,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 
 
 function RamaddaDotstackDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotstack", properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotstack", properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -3573,7 +3569,7 @@ function RamaddaDotstackDisplay(displayManager, id, properties) {
 
 
 function RamaddaDotbarDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotbar", properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, "dotbar", properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineProperties([

@@ -2,14 +2,13 @@
    Copyright 2008-2019 Geode Systems LLC
 */
 
-let DISPLAY_MAP = "map";
-let DISPLAY_MAPGRID = "mapgrid";
+const DISPLAY_MAP = "map";
+const DISPLAY_MAPGRID = "mapgrid";
 
 let displayMapMarkers = ["marker.png", "marker-blue.png", "marker-gold.png", "marker-green.png"];
 let displayMapCurrentMarker = -1;
 let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
-
 
 
 addGlobalDisplayType({
@@ -31,16 +30,16 @@ function MapFeature(source, points) {
 
 
 function RamaddaMapDisplay(displayManager, id, properties) {
-    let ID_LATFIELD = "latfield";
-    let ID_LONFIELD = "lonfield";
-    let ID_MAP = "map";
-    let ID_SIZEBY_LEGEND = "sizebylegend";
-    let ID_COLORTABLE_SIDE = "colortableside";
-    let ID_SHAPES = "shapes";
-    let ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
-    let ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
-    let ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
-    let SUPER;
+    const ID_LATFIELD = "latfield";
+    const ID_LONFIELD = "lonfield";
+    const ID_MAP = "map";
+    const ID_SIZEBY_LEGEND = "sizebylegend";
+    const ID_COLORTABLE_SIDE = "colortableside";
+    const ID_SHAPES = "shapes";
+    const ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
+    const ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
+    const ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
+
     RamaddaUtil.defineMembers(this, {
         showBoxes: true,
         showPercent: false,
@@ -52,8 +51,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         theMap: null
     });
 
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
-							 DISPLAY_MAP, properties));
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_MAP, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
 
     this.defineProperties([
@@ -2686,7 +2685,7 @@ function MapEntryInfo(entry) {
 
 
 function RamaddaMapgridDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MAPGRID, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MAPGRID, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {

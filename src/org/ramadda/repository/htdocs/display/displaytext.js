@@ -113,8 +113,8 @@ addGlobalDisplayType({
 
 
 function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
-    var ID_TEXTBLOCK = "textblock";
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
+    const ID_TEXTBLOCK = "textblock";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
         processText: function(cnt) {
@@ -214,8 +214,8 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
 
 
 function RamaddaWordcloudDisplay(displayManager, id, properties) {
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties));
+    const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
 	getWikiEditorTags: function() {
@@ -502,8 +502,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 
 
 function RamaddaCardsDisplay(displayManager, id, properties) {
-    var ID_RESULTS = "results";
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CARDS, properties);
+    const ID_RESULTS = "results";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CARDS, properties);
     Utils.importJS(ramaddaBaseUrl + "/lib/color-thief.umd.js",
 		   () => {},
 		   (jqxhr, settings, exception) => {
@@ -866,10 +866,10 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 
 function RamaddaImagesDisplay(displayManager, id, properties) {
-    var ID_GALLERY = "gallery";
-    var ID_NEXT = "next";
-    var ID_PREV = "prev";
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
+    const ID_GALLERY = "gallery";
+    const ID_NEXT = "next";
+    const ID_PREV = "prev";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
     
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -966,7 +966,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.showTitle)) properties.showTitle=false;
     if(!Utils.isDefined(properties.showMenu)) properties.showMenu=false;
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -1485,11 +1485,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 
 function RamaddaSlidesDisplay(displayManager, id, properties) {
-    var ID_SLIDE = "slide";
-    var ID_PREV = "prev";
-    var ID_NEXT = "next";
+    constID_SLIDE = "slide";
+    const ID_PREV = "prev";
+    const ID_NEXT = "next";
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -1589,8 +1589,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 function RamaddaTopfieldsDisplay(displayManager, id, properties) {
-    var ID_SLIDE = "slide";
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TOPFIELDS, properties);
+    const ID_SLIDE = "slide";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TOPFIELDS, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -1726,11 +1726,11 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 
 
 function RamaddaBlocksDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLOCKS, properties);
-    var ID_BLOCKS_HEADER = "blocks_header";
-    var ID_BLOCKS = "blocks";
-    var ID_BLOCKS_FOOTER = "blocks_footer";
-    var animStep=1000;
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLOCKS, properties);
+    const ID_BLOCKS_HEADER = "blocks_header";
+    const ID_BLOCKS = "blocks";
+    const ID_BLOCKS_FOOTER = "blocks_footer";
+    let animStep=1000;
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -1827,7 +1827,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 
 
 function RamaddaTextstatsDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTSTATS, properties);
+    const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTSTATS, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -2029,7 +2029,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
 
 
 function RamaddaFrequencyDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_FREQUENCY, properties);
+    const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_FREQUENCY, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -2310,7 +2310,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 }
 
 function RamaddaTextanalysisDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTANALYSIS, properties);
+    const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTANALYSIS, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -2482,15 +2482,14 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
 
 
 function RamaddaTextrawDisplay(displayManager, id, properties) {
-    var ID_TEXT = "text";
-    var ID_OVERLAY = "overlay";
-    var ID_OVERLAY_TABLE = "overlaytable";
-    var ID_LABEL = "label";
-    var ID_SEARCH = "search";
-    var ID_HIGHLIGHT = "highlight"; 
-    var ID_SHRINK = "shrink";
-    
-    let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
+    const ID_TEXT = "text";
+    const ID_OVERLAY = "overlay";
+    const ID_OVERLAY_TABLE = "overlaytable";
+    const ID_LABEL = "label";
+    const ID_SEARCH = "search";
+    const ID_HIGHLIGHT = "highlight"; 
+    const ID_SHRINK = "shrink";
+    const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -2558,7 +2557,6 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             this.showText();
 	    let t2 = new Date();
 	    Utils.displayTimes("T",[t1,t2]);
-
         },
         handleEventPropertyChanged: function(source, prop) {
             if (prop.property == "pattern") {
@@ -2851,7 +2849,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
 
 function RamaddaTextDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties);
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties);
     $.extend(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {

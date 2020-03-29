@@ -2,37 +2,20 @@
    Copyright 2008-2019 Geode Systems LLC
 */
 
-
-/*
-let func = Math.log10;
-var min = func(16000);
-var max = func(81000);
-
-console.log("range:" + min +" " + max);
-[1,16000,32000,48000,64000,81000].forEach(v=>{
-    let fv = func(v);
-    let percent =  (fv - min) / (max-min);
-    console.log("v:" + v + " fv:" + fv +" p:" + percent);
-});
-*/
-
-var testcnt = 0;
-
 function AreaWidget(display) {
-    var ID_CONTAINS = "contains";
-    var ID_NORTH = "north";
-    var ID_SOUTH = "south";
-    var ID_EAST = "east";
-    var ID_WEST = "west";
-
-    var ID_AREA_LINK = "arealink";
+    const ID_CONTAINS = "contains";
+    const ID_NORTH = "north";
+    const ID_SOUTH = "south";
+    const ID_EAST = "east";
+    const ID_WEST = "west";
+    const ID_AREA_LINK = "arealink";
 
     RamaddaUtil.inherit(this, {
         display: display,
         getHtml: function() {
             var callback = this.display.getGet();
             //hack, hack
-            var cbx = HtmlUtils.checkbox(this.display.getDomId(ID_CONTAINS), ["title", "Search mode: checked - contains, unchecked - overlaps"], false);
+            var cbx = HtmlUtils.checkbox(this.display.getDomId(ID_CONTAINS), [TITLE, "Search mode: checked - contains, unchecked - overlaps"], false);
             var link = HtmlUtils.onClick(callback + ".areaWidget.areaLinkClick();", HtmlUtils.image(root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png"), [ATTR_TITLE, "Set bounds from map", ATTR_CLASS, "display-area-link", "border", "0", ATTR_ID, this.display.getDomId(ID_AREA_LINK)]));
 
             var mylocation = HtmlUtils.onClick(callback + ".areaWidget.useMyLocation();", HtmlUtils.image(root + "/icons/compass.png"), [ATTR_TITLE, "Set my location", ATTR_CLASS, "display-area-link", "border", "0"]);
@@ -135,8 +118,8 @@ function AreaWidget(display) {
 
 
 function DateRangeWidget(display) {
-    var ID_DATE_START = "date_start";
-    var ID_DATE_END = "date_end";
+    const ID_DATE_START = "date_start";
+    const ID_DATE_END = "date_end";
 
     RamaddaUtil.inherit(this, {
         display: display,
@@ -150,10 +133,10 @@ function DateRangeWidget(display) {
             settings.setDateRange(start, end);
         },
         getHtml: function() {
-            var html = HtmlUtils.input(ID_DATE_START, "", ["class", "display-date-input", "placeholder", " start date", ATTR_ID,
+            var html = HtmlUtils.input(ID_DATE_START, "", [CLASS, "display-date-input", "placeholder", " start date", ATTR_ID,
 							   display.getDomId(ID_DATE_START), "size", "10"
 							  ]) + " - " +
-                HtmlUtils.input(ID_DATE_END, "", ["class", "display-date-input", "placeholder", " end date", ATTR_ID,
+                HtmlUtils.input(ID_DATE_END, "", [CLASS, "display-date-input", "placeholder", " end date", ATTR_ID,
 						  display.getDomId(ID_DATE_END), "size", "10"
 						 ]);
             return html;
@@ -306,7 +289,7 @@ function DisplayAnimation(display, enabled) {
 		    if(debug)console.log("\ttick:" + record.getDate());
 		    var perc = (date-min)/(max-min)*100;
 		    var tt = this.formatAnimationDate(record.getDate());
-		    ticks+=HtmlUtils.div(["id",this.display.getId()+"-"+record.getId(), "class","display-animation-tick","style","left:" + perc+"%;"+tickStyle,"title",tt,"recordIndex",i],"");
+		    ticks+=HtmlUtils.div([ID,this.display.getId()+"-"+record.getId(), CLASS,"display-animation-tick",STYLE,HU.css('left', perc+'%')+tickStyle,TITLE,tt,"recordIndex",i],"");
 		}
 		this.jq(ID_TICKS).html(ticks);
 		if(debug)console.log("animation.init done making ticks");
@@ -353,26 +336,26 @@ function DisplayAnimation(display, enabled) {
 	    if(this.display.getProperty("animationShowButtons",true)) {
 		var short = display.getProperty("animationWidgetShort",false);
 		if(!short)
-		    buttons +=   HtmlUtils.span(["id", this.getDomId(ID_BEGIN),"title","Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
-		buttons += HtmlUtils.span(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
+		    buttons +=   HtmlUtils.span([ID, this.getDomId(ID_BEGIN),TITLE,"Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
+		buttons += HtmlUtils.span([ID, this.getDomId(ID_PREV), TITLE,"Previous"], HtmlUtils.getIconImage("fa-step-backward")); 
 		if(!short)
-		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")); 
-		buttons +=HtmlUtils.span(["id", this.getDomId(ID_NEXT), "title","Next"], HtmlUtils.getIconImage("fa-step-forward"));
+		    buttons +=HtmlUtils.span([ID, this.getDomId(ID_RUN),  TITLE,"Run/Stop"], HtmlUtils.getIconImage("fa-play")); 
+		buttons +=HtmlUtils.span([ID, this.getDomId(ID_NEXT), TITLE,"Next"], HtmlUtils.getIconImage("fa-step-forward"));
 		if(!short)
-		    buttons +=HtmlUtils.span(["id", this.getDomId(ID_END), "title","Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
+		    buttons +=HtmlUtils.span([ID, this.getDomId(ID_END), TITLE,"Go to end"], HtmlUtils.getIconImage("fa-fast-forward"));
 		if(!short)
-		    buttons += HtmlUtils.span(["id", this.getDomId(ID_SHOWALL), "title","Show all"], HtmlUtils.getIconImage("fa-sync"));
+		    buttons += HtmlUtils.span([ID, this.getDomId(ID_SHOWALL), TITLE,"Show all"], HtmlUtils.getIconImage("fa-sync"));
 	    }
-	    buttons+=HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-animation-label"]);
-            buttons = HtmlUtils.div([ "class","display-animation-buttons"], buttons);
+	    buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label"]);
+            buttons = HtmlUtils.div([ CLASS,"display-animation-buttons"], buttons);
 	    if(display.getProperty("animationShowSlider",true)) {
 		let style= display.getProperty("animationSliderStyle","");
-		buttons +=   HtmlUtils.div(["class","display-animation-slider","style",style,"id",this.getDomId(ID_SLIDER)],
-					   HtmlUtils.div(["class","display-animation-ticks","id",this.getDomId(ID_TICKS)]));
+		buttons +=   HtmlUtils.div([CLASS,"display-animation-slider",STYLE,style,ID,this.getDomId(ID_SLIDER)],
+					   HtmlUtils.div([CLASS,"display-animation-ticks",ID,this.getDomId(ID_TICKS)]));
 	    }
 	    
 
-            this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["style",this.display.getProperty("animationStyle")], buttons));
+            this.jq(ID_TOP_LEFT).append(HtmlUtils.div([STYLE,this.display.getProperty("animationStyle")], buttons));
             this.btnRun = this.jq(ID_RUN);
             this.btnPrev = this.jq(ID_PREV);
             this.btnNext = this.jq(ID_NEXT);
@@ -690,8 +673,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.alphaTargetMax = +this.getProperty("alphaTargetMax",1); 
     }
 
-
-
     this.convertIntensity = this.getProperty("convertColorIntensity",false);
     if(this.convertIntensity) {
 	if(!Utils.isDefined(this.getProperty("intensitySourceMin"))) {
@@ -818,24 +799,6 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.colorByFunc = Math.log2;
     }
 
-/*
-    if(testcnt==1) {
-	this.colorByFunc = Math.log;
-	console.log("log");
-    } else if(testcnt==2) {
-	this.colorByFunc = Math.log10;
-	console.log("log10");
-    } else if(testcnt==3) {
-	this.colorByFunc = Math.log2;
-	console.log("log2");
-    } else {
-	this.colorByFunc = null;
-	console.log("none");
-    }
-    testcnt++;
-    if(testcnt>3) testcnt = 0;
-*/
-
     this.setRange(this.getProperty("Min", this.minValue),
 		  this.getProperty("Max", this.maxValue), true);
 
@@ -861,11 +824,11 @@ ColorByInfo.prototype = {
 	if(this.compareFields.length>0) {
 	    var legend = "";
 	    this.compareFields.map((f,idx)=>{
-		legend += HtmlUtils.div(["style","display:inline-block;width: 15px;height: 15px; background:" + this.colors[idx]+";"]) +" " +
+		legend += HtmlUtils.div([STYLE,HU.css('display','inline-block','width','15px','height','15px','background', this.colors[idx])]) +" " +
 		    f.getLabel() +" ";
 	    });
 	    let dom = this.display.jq(domId || ID_COLORTABLE);
-	    dom.html(HtmlUtils.div(["style","text-align:center; margin-top:5px;"], legend));
+	    dom.html(HtmlUtils.div([STYLE,HU.css('text-align','center','margin-top','5px')], legend));
 	}
 	if(!force && this.index<0) return;
 	if(this.stringMap) {
@@ -1062,7 +1025,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
 
     var tt = d3.select("body").append("div")	
-	.attr("class", "sparkline-tooltip")				
+	.attr(CLASS, "sparkline-tooltip")				
 	.style("opacity", 0);
 
     const svg = d3.select(dom).append('svg')
@@ -1376,7 +1339,7 @@ SizeBy.prototype = {
 		if(vert) html+="<br>";
 	    }
 	}
-	return HU.div(["class","display-size-legend"], html);
+	return HU.div([CLASS,"display-size-legend"], html);
     }
 
 }

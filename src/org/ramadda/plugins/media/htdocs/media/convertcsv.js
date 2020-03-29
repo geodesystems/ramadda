@@ -115,7 +115,7 @@ var Csv = {
 		    }
 		    tooltip += command;
 		    cmd.args.forEach(a=>{
-			let desc = a.desc;
+			let desc = a.desc||"";
 			if(desc!="") desc = " "  + desc;
 			tooltip +=" <" +a.id  +desc+ "> ";
 		    });
@@ -394,6 +394,17 @@ var Csv = {
 	cmds = " " + cmds +" ";
 	Csv.insertText(cmds);
     },
+    insertColumnIndex:function(index) {
+	if(Csv.columnInput && $("#" + Csv.columnInput).length>0) {
+	    let v = $("#" + Csv.columnInput).val()||"";
+	    v = v.trim();
+	    if(v!="" && !v.endsWith(",")) v +=",";
+	    v+=index;
+	    $("#" + Csv.columnInput).val(v);	    
+	    return;
+	}
+	Csv.insertText(index+",");
+    },
     insertText:function(text) {
 	if (Csv.editor) {
             var cursor = Csv.editor.getCursorPosition();
@@ -563,7 +574,7 @@ var Csv = {
                     $("#convertcsv_output .csv_header_field").click(function(event) {
 			$(this).attr(STYLE,"color:black;");
 			var index = $(this).attr("index").replace("#","").trim();
-			Csv.insertText(index+",");
+			Csv.insertColumnIndex(index);
 		    });
                     HtmlUtils.formatTable(".ramadda-table",{xordering:true});
 		} else {
@@ -601,18 +612,14 @@ var Csv = {
 			var line = toks[0];
 			line = line.replace("#fields=","");
 			line = line.replace(/(\] *),/g,"$1\n");
-			//			line = line.replace(/([^\[]+)(\[.*\])/g,"X$1$2");
 			var tmp ="";
 			toks = line.split("\n");
-			Csv.header = [];
 			for(var i=0;i<toks.length;i++) {
 			    var l = toks[i];
-			    Csv.header.push(l);
 			    l = l.replace(/^(.*?)\[/,"<span class=csv_addheader_field field='$1' title='Add to input'>$1</span>[");
 			    tmp+=l +"\n";
 			}
 			result = tmp;
-
 		    } else if(isDb) {
 			result = result.replace("<tables>","Database:");
 			result = result.replace(/<property[^>]+>/g,"");
@@ -662,8 +669,7 @@ var Csv = {
 			$("#convertcsv_output .csv_header_field").click(function(event) {
 			    $(this).attr(STYLE,"color:black;");
 			    var index = $(this).attr("index").replace("#","").trim();
-			    Csv.insertText(index+",");
-			    
+			    Csv.insertColumnIndex(index);
 			});
 		    }			
 		    if(isHeader) {
@@ -774,18 +780,20 @@ var Csv = {
 
 	let inner = HU.center(HU.h2(label)) + HU.center(desc);
 	inner+=HU.formTable();
+	Csv.columnInput = null;
 	cmd.args.forEach((a,idx)=>{
 	    let v = opts.values&& idx<opts.values.length?opts.values[idx]:"";
 	    let label = a.label || Utils.makeLabel(a.id);
+	    let id = "csvcommand" + idx;
 	    if(a.rows) {
-		inner+=HU.formEntryTop(label,HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,"csvcommand" + idx,"size",10]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
+		inner+=HU.formEntryTop(label,HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,id,"size",10]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
 	    } else if(a.values) {
 		
-		inner+=HU.formEntry(label,HU.select("",[ID,"csvcommand" + idx],a.values.split(",")) +" " + a.description);
+		inner+=HU.formEntry(label,HU.select("",[ID,id],a.values.split(",")) +" " + a.description);
 	    } else {
-		let size = 10;
-		if(a.size) size = a.size;
-		inner+=HU.formEntry(label,HU.input("",v,[ID,"csvcommand" + idx,"size",size]) +" " + a.description);
+		let size = a.size || 10;
+		if(!Csv.columnInput && (a.type == "columns" || a.type == "column")) Csv.columnInput = id;
+		inner+=HU.formEntry(label,HU.input("",v,[ID,id,"size",size]) +" " + a.description);
 	    }
 	});
 	inner+=HU.formTableClose();
@@ -804,6 +812,7 @@ var Csv = {
 	}
 	let dialog = HU.makeDraggableDialog(target,inner,{at:at,remove:true});
 	let submit = () =>{
+	    Csv.columnInput = null;
 	    let args = "";
 	    let values =[];
 	    cmd.args.forEach((a,idx)=>{
@@ -839,6 +848,7 @@ var Csv = {
 	    if(opts.callback) {
 		opts.callback(null);
 	    }
+	    Csv.columnInput = null;
 	    dialog.remove();
 	});    
     },

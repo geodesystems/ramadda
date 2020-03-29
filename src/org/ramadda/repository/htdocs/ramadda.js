@@ -2,8 +2,6 @@
  * Copyright (c) 2008-2019 Geode Systems LLC
  */
 
-
-
 var popupObject;
 var dontHideObject=false;
 var tooltipObject;
