@@ -2320,12 +2320,10 @@ public class Utils extends IO {
             if (inEscape) {
                 sb       = append(c, sb, lines);
                 inEscape = false;
-
                 continue;
             }
             if (c == '\\') {
                 inEscape = true;
-
                 continue;
             }
             if (c == '{') {
@@ -2369,11 +2367,11 @@ public class Utils extends IO {
                 if (inBracket) {
                     sb = append(c, sb, lines);
                 } else {
-                    if ( !inQuote) {
+                    if (!inQuote) {
                         inQuote = true;
                     } else {
                         if (sb == null) {
-                            append(' ', sb, lines);
+                            append("", sb, lines);
                         }
                         sb      = null;
                         inQuote = false;
@@ -2692,10 +2690,10 @@ public class Utils extends IO {
      */
     public static void main(String[] args) throws Exception {
         String cmd = "-addheader {} -print";
-        cmd = "-change { +}";
+        cmd = "-change \"\" \"\"";
         for (Object tok : parseMultiLineCommandLine(cmd)) {
             System.err.println("\ttok:"
-                               + tok.toString().replaceAll("\n", "_NL_"));
+                               + tok.toString().replaceAll("\n", "_NL_")+":");
         }
     }
 
