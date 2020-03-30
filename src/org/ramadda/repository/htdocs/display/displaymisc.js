@@ -2487,7 +2487,7 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 function RamaddaBoxtableDisplay(displayManager, id, properties) {
     const ID_HEADER = "coocheader";
     const ID_SORTBY = "sortby";
-    const SUPER =  = new RamaddaDisplay(displayManager, id, DISPLAY_BOXTABLE, properties);
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_BOXTABLE, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -2715,7 +2715,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 
 
 function RamaddaDatatableDisplay(displayManager, id, properties) {
-    const SUPER = = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties));
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {

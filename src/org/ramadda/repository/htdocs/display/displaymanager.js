@@ -488,7 +488,7 @@ function DisplayManager(argId, argProperties) {
                 alert("Error: could not find display function:" + type + " msg: " + msg);
                 return;
             }
-            var displayId = props.displayId;
+            let displayId = props.displayId;
 	    if(!displayId) 
 		displayId = this.getUniqueId("display");
             if (props.data == null && this.dataList.length > 0) {
@@ -498,7 +498,7 @@ function DisplayManager(argId, argProperties) {
             if (!props.entryId) {
                 props.entryId = this.group.entryId;
             }
-            var display = eval(" new " + funcName + "(this,'" + displayId + "', props);");
+            let display = eval(" new " + funcName + "(this,'" + displayId + "', props);");
             if (display == null) {
                 console.log("Error: could not create display using:" + funcName);
                 alert("Error: could not create display using:" + funcName);

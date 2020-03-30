@@ -24756,7 +24756,7 @@ function DisplayManager(argId, argProperties) {
                 alert("Error: could not find display function:" + type + " msg: " + msg);
                 return;
             }
-            var displayId = props.displayId;
+            let displayId = props.displayId;
 	    if(!displayId) 
 		displayId = this.getUniqueId("display");
             if (props.data == null && this.dataList.length > 0) {
@@ -24766,7 +24766,7 @@ function DisplayManager(argId, argProperties) {
             if (!props.entryId) {
                 props.entryId = this.group.entryId;
             }
-            var display = eval(" new " + funcName + "(this,'" + displayId + "', props);");
+            let display = eval(" new " + funcName + "(this,'" + displayId + "', props);");
             if (display == null) {
                 console.log("Error: could not create display using:" + funcName);
                 alert("Error: could not create display using:" + funcName);
@@ -32521,7 +32521,7 @@ function RamaddaCooccurenceDisplay(displayManager, id, properties) {
 function RamaddaBoxtableDisplay(displayManager, id, properties) {
     const ID_HEADER = "coocheader";
     const ID_SORTBY = "sortby";
-    const SUPER =  = new RamaddaDisplay(displayManager, id, DISPLAY_BOXTABLE, properties);
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_BOXTABLE, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -32749,7 +32749,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 
 
 function RamaddaDatatableDisplay(displayManager, id, properties) {
-    const SUPER = = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties));
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_DATATABLE, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
