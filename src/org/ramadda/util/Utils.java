@@ -3669,7 +3669,6 @@ public class Utils extends IO {
             int tagIdx, List results, String tab) {
         String  tag     = (String) tags.get(tagIdx);
         boolean lastTag = (tagIdx == tags.size() - 1);
-
         //      System.err.println (tab+XmlUtil.getLocalName(parent) + " looking for:" + tag + " idx:" + tagIdx+ " lastTag:" + lastTag);
         NodeList elements = XmlUtil.getElements(parent);
         tab = tab + "\t";

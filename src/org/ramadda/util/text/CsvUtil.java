@@ -1740,7 +1740,7 @@ public class CsvUtil {
         new Cmd("-concat", "Create a new column from the given columns",
                 new Arg("columns","","type","columns"), "delimiter"),
         new Cmd("-split", "Split the column", new Arg("column","","type","column"), new Arg("delimiter","What to split on"),
-                new Arg("names", "Comma separated new column names")),
+                new Arg("names", "Comma separated new column names","type","list")),
         new Cmd("-splat",
                 "Create a new column from the values in the given column",
                 "key col", new Arg("column","","type","column"), "delimiter",
@@ -1901,7 +1901,7 @@ public class CsvUtil {
                 "period", "label"),
         new Cmd(true, "Geocode"),
         new Cmd("-geocode", "", new Arg("columns","","type","columns"),
-                "prefix, e.g., state: or county:", "suffix> "),
+                new Arg("prefix","e.g., state: or county:"), new Arg("suffix")),
         new Cmd("-geocodeaddressdb", new Label("Geocode address for DB"), "", new Arg("columns"), "prefix",
                 "suffix> "),
         new Cmd("-geocodejoin", "Geocode with file", new Arg("column","","type","columns"), new Arg("csv file","File to get lat/lon from", "type","file"), "name idx",
@@ -1935,7 +1935,7 @@ public class CsvUtil {
         new Cmd("-widths", "Columns are fixed widths",
                 new Arg("widths", "w1,w2,...,wN")),
         new Cmd("-header", "Raw header",
-                new Arg("header","Comma separated column names","size","60")),
+                new Arg("header","Column names","type","list")),
         new Cmd(
             "-html",
             "Parse the table in the input html file",
@@ -1943,22 +1943,22 @@ public class CsvUtil {
 	    new Arg("pattern","Pattern to skip to","type","pattern","size","40"),
 	    new Arg("properties", "Other attributes - <br>&nbsp;&nbsp;removeEntity false removePattern pattern","rows","6","size","40")),
         new Cmd("-htmlpattern", new Label("Extract from html"), "Parse the input html file",
-                new Arg("columns","comma separated list of column names"),
+                new Arg("columns","Column names","type","columns"),
 		new Arg("startPattern","","type","pattern"),
                 new Arg("endPattern","","type","pattern"),
 		new Arg("pattern","Row pattern. Use (...) to match columns","type","pattern")),
         new Cmd("-json", "Parse the input as json",
-                new Arg("arrayPath", "Path to the array e.g., obj1.arr[index].obj2","size","30","label","Array path"),
-                new Arg("objectPath", "Comma separated paths to the objects e.g. geometry,features","size","30","label","Object path")),
+                new Arg("arrayPath", "Path to the array e.g., obj1.arr[2].obj2","size","30","label","Array path"),
+                new Arg("objectPaths", "One or more paths to the objects e.g. geometry,features","size","30","label","Object paths","type","list","size","30")),
         new Cmd("-xml", "Parse the input as xml",
-                new Arg("arrayPath", "Path to the array","size","60")),
+                new Arg("path",  "Path to the elements","size","60")),
         new Cmd("-text", "Extract rows from the text",
                 new Arg("comma separated header"), new Arg("chunk pattern","","type","pattern"),
                 new Arg("token pattern","","type","pattern")),
         new Cmd("-tokenize", "Tokenize the input from the pattern",
                 new Arg("header", "header1,header2..."), new Arg("pattern","","type","pattern")),
         new Cmd("-prune", "Prune out the first N bytes",
-                new Arg("bytes", "number of leading bytes to remove","type","number")),
+                new Arg("bytes", "Number of leading bytes to remove","type","number")),
         new Cmd(true, "Output"), new Cmd("-print", "Output the rows"),
         new Cmd("-template", "Apply the template to make the output",
                 new Arg("prefix","","size","40"),
@@ -2986,9 +2986,20 @@ public class CsvUtil {
                     continue;
                 }
 
-
-
                 if (arg.equals("-geocode") || arg.equals("-geocodeaddress")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols   = getCols(args.get(++i));
+                    String       prefix = args.get(++i).trim();
+                    String       suffix = args.get(++i).trim();
+                    info.getProcessor().addProcessor(
+                        new Converter.Geocoder(cols, prefix, suffix));
+
+                    continue;
+                }
+
+                if (arg.equals("-geocodejoin")) {
                     if ( !ensureArg(args, i, 5)) {
                         return false;
                     }
@@ -3003,18 +3014,7 @@ public class CsvUtil {
                     continue;
                 }
 
-                if (arg.equals("-geocodeaddress")) {
-                    if ( !ensureArg(args, i, 3)) {
-                        return false;
-                    }
-                    List<String> cols   = getCols(args.get(++i));
-                    String       prefix = args.get(++i).trim();
-                    String       suffix = args.get(++i).trim();
-                    info.getProcessor().addProcessor(
-                        new Converter.Geocoder(cols, prefix, suffix));
 
-                    continue;
-                }
 
                 if (arg.equals("-geocodeaddressdb")) {
                     if ( !ensureArg(args, i, 3)) {
