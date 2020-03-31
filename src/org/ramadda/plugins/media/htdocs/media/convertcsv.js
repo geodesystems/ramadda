@@ -62,13 +62,14 @@ var Csv = {
 	    html += HtmlUtil.checkbox("convertcsv_applytosiblings",[], Csv.applyToSiblings) + " Apply to siblings" +"<br>";
 	    html +=  HtmlUtil.checkbox("",[ID,"convertcsv_save"],Csv.save) +" Save" +"<br>";
 	    html += HtmlUtil.checkbox("",[ID,"convertcsv_docommands"],Csv.doCommands) +" Do commands";
-	    HU.makeDraggableDialog($(this),html,{my:"right top",at:"right bottom",
+	    let dialog = HU.makeDraggableDialog($(this),html,{my:"right top",at:"right bottom",
 						 callback:(dialog)=>{
 						     Csv.maxRows = $("#convertcsv_maxrows").val();
 						     dialog.remove();
 						 }});
 	    HU.onReturnEvent("#convertcsv_maxrows",input=>{
 		Csv.maxRows = input.val();
+		dialog.remove();
 	    });
 
 	    $("#convertcsv_save").click(function() {
@@ -148,7 +149,7 @@ var Csv = {
 		result= JSON.parse(result);
 		Csv.commands = result.commands;
 		Csv.commandsMap = {}
-		result.commands.map(cmd=>{
+		Csv.commands.forEach(cmd=>{
 		    var command = cmd.command;
 		    if(cmd.isCategory) {
 			select +=HtmlUtil.tag("option",[],cmd.description);
@@ -777,26 +778,28 @@ var Csv = {
 	    let v = opts.values&& idx<opts.values.length?opts.values[idx]:"";
 	    let label = a.label || Utils.makeLabel(a.id);
 	    let id = "csvcommand" + idx;
+	    let desc = a.description==null?"": HU.div([STYLE,HU.css('max-width','300px','vertical-align','top')],a.description);
 	    if(a.rows) {
-		inner+=HU.formEntryTop(label,HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,id,"size",10]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
-	    } else if(a.values) {
-		
-		inner+=HU.formEntry(label,HU.select("",[ID,id],a.values.split(",")) +" " + a.description);
+		inner+=HU.formEntryTop(label,
+				       HU.hbox(HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,id,"size",10]),desc));		
 	    } else if(a.type=="list" || a.type=="columns" || a.type=="rows") {
 		v = v.replace(/,/g,"\n");
 		if(!Csv.columnInput && (a.type == "columns" || a.type == "column")) Csv.columnInput = id;
-		inner+=HU.formEntryTop(label,HU.textarea("",v,["cols", a.columns || "10", "rows",a.rows||"5",ID,id]) +" " + HU.div([STYLE,"display:inline-block;vertical-align:top;"],a.description));
-		      
+		inner+=HU.formEntryTop(label,HU.hbox(HU.textarea("",v,["cols", a.size || "10", "rows",a.rows||"5",ID,id]),
+						     desc));
+		
+	    } else if(a.values) {
+		inner+=HU.formEntry(label,HU.hbox(HU.select("",[ID,id],a.values.split(",")),desc));
 	    } else {
-		let size = a.size ||40;
+		let size = a.size ||30;
 		if(a.type=="number") size=a.size||5;
 		if(a.type=="column") size=a.size||5;
 		let placeholder = a.placeholder || "";
-		let title = a.tooltip || "Use _leftparen_,_rightparen_,_leftbracket_,_rightbracket_,_dot_,_dollar_,_star_,_plus_,_nl_";
+		let title = a.tooltip || "";
 		if(a.type=="pattern" && !a.placeholder)
 		    title = "Escapes- _leftparen_, _rightparen_, _leftbracket_, _rightbracket_, _dot_, _dollar_, _star_, _plus_, _nl_"
 		if(!Csv.columnInput && (a.type == "columns" || a.type == "column")) Csv.columnInput = id;
-		inner+=HU.formEntry(label,HU.input("",v,[ID,id,"size",size,TITLE, title, "placeholder",placeholder]) +" " + a.description);
+		inner+=HU.formEntry(label,HU.hbox(HU.input("",v,[ID,id,"size",size,TITLE, title, "placeholder",placeholder]), desc));
 	    }
 	});
 	inner+=HU.formTableClose();

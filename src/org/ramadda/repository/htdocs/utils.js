@@ -2641,7 +2641,13 @@ var HU = HtmlUtils = {
     formTableClose: function() {
         return this.closeTag("table");
     },
-    formEntryTop: function(label, value) {
+    formEntryTop: function(label, value, value2) {
+	if(value2) 
+            return HU.tag("tr", ["valign", "top"],
+			    HU.tag("td", ["class", "formlabel", "align", "right"],
+				     label) +
+			  HU.tag("td", [],   value) +
+			  HU.tag("td", [],   value2));
         return this.tag("tr", ["valign", "top"],
 			this.tag("td", ["class", "formlabel", "align", "right"],
 				 label) +
