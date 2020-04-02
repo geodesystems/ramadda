@@ -422,6 +422,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.handleEventRecordSelection(source, args);
 	},
         handleEventRecordSelection: function(source, args) {
+	    SUPER.handleEventRecordSelection.call(this, source, args);
             //TODO: don't do this in index space, do it in time or space space
             if (source == this) {
                 return;
@@ -719,7 +720,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    let dataList = pointData.getRecords();
 		    if(dataList.length>0) {
 			let record = dataList[0];
-			this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+			this.propagateEventRecordSelection({record: record});
 		    }
 		}
 	    }
@@ -1581,21 +1582,21 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return chart;
 	},
 	addEvents: function(chart) {
-            let theDisplay = this;
+            let _this = this;
 	    google.visualization.events.addListener(chart, 'onmouseover', function(event) {
-                mapVar = theDisplay.getProperty("mapVar", null);
+                mapVar = _this.getProperty("mapVar", null);
                 if (!Utils.stringDefined(mapVar)) {
                     return;
                 }
                 row = event.row;
-                pointData = theDisplay.dataCollection.getList()[0];
+                pointData = _this.dataCollection.getList()[0];
                 var fields = pointData.getRecordFields();
                 var records = pointData.getRecords();
                 var record = records[row];
                 map = ramaddaMapMap[mapVar];
                 if (map) {
-                    if (theDisplay.mouseOverPoint)
-                        map.removePoint(theDisplay.mouseOverPoint);
+                    if (_this.mouseOverPoint)
+                        map.removePoint(_this.mouseOverPoint);
                 } else {}
                 if (record && map) {
                     latField = null;
@@ -1607,19 +1608,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     if (latField && lonField) {
                         lat = record.getValue(latField.getIndex());
                         lon = record.getValue(lonField.getIndex());
-                        theDisplay.mouseOverPoint = map.addPoint(chartId, new OpenLayers.LonLat(lon, lat));
+                        _this.mouseOverPoint = map.addPoint(chartId, new OpenLayers.LonLat(lon, lat));
                     }
                 }
             });
             google.visualization.events.addListener(chart, 'select', function(event) {
-                theDisplay.mapCharts(chart=>{
+                _this.mapCharts(chart=>{
 		    if (chart.getSelection) {
 			var selected = chart.getSelection();
 			if (selected && selected.length > 0) {
                             var index = selected[0].row;
-			    var record = theDisplay.indexToRecord[index];
+			    var record = _this.indexToRecord[index];
 			    if(record) {
-				theDisplay.getDisplayManager().notifyEvent("handleEventRecordSelection", theDisplay, {record: record});
+				_this.propagateEventRecordSelection({record: record});
 			    }
 			}
 		    }});

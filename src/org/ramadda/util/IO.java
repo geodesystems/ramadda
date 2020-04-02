@@ -183,13 +183,24 @@ public class IO {
     public static InputStream doMakeInputStream(String filename,
             boolean buffered)
             throws IOException {
-	return doMakeInputStream(filename, buffered, 0);
+        return doMakeInputStream(filename, buffered, 0);
     }
-	    
 
+
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param buffered _more_
+     * @param tries _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
     private static InputStream doMakeInputStream(String filename,
-						  boolean buffered, int tries)
-	throws IOException {	
+            boolean buffered, int tries)
+            throws IOException {
         checkFile(filename);
         int         size = 8000;
         InputStream is   = null;
@@ -203,31 +214,34 @@ public class IO {
             URL           url        = new URL(filename);
             URLConnection connection = null;
             try {
-		//		System.err.println ("URL: " + url);
+                //              System.err.println ("URL: " + url);
                 connection = url.openConnection();
                 connection.addRequestProperty("Accept", "*/*");
                 connection.addRequestProperty("Host", url.getHost());
                 connection.addRequestProperty("User-Agent", "ramadda");
 
 
-		if (connection instanceof HttpURLConnection) {
+                if (connection instanceof HttpURLConnection) {
                     HttpURLConnection huc = (HttpURLConnection) connection;
-                    int response = huc.getResponseCode();
+                    int               response = huc.getResponseCode();
                     //Check for redirect
-                    if (response == HttpURLConnection.HTTP_MOVED_TEMP
-                        || response == HttpURLConnection.HTTP_MOVED_PERM
-                        || response == HttpURLConnection.HTTP_SEE_OTHER) {
+                    if ((response == HttpURLConnection
+                            .HTTP_MOVED_TEMP) || (response == HttpURLConnection
+                            .HTTP_MOVED_PERM) || (response == HttpURLConnection
+                            .HTTP_SEE_OTHER)) {
                         String newUrl = connection.getHeaderField("Location");
-			//			System.err.println("redirect:" + newUrl);
+                        //                      System.err.println("redirect:" + newUrl);
                         //Don't follow too many redirects
-                        if(tries>10) {
-                            throw new IllegalArgumentException ("Too many nested URL fetches:" + filename);
+                        if (tries > 10) {
+                            throw new IllegalArgumentException(
+                                "Too many nested URL fetches:" + filename);
                         }
+
                         //call this method recursively with the new URL
-                        return doMakeInputStream(newUrl, buffered, tries+1);
-                    }		
-		}
-		//		System.err.println ("OK: " + url);
+                        return doMakeInputStream(newUrl, buffered, tries + 1);
+                    }
+                }
+                //              System.err.println ("OK: " + url);
                 is = connection.getInputStream();
             } catch (Exception exc) {
                 System.err.println("Error URL: " + filename);
@@ -515,6 +529,7 @@ public class IO {
         InputStream is = getInputStream(u);
         String      s  = IOUtil.readContents(is);
         IOUtil.close(is);
+
         return s;
     }
 
@@ -528,20 +543,56 @@ public class IO {
      * @throws Exception _more_
      */
     public static InputStream getInputStream(URL url) throws Exception {
+        return getInputStream(url, 0);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param url _more_
+     * @param tries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private static InputStream getInputStream(URL url, int tries)
+            throws Exception {
         checkFile(url.toString());
         URLConnection connection = url.openConnection();
         connection.setRequestProperty("User-Agent", "ramadda");
         connection.setRequestProperty("Host", url.getHost());
-	if(connection instanceof HttpURLConnection) {
-	    HttpURLConnection huc = (HttpURLConnection) connection;
-	    int response = huc.getResponseCode();
-	    System.err.println("S:" + (""+response).substring(0,1));
-	    if(!(""+response).substring(0,1).equals("2")) {
-		throw new IOException("Error code:" + response +" " + huc.getResponseMessage());
-	    }
-	}
+        if (connection instanceof HttpURLConnection) {
+            HttpURLConnection huc      = (HttpURLConnection) connection;
+            int               response = huc.getResponseCode();
+            if ((response == HttpURLConnection.HTTP_MOVED_TEMP)
+                    || (response == HttpURLConnection.HTTP_MOVED_PERM)
+                    || (response == HttpURLConnection.HTTP_SEE_OTHER)) {
+                String newUrl = connection.getHeaderField("Location");
+                System.err.println(newUrl);
+                //Don't follow too many redirects
+                if (tries > 10) {
+                    throw new IllegalArgumentException(
+                        "Too many nested URL fetches:" + url);
+                }
+
+                //call this method recursively with the new URL
+                return getInputStream(new URL(newUrl), tries + 1);
+            }
+            if ( !("" + response).substring(0, 1).equals("2")) {
+                throw new IOException("Error code:" + response + " "
+                                      + huc.getResponseMessage());
+            }
+        }
+
         return connection.getInputStream();
     }
+
+
+
+
+
 
 
     /**

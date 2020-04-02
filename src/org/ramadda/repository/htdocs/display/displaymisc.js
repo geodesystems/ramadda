@@ -465,7 +465,7 @@ function RamaddaTreeDisplay(displayManager, id, properties) {
 		}
 		let record = _this.countToRecord[cnt];
 		if(record) {
-		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		    _this.propagateEventRecordSelection({record: record});
 		}
 	    });
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-tree-toggle-details").click(function() {
@@ -630,7 +630,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		    if(this.timelineReady) {
 			var record = records[slide];
 			if(record) {
-			    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+			    this.propagateEventRecordSelection({record: record});
 			}
 		    }
 		}
@@ -1897,7 +1897,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-records-record").click(function() {
 		var record = _this.records[$(this).attr(RECORD_INDEX)];
 		if(record) {
-		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+		    _this.propagateEventRecordSelection({highlight:true,record: record});
 		}
 
 	    });
@@ -3301,7 +3301,7 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		_this.mouseEvent = event;
 		let closest = this.findClosest(records,e);
 		if(closest)
-		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: closest});
+		    this.propagateEventRecordSelection({record: closest});
 	    });
 	}
     });
@@ -3695,12 +3695,12 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 		    _this.selectedKey = record.getValue(keyField.getIndex());
 		_this.jq(ID_DISPLAY_CONTENTS).find("[" + RECORD_INDEX+"=\"" + idx+"\"]").addClass( "display-dotbar-dot-select");
 		_this.hadClick = true;
-		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		_this.propagateEventRecordSelection({record: record});
 		_this.updateUI();
 	    });	    //Do this later so other displays get this after they apply their data filter change
 	    if(selectedRecord){
 		setTimeout(()=>{
-		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: selectedRecord});
+		    this.propagateEventRecordSelection({record: selectedRecord});
 		},10);
 	    }
 	    this.makeTooltips(dots,records,null);

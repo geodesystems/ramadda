@@ -18,12 +18,7 @@ package org.ramadda.data.point.text;
 
 
 import org.ramadda.data.point.*;
-
-
-
-
 import org.ramadda.data.record.*;
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
@@ -31,7 +26,6 @@ import org.ramadda.util.XlsUtil;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
 import ucar.unidata.util.StringUtil;
 
 import java.awt.*;
@@ -42,8 +36,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-import javax.swing.*;
 
 
 /**
@@ -153,8 +145,6 @@ public abstract class TextFile extends PointFile {
      * @param buffered _more_
      *
      * @return _more_
-     *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */
@@ -426,12 +416,12 @@ public abstract class TextFile extends PointFile {
 
         boolean haveReadHeader  = headerLines.size() > 0;
         String  headerDelimiter = getHeaderDelimiter();
-        boolean isStandard      = getProperty(PROP_HEADER_STANDARD, false);
-
+        //TODO
+	boolean isStandard      = getProperty(PROP_HEADER_STANDARD, false);
+	//        boolean isStandard      = getProperty(PROP_HEADER_STANDARD, true);
         boolean firstLineFields = getProperty("firstLineDefinesFields",
                                       false);
         String lastHeaderPattern = getProperty("lastHeaderPattern", null);
-
         if (firstLineFields) {
             int    fieldRow = Integer.parseInt(getProperty("fieldRow", "1"));
             String line     = null;
@@ -574,7 +564,6 @@ public abstract class TextFile extends PointFile {
             int skipCnt = getSkipLines(visitInfo);
             commentLineStart = getProperty("commentLineStart", null);
             boolean seenLastHeaderPattern = false;
-
             //            System.err.println("Skip:" + skipCnt +" " + commentLineStart);
             for (int i = 0; i < skipCnt; ) {
                 String line = visitInfo.getRecordIO().readLine();
@@ -599,6 +588,7 @@ public abstract class TextFile extends PointFile {
         initProperties();
 
         return visitInfo;
+
     }
 
 

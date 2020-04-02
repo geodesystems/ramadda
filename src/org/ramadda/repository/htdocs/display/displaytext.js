@@ -990,7 +990,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				    ]);
 	},
 	dataFilterChanged: function() {
-	    if(this.getProperty("onlyShowSelected")&& this.selectedRecord ) {
+	    if(this.getProperty("onlyShowSelected") && this.selectedRecord ) {
 		this.selectedRecord = null;
 		this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    }
@@ -1082,6 +1082,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 	    }
 	    
+
 	    if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
 	       select == "<=" || 	       select == "?>=" || select=="match") {
 		var selectField = this.getProperty("selectField",null);
@@ -1340,7 +1341,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
 		var record = selected[$(this).attr("recordIndex")];
 		_this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
-		_this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+		_this.propagateEventRecordSelection({highlight:true,record: record});
 	    });
 
 
@@ -1357,7 +1358,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    if(topElement) {
 			var record = selected[topElement.attr("recordIndex")];
 			if(record && this.currentTopRecord && record!=this.currentTopRecord) {
-			    this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {highlight:true,record: record});
+			    this.propagateEventRecordSelection({highlight:true,record: record});
 			}
 			this.currentTopRecord = record;
 		    }
@@ -1681,7 +1682,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		$(this).parent().addClass("display-topfields-selected");
 		var record = records[idx];
 		if(record) {
-		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
+		    _this.propagateEventRecordSelection({record: record});
 		}
 	    });
 	    let rows =this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-row");
@@ -2815,7 +2816,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		var record = _this.indexToRecord[idx];
 		if(record) {
 		    _this.showRecordPopup($(this),record);
-		    _this.getDisplayManager().notifyEvent("handleEventRecordSelection", _this, {record: record});
+		    _this.propagateEventRecordSelection({record: record});
 		    _this.highlightLine(idx);
 		}
 	    });
@@ -2852,27 +2853,35 @@ function RamaddaTextDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties);
     $.extend(this, SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Text Display Attributes'},
+	{p:'recordTemplate',wikiValue:''},
+	{p:'showDefault',d:true,wikiValue:"false"},
+	{p:'message',d:null,wikiValue:""},
+    ]);
+    if(!this.getPropertyRecordTemplate()) {
+	this.setProperty("recordTemplate","${default}");
+    }
+
     RamaddaUtil.defineMembers(this, {
-        lastHtml: "<p>&nbsp;<p>&nbsp;<p>",
         needsData: function() {
             return true;
         },
 	updateUI: function() {
             SUPER.updateUI.call(this);
-	    if(!this.getProperty("recordTemplate")) {
-		this.setProperty("recordTemplate","${default}");
-	    }
-            let records = this.filterData();
-	    if(this.getProperty("showDefault",true)) {
+	    if(this.selectedRecord) {
+		this.setContents(this.getRecordHtml(this.selectedRecord));
+	    } else  if(this.getPropertyShowDefault()) {
+		let records = this.filterData();
 		if(records && records.length>0) {
-		    this.lastHtml = this.getRecordHtml(records[0]);
-		    this.setContents(this.lastHtml);
+		    this.setContents(this.getRecordHtml(records[0]));
 		}
+	    } else  if(this.getPropertyMessage()) {
+		this.setContents(this.getMessage(this.getPropertyMessage()));
 	    }
         },
         handleEventRecordSelection: function(source, args) {
-            this.lastHtml = this.getRecordHtml(args.record);
-            this.setContents(this.lastHtml);
+	    this.selectedRecord= args.record;
         }
     });
 }

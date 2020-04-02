@@ -190,7 +190,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		}
 		//		console.log("index:" + index +" record:"+  record);
 		if(record) {
-		    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		    this.propagateEventRecordSelection({record: record});
 		}
 	    }
 	},
@@ -671,7 +671,7 @@ function RamaddaSunburstDisplay(displayManager, id, properties) {
 	    var record = this.myRecords[pointNumber];
 	    //	    console.log(pointNumber +" " + record);
 	    if(record) {
-		this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+		this.propagateEventRecordSelection({record: record});
 	    }
 	},
 

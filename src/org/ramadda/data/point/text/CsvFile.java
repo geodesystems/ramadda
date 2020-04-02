@@ -19,14 +19,11 @@ package org.ramadda.data.point.text;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
-
 import org.ramadda.util.text.CsvUtil;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-import java.awt.*;
-import java.awt.image.*;
 
 import java.io.*;
 
@@ -34,8 +31,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
-import javax.swing.*;
 
 
 /**
@@ -92,7 +87,8 @@ public class CsvFile extends TextFile {
         super(filename, context, properties);
     }
 
-    private static Hashtable filesBeingWritten = new  Hashtable();
+    /** _more_          */
+    private static Hashtable filesBeingWritten = new Hashtable();
 
     /**
      * _more_
@@ -100,8 +96,6 @@ public class CsvFile extends TextFile {
      * @param buffered _more_
      *
      * @return _more_
-     *
-     * @throws IOException _more_
      *
      * @throws Exception _more_
      */
@@ -111,52 +105,54 @@ public class CsvFile extends TextFile {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
-	if(file!=null) {
-	    //	    System.err.println("file:" +file +" " + file.exists()  +" " + file.length() +" being written:" + (filesBeingWritten.get(file)!=null) );
-	    if(file!=null) {
-		int cnt =0;
-		//Wait at most 10 seconds
-		while(cnt++<100) {
-		    if(filesBeingWritten.get(file)==null) break;
-		    Misc.sleep(100);
-		}
-	    }
-	}
+        if (file != null) {
+            //      System.err.println("file:" +file +" " + file.exists()  +" " + file.length() +" being written:" + (filesBeingWritten.get(file)!=null) );
+            if (file != null) {
+                int cnt = 0;
+                //Wait at most 10 seconds
+                while (cnt++ < 100) {
+                    if (filesBeingWritten.get(file) == null) {
+                        break;
+                    }
+                    Misc.sleep(100);
+                }
+            }
+        }
 
 
         if ((file == null) || !file.exists()) {
-	    try {
-		ByteArrayOutputStream bos = null;
-		OutputStream          fos;
-		if (file != null) {
-		    fos = new FileOutputStream(file);
-		    filesBeingWritten.put(file,"");
-		} else {
-		    fos = bos = new ByteArrayOutputStream();
-		}
-		csvCommands = csvCommands.replaceAll("\\\\,","_comma_");
-		String[] args = StringUtil.listToStringArray(
-							     StringUtil.split(csvCommands, ","));
-		for (int i = 0; i < args.length; i++) {
-		    args[i] = args[i].replaceAll("_comma_", ",");
-		}
-		CsvUtil csvUtil = new CsvUtil(args,
-					      new BufferedOutputStream(fos), null);
-		System.err.println("CsvFile fetching url:" + getNormalizedFilename());
-		csvUtil.setInputStream(super.doMakeInputStream(buffered));
-		csvUtil.run(null);
-		fos.flush();
-		fos.close();
-		if (file == null) {
-		    //                    System.err.println("processed:" +new String(bos.toByteArray()));
-		    return new ByteArrayInputStream(bos.toByteArray());
-		}
-	    } finally {
-		if (file != null) {
-		    filesBeingWritten.remove(file);
-		}
-	    }
+            try {
+                ByteArrayOutputStream bos = null;
+                OutputStream          fos;
+                if (file != null) {
+                    fos = new FileOutputStream(file);
+                    filesBeingWritten.put(file, "");
+                } else {
+                    fos = bos = new ByteArrayOutputStream();
+                }
+                csvCommands = csvCommands.replaceAll("\\\\,", "_comma_");
+                String[] args = StringUtil.listToStringArray(
+                                    StringUtil.split(csvCommands, ","));
+                for (int i = 0; i < args.length; i++) {
+                    args[i] = args[i].replaceAll("_comma_", ",");
+                }
+                CsvUtil csvUtil = new CsvUtil(args,
+                                      new BufferedOutputStream(fos), null);
+                csvUtil.setInputStream(super.doMakeInputStream(buffered));
+                csvUtil.run(null);
+                fos.flush();
+                fos.close();
+                if (file == null) {
+                    //                    System.err.println("processed:" +new String(bos.toByteArray()));
+                    return new ByteArrayInputStream(bos.toByteArray());
+                }
+            } finally {
+                if (file != null) {
+                    filesBeingWritten.remove(file);
+                }
+            }
         }
+
         return new BufferedInputStream(new FileInputStream(file));
     }
 
@@ -251,15 +247,13 @@ public class CsvFile extends TextFile {
             fieldString = getProperty(PROP_FIELDS, null);
         } else {
             //Read the header because there are properties
-            if (getProperty(PROP_HEADER_STANDARD, false)) {
-                doQuickVisit();
+            if (getHeaderLines().size() == 0) {
+                if (getProperty(PROP_HEADER_STANDARD, false)) {
+                    doQuickVisit();
+                }
             }
         }
-
-
         commentLineStart = getProperty("commentLineStart", null);
-
-
         if (fieldString == null) {
             setIsHeaderStandard(true);
             doQuickVisit();
@@ -270,6 +264,7 @@ public class CsvFile extends TextFile {
             if (failureOk) {
                 return new ArrayList<RecordField>();
             }
+
             throw new IllegalArgumentException("Properties must have a "
                     + PROP_FIELDS + " value");
         }

@@ -1362,12 +1362,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().handleEventRecordHighlight(source, args);
 	    }
 	},
+        propagateEventRecordSelection: function(args) {
+	    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, args);
+	    if(this.getProperty("recordSelectFilterField")) {
+		let field = this.getFieldById(null,this.getProperty("recordSelectFilterField"));
+		if(field) {
+		    var args = {
+			property: "filterValue",
+			id:field.getId(),
+			fieldId: field.getId(),
+			value: args.record.getValue(field.getIndex())
+		    };
+		    this.propagateEvent("handleEventPropertyChanged", args);
+		}
+	    }
+	},
         handleEventRecordSelection: function(source, args) {
 	    this.selectedRecord= args.record;
-	    if(this.selectedRecord&& this.getProperty("colorThresholdField")) {
-		this.haveCalledUpdateUI = false;
-		this.updateUI();
+	    if(this.selectedRecord) {
+		if(this.getProperty("colorThresholdField")) {
+		    this.haveCalledUpdateUI = false;
+		    this.updateUI();
+		}
+
 	    }
+
+
             if (!source.getEntries) {
                 return;
             }
@@ -4610,7 +4630,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		    let record = records[$(this).attr(RECORD_INDEX)];
 		    if(record)
-			_this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, {record: record});
+			_this.propagateEventRecordSelection({record:record});
 		};
 		let children = jq.find("[recordIndex]");
 		if(!children.length) children = jq;
@@ -4680,7 +4700,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var record = records[parseFloat($(this).attr('recordIndex'))];
 		if(!record) return;
 		if(callback) callback(record);
-		_this.getDisplayManager().notifyEvent("handleEventRecordSelect", _this, {select:true,record: record});
+		_this.propagateEventRecordSelection({select:true,record: record});
 		_this.showRecordPopup($(this),record, callback,popupTemplate);
 	    });
 	},

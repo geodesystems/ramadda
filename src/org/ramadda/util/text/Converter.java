@@ -157,6 +157,7 @@ public abstract class Converter extends Processor {
                     result.add(s);
                 }
             }
+
             return new Row(result);
         }
     }
@@ -1610,7 +1611,7 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String value;
 
-	
+
         /**
          *
          *
@@ -2525,8 +2526,10 @@ public abstract class Converter extends Processor {
                 }
                 row      = firstRow;
                 firstRow = null;
+
                 return row;
             }
+
             return null;
         }
 
@@ -3374,6 +3377,12 @@ public abstract class Converter extends Processor {
                     key.append(", ");
                 }
                 didOne = true;
+                //A hack for US
+                if (value.equals("US") || value.equals("United States")) {
+                    row.add(new Integer(327000000));
+
+                    return row;
+                }
                 key.append(value);
             }
 
@@ -3381,6 +3390,7 @@ public abstract class Converter extends Processor {
                 key.append(" ");
                 key.append(suffix);
             }
+
 
             Place place = GeoUtils.getLocationFromAddress(key.toString());
             if (place != null) {
@@ -4260,7 +4270,7 @@ public abstract class Converter extends Processor {
                 v = values.get(values.size() - 1);
             }
             rowCnt++;
-            if (col < 0 || col>row.getValues().size()) {
+            if ((col < 0) || (col > row.getValues().size())) {
                 row.getValues().add(v);
             } else {
                 row.getValues().add(col, v);

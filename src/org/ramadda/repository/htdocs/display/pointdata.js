@@ -1336,7 +1336,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    let enumValues = [];
 		    let imageField=this.display.getFieldOfType(null, "image");
 		    let valuesAreNumbers = true;
-		    records.map((record,idx)=>{
+		    records.forEach((record,idx)=>{
 			let value = this.display.getDataValues(record)[filterField.getIndex()];
 			if(!seen[value]) {
 			    seen[value]  = true;

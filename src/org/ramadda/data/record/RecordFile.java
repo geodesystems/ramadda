@@ -18,20 +18,14 @@ package org.ramadda.data.record;
 
 
 import org.ramadda.data.record.filter.*;
-
-
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-
-import java.net.URL;
-import java.net.URLConnection;
 
 import java.text.SimpleDateFormat;
 
@@ -42,7 +36,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.zip.*;
-import java.util.zip.GZIPInputStream;
 
 
 /**
@@ -614,8 +607,6 @@ public abstract class RecordFile {
      * @param visitInfo _more_
      * @return The RecordIO for reading the file
      *
-     * @throws IOException On badness
-     *
      * @throws Exception _more_
      */
     public RecordIO doMakeInputIO(VisitInfo visitInfo) throws Exception {
@@ -631,9 +622,6 @@ public abstract class RecordFile {
      * @param buffered If true then make a bufferedinputstream
      *
      * @return The RecordIO
-     *
-     * @throws IOException On badness
-     *
      * @throws Exception _more_
      */
     public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
@@ -652,12 +640,10 @@ public abstract class RecordFile {
      *
      * @return The input stream
      *
-     * @throws IOException On badness
-     *
      * @throws Exception _more_
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
-	//	System.err.println("****  RecordFile reading:" + filename);
+        //      System.err.println("****  RecordFile reading:" + filename);
         String path = getNormalizedFilename();
         //A hack for snotel data
         if (path.startsWith("http://www.wcc.nrcs.usda.gov")) {
@@ -665,12 +651,33 @@ public abstract class RecordFile {
                                 "https://wcc.sc.egov.usda.gov");
         }
 
+
+        if (path.endsWith(".zip") || getProperty("isZip", false)) {
+            InputStream    fis = IO.getInputStream(path);
+            ZipInputStream zin = new ZipInputStream(fis);
+            ZipEntry       ze  = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                if (ze.isDirectory()) {
+                    continue;
+                }
+                String p = ze.getName().toLowerCase();
+                if (p.endsWith(".csv") || p.endsWith(".tsv")) {
+                    return zin;
+                }
+            }
+
+            throw new IllegalArgumentException(
+                "Could not find csv file in source zip file");
+        }
+
         try {
-	    //	    System.err.println("path:" + path);
-	    //            return Utils.doMakeInputStream(path, buffered);
-	    return IO.doMakeInputStream(path, buffered);
+            System.err.println("path:" + path);
+
+            //            return Utils.doMakeInputStream(path, buffered);
+            return IO.doMakeInputStream(path, buffered);
         } catch (IOException ioe) {
             System.err.println("Error fetching data:" + path);
+
             throw ioe;
         }
     }

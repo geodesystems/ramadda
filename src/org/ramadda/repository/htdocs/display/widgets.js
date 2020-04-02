@@ -147,17 +147,17 @@ function DateRangeWidget(display) {
 
 
 function DisplayAnimation(display, enabled) {
-    let ID_RUN = "animrun";
-    let ID_NEXT = "animnext";
-    let ID_PREV= "animprev";
-    let ID_BEGIN= "animbegin";
-    let ID_END= "animend";
-    let ID_SLIDER = "slider";
-    let ID_TICKS = "ticks";
-    let ID_SHOWALL = "showall";
-    let ID_ANIMATION_LABEL = "animationlabel";
-    let MODE_FRAME = "frame";
-    let MODE_SLIDING = "sliding";
+    const ID_RUN = "animrun";
+    const ID_NEXT = "animnext";
+    const ID_PREV= "animprev";
+    const ID_BEGIN= "animbegin";
+    const ID_END= "animend";
+    const ID_SLIDER = "slider";
+    const ID_TICKS = "ticks";
+    const ID_SHOWALL = "showall";
+    const ID_ANIMATION_LABEL = "animationlabel";
+    const MODE_FRAME = "frame";
+    const MODE_SLIDING = "sliding";
     $.extend(this,{
 	display:display,
 	enabled: enabled,
@@ -303,23 +303,26 @@ function DisplayAnimation(display, enabled) {
 	    if(debug)console.log("animation.init-done");
 	},
 	setSliderValues: function(v) {
-	    let debug = true;
+	    let debug = false;
 	    if(debug)
-		console.log("animtion.setSliderValues");
+		console.log("animation.setSliderValues");
 
 	    if(this.mode != MODE_FRAME) {
 		this.begin = new Date(v[0]);
 		this.end = new Date(v[1]);
 	    } else {
-		var sliderDate = new Date(v[0]);
-		var closest = this.dates[0];
-		var dist = 0;
-		this.dates.map(d=>{
+		let sliderDate = new Date(v[0]);
+		let closest = this.dates[0];
+		let dist = 0;
+		let closestIdx=0;
+		this.dates.forEach((d,idx)=>{
 		    if(Math.abs(d.getTime()-sliderDate.getTime()) < Math.abs(closest.getTime()-sliderDate.getTime())) {
 			closest = d;
+			closestIdx = idx;
 		    }
 		});
 		this.begin = this.end = closest;
+		this.frameIndex = closestIdx;
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
@@ -1108,7 +1111,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	if(records) {
 	    let record = records[Math.round(x.invert(coords[0]))]
 	    if(record)
-		_display.getDisplayManager().notifyEvent("handleEventRecordSelection", _display, {select:true,record: record});
+		_display.propagateEventRecordSelection({select:true,record: record});
 	}
     });
 

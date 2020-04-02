@@ -791,9 +791,7 @@ color: #000;
 }
 
 .display-text-inner {
-   border-top:1px #ccc solid; 
    overflow-y: auto;
-   max-height: 300px;
 }
 
 .display-text-input {
