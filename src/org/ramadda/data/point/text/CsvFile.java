@@ -149,7 +149,7 @@ public class CsvFile extends TextFile {
                                     StringUtil.split(csvCommands, ","));
 		for (int i = 0; i < args.length; i++) {
                     args[i] = args[i].replaceAll("_comma_", ",");
-		    //System.err.println("arg:" + args[i]);
+		    System.err.println("arg:" + args[i]);
                 }
                 CsvUtil csvUtil = new CsvUtil(args,
                                       new BufferedOutputStream(fos), null);
