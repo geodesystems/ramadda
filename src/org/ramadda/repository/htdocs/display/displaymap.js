@@ -2695,13 +2695,17 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
+        displayData: function(reload) {
+	    this.updateUI();
+	},
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
 					"label:Grid Map Attributes",
 					'localeField=""',
 					'grid=countries|us',
-					'cellSize="20"',
+					['cellSize="30"','use 0 for flexible width'],
+					'cellHeight="30"',
 					'showCellLabel=false',
 				    ]);
 	},
@@ -2717,22 +2721,22 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
 	updateUI: function() {
-	    var pointData = this.getData();
+	    let pointData = this.getData();
 	    if (pointData == null) return;
-	    var records = this.filterData();
+	    let records = this.filterData();
 	    if(!records) return;
 
 
-            var fields = this.getData().getNonGeoFields();
-	    var localeField = this.getFieldById(fields,this.getProperty("localeField","state"));
+            let fields = this.getData().getNonGeoFields();
+	    let localeField = this.getFieldById(fields,this.getProperty("localeField","state"));
 	    if(localeField==null) {
 		localeField = this.getFieldById(fields,"state");
 	    }
-	    var minx = Number.MAX_VALUE;
-	    var miny = Number.MAX_VALUE;
-	    var maxx = Number.MIN_VALUE;
-	    var maxy = Number.MIN_VALUE;
-	    var map = {};
+	    let minx = Number.MAX_VALUE;
+	    let miny = Number.MAX_VALUE;
+	    let maxx = Number.MIN_VALUE;
+	    let maxy = Number.MIN_VALUE;
+	    let map = {};
 	    let grid = this.getProperty("grid","us")=="countries"?this.countries:this.states;
 
 
@@ -2744,53 +2748,59 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		map[this.getDomId("cell_" +o.x+ "_"+o.y)] = o;
 	    });
 
-	    var table =HU.open(TABLE);
-	    var w = this.getProperty("cellSize","40");
-	    var showLabel  = this.getProperty("showCellLabel",true);
-	    var cellStyle  = this.getProperty("cellStyle","");
-	    var cellMap = {};
-	    for(var y=1;y<=maxy;y++) {
+            let colorBy = this.getColorByInfo(records);
+	    let sparkLinesColorBy = this.getColorByInfo(records,"sparklineColorBy");
+	    let strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
+	    let sparkLineField = this.getFieldById(fields,this.getProperty("sparklineField"));
+
+	    let table =HU.open(TABLE,[WIDTH,"100%"]);
+	    let width = this.getProperty("cellWidth", this.getProperty("cellSize",0));
+	    let height = this.getProperty("cellHeight",width);
+	    if(height==0) height=30;
+	    let showLabel  = this.getProperty("showCellLabel",true);
+	    let cellStyle  = this.getProperty("cellStyle","");
+	    let cellMap = {};
+	    for(let y=1;y<=maxy;y++) {
 		table+=HU.open(TR);
-		for(var x=1;x<=maxx;x++) {
-		    var id = this.getDomId("cell_" +x+ "_"+y);
-		    var o = map[id];
-		    var extra = " id='" + id +"' ";
-		    var style = "position:relative;margin:1px;vertical-align:center;xtext-align:center;width:" + w+"px;" +"height:" + w+"px;";
-		    var c = "";
+		for(let x=1;x<=maxx;x++) {
+		    let id = this.getDomId("cell_" +x+ "_"+y);
+		    let o = map[id];
+		    let extra = " id='" + id +"' ";
+		    let style = HU.css('position','relative','margin','1px','vertical-align','center','text-align','center',HEIGHT, height+"px");
+		    if(width>0) style+=HU.css(WIDTH,width+'px');
+		    let c = "";
 		    if(o) {
 			style+="background:#ccc;" + cellStyle;
-			extra += " title='" + o.name +"' ";
+			if(!sparkLineField) {
+			    extra += " title='" + o.name +"' ";
+			}
 			extra += " class='display-mapgrid-cell' ";
 			c = HU.div([STYLE,HU.css('padding-left','3px')], (showLabel?o.codes[0]:""));
 			o.codes.map(c=>cellMap[c] = id);
 			cellMap[o.name] = id;
 		    }
-		    var td = HU.td([],"<div " + extra +" style='" + style +"'>" + c+"</div>");
+		    let td = HU.td([],"<div " + extra +" style='" + style +"'>" + c+"</div>");
 		    table+=td;
 		}
 		table+=HU.close(TR);
 	    }
 	    table +=HU.tr([],HU.td(["colspan", maxx],"<br>" +   HU.div([ID,this.getDomId(ID_COLORTABLE)])));
 	    table+=HU.close(TABLE);
-            var colorBy = this.getColorByInfo(records);
-	    var sparkLinesColorBy = this.getColorByInfo(records,"sparklineColorBy");
-	    var strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
 	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.center(table));
 
 
-	    let sparkLineField = this.getFieldById(fields,this.getProperty("sparklineField"));
 	    let states = [];
 	    let stateData = {
 	    }
 	    let minData = 0;
 	    let maxData = 0;
 	    let seen = {};
-	    var contents = this.jq(ID_DISPLAY_CONTENTS);
-	    for(var i=0;i<records.length;i++) {
-		var record = records[i]; 
-		var tuple = record.getData();
-		var state = tuple[localeField.getIndex()];
-		var cellId = cellMap[state];
+	    let contents = this.jq(ID_DISPLAY_CONTENTS);
+	    for(let i=0;i<records.length;i++) {
+		let record = records[i]; 
+		let tuple = record.getData();
+		let state = tuple[localeField.getIndex()];
+		let cellId = cellMap[state];
 		if(!cellId) {
 		    cellId = cellMap[state.toUpperCase()];
 		}
@@ -2819,29 +2829,34 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		}
 		//TODO: sort the state data on time
                 if (colorBy.index >= 0) {
-                    var value = record.getData()[colorBy.index];
-		    var color = colorBy.getColorFromRecord(record);
-		    var cell = contents.find("#" + cellId);
+                    let value = record.getData()[colorBy.index];
+		    let color = colorBy.getColorFromRecord(record);
+		    let cell = contents.find("#" + cellId);
 		    cell.css("background",color);
 		    cell.attr(RECORD_INDEX,i);
                 }
 		if (strokeColorBy.index >= 0) {
-                    var value = record.getData()[strokeColorBy.index];
-		    var color = strokeColorBy.getColor(value, record);
-		    var cell = contents.find("#" + cellId);
+                    let value = record.getData()[strokeColorBy.index];
+		    let color = strokeColorBy.getColor(value, record);
+		    let cell = contents.find("#" + cellId);
 		    cell.css("border-color",color);
 		    cell.css("border-width","2px");
                 }
 	    }
 
 	    if(sparkLineField) {
+		let vOffset = 0;
 		states.map((state,idx)=>{
-		    let vOffset = 15;
 		    let s = stateData[state];
 		    let innerId = s.cellId+"_inner";
-		    let innerDiv = HU.div([ID, innerId, STYLE,HU.css(WIDTH, w +'px',HEIGHT, (w-vOffset) +'px','position','absolute','left','0px','top', vOffset+'px')],"");
+		    let cellWidth = width;
+		    if(cellWidth==0) {
+			cellWidth = $("#" + s.cellId).width();
+		    }
+		    let style = HU.css(WIDTH,cellWidth+'px',HEIGHT, (height-vOffset) +'px','position','absolute','left','0px','top', vOffset+'px');
+		    let innerDiv = HU.div([ID, innerId, STYLE,style]);
 		    $("#" + s.cellId).append(innerDiv);
-		    drawSparkLine(this, "#"+innerId,w,w-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
+		    drawSparkLine(this, "#"+innerId,cellWidth,height-vOffset,s.data,s.records,minData,maxData,sparkLinesColorBy);
 		});
 	    }
 
@@ -2849,12 +2864,14 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    this.makePopups(contents.find(".display-mapgrid-cell"), records);
 	    let _this = this;
 	    contents.find(".display-mapgrid-cell").click(function() {
-		var record = records[$(this).attr(RECORD_INDEX)];
+		let record = records[$(this).attr(RECORD_INDEX)];
 		if(record) {
 		    _this.propagateEventRecordSelection({record: record});
 		}
-	    });
-	    this.makeTooltips(contents.find(".display-mapgrid-cell"), records,null,"${default}");
+	    });	
+	    if(!sparkLineField) {
+		this.makeTooltips(contents.find(".display-mapgrid-cell"), records,null,"${default}");
+	    }
             if (colorBy.index >= 0) {
 		colorBy.displayColorTable();
 	    }
@@ -2867,11 +2884,11 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	},
 
         handleEventRecordSelection: function(source, args) {
-	    var contents = this.jq(ID_DISPLAY_CONTENTS);
+	    let contents = this.jq(ID_DISPLAY_CONTENTS);
 	    if(this.selectedCell) {
 		this.selectedCell.css("border",this.selectedBorder);
 	    }
-	    var index = this.recordToIndex[args.record.getId()];
+	    let index = this.recordToIndex[args.record.getId()];
 	    if(!Utils.isDefined(index)) return;
 	    this.selectedCell = contents.find("[recordIndex='" + index+"']");
 	    this.selectedBorder = this.selectedCell.css("border");
@@ -2884,7 +2901,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    {name:"Washington",codes:["WA"],x:3,y:3},
 	    {name:"Oregon",codes:["OR"],x:3,y:4},
 	    {name:"California",codes:["CA"],x:3,y:5},
-	    {name:"Idaho",codes:["id"],x:4,y:3},
+	    {name:"Idaho",codes:["ID"],x:4,y:3},
 	    {name:"Nevada",codes:["NV"],x:4,y:4},
 	    {name:"Utah",codes:["UT"],x:4,y:5},
 	    {name:"Arizona",codes:["AZ"],x:4,y:6},

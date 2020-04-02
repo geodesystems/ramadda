@@ -534,8 +534,8 @@ function DisplayManager(argId, argProperties) {
 
     addDisplayManager(this);
 
-    var displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
-    var html = HtmlUtils.openTag(TAG_DIV);
+    let displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
+    let html = HtmlUtils.openTag(TAG_DIV);
     html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
 
@@ -544,8 +544,8 @@ function DisplayManager(argId, argProperties) {
 	//    if (this.getProperty(PROP_SHOW_MENU, true)) {
         html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
-    var targetDiv = this.getProperty("target");
-    var _this = this;
+    let targetDiv = this.getProperty("target");
+    let _this = this;
     if (targetDiv != null) {
         $(document).ready(function() {
             $("#" + targetDiv).html(displaysHtml);
@@ -559,18 +559,18 @@ function DisplayManager(argId, argProperties) {
     $("#" + this.getId()).html(html)
     this.initializeEntriesMenu();
 
-    var theDisplayManager = this;
+
     $("#" + this.getDomId(ID_MENU_BUTTON)).button({
         icons: {
             primary: "ui-icon-gear",
             secondary: "ui-icon-triangle-1-s"
         }
     }).click(function(event) {
-        var html = theDisplayManager.makeMainMenu();
-        theDisplayManager.jq(ID_MENU_CONTAINER).html(html);
-        var id = theDisplayManager.getDomId(ID_MENU_OUTER);
-        showPopup(event, theDisplayManager.getDomId(ID_MENU_BUTTON), id, false, null, "left bottom");
-        theDisplayManager.jq(ID_MENU_INNER).superfish({
+        let html = _this.makeMainMenu();
+        _this.jq(ID_MENU_CONTAINER).html(html);
+        let id = _this.getDomId(ID_MENU_OUTER);
+        showPopup(event, _this.getDomId(ID_MENU_BUTTON), id, false, null, "left bottom");
+        _this.jq(ID_MENU_INNER).superfish({
             //Don't set animation - it is broke on safari
             //                    animation: {height:'show'},
             speed: 'fast',

@@ -709,11 +709,11 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if (this.display.percentFields != null) {
         this.pctFields = this.display.percentFields.split(",");
     }
-    var colors = defaultColorTable || this.display.getColorTable(true,colorByAttr +".colorTable");
+    let colors = defaultColorTable || this.display.getColorTable(true,[colorByAttr +".colorTable","colorTable"]);
     
-    if(!colors && this.hasField()) {
-	colors = this.display.getColorTable(true,"colorTable");
-    }
+//    if(!colors && this.hasField()) {
+//	colors = this.display.getColorTable(true,"colorTable");
+//    }
 
     if(!colors) {
 	var c = this.getProperty(colorByAttr +".colors");
@@ -1018,8 +1018,7 @@ ColorByInfo.prototype = {
 function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, margin) {
     if(!attrs) attrs = {};
     if(!margin)
-	margin = { top: 5, right: 5, bottom: 5, left: 5 };
-    margin       = { top: 0, right: 0, bottom: 0, left: 0 };
+	margin       = { top: 0, right: 0, bottom: 0, left: 0 };
     const INNER_WIDTH  = w - margin.left - margin.right;
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const BAR_WIDTH  = w / data.length;

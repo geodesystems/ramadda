@@ -3,28 +3,28 @@
 */
 
 
-var CATEGORY_CHARTS = "Charts";
-var CATEGORY_OTHER = "Other Charts";
+const CATEGORY_CHARTS = "Charts";
+const CATEGORY_OTHER = "Other Charts";
 
-var DISPLAY_LINECHART = "linechart";
-var DISPLAY_AREACHART = "areachart";
-var DISPLAY_BARCHART = "barchart";
-var DISPLAY_BARTABLE = "bartable";
-var DISPLAY_BARSTACK = "barstack";
-var DISPLAY_PIECHART = "piechart";
-var DISPLAY_TIMERANGECHART = "timerangechart";
-var DISPLAY_SANKEY = "sankey";
-var DISPLAY_CALENDAR = "calendar";
-var DISPLAY_SCATTERPLOT = "scatterplot";
-var DISPLAY_HISTOGRAM = "histogram";
-var DISPLAY_BUBBLE = "bubble";
-var DISPLAY_GAUGE = "gauge";
-var DISPLAY_TABLE = "table";
-var DISPLAY_WORDTREE = "wordtree";
-var DISPLAY_TREEMAP = "treemap";
-var ID_CHART = "chart";
-var ID_CHARTS = "charts";
-var ID_CHARTS_INNER = "chartsinner";
+const DISPLAY_LINECHART = "linechart";
+const DISPLAY_AREACHART = "areachart";
+const DISPLAY_BARCHART = "barchart";
+const DISPLAY_BARTABLE = "bartable";
+const DISPLAY_BARSTACK = "barstack";
+const DISPLAY_PIECHART = "piechart";
+const DISPLAY_TIMERANGECHART = "timerangechart";
+const DISPLAY_SANKEY = "sankey";
+const DISPLAY_CALENDAR = "calendar";
+const DISPLAY_SCATTERPLOT = "scatterplot";
+const DISPLAY_HISTOGRAM = "histogram";
+const DISPLAY_BUBBLE = "bubble";
+const DISPLAY_GAUGE = "gauge";
+const DISPLAY_TABLE = "table";
+const DISPLAY_WORDTREE = "wordtree";
+const DISPLAY_TREEMAP = "treemap";
+const ID_CHART = "chart";
+const ID_CHARTS = "charts";
+const ID_CHARTS_INNER = "chartsinner";
 
 var googleChartsLoaded = false;
 function googleChartsHaveLoaded() {
@@ -1328,21 +1328,50 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 chartOptions.fontSize = this.fontSize;
             }
 
-            var defaultRange = this.getDisplayManager().getRange(selectedFields[0]);
+	    let defaultRanges=[];
+	    let numeric = [];
+            dataList.forEach((v,idx)=>{
+		if(idx==0) return;
+		let tuple = this.getDataValues(v);
+		if(idx==1) {
+		    tuple.forEach((tv,idx)=>{
+			numeric.push((typeof tv)=="number");
+		    });
+		    numeric.forEach(v=>defaultRanges.push([Number.MAX_VALUE,Number.MIN_VALUE]));
+		}
+		
+		
+		let cnt = 0;
+		tuple.forEach((tv,idx)=>{
+		    if(numeric[idx]) {
+			defaultRanges[cnt][0] = Math.min(defaultRanges[cnt][0],tv);
+			defaultRanges[cnt][1] = Math.max(defaultRanges[cnt][1],tv);
+			cnt++;
+		    }
+		});
+	    });
+
             var range = [NaN, NaN];
 	    //	    console.log("range:" +this.getVAxisMinValue());
             if (!isNaN(this.getVAxisMinValue())) {
                 range[0] = this.getVAxisMinValue();
-            } else if (defaultRange != null) {
-                range[0] = defaultRange[0];
+            } else if (defaultRanges.length>0) {
+                range[0] = defaultRanges[0][0];
             }
 
-            if (!isNaN(this.getVAxisMaxValue())) {
+	    if(this.getProperty("vAxisSharedRange")) {
+		let records = this.getPointData().getRecords();
+		let max = 0;
+		defaultRanges.forEach((r,idx)=>{
+		    max = idx==0?r[1]:Math.max(max,r[1]);
+		});
+                range[1] = max;
+	    } else if (!isNaN(this.getVAxisMaxValue())) {
                 range[1] = this.getVAxisMaxValue();
-            } else if (defaultRange != null) {
-                range[1] = defaultRange[1];
+            } else if (defaultRanges.length>0) {
+                range[1] = defaultRanges[0][1];
             }
-            //console.log("range:" + range[0]+" " + range[1]);
+
 
             if (!isNaN(range[0])) {
                 chartOptions.vAxis.minValue = range[0];
@@ -1500,7 +1529,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let map = {};
 		let groups = [];
 		let tmp = [];
-		dataList.map((v,idx)=>{if(idx>0) tmp.push(v)});
+		dataList.forEach((v,idx)=>{if(idx>0) tmp.push(v)});
 		if(!multiField) {
 		    tmp.sort(function(a,b) {
 			var v1 = a.record?a.record.getDate():a.date;
@@ -1509,7 +1538,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    });
 		}
 		dataList = Utils.mergeLists([dataList[0]], tmp);
-		dataList.map((v,idx)=>{
+		dataList.forEach((v,idx)=>{
 		    if(idx==0) return;
                     var record = v.record;
 		    var groupValue = record?multiField?record.getValue(multiField.getIndex()):record.getDate():v.date;
@@ -1644,6 +1673,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		'indexField=field',
 		"vAxisMinValue=\"\"",
 		"vAxisMaxValue=\"\"", 
+		['vAxisSharedRange=true','use the same max value'],
 		'vAxisLogScale=true',
 		'hAxisLogScale=true',
 		'tooltipFields=""',

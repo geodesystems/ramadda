@@ -3,7 +3,7 @@
 */
 
 
-var displayDebug = {
+const displayDebug = {
     getProperty:false,
     handleEventPropertyChanged:false,
     getSelectedFields:false,
@@ -88,10 +88,9 @@ function initRamaddaDisplays() {
     if (window.globalDisplaysList == null) {
         return;
     }
-    //    console.log("page has loaded");
-    for (var i = 0; i < window.globalDisplaysList.length; i++) {
-	window.globalDisplaysList[i].pageHasLoaded();
-    }
+    window.globalDisplaysList.forEach(d=>{
+	d.pageHasLoaded();
+    });
 }
 
 function addGlobalDisplayProperty(name, value) {
@@ -133,11 +132,11 @@ async function ramaddaDisplaySetSelectedEntry(entryId) {
 
 function ramaddaDisplayCheckLayout() {
     if(!window.globalDisplaysList) return;
-    for (let i = 0; i < window.globalDisplaysList.length; i++) {
-        if (window.globalDisplaysList[i].checkLayout) {
-            window.globalDisplaysList[i].checkLayout();
+    window.globalDisplaysList.forEach(d=>{
+        if (d.checkLayout) {
+            d.checkLayout();
         }
-    }
+    });
 }
 
 function ramaddaCheckForResize() {
@@ -1034,10 +1033,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    return this.colorList;
 	},
-        getColorTableName: function(name) {
+        getColorTableName: function(names) {
+	    if(names && !Array.isArray(names)) names  = [name];
             let ct = null;
-            if (name) {
-                ct = this.getProperty(name);
+            if (names) {
+		names.forEach(name=>{
+                    ct = this.getProperty(name);
+		    if(ct) return false;
+		    return true;
+		});
             } else {
 		var colorBy = this.getProperty("colorBy");
 		if(colorBy) {
@@ -1051,11 +1055,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return ct;
         },
 	getColorTable: function(justColors, name, dflt) {
-            var colorTable = this.getColorTableName(name);
+            let colorTable = this.getColorTableName(name);
             if (!colorTable) {
                 colorTable = dflt;
             }
-	    var list;
+	    let list;
             if (colorTable) {
                 let ct = null;
  		if(colorTable.startsWith("colors:")) {
@@ -4186,7 +4190,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			enums.push([field.getId(),field.getLabel()]);
 		    });
 		    header2 += HU.span([CLASS,"display-filter"],
-				       this.makeFilterLabel(label+": ") + 
+				       (label==""?"":this.makeFilterLabel(label+": ")) + 
 				       HU.select("",[ID,this.getDomId("fieldselect_" + prop)],enums,this.getProperty(prop,"")))+SPACE;
 
 		    selectFieldProps.push(prop);
