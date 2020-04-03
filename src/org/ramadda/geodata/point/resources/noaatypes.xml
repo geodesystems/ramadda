@@ -69,7 +69,7 @@ DC Climate Data"  handler="org.ramadda.data.services.PointTypeHandler">
   </type>
 
 
-  <type name="type_psd_monthly_climate_index"  super="type_point_noaa" category="Climate Data" description="NOAA-ESRL-PSD Monthly Climate Index"  handler="org.ramadda.data.services.NoaaPsdMonthlyClimateIndexTypeHandler">
+  <type name="type_psd_monthly_climate_index"  super="type_point_noaa" category="Climate Data" description="NOAA-PSL Monthly Climate Index"  handler="org.ramadda.data.services.NoaaPsdMonthlyClimateIndexTypeHandler">
      <property name="icon" value="/point/noaa.gif"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.MultiMonthFile"/>
      <column  name="missing_value"  type="double" label="Missing Value" cansearch="false"/>

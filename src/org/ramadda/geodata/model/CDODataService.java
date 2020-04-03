@@ -1323,7 +1323,7 @@ public abstract class CDODataService extends Service {
             sortedOps = new ArrayList<List<ServiceOperand>>();
             sortedOps.add(climInput.getOperands());
         } else {
-            ModelUtil.sortOperandsByCollection(request,
+            sortedOps = ModelUtil.sortOperandsByCollection(request,
                 climInput.getOperands());
         }
         Entry freqSample = sortedOps.get(0).get(0).getEntries().get(0);

@@ -1652,10 +1652,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         if (myColumn.isEnumeration()) {
             List<TwoFacedObject> tfos = typeHandler.getValueList(entry,
                                             values, myColumn);
+            /*
             if (myColumn.getName().equals("variable")
                     && type.equals(ARG_ACTION_COMPARE)) {
                 addVariableFormulas(tfos);
             }
+            */
             if (showBlank) {
                 tfos.add(0, new TwoFacedObject(""));
             }
