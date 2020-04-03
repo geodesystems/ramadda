@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="../../../../../../" default="plugin" name="PSD_Repository">
+<project basedir="../../../../../../" default="plugin" name="PSL_Repository">
 
   <target name="init">
        <tstamp>

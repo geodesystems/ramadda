@@ -6,27 +6,29 @@
 
 <head>
     <meta charset="utf-8">
+    <meta charset="ISO-8859-1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="US Department of Commerce, NOAA, Earth System Research Laboratory, Physical Sciences Departmant">
-    <meta name="author" content="PSD Web Team">
+    <meta name="author" content="PSL Web Team">
 
 	<!--#if expr="$keywords" --><meta name="keywords" content='<!--#echo var="keywords"-->'><!--#else -->
 	<meta name="keywords" content="noaa, national oceanic and atmospheric administration, earth system research, esrl, climate, weather, air quality, computer modeling">
 	<!--#endif -->
 	<title>
-	  ESRL : PSD : <!--#echo var="title"-->
+	  PSL : <!--#echo var="title"-->
 	</title>
 
-    <!-- Bootstrap Core CSS -->
+	<!-- Favicon -->
+	<link rel="icon" type="image/png" href="/favicon.png" sizes="32x32">
 
-    <link href="/psd/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/bootstrap.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="/psd/css/psd.css" rel="stylesheet">
+    <link href="/css/psd.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
-    <link href="/psd/css/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
 	  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
 	  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet">
 	  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
@@ -35,17 +37,17 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load fater -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="/psd/jquery/js/jquery-1.12.4.min.js"></script>
+    <script src="/jquery/js/jquery-1.12.4.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/psd/js/bootstrap.min.js"></script>
-    <script src="/psd/js/bootstrap-hover-dropdown.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-hover-dropdown.js"></script>
 
 	 <!--jQuery core JavaScript
      ================================================== -->
-	<script type="text/javascript" src="/psd/jquery/js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="/jquery/js/jquery.cookie.js"></script>
 
-	<script type="text/javascript" src="/psd/js/highslide/highslide-full.js"></script>
-  <link rel="stylesheet" type="text/css" href="/psd/js/highslide/highslide.css" />
+	<script type="text/javascript" src="/js/highslide/highslide-full.js"></script>
+  <link rel="stylesheet" type="text/css" href="/js/highslide/highslide.css" />
   <script type="text/javascript">
     hs.registerOverlay({
 	    html: '<div class="closebutton" onclick="return hs.close(this)" title="Close"></div>',
@@ -53,7 +55,7 @@
 	    fade: 2 // fading the semi-transparent overlay looks bad in IE
     });
 
-    hs.graphicsDir = '/psd/js/highslide/graphics/';
+    hs.graphicsDir = '/js/highslide/graphics/';
     hs.showCredits = 0;
     hs.align = 'center';
     hs.dimmingOpacity = .75;
@@ -83,7 +85,15 @@
 
   $(function() {
     responsiveTabs($('.nav.nav-tabs'));
-    // $('.nav.nav-tabs').responsiveTabs();
+    $('[data-toggle="tooltip"]').tooltip()
+  });
+
+  $(function() {
+    $( "a.scrollLink" ).click(function( event ) {
+        event.preventDefault();
+        console.log("scroll link")
+        $("html, body").animate({ scrollTop: $($(this).attr("href")).offset().top-100 }, 500);
+    });
   });
 </script>
 
@@ -183,18 +193,18 @@ $(function() {
 
 <body>
 <div id="banner">
-	<!--#include virtual="/psd/nav/major_nav.html"-->
+	<!--#include virtual="/nav/major_nav.html"-->
 </div><!--/.banner-->
 
 <!-- Page Content -->
 <div class="mainsection" role="main">
 <div class="container">
 	<!--#if expr="$self"-->
-		<!--#include virtual="/psd/nav/breadcrumbs.html"-->
+		<!--#include virtual="/nav/breadcrumbs.html"-->
 	<!--#elif expr="$title"-->
-		<!--#include virtual="/psd/nav/breadcrumbs.html"-->
+		<!--#include virtual="/nav/breadcrumbs.html"-->
 	<!--#endif-->
-  <!--#include virtual="/psd/warnings.html"-->
+  <!--#include virtual="/warnings.html"-->
   <!--#if expr="$warnfilepath" -->
     <!--#include virtual="$warnfilepath"-->
   <!--#endif-->

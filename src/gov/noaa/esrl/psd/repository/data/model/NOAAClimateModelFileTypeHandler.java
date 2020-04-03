@@ -19,7 +19,7 @@ import ucar.unidata.util.IOUtil;
 
 
 /**
- * ClimateModelFileTypeHandler to handle NOAA/ESRL/PSD climate model files
+ * ClimateModelFileTypeHandler to handle NOAA/PSL climate model files
  */
 public class NOAAClimateModelFileTypeHandler extends ClimateModelFileTypeHandler {
 
