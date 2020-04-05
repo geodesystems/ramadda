@@ -69,7 +69,7 @@ public abstract class CsvOperator {
     /** _more_ */
     public static int OP_DEFINED = 6;
 
-    /** _more_          */
+    /** _more_ */
     public static int OP_MATCH = 7;
 
 
@@ -132,6 +132,27 @@ public abstract class CsvOperator {
     public CsvOperator(List<String> cols) {
         this.sindices = cols;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param reader _more_
+     * @param row _more_
+     * @param values _more_
+     */
+    public void add(TextReader reader, Row row, Object... values) {
+        if (reader.getPositionStart()) {
+            for (int i = values.length - 1; i >= 0; i--) {
+                row.insert(0, values[i]);
+            }
+        } else {
+            for (Object value : values) {
+                row.add(value);
+            }
+        }
+    }
+
 
 
     /**

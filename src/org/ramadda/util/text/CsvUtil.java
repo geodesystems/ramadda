@@ -70,10 +70,10 @@ public class CsvUtil {
     /** _more_ */
     private TextReader textReader;
 
-    /** _more_          */
+    /** _more_ */
     private String currentArg;
 
-    /** _more_          */
+    /** _more_ */
     private Row currentRow;
 
     /** _more_ */
@@ -1673,11 +1673,11 @@ public class CsvUtil {
      *
      *
      * @version        $version$, Sun, Apr 5, '20
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Label {
 
-        /** _more_          */
+        /** _more_ */
         String label;
 
         /**
@@ -1706,7 +1706,7 @@ public class CsvUtil {
         /** _more_ */
         String cmd;
 
-        /** _more_          */
+        /** _more_ */
         String label;
 
         /** _more_ */
@@ -2092,6 +2092,9 @@ public class CsvUtil {
         new Cmd("-verify",
                 "Throw error if a row has a different number of columns",
                 new Arg("# columns", "", "type", "number")),
+        new Cmd("-prop", "Set a property",
+                new Arg("property", "", "values", "position"),
+                new Arg("value", "start, end, etc")),
         new Cmd("-comment", "", "string"),
         new Cmd("-verify",
                 "Verify that all of the rows have the same # of columns"),
@@ -2877,6 +2880,19 @@ public class CsvUtil {
                     info.getProcessor().addProcessor(
                         new Filter.RowCutter(
                             getNumbers(r), arg.equals("-cut")));
+
+                    continue;
+                }
+
+
+                if (arg.equals("-prop")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    String flag  = args.get(++i);
+                    String value = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Processor.Propper(flag, value));
 
                     continue;
                 }
@@ -3934,10 +3950,12 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-                    handlePattern(info, filterToAddTo,
-                                  new Filter.ValueFilter(args.get(++i),
-                                      Filter.ValueFilter.OP_EQUALS,
-                                      Double.parseDouble(args.get(++i))));
+                    handlePattern(
+                        info, filterToAddTo,
+                        new Filter.ValueFilter(
+                            getCols(args.get(++i)),
+                            Filter.ValueFilter.OP_EQUALS,
+                            Double.parseDouble(args.get(++i))));
 
                     continue;
                 }
@@ -3946,10 +3964,12 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-                    handlePattern(info, filterToAddTo,
-                                  new Filter.ValueFilter(args.get(++i),
-                                      Filter.ValueFilter.OP_NOTEQUALS,
-                                      Double.parseDouble(args.get(++i))));
+                    handlePattern(
+                        info, filterToAddTo,
+                        new Filter.ValueFilter(
+                            getCols(args.get(++i)),
+                            Filter.ValueFilter.OP_NOTEQUALS,
+                            Double.parseDouble(args.get(++i))));
 
                     continue;
                 }
@@ -3961,10 +3981,11 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-                    handlePattern(info, filterToAddTo,
-                                  new Filter.ValueFilter(args.get(++i),
-                                      Filter.ValueFilter.OP_LT,
-                                      Double.parseDouble(args.get(++i))));
+                    handlePattern(
+                        info, filterToAddTo,
+                        new Filter.ValueFilter(
+                            getCols(args.get(++i)), Filter.ValueFilter.OP_LT,
+                            Double.parseDouble(args.get(++i))));
 
                     continue;
                 }
@@ -3973,10 +3994,11 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-                    handlePattern(info, filterToAddTo,
-                                  new Filter.ValueFilter(args.get(++i),
-                                      Filter.ValueFilter.OP_GT,
-                                      Double.parseDouble(args.get(++i))));
+                    handlePattern(
+                        info, filterToAddTo,
+                        new Filter.ValueFilter(
+                            getCols(args.get(++i)), Filter.ValueFilter.OP_GT,
+                            Double.parseDouble(args.get(++i))));
 
                     continue;
                 }
@@ -3986,9 +4008,11 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    handlePattern(info, filterToAddTo,
-                                  new Filter.ValueFilter(args.get(++i),
-                                      Filter.ValueFilter.OP_DEFINED, 0));
+                    handlePattern(
+                        info, filterToAddTo,
+                        new Filter.ValueFilter(
+                            getCols(args.get(++i)),
+                            Filter.ValueFilter.OP_DEFINED, 0));
 
                     continue;
                 }
@@ -4047,30 +4071,7 @@ public class CsvUtil {
                 }
 
 
-                boolean didone = false;
-                /*
-                for (String op : new String[] { "<=", ">=", "<", ">", "=" }) {
-                    idx = arg.indexOf(op);
-                    if (idx >= 0) {
-                        handlePattern(
-                            info, filterToAddTo,
-                            new Filter.ValueFilter(
-                                arg.substring(0, idx).trim(),
-                                Filter.ValueFilter.getOperator(op),
-                                Double.parseDouble(
-                                    arg.substring(
-                                        idx + op.length()).trim())));
-                        didone = true;
 
-                        break;
-                    }
-                }
-                */
-
-
-                if (didone) {
-                    continue;
-                }
 
                 if (arg.length() == 0) {
                     throw new IllegalArgumentException("Unknown argument:"

@@ -124,6 +124,9 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private int pruneBytes = 0;
 
+    /** _more_          */
+    private boolean positionStart = false;
+
     /** _more_ */
     private int maxLineLength = -1;
 
@@ -1340,6 +1343,25 @@ public class TextReader implements Cloneable {
     public boolean getSplitOnSpaces() {
         return splitOnSpaces;
     }
+
+    /**
+     * Set the PositionStart property.
+     *
+     * @param value The new value for PositionStart
+     */
+    public void setPositionStart(boolean value) {
+        positionStart = value;
+    }
+
+    /**
+     * Get the PositionStart property.
+     *
+     * @return The PositionStart
+     */
+    public boolean getPositionStart() {
+        return positionStart;
+    }
+
 
 
 

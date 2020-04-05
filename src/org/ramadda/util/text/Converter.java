@@ -262,7 +262,7 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                row.add("image");
+                add(info, row, "image");
 
                 return row;
             }
@@ -303,7 +303,7 @@ public abstract class Converter extends Processor {
                                            + image);
                         imageMap.put(s, image);
                     }
-                    row.add(image);
+                    add(info, row, image);
 
                     return row;
                 } catch (Exception exc) {
@@ -312,7 +312,7 @@ public abstract class Converter extends Processor {
                     throw new RuntimeException(exc);
                 }
             }
-            row.add("");
+            add(info, row, "");
 
             return row;
         }
@@ -358,7 +358,7 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                row.add("description");
+                add(info, row, "description");
 
                 return row;
             }
@@ -381,7 +381,7 @@ public abstract class Converter extends Processor {
                 JSONArray  values = Json.readArray(obj, "query.search");
                 if (values.length() == 0) {
                     System.err.println("No results for query:" + s);
-                    row.add("");
+                    add(info, row, "");
 
                     return row;
                 }
@@ -409,7 +409,7 @@ public abstract class Converter extends Processor {
                 if (p == null) {
                     p = snippet;
                 }
-                row.add(p);
+                add(info, row, p);
 
                 return row;
             } catch (Exception exc) {
@@ -1231,26 +1231,25 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                row.add(row.get(col) + " increase");
+                add(info, row, row.get(col) + " increase");
 
                 return row;
             }
             double v = Double.parseDouble(row.get(col).toString());
             if (values.size() < step) {
-                row.add(Double.NaN);
+                add(info, row, new Double(Double.NaN));
             } else {
                 double pastValue = values.get(0);
                 values.remove(0);
                 double increase = 0;
                 // 20 30
                 if (pastValue == 0) {
-                    row.add(Double.NaN);
+                    add(info, row, new Double(Double.NaN));
                 } else {
                     double diff = v - pastValue;
                     increase = diff / pastValue;
                     //              System.out.println("x:" + v +" " + pastValue +"  diff:" + diff +" i:" + increase);
-
-                    row.add(increase);
+                    add(info, row, new Double(increase));
                 }
             }
             values.add(v);
@@ -1333,7 +1332,7 @@ public abstract class Converter extends Processor {
             if (rowCnt++ == 0) {
                 for (int i = 0; i < indices.size(); i++) {
                     values.add(new ArrayList<Double>());
-                    row.add(row.get(indices.get(i)) + " " + label);
+                    add(info, row, row.get(indices.get(i)) + " " + label);
                 }
 
                 return row;
@@ -1359,7 +1358,7 @@ public abstract class Converter extends Processor {
                 double average = (cnt == 0)
                                  ? Double.NaN
                                  : total / cnt;
-                row.add(average);
+                add(info, row, average);
             }
 
             return row;
@@ -1964,7 +1963,7 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-                row.add(whatLabel);
+                add(info, row, whatLabel);
 
                 return row;
             }
@@ -1981,7 +1980,7 @@ public abstract class Converter extends Processor {
                 }
                 String v = "NA";
                 v = "" + cal.get(what);
-                row.add(v);
+                add(info, row, v);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -2212,7 +2211,7 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-                row.add(name);
+                add(info, row, name);
 
                 return row;
             }
@@ -2224,7 +2223,7 @@ public abstract class Converter extends Processor {
             if (newValue == null) {
                 newValue = "";
             }
-            row.add(newValue);
+            add(info, row, newValue);
             if ( !replace.equals("none")) {
                 value = value.replaceAll(pattern, replace);
             }
@@ -3180,10 +3179,9 @@ public abstract class Converter extends Processor {
             List values = row.getValues();
             if ( !doneHeader) {
                 if (writeForDb) {
-                    row.add("Location");
+                    add(info, row, "Location");
                 } else {
-                    row.add(latLabel);
-                    row.add(lonLabel);
+                    add(info, row, latLabel, lonLabel);
                 }
                 doneHeader = true;
 
@@ -3251,10 +3249,9 @@ public abstract class Converter extends Processor {
                 }
             }
             if (writeForDb) {
-                row.add(lat + ";" + lon);
+                add(info, row, lat + ";" + lon);
             } else {
-                row.add(new Double(lat));
-                row.add(new Double(lon));
+                add(info, row, new Double(lat), new Double(lon));
             }
 
             return row;
@@ -3357,7 +3354,7 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             List values = row.getValues();
             if ( !doneHeader) {
-                row.add("Population");
+                add(info, row, "Population");
                 doneHeader = true;
 
                 //              System.err.println("pop row:" + row);
@@ -3379,7 +3376,7 @@ public abstract class Converter extends Processor {
                 didOne = true;
                 //A hack for US
                 if (value.equals("US") || value.equals("United States")) {
-                    row.add(new Integer(327000000));
+                    add(info, row, new Integer(327000000));
 
                     return row;
                 }
@@ -3394,9 +3391,9 @@ public abstract class Converter extends Processor {
 
             Place place = GeoUtils.getLocationFromAddress(key.toString());
             if (place != null) {
-                row.add(new Integer(place.getPopulation()));
+                add(info, row, new Integer(place.getPopulation()));
             } else {
-                row.add(new Integer(0));
+                add(info, row, new Integer(0));
             }
 
             //      System.err.println("pop row:" + row);
@@ -4332,14 +4329,14 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                row.add(label);
+                add(info, row, label);
 
                 return row;
             }
             if (value == (int) value) {
-                row.add("" + ((int) value));
+                add(info, row, "" + ((int) value));
             } else {
-                row.add("" + value);
+                add(info, row, "" + value);
             }
             value += step;
 
@@ -4759,13 +4756,13 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             cnt++;
             if (cnt == 1) {
-                row.add("label");
+                add(info, row, "label");
 
                 return row;
 
             }
             String letter = getLabel(cnt - 2);
-            row.add(letter);
+            add(info, row, letter);
 
             return row;
         }

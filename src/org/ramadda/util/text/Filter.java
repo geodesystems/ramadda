@@ -61,6 +61,15 @@ public class Filter extends Processor {
     /**
      * _more_
      *
+     * @param cols _more_
+     */
+    public Filter(List<String> cols) {
+        super(cols);
+    }
+
+    /**
+     * _more_
+     *
      * @param info _more_
      * @param row _more_
      * @param line _more_
@@ -134,6 +143,16 @@ public class Filter extends Processor {
         public ColumnFilter(String scol) {
             this.scol = scol;
         }
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         */
+        public ColumnFilter(List<String> cols) {
+            super(cols);
+        }
+
 
         /**
          * _more_
@@ -756,26 +775,13 @@ public class Filter extends Processor {
          * _more_
          *
          * @param col _more_
-         * @param op _more_
-         * @param value _more_
-         */
-        public ValueFilter(int col, int op, double value) {
-            super(col);
-            this.op    = op;
-            this.value = value;
-        }
-
-
-
-        /**
-         * _more_
          *
-         * @param col _more_
+         * @param cols _more_
          * @param op _more_
          * @param value _more_
          */
-        public ValueFilter(String col, int op, double value) {
-            super(col);
+        public ValueFilter(List<String> cols, int op, double value) {
+            super(cols);
             this.op    = op;
             this.value = value;
         }
@@ -798,43 +804,47 @@ public class Filter extends Processor {
             if (cnt++ == 0) {
                 return true;
             }
-            int idx = getIndex(info);
-            if (idx >= row.size()) {
-                return false;
+            for (int idx : getIndices(info)) {
+                if (idx >= row.size()) {
+                    continue;
+                }
+                try {
+                    String v     = row.getString(idx);
+                    double value = Double.parseDouble(v);
+                    if (op == OP_LT) {
+                        if ( !(value < this.value)) {
+                            return false;
+                        }
+                    } else if (op == OP_LE) {
+                        if ( !(value <= this.value)) {
+                            return false;
+                        }
+                    } else if (op == OP_GT) {
+                        if ( !(value > this.value)) {
+                            return false;
+                        }
+                    } else if (op == OP_GE) {
+                        if ( !(value >= this.value)) {
+                            return false;
+                        }
+                    } else if (op == OP_EQUALS) {
+                        if (value != this.value) {
+                            return false;
+                        }
+                    } else if (op == OP_NOTEQUALS) {
+                        if (value == this.value) {
+                            return false;
+                        }
+                    } else if (op == OP_DEFINED) {
+                        if (Double.isNaN(value)) {
+                            return false;
+                        }
+                    }
+                } catch (Exception exc) {}
             }
-            try {
-                String v     = row.getString(idx);
-                double value = Double.parseDouble(v);
-                if (op == OP_LT) {
-                    return value < this.value;
-                }
-                if (op == OP_LE) {
-                    return value <= this.value;
 
-                }
-                if (op == OP_GT) {
-                    return value > this.value;
-                }
-                if (op == OP_GE) {
-                    return value >= this.value;
-                }
-                if (op == OP_EQUALS) {
-                    return value == this.value;
-                }
-                if (op == OP_NOTEQUALS) {
-                    return value != this.value;
-                }
-                if (op == OP_DEFINED) {
-                    return value == value;
-                }
-
-                return false;
-            } catch (Exception exc) {}
-
-            return false;
-
+            return true;
         }
-
     }
 
     /**

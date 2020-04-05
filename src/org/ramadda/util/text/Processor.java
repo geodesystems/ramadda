@@ -18,21 +18,16 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.data.record.RecordField;
-
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
 import java.text.DateFormat;
-
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
@@ -691,6 +686,66 @@ rotate -> pass -> pass -> rotate -> pass
             info.getWriter().flush();
 
             return rows;
+        }
+
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sun, Apr 5, '20
+     * @author         Enter your name here...    
+     */
+    public static class Propper extends Processor {
+
+        /** _more_          */
+        public static final int FLAG_NONE = -1;
+
+        /** _more_ */
+        public static final int FLAG_POSITION = 0;
+
+        /** _more_          */
+        private int flag;
+
+        /** _more_ */
+        private boolean value;
+
+        /**
+         * _more_
+         *
+         * @param flag _more_
+         * @param value _more_
+         */
+        public Propper(String flag, String value) {
+            this.flag = flag.equals("position")
+                        ? FLAG_POSITION
+                        : FLAG_NONE;
+            if (this.flag == FLAG_POSITION) {
+                this.value = value.equals("start");
+            }
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line)
+                throws Exception {
+            if (flag == FLAG_POSITION) {
+                info.setPositionStart(value);
+            }
+
+            return row;
         }
 
     }
@@ -3201,17 +3256,17 @@ rotate -> pass -> pass -> rotate -> pass
      *
      *
      * @version        $version$, Sun, Apr 5, '20
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class GroupFilter extends RowCollector {
 
-        /** _more_          */
+        /** _more_ */
         private int op;
 
-        /** _more_          */
+        /** _more_ */
         private String value;
 
-        /** _more_          */
+        /** _more_ */
         private int valueIdx;
 
         /**
