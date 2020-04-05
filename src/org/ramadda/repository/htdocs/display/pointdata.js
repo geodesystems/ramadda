@@ -2,10 +2,7 @@
    Copyright 2008-2020 Geode Systems LLC
 */
 
-var FILTER_ALL = "-all-";
-
-
-
+const FILTER_ALL = "-all-";
 let pointDataCache = {};
 
 function DataCollection() {
@@ -1117,6 +1114,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.display.getProperty(key, dflt);
 	},
 	prepareToFilter: function() {
+	    if(this.depend) {
+		this.checkDependency();
+	    }
 	    if(!this.field) return;
 	    //	    if (prefix) pattern = prefix + value;
 	    //	    if (suffix) pattern = value + suffix;
@@ -1180,8 +1180,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.mySearch = null;
 	    }
 	},
-	isRecordOk:function(record) {
-	    
+	isRecordOk:function(record,debug) {
 	    let ok = true;
 	    if(!this.isEnabled() || !this.mySearch) return ok;
 	    var rowValue = record.getValue(this.field.getIndex());
@@ -1252,7 +1251,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else {
 		value = element.val();
 	    }
-	    if(!value) value = FILTER_ALL;
+	    if(!value) {
+		if(this.defaultValue) value = this.defaultValue;
+		else value = FILTER_ALL;
+	    }
 	    if(!Array.isArray(value)) {
 		if(!this.field.isFieldEnumeration()) {
 		    value = value.split(",");
@@ -1266,6 +1268,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	    //	    console.log(this.type +".getFilterFieldValues:" + Array.isArray(value) +" " + value.length +" " +value);
 	    return value;
 	},
+	initWidget: function(inputFunc) {
+	    this.initDateWidget(inputFunc);
+	},
 	initDateWidget: function(inputFunc) {
 	    if(!this.hideFilterWidget) {
 		for(var i=0;i<this.dateIds.length;i++) {
@@ -1277,7 +1282,30 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 	    }
 	},
+	checkDependency: function() {
+	    if(!this.depend || !this.records || !this.dependMySearch || !this.depend.mySearch || !this.dependMySearch.values || !this.depend.mySearch.values) return;
+
+	    let v1 = this.dependMySearch.values;
+	    let v2 = this.depend.mySearch.values;
+	    if(v1.length == v2.length) {
+		let equals = true;
+		for(let i=0;i<v1.length && equals;i++)
+		    equals = v1[i] == v2[i];
+		if(equals) return;
+	    }
+            let enums = this.getEnums(this.records);
+	    let widgetId = this.getFilterId(filterField.getId());
+	    let tmp = [];
+	    enums.map(e=>tmp.push(e.value));
+	    this.display.ignoreFilterChange = true;
+	    let widget = $("#" + widgetId);
+	    let val = widget.val();
+	    if(!val) val  = 	widget.attr("data-value");
+	    widget.html(HU.makeOptions(tmp,val));
+	    this.display.ignoreFilterChange = false;
+	},
 	getWidget: function(fieldMap, bottom,records) {
+	    this.records = records;
 	    let debug = false;
 	    if(debug) console.log(this.id +".getWidget");
 	    if(!this.isEnabled()) {
@@ -1296,80 +1324,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	    let widgetId = this.getFilterId(filterField.getId());
             if(filterField.getType() == "enumeration") {
 		if(debug) console.log("\tis enumeration");
-		let dfltValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
-		let filterValues = this.getProperty(filterField.getId()+".filterValues");
-                let enums = null;
-		if (filterValues) {
-		    let toks;
-		    if ((typeof filterValues) == "string") {
-			filterValues = Utils.getMacro(filterValues);
-			toks = filterValues.split(",");
-		    } else {
-			toks = filterValues;
-		    }
-		    enums=[];
-		    toks.map(tok=>{
-			let tmp = tok.split(":");
-			if(tmp.length>1) {
-			    tok = [tmp[0],tmp[1]];
-			} else if(tok == FILTER_ALL) {
-			    tok = [tmp[0],"All"];
-			}
-			enums.push({value:tok});
-		    })
-		}
-		let includeAll = this.getProperty(filterField.getId() +".includeAll",true);
-		if(enums == null) {
-		    let allName = this.getProperty(filterField.getId() +".allName","All");
-		    enums = [];
-		    if(includeAll) {
-			enums.push({value:[FILTER_ALL,allName]});
-		    }
-		    let seen = {};
-		    let dflt = filterField.getEnumeratedValues();
-		    if(dflt) {
-			for(let v in dflt) {
-			    seen[v] = true;
-			    enums.push({value:[v,dflt[v]]});
-			}
-		    }
-		    let enumValues = [];
-		    let imageField=this.display.getFieldOfType(null, "image");
-		    let valuesAreNumbers = true;
-		    records.forEach((record,idx)=>{
-			let value = this.display.getDataValues(record)[filterField.getIndex()];
-			if(!seen[value]) {
-			    seen[value]  = true;
-			    let obj = {};
-			    if(imageField)
-				obj.image = this.display.getDataValues(record)[imageField.getIndex()];
-			    if((+value+"") != value) valuesAreNumbers = false;
-			    let label = value;
-			    if(label.length>30) {
-				label=  label.substring(0,29)+"...";
-			    }
-			    if(typeof value == "string")
-				value = value.replace(/\'/g,"&apos;");
-			    let tuple = [value, label];
-			    obj.value = tuple;
-			    enumValues.push(obj);
-			}
-		    });
-		    if(this.getProperty(filterField.getId() +".filterSort",true)) {
-			enumValues.sort((a,b)  =>{
-			    a= a.value;
-			    b = b.value;
-			    if(valuesAreNumbers) {
-				return +a - +b;
-			    }
-			    return (""+a[1]).localeCompare(""+b[1]);
-			});
-		    }
-		    for(let j=0;j<enumValues.length;j++) {
-			let v = enumValues[j];
-			enums.push(v);
-		    }
-		}
+		let dfltValue = this.defaultValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
+                let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
 		if(this.getProperty(filterField.getId() +".filterMultiple",false)) {
 		    attrs.push("multiple");
@@ -1534,6 +1490,95 @@ function RecordFilter(display,filterFieldId, properties) {
 				       this.display.makeFilterLabel(label,tt) + widget+suffix);
 	    }
             return widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
+	},
+	getEnums: function(records) {
+	    let enums = null;
+	    let filterValues = this.getProperty(filterField.getId()+".filterValues");
+	    if (filterValues) {
+		let toks;
+		if ((typeof filterValues) == "string") {
+		    filterValues = Utils.getMacro(filterValues);
+		    toks = filterValues.split(",");
+		} else {
+		    toks = filterValues;
+		}
+		enums=[];
+		toks.map(tok=>{
+		    let tmp = tok.split(":");
+		    if(tmp.length>1) {
+			tok = [tmp[0],tmp[1]];
+		    } else if(tok == FILTER_ALL) {
+			tok = [tmp[0],"All"];
+		    }
+		    enums.push({value:tok});
+		})
+	    }
+	    let includeAll = this.getProperty(filterField.getId() +".includeAll",true);
+	    if(enums == null) {
+		let depend = this.getProperty(filterField.getId() +".depends");
+		if(depend) {
+		    depend=this.depend = this.display.getRecordFilter(depend);
+		}
+		let allName = this.getProperty(filterField.getId() +".allName","All");
+		enums = [];
+		if(includeAll) {
+		    enums.push({value:[FILTER_ALL,allName]});
+		}
+		let seen = {};
+		let dflt = filterField.getEnumeratedValues();
+		if(dflt) {
+		    for(let v in dflt) {
+			seen[v] = true;
+			enums.push({value:[v,dflt[v]]});
+		    }
+		}
+		let enumValues = [];
+		let imageField=this.display.getFieldOfType(null, "image");
+		let valuesAreNumbers = true;
+
+		if(depend) {
+		    depend.prepareToFilter();
+		    this.dependMySearch = depend.mySearch;
+		}
+
+		records.forEach((record,idx)=>{
+		    if(depend) {
+			if(!depend.isRecordOk(record,idx<5)) return;
+		    }
+		    let value = this.display.getDataValues(record)[filterField.getIndex()];
+		    if(!seen[value]) {
+			seen[value]  = true;
+			let obj = {};
+			if(imageField)
+			    obj.image = this.display.getDataValues(record)[imageField.getIndex()];
+			if((+value+"") != value) valuesAreNumbers = false;
+			let label = value;
+			if(label.length>30) {
+			    label=  label.substring(0,29)+"...";
+			}
+			if(typeof value == "string")
+			    value = value.replace(/\'/g,"&apos;");
+			let tuple = [value, label];
+			obj.value = tuple;
+			enumValues.push(obj);
+		    }
+		});
+		if(this.getProperty(filterField.getId() +".filterSort",true)) {
+		    enumValues.sort((a,b)  =>{
+			a= a.value;
+			b = b.value;
+			if(valuesAreNumbers) {
+			    return +a - +b;
+			}
+			return (""+a[1]).localeCompare(""+b[1]);
+		    });
+		}
+		for(let j=0;j<enumValues.length;j++) {
+		    let v = enumValues[j];
+		    enums.push(v);
+		}
+	    }
+	    return enums;
 	}
 	
     });
@@ -3211,7 +3256,7 @@ function RequestMacro(display, macro) {
 	});
     }
     let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
-//    console.log(macro +" type:" + macroType +" v:" + values);
+    //    console.log(macro +" type:" + macroType +" v:" + values);
     let dflt =this.getProperty("request." +macro+".default",null);
     if(dflt == null) {
 	if(values && values.length>0  && macroType=="enumeration") {
@@ -3277,7 +3322,6 @@ RequestMacro.prototype = {
 		    });
 		    values = Utils.mergeLists(first,rest);
 		}
-
 
 		if(this.multiple) {
 		    attrs.push("multiple");
