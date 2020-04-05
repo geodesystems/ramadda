@@ -80,6 +80,7 @@ const PROP_FIELDS = "fields";
 const PROP_LAYOUT_HERE = "layoutHere";
 const PROP_HEIGHT = "height";
 const PROP_WIDTH = "width";
+const PROP_FILTER_VALUE = "fitlerValue";
 const HIGHLIGHT_COLOR = "yellow";
 const RECORD_INDEX = "recordIndex";
 
@@ -834,6 +835,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterSort=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
+		['recordSelectFilterFields=""','Set the value of other displays filter fields'],
 		'selectFields=prop:label:field1,...fieldN;prop:....',
 		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
 		['not match value','dataFilters="notmatch(field=field,value=value,label=,enabled=);"','Only show records that dont match'],
@@ -863,6 +865,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['colorByInverse=true','Inverse the values'],
 		["colorTableAlpha=\"0.5\"","Set transparency on color table values"],
 		['colorTableInverse=true',"Inverse the color table"],
+		['colorTablePruneLeft=N',"Prune first N colors"],
+		['colorTablePruneRight=N',"Prune last N colors"],
 		["colorByMin=\"value\"","Min scale value"],
 		["colorByMax=\"value\"","Max scale value"],
 		['showColorTable=false',"Display the color table"],
@@ -1101,6 +1105,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    tmp.push(colors[i]);
 		colors = tmp;
 	    }
+	    if(this.getProperty("colorTablePruneLeft")) {
+		let tmp = [];
+		for(let i=+this.getProperty("colorTablePruneLeft");i<colors.length;i++) {
+		    tmp.push(colors[i]);
+		}
+		colors = tmp;
+	    }
+	    if(this.getProperty("colorTablePruneRight")) {
+		let tmp = [];
+		let d = +this.getProperty("colorTablePruneRight");
+		for(let i=0;i<colors.length-d;i++) {
+		    tmp.push(colors[i]);
+		}
+		colors = tmp;
+	    }
 	    return colors;
 	},
 
@@ -1318,42 +1337,48 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
 	    }
 
-	    if (prop.property == "filterValue") {
+	    if (prop.property == PROP_FILTER_VALUE) {
 		if(!this.getProperty("acceptFilterEvent",true)) {
 		    return;
 		}
 		this.haveCalledUpdateUI = false;
-		//xxxx
-		var widgetId = this.getFilterId(prop.fieldId);
-		if(prop.id && prop.id.endsWith("date1")) {
-		    widgetId+="_date1";
-		} else 	if(prop.id && prop.id.endsWith("date2")) {
-		    widgetId+="_date2";
+		let properties = prop.properties;
+		if(!properties) {
+		    properties=[];
+		    properties.push(prop);
 		}
 		this.settingFilterValue = true;
-		if(prop.fieldId == "_highlight") {
-		    this.jq(ID_FILTER_HIGHLIGHT).val(prop.value);
-		    this.setProperty("filterHighlight", prop.value=="highlight");
-		} else 	if(Utils.isDefined(prop.value2)) {
-		    $("#" +widgetId+"_min").val(prop.value);
-		    $("#" +widgetId+"_min").attr("data-value", prop.value);
-		    $("#" +widgetId+"_max").val(prop.value2);
-		    $("#" +widgetId+"_max").attr("data-value", prop.value2);
-		} else {
-		    var widget = $("#"+widgetId);
-		    if(widget.attr("isCheckbox")) {
-			var on = widget.attr("onValue");
-			var off = widget.attr("offValue");
-			widget.prop('checked',prop.value.includes(on));
+		properties.forEach(prop=> {
+		    let widgetId = this.getFilterId(prop.fieldId);
+		    if(prop.id && prop.id.endsWith("date1")) {
+			widgetId+="_date1";
+		    } else 	if(prop.id && prop.id.endsWith("date2")) {
+			widgetId+="_date2";
+		    }
+		    if(prop.fieldId == "_highlight") {
+			this.jq(ID_FILTER_HIGHLIGHT).val(prop.value);
+			this.setProperty("filterHighlight", prop.value=="highlight");
+		    } else 	if(Utils.isDefined(prop.value2)) {
+			$("#" +widgetId+"_min").val(prop.value);
+			$("#" +widgetId+"_min").attr("data-value", prop.value);
+			$("#" +widgetId+"_max").val(prop.value2);
+			$("#" +widgetId+"_max").attr("data-value", prop.value2);
 		    } else {
-			widget.val(prop.value);
+			var widget = $("#"+widgetId);
+			if(widget.attr("isCheckbox")) {
+			    var on = widget.attr("onValue");
+			    var off = widget.attr("offValue");
+			    widget.prop('checked',prop.value.includes(on));
+			} else {
+			    widget.val(prop.value);
+			}
+			widget.attr("data-value",prop.value);
+			if(widget.attr("isButton")) {
+			    widget.find(".display-filter-button").removeClass("display-filter-button-selected");
+			    widget.find("[value='" + prop.value +"']").addClass("display-filter-button-selected");
+			}
 		    }
-		    widget.attr("data-value",prop.value);
-		    if(widget.attr("isButton")) {
-			widget.find(".display-filter-button").removeClass("display-filter-button-selected");
-			widget.find("[value='" + prop.value +"']").addClass("display-filter-button-selected");
-		    }
-		}
+		});
 		this.settingFilterValue = false;
 		this.dataFilterChanged();
 		return;
@@ -1368,16 +1393,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
         propagateEventRecordSelection: function(args) {
 	    this.getDisplayManager().notifyEvent("handleEventRecordSelection", this, args);
-	    if(this.getProperty("recordSelectFilterField")) {
-		let field = this.getFieldById(null,this.getProperty("recordSelectFilterField"));
-		if(field) {
-		    var args = {
-			property: "filterValue",
-			id:field.getId(),
-			fieldId: field.getId(),
-			value: args.record.getValue(field.getIndex())
+	    if(this.getProperty("recordSelectFilterFields")) {
+		let fields = this.getFieldsByIds(null,this.getProperty("recordSelectFilterFields"));
+		if(fields && fields.length>0) {
+		    let props = {
+			property: PROP_FILTER_VALUE,
+			properties:[]
 		    };
-		    this.propagateEvent("handleEventPropertyChanged", args);
+		    fields.forEach(field=>{
+			props.properties.push({
+			    id:field.getId(),
+			    fieldId: field.getId(),
+			    value: args.record.getValue(field.getIndex())
+			});
+		    })
+		    this.propagateEvent("handleEventPropertyChanged", props);
 		}
 	    }
 	},
@@ -3986,7 +4016,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    };
 
 	    let sliderFunc = function() {
-//		macroChangeinputFunc
+		//		macroChangeinputFunc
 	    };
 
 	    macroDateIds.forEach(id=>{
@@ -4122,7 +4152,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    });
 	},
-
+	getRecordFilter: function(fieldId) {
+	    if(this.filters) {
+		for(let i=0;i<this.filters.length;i++) {
+		    let filter = this.filters[i];
+		    if(filter.field.getId() == fieldId) return this.filters[i];
+		}
+	    }
+	    return null;
+	},
         checkSearchBar: function() {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
@@ -4279,7 +4317,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    
 
-
             let filterBy = this.getProperty("filterFields","",true).split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let fieldMap = {};
@@ -4315,6 +4352,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 	    this.createRequestProperties();
  	    let inputFunc = function(input, input2, value){
+		if(this.ignoreFilterChange) return;
                 var id = input.attr(ID);
 		if(!input2) {
 		    if(id.endsWith("_min")) {
@@ -4366,7 +4404,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		_this.dataFilterChanged();
 
 		var args = {
-		    property: "filterValue",
+		    property: PROP_FILTER_VALUE,
 		    id:id,
 		    fieldId: fieldId,
 		    value: value
@@ -4384,10 +4422,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    });
 
-
 	    this.filters.forEach(f=>{
-		if(f.initDateWidget)
-		    f.initDateWidget(inputFunc);
+		if(f.initWidget)
+		    f.initWidget(inputFunc);
 	    });
 
 	    this.jq(ID_FILTERBAR).find(".display-filter-items").each(function(){
@@ -4647,8 +4684,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		jq.find("[field-id]").click(function() {
 		    let fieldId = $(this).attr("field-id");
 		    let value = $(this).attr("field-value");
-		    var args = {
-			property: "filterValue",
+		    let args = {
+			property: PROP_FILTER_VALUE,
 			id:fieldId,
 			fieldId: fieldId,
 			value: value

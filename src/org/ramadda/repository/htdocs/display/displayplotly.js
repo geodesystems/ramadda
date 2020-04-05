@@ -2,20 +2,20 @@
    Copyright 2008-2019 Geode Systems LLC
 */
 
-var CATEGORY_PLOTLY = "More Charts";
-var DISPLAY_PLOTLY_RADAR = "radar";
-var DISPLAY_PLOTLY_WINDROSE = "windrose";
-var DISPLAY_PLOTLY_DENSITY = "density";
-var DISPLAY_PLOTLY_DOTPLOT = "dotplot";
-var DISPLAY_PLOTLY_SPLOM = "splom";
-var DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
-var DISPLAY_PLOTLY_3DMESH = "3dmesh";
-var DISPLAY_PLOTLY_TREEMAP = "ptreemap";
-var DISPLAY_PLOTLY_TERNARY = "ternary";
-var DISPLAY_PLOTLY_SUNBURST= "sunburst";
-var DISPLAY_PLOTLY_TEXTCOUNT = "textcount";
-var DISPLAY_PLOTLY_COMBOCHART = "combochart";
-var DISPLAY_PLOTLY_PARCOORDS = "parcoords";
+const CATEGORY_PLOTLY = "More Charts";
+const DISPLAY_PLOTLY_RADAR = "radar";
+const DISPLAY_PLOTLY_WINDROSE = "windrose";
+const DISPLAY_PLOTLY_DENSITY = "density";
+const DISPLAY_PLOTLY_DOTPLOT = "dotplot";
+const DISPLAY_PLOTLY_SPLOM = "splom";
+const DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
+const DISPLAY_PLOTLY_3DMESH = "3dmesh";
+const DISPLAY_PLOTLY_TREEMAP = "ptreemap";
+const DISPLAY_PLOTLY_TERNARY = "ternary";
+const DISPLAY_PLOTLY_SUNBURST= "sunburst";
+const DISPLAY_PLOTLY_TEXTCOUNT = "textcount";
+const DISPLAY_PLOTLY_COMBOCHART = "combochart";
+const DISPLAY_PLOTLY_PARCOORDS = "parcoords";
 
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_RADAR,
@@ -105,7 +105,7 @@ addGlobalDisplayType({
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
-    var ID_PLOTY = "plotly";
+    const ID_PLOTY = "plotly";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     RamaddaUtil.inherit(this, SUPER);
     RamaddaUtil.defineMembers(this, {
@@ -1318,7 +1318,7 @@ function TextcountDisplay(displayManager, id, properties) {
 	    var pointNumber = data.points[0].pointNumber;
 	    var pattern = this.patternList[pointNumber];
 	    var args = {
-		property: "filterValue",
+		property: PROP_FILTER_VALUE,
 		fieldId: this.textField.getId(),
 		value: pattern
 	    };

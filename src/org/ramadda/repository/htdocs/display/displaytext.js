@@ -2283,7 +2283,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    });
 		} else if(click == "selectother") {
 		    _this.propagateEvent("handleEventPropertyChanged", {
-			property: "filterValue",
+			property: PROP_FILTER_VALUE,
 			value: value,
 			id:_this.getFilterId(fieldId),
 			fieldId: fieldId,
@@ -2294,7 +2294,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		var field = $(this).attr("data-field");
 		//		    _this.jq(ID_DISPLAY_CONTENTS).find("[data-field=" + field+"]").css("color","black");
 		_this.handleEventPropertyChanged(_this,{
-		    property: "filterValue",
+		    property: PROP_FILTER_VALUE,
 		    id:ID,
 		    fieldId: field,
 		    value: "-all-"

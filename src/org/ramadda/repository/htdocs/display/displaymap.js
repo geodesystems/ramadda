@@ -2721,12 +2721,8 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
 	updateUI: function() {
-	    let pointData = this.getData();
-	    if (pointData == null) return;
 	    let records = this.filterData();
 	    if(!records) return;
-
-
             let fields = this.getData().getNonGeoFields();
 	    let localeField = this.getFieldById(fields,this.getProperty("localeField","state"));
 	    if(localeField==null) {
@@ -2739,8 +2735,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    let map = {};
 	    let grid = this.getProperty("grid","us")=="countries"?this.countries:this.states;
 
-
-	    grid.map(o=>{
+	    grid.forEach(o=>{
 		minx = Math.min(minx,o.x);
 		maxx = Math.max(maxx,o.x);
 		miny = Math.min(miny,o.y);
@@ -2752,7 +2747,6 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    let sparkLinesColorBy = this.getColorByInfo(records,"sparklineColorBy");
 	    let strokeColorBy = this.getColorByInfo(records,"strokeColorBy","strokeColorByMap");
 	    let sparkLineField = this.getFieldById(fields,this.getProperty("sparklineField"));
-
 	    let table =HU.open(TABLE,[WIDTH,"100%"]);
 	    let width = this.getProperty("cellWidth", this.getProperty("cellSize",0));
 	    let height = this.getProperty("cellHeight",width);

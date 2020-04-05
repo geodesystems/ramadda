@@ -154,7 +154,7 @@ function DisplayManager(argId, argProperties) {
 		var fields = mapDisplay.getFieldsByIds(null, mapDisplay.getProperty("filterFieldsToPropagate"));
 		fields.map(field=>{
 		    var args = {
-			property: "filterValue",
+			property: PROP_FILTER_VALUE,
 			fieldId:field.getId(),
 			value:closest.getValue(field.getIndex())
 		    };
