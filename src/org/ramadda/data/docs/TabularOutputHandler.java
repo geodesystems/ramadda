@@ -682,6 +682,8 @@ public class TabularOutputHandler extends OutputHandler {
                         int column = Integer.parseInt(
                                          searchField.getName().substring(
                                              "column".length()).trim()) - 1;
+			List<String> cols = new ArrayList<String>();
+			cols.add(column+"");
                         String s = request.getString(id, "");
                         s = s.trim();
                         //                        System.err.println("column:" + column + " s:" + s);
@@ -693,7 +695,7 @@ public class TabularOutputHandler extends OutputHandler {
                             double value = Double.parseDouble(s);
                             int op = Filter.ValueFilter.getOperator(operator);
                             textReader.getFilter().addFilter(
-                                new Filter.ValueFilter(column, op, value));
+                                new Filter.ValueFilter(cols, op, value));
 
                             continue;
                         }

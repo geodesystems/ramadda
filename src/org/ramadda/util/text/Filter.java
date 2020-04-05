@@ -771,6 +771,8 @@ public class Filter extends Processor {
         private double value;
 
 
+
+
         /**
          * _more_
          *
