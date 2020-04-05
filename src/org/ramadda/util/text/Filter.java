@@ -43,6 +43,9 @@ import java.util.regex.*;
 
 public class Filter extends Processor {
 
+
+
+
     /** _more_ */
     private String commentPrefix = "#";
 
@@ -76,6 +79,9 @@ public class Filter extends Processor {
             return null;
         }
     }
+
+
+
 
     /**
      * _more_
@@ -468,6 +474,7 @@ public class Filter extends Processor {
                 return false;
             }
             map.put(v, new Integer(count.intValue() + 1));
+
             return true;
         }
 
@@ -737,23 +744,6 @@ public class Filter extends Processor {
      */
     public static class ValueFilter extends ColumnFilter {
 
-        /** _more_ */
-        public static int OP_LT = 0;
-
-        /** _more_ */
-        public static int OP_LE = 1;
-
-        /** _more_ */
-        public static int OP_GT = 2;
-
-        /** _more_ */
-        public static int OP_GE = 3;
-
-        /** _more_ */
-        public static int OP_EQUALS = 4;
-
-        /** _more_ */
-        public static int OP_DEFINED = 5;
 
         /** _more_ */
         private int op;
@@ -791,34 +781,6 @@ public class Filter extends Processor {
         }
 
 
-
-        /**
-         * _more_
-         *
-         * @param s _more_
-         *
-         * @return _more_
-         */
-        public static int getOperator(String s) {
-            s = s.trim();
-            if (s.equals("<")) {
-                return OP_LT;
-            }
-            if (s.equals("<=")) {
-                return OP_LE;
-            }
-            if (s.equals(">")) {
-                return OP_GT;
-            }
-            if (s.equals(">=")) {
-                return OP_GE;
-            }
-            if (s.equals("=")) {
-                return OP_EQUALS;
-            }
-
-            return -1;
-        }
 
 
         /**
@@ -858,6 +820,9 @@ public class Filter extends Processor {
                 }
                 if (op == OP_EQUALS) {
                     return value == this.value;
+                }
+                if (op == OP_NOTEQUALS) {
+                    return value != this.value;
                 }
                 if (op == OP_DEFINED) {
                     return value == value;
@@ -1004,7 +969,6 @@ public class Filter extends Processor {
             return true;
         }
     }
-
 
 
 

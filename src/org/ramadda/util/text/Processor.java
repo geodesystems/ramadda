@@ -221,6 +221,7 @@ public abstract class Processor extends CsvOperator {
     public Row processRow(TextReader info, Row row, String line)
             throws Exception {
         info.setCurrentOperator(null);
+
         return row;
     }
 
@@ -1066,13 +1067,13 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         private String template;
 
-        /** _more_          */
+        /** _more_ */
         private String prefix;
 
-        /** _more_          */
+        /** _more_ */
         private String delimiter;
 
-        /** _more_          */
+        /** _more_ */
         private String suffix;
 
         /** _more_ */
@@ -2628,6 +2629,7 @@ rotate -> pass -> pass -> rotate -> pass
                 }
                 if (seenKeys.contains(key)) {
                     newRows.add(row);
+
                     continue;
                 }
                 Row seenRow = seen.get(key);
@@ -3194,6 +3196,140 @@ rotate -> pass -> pass -> rotate -> pass
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sun, Apr 5, '20
+     * @author         Enter your name here...    
+     */
+    public static class GroupFilter extends RowCollector {
+
+        /** _more_          */
+        private int op;
+
+        /** _more_          */
+        private String value;
+
+        /** _more_          */
+        private int valueIdx;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param valueIdx _more_
+         * @param op _more_
+         * @param value _more_
+         */
+        public GroupFilter(List<String> cols, int valueIdx, int op,
+                           String value) {
+            super(cols);
+            this.op       = op;
+            this.valueIdx = valueIdx;
+            this.value    = value;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param v _more_
+         *
+         * @return _more_
+         */
+        private double getValue(String v) {
+            try {
+                return Double.parseDouble(v);
+            } catch (Exception e) {
+                return Double.NaN;
+            }
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         * @param finalRows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> finalRows)
+                throws Exception {
+            List<Integer> indices   = getIndices(info);
+            List<Row>     allRows   = getRows();
+            List<Row>     newRows   = new ArrayList<Row>();
+            Row           headerRow = allRows.get(0);
+            newRows.add(headerRow);
+            allRows.remove(0);
+            List keys = new ArrayList();
+            Hashtable<Object, List<Row>> rowMap = new Hashtable<Object,
+                                                      List<Row>>();
+            for (Row row : allRows) {
+                List          values = row.getValues();
+                StringBuilder key    = new StringBuilder();
+                for (int idx : indices) {
+                    key.append(values.get(idx).toString());
+                    key.append("-");
+                }
+                String    k    = key.toString();
+                List<Row> rows = rowMap.get(k);
+                if (rows == null) {
+                    keys.add(k);
+                    rows = new ArrayList<Row>();
+                    rowMap.put(k, rows);
+                }
+                rows.add(row);
+            }
+            double dv = 0;
+            try {
+                dv = Double.parseDouble(value);
+            } catch (Exception ignore) {}
+            ;
+            int cnt = 0;
+            for (Object key : keys) {
+                List<Row> rows = rowMap.get(key);
+                //              System.out.println(key +" " + rows.size());
+                boolean ok = false;
+                for (Row row : rows) {
+                    cnt++;
+                    String v = row.getString(valueIdx);
+                    if (op == OP_LT) {
+                        ok = getValue(v) < dv;
+                    } else if (op == OP_LE) {
+                        ok = getValue(v) <= dv;
+                    } else if (op == OP_GT) {
+                        ok = getValue(v) > dv;
+                    } else if (op == OP_GE) {
+                        ok = getValue(v) >= dv;
+                    } else if (op == OP_EQUALS) {
+                        ok = getValue(v) == dv;
+                    } else if (op == OP_NOTEQUALS) {
+                        ok = getValue(v) != dv;
+                    } else if (op == OP_DEFINED) {
+                        ok = !Double.isNaN(getValue(v));
+                    } else if (op == OP_MATCH) {
+                        ok = v.matches(value);
+                    } else {}
+                    if (ok) {
+                        break;
+                    }
+                }
+                if (ok) {
+                    newRows.addAll(rows);
+                }
+
+
+            }
+
+            return newRows;
+        }
+    }
 
 
 }

@@ -49,6 +49,32 @@ import java.util.regex.*;
 public abstract class CsvOperator {
 
     /** _more_ */
+    public static int OP_LT = 0;
+
+    /** _more_ */
+    public static int OP_LE = 1;
+
+    /** _more_ */
+    public static int OP_GT = 2;
+
+    /** _more_ */
+    public static int OP_GE = 3;
+
+    /** _more_ */
+    public static int OP_EQUALS = 4;
+
+    /** _more_ */
+    public static int OP_NOTEQUALS = 5;
+
+    /** _more_ */
+    public static int OP_DEFINED = 6;
+
+    /** _more_          */
+    public static int OP_MATCH = 7;
+
+
+
+    /** _more_ */
     protected int rowCnt = 0;
 
     /** _more_ */
@@ -129,7 +155,9 @@ public abstract class CsvOperator {
      */
     public String getDescription() {
         String className = getClass().getName();
-        return className.replace("org.ramadda.util.text.", "").replaceAll("^[^\\$]+\\$","");
+
+        return className.replace("org.ramadda.util.text.",
+                                 "").replaceAll("^[^\\$]+\\$", "");
     }
 
 
@@ -153,6 +181,43 @@ public abstract class CsvOperator {
     public int getIndex(TextReader info) {
         return getIndices(info).get(0);
     }
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static int getOperator(String s) {
+        s = s.trim();
+        if (s.equals("<")) {
+            return OP_LT;
+        }
+        if (s.equals("<=")) {
+            return OP_LE;
+        }
+        if (s.equals(">")) {
+            return OP_GT;
+        }
+        if (s.equals(">=")) {
+            return OP_GE;
+        }
+        if (s.equals("=")) {
+            return OP_EQUALS;
+        }
+        if (s.equals("!=")) {
+            return OP_NOTEQUALS;
+        }
+        if (s.equals("~")) {
+            return OP_MATCH;
+        }
+
+        throw new IllegalArgumentException("unknown operator:" + s);
+    }
+
+
 
 
     /** _more_ */
