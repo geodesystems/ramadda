@@ -392,7 +392,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             lonFld.obj.value = formatLocationValue(lonlat.lon);
         }
         if (zoomFld) {
-            zoomFld.obj.value = this.getMap().getZoom();
+            zoomFld.obj.value = this.theMap.getMap().getZoom();
         }
         //                this.setSelectionMarker(lonlat.lon, lonlat.lat);
 
@@ -560,6 +560,7 @@ RepositoryMap.prototype = {
     centerOnMarkers: function(dfltBounds, force, justMarkerLayer) {
 	if(debugBounds) {
 	    console.log("centerOnMarkers: force=" + force +" dflt:" + dfltBounds);
+	    console.trace();
 	}
         this.centerOnMarkersCalled = true;
         this.centerOnMarkersForce = force;
@@ -673,8 +674,10 @@ RepositoryMap.prototype = {
         this.zoomToExtent(bounds);
     },
     zoomToExtent: function(bounds,flag) {
-	if(debugBounds)
+	if(debugBounds) {
 	    console.log("zoomToExtent");
+	    console.trace();
+	}
         this.getMap().zoomToExtent(bounds,flag);
     },
     centerToMarkers: function() {
@@ -3345,11 +3348,33 @@ RepositoryMap.prototype = {
 	}
     },
 
-    zoomToLayer:  function(layer)  {
-        var dataBounds = layer.getDataExtent();
+    getLayerVisbileExtent: function(layer) {
+        var maxExtent = null;
+        var features = layer.features;
+	if(!features) return layer.getDataExtent();
+        if(features.length > 0) {
+            var geometry = null;
+            for(var i=0, len=features.length; i<len; i++) {
+		if(!features[i].getVisibility()) continue;
+                geometry = features[i].geometry;
+                if (geometry) {
+                    if (maxExtent === null) {
+                        maxExtent = new OpenLayers.Bounds();
+                    }
+                    maxExtent.extend(geometry.getBounds());
+                }
+            }
+        }
+        return maxExtent;
+    },
+
+    zoomToLayer:  function(layer,scale)  {
+        var dataBounds = this.getLayerVisbileExtent(layer);
 	if(!dataBounds)
 	    dataBounds = layer.extent;
         if (dataBounds) {
+	    if(scale)
+		dataBounds = dataBounds.scale(parseFloat(scale),dataBounds.getCenterPixel());
             this.zoomToExtent(dataBounds, true);
 	}
     },

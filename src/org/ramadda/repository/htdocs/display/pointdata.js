@@ -1481,7 +1481,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(!this.hideFilterWidget) {
 		var tt = label;
 		if(label.length>50) label = label.substring(0,49)+"...";
-		if(!this.getProperty(filterField.getId() +".showFilterLabel",true)) {
+		if(!this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true))) {
 		    label = "";
 		}
 		else
@@ -1513,7 +1513,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    enums.push({value:tok});
 		})
 	    }
-	    let includeAll = this.getProperty(filterField.getId() +".includeAll",true);
+	    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 	    if(enums == null) {
 		let depend = this.getProperty(filterField.getId() +".depends");
 		if(depend) {

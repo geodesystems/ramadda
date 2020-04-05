@@ -2198,6 +2198,8 @@ var ATTR_VALIGN = "valign";
 var SPACE = "&nbsp;";
 var SPACE1 = "&nbsp;";
 var SPACE2 = "&nbsp;&nbsp;";
+var SPACE3 = "&nbsp;&nbsp;&nbsp;";
+var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 
 var HU = HtmlUtils = {

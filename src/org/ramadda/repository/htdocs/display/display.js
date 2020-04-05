@@ -4771,7 +4771,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
 		//		var t1 = new Date();
-		this.dataFilterChanged();
+		this.dataFilterChanged({source:"animation"});
 		//		var t2 = new Date();
 		//		Utils.displayTimes("timeChanged",[t1,t2]);
 	    }
