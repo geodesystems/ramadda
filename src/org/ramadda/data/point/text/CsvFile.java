@@ -87,7 +87,7 @@ public class CsvFile extends TextFile {
         super(filename, context, properties);
     }
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable filesBeingWritten = new Hashtable();
 
     /**
@@ -100,20 +100,29 @@ public class CsvFile extends TextFile {
      * @throws Exception _more_
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
-	StringBuilder commands = new StringBuilder();
-        String csvCommands = getProperty("csvcommands", getProperty("point.csvcommands",(String) null));
-	if(csvCommands!=null) commands.append(csvCommands);
-	int commandCnt = 1;
-	while(true) {
-	    String c = getProperty("csvcommands" +(commandCnt++), (String) null);
-	    if(c==null) break;
-	    c = c.trim();
-	    if(c.length()>0) {
-		if(commands.length()>0) commands.append(",");
-		commands.append(c);
-	    }
-	}
-        if (commands.length()==0) {
+        StringBuilder commands  = new StringBuilder();
+        int           appendCnt = 0;
+        String csvCommands = getProperty("csvcommands",
+                                         getProperty("point.csvcommands",
+                                             (String) null));
+        if (csvCommands != null) {
+            commands.append(csvCommands);
+            appendCnt++;
+        }
+        int commandCnt = 1;
+        while (true) {
+            String c = getProperty("csvcommands" + (commandCnt++),
+                                   (String) null);
+            if (c == null) {
+                break;
+            }
+            if (appendCnt > 0) {
+                commands.append(",");
+            }
+            commands.append(c);
+            appendCnt++;
+        }
+        if (commands.length() == 0) {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
@@ -142,14 +151,16 @@ public class CsvFile extends TextFile {
                 } else {
                     fos = bos = new ByteArrayOutputStream();
                 }
-		csvCommands  =commands.toString().trim();
-		if(!csvCommands.endsWith("-p")) csvCommands+=",-p";
+                csvCommands = commands.toString().trim();
+                if ( !csvCommands.endsWith("-p")) {
+                    csvCommands += ",-p";
+                }
                 csvCommands = csvCommands.replaceAll("\\\\,", "_comma_");
                 String[] args = StringUtil.listToStringArray(
                                     StringUtil.split(csvCommands, ","));
-		for (int i = 0; i < args.length; i++) {
+                for (int i = 0; i < args.length; i++) {
                     args[i] = args[i].replaceAll("_comma_", ",");
-		    //		    System.err.println("arg:" + args[i]);
+                    //              System.err.println("arg:" + args[i]);
                 }
                 CsvUtil csvUtil = new CsvUtil(args,
                                       new BufferedOutputStream(fos), null);
