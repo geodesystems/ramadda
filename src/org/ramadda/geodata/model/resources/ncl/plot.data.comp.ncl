@@ -459,7 +459,7 @@ begin
   ;else
   ;  plottext = "Plotted on "+datestr
   ;end if
-  ;plottext = "NOAA/ESRL/PSD Facility for Climate Assessments"
+  ;plottext = "NOAA/PSL Facility for Climate Assessments"
   plottext = text
 
   ;; create the object and add it to the plot

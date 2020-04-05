@@ -258,7 +258,7 @@ function CollectionForm(formId, plottype, args) {
                   }
                   */
                 }
-                closeFormLoadingDialog();
+                Utils.closeFormLoadingDialog();
             },
             outputImages: function(imageEntries) {
                 if (imageEntries.length == 0) return "";

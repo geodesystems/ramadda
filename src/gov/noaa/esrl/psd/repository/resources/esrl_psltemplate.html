@@ -5,15 +5,17 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="US Department of Commerce, NOAA, Earth System Research Laboratory, Physical Sciences Departmant">
-    <meta name="author" content="PSD Web Team">
+    <meta name="description" content="US Department of Commerce, NOAA, Earth System Research Laboratory, Physical Sciences Laboratory">
+    <meta name="author" content="PSL Web Team">
 
-        <meta name="keywords" content='esrl, physical sciences division, noaa, weather and climate processes'>
+        <meta name="keywords" content='esrl, physical sciences laboratory, noaa, weather and climate processes'>
 
 <title>${repository_name} - ${title}</title>
 
+<link href="${root}/psdtheme/img/favicon.png" rel="icon">
+
 <properties>
-name=NOAA/ESRL/PSD Template
+name=NOAA PSL Template
 id=esrl_psd
 
 mobile=true
@@ -89,7 +91,7 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
   }
 
   function responsiveTabs(e) {
-    console.log("tabs stuff");
+    //console.log("tabs stuff");
     console.log(e);
     e.addClass('responsive-tabs');
     e.append($('<i class="fa fa-caret-down"> </i>'));
@@ -110,7 +112,6 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
   });
 </script>
 
-<link href="${root}/images/noaa3.gif " rel="SHORTCUT ICON">
 
 ${headfinal}
         
@@ -334,13 +335,11 @@ nav.shrink .navbar-toggle {
     <div class="navbar-header">
       <div class="navbar-brand">
         <div style="float: left;">
-          <a href="http://www.noaa.gov" title="NOAA"><img src="${root}/psdtheme/img/logos/noaa_notext.svg" 
-              width="38" class="header_logo"/></a>
+          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="${root}/psdtheme/img/logos/noaa-50th-logo.png" 
+          width="38" class="header_logo" alt="NOAA 50th Anniversary Logo" /></a>
         </div>
         <div style="float: left;">
-          <div style="margin: 12px 0 0 2px;">
-            <span class="hidden-xs"><a href="http://www.esrl.noaa.gov" title="ESRL">ESRL</a>
-              | </span><a href="/psd/" title="PSD">Physical Sciences Division</a>
+          <div style="margin: 12px 0 0 2px;"><a href="/" title="PSL">Physical Sciences Laboratory</a>
           </div>
         </div>
       </div>
@@ -358,22 +357,27 @@ nav.shrink .navbar-toggle {
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">About</a>
           
-          <ul class="dropdown-menu dropdown-menu-left">
-                  <li><a href="/psd/about/">About PSD</a></li>
-                  <li><a href="/psd/about/org.html">Organization At-A-Glance</a></li>
-                  <li><a href="/psd/reviews/">Science Reviews</a></li>
+          <ul class="dropdown-menu dropdown-intranet dropdown-menu-left row">
+            <li class="col-sm-6">
+              <ul class='about-menu'>
+                
+                  <li><a href="/about/">About PSL</a></li>
+                  <li><a href="/about/org.html">Organization At-A-Glance</a></li>
+                  <li><a href="/reviews/">Science Reviews</a></li>
                   <li><a href="http://www.boulder.noaa.gov/">Visiting NOAA
                       Boulder</a></li>
-            
+
+                  
+                </ul>
+            </li>
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">People
-            <!--i class="fa fa-angle-down"></i>--></a>
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">People</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li> <a href="/psd/about/contacts.html">Contacts</a></li>
-            <li><a href="/psd/staff/index.html">Staff List</a></li>
-            <li><a href="/psd/staff/spotlight/">Employee Spotlight</a></li>
+            <li> <a href="/about/contacts.html">Contacts</a></li>
+            <li><a href="/staff/index.html">Staff List</a></li>
+            <li><a href="/staff/spotlight/">Employee Spotlight</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -383,89 +387,86 @@ nav.shrink .navbar-toggle {
               <div class=" col-xs-12 col-md-3">
                 <ul class="">
                   <li class="hidden-xs hidden-sm"><span class="dropdown-header">Research</span></li>
-                  <li><a href="/psd/research/">Overview</a></li>
-                  <li><a href="/psd/research/teams/">Teams</a></li>
-                  <li><a href="/psd/pubs/">Publications</a></li>
+                  <li><a href="/research/">Overview</a></li>
+                  <li><a href="/research/teams/">Teams</a></li>
+                  <li><a href="/pubs/">Publications</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
                 <ul class="">
                   <li><span class="dropdown-header">Selected Topics</span></li>
-                  <li><a href="/psd/arportal/">Atmospheric Rivers</a></li>
-                  <li><a href="/psd/enso/">El Ni&ntilde;o and La Ni&ntilde;a</a></li>
-                  <li><a href="/psd/renewable_energy/">Renewable Energy</a></li>
-                  <li><a href="/psd/csi/">Interpreting Climate Conditions</a></li>
+                  <li><a href="/data/20thC_Rean">20th Century Reanalysis</a></li>
+                  <li><a href="/arportal/">Atmospheric Rivers</a></li>
+                  <li><a href="/enso/">El Ni&ntilde;o and La Ni&ntilde;a</a></li>
+                  <li><a href="/renewable_energy/">Renewable Energy</a></li>
+                  <li><a href="/csi/">Interpreting Climate Conditions</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
                 <ul class="">
                   <li><span class="dropdown-header">In the Field</span></li>
-                  <li><a href="/psd/aqpi/">AQPI</a></li>
-                  <li><a href="/psd/atomic/">ATOMIC</a></li>
-                  <li><a href="/psd/enso/rapid_response/">ENRR</a></li>
-                  <!-- li><a href="/psd/mosaic/">MOSAiC</a></li -->
+                  <li><a href="/aqpi/">AQPI</a></li>
+                  <li><a href="/atomic/">ATOMIC</a></li>
+                  <li><a href="/enso/rapid_response/">ENRR</a></li>
+                  <li><a href="/psd/mosaic/">MOSAiC</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
                 <ul class="">
                   <li><span class="dropdown-header">Observations</span></li>
-                  <li><a href="/psd/arctic/observatories/">Arctic Climate</a></li>
-                  <li><a href="/psd/psd3/air-sea/oceanobs/">Shipboard</a></li>
-                  <li><a href="/psd/technology/">Technology</a></li>
+                  <li><a href="/arctic/observatories/">Arctic Climate</a></li>
+                  <li><a href="/psd3/air-sea/oceanobs/">Shipboard</a></li>
+                  <li><a href="/technology/">Technology</a></li>
                 </ul>
               </div>
             </div>
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Data
-            <!--i class="fa fa-angle-down"></i>--></a>
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Data</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li><a href="/psd/data/index.html">All</a></li>
-            <li><a href="/psd/data/gridded/index.html">Gridded Climate</a></li>
-            <li><a href="/psd/data/obs/">Profiler Network Data &amp; Image
+            <li><a href="/data/index.html">All</a></li>
+            <li><a href="/data/gridded/index.html">Gridded Climate</a></li>
+            <li><a href="/data/obs/">Profiler Network Data &amp; Image
                 Library</a></li>
-            <li><a href="/psd/psd3/cruises/">Research Cruises</a></li>
-            <li><a href="/psd/arctic/data/">Arctic</a></li>
-            <li><a href="/psd/psd2/coastal/satres/">Satellite</a></li>
-            <li><a href="/psd/boulder/">Boulder Climate &amp; Weather</a></li>
-            <li><a href="/psd/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
+            <li><a href="/psd3/cruises/">Research Cruises</a></li>
+            <li><a href="/arctic/data/">Arctic</a></li>
+            <li><a href="/psd2/coastal/satres/">Satellite</a></li>
+            <li><a href="/boulder/">Boulder Climate &amp; Weather</a></li>
+            <li><a href="/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
                 Tools</a></li>
-            <li><a href="/psd/data/help/">Help</a></li>
+            <li><a href="/data/help/">Help</a></li>
 
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Products
-            <!--<i class="fa fa-angle-down"></i>--></a>
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Products</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li><a href="/psd/products/">All</a></li>
-            <li><a href="/psd/products/monitor/">Experimental </a></li>
-            <li><a href="/psd/map/">Map Room</a></li>
-            <li><a href="/psd/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
+            <li><a href="/products/">All</a></li>
+            <li><a href="/products/monitor/">Experimental </a></li>
+            <li><a href="/map/">Map Room</a></li>
+            <li><a href="/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
                 Tools</a></li>
-            <li><a href="/psd/forecasts/reforecast2/">GEFS Reforecast V2</a></li>
-            <li><a href="/psd/forecasts/clim/">Subseasonal Tropical Forecasts</a></li>
-            <li><a href="/psd/ipcc/">Climate Change Web Portal</a></li>
-            <li><a href="/psd/repository/facts/">FACTS</a></li>
+            <li><a href="/forecasts/reforecast2/">GEFS Reforecast V2</a></li>
+            <li><a href="/forecasts/clim/">Subseasonal Tropical Forecasts</a></li>
+            <li><a href="/ipcc/">Climate Change Web Portal</a></li>
+            <li><a href="/repository/facts/">FACTS</a></li>
           </ul>
         </li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">News
-            | Events
-            <!--i class="fa fa-angle-down"></i>--></a>
+            | Events</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li><a href="/psd/news/">News</a></li>
-            <li><a href="/psd/events/">Events</a></li>
-            <li><a href="/psd/seminars/">Seminars</a></li>
+            <li><a href="/news/">News</a></li>
+            <li><a href="/events/">Events</a></li>
+            <li><a href="/seminars/">Seminars</a></li>
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Learn
-            <!--<i class="fa fa-angle-down"></i>--></a>
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Learn</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li><a href="/psd/outreach/resources/">Research Handouts</a></li>
-            <li><a href="/psd/outreach/education/">Education Resources</a></li>
+            <li><a href="/outreach/resources/">Research Handouts</a></li>
+            <li><a href="/outreach/education/">Education Resources</a></li>
           </ul>
         </li>
         <li class="dropdown hidden-sm hidden-xs">
@@ -479,7 +480,7 @@ nav.shrink .navbar-toggle {
                     <input type="hidden" name="affiliate" value="etl.noaa.gov">
                     <span class="input-group-btn">
                       <input type="text" name="query" id="query-field" size="20"
-                        class="search-query form-control" placeholder="Search PSD...">
+                        class="search-query form-control" placeholder="Search PSL...">
                       <button class="btn btn-success" type="submit" name="search"><i
                           class="fa fa-search" style="color:#679b6c"></i></button>
                     </span>
@@ -496,7 +497,7 @@ nav.shrink .navbar-toggle {
                 <input type="hidden" name="affiliate" value="etl.noaa.gov">
                 <span class="input-group-btn">
                   <input type="text" name="query" id="query-field" size="20"
-                    class="search-query form-control" placeholder="Search PSD...">
+                    class="search-query form-control" placeholder="Search PSL...">
                   <button class="btn btn-success" type="submit" name="search"><i
                       class="fa fa-search" style="color:#679b6c"></i></button>
                 </span>
@@ -509,7 +510,7 @@ nav.shrink .navbar-toggle {
     <div>
       <table width="100%">
       <tr valign="bottom">
-      <td align="left" width="50%"><div class="title"><a href="${root}">${repository_name}</a></div></td>
+      <td align="left" width="50%"><div class="title"><a href="${root}">NOAA/PSL Climate Data Repository</a></div></td>
       <td align="right">${links}</td>
       </tr>
       </table>
@@ -547,7 +548,7 @@ nav.shrink .navbar-toggle {
                         <div class="col-md-4 col-sm-4">
                                         <h4>Mailing Address</h4>
                                         <p>
-                                                NOAA ESRL PSD<br />
+                                                NOAA PSL<br />
                                                 325 Broadway<br />
                                                 Boulder, CO 80305-3328
                                         </p>
@@ -562,12 +563,12 @@ nav.shrink .navbar-toggle {
                         </div>
 
                         <div class="col-md-5 col-sm-5">
-                <h4>Physical Sciences Division</h4>
-                                <p><a href="/psd/about/">About</a></p>
-                                <p><a href="/psd/about/contacts.html">Contact Us</a></p>
-                                <p><a href="/psd/site_index.html">Site Index</a></p>
-                                <p><a href="/psd/survey/">Take Our Survey</a></p>
-                                <p><a href="mailto:webmaster.psd&#64;noaa.gov">Webmaster</a></p>
+                <h4>Physical Sciences Laboratory</h4>
+                                <p><a href="/about/">About</a></p>
+                                <p><a href="/about/contacts.html">Contact Us</a></p>
+                                <p><a href="/site_index.html">Site Index</a></p>
+                                <p><a href="/survey/">Take Our Survey</a></p>
+                                <p><a href="mailto:webmaster.psl&#64;noaa.gov">Webmaster</a></p>
                         </div>
 
                         <div class="col-md-3 col-sm-3">
@@ -576,7 +577,7 @@ nav.shrink .navbar-toggle {
                                 <p><a href="https://intranet.psd.esrl.noaa.gov" target="intranet">Intranet</a></p>
                                 
                                 <p><a href="http://www.noaa.gov/privacy.html">Privacy Policy</a></p>
-                                <p><a href="/psd/disclaimer/">Disclaimer</a></p>
+                                <p><a href="/disclaimer/">Disclaimer</a></p>
                                 <p><a href="http://www.esrl.noaa.gov/about/accessibility.html">Accessibility</a></p>
                                 <p><a href="http://www.usa.gov/">USA.gov</a></p>
                         </div>
@@ -584,7 +585,7 @@ nav.shrink .navbar-toggle {
         </div><!--/.container-->
         <div class="subFooter">
                 <div class="col-md-12">
-                        <a href="http://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="http://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a>  &nbsp;|&nbsp; <a href="http://www.esrl.noaa.gov">Earth System Research Laboratory</a>
+                        <a href="http://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="http://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a>&nbsp;|&nbsp;<a href="http://www.esrl.noaa.gov">ESRL</a>
                 </div>
         </div>
 </footer>

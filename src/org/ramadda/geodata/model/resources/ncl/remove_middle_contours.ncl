@@ -12,11 +12,11 @@
 ; to scale the plot to the input data, without special code to
 ; explicitly compute contour levels or numeric control parameters.
 ;
-; 2011-oct-27	Original version.  By Dave Allured, NOAA/PSD/CIRES.
+; 2011-oct-27	Original version.  By Dave Allured, NOAA/PSL/CIRES.
 ;
 ; Acknowledgements:  This function combines methods and ideas from
 ; Mary Haley, NCAR/CISL; Gibies George, IITM; and Cathy Smith,
-; NOAA/PSD/CIRES.
+; NOAA/PSL/CIRES.
 ;
 ; Input:
 ;

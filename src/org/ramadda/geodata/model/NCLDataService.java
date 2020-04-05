@@ -198,7 +198,7 @@ public class NCLDataService extends Service {
             throws Exception {
 
         //System.err.println("cmds:" + commands);
-        System.err.println("env:" + envMap);
+        //System.err.println("env:" + envMap);
 
         long millis = System.currentTimeMillis();
         JobManager.CommandResults results =
