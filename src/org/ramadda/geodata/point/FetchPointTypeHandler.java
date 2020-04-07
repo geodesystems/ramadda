@@ -122,7 +122,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     private void doFetchInner() throws Exception {
-        System.err.println("doFetch");
+        //System.err.println("doFetch");
         Request request = getRepository().getTmpRequest();
         request.put(ARG_TYPE, "type_point_fetch");
         List[] pair =
