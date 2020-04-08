@@ -3375,7 +3375,7 @@ public abstract class Converter extends Processor {
                 }
                 didOne = true;
                 //A hack for US
-                if (value.equals("US") || value.startsWith("United States")) {
+                if (value.equals("US") || value.toString().startsWith("United States")) {
                     add(info, row, new Integer(327000000));
 
                     return row;
