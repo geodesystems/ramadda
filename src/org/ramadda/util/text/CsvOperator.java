@@ -472,6 +472,28 @@ public abstract class CsvOperator {
     }
 
 
+    public Hashtable<Object, List<Row>> groupRows(List<Row> rows, List<Integer> indices, List keys) {
+	Hashtable<Object, List<Row>> rowMap = new Hashtable<Object,
+	    List<Row>>();
+	for (Row row : rows) {
+	    List          values = row.getValues();
+	    StringBuilder key    = new StringBuilder();
+	    for (int idx : indices) {
+		key.append(values.get(idx).toString());
+		key.append("-");
+	    }
+	    String    k    = key.toString();
+	    List<Row> group = rowMap.get(k);
+	    if (group == null) {
+		if(keys!=null)
+		    keys.add(k);
+		group = new ArrayList<Row>();
+		rowMap.put(k, group);
+	    }
+	    group.add(row);
+	}
+	return rowMap;
+    }
 
 
 

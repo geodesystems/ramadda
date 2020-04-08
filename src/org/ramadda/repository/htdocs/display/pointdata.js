@@ -391,7 +391,7 @@ function PointData(name, recordFields, records, url, properties) {
                 cacheObject.pending = [];
                 for (var i = 0; i < tmp.length; i++) {
 		    if(debug)
-			console.log("\tcalling pointDataLoaded:" + tmp[i].getId() +" #:" + pointData.getRecords().length);
+			console.log("\tcalling pointDataLoaded:" + tmp[i].type +" " + tmp[i].getId() +" #:" + pointData.getRecords().length);
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
 

@@ -1849,6 +1849,12 @@ public class CsvUtil {
         new Cmd("-mergerows", new Label("Merge rows"), "",
                 new Arg("rows", "2 or more rows", "type", "rows"),
                 new Arg("delimiter"), new Arg("close")),
+        new Cmd("-rowop", new Label("Row Operator"),
+                "Apply an operator to columns and merge rows",
+		new Arg("keys","Key columns","type","columns"),
+		new Arg("values","Value columns","type","columns"),
+		new Arg("operator","Operator","values","average,min,max,count")),
+
         new Cmd("-rotate", "Rotate the data"),
         new Cmd("-flip", "Reverse the order of the rows except the header"),
         new Cmd("-unfurl", "Make columns from data values",
@@ -2041,8 +2047,6 @@ public class CsvUtil {
         new Cmd("-scale", "Set value={value+delta1}*scale+delta2",
                 new Arg("column", "", "type", "columns"), "delta1", "scale",
                 "delta2"),
-        new Cmd("-rowaverage", new Label("Row average"),
-                "Average the row values", ""),
         new Cmd("-generate", "Add row values", "label", "start", "step"),
         new Cmd("-decimals", "", new Arg("column", "", "type", "columns"),
                 "how many decimals to round to"),
@@ -2434,6 +2438,9 @@ public class CsvUtil {
 
                     continue;
                 }
+                if (arg.equals("-dummy")) {
+		    continue;
+		}
                 if (arg.equals("-html")) {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
@@ -2788,13 +2795,6 @@ public class CsvUtil {
                     continue;
                 }
 
-                if (arg.equals("-sum")) {
-                    info.getProcessor().addProcessor(
-                        new Processor.RowOperator(
-                            Processor.RowOperator.OP_SUM));
-
-                    continue;
-                }
 
                 if (arg.equals("-rotate")) {
                     info.getProcessor().addProcessor(new Processor.Rotator());
@@ -2899,26 +2899,16 @@ public class CsvUtil {
 
 
 
-                if (arg.equals("-max")) {
+                if (arg.equals("-rowop")) {
+                    if (!ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> keys = getCols(args.get(++i));
+		    List<String> values = getCols(args.get(++i));
+		    String op = args.get(++i);
+		    
                     info.getProcessor().addProcessor(
-                        new Processor.RowOperator(
-                            Processor.RowOperator.OP_MAX));
-
-                    continue;
-                }
-
-                if (arg.equals("-min")) {
-                    info.getProcessor().addProcessor(
-                        new Processor.RowOperator(
-                            Processor.RowOperator.OP_MIN));
-
-                    continue;
-                }
-
-                if (arg.equals("-rowaverage")) {
-                    info.getProcessor().addProcessor(
-                        new Processor.RowOperator(
-                            Processor.RowOperator.OP_AVERAGE));
+						     new Processor.RowOperator(keys,values,op));
 
                     continue;
                 }

@@ -538,7 +538,7 @@ rotate -> pass -> pass -> rotate -> pass
      * @version        $version$, Fri, Jan 9, '15
      * @author         Jeff McWhirter
      */
-    public static class RowOperator extends Processor {
+    public static class RowOperator extends RowCollector {
 
         /** _more_ */
         public static final int OP_SUM = 0;
@@ -552,95 +552,33 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         public static final int OP_AVERAGE = 3;
 
+        public static final int OP_COUNT =3;	
+
 
         /** _more_ */
         private int op = OP_SUM;
 
-        /** _more_ */
-        private List<Double> values;
+	private String opLabel;
 
         /** _more_ */
-        private List<Integer> counts;
+        private List<String> valueCols;
 
-        /**
-         * _more_
-         */
-        public RowOperator() {}
 
         /**
          * _more_
          *
          * @param op _more_
          */
-        public RowOperator(int op) {
-            this.op = op;
-        }
-
-        /**
-         * _more_
-         */
-        public void reset() {
-            values = null;
-            counts = null;
-        }
-
-        /**
-         * _more_
-         *
-         *
-         * @param info _more_
-         * @param row _more_
-         * @param line _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
-        @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
-            boolean first = false;
-            if (values == null) {
-                values = new ArrayList<Double>();
-                counts = new ArrayList<Integer>();
-                first  = true;
-            }
-            for (int i = 0; i < row.size(); i++) {
-                if (i >= values.size()) {
-                    values.add(new Double(0));
-                    counts.add(new Integer(0));
-                }
-                try {
-                    String s            = row.getString(i).trim();
-                    double value        = (s.length() == 0)
-                                          ? 0
-                                          : new Double(s).doubleValue();
-                    double currentValue = values.get(i).doubleValue();
-                    double newValue     = 0;
-                    if (op == OP_SUM) {
-                        newValue = currentValue + value;
-                    } else if (op == OP_MIN) {
-                        newValue = first
-                                   ? value
-                                   : Math.min(value, currentValue);
-                    } else if (op == OP_MAX) {
-                        newValue = first
-                                   ? value
-                                   : Math.max(value, currentValue);
-                    } else if (op == OP_AVERAGE) {
-                        newValue = currentValue + value;
-                    } else {
-                        System.err.println("NA:" + op);
-                    }
-                    values.set(i, newValue);
-                    counts.set(i, new Integer(counts.get(i).intValue() + 1));
-                } catch (Exception exc) {
-                    //                    System.err.println("err:" + exc);
-                    //                    System.err.println("line:" + theLine);
-                }
-            }
-
-            return row;
+        public RowOperator(List<String> keys, List<String> values,
+			   String op) {
+	    super(keys);
+	    this.opLabel = op;
+	    if(op.equals("sum")) this.op = OP_SUM;
+	    else if(op.equals("average")) this.op = OP_AVERAGE;
+	    else if(op.equals("min")) this.op = OP_MIN;
+	    else if(op.equals("max")) this.op = OP_MAX;
+	    else if(op.equals("count")) this.op = OP_COUNT;
+            this.valueCols = values;
         }
 
         /**
@@ -654,37 +592,71 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
-            if (values == null) {
-                Converter.ColumnSelector selector = info.getSelector();
-                if ((selector != null)
-                        && (selector.getIndices(info) != null)) {
-                    for (int i = 0; i < selector.getIndices(info).size();
-                            i++) {
-                        if (i > 0) {
-                            info.getWriter().print(",");
-                        }
-                        info.getWriter().print("-0");
-                    }
-                } else {
-                    info.getWriter().print("-0");
-                }
-                //                System.err.println("no values");
-            } else {
-                for (int i = 0; i < values.size(); i++) {
-                    double value = values.get(i);
-                    if (op == OP_AVERAGE) {
-                        value = value / counts.get(i);
-                    }
-                    if (i > 0) {
-                        info.getWriter().print(",");
-                    }
-                    info.getWriter().print(info.formatValue(value));
-                }
-            }
-            info.getWriter().flush();
-
+        public List<Row> finish(TextReader info, List<Row> r)
+	    throws Exception {
+	    List keys = new ArrayList();
+            List<Integer> valueIndices = getIndices(valueCols);
+	    List<Row> rows = new ArrayList<Row>();
+            List<Row> allRows   = getRows();
+            Row       headerRow = allRows.get(0);
+            allRows.remove(0);
+	    Hashtable<Object, List<Row>> groups = groupRows(allRows, getIndices(info), keys);
+	    for(int idx: valueIndices) {
+		if(idx>=headerRow.size()) continue;
+		headerRow.set(idx, headerRow.get(idx)+" " + opLabel);
+	    }
+	    rows.add(headerRow);
+	    List<double[]> tuples = new ArrayList<double[]>();
+	    for(int i=0;i<valueIndices.size();i++) {
+		tuples.add(new double[]{0,0,0,0});
+	    }
+	    for(Object key: keys) {
+		for(int i=0;i<valueIndices.size();i++) {
+		    double[] tuple = tuples.get(i);
+		    tuple[0]=0;tuple[1]=0;tuple[2]=0;tuple[3]=0;
+		}
+		Row aggRow = null;
+		List<Row> group = groups.get(key);
+		int count = 0;
+		for(Row row: group) {
+		    boolean first = false;
+		    if(aggRow==null) {
+			aggRow = new Row(row);
+			rows.add(aggRow);
+			first = true;
+		    }
+		    for(int i=0;i<valueIndices.size();i++) {
+			int idx= valueIndices.get(i);
+			if(idx>= row.size()) continue;
+			double v = Double.parseDouble(row.get(idx).toString());
+			if(Double.isNaN(v)) continue;
+			double[] tuple = tuples.get(i);
+			tuple[0]++;
+			tuple[1] = first?v:Math.min(v, tuple[0]);
+			tuple[2] = first?v:Math.max(v, tuple[1]);
+			tuple[3]+=v;
+		    }
+		}
+		for(int i=0;i<valueIndices.size();i++) {
+		    int idx= valueIndices.get(i);
+		    if(idx>= aggRow.size()) continue;
+		    double[] tuple = tuples.get(i);
+		    if(op ==OP_SUM) {
+			aggRow.set(idx,new Double(tuple[3]));
+		    } else if(op ==OP_COUNT) {
+			aggRow.set(idx,group.size());
+		    } else if(op ==OP_MIN) {
+			aggRow.set(idx,tuple[1]);
+		    } else if(op ==OP_MAX) {
+			aggRow.set(idx,tuple[2]);
+		    } else if(op ==OP_AVERAGE) {
+			if(tuple[0]==0) 
+			    aggRow.set(idx,Double.NaN);
+			else
+			    aggRow.set(idx,tuple[3]/tuple[0]);
+		    }
+		}
+	    }
             return rows;
         }
 
