@@ -908,7 +908,20 @@ var Utils = {
 	if(rem==0) {
 	    return wholeFormatted;
 	} else {
-	    return wholeFormatted +"." + Utils.formatNumber(rem).replace("0\.","");
+	    let a = Math.abs(number);
+	    let decimals = 0;
+	    if(a>=9999)
+		decimals = 0;
+	    else if(a>=999)
+		decimals = 1;
+	    else if(a>=99)
+		decimals = 2;
+	    else if(a>=9)
+		decimals = 3;
+	    else
+		decimals = 4
+	    return number_format(number,decimals);
+//	    return wholeFormatted +"." + String(Utils.formatNumber(rem)).replace("0\.","");
 	}
     },
 
@@ -918,7 +931,7 @@ var Utils = {
 	return s;
     },
     formatNumberInner: function(number) {
-        var anumber = number < 0 ? -number : number;
+        var anumber = Math.abs(number);
         if (anumber == Math.floor(anumber)) return number;
         if (anumber > 1000) {
             return number_format(number, 0);
@@ -1475,7 +1488,7 @@ var Utils = {
 	let formatter = n=>{
 	    if(options.decimals>=0)
 		return number_format(n,options.decimals);
-	    return this.formatNumberComma(n);
+	    return  this.formatNumberComma(n);
 	};
 
         if (options.showRange) {
