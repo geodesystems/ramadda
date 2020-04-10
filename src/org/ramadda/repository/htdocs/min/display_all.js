@@ -10336,22 +10336,20 @@ function CsvUtil() {
 	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
-	    let op = args["operator"] || "count";
-
-	    let keyFields =  this.display.getFieldsByIds(fields, (args["keyFields"]||"").replace(/_comma_/g,","));
-	    if(keyFields.length==0) throw new Error("No key fields processing mergeRows:" + args["keyFields"]);
-	    let altFields =  this.display.getFieldsByIds(fields, (args["altFields"]||"").replace(/_comma_/g,","));
-
+	    let op = args.operator || "count";
+	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
+	    if(keyFields.length==0) throw new Error("No key fields processing mergeRows:" + args.keyFields);
+	    let altFields =  this.display.getFieldsByIds(fields, (args.altFields||"").replace(/_comma_/g,","));
 	    let newFields = [];
 	    let seen = {};
 	    keyFields.forEach((f,idx)=>{
 		seen[f.getId()] = true;
-		var newField = f.clone();
+		let newField = f.clone();
 		newField.index = newFields.length;
 		newFields.push(newField);
 	    });
 	    let tmp =  this.display.getFieldsByIds(fields, (args["valueFields"]||"").replace(/_comma_/g,","));
-	    if(args["valueFields"]==null) tmp=fields;
+	    if(args.valueFields==null) tmp=fields;
 	    let valueFields = [];
 	    tmp.forEach(f=>{
 		if(!seen[f.getId()])
@@ -10362,8 +10360,9 @@ function CsvUtil() {
 		var newField = f.clone();
 		newField.index = newFields.length;
 		if(newField.isNumeric()) {
+		    let label = args[newField.id+".label"];
 		    newField.id = newField.id +"_" + op;
-		    newField.label = Utils.makeLabel(newField.id);
+		    newField.label = label || Utils.makeLabel(newField.id);
 		}
 		newFields.push(newField);
 	    });
@@ -10378,6 +10377,7 @@ function CsvUtil() {
 		    chartable:true,
 		}));
 	    }
+//	    console.log("fields:" + newFields);
 	    let keys = [];
 	    let collection ={
 	    };
@@ -10469,6 +10469,48 @@ function CsvUtil() {
 
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
+	maxDate: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let fields  = pointData.getRecordFields();
+	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
+	    let seen = {};
+	    let keys = [];
+	    let collection ={
+	    };
+
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		var record = records[rowIdx];
+		let key = "";
+		keyFields.forEach(f=>{
+		    key +=  record.getValue(f.getIndex())+"-";
+		});
+		let obj = collection[key];
+		if(!obj) {
+		    keys.push(key);
+		    obj = collection[key]= {
+			records:[]
+		    };
+		}
+		obj.records.push(record);
+	    }
+	    let newRecords = [];
+	    let cnt = 0;
+	    keys.forEach((key,idx)=>{
+		let records = collection[key].records;
+		let maxRecord = null;
+		let maxDate = null;
+		records.forEach(r=>{
+		    if(maxRecord==null || r.getDate().getTime()>maxDate) {
+			maxDate = r.getDate().getTime();
+			maxRecord = r;
+		    }
+		});
+		newRecords.push(maxRecord);
+	    });
+
+	    return   new  PointData("pointdata", fields, newRecords,null,null);
+	},
+
 	unfurl: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
@@ -10596,7 +10638,7 @@ var DataUtils = {
     parseCommands: function(commands) {
 	let result = [];
 	if(!commands) return result;
-	commands.split(";").map(command=>{
+	commands.split(";").forEach(command=>{
 	    command = command.trim();
 	    let idx=command.indexOf("(");
 	    let args = {};
@@ -16554,6 +16596,10 @@ function TableDisplay(displayManager, id, properties) {
 	    let unhighlightColor = this.getProperty("unhighlightColor","#fff");
 	    let highlightColor = this.getProperty("highlightColor","#FFFFCC");
 	    return  (v,record)=>{
+		if(!v) return {
+		    v:0,
+		    f:""
+		}
 		let f = v;
 		if(v.f) {
 		    f = v.f;
@@ -17483,13 +17529,13 @@ function ScatterplotDisplay(displayManager, id, properties) {
 
 
 //Note: I put all of the chart definitions together at the top so one can see everything that is available here
-var DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
-var DISPLAY_D3_PROFILE = "profile";
-var DISPLAY_D3_LINECHART = "D3LineChart";
-var DISPLAY_SKEWT = "skewt";
-var DISPLAY_VENN = "venn";
-var DISPLAY_CHERNOFF = "chernoff";
-var DISPLAY_D3BUBBLE = "d3bubble";
+const DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
+const DISPLAY_D3_PROFILE = "profile";
+const DISPLAY_D3_LINECHART = "D3LineChart";
+const DISPLAY_SKEWT = "skewt";
+const DISPLAY_VENN = "venn";
+const DISPLAY_CHERNOFF = "chernoff";
+const DISPLAY_D3BUBBLE = "d3bubble";
 
 //Note: Added requiresData and category
 addGlobalDisplayType({
@@ -17549,21 +17595,21 @@ addGlobalDisplayType({
 });
 
 //Note: define meaningful things as variables not as string literals
-var FIELD_TIME = "time";
-var FIELD_DEPTH = "depth";
-var FIELD_VALUE = "value";
-var FIELD_SELECTEDFIELD = "selectedfield";
+const FIELD_TIME = "time";
+const FIELD_DEPTH = "depth";
+const FIELD_VALUE = "value";
+const FIELD_SELECTEDFIELD = "selectedfield";
 
-var TYPE_LATITUDE = "latitude";
-var TYPE_LONGITUDE = "longitude";
-var TYPE_TIME = "time";
-var TYPE_VALUE = "value";
-var TYPE_ELEVATION = "elevation";
+const TYPE_LATITUDE = "latitude";
+const TYPE_LONGITUDE = "longitude";
+const TYPE_TIME = "time";
+const TYPE_VALUE = "value";
+const TYPE_ELEVATION = "elevation";
 
 
-var FUNC_MOVINGAVERAGE = "movingAverage";
+const FUNC_MOVINGAVERAGE = "movingAverage";
 
-var D3Util = {
+const D3Util = {
     foo: "bar",
     getAxis: function(axisType, range) {
         var axis;
@@ -17656,12 +17702,11 @@ var D3Util = {
 
 
 function RamaddaSkewtDisplay(displayManager, id, properties) {
-    let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
-    var ID_SKEWT = "skewt";
-    var ID_DATE_LABEL = "skewtdate";
+    const ID_SKEWT = "skewt";
+    const ID_DATE_LABEL = "skewtdate";
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
-
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
             return true;
@@ -17938,12 +17983,9 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 
 
 function RamaddaD3Display(displayManager, id, properties) {
-    // To get it to the console
-    testProperties = properties;
-
-    var ID_SVG = "svg";
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, "d3", properties));
+    const ID_SVG = "svg";
+    const SUPER = new RamaddaDisplay(displayManager, id, "d3", properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
 
     RamaddaUtil.defineMembers(this, {
@@ -18301,8 +18343,8 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
 
 
 function RamaddaVennDisplay(displayManager, id, properties) {
-    var ID_VENN = "venn";
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
+    const ID_VENN = "venn";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -18426,8 +18468,8 @@ function RamaddaVennDisplay(displayManager, id, properties) {
 
 
 function RamaddaChernoffDisplay(displayManager, id, properties) {
-    var ID_VENN = "venn";
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
+    const ID_VENN = "venn";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -18720,9 +18762,8 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
 
 function RamaddaD3bubbleDisplay(displayManager, id, properties) {
     const ID_BUBBLES = "bubbles";
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
-							 DISPLAY_D3BUBBLE, properties));
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_D3BUBBLE, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     if(!window["BubbleChart"]) {
 	Utils.importJS(ramaddaBaseUrl +"/lib/d3/d3-legend.min.js");
@@ -25185,9 +25226,9 @@ function MapFeature(source, points) {
 
 
 function RamaddaMapDisplay(displayManager, id, properties) {
+    const ID_MAP = "map";
     const ID_LATFIELD = "latfield";
     const ID_LONFIELD = "lonfield";
-    const ID_MAP = "map";
     const ID_SIZEBY_LEGEND = "sizebylegend";
     const ID_COLORTABLE_SIDE = "colortableside";
     const ID_SHAPES = "shapes";
@@ -26416,7 +26457,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 //	    console.log("redraw:" + redrawCnt);
 
-            if (!args.dontSetBounds && maxExtent && !this.hadInitialPosition && this.getProperty("centerOnFilterChange",true)) {
+            if (!args.dontSetBounds && maxExtent && !this.hadInitialPosition && this.getPropertyCenterOnFilterChange(true)) {
+//		console.log("max:" + this.map.transformProjBounds(maxExtent));
 		this.map.zoomToExtent(maxExtent, true);
 	    }
 	    if(!this.getProperty("fixedPosition",false))  {
@@ -26590,7 +26632,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.vectorMapApplied  = false;
 	    this.updateUI({dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: ()=>{
 		if(args.source=="animation") return;
-		if(this.getProperty("centerOnFilterChange",false)) {
+		if(this.getPropertyCenterOnFilterChange(false)) {
 		    if (this.vectorLayer && this.showVectorLayer) {
 			this.map.zoomToLayer(this.vectorLayer,1.2);
 		    } else if(this.lastImageLayer) {
@@ -26788,8 +26830,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if (!isNaN(pointBounds.north)) {
 		    this.initBounds = pointBounds;
 		    if(!showSegments && !this.hadInitialPosition && !args.dontSetBounds) {
-			if(!args.dataFilterChanged || this.getProperty("centerOnFilterChange",true)) {
-			    console.log(JSON.stringify(args,null,2));
+			if(!args.dataFilterChanged || this.getPropertyCenterOnFilterChange(true)) {
+//			    console.log(JSON.stringify(args,null,2));
 			    this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south,
 						  pointBounds.east);
 			}

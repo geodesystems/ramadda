@@ -30,9 +30,9 @@ function MapFeature(source, points) {
 
 
 function RamaddaMapDisplay(displayManager, id, properties) {
+    const ID_MAP = "map";
     const ID_LATFIELD = "latfield";
     const ID_LONFIELD = "lonfield";
-    const ID_MAP = "map";
     const ID_SIZEBY_LEGEND = "sizebylegend";
     const ID_COLORTABLE_SIDE = "colortableside";
     const ID_SHAPES = "shapes";
@@ -1261,7 +1261,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 //	    console.log("redraw:" + redrawCnt);
 
-            if (!args.dontSetBounds && maxExtent && !this.hadInitialPosition && this.getProperty("centerOnFilterChange",true)) {
+            if (!args.dontSetBounds && maxExtent && !this.hadInitialPosition && this.getPropertyCenterOnFilterChange(true)) {
+//		console.log("max:" + this.map.transformProjBounds(maxExtent));
 		this.map.zoomToExtent(maxExtent, true);
 	    }
 	    if(!this.getProperty("fixedPosition",false))  {
@@ -1435,7 +1436,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.vectorMapApplied  = false;
 	    this.updateUI({dataFilterChanged:true, dontSetBounds:true,  reload:true,callback: ()=>{
 		if(args.source=="animation") return;
-		if(this.getProperty("centerOnFilterChange",false)) {
+		if(this.getPropertyCenterOnFilterChange(false)) {
 		    if (this.vectorLayer && this.showVectorLayer) {
 			this.map.zoomToLayer(this.vectorLayer,1.2);
 		    } else if(this.lastImageLayer) {
@@ -1633,8 +1634,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if (!isNaN(pointBounds.north)) {
 		    this.initBounds = pointBounds;
 		    if(!showSegments && !this.hadInitialPosition && !args.dontSetBounds) {
-			if(!args.dataFilterChanged || this.getProperty("centerOnFilterChange",true)) {
-			    console.log(JSON.stringify(args,null,2));
+			if(!args.dataFilterChanged || this.getPropertyCenterOnFilterChange(true)) {
+//			    console.log(JSON.stringify(args,null,2));
 			    this.setInitMapBounds(pointBounds.north, pointBounds.west, pointBounds.south,
 						  pointBounds.east);
 			}

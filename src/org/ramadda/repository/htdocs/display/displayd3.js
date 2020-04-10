@@ -4,13 +4,13 @@
 
 
 //Note: I put all of the chart definitions together at the top so one can see everything that is available here
-var DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
-var DISPLAY_D3_PROFILE = "profile";
-var DISPLAY_D3_LINECHART = "D3LineChart";
-var DISPLAY_SKEWT = "skewt";
-var DISPLAY_VENN = "venn";
-var DISPLAY_CHERNOFF = "chernoff";
-var DISPLAY_D3BUBBLE = "d3bubble";
+const DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
+const DISPLAY_D3_PROFILE = "profile";
+const DISPLAY_D3_LINECHART = "D3LineChart";
+const DISPLAY_SKEWT = "skewt";
+const DISPLAY_VENN = "venn";
+const DISPLAY_CHERNOFF = "chernoff";
+const DISPLAY_D3BUBBLE = "d3bubble";
 
 //Note: Added requiresData and category
 addGlobalDisplayType({
@@ -70,21 +70,21 @@ addGlobalDisplayType({
 });
 
 //Note: define meaningful things as variables not as string literals
-var FIELD_TIME = "time";
-var FIELD_DEPTH = "depth";
-var FIELD_VALUE = "value";
-var FIELD_SELECTEDFIELD = "selectedfield";
+const FIELD_TIME = "time";
+const FIELD_DEPTH = "depth";
+const FIELD_VALUE = "value";
+const FIELD_SELECTEDFIELD = "selectedfield";
 
-var TYPE_LATITUDE = "latitude";
-var TYPE_LONGITUDE = "longitude";
-var TYPE_TIME = "time";
-var TYPE_VALUE = "value";
-var TYPE_ELEVATION = "elevation";
+const TYPE_LATITUDE = "latitude";
+const TYPE_LONGITUDE = "longitude";
+const TYPE_TIME = "time";
+const TYPE_VALUE = "value";
+const TYPE_ELEVATION = "elevation";
 
 
-var FUNC_MOVINGAVERAGE = "movingAverage";
+const FUNC_MOVINGAVERAGE = "movingAverage";
 
-var D3Util = {
+const D3Util = {
     foo: "bar",
     getAxis: function(axisType, range) {
         var axis;
@@ -177,12 +177,11 @@ var D3Util = {
 
 
 function RamaddaSkewtDisplay(displayManager, id, properties) {
-    let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
-    var ID_SKEWT = "skewt";
-    var ID_DATE_LABEL = "skewtdate";
+    const ID_SKEWT = "skewt";
+    const ID_DATE_LABEL = "skewtdate";
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
-
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
             return true;
@@ -459,12 +458,9 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 
 
 function RamaddaD3Display(displayManager, id, properties) {
-    // To get it to the console
-    testProperties = properties;
-
-    var ID_SVG = "svg";
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, "d3", properties));
+    const ID_SVG = "svg";
+    const SUPER = new RamaddaDisplay(displayManager, id, "d3", properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
 
     RamaddaUtil.defineMembers(this, {
@@ -822,8 +818,8 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
 
 
 function RamaddaVennDisplay(displayManager, id, properties) {
-    var ID_VENN = "venn";
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
+    const ID_VENN = "venn";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -947,8 +943,8 @@ function RamaddaVennDisplay(displayManager, id, properties) {
 
 
 function RamaddaChernoffDisplay(displayManager, id, properties) {
-    var ID_VENN = "venn";
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
+    const ID_VENN = "venn";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -1241,9 +1237,8 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
 
 function RamaddaD3bubbleDisplay(displayManager, id, properties) {
     const ID_BUBBLES = "bubbles";
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
-							 DISPLAY_D3BUBBLE, properties));
+    const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_D3BUBBLE, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     if(!window["BubbleChart"]) {
 	Utils.importJS(ramaddaBaseUrl +"/lib/d3/d3-legend.min.js");

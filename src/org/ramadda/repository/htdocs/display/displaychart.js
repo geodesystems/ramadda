@@ -2540,6 +2540,10 @@ function TableDisplay(displayManager, id, properties) {
 	    let unhighlightColor = this.getProperty("unhighlightColor","#fff");
 	    let highlightColor = this.getProperty("highlightColor","#FFFFCC");
 	    return  (v,record)=>{
+		if(!v) return {
+		    v:0,
+		    f:""
+		}
 		let f = v;
 		if(v.f) {
 		    f = v.f;
