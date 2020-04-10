@@ -23,6 +23,7 @@ var Csv = {
 	html += ".convert_button {padding:2px;padding-left:5px;padding-right:5px;}\n.ramadda-csv-table  {font-size:10pt;}\n ";
 	html += ".convert_add {margin-left:10px; cursor:pointer;}\n";
 	html += ".convert_add:hover {text-decoration:underline;}\n";
+	html += ".ace_gutter-cell {cursor:pointer;}\n";
 	html += ".ace_editor {margin-bottom:5px;height:200px;}\n";
 	html += ".ace_editor_disabled {background:rgb(250,250,250);}\n";
 	html += ".ace_csv_comment {color:#B7410E;}\n";
@@ -149,10 +150,12 @@ var Csv = {
 		result= JSON.parse(result);
 		Csv.commands = result.commands;
 		Csv.commandsMap = {}
+		let docs ="";
 		Csv.commands.forEach(cmd=>{
 		    var command = cmd.command;
 		    if(cmd.isCategory) {
 			select +=HtmlUtil.tag("option",[],cmd.description);
+			docs+="etlcat {" + cmd.description+"}\n";
 			return;
 		    }
 		    if(!command) return;
@@ -164,16 +167,20 @@ var Csv = {
 			tooltip =desc+"\n";
 		    }
 		    tooltip += command;
+		    let docArgs="";
 		    cmd.args.forEach(a=>{
 			let desc = a.desc;
+			docArgs+=" {{" +a.id+"} {" + (a.description||"") +"}} "
 			if(desc!="") desc = " "  + desc;
 			tooltip +=" <" +a.id  +desc+ "> ";
 		    });
 		    tooltip = tooltip.replace(/\"/g,"&quot;").replace(/\(/g,"").replace(/\)/g,"");
 		    var label = cmd.label ||  Utils.camelCase(cmd.command.replace("-",""));
+		    docs+="etl " + "{" + command +"} {"  + label+"} {" +  desc + "} "   + docArgs +"\n"
 		    Csv.commandsMap[command] = cmd;
 		    select +=HtmlUtil.tag("option",["value", command,"title",tooltip],"&nbsp;&nbsp;&nbsp;" + label);
 		});
+//		Utils.makeDownloadFile("etlcommands.tcl",docs);
 		select += "</select>&nbsp;&nbsp;";
 
 		$("#csv_commands").html(select);
@@ -211,6 +218,17 @@ var Csv = {
 	};
 	Csv.editor.setOptions(options);
 	Csv.editor.session.setMode("ace/mode/csvconvert");
+	Csv.editor.on("guttermousedown", function(e) {
+	    if(e.domEvent.metaKey) {
+		let row = +e.getDocumentPosition().row+1;
+		let lines =Csv.editor.getValue().split("\n");
+		let text = "";
+		for(let i=0;i<row;i++) {
+		    text+=lines[i]+"\n";
+		}
+		Csv.display("-table",null,true,text);
+	    }
+	});
 	Csv.editor.commands.addCommand({
 	    name: "keyt",
 	    exec: function() {
@@ -428,15 +446,17 @@ var Csv = {
 	if(val == null) return "";
 	return val.trim();
     },
-    display:function(what, process,html) {
-	var command ="";
-	lines = Csv.getInput().split("\n");
-	for(var i=0;i<lines.length;i++){
-            line = lines[i].trim();
-            if(line =="") continue;
-	    if(line.startsWith("#")) continue;
-            command +=line;
-            command +="\n";
+    display:function(what, process,html,command) {
+	if(!command) {
+	    command ="";
+	    lines = Csv.getInput().split("\n");
+	    for(var i=0;i<lines.length;i++){
+		line = lines[i].trim();
+		if(line =="") continue;
+		if(line.startsWith("#")) continue;
+		command +=line;
+		command +="\n";
+	    }
 	}
 	command = command.trim();
 	if(what!="-raw" && command.indexOf("-template ")>=0) what = "";
