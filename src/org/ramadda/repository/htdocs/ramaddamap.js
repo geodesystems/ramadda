@@ -2,6 +2,10 @@
  * Copyright (c) 2008-2019 Geode Systems LLC
  */
 
+var debugBounds = false;
+var getMapDebug = false;
+
+
 const map_esri_topo = "esri.topo";
 const map_esri_street = "esri.street";
 const map_esri_worldimagery = "esri.worldimagery";
@@ -21,7 +25,6 @@ const map_white = "white";
 const map_blue = "blue";
 const map_black = "black";
 const map_gray = "gray";
-
 const map_usfs_ownership = "usfs.ownership";
 const map_osm = "osm";
 const map_osm_toner = "osm.toner";
@@ -45,13 +48,11 @@ const ramaddaCircleHiliteAttrs = {
 
 
 
+//Define new symbols
 OpenLayers.Renderer.symbol.lightning = [0, 0, 4, 2, 6, 0, 10, 5, 6, 3, 4, 5, 0, 0];
 OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
 OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
 
-
-var debugBounds = false;
-var getMapDebug = false;
 
 function createLonLat(lon, lat) {
     lon = parseFloat(lon);
@@ -76,14 +77,12 @@ function get_my_url(bounds) {
     var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
     var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
     var z = this.getMap().getZoom();
-
     var path = z + "/" + x + "/" + y + "." + this.type + "?" + parseInt(Math.random() * 9999);
     var url = this.url;
     if (url instanceof Array) {
         url = this.selectUrl(path, url);
     }
     return url + this.service + "/" + this.layername + "/" + path;
-
 }
 
 
