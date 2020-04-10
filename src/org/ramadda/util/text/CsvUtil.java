@@ -1799,12 +1799,9 @@ public class CsvUtil {
         new Cmd("-columns", new Label("Select columns"),
                 "Only include the given columns",
                 new Arg("columns", "", "type", "columns")),
-        new Cmd("-notcolumns", new Label("Deselect columns"),
-                "Don't include the given columns",
-                new Arg("columns", "", "type", "columns")),
         new Cmd("-delete", new Label("Delete columns"), "Remove the columns",
-                new Arg("columns")),
-        new Cmd("-cut", new Label("Cut rows"), "",
+                new Arg("columns", "", "type", "columns")),
+        new Cmd("-cut", new Label("Drop rows"), "",
                 new Arg("rows",
                         "One or more rows. -1 to the end. e.g., 0-3,5,10,-1",
                         "type", "rows")),
@@ -1851,10 +1848,10 @@ public class CsvUtil {
                 new Arg("delimiter"), new Arg("close")),
         new Cmd("-rowop", new Label("Row Operator"),
                 "Apply an operator to columns and merge rows",
-		new Arg("keys","Key columns","type","columns"),
-		new Arg("values","Value columns","type","columns"),
-		new Arg("operator","Operator","values","average,min,max,count")),
-
+                new Arg("keys", "Key columns", "type", "columns"),
+                new Arg("values", "Value columns", "type", "columns"),
+                new Arg("operator", "Operator", "values",
+                        "average,min,max,count")),
         new Cmd("-rotate", "Rotate the data"),
         new Cmd("-flip", "Reverse the order of the rows except the header"),
         new Cmd("-unfurl", "Make columns from data values",
@@ -2439,8 +2436,8 @@ public class CsvUtil {
                     continue;
                 }
                 if (arg.equals("-dummy")) {
-		    continue;
-		}
+                    continue;
+                }
                 if (arg.equals("-html")) {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
@@ -2900,15 +2897,15 @@ public class CsvUtil {
 
 
                 if (arg.equals("-rowop")) {
-                    if (!ensureArg(args, i, 3)) {
+                    if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
-                    List<String> keys = getCols(args.get(++i));
-		    List<String> values = getCols(args.get(++i));
-		    String op = args.get(++i);
-		    
+                    List<String> keys   = getCols(args.get(++i));
+                    List<String> values = getCols(args.get(++i));
+                    String       op     = args.get(++i);
+
                     info.getProcessor().addProcessor(
-						     new Processor.RowOperator(keys,values,op));
+                        new Processor.RowOperator(keys, values, op));
 
                     continue;
                 }

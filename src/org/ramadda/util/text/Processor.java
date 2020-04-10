@@ -38,7 +38,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
 import java.util.regex.*;
 
 
@@ -552,13 +551,15 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         public static final int OP_AVERAGE = 3;
 
-        public static final int OP_COUNT =3;	
+        /** _more_          */
+        public static final int OP_COUNT = 3;
 
 
         /** _more_ */
         private int op = OP_SUM;
 
-	private String opLabel;
+        /** _more_          */
+        private String opLabel;
 
         /** _more_ */
         private List<String> valueCols;
@@ -567,17 +568,26 @@ rotate -> pass -> pass -> rotate -> pass
         /**
          * _more_
          *
+         *
+         * @param keys _more_
+         * @param values _more_
          * @param op _more_
          */
         public RowOperator(List<String> keys, List<String> values,
-			   String op) {
-	    super(keys);
-	    this.opLabel = op;
-	    if(op.equals("sum")) this.op = OP_SUM;
-	    else if(op.equals("average")) this.op = OP_AVERAGE;
-	    else if(op.equals("min")) this.op = OP_MIN;
-	    else if(op.equals("max")) this.op = OP_MAX;
-	    else if(op.equals("count")) this.op = OP_COUNT;
+                           String op) {
+            super(keys);
+            this.opLabel = op;
+            if (op.equals("sum")) {
+                this.op = OP_SUM;
+            } else if (op.equals("average")) {
+                this.op = OP_AVERAGE;
+            } else if (op.equals("min")) {
+                this.op = OP_MIN;
+            } else if (op.equals("max")) {
+                this.op = OP_MAX;
+            } else if (op.equals("count")) {
+                this.op = OP_COUNT;
+            }
             this.valueCols = values;
         }
 
@@ -586,6 +596,7 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param rows _more_
+         * @param r _more_
          *
          *
          * @return _more_
@@ -593,70 +604,89 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public List<Row> finish(TextReader info, List<Row> r)
-	    throws Exception {
-	    List keys = new ArrayList();
+                throws Exception {
+            List          keys         = new ArrayList();
             List<Integer> valueIndices = getIndices(valueCols);
-	    List<Row> rows = new ArrayList<Row>();
-            List<Row> allRows   = getRows();
-            Row       headerRow = allRows.get(0);
+            List<Row>     rows         = new ArrayList<Row>();
+            List<Row>     allRows      = getRows();
+            Row           headerRow    = allRows.get(0);
             allRows.remove(0);
-	    Hashtable<Object, List<Row>> groups = groupRows(allRows, getIndices(info), keys);
-	    for(int idx: valueIndices) {
-		if(idx>=headerRow.size()) continue;
-		headerRow.set(idx, headerRow.get(idx)+" " + opLabel);
-	    }
-	    rows.add(headerRow);
-	    List<double[]> tuples = new ArrayList<double[]>();
-	    for(int i=0;i<valueIndices.size();i++) {
-		tuples.add(new double[]{0,0,0,0});
-	    }
-	    for(Object key: keys) {
-		for(int i=0;i<valueIndices.size();i++) {
-		    double[] tuple = tuples.get(i);
-		    tuple[0]=0;tuple[1]=0;tuple[2]=0;tuple[3]=0;
-		}
-		Row aggRow = null;
-		List<Row> group = groups.get(key);
-		int count = 0;
-		for(Row row: group) {
-		    boolean first = false;
-		    if(aggRow==null) {
-			aggRow = new Row(row);
-			rows.add(aggRow);
-			first = true;
-		    }
-		    for(int i=0;i<valueIndices.size();i++) {
-			int idx= valueIndices.get(i);
-			if(idx>= row.size()) continue;
-			double v = Double.parseDouble(row.get(idx).toString());
-			if(Double.isNaN(v)) continue;
-			double[] tuple = tuples.get(i);
-			tuple[0]++;
-			tuple[1] = first?v:Math.min(v, tuple[0]);
-			tuple[2] = first?v:Math.max(v, tuple[1]);
-			tuple[3]+=v;
-		    }
-		}
-		for(int i=0;i<valueIndices.size();i++) {
-		    int idx= valueIndices.get(i);
-		    if(idx>= aggRow.size()) continue;
-		    double[] tuple = tuples.get(i);
-		    if(op ==OP_SUM) {
-			aggRow.set(idx,new Double(tuple[3]));
-		    } else if(op ==OP_COUNT) {
-			aggRow.set(idx,group.size());
-		    } else if(op ==OP_MIN) {
-			aggRow.set(idx,tuple[1]);
-		    } else if(op ==OP_MAX) {
-			aggRow.set(idx,tuple[2]);
-		    } else if(op ==OP_AVERAGE) {
-			if(tuple[0]==0) 
-			    aggRow.set(idx,Double.NaN);
-			else
-			    aggRow.set(idx,tuple[3]/tuple[0]);
-		    }
-		}
-	    }
+            Hashtable<Object, List<Row>> groups = groupRows(allRows,
+                                                      getIndices(info), keys);
+            for (int idx : valueIndices) {
+                if (idx >= headerRow.size()) {
+                    continue;
+                }
+                headerRow.set(idx, headerRow.get(idx) + " " + opLabel);
+            }
+            rows.add(headerRow);
+            List<double[]> tuples = new ArrayList<double[]>();
+            for (int i = 0; i < valueIndices.size(); i++) {
+                tuples.add(new double[] { 0, 0, 0, 0 });
+            }
+            for (Object key : keys) {
+                for (int i = 0; i < valueIndices.size(); i++) {
+                    double[] tuple = tuples.get(i);
+                    tuple[0] = 0;
+                    tuple[1] = 0;
+                    tuple[2] = 0;
+                    tuple[3] = 0;
+                }
+                Row       aggRow = null;
+                List<Row> group  = groups.get(key);
+                int       count  = 0;
+                for (Row row : group) {
+                    boolean first = false;
+                    if (aggRow == null) {
+                        aggRow = new Row(row);
+                        rows.add(aggRow);
+                        first = true;
+                    }
+                    for (int i = 0; i < valueIndices.size(); i++) {
+                        int idx = valueIndices.get(i);
+                        if (idx >= row.size()) {
+                            continue;
+                        }
+                        double v =
+                            Double.parseDouble(row.get(idx).toString());
+                        if (Double.isNaN(v)) {
+                            continue;
+                        }
+                        double[] tuple = tuples.get(i);
+                        tuple[0]++;
+                        tuple[1] = first
+                                   ? v
+                                   : Math.min(v, tuple[0]);
+                        tuple[2] = first
+                                   ? v
+                                   : Math.max(v, tuple[1]);
+                        tuple[3] += v;
+                    }
+                }
+                for (int i = 0; i < valueIndices.size(); i++) {
+                    int idx = valueIndices.get(i);
+                    if (idx >= aggRow.size()) {
+                        continue;
+                    }
+                    double[] tuple = tuples.get(i);
+                    if (op == OP_SUM) {
+                        aggRow.set(idx, new Double(tuple[3]));
+                    } else if (op == OP_COUNT) {
+                        aggRow.set(idx, group.size());
+                    } else if (op == OP_MIN) {
+                        aggRow.set(idx, tuple[1]);
+                    } else if (op == OP_MAX) {
+                        aggRow.set(idx, tuple[2]);
+                    } else if (op == OP_AVERAGE) {
+                        if (tuple[0] == 0) {
+                            aggRow.set(idx, Double.NaN);
+                        } else {
+                            aggRow.set(idx, tuple[3] / tuple[0]);
+                        }
+                    }
+                }
+            }
+
             return rows;
         }
 
@@ -667,17 +697,17 @@ rotate -> pass -> pass -> rotate -> pass
      *
      *
      * @version        $version$, Sun, Apr 5, '20
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Propper extends Processor {
 
-        /** _more_          */
+        /** _more_ */
         public static final int FLAG_NONE = -1;
 
         /** _more_ */
         public static final int FLAG_POSITION = 0;
 
-        /** _more_          */
+        /** _more_ */
         private int flag;
 
         /** _more_ */
@@ -3110,7 +3140,7 @@ rotate -> pass -> pass -> rotate -> pass
      * @version        $version$, Wed, Feb 20, '19
      * @author         Enter your name here...
      */
-    public static class Joiner extends RowCollector {
+    public static class Joiner extends Processor {
 
         /** _more_ */
         private List<String> keys1;
@@ -3125,6 +3155,18 @@ rotate -> pass -> pass -> rotate -> pass
 
         /** _more_ */
         private String file;
+
+        /** _more_          */
+        private Hashtable<String, Row> map;
+
+        /** _more_          */
+        private Row headerRow1;
+
+        /** _more_          */
+        private List<Integer> values1Indices;
+
+        /** _more_          */
+        private Row headerRow2;
 
         /**
          * _more_
@@ -3141,44 +3183,45 @@ rotate -> pass -> pass -> rotate -> pass
             this.values1 = values1;
             this.keys2   = keys2;
             this.file    = file;
+            try {
+                init();
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
         }
 
 
         /**
          * _more_
          *
-         * @param info _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
+         * @throws Exception _more_
          */
-        @Override
-        public List<Row> finish(TextReader info, List<Row> rows)
-                throws Exception {
-            List<Integer> keys1Indices   = getIndices(keys1);
-            List<Integer> values1Indices = getIndices(values1);
-            List<Integer> keys2Indices   = getIndices(keys2);
-            List<Row>     newRows        = new ArrayList<Row>();
+        private void init() throws Exception {
+            List<Integer> keys1Indices = getIndices(keys1);
+            values1Indices = getIndices(values1);
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
-            TextReader             reader     = new TextReader(br);
-            Hashtable<String, Row> map        = new Hashtable<String, Row>();
-
-            Row                    headerRow1 = null;
-            Row                    headerRow2 = null;
-            List<Row>              rows2      = new ArrayList<Row>();
+            TextReader reader = new TextReader(br);
+            map        = new Hashtable<String, Row>();
+            headerRow1 = null;
+            String delimiter = null;
             while (true) {
                 String line = reader.readLine();
                 if (line == null) {
                     break;
                 }
-                List<String> cols = Utils.tokenizeColumns(line, ",");
+                if (delimiter == null) {
+                    if (line.indexOf("\t") >= 0) {
+                        delimiter = "\t";
+                    } else {
+                        delimiter = ",";
+                    }
+                }
+                List<String> cols = Utils.tokenizeColumns(line, delimiter);
                 String       key  = "";
                 for (int i : keys1Indices) {
-                    key += cols.get(i);
+                    key += cols.get(i) + "_";
                 }
                 Row row = new Row(cols);
                 if (headerRow1 == null) {
@@ -3186,42 +3229,57 @@ rotate -> pass -> pass -> rotate -> pass
                 }
                 map.put(key, row);
             }
-
-            for (Row row : getRows()) {
-                if (headerRow2 == null) {
-                    headerRow2 = row;
-                    for (int j : values1Indices) {
-                        row.add(headerRow1.get(j));
-                    }
-                    newRows.add(row);
-
-                    continue;
-                }
-                String key = "";
-                for (int i : keys2Indices) {
-                    key += row.getString(i);
-                }
-                Row other = map.get(key);
-                if (other == null) {
-                    System.err.println("no join:" + " key=" + key + " row:"
-                                       + row);
-
-                    continue;
-                }
-                for (int j : values1Indices) {
-                    row.add(other.get(j));
-                }
-                newRows.add(row);
-            }
-
-            return newRows;
         }
 
 
 
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line)
+                throws Exception {
+            List<Integer> keys2Indices = getIndices(keys2);
+            if (headerRow2 == null) {
+                headerRow2 = row;
+                System.err.println("ROW:" + headerRow1);
+                for (int j : values1Indices) {
+                    System.err.println("idx:" + j);
+                    row.add(headerRow1.get(j));
+                }
 
+                return row;
+            }
+            String key = "";
+            for (int i : keys2Indices) {
+                key += row.getString(i) + "_";
+            }
+            Row other = map.get(key);
+            if (other == null) {
+                //              System.err.println("no join:" + " key=" + key + " row:"+ row);
+                for (int j : values1Indices) {
+                    row.add("");
+                }
+
+                return null;
+                //              return row;
+            }
+            for (int j : values1Indices) {
+                row.add(other.get(j));
+            }
+
+            return row;
+        }
     }
-
 
     /**
      * Class description
