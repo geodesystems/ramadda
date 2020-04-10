@@ -2789,22 +2789,20 @@ function CsvUtil() {
 	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
-	    let op = args["operator"] || "count";
-
-	    let keyFields =  this.display.getFieldsByIds(fields, (args["keyFields"]||"").replace(/_comma_/g,","));
-	    if(keyFields.length==0) throw new Error("No key fields processing mergeRows:" + args["keyFields"]);
-	    let altFields =  this.display.getFieldsByIds(fields, (args["altFields"]||"").replace(/_comma_/g,","));
-
+	    let op = args.operator || "count";
+	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
+	    if(keyFields.length==0) throw new Error("No key fields processing mergeRows:" + args.keyFields);
+	    let altFields =  this.display.getFieldsByIds(fields, (args.altFields||"").replace(/_comma_/g,","));
 	    let newFields = [];
 	    let seen = {};
 	    keyFields.forEach((f,idx)=>{
 		seen[f.getId()] = true;
-		var newField = f.clone();
+		let newField = f.clone();
 		newField.index = newFields.length;
 		newFields.push(newField);
 	    });
 	    let tmp =  this.display.getFieldsByIds(fields, (args["valueFields"]||"").replace(/_comma_/g,","));
-	    if(args["valueFields"]==null) tmp=fields;
+	    if(args.valueFields==null) tmp=fields;
 	    let valueFields = [];
 	    tmp.forEach(f=>{
 		if(!seen[f.getId()])
@@ -2815,8 +2813,9 @@ function CsvUtil() {
 		var newField = f.clone();
 		newField.index = newFields.length;
 		if(newField.isNumeric()) {
+		    let label = args[newField.id+".label"];
 		    newField.id = newField.id +"_" + op;
-		    newField.label = Utils.makeLabel(newField.id);
+		    newField.label = label || Utils.makeLabel(newField.id);
 		}
 		newFields.push(newField);
 	    });
@@ -2831,6 +2830,7 @@ function CsvUtil() {
 		    chartable:true,
 		}));
 	    }
+//	    console.log("fields:" + newFields);
 	    let keys = [];
 	    let collection ={
 	    };
@@ -2922,6 +2922,48 @@ function CsvUtil() {
 
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
+	maxDate: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let fields  = pointData.getRecordFields();
+	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
+	    let seen = {};
+	    let keys = [];
+	    let collection ={
+	    };
+
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		var record = records[rowIdx];
+		let key = "";
+		keyFields.forEach(f=>{
+		    key +=  record.getValue(f.getIndex())+"-";
+		});
+		let obj = collection[key];
+		if(!obj) {
+		    keys.push(key);
+		    obj = collection[key]= {
+			records:[]
+		    };
+		}
+		obj.records.push(record);
+	    }
+	    let newRecords = [];
+	    let cnt = 0;
+	    keys.forEach((key,idx)=>{
+		let records = collection[key].records;
+		let maxRecord = null;
+		let maxDate = null;
+		records.forEach(r=>{
+		    if(maxRecord==null || r.getDate().getTime()>maxDate) {
+			maxDate = r.getDate().getTime();
+			maxRecord = r;
+		    }
+		});
+		newRecords.push(maxRecord);
+	    });
+
+	    return   new  PointData("pointdata", fields, newRecords,null,null);
+	},
+
 	unfurl: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
@@ -3049,7 +3091,7 @@ var DataUtils = {
     parseCommands: function(commands) {
 	let result = [];
 	if(!commands) return result;
-	commands.split(";").map(command=>{
+	commands.split(";").forEach(command=>{
 	    command = command.trim();
 	    let idx=command.indexOf("(");
 	    let args = {};
