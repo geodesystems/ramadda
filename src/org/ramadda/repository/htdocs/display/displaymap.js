@@ -1139,9 +1139,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		var matchedFeature = recordToFeature[record.getId()];
 		if(matchedFeature) {
 		    matchedFeature.featureMatched = true;
-		} 
-		if(!matchedFeature) 
+		    if (matchedFeature.geometry) {
+			if (maxExtent === null) {
+			    maxExtent = new OpenLayers.Bounds();
+			}
+			maxExtent.extend(matchedFeature.geometry.getBounds());
+		    } else {
+			//console.log("no geometry:" + matchedFeature.CLASS_NAME);
+		    }
+		}  else {
                     matchedFeature = this.findContainingFeature(features, center,tmp,false);
+		}
 		if(!matchedFeature) {
 		    return;
 		}
@@ -1271,10 +1279,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         },
 	findContainingFeature: function(features, center, info,debug) {
-	    var matchedFeature = null;
-            for (var j = 0; j < features.length; j++) {
-                var feature = features[j];
-                var geometry = feature.geometry;
+//	    debug=true;
+	    let matchedFeature = null;
+            for (let j = 0; j < features.length; j++) {
+                let feature = features[j];
+                let geometry = feature.geometry;
                 if (!geometry) {
 		    if(debug) console.log("\tno geometry")
                     continue;
@@ -1289,7 +1298,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(debug) console.log("\thas components:" +geometry.components.length);
                     geometry.components.every(comp=> {
                         bounds = comp.getBounds();
-			
                         if (!bounds.contains(center.x, center.y)) {
 			    if(debug) console.log("\t\tnot contain:" + bounds + " " + comp.CLASS_NAME);
 			    return true;
@@ -1301,12 +1309,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(debug) console.log("\t\tcontains:" + comp.containsPoint(center));
                         if (comp.containsPoint(center)) {
                             matchedFeature = feature;
-			    geometry = feature.geometry;
-			    if (geometry) {
+			    if (feature.geometry) {
 				if (info.maxExtent === null) {
 				    info.maxExtent = new OpenLayers.Bounds();
 				}
-				info.maxExtent.extend(geometry.getBounds());
+				info.maxExtent.extend(feature.geometry.getBounds());
 			    }
                             info.index = j;
 			    return false;
@@ -1316,11 +1323,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(matchedFeature) return matchedFeature;
                 if (!geometry.containsPoint) {
-                    if(debug)
+                    if(debug && !geometry.components) 
 			console.log("unknown geometry:" + geometry.CLASS_NAME);
                     continue;
                 }
                 if (geometry.containsPoint(center)) {
+		    if (info.maxExtent === null) {
+			info.maxExtent = new OpenLayers.Bounds();
+		    }
+		    info.maxExtent.extend(geometry.getBounds());
                     matchedFeature = feature;
                     info.index = j;
                     break;

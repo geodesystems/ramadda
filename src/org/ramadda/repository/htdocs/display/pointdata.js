@@ -2790,6 +2790,7 @@ function CsvUtil() {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
 	    let op = args.operator || "count";
+	    let ops = {};
 	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
 	    if(keyFields.length==0) throw new Error("No key fields processing mergeRows:" + args.keyFields);
 	    let altFields =  this.display.getFieldsByIds(fields, (args.altFields||"").replace(/_comma_/g,","));
@@ -2805,8 +2806,10 @@ function CsvUtil() {
 	    if(args.valueFields==null) tmp=fields;
 	    let valueFields = [];
 	    tmp.forEach(f=>{
-		if(!seen[f.getId()])
+		if(!seen[f.getId()]) {
+		    ops[f.getId()] = args[f.getId()+".operator"];
 		    valueFields.push(f);
+		}
 	    });
 
 	    valueFields.forEach((f,idx)=>{
@@ -2814,7 +2817,7 @@ function CsvUtil() {
 		newField.index = newFields.length;
 		if(newField.isNumeric()) {
 		    let label = args[newField.id+".label"];
-		    newField.id = newField.id +"_" + op;
+		    newField.id = newField.id +"_" + (ops[f.getId()+".operator"] || op);
 		    newField.label = label || Utils.makeLabel(newField.id);
 		}
 		newFields.push(newField);

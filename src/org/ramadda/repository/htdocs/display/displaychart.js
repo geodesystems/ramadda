@@ -1208,7 +1208,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		}
 		if(indexToAnnotation) {
-		    var annotation = indexToAnnotation[rowIdx];
+		    let annotation = indexToAnnotation[rowIdx];
 		    if(annotation) {
 			if(debug && rowIdx<debugRows) {
 			    console.log("\t annotation:" + annotation.label);
@@ -1235,15 +1235,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return dataTable;
         },
         makeChartOptions: function(dataList, props, selectedFields) {
-            var chartOptions = {
+            let chartOptions = {
                 tooltip: {
                     isHtml: true
                 },
             };
 
-
-
             $.extend(chartOptions, {
+		width:"100%",
                 lineWidth: this.getProperty("lineWidth",1),
                 colors: this.getColorList(),
                 curveType: this.curveType,
@@ -1251,10 +1250,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		pointSize: this.getProperty("pointSize"),
                 vAxis: {}
             });
-
-
-
-
 
             chartOptions.backgroundColor = {};
             chartOptions.chartArea = {};

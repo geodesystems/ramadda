@@ -10337,6 +10337,7 @@ function CsvUtil() {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
 	    let op = args.operator || "count";
+	    let ops = {};
 	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
 	    if(keyFields.length==0) throw new Error("No key fields processing mergeRows:" + args.keyFields);
 	    let altFields =  this.display.getFieldsByIds(fields, (args.altFields||"").replace(/_comma_/g,","));
@@ -10352,8 +10353,10 @@ function CsvUtil() {
 	    if(args.valueFields==null) tmp=fields;
 	    let valueFields = [];
 	    tmp.forEach(f=>{
-		if(!seen[f.getId()])
+		if(!seen[f.getId()]) {
+		    ops[f.getId()] = args[f.getId()+".operator"];
 		    valueFields.push(f);
+		}
 	    });
 
 	    valueFields.forEach((f,idx)=>{
@@ -10361,7 +10364,7 @@ function CsvUtil() {
 		newField.index = newFields.length;
 		if(newField.isNumeric()) {
 		    let label = args[newField.id+".label"];
-		    newField.id = newField.id +"_" + op;
+		    newField.id = newField.id +"_" + (ops[f.getId()+".operator"] || op);
 		    newField.label = label || Utils.makeLabel(newField.id);
 		}
 		newFields.push(newField);
@@ -15264,7 +15267,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		}
 		if(indexToAnnotation) {
-		    var annotation = indexToAnnotation[rowIdx];
+		    let annotation = indexToAnnotation[rowIdx];
 		    if(annotation) {
 			if(debug && rowIdx<debugRows) {
 			    console.log("\t annotation:" + annotation.label);
@@ -15291,15 +15294,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return dataTable;
         },
         makeChartOptions: function(dataList, props, selectedFields) {
-            var chartOptions = {
+            let chartOptions = {
                 tooltip: {
                     isHtml: true
                 },
             };
 
-
-
             $.extend(chartOptions, {
+		width:"100%",
                 lineWidth: this.getProperty("lineWidth",1),
                 colors: this.getColorList(),
                 curveType: this.curveType,
@@ -15307,10 +15309,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		pointSize: this.getProperty("pointSize"),
                 vAxis: {}
             });
-
-
-
-
 
             chartOptions.backgroundColor = {};
             chartOptions.chartArea = {};
@@ -26335,9 +26333,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		var matchedFeature = recordToFeature[record.getId()];
 		if(matchedFeature) {
 		    matchedFeature.featureMatched = true;
-		} 
-		if(!matchedFeature) 
+		    if (matchedFeature.geometry) {
+			if (maxExtent === null) {
+			    maxExtent = new OpenLayers.Bounds();
+			}
+			maxExtent.extend(matchedFeature.geometry.getBounds());
+		    } else {
+			//console.log("no geometry:" + matchedFeature.CLASS_NAME);
+		    }
+		}  else {
                     matchedFeature = this.findContainingFeature(features, center,tmp,false);
+		}
 		if(!matchedFeature) {
 		    return;
 		}
@@ -26467,10 +26473,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         },
 	findContainingFeature: function(features, center, info,debug) {
-	    var matchedFeature = null;
-            for (var j = 0; j < features.length; j++) {
-                var feature = features[j];
-                var geometry = feature.geometry;
+//	    debug=true;
+	    let matchedFeature = null;
+            for (let j = 0; j < features.length; j++) {
+                let feature = features[j];
+                let geometry = feature.geometry;
                 if (!geometry) {
 		    if(debug) console.log("\tno geometry")
                     continue;
@@ -26485,7 +26492,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(debug) console.log("\thas components:" +geometry.components.length);
                     geometry.components.every(comp=> {
                         bounds = comp.getBounds();
-			
                         if (!bounds.contains(center.x, center.y)) {
 			    if(debug) console.log("\t\tnot contain:" + bounds + " " + comp.CLASS_NAME);
 			    return true;
@@ -26497,12 +26503,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(debug) console.log("\t\tcontains:" + comp.containsPoint(center));
                         if (comp.containsPoint(center)) {
                             matchedFeature = feature;
-			    geometry = feature.geometry;
-			    if (geometry) {
+			    if (feature.geometry) {
 				if (info.maxExtent === null) {
 				    info.maxExtent = new OpenLayers.Bounds();
 				}
-				info.maxExtent.extend(geometry.getBounds());
+				info.maxExtent.extend(feature.geometry.getBounds());
 			    }
                             info.index = j;
 			    return false;
@@ -26512,11 +26517,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(matchedFeature) return matchedFeature;
                 if (!geometry.containsPoint) {
-                    if(debug)
+                    if(debug && !geometry.components) 
 			console.log("unknown geometry:" + geometry.CLASS_NAME);
                     continue;
                 }
                 if (geometry.containsPoint(center)) {
+		    if (info.maxExtent === null) {
+			info.maxExtent = new OpenLayers.Bounds();
+		    }
+		    info.maxExtent.extend(geometry.getBounds());
                     matchedFeature = feature;
                     info.index = j;
                     break;
