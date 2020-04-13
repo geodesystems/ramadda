@@ -1815,6 +1815,10 @@ margin:10px;
 .display-mapgrid-cell {
     cursor:pointer;
     padding:2px;
+    border:1px solid #ccc;
+}
+.display-mapgrid-cell:hover {
+    border:1px solid #888;
 }
 
 .display-mapgrid-selected {

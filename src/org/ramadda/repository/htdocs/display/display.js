@@ -517,9 +517,9 @@ function DisplayThing(argId, argProperties) {
 	},
         getRecordHtml: function(record, fields, template) {
 	    fields = this.getFields(fields);
-	    var showDate = this.getProperty("showDate", true);
-	    var showImage = this.getProperty("showImage", true);
-            var showGeo = false;
+	    let showDate = this.getProperty("showDate", true);
+	    let showImage = this.getProperty("showImage", true);
+            let showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
@@ -527,23 +527,19 @@ function DisplayThing(argId, argProperties) {
 		template = this.getProperty("recordTemplate");
 	    if(template) {
 		if(template!="${default}" && template!="${fields}") {
-		    var row = this.getDataValues(record);
-		    return this.applyRecordTemplate(row, fields, template);
+		    return this.applyRecordTemplate(this.getDataValues(record), fields, template);
 		}
 	    }
 	    if(template=="${fields}") {
 		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getProperty("fields")));
 	    }
 
-            var values = HU.open(TABLE);
+            let values = HU.open(TABLE);
             for (var doDerived = 0; doDerived < 2; doDerived++) {
-		//record.getData()
                 for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
-                    var label = field.getLabel();
-		    label = this.formatRecordLabel(label);
 		    if(!showDate) {
                         if (field.isFieldDate()) {
                             continue;
@@ -573,15 +569,18 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>200) {
 			value  = HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto")],value);
 		    }
-                    values += "<tr valign=top><td xnowrap align=right><b>" + label + ":</b></td>" + 
-			HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value)) + "</tr>\n";
+		    let label = this.formatRecordLabel(field.getLabel());
+                    values += HU.open(TR,['valign','top']);
+		    values += HU.td([],HU.b(label + ':'));
+		    values += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
+		    values += HU.close(TR);
                 }
             }
-
             if (record.hasElevation()) {
-                values += "<tr><td  align=right><b>Elevation:</b></td><td align=left>" + number_format(record.getElevation(), 4, '.', '') + "</td></tr>";
+                values += HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
+				HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', '')));
             }
-            values += "</table>";
+            values += HU.close(TABLE);
 	    if(this.getProperty("recordHtmlStyle")){
 		values = HU.div([STYLE,this.getProperty("recordHtmlStyle")], values);
 	    }
