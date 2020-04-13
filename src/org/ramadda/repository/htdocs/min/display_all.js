@@ -1018,7 +1018,7 @@ ColorByInfo.prototype = {
 function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, margin) {
     if(!attrs) attrs = {};
     if(!margin)
-	margin       = { top: 0, right: 0, bottom: 0, left: 0 };
+	margin = { top: 0, right: 0, bottom: 0, left: 0 };
     const INNER_WIDTH  = w - margin.left - margin.right;
     const INNER_HEIGHT = h - margin.top - margin.bottom;
     const BAR_WIDTH  = w / data.length;
@@ -1864,9 +1864,9 @@ function DisplayThing(argId, argProperties) {
 	},
         getRecordHtml: function(record, fields, template) {
 	    fields = this.getFields(fields);
-	    var showDate = this.getProperty("showDate", true);
-	    var showImage = this.getProperty("showImage", true);
-            var showGeo = false;
+	    let showDate = this.getProperty("showDate", true);
+	    let showImage = this.getProperty("showImage", true);
+            let showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
             }
@@ -1874,23 +1874,19 @@ function DisplayThing(argId, argProperties) {
 		template = this.getProperty("recordTemplate");
 	    if(template) {
 		if(template!="${default}" && template!="${fields}") {
-		    var row = this.getDataValues(record);
-		    return this.applyRecordTemplate(row, fields, template);
+		    return this.applyRecordTemplate(this.getDataValues(record), fields, template);
 		}
 	    }
 	    if(template=="${fields}") {
 		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getProperty("fields")));
 	    }
 
-            var values = HU.open(TABLE);
+            let values = HU.open(TABLE);
             for (var doDerived = 0; doDerived < 2; doDerived++) {
-		//record.getData()
                 for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
-                    var label = field.getLabel();
-		    label = this.formatRecordLabel(label);
 		    if(!showDate) {
                         if (field.isFieldDate()) {
                             continue;
@@ -1920,15 +1916,18 @@ function DisplayThing(argId, argProperties) {
 		    if(value.length>200) {
 			value  = HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto")],value);
 		    }
-                    values += "<tr valign=top><td xnowrap align=right><b>" + label + ":</b></td>" + 
-			HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value)) + "</tr>\n";
+		    let label = this.formatRecordLabel(field.getLabel());
+                    values += HU.open(TR,['valign','top']);
+		    values += HU.td([],HU.b(label + ':'));
+		    values += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([STYLE,HU.css('margin-left','5px')], value));
+		    values += HU.close(TR);
                 }
             }
-
             if (record.hasElevation()) {
-                values += "<tr><td  align=right><b>Elevation:</b></td><td align=left>" + number_format(record.getElevation(), 4, '.', '') + "</td></tr>";
+                values += HU.tr([],HU.td([ALIGN,'right'],HU.b('Elevation:')) +
+				HU.td([ALIGN,'left'], number_format(record.getElevation(), 4, '.', '')));
             }
-            values += "</table>";
+            values += HU.close(TABLE);
 	    if(this.getProperty("recordHtmlStyle")){
 		values = HU.div([STYLE,this.getProperty("recordHtmlStyle")], values);
 	    }
@@ -26256,7 +26255,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(linkFeature && linkField) {
 		var recordMap = {};
-		this.points.map(p=>{
+		this.points.forEach(p=>{
 		    var record = p.record;
 		    if(record) {
 			var tuple = record.getData();
@@ -26786,7 +26785,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		return true;
 	    })
-	    offLayers.map(layer=>{
+	    offLayers.forEach(layer=>{
 		layer.setVisibility(false);
 	    });
  	    if(!onDate) {
@@ -26870,13 +26869,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	applyHeatmapAnimation: function(index) {
 	    this.jq(ID_HEATMAP_ANIM_LIST)[0].selectedIndex = index;
 	    let offLayers = [];
-	    this.heatmapLayers.map((layer,idx)=>{
+	    this.heatmapLayers.forEach((layer,idx)=>{
 		if(index==idx)
 		    layer.setVisibility(true);
 		else
 		    offLayers.push(layer);
 	    });
-	    offLayers.map(layer=>{
+	    offLayers.forEach(layer=>{
 		layer.setVisibility(false);
 	    });
 	    this.setMapLabel(this.heatmapLayers[index].heatmapLabel);
@@ -27058,7 +27057,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.jq("heatmaptoggle").change(function() {
 		    if(_this.heatmapLayers)  {
 			let visible = $(this).is(':checked');
-			_this.heatmapLayers.map(layer=>layer.setVisibility(visible));
+			_this.heatmapLayers.forEach(layer=>layer.setVisibility(visible));
 		    }
 		});
 	    }
@@ -27295,7 +27294,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 	    if(this.getDisplayProp(source, "shapeByMap", null)) {
-		this.getDisplayProp(source, "shapeByMap", null).split(",").map((pair)=>{
+		this.getDisplayProp(source, "shapeByMap", null).split(",").forEach((pair)=>{
 		    let tuple = pair.split(":");
 		    shapeBy.map[tuple[0]] = tuple[1];
 		})
@@ -27315,7 +27314,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             if (this.getProperty("showColorByMenu", false) && colorBy.field && !this.madeColorByMenu) {
                 this.madeColorByMenu = true;
-                let menu = "<select class='ramadda-pulldown' id='" + this.getDomId("colorByMenu") + "'>";
+                let menu = HU.open(SELECT,[CLASS,'ramadda-pulldown',ID,this.getDomId("colorByMenu")]);
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
                     if (!field.isNumeric() || field.isFieldGeo()) continue;
@@ -27323,7 +27322,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (colorBy.field.getId() == field.getId()) extra = "selected ";
                     menu += "<option value='" + field.getId() + "' " + extra + ">" + field.getLabel() + "</option>\n";
                 }
-                menu += "</select>";
+                menu += HU,close(SELECT);
                 this.writeHtml(ID_TOP_RIGHT, "Color by: " + menu);
                 this.jq("colorByMenu").change(() => {
                     let value = this.jq("colorByMenu").val();
@@ -27511,7 +27510,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(colorBy.compareFields.length>0) {
 		    let maxColor = null;
 		    let maxValue = 0;
-		    colorBy.compareFields.map((f,idx)=>{
+		    colorBy.compareFields.forEach((f,idx)=>{
 			let value = record.getData()[f.getIndex()];
 			if(idx==0 || value>maxValue) {
 			    maxColor = colorBy.colors[idx];
@@ -27548,12 +27547,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(polygonField) {
 		    let s = values[polygonField.getIndex()];
 		    let delimiter;
-		    [";",","].map(d=>{
+		    [";",","].forEach(d=>{
 			if(s.indexOf(d)>=0) delimiter = d;
 		    });
 		    let toks  = s.split(delimiter);
-		    
-
 		    let polygonProps ={};
 		    $.extend(polygonProps,props);
 		    if(polygonProps.strokeWidth==0)
@@ -27999,9 +27996,9 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 			if(!sparkLineField) {
 			    extra += " title='" + o.name +"' ";
 			}
-			extra += " class='display-mapgrid-cell' ";
+			extra += HU.attr(CLASS,'display-mapgrid-cell');
 			c = HU.div([STYLE,HU.css('padding-left','3px')], (showLabel?o.codes[0]:""));
-			o.codes.map(c=>cellMap[c] = id);
+			o.codes.forEach(c=>cellMap[c] = id);
 			cellMap[o.name] = id;
 		    }
 		    let td = HU.td([],"<div " + extra +" style='" + style +"'>" + c+"</div>");
@@ -28013,9 +28010,8 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    table+=HU.close(TABLE);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.center(table));
 
-
 	    let states = [];
-	    let stateData = {
+	    let stateData = this.stateData = {
 	    }
 	    let minData = 0;
 	    let maxData = 0;
@@ -28071,7 +28067,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 
 	    if(sparkLineField) {
 		let vOffset = 0;
-		states.map((state,idx)=>{
+		states.forEach((state,idx)=>{
 		    let s = stateData[state];
 		    let innerId = s.cellId+"_inner";
 		    let cellWidth = width;
@@ -28085,7 +28081,6 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		});
 	    }
 
-
 	    this.makePopups(contents.find(".display-mapgrid-cell"), records);
 	    let _this = this;
 	    contents.find(".display-mapgrid-cell").click(function() {
@@ -28095,7 +28090,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		}
 	    });	
 	    if(!sparkLineField) {
-		this.makeTooltips(contents.find(".display-mapgrid-cell"), records,null,"${default}");
+		this.makeTooltips(contents.find(".display-mapgrid-cell"), records, null, "${default}");
 	    }
             if (colorBy.index >= 0) {
 		colorBy.displayColorTable();
@@ -28103,9 +28098,6 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    if (sparkLinesColorBy.index >= 0) {
 		sparkLinesColorBy.displayColorTable();
 	    }
-
-
-
 	},
 
         handleEventRecordSelection: function(source, args) {

@@ -204,6 +204,16 @@ a.ramadda-menubar-button:hover {
     text-align: center;
 }
 
+
+.ramadda-subheading-small  {
+    font-size:100%;
+    padding: 0px;
+    margin: 0px;
+    margin-bottom: 2px;
+    color: #000;
+    text-align: center;
+}
+
 .ramadda-page-title-left, .ramadda-page-heading-left  {
     text-align:left;
 }
@@ -389,6 +399,16 @@ a.ramadda-menubar-button:hover {
 }
 
 
+.ramadda-grid-box .ramadda-subheading {
+    max-width:100%;
+    overflow-x:auto;
+    white-space:nowrap;
+}
+
+.ramadda-card  {
+    max-height:100%;
+    overflow-y:auto;
+}    
 
 .ramadda-card img {
     border : 1px #ddd solid;
@@ -1050,7 +1070,7 @@ input, password, fileinput,textarea {
     background: transparent;
     padding: 0px;
     border: 1px #aaa solid;
-    max-width:100px;
+    max-width:150px;
 }
 
 .entry-confirm-header {
@@ -1327,6 +1347,7 @@ table.dataTable tbody td {
 
 .entry-row-label {
     white-space:nowrap;
+    padding-left:5px;
 }
 
 
@@ -2742,6 +2763,9 @@ snippet-hide {
     margin-left:5px;
     overflow-y:auto;
     line-height:1.5em;
+    overflow-x:auto;
+    max-width:100%;
+ white-space: nowrap;
 }
 
 nowiki {

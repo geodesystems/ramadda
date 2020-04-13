@@ -1,18 +1,18 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (c) 2008-2019 Geode Systems LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.ramadda.repository.output;
 
@@ -85,11 +85,11 @@ import java.util.TimeZone;
  * Provides wiki text processing services
  */
 public class WikiManager extends RepositoryManager implements WikiConstants,
-        WikiUtil.WikiPageHandler {
+							      WikiUtil.WikiPageHandler {
 
     /** layout attributes */
     public static final String ATTRS_LAYOUT = attrs(ATTR_TEXTPOSITION,
-                                                  POS_LEFT);
+						    POS_LEFT);
 
     /** list of import items for the text editor menu */
     //J--
@@ -133,12 +133,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
                             new WikiTag(WIKI_TAG_MULTI, null,"#_tag","","#_template",""), 
                             new WikiTag(WIKI_TAG_APPLY, null, APPLY_PREFIX
-                                                              + "tag", WIKI_TAG_HTML, APPLY_PREFIX
-                                                              + "layout", "table", APPLY_PREFIX
-                                                              + "columns", "1", APPLY_PREFIX
-                                                              + "header", "", APPLY_PREFIX
-                                                              + "footer", "", APPLY_PREFIX
-                                                              + "border", "0", APPLY_PREFIX
+					+ "tag", WIKI_TAG_HTML, APPLY_PREFIX
+					+ "layout", "table", APPLY_PREFIX
+					+ "columns", "1", APPLY_PREFIX
+					+ "header", "", APPLY_PREFIX
+					+ "footer", "", APPLY_PREFIX
+					+ "border", "0", APPLY_PREFIX
                                         + "bordercolor", "#000")),
         new WikiTagCategory("Images",
                             new WikiTag(WIKI_TAG_IMAGE,null,
@@ -429,9 +429,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
     /** output type */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
-                                                     "wiki.view",
-                                                     OutputType.TYPE_VIEW,
-                                                     "", ICON_WIKI);
+								"wiki.view",
+								OutputType.TYPE_VIEW,
+								"", ICON_WIKI);
 
 
 
@@ -464,12 +464,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         displayImports = makeDisplayImports();
         wikiMacros     = new Hashtable<String, String>();
         for (String macro :
-                StringUtil.split(
-                    getRepository().getProperty("ramadda.wiki.macros", ""),
-                    ",", true, true)) {
+		 StringUtil.split(
+				  getRepository().getProperty("ramadda.wiki.macros", ""),
+				  ",", true, true)) {
             wikiMacros.put(macro,
                            getRepository().getProperty("ramadda.wiki.macro."
-                               + macro, ""));
+						       + macro, ""));
         }
         WikiUtil.setGlobalProperties(wikiMacros);
 
@@ -596,7 +596,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (toks.size() == 0) {
                 return "<b>Incorrect import specification:" + property
-                       + "</b>";
+		    + "</b>";
             }
             String tag = toks.get(0);
             if (notTags != null) {
@@ -620,7 +620,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     toks = StringUtil.splitUpTo(remainder, " ", 3);
                     if (toks.size() < 2) {
                         return "<b>Incorrect import specification:"
-                               + property + "</b>";
+			    + property + "</b>";
                     }
                     String id = toks.get(0).trim();
                     tag = toks.get(1).trim();
@@ -632,7 +632,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     theEntry = findWikiEntry(request, wikiUtil, id, entry);
                     if (theEntry == null) {
                         return "<b>Could not find entry&lt;" + id
-                               + "&gt;</b>";
+			    + "&gt;</b>";
                     }
                 }
             }
@@ -644,7 +644,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             Hashtable props    = new Hashtable();
             for (Enumeration keys =
-                    tmpProps.keys(); keys.hasMoreElements(); ) {
+		     tmpProps.keys(); keys.hasMoreElements(); ) {
                 String key = (String) keys.nextElement();
                 if (key.startsWith("#")) {
                     continue;
@@ -672,19 +672,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             //TODO: figure out a way to look for infinte loops
             /*
-            String propertyKey = theEntry.getId() + "_" + property;
-            if (request.getExtraProperty(propertyKey) != null) {
-                return "<b>Detected circular wiki import:" + property +
-                    "<br>For entry:" +  theEntry.getId()
-                    + "</b>";
-            }
-            request.putExtraProperty(propertyKey, property);
+	      String propertyKey = theEntry.getId() + "_" + property;
+	      if (request.getExtraProperty(propertyKey) != null) {
+	      return "<b>Detected circular wiki import:" + property +
+	      "<br>For entry:" +  theEntry.getId()
+	      + "</b>";
+	      }
+	      request.putExtraProperty(propertyKey, property);
             */
 
 
             addWikiLink(wikiUtil, theEntry);
             String include = handleWikiImport(wikiUtil, request, entry,
-                                 theEntry, tag, props);
+					      theEntry, tag, props);
             if (include != null) {
                 return include;
             }
@@ -711,7 +711,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     private Entry findEntryFromId(Request request, Entry entry,
                                   WikiUtil wikiUtil, String entryId)
-            throws Exception {
+	throws Exception {
 
         Entry theEntry = null;
         int   barIndex = entryId.indexOf("|");
@@ -737,7 +737,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
                 List<Entry> children = getEntryManager().getChildren(request,
-                                           entry);
+								     entry);
                 if (children.size() > 0) {
                     return children.get(0);
                 }
@@ -745,7 +745,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return null;
             }
             List<Entry> children = getEntryManager().getChildren(request,
-                                       entry);
+								 entry);
             if (children.size() > 0) {
                 return children.get(0);
             }
@@ -760,18 +760,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //            System.err.println("Link: " + type);
             List<Association> associations =
                 getRepository().getAssociationManager().getAssociations(
-                    request, entry.getId());
+									request, entry.getId());
             //            System.err.println("associations: " + associations);
             for (Association association : associations) {
                 Entry otherEntry =
                     getAssociationManager().getOtherEntry(request,
-                        association, entry);
+							  association, entry);
                 //                System.err.println("other entry: " + otherEntry);
                 if (otherEntry == null) {
                     continue;
                 }
                 if ((type != null)
-                        && !otherEntry.getTypeHandler().isType(type)) {
+		    && !otherEntry.getTypeHandler().isType(type)) {
                     System.err.println("not type");
 
                     continue;
@@ -788,15 +788,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         if ((theEntry == null) && entryId.equals(ID_PARENT)) {
             theEntry = getEntryManager().getEntry(request,
-                    entry.getParentEntryId());
+						  entry.getParentEntryId());
         }
 
         if ((theEntry == null) && entryId.equals(ID_GRANDPARENT)) {
             theEntry = getEntryManager().getEntry(request,
-                    entry.getParentEntryId());
+						  entry.getParentEntryId());
             if (theEntry != null) {
                 theEntry = getEntryManager().getEntry(request,
-                        theEntry.getParentEntryId());
+						      theEntry.getParentEntryId());
             }
         }
 
@@ -811,13 +811,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         //Look for file path based entry id
         if ((theEntry == null) && entryId.startsWith("/")) {
             theEntry = getEntryManager().findEntryFromName(request, entryId,
-                    request.getUser(), false);
+							   request.getUser(), false);
         }
 
         //Look for relative to the current entry
         if (theEntry == null) {
             theEntry = getEntryManager().findEntryFromPath(request, entry,
-                    entryId);
+							   entryId);
         }
 
         return theEntry;
@@ -840,7 +840,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String getWikiImage(WikiUtil wikiUtil, Request request,
                                String url, Entry entry, Hashtable props)
-            throws Exception {
+	throws Exception {
 
 
         boolean       inDiv = getProperty(wikiUtil, props, "inDiv", true);
@@ -925,11 +925,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             img = HtmlUtils.href(iurl, img);
         } else if (link) {
             img = HtmlUtils.href(
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry), img);
+				 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry), img);
         } else if (linkResource) {
             img = HtmlUtils.href(
-                entry.getTypeHandler().getEntryResourceUrl(request, entry),
-                img);
+				 entry.getTypeHandler().getEntryResourceUrl(request, entry),
+				 img);
         } else if (popup) {
             //A hack to see if this image is an attachment (e.g. src="::*")
             String hrefUrl;
@@ -937,7 +937,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 hrefUrl = url;
             } else {
                 hrefUrl = entry.getTypeHandler().getEntryResourceUrl(request,
-                        entry);
+								     entry);
             }
             StringBuilder buf = new StringBuilder();
             addImagePopupJS(request, wikiUtil, buf, props);
@@ -957,16 +957,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV, attrs);
         } else {
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV, "style", ((align != null)
-                    ? "float:" + align + ";"
-                    : "") + " display:inline-block;text-align:center");
+							    ? "float:" + align + ";"
+							    : "") + " display:inline-block;text-align:center");
         }
         sb.append(img);
         if (map != null) {
             sb.append("\n<map name='" + mapId + "'>" + map + "</map>\n");
             sb.append(
-                HtmlUtils.importJS(
-                    getRepository().getHtdocsUrl(
-                        "/lib/jquery.maphilight.js")));
+		      HtmlUtils.importJS(
+					 getRepository().getHtdocsUrl(
+								      "/lib/jquery.maphilight.js")));
             sb.append(HtmlUtils.script("$('#" + id + "').maphilight();"));
         }
 
@@ -1054,7 +1054,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String getWikiUrl(WikiUtil wikiUtil, Request request, Entry entry,
                              Hashtable props)
-            throws Exception {
+	throws Exception {
 
         String src = getProperty(wikiUtil, props, ATTR_SRC, (String) null);
         Entry  srcEntry = null;
@@ -1063,11 +1063,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else {
             src = src.trim();
             if ((src.length() == 0) || entry.getName().equals(src)
-                    || src.equals("this")) {
+		|| src.equals("this")) {
                 srcEntry = entry;
             } else if (entry instanceof Entry) {
                 srcEntry = getEntryManager().findEntryWithName(request,
-                        (Entry) entry, src);
+							       (Entry) entry, src);
             }
         }
         if (srcEntry == null) {
@@ -1098,7 +1098,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String getWikiImage(WikiUtil wikiUtil, Request request,
                                Entry entry, Hashtable props)
-            throws Exception {
+	throws Exception {
 
         String src = getProperty(wikiUtil, props, ATTR_SRC, (String) null);
         if ((src == null) || (src.length() == 0)) {
@@ -1108,7 +1108,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return getWikiImage(wikiUtil, request,
                                 getHtmlOutputHandler().getImageUrl(request,
-                                    entry), entry, props);
+								   entry), entry, props);
         }
 
         String attachment = null;
@@ -1127,7 +1127,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             srcEntry = entry;
         } else if (entry instanceof Entry) {
             srcEntry = getEntryManager().findEntryWithName(request,
-                    (Entry) entry, src);
+							   (Entry) entry, src);
         }
         if (srcEntry == null) {
             return getMessage(wikiUtil, props,
@@ -1140,7 +1140,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return getWikiImage(wikiUtil, request,
                                 getHtmlOutputHandler().getImageUrl(request,
-                                    srcEntry), srcEntry, props);
+								   srcEntry), srcEntry, props);
         }
 
 
@@ -1155,7 +1155,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 continue;
             }
             String url = metadataType.getDisplayImageUrl(request, srcEntry,
-                             metadata, attachment);
+							 metadata, attachment);
             if (url != null) {
                 return getWikiImage(wikiUtil, request, url, srcEntry, props);
             }
@@ -1204,7 +1204,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                      Entry originalEntry, Entry entry,
                                      String tag, Hashtable props,
                                      boolean doingApply)
-            throws Exception {
+	throws Exception {
         //        boolean doingApply = tag.equals(WIKI_TAG_APPLY);
         String attrPrefix = "";
         if (doingApply) {
@@ -1262,8 +1262,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (wrapInADiv) {
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV, ((cssClass != null)
-                    ? "class"
-                    : ""), (cssClass != null)
+						   ? "class"
+						   : ""), (cssClass != null)
                            ? cssClass
                            : "", "style", style.toString());
         }
@@ -1288,9 +1288,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                             true);
 
             return HtmlUtils.makeShowHideBlock(blockTitle, sb.toString(),
-                    blockOpen, HtmlUtils.cssClass("entry-toggleblock-label"),
-                    "", getIconUrl(ICON_TOGGLEARROWDOWN),
-                    getIconUrl(ICON_TOGGLEARROWRIGHT));
+					       blockOpen, HtmlUtils.cssClass("entry-toggleblock-label"),
+					       "", getIconUrl(ICON_TOGGLEARROWDOWN),
+					       getIconUrl(ICON_TOGGLEARROWRIGHT));
 
         }
 
@@ -1310,7 +1310,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public Result processGetWikiToolbar(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request,
-                          request.getString(ARG_ENTRYID, ""));
+						 request.getString(ARG_ENTRYID, ""));
         String handlerId = request.getString("handler", "");
         String toolbar   = makeWikiEditBar(request, entry, handlerId);
         toolbar = getPageHandler().translate(request, toolbar);
@@ -1339,7 +1339,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 request.putExtraProperty(MapManager.ADDED_IMPORTS, "added");
             }
             Entry entry = getEntryManager().getEntry(request,
-                              request.getString(ARG_ENTRYID, ""));
+						     request.getString(ARG_ENTRYID, ""));
             wiki = wikifyEntry(request, entry, wiki);
         } else {
             wiki = wikify(request, wiki);
@@ -1362,10 +1362,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public Result processGetNotebook(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request,
-                          request.getString(ARG_ENTRYID, ""));
+						 request.getString(ARG_ENTRYID, ""));
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                "wiki_notebook", false);
+					      "wiki_notebook", false);
 
 
         Metadata metadata = null;
@@ -1389,10 +1389,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         Result result = new Result(
-                            new FileInputStream(
-                                getMetadataManager().getFile(
-                                    request, entry, metadata,
-                                    2)), Json.MIMETYPE);
+				   new FileInputStream(
+						       getMetadataManager().getFile(
+										    request, entry, metadata,
+										    2)), Json.MIMETYPE);
         result.setShouldDecorate(false);
 
         return result;
@@ -1415,8 +1415,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             Result result = new Result("",
                                        new StringBuilder("{'error':'"
-                                           + exc.getMessage()
-                                           + "'}"), Json.MIMETYPE);
+							 + exc.getMessage()
+							 + "'}"), Json.MIMETYPE);
 
             return result;
         }
@@ -1433,24 +1433,24 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public Result processSaveNotebookInner(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request,
-                          request.getString(ARG_ENTRYID, ""));
+						 request.getString(ARG_ENTRYID, ""));
         if (entry == null) {
             return new Result(
-                "", new StringBuilder("{\"error\":\"cannot find entry\"}"),
-                Json.MIMETYPE);
+			      "", new StringBuilder("{\"error\":\"cannot find entry\"}"),
+			      Json.MIMETYPE);
         }
         if ( !getAccessManager().canEditEntry(request, entry)) {
             return new Result(
-                "", new StringBuilder("{\"error\":\"cannot edit entry\"}"),
-                Json.MIMETYPE);
+			      "", new StringBuilder("{\"error\":\"cannot edit entry\"}"),
+			      Json.MIMETYPE);
         }
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                "wiki_notebook", false);
+					      "wiki_notebook", false);
 
         String notebookId = request.getString("notebookId",
-                                "default_notebook");
+					      "default_notebook");
         Metadata metadata = null;
         if ((metadataList != null) && (metadataList.size() > 0)) {
             if ( !Utils.stringDefined(notebookId)) {
@@ -1470,19 +1470,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             File f = getStorageManager().getTmpFile(request, "notebook.json");
             IOUtil.writeFile(f, notebook);
             String theFile = getStorageManager().moveToEntryDir(entry,
-                                 f).getName();
+								f).getName();
             getMetadataManager().addMetadata(
-                entry,
-                new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    "wiki_notebook", false, notebookId, theFile, "", "", ""));
+					     entry,
+					     new Metadata(
+							  getRepository().getGUID(), entry.getId(),
+							  "wiki_notebook", false, notebookId, theFile, "", "", ""));
             getEntryManager().updateEntry(null, entry);
 
             return new Result("", new StringBuilder("{\"result\":\"ok\"}"),
                               Json.MIMETYPE);
         } else {
             File file = getMetadataManager().getFile(request, entry,
-                            metadata, 2);
+						     metadata, 2);
             getStorageManager().writeFile(file, notebook);
 
             return new Result("", new StringBuilder("{\"result\":\"ok\"}"),
@@ -1509,7 +1509,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     private String getWikiIncludeInner(WikiUtil wikiUtil, Request request,
                                        Entry originalEntry, Entry entry,
                                        String theTag, Hashtable props)
-            throws Exception {
+	throws Exception {
 
 
 
@@ -1530,20 +1530,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean details = getProperty(wikiUtil, props, ATTR_DETAILS,
                                           false);
             boolean showResource = getProperty(wikiUtil, props,
-                                       "showResource", true);
+					       "showResource", true);
             if ( !details) {
                 return entry.getTypeHandler().getEntryContent(myRequest,
-                        entry, false, showResource).toString();
+							      entry, false, showResource).toString();
             }
 
             return getRepository().getHtmlOutputHandler().getInformationTabs(
-                myRequest, entry, false);
+									     myRequest, entry, false);
         } else if (theTag.equals(WIKI_TAG_TAGCLOUD)) {
             StringBuilder tagCloud = new StringBuilder();
             int threshold = getProperty(wikiUtil, props, "threshold", 0);
             getMetadataManager().doMakeTagCloudOrList(request,
-                    getProperty(wikiUtil, props, "type", ""), tagCloud, true,
-                    threshold);
+						      getProperty(wikiUtil, props, "type", ""), tagCloud, true,
+						      threshold);
 
             return tagCloud.toString();
         } else if (theTag.equals(WIKI_TAG_ODOMETER)) {
@@ -1558,13 +1558,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (request.getExtraProperty("added odometer") == null) {
                 request.putExtraProperty("added odometer", "yes");
                 buff.append(
-                    HtmlUtils.cssLink(
-                        getRepository().getHtdocsUrl(
-                            "/lib/odometer/odometer-theme-default.css")));
+			    HtmlUtils.cssLink(
+					      getRepository().getHtdocsUrl(
+									   "/lib/odometer/odometer-theme-default.css")));
                 buff.append(
-                    HtmlUtils.importJS(
-                        getRepository().getHtdocsUrl(
-                            "/lib/odometer/odometer.js")));
+			    HtmlUtils.importJS(
+					       getRepository().getHtdocsUrl(
+									    "/lib/odometer/odometer.js")));
             }
 
             buff.append(HtmlUtils.span(initCount,
@@ -1578,12 +1578,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return buff.toString();
         } else if (theTag.equals(WIKI_TAG_COMMENTS)) {
             return getHtmlOutputHandler().getCommentBlock(request, entry,
-                    false).toString();
+							  false).toString();
         } else if (theTag.equals(WIKI_TAG_TOOLBAR)) {
             return getPageHandler().getEntryToolbar(request, entry);
         } else if (theTag.equals(WIKI_TAG_BREADCRUMBS)) {
             List<Entry> parents = getEntryManager().getParents(request,
-                                      entry);
+							       entry);
             List<String> breadcrumbs =
                 getPageHandler().makeBreadcrumbList(request, parents, null);
 
@@ -1606,16 +1606,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return text;
         } else if (theTag.equals(WIKI_TAG_LINK)) {
             boolean linkResource = getProperty(wikiUtil, props,
-                                       ATTR_LINKRESOURCE, false);
+					       ATTR_LINKRESOURCE, false);
             String name  = getEntryDisplayName(entry);
             String title = getProperty(wikiUtil, props, ATTR_TITLE, name);
             title = title.replace("${name}", name);
             String url;
             if (linkResource
-                    && (entry.getTypeHandler().isType("link")
-                        || entry.isFile() || entry.getResource().isUrl())) {
+		&& (entry.getTypeHandler().isType("link")
+		    || entry.isFile() || entry.getResource().isUrl())) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
-                        entry);
+								 entry);
             } else {
                 String output =
                     getProperty(wikiUtil, props, ATTR_OUTPUT,
@@ -1627,9 +1627,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (getProperty(wikiUtil, props, "button", false)) {
                 return HtmlUtils.href(
-                    url, title,
-                    HtmlUtils.cssClass("ramadda-button ramadda-button-blue")
-                    + HtmlUtils.attr("role", "button"));
+				      url, title,
+				      HtmlUtils.cssClass("ramadda-button ramadda-button-blue")
+				      + HtmlUtils.attr("role", "button"));
             } else {
                 return HtmlUtils.href(url, title);
             }
@@ -1638,11 +1638,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String label;
             if ( !entry.getResource().isDefined()) {
                 url   = entry.getTypeHandler().getPathForEntry(request,
-                        entry);
+							       entry);
                 label = getProperty(wikiUtil, props, ATTR_TITLE, url);
             } else if (entry.getResource().isFile()) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
-                        entry);
+								 entry);
                 label = getProperty(wikiUtil, props, ATTR_TITLE, "Download");
             } else {
                 url   = entry.getResource().getPath();
@@ -1665,16 +1665,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean simple = getProperty(wikiUtil, props, "simple", false);
 
             boolean includeIcon = getProperty(wikiUtil, props,
-                                      ATTR_INCLUDEICON, false);
+					      ATTR_INCLUDEICON, false);
             if (includeIcon) {
                 label = HtmlUtils.img(getIconUrl("/icons/download.png"))
-                        + HtmlUtils.space(2) + label;
+		    + HtmlUtils.space(2) + label;
             }
 
             if ( !simple) {
                 return HtmlUtils.div(HtmlUtils.href(url, label,
-                        HtmlUtils.cssClass("ramadda-button")
-                        + HtmlUtils.attr("role", "button")));
+						    HtmlUtils.cssClass("ramadda-button")
+						    + HtmlUtils.attr("role", "button")));
             }
             String extra = "";
 
@@ -1686,13 +1686,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             // can't add to local file view
             if (group.getIsLocalFile()
-                    || (group.getTypeHandler()
-                        instanceof LocalFileTypeHandler)) {
+		|| (group.getTypeHandler()
+		    instanceof LocalFileTypeHandler)) {
                 return "";
             }
             TypeHandler typeHandler =
                 getRepository().getTypeHandler(getProperty(wikiUtil, props,
-                    ATTR_TYPE, TypeHandler.TYPE_FILE));
+							   ATTR_TYPE, TypeHandler.TYPE_FILE));
             if (typeHandler == null) {
                 return "ERROR: unknown type";
             }
@@ -1712,7 +1712,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     icon = ICON_BLANK;
                     img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
                                         HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                            "16"));
+						       "16"));
                 } else {
                     img = HtmlUtils.img(typeHandler.getIconUrl(icon));
                 }
@@ -1723,9 +1723,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return HtmlUtils
                 .href(request
-                    .makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP,
-                             group.getId(), EntryManager.ARG_TYPE,
-                             typeHandler.getType()), img + " " + msg(label));
+		      .makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP,
+			       group.getId(), EntryManager.ARG_TYPE,
+			       typeHandler.getType()), img + " " + msg(label));
 
         } else if (theTag.equals(WIKI_TAG_DESCRIPTION)) {
             String prefix = getProperty(wikiUtil, props, "prefix",
@@ -1755,7 +1755,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return desc;
         } else if (theTag.equals(WIKI_TAG_LAYOUT)) {
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
-                    getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
+							 getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
@@ -1767,15 +1767,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
             if ( !entry.isFile()
-                    || ( !isTextFile(entry.getResource().getPath())
-                         && !getProperty(wikiUtil, props, ATTR_FORCE,
-                                         false))) {
+		 || ( !isTextFile(entry.getResource().getPath())
+		      && !getProperty(wikiUtil, props, ATTR_FORCE,
+				      false))) {
                 return "Entry isn't a text file";
             }
             StringBuilder txt = new StringBuilder("");
 
             InputStream fis = getStorageManager().getFileInputStream(
-                                  entry.getResource().getPath());
+								     entry.getResource().getPath());
             BufferedReader br =
                 new BufferedReader(new InputStreamReader(fis));
             int skipLines = getProperty(wikiUtil, props, ATTR_SKIP_LINES, 0);
@@ -1811,7 +1811,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return HtmlUtils.pre(txt.toString(),
                                  HtmlUtils.style("max-height:" + maxHeight
-                                     + "px; overflow-y:auto;"));
+						 + "px; overflow-y:auto;"));
         } else if (theTag.equals(WIKI_TAG_FIELD)) {
             String name = getProperty(wikiUtil, props, ATTR_FIELDNAME,
                                       (String) null);
@@ -1843,7 +1843,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             return getDateHandler().formatDate(entry, date,
-                    getProperty(wikiUtil, props, ATTR_FORMAT, null));
+					       getProperty(wikiUtil, props, ATTR_FORMAT, null));
         } else if (theTag.equals(WIKI_TAG_DATERANGE)) {
             String format = getProperty(wikiUtil, props, ATTR_FORMAT,
                                         (String) null);
@@ -1855,7 +1855,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                            " -- ");
 
             return dateFormat.format(date1) + separator
-                   + dateFormat.format(date2);
+		+ dateFormat.format(date2);
         } else if (theTag.equals(WIKI_TAG_ENTRYID)) {
             return entry.getId();
         } else if (theTag.equals(WIKI_TAG_JAVASCRIPT)) {
@@ -1896,7 +1896,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_STREETVIEW)) {
             ImageOutputHandler ioh =
                 (ImageOutputHandler) getRepository().getOutputHandler(
-                    ImageOutputHandler.OUTPUT_PLAYER);
+								      ImageOutputHandler.OUTPUT_PLAYER);
             if ( !ioh.isStreetviewEnabled()) {
                 String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                              "Streetview not enabled");
@@ -1923,81 +1923,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return img;
 
         } else if (theTag.equals(WIKI_TAG_CARD)) {
-            StringBuilder card = new StringBuilder();
-            HtmlUtils.open(card, HtmlUtils.TAG_DIV,
-                           HtmlUtils.cssClass("ramadda-card"));
-            String entryUrl =
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-            boolean showHeading = getProperty(wikiUtil, props, "showHeading",
-                                      true);
-            if (showHeading) {
-                HtmlUtils.div(card,
-                              HtmlUtils.href(entryUrl, entry.getName()),
-                              HtmlUtils.cssClass("ramadda-subheading"));
-            }
-            boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
-                                      false);
-
-            boolean showSnippetHover = getProperty(wikiUtil, props,
-                                           "showSnippetHover", false);
-            if (showSnippet || showSnippetHover) {
-                String snippet = getSnippet(request, entry);
-                if (Utils.stringDefined(snippet)) {
-                    snippet = wikifyEntry(request, entry, snippet, false,
-                                          null, null, wikiUtil.getNotTags());
-                    if (showSnippet) {
-                        HtmlUtils.div(card, snippet,
-                                      HtmlUtils.cssClass("ramadda-snippet"));
-
-                    } else if (showSnippetHover) {
-                        HtmlUtils.div(
-                            card, snippet,
-                            HtmlUtils.cssClass("ramadda-snippet-hover"));
-
-                    }
-
-                }
-            }
-
-
-
-            String imageUrl = null;
-            if (entry.isImage()) {
-                imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
-                    request, entry);
-            } else {
-                List<String> urls = new ArrayList<String>();
-                getMetadataManager().getThumbnailUrls(request, entry, urls);
-                if (urls.size() > 0) {
-                    imageUrl = urls.get(0);
-                }
-            }
-
-
-            if (imageUrl != null) {
-                String img = HtmlUtils.img(imageUrl, "",
-                                           HtmlUtils.style("width:100%;"));
-                String  inner;
-                boolean popup = getProperty(wikiUtil, props, "popup", true);
-                if (popup) {
-                    inner = HtmlUtils.href(imageUrl, img,
-                                           HtmlUtils.cssClass("popup_image"));
-                } else {
-                    inner = HtmlUtils.href(entryUrl, img,
-                                           HtmlUtils.cssClass(""));
-                }
-                card.append(
-                    HtmlUtils.div(
-                        inner, HtmlUtils.cssClass("ramadda-imagewrap")));
-
-                if (popup) {
-                    addImagePopupJS(request, wikiUtil, card, props);
-                }
-            }
-
-            HtmlUtils.close(card, HtmlUtils.TAG_DIV);
-
-            return card.toString();
+	    return makeCard(request, wikiUtil, props, entry);
         } else if (theTag.equals(WIKI_TAG_IMAGE)) {
             return getWikiImage(wikiUtil, request, entry, props);
         } else if (theTag.equals(WIKI_TAG_URL)) {
@@ -2006,11 +1932,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Request newRequest = makeRequest(request, props);
             if (getProperty(wikiUtil, props, ATTR_CHILDREN, false)) {
                 List<Entry> children = getEntries(request, wikiUtil,
-                                           originalEntry, entry, props);
+						  originalEntry, entry, props);
                 for (Entry child : children) {
                     Result result =
                         getHtmlOutputHandler().getHtmlResult(request,
-                            OutputHandler.OUTPUT_HTML, child);
+							     OutputHandler.OUTPUT_HTML, child);
                     sb.append(getEntryManager().getEntryLink(request, child));
                     sb.append(HtmlUtils.br());
                     sb.append(new String(result.getContent()));
@@ -2028,19 +1954,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             Result result = getEntryManager().processEntryShow(myRequest,
-                                entry);
+							       entry);
             //            Result result = getHtmlOutputHandler().getHtmlResult(newRequest,
             //                                OutputHandler.OUTPUT_HTML, entry);
 
             return new String(result.getContent());
         } else if (theTag.equals(WIKI_TAG_CALENDAR)) {
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props);
+					      originalEntry, entry, props);
             boolean doDay = getProperty(wikiUtil, props, ATTR_DAY, false)
-                            || request.defined(ARG_DAY);
+		|| request.defined(ARG_DAY);
             getCalendarOutputHandler().outputCalendar(request,
-                    getCalendarOutputHandler().makeCalendarEntries(request,
-                        children), sb, doDay);
+						      getCalendarOutputHandler().makeCalendarEntries(request,
+												     children), sb, doDay);
 
             return sb.toString();
 
@@ -2051,8 +1977,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String jsonUrl = null;
             if (getProperty(wikiUtil, props, "doEntries", false)) {
                 jsonUrl = request.entryUrl(
-                    getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-                    JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+					   getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
+					   JsonOutputHandler.OUTPUT_JSON_POINT.getId());
             }
             if (theTag.startsWith("display_")) {
                 String newType = theTag.substring(8);
@@ -2068,21 +1994,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                 }
                 jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
-                        entry, theTag, props, displayProps);
+							       entry, theTag, props, displayProps);
             }
             //      System.err.println("jsonurl:" +jsonUrl);
             //Gack - handle the files that are gridded netcdf
             //This is awful to have this here but I just don't know how to 
             //handle these entries
             if ((jsonUrl == null)
-                    && entry.getTypeHandler().isType(Constants.TYPE_FILE)
-                    && entry.getResource().getPath().toLowerCase().endsWith(
-                        ".nc")) {
+		&& entry.getTypeHandler().isType(Constants.TYPE_FILE)
+		&& entry.getResource().getPath().toLowerCase().endsWith(
+									".nc")) {
                 TypeHandler gridType =
                     getRepository().getTypeHandler("cdm_grid");
                 if (gridType != null) {
                     jsonUrl = gridType.getUrlForWiki(request, entry, theTag,
-                            props, displayProps);
+						     props, displayProps);
                 }
             }
             getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
@@ -2099,16 +2025,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_TIMELINE)) {
             Entry mainEntry = entry;
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, mainEntry, props);
+					      originalEntry, mainEntry, props);
             int    height = getProperty(wikiUtil, props, ATTR_HEIGHT, 150);
             String style  = Utils.concatString("height: ", height, "px;");
             getCalendarOutputHandler().makeTimeline(request, mainEntry,
-                    children, sb, style, props);
+						    children, sb, style, props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_EARTH)) {
             return getPageHandler().showDialogWarning(
-                "Google earth view is no longer available");
+						      "Google earth view is no longer available");
         } else if (theTag.equals(WIKI_TAG_MAP)
                    || theTag.equals(WIKI_TAG_MAPENTRY)) {
             handleMapTag(request, wikiUtil, entry, originalEntry, theTag,
@@ -2119,13 +2045,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             StringBuilder links = new StringBuilder();
             int           cnt   = 0;
             for (Link link :
-                    getEntryManager().getEntryLinks(request, entry)) {
+		     getEntryManager().getEntryLinks(request, entry)) {
                 if ( !link.isType(OutputType.TYPE_IMPORTANT)) {
                     continue;
                 }
 
                 String label = getIconImage(link.getIcon())
-                               + HtmlUtils.space(1) + link.getLabel();
+		    + HtmlUtils.space(1) + link.getLabel();
                 HtmlUtils.href(links, link.getUrl(), label);
                 links.append(HtmlUtils.br());
                 cnt++;
@@ -2143,10 +2069,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_MENU)) {
             String menus = getProperty(wikiUtil, props, ATTR_MENUS, "");
             int type = OutputType.getTypeMask(StringUtil.split(menus, ",",
-                           true, true));
+							       true, true));
 
             String links = getEntryManager().getEntryActionsTable(request,
-                               entry, type);
+								  entry, type);
             if (getProperty(wikiUtil, props, "popup", true)) {
                 StringBuilder popup  = new StringBuilder();
                 String        header = "";
@@ -2157,19 +2083,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         getEntryManager().getParents(request, entry);
                     List<String> breadcrumbs =
                         getPageHandler().makeBreadcrumbList(request, parents,
-                            null);
+							    null);
 
                     getPageHandler().makeBreadcrumbs(request, breadcrumbs,
-                            tmp);
+						     tmp);
                     header = tmp.toString();
                 }
                 String menuLinkImg =
                     HtmlUtils.img(
-                        getRepository().getIconUrl("/icons/menu_arrow.gif"),
-                        msg("Click to show menu"),
-                        HtmlUtils.cssClass("ramadda-breadcrumbs-menu-img"));
+				  getRepository().getIconUrl("/icons/menu_arrow.gif"),
+				  msg("Click to show menu"),
+				  HtmlUtils.cssClass("ramadda-breadcrumbs-menu-img"));
                 String menuLink = getPageHandler().makePopupLink(menuLinkImg,
-                                      links, "", true, false, popup, header);
+								 links, "", true, false, popup, header);
 
                 popup.append(menuLink);
 
@@ -2181,7 +2107,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             String type = getProperty(wikiUtil, props, ATTR_TYPE,
                                       getProperty(wikiUtil, props, ATTR_ID,
-                                          TypeHandler.TYPE_ANY));
+						  TypeHandler.TYPE_ANY));
 
             String provider = getProperty(wikiUtil, props,
                                           SearchManager.ARG_PROVIDER);
@@ -2201,7 +2127,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String fields = getProperty(wikiUtil, props, ATTR_FIELDS);
             if (fields == null) {
                 fields = entry.getTypeHandler().getTypeProperty(
-                    "map.chart.fields", (String) null);
+								"map.chart.fields", (String) null);
             }
 
             if (fields != null) {
@@ -2285,14 +2211,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          value);
                     } else if (key.startsWith("notfirst.")) {
                         notFirstProps.put(
-                            key.substring("notfirst.".length()), value);
+					  key.substring("notfirst.".length()), value);
                     }
                     props2.put(key, value);
                 }
             }
             if ((tag == null) && (template == null)) {
                 return getPageHandler().showDialogError(
-                    "No _tag or _template attribute specified");
+							"No _tag or _template attribute specified");
             }
             int multiCount = getProperty(wikiUtil, props, "multiCount", -1);
             if (multiCount > 0) {
@@ -2300,7 +2226,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             if (template != null) {
                 template = template.replaceAll("\\\\\\{",
-                        "{").replaceAll("\\\\\\}", "}");
+					       "{").replaceAll("\\\\\\}", "}");
             }
             if (columns > 0) {
                 buff.append("<table width=100%><tr valign=top>\n");
@@ -2326,7 +2252,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
                 String s = template;
                 for (Enumeration keys = multiAttrs.keys();
-                        keys.hasMoreElements(); ) {
+		     keys.hasMoreElements(); ) {
                     String       key    = (String) keys.nextElement();
                     List<String> values = multiAttrs.get(key);
                     if (i < values.size()) {
@@ -2335,9 +2261,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         _props.put(key, value);
                         if (s != null) {
                             s = s.replaceAll(
-                                "\\$\\{" + key + "\\}", value).replaceAll(
-                                "\\$\\{" + "multiIndex" + "\\}",
-                                (i + 1) + "");
+					     "\\$\\{" + key + "\\}", value).replaceAll(
+										       "\\$\\{" + "multiIndex" + "\\}",
+										       (i + 1) + "");
                         }
                     }
                 }
@@ -2349,8 +2275,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     buff.append("<td width='" + colWidth + "'>");
                 }
                 String header = ((headers != null) && (i < headers.size()))
-                                ? headers.get(i)
-                                : null;
+		    ? headers.get(i)
+		    : null;
                 if (header != null) {
                     if (headerTemplate != null) {
                         header = headerTemplate.replace("${header}", header);
@@ -2366,7 +2292,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                             false, null, null, null));
                 } else {
                     buff.append(getWikiIncludeInner(wikiUtil, request,
-                            originalEntry, theEntry, tag, _props));
+						    originalEntry, theEntry, tag, _props));
                 }
                 if (columns > 0) {
                     buff.append("</td>");
@@ -2379,7 +2305,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return buff.toString();
         } else if (theTag.equals(WIKI_TAG_APPLY)) {
             StringBuilder style = new StringBuilder(getProperty(wikiUtil,
-                                      props, APPLY_PREFIX + ATTR_STYLE, ""));
+								props, APPLY_PREFIX + ATTR_STYLE, ""));
             int padding = getProperty(wikiUtil, props,
                                       APPLY_PREFIX + ATTR_PADDING, 5);
             int margin = getProperty(wikiUtil, props,
@@ -2425,13 +2351,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //            {{apply tag="tree" apply.layout="grid" apply.columns="2"}}
             String tag = getProperty(wikiUtil, props, ATTR_APPLY_TAG, "html");
             String prefixTemplate = getProperty(wikiUtil, props,
-                                        APPLY_PREFIX + "header", "");
+						APPLY_PREFIX + "header", "");
             String suffixTemplate = getProperty(wikiUtil, props,
-                                        APPLY_PREFIX + "footer", "");
+						APPLY_PREFIX + "footer", "");
 
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props, false,
-                                       APPLY_PREFIX);
+					      originalEntry, entry, props, false,
+					      APPLY_PREFIX);
             if (children.size() == 0) {
                 return null;
             }
@@ -2446,7 +2372,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (layout.equals("table")) {
                 if (columns > 1) {
                     sb.append(
-                        "<table border=0 cellspacing=5 cellpadding=5  width=100%>");
+			      "<table border=0 cellspacing=5 cellpadding=5  width=100%>");
                     sb.append("<tr valign=top>");
                     colWidth = ((int) (100.0 / columns)) + "%";
                 }
@@ -2456,7 +2382,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             boolean includeIcon = getProperty(wikiUtil, props,
-                                      APPLY_PREFIX + ATTR_INCLUDEICON, false);
+					      APPLY_PREFIX + ATTR_INCLUDEICON, false);
             String divClass = getProperty(wikiUtil, props,
                                           APPLY_PREFIX + "divclass", "");
 
@@ -2474,8 +2400,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             for (Entry child : children) {
                 String childsHtml = my_getWikiInclude(wikiUtil, newRequest,
-                                        originalEntry, child, tag, tmpProps,
-                                        true);
+						      originalEntry, child, tag, tmpProps,
+						      true);
 
                 String prefix   = prefixTemplate;
                 String suffix   = suffixTemplate;
@@ -2483,26 +2409,26 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (includeIcon) {
                     urlLabel =
                         HtmlUtils.img(getPageHandler().getIconUrl(request,
-                            child)) + " " + urlLabel;
+								  child)) + " " + urlLabel;
                 }
 
                 String childUrl = HtmlUtils.href(
-                                      request.entryUrl(
-                                          getRepository().URL_ENTRY_SHOW,
-                                          child), urlLabel);
+						 request.entryUrl(
+								  getRepository().URL_ENTRY_SHOW,
+								  child), urlLabel);
                 prefix = prefix.replace(
-                    "${name}",
-                    getEntryDisplayName(child).replace(
-                        "${description}", child.getDescription()));
+					"${name}",
+					getEntryDisplayName(child).replace(
+									   "${description}", child.getDescription()));
                 suffix = suffix.replace(
-                    "${name}",
-                    getEntryDisplayName(child).replace(
-                        "${description}", child.getDescription()));
+					"${name}",
+					getEntryDisplayName(child).replace(
+									   "${description}", child.getDescription()));
                 prefix = prefix.replace("${url}", childUrl);
                 suffix = suffix.replace("${url}", childUrl);
                 String icon =
                     HtmlUtils.img(getPageHandler().getIconUrl(request,
-                        child));
+							      child));
                 prefix = prefix.replace("${icon}", icon);
                 suffix = suffix.replace("${icon}", icon);
 
@@ -2536,8 +2462,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     String title = getEntryDisplayName(child);
                     if (includeIcon) {
                         title = HtmlUtils.img(
-                            getPageHandler().getIconUrl(
-                                request, child)) + " " + title;
+					      getPageHandler().getIconUrl(
+									  request, child)) + " " + title;
                     }
                     titles.add(title);
                 }
@@ -2550,19 +2476,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else if (layout.equals("tabs")) {
 
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
-                        false));
+						 false));
             } else if (layout.equals("accordian")
                        || layout.equals("accordion")) {
                 int showBorder = getProperty(wikiUtil, props, "border", 0);
                 boolean collapse = getProperty(wikiUtil, props, "collapse",
-                                       false);
+					       false);
                 HtmlUtils.makeAccordion(sb, titles, contents, collapse,
                                         ((showBorder == 0)
                                          ? "ramadda-accordion"
                                          : null), null);
             } else {
                 throw new IllegalArgumentException("Unknown layout:"
-                        + layout);
+						   + layout);
             }
 
             return sb.toString();
@@ -2576,7 +2502,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
                    || theTag.equals(WIKI_TAG_GRID)) {
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props);
+					      originalEntry, entry, props);
             String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                          (String) null);
             if ((children.size() == 0) && (message != null)) {
@@ -2584,7 +2510,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             boolean doingSlideshow = theTag.equals(WIKI_TAG_SLIDESHOW);
             boolean doingGrid = theTag.equals(WIKI_TAG_GRID)
-                                || theTag.equals(WIKI_TAG_BOOTSTRAP);
+		|| theTag.equals(WIKI_TAG_BOOTSTRAP);
             List<String> titles   = new ArrayList<String>();
             List<String> urls     = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
@@ -2592,7 +2518,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (getProperty(wikiUtil, props, ATTR_USEDESCRIPTION) != null) {
                 boolean useDescription = getProperty(wikiUtil, props,
-                                             ATTR_USEDESCRIPTION, true);
+						     ATTR_USEDESCRIPTION, true);
 
                 if (useDescription) {
                     dfltTag = WIKI_TAG_SIMPLE;
@@ -2601,18 +2527,27 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
+
+            boolean includeIcon = getProperty(wikiUtil, props,
+					      ATTR_INCLUDEICON, false);
+            if (doingGrid) {
+                includeIcon = false;
+		if(props.get("showLink")==null)
+		    props.put("showLink","false");
+            }
+
             boolean showHeading = getProperty(wikiUtil, props, "showHeading",
-                                      true);
+					      true);
+	    boolean headingSmall = getProperty(wikiUtil, props, "headingSmall",
+					       true);
+	    String headingClass = headingSmall?HtmlUtils.cssClass("ramadda-subheading ramadda-subheading-small"):HtmlUtils.cssClass("ramadda-subheading");
+
             boolean showLink = getProperty(wikiUtil, props, ATTR_SHOWLINK,
                                            true);
 
-            boolean includeIcon = getProperty(wikiUtil, props,
-                                      ATTR_INCLUDEICON, false);
             boolean includeUrl = getProperty(wikiUtil, props, "includeurl",
                                              false);
-            if (doingGrid) {
-                includeIcon = false;
-            }
+
             boolean useCookies = getProperty(wikiUtil, props, "cookie",
                                              false);
             String linklabel = getProperty(wikiUtil, props, ATTR_LINKLABEL,
@@ -2633,7 +2568,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             boolean linkResource = getProperty(wikiUtil, props,
-                                       ATTR_LINKRESOURCE, false);
+					       ATTR_LINKRESOURCE, false);
 
 
             String    tag = getProperty(wikiUtil, props, ATTR_TAG, dfltTag);
@@ -2644,7 +2579,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             tmpProps.remove(ATTR_FIRST);
             if (doingGrid) {
                 tmpProps.put("showHeading", "false");
-            }
+		if(tmpProps.get("includeIcon")==null)
+		    tmpProps.put("includeIcon","true");
+	    }
             if (children.size() > 0) {
                 checkHeading(request, wikiUtil, props, sb);
             }
@@ -2654,29 +2591,30 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (includeIcon) {
                     title =
                         HtmlUtils.img(getPageHandler().getIconUrl(request,
-                            child)) + " " + title;
+								  child)) + " " + title;
                 }
                 titles.add(title);
                 //                urls.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, child));
                 urls.add(getEntryManager().getEntryUrl(request, child));
 
+		tmpProps.put("defaultToCard","true");
                 StringBuilder content =
                     new StringBuilder(my_getWikiInclude(wikiUtil, newRequest,
-                        originalEntry, child, tag, tmpProps, true));
+							originalEntry, child, tag, tmpProps, true));
                 if (showLink) {
                     String url;
                     if (linkResource
-                            && (child.isFile()
-                                || child.getResource().isUrl())) {
+			&& (child.isFile()
+			    || child.getResource().isUrl())) {
                         url = child.getTypeHandler().getEntryResourceUrl(
-                            request, child);
+									 request, child);
                     } else {
                         url = getEntryManager().getEntryUrl(request, child);
                         //                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
                     }
                     String href = HtmlUtils.href(url, linklabel.isEmpty()
-                            ? getEntryDisplayName(child)
-                            : linklabel);
+						 ? getEntryDisplayName(child)
+						 : linklabel);
 
                     //                    content.append(HtmlUtils.br());
                     content.append(HtmlUtils.leftRight("", href));
@@ -2687,10 +2625,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             if (theTag.equals(WIKI_TAG_ACCORDIAN)
-                    || theTag.equals(WIKI_TAG_ACCORDION)) {
+		|| theTag.equals(WIKI_TAG_ACCORDION)) {
                 int border = getProperty(wikiUtil, props, ATTR_BORDER, 0);
                 boolean collapse = getProperty(wikiUtil, props,
-                                       ATTR_COLLAPSE, false);
+					       ATTR_COLLAPSE, false);
                 HtmlUtils.makeAccordion(sb, titles, contents, collapse,
                                         ((border == 0)
                                          ? "ramadda-accordion"
@@ -2698,10 +2636,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 return sb.toString();
             } else if (doingGrid) {
+
                 List<String> weights = null;
                 boolean showLine = getProperty(wikiUtil, props, "showLine",
-                                       getProperty(wikiUtil, props, "doline",
-                                           false));
+					       getProperty(wikiUtil, props, "doline",
+							   false));
                 String ws = getProperty(wikiUtil, props, "weights",
                                         (String) null);
                 if (ws != null) {
@@ -2710,7 +2649,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 int columns = getProperty(wikiUtil, props, "columns", 3);
                 int innerHeight = getProperty(wikiUtil, props,
-                                      "inner-height", -1);
+					      "inner-height", 150);
                 int minHeight = getProperty(wikiUtil, props,
                                             "inner-minheight", -1);
                 int maxHeight = getProperty(wikiUtil, props,
@@ -2734,56 +2673,67 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
                 sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                          HtmlUtils.cssClass("ramadda-grid")));
+		sb.append("\n");
                 int rowCnt = 0;
                 int colCnt = 10000;
                 int weight = 12 / columns;
 
+		String boxClass = HtmlUtils.cssClass("ramadda-grid-box");
+		String boxStyle = "";
+		width  = getProperty(wikiUtil, props, ATTR_WIDTH, (String)null);
+		if(width!=null) {
+		    boxStyle = HtmlUtils.style("width:" + width +"px;" +"display:inline-block;margin:6px;");
+		}
                 for (int i = 0; i < titles.size(); i++) {
                     Entry child = children.get(i);
-                    colCnt++;
-                    if (colCnt >= columns) {
-                        if (rowCnt > 0) {
-                            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-                            if (showLine) {
-                                sb.append("<hr>");
-                            } else {
-                                //                                sb.append(HtmlUtils.br());
-                            }
-                        }
-                        rowCnt++;
-                        HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
-                                       HtmlUtils.cssClass("row"));
-                        colCnt = 0;
-                    }
-                    String weightString = "" + weight;
-                    if ((weights != null) && (i < weights.size())) {
-                        weightString = weights.get(i);
-                    }
-                    HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
-                                   HtmlUtils.cssClass("col-md-"
-                                       + weightString + " ramadda-col"));
-                    HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
-                                   HtmlUtils.cssClass("ramadda-grid-box"));
-
+		    if(width==null) {
+			colCnt++;
+			if (colCnt >= columns) {
+			    if (rowCnt > 0) {
+				sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+				if (showLine) {
+				    sb.append("<hr>");
+				} else {
+				    //                                sb.append(HtmlUtils.br());
+				}
+			    }
+			    rowCnt++;
+			    HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
+					   HtmlUtils.cssClass("row"));
+			    colCnt = 0;
+			}
+			String weightString = "" + weight;
+			if ((weights != null) && (i < weights.size())) {
+			    weightString = weights.get(i);
+			}
+			HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
+				       HtmlUtils.cssClass("col-md-"
+							  + weightString + " ramadda-col"));
+		    }
+                    HtmlUtils.open(sb, HtmlUtils.TAG_DIV, boxClass + boxStyle);
                     if (showHeading) {
                         HtmlUtils.div(
-                            sb, HtmlUtils.href(urls.get(i), titles.get(i)),
-                            HtmlUtils.cssClass("ramadda-subheading"));
+				      sb, HtmlUtils.href(urls.get(i), titles.get(i)),
+				      headingClass);
                     }
-
                     String displayHtml = contents.get(i);
                     HtmlUtils.div(sb, displayHtml,
                                   HtmlUtils.cssClass("bs-inner")
                                   + HtmlUtils.attr("style",
-                                      innerStyle.toString()));
+						   innerStyle.toString()));
                     HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
-                    HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
-                }
+		    if(width==null) {
+			HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
+		    }
+		    sb.append("\n");
+		}
 
                 //Close the div if there was anything
-                if (rowCnt > 0) {
-                    HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
-                }
+		if(width==null) {
+		    if (rowCnt > 0) {
+			HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
+		    }
+		}
 
                 //Close the grid div
                 HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
@@ -2792,9 +2742,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else if (doingSlideshow) {
                 // for slideshow
                 boolean shownav = getProperty(wikiUtil, props, "shownav",
-                                      false);
+					      false);
                 boolean autoplay = getProperty(wikiUtil, props, "autoplay",
-                                       false);
+					       false);
                 int    playSpeed = getProperty(wikiUtil, props, "speed", 5);
 
                 String slideId   = HtmlUtils.getUniqueId("slides_");
@@ -2808,38 +2758,38 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 int border = getProperty(wikiUtil, props, ATTR_BORDER, 1);
                 String borderColor = getProperty(wikiUtil, props,
-                                         ATTR_BORDERCOLOR, "#aaa");
+						 ATTR_BORDERCOLOR, "#aaa");
                 sb.append(
-                    "#" + slideId + " .slides_container {border: " + border
-                    + "px solid " + borderColor + "; width:" + width
-                    + ";overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
-                    + width + ";height:" + height + "px;display:block;}\n");
+			  "#" + slideId + " .slides_container {border: " + border
+			  + "px solid " + borderColor + "; width:" + width
+			  + ";overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
+			  + width + ";height:" + height + "px;display:block;}\n");
                 sb.append("</style>\n\n");
                 sb.append("<link rel=\"stylesheet\" href=\"");
                 sb.append(
-                    getRepository().getHtdocsUrl("/lib/slides/paginate.css"));
+			  getRepository().getHtdocsUrl("/lib/slides/paginate.css"));
                 sb.append("\" type=\"text/css\" media=\"screen\" />");
                 sb.append("\n");
 
 
                 // user speed is seconds, script uses milliseconds - 0 == no play
                 int startSpeed = (autoplay)
-                                 ? playSpeed * 1000
-                                 : 0;
+		    ? playSpeed * 1000
+		    : 0;
                 String slideParams =
                     "preload: false, preloadImage: "
                     + HtmlUtils.squote(
-                        getRepository().getHtdocsUrl(
-                            "/lib/slides/img/loading.gif")) + ", play: "
-                                + startSpeed + ", width: \"" + width + "\""
-                                + ", pause: 2500, hoverPause: true"
-                                + ", generatePagination: " + shownav + "\n";
+				       getRepository().getHtdocsUrl(
+								    "/lib/slides/img/loading.gif")) + ", play: "
+		    + startSpeed + ", width: \"" + width + "\""
+		    + ", pause: 2500, hoverPause: true"
+		    + ", generatePagination: " + shownav + "\n";
                 StringBuilder js =
                     new StringBuilder("$(document).ready(function(){\n");
                 js.append(
-                    "$(function(){\n$(" + HtmlUtils.squote("#" + slideId)
-                    + ").slides({" + slideParams
-                    + ",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
+			  "$(function(){\n$(" + HtmlUtils.squote("#" + slideId)
+			  + ").slides({" + slideParams
+			  + ",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
                 js.append("\n});");
                 HtmlUtils.open(sb, HtmlUtils.TAG_DIV, HtmlUtils.id(slideId));
 
@@ -2855,7 +2805,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String arrowTDWidth = "20px";
 
                 sb.append(
-                    "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
+			  "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
                 HtmlUtils.col(sb, prevImage,
                               "width=\"" + arrowTDWidth
                               + "\" style=\"font-size: 30px\"");
@@ -2883,9 +2833,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HtmlUtils.close(sb, HtmlUtils.TAG_DIV);  // slideId
 
                 sb.append(
-                    HtmlUtils.importJS(
-                        getRepository().getHtdocsUrl(
-                            "/lib/slides/slides.min.jquery.js")));
+			  HtmlUtils.importJS(
+					     getRepository().getHtdocsUrl(
+									  "/lib/slides/slides.min.jquery.js")));
 
                 wikiUtil.appendJavascript(js.toString());
                 //                HtmlUtils.script(sb, js.toString());
@@ -2894,14 +2844,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else {
                 //TABS
                 int innerHeight = getProperty(wikiUtil, props,
-                                      "inner-height", -1);
+					      "inner-height", -1);
 
                 if (innerHeight > 1) {
                     List<String> tmp = new ArrayList<String>();
                     for (String content : contents) {
                         tmp.add(HtmlUtils.div(content,
-                                HtmlUtils.style("max-height:" + innerHeight
-                                    + "px;overflow-y:auto;")));
+					      HtmlUtils.style("max-height:" + innerHeight
+							      + "px;overflow-y:auto;")));
                     }
                     contents = tmp;
                 }
@@ -2917,7 +2867,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 sb.append(HtmlUtils.open("div",
                                          HtmlUtils.cssClass(divClass)));
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
-                        useCookies));
+						 useCookies));
 
                 sb.append(HtmlUtils.close("div"));
 
@@ -2926,8 +2876,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (false && theTag.equals(WIKI_TAG_GRID)) {
             getHtmlOutputHandler().makeGrid(request,
                                             getEntries(request, wikiUtil,
-                                                originalEntry, entry,
-                                                    props), sb);
+						       originalEntry, entry,
+						       props), sb);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TABLE)) {
@@ -2940,18 +2890,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             StringBuilder editor = new StringBuilder();
 
             boolean showToolbar = getProperty(wikiUtil, props, "showToolbar",
-                                      false);
+					      false);
 
             String text = entry.getTypeHandler().getTextForWiki(request,
-                              entry, props);
+								entry, props);
             entry.getTypeHandler().addWikiEditor(request, entry, editor,
-                    null, HtmlUtils.getUniqueId(""), "", text, null,
-                    !showToolbar, 0);
+						 null, HtmlUtils.getUniqueId(""), "", text, null,
+						 !showToolbar, 0);
 
             return editor.toString();
         } else if (theTag.equals(WIKI_TAG_RECENT)) {
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props);
+					      originalEntry, entry, props);
             int numDays = getProperty(wikiUtil, props, ATTR_DAYS, 3);
             BufferMapList<Date> map = new BufferMapList<Date>();
             SimpleDateFormat dateFormat =
@@ -2980,13 +2930,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 for (Entry e : children) {
                     Date changeDate = new Date(e.getChangeDate());
                     if ((changeDate.getTime() < date1.getTime())
-                            || (changeDate.getTime() > date2.getTime())) {
+			|| (changeDate.getTime() > date2.getTime())) {
                         continue;
                     }
                     Appendable buff = map.get(date1);
                     buff.append("<tr><td width=75%>&nbsp;&nbsp;&nbsp;");
                     buff.append(getEntryManager().getAjaxLink(request, e,
-                            e.getLabel()).toString());
+							      e.getLabel()).toString());
                     buff.append("</td><td width=25% align=right><i>");
                     buff.append(formatDate(request, changeDate));
                     buff.append("</i></td></tr>");
@@ -2995,12 +2945,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             for (Date date : map.getKeys()) {
                 Appendable tmp = new StringBuilder();
                 String     msg = msg("New on") + " "
-                                 + dateFormat.format(date);
+		    + dateFormat.format(date);
                 tmp.append("<table width=100% border=0>");
                 tmp.append(map.get(date).toString());
                 tmp.append("</table>");
                 sb.append(HtmlUtils.makeShowHideBlock(msg, tmp.toString(),
-                        true));
+						      true));
             }
 
             return sb.toString();
@@ -3008,20 +2958,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_PLAYER)
                    || theTag.equals(WIKI_TAG_PLAYER_OLD)) {
             boolean useAttachment = getProperty(wikiUtil, props,
-                                        "useAttachment", false);
+						"useAttachment", false);
 
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props, true);
+					      originalEntry, entry, props, true);
             if (children.size() == 0) {
                 return null;
             }
             ImageOutputHandler imageOutputHandler =
                 (ImageOutputHandler) getRepository().getOutputHandler(
-                    ImageOutputHandler.OUTPUT_PLAYER);
+								      ImageOutputHandler.OUTPUT_PLAYER);
             Request imageRequest = request.cloneMe();
 
             int     width        = getProperty(wikiUtil, props, ATTR_WIDTH,
-                                       0);
+					       0);
             if (width != 0) {
                 imageRequest.put(ARG_WIDTH, "" + width);
             }
@@ -3051,13 +3001,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             imageOutputHandler.makePlayer(imageRequest, entry, children, sb,
                                           getProperty(wikiUtil, props,
-                                              "show_sort_links",
-                                                  false), false);
+						      "show_sort_links",
+						      false), false);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GALLERY)) {
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props, true);
+					      originalEntry, entry, props, true);
             if (children.size() == 0) {
                 String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                              (String) null);
@@ -3085,20 +3035,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props);
+					      originalEntry, entry, props);
 
+
+			       
             if (children.size() == 0) {
-                return null;
+		//		return makeCard(request, wikiUtil, props, entry);
+		return null;
             }
             boolean showCategories = getProperty(wikiUtil, props,
-                                         ARG_SHOWCATEGORIES, false);
+						 ARG_SHOWCATEGORIES, false);
             if (showCategories) {
                 request.put(ARG_SHOWCATEGORIES, "true");
             }
             boolean decorate = getProperty(wikiUtil, props, ATTR_DECORATE,
                                            true);
             boolean showDetails = getProperty(wikiUtil, props, ATTR_DETAILS,
-                                      true);
+					      true);
 
             Request newRequest = request.cloneMe();
 
@@ -3114,7 +3067,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             String link = getHtmlOutputHandler().getEntriesList(newRequest,
-                              sb, children, true, false, showDetails);
+								sb, children, true, false, showDetails);
             if (getProperty(wikiUtil, props, "form", false)) {
                 return link + HtmlUtils.br() + sb.toString();
             } else {
@@ -3127,32 +3080,34 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             int height = getDimension(wikiUtil, props, ATTR_HEIGHT, 500);
 
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props);
+					      originalEntry, entry, props);
             if (children.size() == 0) {
                 return null;
             }
             boolean noTemplate = getProperty(wikiUtil, props, "noTemplate",
                                              true);
             getHtmlOutputHandler().makeTreeView(request, children, sb, width,
-                    height, noTemplate);
+						height, noTemplate);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LINKS)
                    || theTag.equals(WIKI_TAG_LIST)) {
             boolean isList = theTag.equals(WIKI_TAG_LIST);
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props);
+					      originalEntry, entry, props);
             if (children.size() == 0) {
-                return null;
+		if(getProperty(wikiUtil,props,"defaultToCard",false))
+		    return makeCard(request, wikiUtil, props, entry);
+		return null;
             }
             boolean includeIcon = getProperty(wikiUtil, props,
-                                      ATTR_INCLUDEICON, false);
+					      ATTR_INCLUDEICON, false);
             boolean linkResource = getProperty(wikiUtil, props,
-                                       ATTR_LINKRESOURCE, false);
+					       ATTR_LINKRESOURCE, false);
             String separator = (isList
                                 ? ""
                                 : getProperty(wikiUtil, props,
-                                    ATTR_SEPARATOR, ""));
+					      ATTR_SEPARATOR, ""));
             String output = getProperty(wikiUtil, props, "output",
                                         (String) null);
             String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
@@ -3178,19 +3133,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             for (Entry child : children) {
                 String url;
                 if (linkResource
-                        && (child.getTypeHandler().isType("link")
-                            || child.isFile()
-                            || child.getResource().isUrl())) {
+		    && (child.getTypeHandler().isType("link")
+			|| child.isFile()
+			|| child.getResource().isUrl())) {
                     url = child.getTypeHandler().getEntryResourceUrl(request,
-                            child);
+								     child);
                 } else {
                     if (output == null) {
                         url = getEntryManager().getEntryUrl(request, child);
                         //                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
                     } else {
                         url = request.entryUrl(
-                            getRepository().URL_ENTRY_SHOW, child,
-                            ARG_OUTPUT, output);
+					       getRepository().URL_ENTRY_SHOW, child,
+					       ARG_OUTPUT, output);
                     }
                 }
 
@@ -3198,7 +3153,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (includeIcon) {
                     linkLabel =
                         HtmlUtils.img(getPageHandler().getIconUrl(request,
-                            child)) + HtmlUtils.space(1) + linkLabel;
+								  child)) + HtmlUtils.space(1) + linkLabel;
                 }
                 String href = HtmlUtils.href(url, linkLabel,
                                              HtmlUtils.cssClass(cssClass)
@@ -3252,22 +3207,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else {
             String fromTypeHandler =
                 entry.getTypeHandler().getWikiInclude(wikiUtil, request,
-                    originalEntry, entry, theTag, props);
+						      originalEntry, entry, theTag, props);
             if (fromTypeHandler != null) {
                 if (wikify) {
                     fromTypeHandler = wikifyEntry(request, entry,
-                            fromTypeHandler, false, null, null,
-                            wikiUtil.getNotTags());
+						  fromTypeHandler, false, null, null,
+						  wikiUtil.getNotTags());
                 }
 
                 return fromTypeHandler;
             }
 
             for (PageDecorator pageDecorator :
-                    repository.getPluginManager().getPageDecorators()) {
+		     repository.getPluginManager().getPageDecorators()) {
                 String fromPageDecorator =
                     pageDecorator.getWikiInclude(wikiUtil, request,
-                        originalEntry, entry, theTag, props);
+						 originalEntry, entry, theTag, props);
                 if (fromPageDecorator != null) {
                     return fromPageDecorator;
                 }
@@ -3276,11 +3231,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             //Check for the wiki.<tag> property
             String fromProperty = getRepository().getProperty("wiki."
-                                      + theTag, (String) null);
+							      + theTag, (String) null);
             if (fromProperty != null) {
                 if (wikify) {
                     fromProperty = wikifyEntry(request, entry, fromProperty,
-                            false, null, null, wikiUtil.getNotTags());
+					       false, null, null, wikiUtil.getNotTags());
                 }
 
                 return fromProperty;
@@ -3307,9 +3262,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String getWikiMetadataLabel(Request request, Entry entry,
                                        String id, String text)
-            throws Exception {
+	throws Exception {
         List<Metadata> list = getMetadataManager().findMetadata(request,
-                                  entry, "wiki_label", true);
+								entry, "wiki_label", true);
         if (list == null) {
             return text;
         }
@@ -3343,7 +3298,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public MapInfo handleMapTag(Request request, WikiUtil wikiUtil,
                                 Entry entry, Entry originalEntry,
                                 String theTag, Hashtable props, Appendable sb)
-            throws Exception {
+	throws Exception {
 
         int     width      = getDimension(wikiUtil, props, ATTR_WIDTH, -100);
         int     height     = getDimension(wikiUtil, props, ATTR_HEIGHT, 300);
@@ -3405,15 +3360,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (googleEarth) {
             getMapManager().getGoogleEarth(newRequest, children, sb,
                                            getProperty(wikiUtil, props,
-                                               ATTR_WIDTH,
-                                                   -1), getProperty(wikiUtil,
-                                                       props, ATTR_HEIGHT,
-                                                           -1), listEntries,
-                                                               justPoints);
+						       ATTR_WIDTH,
+						       -1), getProperty(wikiUtil,
+									props, ATTR_HEIGHT,
+									-1), listEntries,
+					   justPoints);
         } else {
             MapOutputHandler mapOutputHandler =
                 (MapOutputHandler) getRepository().getOutputHandler(
-                    MapOutputHandler.OUTPUT_MAP);
+								    MapOutputHandler.OUTPUT_MAP);
             if (mapOutputHandler == null) {
                 sb.append("No maps");
 
@@ -3463,7 +3418,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
             MapInfo map = getMapManager().getMap(newRequest, entry, children,
-                              sb, width, height, mapProps, props);
+						 sb, width, height, mapProps, props);
             if (icon != null) {
                 newRequest.remove(ARG_ICON);
             }
@@ -3488,13 +3443,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public void checkHeading(Request request, WikiUtil wikiUtil,
                              Hashtable props, Appendable sb)
-            throws Exception {
+	throws Exception {
         String heading = getProperty(wikiUtil, props, "heading",
                                      (String) null);
         if (heading != null) {
             sb.append(
-                HtmlUtils.div(
-                    heading, HtmlUtils.cssClass("ramadda-page-heading")));
+		      HtmlUtils.div(
+				    heading, HtmlUtils.cssClass("ramadda-page-heading")));
 
         }
     }
@@ -3534,7 +3489,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
         if (snippet == null) {
             snippet = StringUtil.findPattern(
-                text, "(?s)<snippet-hide>(.*)</snippet-hide>");
+					     text, "(?s)<snippet-hide>(.*)</snippet-hide>");
         }
         child.setSnippet(snippet);
 
@@ -3542,7 +3497,87 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
+    private String  makeCard(Request request, WikiUtil wikiUtil, Hashtable props, Entry entry) throws Exception {
+	StringBuilder card = new StringBuilder();
+	HtmlUtils.open(card, HtmlUtils.TAG_DIV,
+		       HtmlUtils.cssClass("ramadda-card"));
+	String entryUrl =
+	    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+	boolean showHeading = getProperty(wikiUtil, props, "showHeading",
+					  true);
+	if (showHeading) {
+	    HtmlUtils.div(card,
+			  HtmlUtils.href(entryUrl, entry.getName()),
+			  HtmlUtils.cssClass("ramadda-subheading"));
+	}
+	boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
+					  false);
 
+	boolean showSnippetHover = getProperty(wikiUtil, props,
+					       "showSnippetHover", false);
+	if (showSnippet || showSnippetHover) {
+	    String snippet = getSnippet(request, entry);
+	    if (Utils.stringDefined(snippet)) {
+		snippet = wikifyEntry(request, entry, snippet, false,
+				      null, null, wikiUtil.getNotTags());
+		if (showSnippet) {
+		    HtmlUtils.div(card, snippet,
+				  HtmlUtils.cssClass("ramadda-snippet"));
+
+		} else if (showSnippetHover) {
+		    HtmlUtils.div(
+				  card, snippet,
+				  HtmlUtils.cssClass("ramadda-snippet-hover"));
+
+		}
+
+	    }
+	}
+
+	String imageUrl = null;
+	if (entry.isImage()) {
+	    imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
+									  request, entry);
+	} else {
+	    List<String> urls = new ArrayList<String>();
+	    getMetadataManager().getThumbnailUrls(request, entry, urls);
+	    if (urls.size() > 0) {
+		imageUrl = urls.get(0);
+	    }
+	}
+
+	//Default to the type icon
+	if (imageUrl == null) {
+	    imageUrl = entry.getTypeHandler().getTypeIconUrl();
+	}
+
+	if (imageUrl != null) {
+	    String img = HtmlUtils.img(imageUrl, "",
+				       HtmlUtils.style("width:100%;"));
+	    String  inner;
+	    boolean popup = getProperty(wikiUtil, props, "popup", true);
+	    if (popup) {
+		inner = HtmlUtils.href(imageUrl, img,
+				       HtmlUtils.cssClass("popup_image"));
+	    } else {
+		inner = HtmlUtils.href(entryUrl, img,
+				       HtmlUtils.cssClass(""));
+	    }
+	    card.append(
+			HtmlUtils.div(
+				      inner, HtmlUtils.cssClass("ramadda-imagewrap")));
+
+	    if (popup) {
+		addImagePopupJS(request, wikiUtil, card, props);
+	    }
+	}
+
+	HtmlUtils.close(card, HtmlUtils.TAG_DIV);
+
+	return card.toString();
+
+    }
+    
     /**
      * _more_
      *
@@ -3554,7 +3589,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @throws Exception _more_
      */
     private Request copyRequest(Request request, Hashtable props)
-            throws Exception {
+	throws Exception {
         Request clonedRequest = request.cloneMe();
         clonedRequest.putAll(props);
 
@@ -3596,13 +3631,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (wikiUtil != null) {
                 wikiUtil.appendJavascript(
-                    "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
-                    + options.toString() + ");\n });\n");
+					  "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
+					  + options.toString() + ");\n });\n");
             } else {
                 buf.append(
-                    HtmlUtils.script(
-                        "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
-                        + options.toString() + ");\n });\n"));
+			   HtmlUtils.script(
+					    "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
+					    + options.toString() + ");\n });\n"));
             }
             request.putExtraProperty("added fancybox", "yes");
         }
@@ -3698,7 +3733,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     private String makeEntryTabs(Request request, WikiUtil wikiUtil,
                                  Entry entry, Hashtable props)
-            throws Exception {
+	throws Exception {
 
         request = request.cloneMe();
         request.putExtraProperty("wiki.props", props);
@@ -3708,12 +3743,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         List<String> notTheseTypes  = null;
 
         String metadataTypesAttr = getProperty(wikiUtil, props,
-                                       ATTR_METADATA_TYPES, (String) null);
+					       ATTR_METADATA_TYPES, (String) null);
         if (metadataTypesAttr != null) {
             onlyTheseTypes = new ArrayList<String>();
             notTheseTypes  = new ArrayList<String>();
             for (String type :
-                    StringUtil.split(metadataTypesAttr, ",", true, true)) {
+		     StringUtil.split(metadataTypesAttr, ",", true, true)) {
                 if (type.startsWith("!")) {
                     notTheseTypes.add(type.substring(1));
                 } else {
@@ -3729,9 +3764,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         for (TwoFacedObject tfo :
-                getRepository().getHtmlOutputHandler().getMetadataHtml(
-                    request, entry, onlyTheseTypes, notTheseTypes,
-                    includeTitle)) {
+		 getRepository().getHtmlOutputHandler().getMetadataHtml(
+									request, entry, onlyTheseTypes, notTheseTypes,
+									includeTitle)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
@@ -3764,7 +3799,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public List<Entry> getImageEntries(Request request, List<Entry> entries,
                                        boolean useAttachment)
-            throws Exception {
+	throws Exception {
         return getImageEntriesOrNot(request, entries, false, useAttachment);
     }
 
@@ -3807,13 +3842,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                             List<Entry> entries,
                                             boolean orNot,
                                             boolean useAttachment)
-            throws Exception {
+	throws Exception {
         List<Entry> imageEntries = new ArrayList<Entry>();
         for (Entry entry : entries) {
             boolean isImage = entry.isImage();
             if ( !isImage && useAttachment) {
                 isImage = getMetadataManager().getImageUrls(request,
-                        entry).size() > 0;
+							    entry).size() > 0;
             }
             orNot(imageEntries, entry, isImage, orNot);
         }
@@ -3837,7 +3872,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
                                   Hashtable props)
-            throws Exception {
+	throws Exception {
 
         return getEntries(request, wikiUtil, originalEntry, entry, props,
                           false, "");
@@ -3862,7 +3897,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry originalEntry, Entry entry,
                                   Hashtable props, boolean onlyImages)
-            throws Exception {
+	throws Exception {
         return getEntries(request, wikiUtil, originalEntry, entry, props,
                           onlyImages, "");
     }
@@ -3887,7 +3922,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                   Entry originalEntry, Entry entry,
                                   Hashtable props, boolean onlyImages,
                                   String attrPrefix)
-            throws Exception {
+	throws Exception {
         if (props == null) {
             props = new Hashtable();
         } else {
@@ -3897,8 +3932,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         String userDefinedEntries = getProperty(wikiUtil, props,
-                                        attrPrefix + ATTR_ENTRIES,
-                                        ID_CHILDREN);
+						attrPrefix + ATTR_ENTRIES,
+						ID_CHILDREN);
 
         return getEntries(request, wikiUtil, originalEntry, entry,
                           userDefinedEntries, props, onlyImages, attrPrefix);
@@ -3921,7 +3956,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public List<Entry> applyFilter(Request request, WikiUtil wikiUtil,
                                    Entry entry, String filter,
                                    Hashtable props)
-            throws Exception {
+	throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
 
@@ -3945,7 +3980,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public List<Entry> applyFilter(Request request, WikiUtil wikiUtil,
                                    List<Entry> entries, String filter,
                                    Hashtable props)
-            throws Exception {
+	throws Exception {
         if (filter == null) {
             return entries;
         }
@@ -3956,7 +3991,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         if (filter.equals(FILTER_IMAGE)) {
             boolean useAttachment = getProperty(wikiUtil, props,
-                                        "useAttachment", false);
+						"useAttachment", false);
             entries = getImageEntriesOrNot(request, entries, doNot,
                                            useAttachment);
         } else if (filter.equals(FILTER_FILE)) {
@@ -4063,7 +4098,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                   Entry originalEntry, Entry entry,
                                   String userDefinedEntries, Hashtable props,
                                   boolean onlyImages, String attrPrefix)
-            throws Exception {
+	throws Exception {
 
 
 
@@ -4106,13 +4141,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         if (onlyImages
-                || getProperty(wikiUtil, props, attrPrefix + ATTR_IMAGES,
-                               false)) {
+	    || getProperty(wikiUtil, props, attrPrefix + ATTR_IMAGES,
+			   false)) {
             boolean useAttachment = getProperty(wikiUtil, props,
-                                        "useAttachment", false);
+						"useAttachment", false);
             entries = applyFilter(request, wikiUtil,
                                   getImageEntries(request, entries,
-                                      useAttachment), filter, props);
+						  useAttachment), filter, props);
         }
 
 
@@ -4132,7 +4167,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             List<Entry> okEntries = new ArrayList<Entry>();
             for (Entry e : entries) {
                 if ( !seen.contains(e.getId())
-                        && !seen.contains(e.getName())) {
+		     && !seen.contains(e.getName())) {
                     okEntries.add(e);
                 }
             }
@@ -4220,8 +4255,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String name = getProperty(wikiUtil, props, attrPrefix + ATTR_NAME,
                                   (String) null);
         String pattern = (name == null)
-                         ? null
-                         : getPattern(name);
+	    ? null
+	    : getPattern(name);
         if (name != null) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : entries) {
@@ -4266,7 +4301,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
                                   Entry baseEntry, String ids,
                                   Hashtable props)
-            throws Exception {
+	throws Exception {
 
         if (props == null) {
             props = new Hashtable();
@@ -4293,7 +4328,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (entryid.startsWith("entries.max=")) {
                 max = Integer.parseInt(
-                    entryid.substring("entries.max=".length()));
+				       entryid.substring("entries.max=".length()));
 
                 continue;
             }
@@ -4304,7 +4339,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             if (entryid.startsWith("entries.orderdir=")) {
                 orderDir = entryid.substring(
-                    "entries.orderdir=".length()).equals("up");
+					     "entries.orderdir=".length()).equals("up");
 
                 continue;
             }
@@ -4323,7 +4358,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (toks2.size() == 2) {}
                 else {
                     theBaseEntry = getEntryManager().getEntry(request,
-                            suffix);
+							      suffix);
                 }
             }
 
@@ -4356,21 +4391,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (entryid.equals(ID_LINKS)) {
                 List<Association> associations =
                     getRepository().getAssociationManager().getAssociations(
-                        request, theBaseEntry.getId());
+									    request, theBaseEntry.getId());
                 for (Association association : associations) {
                     String id = null;
                     if ( !association.getFromId().equals(
-                            theBaseEntry.getId())) {
+							 theBaseEntry.getId())) {
                         id = association.getFromId();
                     } else if ( !association.getToId().equals(
-                            theBaseEntry.getId())) {
+							      theBaseEntry.getId())) {
                         id = association.getToId();
                     } else {
                         continue;
                     }
                     entries.addAll(applyFilter(request, wikiUtil,
-                            getEntryManager().getEntry(request, id), filter,
-                            props));
+					       getEntryManager().getEntry(request, id), filter,
+					       props));
                 }
 
                 continue;
@@ -4445,10 +4480,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 if (isRemote) {
                     List<String> tokens = (entryid.indexOf("=") >= 0)
-                                          ? StringUtil.splitUpTo(entryid,
-                                              "=", 2)
-                                          : StringUtil.splitUpTo(entryid,
-                                              ":", 2);
+			? StringUtil.splitUpTo(entryid,
+					       "=", 2)
+			: StringUtil.splitUpTo(entryid,
+					       ":", 2);
                     ServerInfo serverInfo =
                         new ServerInfo(new URL(tokens.get(1)),
                                        "remote server", "");
@@ -4456,13 +4491,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     List<ServerInfo> servers = new ArrayList<ServerInfo>();
                     servers.add(serverInfo);
                     getSearchManager().doDistributedSearch(myRequest,
-                            servers, theBaseEntry, entries);
+							   servers, theBaseEntry, entries);
 
                     continue;
                 }
 
                 List<Entry>[] pair = getSearchManager().doSearch(myRequest,
-                                         new SearchInfo());
+								 new SearchInfo());
                 //                if(myRequest.defined(ARG_PROVIDER)) {
                 //List<Entry>[] pair = getEntryManager().getEntries(myRequest);
                 entries.addAll(applyFilter(request, wikiUtil, pair[0],
@@ -4476,11 +4511,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (entryid.equals(ID_PARENT)) {
                 entries.addAll(
-                    applyFilter(
-                        request, wikiUtil,
-                        getEntryManager().getEntry(
-                            request,
-                            theBaseEntry.getParentEntryId()), filter, props));
+			       applyFilter(
+					   request, wikiUtil,
+					   getEntryManager().getEntry(
+								      request,
+								      theBaseEntry.getParentEntryId()), filter, props));
 
                 continue;
             }
@@ -4488,10 +4523,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (entryid.startsWith(ID_SIBLINGS)) {
                 Entry parent = getEntryManager().getEntry(request,
-                                   theBaseEntry.getParentEntryId());
+							  theBaseEntry.getParentEntryId());
                 if (parent != null) {
                     for (Entry sibling :
-                            getEntryManager().getChildren(request, parent)) {
+			     getEntryManager().getChildren(request, parent)) {
                         if ( !sibling.getId().equals(theBaseEntry.getId())) {
                             if (type != null) {
                                 if ( !sibling.getTypeHandler().isType(type)) {
@@ -4499,7 +4534,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                 }
                             }
                             entries.addAll(applyFilter(request, wikiUtil,
-                                    sibling, filter, props));
+						       sibling, filter, props));
                         }
                     }
                 }
@@ -4511,13 +4546,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (entryid.equals(ID_GRANDPARENT)) {
                 Entry parent = getEntryManager().getEntry(request,
-                                   theBaseEntry.getParentEntryId());
+							  theBaseEntry.getParentEntryId());
                 if (parent != null) {
                     Entry grandparent = getEntryManager().getEntry(request,
-                                            parent.getParentEntryId());
+								   parent.getParentEntryId());
                     if (grandparent != null) {
                         entries.addAll(applyFilter(request, wikiUtil,
-                                grandparent, filter, props));
+						   grandparent, filter, props));
                     }
                 }
 
@@ -4527,7 +4562,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (entryid.equals(ID_CHILDREN)) {
                 List<Entry> children = getEntryManager().getChildren(request,
-                                           theBaseEntry);
+								     theBaseEntry);
                 entries.addAll(children);
 
                 continue;
@@ -4535,9 +4570,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             if (entryid.equals(ID_GRANDCHILDREN)
-                    || entryid.equals(ID_GREATGRANDCHILDREN)) {
+		|| entryid.equals(ID_GREATGRANDCHILDREN)) {
                 List<Entry> children = getEntryManager().getChildren(request,
-                                           theBaseEntry);
+								     theBaseEntry);
                 List<Entry> grandChildren = new ArrayList<Entry>();
                 for (Entry child : children) {
                     //Include the children non folders
@@ -4545,7 +4580,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         grandChildren.add(child);
                     } else {
                         grandChildren.addAll(
-                            getEntryManager().getChildren(request, child));
+					     getEntryManager().getChildren(request, child));
                     }
                 }
 
@@ -4557,8 +4592,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             greatgrandChildren.add(child);
                         } else {
                             greatgrandChildren.addAll(
-                                getEntryManager().getChildren(
-                                    request, child));
+						      getEntryManager().getChildren(
+										    request, child));
 
                         }
                     }
@@ -4566,10 +4601,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
 
                 entries.addAll(
-                    applyFilter(
-                        request, wikiUtil,
-                        getEntryUtil().sortEntriesOnDate(
-                            grandChildren, true), filter, props));
+			       applyFilter(
+					   request, wikiUtil,
+					   getEntryUtil().sortEntriesOnDate(
+									    grandChildren, true), filter, props));
 
 
                 continue;
@@ -4587,12 +4622,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (addChildren) {
                     List<Entry> children =
                         getEntryManager().getChildrenAll(request, entry,
-                            null);
+							 null);
                     entries.addAll(applyFilter(request, wikiUtil, children,
-                            filter, props));
+					       filter, props));
                 } else {
                     entries.addAll(applyFilter(request, wikiUtil, entry,
-                            filter, props));
+					       filter, props));
                 }
             }
         }
@@ -4644,7 +4679,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 entries = getEntryUtil().sortEntriesOnDate(entries, orderDir);
             } else if (orderBy.equals("createdate")) {
                 entries = getEntryUtil().sortEntriesOnCreateDate(entries,
-                        orderDir);
+								 orderDir);
             } else {
                 entries = getEntryUtil().sortEntriesOnName(entries, orderDir);
             }
@@ -4677,7 +4712,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     private void addSearchTerms(Request request, WikiUtil wikiUtil,
                                 Hashtable props, Entry baseEntry)
-            throws Exception {
+	throws Exception {
         String[] args = new String[] {
             ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
             ARG_BBOX + ".north", ARG_BBOX + ".west", ARG_BBOX + ".south",
@@ -4725,7 +4760,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public void makeGallery(Request request, WikiUtil wikiUtil,
                             List<Entry> imageEntries, Hashtable props,
                             StringBuilder sb)
-            throws Exception {
+	throws Exception {
 
         int width = getProperty(wikiUtil, props, ATTR_WIDTH, -100);
         int serverImageWidth = getProperty(wikiUtil, props, ATTR_IMAGEWIDTH,
@@ -4783,11 +4818,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (url == null) {
                 url = child.getTypeHandler().getEntryResourceUrl(request,
-                        child);
+								 child);
                 /*                url = HtmlUtils.url(
-                    request.makeUrl(repository.URL_ENTRY_GET) + "/"
-                    + getStorageManager().getFileTail(child), ARG_ENTRYID,
-                    child.getId());*/
+				  request.makeUrl(repository.URL_ENTRY_GET) + "/"
+				  + getStorageManager().getFileTail(child), ARG_ENTRYID,
+				  child.getId());*/
             }
             if (serverImageWidth > 0) {
                 url = url + "&" + ARG_IMAGEWIDTH + "=" + serverImageWidth;
@@ -4797,11 +4832,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String extra = "";
             if (width > 0) {
                 extra = extra
-                        + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
+		    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
             } else if (width < 0) {
                 extra = extra
-                        + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                         "" + (-width) + "%");
+		    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+				     "" + (-width) + "%");
             }
             String name = getEntryDisplayName(child);
             if ((name != null) && !name.isEmpty()) {
@@ -4818,21 +4853,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             theCaption =
                 theCaption.replace("${date}",
                                    formatDate(request,
-                                       new Date(child.getStartDate())));
+					      new Date(child.getStartDate())));
             theCaption = theCaption.replace("${name}", child.getLabel());
             theCaption = theCaption.replace("${description}",
                                             child.getDescription());
 
             if (popup) {
                 String popupExtras = HtmlUtils.cssClass("popup_image")
-                                     + HtmlUtils.attr("width", "100%");
+		    + HtmlUtils.attr("width", "100%");
                 if ( !captionPos.equals("none")) {
                     popupExtras += HtmlUtils.attr("title", theCaption);
                 }
                 buff.append(
-                    HtmlUtils.href(
-                        child.getTypeHandler().getEntryResourceUrl(
-                            request, child), img, popupExtras));
+			    HtmlUtils.href(
+					   child.getTypeHandler().getEntryResourceUrl(
+										      request, child), img, popupExtras));
             } else {
                 buff.append(img);
             }
@@ -4860,9 +4895,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         HtmlUtils.open(sb, "div", HtmlUtils.cssClass("row"));
         for (StringBuilder buff : colsSB) {
             HtmlUtils.open(
-                sb, "div",
-                HtmlUtils.cssClass(colClass + " ramadda-col")
-                + HtmlUtils.style("padding-left:5px; padding-right:5px;"));
+			   sb, "div",
+			   HtmlUtils.cssClass(colClass + " ramadda-col")
+			   + HtmlUtils.style("padding-left:5px; padding-right:5px;"));
             sb.append(buff);
             HtmlUtils.close(sb, "div");
         }
@@ -4888,7 +4923,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public CalendarOutputHandler getCalendarOutputHandler() {
         try {
             return (CalendarOutputHandler) getRepository().getOutputHandler(
-                CalendarOutputHandler.OUTPUT_CALENDAR);
+									    CalendarOutputHandler.OUTPUT_CALENDAR);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -4902,7 +4937,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public GraphOutputHandler getGraphOutputHandler() {
         try {
             return (GraphOutputHandler) getRepository().getOutputHandler(
-                GraphOutputHandler.OUTPUT_GRAPH);
+									 GraphOutputHandler.OUTPUT_GRAPH);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -4928,8 +4963,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         try {
             if ( !tag.equals(WIKI_TAG_IMPORT)) {
                 String include = my_getWikiInclude(wikiUtil, request,
-                                     originalEntry, importEntry, tag, props,
-                                     tag.equals(WIKI_TAG_APPLY));
+						   originalEntry, importEntry, tag, props,
+						   tag.equals(WIKI_TAG_APPLY));
                 if (include != null) {
                     return include;
                 }
@@ -4949,13 +4984,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Request myRequest =
                 new Request(request,
                             getRepository().URL_ENTRY_SHOW.toString()) {
-                public void putExtraProperty(Object key, Object value) {
-                    request.putExtraProperty(key, value);
-                }
-                public Object getExtraProperty(Object key) {
-                    return request.getExtraProperty(key);
-                }
-            };
+		    public void putExtraProperty(Object key, Object value) {
+			request.putExtraProperty(key, value);
+		    }
+		    public Object getExtraProperty(Object key) {
+			return request.getExtraProperty(key);
+		    }
+		};
 
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 Object key = keys.nextElement();
@@ -4968,7 +5003,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             myRequest.put(ARG_EMBEDDED, "true");
 
             Result result = getEntryManager().processEntryShow(myRequest,
-                                importEntry);
+							       importEntry);
             if (result == null) {
                 return null;
             }
@@ -4979,14 +5014,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             boolean inBlock = getProperty(wikiUtil, props, ATTR_SHOWTOGGLE,
                                           getProperty(wikiUtil, props,
-                                              ATTR_SHOWHIDE, false));
+						      ATTR_SHOWHIDE, false));
             if (inBlock && (title != null)) {
                 boolean open = getProperty(wikiUtil, props, ATTR_OPEN, true);
 
                 return HtmlUtils.makeShowHideBlock(title, content, open,
-                        HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "",
-                        getIconUrl("ramadda.icon.togglearrowdown"),
-                        getIconUrl("ramadda.icon.togglearrowright"));
+						   HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "",
+						   getIconUrl("ramadda.icon.togglearrowdown"),
+						   getIconUrl("ramadda.icon.togglearrowright"));
             }
 
             return content;
@@ -5020,13 +5055,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public Entry findWikiEntry(Request request, WikiUtil wikiUtil,
                                String name, Entry parent)
-            throws Exception {
+	throws Exception {
         Entry theEntry = null;
         if ((parent != null  /* top group */
-                ) && parent.isGroup()) {
+	     ) && parent.isGroup()) {
             String pattern = getPattern(name);
             for (Entry child :
-                    getEntryManager().getChildren(request, (Entry) parent)) {
+		     getEntryManager().getChildren(request, (Entry) parent)) {
                 if (entryMatches(child, pattern, name)) {
                     return child;
                 }
@@ -5065,7 +5100,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         } else if (name.startsWith("type:")) {
             if (child.getTypeHandler().isType(
-                    name.substring("type:".length()))) {
+					      name.substring("type:".length()))) {
                 return true;
             }
         } else if (entryName.equalsIgnoreCase(name)) {
@@ -5103,52 +5138,52 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String makeWikiEditBar(Request request, Entry entry,
                                   String textAreaId)
-            throws Exception {
+	throws Exception {
 
         StringBuilder buttons = new StringBuilder();
         addDisplayImports(request, buttons);
 
         StringBuilder tags = new StringBuilder();
         tags.append(
-            addWikiEditButton(
-                textAreaId, "button_section.png", "Section",
-                "+section title={{name}}_newline__newline_", "-section",
-                "Section", "mw-editbutton-bold"));
+		    addWikiEditButton(
+				      textAreaId, "button_section.png", "Section",
+				      "+section title={{name}}_newline__newline_", "-section",
+				      "Section", "mw-editbutton-bold"));
 
 
         tags.append(
-            addWikiEditButton(
-                textAreaId, "button_section.png", "Frame",
-                "+frame background=#fff frameSize=0 shadow title=_title_",
-                "-frame", "Section", "mw-editbutton-bold"));
+		    addWikiEditButton(
+				      textAreaId, "button_section.png", "Frame",
+				      "+frame background=#fff frameSize=0 shadow title=_title_",
+				      "-frame", "Section", "mw-editbutton-bold"));
 
 
 
 
 
         tags.append(
-            addWikiEditButton(
-                textAreaId, "button_section.png", "Table",
-                "+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table", "Table", "mw-editbutton-bold"));
+		    addWikiEditButton(
+				      textAreaId, "button_section.png", "Table",
+				      "+table height=400 hover=true cellborder=false rowborder=false stripe=false ordering=false paging=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_", "-td_newline_-tr_newline_-table", "Table", "mw-editbutton-bold"));
 
         tags.append(
-            addWikiEditButton(
-                textAreaId, "button_blockquote.png", "Row/Column",
-                "+row_newline_+col-6_newline_",
-                "-col_newline_+col-6_newline_-col_newline_-row",
-                "Row/Column", "mw-editbutton-headline"));
+		    addWikiEditButton(
+				      textAreaId, "button_blockquote.png", "Row/Column",
+				      "+row_newline_+col-6_newline_",
+				      "-col_newline_+col-6_newline_-col_newline_-row",
+				      "Row/Column", "mw-editbutton-headline"));
         tags.append(
-            addWikiEditButton(
-                textAreaId, "button_blockquote.png", "Tabs",
-                "+tabs_newline_+tab tab title_newline_",
-                "-tab_newline_-tabs_newline_", "Tabs",
-                "mw-editbutton-headline"));
+		    addWikiEditButton(
+				      textAreaId, "button_blockquote.png", "Tabs",
+				      "+tabs_newline_+tab tab title_newline_",
+				      "-tab_newline_-tabs_newline_", "Tabs",
+				      "mw-editbutton-headline"));
         tags.append(
-            addWikiEditButton(
-                textAreaId, "button_blockquote.png", "Accordion",
-                "+accordion decorate=true activeSegment=0 _newline_+segment segment  title_newline_",
-                "-segment_newline_-accordion_newline_", "Accordion",
-                "mw-editbutton-headline"));
+		    addWikiEditButton(
+				      textAreaId, "button_blockquote.png", "Accordion",
+				      "+accordion decorate=true activeSegment=0 _newline_+segment segment  title_newline_",
+				      "-segment_newline_-accordion_newline_", "Accordion",
+				      "mw-editbutton-headline"));
 
         tags.append(addWikiEditButton(textAreaId, "button_bold.png",
                                       "Bold text", "\\'\\'\\'", "\\'\\'\\'",
@@ -5171,20 +5206,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                       "Line break", "<br>", "", "",
                                       "mw-editbutton-headline"));
         /*
-        tags.append(addWikiEditButton(textAreaId, "button_strike.png",
-                                         "Strike Through", "<s>", "</s>",
-                                         "Strike-through text",
-                                         "mw-editbutton-headline"));
-        tags.append(addWikiEditButton(textAreaId,
-                                         "button_upper_letter.png",
-                                         "Super Script", "<sup>", "</sup>",
-                                         "Super script text",
-                                         "mw-editbutton-headline"));
-        tags.append(addWikiEditButton(textAreaId,
-                                         "button_lower_letter.png",
-                                         "Sub Script", "<sub>", "</sub>",
-                                         "Subscript script text",
-                                         "mw-editbutton-headline"));
+	  tags.append(addWikiEditButton(textAreaId, "button_strike.png",
+	  "Strike Through", "<s>", "</s>",
+	  "Strike-through text",
+	  "mw-editbutton-headline"));
+	  tags.append(addWikiEditButton(textAreaId,
+	  "button_upper_letter.png",
+	  "Super Script", "<sup>", "</sup>",
+	  "Super script text",
+	  "mw-editbutton-headline"));
+	  tags.append(addWikiEditButton(textAreaId,
+	  "button_lower_letter.png",
+	  "Sub Script", "<sub>", "</sub>",
+	  "Subscript script text",
+	  "mw-editbutton-headline"));
         */
 
         tags.append(addWikiEditButton(textAreaId, "button_small.png",
@@ -5201,7 +5236,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         List<Link> links = getRepository().getOutputLinks(request,
-                               new OutputHandler.State(entry));
+							  new OutputHandler.State(entry));
         for (Link link : links) {
             if (link.getOutputType() == null) {
                 continue;
@@ -5209,24 +5244,24 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             String prop = link.getOutputType().getId();
             String js = "javascript:insertTags("
-                        + HtmlUtils.squote(textAreaId) + ","
-                        + HtmlUtils.squote("{{") + ","
-                        + HtmlUtils.squote("}}") + ","
-                        + HtmlUtils.squote(prop) + ");";
+		+ HtmlUtils.squote(textAreaId) + ","
+		+ HtmlUtils.squote("{{") + ","
+		+ HtmlUtils.squote("}}") + ","
+		+ HtmlUtils.squote(prop) + ");";
         }
 
 
         List<String[]> fromType     = (entry == null)
-                                      ? null
-                                      : entry.getTypeHandler()
-                                          .getWikiEditLinks();
+	    ? null
+	    : entry.getTypeHandler()
+	    .getWikiEditLinks();
         Appendable     fromTypeBuff = null;
         if ((fromType != null) && (fromType.size() > 0)) {
             fromTypeBuff = new StringBuilder();
             for (String[] pair : fromType) {
                 String js = "javascript:insertTags("
-                            + HtmlUtils.squote(textAreaId) + ","
-                            + HtmlUtils.squote(pair[1]) + ",'');";
+		    + HtmlUtils.squote(textAreaId) + ","
+		    + HtmlUtils.squote(pair[1]) + ",'');";
                 fromTypeBuff.append(HtmlUtils.href(js, pair[0]));
                 fromTypeBuff.append("<br>");
             }
@@ -5236,78 +5271,78 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         StringBuilder help        = new StringBuilder();
         for (String extraHelp :
-                StringUtil.split(request.getString("extrahelp", ""), ",",
-                                 true, true)) {
+		 StringUtil.split(request.getString("extrahelp", ""), ",",
+				  true, true)) {
             List<String> toks = StringUtil.splitUpTo(extraHelp, "|", 2);
             if (toks.size() == 2) {
                 help.append(
-                    HtmlUtils.href(
-                        Utils.encodeUntrustedText(toks.get(0)),
-                        Utils.encodeUntrustedText(toks.get(1)),
-                        "target=_help") + "<br>");
+			    HtmlUtils.href(
+					   Utils.encodeUntrustedText(toks.get(0)),
+					   Utils.encodeUntrustedText(toks.get(1)),
+					   "target=_help") + "<br>");
             }
         }
 
 
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/userguide/wikitext.html", "Wiki text",
-                                       "target=_help") + "<br>");
+				   "target=_help") + "<br>");
 
         help.append(
-            HtmlUtils.href(
-                getRepository().getUrlBase() + "/userguide/wikidisplay.html",
-                "Displays and Charts", "target=_help") + "<br>");
+		    HtmlUtils.href(
+				   getRepository().getUrlBase() + "/userguide/wikidisplay.html",
+				   "Displays and Charts", "target=_help") + "<br>");
 
         help.append(
-            HtmlUtils.href(
-                getRepository().getUrlBase()
-                + "/userguide/wikitext.html#sections", "Sections",
-                    "target=_help") + "<br>");
+		    HtmlUtils.href(
+				   getRepository().getUrlBase()
+				   + "/userguide/wikitext.html#sections", "Sections",
+				   "target=_help") + "<br>");
 
         help.append(
-            HtmlUtils.href(
-                getRepository().getUrlBase()
-                + "/userguide/wikitext.html#gridlayout", "Grid layout",
-                    "target=_help") + "<br>");
+		    HtmlUtils.href(
+				   getRepository().getUrlBase()
+				   + "/userguide/wikitext.html#gridlayout", "Grid layout",
+				   "target=_help") + "<br>");
 
 
 
         help.append(
-            HtmlUtils.href(
-                getRepository().getUrlBase()
-                + "/userguide/wikitext.html#entry", "Specifying the entry",
-                    "target=_help") + "<br>");
+		    HtmlUtils.href(
+				   getRepository().getUrlBase()
+				   + "/userguide/wikitext.html#entry", "Specifying the entry",
+				   "target=_help") + "<br>");
 
         help.append(
-            HtmlUtils.href(
-                getRepository().getUrlBase()
-                + "/userguide/wikitext.html#entries", "Specifying multiple entries", "target=_help") + "<br>");
+		    HtmlUtils.href(
+				   getRepository().getUrlBase()
+				   + "/userguide/wikitext.html#entries", "Specifying multiple entries", "target=_help") + "<br>");
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/search/providers", "Search Providers",
-                                       "target=_help") + "<br>");
+				   "target=_help") + "<br>");
         help.append(
-            HtmlUtils.href(
-                getRepository().getUrlBase() + "/search/info#entrytypes",
-                "Entry Types", "target=_help") + "<br>");
+		    HtmlUtils.href(
+				   getRepository().getUrlBase() + "/search/info#entrytypes",
+				   "Entry Types", "target=_help") + "<br>");
         help.append(
-            HtmlUtils.href(
-                getRepository().getUrlBase() + "/search/info#metadatatypes",
-                "Metadata Types", "target=_help") + "<br>");
+		    HtmlUtils.href(
+				   getRepository().getUrlBase() + "/search/info#metadatatypes",
+				   "Metadata Types", "target=_help") + "<br>");
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/colortables", "Color Tables",
-                                       "target=_help") + "<br>");
+				   "target=_help") + "<br>");
 
         String helpButton =
             getPageHandler().makePopupLink(
-                msg("Help"),
-                HtmlUtils.div(help.toString(), "style='padding:5px;'"),
-                HtmlUtils.clazz(
-                    " ramadda-menubar-button ramadda-menubar-button"));
+					   msg("Help"),
+					   HtmlUtils.div(help.toString(), "style='padding:5px;'"),
+					   HtmlUtils.clazz(
+							   " ramadda-menubar-button ramadda-menubar-button"));
 
 
         String tagsButton = getPageHandler().makePopupLink(msg("Formatting"),
-                                HtmlUtils.div(tags.toString(),
-                                    "style='padding:5px;'"), buttonClass);
+							   HtmlUtils.div(tags.toString(),
+									 "style='padding:5px;'"), buttonClass);
 
         StringBuilder tags1 = new StringBuilder();
         makeTagsMenu(false, tags1, textAreaId);
@@ -5320,20 +5355,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                            tags1.toString(), buttonClass);
 
         String tagsButton2 = getPageHandler().makePopupLink(msg("Displays"),
-                                 tags2.toString(), buttonClass);
+							    tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
-                              "Entry id", true, "entryid", entry, false,
-                              buttonClass);
+						  "Entry id", true, "entryid", entry, false,
+						  buttonClass);
 
 
         String addLink = OutputHandler.getSelect(request, textAreaId,
-                             "Entry link", true, "wikilink", entry, false,
-                             buttonClass);
+						 "Entry link", true, "wikilink", entry, false,
+						 buttonClass);
 
         String fieldLink = OutputHandler.getSelect(request, textAreaId,
-                               "Field name", true, "fieldname", entry, false,
-                               buttonClass);
+						   "Field name", true, "fieldname", entry, false,
+						   buttonClass);
 
 
         HtmlUtils.open(buttons, "div",
@@ -5346,9 +5381,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         buttons.append(tagsButton1);
         if (fromTypeBuff != null) {
             buttons.append(
-                getPageHandler().makePopupLink(
-                    msg(entry.getTypeHandler().getLabel() + " tags"),
-                    fromTypeBuff.toString(), buttonClass));
+			   getPageHandler().makePopupLink(
+							  msg(entry.getTypeHandler().getLabel() + " tags"),
+							  fromTypeBuff.toString(), buttonClass));
         }
 
         buttons.append(tagsButton2);
@@ -5357,22 +5392,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         buttons.append(fieldLink);
         if (entry != null) {
             entry.getTypeHandler().addToWikiToolbar(request, entry, buttons,
-                    textAreaId);
+						    textAreaId);
         }
 
 
         buttons.append(helpButton);
         String previewCall = HtmlUtils.call("wikiPreview", ((entry != null)
-                ? HtmlUtils.squote(entry.getId())
-                : "null"), HtmlUtils.squote(textAreaId));
+							    ? HtmlUtils.squote(entry.getId())
+							    : "null"), HtmlUtils.squote(textAreaId));
         String previewButton =
             HtmlUtils.href("#", "Preview",
-                HtmlUtils.attrs("onclick", previewCall, "id",
-                    "wikieditpreviewbutton ", "style", "padding:5px;",
-                    "class",
-                    " ramadda-menubar-button ramadda-menubar-button-last")) + HtmlUtils.div("",
-                        HtmlUtils.attrs("id", "wikieditpreview", "style",
-                            "display:none;height:800px;overflow-y:auto;position:absolute;left:100px;top:10px;"));
+			   HtmlUtils.attrs("onclick", previewCall, "id",
+					   "wikieditpreviewbutton ", "style", "padding:5px;",
+					   "class",
+					   " ramadda-menubar-button ramadda-menubar-button-last")) + HtmlUtils.div("",
+														   HtmlUtils.attrs("id", "wikieditpreview", "style",
+																   "display:none;height:800px;overflow-y:auto;position:absolute;left:100px;top:10px;"));
 
 
         buttons.append(previewButton);
@@ -5399,16 +5434,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             WikiTagCategory cat = WIKITAGS[i];
             if ( !charts) {
                 if (cat.category.equals("Displays")
-                        || cat.category.equals("Misc Charts")
-                        || cat.category.equals("Charts")
-                        || cat.category.equals("Text and Images")) {
+		    || cat.category.equals("Misc Charts")
+		    || cat.category.equals("Charts")
+		    || cat.category.equals("Text and Images")) {
                     continue;
                 }
             } else {
                 if ( !(cat.category.equals("Displays")
-                        || cat.category.equals("Charts")
-                        || cat.category.equals("Misc Charts")
-                        || cat.category.equals("Text and Images"))) {
+		       || cat.category.equals("Charts")
+		       || cat.category.equals("Misc Charts")
+		       || cat.category.equals("Text and Images"))) {
                     continue;
                 }
             }
@@ -5432,10 +5467,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
 
                 String js2 = "javascript:insertTags("
-                             + HtmlUtils.squote(textAreaId) + ","
-                             + HtmlUtils.squote("{{" + textToInsert + " ")
-                             + "," + HtmlUtils.squote("}}") + ","
-                             + HtmlUtils.squote("") + ");";
+		    + HtmlUtils.squote(textAreaId) + ","
+		    + HtmlUtils.squote("{{" + textToInsert + " ")
+		    + "," + HtmlUtils.squote("}}") + ","
+		    + HtmlUtils.squote("") + ");";
                 sb.append(inset);
                 sb.append(HtmlUtils.href(js2, tag.label));
                 sb.append(HtmlUtils.br());
@@ -5473,12 +5508,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String js;
         if (suffix.length() == 0) {
             js = "javascript:insertText(" + HtmlUtils.squote(textAreaId)
-                 + "," + HtmlUtils.squote(prop) + ");";
+		+ "," + HtmlUtils.squote(prop) + ");";
         } else {
             js = "javascript:insertTags(" + HtmlUtils.squote(textAreaId)
-                 + "," + HtmlUtils.squote(prefix) + ","
-                 + HtmlUtils.squote(suffix) + "," + HtmlUtils.squote(example)
-                 + ");";
+		+ "," + HtmlUtils.squote(prefix) + ","
+		+ HtmlUtils.squote(suffix) + "," + HtmlUtils.squote(example)
+		+ ");";
         }
 
         return HtmlUtils.href(js, label) + "<br>";
@@ -5518,7 +5553,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 srcEntry = entry;
             } else if (entry instanceof Entry) {
                 srcEntry = getEntryManager().findEntryWithName(request,
-                        (Entry) entry, src);
+							       (Entry) entry, src);
             }
             if (srcEntry == null) {
                 return null;
@@ -5534,14 +5569,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 attachment = null;
             }
             for (Metadata metadata :
-                    getMetadataManager().getMetadata(srcEntry)) {
+		     getMetadataManager().getMetadata(srcEntry)) {
                 MetadataType metadataType =
                     getMetadataManager().findType(metadata.getType());
                 if (metadataType == null) {
                     continue;
                 }
                 String url = metadataType.getDisplayImageUrl(request,
-                                 srcEntry, metadata, attachment);
+							     srcEntry, metadata, attachment);
                 if (url != null) {
                     return url;
                 }
@@ -5585,9 +5620,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String category = name.substring("Category:".length());
                 String url =
                     request.makeUrl(
-                        getRepository().getSearchManager().URL_ENTRY_SEARCH,
-                        ARG_METADATA_TYPE + ".wikicategory", "wikicategory",
-                        ARG_METADATA_ATTR1 + ".wikicategory", category);
+				    getRepository().getSearchManager().URL_ENTRY_SEARCH,
+				    ARG_METADATA_TYPE + ".wikicategory", "wikicategory",
+				    ARG_METADATA_ATTR1 + ".wikicategory", category);
                 wikiUtil.addCategoryLink(HtmlUtils.href(url, category));
                 List categories =
                     (List) wikiUtil.getProperty("wikicategories");
@@ -5602,7 +5637,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             Entry theEntry = null;
             theEntry = getEntryManager().findEntryWithName(request,
-                    (Entry) entry, name);
+							   (Entry) entry, name);
 
             //If the entry is a group first check its children.
             if (theEntry == null) {
@@ -5627,20 +5662,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          OUTPUT_WIKI.toString());
 
                     return getEntryManager().getTooltipLink(request,
-                            theEntry, label, url);
+							    theEntry, label, url);
 
                 } else {
                     String url = null;
                     // Add output
                     if (outputType != null) {
                         url = HtmlUtils.url(
-                            request.entryUrl(
-                                getRepository().URL_ENTRY_SHOW,
-                                theEntry), ARG_OUTPUT, outputType);
+					    request.entryUrl(
+							     getRepository().URL_ENTRY_SHOW,
+							     theEntry), ARG_OUTPUT, outputType);
                     }
 
                     return getEntryManager().getTooltipLink(request,
-                            theEntry, label, url);
+							    theEntry, label, url);
                 }
             }
 
@@ -5660,7 +5695,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          (entry.isGroup()
                                           ? entry.getId()
                                           : parent.getId()), ARG_TYPE,
-                                              TYPE_WIKIPAGE);
+					 TYPE_WIKIPAGE);
 
             return HtmlUtils.href(url, name,
                                   HtmlUtils.cssClass("wiki-link-noexist"));
@@ -5685,7 +5720,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent)
-            throws Exception {
+	throws Exception {
         return wikifyEntry(request, entry, wikiContent, true, null, null);
     }
 
@@ -5707,7 +5742,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent, boolean wrapInDiv,
                               List<Entry> subGroups, List<Entry> subEntries)
-            throws Exception {
+	throws Exception {
         return wikifyEntry(request, entry, wikiContent, wrapInDiv, subGroups,
                            subEntries, null);
     }
@@ -5732,14 +5767,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                               String wikiContent, boolean wrapInDiv,
                               List<Entry> subGroups, List<Entry> subEntries,
                               String[] notTags)
-            throws Exception {
+	throws Exception {
 
         Request myRequest = request.cloneMe();
         WikiUtil wikiUtil =
             initWikiUtil(myRequest,
                          new WikiUtil(Misc.newHashtable(new Object[] {
-                             ATTR_REQUEST,
-                             myRequest, ATTR_ENTRY, entry })), entry);
+				     ATTR_REQUEST,
+				     myRequest, ATTR_ENTRY, entry })), entry);
 
         return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
                            subGroups, subEntries, notTags);
@@ -5766,7 +5801,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                               WikiUtil wikiUtil, String wikiContent,
                               boolean wrapInDiv, List<Entry> subGroups,
                               List<Entry> subEntries, String[] notTags)
-            throws Exception {
+	throws Exception {
         List children = new ArrayList();
         if (subGroups != null) {
             wikiUtil.putProperty(entry.getId() + "_subgroups", subGroups);
@@ -5866,7 +5901,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     private String getDescription(Request request, WikiUtil wikiUtil,
                                   Hashtable props, Entry originalEntry,
                                   Entry entry)
-            throws Exception {
+	throws Exception {
         String  content;
         boolean wikify = getProperty(wikiUtil, props, ATTR_WIKIFY, false);
         if (entry.getTypeHandler().isType(TYPE_WIKIPAGE)) {
@@ -5906,18 +5941,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String makeSimpleDisplay(Request request, WikiUtil wikiUtil,
                                     Hashtable props, Entry originalEntry,
                                     Entry entry)
-            throws Exception {
+	throws Exception {
 
 
         String fromType = entry.getTypeHandler().getSimpleDisplay(request,
-                              props, entry);
+								  props, entry);
         if (fromType != null) {
             return fromType;
         }
 
 
         boolean sizeConstrained = getProperty(wikiUtil, props,
-                                      ATTR_CONSTRAINSIZE, false);
+					      ATTR_CONSTRAINSIZE, false);
         String content = getDescription(request, wikiUtil, props,
                                         originalEntry, entry);
         boolean haveText = Utils.stringDefined(content);
@@ -5926,7 +5961,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (entry.isImage()) {
             imageUrl =
                 getRepository().getHtmlOutputHandler().getImageUrl(request,
-                    entry);
+								   entry);
         } else {
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request, entry, urls);
@@ -5940,7 +5975,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             StringBuilder extra = new StringBuilder();
             String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
             boolean layoutHorizontal = position.equals(POS_RIGHT)
-                                       || position.equals(POS_LEFT);
+		|| position.equals(POS_LEFT);
             String imageWidth = null;
             String divStyle   = "";
 
@@ -5963,20 +5998,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String alt = request.getString(ATTR_ALT,
                                            getEntryDisplayName(entry));
             String imageClass = request.getString("imageclass",
-                                    (String) null);
+						  (String) null);
             if (Utils.stringDefined(alt)) {
                 extra.append(HtmlUtils.attr(ATTR_ALT, alt));
             }
             String image = HtmlUtils.img(imageUrl, "", extra.toString());
             if (request.get(WikiManager.ATTR_LINK, true)) {
                 image = HtmlUtils.href(
-                    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
-                    image);
+				       request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+				       image);
                 /*  Maybe add this later
-                } else if (request.get(WikiManager.ATTR_LINKRESOURCE, false)) {
+		    } else if (request.get(WikiManager.ATTR_LINKRESOURCE, false)) {
                     image =  HtmlUtils.href(
-                        entry.getTypeHandler().getEntryResourceUrl(request, entry),
-                        image);
+		    entry.getTypeHandler().getEntryResourceUrl(request, entry),
+		    image);
                 */
             }
 
@@ -5984,7 +6019,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 int height = getProperty(wikiUtil, props, ATTR_HEIGHT, -1);
                 if ((height > 0) && position.equals(POS_BOTTOM)) {
                     divStyle += "overflow-y: auto; max-height:"
-                                + (height - 75) + "px;";
+			+ (height - 75) + "px;";
                 }
             }
 
@@ -5996,8 +6031,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             String textClass = "entry-simple-text "
-                               + getProperty(wikiUtil, props, "textClass",
-                                             "note");
+		+ getProperty(wikiUtil, props, "textClass",
+			      "note");
             String textStyle = getProperty(wikiUtil, props, "textStyle",
                                            "margin:8px;");
             String textExtra = HtmlUtils.cssClass(textClass);
@@ -6005,9 +6040,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 content = image;
             } else if (position.equals(POS_BOTTOM)) {
                 content = image
-                          + HtmlUtils.div(content,
-                                          HtmlUtils.style(textStyle)
-                                          + textExtra);
+		    + HtmlUtils.div(content,
+				    HtmlUtils.style(textStyle)
+				    + textExtra);
             } else if (position.equals(POS_TOP)) {
                 content = HtmlUtils.div(content,
                                         HtmlUtils.style(textStyle)
@@ -6015,39 +6050,39 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else if (position.equals(POS_RIGHT)) {
                 content =
                     HtmlUtils.table(
-                        HtmlUtils.row(
-                            HtmlUtils.col(image)
-                            + HtmlUtils.col(
-                                HtmlUtils.div(
-                                    content,
-                                    HtmlUtils.style(
-                                        "width:"
-                                        + getProperty(
-                                            wikiUtil, props, "textWidth",
-                                            "150px;") + textStyle) + HtmlUtils.cssClass(
-                                                textClass))), HtmlUtils.attr(
-                                                    HtmlUtils.ATTR_VALIGN,
-                                                        "top")), HtmlUtils.attr(
-                                                            HtmlUtils.ATTR_CELLPADDING,
-                                                                "0"));
+				    HtmlUtils.row(
+						  HtmlUtils.col(image)
+						  + HtmlUtils.col(
+								  HtmlUtils.div(
+										content,
+										HtmlUtils.style(
+												"width:"
+												+ getProperty(
+													      wikiUtil, props, "textWidth",
+													      "150px;") + textStyle) + HtmlUtils.cssClass(
+																			  textClass))), HtmlUtils.attr(
+																						       HtmlUtils.ATTR_VALIGN,
+																						       "top")), HtmlUtils.attr(
+																									       HtmlUtils.ATTR_CELLPADDING,
+																									       "0"));
             } else if (position.equals(POS_LEFT)) {
                 content =
                     HtmlUtils.table(
-                        HtmlUtils.row(
-                            HtmlUtils.col(
-                                HtmlUtils.div(
-                                    content,
-                                    HtmlUtils.style(
-                                        "width:"
-                                        + getProperty(
-                                            wikiUtil, props, "textWidth",
-                                            "150px;") + textStyle) + HtmlUtils.cssClass(
-                                                textClass))) + HtmlUtils.col(
-                                                    image), HtmlUtils.attr(
-                                                        HtmlUtils.ATTR_VALIGN,
-                                                            "top")), HtmlUtils.attr(
-                                                                HtmlUtils.ATTR_CELLPADDING,
-                                                                    "0"));
+				    HtmlUtils.row(
+						  HtmlUtils.col(
+								HtmlUtils.div(
+									      content,
+									      HtmlUtils.style(
+											      "width:"
+											      + getProperty(
+													    wikiUtil, props, "textWidth",
+													    "150px;") + textStyle) + HtmlUtils.cssClass(
+																			textClass))) + HtmlUtils.col(
+																						     image), HtmlUtils.attr(
+																									    HtmlUtils.ATTR_VALIGN,
+																									    "top")), HtmlUtils.attr(
+																												    HtmlUtils.ATTR_CELLPADDING,
+																												    "0"));
             } else {
                 content = "Unknown position:" + position;
             }
@@ -6055,15 +6090,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         if (entry.getTypeHandler().isGroup()
-                && entry.getTypeHandler().isType(TypeHandler.TYPE_GROUP)) {
+	    && entry.getTypeHandler().isType(TypeHandler.TYPE_GROUP)) {
             //Do we tack on the listing
             StringBuilder sb = new StringBuilder();
             List<Entry> children = getEntryManager().getChildren(request,
-                                       entry);
+								 entry);
             if (children.size() > 0) {
                 String link = getHtmlOutputHandler().getEntriesList(request,
-                //                                  sb, children, true, false, true);
-                sb, children, false, false, false);
+								    //                                  sb, children, true, false, true);
+								    sb, children, false, false, false);
                 content = content + sb;
             }
         }
@@ -6084,7 +6119,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @throws Exception _more_
      */
     public String getStandardChartDisplay(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         TypeHandler       typeHandler       = entry.getTypeHandler();
         RecordTypeHandler recordTypeHandler = null;
         if (typeHandler instanceof RecordTypeHandler) {
@@ -6096,27 +6131,27 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                "point_chart_wiki", true);
+					      "point_chart_wiki", true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             wiki.append(metadataList.get(0).getAttr1());
         } else {
             String fromEntry = typeHandler.getProperty(entry, "chart.wiki",
-                                   null);
+						       null);
             if (fromEntry != null) {
                 wiki.append(fromEntry);
             } else {
                 wiki.append(
-                    "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
+			    "{{group  howMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
                 String chartType = (recordTypeHandler == null)
-                                   ? typeHandler.getProperty(entry,
-                                       "chart.type", "linechart")
-                                   : recordTypeHandler.getChartProperty(
-                                       request, entry, "chart.type",
-                                       "linechart");
+		    ? typeHandler.getProperty(entry,
+					      "chart.type", "linechart")
+		    : recordTypeHandler.getChartProperty(
+							 request, entry, "chart.type",
+							 "linechart");
                 wiki.append(
-                    "{{display  xwidth=\"600\"  height=\"400\"   type=\""
-                    + chartType
-                    + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"false\"  showTitle=\"false\"  row=\"0\"  column=\"0\"  }}");
+			    "{{display  xwidth=\"600\"  height=\"400\"   type=\""
+			    + chartType
+			    + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"false\"  showTitle=\"false\"  row=\"0\"  column=\"0\"  }}");
                 if (entry.isGeoreferenced()) {
                     String mapLayers = getMapManager().getMapLayers();
                     String layerVar  = "";
@@ -6125,21 +6160,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         layerVar  = "mapLayers=\"" + mapLayers + "\"";
                     }
                     String entryAttrs = (recordTypeHandler == null)
-                                        ? typeHandler.getProperty(entry,
-                                            "chart.wiki.map", "")
-                                        : recordTypeHandler.getChartProperty(
-                                            request, entry, "chart.wiki.map",
-                                            "");
+			? typeHandler.getProperty(entry,
+						  "chart.wiki.map", "")
+			: recordTypeHandler.getChartProperty(
+							     request, entry, "chart.wiki.map",
+							     "");
 
                     if (typeHandler.getTypeProperty("isTrajectory", false)
-                            || typeHandler.getProperty(entry, "isTrajectory",
-                                false)) {
+			|| typeHandler.getProperty(entry, "isTrajectory",
+						   false)) {
                         entryAttrs += " isTrajectory=\"true\" ";
                     }
                     wiki.append(
-                        "{{display  width=\"600\"  height=\"400\"   type=\"map\" "
-                        + layerVar + entryAttrs
-                        + " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
+				"{{display  width=\"600\"  height=\"400\"   type=\"map\" "
+				+ layerVar + entryAttrs
+				+ " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
                 }
             }
         }
@@ -6169,7 +6204,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                  String tag, String name,
                                  String pointDataUrl, StringBuilder sb,
                                  Hashtable props, List<String> propList)
-            throws Exception {
+	throws Exception {
 
         String displayType = getProperty(wikiUtil, props, "type",
                                          "linechart");
@@ -6243,14 +6278,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (tok.startsWith("name:") || tok.startsWith("category:")) {
                     boolean doName  = tok.startsWith("name:");
                     String  pattern = tok.substring(doName
-                            ? "name:".length()
-                            : "category:".length());
+						    ? "name:".length()
+						    : "category:".length());
                     //                    System.err.println ("doName:" + doName +" pattern:" + pattern);
                     for (SearchProvider provider :
-                            getSearchManager().getSearchProviders()) {
+			     getSearchManager().getSearchProviders()) {
                         String  target  = doName
-                                          ? provider.getName()
-                                          : provider.getCategory();
+			    ? provider.getName()
+			    : provider.getCategory();
                         boolean include = target.equals(pattern);
                         if ( !include) {
                             try {
@@ -6270,8 +6305,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                 provider.getId().replace(":", "_COLON_")
                                 + ":"
                                 + provider.getName().replace(":",
-                                    "-").replace(",", " ") + ":" + icon + ":"
-                                        + provider.getCategory();
+							     "-").replace(",", " ") + ":" + icon + ":"
+				+ provider.getCategory();
 
                             processed.add(v);
                         }
@@ -6309,8 +6344,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     icon = subToks.get(2);
                 }
                 String v = id.replace(":", "_COLON_") + ":"
-                           + label.replace(":", "-").replace(",", " ") + ":"
-                           + icon + ":" + searchProvider.getCategory();
+		    + label.replace(":", "-").replace(",", " ") + ":"
+		    + icon + ":" + searchProvider.getCategory();
                 processed.add(v);
             }
             //            for(String s: processed) {
@@ -6349,7 +6384,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                      "true"));
             showTitle = Misc.equals("true",
                                     getProperty(wikiUtil, props,
-                                        ATTR_SHOWTITLE, "true"));
+						ATTR_SHOWTITLE, "true"));
             topProps.add(ATTR_SHOWTITLE);
             topProps.add(getProperty(wikiUtil, props, ATTR_SHOWTITLE,
                                      "true"));
@@ -6521,9 +6556,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         for (String arg : new String[] {
-            "eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
-            ARG_HEIGHT, ARG_FROMDATE, ARG_TODATE, "column", "row"
-        }) {
+		"eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
+		ARG_HEIGHT, ARG_FROMDATE, ARG_TODATE, "column", "row"
+	    }) {
             String value = getProperty(wikiUtil, props, arg, (String) null);
             if (value != null) {
                 Utils.add(propList, arg, Json.quote(value));
@@ -6543,14 +6578,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (request.getExtraProperty("added plotly") == null) {
             HtmlUtils.importJS(
-                sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
+			       sb, getHtdocsUrl("/lib/plotly/plotly-latest.min.js"));
             request.putExtraProperty("added plotly", "true");
         }
 
         if (displayType.equals("entrygallery")
-                || displayType.equals("entrygrid")) {
+	    || displayType.equals("entrygrid")) {
             List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props);
+					      originalEntry, entry, props);
             StringBuilder ids = new StringBuilder();
             for (Entry child : children) {
                 if (ids.length() > 0) {
@@ -6584,19 +6619,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         HtmlUtils.commentJS(
-            js,
-            "This gets the global display manager or creates it if not created");
+			    js,
+			    "This gets the global display manager or creates it if not created");
 
         if (needToCreateGroup) {
             request.putExtraProperty("added displaymanager", "true");
             Utils.concatBuff(
-                js, "\nvar displayManager = getOrCreateDisplayManager(",
-                HtmlUtils.quote(mainDivId), ",", Json.map(topProps, false),
-                ");\n");
+			     js, "\nvar displayManager = getOrCreateDisplayManager(",
+			     HtmlUtils.quote(mainDivId), ",", Json.map(topProps, false),
+			     ");\n");
         }
         Utils.add(propList, "entryId", HtmlUtils.quote(entry.getId()));
         if ((pointDataUrl != null)
-                && getProperty(wikiUtil, props, "includeData", true)) {
+	    && getProperty(wikiUtil, props, "includeData", true)) {
             Utils.add(propList, "data",
                       Utils.concatString("new PointData(",
                                          HtmlUtils.quote(name),
@@ -6609,7 +6644,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (isMap) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
-                    "map_displaymap", true);
+						  "map_displaymap", true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 String kmlIds       = null;
                 String geojsonIds   = null;
@@ -6622,29 +6657,29 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                     Entry mapEntry =
                         (Entry) getEntryManager().getEntry(request,
-                            metadata.getAttr1());
+							   metadata.getAttr1());
                     if ((mapEntry == null)
-                            || !(mapEntry.getTypeHandler()
-                                .isType("geo_shapefile") || mapEntry
-                                .getTypeHandler().isType("geo_geojson"))) {
+			|| !(mapEntry.getTypeHandler()
+			     .isType("geo_shapefile") || mapEntry
+			     .getTypeHandler().isType("geo_geojson"))) {
                         continue;
                     }
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
                         if (kmlIds == null) {
                             kmlIds   = mapEntry.getId();
                             kmlNames = mapEntry.getName().replaceAll(",",
-                                    " ");
+								     " ");
                         } else {
                             kmlIds += "," + mapEntry.getId();
                             kmlNames += ","
-                                        + mapEntry.getName().replaceAll(",",
-                                            " ");
+				+ mapEntry.getName().replaceAll(",",
+								" ");
                         }
                     } else {
                         if (geojsonIds == null) {
                             geojsonIds = mapEntry.getId();
                             geojsonNames = mapEntry.getName().replaceAll(",",
-                                    " ");
+									 " ");
                         } else {
                             geojsonIds += "," + mapEntry.getId();
                             geojsonNames +=
@@ -6693,7 +6728,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @throws Exception _more_
      */
     public void addDisplayImports(Request request, Appendable sb)
-            throws Exception {
+	throws Exception {
         getMapManager().addMapImports(request, sb);
         if (request.getExtraProperty("initchart") == null) {
             request.putExtraProperty("initchart", "added");
@@ -6716,80 +6751,80 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','treemap', 'sankey','wordtree','timeline','gauge']});\n");
 
             HtmlUtils.importJS(
-                sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
+			       sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(
-                sb,
-                getPageHandler().getCdnPath(
-                    "/lib/jquery.handsontable.full.min.js"));
+			       sb,
+			       getPageHandler().getCdnPath(
+							   "/lib/jquery.handsontable.full.min.js"));
             HtmlUtils.cssLink(
-                sb,
-                getPageHandler().getCdnPath(
-                    "/lib/jquery.handsontable.full.min.css"));
+			      sb,
+			      getPageHandler().getCdnPath(
+							  "/lib/jquery.handsontable.full.min.css"));
 
             //Put this here after the google load
             HtmlUtils.importJS(
-                sb, getPageHandler().getCdnPath("/lib/dom-drag.js"));
+			       sb, getPageHandler().getCdnPath("/lib/dom-drag.js"));
 
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/min/display_all.min.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/min/display_all.min.js"));
                 HtmlUtils.cssLink(
-                    sb, getPageHandler().getCdnPath("/min/display.min.css"));
+				  sb, getPageHandler().getCdnPath("/min/display.min.css"));
             } else {
                 HtmlUtils.cssLink(
-                    sb, getPageHandler().getCdnPath("/display/display.css"));
+				  sb, getPageHandler().getCdnPath("/display/display.css"));
                 HtmlUtils.importJS(
-                    sb, getPageHandler().getCdnPath("/display/pointdata.js"));
+				   sb, getPageHandler().getCdnPath("/display/pointdata.js"));
                 HtmlUtils.importJS(
-                    sb, getPageHandler().getCdnPath("/display/widgets.js"));
+				   sb, getPageHandler().getCdnPath("/display/widgets.js"));
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath(
-                        "/display/displaymanager.js"));
+				   sb,
+				   getPageHandler().getCdnPath(
+							       "/display/displaymanager.js"));
                 HtmlUtils.importJS(
-                    sb, getPageHandler().getCdnPath("/display/display.js"));
+				   sb, getPageHandler().getCdnPath("/display/display.js"));
 
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displayentry.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/display/displayentry.js"));
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaymap.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/display/displaymap.js"));
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaymisc.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/display/displaymisc.js"));
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaychart.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/display/displaychart.js"));
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaytable.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/display/displaytable.js"));
                 HtmlUtils.importJS(
-                    sb, getPageHandler().getCdnPath("/display/control.js"));
+				   sb, getPageHandler().getCdnPath("/display/control.js"));
                 HtmlUtils.importJS(
-                    sb, getPageHandler().getCdnPath("/display/notebook.js"));
+				   sb, getPageHandler().getCdnPath("/display/notebook.js"));
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displayplotly.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/display/displayplotly.js"));
                 HtmlUtils.importJS(
-                    sb, getPageHandler().getCdnPath("/display/displayd3.js"));
+				   sb, getPageHandler().getCdnPath("/display/displayd3.js"));
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displaytext.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/display/displaytext.js"));
                 HtmlUtils.importJS(
-                    sb,
-                    getPageHandler().getCdnPath("/display/displayext.js"));
+				   sb,
+				   getPageHandler().getCdnPath("/display/displayext.js"));
             }
             HtmlUtils.importJS(
-                sb, getPageHandler().getCdnPath("/repositories.js"));
+			       sb, getPageHandler().getCdnPath("/repositories.js"));
 
             String includes =
                 getRepository().getProperty("ramadda.display.includes",
                                             (String) null);
             if (includes != null) {
                 for (String include :
-                        StringUtil.split(includes, ",", true, true)) {
+			 StringUtil.split(includes, ",", true, true)) {
                     HtmlUtils.importJS(sb, getFileUrl(include));
                 }
             }

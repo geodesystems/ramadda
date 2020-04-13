@@ -82,13 +82,13 @@ public class OutputHandler extends RepositoryManager {
 
 
     /** _more_ */
-    public static final String WIDTH_DATE = "150";
+    public static final String WIDTH_DATE = "120";
 
     /** _more_ */
     public static final String WIDTH_SIZE = "100";
 
     /** _more_ */
-    public static final String WIDTH_KIND = "200";
+    public static final String WIDTH_KIND = "100";
 
     /** _more_ */
     public static final JQuery JQ = null;
@@ -1378,8 +1378,10 @@ public class OutputHandler extends RepositoryManager {
         selectSB.append(HtmlUtils.leftRightBottom(sortLinks,
                 actionsSB.toString(), ""));
         String arrowImg = getRepository().getIconImage(hideIt
-                ? "/icons/application_side_expand.png"
-                : "/icons/application_side_contract.png", "title",
+						       //                ? "/icons/application_side_expand.png"
+						       //                : "/icons/application_side_contract.png", "title",
+                ? "/icons/togglearrowright.gif"
+                : "/icons/togglearrowdown.gif", "title",						       
                     msg("Show/Hide Form"), "id", base + "img");
         String linkLabel = arrowImg;
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
