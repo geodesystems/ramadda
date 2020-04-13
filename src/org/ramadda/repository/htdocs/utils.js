@@ -2184,6 +2184,9 @@ var PRE = "pre";
 var TAG_A = "a";
 var TAG_B = "b";
 var TAG_DIV = "div";
+var SELECT = "select";
+var OPTION = "option";
+var VALUE = "value";
 
 var TAG_IMG = "img";
 var TAG_INPUT = "input";
