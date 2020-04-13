@@ -4,7 +4,10 @@
      <service link="media_pdfbox_extracttext"/>
 -->
      <service link="tika_extracttext"/>
+     <!--
      <service link="media_pdfbox_thumbnail" target="attachment"/>
+-->
+     <service link="media_gs_thumbnail" target="attachment"/>
      <wiki><![CDATA[
 +section # title="{{name}}"
 {{information showTitle="false" details="true"}}
@@ -22,7 +25,7 @@
      <service link="media_pdfbox_extracttext"/>
 -->
      <property name="icon" value="/icons/pdf.png"/>
-     <wiki><![CDATA[
+     <xwiki><![CDATA[
 +section # title="{{name}}"
 {{description wikify="true"}}
 ----
@@ -32,7 +35,7 @@
 {{information}}
 -section
 ]]>
-</wiki>
+</xwiki>
 
 </type>
 

@@ -1,0 +1,3 @@
+<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" icon="/icons/pdf.png" category="Documents and Images">
+  <outputhandler serviceId="media_gs_thumbnail"/>
+</outputhandlers>

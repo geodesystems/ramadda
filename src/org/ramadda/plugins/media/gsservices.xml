@@ -1,0 +1,24 @@
+<services command="${service.gs}" >
+   <service id="media_gs_thumbnail" label="Make an image from PDF" outputToStderr="true">
+<process_description><![CDATA[<wiki>
+{{description}}
+{{gallery}}
+----
+{{tree}}
+]]></process_description>
+<description><![CDATA[
+Runs GS to make an image from a PDF
+]]></description>
+          <arg value="-sDEVICE=jpeg"/>
+          <arg value="-sPAPERSIZE=a4"/>
+          <arg value="-dFirstPage=1 "/>
+          <arg value="-dLastPage=1"/>
+	  <arg value="-o"/>
+          <arg value="thumb.jpg"  xfile="${entry.file.base}.jpg" xfilePattern=".*${unique}${entry.file.base}[0-9]+.jpg"/>
+          <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
+          <output type="file" pattern=".*\.jpg"/>
+    </service>
+
+
+
+</services>
