@@ -2722,7 +2722,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     if (showHeading) {
                         HtmlUtils.div(sb,
                                       HtmlUtils.href(urls.get(i),
-                                          titles.get(i)), headingClass);
+                                          titles.get(i)),
+				      HtmlUtils.title(titles.get(i)) +
+				      headingClass);
                     }
                     String displayHtml = contents.get(i);
                     HtmlUtils.div(sb, displayHtml,
@@ -3531,6 +3533,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                           true);
         if (showHeading) {
             HtmlUtils.div(card, HtmlUtils.href(entryUrl, entry.getName()),
+			  HtmlUtils.title(entry.getName()) +
                           HtmlUtils.cssClass("ramadda-subheading"));
         }
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
@@ -3580,15 +3583,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        HtmlUtils.style("width:100%;"));
             String  inner;
             boolean popup = getProperty(wikiUtil, props, "popup", true);
-            String popupGroup = getProperty(wikiUtil, props, "popupPrefix",
-                                            "popupgallery");
             if (popup) {
+		boolean popupResource = getProperty(wikiUtil, props, "popupResource", false);
+		String popupGroup = getProperty(wikiUtil, props, "popupPrefix",
+						"popupgallery");
                 String titleId = HtmlUtils.getUniqueId("id");
                 String caption = " <a href='" + entryUrl + "'>"
                                  + entry.getName() + "</a> ";
+		String popupUrl = imageUrl;
+		if(popupResource) {
+		    String path = entry.getResource().getPath().toLowerCase();
+		    if(path.endsWith("pdf") || Utils.isImage(path)) {
+			popupUrl = entry.getTypeHandler().getEntryResourceUrl(request,entry);
+		    }
+		}
                 inner =
                     HtmlUtils.href(
-                        imageUrl, img,
+				   popupUrl, img,
                         HtmlUtils.attr("data-caption", caption)
                         + HtmlUtils.attr(
                             "id",
@@ -3668,6 +3679,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 options.append(" : ");
                 options.append("false");
             }
+
+	    if(getProperty(wikiUtil, props,"popupIframe",false)) {
+		//		options.append(",width:600");
+		//		options.append(",height:300");
+		options.append(",type:'iframe'");
+	    }
+
+	    
             options.append("}");
 
             if (wikiUtil != null) {
