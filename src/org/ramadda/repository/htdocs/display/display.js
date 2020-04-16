@@ -192,6 +192,17 @@ function displayGetFunctionValue(v) {
     return v;
 }
 
+function ramaddaDisplayStepAnimation() {
+    if (window.globalDisplaysList == null) {
+        return;
+    }
+    window.globalDisplaysList.forEach(d=>{
+	if(d.getProperty("doAnimation")) {
+	    d.getAnimation().doNext();
+	}
+    });
+}
+
 
 
 /**

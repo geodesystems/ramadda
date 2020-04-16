@@ -335,8 +335,10 @@ function DisplayAnimation(display, enabled) {
 	    }
 	},
 	makeControls:function() {
-            var buttons =  "";
-	    if(this.display.getProperty("animationShowButtons",true)) {
+            let buttons =  "";
+	    let showButtons  = this.display.getProperty("animationShowButtons",true);
+	    let showSlider = display.getProperty("animationShowSlider",true);
+	    if(showButtons) {
 		var short = display.getProperty("animationWidgetShort",false);
 		if(!short)
 		    buttons +=   HtmlUtils.span([ID, this.getDomId(ID_BEGIN),TITLE,"Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
@@ -349,9 +351,13 @@ function DisplayAnimation(display, enabled) {
 		if(!short)
 		    buttons += HtmlUtils.span([ID, this.getDomId(ID_SHOWALL), TITLE,"Show all"], HtmlUtils.getIconImage("fa-sync"));
 	    }
-	    buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label"]);
+	    if(showButtons) {
+		buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label"]);
+	    } else {
+		buttons+=HtmlUtils.div([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "xxdisplay-animation-label",STYLE,HU.css("text-align","center","font-size","14pt")]);
+	    }
             buttons = HtmlUtils.div([ CLASS,"display-animation-buttons"], buttons);
-	    if(display.getProperty("animationShowSlider",true)) {
+	    if(showSlider) {
 		let style= display.getProperty("animationSliderStyle","");
 		buttons +=   HtmlUtils.div([CLASS,"display-animation-slider",STYLE,style,ID,this.getDomId(ID_SLIDER)],
 					   HtmlUtils.div([CLASS,"display-animation-ticks",ID,this.getDomId(ID_TICKS)]));
@@ -1537,6 +1543,17 @@ function removeRamaddaDisplay(id) {
 function displayGetFunctionValue(v) {
     if(isNaN(v))return 0;
     return v;
+}
+
+function ramaddaDisplayStepAnimation() {
+    if (window.globalDisplaysList == null) {
+        return;
+    }
+    window.globalDisplaysList.forEach(d=>{
+	if(d.getProperty("doAnimation")) {
+	    d.getAnimation().doNext();
+	}
+    });
 }
 
 
@@ -10351,6 +10368,8 @@ function CsvUtil() {
 	    let tmp =  this.display.getFieldsByIds(fields, (args["valueFields"]||"").replace(/_comma_/g,","));
 	    if(args.valueFields==null) tmp=fields;
 	    let valueFields = [];
+
+
 	    tmp.forEach(f=>{
 		if(!seen[f.getId()]) {
 		    ops[f.getId()] = args[f.getId()+".operator"];
@@ -26669,7 +26688,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		html += HU.checkbox("",[ID,this.getDomId("showMarkersToggle")],dflt) +" " +
 		    this.getProperty("showMarkersToggleLabel","Show Markers") +SPACE2;
 	    }
-	    if(this.getProperty("showVectorLayerToggle",true)) {
+	    if(this.getProperty("showVectorLayerToggle",false)) {
 		html += HU.checkbox("",[ID,this.getDomId("showVectorLayerToggle")],!this.showVectorLayer) +" " +
 		    this.getProperty("showVectorLayerToggleLabel","Show Points") +SPACE4;
 	    }

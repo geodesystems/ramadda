@@ -2805,6 +2805,8 @@ function CsvUtil() {
 	    let tmp =  this.display.getFieldsByIds(fields, (args["valueFields"]||"").replace(/_comma_/g,","));
 	    if(args.valueFields==null) tmp=fields;
 	    let valueFields = [];
+
+
 	    tmp.forEach(f=>{
 		if(!seen[f.getId()]) {
 		    ops[f.getId()] = args[f.getId()+".operator"];

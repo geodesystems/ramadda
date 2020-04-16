@@ -1476,7 +1476,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		html += HU.checkbox("",[ID,this.getDomId("showMarkersToggle")],dflt) +" " +
 		    this.getProperty("showMarkersToggleLabel","Show Markers") +SPACE2;
 	    }
-	    if(this.getProperty("showVectorLayerToggle",true)) {
+	    if(this.getProperty("showVectorLayerToggle",false)) {
 		html += HU.checkbox("",[ID,this.getDomId("showVectorLayerToggle")],!this.showVectorLayer) +" " +
 		    this.getProperty("showVectorLayerToggleLabel","Show Points") +SPACE4;
 	    }

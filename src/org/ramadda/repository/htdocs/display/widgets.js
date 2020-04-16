@@ -335,8 +335,10 @@ function DisplayAnimation(display, enabled) {
 	    }
 	},
 	makeControls:function() {
-            var buttons =  "";
-	    if(this.display.getProperty("animationShowButtons",true)) {
+            let buttons =  "";
+	    let showButtons  = this.display.getProperty("animationShowButtons",true);
+	    let showSlider = display.getProperty("animationShowSlider",true);
+	    if(showButtons) {
 		var short = display.getProperty("animationWidgetShort",false);
 		if(!short)
 		    buttons +=   HtmlUtils.span([ID, this.getDomId(ID_BEGIN),TITLE,"Go to beginning"], HtmlUtils.getIconImage("fa-fast-backward")); 
@@ -349,9 +351,13 @@ function DisplayAnimation(display, enabled) {
 		if(!short)
 		    buttons += HtmlUtils.span([ID, this.getDomId(ID_SHOWALL), TITLE,"Show all"], HtmlUtils.getIconImage("fa-sync"));
 	    }
-	    buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label"]);
+	    if(showButtons) {
+		buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label"]);
+	    } else {
+		buttons+=HtmlUtils.div([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "xxdisplay-animation-label",STYLE,HU.css("text-align","center","font-size","14pt")]);
+	    }
             buttons = HtmlUtils.div([ CLASS,"display-animation-buttons"], buttons);
-	    if(display.getProperty("animationShowSlider",true)) {
+	    if(showSlider) {
 		let style= display.getProperty("animationSliderStyle","");
 		buttons +=   HtmlUtils.div([CLASS,"display-animation-slider",STYLE,style,ID,this.getDomId(ID_SLIDER)],
 					   HtmlUtils.div([CLASS,"display-animation-ticks",ID,this.getDomId(ID_TICKS)]));
