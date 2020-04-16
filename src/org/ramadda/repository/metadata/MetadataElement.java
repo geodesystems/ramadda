@@ -20,27 +20,21 @@ package org.ramadda.repository.metadata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.DataTypes;
 import org.ramadda.util.ColorTable;
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-
 
 import org.w3c.dom.*;
 
 import ucar.unidata.ui.ImageUtils;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.awt.Image;
 
 import java.io.File;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -58,8 +52,7 @@ import java.util.List;
 
 /**
  *
- *
- * @author RAMADDA Development Team
+ * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
@@ -71,6 +64,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     /** _more_ */
     public static final String ARG_THUMBNAIL_SCALEDOWN =
         "metadata_thumbnail_scaledown";
+
+    /** _more_          */
+    public static final String ARG_THUMBNAIL_WIDTH =
+        "metadata_thumbnail_width";
 
     /** _more_ */
     public static final String ATTR_REQUIRED = "required";
@@ -126,9 +123,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
     /** _more_ */
     private boolean attachment = true;
-
-
-
 
     /** _more_ */
     private String id = null;
@@ -765,8 +759,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         if (getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false)) {
             Image image = Utils.readImage(theFile);
-            if (image.getWidth(null) > THUMBNAIL_WIDTH) {
-                image = ImageUtils.resize(image, THUMBNAIL_WIDTH, -1);
+            int   width = request.get(ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH);
+            if (image.getWidth(null) > width) {
+                image = ImageUtils.resize(image, width, -1);
                 ImageUtils.waitOnImage(image);
                 ImageUtils.writeImageToFile(image, theFile);
             }
@@ -932,9 +927,14 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             String extra = "";
             if (getThumbnail()) {
                 extra = "<br>"
-                        + HtmlUtils.checkbox(ARG_THUMBNAIL_SCALEDOWN, "true",
-                                             true) + HtmlUtils.space(1)
-                                                 + msg("Scale down image");
+                        + HtmlUtils.checkbox(
+                            ARG_THUMBNAIL_SCALEDOWN, "true",
+                            true) + HtmlUtils.space(1)
+                                  + msg("Scale down image")
+                                  + HtmlUtils.space(2) + "Width: "
+                                  + HtmlUtils.input(
+                                      ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH,
+                                      HtmlUtils.SIZE_5);
             }
 
             return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + image
