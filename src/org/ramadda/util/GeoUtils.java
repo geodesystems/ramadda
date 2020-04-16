@@ -301,7 +301,6 @@ public class GeoUtils {
             for (String arg : args) {
                 if (key == null) {
                     key = arg;
-
                     continue;
                 }
                 Place place = getLocationFromAddress(arg, key);
@@ -391,6 +390,8 @@ public class GeoUtils {
     private static final String[] citySuffixes = new String[] { " city",
             " town", " cdp", " village" };
 
+    private static final String[] countySuffixes = new String[]{"county","city", "borough","municipality","parish","census area","city and borough"};  
+
 
     /**
      * _more_
@@ -426,6 +427,8 @@ public class GeoUtils {
     }
 
     private static HashSet noPlaceSet = new HashSet();
+
+
 
     /**
      * _more_
@@ -496,30 +499,11 @@ public class GeoUtils {
 
         Place.Resource resource = null;
         Place          place    = null;
-        if (doCountry) {
-            resource = Place.getResource("countries");
-        }
-
-        if (doState) {
-            resource = Place.getResource("states");
-        }
 
         if (doZip) {
             resource = Place.getResource("zipcodes");
         }
 
-
-
-        if (resource != null) {
-            place = resource.getPlace(address);
-            if (place == null) {
-		if(!noPlaceSet.contains(address)) {
-		    noPlaceSet.add(address);
-		    System.err.println("no place:" + address);
-		}
-            }
-            return place;
-        }
 
         if (doCity) {
             //abbrev to name
@@ -598,50 +582,74 @@ public class GeoUtils {
                 exc.printStackTrace();
             }
 
-
-
             //If the city fails then do the county
             doCounty = true;
         }
 
         if (doCounty) {
+	    boolean debug = false;
             resource = Place.getResource("counties");
+            
             int index = _address.indexOf(",");
             if (index < 0) {
 		return resource.getPlace(_address);
 	    }
 	    getStatesMap();
-	    List<String> toks   = StringUtil.splitUpTo(_address, ",", 2);
+	    List<String> toks   = StringUtil.split(_address, ",");
 	    String       county = toks.get(0).trim();
 	    String       state  = toks.get(1).trim();
-	    //	    System.out.println("start:" + state  +" c:" + county);
 	    if(place!=null) return place;
+	    if(debug)
+		System.out.println("trying:" + county + "," + state);
 	    place = resource.getPlace(county + "," + state);
-	    if (place == null) {
-		state = (String) statesMap.get(state);
-		//		System.out.println("state after:" +county+"," + state);
-		if (state != null) {
-		    place = resource.getPlace(county + "," + state);
-		    //		    System.out.println("try 2:" +county+"," + state +" place:" + place);
-		    if(place==null) {
-			place = resource.getPlace(county + " county," + state);
-		    }
-		    if(place==null) {
-			place = resource.getPlace(county + " city," + state);
-		    }
-		    if(place==null) {
-			place = resource.getPlace(county + " parish," + state);
-		    }
+	    if (place != null)  return place;
+	    state = (String) statesMap.get(state);
+	    if(debug)
+		System.out.println("state after:" +county+"," + state);
+	    if (state != null) {
+		if(debug)
+		    System.out.println("trying:" + county + "," + state);
+		place = resource.getPlace(county + "," + state);
+		if(place!=null) return place;
+		if(debug)
+		    System.out.println("try 2:" +county+"," + state +" place:" + place);
+		for(String suffix: countySuffixes) {
+		    if(debug)
+			System.out.println("suffix: " + county + " " + suffix+"," + state);
+		    place = resource.getPlace(county + " " + suffix+"," + state);
+		    if(place!=null) return place;
                 }
-                if (place == null) {
-                    //              System.err.println("No place:" + address);
-                    //              System.exit(0);
-                }
-
-                return place;
+		//                return place;
             }
+	    doState = true;
         }
 
+
+        if (doState) {
+            resource = Place.getResource("states");
+            place = resource.getPlace(address);
+	    if(place!=null) return place;
+	    doCountry =true;
+        }
+
+
+	if (doCountry) {
+            resource = Place.getResource("countries");
+            place = resource.getPlace(address);
+	    return place;
+        }
+
+
+        if (resource != null) {
+            place = resource.getPlace(address);
+            if (place == null) {
+		if(!noPlaceSet.contains(address)) {
+		    noPlaceSet.add(address);
+		    System.err.println("no place:" + address);
+		}
+            }
+            return place;
+        }
 
 
         /*

@@ -231,6 +231,8 @@ public class Place {
 	    return places;
 	}
 
+	static boolean printKeys = false;
+
         /**
          * _more_
          *
@@ -240,12 +242,14 @@ public class Place {
          */
         public Place getPlace(String key) {
             key = key.toLowerCase();
-	    /*
-	      for (Enumeration keys = this.map.keys(); keys.hasMoreElements(); ) {
-	      String k = (String) keys.nextElement();
-	      System.out.println("key:" + k+":");
-	      }
-	    */
+	    if(printKeys) {
+		for (Enumeration keys = this.map.keys(); keys.hasMoreElements(); ) {
+		    String k = (String) keys.nextElement();
+		    System.out.println("key:" + k+":");
+		}
+	    }
+	    printKeys = false;
+	    //	    System.out.println("try:" + key);
             return this.map.get(key);
         }
 

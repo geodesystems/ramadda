@@ -3356,7 +3356,6 @@ public abstract class Converter extends Processor {
             if ( !doneHeader) {
                 add(info, row, "Population");
                 doneHeader = true;
-
                 //              System.err.println("pop row:" + row);
                 return row;
             }
@@ -3393,6 +3392,7 @@ public abstract class Converter extends Processor {
             if (place != null) {
                 add(info, row, new Integer(place.getPopulation()));
             } else {
+		System.out.println("NOT:" + key);
                 add(info, row, new Integer(0));
             }
 
