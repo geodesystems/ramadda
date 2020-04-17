@@ -1,6 +1,7 @@
 set ::loc [file dirname [file normalize [info script]]]
 set sleep 2
-for {set i 0} {$i<32} {incr i} {
+set steps 1
+for {set i 0} {$i<$steps} {incr i} {
     set thumb capture${i}.png
     if {$i<10} {
 	set thumb capture0${i}.png
