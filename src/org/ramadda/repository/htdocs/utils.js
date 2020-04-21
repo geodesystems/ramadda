@@ -2797,7 +2797,7 @@ var HU = HtmlUtils = {
 	    console.log("loadGoogleCharts: no google");
 	    return;
 	}
-	//	let version = "current";
+//	let version = "current";
 	let	version = "44";
         google.charts.load(version, {
             packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', /*'sankey',*/ 'wordtree', 'timeline', 'gauge','orgchart']

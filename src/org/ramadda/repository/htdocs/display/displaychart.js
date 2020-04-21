@@ -941,112 +941,40 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
-
-
 	    if(debug) {
 		for(var i=0;i<dataTable.getNumberOfColumns();i++)
 		    console.log("col:" + i +" " + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
 	    }
-
-	    var annotationLabelField = this.getFieldById(null,this.getProperty("annotationLabelField"));
-	    var annotationFields = this.getFieldsByIds(null,this.getProperty("annotationFields"));
-	    var annotations = this.getProperty("annotations");
-	    if(annotations) annotationFields = [];
-	    if(annotationFields.length>0) {
-                dataTable.addColumn({
-                    type: 'string',
-                    role: 'annotation',
-                    'p': {
-                        'html': true
-                    }
-                });
-		dataTable.addColumn({
-                    type: 'string',
-                    role: 'annotationText',
-                    'p': {
-                        'html': true
-                    }
-                });
+	    if(this.getProperty("annotations") ||  this.getProperty("annotationFields")) {
+		let clonedList = Utils.cloneList(dataList);
+		clonedList.shift();
+		this.annotations  = new Annotations(this,clonedList);
+		if(this.annotations.hasFields()) {
+                    dataTable.addColumn({
+			type: 'string',
+			role: 'annotation',
+			'p': {
+                            'html': true
+			}
+                    });
+		    dataTable.addColumn({
+			type: 'string',
+			role: 'annotationText',
+			'p': {
+                            'html': true
+			}
+                    });
+		}
 	    }
 
 
-
-
-	    var indexToAnnotation = null;
-	    if(annotations) {
-		indexToAnnotation = {};
-		var annotationsList=[];
-		var annotationsMap = {};
-		let legend = "";
-		var labelCnt = 0;
-		var toks = annotations.split(";");
-		for(var i=0;i<toks.length;i++) {
-		    var toks2 = toks[i].split(",");
-		    //index,label,description,url
-		    if(toks2.length<2) continue;
-		    var index = toks2[0].trim();
-		    var label = toks2[1];
-		    if(label.trim() == "") {
-			labelCnt++;
-			label  =""+labelCnt;
-		    }
-		    var desc = toks2.length<2?"":toks2[2];
-		    var url = toks2.length<3?null:toks2[3];
-		    let isDate = false;
-		    let dateLabel ="";
-		    if(index.match(/^[0-9]+$/)) {
-			index = parseFloat(index);
-		    } else {
-			if(index=="today") {
-			    index = Utils.formatDateYYYYMMDD(new Date());
-			}
-			index = Utils.parseDate(index,false);
-			isDate = true;
-			dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
-		    }
-		    var annotation = {label: label,description: desc   };
-		    annotationsList.push(annotation);
-		    annotation.index = isDate?index.getTime():index;
-		    var legendLabel = desc;
-		    if(url!=null) {
-			legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
-		    }
-		    legend+= HU.b(label)+":" + legendLabel+" ";
-		}
-		if(this.getProperty("showAnnotationsLegend")) {
+	    if(this.annotations && this.annotations.isEnabled()) {
+		if(this.annotations.getShowLegend()) {
 		    //Pad the left to align with  the chart axis
 		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
-					    HU.div([CLASS, "display-chart-legend"],legend)
+					    HU.div([CLASS, "display-chart-legend"],this.annotations.getLegend())
 					    +"</td></tr></table>");
 		}
-		for(var aidx=0;aidx<annotationsList.length;aidx++) {
-		    var annotation = annotationsList[aidx];
-
-		    var minIndex = null;
-		    var minDistance = null;
-		    for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-			var row = this.getDataValues(dataList[rowIdx]);
-			var index = row[0];
-			if(index.v) index=  index.v;
-			if(index.getTime) index = index.getTime();
-			var distance = Math.abs(annotation.index-index);
-			if(minIndex == null) {
-			    minIndex = rowIdx;
-			    minDistance = distance;
-			} else {
-			    if(distance<minDistance) {
-				minIndex = rowIdx;
-				minDistance = distance;
-			    }
-			}
-		    }
-		    if(minIndex!=null) {
-			indexToAnnotation[minIndex] = annotation;
-		    }
-		}
-	    }
-
-	    if(indexToAnnotation) {
 		dataTable.addColumn({
                     type: 'string',
                     role: 'annotation',
@@ -1062,6 +990,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 });
 	    }
+
 
 	    var annotationCnt=0;
 
@@ -1180,11 +1109,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			break;
 		    }
                 }
-		if(annotationFields.length>0) {
+		if(this.annotations && this.annotations.hasFields()) {
                     if (theRecord) {
 			var desc = "";
-			annotationFields.map(f=>{
-			    var d = ""+theRecord.getValue(f.getIndex());
+			this.annotations.getFields().map(f=>{
+			    let d = ""+theRecord.getValue(f.getIndex());
 			    if(d!="")
 				desc+= (d+"<br>");
 			});
@@ -1193,7 +1122,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			annotationCnt++;
 			var label = null; 
 			if(desc.trim().length>0) {
-			    label =""+( annotationLabelField?theRecord.getValue(annotationLabelField.getIndex()):(annotationCnt))
+			    label =""+( this.annotations.labelField?theRecord.getValue(this.annotations.labelField.getIndex()):(annotationCnt))
 			    if(label.trim().length==0) label = ""+annotationCnt;
 			}
 			if(debug && rowIdx<debugRows) {
@@ -1207,8 +1136,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    console.log("No records for annotation");
 		    }
 		}
-		if(indexToAnnotation) {
-		    let annotation = indexToAnnotation[rowIdx];
+		if(this.annotations &&  this.annotations.isEnabled()) {
+		    let annotation = this.annotations.getAnnotation(rowIdx);
 		    if(annotation) {
 			if(debug && rowIdx<debugRows) {
 			    console.log("\t annotation:" + annotation.label);
@@ -1263,7 +1192,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 minorGridlines: {},		
                 textStyle: {},
             };
-	    chartOptions.annotations = {
+	    chartOptions.xannotations = {
 		textStyle: {
 		    fontSize: this.getProperty('annotationsFontSize',12),
 		    color: this.getProperty('annotationsTextColor')
@@ -2309,7 +2238,6 @@ function SankeyDisplay(displayManager, id, properties) {
             return true;
         },
         makeDataTable: function(dataList, props, selectedFields) {
-	    //		dataList = this.filterData(dataList, selectedFields,false,true);
             if (!this.getProperty("doCategories", false)) {
                 var values = this.makeDataArray(dataList);
                 return google.visualization.arrayToDataTable(values);
@@ -2390,7 +2318,7 @@ function WordtreeDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
             //null ->get all data
             var root = this.getProperty("treeRoot", "root");
-            var records = this.filterData(null, selectedFields, false,true);
+            var records = this.filterData(null, selectedFields, {skipFirst:true});
             var fields = this.getSelectedFields(this.getData().getRecordFields());
             var valueField = this.getFieldById(null, this.getProperty("colorBy"));
             var values = [];
@@ -2959,7 +2887,7 @@ function TreemapDisplay(displayManager, id, properties) {
             });
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            var records = this.filterData(null,null,false,true);
+            var records = this.filterData(null,null,{skipFirst:true});
             if (!records) {
                 return null;
             }
@@ -3060,7 +2988,7 @@ function TimerangechartDisplay(displayManager, id, properties) {
             return new google.visualization.Timeline(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {
-	    var records = this.filterData(null,null,false,true);
+	    var records = this.filterData(null,null,{skipFirst:true});
             var strings = [];
             var stringField = this.getFieldOfType(selectedFields, "string");
             if (!stringField)

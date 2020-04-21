@@ -2867,8 +2867,53 @@ function RamaddaTextDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
+	handleAnnotation: function() {
+	    let annotation = null;
+	    let template = this.getProperty("template","${date} - ${description}");
+	    let  macros = Utils.tokenizeMacros(template);
+	    let attrs = {};
+	    let date = null;
+	    if(this.selectedRecord) {
+		annotation = this.annotations.getAnnotationFromDate(date = this.selectedRecord.getDate());
+	    }
+	    if(!annotation) {
+		annotation = this.annotations.getAnnotationFromDate(date=this.getAnimation().getBeginTime());
+	    }
+	    if(date) {
+		attrs.date = date;
+	    }  else {
+		attrs.date = "";
+	    }
+	    if(!annotation) {
+		this.setContents("");
+		return;
+	    }
+	    attrs.description = annotation.description;
+	    attrs.label = annotation.label;
+	    if(this.annotations.getShowLegend()) {
+		attrs.legend  = this.annotations.getLegend();
+	    } else {
+		attrs.legend  = "";
+	    }
+	    let html =  macros.apply(attrs);
+	    if(this.getProperty("decorate",true)) {
+		html = this.getMessage(html);
+	    }
+	    this.setContents(html);
+	},
 	updateUI: function() {
             SUPER.updateUI.call(this);
+	    if(this.getProperty("annotations")) {
+		var pointData = this.getData();
+		if (pointData == null) return;
+		if(!this.annotations) {
+		    this.annotations  = new Annotations(this,this.filterData());
+		} 
+		if(this.annotations.isEnabled()) {
+		    this.handleAnnotation();
+		    return;
+		}
+	    }
 	    if(this.selectedRecord) {
 		this.setContents(this.getRecordHtml(this.selectedRecord));
 	    } else  if(this.getPropertyShowDefault()) {

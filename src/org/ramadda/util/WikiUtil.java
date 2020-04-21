@@ -16,10 +16,14 @@
 
 package org.ramadda.util;
 
+
 import org.ramadda.util.HtmlUtils;
+
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
+
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -28,6 +32,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.*;
 import java.util.regex.*;
+
 
 /**
  */
@@ -126,7 +131,9 @@ public class WikiUtil {
      * @param code _more_
      */
     public void appendJavascript(String code) {
-	if(code==null || code.trim().length()==0) return;
+        if ((code == null) || (code.trim().length() == 0)) {
+            return;
+        }
         js.append(code);
         js.append("\n");
     }
@@ -484,6 +491,24 @@ public class WikiUtil {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    private String getSize(String s) {
+        if (s == null) {
+            return null;
+        }
+        if (s.endsWith("%") || s.endsWith("px")) {
+            return s;
+        }
+
+        return s + "px";
+    }
+
 
     /**
      * _more_
@@ -722,12 +747,14 @@ public class WikiUtil {
             if (tline.equals("+pre")) {
                 inPre = true;
                 buff.append("<pre>\n");
+
                 continue;
             }
 
             if (tline.equals("-pre")) {
                 inPre = false;
                 buff.append("</pre>\n");
+
                 continue;
             }
 
@@ -742,13 +769,15 @@ public class WikiUtil {
                 inPre = false;
                 buff.append(tline);
                 buff.append("\n");
+
                 continue;
             }
 
             if (inPre) {
-		line = line.replaceAll("//(.*)","//<i>$1</i>");
+                line = line.replaceAll("//(.*)", "//<i>$1</i>");
                 buff.append(line);
                 buff.append("\n");
+
                 continue;
             }
 
@@ -1040,9 +1069,8 @@ public class WikiUtil {
                     }
 
                     tabInfo.minHeight = (String) props.get("minHeight");
-                    if ((tabInfo.minHeight != null)
-                            && !tabInfo.minHeight.endsWith("px")) {
-                        tabInfo.minHeight = tabInfo.minHeight + "px";
+                    if (tabInfo.minHeight != null) {
+                        tabInfo.minHeight = getSize(tabInfo.minHeight);
                     }
                 }
                 tabStates.add(tabInfo);
@@ -1260,7 +1288,7 @@ public class WikiUtil {
                             "right" }) {
                         String v = getAttribute(tline, side);
                         if (v != null) {
-			    if(!v.endsWith("px")) v = v +"px";
+                            v = getSize(v);
                             styles.append("margin-" + side + ":" + v + ";");
                         }
                     }
@@ -1630,8 +1658,9 @@ public class WikiUtil {
             if (tline.startsWith(":script")) {
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                 HtmlUtils.importJS(buff, toks.get(1));
-		continue;
-	    }
+
+                continue;
+            }
 
             if (tline.startsWith("+panel")) {
                 buff.append("\n");
@@ -1712,7 +1741,7 @@ public class WikiUtil {
                 }
                 String frameSize = (String) props.get("frameSize");
                 if (frameSize != null) {
-                    frameStyle += " padding:" + frameSize + "px;";
+                    frameStyle += " padding:" + getSize(frameSize) + ";";
                 }
                 String frameColor = (String) props.get("frameColor");
                 if (frameColor != null) {
@@ -1828,22 +1857,30 @@ public class WikiUtil {
             }
 
             if (tline.startsWith("+absolute")) {
-		Hashtable props = lineToProps(tline);
-		String style = (String) props.get("style");
-		if(style==null) style="";
-		style+="position:absolute;";
-		for(String side: new String[]{"top","left","bottom","right"}) {
-		    String sv = (String) props.get(side);
-		    if(sv!=null) {
-			if(!sv.endsWith(";")) sv+=";";
-			style+=side+":" + sv;
-		    }
-		}
-		HtmlUtils.open(buff, "div",HtmlUtils.style(style));
+                Hashtable props = lineToProps(tline);
+                String    style = (String) props.get("style");
+                if (style == null) {
+                    style = "";
+                }
+                style += "position:absolute;";
+                for (String side : new String[] { "top", "left", "bottom",
+                        "right" }) {
+                    String sv = (String) props.get(side);
+                    if (sv != null) {
+                        sv = getSize(sv);
+                        if ( !sv.endsWith(";")) {
+                            sv += ";";
+                        }
+                        style += side + ":" + sv;
+                    }
+                }
+                HtmlUtils.open(buff, "div", HtmlUtils.style(style));
+
                 continue;
             }
             if (tline.equals("-absolute")) {
                 buff.append("</div>\n");
+
                 continue;
             }
 
@@ -2233,6 +2270,7 @@ public class WikiUtil {
             buff.append(line);
             buff.append("\n");
         }
+
 
         while (ulCnt > 0) {
             buff.append("</ul>\n");

@@ -251,7 +251,8 @@ function DisplayThing(argId, argProperties) {
     }
 
     this.displayId = null;
-    $.extend(this, argProperties);
+    //IMPORTANT: might breqak a bunch of displays
+    //    $.extend(this, argProperties);
 
     RamaddaUtil.defineMembers(this, {
         objectId: argId,
@@ -2245,7 +2246,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterHighlight: function() {
 	    return this.getProperty("filterHighlight",false);
 	},
-	filterData: function(records, fields, doGroup, skipFirst) {
+	filterData: function(records, fields, args) {
+	    if(!args) args = {};
+	    let opts = {
+		doGroup:false,
+		skipFirst:false,
+		applyDateRange: true
+	    }
+	    $.extend(opts,args);
 	    let debug = displayDebug.filterData;
 	    let highlight =  this.getFilterHighlight();
 	    var startDate = this.getProperty("startDate");
@@ -2287,7 +2295,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
-            if(doGroup || this.requiresGrouping()) {
+            if(opts.doGroup || this.requiresGrouping()) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
@@ -2329,7 +2337,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var filter= this.filters[i];
 			ok = filter.isRecordOk(record);
 		    }
-		    if(skipFirst && rowIdx==0) {
+		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
 		    }
 		    if(highlight) {
@@ -4626,7 +4634,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(debug) console.log("checkSearchBar-done calling animation.init");
 		    if(!this.minDateObj) {
 			if(debug) console.log("checkSearchBar-calling setDateRange");
-			this.setDateRange(animation.begin, animation.end);
+			if(this.getProperty("animationFilter", true)) {
+			    this.setDateRange(animation.begin, animation.end);
+			}
 			if(debug) console.log("checkSearchBar-done calling setDateRange");
 		    }
 		}
@@ -4777,7 +4787,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	animationStart: function(animation) {
 	},
 	animationApply: function(animation, skipUpdateUI) {
-	    this.setDateRange(animation.begin, animation.end);
+	    if(this.getProperty("animationFilter", true))
+		this.setDateRange(animation.begin, animation.end);
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
 		//		var t1 = new Date();

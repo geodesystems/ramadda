@@ -302,6 +302,12 @@ function DisplayAnimation(display, enabled) {
 	    this.updateLabels();
 	    if(debug)console.log("animation.init-done");
 	},
+	getIndex: function() {
+	    return this.frameIndex;
+	},
+	getBeginTime: function() {
+	    return this.begin;
+	},
 	setSliderValues: function(v) {
 	    let debug = false;
 	    if(debug)
@@ -362,9 +368,10 @@ function DisplayAnimation(display, enabled) {
 		buttons +=   HtmlUtils.div([CLASS,"display-animation-slider",STYLE,style,ID,this.getDomId(ID_SLIDER)],
 					   HtmlUtils.div([CLASS,"display-animation-ticks",ID,this.getDomId(ID_TICKS)]));
 	    }
-	    
 
-            this.jq(ID_TOP_LEFT).append(HtmlUtils.div([STYLE,this.display.getProperty("animationStyle")], buttons));
+	    if(this.display.getProperty("animationShow",true)) {
+		this.jq(ID_TOP_LEFT).append(HtmlUtils.div([STYLE,this.display.getProperty("animationStyle")], buttons));
+	    }
             this.btnRun = this.jq(ID_RUN);
             this.btnPrev = this.jq(ID_PREV);
             this.btnNext = this.jq(ID_NEXT);
@@ -1349,5 +1356,178 @@ SizeBy.prototype = {
 	}
 	return HU.div([CLASS,"display-size-legend"], html);
     }
+
+}
+
+
+
+
+function Annotations(display,records) {
+    this.display = display;
+    if(!records) records = display.filterData();
+    let pointData = this.display.getPointData();
+    let fields = pointData.getRecordFields();
+    this.labelField = this.display.getFieldById(null,this.display.getProperty("annotationLabelField"));
+    this.fields = this.display.getFieldsByIds(null,this.display.getProperty("annotationFields"));
+    let prop = this.display.getProperty("annotations");
+    if(prop) this.fields = [];
+    this.indexToAnnotation = null;
+    if(prop) {
+	this.indexToAnnotation = {};
+	this.recordToAnnotation = {};
+	this.annotations=[];
+	this.legend = "";
+	let labelCnt = 0;
+	let toks = prop.split(";");
+	this.hasRange = false;
+	for(let i=0;i<toks.length;i++) {
+	    let toks2 = toks[i].split(",");
+	    //index,label,description,url
+	    if(toks2.length<2) continue;
+	    let index = toks2[0].trim();
+	    let label = toks2[1];
+	    if(label.trim() == "") {
+		labelCnt++;
+		label  =""+labelCnt;
+	    }
+	    let desc = toks2.length<2?"":toks2[2];
+	    let url = toks2.length<3?null:toks2[3];
+	    let isDate = false;
+	    let dateLabel ="";
+	    let annotation = {label: label,description: desc,toString:function() {return this.description;}   };
+	    this.annotations.push(annotation);
+	    if(index.match(/^[0-9]+$/)) {
+		index = parseFloat(index);
+	    } else {
+		let index2 = null;
+		if(index.indexOf(":")>=0) {
+		    index2 = index.split(":")[1];
+		    index = index.split(":")[0];
+		}
+		
+		if(index=="today") {
+		    index = Utils.formatDateYYYYMMDD(new Date());
+		} else {
+		    index = Utils.parseDate(index,false);
+		}
+		if(index2) {
+		    this.hasRange = true;
+ 		    if(index2=="today") {
+			index2 = Utils.formatDateYYYYMMDD(new Date());
+		    } else {
+			index2 = Utils.parseDate(index2,false);
+
+		    }
+		    annotation.index2 = index2.getTime();
+		}
+		isDate = true;
+		dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
+	    }
+	    annotation.index = isDate?index.getTime():index;
+	    let legendLabel = desc;
+	    if(url!=null) {
+		legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
+	    }
+	    this.legend+= HU.b(label)+":" + legendLabel+" ";
+	}
+	for(let aidx=0;aidx<this.annotations.length;aidx++) {
+	    let annotation = this.annotations[aidx];
+	    let minIndex = null;
+	    let minRecord = null;
+	    let minDistance = null;
+	    for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+		let ele = records[rowIdx];
+		let record = ele.record?ele.record:ele;
+		let row = this.display.getDataValues(records[rowIdx]);
+		let index = row[0];
+		if(index.v) index=  index.v;
+		if(record) index = record.getTime();
+		let distance =  Number.MAX_VALUE;
+		if(annotation.index2) {
+		    //range
+ 		    if(index>=annotation.index && index<=annotation.index2) {
+			distance = 0;
+		    } else {
+			distance = Math.min(Math.abs(annotation.index-index),Math.abs(annotation.index2-index));
+		    }
+		    if(distance==0) {
+			this.indexToAnnotation[rowIdx] = annotation;
+			this.recordToAnnotation[record] = annotation;
+		    }
+		} else {
+		    distance = Math.abs(annotation.index-index);
+		}
+		if(minIndex == null) {
+		    minIndex = rowIdx;
+		    minDistance = distance;
+		    minRecord = record;
+		} else {
+		    if(distance<minDistance) {
+			minIndex = rowIdx;
+			minDistance = distance;
+			minRecord = record;
+		    }
+		}
+	    }
+	    if(minIndex!=null) {
+		this.indexToAnnotation[minIndex] = annotation;
+		this.recordToAnnotation[minRecord] = annotation;
+
+	    }
+	}
+    }
+}
+
+Annotations.prototype = {
+    isEnabled: function() {
+	return this.annotations!=null;
+    },
+    getAnnotations: function() {
+	return this.annotations;
+    },
+    getAnnotation: function(rowIdx) {
+	if(this.recordToAnnotation[rowIdx])
+	    return this.recordToAnnotation[rowIdx];
+	return this.indexToAnnotation?this.indexToAnnotation[rowIdx]:null;
+    },
+    getAnnotationFromDate: function(date) {
+	let distance =  Number.MAX_VALUE;
+	let minAnnotation = null;
+	let minDistance = null;
+	let time = date.getTime();
+	for(let aidx=0;aidx<this.annotations.length;aidx++) {
+	    let annotation = this.annotations[aidx];
+	    if(annotation.index2) {
+ 		if(time>=annotation.index && time<=annotation.index2) {
+		    return annotation;
+		}
+	    } else {
+		distance = Math.abs(annotation.index-time);
+		if(minAnnotation == null) {
+		    minAnnotation = annotation;
+		    minDistance = distance;
+		} else {
+		    if(distance<minDistance) {
+			minAnnotation = annotation;
+			minDistance = distance;
+		    }
+		}
+	    }
+	}
+	return minAnnotation;
+    },
+    getLegend: function() {
+	return this.legend;
+    },
+    getShowLegend: function() {
+	return 	this.display.getProperty("showAnnotationsLegend");
+    },
+    hasFields: function() {
+	return this.fields && this.fields.length>0;
+    },
+    getFields: function() {
+	return this.fields;
+    }
+    
 
 }

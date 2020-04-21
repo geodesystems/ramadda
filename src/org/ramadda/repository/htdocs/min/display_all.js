@@ -302,6 +302,12 @@ function DisplayAnimation(display, enabled) {
 	    this.updateLabels();
 	    if(debug)console.log("animation.init-done");
 	},
+	getIndex: function() {
+	    return this.frameIndex;
+	},
+	getBeginTime: function() {
+	    return this.begin;
+	},
 	setSliderValues: function(v) {
 	    let debug = false;
 	    if(debug)
@@ -362,9 +368,10 @@ function DisplayAnimation(display, enabled) {
 		buttons +=   HtmlUtils.div([CLASS,"display-animation-slider",STYLE,style,ID,this.getDomId(ID_SLIDER)],
 					   HtmlUtils.div([CLASS,"display-animation-ticks",ID,this.getDomId(ID_TICKS)]));
 	    }
-	    
 
-            this.jq(ID_TOP_LEFT).append(HtmlUtils.div([STYLE,this.display.getProperty("animationStyle")], buttons));
+	    if(this.display.getProperty("animationShow",true)) {
+		this.jq(ID_TOP_LEFT).append(HtmlUtils.div([STYLE,this.display.getProperty("animationStyle")], buttons));
+	    }
             this.btnRun = this.jq(ID_RUN);
             this.btnPrev = this.jq(ID_PREV);
             this.btnNext = this.jq(ID_NEXT);
@@ -1351,6 +1358,179 @@ SizeBy.prototype = {
     }
 
 }
+
+
+
+
+function Annotations(display,records) {
+    this.display = display;
+    if(!records) records = display.filterData();
+    let pointData = this.display.getPointData();
+    let fields = pointData.getRecordFields();
+    this.labelField = this.display.getFieldById(null,this.display.getProperty("annotationLabelField"));
+    this.fields = this.display.getFieldsByIds(null,this.display.getProperty("annotationFields"));
+    let prop = this.display.getProperty("annotations");
+    if(prop) this.fields = [];
+    this.indexToAnnotation = null;
+    if(prop) {
+	this.indexToAnnotation = {};
+	this.recordToAnnotation = {};
+	this.annotations=[];
+	this.legend = "";
+	let labelCnt = 0;
+	let toks = prop.split(";");
+	this.hasRange = false;
+	for(let i=0;i<toks.length;i++) {
+	    let toks2 = toks[i].split(",");
+	    //index,label,description,url
+	    if(toks2.length<2) continue;
+	    let index = toks2[0].trim();
+	    let label = toks2[1];
+	    if(label.trim() == "") {
+		labelCnt++;
+		label  =""+labelCnt;
+	    }
+	    let desc = toks2.length<2?"":toks2[2];
+	    let url = toks2.length<3?null:toks2[3];
+	    let isDate = false;
+	    let dateLabel ="";
+	    let annotation = {label: label,description: desc,toString:function() {return this.description;}   };
+	    this.annotations.push(annotation);
+	    if(index.match(/^[0-9]+$/)) {
+		index = parseFloat(index);
+	    } else {
+		let index2 = null;
+		if(index.indexOf(":")>=0) {
+		    index2 = index.split(":")[1];
+		    index = index.split(":")[0];
+		}
+		
+		if(index=="today") {
+		    index = Utils.formatDateYYYYMMDD(new Date());
+		} else {
+		    index = Utils.parseDate(index,false);
+		}
+		if(index2) {
+		    this.hasRange = true;
+ 		    if(index2=="today") {
+			index2 = Utils.formatDateYYYYMMDD(new Date());
+		    } else {
+			index2 = Utils.parseDate(index2,false);
+
+		    }
+		    annotation.index2 = index2.getTime();
+		}
+		isDate = true;
+		dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
+	    }
+	    annotation.index = isDate?index.getTime():index;
+	    let legendLabel = desc;
+	    if(url!=null) {
+		legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
+	    }
+	    this.legend+= HU.b(label)+":" + legendLabel+" ";
+	}
+	for(let aidx=0;aidx<this.annotations.length;aidx++) {
+	    let annotation = this.annotations[aidx];
+	    let minIndex = null;
+	    let minRecord = null;
+	    let minDistance = null;
+	    for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+		let ele = records[rowIdx];
+		let record = ele.record?ele.record:ele;
+		let row = this.display.getDataValues(records[rowIdx]);
+		let index = row[0];
+		if(index.v) index=  index.v;
+		if(record) index = record.getTime();
+		let distance =  Number.MAX_VALUE;
+		if(annotation.index2) {
+		    //range
+ 		    if(index>=annotation.index && index<=annotation.index2) {
+			distance = 0;
+		    } else {
+			distance = Math.min(Math.abs(annotation.index-index),Math.abs(annotation.index2-index));
+		    }
+		    if(distance==0) {
+			this.indexToAnnotation[rowIdx] = annotation;
+			this.recordToAnnotation[record] = annotation;
+		    }
+		} else {
+		    distance = Math.abs(annotation.index-index);
+		}
+		if(minIndex == null) {
+		    minIndex = rowIdx;
+		    minDistance = distance;
+		    minRecord = record;
+		} else {
+		    if(distance<minDistance) {
+			minIndex = rowIdx;
+			minDistance = distance;
+			minRecord = record;
+		    }
+		}
+	    }
+	    if(minIndex!=null) {
+		this.indexToAnnotation[minIndex] = annotation;
+		this.recordToAnnotation[minRecord] = annotation;
+
+	    }
+	}
+    }
+}
+
+Annotations.prototype = {
+    isEnabled: function() {
+	return this.annotations!=null;
+    },
+    getAnnotations: function() {
+	return this.annotations;
+    },
+    getAnnotation: function(rowIdx) {
+	if(this.recordToAnnotation[rowIdx])
+	    return this.recordToAnnotation[rowIdx];
+	return this.indexToAnnotation?this.indexToAnnotation[rowIdx]:null;
+    },
+    getAnnotationFromDate: function(date) {
+	let distance =  Number.MAX_VALUE;
+	let minAnnotation = null;
+	let minDistance = null;
+	let time = date.getTime();
+	for(let aidx=0;aidx<this.annotations.length;aidx++) {
+	    let annotation = this.annotations[aidx];
+	    if(annotation.index2) {
+ 		if(time>=annotation.index && time<=annotation.index2) {
+		    return annotation;
+		}
+	    } else {
+		distance = Math.abs(annotation.index-time);
+		if(minAnnotation == null) {
+		    minAnnotation = annotation;
+		    minDistance = distance;
+		} else {
+		    if(distance<minDistance) {
+			minAnnotation = annotation;
+			minDistance = distance;
+		    }
+		}
+	    }
+	}
+	return minAnnotation;
+    },
+    getLegend: function() {
+	return this.legend;
+    },
+    getShowLegend: function() {
+	return 	this.display.getProperty("showAnnotationsLegend");
+    },
+    hasFields: function() {
+	return this.fields && this.fields.length>0;
+    },
+    getFields: function() {
+	return this.fields;
+    }
+    
+
+}
 /**
    Copyright 2008-2020 Geode Systems LLC
 */
@@ -1604,7 +1784,8 @@ function DisplayThing(argId, argProperties) {
     }
 
     this.displayId = null;
-    $.extend(this, argProperties);
+    //IMPORTANT: might breqak a bunch of displays
+    //    $.extend(this, argProperties);
 
     RamaddaUtil.defineMembers(this, {
         objectId: argId,
@@ -3598,7 +3779,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterHighlight: function() {
 	    return this.getProperty("filterHighlight",false);
 	},
-	filterData: function(records, fields, doGroup, skipFirst) {
+	filterData: function(records, fields, args) {
+	    if(!args) args = {};
+	    let opts = {
+		doGroup:false,
+		skipFirst:false,
+		applyDateRange: true
+	    }
+	    $.extend(opts,args);
 	    let debug = displayDebug.filterData;
 	    let highlight =  this.getFilterHighlight();
 	    var startDate = this.getProperty("startDate");
@@ -3640,7 +3828,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
-            if(doGroup || this.requiresGrouping()) {
+            if(opts.doGroup || this.requiresGrouping()) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
@@ -3682,7 +3870,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var filter= this.filters[i];
 			ok = filter.isRecordOk(record);
 		    }
-		    if(skipFirst && rowIdx==0) {
+		    if(opts.skipFirst && rowIdx==0) {
 			ok = true;
 		    }
 		    if(highlight) {
@@ -5979,7 +6167,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(debug) console.log("checkSearchBar-done calling animation.init");
 		    if(!this.minDateObj) {
 			if(debug) console.log("checkSearchBar-calling setDateRange");
-			this.setDateRange(animation.begin, animation.end);
+			if(this.getProperty("animationFilter", true)) {
+			    this.setDateRange(animation.begin, animation.end);
+			}
 			if(debug) console.log("checkSearchBar-done calling setDateRange");
 		    }
 		}
@@ -6130,7 +6320,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	animationStart: function(animation) {
 	},
 	animationApply: function(animation, skipUpdateUI) {
-	    this.setDateRange(animation.begin, animation.end);
+	    if(this.getProperty("animationFilter", true))
+		this.setDateRange(animation.begin, animation.end);
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
 		//		var t1 = new Date();
@@ -11084,7 +11275,6 @@ RequestMacro.prototype = {
 
 
 
-
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -15020,112 +15210,40 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
             }
 
-
-
 	    if(debug) {
 		for(var i=0;i<dataTable.getNumberOfColumns();i++)
 		    console.log("col:" + i +" " + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
 	    }
-
-	    var annotationLabelField = this.getFieldById(null,this.getProperty("annotationLabelField"));
-	    var annotationFields = this.getFieldsByIds(null,this.getProperty("annotationFields"));
-	    var annotations = this.getProperty("annotations");
-	    if(annotations) annotationFields = [];
-	    if(annotationFields.length>0) {
-                dataTable.addColumn({
-                    type: 'string',
-                    role: 'annotation',
-                    'p': {
-                        'html': true
-                    }
-                });
-		dataTable.addColumn({
-                    type: 'string',
-                    role: 'annotationText',
-                    'p': {
-                        'html': true
-                    }
-                });
+	    if(this.getProperty("annotations") ||  this.getProperty("annotationFields")) {
+		let clonedList = Utils.cloneList(dataList);
+		clonedList.shift();
+		this.annotations  = new Annotations(this,clonedList);
+		if(this.annotations.hasFields()) {
+                    dataTable.addColumn({
+			type: 'string',
+			role: 'annotation',
+			'p': {
+                            'html': true
+			}
+                    });
+		    dataTable.addColumn({
+			type: 'string',
+			role: 'annotationText',
+			'p': {
+                            'html': true
+			}
+                    });
+		}
 	    }
 
 
-
-
-	    var indexToAnnotation = null;
-	    if(annotations) {
-		indexToAnnotation = {};
-		var annotationsList=[];
-		var annotationsMap = {};
-		let legend = "";
-		var labelCnt = 0;
-		var toks = annotations.split(";");
-		for(var i=0;i<toks.length;i++) {
-		    var toks2 = toks[i].split(",");
-		    //index,label,description,url
-		    if(toks2.length<2) continue;
-		    var index = toks2[0].trim();
-		    var label = toks2[1];
-		    if(label.trim() == "") {
-			labelCnt++;
-			label  =""+labelCnt;
-		    }
-		    var desc = toks2.length<2?"":toks2[2];
-		    var url = toks2.length<3?null:toks2[3];
-		    let isDate = false;
-		    let dateLabel ="";
-		    if(index.match(/^[0-9]+$/)) {
-			index = parseFloat(index);
-		    } else {
-			if(index=="today") {
-			    index = Utils.formatDateYYYYMMDD(new Date());
-			}
-			index = Utils.parseDate(index,false);
-			isDate = true;
-			dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
-		    }
-		    var annotation = {label: label,description: desc   };
-		    annotationsList.push(annotation);
-		    annotation.index = isDate?index.getTime():index;
-		    var legendLabel = desc;
-		    if(url!=null) {
-			legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
-		    }
-		    legend+= HU.b(label)+":" + legendLabel+" ";
-		}
-		if(this.getProperty("showAnnotationsLegend")) {
+	    if(this.annotations && this.annotations.isEnabled()) {
+		if(this.annotations.getShowLegend()) {
 		    //Pad the left to align with  the chart axis
 		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
-					    HU.div([CLASS, "display-chart-legend"],legend)
+					    HU.div([CLASS, "display-chart-legend"],this.annotations.getLegend())
 					    +"</td></tr></table>");
 		}
-		for(var aidx=0;aidx<annotationsList.length;aidx++) {
-		    var annotation = annotationsList[aidx];
-
-		    var minIndex = null;
-		    var minDistance = null;
-		    for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-			var row = this.getDataValues(dataList[rowIdx]);
-			var index = row[0];
-			if(index.v) index=  index.v;
-			if(index.getTime) index = index.getTime();
-			var distance = Math.abs(annotation.index-index);
-			if(minIndex == null) {
-			    minIndex = rowIdx;
-			    minDistance = distance;
-			} else {
-			    if(distance<minDistance) {
-				minIndex = rowIdx;
-				minDistance = distance;
-			    }
-			}
-		    }
-		    if(minIndex!=null) {
-			indexToAnnotation[minIndex] = annotation;
-		    }
-		}
-	    }
-
-	    if(indexToAnnotation) {
 		dataTable.addColumn({
                     type: 'string',
                     role: 'annotation',
@@ -15141,6 +15259,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     }
                 });
 	    }
+
 
 	    var annotationCnt=0;
 
@@ -15259,11 +15378,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			break;
 		    }
                 }
-		if(annotationFields.length>0) {
+		if(this.annotations && this.annotations.hasFields()) {
                     if (theRecord) {
 			var desc = "";
-			annotationFields.map(f=>{
-			    var d = ""+theRecord.getValue(f.getIndex());
+			this.annotations.getFields().map(f=>{
+			    let d = ""+theRecord.getValue(f.getIndex());
 			    if(d!="")
 				desc+= (d+"<br>");
 			});
@@ -15272,7 +15391,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			annotationCnt++;
 			var label = null; 
 			if(desc.trim().length>0) {
-			    label =""+( annotationLabelField?theRecord.getValue(annotationLabelField.getIndex()):(annotationCnt))
+			    label =""+( this.annotations.labelField?theRecord.getValue(this.annotations.labelField.getIndex()):(annotationCnt))
 			    if(label.trim().length==0) label = ""+annotationCnt;
 			}
 			if(debug && rowIdx<debugRows) {
@@ -15286,8 +15405,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    console.log("No records for annotation");
 		    }
 		}
-		if(indexToAnnotation) {
-		    let annotation = indexToAnnotation[rowIdx];
+		if(this.annotations &&  this.annotations.isEnabled()) {
+		    let annotation = this.annotations.getAnnotation(rowIdx);
 		    if(annotation) {
 			if(debug && rowIdx<debugRows) {
 			    console.log("\t annotation:" + annotation.label);
@@ -15342,7 +15461,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 minorGridlines: {},		
                 textStyle: {},
             };
-	    chartOptions.annotations = {
+	    chartOptions.xannotations = {
 		textStyle: {
 		    fontSize: this.getProperty('annotationsFontSize',12),
 		    color: this.getProperty('annotationsTextColor')
@@ -16388,7 +16507,6 @@ function SankeyDisplay(displayManager, id, properties) {
             return true;
         },
         makeDataTable: function(dataList, props, selectedFields) {
-	    //		dataList = this.filterData(dataList, selectedFields,false,true);
             if (!this.getProperty("doCategories", false)) {
                 var values = this.makeDataArray(dataList);
                 return google.visualization.arrayToDataTable(values);
@@ -16469,7 +16587,7 @@ function WordtreeDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
             //null ->get all data
             var root = this.getProperty("treeRoot", "root");
-            var records = this.filterData(null, selectedFields, false,true);
+            var records = this.filterData(null, selectedFields, {skipFirst:true});
             var fields = this.getSelectedFields(this.getData().getRecordFields());
             var valueField = this.getFieldById(null, this.getProperty("colorBy"));
             var values = [];
@@ -17038,7 +17156,7 @@ function TreemapDisplay(displayManager, id, properties) {
             });
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            var records = this.filterData(null,null,false,true);
+            var records = this.filterData(null,null,{skipFirst:true});
             if (!records) {
                 return null;
             }
@@ -17139,7 +17257,7 @@ function TimerangechartDisplay(displayManager, id, properties) {
             return new google.visualization.Timeline(chartDiv);
         },
         makeDataTable: function(dataList, props, selectedFields) {
-	    var records = this.filterData(null,null,false,true);
+	    var records = this.filterData(null,null,{skipFirst:true});
             var strings = [];
             var stringField = this.getFieldOfType(selectedFields, "string");
             if (!stringField)
@@ -21754,8 +21872,53 @@ function RamaddaTextDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
+	handleAnnotation: function() {
+	    let annotation = null;
+	    let template = this.getProperty("template","${date} - ${description}");
+	    let  macros = Utils.tokenizeMacros(template);
+	    let attrs = {};
+	    let date = null;
+	    if(this.selectedRecord) {
+		annotation = this.annotations.getAnnotationFromDate(date = this.selectedRecord.getDate());
+	    }
+	    if(!annotation) {
+		annotation = this.annotations.getAnnotationFromDate(date=this.getAnimation().getBeginTime());
+	    }
+	    if(date) {
+		attrs.date = date;
+	    }  else {
+		attrs.date = "";
+	    }
+	    if(!annotation) {
+		this.setContents("");
+		return;
+	    }
+	    attrs.description = annotation.description;
+	    attrs.label = annotation.label;
+	    if(this.annotations.getShowLegend()) {
+		attrs.legend  = this.annotations.getLegend();
+	    } else {
+		attrs.legend  = "";
+	    }
+	    let html =  macros.apply(attrs);
+	    if(this.getProperty("decorate",true)) {
+		html = this.getMessage(html);
+	    }
+	    this.setContents(html);
+	},
 	updateUI: function() {
             SUPER.updateUI.call(this);
+	    if(this.getProperty("annotations")) {
+		var pointData = this.getData();
+		if (pointData == null) return;
+		if(!this.annotations) {
+		    this.annotations  = new Annotations(this,this.filterData());
+		} 
+		if(this.annotations.isEnabled()) {
+		    this.handleAnnotation();
+		    return;
+		}
+	    }
 	    if(this.selectedRecord) {
 		this.setContents(this.getRecordHtml(this.selectedRecord));
 	    } else  if(this.getPropertyShowDefault()) {
@@ -25676,6 +25839,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.handleEventEntriesChanged(pair.source, pair.entries);
             }
 
+
             if (this.layerEntries) {
                 var selectCallback = function(layer) {
                     _this.handleLayerSelect(layer);
@@ -25687,6 +25851,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 for (var i = 0; i < toks.length; i++) {
                     var tok = toks[i];
                     var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + tok;
+		    console.log("kml layer");
                     this.map.addKMLLayer("layer", url, true, selectCallback, unselectCallback);
                     //TODO: Center on the kml
                 }
@@ -25695,12 +25860,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.getPropertyShowLayers()) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
-                    if (_this.kmlLayer != null) {
-			var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.kmlLayer;
+                    if (_this.getProperty("kmlLayer")) {
+			var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer");
 			_this.addBaseMapLayer(url, true);
                     }
-                    if (_this.geojsonLayer != null) {
-			url = _this.getRamadda().getEntryDownloadUrl(_this.geojsonLayer);
+                    if (_this.getProperty("geojsonLayer")) {
+			url = _this.getRamadda().getEntryDownloadUrl(_this.getProperty("geojsonLayer"));
 			_this.addBaseMapLayer(url, false);
                     }
 		},500);
@@ -25733,12 +25898,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     strokeWidth: this.getProperty("vectorLayerStrokeWidth",1),
 		}
                 if (isKml)
-                    this.map.addKMLLayer(this.kmlLayerName, url, this.doDisplayMap(), selectFunc, null, attrs,
+                    this.map.addKMLLayer(this.getProperty("kmlLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
 					 function(map, layer) {
 					     _this.baseMapLoaded(layer, url);
 					 }, !hasBounds);
                 else
-                    this.map.addGeoJsonLayer(this.geojsonLayerName, url, this.doDisplayMap(), selectFunc, null, attrs,
+                    this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectFunc, null, attrs,
 					     function(map, layer) {
 						 _this.baseMapLoaded(layer, url);
 					     }, !hasBounds);
@@ -25773,7 +25938,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         doDisplayMap: function() {
             if (!this.getPropertyShowLayers()) return false;
             if (!this.getProperty("displayAsMap", true)) return false;
-            if(this.kmlLayer != null || this.geojsonLayer!=null) {
+            if(this.getProperty("kmlLayer") || this.getProperty("geojsonLayer")) {
 		return this.showVectorLayer;
 	    }
         },
@@ -25917,7 +26082,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var layer;
                 if (type == "geo_geojson") {
                     var url = entry.getRamadda().getEntryDownloadUrl(entry);
-                    layer = this.map.addGeoJsonLayer(this.geojsonLayerName, url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
+                    layer = this.map.addGeoJsonLayer(this.getProperty("geojsonLayerName"), url, this.doDisplayMap(), selectCallback, unselectCallback, null, null, true);
                 } else {
                     var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + entry.getId();
                     layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback, null, null, true);
@@ -26246,28 +26411,28 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.selectedMarker = marker;
         },
         applyVectorMap: function(force, textGetter, args) {
-	    if(!args) args = {};
             if (!force && this.vectorMapApplied) {
                 return;
             }
-            if (!this.doDisplayMap() || !this.vectorLayer) {
+            if (!this.doDisplayMap() || !this.vectorLayer || !this.points) {
                 return;
             }
+	    
+	    if(!args) args = {};
 	    let debug = false;
 	    if(debug) console.log("applyVectorMap");
 	    if(!textGetter) textGetter  = this.textGetter;
 
-	    var linkField=this.getFieldById(null,this.getProperty("linkField"));
-	    var linkFeature=this.getProperty("linkFeature");
-            var features = this.vectorLayer.features.slice();
+	    let linkField=this.getFieldById(null,this.getProperty("linkField"));
+	    let linkFeature=this.getProperty("linkFeature");
+            let features = this.vectorLayer.features.slice();
             let allFeatures = features.slice();
-	    var recordToFeature = {};
+	    let recordToFeature = {};
 	    if(debug) console.log("\t#features:" + features.length);
 
-	    if(!this.points) return;
 
 	    this.points.forEach(point=>{
-		var record = point.record;
+		let record = point.record;
 		let feature = record.getDisplayProperty(this,"feature");
 		if(feature)  recordToFeature[record.getId()] = feature;
 	    });
@@ -26288,12 +26453,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 
 		features.forEach(feature=>{
-		    var attrs = feature.attributes;
-		    var ok = false;
-		    for (var attr in attrs) {
+		    let attrs = feature.attributes;
+		    let ok = false;
+		    for (let attr in attrs) {
 			if(linkFeature==attr) {
 			    ok  = true;
-			    var value = this.map.getAttrValue(attrs, attr);
+			    let value = this.map.getAttrValue(attrs, attr);
 			    let debug = false;
 			    if(value) {
 				if(debug)
@@ -26321,13 +26486,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 	    }
 
-	    var j=0;
+	    let j=0;
 	    features.forEach((feature,idx)=>{
 		feature.wasPruned = feature.pruned;
 		feature.pruned = false;
 		feature.newStyle=null;
-		if(feature.style)
+		if(feature.style) {
 		    feature.style.display ="inline-block";
+		}
 		feature.featureIndex = j++;
 		feature.featureMatched = false;
 		feature.pointCount = 0;
@@ -26337,20 +26503,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             this.vectorMapApplied = true;
 
-	    var maxExtent = null;
-            var circles = this.points;
-	    var doCount = this.getProperty("colorByCount",false);
-	    var matchedFeatures = [];
-	    var seen = {};
-	    var maxCnt = -1;
-	    var minCnt = -1;
+	    let maxExtent = null;
+            let circles = this.points;
+	    let doCount = this.getProperty("colorByCount",false);
+	    let matchedFeatures = [];
+	    let seen = {};
+	    let maxCnt = -1;
+	    let minCnt = -1;
 
 	    this.points.forEach(point=>{
                 if (point.style && point.style.display == "none") return;
-		var record = point.record;
-                var center = point.center;
-		var tmp = {index:-1,maxExtent: maxExtent};
-		var matchedFeature = recordToFeature[record.getId()];
+		let record = point.record;
+                let center = point.center;
+		let tmp = {index:-1,maxExtent: maxExtent};
+		let matchedFeature = recordToFeature[record.getId()];
 		if(matchedFeature) {
 		    matchedFeature.featureMatched = true;
 		    if (matchedFeature.geometry) {
@@ -26389,9 +26555,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    });
 
+
+
 	    if(!doCount) {
-		for(var i=0;i<matchedFeatures.length;i++) {
-		    var matchedFeature = matchedFeatures[i];
+		for(let i=0;i<matchedFeatures.length;i++) {
+		    let matchedFeature = matchedFeatures[i];
 		    style = matchedFeature.style;
 		    if (!style) style = {
 			"stylename": "from display",
@@ -26399,7 +26567,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    style.display = null;
 		    let newStyle = {};
 		    $.extend(newStyle,style);
-		    var circle = matchedFeature.circles[0];
+		    let circle = matchedFeature.circles[0];
 		    $.extend(newStyle, circle.style);
 		    matchedFeature.newStyle=newStyle;
 		    matchedFeature.popupText = circle.text;
@@ -26408,22 +26576,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
 
-	    var prune = this.getProperty("pruneFeatures", false);
+	    let prune = this.getProperty("pruneFeatures", false);
 	    if(doCount) {
-		var colors = this.getColorTable(true);
+		let colors = this.getColorTable(true);
 		if (colors == null) {
 		    colors = Utils.ColorTables.grayscale.colors;
 		}
-		var range = maxCnt-minCnt;
-		var labelSuffix = this.getProperty("doCountLabel","points");
-		for (var j = 0; j < features.length; j++) {
-		    var feature = features[j];
-		    var percent = range==0?0:(feature.pointCount - minCnt) /range;
-                    var index = parseInt(percent * colors.length);
+		let range = maxCnt-minCnt;
+		let labelSuffix = this.getProperty("doCountLabel","points");
+		for (let j = 0; j < features.length; j++) {
+		    let feature = features[j];
+		    let percent = range==0?0:(feature.pointCount - minCnt) /range;
+                    let index = parseInt(percent * colors.length);
                     if (index >= colors.length) index = colors.length - 1;
                     else if (index < 0) index = 0;
-		    var color= colors[index];
-		    var style = feature.style;
+		    let color= colors[index];
+		    let style = feature.style;
 		    if (!style) style = {
 			"stylename": "from display",
 		    };
@@ -26448,12 +26616,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.displayColorTable(colors, ID_COLORTABLE, minCnt,maxCnt,{});
 	    } else {
 		if(prune) {
-		    for (var i = 0; i < features.length; i++) {
-			var feature = features[i];
+		    for (let i = 0; i < features.length; i++) {
+			let feature = features[i];
 			if(feature.featureMatched) {
 			    continue;
 			}
-			var style = feature.style;
+			let style = feature.style;
 			if (!style) style = {
 			    "stylename": "from display"
 			};
@@ -26466,9 +26634,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    }
 
-
 	    let redrawCnt = 0;
 	    allFeatures.forEach((feature,idx)=>{
+		if(!feature.newStyle) feature.newStyle={};
+
+//		if(!feature.featureMatched)
+//		    feature.newStyle.fillColor="green";
+
+
 		if(feature.wasPruned && !feature.pruned ||
 		   !feature.style ||
 		   (feature.newStyle.display && 
@@ -26476,6 +26649,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    feature.newStyle.display!=feature.style.display) ||
 		   feature.style.fillColor!=feature.newStyle.fillColor) {
 		    feature.style = feature.newStyle;
+		    if(!feature.style.fillColor) {
+			feature.style.fillColor = "rgba(230,230,230,0.5)";
+			feature.style.strokeColor = "rgba(200,200,200,0.5)";
+			feature.style.strokeWidth=1;
+		    }
 		    redrawCnt++;
 		    this.vectorLayer.drawFeature(feature);
 		}
@@ -31047,14 +31225,13 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    var records = this.filterData();
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
-	    if(records) {
-		var colorBy = this.getColorByInfo(records);
-		if(colorBy.index>=0) {
-		    records.map(record=>{
-			color =  colorBy.getColor(record.getData()[colorBy.index], record);
-		    });
-		    colorBy.displayColorTable();
-		}
+	    if(!records) return;
+	    var colorBy = this.getColorByInfo(records);
+	    if(colorBy.index>=0) {
+		records.map(record=>{
+		    color =  colorBy.getColor(record.getData()[colorBy.index], record);
+		});
+		colorBy.displayColorTable();
 	    }
 	}});
 }

@@ -741,14 +741,13 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    var records = this.filterData();
 	    this.writeHtml(ID_DISPLAY_CONTENTS, "");
-	    if(records) {
-		var colorBy = this.getColorByInfo(records);
-		if(colorBy.index>=0) {
-		    records.map(record=>{
-			color =  colorBy.getColor(record.getData()[colorBy.index], record);
-		    });
-		    colorBy.displayColorTable();
-		}
+	    if(!records) return;
+	    var colorBy = this.getColorByInfo(records);
+	    if(colorBy.index>=0) {
+		records.map(record=>{
+		    color =  colorBy.getColor(record.getData()[colorBy.index], record);
+		});
+		colorBy.displayColorTable();
 	    }
 	}});
 }

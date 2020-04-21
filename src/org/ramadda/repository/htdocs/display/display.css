@@ -18,7 +18,10 @@
     pointer-events: none;
 }
 
+/** Don't do this for now as it disables the annotation tooltip
 svg > g > g:last-child { pointer-events: none }
+**/
+
 
 .display-tooltip {
     max-width:600px;

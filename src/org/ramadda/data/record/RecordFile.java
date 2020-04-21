@@ -671,8 +671,7 @@ public abstract class RecordFile {
         }
 
         try {
-            System.err.println("path:" + path);
-
+	    //            System.err.println("path:" + path);
             //            return Utils.doMakeInputStream(path, buffered);
             return IO.doMakeInputStream(path, buffered);
         } catch (IOException ioe) {
