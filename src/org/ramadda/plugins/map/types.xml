@@ -54,7 +54,7 @@
 {{gpx.stats}}
 </center>
 <p>
-  {{group showMenu="true" xmapVar="gpxMap${entryid}"}}
+  {{group showMenu="false" xmapVar="gpxMap${entryid}"}}
 +row
 :col-2
 +col-8
