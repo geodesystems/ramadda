@@ -1533,7 +1533,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        "showResource", true);
             if ( !details) {
                 return entry.getTypeHandler().getEntryContent(myRequest,
-                        entry, false, showResource).toString();
+                        entry, false, showResource, props).toString();
             }
 
             return getRepository().getHtmlOutputHandler().getInformationTabs(
@@ -2720,11 +2720,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                                    boxClass + boxStyle);
                     if (showHeading) {
-                        HtmlUtils.div(sb,
-                                      HtmlUtils.href(urls.get(i),
-                                          titles.get(i)),
-				      HtmlUtils.title(titles.get(i)) +
-				      headingClass);
+                        HtmlUtils.div(
+                            sb, HtmlUtils.href(urls.get(i), titles.get(i)),
+                            HtmlUtils.title(titles.get(i)) + headingClass);
                     }
                     String displayHtml = contents.get(i);
                     HtmlUtils.div(sb, displayHtml,
@@ -3524,6 +3522,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     private String makeCard(Request request, WikiUtil wikiUtil,
                             Hashtable props, Entry entry)
             throws Exception {
+
         StringBuilder card = new StringBuilder();
         HtmlUtils.open(card, HtmlUtils.TAG_DIV,
                        HtmlUtils.cssClass("ramadda-card"));
@@ -3533,8 +3532,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                           true);
         if (showHeading) {
             HtmlUtils.div(card, HtmlUtils.href(entryUrl, entry.getName()),
-			  HtmlUtils.title(entry.getName()) +
-                          HtmlUtils.cssClass("ramadda-subheading"));
+                          HtmlUtils.title(entry.getName())
+                          + HtmlUtils.cssClass("ramadda-subheading"));
         }
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
                                           false);
@@ -3584,22 +3583,24 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String  inner;
             boolean popup = getProperty(wikiUtil, props, "popup", true);
             if (popup) {
-		boolean popupResource = getProperty(wikiUtil, props, "popupResource", false);
-		String popupGroup = getProperty(wikiUtil, props, "popupPrefix",
-						"popupgallery");
+                boolean popupResource = getProperty(wikiUtil, props,
+                                            "popupResource", false);
+                String popupGroup = getProperty(wikiUtil, props,
+                                        "popupPrefix", "popupgallery");
                 String titleId = HtmlUtils.getUniqueId("id");
                 String caption = " <a href='" + entryUrl + "'>"
                                  + entry.getName() + "</a> ";
-		String popupUrl = imageUrl;
-		if(popupResource) {
-		    String path = entry.getResource().getPath().toLowerCase();
-		    if(path.endsWith("pdf") || Utils.isImage(path)) {
-			popupUrl = entry.getTypeHandler().getEntryResourceUrl(request,entry);
-		    }
-		}
+                String popupUrl = imageUrl;
+                if (popupResource) {
+                    String path = entry.getResource().getPath().toLowerCase();
+                    if (path.endsWith("pdf") || Utils.isImage(path)) {
+                        popupUrl = entry.getTypeHandler().getEntryResourceUrl(
+                            request, entry);
+                    }
+                }
                 inner =
                     HtmlUtils.href(
-				   popupUrl, img,
+                        popupUrl, img,
                         HtmlUtils.attr("data-caption", caption)
                         + HtmlUtils.attr(
                             "id",
@@ -3623,6 +3624,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         HtmlUtils.close(card, HtmlUtils.TAG_DIV);
 
         return card.toString();
+
 
     }
 
@@ -3680,13 +3682,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 options.append("false");
             }
 
-	    if(getProperty(wikiUtil, props,"popupIframe",false)) {
-		//		options.append(",width:600");
-		//		options.append(",height:300");
-		options.append(",type:'iframe'");
-	    }
+            if (getProperty(wikiUtil, props, "popupIframe", false)) {
+                //              options.append(",width:600");
+                //              options.append(",height:300");
+                options.append(",type:'iframe'");
+            }
 
-	    
+
             options.append("}");
 
             if (wikiUtil != null) {

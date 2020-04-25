@@ -1199,7 +1199,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         request.put(WikiConstants.ATTR_SHOWTITLE, "false");
         basicSB.append(entry.getTypeHandler().getEntryContent(request, entry,
-                false, true));
+                false, true, null));
 
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());

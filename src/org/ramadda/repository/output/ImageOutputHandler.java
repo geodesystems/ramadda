@@ -1058,7 +1058,7 @@ public class ImageOutputHandler extends OutputHandler {
                 request.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML);
                 String title =
                     entry.getTypeHandler().getEntryContent(request, entry,
-                        true, false).toString();
+                        true, false, null).toString();
                 request.put(ARG_OUTPUT, output);
                 title = title.replace("\"", "\\\"");
                 title = title.replace("\n", " ");
