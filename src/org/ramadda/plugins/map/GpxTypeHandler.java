@@ -67,10 +67,6 @@ import java.util.List;
  */
 public class GpxTypeHandler extends PointTypeHandler {
 
-
-    /** _more_ */
-    private SimpleDateFormat hoursSdf = new SimpleDateFormat("HH:mm:ss");
-
     /** _more_ */
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
 
@@ -143,6 +139,21 @@ public class GpxTypeHandler extends PointTypeHandler {
             getStorageManager().readSystemResource(entry.getFile()));
     }
 
+    private String digit(int t) {
+	if(t<10) return "0" + t;
+	return ""+t;
+    }
+
+    private String formatTime(double t) {
+	String fmt = "";
+	fmt+=digit((int)t);
+	double minutes = 60*(t-(int)t);
+	fmt+=":"+digit((int)(minutes));
+	double seconds = 60*(minutes-(int)minutes);
+	fmt+=":"+digit((int)(seconds));
+	return fmt;
+    }
+
     /**
      * _more_
      *
@@ -164,7 +175,6 @@ public class GpxTypeHandler extends PointTypeHandler {
             throws Exception {
 
         if (tag.equals("gpx.stats")) {
-            StringBuilder sb = new StringBuilder();
             //            initializeNewEntry(request, entry,false);
             //            getEntryManager().updateEntry(request, entry);
             double distance = (Double) entry.getValue(IDX_DISTANCE,
@@ -200,17 +210,14 @@ public class GpxTypeHandler extends PointTypeHandler {
                 return "";
             }
 
-
-            String totalFmt = hoursSdf.format((long) (totalTime * 60 * 60
-                                  * 1000));
-            String movingFmt = hoursSdf.format((long) (movingTime * 60 * 60
-                                   * 1000));
-
-
+	    
+	    String totalFmt = formatTime(totalTime);
+            String movingFmt = formatTime(movingTime);
+            StringBuilder sb = new StringBuilder();
             sb.append(
                 HtmlUtils.importCss(
-                    ".gpx-stats td {padding-left:7px; padding-right:7px;}\n.gpx-stats .gpx-stats-data {font-size:150%;    font-weight: bold;}\n.gpx-stats .gpx-stats-labels td {color: gray;}"));
-            sb.append("<table class=\"gpx-stats\">");
+                    ".gpx-stats td {padding-left:10px; padding-right:10px;}\n.gpx-stats .gpx-stats-data {font-size:150%;    font-weight: bold;}\n.gpx-stats .gpx-stats-labels td {color: gray;}"));
+            sb.append("<table cellpadding=0 cellspacing=0 class=\"gpx-stats\">");
             sb.append(HtmlUtils.row(HtmlUtils.cols(distance + " miles",
                     gain + " ft", speed + " mph", totalFmt,
                     movingFmt), "class=gpx-stats-data"));
@@ -604,7 +611,6 @@ public class GpxTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         SimpleDateFormat sdf  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         String           dttm = "2010-01-27T00:39:16Z";
         sdf.parse("2010-01-27T00:39:00Z");

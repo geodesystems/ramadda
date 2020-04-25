@@ -29,7 +29,7 @@
      <wiki><![CDATA[
 +section title="{{name}}"
 {{description}}
-{{map width="-100" height="450" details="true" listentries="true" showCheckbox="true"}}
+{{map width="100%" height="450" details="true" listentries="true" showCheckbox="true"}}
 {{resource includeicon="true"}}
 -section
 ]]>
@@ -53,21 +53,27 @@
 <center>
 {{gpx.stats}}
 </center>
-<p>
-  {{group showMenu="false" xmapVar="gpxMap${entryid}"}}
+{{group showMenu="false"}}
 +row
 :col-2
 +col-8
-  {{display_map  showMenu="false" layoutHere="true" showBounds="false" isTrajectory="true" width="100%" height="400" details="true" defaultMapLayer="esri.topo" 
+  {{display_map  recordHighlightStrokeWidth=1 recordHighlightStrokeColor=#000 recordHighlightRadius=10 recordHighlightFillColor=blue showMenu="false" layoutHere="true" doPopup=false showBounds="false" isTrajectory="true" width="100%" height="400" details="true" defaultMapLayer="esri.topo" 
   mapVar="gpxMap${entryid}" }}
 -col
 -row
-  {{display type="linechart" showTitle="false" layoutHere="true" showMenu="true" fields="point_altitude,speed"  errorMessage=" "  }}
+  {{display type="linechart" propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true" fields="point_altitude,speed"  errorMessage=" "  chartRight=75}}
 
 ----
 {{gallery message=""}}
 {{tabs message="" entries.filter="type:media_video_quicktime;media_audiofile"}}
-{{information showTitle="false"}}
++row
++col-6
+{{information showTitle="false" showDetails=false}}
+-col
++col-6
+{{information showTitle="false" showBase=false}}
+-col
+-row
 -section
 ]]>
 </wiki>
