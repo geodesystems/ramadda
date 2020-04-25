@@ -140,37 +140,6 @@ function DisplayManager(argId, argProperties) {
                 entry: entry
             });
         },
-        handleEventMapClick: function(mapDisplay, lon, lat) {
-            var indexObj = [];
-            var records = null;
-            for (var i = 0; i < this.dataList.length; i++) {
-                var pointData = this.dataList[i];
-                records = pointData.getRecords();
-                if (records != null) break;
-            }
-            var indexObj = [];
-            var closest = RecordUtil.findClosest(records, lon, lat, indexObj);
-            if (closest != null) {
-		var fields = mapDisplay.getFieldsByIds(null, mapDisplay.getProperty("filterFieldsToPropagate"));
-		fields.map(field=>{
-		    var args = {
-			property: PROP_FILTER_VALUE,
-			fieldId:field.getId(),
-			value:closest.getValue(field.getIndex())
-		    };
-		    mapDisplay.propagateEvent("handleEventPropertyChanged", args);
-		});
-
-                this.propagateEventRecordSelection(mapDisplay, pointData, {
-                    index: indexObj.index
-                });
-            }
-            this.notifyEvent("handleEventMapClick", mapDisplay, {
-                display: mapDisplay,
-                lon: lon,
-                lat: lat
-            });
-        },
         propagateEventRecordSelection: function(source, pointData, args) {
             var index = args.index;
             if (pointData == null && this.dataList.length > 0) {

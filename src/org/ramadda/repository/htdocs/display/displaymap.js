@@ -82,6 +82,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'iconSize',wikiValue:16},
 	{label:'Other map attributes'},
 	{p:'showRecordSelection',wikiValue:'false'},
+	{p:'recordHighlightShape',wikiValue:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
 	{p:'recordHighlightRadius',wikiValue:'20',tt:'Radius to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeWidth',wikiValue:'2',tt:'Stroke to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeColor',wikiValue:'red',tt:'Color to use to show other displays highlighted record'},
@@ -149,72 +150,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         features: [],
         myMarkers: {},
         mapEntryInfos: {},
-	xxgetWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
-		{inlineLabel:'Other map attributes'},
-		'showRecordSelection=false',
-		['recordHighlightRadius=20','Radius to use to show other displays highlighted record'],
-		['recordHighlightStrokeWidth=2','Stroke to use to show other displays highlighted record'],
-		['recordHighlightStrokeColor=red','Color to use to show other displays highlighted record'],
-		['recordHighlightFillColor=rgba(0,0,0,0)','Fill color to use to show other displays highlighted record'],
-		['unhighlightColor=#ccc','Fill color when records are unhighlighted with the filters'],
-		['unhighlightStrokeWidth=1','Stroke width for when records are unhighlighted with the filters'],
-		['unhighlightStrokeColor=#aaa','Stroke color for when records are unhighlighted with the filters'],
-		['unhighlightRadius=1','Radius for when records are highlighted with the filters'],
-                'vectorLayerStrokeColor=#000',
-		'vectorLayerFillColor=#ccc',
-		'vectorLayerFillOpacity=0.25',
-                'vectorLayerStrokeWidth=1',
-		['showMarkersToggle=true','Show the toggle checkbox for the marker layer'],
-		['showMarkersToggleLabel="label"','Label to use for checkbox'],
-		["showClipToBounds=true",'Show the clip bounds checkbox'],
-		['showMarkers=false', 'Hide the markers'],
-		"showLocationSearch=\"true\"",
-		'showLatLonPosition=false',
-		'showLayerSwitcher=false',
-		'showScaleLine=true',
-		'showZoomPanControl=true',
-		'showZoomOnlyControl=false',
-		'showLayers=false',
-		'enableDragPan=false',
-		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
-		['latField1=','Field id for segments']
-		['lonField1=','Field id for segments'],
-		['latField2=','Field id for segments'],
-		['lonField2=','Field id for segments'],
-		'inlinelabel:Heatmap Attributes',
-		['doHeatmap=true',"Grid the data into an image"],
-		['doGridPoints=true',"Display a image showing shapes or bars"],
-		'htmlLayerField=""',
-		'htmlLayerWidth=30',
-		'htmlLayerHeight=15',
-		'htmlLayerStyle="css style"',
-		['htmlLayerScale="2:0.75,3:1,4:2,5:3,6:4,7:6"',"zoomlevel:scale,..."],
-		['hm.showPoints="true"',"Also show the map points"],
-		"cellShape=rect|circle|vector",
-		['angleBy=field','field for angle of vectors'],
-		["cell3D=true","Draw 3d bars"],
-		"cellColor=color",
-		"cellFilled=true",
-		"cellSize=8",
-		["cellSizeH=20","Base height to scale by"],
-		'hm.operator="count|average|min|max"',
-		'hm.animationSleep="1000"',
-		'hm.reloadOnZoom=true',
-		['hm.groupByDate="true|day|month|year|decade"',"Group heatmap images by date"], 
-		['hm.groupBy="field id"',"Field to group heatmap images"], 
-		'hm.labelPrefix=""',
-		'hm.showToggle=""',
-		'hm.toggleLabel=""',
-		['hm.boundsScale=0.1',"Scale up the map bounds"],
-		['hm.filter="average5|average9|average25|gauss9|gauss25"',"Apply filter to image"],
-		'hm.filterPasses="1"',
-		'hm.filterThreshold="1"',
-		'hm.countThreshold="1"',
-	    ]);
-	},
-
-
         initDisplay: function() {
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
@@ -780,6 +715,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    points.push(new OpenLayers.Geometry.Point(lon,80));
                     this.highlightMarker = this.map.addPolygon(id, "highlight", points, attrs, null);
 		} else {
+		    attrs.graphicName = this.getProperty("recordHighlightShape");
 		    this.highlightMarker =  this.map.addPoint("highlight", point, attrs);
 		}
 		if(andCenter && this.getProperty("centerOnHighlight",false)) {
@@ -838,7 +774,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     pointData.handleEventMapClick(this, source, lon, lat);
                 }
             }
-            this.getDisplayManager().handleEventMapClick(this, lon, lat);
+	    if(!this.records) return;
+	    let indexObj = [];
+            let closest = RecordUtil.findClosest(this.records, lon, lat, indexObj);
+            if (!closest) return;
+	    this.propagateEventRecordSelection({record: closest});
+	    var fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
+	    fields.map(field=>{
+		var args = {
+		    property: PROP_FILTER_VALUE,
+		    fieldId:field.getId(),
+		    value:closest.getValue(field.getIndex())
+		};
+		this.propagateEvent("handleEventPropertyChanged", args);
+	    });
         },
 
         getPosition: function() {

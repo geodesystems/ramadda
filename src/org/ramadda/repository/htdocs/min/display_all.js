@@ -2367,6 +2367,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['filterHighlight=true',"Highlight the records"],
 		['showFilterHighlight=false',"show/hide the filter highlight widget"],
 		"acceptFilterEvent=false",
+		"propagateHighlightEvent=true",
 		['filterSliderImmediate=true',"Apply the change while sliding"],
 		"&lt;field&gt;.filterValue=\"\"",
 		"&lt;field&gt;.filterValues=\"\"",
@@ -15571,7 +15572,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!isNaN(this.getVAxisMinValue())) {
                 range[0] = this.getVAxisMinValue();
             } else if (defaultRanges.length>0) {
-                range[0] = defaultRanges[0][0];
+		if(this.getProperty("vAxisUseDefault")) {
+                    range[0] = defaultRanges[0][0];
+		}
             }
 
 	    if(this.getProperty("vAxisSharedRange")) {
@@ -15588,9 +15591,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
+
             if (!isNaN(range[0])) {
                 chartOptions.vAxis.minValue = range[0];
             }
+//	    console.log(JSON.stringify(chartOptions.vAxis,null,2));
             if (!isNaN(range[1])) {
                 chartOptions.vAxis.maxValue = range[1];
             }
@@ -15726,6 +15731,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
+
 	    this.chartOptions.bar = {groupWidth:"95%"}
             if (!Utils.isDefined(this.chartOptions.height)) {
                 this.chartOptions.height = "100%";
@@ -15736,7 +15742,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
-	    //	    console.log(JSON.stringify(chartOptions, null,2));
+//	    console.log(JSON.stringify(chartOptions.vAxis, null,2));
+	    chartOptions.vAxis = null;
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
@@ -15827,42 +15834,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 	addEvents: function(chart) {
             let _this = this;
-	    google.visualization.events.addListener(chart, 'onmouseover', function(event) {
-                mapVar = _this.getProperty("mapVar", null);
-                if (!Utils.stringDefined(mapVar)) {
-                    return;
-                }
-                row = event.row;
-                pointData = _this.dataCollection.getList()[0];
-                var fields = pointData.getRecordFields();
-                var records = pointData.getRecords();
-                var record = records[row];
-                map = ramaddaMapMap[mapVar];
-                if (map) {
-                    if (_this.mouseOverPoint)
-                        map.removePoint(_this.mouseOverPoint);
-                } else {}
-                if (record && map) {
-                    latField = null;
-                    lonField = null;
-                    for (i = 0; i < fields.length; i++) {
-                        if (fields[i].isFieldLatitude()) latField = fields[i];
-                        else if (fields[i].isFieldLongitude()) lonField = fields[i];
-                    }
-                    if (latField && lonField) {
-                        lat = record.getValue(latField.getIndex());
-                        lon = record.getValue(lonField.getIndex());
-                        _this.mouseOverPoint = map.addPoint(chartId, new OpenLayers.LonLat(lon, lat));
-                    }
-                }
-            });
+	    if(this.getProperty("propagateHighlightEvent")) {
+		google.visualization.events.addListener(chart, 'onmouseover', function(event) {
+                    pointData = _this.dataCollection.getList()[0];
+                    let fields = pointData.getRecordFields();
+                    let records = pointData.getRecords();
+	            let record = records[event.row];
+		    if(!record) return;
+		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
+		});
+	    }
             google.visualization.events.addListener(chart, 'select', function(event) {
                 _this.mapCharts(chart=>{
 		    if (chart.getSelection) {
-			var selected = chart.getSelection();
+			let selected = chart.getSelection();
 			if (selected && selected.length > 0) {
-                            var index = selected[0].row;
-			    var record = _this.indexToRecord[index];
+                            let index = selected[0].row;
+			    let record = _this.indexToRecord[index];
 			    if(record) {
 				_this.propagateEventRecordSelection({record: record});
 			    }
@@ -16991,6 +16979,7 @@ function BubbleDisplay(displayManager, id, properties) {
 		chartOptions.vAxis.minValue = y.min;
 		chartOptions.vAxis.maxValue = y.max;
 	    }
+
 
 
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
@@ -24799,37 +24788,6 @@ function DisplayManager(argId, argProperties) {
                 entry: entry
             });
         },
-        handleEventMapClick: function(mapDisplay, lon, lat) {
-            var indexObj = [];
-            var records = null;
-            for (var i = 0; i < this.dataList.length; i++) {
-                var pointData = this.dataList[i];
-                records = pointData.getRecords();
-                if (records != null) break;
-            }
-            var indexObj = [];
-            var closest = RecordUtil.findClosest(records, lon, lat, indexObj);
-            if (closest != null) {
-		var fields = mapDisplay.getFieldsByIds(null, mapDisplay.getProperty("filterFieldsToPropagate"));
-		fields.map(field=>{
-		    var args = {
-			property: PROP_FILTER_VALUE,
-			fieldId:field.getId(),
-			value:closest.getValue(field.getIndex())
-		    };
-		    mapDisplay.propagateEvent("handleEventPropertyChanged", args);
-		});
-
-                this.propagateEventRecordSelection(mapDisplay, pointData, {
-                    index: indexObj.index
-                });
-            }
-            this.notifyEvent("handleEventMapClick", mapDisplay, {
-                display: mapDisplay,
-                lon: lon,
-                lat: lat
-            });
-        },
         propagateEventRecordSelection: function(source, pointData, args) {
             var index = args.index;
             if (pointData == null && this.dataList.length > 0) {
@@ -25459,6 +25417,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'iconSize',wikiValue:16},
 	{label:'Other map attributes'},
 	{p:'showRecordSelection',wikiValue:'false'},
+	{p:'recordHighlightShape',wikiValue:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
 	{p:'recordHighlightRadius',wikiValue:'20',tt:'Radius to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeWidth',wikiValue:'2',tt:'Stroke to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeColor',wikiValue:'red',tt:'Color to use to show other displays highlighted record'},
@@ -25526,72 +25485,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         features: [],
         myMarkers: {},
         mapEntryInfos: {},
-	xxgetWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(), [
-		{inlineLabel:'Other map attributes'},
-		'showRecordSelection=false',
-		['recordHighlightRadius=20','Radius to use to show other displays highlighted record'],
-		['recordHighlightStrokeWidth=2','Stroke to use to show other displays highlighted record'],
-		['recordHighlightStrokeColor=red','Color to use to show other displays highlighted record'],
-		['recordHighlightFillColor=rgba(0,0,0,0)','Fill color to use to show other displays highlighted record'],
-		['unhighlightColor=#ccc','Fill color when records are unhighlighted with the filters'],
-		['unhighlightStrokeWidth=1','Stroke width for when records are unhighlighted with the filters'],
-		['unhighlightStrokeColor=#aaa','Stroke color for when records are unhighlighted with the filters'],
-		['unhighlightRadius=1','Radius for when records are highlighted with the filters'],
-                'vectorLayerStrokeColor=#000',
-		'vectorLayerFillColor=#ccc',
-		'vectorLayerFillOpacity=0.25',
-                'vectorLayerStrokeWidth=1',
-		['showMarkersToggle=true','Show the toggle checkbox for the marker layer'],
-		['showMarkersToggleLabel="label"','Label to use for checkbox'],
-		["showClipToBounds=true",'Show the clip bounds checkbox'],
-		['showMarkers=false', 'Hide the markers'],
-		"showLocationSearch=\"true\"",
-		'showLatLonPosition=false',
-		'showLayerSwitcher=false',
-		'showScaleLine=true',
-		'showZoomPanControl=true',
-		'showZoomOnlyControl=false',
-		'showLayers=false',
-		'enableDragPan=false',
-		["showSegments=\"true\"","If data has 2 lat/lon locations draw a line"],
-		['latField1=','Field id for segments']
-		['lonField1=','Field id for segments'],
-		['latField2=','Field id for segments'],
-		['lonField2=','Field id for segments'],
-		'inlinelabel:Heatmap Attributes',
-		['doHeatmap=true',"Grid the data into an image"],
-		['doGridPoints=true',"Display a image showing shapes or bars"],
-		'htmlLayerField=""',
-		'htmlLayerWidth=30',
-		'htmlLayerHeight=15',
-		'htmlLayerStyle="css style"',
-		['htmlLayerScale="2:0.75,3:1,4:2,5:3,6:4,7:6"',"zoomlevel:scale,..."],
-		['hm.showPoints="true"',"Also show the map points"],
-		"cellShape=rect|circle|vector",
-		['angleBy=field','field for angle of vectors'],
-		["cell3D=true","Draw 3d bars"],
-		"cellColor=color",
-		"cellFilled=true",
-		"cellSize=8",
-		["cellSizeH=20","Base height to scale by"],
-		'hm.operator="count|average|min|max"',
-		'hm.animationSleep="1000"',
-		'hm.reloadOnZoom=true',
-		['hm.groupByDate="true|day|month|year|decade"',"Group heatmap images by date"], 
-		['hm.groupBy="field id"',"Field to group heatmap images"], 
-		'hm.labelPrefix=""',
-		'hm.showToggle=""',
-		'hm.toggleLabel=""',
-		['hm.boundsScale=0.1',"Scale up the map bounds"],
-		['hm.filter="average5|average9|average25|gauss9|gauss25"',"Apply filter to image"],
-		'hm.filterPasses="1"',
-		'hm.filterThreshold="1"',
-		'hm.countThreshold="1"',
-	    ]);
-	},
-
-
         initDisplay: function() {
             SUPER.initDisplay.call(this);
 	    if(!HU.documentReady) {
@@ -26157,6 +26050,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    points.push(new OpenLayers.Geometry.Point(lon,80));
                     this.highlightMarker = this.map.addPolygon(id, "highlight", points, attrs, null);
 		} else {
+		    attrs.graphicName = this.getProperty("recordHighlightShape");
 		    this.highlightMarker =  this.map.addPoint("highlight", point, attrs);
 		}
 		if(andCenter && this.getProperty("centerOnHighlight",false)) {
@@ -26215,7 +26109,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     pointData.handleEventMapClick(this, source, lon, lat);
                 }
             }
-            this.getDisplayManager().handleEventMapClick(this, lon, lat);
+	    if(!this.records) return;
+	    let indexObj = [];
+            let closest = RecordUtil.findClosest(this.records, lon, lat, indexObj);
+            if (!closest) return;
+	    this.propagateEventRecordSelection({record: closest});
+	    var fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
+	    fields.map(field=>{
+		var args = {
+		    property: PROP_FILTER_VALUE,
+		    fieldId:field.getId(),
+		    value:closest.getValue(field.getIndex())
+		};
+		this.propagateEvent("handleEventPropertyChanged", args);
+	    });
         },
 
         getPosition: function() {

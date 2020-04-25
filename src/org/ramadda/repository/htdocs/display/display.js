@@ -834,6 +834,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['filterHighlight=true',"Highlight the records"],
 		['showFilterHighlight=false',"show/hide the filter highlight widget"],
 		"acceptFilterEvent=false",
+		"propagateHighlightEvent=true",
 		['filterSliderImmediate=true',"Apply the change while sliding"],
 		"&lt;field&gt;.filterValue=\"\"",
 		"&lt;field&gt;.filterValues=\"\"",

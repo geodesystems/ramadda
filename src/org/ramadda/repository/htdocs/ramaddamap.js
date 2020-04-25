@@ -52,6 +52,8 @@ const ramaddaCircleHiliteAttrs = {
 OpenLayers.Renderer.symbol.lightning = [0, 0, 4, 2, 6, 0, 10, 5, 6, 3, 4, 5, 0, 0];
 OpenLayers.Renderer.symbol.rectangle = [0, 0, 4, 0, 4, 10, 0, 10, 0, 0];
 OpenLayers.Renderer.symbol.church = [4, 0, 6, 0, 6, 4, 10, 4, 10, 6, 6, 6, 6, 14, 4, 14, 4, 6, 0, 6, 0, 4, 4, 4, 4, 0];
+OpenLayers.Renderer.symbol._x = [0, 0, 6,6,3,3,6,0,0,6,3,3];
+
 
 
 function createLonLat(lon, lat) {
@@ -3709,7 +3711,6 @@ RepositoryMap.prototype = {
 	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
         var center = new OpenLayers.Geometry.Point(point.x, point.y);
         center.transform(this.displayProjection, this.sourceProjection);
-	//	    cstyle.graphicName = "triangle";
         var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
         feature.center = center;
         feature.ramaddaId = id;

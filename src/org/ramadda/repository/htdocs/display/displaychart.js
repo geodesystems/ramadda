@@ -1302,7 +1302,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!isNaN(this.getVAxisMinValue())) {
                 range[0] = this.getVAxisMinValue();
             } else if (defaultRanges.length>0) {
-                range[0] = defaultRanges[0][0];
+		if(this.getProperty("vAxisUseDefault")) {
+                    range[0] = defaultRanges[0][0];
+		}
             }
 
 	    if(this.getProperty("vAxisSharedRange")) {
@@ -1319,9 +1321,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
+
             if (!isNaN(range[0])) {
                 chartOptions.vAxis.minValue = range[0];
             }
+//	    console.log(JSON.stringify(chartOptions.vAxis,null,2));
             if (!isNaN(range[1])) {
                 chartOptions.vAxis.maxValue = range[1];
             }
@@ -1457,6 +1461,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
+
 	    this.chartOptions.bar = {groupWidth:"95%"}
             if (!Utils.isDefined(this.chartOptions.height)) {
                 this.chartOptions.height = "100%";
@@ -1467,7 +1472,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
-	    //	    console.log(JSON.stringify(chartOptions, null,2));
+//	    console.log(JSON.stringify(chartOptions.vAxis, null,2));
+	    chartOptions.vAxis = null;
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
@@ -1558,42 +1564,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 	addEvents: function(chart) {
             let _this = this;
-	    google.visualization.events.addListener(chart, 'onmouseover', function(event) {
-                mapVar = _this.getProperty("mapVar", null);
-                if (!Utils.stringDefined(mapVar)) {
-                    return;
-                }
-                row = event.row;
-                pointData = _this.dataCollection.getList()[0];
-                var fields = pointData.getRecordFields();
-                var records = pointData.getRecords();
-                var record = records[row];
-                map = ramaddaMapMap[mapVar];
-                if (map) {
-                    if (_this.mouseOverPoint)
-                        map.removePoint(_this.mouseOverPoint);
-                } else {}
-                if (record && map) {
-                    latField = null;
-                    lonField = null;
-                    for (i = 0; i < fields.length; i++) {
-                        if (fields[i].isFieldLatitude()) latField = fields[i];
-                        else if (fields[i].isFieldLongitude()) lonField = fields[i];
-                    }
-                    if (latField && lonField) {
-                        lat = record.getValue(latField.getIndex());
-                        lon = record.getValue(lonField.getIndex());
-                        _this.mouseOverPoint = map.addPoint(chartId, new OpenLayers.LonLat(lon, lat));
-                    }
-                }
-            });
+	    if(this.getProperty("propagateHighlightEvent")) {
+		google.visualization.events.addListener(chart, 'onmouseover', function(event) {
+                    pointData = _this.dataCollection.getList()[0];
+                    let fields = pointData.getRecordFields();
+                    let records = pointData.getRecords();
+	            let record = records[event.row];
+		    if(!record) return;
+		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
+		});
+	    }
             google.visualization.events.addListener(chart, 'select', function(event) {
                 _this.mapCharts(chart=>{
 		    if (chart.getSelection) {
-			var selected = chart.getSelection();
+			let selected = chart.getSelection();
 			if (selected && selected.length > 0) {
-                            var index = selected[0].row;
-			    var record = _this.indexToRecord[index];
+                            let index = selected[0].row;
+			    let record = _this.indexToRecord[index];
 			    if(record) {
 				_this.propagateEventRecordSelection({record: record});
 			    }
@@ -2722,6 +2709,7 @@ function BubbleDisplay(displayManager, id, properties) {
 		chartOptions.vAxis.minValue = y.min;
 		chartOptions.vAxis.maxValue = y.max;
 	    }
+
 
 
 	    chartOptions.vAxis.viewWindowMode = this.getProperty("viewWindowMode","pretty");
