@@ -1099,14 +1099,16 @@ public class GenericTypeHandler extends TypeHandler {
     public StringBuilder getInnerEntryContent(Entry entry, Request request,
             TypeHandler typeHandler, OutputType output,
             boolean showDescription, boolean showResource,
-            boolean linkToDownload)
+					      boolean linkToDownload, Hashtable props)
             throws Exception {
         if (typeHandler == null) {
             typeHandler = this;
         }
         StringBuilder parentBuff = super.getInnerEntryContent(entry, request,
                                        typeHandler, output, showDescription,
-                                       showResource, linkToDownload);
+							      showResource, linkToDownload,props);
+	if(props!=null && Misc.equals(props.get("showDetails"),"false")) return parentBuff;
+
         //        if (shouldShowInHtml(request, entry, output)) {
         if (true) {
             StringBuilder myBuff = new StringBuilder();

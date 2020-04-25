@@ -2260,30 +2260,27 @@ public class TypeHandler extends RepositoryManager {
      */
     public StringBuilder getEntryContent(Request request, Entry entry,
                                          boolean showDescription,
-                                         boolean showResource)
+                                         boolean showResource,
+					 Hashtable props)
             throws Exception {
 
         StringBuilder sb     = new StringBuilder();
         OutputType    output = request.getOutput();
-        if (true) {
-            if (displayTemplatePath != null) {
-                String html =
-                    getRepository().getResource(displayTemplatePath);
-
-                return new StringBuilder(processDisplayTemplate(request,
-                        entry, html));
-            }
-            if (request.get(WikiConstants.ATTR_SHOWTITLE, true)) {
-                HtmlUtils.sectionHeader(
-                    sb, getPageHandler().getEntryHref(request, entry));
-            }
-            sb.append(HtmlUtils.formTable());
-            sb.append(getInnerEntryContent(entry, request, null, output,
-                                           showDescription, showResource,
-                                           true));
-            sb.append(HtmlUtils.formTableClose());
-        } else if (output.equals(XmlOutputHandler.OUTPUT_XML)) {}
-
+	if (displayTemplatePath != null) {
+	    String html =
+		getRepository().getResource(displayTemplatePath);
+	    return new StringBuilder(processDisplayTemplate(request,
+							    entry, html));
+	}
+	if (request.get(WikiConstants.ATTR_SHOWTITLE, true)) {
+	    HtmlUtils.sectionHeader(
+				    sb, getPageHandler().getEntryHref(request, entry));
+	}
+	sb.append(HtmlUtils.formTable());
+	sb.append(getInnerEntryContent(entry, request, null, output,
+				       showDescription, showResource,
+				       true,props));
+	sb.append(HtmlUtils.formTableClose());
         return sb;
 
     }
@@ -2927,7 +2924,7 @@ public class TypeHandler extends RepositoryManager {
     public StringBuilder getInnerEntryContent(Entry entry, Request request,
             TypeHandler typeHandler, OutputType output,
             boolean showDescription, boolean showResource,
-            boolean linkToDownload)
+					      boolean linkToDownload, Hashtable props)
             throws Exception {
 
         if (typeHandler == null) {
@@ -2935,8 +2932,11 @@ public class TypeHandler extends RepositoryManager {
         }
         if (parent != null) {
             return parent.getInnerEntryContent(entry, request, typeHandler,
-                    output, showDescription, showResource, linkToDownload);
+					       output, showDescription, showResource, linkToDownload,props);
         }
+
+        StringBuilder sb = new StringBuilder();
+	if(props!=null && Misc.equals(props.get("showBase"),"false")) return sb;
 
         boolean showDate = typeHandler.okToShowInHtml(entry, ARG_DATE, true);
         boolean showCreateDate = showDate
@@ -2955,7 +2955,6 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        StringBuilder sb = new StringBuilder();
         if (true || output.equals(OutputHandler.OUTPUT_HTML)) {
             OutputHandler outputHandler =
                 getRepository().getOutputHandler(request);

@@ -1184,7 +1184,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             info.append("<table class=\"formtable\">");
             info.append(entry.getTypeHandler().getInnerEntryContent(entry,
                     request, null, OutputHandler.OUTPUT_HTML, true, false,
-                    false));
+								    false,null));
 
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request, entry, urls);
