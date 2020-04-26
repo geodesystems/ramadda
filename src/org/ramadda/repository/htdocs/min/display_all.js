@@ -15743,7 +15743,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
 //	    console.log(JSON.stringify(chartOptions.vAxis, null,2));
-	    chartOptions.vAxis = null;
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
