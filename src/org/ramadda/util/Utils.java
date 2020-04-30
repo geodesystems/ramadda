@@ -2292,7 +2292,7 @@ public class Utils extends IO {
         return sb;
     }
 
-    /** _more_          */
+    /** _more_ */
     public static final String MULTILINE_END = "_multilineend_";
 
     /**
@@ -2320,10 +2320,12 @@ public class Utils extends IO {
             if (inEscape) {
                 sb       = append(c, sb, lines);
                 inEscape = false;
+
                 continue;
             }
             if (c == '\\') {
                 inEscape = true;
+
                 continue;
             }
             if (c == '{') {
@@ -2367,7 +2369,7 @@ public class Utils extends IO {
                 if (inBracket) {
                     sb = append(c, sb, lines);
                 } else {
-                    if (!inQuote) {
+                    if ( !inQuote) {
                         inQuote = true;
                     } else {
                         if (sb == null) {
@@ -2693,7 +2695,8 @@ public class Utils extends IO {
         cmd = "-change \"\" \"\"";
         for (Object tok : parseMultiLineCommandLine(cmd)) {
             System.err.println("\ttok:"
-                               + tok.toString().replaceAll("\n", "_NL_")+":");
+                               + tok.toString().replaceAll("\n", "_NL_")
+                               + ":");
         }
     }
 
