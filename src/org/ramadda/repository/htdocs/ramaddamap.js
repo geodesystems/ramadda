@@ -3424,10 +3424,19 @@ RepositoryMap.prototype = {
 
 
 
-    addEntryMarker:  function(id, location, iconUrl, markerName, text, type) {
+    addEntryMarker:  function(id, location, iconUrl, markerName, text, type, props) {
         marker = this.addMarker(id, location, iconUrl, markerName, text);
         marker.entryType = type;
         marker.entryId = id;
+	if(props && props.fillColor) {
+	    let pointStyle = {
+		pointRadius:props.radius||12,
+		fillColor:props.fillColor,
+		strokeWidth:props.strokeWidth,
+		strokeColor:props.strokeColor
+	    };
+	    this.addPoint(id, location, pointStyle,"");
+	}
     },
 
 
