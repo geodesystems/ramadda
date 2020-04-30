@@ -779,9 +779,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let closest = RecordUtil.findClosest(this.records, lon, lat, indexObj);
             if (!closest) return;
 	    this.propagateEventRecordSelection({record: closest});
-	    var fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
+
+	    //If we are highlighting a record then change the marker
+	    if(this.highlightMarker) {
+		this.highlightPoint(closest.getLatitude(),closest.getLongitude(),true,true);
+		
+	    }
+	    
+
+
+	    let fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
 	    fields.map(field=>{
-		var args = {
+		let args = {
 		    property: PROP_FILTER_VALUE,
 		    fieldId:field.getId(),
 		    value:closest.getValue(field.getIndex())
@@ -1517,6 +1526,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (records == null) {
                 return;
             }
+
 
 	    if(!args.dataFilterChanged)
 		this.setMessage("Creating display...");
