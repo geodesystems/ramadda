@@ -969,11 +969,15 @@ public class MapInfo {
     public void addBox(String id, String boxName, String text,
                        MapBoxProperties properties, double north,
                        double west, double south, double east) {
-	String color = properties.getColor();
-        String attrs = Json.map("color", color==null?"null":Json.quote(color),
-				"selectable",""+properties.getSelectable(),
-				"zoomToExtent", ""+properties.getZoomToExtent());
-        getJS().append("var mapBoxAttributes = " + attrs +";\n");
+        String color = properties.getColor();
+        String attrs = Json.map("color", (color == null)
+                                         ? "null"
+                                         : Json.quote(color), "selectable",
+                                             "" + properties.getSelectable(),
+                                             "zoomToExtent",
+                                             "" + properties
+                                                 .getZoomToExtent());
+        getJS().append("var mapBoxAttributes = " + attrs + ";\n");
         getJS().append(
             mapVarName + ".createBox("
             + HtmlUtils.comma(
@@ -1187,13 +1191,23 @@ public class MapInfo {
         String   id       = entry.getId();
         String info = repository.getMapManager().makeInfoBubble(request,
                           entry, true);
+        String props = "null";
+
+        String fillColor = entry.getTypeHandler().getDisplayAttribute(entry,
+                               "mapFillColor");
+        if (fillColor != null) {
+            props = "{fillColor:'" + fillColor + "'";
+            props += "}";
+        }
+
         getJS().append(
             mapVarName + ".addEntryMarker(" + HtmlUtils.squote(id) + ","
             + llp(location[0], location[1]) + "," + HtmlUtils.squote(icon)
             + ","
             + HtmlUtils.squote(entry.getName().replaceAll("'", "\\\\'"))
             + "," + HtmlUtils.squote(info) + ","
-            + HtmlUtils.squote(entry.getTypeHandler().getType()) + ");\n");
+            + HtmlUtils.squote(entry.getTypeHandler().getType()) + ","
+            + props + ");\n");
     }
 
 

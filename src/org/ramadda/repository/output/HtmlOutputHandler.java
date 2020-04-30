@@ -1795,6 +1795,7 @@ public class HtmlOutputHandler extends OutputHandler {
                             if (s == null) {
                                 s = "";
                             }
+                            s = column.decorate(s);
                             if (column.isNumeric()) {
                                 tableSB.append(HU.colRight(s));
                             } else {

@@ -19,7 +19,6 @@ package org.ramadda.repository.type;
 
 import org.json.*;
 
-
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
@@ -50,8 +49,6 @@ import java.sql.Statement;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -359,6 +356,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     private Hashtable<String, String> enumMap = new Hashtable<String,
                                                     String>();
 
+    /** _more_ */
+    private Hashtable<Object, Display> displays = new Hashtable<Object,
+                                                      Display>();
+
 
     /** _more_ */
     private String alias;
@@ -495,6 +496,16 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         }
 
+
+
+        List displayNodes = XmlUtil.findChildren(element, "display");
+        for (int i = 0; i < displayNodes.size(); i++) {
+            Element node = (Element) displayNodes.get(i);
+            displays.put(XmlUtil.getAttribute(node, "value", ""),
+                         new Display(node));
+        }
+
+
         description = getAttributeOrTag(element, ATTR_DESCRIPTION, label);
 
         displayPatternFrom = Utils.getAttributeOrTag(element,
@@ -577,6 +588,53 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
 
+    }
+
+    /**
+     * _more_
+     *
+     * @param attr _more_
+     * @param v _more_
+     *
+     * @return _more_
+     */
+    public String getDisplayAttribute(String attr, Object v) {
+        Display d = displays.get(v);
+        if (d == null) {
+            return null;
+        }
+
+        return d.getAttribute(attr);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
+    public Display getDisplay(Object v) {
+        return displays.get(v);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
+    public String decorate(String v) {
+        Display d = displays.get(v);
+        if (d == null) {
+            return v;
+        }
+
+        return d.decorate(v);
     }
 
 
@@ -1302,6 +1360,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (label != null) {
                     s = label;
                 }
+                s = decorate(s);
             }
             sb.append(s);
         }
@@ -1912,16 +1971,22 @@ public class Column implements DataTypes, Constants, Cloneable {
         DatabaseManager dbm        = getDatabaseManager();
         //      System.err.println("s:" + searchArg);
         if (isType(DATATYPE_LATLON)) {
-            double north = request.get("north", request.get(searchArg + "_north",
-							    request.get(ARG_AREA_NORTH,
-						   Double.NaN)));
-            double south = request.get("south", request.get(searchArg + "_south",
-                                       request.get(ARG_AREA_SOUTH,
-						   Double.NaN)));
-            double east = request.get("east",request.get(searchArg + "_east",
-							 request.get(ARG_AREA_EAST, Double.NaN)));
-            double west = request.get("west", request.get(searchArg + "_west",
-							  request.get(ARG_AREA_WEST, Double.NaN)));
+            double north = request.get("north",
+                                       request.get(searchArg + "_north",
+                                           request.get(ARG_AREA_NORTH,
+                                               Double.NaN)));
+            double south = request.get("south",
+                                       request.get(searchArg + "_south",
+                                           request.get(ARG_AREA_SOUTH,
+                                               Double.NaN)));
+            double east = request.get("east",
+                                      request.get(searchArg + "_east",
+                                          request.get(ARG_AREA_EAST,
+                                              Double.NaN)));
+            double west = request.get("west",
+                                      request.get(searchArg + "_west",
+                                          request.get(ARG_AREA_WEST,
+                                              Double.NaN)));
 
 
             if (latLonOk(north)) {
@@ -2051,7 +2116,9 @@ public class Column implements DataTypes, Constants, Cloneable {
             if ((values != null) && (values.size() > 0)) {
                 List<Clause> subClauses = new ArrayList<Clause>();
                 for (String value : values) {
-		    if(value.equals("_blank_")) value = "";
+                    if (value.equals("_blank_")) {
+                        value = "";
+                    }
                     if (value.equals(TypeHandler.ALL)) {
                         continue;
                     }
@@ -3199,21 +3266,21 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public List<String> getColumnNames() {
-	List<String> names = null;
-	if(names==null) {
-	    names = new ArrayList<String>();
-	    if (isType(DATATYPE_LATLON)) {
-		names.add(name + "_lat");
-		names.add(name + "_lon");
-	    } else if (isType(DATATYPE_LATLONBBOX)) {
-		names.add(name + "_north");
-		names.add(name + "_west");
-		names.add(name + "_south");
-		names.add(name + "_east");
-	    } else {
-		names.add(name);
-	    }
-	}
+        List<String> names = null;
+        if (names == null) {
+            names = new ArrayList<String>();
+            if (isType(DATATYPE_LATLON)) {
+                names.add(name + "_lat");
+                names.add(name + "_lon");
+            } else if (isType(DATATYPE_LATLONBBOX)) {
+                names.add(name + "_north");
+                names.add(name + "_west");
+                names.add(name + "_south");
+                names.add(name + "_east");
+            } else {
+                names.add(name);
+            }
+        }
 
         return names;
     }
@@ -3823,6 +3890,97 @@ public class Column implements DataTypes, Constants, Cloneable {
     public boolean getDoStats() {
         return doStats;
     }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Apr 29, '20
+     * @author         Enter your name here...
+     */
+    public static class Display {
+
+        /** _more_ */
+        String background;
+
+        /** _more_ */
+        String color;
+
+        /** _more_ */
+        String mapFillColor;
+
+        /** _more_ */
+        String template;
+
+        /** _more_ */
+        String icon;
+
+        /**
+         * _more_
+         *
+         * @param element _more_
+         */
+        public Display(Element element) {
+            background = XmlUtil.getAttribute(element, "background",
+                    (String) null);
+            color = XmlUtil.getAttribute(element, "color", (String) null);
+            mapFillColor = XmlUtil.getAttribute(element, "mapFillColor",
+                    (String) null);
+            template = XmlUtil.getAttribute(element, "template",
+                                            (String) null);
+            icon = XmlUtil.getAttribute(element, "icon", (String) null);
+        }
+
+        /**
+         * _more_
+         *
+         * @param attr _more_
+         *
+         * @return _more_
+         */
+        public String getAttribute(String attr) {
+            if (attr.equals("mapFillColor")) {
+                return mapFillColor;
+            }
+            if (attr.equals("background")) {
+                return background;
+            }
+            if (attr.equals("color")) {
+                return color;
+            }
+
+            return null;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param v _more_
+         *
+         * @return _more_
+         */
+        public String decorate(String v) {
+            String style = "";
+            if (background != null) {
+                style += "background:" + background + ";";
+            }
+            if (color != null) {
+                style += "color:" + color + ";";
+            }
+
+            if (style.length() > 0) {
+                v = HtmlUtils.div(v, HtmlUtils.style(style));
+            }
+            if (template != null) {
+                v = template.replace("${value}", v);
+            }
+
+            return v;
+        }
+    }
+
 
 
 

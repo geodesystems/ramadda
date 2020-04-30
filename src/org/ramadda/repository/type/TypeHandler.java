@@ -363,6 +363,10 @@ public class TypeHandler extends RepositoryManager {
     /** Should users be shown this type when doing a New Entry... */
     private boolean forUser = true;
 
+    /** _more_ */
+    private boolean canCache = true;
+
+
     /** Default metadata types to show in Edit->Add Property menu */
     private List<String> metadataTypes;
 
@@ -531,9 +535,14 @@ public class TypeHandler extends RepositoryManager {
                 //            System.err.println("DOT TYPE: " + getType());
             }
 
+
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
                     XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
                         forUser));
+
+
+            canCache = Utils.getAttributeOrTag(node, "canCache",
+                    XmlUtil.getAttributeFromTree(node, "canCache", true));
 
             setProperties(node);
             if ( !Utils.stringDefined(description)) {
@@ -588,6 +597,18 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void getTextCorpus(Entry entry, Appendable sb) throws Exception {}
+
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public boolean canCache(Entry entry) {
+        return canCache;
+    }
 
 
     /**
@@ -2253,6 +2274,7 @@ public class TypeHandler extends RepositoryManager {
      * @param request The request
      * @param showDescription _more_
      * @param showResource _more_
+     * @param props _more_
      *
      * @return _more_
      *
@@ -2261,26 +2283,28 @@ public class TypeHandler extends RepositoryManager {
     public StringBuilder getEntryContent(Request request, Entry entry,
                                          boolean showDescription,
                                          boolean showResource,
-					 Hashtable props)
+                                         Hashtable props)
             throws Exception {
 
         StringBuilder sb     = new StringBuilder();
         OutputType    output = request.getOutput();
-	if (displayTemplatePath != null) {
-	    String html =
-		getRepository().getResource(displayTemplatePath);
-	    return new StringBuilder(processDisplayTemplate(request,
-							    entry, html));
-	}
-	if (request.get(WikiConstants.ATTR_SHOWTITLE, true)) {
-	    HtmlUtils.sectionHeader(
-				    sb, getPageHandler().getEntryHref(request, entry));
-	}
-	sb.append(HtmlUtils.formTable());
-	sb.append(getInnerEntryContent(entry, request, null, output,
-				       showDescription, showResource,
-				       true,props));
-	sb.append(HtmlUtils.formTableClose());
+        if (displayTemplatePath != null) {
+            String html = getRepository().getResource(displayTemplatePath);
+
+            return new StringBuilder(processDisplayTemplate(request, entry,
+                    html));
+        }
+        if (request.get(WikiConstants.ATTR_SHOWTITLE, true)) {
+            HtmlUtils.sectionHeader(sb,
+                                    getPageHandler().getEntryHref(request,
+                                        entry));
+        }
+        sb.append(HtmlUtils.formTable());
+        sb.append(getInnerEntryContent(entry, request, null, output,
+                                       showDescription, showResource, true,
+                                       props));
+        sb.append(HtmlUtils.formTableClose());
+
         return sb;
 
     }
@@ -2916,6 +2940,7 @@ public class TypeHandler extends RepositoryManager {
      * @param showDescription _more_
      * @param showResource _more_
      * @param linkToDownload _more_
+     * @param props _more_
      *
      * @return _more_
      *
@@ -2924,7 +2949,7 @@ public class TypeHandler extends RepositoryManager {
     public StringBuilder getInnerEntryContent(Entry entry, Request request,
             TypeHandler typeHandler, OutputType output,
             boolean showDescription, boolean showResource,
-					      boolean linkToDownload, Hashtable props)
+            boolean linkToDownload, Hashtable props)
             throws Exception {
 
         if (typeHandler == null) {
@@ -2932,11 +2957,14 @@ public class TypeHandler extends RepositoryManager {
         }
         if (parent != null) {
             return parent.getInnerEntryContent(entry, request, typeHandler,
-					       output, showDescription, showResource, linkToDownload,props);
+                    output, showDescription, showResource, linkToDownload,
+                    props);
         }
 
         StringBuilder sb = new StringBuilder();
-	if(props!=null && Misc.equals(props.get("showBase"),"false")) return sb;
+        if ((props != null) && Misc.equals(props.get("showBase"), "false")) {
+            return sb;
+        }
 
         boolean showDate = typeHandler.okToShowInHtml(entry, ARG_DATE, true);
         boolean showCreateDate = showDate
@@ -3391,14 +3419,16 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception _more_
      */
-    public void initializeNewEntry(Request request, Entry entry,boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
 
         if (parent != null) {
-            parent.initializeNewEntry(request, entry,fromImport);
+            parent.initializeNewEntry(request, entry, fromImport);
         }
 
 
@@ -3963,8 +3993,9 @@ public class TypeHandler extends RepositoryManager {
     public String getFormWidget(Request request, Entry entry, Column column,
                                 String widget)
             throws Exception {
-	if(true)
-	    return widget;
+        if (true) {
+            return widget;
+        }
 
         return HtmlUtils.hbox(widget, getFormHelp(request, entry, column));
     }
@@ -4925,6 +4956,32 @@ public class TypeHandler extends RepositoryManager {
      */
     public final String getIconUrl(Request request, Entry entry)
             throws Exception {
+        return null;
+    }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param attribute _more_
+     *
+     * @return _more_
+     */
+    public String getDisplayAttribute(Entry entry, String attribute) {
+        List<Column> columns = getColumns();
+        if (columns != null) {
+            Object[] values = entry.getValues();
+            for (Column column : columns) {
+                if (column.isEnumeration()) {
+                    String s    = column.getString(values);
+                    String attr = column.getDisplayAttribute(attribute, s);
+                    if (attr != null) {
+                        return attr;
+                    }
+                }
+            }
+        }
+
         return null;
     }
 
@@ -6830,7 +6887,7 @@ public class TypeHandler extends RepositoryManager {
             if (s.length() == 0) {
                 label = "&lt;blank&gt;";
             }
-            tfos.add(new TwoFacedObject(label,s));
+            tfos.add(new TwoFacedObject(label, s));
         }
 
         return tfos;

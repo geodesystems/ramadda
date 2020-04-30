@@ -549,7 +549,9 @@ public class EntryManager extends RepositoryManager {
             if ( !getRepository().doCache()) {
                 return;
             }
-            getEntryCache().put(entry.getId(), entry);
+            if (entry.getTypeHandler().canCache(entry)) {
+                getEntryCache().put(entry.getId(), entry);
+            }
         }
     }
 
@@ -955,12 +957,24 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
     private void printRequest(Request request, Entry entry) throws Exception {
-	if(true) return;
-	if(!request.get(ARG_EMBEDDED, false) && request.getString("output",null) == null) {
-	    System.err.println("/entry " +entry.getName());
-	    System.err.println("https://" + request.getServerName()+":"+ request.getServerPort()+request.getUrl());
-	}
+        if (true) {
+            return;
+        }
+        if ( !request.get(ARG_EMBEDDED, false)
+                && (request.getString("output", null) == null)) {
+            System.err.println("/entry " + entry.getName());
+            System.err.println("https://" + request.getServerName() + ":"
+                               + request.getServerPort() + request.getUrl());
+        }
     }
 
 
@@ -997,7 +1011,7 @@ public class EntryManager extends RepositoryManager {
                 result = processGroupShow(request, outputHandler, outputType,
                                           entry);
             } else {
-		printRequest(request, entry);
+                printRequest(request, entry);
                 OutputType dfltOutputType = getDefaultOutputType(request,
                                                 entry, null, null);
                 if (dfltOutputType != null) {
@@ -1032,7 +1046,7 @@ public class EntryManager extends RepositoryManager {
                                    OutputHandler outputHandler,
                                    OutputType outputType, Entry group)
             throws Exception {
-	printRequest(request, group);
+        printRequest(request, group);
         boolean      doLatest    = request.get(ARG_LATEST, false);
         TypeHandler  typeHandler = group.getTypeHandler();
         List<Clause> where       = typeHandler.assembleWhereClause(request);
@@ -2106,20 +2120,20 @@ public class EntryManager extends RepositoryManager {
         if (request.isAnonymous()) {
             return;
         }
-	List<String> list =
-	    (List<String>) getSessionManager().getSessionProperty(
-								  request, SESSION_ENTRIES);
-	if (list == null) {
-	    list = new ArrayList<String>();
-	    getSessionManager().putSessionProperty(request, SESSION_ENTRIES,
-						   list);
-	}
-	list.remove(entry.getId());
-	list.add(0, entry.getId());
-	//Cap the size at 8
-	if (list.size() > 8) {
-	    list.remove(list.size() - 1);
-	}
+        List<String> list =
+            (List<String>) getSessionManager().getSessionProperty(request,
+                SESSION_ENTRIES);
+        if (list == null) {
+            list = new ArrayList<String>();
+            getSessionManager().putSessionProperty(request, SESSION_ENTRIES,
+                    list);
+        }
+        list.remove(entry.getId());
+        list.add(0, entry.getId());
+        //Cap the size at 8
+        if (list.size() > 8) {
+            list.remove(list.size() - 1);
+        }
     }
 
 
@@ -6324,7 +6338,7 @@ public class EntryManager extends RepositoryManager {
 
             entry.setXmlNode(node);
             entry.getTypeHandler().initializeEntryFromXml(request, entry,
-							  node, files);
+                    node, files);
             entries.add(entry);
         }
 
@@ -8025,7 +8039,7 @@ public class EntryManager extends RepositoryManager {
                 //for xml imports. 
                 //                if ( !fromImport) {
                 theNewEntry.getTypeHandler().initializeNewEntry(request,
-								theNewEntry, fromImport);
+                        theNewEntry, fromImport);
                 //                }
                 String name = theNewEntry.getName();
                 if (name.trim().length() == 0) {
