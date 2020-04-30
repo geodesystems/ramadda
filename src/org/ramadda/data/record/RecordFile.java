@@ -664,6 +664,10 @@ public abstract class RecordFile {
                 if (p.endsWith(".csv") || p.endsWith(".tsv")) {
                     return zin;
                 }
+		//Apple health
+                if (p.equals("export.xml")) {
+		    return zin;
+		}
             }
 
             throw new IllegalArgumentException(

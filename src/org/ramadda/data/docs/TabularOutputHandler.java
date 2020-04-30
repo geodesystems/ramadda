@@ -60,6 +60,7 @@ import java.io.*;
 
 import java.net.*;
 
+import java.util.zip.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -603,9 +604,35 @@ public class TabularOutputHandler extends OutputHandler {
         String      suffix      = "";
 
         if ((file != null) && file.exists()) {
-            inputStream = new BufferedInputStream(
-                getStorageManager().getFileInputStream(file));
-            suffix = IOUtil.getFileExtension(file.toString()).toLowerCase();
+	    if (file.toString().toLowerCase().endsWith(".zip")) {
+		InputStream    fis = IO.getInputStream(file.toString());
+		ZipInputStream zin = new ZipInputStream(fis);
+		ZipEntry       ze  = null;
+		while ((ze = zin.getNextEntry()) != null) {
+		    if (ze.isDirectory()) {
+			continue;
+		    }
+		    String p = ze.getName().toLowerCase();
+		    if (p.endsWith(".csv") || p.endsWith(".tsv")) {
+			inputStream =  zin;
+			suffix="csv";
+			break;
+		    }
+		    //Apple health
+		    if (p.equals("export.xml")) {
+			inputStream =  zin;
+			suffix="xml";
+			break;
+		    }
+		}
+	    }
+
+
+	    if(inputStream==null) {
+		inputStream = new BufferedInputStream(
+						      getStorageManager().getFileInputStream(file));
+		suffix = IOUtil.getFileExtension(file.toString()).toLowerCase();
+	    }
             if (suffix.equals(".xlsx") || suffix.equals(".xls")) {
                 if (file.length() > 10 * 1000000) {
                     throw new IllegalArgumentException("File too big");
