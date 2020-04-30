@@ -37,12 +37,14 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.*;
+import java.util.zip.*;
 
 
 /**
@@ -413,7 +415,6 @@ public class CsvUtil {
 
             if (arg.equals("-raw")) {
                 doRaw = true;
-
                 continue;
             }
 
@@ -584,9 +585,25 @@ public class CsvUtil {
     public InputStream getInputStream(String file) throws Exception {
         if (file.endsWith(".xls") || file.endsWith(".xlsx")) {
             String csv = XlsUtil.xlsToCsv(file);
-
             return new BufferedInputStream(
                 new ByteArrayInputStream(csv.getBytes()));
+	} else 	if (file.toLowerCase().endsWith(".zip")) {
+	    InputStream    fis = IO.getInputStream(file.toString());
+	    ZipInputStream zin = new ZipInputStream(fis);
+	    ZipEntry       ze  = null;
+	    while ((ze = zin.getNextEntry()) != null) {
+		if (ze.isDirectory()) {
+		    continue;
+		}
+		String p = ze.getName().toLowerCase();
+		if (p.endsWith(".csv") || p.endsWith(".tsv")) {
+		    return  zin;
+		}
+		//Apple health
+		if (p.endsWith("export.xml")) {
+		    return zin;
+		}
+	    }
         } else {
             if (new File(file).exists()) {
                 try {
@@ -597,10 +614,11 @@ public class CsvUtil {
                     throw exc;
                 }
             }
-
             return IO.getInputStream(file);
         }
+	return null;
     }
+
 
     /**
      * _more_
@@ -1126,8 +1144,25 @@ public class CsvUtil {
         int                        cnt    = 0;
         int                        colCnt = 0;
         Hashtable<String, Integer> colMap = new Hashtable<String, Integer>();
+	System.err.println("NODES:" + nodes.size());
         for (Element parent : nodes) {
             NodeList children = XmlUtil.getElements(parent);
+
+	    if(children.getLength()==0) {
+		//use attrs
+		NamedNodeMap nnm = parent.getAttributes();
+		if (nnm == null) continue;
+		for (int i = 0; i < nnm.getLength(); i++) {
+		    Attr attr = (Attr) nnm.item(i);
+		    String name = attr.getNodeName();
+                    Integer idx = colMap.get(name);
+                    if (idx == null) {
+                        colMap.put(name, colCnt++);
+                        header.add(name);
+                    }
+                }
+		continue;
+	    } 
             for (int i = 0; i < children.getLength(); i++) {
                 Element  child     = (Element) children.item(i);
                 NodeList gchildren = XmlUtil.getElements(child);
@@ -1151,7 +1186,7 @@ public class CsvUtil {
                     }
                 }
             }
-        }
+	}
 
         for (Element parent : nodes) {
             NodeList children = XmlUtil.getElements(parent);
@@ -1160,6 +1195,19 @@ public class CsvUtil {
             for (int i = 0; i < colCnt; i++) {
                 row.add("");
             }
+	    if(children.getLength()==0) {
+		NamedNodeMap nnm = parent.getAttributes();
+		if (nnm == null) continue;
+		for (int i = 0; i < nnm.getLength(); i++) {
+		    Attr attr = (Attr) nnm.item(i);
+		    String name = attr.getNodeName();
+		    String value = attr.getNodeValue();
+		    Integer idx    = colMap.get(name);
+		    row.set(idx, value);
+                }
+		continue;
+	    } 
+
             for (int i = 0; i < children.getLength(); i++) {
                 Element  child     = (Element) children.item(i);
                 NodeList gchildren = XmlUtil.getElements(child);
@@ -1250,7 +1298,7 @@ public class CsvUtil {
 
             readers.add(
                 new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file))));
+                    new InputStreamReader(getInputStream(file))));
             for (BufferedReader br : readers) {
                 while (lineCnt < numLines) {
                     String line = br.readLine();
@@ -4082,7 +4130,6 @@ public class CsvUtil {
                 pw.print("\n");
             }
             pw.close();
-
             return false;
         }
 
@@ -4093,7 +4140,7 @@ public class CsvUtil {
         } else if (doHtml2) {
             String s = null;
             if (files.size() > 0) {
-                s = IO.readContents(files.get(0));
+                s = IO.readInputStream(getInputStream(files.get(0)));
             } else if (inputStream != null) {
                 s = IO.readInputStream(inputStream);
             } else {
@@ -4108,7 +4155,7 @@ public class CsvUtil {
             //xxxx
             String s = null;
             if (files.size() > 0) {
-                s = IO.readContents(files.get(0));
+                s = IO.readInputStream(getInputStream(files.get(0)));
             } else if (inputStream != null) {
                 s = IO.readInputStream(inputStream);
             } else {
@@ -4119,7 +4166,7 @@ public class CsvUtil {
             //xxxx
             String s = null;
             if (files.size() > 0) {
-                s = IO.readContents(files.get(0));
+                s = IO.readInputStream(getInputStream(files.get(0)));
                 //              System.err.println("xml file:" + files.get(0));
                 //              System.err.println("xml:" + s.substring(0,100));
             } else if (inputStream != null) {
