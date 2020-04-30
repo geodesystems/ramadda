@@ -12,7 +12,10 @@
     <property name="record.file.class" value="org.ramadda.data.point.above.AmerifluxLevel2PointFile"/>
     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
     <column  name="contact"  type="string" label="Contact" cansearch="true"/>
-    <column  name="ecosystem_type"  type="enumerationplus" label="Ecosystem Type" cansearch="true"/>
+    <column  name="ecosystem_type"  type="enumerationplus" label="Ecosystem Type" cansearch="true">
+      <display value="WSA Woody Savannas" background="red" color="blue" mapFillColor="red"/>
+      <display value="DBF Deciduous Broadleaf Forests" background="green" mapFillColor="black"/>
+    </column>
   </type>
 
 
