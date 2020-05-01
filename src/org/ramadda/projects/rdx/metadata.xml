@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="RDX" >
+    <type id="rdx_notification" name="Notification"  values="">
+      <element id="name" name="Name" datatype="string" columns="20"/>
+      <element id="email" name="Email" datatype="email" columns="20"/>
+      <element id="phone" name="Phone" datatype="string" suffix="No spaces or dashes" columns="20"/>
+      <element id="when" name="When" datatype="enumeration" default="all_week" values="all_week:All Week,weekdays:Weekdays,weekend:Weekend"/>
+    </type>
+  </handler>
+
+</metadata>

@@ -121,9 +121,13 @@ function ramaddaMapAdd(map) {
 
 
 function ramaddaMapCheckLayout() {
-    if (window.globalMapList != null) {
-        window.globalMapList.map(map => map.map.updateSize());
-    }
+    setTimeout(()=>{
+	if (window.globalMapList != null) {
+            window.globalMapList.map(map => {
+		map.map.updateSize();
+	    });
+	}
+    },1000);
 }
 
 
@@ -761,6 +765,7 @@ RepositoryMap.prototype = {
             var url = getRamadda().getEntryDownloadUrl(this.geojsonLayer);
             this.addGeoJsonLayer(this.geojsonLayerName, url, false, null, null, null, null);
         }
+	Utils.addDisplay(this);
     },
     setProgress: function(msg) {
 	$("#" + this.mapDivId+"_progress").html(msg);

@@ -18,6 +18,7 @@ package org.ramadda.projects.rdx;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
@@ -32,6 +33,8 @@ import ucar.unidata.util.StringUtil;
 
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -140,16 +143,43 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
             message = "Could not find instrument: " + id;
             sb.append(Json.map("ok", "false", "message",
                                Json.quote(message)));
-
             return new Result(sb.toString(), "application/json");
         }
 
         boolean network = request.get("network_status", true);
         int     data    = request.get("data_download", 0);
+	GregorianCalendar cal = new GregorianCalendar();
+	cal.setTime(new Date());
+	boolean weekend = cal.get(cal.DAY_OF_WEEK) == cal.SUNDAY ||cal.get(cal.DAY_OF_WEEK) == cal.SATURDAY;
         for (Entry entry : entries) {
-            //TODO: make these IDX-es
-            entry.setValue(4, network);
-            entry.setValue(5, data);
+
+	    boolean changed = false;
+	    if((boolean) entry.getValue(RdxInstrumentTypeHandler.IDX_NETWORK_UP)!=network)
+		changed = true;
+
+	    if((int) entry.getValue(RdxInstrumentTypeHandler.IDX_DATA_DOWN)!=data)
+		changed = true;
+
+	    entry.setValue(RdxInstrumentTypeHandler.IDX_NETWORK_UP, network);
+            entry.setValue(RdxInstrumentTypeHandler.IDX_DATA_DOWN, data);
+
+
+	    if(changed) {
+		System.err.println("changed:" + changed);
+		List<Metadata> metadataList =
+		    getMetadataManager().findMetadata(request, entry.getParentEntry(), "rdx_notification",
+						      false);
+		if ((metadataList != null) && (metadataList.size() > 0)) {
+		    for (Metadata metadata : metadataList) {
+			String when = metadata.getAttr4();
+			if(when.equals("weekend") && !weekend) continue;
+			System.err.println("notification:" + metadata.getAttr1());
+		    }
+		}
+	    }
+	    
+
+
             System.err.println("rdx update: updated:" + entry.getName());
             message += "updated: " + entry.getName() + "\n";
             getEntryManager().updateEntry(request, entry);

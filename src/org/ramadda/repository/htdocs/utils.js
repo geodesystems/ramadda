@@ -1041,6 +1041,7 @@ var Utils = {
 	    Utils.checkPageReload(time,id);
 	}
     },
+    checkPageReloadPending: false,
     checkPageReload:function(time, id) {
 	let cbx = $("#" + id);
 	let label = $("#" + id+"_label");
@@ -1055,12 +1056,59 @@ var Utils = {
 	if(label.length>0) {
 	    label.html(" in " +time+" seconds");
 	}
-	setTimeout(()=>{
-	    Utils.checkPageReload(time-1,id);
-	},1000);
+	if(!Utils.checkPageReloadPending) {
+	    Utils.checkPageReloadPending=true;
+	    setTimeout(()=>{
+		Utils.checkPageReloadPending=false;
+		Utils.checkPageReload(time-1,id);
+	    },1000);
+	}
     },
-
-
+    checkForResize:     function() {
+	let redisplayPending = false;
+	let redisplayPendingCnt = 0;
+	//A hack to redraw the chart after the window is resized
+	$(window).resize(function() {
+            //This handles multiple resize events but keeps only having one timeout pending at a time
+            if (redisplayPending) {
+		redisplayPendingCnt++;
+		return;
+            }
+            let timeoutFunc = function(myCnt) {
+		if (myCnt == redisplayPendingCnt) {
+                    redisplayPending = false;
+                    redisplayPendingCnt = 0;
+                    for (let i = 0; i < Utils.displaysList.length; i++) {
+			let display = Utils.displaysList[i];
+			if (display.displayData) {
+                            display.displayData();
+			}
+                    }
+		} else {
+                    //Had a resize event during the previous timeout
+                    setTimeout(timeoutFunc.bind(null, redisplayPendingCnt), 1000);
+		}
+            }
+            redisplayPending = true;
+            setTimeout(timeoutFunc.bind(null, redisplayPendingCnt), 1000);
+	});
+    },
+    displaysList:[],
+    displaysMap:[],
+    addDisplay: function(display) {
+	this.displaysList.push(display);
+	if(display.getId)
+	    this.displaysMap[display.getId()] = display;
+	if (display.displayId) {
+            this.displaysMap[display.displayId] = display;
+	}
+    },
+    initDisplays: function() {
+	this.displaysList.forEach(d=>{
+	    if(d.pageHasLoaded)
+		d.pageHasLoaded();
+	});
+    },
     getPageLoaded: function() {
         return this.pageLoaded;
     },
@@ -1308,9 +1356,9 @@ var Utils = {
     initPage: function() {
         this.initContent();
         this.pageLoaded = true;
-        if (window["initRamaddaDisplays"]) {
-	    initRamaddaDisplays();
-        }
+	this.initDisplays();
+
+
 
 
         //allow for tabs to be added to text areas
@@ -3428,6 +3476,7 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
 $( document ).ready(function() {
     HU.documentReady = true;
+    Utils.checkForResize();
 });
 
 

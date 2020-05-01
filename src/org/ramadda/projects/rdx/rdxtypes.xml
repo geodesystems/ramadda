@@ -1,10 +1,10 @@
 <types  supercategory="Science and Education">
 
-  <type name="rdx_collection"  description="RDX Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX">
+  <type name="rdx_collection"  description="RDX Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX"   metadata="rdx_notification">
      <property name="icon" value="/rdx/radiometrics_icon.png"/>
      <wiki><![CDATA[
 +section title={{name}}
-:reload seconds=30 showCheckbox=true showLabel=true
+:reload seconds=60 showCheckbox=true showLabel=true
 +tabs
 +tab Instrument List
 {{table showDate=false showChangeDate=true}}
@@ -39,7 +39,7 @@
        <display value="true" background="green"  mapFillColor="green"/>
        <display value="false" background="red"  mapFillColor="red"/>
      </column>
-     <column name="status_data_down" type="int"  label="Data Down"   cansearch="true" />
+     <column name="data_down" type="int"  label="Data Down"   cansearch="true" />
      <column name="last_network_connection" type="datetime"  label="Last Network Connection"   />
      <column name="last_data" type="datetime"  label="Last Data Time"   />
 

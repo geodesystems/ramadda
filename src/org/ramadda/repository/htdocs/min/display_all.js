@@ -1617,15 +1617,6 @@ const PROP_FILTER_VALUE = "fitlerValue";
 const HIGHLIGHT_COLOR = "yellow";
 const RECORD_INDEX = "recordIndex";
 
-function initRamaddaDisplays() {
-    ramaddaCheckForResize();
-    if (window.globalDisplaysList == null) {
-        return;
-    }
-    window.globalDisplaysList.forEach(d=>{
-	d.pageHasLoaded();
-    });
-}
 
 function addGlobalDisplayProperty(name, value) {
     if (window.globalDisplayProperties == null) {
@@ -1644,20 +1635,12 @@ function getGlobalDisplayProperty(name) {
 
 
 function addRamaddaDisplay(display) {
-    if (window.globalDisplays == null) {
-        window.globalDisplays = {};
-        window.globalDisplaysList = [];
-    }
-    window.globalDisplaysList.push(display);
-    window.globalDisplays[display.getId()] = display;
-    if (display.displayId) {
-        window.globalDisplays[display.displayId] = display;
-    }
+    Utils.addDisplay(display);
 }
 
 async function ramaddaDisplaySetSelectedEntry(entryId) {
     await getGlobalRamadda().getEntry(entryId, e => {
-	window.globalDisplaysList.forEach(d=>{
+	Utils.globalDisplays.forEach(d=>{
 	    if(d.setEntry) d.setEntry(e);
 	});
     });
@@ -1665,52 +1648,16 @@ async function ramaddaDisplaySetSelectedEntry(entryId) {
 
 
 function ramaddaDisplayCheckLayout() {
-    if(!window.globalDisplaysList) return;
-    window.globalDisplaysList.forEach(d=>{
+    Utils.displaysList.forEach(d=>{
         if (d.checkLayout) {
             d.checkLayout();
         }
     });
 }
 
-function ramaddaCheckForResize() {
-    let redisplayPending = false;
-    let redisplayPendingCnt = 0;
-    //A hack to redraw the chart after the window is resized
-    $(window).resize(function() {
-        if (window.globalDisplaysList == null) {
-            return;
-        }
-        //This handles multiple resize events but keeps only having one timeout pending at a time
-        if (redisplayPending) {
-            redisplayPendingCnt++;
-            return;
-        }
-        var timeoutFunc = function(myCnt) {
-            if (myCnt == redisplayPendingCnt) {
-                redisplayPending = false;
-                redisplayPendingCnt = 0;
-                for (var i = 0; i < window.globalDisplaysList.length; i++) {
-                    var display = window.globalDisplaysList[i];
-                    if (display.displayData) {
-                        display.displayData();
-		    }
-                }
-            } else {
-                //Had a resize event during the previous timeout
-                setTimeout(timeoutFunc.bind(null, redisplayPendingCnt), 1000);
-            }
-        }
-        redisplayPending = true;
-        setTimeout(timeoutFunc.bind(null, redisplayPendingCnt), 1000);
-    });
-}
 
 function getRamaddaDisplay(id) {
-    if (window.globalDisplays == null) {
-        return null;
-    }
-    return window.globalDisplays[id];
+    return Utils.displaysMap[id];
 }
 
 function removeRamaddaDisplay(id) {
@@ -1726,12 +1673,11 @@ function displayGetFunctionValue(v) {
 }
 
 function ramaddaDisplayStepAnimation() {
-    if (window.globalDisplaysList == null) {
-        return;
-    }
-    window.globalDisplaysList.forEach(d=>{
-	if(d.getProperty("doAnimation")) {
-	    d.getAnimation().doNext();
+    Utils.displaysList.forEach(d=>{
+	if(d.getProperty && d.getAnimation)  {
+	    if(d.getProperty("doAnimation")) {
+		d.getAnimation().doNext();
+	    }
 	}
     });
 }
