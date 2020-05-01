@@ -31,15 +31,15 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.top.show" value="false"/>
-     <column name="instrument_id" type="string"  label="ID"   />
-     <column name="type" type="enumeration"  label="Instrument Type"   values="radiometer"/>
+     <column name="instrument_id" type="string"  label="ID"   cansearch="true"  />
+     <column name="type" type="enumeration"  label="Instrument Type"   values="radiometer" cansearch="true" />
      <column name="locale_city" type="enumerationplus"  label="City"   />
-     <column name="locale_state" type="enumerationplus"  label="State"   values="file:/org/ramadda/repository/resources/geo/statesmap.txt"/>
-     <column name="status_network_up" type="boolean"  label="Network Up" >
+     <column name="locale_state" type="enumerationplus"  label="State"   values="file:/org/ramadda/repository/resources/geo/statesmap.txt" cansearch="true" />
+     <column name="status_network_up" type="boolean"  label="Network Up" cansearch="true" >
        <display value="true" background="green"  mapFillColor="green"/>
        <display value="false" background="red"  mapFillColor="red"/>
      </column>
-     <column name="status_data_down" type="int"  label="Data Down"   />
+     <column name="status_data_down" type="int"  label="Data Down"   cansearch="true" />
      <column name="last_network_connection" type="datetime"  label="Last Network Connection"   />
      <column name="last_data" type="datetime"  label="Last Data Time"   />
 
