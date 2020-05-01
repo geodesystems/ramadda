@@ -1,0 +1,39 @@
+<types  supercategory="Science and Education">
+
+  <type name="rdx_instrument"  description="Example Instrument" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="icon" value="/fieldproject/system-monitor.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <column name="instrument_id" type="string"  label="ID"   />
+     <column name="type" type="enumeration"  label="Instrument Type"   values="radiometer"/>
+     <column name="locale_city" type="enumerationplus"  label="City"   />
+     <column name="locale_state" type="enumerationplus"  label="State"   values="file:/org/ramadda/repository/resources/geo/statesmap.txt"/>
+     <column name="status_network_up" type="boolean"  label="Network Up" >
+       <display value="true" background="green"  mapFillColor="green"/>
+       <display value="false" background="red"  mapFillColor="red"/>
+     </column>
+     <column name="status_data_down" type="int"  label="Data Down"   />
+     <column name="last_network_connection" type="datetime"  label="Last Network Connection"   />
+     <column name="last_data" type="datetime"  label="Last Data Time"   />
+
+     <wiki><![CDATA[
++section title="Instrument: {{name}}"
++row
++col-9
+{{information details=true}}
+-col
++col-3
+{{map}}
+-col
+-row
+-section
+]]>
+</wiki>
+ </type>
+
+</types>
