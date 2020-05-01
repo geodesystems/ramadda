@@ -1440,7 +1440,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List<Entry> allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
-        makeTable(request, allEntries, sb);
+        makeTable(request, allEntries, sb,null);
         getPageHandler().entrySectionClose(request, group, sb);
 
         return makeLinksResult(request, group.getName(), sb,
@@ -1656,12 +1656,17 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void makeTable(Request request, List<Entry> allEntries,
-                          Appendable sb)
+                          Appendable sb, Hashtable props)
             throws Exception {
 
+	if(props==null) props = new Hashtable();
         boolean showCategories = request.get(ARG_SHOWCATEGORIES, true);
         Hashtable<String, List<Entry>> map = new Hashtable<String,
                                                  List<Entry>>();
+	boolean showDate = Utils.getProperty(props, "showDate",true);
+	boolean showCreateDate = Utils.getProperty(props, "showCreateDate",false);
+	boolean showChangeDate = Utils.getProperty(props, "showChangeDate",true);
+
         List<String> types = new ArrayList<String>();
         for (Entry entry : allEntries) {
             TypeHandler  typeHandler = entry.getTypeHandler();
@@ -1721,9 +1726,17 @@ public class HtmlOutputHandler extends OutputHandler {
             tableSB.append("<tr valign=bottom>");
             numCols++;
 
+
+
+
             tableSB.append(HU.th(HU.b(msg("Name"))));
             numCols++;
-            tableSB.append(HU.th(HU.b(msg("Date"))));
+	    if(showDate)
+		tableSB.append(HU.th(HU.b(msg("Date"))));
+	    if(showCreateDate)
+		tableSB.append(HU.th(HU.b(msg("Create Date"))));
+	    if(showChangeDate)
+		tableSB.append(HU.th(HU.b(msg("Change Date"))));
             boolean haveFiles = false;
             for (Entry entry : entries) {
                 if (entry.isFile()) {
@@ -1738,13 +1751,15 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             if (columns != null) {
                 for (Column column : columns) {
-                    if (column.getCanList() && column.getCanShow()
-                            && (column.getRows() <= 1)) {
-                        numCols++;
-                        tableSB.append(HU.th(HU.b(column.getLabel())));
-                    }
+		    if(column.getRows() <= 1 &&  column.getCanShow()) {
+			if (column.getCanList() || Utils.getProperty(props,"show"+ column.getName(),false)) {
+			    numCols++;
+			    tableSB.append(HU.th(HU.b(column.getLabel())));
+			}
+		    }
                 }
             }
+
             tableSB.append("</tr>");
             tableSB.append("</thead>");
             tableSB.append("<tbody>");
@@ -1756,22 +1771,39 @@ public class HtmlOutputHandler extends OutputHandler {
                                        HU.attrs(new String[] { "class", odd
                         ? "odd"
                         : "even", "valign", "top" })));
-
+ 
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                           entry, getEntryDisplayName(entry));
 
                 tableSB.append(HU.col(entryLink.getLink(),
                                       " nowrap "
                                       + HU.cssClass("entry-table-name")));
-                String date = getDateHandler().formatDateShort(request,
-                                  entry, entry.getStartDate());
-                tableSB.append(HU.col(date,
-                        " class=\"entry-table-date\" width=10% align=right "));
+
+		if(showDate) {
+		    String date = getDateHandler().formatDateShort(request,
+								   entry, entry.getStartDate());
+		    tableSB.append(HU.col(date,
+					  " class=\"entry-table-date\" width=10% align=right "));
+		}
+
+		if(showCreateDate) {
+		    String date = getDateHandler().formatDateShort(request,
+								   entry, entry.getCreateDate());
+		    tableSB.append(HU.col(date,
+					  " class=\"entry-table-date\" width=10% align=right "));
+		}
+
+		if(showChangeDate) {
+		    String date = getDateHandler().formatDateShort(request,
+								   entry, entry.getChangeDate());
+		    tableSB.append(HU.col(date,
+					  " class=\"entry-table-date\" width=10% align=right "));
+		}
 
                 if (haveFiles) {
                     String downloadLink =
                         HU.href(
-                            entry.getTypeHandler().getEntryResourceUrl(
+				entry.getTypeHandler().getEntryResourceUrl(
                                 request, entry), HU.img(
                                 getIconUrl(ICON_DOWNLOAD), msg("Download"),
                                 ""));
@@ -1786,24 +1818,26 @@ public class HtmlOutputHandler extends OutputHandler {
                     }
 
                 }
+
                 Object[] values = entry.getValues();
                 if (columns != null) {
                     for (Column column : columns) {
-                        if (column.getCanList() && column.getCanShow()
-                                && (column.getRows() <= 1)) {
-                            String s = column.getString(values);
-                            if (s == null) {
-                                s = "";
-                            }
-                            s = column.decorate(s);
-                            if (column.isNumeric()) {
-                                tableSB.append(HU.colRight(s));
-                            } else {
-                                HU.col(tableSB, s);
-                            }
+                        if (column.getCanShow() && column.getRows() <= 1) {
+			    if (column.getCanList() || Utils.getProperty(props,"show"+ column.getName(),false)) {
+				String s = column.getString(values);
+				if (s == null) {
+				    s = "";
+				}
+				s = entry.getTypeHandler().decorateValue(request, entry, column, s);
+				if (column.isNumeric()) {
+				    tableSB.append(HU.colRight(s));
+				} else {
+				    HU.col(tableSB, s);
+				}
+			    }
                         }
-                    }
-                }
+		    }
+		}
                 tableSB.append("</tr>");
                 HU.open(tableSB, "tr", "class", (odd
                         ? "odd"
@@ -1828,7 +1862,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
             contents.add(tableSB.toString());
             titles.add(typeLabel);
-        }
+
+	    }
         if (types.size() == 1) {
             sb.append(contents.get(0));
         } else {

@@ -2891,7 +2891,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_TABLE)) {
             List<Entry> entries = getEntries(request, wikiUtil,
                                              originalEntry, entry, props);
-            getHtmlOutputHandler().makeTable(request, entries, sb);
+            getHtmlOutputHandler().makeTable(request, entries, sb, props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_WIKITEXT)) {

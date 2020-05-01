@@ -536,6 +536,8 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
+
+
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
                     XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
                         forUser));
@@ -1710,6 +1712,18 @@ public class TypeHandler extends RepositoryManager {
         */
 
         return value.equals("true");
+    }
+
+
+    public boolean okToList(Entry entry, String arg, Hashtable props, boolean dflt) {
+        String key   = "list." + arg + ".show";
+        String value = getProperty(entry, key, (String)null);
+	if(value!=null)
+	    return value.equals("true");
+	if(props!=null) {
+	    return Utils.getProperty(props, key,  dflt);
+	}
+	return dflt;
     }
 
 
@@ -4972,18 +4986,21 @@ public class TypeHandler extends RepositoryManager {
         if (columns != null) {
             Object[] values = entry.getValues();
             for (Column column : columns) {
-                if (column.isEnumeration()) {
-                    String s    = column.getString(values);
-                    String attr = column.getDisplayAttribute(attribute, s);
-                    if (attr != null) {
-                        return attr;
-                    }
+		String s    = column.getString(values);
+		String attr = column.getDisplayAttribute(attribute, s);
+		if (attr != null) {
+		    return attr;
                 }
             }
         }
 
         return null;
     }
+
+    public String decorateValue(Request request, Entry entry, Column column, String s) {
+	return column.decorate(s);
+    }
+    
 
     /**
      * _more_

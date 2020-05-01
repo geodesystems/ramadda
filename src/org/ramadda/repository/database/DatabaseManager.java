@@ -3056,7 +3056,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public String getAlterTableSql(String table, String column, String type) {
         String sql;
-        if (isDatabaseDerby()) {
+	if (isDatabaseDerby()) {
             sql = "alter table " + table + "  alter column " + column
                   + "  set data type " + type + ";";
         } else if (isDatabasePostgres()) {

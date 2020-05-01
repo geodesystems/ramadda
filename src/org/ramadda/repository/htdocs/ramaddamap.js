@@ -2475,6 +2475,8 @@ RepositoryMap.prototype = {
 	if(this.defaultLocation) {
             var projPoint = this.transformLLPoint(this.defaultLocation);
             this.getMap().setCenter(projPoint);
+            this.getMap().zoomTo(4);
+
 	} else  if (this.defaultBounds) {
             var llPoint = this.defaultBounds.getCenterLonLat();
             var projPoint = this.transformLLPoint(llPoint);
@@ -3046,9 +3048,9 @@ RepositoryMap.prototype = {
             },
 
             notice: function(bounds) {
-                var ll = this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
+                var ll = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
                     bounds.left, bounds.bottom));
-                var ur = this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
+                var ur = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
                     bounds.right, bounds.top));
                 ll = _this.transformProjPoint(ll);
                 ur = _this.transformProjPoint(ur);

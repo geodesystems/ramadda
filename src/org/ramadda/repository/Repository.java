@@ -1511,6 +1511,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String file : getPluginManager().getTypeDefFiles()) {
             try {
                 file = getStorageManager().localizePath(file);
+		//		System.err.println(file);
                 if (getPluginManager().haveSeen("types:" + file, false)) {
                     continue;
                 }

@@ -1025,6 +1025,42 @@ var Utils = {
     },
 
 
+    initPageReload:function(time, id) {
+	let cbx = $("#" + id);
+	let label = $("#" + id+"_label");
+	if(cbx.length>0) {
+	    cbx.change(()=>{
+		label.html("");
+		if(cbx.is(':checked')) {
+		    Utils.checkPageReload(time,id);
+		}
+	    });
+	}
+	
+	if(cbx.length==0  || cbx.is(':checked')) {
+	    Utils.checkPageReload(time,id);
+	}
+    },
+    checkPageReload:function(time, id) {
+	let cbx = $("#" + id);
+	let label = $("#" + id+"_label");
+	if(cbx.length>0  &&!cbx.is(':checked')) {
+	    return;
+	}
+	if(time<=0) {
+	    location.reload();
+	    return;
+	}
+
+	if(label.length>0) {
+	    label.html(" in " +time+" seconds");
+	}
+	setTimeout(()=>{
+	    Utils.checkPageReload(time-1,id);
+	},1000);
+    },
+
+
     getPageLoaded: function() {
         return this.pageLoaded;
     },

@@ -599,6 +599,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public String getDisplayAttribute(String attr, Object v) {
+	if(v==null) return null;
         Display d = displays.get(v);
         if (d == null) {
             return null;
@@ -624,7 +625,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     /**
      * _more_
      *
-     * @param v _more_
+     * @param v 
      *
      * @return _more_
      */
@@ -1360,8 +1361,8 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (label != null) {
                     s = label;
                 }
-                s = decorate(s);
             }
+	    s = typeHandler.decorateValue(null, entry, this, s);
             sb.append(s);
         }
 

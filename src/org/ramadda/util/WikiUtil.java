@@ -800,6 +800,7 @@ public class WikiUtil {
                 continue;
             }
 
+
             if (tline.startsWith(":macro")) {
                 hasSet = true;
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
@@ -919,6 +920,9 @@ public class WikiUtil {
 
                 continue;
             }
+
+
+
             if (tline.startsWith(":tr")) {
                 TableState state = (tableStates.size() > 0)
                                    ? tableStates.get(tableStates.size() - 1)
@@ -1654,6 +1658,25 @@ public class WikiUtil {
 
                 continue;
             }
+
+            if (tline.startsWith(":reload")) {
+		String id = HtmlUtils.getUniqueId("reload");
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable props = HtmlUtils.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+		String time = Utils.getProperty(props,"seconds","60");
+		boolean showCbx = Utils.getProperty(props,"showCheckbox",true);
+		if(showCbx) {
+		    HtmlUtils.checkbox(buff, "","true",true,HtmlUtils.id(id));
+		    buff.append(" Reload");
+		}
+		boolean showLabel = Utils.getProperty(props,"showLabel",true);
+		if(showLabel) {
+		    buff.append(" ");
+		    HtmlUtils.span( buff, "",HtmlUtils.id(id+"_label"));
+		}		
+		buff.append(HtmlUtils.script("Utils.initPageReload(" + time +",'" + id +"');"));
+		continue;
+	    }
 
             if (tline.startsWith(":script")) {
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);

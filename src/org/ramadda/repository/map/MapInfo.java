@@ -1194,7 +1194,7 @@ public class MapInfo {
         String props = "null";
 
         String fillColor = entry.getTypeHandler().getDisplayAttribute(entry,
-                               "mapFillColor");
+								      "mapFillColor");
         if (fillColor != null) {
             props = "{fillColor:'" + fillColor + "'";
             props += "}";

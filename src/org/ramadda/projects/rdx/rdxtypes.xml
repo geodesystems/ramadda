@@ -1,10 +1,32 @@
 <types  supercategory="Science and Education">
 
-  <type name="rdx_instrument"  description="Example Instrument" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+  <type name="rdx_collection"  description="RDX Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX">
+     <property name="icon" value="/rdx/radiometrics_icon.png"/>
+     <wiki><![CDATA[
++section title={{name}}
+:reload seconds=30 showCheckbox=true showLabel=true
++tabs
++tab Instrument List
+{{table showDate=false showChangeDate=true}}
+-tab
++tab Map
+{{map  width="100%"  height="400" }} 
+-tab
+-tabs
+ -section
+]]>
+</wiki>
+
+
+  </type>
+
+
+
+  <type name="rdx_instrument"  description="RDX Instrument" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX">
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
-     <property name="icon" value="/fieldproject/system-monitor.png"/>
+     <property name="icon" value="/rdx/system-monitor.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
@@ -20,6 +42,12 @@
      <column name="status_data_down" type="int"  label="Data Down"   />
      <column name="last_network_connection" type="datetime"  label="Last Network Connection"   />
      <column name="last_data" type="datetime"  label="Last Data Time"   />
+
+     <bubble><![CDATA[
+:heading {{name link=true}}
+{{information details=true}}
+]]>
+</bubble>
 
      <wiki><![CDATA[
 +section title="Instrument: {{name}}"

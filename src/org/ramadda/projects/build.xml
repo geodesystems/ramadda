@@ -10,8 +10,9 @@
     </target>
 
 
-    <target name="plugins" depends="init">
 
+    <target name="plugins" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/projects/rdx/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/aap/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/fec/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/ou/build.xml" inheritAll="false"/>
