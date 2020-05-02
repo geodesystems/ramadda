@@ -4,16 +4,25 @@
      <property name="icon" value="/rdx/radiometrics_icon.png"/>
      <wiki><![CDATA[
 +section title={{name}}
-:reload seconds=60 showCheckbox=true showLabel=true
-+tabs
-+tab Instrument List
-{{table showDate=false showChangeDate=true}}
--tab
-+tab Map
-{{map  width="100%"  height="400" }} 
--tab
--tabs
- -section
+:reload seconds=30 showCheckbox=true showLabel=true
+{{property name=doEntries value=true}}
+{{property name=addAttributes value=true}} 
+{{group filterFields=network_up,data_down hideFilterWidget=true sortFields=name}} 
+{{display_blank hideFilterWidget=false showMenu=true}}
+{{display_table  height="300"  showMenu=true
+linkField=entry_url iconField=icon  
+fields="name,instrument_id,type,city,state,network_up,data_down"
+data_down.colorTable=plotly_reds
+network_up.colorByMap="true:green,false:red"
+colorCells="network_up,data_down"
+}} 
+{{display_barchart fields=data_down indexField=name forceStrings=true}}
+{{display_map  width="100%"  height="400" iconField=icon iconSize=16
+ radius="18" colorBy=network_up colorByMap="true:green,false:red"
+ showColorTable=false 
+  linkField=entry_url titleField=name descriptionField=description
+}} 
+-section
 ]]>
 </wiki>
 
@@ -35,7 +44,7 @@
      <column name="type" type="enumeration"  label="Instrument Type"   values="radiometer" cansearch="true" />
      <column name="locale_city" type="enumerationplus"  label="City"   />
      <column name="locale_state" type="enumerationplus"  label="State"   values="file:/org/ramadda/repository/resources/geo/statesmap.txt" cansearch="true" />
-     <column name="status_network_up" type="boolean"  label="Network Up" cansearch="true" >
+     <column name="network_up" type="boolean"  label="Network Up" cansearch="true"  default="true">
        <display value="true" background="green"  mapFillColor="green"/>
        <display value="false" background="red"  mapFillColor="red"/>
      </column>

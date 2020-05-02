@@ -2117,3 +2117,8 @@ table.dataTable tfoot td {
     border:1px solid #000 !important;
     z-index:50;
 }
+
+
+.display-table-cell {
+  height: 35px;
+}

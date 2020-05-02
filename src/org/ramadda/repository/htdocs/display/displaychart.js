@@ -787,7 +787,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
-	    let valueGetter = this.getDataTableValueGetter();
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -1000,6 +999,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    var colors =  this.getColorTable(true);
             var colorBy = this.getColorByInfo(records);
+	    let valueGetter = this.getDataTableValueGetter(records);
+
+
+
 
 	    var didColorBy = false;
 	    var tuples = [];
@@ -1058,13 +1061,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(debug && rowIdx<debugRows)
 		    console.log("row:");
 
+		let fIdx=0;
                 for (var j = 0; j < row.length; j++) {
+		    let field = selectedFields[fIdx++];
                     var value = row[j];
 		    if(forceStrings) {
 			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
 		    }
 		    if(j>0 && fixedValueS) {
-			newRow.push(valueGetter(fixedValueN, theRecord));
+			newRow.push(valueGetter(fixedValueN, j, field, theRecord));
 			if(debug && rowIdx<debugRows)
 			    console.log("\t fixed:" + fixedValueN);
 		    } else {
@@ -1077,10 +1082,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    value = String(value);
 			}
 			if(debug && rowIdx<debugRows)
-			    console.log("\t value:" + value +" " + (typeof value));
+			    console.log("\t value: " + j +"="+ value +" " + (typeof value));
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";
-			newRow.push(valueGetter(value, theRecord));
+			let o = valueGetter(value, j, field, theRecord);
+			newRow.push(o);
 		    }
                     if (j == 0 && props.includeIndex) {
 			/*note to self - an inline comment breaks the minifier 
@@ -1472,7 +1478,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             let records = this.getPointData().getRecords();
 	    this.setAxisRanges(this.chartOptions, selectedFields, records);
-//	    console.log(JSON.stringify(chartOptions.vAxis, null,2));
+//	    console.log(JSON.stringify(this.chartOptions, null,2));
 	    
 	    if(this.getProperty("doMultiCharts",this.getProperty("multipleCharts",false))) {
 		let multiField=this.getFieldById(null,this.getProperty("multiField"));
@@ -2088,6 +2094,8 @@ function PiechartDisplay(displayManager, id, properties) {
             var header = this.getDataValues(dataList[0]);
             dataTable.addColumn("string", header[0]);
             dataTable.addColumn("number", header[1]);
+
+
             if (this.getProperty("bins", null)) {
                 var bins = parseInt(this.getProperty("bins", null));
                 var min = Number.MAX_VALUE;
@@ -2433,6 +2441,7 @@ function TableDisplay(displayManager, id, properties) {
 					"label:Table Attributes",
 					'tableWidth=100%',
 					'frozenColumns=1',
+					'colorCells=field1,field2',
 					'showRowNumber=true',
 					'maxHeaderLength=60',
 					'maxHeaderWidth=60',
@@ -2445,25 +2454,61 @@ function TableDisplay(displayManager, id, properties) {
         defaultSelectedToAll: function() {
             return true;
         },
-        getDataTableValueGetter: function() {
+        getDataTableValueGetter: function(records) {
 	    let unhighlightColor = this.getProperty("unhighlightColor","#fff");
 	    let highlightColor = this.getProperty("highlightColor","#FFFFCC");
-	    return  (v,record)=>{
-		if(!v) return {
-		    v:0,
-		    f:""
+	    let colorCells = this.getProperty("colorCells");
+	    let colorByMap = {};
+	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
+	    let iconField = this.getFieldById(null,this.getProperty("iconField"));
+	    if(colorCells) {
+		colorCells.split(",").forEach(c=>{
+		    let f = this.getFieldById(null,c);
+		    if(f) {
+			colorByMap[c] = new ColorByInfo(this, null, records, null,c+".colorByMap",null, c, f);
+		    }
+		});
+	    }
+
+	    return  (v,idx, field, record)=>{
+		if(v===null) {
+		    return {
+			v:0,
+			f:""
+		    }
 		}
 		let f = v;
 		if(v.f) {
 		    f = v.f;
 		    v = v.v;
 		}
+
+		if(iconField && record && idx==0) {
+		    let icon = record.getValue(iconField.getIndex());
+		    f = HU.image(icon) +" " +f;
+		}
+		if(linkField && record) {
+		    let url = record.getValue(linkField.getIndex());
+		    f = HU.href(url,f);
+		}
+
 		if(!this.getFilterHighlight() || !record) {
 		    f = HU.div([STYLE,HU.css('padding','4px')],f)
 		} else {
 		    let c = record.isHighlight(this) ? highlightColor: unhighlightColor;
 		    f = HU.div([STYLE,HU.css('padding','4px','background', c)],f)
 		}
+
+
+
+		if(field) {
+		    let colorBy = colorByMap[field.getId()];
+		    if(colorBy && record) {
+			let color =  colorBy.getColorFromRecord(record);
+			f = HU.div([STYLE,HU.css('height','100%','background', color)],f)
+		    }
+		}
+
 		return {
 		    v:v,
 		    f:f
@@ -2505,6 +2550,16 @@ function TableDisplay(displayManager, id, properties) {
                     headerCell: 'display-table-header'
                 };
             }
+	    if(!chartOptions.cssClassNames)
+		chartOptions.cssClassNames = {};
+
+	    if(this.getProperty("fixCellHeight",true)) {
+		chartOptions.cssClassNames.headerCell= 'display-table-cell';
+		chartOptions.cssClassNames.tableCell= 'display-table-cell';
+	    }
+
+
+
             return new google.visualization.Table(chartDiv); 
         },
 	getAddToolTip: function() {

@@ -1085,7 +1085,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.vectorMapApplied = true;
 
 	    let maxExtent = null;
-            let circles = this.points;
 	    let doCount = this.getProperty("colorByCount",false);
 	    let matchedFeatures = [];
 	    let seen = {};
@@ -1350,7 +1349,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
             for (var i = 0; i < this.points.length; i++) {
-                var point = this.points[i];
+                let point = this.points[i];
                 if (point.date < windowStart || point.date > windowEnd) {
                     point.style.display = 'none';
                     continue;
@@ -1387,15 +1386,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         showAllPoints: function() {
 	    if(this.lines) {
 		for (var i = 0; i < this.lines.length; i++) {
-		    var line = this.lines[i];
+		    let line = this.lines[i];
 		    line.style.display = 'inline';
 		}
 		if (this.map.lines)
 		    this.map.lines.redraw();
 	    }
             if (!this.points) return;
-            for (var i = 0; i < this.points.length; i++) {
-                var point = this.points[i];
+            for (let i = 0; i < this.points.length; i++) {
+                let point = this.points[i];
                 point.style.display = 'inline';
             }
             if (this.map.circles)
@@ -2059,12 +2058,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let lineColor = this.getProperty("lineColor", "green");
 	    let lineCap = this.getProperty('lineCap', 'round');
 	    let pointIcon = this.getProperty("pointIcon");
-	    if(pointIcon) this.pointsAreMarkers = true;
             let iconField = this.getFieldById(fields, this.getProperty("iconField"));
+	    let usingIcon = pointIcon || iconField;
             let iconSize = parseFloat(this.getProperty("iconSize",32));
 	    let iconMap = this.getIconMap();
-	    if(iconField || iconMap)
-		this.pointsAreMarkers = true;
 	    let dfltShape = this.getProperty("defaultShape",null);
 	    let dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
 	    let dfltShapeIdx=0;
@@ -2150,12 +2147,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
             if (this.points) {
-                for (let i = 0; i < this.points.length; i++) {
-		    if(this.pointsAreMarkers)
-			this.map.removeMarker(this.points[i]);
+		this.points.forEach(point=>{
+		    if(point.isMarker)
+			this.map.removeMarker(point);
 		    else
-			this.map.removePoint(this.points[i]);
-		}
+			this.map.removePoint(point);
+		});
                 this.points = [];
             }
 
@@ -2427,25 +2424,36 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     seen[key]++;
 		    //		    continue;
 
+		    let includePoints = true;
 		    let mapPoint=null;
-		    if(iconField) {
-			let icon = tuple[iconField.getIndex()];
-			if(iconMap) {
-			    icon = iconMap[icon];
-			    if(!icon) icon = this.getMarkerIcon();
+		    let mapPoints =[];
+
+		    if(usingIcon) {
+			if(iconField) {
+			    let icon = tuple[iconField.getIndex()];
+			    if(iconMap) {
+				icon = iconMap[icon];
+				if(!icon) icon = this.getMarkerIcon();
+			    }
+			    let size = iconSize;
+			    if(sizeBy.index >= 0) {
+				size = props.pointRadius;
+			    }
+			    mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
+			    mapPoint.isMarker = true;
+			    mapPoints.push(mapPoint);
+			} else  if(pointIcon) {
+			    mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
+			    mapPoint.isMarker = true;
+			    mapPoints.push(mapPoint);
 			}
-			let size = iconSize;
-			if(sizeBy.index >= 0) {
-			    size = props.pointRadius;
-			}
-			mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
-		    } else  if(pointIcon) {
-			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,null,null,props.pointRadius);
-		    } else {
+		    } 
+		    if(!usingIcon || includePoints)  {
 			if(!props.graphicName)
 			    props.graphicName = this.getPropertyShape();
 			if(radius>0) {
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
+			    mapPoints.push(mapPoint);
 			}
 		    }
 		    if(isPath && lastPoint) {
@@ -2454,7 +2462,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    lastPoint = point;
 
                     let date = record.getDate();
-		    if(mapPoint) {
+		    mapPoints.forEach(mapPoint=>{
 			if(highlight) {
 			    mapPoint.highlightTextGetter = highlightGetter;
 			    mapPoint.highlightSize = highlightSize;
@@ -2468,7 +2476,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    mapPoint.date = date.getTime();
 			}
 			this.points.push(mapPoint);
-		    }
+		    });
 		}
 	    }
 

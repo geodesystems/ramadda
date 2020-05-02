@@ -722,7 +722,12 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if (this.display.percentFields != null) {
         this.pctFields = this.display.percentFields.split(",");
     }
+
     let colors = defaultColorTable || this.display.getColorTable(true,[colorByAttr +".colorTable","colorTable"]);
+    if(!colors && colorByAttr) {
+	let c = this.display.getProperty(colorByAttr +".colors");
+	if(c) colors = c.split(",");
+    }
     
 //    if(!colors && this.hasField()) {
 //	colors = this.display.getColorTable(true,"colorTable");

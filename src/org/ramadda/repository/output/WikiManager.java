@@ -1979,6 +1979,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 jsonUrl = request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
                     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
+		if(getProperty(wikiUtil,props,"addAttributes",false)) {
+		    jsonUrl +="&addAttributes=true";
+		}
             }
             if (theTag.startsWith("display_")) {
                 String newType = theTag.substring(8);

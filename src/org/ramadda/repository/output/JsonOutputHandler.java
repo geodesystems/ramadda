@@ -211,12 +211,14 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
-    private void addPointHeader(List<String> header,String name, String label,String type) throws Exception {
+    private void addPointHeader(List<String> header,String name, String label,String type, String ...attrs) throws Exception {
 	List<String> items = new ArrayList<String>();
 	Json.quoteAttr(items, "index", ""+header.size());
 	Json.quoteAttr(items, "id", name);
 	Json.quoteAttr(items, "type", type);
 	Json.quoteAttr(items, "label", label);
+	for(int i=0;i<attrs.length;i+=2)
+	    Json.quoteAttr(items, attrs[i], attrs[i+1]);
 	if(name.indexOf("date")>=0) 
 	    Json.attr(items, "isDate", "true");
 	header.add(Json.map(null,items,false).toString());
@@ -225,21 +227,12 @@ public class JsonOutputHandler extends OutputHandler {
     public void makePointJson(Request request, Entry mainEntry, List<Entry> entries, Appendable sb)
             throws Exception {
 	List<String> fields = new ArrayList<String>();
-	addPointHeader(fields,"id","Id","string");
 	addPointHeader(fields,"name","Name","string");
-	addPointHeader(fields,"type","Type","enumeration");
         addPointHeader(fields,"description","Description","string");
-        addPointHeader(fields,"icon","Icon","image");
-	addPointHeader(fields,"start_date","Start Date","date");
-	addPointHeader(fields,"end_date","End Date","date");
-	addPointHeader(fields,"create_date","Create Date","date");
-	addPointHeader(fields,"entry_url","Entry Url","url");
-	addPointHeader(fields,"file_url","File Url","url");
-	addPointHeader(fields,"latitude","Latitude","double");
-	addPointHeader(fields,"longitude","Longitude","double");
-	addPointHeader(fields,"elevation","Elevation","double");
-	/*
-        if (request.get(ARG_EXTRACOLUMNS, true)) {
+
+
+        boolean addAttributes = request.get("addAttributes", false);
+        if (addAttributes) {
 	    Entry entry = entries.get(0);
             Object[]     extraParameters = entry.getValues();
 	    if (extraParameters != null) {
@@ -247,14 +240,31 @@ public class JsonOutputHandler extends OutputHandler {
                 for (int i = 0; i < extraParameters.length; i++) {
                     Column column     = columns.get(i);
                     String columnName = column.getName();
+		    String type = column.isNumeric()?"double":column.isBoolean()?"enumeration":column.isEnumeration()?"enumeration":"string";
+		    addPointHeader(fields,columnName,column.getLabel(),type);
 		}
 	    }
 	}
-	*/
+
+	addPointHeader(fields,"id","Id","string","forDisplay","false");
+	addPointHeader(fields,"type","Type","enumeration","forDisplay","false");
+	addPointHeader(fields,"start_date","Start Date","date");
+	addPointHeader(fields,"end_date","End Date","date");
+	addPointHeader(fields,"create_date","Create Date","date","forDisplay","false");
+	addPointHeader(fields,"icon","Icon","image","forDisplay","false");
+	addPointHeader(fields,"entry_url","Entry Url","url","forDisplay","false");
+	boolean showFileUrl = entries.size()==0?false:entries.get(0).getResource().hasResource();
+	if(showFileUrl)
+	    addPointHeader(fields,"file_url","File Url","url");
+	addPointHeader(fields,"latitude","Latitude","double");
+	addPointHeader(fields,"longitude","Longitude","double");
+	addPointHeader(fields,"elevation","Elevation","double");
+
+
         List<String> values = new ArrayList<String>();
         for (Entry entry : entries) {
 	    List<String> entryArray = new ArrayList<String>();
-	    String array = toPointJson(request, entry);
+	    String array = toPointJson(request, entry, addAttributes,showFileUrl);
 	    entryArray.add("values");
 	    entryArray.add(array);
             values.add(Json.map(entryArray,false));
@@ -616,46 +626,43 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
-    private String toPointJson(Request request, Entry entry) throws Exception {
+    private String toPointJson(Request request, Entry entry, boolean addAttributes, boolean showFileUrl) throws Exception {
 
         List<String> items = new ArrayList<String>();
-	items.add(Json.quote(entry.getId()));
 	items.add(Json.quote(entry.getName()));
-	items.add(Json.quote(entry.getTypeHandler().getType()));
 	String description =entry.getDescription();
 	//TODO
 	//Don't wikify the description. Figure out how to display things
 	//	description = getWikiManager().wikifyEntry(request, entry,description,false,null,null,null);
 	items.add(Json.quote(description));
-	items.add(Json.quote(request.getAbsoluteUrl(getPageHandler().getIconUrl(request, entry))));
-	items.add(Json.quote(formatDate(entry.getStartDate())));
-	items.add(Json.quote(formatDate(entry.getEndDate())));
-	items.add(Json.quote(formatDate(entry.getCreateDate())));
-	items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
-	//todo
-	items.add(Json.quote(entry.getTypeHandler().getEntryResourceUrl(request, entry)));
-	items.add("" + (entry.getLatitude()==Entry.NONGEO?"null":entry.getLatitude()));
-	items.add("" + (entry.getLongitude()==Entry.NONGEO?"null":entry.getLongitude()));
-	items.add("" + (entry.getAltitude()==Entry.NONGEO?"null":entry.getAltitude()));
 
-	/****
         TypeHandler       typeHandler = entry.getTypeHandler();
-        if (request.get(ARG_EXTRACOLUMNS, true)) {
-            List<String> extraColumns    = new ArrayList<String>();
-            List<String> columnNames     = new ArrayList<String>();
-            List<String> columnLabels    = new ArrayList<String>();
+        if (addAttributes) {
             Object[]     extraParameters = entry.getValues();
             if (extraParameters != null) {
                 List<Column> columns = entry.getTypeHandler().getColumns();
                 for (int i = 0; i < extraParameters.length; i++) {
-                    Column column     = columns.get(i);
-                    String columnName = column.getName();
                     String value = entry.getValue(i, "");
-		    items.add(Json.quote(value));
+		    if(columns.get(i).isNumeric()) 
+			items.add(value);
+		    else
+			items.add(Json.quote(value));
                 }
             }
         }
-	***/
+	items.add(Json.quote(entry.getId()));
+	items.add(Json.quote(entry.getTypeHandler().getType()));
+	items.add(Json.quote(formatDate(entry.getStartDate())));
+	items.add(Json.quote(formatDate(entry.getEndDate())));
+	items.add(Json.quote(formatDate(entry.getCreateDate())));
+	items.add(Json.quote(request.getAbsoluteUrl(getPageHandler().getIconUrl(request, entry))));
+	items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
+	if(showFileUrl)
+	    items.add(Json.quote(entry.getTypeHandler().getEntryResourceUrl(request, entry)));
+	items.add("" + (entry.getLatitude()==Entry.NONGEO?"null":entry.getLatitude()));
+	items.add("" + (entry.getLongitude()==Entry.NONGEO?"null":entry.getLongitude()));
+	items.add("" + (entry.getAltitude()==Entry.NONGEO?"null":entry.getAltitude()));
+
         return Json.list(items);
     }
 

@@ -475,6 +475,10 @@ function DisplayThing(argId, argProperties) {
 	},
         getRecordHtml: function(record, fields, template) {
 	    fields = this.getFields(fields);
+	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
+	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
+	    let descField = this.getFieldById(null,this.getProperty("descriptionField"));
+	    let link  = linkField?record.getValue(linkField.getIndex()):null;
 	    let showDate = this.getProperty("showDate", true);
 	    let showImage = this.getProperty("showImage", true);
             let showGeo = false;
@@ -492,12 +496,30 @@ function DisplayThing(argId, argProperties) {
 		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getProperty("fields")));
 	    }
 
-            let values = HU.open(TABLE);
+	    let values = "";
+	    if(titleField) {
+		let title = record.getValue(titleField.getIndex());
+		if(link)
+		    title = HU.href(link,title);
+		values+=HU.center(HU.h3(title));
+		link = null;
+	    }
+
+	    if(descField) {
+		let desc = record.getValue(descField.getIndex());
+		values+=desc;
+	    }
+
+            values += HU.open(TABLE);
             for (var doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     var field = fields[i];
+		    if(field==titleField || field==descField) continue;
                     if (doDerived == 0 && !field.derived) continue;
                     else if (doDerived == 1 && field.derived) continue;
+                    if (!field.getForDisplay()) {
+			continue;
+		    }
 		    if(!showDate) {
                         if (field.isFieldDate()) {
                             continue;
@@ -762,6 +784,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['displayStyle="css styles"',"Specify styles for display"],
 		"title=\"\"",
 		"titleBackground=\"color\"",
+		"linkField=",
+		"titleField=",
+		"descriptionField=",
 		"textColor=\"color\"",
 		["backgroundImage=\"\"","Image url to display in background"],
 		"background=\"color\"",
@@ -999,7 +1024,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(names && !Array.isArray(names)) names  = [name];
             let ct = null;
             if (names) {
-		names.forEach(name=>{
+		names.every(name=>{
                     ct = this.getProperty(name);
 		    if(ct) return false;
 		    return true;
@@ -3629,7 +3654,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this.checkSearchBar();
 	    this.updateUI();
+	    if(this.getProperty("reloadSeconds")) {
+		this.runReload();
+	    }
         },
+	runReload: function() {
+	    setTimeout(() =>{
+		this.reloadData();
+		this.runReload();
+	    }, this.getProperty("reloadSeconds")*1000);
+	},
         getMainDiv: function() {
 	    return $("#" + this.getProperty(PROP_DIVID));
 	},

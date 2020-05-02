@@ -550,6 +550,7 @@ function RecordField(props) {
         isLatitude: false,
         isLongitude: false,
         isElevation: false,
+	forDisplay:true
     });
     $.extend(this, props);
     $.extend(this, {
@@ -566,6 +567,9 @@ function RecordField(props) {
 	toString: function() {
 	    return this.getId();
 	    return "Field:" + this.getId() +" label:" + this.getLabel() +" type:" + this.getType()+" " + this.isNumeric();
+	},
+	getForDisplay: function() {
+	    return this.forDisplay;
 	},
         getIndex: function() {
             return this.index;

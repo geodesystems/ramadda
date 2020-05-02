@@ -177,8 +177,6 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
 		    }
 		}
 	    }
-	    
-
 
             System.err.println("rdx update: updated:" + entry.getName());
             message += "updated: " + entry.getName() + "\n";

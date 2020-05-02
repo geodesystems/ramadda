@@ -248,6 +248,11 @@ public class Resource {
         return fileSize;
     }
 
+    public boolean hasResource() {
+	return isFile()||isUrl();
+    }
+
+
     /**
      * _more_
      *
