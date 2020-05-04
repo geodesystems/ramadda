@@ -199,8 +199,6 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
     private void sendNotification(Request request, Entry entry,
                                   String siteId, String msg)
             throws Exception {
-        String fromPhone =
-            getRepository().getProperty("rdx.notification.fromphone");
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(new Date());
         boolean weekend = (cal.get(cal.DAY_OF_WEEK) == cal.SUNDAY)
@@ -211,7 +209,6 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
                 "rdx_notification", true);
         if ((metadataList == null) || (metadataList.size() == 0)) {
             System.err.println("RdxApiHandler: no notifications found");
-
             return;
         }
 
@@ -249,15 +246,9 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
 
                     continue;
                 }
-                if (fromPhone == null) {
-                    System.err.println(
-                        "RdxApiHandler: Error: No rdx.notification.fromphone specified");
-
-                    continue;
-                }
                 System.err.println("RdxApiHandler: Sending site status sms:"
                                    + phone);
-                twilio.sendTextMessage(fromPhone, phone, msg);
+                twilio.sendTextMessage(null, phone, msg);
             }
         }
     }
