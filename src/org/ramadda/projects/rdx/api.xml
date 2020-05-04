@@ -1,4 +1,4 @@
 
 <api handler="org.ramadda.projects.rdx.RdxApiHandler" id="rdx">
-      <api request="/rdx/update"    method="processUpdate" admin="false"/>
+      <api request="/rdx/api/v1/update"    method="processUpdate" admin="false"/>
 </api>

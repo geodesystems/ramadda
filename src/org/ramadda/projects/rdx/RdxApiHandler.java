@@ -17,9 +17,12 @@
 package org.ramadda.projects.rdx;
 
 
+import org.ramadda.plugins.phone.TwilioApiHandler;
+
+
 import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Json;
@@ -27,28 +30,22 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.regex.*;
-
 
 
 /**
- * Provides a top-level API
- *
+ * Provides an API for handling station changes
+ * The file api.xml specifies the /path to method mapping
  */
 public class RdxApiHandler extends RepositoryManager implements RequestHandler {
+
+    /** _more_ */
+    private int passwordErrors = 0;
 
     /**
      *     ctor
@@ -62,59 +59,55 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
     }
 
 
-    /** _more_          */
-    private int passwordErrors = 0;
+    /**
+     * _more_
+     *
+     * @param message _more_
+     *
+     * @return _more_
+     */
+    private Result makeErrorResult(String message) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Json.map("status", "false", "message",
+                           Json.quote(message)));
+
+        return new Result(sb.toString(), "application/json");
+    }
+
 
     /**
-     * handle the request
+     * handle the site update request
      *
      * @param request request
      *
-     * @return result
+     * @return JSON status
      *
      * @throws Exception on badness
      */
     public Result processUpdate(Request request) throws Exception {
-        StringBuilder sb      = new StringBuilder();
-        String        message = "";
-
+        StringBuilder sb = new StringBuilder();
         //If too many failed attempts then bail
         if (passwordErrors > 50) {
-            message = "Too many failed requests";
-            sb.append(Json.map("ok", "false", "message",
-                               Json.quote(message)));
-
-            return new Result(sb.toString(), "application/json");
+            return makeErrorResult("Too many failed requests");
         }
 
         String auth = getRepository().getProperty("rdx.update.password");
         if (auth == null) {
-            message =
-                "No rdx.update.password specified in repository properties";
-            sb.append(Json.map("ok", "false", "message",
-                               Json.quote(message)));
-
-            return new Result(sb.toString(), "application/json");
+            return makeErrorResult(
+                "No rdx.update.password specified in repository properties");
         }
 
         String password = request.getString("password", (String) null);
         if (password == null) {
-            message = "No password specified in request";
-            sb.append(Json.map("ok", "false", "message",
-                               Json.quote(message)));
-
-            return new Result(sb.toString(), "application/json");
+            return makeErrorResult("No password specified in request");
         }
 
         if ( !password.equals(auth)) {
-            message = "Incorrect password specified in request";
-            sb.append(Json.map("ok", "false", "message",
-                               Json.quote(message)));
-            //Sleep a second to prevent multiple guesses
+            //Sleep a second to slow down multiple guesses
             Misc.sleepSeconds(1);
             passwordErrors++;
 
-            return new Result(sb.toString(), "application/json");
+            return makeErrorResult("Incorrect password specified in request");
         }
 
         //Clear the error count
@@ -122,16 +115,11 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
 
         String id = request.getString("instrument_id", (String) null);
         if (id == null) {
-            message = "No instrument_id specified in request";
-            sb.append(Json.map("ok", "false", "message",
-                               Json.quote(message)));
-
-            return new Result(sb.toString(), "application/json");
+            return makeErrorResult("No instrument_id specified in request");
         }
 
 
-
-
+        //Find the station entries
         Request tmpRequest = getRepository().getTmpRequest();
         tmpRequest.put("type", "rdx_instrument");
         tmpRequest.put("search.rdx_instrument.instrument_id", id);
@@ -140,52 +128,137 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
         entries.addAll((List<Entry>) result[0]);
         entries.addAll((List<Entry>) result[1]);
         if (entries.size() == 0) {
-            message = "Could not find instrument: " + id;
-            sb.append(Json.map("ok", "false", "message",
-                               Json.quote(message)));
-            return new Result(sb.toString(), "application/json");
+            return makeErrorResult("Could not find instrument: " + id);
         }
 
-        boolean network = request.get("network_status", true);
-        int     data    = request.get("data_download", 0);
-	GregorianCalendar cal = new GregorianCalendar();
-	cal.setTime(new Date());
-	boolean weekend = cal.get(cal.DAY_OF_WEEK) == cal.SUNDAY ||cal.get(cal.DAY_OF_WEEK) == cal.SATURDAY;
+        String  message    = "";
+        boolean haveStatus = request.defined("network_status");
+        boolean haveData   = request.defined("data_download");
+        int     data       = request.get("data_download", 0);
+        boolean network    = request.get("network_status", true);
         for (Entry entry : entries) {
+            boolean needToNotify = false;
+            boolean changed      = false;
+            if (haveStatus) {
+                if ((boolean) entry.getValue(
+                        RdxInstrumentTypeHandler.IDX_NETWORK_UP) != network) {
+                    changed = true;
+                    entry.setValue(RdxInstrumentTypeHandler.IDX_NETWORK_UP,
+                                   network);
+                    if ( !network) {
+                        needToNotify = true;
+                    }
+                }
+            }
 
-	    boolean changed = false;
-	    if((boolean) entry.getValue(RdxInstrumentTypeHandler.IDX_NETWORK_UP)!=network)
-		changed = true;
+            if (haveData) {
+                if ((int) entry.getValue(
+                        RdxInstrumentTypeHandler.IDX_DATA_DOWN) != data) {
+                    changed = true;
+                    entry.setValue(RdxInstrumentTypeHandler.IDX_DATA_DOWN,
+                                   data);
+                }
+            }
 
-	    if((int) entry.getValue(RdxInstrumentTypeHandler.IDX_DATA_DOWN)!=data)
-		changed = true;
+            if (changed) {
+                System.err.println("changed:" + entry);
+                getEntryManager().updateEntry(request, entry);
+                message += "updated: " + entry.getName() + "\n";
+            }
 
-	    entry.setValue(RdxInstrumentTypeHandler.IDX_NETWORK_UP, network);
-            entry.setValue(RdxInstrumentTypeHandler.IDX_DATA_DOWN, data);
-
-
-	    if(changed) {
-		System.err.println("changed:" + changed);
-		List<Metadata> metadataList =
-		    getMetadataManager().findMetadata(request, entry.getParentEntry(), "rdx_notification",
-						      false);
-		if ((metadataList != null) && (metadataList.size() > 0)) {
-		    for (Metadata metadata : metadataList) {
-			String when = metadata.getAttr4();
-			if(when.equals("weekend") && !weekend) continue;
-			System.err.println("notification:" + metadata.getAttr1());
-		    }
-		}
-	    }
-
-            System.err.println("rdx update: updated:" + entry.getName());
-            message += "updated: " + entry.getName() + "\n";
-            getEntryManager().updateEntry(request, entry);
+            if (needToNotify) {
+                String url = request.getAbsoluteUrl(
+                                 request.entryUrl(
+                                     getRepository().URL_ENTRY_SHOW, entry));
+                String msg = "Network for station:" + id + " is down\n" + url;
+                try {
+                    sendNotification(request, entry, id, msg);
+                } catch (Exception exc) {
+                    System.err.println(
+                        "RdxApiHandler: Error sending notification:" + exc);
+                    exc.printStackTrace();
+                }
+            }
         }
-
-        sb.append(Json.map("ok", "true", "message", Json.quote(message)));
+        sb.append(Json.map("status", "true", "message", Json.quote(message)));
 
         return new Result(sb.toString(), "application/json");
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param siteId _more_
+     * @param msg _more_
+     *
+     * @throws Exception _more_
+     */
+    private void sendNotification(Request request, Entry entry,
+                                  String siteId, String msg)
+            throws Exception {
+        String fromPhone =
+            getRepository().getProperty("rdx.notification.fromphone");
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(new Date());
+        boolean weekend = (cal.get(cal.DAY_OF_WEEK) == cal.SUNDAY)
+                          || (cal.get(cal.DAY_OF_WEEK) == cal.SATURDAY);
+
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+                "rdx_notification", true);
+        if ((metadataList == null) || (metadataList.size() == 0)) {
+            System.err.println("RdxApiHandler: no notifications found");
+
+            return;
+        }
+
+        for (Metadata metadata : metadataList) {
+            String when = metadata.getAttr4();
+            if (when.equals("weekend") && !weekend) {
+                continue;
+            }
+            String name  = metadata.getAttr1();
+            String email = Utils.trim(metadata.getAttr2());
+            String phone = Utils.trim(metadata.getAttr3());
+            System.err.println("RdxApiHandler: notification:" + name
+                               + " email:" + email + " phone:" + phone);
+            if (email.length() > 0) {
+                if ( !getRepository().getMailManager().isEmailCapable()) {
+                    System.err.println(
+                        "RdxApiHandler: Error: Email is not enabled");
+
+                    continue;
+                }
+                System.err.println(
+                    "RdxApiHandler: Sending site status email:" + email);
+                getRepository().getMailManager().sendEmail(email,
+                        "Site status:" + siteId, msg, true);
+            }
+
+            phone = phone.replaceAll("-", "");
+            if (phone.length() > 0) {
+                TwilioApiHandler twilio =
+                    (TwilioApiHandler) getRepository().getApiManager()
+                        .getApiHandler("twilio");
+                if ((twilio == null) || !twilio.sendingEnabled()) {
+                    System.err.println(
+                        "RdxApiHandler: Error: SMS is not enabled");
+
+                    continue;
+                }
+                if (fromPhone == null) {
+                    System.err.println(
+                        "RdxApiHandler: Error: No rdx.notification.fromphone specified");
+
+                    continue;
+                }
+                System.err.println("RdxApiHandler: Sending site status sms:"
+                                   + phone);
+                twilio.sendTextMessage(fromPhone, phone, msg);
+            }
+        }
+    }
 }
