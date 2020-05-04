@@ -1049,6 +1049,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         });
 
+	/*
 	try {
 	    System.err.println("sending test email");
 	    getMailManager().sendEmail("jeff.mcwhirter@gmail.com","test it","contents", true);
@@ -1056,6 +1057,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    System.err.println("Error:" + exc);
 	    exc.printStackTrace();
 	}
+	*/
 
 
     }
