@@ -3392,7 +3392,7 @@ public abstract class Converter extends Processor {
             if (place != null) {
                 add(info, row, new Integer(place.getPopulation()));
             } else {
-		System.out.println("NOT:" + key);
+		//		System.out.println("NOT:" + key);
                 add(info, row, new Integer(0));
             }
 
