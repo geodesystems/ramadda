@@ -1049,8 +1049,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         });
 
-	System.err.println("sending test email");
-	getMailManager().sendEmail("jeff.mcwhirter","test it","contents", true);
+	try {
+	    System.err.println("sending test email");
+	    getMailManager().sendEmail("jeff.mcwhirter@gmail.com","test it","contents", true);
+	} catch(Exception exc) {
+	    System.err.println("Error:" + exc);
+	    exc.printStackTrace();
+	}
 
 
     }
