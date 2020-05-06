@@ -19,7 +19,7 @@ data_down.colorTable=plotly_reds
 network_up.colorByMap="true:green,false:red"
 colorCells="network_up,data_down"
 }} 
-{{display_barchart fields=data_down indexField=name forceStrings=true}}
+{{display_barchart fields=data_down,minutes_since indexField=name forceStrings=true chartRight=80}}
 {{display_map  width="100%"  height="400" iconField=icon iconSize=16
 doGridPoints=true 
 showPoints=true
