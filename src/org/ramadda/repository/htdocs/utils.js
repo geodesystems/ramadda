@@ -463,6 +463,9 @@ var Utils = {
 	return  new Date(d);
 
     },
+    toMinutes: function(ms) {
+	return ms/1000/60;
+    },
     formatDateMonthDayYear: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
 	var m = this.monthNames[date.getUTCMonth()];
