@@ -209,17 +209,22 @@ public class RdxApiHandler extends RepositoryManager implements RequestHandler {
                 "rdx_notification", true);
         if ((metadataList == null) || (metadataList.size() == 0)) {
             System.err.println("RdxApiHandler: no notifications found");
+
             return;
         }
 
         for (Metadata metadata : metadataList) {
-            String when = metadata.getAttr4();
+            String when = metadata.getAttr(5);
             if (when.equals("weekend") && !weekend) {
                 continue;
             }
-            String name  = metadata.getAttr1();
-            String email = Utils.trim(metadata.getAttr2());
-            String phone = Utils.trim(metadata.getAttr3());
+            boolean enabled = Misc.equals(metadata.getAttr1(), "true");
+            if ( !enabled) {
+                continue;
+            }
+            String name  = metadata.getAttr2();
+            String email = Utils.trim(metadata.getAttr3());
+            String phone = Utils.trim(metadata.getAttr4());
             System.err.println("RdxApiHandler: notification:" + name
                                + " email:" + email + " phone:" + phone);
             if (email.length() > 0) {

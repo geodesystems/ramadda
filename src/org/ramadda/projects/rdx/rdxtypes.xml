@@ -5,22 +5,38 @@
      <wiki><![CDATA[
 +section title={{name}}
 :reload seconds=30 showCheckbox=true showLabel=true
+{{description wikify=true}}
 {{property name=doEntries value=true}}
 {{property name=addAttributes value=true}} 
-{{group filterFields=network_up,data_down hideFilterWidget=true sortFields=name}} 
+{{group filterFields=network_up,data_down hideFilterWidget=true sortFields=name
+ convertData="derived(field=minutes_since, function=Utils.toMinutes(new Date().getTime()-last_data));" 
+}} 
 {{display_blank hideFilterWidget=false showMenu=true}}
 {{display_table  height="300"  showMenu=true
 linkField=entry_url iconField=icon  
-fields="name,instrument_id,type,city,state,network_up,data_down"
+fields="name,instrument_id,type,city,state,network_up,data_down,minutes_since"
 data_down.colorTable=plotly_reds
 network_up.colorByMap="true:green,false:red"
 colorCells="network_up,data_down"
 }} 
 {{display_barchart fields=data_down indexField=name forceStrings=true}}
 {{display_map  width="100%"  height="400" iconField=icon iconSize=16
- radius="18" colorBy=network_up colorByMap="true:green,false:red"
- showColorTable=false 
-  linkField=entry_url titleField=name descriptionField=description
+doGridPoints=true 
+showPoints=true
+lengthBy=data_down
+hm.colorBy=minutes_since
+hm.boundsScale=0.15
+cellShape=rect
+cellSizeHBase=5
+cellOffsetX=10
+cellOffsetY=9
+cell3D=true
+cellSize=8
+gridWidth=800
+radius="12" 
+colorBy=network_up colorByMap="true:green,false:red"
+showColorTable=false 
+linkField=entry_url titleField=name descriptionField=description
 }} 
 -section
 ]]>

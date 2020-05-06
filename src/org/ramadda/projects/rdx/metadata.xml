@@ -2,6 +2,7 @@
 <metadata>
   <handler category="RDX" >
     <type id="rdx_notification" name="Notification"  values="">
+      <element id="enabled" name="Enabled" datatype="boolean" default="true"/>
       <element id="name" name="Name" datatype="string" columns="20"/>
       <element id="email" name="Email" datatype="email" columns="20"/>
       <element id="phone" name="Phone" datatype="string" suffix="No spaces or dashes" columns="20"/>
