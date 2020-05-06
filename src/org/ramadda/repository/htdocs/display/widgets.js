@@ -1411,7 +1411,7 @@ function Annotations(display,records) {
 		}
 		
 		if(index=="today") {
-		    index = Utils.formatDateYYYYMMDD(new Date());
+		    index = new Date();
 		} else {
 		    index = Utils.parseDate(index,false);
 		}
