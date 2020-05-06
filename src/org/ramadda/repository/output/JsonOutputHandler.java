@@ -240,7 +240,7 @@ public class JsonOutputHandler extends OutputHandler {
                 for (int i = 0; i < extraParameters.length; i++) {
                     Column column     = columns.get(i);
                     String columnName = column.getName();
-		    String type = column.isNumeric()?"double":column.isBoolean()?"enumeration":column.isEnumeration()?"enumeration":"string";
+		    String type = column.isDate()?"date":column.isNumeric()?"double":column.isBoolean()?"enumeration":column.isEnumeration()?"enumeration":"string";
 		    addPointHeader(fields,columnName,column.getLabel(),type);
 		}
 	    }
