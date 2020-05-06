@@ -202,15 +202,6 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
         },
-        handleEventMapClick: function(source, args) {
-            if (!this.dataCollection) {
-                return;
-            }
-            var pointData = this.dataCollection.getList();
-            for (var i = 0; i < pointData.length; i++) {
-                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
-            }
-        },
         handleEventPointDataLoaded: function(source, pointData) {
             //TODO: this results in a double  call to updateUI when first created
             this.updateUI();
@@ -442,6 +433,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
             await this.getDisplayEntry((e)=>{
+		if(!e) return;
                 var q= e.getAttribute("variables");
                 if(!q) return;
                 q = q.value;

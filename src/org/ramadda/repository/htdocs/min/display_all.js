@@ -1411,7 +1411,7 @@ function Annotations(display,records) {
 		}
 		
 		if(index=="today") {
-		    index = Utils.formatDateYYYYMMDD(new Date());
+		    index = new Date();
 		} else {
 		    index = Utils.parseDate(index,false);
 		}
@@ -1673,7 +1673,13 @@ function removeRamaddaDisplay(id) {
 }
 
 function displayGetFunctionValue(v) {
-    if(isNaN(v))return 0;
+    if(v.getTime) {
+	return v.getTime();
+    }
+    if(isNaN(v)) {
+	if((typeof v) == "string")return v;
+	return 0;
+    }
     return v;
 }
 
@@ -2465,7 +2471,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DISPLAY_CONTENTS).html(html);
         },
         notifyEvent: function(func, source, data) {
-	    //	    console.log(this.type +".notifyEvent:" + func);
             if (this[func] == null) {
                 return;
             }
@@ -2685,6 +2690,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		stroke: !this.getProperty("cellFilled",true),
 		cellSize: this.getProperty("cellSize",doHeatmap?0:4),
 		cellSizeH: this.getProperty("cellSizeH",20),
+		cellSizeHBase: this.getProperty("cellSizeHBase",0),
 		cell3D:this.getProperty("cell3D",false),
 		cellShowText:this.getProperty("cellShowText",false),
 		cellFont:this.getProperty("cellFont"),
@@ -2791,6 +2797,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return titleToShow;
         },
+        handleEventMapClick: function(source, args) {
+	    console.log(this.type+".mapClick");
+            if (!this.dataCollection) return;
+            var pointData = this.dataCollection.getList();
+            for (var i = 0; i < pointData.length; i++) {
+                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
+            }
+        },
+
         handleEventMapBoundsChanged: function(source, args) {
 	    if(this.getProperty("acceptBoundsChange")) {
 		this.filterBounds  = args.bounds;
@@ -5046,8 +5061,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return;
             }
             if (this.getProperty("latitude")) {
-                this.data.lat = this.getProperty("latitude");
-                this.data.lon = this.getProperty("longitude", "-105");
+                this.properties.data.lat = this.getProperty("latitude");
+                this.properties.data.lon = this.getProperty("longitude", "-105");
             }
 
             if (this.properties.data.hasData()) {
@@ -7665,13 +7680,6 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         needsData: function() {
             return true;
         },
-        handleEventMapClick: function(source, args) {
-            if (!this.dataCollection) return;
-            var pointData = this.dataCollection.getList();
-            for (var i = 0; i < pointData.length; i++) {
-                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
-            }
-        },
         initDisplay: function() {
             SUPER.initDisplay.call(this);
             if (this.needsData()) {
@@ -7962,7 +7970,6 @@ function PointData(name, recordFields, records, url, properties) {
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
 	    //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
             if (myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
-		console.log("url:" + this.url);
                 this.loadData(myDisplay, true);
                 return true;
             }
@@ -8050,6 +8057,7 @@ function PointData(name, recordFields, records, url, properties) {
                 cacheObject = {
                     pointData: null,
                     pending: [],
+		    displays:[],
 		    size:0,
 		    url:url,
 		    toString:function() {
@@ -8061,9 +8069,10 @@ function PointData(name, recordFields, records, url, properties) {
                     console.log("\tcreated new obj in cache: " +url);
                 pointDataCache[url] = cacheObject;
             }
+            cacheObject.displays.push(display);
             if (cacheObject.pointData != null) {
 		if(debug)
-                    console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
+                   console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
                 display.pointDataLoaded(cacheObject.pointData, url, reload);
                 return;
             }
@@ -9573,10 +9582,10 @@ var RecordUtil = {
 
 	points.map((p,idx)=>{
 	    let cell = values[p.y][p.x];
-	    cell.min = cell.count==0?p.v:Math.min(cell.min,p.v);
-	    cell.max = cell.count==0?p.v:Math.max(cell.max,p.v);
+	    cell.min = cell.count==0?p.colorValue:Math.min(cell.min,p.colorValue);
+	    cell.max = cell.count==0?p.colorValue:Math.max(cell.max,p.colorValue);
 	    cell.count++;
-	    cell.total += p.value;
+	    cell.total += p.colorValue;
 	});
 
 	let minValue = NaN;
@@ -9688,15 +9697,23 @@ var RecordUtil = {
     
 
 
-    drawGridCell: function(opts, canvas, ctx, x,y,v,colIdx,rowIdx, cell,grid,alphaByCount) {
+    drawGridCell: function(opts, canvas, ctx, x,y,colorValue,lengthValue,colIdx,rowIdx, cell,grid,alphaByCount) {
 	let c =  opts.color|| "#ccc";
-	let perc = 1.0;
-	if(opts.colorBy && v) {
-	    perc = opts.colorBy.getValuePercent(v);
+	let colorPercent = 1.0;
+	let lengthPercent = 1.0;
+	if(opts.colorBy && Utils.isDefined(colorValue)) {
+	    colorPercent = opts.colorBy.getValuePercent(colorValue);
 	    if(opts.colorBy.index>=0) {
-		c=  opts.colorBy.getColor(v);
+		c=  opts.colorBy.getColor(colorValue);
 	    }
 	}
+	if(opts.lengthBy && lengthValue) {
+	    lengthPercent = opts.lengthBy.getValuePercent(lengthValue);
+	} else {
+	    lengthPercent = colorPercent;
+	}
+
+
 	if(alphaByCount && cell && grid) {
 	    if(grid.maxCount!=grid.minCount) {
 		let countPerc = (cell.count-grid.minCount)/(grid.maxCount-grid.minCount);
@@ -9759,14 +9776,15 @@ var RecordUtil = {
 		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
 		ctx.stroke();
 	    }
-
-
-
 	} else if(opts.cell3D) {
-	    let height = perc*(opts.cellSizeH||20);
+	    let base = opts.cellSizeHBase?+opts.cellSizeHBase:0;
+	    let height = lengthPercent*(opts.cellSizeH||20) + base;
+//	    console.log(lengthValue +" %:" + lengthPercent  +" h:" + height +" base:" + (opts.cellSizeHBase?opts.cellSizeHBase:0));
 	    ctx.strokeStyle = "#000";
 	    ctx.strokeStyle = "rgba(0,0,0,0)"
-	    RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
+	    let offx = +opts.display.getProperty("cellOffsetX",0);
+	    let offy = +opts.display.getProperty("cellOffsetY",0);
+	    RecordUtil.draw3DRect(canvas,ctx,x+offx, canvas.height-y-offy,+opts.cellSize,height,+opts.cellSize);
 	} else if(opts.shape=="tile"){
 	    let crx = x+opts.cellSizeX/2;
 	    let cry = y+opts.cellSizeY/2;
@@ -10053,18 +10071,23 @@ var RecordUtil = {
 		let x = scaleX(lat,lon);
 		let y = scaleY(lat,lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
-		let v = 0;
+		let colorValue = 0;
 		if(opts.colorBy && opts.colorBy.index>=0) {
-		    v = record.getValue(opts.colorBy.index);
+		    colorValue = record.getValue(opts.colorBy.index);
 		}
+		let lengthValue = 0;
+		if(opts.lengthBy && opts.lengthBy.index>=0) {
+		    lengthValue = record.getValue(opts.lengthBy.index);
+		}		
 		x =Math.floor(x/opts.cellSizeX);
 		y =Math.floor(y/opts.cellSizeY);
 		if(x<0) x=0;
 		if(y<0) y=0;
 		if(x>=cols) x=cols-1;
 		if(y>=rows) y=rows-1;
-		points.push({x:x,y:y,value:v,r:record});
+		points.push({x:x,y:y,colorValue:colorValue,r:record});
 	    });
+
 
 	    let grid = RecordUtil.gridPoints(rows,cols,points,args);
 	    opts.cellSizeX = +opts.cellSizeX;
@@ -10091,7 +10114,7 @@ var RecordUtil = {
 		    let x = colIdx*opts.cellSizeX;
 		    let y = rowIdx*opts.cellSizeY;
 		    if(cell.count>=countThreshold)
-			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,cell.v, colIdx,rowIdx,cell, grid);
 		}
 	    }
 
@@ -10105,12 +10128,9 @@ var RecordUtil = {
 		    let x = colIdx*opts.cellSizeX;
 		    let y = rowIdx*opts.cellSizeY;
 		    if(cell.count>=countThreshold)
-			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,cell.v,colIdx,rowIdx,cell, grid);
 		}
 	    }
-	    
-
-
 	} else {
 	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
 	    records.map((record,idx)=>{
@@ -10119,13 +10139,14 @@ var RecordUtil = {
 		let x = scaleX(lat,lon);
 		let y = scaleY(lat,lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
-		let v = opts.colorBy? record.getData()[opts.colorBy.index]:null;
+		let colorValue = opts.colorBy? record.getData()[opts.colorBy.index]:null;
+		let lengthValue = opts.lengthBy? record.getData()[opts.lengthBy.index]:null;
 		if(false && opts.forMercator) {
 		    var [tx,ty]  =RecordUtil.convertGeoToPixel(lat, lon,opts.bounds,opts.w,opts.h);
 		    x = tx;
 		    y = ty;
 		}
-		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,v);
+		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,colorValue, lengthValue);
 	    });
 	}
 
@@ -10370,22 +10391,22 @@ function CsvUtil() {
 		func = "return " + func;
 	    }
             let setVars = "";
-            fields.map((field,idx)=>{
-		if(field.isFieldNumeric() && field.getId()!="") {
+            fields.forEach((field,idx)=>{
+		if(/*field.isFieldNumeric() && */field.getId()!="") {
 		    let varName = field.getId().replace(/^([0-9]+)/g,"v$1");
 		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args[\"" + field.getId() + "\"]);\n";
 		}
             });
-            let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
-	    //	    console.log(code);
+            let code = "function displayDerivedEval(args) {\n" + setVars +  func + "\n}";
+//	    console.log(code);
             eval(code);
-	    records.map((record, rowIdx)=>{
+	    records.forEach((record, rowIdx)=>{
 		let newRecord = record.clone();
 		newRecord.data= record.data.slice();
 		newRecords.push(newRecord);
 		let funcArgs = {};
 		fields.map((field,idx)=>{
-		    if(field.isFieldNumeric() && field.getId()!="") {
+		    if(/*field.isFieldNumeric() &&*/ field.getId()!="") {
 			funcArgs[field.getId()] = record.getValue(field.getIndex());
 		    }
 		});
@@ -17895,15 +17916,6 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
         },
-        handleEventMapClick: function(source, args) {
-            if (!this.dataCollection) {
-                return;
-            }
-            var pointData = this.dataCollection.getList();
-            for (var i = 0; i < pointData.length; i++) {
-                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
-            }
-        },
         handleEventPointDataLoaded: function(source, pointData) {
             //TODO: this results in a double  call to updateUI when first created
             this.updateUI();
@@ -18135,6 +18147,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 return;
             }
             await this.getDisplayEntry((e)=>{
+		if(!e) return;
                 var q= e.getAttribute("variables");
                 if(!q) return;
                 q = q.value;
@@ -24695,14 +24708,14 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
 
 
 //Properties
-var PROP_LAYOUT_TYPE = "layoutType";
-var PROP_LAYOUT_COLUMNS = "layoutColumns";
-var PROP_SHOW_MAP = "showMap";
-var PROP_SHOW_MENU = "showMenu";
-var PROP_FROMDATE = "fromDate";
-var PROP_TODATE = "toDate";
+const PROP_LAYOUT_TYPE = "layoutType";
+const PROP_LAYOUT_COLUMNS = "layoutColumns";
+const PROP_SHOW_MAP = "showMap";
+const PROP_SHOW_MENU = "showMenu";
+const PROP_FROMDATE = "fromDate";
+const PROP_TODATE = "toDate";
 
-var DISPLAY_MULTI = "multi";
+const DISPLAY_MULTI = "multi";
 addGlobalDisplayType({
     type: DISPLAY_MULTI,
     label: "Multi Chart",
@@ -25507,7 +25520,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'cellColor',wikiValue:'color'},
 	{p:'cellFilled',wikiValue:true},
 	{p:'cellSize',wikiValue:'8'},
-	{p:'cellSizeH',wikiValue:'20',tt:'Base height to scale by'},
+	{p:'cellSizeH',wikiValue:'20',tt:'Base value to scale by to get height'},
+	{p:'cellSizeHBase',wikiValue:'0',tt:'Extra height value'},
 	{p:'hm.operator',wikiValue:'count|average|min|max'},
 	{p:'hm.animationSleep',wikiValue:'1000'},
 	{p:'hm.reloadOnZoom',wikiValue:'true'},
@@ -26149,9 +26163,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if(justOneMarker) {
                 var pointData = this.getPointData();
                 if(pointData) {
-                    pointData.handleEventMapClick(this, source, lon, lat);
+                    pointData.handleEventMapClick(this, this, lon, lat);
                 }
             }
+//            this.getDisplayManager().notifyEvent("handleEventMapClick", this, {lat:lat,lon:lon});
+
 	    if(!this.records) return;
 	    let indexObj = [];
             let closest = RecordUtil.findClosest(this.records, lon, lat, indexObj);
@@ -26161,11 +26177,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //If we are highlighting a record then change the marker
 	    if(this.highlightMarker) {
 		this.highlightPoint(closest.getLatitude(),closest.getLongitude(),true,true);
-		
 	    }
 	    
-
-
 	    let fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
 	    fields.map(field=>{
 		let args = {
@@ -27084,6 +27097,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let angleBy = this.getColorByInfo(records, "angleBy",null,null,["hm.angleBy","angleBy",""]);
 	    let lengthBy = this.getColorByInfo(records, "lengthBy",null,null,["hm.lengthBy","lengthBy",""]);
 	    if(angleBy.index<0) angleBy = colorBy;
+
+
+
 	    if(lengthBy.index<0) lengthBy=null;
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
@@ -27157,6 +27173,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
 		});
+		this.map.getMap().setLayerIndex(layer, 1000);
 		layer.heatmapLabel = label;
 		if(groupByDate) {
 		    if(value.getTime)
@@ -27365,19 +27382,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
         addPoints: function(records, fields, points,bounds) {
-	    let debug = displayDebug.displayMapAddPoints;
-	    let highlightRecords = this.getFilterHighlight();
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
-		if(debug) console.log("displaymap creating heatmap");
+		if(this.getProperty("hm.showPoints") || this.getProperty("showPoints")) {
+		    this.createPoints(records, fields, points, bounds);
+		}
 		this.createHeatmap(records, bounds);
-		if(debug) console.log("displaymap done creating heatmap");
-		if(!this.getProperty("hm.showPoints"))
-		    return;
+		return;
 	    }
 	    if(this.getProperty("htmlLayerField")) {
 		this.createHtmlLayer(records, fields);
 		return;
 	    }
+	    this.createPoints(records, fields, points, bounds);
+	},
+        createPoints: function(records, fields, points,bounds) {
+	    let debug = displayDebug.displayMapAddPoints;
             let colorBy = this.getColorByInfo(records);
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
@@ -27385,6 +27404,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
             let radius = +this.getPropertyRadius(8);
+	    let highlightRecords = this.getFilterHighlight();
 	    let unhighlightFillColor = this.getUnhighlightColor();
 	    let unhighlightStrokeWidth = this.getProperty("unhighlightStrokeWidth",0);
 	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#aaa");

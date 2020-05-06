@@ -129,7 +129,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'cellColor',wikiValue:'color'},
 	{p:'cellFilled',wikiValue:true},
 	{p:'cellSize',wikiValue:'8'},
-	{p:'cellSizeH',wikiValue:'20',tt:'Base height to scale by'},
+	{p:'cellSizeH',wikiValue:'20',tt:'Base value to scale by to get height'},
+	{p:'cellSizeHBase',wikiValue:'0',tt:'Extra height value'},
 	{p:'hm.operator',wikiValue:'count|average|min|max'},
 	{p:'hm.animationSleep',wikiValue:'1000'},
 	{p:'hm.reloadOnZoom',wikiValue:'true'},
@@ -771,9 +772,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if(justOneMarker) {
                 var pointData = this.getPointData();
                 if(pointData) {
-                    pointData.handleEventMapClick(this, source, lon, lat);
+                    pointData.handleEventMapClick(this, this, lon, lat);
                 }
             }
+//            this.getDisplayManager().notifyEvent("handleEventMapClick", this, {lat:lat,lon:lon});
+
 	    if(!this.records) return;
 	    let indexObj = [];
             let closest = RecordUtil.findClosest(this.records, lon, lat, indexObj);
@@ -783,11 +786,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    //If we are highlighting a record then change the marker
 	    if(this.highlightMarker) {
 		this.highlightPoint(closest.getLatitude(),closest.getLongitude(),true,true);
-		
 	    }
 	    
-
-
 	    let fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
 	    fields.map(field=>{
 		let args = {
@@ -1706,6 +1706,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let angleBy = this.getColorByInfo(records, "angleBy",null,null,["hm.angleBy","angleBy",""]);
 	    let lengthBy = this.getColorByInfo(records, "lengthBy",null,null,["hm.lengthBy","lengthBy",""]);
 	    if(angleBy.index<0) angleBy = colorBy;
+
+
+
 	    if(lengthBy.index<0) lengthBy=null;
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
@@ -1779,6 +1782,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
 		});
+		this.map.getMap().setLayerIndex(layer, 1000);
 		layer.heatmapLabel = label;
 		if(groupByDate) {
 		    if(value.getTime)
@@ -1987,19 +1991,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
         addPoints: function(records, fields, points,bounds) {
-	    let debug = displayDebug.displayMapAddPoints;
-	    let highlightRecords = this.getFilterHighlight();
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
-		if(debug) console.log("displaymap creating heatmap");
+		if(this.getProperty("hm.showPoints") || this.getProperty("showPoints")) {
+		    this.createPoints(records, fields, points, bounds);
+		}
 		this.createHeatmap(records, bounds);
-		if(debug) console.log("displaymap done creating heatmap");
-		if(!this.getProperty("hm.showPoints"))
-		    return;
+		return;
 	    }
 	    if(this.getProperty("htmlLayerField")) {
 		this.createHtmlLayer(records, fields);
 		return;
 	    }
+	    this.createPoints(records, fields, points, bounds);
+	},
+        createPoints: function(records, fields, points,bounds) {
+	    let debug = displayDebug.displayMapAddPoints;
             let colorBy = this.getColorByInfo(records);
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
@@ -2007,6 +2013,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let latlon = this.getProperty("latlon",true);
             let source = this;
             let radius = +this.getPropertyRadius(8);
+	    let highlightRecords = this.getFilterHighlight();
 	    let unhighlightFillColor = this.getUnhighlightColor();
 	    let unhighlightStrokeWidth = this.getProperty("unhighlightStrokeWidth",0);
 	    let unhighlightStrokeColor = this.getProperty("unhighlightStrokeColor","#aaa");

@@ -135,7 +135,13 @@ function removeRamaddaDisplay(id) {
 }
 
 function displayGetFunctionValue(v) {
-    if(isNaN(v))return 0;
+    if(v.getTime) {
+	return v.getTime();
+    }
+    if(isNaN(v)) {
+	if((typeof v) == "string")return v;
+	return 0;
+    }
     return v;
 }
 
@@ -927,7 +933,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DISPLAY_CONTENTS).html(html);
         },
         notifyEvent: function(func, source, data) {
-	    //	    console.log(this.type +".notifyEvent:" + func);
             if (this[func] == null) {
                 return;
             }
@@ -1147,6 +1152,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		stroke: !this.getProperty("cellFilled",true),
 		cellSize: this.getProperty("cellSize",doHeatmap?0:4),
 		cellSizeH: this.getProperty("cellSizeH",20),
+		cellSizeHBase: this.getProperty("cellSizeHBase",0),
 		cell3D:this.getProperty("cell3D",false),
 		cellShowText:this.getProperty("cellShowText",false),
 		cellFont:this.getProperty("cellFont"),
@@ -1253,6 +1259,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return titleToShow;
         },
+        handleEventMapClick: function(source, args) {
+	    console.log(this.type+".mapClick");
+            if (!this.dataCollection) return;
+            var pointData = this.dataCollection.getList();
+            for (var i = 0; i < pointData.length; i++) {
+                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
+            }
+        },
+
         handleEventMapBoundsChanged: function(source, args) {
 	    if(this.getProperty("acceptBoundsChange")) {
 		this.filterBounds  = args.bounds;
@@ -3508,8 +3523,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return;
             }
             if (this.getProperty("latitude")) {
-                this.data.lat = this.getProperty("latitude");
-                this.data.lon = this.getProperty("longitude", "-105");
+                this.properties.data.lat = this.getProperty("latitude");
+                this.properties.data.lon = this.getProperty("longitude", "-105");
             }
 
             if (this.properties.data.hasData()) {
@@ -6126,13 +6141,6 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
             return true;
-        },
-        handleEventMapClick: function(source, args) {
-            if (!this.dataCollection) return;
-            var pointData = this.dataCollection.getList();
-            for (var i = 0; i < pointData.length; i++) {
-                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
-            }
         },
         initDisplay: function() {
             SUPER.initDisplay.call(this);
