@@ -232,6 +232,8 @@ public class NcssTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
             throws Exception {
 
+	super.initializeNewEntry(request,entry,fromImport);
+	if(fromImport) return;
         String url = entry.getResource().getPath();
         if ( !Utils.stringDefined(entry.getName())) {
             String[] toks = Utils.findPatterns(url, "/(.*)/(.*)/[^/]+\\?");
