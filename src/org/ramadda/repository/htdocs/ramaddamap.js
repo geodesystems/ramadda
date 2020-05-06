@@ -1125,6 +1125,21 @@ RepositoryMap.prototype = {
         if (!theArgs.isBaseLayer) {
             this.imageLayers[layerId] = image;
         }
+
+	if(image.div) {
+	    var childNodes = image.div.childNodes;
+	    for(var i = 0, len = childNodes.length; i < len; ++i) {
+		var element = childNodes[i].firstChild || childNodes[i];
+		var lastChild = childNodes[i].lastChild;
+		//TODO de-uglify this
+		if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
+		    element = lastChild.parentNode;
+		}
+		element.style["pointer-events"]="none";
+	    }
+	}
+
+
         return image;
     },
     addWMSLayer: function(name, url, layer, isBaseLayer) {
