@@ -222,7 +222,6 @@ function PointData(name, recordFields, records, url, properties) {
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
 	    //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
             if (myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
-		console.log("url:" + this.url);
                 this.loadData(myDisplay, true);
                 return true;
             }
@@ -310,6 +309,7 @@ function PointData(name, recordFields, records, url, properties) {
                 cacheObject = {
                     pointData: null,
                     pending: [],
+		    displays:[],
 		    size:0,
 		    url:url,
 		    toString:function() {
@@ -321,9 +321,10 @@ function PointData(name, recordFields, records, url, properties) {
                     console.log("\tcreated new obj in cache: " +url);
                 pointDataCache[url] = cacheObject;
             }
+            cacheObject.displays.push(display);
             if (cacheObject.pointData != null) {
 		if(debug)
-                    console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
+                   console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
                 display.pointDataLoaded(cacheObject.pointData, url, reload);
                 return;
             }
@@ -1833,10 +1834,10 @@ var RecordUtil = {
 
 	points.map((p,idx)=>{
 	    let cell = values[p.y][p.x];
-	    cell.min = cell.count==0?p.v:Math.min(cell.min,p.v);
-	    cell.max = cell.count==0?p.v:Math.max(cell.max,p.v);
+	    cell.min = cell.count==0?p.colorValue:Math.min(cell.min,p.colorValue);
+	    cell.max = cell.count==0?p.colorValue:Math.max(cell.max,p.colorValue);
 	    cell.count++;
-	    cell.total += p.value;
+	    cell.total += p.colorValue;
 	});
 
 	let minValue = NaN;
@@ -1948,15 +1949,23 @@ var RecordUtil = {
     
 
 
-    drawGridCell: function(opts, canvas, ctx, x,y,v,colIdx,rowIdx, cell,grid,alphaByCount) {
+    drawGridCell: function(opts, canvas, ctx, x,y,colorValue,lengthValue,colIdx,rowIdx, cell,grid,alphaByCount) {
 	let c =  opts.color|| "#ccc";
-	let perc = 1.0;
-	if(opts.colorBy && v) {
-	    perc = opts.colorBy.getValuePercent(v);
+	let colorPercent = 1.0;
+	let lengthPercent = 1.0;
+	if(opts.colorBy && Utils.isDefined(colorValue)) {
+	    colorPercent = opts.colorBy.getValuePercent(colorValue);
 	    if(opts.colorBy.index>=0) {
-		c=  opts.colorBy.getColor(v);
+		c=  opts.colorBy.getColor(colorValue);
 	    }
 	}
+	if(opts.lengthBy && lengthValue) {
+	    lengthPercent = opts.lengthBy.getValuePercent(lengthValue);
+	} else {
+	    lengthPercent = colorPercent;
+	}
+
+
 	if(alphaByCount && cell && grid) {
 	    if(grid.maxCount!=grid.minCount) {
 		let countPerc = (cell.count-grid.minCount)/(grid.maxCount-grid.minCount);
@@ -2019,14 +2028,15 @@ var RecordUtil = {
 		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
 		ctx.stroke();
 	    }
-
-
-
 	} else if(opts.cell3D) {
-	    let height = perc*(opts.cellSizeH||20);
+	    let base = opts.cellSizeHBase?+opts.cellSizeHBase:0;
+	    let height = lengthPercent*(opts.cellSizeH||20) + base;
+//	    console.log(lengthValue +" %:" + lengthPercent  +" h:" + height +" base:" + (opts.cellSizeHBase?opts.cellSizeHBase:0));
 	    ctx.strokeStyle = "#000";
 	    ctx.strokeStyle = "rgba(0,0,0,0)"
-	    RecordUtil.draw3DRect(canvas,ctx,x, canvas.height-y,+opts.cellSize,height,+opts.cellSize);
+	    let offx = +opts.display.getProperty("cellOffsetX",0);
+	    let offy = +opts.display.getProperty("cellOffsetY",0);
+	    RecordUtil.draw3DRect(canvas,ctx,x+offx, canvas.height-y-offy,+opts.cellSize,height,+opts.cellSize);
 	} else if(opts.shape=="tile"){
 	    let crx = x+opts.cellSizeX/2;
 	    let cry = y+opts.cellSizeY/2;
@@ -2313,18 +2323,23 @@ var RecordUtil = {
 		let x = scaleX(lat,lon);
 		let y = scaleY(lat,lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
-		let v = 0;
+		let colorValue = 0;
 		if(opts.colorBy && opts.colorBy.index>=0) {
-		    v = record.getValue(opts.colorBy.index);
+		    colorValue = record.getValue(opts.colorBy.index);
 		}
+		let lengthValue = 0;
+		if(opts.lengthBy && opts.lengthBy.index>=0) {
+		    lengthValue = record.getValue(opts.lengthBy.index);
+		}		
 		x =Math.floor(x/opts.cellSizeX);
 		y =Math.floor(y/opts.cellSizeY);
 		if(x<0) x=0;
 		if(y<0) y=0;
 		if(x>=cols) x=cols-1;
 		if(y>=rows) y=rows-1;
-		points.push({x:x,y:y,value:v,r:record});
+		points.push({x:x,y:y,colorValue:colorValue,r:record});
 	    });
+
 
 	    let grid = RecordUtil.gridPoints(rows,cols,points,args);
 	    opts.cellSizeX = +opts.cellSizeX;
@@ -2351,7 +2366,7 @@ var RecordUtil = {
 		    let x = colIdx*opts.cellSizeX;
 		    let y = rowIdx*opts.cellSizeY;
 		    if(cell.count>=countThreshold)
-			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,cell.v, colIdx,rowIdx,cell, grid);
 		}
 	    }
 
@@ -2365,12 +2380,9 @@ var RecordUtil = {
 		    let x = colIdx*opts.cellSizeX;
 		    let y = rowIdx*opts.cellSizeY;
 		    if(cell.count>=countThreshold)
-			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,colIdx,rowIdx,cell, grid);
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,cell.v,colIdx,rowIdx,cell, grid);
 		}
 	    }
-	    
-
-
 	} else {
 	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
 	    records.map((record,idx)=>{
@@ -2379,13 +2391,14 @@ var RecordUtil = {
 		let x = scaleX(lat,lon);
 		let y = scaleY(lat,lon);
 		record[gridId+"_coordinates"] = {x:x,y:y};
-		let v = opts.colorBy? record.getData()[opts.colorBy.index]:null;
+		let colorValue = opts.colorBy? record.getData()[opts.colorBy.index]:null;
+		let lengthValue = opts.lengthBy? record.getData()[opts.lengthBy.index]:null;
 		if(false && opts.forMercator) {
 		    var [tx,ty]  =RecordUtil.convertGeoToPixel(lat, lon,opts.bounds,opts.w,opts.h);
 		    x = tx;
 		    y = ty;
 		}
-		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,v);
+		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,colorValue, lengthValue);
 	    });
 	}
 
@@ -2630,22 +2643,22 @@ function CsvUtil() {
 		func = "return " + func;
 	    }
             let setVars = "";
-            fields.map((field,idx)=>{
-		if(field.isFieldNumeric() && field.getId()!="") {
+            fields.forEach((field,idx)=>{
+		if(/*field.isFieldNumeric() && */field.getId()!="") {
 		    let varName = field.getId().replace(/^([0-9]+)/g,"v$1");
 		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args[\"" + field.getId() + "\"]);\n";
 		}
             });
-            let code = "function displayDerivedEval(args) {\n" + setVars + func + "\n}";
-	    //	    console.log(code);
+            let code = "function displayDerivedEval(args) {\n" + setVars +  func + "\n}";
+//	    console.log(code);
             eval(code);
-	    records.map((record, rowIdx)=>{
+	    records.forEach((record, rowIdx)=>{
 		let newRecord = record.clone();
 		newRecord.data= record.data.slice();
 		newRecords.push(newRecord);
 		let funcArgs = {};
 		fields.map((field,idx)=>{
-		    if(field.isFieldNumeric() && field.getId()!="") {
+		    if(/*field.isFieldNumeric() &&*/ field.getId()!="") {
 			funcArgs[field.getId()] = record.getValue(field.getIndex());
 		    }
 		});
