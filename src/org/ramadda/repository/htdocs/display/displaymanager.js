@@ -4,14 +4,14 @@
 
 
 //Properties
-var PROP_LAYOUT_TYPE = "layoutType";
-var PROP_LAYOUT_COLUMNS = "layoutColumns";
-var PROP_SHOW_MAP = "showMap";
-var PROP_SHOW_MENU = "showMenu";
-var PROP_FROMDATE = "fromDate";
-var PROP_TODATE = "toDate";
+const PROP_LAYOUT_TYPE = "layoutType";
+const PROP_LAYOUT_COLUMNS = "layoutColumns";
+const PROP_SHOW_MAP = "showMap";
+const PROP_SHOW_MENU = "showMenu";
+const PROP_FROMDATE = "fromDate";
+const PROP_TODATE = "toDate";
 
-var DISPLAY_MULTI = "multi";
+const DISPLAY_MULTI = "multi";
 addGlobalDisplayType({
     type: DISPLAY_MULTI,
     label: "Multi Chart",
