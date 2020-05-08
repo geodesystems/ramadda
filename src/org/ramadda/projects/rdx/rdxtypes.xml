@@ -94,7 +94,7 @@ linkField=entry_url titleField=name descriptionField=description
 ----
 :heading Data
 {{group changeEntries=true changeEntriesLabel="Select Skewt" }} 
-{{display type="skewt" entry="child:" showProgress=true}}
+{{display type="skewt" entry="child:" showProgress=true message=""}}
 -section
 ]]>
 </wiki>
