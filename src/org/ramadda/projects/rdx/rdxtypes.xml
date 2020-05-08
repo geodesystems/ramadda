@@ -9,7 +9,7 @@
 {{property name=doEntries value=true}}
 {{property name=addAttributes value=true}} 
 {{group filterFields=network_up,data_down hideFilterWidget=true sortFields=name
- convertData="derived(field=minutes_since, function=Utils.toMinutes(new Date().getTime()-last_data));" 
+ convertData="derived(field=minutes_since, function=Math.round(Utils.toMinutes(new Date().getTime()-last_data)));" 
 }} 
 {{display_blank hideFilterWidget=false showMenu=true}}
 {{display_table  height="300"  showMenu=true
