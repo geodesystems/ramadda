@@ -510,7 +510,6 @@ function DisplayManager(argId, argProperties) {
 
     //    html += this.makeMainMenu();
     if(this.getShowMenu()) {
-	//    if (this.getProperty(PROP_SHOW_MENU, true)) {
         html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
     let targetDiv = this.getProperty("target");

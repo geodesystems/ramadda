@@ -30,7 +30,7 @@ cellShape=rect
 cellSizeHBase=5
 cellOffsetX=10
 cellOffsetY=9
-cell3D=true
+cellShape=3drect
 cellSize=8
 gridWidth=800
 radius="12" 
@@ -76,14 +76,22 @@ linkField=entry_url titleField=name descriptionField=description
 
      <wiki><![CDATA[
 +section title="Instrument: {{name}}"
+{{description wikify=true}}
 +row
-+col-9
-{{information details=true}}
++col-4
+{{information xdetails=true showBase=true showDetails=false}}
 -col
-+col-3
-{{map}}
++col-4
+{{information xdetails=true showBase=false showDetails=true}}
+-col
++col-4
+{{mapentry}}
 -col
 -row
+----
+:heading Data
+{{group changeEntries=true changeEntriesLabel="Select Skewt" }} 
+{{display type="skewt" entry="child:" showProgress=true}}
 -section
 ]]>
 </wiki>

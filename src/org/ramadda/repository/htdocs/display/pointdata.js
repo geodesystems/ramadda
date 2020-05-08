@@ -1949,31 +1949,76 @@ var RecordUtil = {
     
 
 
-    drawGridCell: function(opts, canvas, ctx, x,y,colorValue,lengthValue,colIdx,rowIdx, cell,grid,alphaByCount) {
+    drawGridCell: function(opts, canvas, ctx, x,y,args) {
 	let c =  opts.color|| "#ccc";
 	let colorPercent = 1.0;
 	let lengthPercent = 1.0;
-	if(opts.colorBy && Utils.isDefined(colorValue)) {
-	    colorPercent = opts.colorBy.getValuePercent(colorValue);
+	if(opts.colorBy && Utils.isDefined(args.colorValue)) {
+	    colorPercent = opts.colorBy.getValuePercent(args.colorValue);
 	    if(opts.colorBy.index>=0) {
-		c=  opts.colorBy.getColor(colorValue);
+		c=  opts.colorBy.getColor(args.colorValue);
 	    }
 	}
-	if(opts.lengthBy && lengthValue) {
-	    lengthPercent = opts.lengthBy.getValuePercent(lengthValue);
+	if(opts.lengthBy && args.lengthValue) {
+	    lengthPercent = opts.lengthBy.getValuePercent(args.lengthValue);
 	} else {
 	    lengthPercent = colorPercent;
 	}
 
 
-	if(alphaByCount && cell && grid) {
-	    if(grid.maxCount!=grid.minCount) {
-		let countPerc = (cell.count-grid.minCount)/(grid.maxCount-grid.minCount);
+	if(args.alphaByCount && args.cell && args.grid) {
+	    if(args.grid.maxCount!=args.grid.minCount) {
+		let countPerc = (args.cell.count-args.grid.minCount)/(args.grid.maxCount-args.grid.minCount);
 		c = Utils.addAlphaToColor(c,countPerc);
 	    }
 	}
+	let offx = +opts.display.getProperty("cellOffsetX",0);
+	let offy = +opts.display.getProperty("cellOffsetY",0);
+
+	if(opts.cellLabel) {
+	    ctx.font = opts.cellFont || "9pt Arial;"
+	    ctx.strokeStyle =    "#000";
+	    ctx.fillStyle =    "#000";
+	    let text = String(opts.cellLabel);
+	    let labelOffX= +opts.display.getProperty("cellLabelOffsetX",0);
+	    let labelOffY= +opts.display.getProperty("cellLabelOffsetY",0);
+	    let pos = opts.display.getProperty("cellLabelPosition","nw");
+
+
+
+	    text =  text.replace(/\${lengthValue}/,args.lengthValue).replace(/\${colorValue}/,args.colorValue);
+	    if(args.record) {
+		args.record.fields.forEach(f=>{
+		    text = text.replace("\${" + f.getId()+"}",args.record.getValue(f.getIndex()));
+		});
+	    }
+	    text = text.split("_nl_");
+	    let labelX= +x;
+	    let labelY= +y;
+	    let h = 0;
+	    let hgap = 2;
+	    let maxw = 0;
+	    text.forEach(t=>{
+		let dim = ctx.measureText(t);
+		maxw=Math.max(maxw,dim.width);
+		h +=dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent+hgap;
+	    });
+	    let pt = Utils.translatePoint(x, y, maxw,  h, pos,{x:labelOffX,y:labelOffY});
+
+	    text.forEach(t=>{
+		let dim = ctx.measureText(t);
+		ctx.fillText(t,pt.x,pt.y);
+		pt.y+=dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent+hgap;
+	    });
+	    
+	}
+
+
+
 	ctx.fillStyle =c
 	ctx.strokeStyle =c
+
+
 	if(opts.shape == "circle") {
 	    ctx.beginPath();
 	    ctx.arc(x,y, opts.cellSize, 0, 2 * Math.PI);
@@ -1981,6 +2026,25 @@ var RecordUtil = {
 		ctx.stroke();
 	    else
 		ctx.fill();
+	} else if(opts.shape=="rect") {
+	    let crx = x-opts.cellSizeX/2;
+	    let cry = y+opts.cellSizeY/2;
+	    crx=x;
+	    cry=y
+	    if(opts.stroke)
+		ctx.strokeRect(x-opts.cellSizeX/2+offx, y-offy/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+	    //	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
+	    else
+		ctx.fillRect(crx+offx, cry-offy, opts.cellSizeX, opts.cellSizeY);
+
+	} else if(opts.shape=="3dbar" || opts.cell3D) {
+	    let base = opts.cellSizeHBase?+opts.cellSizeHBase:0;
+	    let height = lengthPercent*(opts.cellSizeH||20) + base;
+//	    console.log(args.lengthValue +" %:" + lengthPercent  +" h:" + height +" base:" + (opts.cellSizeHBase?opts.cellSizeHBase:0));
+	    ctx.fillStyle =   opts.display.getProperty("cellColor",ctx.fillStyle);
+	    ctx.strokeStyle = "#000";
+	    ctx.strokeStyle = "rgba(0,0,0,0)"
+	    RecordUtil.draw3DRect(canvas,ctx,x+offx, canvas.height-y-offy,+opts.cellSize,height,+opts.cellSize);
 	} else if(opts.shape == "vector") {
 	    let length = opts.cellSizeH;
 	    if(opts.lengthBy && opts.lengthBy.index>=0) {
@@ -2028,19 +2092,10 @@ var RecordUtil = {
 		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
 		ctx.stroke();
 	    }
-	} else if(opts.cell3D) {
-	    let base = opts.cellSizeHBase?+opts.cellSizeHBase:0;
-	    let height = lengthPercent*(opts.cellSizeH||20) + base;
-//	    console.log(lengthValue +" %:" + lengthPercent  +" h:" + height +" base:" + (opts.cellSizeHBase?opts.cellSizeHBase:0));
-	    ctx.strokeStyle = "#000";
-	    ctx.strokeStyle = "rgba(0,0,0,0)"
-	    let offx = +opts.display.getProperty("cellOffsetX",0);
-	    let offy = +opts.display.getProperty("cellOffsetY",0);
-	    RecordUtil.draw3DRect(canvas,ctx,x+offx, canvas.height-y-offy,+opts.cellSize,height,+opts.cellSize);
 	} else if(opts.shape=="tile"){
 	    let crx = x+opts.cellSizeX/2;
 	    let cry = y+opts.cellSizeY/2;
- 	    if((rowIdx%2)==0)  {
+ 	    if((args.row%2)==0)  {
 		crx = crx+opts.cellSizeX/2;
 		cry = cry-opts.cellSizeY/2;
 	    }
@@ -2055,17 +2110,8 @@ var RecordUtil = {
 	    ctx.strokeStyle = "#000";
 	    //	    ctx.fill();
 	    ctx.stroke();
-
 	} else {
-	    let crx = x-opts.cellSizeX/2;
-	    let cry = y+opts.cellSizeY/2;
-	    crx=x;
-	    cry=y
-	    if(opts.stroke)
-		ctx.strokeRect(x-opts.cellSizeX/2, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-	    //	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-	    else
-		ctx.fillRect(crx, cry, opts.cellSizeX, opts.cellSizeY);
+	    console.log("Unknwon cell shape:" + opts.shape);
 	}
 	if(opts.cellShowText && v!=null) {
 	    ctx.textAlign = "center";
@@ -2366,7 +2412,10 @@ var RecordUtil = {
 		    let x = colIdx*opts.cellSizeX;
 		    let y = rowIdx*opts.cellSizeY;
 		    if(cell.count>=countThreshold)
-			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,cell.v, colIdx,rowIdx,cell, grid);
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,{colorValue:cell.v,
+									col:colIdx,
+									row:rowIdx,
+									cell:cell, grid:grid});
 		}
 	    }
 
@@ -2380,7 +2429,9 @@ var RecordUtil = {
 		    let x = colIdx*opts.cellSizeX;
 		    let y = rowIdx*opts.cellSizeY;
 		    if(cell.count>=countThreshold)
-			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,cell.v,cell.v,colIdx,rowIdx,cell, grid);
+			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,{
+			    colorValue:cell.v,
+			    col:colIdx,row:rowIdx,cell:cell, grid:grid});
 		}
 	    }
 	} else {
@@ -2393,12 +2444,7 @@ var RecordUtil = {
 		record[gridId+"_coordinates"] = {x:x,y:y};
 		let colorValue = opts.colorBy? record.getData()[opts.colorBy.index]:null;
 		let lengthValue = opts.lengthBy? record.getData()[opts.lengthBy.index]:null;
-		if(false && opts.forMercator) {
-		    var [tx,ty]  =RecordUtil.convertGeoToPixel(lat, lon,opts.bounds,opts.w,opts.h);
-		    x = tx;
-		    y = ty;
-		}
-		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,colorValue, lengthValue);
+		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,{colorValue:colorValue, lengthValue:lengthValue,record:record});
 	    });
 	}
 
@@ -2655,6 +2701,7 @@ function CsvUtil() {
 	    records.forEach((record, rowIdx)=>{
 		let newRecord = record.clone();
 		newRecord.data= record.data.slice();
+		newRecord.fields =  newFields;
 		newRecords.push(newRecord);
 		let funcArgs = {};
 		fields.map((field,idx)=>{
@@ -2748,6 +2795,7 @@ function CsvUtil() {
 	    records.map((record, rowIdx)=>{
 		let data = [];
 		let newRecord = record.clone();
+		newRecord.fields =newFields;
 		newRecords.push(newRecord);
 		fields.map((f,fieldIdx)=>{
 		    let value = record.data[f.getIndex()];
@@ -2790,6 +2838,7 @@ function CsvUtil() {
 		if(newRecord==null) {
 		    newRecord = record.clone();
 		    newRecords.push(newRecord);
+		    newRecord.fields =newFields;
 		}
 		fields.map((f,idx)=>{
 		    if(!f.isNumeric()) return;

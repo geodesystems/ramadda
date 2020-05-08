@@ -1156,6 +1156,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		cell3D:this.getProperty("cell3D",false),
 		cellShowText:this.getProperty("cellShowText",false),
 		cellFont:this.getProperty("cellFont"),
+		cellLabel:this.getProperty("cellLabel"),
 		doHeatmap:doHeatmap,
 		operator:this.getProperty("hm.operator","count"),
 		filter:this.getProperty("hm.filter")
@@ -5985,7 +5986,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 	    //If we don't  have any displays to show then hide us
 
 	    if(!this.getShowMenu() && displaysToLayout.length==0) {
-		$("#" + this.getId()).hide();
+		//TODO: This hides the change entry group menu 
+//		$("#" + this.getId()).hide();
 	    } else {
 		$("#" + this.getId()).show();
 	    }
