@@ -26,12 +26,15 @@ showPoints=true
 lengthBy=data_down
 hm.colorBy=minutes_since
 hm.boundsScale=0.15
-cellShape=rect
+cellShape=3dbar
 cellSizeHBase=5
 cellOffsetX=10
 cellOffsetY=9
-cellShape=3drect
 cellSize=8
+cellColor=yellow
+cellLabel="data: ${data_down}_nl_minutes: ${minutes_since}"
+cellLabelOffsetX=0
+cellLabelOffsetY=5
 gridWidth=800
 radius="12" 
 colorBy=network_up colorByMap="true:green,false:red"
