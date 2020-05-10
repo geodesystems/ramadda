@@ -51,8 +51,22 @@ var Utils = {
         return ramaddaBaseUrl + "/icons/" + icon;
     },
     imports: {},
+    get: function(list,idx,dflt) {
+	if(!list) return dflt;
+	if(idx<list.length) return list[idx];
+	return dflt;
+    },
+    split: function(s) {
+	if(!s) return null;
+	s = String(s).replace(/\\,/g,"_comma_");
+	let l = [];
+	s.split(",").forEach(t=>{
+	    l.push(t.replace(/_comma_/g,","));
+	});
+	return l;
+    },
     mergeLists: function(l1,l2,l3,l4,l5) {
-	var l = [];
+	let l = [];
 	if(l1) l1.map(e=>l.push(e));
 	if(l2) l2.map(e=>l.push(e));
 	if(l3) l3.map(e=>l.push(e));
