@@ -824,15 +824,16 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 }
                 group.members.push(html);
             }
-            var html = HU.div([CLASS,"display-cards-header"],"Total" +" (" + topGroup.getCount()+")");
-            html+=this.makeGroupHtml(topGroup);
-            this.writeHtml(ID_RESULTS, html);
+	    let total = topGroup.getCount();
+            let topHtml = HU.div([CLASS,"display-cards-header"],"Total" +" (" + total+")");
+            topHtml+=this.makeGroupHtml(topGroup, topGroup);
+            this.writeHtml(ID_RESULTS, topHtml);
             this.jq(ID_RESULTS).find("a.display-cards-popup").fancybox({
                 caption : function( instance, item ) {
                     return  $(this).data('caption') || '';
                 }});
         },
-        makeGroupHtml: function(group) {
+        makeGroupHtml: function(group, topGroup) {
             if(group.members.length==0) return "";
             var html="";
             if(group.members[0].isGroup) {
@@ -849,8 +850,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		    if(child.field)
 			prefix = child.field.getLabel()+": ";
                     html+=HU.open(TD,[WIDTH, width+"%"]);
-		    html+=HU.div([CLASS,"display-cards-header"],prefix+child.id +" (" + child.getCount()+")");
-		    html+= this.makeGroupHtml(child);
+		    let perc = Math.round(100*child.getCount()/topGroup.getCount());
+		    html+=HU.div([CLASS,"display-cards-header"],prefix+child.id +" (#" + child.getCount()+" - " + perc +"%)");
+		    html+= this.makeGroupHtml(child, topGroup);
                     html+=HU.close(TD);
                 }
                 html +=HU.close(TR, TABLE);
