@@ -121,6 +121,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
+	if(!request.getUser().getAdmin()) return;
+
         if (state.entry != null) {
             if (state.entry.getResource().isUrl()
                     || getAccessManager().canDownload(request, state.entry)) {
@@ -183,8 +185,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+	if(!request.getUser().getAdmin()) return new Result("",new StringBuilder("Only admin"));
         request.setReturnFilename("download.sh");
-
         return outputGroup(request, outputType, null, new ArrayList<Entry>(),
                            (List<Entry>) Misc.newList(entry));
     }
@@ -208,6 +210,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                               List<Entry> entries)
             throws Exception {
 
+	if(!request.getUser().getAdmin()) return new Result("",new StringBuilder
+("Only admin"));
         //For the download get all children entries
         if ( !request.defined(ARG_MAX)) {
             request.put(ARG_MAX, "20000");
