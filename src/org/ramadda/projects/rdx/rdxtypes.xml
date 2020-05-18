@@ -9,7 +9,7 @@
 {{property name=doEntries value=true}}
 {{property name=addAttributes value=true}} 
 {{group filterFields=network_up,data_down hideFilterWidget=true sortFields=name
- convertData="derived(field=minutes_since, function=Math.round(Utils.toMinutes(new Date().getTime()-last_data)));" 
+convertData="derived(field=minutes_since, function=Math.round(Utils.toMinutes(new Date().getTime()-last_data)));" 
 }} 
 {{display_blank hideFilterWidget=false showMenu=true}}
 {{display_table  height="300"  showMenu=true
@@ -44,25 +44,23 @@ linkField=entry_url titleField=name descriptionField=description
 -section
 ]]>
 </wiki>
-
-
-  </type>
+</type>
 
 
 
   <type name="rdx_instrument"  description="RDX Instrument" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX">
+     <property name="icon" value="/rdx/system-monitor.png"/>
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
-     <property name="icon" value="/rdx/system-monitor.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.top.show" value="false"/>
      <column name="instrument_id" type="string"  label="ID"   cansearch="true"  />
      <column name="type" type="enumeration"  label="Instrument Type"   values="radiometer" cansearch="true" />
-     <column name="locale_city" type="enumerationplus"  label="City"   />
-     <column name="locale_state" type="enumerationplus"  label="State"   values="file:/org/ramadda/repository/resources/geo/statesmap.txt" cansearch="true" />
+     <column name="city" type="enumerationplus"  label="City"   />
+     <column name="state" type="enumerationplus"  label="State"   values="file:/org/ramadda/repository/resources/geo/statesmap.txt" cansearch="true" />
      <column name="network_up" type="boolean"  label="Network Up" cansearch="true"  default="true">
        <display value="true" background="green"  mapFillColor="green"/>
        <display value="false" background="red"  mapFillColor="red"/>
@@ -81,11 +79,8 @@ linkField=entry_url titleField=name descriptionField=description
 +section title="Instrument: {{name}}"
 {{description wikify=true}}
 +row
-+col-4
-{{information xdetails=true showBase=true showDetails=false}}
--col
-+col-4
-{{information xdetails=true showBase=false showDetails=true}}
++col-8
+{{information showBase=false showDetails=true}}
 -col
 +col-4
 {{mapentry}}
