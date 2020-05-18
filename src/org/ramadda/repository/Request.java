@@ -2437,13 +2437,10 @@ public class Request implements Constants, Cloneable {
         }
 
         return ((userAgent.indexOf("googlebot") >= 0)
+		|| (userAgent.indexOf("bot") >=0)
                 || (userAgent.indexOf("slurp") >= 0)
-                || (userAgent.indexOf("spider") >= 0)
-                || (userAgent.indexOf("bots") >= 0)
-                || (userAgent.indexOf("bot/") >= 0)
-                || (userAgent.indexOf("bot.") >= 0)
-                || (userAgent.indexOf(".bot") >= 0)
-                || (userAgent.indexOf("msnbot") >= 0));
+                || (userAgent.indexOf("spider") >= 0));
+
     }
 
 
