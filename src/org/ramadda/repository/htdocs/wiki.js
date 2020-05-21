@@ -356,18 +356,17 @@ function wikiInitEditor(info) {
 		    if(Array.isArray(tag)) {
 			if(tag.length==3) {
 			    label = tag[0];
-			    tt = tag[2];
 			    tag = tag[1];
+			    tt = tag[2];
 			} else {
-			    tt = tag[1];
 			    tag = tag[0];
+			    tt = tag[1];
 			}
 		    } 
 		    if(tag.inline)  tag = "inlinelabel:" + tag.inline;
 		    if(tag.inlineLabel)  tag = "inlinelabel:" + tag.inlineLabel;
 		    if(tag.label) tag="label:" + tag.label;
 		    if(!tag.startsWith) console.log(tag);
-
 
 		    if(tag.startsWith("inlinelabel:")) {
 			handleBlock();
@@ -379,7 +378,7 @@ function wikiInitEditor(info) {
 			toggleLabel = tag.substring(6);
 			return;
 		    }
-		    var t = " " + tag.replace(/\"/g,"&quot;")+" ";
+		    let t = " " + tag.replace(/\"/g,"&quot;")+" ";
 		    tag = tag.replace(/=.*$/,"");
 		    let tt2 = t.replace(/"/g,"&quot;");
 		    if(tt) {
