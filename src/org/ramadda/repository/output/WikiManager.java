@@ -670,26 +670,32 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
+            String propertyKey = null;
             //TODO: figure out a way to look for infinte loops
-            /*
-              String propertyKey = theEntry.getId() + "_" + property;
-              if (request.getExtraProperty(propertyKey) != null) {
-              return "<b>Detected circular wiki import:" + property +
-              "<br>For entry:" +  theEntry.getId()
-              + "</b>";
-              }
-              request.putExtraProperty(propertyKey, property);
-            */
+            if (property.startsWith(TAG_DESCRIPTION)) {
+                propertyKey = theEntry.getId() + "_description";
+                if (request.getExtraProperty(propertyKey) != null) {
+                    return "<b>Detected circular wiki import:" + property
+                           + "<br>For entry:" + theEntry.getId() + "</b>";
+                }
+                request.putExtraProperty(propertyKey, property);
+            }
 
 
             addWikiLink(wikiUtil, theEntry);
             String include = handleWikiImport(wikiUtil, request, entry,
                                  theEntry, tag, props);
-            if (include != null) {
-                return include;
-            }
+            try {
+                if (include != null) {
+                    return include;
+                }
 
-            return wikiUtil.getPropertyValue(property);
+                return wikiUtil.getPropertyValue(property);
+            } finally {
+                if (propertyKey != null) {
+                    request.removeExtraProperty(propertyKey);
+                }
+            }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -1975,13 +1981,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                    || theTag.startsWith("display_")
                    || theTag.equals(WIKI_TAG_CHART)) {
             String jsonUrl = null;
-            if (getProperty(wikiUtil, props, "doEntries", false)) {
+            boolean doEntries = getProperty(wikiUtil, props, "doEntries",
+                                            false);
+            boolean doEntry = getProperty(wikiUtil, props, "doEntry", false);
+            if (doEntries || doEntry) {
                 jsonUrl = request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
                     JsonOutputHandler.OUTPUT_JSON_POINT.getId());
-		if(getProperty(wikiUtil,props,"addAttributes",false)) {
-		    jsonUrl +="&addAttributes=true";
-		}
+                if (doEntry) {
+                    jsonUrl += "&onlyentry=true";
+                }
+                if (getProperty(wikiUtil, props, "addAttributes", false)) {
+                    jsonUrl += "&addAttributes=true";
+                }
             }
             if (theTag.startsWith("display_")) {
                 String newType = theTag.substring(8);
@@ -5296,10 +5308,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                       "", "mw-editbutton-hr"));
 
 
-
-
-
-
         List<Link> links = getRepository().getOutputLinks(request,
                                new OutputHandler.State(entry));
         for (Link link : links) {
@@ -5409,15 +5417,50 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                 HtmlUtils.div(tags.toString(),
                                     "style='padding:5px;'"), buttonClass);
 
+        StringBuilder misc = new StringBuilder();
+
+
+        misc.append(addWikiEditButton(textAreaId, "", "Break", "\\n:br", "",
+                                      "", ""));
+
+        misc.append(addWikiEditButton(textAreaId, "", "Paragraph", "\\n:p",
+                                      "", "", ""));
+        misc.append(
+            addWikiEditButton(
+                textAreaId, "", "Absolute",
+                "\\n+absolute top= bottom= left= right=\\n-absolute", "", "",
+                ""));
+        misc.append(addWikiEditButton(textAreaId, "", "Relative",
+                                      "\\n+relative\\n-relative", "", "",
+                                      ""));
+        misc.append(addWikiEditButton(textAreaId, "", "Center",
+                                      "\\n+center\\n-center", "", "", ""));
+        misc.append(addWikiEditButton(textAreaId, "", "Button",
+                                      ":button url label", "", "", ""));
+        /*        misc.append(addWikiEditButton(textAreaId, "",
+                                      "", "\\n:", "",
+                                      "", ""));
+        */
+
+        misc.append(addWikiEditButton(textAreaId, "", "Remark", "\\n:rem ",
+                                      "", "", ""));
+        misc.append(
+            addWikiEditButton(
+                textAreaId, "", "Reload",
+                "\\n:reload seconds=30 showCheckbox=true showLabel=true", "",
+                "", ""));
+
+        String miscButton = getPageHandler().makePopupLink(msg("Misc"),
+                                misc.toString(), buttonClass);
+
         StringBuilder tags1 = new StringBuilder();
         makeTagsMenu(false, tags1, textAreaId);
 
         StringBuilder tags2 = new StringBuilder();
         makeTagsMenu(true, tags2, textAreaId);
 
-        String tagsButton1 =
-            getPageHandler().makePopupLink(msg("Entry Property"),
-                                           tags1.toString(), buttonClass);
+        String tagsButton1 = getPageHandler().makePopupLink(msg("Entries"),
+                                 tags1.toString(), buttonClass);
 
         String tagsButton2 = getPageHandler().makePopupLink(msg("Displays"),
                                  tags2.toString(), buttonClass);
@@ -5443,6 +5486,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         buttons.append(HtmlUtils.span("",
                                       HtmlUtils.id(textAreaId + "_prefix")));
         buttons.append(tagsButton);
+        buttons.append(miscButton);
         buttons.append(tagsButton1);
         if (fromTypeBuff != null) {
             buttons.append(
