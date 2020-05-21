@@ -740,6 +740,7 @@ RepositoryMap.prototype = {
             });
             _this.getMap().events.register("zoomend", "", function() {
                 _this.locationChanged();
+		_this.setNoPointerEvents();
             });
             _this.getMap().events.register("moveend", "", function() {
                 _this.locationChanged();
@@ -1126,21 +1127,29 @@ RepositoryMap.prototype = {
             this.imageLayers[layerId] = image;
         }
 
-	if(image.div) {
-	    var childNodes = image.div.childNodes;
-	    for(var i = 0, len = childNodes.length; i < len; ++i) {
-		var element = childNodes[i].firstChild || childNodes[i];
-		var lastChild = childNodes[i].lastChild;
-		//TODO de-uglify this
-		if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
-		    element = lastChild.parentNode;
-		}
-		element.style["pointer-events"]="none";
-	    }
-	}
-
-
+	if(!this.noPointerEventsLayers) this.noPointerEventsLayers = [];
+	this.noPointerEventsLayers.push(image);
+	this.setNoPointerEvents();
         return image;
+    },
+    setNoPointerEvents: function() {
+	if(!this.noPointerEventsLayers) return;
+	//Do this later
+	setTimeout(()=>{
+	    this.noPointerEventsLayers.forEach(image=>{
+		if(image.div) {
+		    var childNodes = image.div.childNodes;
+		    for(var i = 0, len = childNodes.length; i < len; ++i) {
+			var element = childNodes[i].firstChild || childNodes[i];
+			var lastChild = childNodes[i].lastChild;
+			if (lastChild && lastChild.nodeName.toLowerCase() === "iframe") {
+			    element = lastChild.parentNode;
+			}
+			element.style["pointer-events"]="none";
+		    }
+		}
+	    });
+	},1000);
     },
     addWMSLayer: function(name, url, layer, isBaseLayer) {
         var layer = new OpenLayers.Layer.WMS(name, url, {
@@ -2495,8 +2504,10 @@ RepositoryMap.prototype = {
 	if(this.defaultLocation) {
             var projPoint = this.transformLLPoint(this.defaultLocation);
             this.getMap().setCenter(projPoint);
-            this.getMap().zoomTo(4);
-
+	    if(!(this.initialZoom>=0)) {
+		this.getMap().zoomTo(4);
+	    }
+	    this.defaultLocation = null;
 	} else  if (this.defaultBounds) {
             var llPoint = this.defaultBounds.getCenterLonLat();
             var projPoint = this.transformLLPoint(llPoint);
@@ -2511,6 +2522,7 @@ RepositoryMap.prototype = {
 	    if(debugBounds)
 		console.log("initial zoom:" + this.initialZoom);
 	    this.getMap().zoomTo(this.initialZoom);
+	    this.initialZoom=-1;
 	}
     },
 
