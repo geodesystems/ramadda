@@ -481,6 +481,7 @@ function DisplayThing(argId, argProperties) {
 	},
         getRecordHtml: function(record, fields, template) {
 	    fields = this.getFields(fields);
+	    if(!fields) return "";
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
 	    let descField = this.getFieldById(null,this.getProperty("descriptionField"));
@@ -763,9 +764,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this._wikiTags.push('inlinelabel:' + p.inlineLabel);
 		    return;
 		}		
-		let w = [p.p+'="' + (p.wikiValue?p.wikiValue:p.d?p.d:"")+'"'];
-		if(p.tt)
-		    w.push(p.tt);
+		let tag=p.p+'="' + (p.wikiValue?p.wikiValue:p.d?p.d:"")+'"'
+		let w = [];
+		let tt = p.tt||"";
+		if(p.label) {
+		    w.push(p.label);
+		    w.push(tag);
+		} else {
+		    w.push(tag);
+		}
+		w.push(p.tt);
 		this._wikiTags.push(w);
 		if(!Utils.isDefined(p.doGetter) || p.doGetter) {
 		    let funcName =  'getProperty' + p.p.substring(0, 1).toUpperCase() + p.p.substring(1);
@@ -780,7 +788,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let l =   [
 		"label:Display Attributes",
 		['fields=""','comma separated list of field ids or indices - #1,#2,etc or *'],
-		['fieldsNumeric=true','Only get numeric fields'],
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
 		"layoutHere=\"true\"",
@@ -797,6 +804,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["backgroundImage=\"\"","Image url to display in background"],
 		"background=\"color\"",
 		'showProgress=true',
+		['doEntries=true','Make the children entries be data'],
+		['addAttributes=true','Include the extra attributes of the children'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'doFormatNumber=false',
@@ -805,6 +814,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		'numberTemplate="${number}%"',
 		'&lt;field_id&gt;.&lt;format&gt;="..."',
 		"label:Filter Data",
+		['fieldsNumeric=true','Only get numeric fields'],
 		"filterFields=\"\"",
 		'filterFieldsToPropagate=""',
 		"hideFilterWidget=true",
@@ -1051,6 +1061,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!colorTable) {
                 colorTable = dflt;
             }
+	    return this.getColorTableInner(justColors, colorTable);
+	},
+	getColorTableInner: function(justColors, colorTable) {
 	    let list;
             if (colorTable) {
                 let ct = null;
@@ -1155,8 +1168,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		cellSizeHBase: this.getProperty("cellSizeHBase",0),
 		cell3D:this.getProperty("cell3D",false),
 		cellShowText:this.getProperty("cellShowText",false),
-		cellFont:this.getProperty("cellFont"),
-		cellLabel:this.getProperty("cellLabel"),
+		cellLabels:Utils.split(this.getProperty("cellLabels")),
+		cellFonts:Utils.split(this.getProperty("cellFonts")),
+		cellLabelColors:Utils.split(this.getProperty("cellLabelColor")),
+		cellLabelPositions:Utils.split(this.getProperty("cellLabelPositions")),
+		cellLabelOffsetsX:Utils.split(this.getProperty("cellLabelOffsetsX")),
+		cellLabelOffsetsY:Utils.split(this.getProperty("cellLabelOffsetsY")),
 		doHeatmap:doHeatmap,
 		operator:this.getProperty("hm.operator","count"),
 		filter:this.getProperty("hm.filter")
@@ -4712,6 +4729,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	},
+	//Make sure to set the title attribute on the elements
 	makeTooltips: function(selector, records, callback, tooltipArg) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
@@ -4742,7 +4760,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		show: {
 		    delay: parseFloat(_this.getProperty("tooltipDelay",1000)),
 		    duration: parseFloat(_this.getProperty("tooltipDuration",500)),
-		    
+	    
 		},
 		classes: {
 		    "ui-tooltip": _this.getProperty("tooltipClass", "display-tooltip")
