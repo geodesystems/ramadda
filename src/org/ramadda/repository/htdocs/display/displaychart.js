@@ -2443,6 +2443,9 @@ function TableDisplay(displayManager, id, properties) {
 					'frozenColumns=1',
 					'colorCells=field1,field2',
 					'showRowNumber=true',
+					'colorCells="fields"',
+					'&lt;field&gt;.colorTable="',
+					'&lt;field&gt;.colorByMap="value1:color1,value2:color2',
 					'maxHeaderLength=60',
 					'maxHeaderWidth=60',
 					'headerStyle=""']); 
