@@ -90,7 +90,7 @@ colorBy="B01002_001E"
 colorBar="blue_white_red"
 strokeColor="black"
 }}
-{{display type="stats" 
+{{display_stats
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 layoutHere="false" showTitle="true" title="Summary Statistics"}}
 {{display type="text" layoutHere="false" showTitle="true" title="Details"}}
@@ -151,7 +151,7 @@ Median income
 -row
 +row
 +col-md-6
-{{display type="stats" layoutHere="true" showTitle="true" title="Summary Statistics"
+{{display_stats layoutHere="true" showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
 -col
@@ -262,7 +262,7 @@ colorBy="B07012_002E"
 colorBar="blue_white_red"
 strokeColor="black"
 }}
-{{display type="stats" layoutHere="false" showTitle="true" title="Summary Statistics"
+{{display_stats layoutHere="false" showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
 {{display type="text" layoutHere="false" showTitle="true" title="Details"}}
@@ -303,7 +303,7 @@ strokeColor="magenta"
 sizeBy="B05001_001E"
 }}
 {{display type=scatterplot layoutHere=false column=1 fields="B19113_001E,B05001_006E" map-display="false" chartWidth="600"}}
-{{display type="stats" layoutHere="false"  showTitle="true" title="Summary Statistics"
+{{display_stats layoutHere="false"  showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
 {{display type="text" layoutHere=false column=1 showTitle="true" title="Details"}}
@@ -348,7 +348,7 @@ sizeBy="B25001_001E"}}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25003_002E" map-display="false" showTitle="true" title="Owner Occupied"}}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25003_003E" map-display="false" showTitle="true" title="Renter Occupied"}}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25027_002E" map-display="false" showTitle="true" title="Housing units with a mortgage"}}
-{{display type="stats" layoutHere="false"  showTitle="true" title="Summary Statistics"
+{{display_stats layoutHere="false"  showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
 {{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
@@ -399,7 +399,7 @@ sizeBy="B19113_001E"
 {{display type=scatterplot layoutHere=false map-display="false" fields="B19113_001E,B15003_017E" title="High School Diploma" showTitle="true"  }}
 {{display type=scatterplot layoutHere=false  map-display="false" fields="B19113_001E,B15003_022E" title="Bachelor's Degree"  showTitle="true" }}
 {{display type=scatterplot layoutHere=false  map-display="false" fields="B19113_001E,B15003_024E" title="Professional Degree"  showTitle="true" }}
-{{display type="stats" layoutHere="false"  showTitle="true" title="Summary Statistics"
+{{display_stats layoutHere="false"  showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
 {{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
@@ -455,7 +455,7 @@ sizeBy="B08006_001E"
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B08006_008E" map-display="false" chartWidth="600" showTitle="true" title="Public Transportation"}}
 {{display type="scatterplot" layoutHere="false" fields="B19113_001E,B08006_014E" map-display="false" chartWidth="600" showTitle="true" title="Biked"}}
 
-{{display type="stats" layoutHere="false" showTitle="true" title="Summary Statistics"
+{{display_stats layoutHere="false" showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
 {{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
