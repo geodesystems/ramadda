@@ -89,32 +89,33 @@ var Utils = {
 	return map;
     },
     translatePoint: function(x, y, w,  h, pt, delta) {
+	x = +x;
+	y = +y;
 	let r = {x:x,y:y};
 	if(pt=="nw") {
-	    r.x = x; r.y = y+h;
+	    r.x = x; r.y = y;
 	} else if(pt == "w") {
-	    r.x = x; r.y = y+h/2;
-	} else if(pt == "sw") {
 	    r.x = x; r.y = y-h/2;
+	} else if(pt == "sw") {
+	    r.x = x; r.y = y-h;
 	} else if(pt == "s") {
-	    r.x = x-w/2; r.y = y-h/2;
+	    r.x = x-w/2; r.y = y-h;
 	} else if(pt == "se") {
-	    r.x = x-w; r.y = y-h/2;
+	    r.x = x-w; r.y = y-h;
 	} else if(pt == "e") {
-	    r.x = x-w; r.y = y+h/2;
+	    r.x = x-w; r.y = y-h/2;
 	} else if(pt == "ne") {
-	    r.x = x-w; r.y = y+h;
+	    r.x = x-w; r.y = y;
 	} else if(pt == "n") {
-	    r.x = x-w/2; r.y = y+h;	    	    
-	    
+	    r.x = x-w/2; r.y = y;	    	    
 	} else if(pt == "c") {
-	    r.x = x-w/2; r.y = y+h/2;	    	    
-} else {
+	    r.x = x-w/2; r.y = y-h/2;	    	    
+	} else {
 	    throw new Error("Unknown point" + pt);
 	}
 	if(delta!=null) {
-	    r.x+=delta.x;
-	    r.y+=delta.y;
+	    r.x+= +delta.dx;
+	    r.y+= +delta.dy;
 	}
 	return r;
     },
