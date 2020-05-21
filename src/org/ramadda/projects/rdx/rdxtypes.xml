@@ -6,11 +6,15 @@
 +section title={{name}}
 :reload seconds=30 showCheckbox=true showLabel=true
 {{description wikify=true}}
+:rem These properties say to use the children of this group as data
 {{property name=doEntries value=true}}
 {{property name=addAttributes value=true}} 
+:rem Define properties that all displays use
+:rem The convert data adds a derived quantity
 {{group filterFields=network_up,data_down hideFilterWidget=true sortFields=name
 convertData="derived(field=minutes_since, function=Math.round(Utils.toMinutes(new Date().getTime()-last_data)));" 
 }} 
+:rem This is used to show the filter widgets. The changes get applied to all displays
 {{display_blank hideFilterWidget=false showMenu=true}}
 {{display_table  height="300"  showMenu=true
 linkField=entry_url iconField=icon  
