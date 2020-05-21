@@ -156,7 +156,7 @@ function DisplayManager(argId, argProperties) {
             }
             var record = records[index];
             if (record == null) return;
-            var values = this.getRecordHtml(record, fields);
+            var values = source?source.getRecordHtml(record, fields):"";
             if (source.recordSelectionCallback) {
                 var func = source.recordSelectionCallback;
                 if ((typeof func) == "string") {
