@@ -217,7 +217,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             request.put(ARG_MAX, "20000");
         }
         boolean wget = outputType.equals(OUTPUT_WGET);
-
         request.setReturnFilename("download.sh");
 
         StringBuilder sb = new StringBuilder();
