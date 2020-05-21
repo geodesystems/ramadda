@@ -230,9 +230,8 @@ public class JsonOutputHandler extends OutputHandler {
 	addPointHeader(fields,"name","Name","string");
         addPointHeader(fields,"description","Description","string");
 
-
         boolean addAttributes = request.get("addAttributes", false);
-        if (addAttributes) {
+        if (addAttributes && entries.size()>0) {
 	    Entry entry = entries.get(0);
             Object[]     extraParameters = entry.getValues();
 	    if (extraParameters != null) {
