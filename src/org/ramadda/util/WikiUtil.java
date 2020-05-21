@@ -1660,23 +1660,31 @@ public class WikiUtil {
             }
 
             if (tline.startsWith(":reload")) {
-		String id = HtmlUtils.getUniqueId("reload");
+                String       id   = HtmlUtils.getUniqueId("reload");
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable props = HtmlUtils.parseHtmlProperties(toks.size()>1?toks.get(1):"");
-		String time = Utils.getProperty(props,"seconds","60");
-		boolean showCbx = Utils.getProperty(props,"showCheckbox",true);
-		if(showCbx) {
-		    HtmlUtils.checkbox(buff, "","true",true,HtmlUtils.id(id));
-		    buff.append(" Reload");
-		}
-		boolean showLabel = Utils.getProperty(props,"showLabel",true);
-		if(showLabel) {
-		    buff.append(" ");
-		    HtmlUtils.span( buff, "",HtmlUtils.id(id+"_label"));
-		}		
-		buff.append(HtmlUtils.script("Utils.initPageReload(" + time +",'" + id +"');"));
-		continue;
-	    }
+                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
+                                      > 1)
+                        ? toks.get(1)
+                        : "");
+                String time = Utils.getProperty(props, "seconds", "60");
+                boolean showCbx = Utils.getProperty(props, "showCheckbox",
+                                      true);
+                if (showCbx) {
+                    HtmlUtils.checkbox(buff, "", "true", true,
+                                       HtmlUtils.id(id));
+                    buff.append(" Reload");
+                }
+                boolean showLabel = Utils.getProperty(props, "showLabel",
+                                        true);
+                if (showLabel) {
+                    buff.append(" ");
+                    HtmlUtils.span(buff, "", HtmlUtils.id(id + "_label"));
+                }
+                buff.append(HtmlUtils.script("Utils.initPageReload(" + time
+                                             + ",'" + id + "');"));
+
+                continue;
+            }
 
             if (tline.startsWith(":script")) {
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
@@ -2144,6 +2152,10 @@ public class WikiUtil {
                     HtmlUtils.comment(buff, toks.get(1));
                 }
 
+                continue;
+            }
+
+            if (tline.startsWith(":rem")) {
                 continue;
             }
 
