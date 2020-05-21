@@ -21,6 +21,7 @@ const DISPLAY_DATATABLE = "datatable";
 const DISPLAY_PERCENTCHANGE = "percentchange";
 const DISPLAY_SPARKLINE = "sparkline";
 const DISPLAY_POINTIMAGE = "pointimage";
+const DISPLAY_CANVAS = "canvas";
 const DISPLAY_FIELDTABLE = "fieldtable";
 
 addGlobalDisplayType({
@@ -94,6 +95,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_SPARKLINE,
     label: "Sparkline",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_CANVAS,
+    label: "Canvas",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -1910,7 +1919,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 
 
 function RamaddaStatsDisplay(displayManager, id, properties, type) {
-    var dflt = Utils.isDefined(properties["showDefault"]) ? properties["showDefault"] : true;
+    let dflt = Utils.isDefined(properties["showDefault"]) ? properties["showDefault"] : true;
     $.extend(this, {
         showMin: dflt,
         showMax: dflt,
@@ -2106,15 +2115,15 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             var dummy = [SPACE];
             if (!justOne) {
                 header = [""];
-                if (this.showCount) {
+                if (this.getProperty("showCount", dflt)) {
                     header.push("Count");
                     dummy.push(SPACE);
                 }
-                if (this.showMin) {
+                if (this.getProperty("showMin", dflt)) {
                     header.push("Min");
                     dummy.push(SPACE);
                 }
-                if (this.showPercentile) {
+                if (this.getProperty("showPercentile", dflt)) {
                     header.push("25%");
                     dummy.push(SPACE);
                     header.push("50%");
@@ -2122,23 +2131,23 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("75%");
                     dummy.push(SPACE);
                 }
-                if (this.showMax) {
+                if (this.getProperty("showMax", dflt)) {
                     header.push("Max");
                     dummy.push(SPACE);
                 }
-                if (this.showTotal) {
+                if (this.getProperty("showTotal", dflt)) {
                     header.push("Total");
                     dummy.push(SPACE);
                 }
-                if (this.showAverage) {
+                if (this.getProperty("showAverage", dflt)) {
                     header.push("Average");
                     dummy.push(SPACE);
                 }
-                if (this.showStd) {
+                if (this.getProperty("showStd", dflt)) {
                     header.push("Std");
                     dummy.push(SPACE);
                 }
-                if (this.showUnique) {
+                if (this.getProperty("showUnique", dflt)) {
                     header.push("# Unique");
                     dummy.push(SPACE);
                     header.push("Top");
@@ -2146,7 +2155,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("Freq.");
                     dummy.push(SPACE);
                 }
-                if (this.showMissing) {
+                if (this.getProperty("showMissing", dflt)) {
                     header.push("Not&nbsp;Missing");
                     dummy.push(SPACE);
                     header.push("Missing");
@@ -2174,43 +2183,43 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     continue;
                 }
                 var values = [];
-                if (!stats[col].isNumber && this.showText) {
-                    if (this.showCount)
+                if (!stats[col].isNumber && this.getProperty("showText", dflt)) {
+                    if (this.getProperty("showCount", dflt))
                         values.push(stats[col].count);
-                    if (this.showMin)
+                    if (this.getProperty("showMin", dflt))
                         values.push("-");
-                    if (this.showPercentile) {
+                    if (this.getProperty("showPercentile", dflt)) {
                         values.push("-");
                         values.push("-");
                         values.push("-");
                     }
-                    if (this.showMax)
+                    if (this.getProperty("showMax", dflt))
                         values.push("-");
                     values.push("-");
-                    if (this.showAverage) {
+                    if (this.getProperty("showAverage", dflt)) {
                         values.push("-");
                     }
-                    if (this.showStd) {
+                    if (this.getProperty("showStd", dflt)) {
                         values.push("-");
                     }
-                    if (this.showUnique) {
+                    if (this.getProperty("showUnique", dflt)) {
                         values.push(stats[col].unique);
                         values.push(stats[col].uniqueValue);
                         values.push(stats[col].uniqueMax);
                     }
-                    if (this.showMissing) {
+                    if (this.getProperty("showMissing", dflt)) {
                         values.push(stats[col].numNotMissing);
                         values.push(stats[col].numMissing);
                     }
                 } else {
-                    if (this.showCount) {
+                    if (this.getProperty("showCount", dflt)) {
                         values.push(stats[col].count);
                     }
-                    if (this.showMin) {
+                    if (this.getProperty("showMin", dflt)) {
 			var s=this.formatNumber(stats[col].min);
                         values.push(s);
                     }
-                    if (this.showPercentile) {
+                    if (this.getProperty("showPercentile", dflt)) {
                         var range = stats[col].max - stats[col].min;
 			var tmp =p=> {
                             var s = this.formatNumber(stats[col].min + range * p);
@@ -2222,20 +2231,20 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 			var percs = [.25,.5,.75];
 			percs.map(v=>tmp(v));
                     }
-                    if (this.showMax) {
+                    if (this.getProperty("showMax", dflt)) {
 			var s=this.formatNumber(stats[col].max);
                         values.push(s);
                     }
-                    if (this.showTotal) {
+                    if (this.getProperty("showTotal", dflt)) {
                         values.push(total);
                     }
-                    if (this.showAverage) {
+                    if (this.getProperty("showAverage", dflt)) {
                         values.push(avg);
                     }
-                    if (this.showStd) {
+                    if (this.getProperty("showStd", dflt)) {
                         values.push(this.formatNumber(stats[col].std));
                     }
-                    if (this.showUnique) {
+                    if (this.getProperty("showUnique", dflt)) {
                         values.push(stats[col].unique);
                         if (Utils.isNumber(stats[col].uniqueValue)) {
                             values.push(this.formatNumber(stats[col].uniqueValue));
@@ -2244,11 +2253,10 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                         }
                         values.push(stats[col].uniqueMax);
                     }
-                    if (this.showMissing) {
+                    if (this.getProperty("showMissing", dflt)) {
                         values.push(stats[col].numNotMissing);
                         values.push(stats[col].numMissing);
                     }
-
                 }
                 right = HU.tds(["align", "right"], values);
                 var align = (justOne ? "right" : "left");
@@ -3302,6 +3310,90 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		if(closest)
 		    this.propagateEventRecordSelection({record: closest});
 	    });
+	}
+    });
+}
+
+
+function RamaddaCanvasDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CANVAS, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Canvas Properties'},
+	{p:'canvasWidth',d:100,wikiValue:"100",tt:'Canvas width'},
+	{p:'canvasHeight',d:100,wikiValue:"100",tt:'Canvas height'},
+	{p:'canvasStyle',d:"",wikiValue:"",tt:'Canvas CSS style'},
+	{p:'titleTemplate',tt:'Template to show as title'},
+	{p:'topTitleTemplate',tt:'Template to show as top title'},	
+	{p:'urlField',tt:'Url Field'},
+	{p:'canvasOrigin',d:"sw",wikiValue:"center",tt:'Origin point for drawing glyphs'},
+	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
+	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
+	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
+	{label:'3dbar glyph', p:"glyph1",wikiValue:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
+	{label:'gauge glyph',p:"glyph1",wikiValue:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
+    ]);
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+	    let _this = this;
+	    let records = this.filterData();
+	    let fields = this.getFields();
+	    if(!records) return;
+	    let style = this.getPropertyCanvasStyle("");
+	    let columns = this.getProperty("columns");
+	    let html = "";
+	    let canvasWidth = this.getPropertyCanvasWidth();
+	    let canvasHeight = this.getPropertyCanvasHeight();
+	    let titleTemplate= this.getPropertyTitleTemplate();
+	    let topTitleTemplate= this.getPropertyTopTitleTemplate();
+	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
+	    records.forEach((record,idx)=>{
+		let cid = this.getDomId("canvas_" + idx);
+		let c = HU.tag("canvas",[CLASS,"display-canvas-canvas", STYLE,style, 
+					 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
+		let topTitle  =topTitleTemplate?
+		    HU.div([CLASS,"display-canvas-title"], 
+			   this.getRecordHtml(record, null, topTitleTemplate)):"";
+		let title  = titleTemplate?
+		    HU.div([CLASS,"display-canvas-title"], 
+			   this.getRecordHtml(record, null, titleTemplate)):"";	
+	let div =  HU.div([TITLE,"",CLASS,"display-canvas-block", "recordIndex",idx], topTitle+c+title);
+		if(urlField) {
+		    var url = record.getValue(urlField.getIndex());
+		    if(Utils.stringDefined(url))
+			div = HU.href(url,div);
+		}
+		html+=div;
+	    });
+	    this.setContents(html);
+	    let glyphs=[];
+	    let cnt = 1;
+	    while(cnt<11) {
+		let attr = this.getProperty("glyph" + (cnt++));
+		if(!attr)
+		    continue;
+		glyphs.push(new Glyph(this,1.0, fields,records,{
+		    canvasWidth:canvasWidth,
+		    canvasHeight: canvasHeight
+		},attr));
+	    }
+	    let opts = {};
+	    let originX = 0;
+	    let originY=this.getPropertyCanvasOrigin()=="center"?canvasHeight/2:canvasHeight;
+	    records.forEach((record,idx)=>{
+		let cid = this.getDomId("canvas_" + idx);
+		let canvas = document.getElementById(cid);
+		let ctx = canvas.getContext("2d");
+		glyphs.forEach(glyph=>{
+		    glyph.draw(opts, canvas, ctx, originX,originY,{record:record});
+		});
+	    });
+	    var blocks = this.jq(ID_DISPLAY_CONTENTS).find(".display-canvas-block");
+	    this.makeTooltips(blocks,records,null,"${default}");
 	}
     });
 }
