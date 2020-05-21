@@ -116,13 +116,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'lonField2',tt:'Field id for segments'},
 	{label:'Heatmap Attributes'},
 	{p:'doHeatmap',wikiValue:'true',tt:'Grid the data into an image'},
+	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
 	{p:'doGridPoints',wikiValue:'true',tt:'Display a image showing shapes or bars'},
+	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
+	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
+	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
+	{label:'3dbar glyph', p:"glyph1",wikiValue:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
+	{label:'gauge glyph',p:"glyph1",wikiValue:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
 	{p:'htmlLayerField'},
 	{p:'htmlLayerWidth',wikiValue:'30'},
 	{p:'htmlLayerHeight',wikiValue:'15'},
 	{p:'htmlLayerStyle',wikiValue:'css style'},
 	{p:'htmlLayerScale',wikiValue:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
-	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
 	{p:'cellShape',wikiValue:'rect|3dbar|circle|vector'},
 	{p:'cellColor',wikiValue:'color'},
 	{p:'cellFilled',wikiValue:true},
@@ -1674,7 +1679,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 	checkHeatmapReload:function() {
-	    if(!this.getProperty("hm.reloadOnZoom")) return;
+	    return
+	    if(!this.getProperty("hm.reloadOnZoom", this.getProperty("reloadOnZoom"))) return;
 	    let now = new Date ();
 	    //Don't do this the first couple of seconds after we've been created
 	    if(now.getTime()-this.createTime.getTime()<3000) return;
@@ -1696,19 +1702,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.checkHeatmapReloadTime = null;
 	    this.reloadHeatmap = true;
 	    this.haveCalledUpdateUI = false;
+	    console.log("updateUI");
 	    this.updateUI();
 	},
-	createHeatmap(records, bounds) {
+	createHeatmap(records, fields, bounds) {
 	    let debug = displayDebug.displayMapCreateMap;
 	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.colorBy","colorBy",""]);
 	    let angleBy = this.getColorByInfo(records, "angleBy",null,null,["hm.angleBy","angleBy",""]);
 	    let lengthBy = this.getColorByInfo(records, "lengthBy",null,null,["hm.lengthBy","lengthBy",""]);
-	    if(angleBy.index<0) angleBy = colorBy;
-
-
-
-	    if(lengthBy.index<0) lengthBy=null;
+	    if(!angleBy.isEnabled()) angleBy = colorBy;
+	    if(!lengthBy.isEnabled()) lengthBy=null;
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
  	    if(this.heatmapLayers) {
@@ -1730,14 +1734,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.reloadHeatmap) {
 		this.reloadHeatmap = false;
 		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
-		records = RecordUtil.subset(records, bounds);
+//TODO		records = RecordUtil.subset(records, bounds);
 		bounds =  RecordUtil.getBounds(records);
 	    }
 	    bounds = RecordUtil.expandBounds(bounds,this.getProperty("hm.boundsScale",0.05));
 
 	    let dfltArgs = this.getDefaultGridByArgs();
-	    let w = Math.round(this.getProperty("gridWidth",800));
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+	    let w = Math.round(this.getProperty("gridWidth",800));
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
 	    let groupByDate = this.getProperty("hm.groupByDate",null);
@@ -1774,7 +1778,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
-		let img = RecordUtil.gridData(this.getId(),recordsAtTime,args);
+		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
+		$("#test").html(HU.image(img,[WIDTH,"500", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
@@ -1942,7 +1947,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			else
 			    $("#" + info.hoverId).html(pie);
 			let canvas = document.getElementById(id);
-			let color = colorBy&& colorBy.index>=0?colorBy.getColor(info.data[0]):this.getPropertyFillColor("#619FCA");
+			let color = colorBy&& colorBy.isEnabled()?colorBy.getColor(info.data[0]):this.getPropertyFillColor("#619FCA");
 			var ctx = canvas.getContext("2d");
 			if(idx==1) {
 			    ctx.fillStyle= '#fff';
@@ -1994,7 +1999,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getProperty("hm.showPoints") || this.getProperty("showPoints")) {
 		    this.createPoints(records, fields, points, bounds);
 		}
-		this.createHeatmap(records, bounds);
+		this.createHeatmap(records, fields, bounds);
 		return;
 	    }
 	    if(this.getProperty("htmlLayerField")) {
@@ -2304,11 +2309,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colorByValue = maxValue;
 		    theColor = maxColor;
 		} else {
-		    if(colorBy.index >= 0) {
+		    if(colorBy.isEnabled()) {
 			let value = record.getData()[colorBy.index];
 			colorByValue = value;
+			theColor =  colorBy.getColorFromRecord(record, theColor);
 		    }
-		    theColor =  colorBy.getColorFromRecord(record, theColor);
                 }
 
 		if(theColor) {
@@ -2442,7 +2447,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				if(!icon) icon = this.getMarkerIcon();
 			    }
 			    let size = iconSize;
-			    if(sizeBy.index >= 0) {
+			    if(sizeBy.isEnabled()) {
 				size = props.pointRadius;
 			    }
 			    mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
@@ -2844,14 +2849,14 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    }
 		}
 		//TODO: sort the state data on time
-                if (colorBy.index >= 0) {
+                if (colorBy.isEnabled()) {
                     let value = record.getData()[colorBy.index];
 		    let color = colorBy.getColorFromRecord(record);
 		    let cell = contents.find("#" + cellId);
 		    cell.css("background",color);
 		    cell.attr(RECORD_INDEX,i);
                 }
-		if (strokeColorBy.index >= 0) {
+		if (strokeColorBy.isEnabled()) {
                     let value = record.getData()[strokeColorBy.index];
 		    let color = strokeColorBy.getColor(value, record);
 		    let cell = contents.find("#" + cellId);

@@ -587,7 +587,8 @@ function DisplayAnimation(display, enabled) {
 }
 
 
-function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField) {
+function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props) {
+    this.properties = props || {};
     if(!prop) prop = "colorBy";
     if ( !propPrefix ) {
 	propPrefix = ["colorBy",""];
@@ -643,7 +644,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	colorByMaxPerc: this.getProperty("MaxPercentile", -1),
 	colorByOffset: 0,
         pctFields:null,
-	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "", true)),
+	compareFields: display.getFieldsByIds(null, this.getProperty("CompareFields", "")),
     });
     if(this.fieldValue == "year") {
 	let seen= {};
@@ -826,20 +827,26 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.range = this.maxValue - this.minValue;
     this.toMinValue = this.getProperty("ToMin", this.toMinValue);
     this.toMaxValue = this.getProperty("ToMax", this.toMaxValue);
+    this.enabled = this.getProperty("doColorBy",true) && this.index>=0;
 }
 
 
 ColorByInfo.prototype = {
-    getProperty: function(prop, dflt) {
+    getProperty: function(prop, dflt, debug) {
+	if(this.properties[prop]) return this.properties[prop];
 	if(this.debug) console.log("getProperty:" + prop);
 	for(let i=0;i<this.propPrefix.length;i++) {
-	    let v = this.display.getProperty(this.propPrefix[i]+prop);
+	    this.display.debugGetProperty = debug;
 	    if(this.debug) console.log("\t" + this.propPrefix[i]+prop);
+	    let v = this.display.getProperty(this.propPrefix[i]+prop);
+	    this.display.debugGetProperty = false;
 	    if(Utils.isDefined(v)) return v;
 	}
 	return dflt;
     },
-
+    isEnabled: function() {
+	return this.enabled;
+    },
     displayColorTable: function(width,force, domId) {
 	if(!this.getProperty("showColorTable",true)) return;
 	if(this.compareFields.length>0) {
@@ -994,7 +1001,6 @@ ColorByInfo.prototype = {
 		    break;
 		}
 	    }
-	    this.xcnt++;
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
@@ -1210,7 +1216,6 @@ function SizeBy(display,records) {
     if(!records) records = display.filterData();
     let pointData = this.display.getPointData();
     let fields = pointData.getRecordFields();
-
     $.extend(this, {
         id: this.display.getProperty("sizeBy"),
         minValue: 0,
@@ -1534,6 +1539,837 @@ Annotations.prototype = {
 	return this.fields;
     }
     
+
+}
+
+
+
+var Gfx = {
+    gridData: function(gridId,fields, records,args) {
+	if(!args) args = {};
+	if(isNaN(args.cellSize) || args.cellSize == null)
+	    args.cellSize = args.cellSizeX;
+
+	if(isNaN(args.cellSizeX) || args.cellSizeX == null)
+	    args.cellSizeX= args.cellSize;
+	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
+	    args.cellSizeY= args.cellSizeX;
+	let opts = {
+	    shape:"circle",
+	    color:"blue",
+	    w:800,
+	    h:400,
+	    scale:1,
+	    cellSize:2,
+	    cellSizeX:2,
+	    cellSizeY:2,
+	    operator:"average"
+	}
+	$.extend(opts,args);
+	//	console.log(JSON.stringify(opts,null,2));
+	let id = HtmlUtils.getUniqueId();
+	opts.scale=+opts.scale;
+	let scale = opts.scale;
+//	scale=1;
+	opts.w*=opts.scale;
+	opts.h*=opts.scale;
+	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
+	let canvas = document.getElementById(id);
+	var ctx = canvas.getContext("2d");
+	//	ctx.strokeStyle= "#000";
+	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
+	let cnt = 0;
+	let earthWidth = args.bounds.east-args.bounds.west;
+	let earthHeight= args.bounds.north-args.bounds.south;
+	ctx.font = opts.cellFont || "8pt Arial;"
+	var gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+	gradient.addColorStop(0,'white');
+	gradient.addColorStop(1,'red');
+
+	let scaleX = (lat,lon)=>{
+	    return Math.floor(opts.w*(lon-args.bounds.west)/earthWidth);
+	};
+	let scaleY;
+	if(opts.display && opts.display.map) {
+	    //Get the global bounds so we can map down to the image
+	    var n1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,85));
+	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
+	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
+	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
+	    //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
+	    scaleY = (lat,lon)=> {
+		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
+		var dy = n2.lat-pt.lat;
+		var perc = dy/(n2.lat-s2.lat)
+		return Math.floor(perc*opts.h);
+	    };
+	} else {
+	    scaleY= (lat,lon)=> {
+		return Math.floor(opts.h*(args.bounds.north-lat)/earthHeight);		
+	    }
+	}
+
+
+	ctx.lineStyle = "#000";
+	if(opts.doHeatmap) {
+	    let cols = Math.floor(opts.w/opts.cellSizeX);
+	    let rows = Math.floor(opts.h/opts.cellSizeY);
+	    let points = [];
+	    records.map((record,idx)=>{
+		let lat = record.getLatitude();
+		let lon = record.getLongitude();
+		let x = scaleX(lat,lon);
+		let y = scaleY(lat,lon);
+//		console.log("x:" + x +" " + y +" lat:" + lat +" " + lon);
+		record[gridId+"_coordinates"] = {x:x,y:y};
+		let colorValue = 0;
+		if(opts.colorBy && opts.colorBy.index>=0) {
+		    colorValue = record.getValue(opts.colorBy.index);
+		}
+		let lengthValue = 0;
+		if(opts.lengthBy && opts.lengthBy.index>=0) {
+		    lengthValue = record.getValue(opts.lengthBy.index);
+		}		
+		x =Math.floor(x/opts.cellSizeX);
+		y =Math.floor(y/opts.cellSizeY);
+		if(x<0) x=0;
+		if(y<0) y=0;
+		if(x>=cols) x=cols-1;
+		if(y>=rows) y=rows-1;
+		points.push({x:x,y:y,colorValue:colorValue,r:record});
+//		console.log(x+" " + y +" " + colorValue);
+	    });
+
+
+	    let grid = Gfx.gridPoints(rows,cols,points,args);
+	    opts.cellSizeX = +opts.cellSizeX;
+	    opts.cellSizeY = +opts.cellSizeY;
+	    this.applyFilter(opts,grid);
+	    //get the new min/max from the filtered grid
+	    let mm = this.getMinMaxGrid(grid,v=>v.v);
+	    if(opts.colorBy) {
+		if(!Utils.isDefined(opts.display.getProperty("colorByMin")))  {
+		    opts.colorBy.setRange(mm.min,mm.max);
+		}  
+		opts.colorBy.index=0;
+	    }
+
+	    let countThreshold = opts.display.getProperty("hm.countThreshold",opts.operator=="count"?1:0);
+	    let glyph = new Glyph(opts.display,
+				  scale,
+				  fields,
+				  records,
+				  {type:"rect",
+				   canvasWidth:canvas.width,
+				   canvasHeight: canvas.height,
+				   colorByInfo:opts.colorBy,
+				   width: opts.cellSizeX,
+				   height: opts.cellSizeY,
+				   stroke:false,
+				   pos:"c",
+				   dx:opts.cellSizeX/2,
+				   dy:opts.cellSizeY/2,				   
+				  },
+				  "");
+	    opts.shape = "rect";
+	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+		let row = grid[rowIdx];
+		for(var colIdx=0;colIdx<cols;colIdx++)  {
+		    let cell = row[colIdx];
+		    let v = cell.v;
+		    if(isNaN(v)) continue;
+		    let x = colIdx*opts.cellSizeX;
+		    let y = rowIdx*opts.cellSizeY;
+		    if(cell.count>=countThreshold)
+			glyph.draw(opts, canvas, ctx, x,y,{
+			    colorValue:cell.v,
+			    col:colIdx,row:rowIdx,cell:cell, grid:grid});
+		}
+	    }
+	} else {
+	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
+	    let glyphs=[];
+	    let cnt = 1;
+	    while(cnt<11) {
+		let attr = opts.display.getProperty("glyph" + (cnt++));
+		if(!attr)
+		    continue;
+		glyphs.push(new Glyph(opts.display,scale, fields,records,{
+		    canvasWidth:canvas.width,
+		    canvasHeight: canvas.height
+		},attr));
+	    }
+
+
+	    glyphs.forEach(glyph=>{
+		records.map((record,idx)=>{
+		    let lat = record.getLatitude();
+		    let lon = record.getLongitude();
+		    let x = scaleX(lat,lon);
+		    let y = scaleY(lat,lon);
+		    record[gridId+"_coordinates"] = {x:x,y:y};
+		    let colorValue = opts.colorBy? record.getData()[opts.colorBy.index]:null;
+		    let lengthValue = opts.lengthBy? record.getData()[opts.lengthBy.index]:null;
+		    glyph.draw(opts, canvas, ctx, x,y,{colorValue:colorValue, lengthValue:lengthValue,record:record});
+		});
+	    });
+	}
+
+	let alpha = opts.display.getProperty("colorTableAlpha",-1);
+	//add in the color table alpha
+	if(alpha>0) {
+	    var image = ctx.getImageData(0, 0, opts.w, opts.h);
+	    var imageData = image.data,
+		length = imageData.length;
+	    for(var i=3; i < length; i+=4){  
+		if(imageData[i]) {
+		    imageData[i] = alpha*255;
+		}
+	    }
+	    image.data = imageData;
+	    ctx.putImageData(image, 0, 0);
+	}
+
+	let img =  canvas.toDataURL("image/png");
+	canvas.parentNode.removeChild(canvas);
+	return img;
+    },
+    gridPoints: function(rows,cols,points,args) {
+	let debug = displayDebug.gridPoints;
+	let values = [];
+	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    let row = [];
+	    values.push(row);
+	    for(var colIdx=0;colIdx<cols;colIdx++)  {
+		row.push({v:NaN,count:0,total:0,min:NaN,max:NaN,t:""});
+	    }
+	}
+
+	points.forEach((p,idx)=>{
+	    let cell = values[p.y][p.x];
+	    cell.min = cell.count==0?p.colorValue:Math.min(cell.min,p.colorValue);
+	    cell.max = cell.count==0?p.colorValue:Math.max(cell.max,p.colorValue);
+	    cell.count++;
+	    cell.total += p.colorValue;
+	});
+
+
+	let minValue = NaN;
+	let maxValue = NaN;
+	let maxCount=0;
+	let minCount=0;
+
+	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
+	    for(var colIdx=0;colIdx<cols;colIdx++)  {
+		let cell = values[rowIdx][colIdx];
+		if(cell.count==0) continue;
+		let v;
+		if(args.operator=="count")
+		    v = cell.count;
+		else if(args.operator=="min")
+		    v =  cell.min;
+		else if(args.operator=="max")
+		    v =  cell.max;
+		else if(args.operator=="total")
+		    v =  cell.total;
+		else
+		    v =  cell.total/cell.count;
+		cell.v = v;
+		if(!isNaN(v)) {
+		    minValue = isNaN(minValue)?v:Math.min(minValue,v);
+		    maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
+		}
+		maxCount = Math.max(maxCount, cell.count);
+		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
+	    }
+	}	
+	if(debug)
+	    console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
+	values.minValue = minValue;
+	values.maxValue = maxValue;
+	values.minCount = minCount;
+	values.maxCount = maxCount;
+	return values;
+    },
+
+
+    
+    //This gets the value at row/col if its defined. else 0
+    //    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
+    getGridValue:function(src,row,col,mult,total,goodones) {
+	if(row>=0 && row<src.length && col>=0 && col<src[row].length) {
+	    if(isNaN(src[row][col])) return 0;
+	    total[0]+=mult;
+	    goodones[0]++;
+	    return src[row][col]*mult;
+	}
+	return 0;
+    },
+    applyKernel: function(src, kernel) {
+	let result = this.cloneGrid(src,null,0);
+	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = result[rowIdx];
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		//		if(isNaN(row[colIdx])) continue;
+		if(isNaN(row[colIdx])) row[colIdx] = 0;
+		let total =[0];
+		let goodones =[0];
+		let sum = 0;
+		kernel.every(t=>{
+		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],total,goodones); 
+		    return true;
+		});
+		if(goodones[0]>0)
+		    row[colIdx] = sum/total[0];
+		else
+		    row[colIdx] = NaN;
+	    }
+	}
+	return result;
+    },
+    blurGrid: function(type, src) {
+	let kernels = {
+	    average5: [
+		[0,1,0],
+		[1,1,1],
+		[0,1,0],
+	    ],
+	    average9: [
+		[1,1,1],
+		[1,1,1],
+		[1,1,1],
+	    ],
+	    average25:[
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+		[1,1,1,1,1],
+	    ],
+	    average49:[
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+		[1,1,1,1,1,1,1],
+	    ],
+	    gauss9:[
+		[0.077847,0.123317,0.077847],
+		[0.123317,0.195346,0.123317],
+		[0.077847,0.123317,0.077847]
+	    ],
+	    gauss25:[
+		[0.003765,0.015019,0.023792,0.015019,0.003765],
+		[0.015019,0.059912,0.094907,0.059912,0.015019],
+		[0.023792,0.094907,0.150342,0.094907,0.023792],
+		[0.015019,0.059912,0.094907,0.059912,0.015019],
+		[0.003765,0.015019,0.023792,0.015019,0.003765],
+	    ],
+	    gauss49: [
+		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067],
+		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
+		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
+		[0.00038771 ,0.01330373 ,0.11098164 ,0.22508352 ,0.11098164 ,0.01330373 ,0.00038771],
+		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
+		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
+		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067]
+	    ]
+	}
+	let a = kernels[type];
+	if(!a) {
+	    if(type.startsWith("average"))
+		a=kernels.average5;
+	    else if(type.startsWith("gauss"))
+		a=kernels.gauss9;
+	}
+	if(!a) return src;
+	return this.applyKernel(src, this.makeKernel(a));
+    },
+    makeKernel: function(kernel) {
+	let a = [];
+	let mid = (kernel.length-1)/2;
+	for(let rowIdx=0;rowIdx<kernel.length;rowIdx++) {
+	    let row = kernel[rowIdx];
+	    let rowOffset = rowIdx-mid;
+	    for(let colIdx=0;colIdx<row.length;colIdx++) {
+		let colOffset = colIdx-mid;
+		a.push([rowOffset,colOffset,kernel[rowIdx][colIdx]]);
+	    }
+	}
+	return a;
+    },
+    printGrid: function(grid) {
+	console.log("grid:");
+	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
+	    let row = grid[rowIdx];
+	    let h = "";
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		if(Utils.isDefined(row[colIdx].v))
+		    h+=row[colIdx].v+",";
+		else
+		    h+=row[colIdx]+",";
+	    }
+	    console.log(h);
+	}
+    },
+    applyFilter(opts, grid) {
+	if(!opts.filter || opts.filter=="" || opts.filter=="none") {
+	    return;
+	}
+
+	let copy = this.cloneGrid(grid,v=>v.v);
+	let filtered = copy;
+	let filterPasses = opts.display.getProperty("hm.filterPasses",1);
+	for(var i=0;i<filterPasses;i++) {
+	    filtered = this.blurGrid(opts.filter,filtered);
+	}
+	let filterThreshold = opts.display.getProperty("hm.filterThreshold",-999);
+	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
+	    let row = grid[rowIdx];
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		let cell = row[colIdx];
+		let filterValue = filtered[rowIdx][colIdx];
+		if(filterThreshold!=-999) {
+		    if(filterValue<filterThreshold)
+			filterValue = cell.v;
+		}
+		cell.v = filterValue;
+	    }
+	}
+    },
+    getMinMaxGrid: function(src,valueGetter) {
+	let min = NaN;
+	let max = NaN;
+	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = src[rowIdx];
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		let v = row[colIdx]
+		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
+		if(isNaN(v)) continue;
+		min = isNaN(min)?v:Math.min(min,v);
+		max = isNaN(max)?v:Math.max(max,v);
+	    }
+	}
+	return {min:min,max:max};
+    },
+
+
+
+    cloneGrid: function(src,valueGetter,dflt) {
+	let dest = [];
+	let hasDflt = Utils.isDefined(dflt);
+	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
+	    let row = src[rowIdx];
+	    let nrow=[];
+	    dest.push(nrow);
+	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
+		let v = row[colIdx]
+		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
+		if(hasDflt)
+		    nrow.push(dflt);
+		else
+		    nrow.push(v);
+	    }
+	}
+	return dest;
+    },
+    convertGeoToPixel:function(lat, lon,bounds,mapWidth,mapHeight) {
+	var mapLonLeft = bounds.west;
+	var mapLonRight = bounds.east;
+	var mapLonDelta = mapLonRight - mapLonLeft;
+	var mapLatBottom = bounds.south;
+	var mapLatBottomDegree = mapLatBottom * Math.PI / 180;
+	var x = (lon - mapLonLeft) * (mapWidth / mapLonDelta);
+	var lat = lat * Math.PI / 180;
+	var worldMapWidth = ((mapWidth / mapLonDelta) * 360) / (2 * Math.PI);
+	var mapOffsetY = (worldMapWidth / 2 * Math.log((1 + Math.sin(mapLatBottomDegree)) / (1 - Math.sin(mapLatBottomDegree))));
+	var y = mapHeight - ((worldMapWidth / 2 * Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat)))) - mapOffsetY);
+	return [x, y];
+    },
+}
+
+
+function Glyph(display, scale, fields, records, args, attrs) {
+    args = args||{};
+    $.extend(this,{
+	display: display,
+	type:"label",
+	dx:0,
+	dy:0,
+	label:"",
+	baseHeight:0,
+	baseWidth:0,
+	width:8,
+	fill:true,
+	stroke:true,
+    });
+    $.extend(this,args);
+    attrs.split(",").forEach(attr=>{
+	let toks = attr.split(":");
+	let name = toks[0];
+	let value="";
+	for(let i=1;i<toks.length;i++) {
+	    if(i>1) value+=":";
+	    value+=toks[i];
+	}
+	value = value.replace(/_nl_/g,"\n").replace(/_colon_/g,":").replace(/_comma_/g,",");
+	if(value=="true") value=true;
+	else if(value=="false") value=false;
+	this[name] = value;
+//	console.log("attr:" + name+"=" + value);
+    });
+    this.scale = scale;
+    if(this.height==null) {
+	if(this.type == "3dbar")
+	    this.height=20;
+	else
+	    this.height=8;
+    }
+    if(this.pos==null) {
+	if(this.type == "3dbar")
+	    this.color = "blue";
+	else if(this.type == "rect") {
+	    this.pos = "c";
+	}
+	else
+	    this.pos = "nw";
+    }	
+    
+    this.width = (+this.width);
+    this.height = (+this.height);
+    if(this.dx=="canvasWidth") this.dx=this.canvasWidth;
+    else if(this.dx=="-canvasWidth") this.dx=-this.canvasWidth;
+    else if(this.dx=="canvasWidth2") this.dx=this.canvasWidth/2;
+    else if(this.dx=="-canvasWidth2") this.dx=-this.canvasWidth/2;    
+    else if(this.dx=="width") this.dx=this.width;
+    else if(this.dx=="-width") this.dx=-this.width;
+    else if(this.dx=="width2") this.dx=this.width/2;
+    else if(this.dx=="-width2") this.dx=-this.width/2;
+    if(this.dy=="canvasHeight") this.dy=this.canvasHeight;
+    else if(this.dy=="-canvasHeight") this.dy=-this.canvasHeight;
+    else if(this.dy=="canvasHeight2") this.dy=this.canvasHeight/2;
+    else if(this.dy=="-canvasHeight2") this.dy=-this.canvasHeight/2;    
+    else if(this.dy=="height") this.dy=this.height;
+    else if(this.dy=="-height") this.dy=-this.height;
+    else if(this.dy=="height2") this.dy=this.height/2;
+    else if(this.dy=="-height2") this.dy=-this.height/2;
+
+
+
+    this.baseWidth = +this.baseWidth;
+    this.width = (+this.width)*scale;
+    this.height = (+this.height)*scale;
+    this.dx = (+this.dx)*scale;
+    this.dy = (+this.dy)*scale;
+    if(this.sizeBy) {
+	this.sizeByField=display.getFieldById(fields,this.sizeBy);
+	if(this.sizeByField) {
+	    let props = {
+		Min:this.sizeByMin,
+		Max:this.sizeByMax,
+	    };
+	    this.sizeByInfo =  new ColorByInfo(display, fields, records, this.sizeBy,this.sizeBy, null, this.sizeBy,this.sizeByField,props);
+	}
+    }
+    if(!this.colorByInfo && this.colorBy) {
+	this.colorByField=display.getFieldById(fields,this.colorBy);
+	let ct = this.colorTable?display.getColorTableInner(true, this.colorTable):null;
+	if(this.colorByField) {
+	    let props = {
+		Min:this.colorByMin,
+		Max:this.colorByMax,
+	    };	    
+	    this.colorByInfo =  new ColorByInfo(display, fields, records, this.colorBy,this.colorBy+".colorByMap", ct, this.colorBy,this.colorByField, props);
+	}
+    }
+
+
+}
+
+
+
+Glyph.prototype = {
+    draw: function(opts, canvas, ctx, x,y,args) {
+	let color =   null;
+	if(this.colorByInfo) {
+	    if(this.colorByField) {
+		let v = args.record.getValue(this.colorByField.getIndex());
+		color=  this.colorByInfo.getColor(v);
+	    } else if(args.colorValue) {
+		color=  this.colorByInfo.getColor(args.colorValue);
+	    }
+	}
+	let lengthPercent = 1.0;
+	if(this.sizeByInfo) {
+	    let v = args.record.getValue(this.sizeByField.getIndex());
+	    lengthPercent = this.sizeByInfo.getValuePercent(v);
+	}
+
+	if(args.alphaByCount && args.cell && args.grid) {
+	    if(args.grid.maxCount!=args.grid.minCount) {
+		let countPerc = (args.cell.count-args.grid.minCount)/(args.grid.maxCount-args.grid.minCount);
+		color = Utils.addAlphaToColor(c,countPerc);
+	    }
+	}
+	ctx.fillStyle =color || this.fillStyle || this.color || "blue";
+	ctx.strokeStyle =this.strokeStyle || this.color || "#000";
+	ctx.lineWidth=this.lineWidth||1;
+
+	if(this.type=="label" || this.label) {
+	    if(!this.label) {
+		console.log("No label specified");
+		return;
+	    }
+	    ctx.font = this.font || "12pt arial"
+	    ctx.fillStyle = ctx.strokeStyle =    this.color|| "#000";
+	    let text = String(this.label);
+	    if(args.record) {
+		args.record.fields.forEach(f=>{
+		    text = text.replace("\${" + f.getId()+"}",args.record.getValue(f.getIndex()));
+		});
+	    }
+	    text = text.split("\n");
+	    let h = 0;
+	    let hgap = 3;
+	    let maxw = 0;
+	    text.forEach((t,idx)=>{
+		let dim = ctx.measureText(t);
+		if(idx>0) h+=hgap;
+		maxw=Math.max(maxw,dim.width);
+		h +=dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent;
+	    });
+	    let pt = Utils.translatePoint(x, y, maxw,  h, this.pos,{dx:this.dx,dy:this.dy});
+	    text.forEach(t=>{
+		let dim = ctx.measureText(t);
+//		console.log(pt.x +" " + pt.y +" " + t);
+		ctx.fillText(t,pt.x,pt.y);
+		pt.y += dim.actualBoundingBoxAscent + dim.actualBoundingBoxDescent + hgap;
+	    });
+	} else 	if(this.type == "circle") {
+	    /*
+	    ctx.beginPath();
+	    ctx.moveTo(0,y);
+	    ctx.lineTo(100,y);
+	    ctx.stroke();
+	    ctx.moveTo(x,0);
+	    ctx.lineTo(x,100);
+	    ctx.stroke();
+	    */
+	    ctx.beginPath();
+	    let w = this.width*lengthPercent+ this.baseWidth;
+//	    this.dx=0; 
+//	    this.dy=-50;
+//	    this.pos="n"; 
+	    let pt = Utils.translatePoint(x, y, w,  w, this.pos,{dx:this.dx,dy:this.dy});
+	    let cx = pt.x+w/2;
+	    let cy = pt.y+w/2;
+	    ctx.arc(cx,cy, w/2, 0, 2 * Math.PI);
+//	    console.log(pt.x +" " + pt.y +" " + cx +" " + cy  +" " + this.width);
+	    if(this.fill)  {
+		ctx.fill();
+	    }
+	    if(this.stroke) 
+		ctx.stroke();
+	} else if(this.type=="rect") {
+	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
+	    if(this.fill)  
+		ctx.fillRect(pt.x,pt.y, this.width, this.height);
+	    if(this.stroke) 
+		ctx.strokeRect(pt.x,pt.y, this.width, this.height);
+	} else 	if(this.type == "gauge") {
+	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
+	    ctx.fillStyle =  this.fillColor || "#F7F7F7";
+	    ctx.beginPath();
+	    let cx= pt.x+this.width/2;
+	    let cy = pt.y+this.height;
+	    ctx.arc(cx,cy, this.width/2,  1 * Math.PI,0);
+	    ctx.fill();
+	    ctx.strokeStyle =   "#000";
+	    ctx.stroke();
+	    ctx.beginPath();
+//	    ctx.moveTo(cx-this.width/2,cy);
+//	    ctx.lineTo(cx+this.width/2,cy);
+//	    ctx.stroke();
+
+	    ctx.beginPath();
+	    let length = this.width/2*0.75;
+            let degrees = (180*lengthPercent);
+	    let ex = cx-this.width*0.4;
+	    let ey = cy;
+	    let ep = this.rotate(cx,cy,ex,ey,degrees);
+	    ctx.strokeStyle =  this.color || "#000";
+	    ctx.lineWidth=this.lineWidth||2;
+	    ctx.moveTo(cx,cy);
+	    ctx.lineTo(ep.x,ep.y);
+	    ctx.stroke();
+	    ctx.lineWidth=1;
+	    this.showLabel = true;
+	    if(this.showLabel && this.sizeByInfo) {
+		ctx.fillStyle="#000";
+		let label = String(this.sizeByInfo.minValue);
+		ctx.font = this.font || "9pt arial"
+		let dim = ctx.measureText(label);
+		ctx.fillText(label,cx-this.width/2-dim.width-2,cy);
+		ctx.fillText(this.sizeByInfo.maxValue,cx+this.width/2+2,cy);
+	    }
+	} else if(this.type=="3dbar") {
+	    let height = lengthPercent*(this.height) + parseFloat(this.baseHeight);
+	    ctx.fillStyle =   color || this.color;
+	    ctx.strokeStyle = this.strokeStyle||"#000";
+	    this.draw3DRect(canvas,ctx,x+this.dx, canvas.height-y-this.dy,+this.width,height,+this.width);
+	} else if(this.type == "vector") {
+	    let length = opts.cellSizeH;
+	    if(opts.lengthBy && opts.lengthBy.index>=0) {
+		length = opts.lengthBy.scaleToValue(v);
+	    }
+	    let x2=x+length;
+	    let y2=y;
+	    let arrowLength = opts.display.getProperty("arrowLength",-1);
+	    /*
+	      if(opts.angleBy && opts.angleBy.index>=0) {
+	      let perc = opts.angleBy.getValuePercent(v);
+	      let degrees = (360*perc);
+	      let rads = degrees * (Math.PI/360);
+	      x2 = length*Math.cos(rads)-0* Math.sin(rads);
+	      y2 = 0*Math.cos(rads)-length* Math.sin(rads);
+	      x2+=x;
+	      y2+=y;
+	      }
+	    */
+	    if(opts.colorBy && opts.colorBy.index>=0) {
+                let perc = opts.colorBy.getValuePercent(v);
+                let degrees = (180*perc)+90;
+		degrees = degrees*(Math.PI / 360)
+                x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
+		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
+                x2+=x;
+                y2+=y;
+            }
+	    //Draw the circle if no arrow
+	    if(arrowLength<=0) {
+		ctx.save();
+		ctx.fillStyle="#000";
+		ctx.beginPath();
+		ctx.arc(x,y, 1, 0, 2 * Math.PI);
+		ctx.fill();
+		ctx.restore();
+	    }
+	    ctx.beginPath();
+	    ctx.moveTo(x,y);
+	    ctx.lineTo(x2,y2);
+	    ctx.lineWidth=opts.display.getProperty("lineWidth",1);
+	    ctx.stroke();
+	    if(arrowLength>0) {
+		ctx.beginPath();
+		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
+		ctx.stroke();
+	    }
+	} else if(this.type=="tile"){
+	    let crx = x+opts.cellSizeX/2;
+	    let cry = y+opts.cellSizeY/2;
+ 	    if((args.row%2)==0)  {
+		crx = crx+opts.cellSizeX/2;
+		cry = cry-opts.cellSizeY/2;
+	    }
+	    let sizex = opts.cellSizeX/2;
+	    let sizey = opts.cellSizeY/2;
+	    ctx.beginPath();
+	    let quarter = Math.PI/2;
+	    ctx.moveTo(crx + sizex * Math.cos(quarter), cry + sizey * Math.sin(quarter));
+	    for (let side=0; side < 7; side++) {
+		ctx.lineTo(crx + sizex * Math.cos(quarter+side * 2 * Math.PI / 6), cry + sizey * Math.sin(quarter+side * 2 * Math.PI / 6));
+	    }
+	    ctx.strokeStyle = "#000";
+	    //	    ctx.fill();
+	    ctx.stroke();
+	} else {
+	    console.log("Unknwon cell shape:" + this.type);
+	}
+    },
+    rotate:function(cx, cy, x, y, angle,anticlock_wise = false) {
+	if(angle == 0){
+            return {x:parseFloat(x), y:parseFloat(y)};
+	}
+	if(anticlock_wise){
+            var radians = (Math.PI / 180) * angle;
+	}else{
+            var radians = (Math.PI / -180) * angle;
+	}
+	var cos = Math.cos(radians);
+	var sin = Math.sin(radians);
+	var nx = (cos * (x - cx)) + (sin * (y - cy)) + cx;
+	var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+	return {x:nx, y:ny};
+    },
+    draw3DRect:function(canvas,ctx,x,y,width, height, depth) {
+	// Dimetric projection functions
+	var dimetricTx = function(x,y,z) { return x + z/2; };
+	var dimetricTy = function(x,y,z) { return y + z/4; };
+	
+	// Isometric projection functions
+	var isometricTx = function(x,y,z) { return (x -z) * Math.cos(Math.PI/6); };
+	var isometricTy = function(x,y,z) { return y + (x+z) * Math.sin(Math.PI/6); };
+	
+	var drawPoly = (function(ctx,tx,ty) {
+	    return function() {
+		var args = Array.prototype.slice.call(arguments, 0);
+		// Begin the path
+		ctx.beginPath();
+		// Move to the first point
+		var p = args.pop();
+		if(p) {
+		    ctx.moveTo(tx.apply(undefined, p), ty.apply(undefined, p));
+		}
+		// Draw to the next point
+		while((p = args.pop()) !== undefined) {
+		    ctx.lineTo(tx.apply(undefined, p), ty.apply(undefined, p));
+		}
+		ctx.closePath();
+		ctx.stroke();
+		ctx.fill();
+	    };
+	})(ctx, dimetricTx, dimetricTy);
+	
+	// Set some context
+	ctx.save();
+	ctx.scale(1,-1);
+	ctx.translate(0,-canvas.height);
+	ctx.save();
+	
+	// Move our graph
+	ctx.translate(x,y);  
+	// Draw the "container"
+	//back
+	let  baseColor = ctx.fillStyle;
+	//		drawPoly([0,0,depth],[0,height,depth],[width,height,depth],[width,0,depth]);
+	//left
+	//		drawPoly([0,0,0],[0,0,depth],[0,height,depth],[0,height,0]);
+	//right
+	ctx.fillStyle =    Utils.pSBC(-0.5,baseColor);
+	drawPoly([width,0,0],[width,0,depth],[width,height,depth],[width,height,0]);
+	ctx.fillStyle =    baseColor;
+	//front
+	drawPoly([0,0,0],[0,height,0],[width,height,0],[width,0,0]);
+	//top		
+	ctx.fillStyle =    Utils.pSBC(0.5,baseColor);
+	drawPoly([0,height,0],[0,height,depth],[width,height,depth],[width,height,0]);
+	ctx.fillStyle =    baseColor;
+	ctx.restore();
+	ctx.restore();
+    },
+
+    drawArrow:function(context, fromx, fromy, tox, toy,headlen) {
+	let dx = tox - fromx;
+	let dy = toy - fromy;
+	let angle = Math.atan2(dy, dx);
+	context.moveTo(fromx, fromy);
+	context.lineTo(tox, toy);
+	context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+	context.moveTo(tox, toy);
+	context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+    },
 
 }
 /**
@@ -2019,6 +2855,7 @@ function DisplayThing(argId, argProperties) {
 	},
         getRecordHtml: function(record, fields, template) {
 	    fields = this.getFields(fields);
+	    if(!fields) return "";
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let titleField = this.getFieldById(null,this.getProperty("titleField"));
 	    let descField = this.getFieldById(null,this.getProperty("descriptionField"));
@@ -2301,9 +3138,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this._wikiTags.push('inlinelabel:' + p.inlineLabel);
 		    return;
 		}		
-		let w = [p.p+'="' + (p.wikiValue?p.wikiValue:p.d?p.d:"")+'"'];
-		if(p.tt)
-		    w.push(p.tt);
+		let tag=p.p+'="' + (p.wikiValue?p.wikiValue:p.d?p.d:"")+'"'
+		let w = [];
+		let tt = p.tt||"";
+		if(p.label) {
+		    w.push(p.label);
+		    w.push(tag);
+		} else {
+		    w.push(tag);
+		}
+		w.push(p.tt);
 		this._wikiTags.push(w);
 		if(!Utils.isDefined(p.doGetter) || p.doGetter) {
 		    let funcName =  'getProperty' + p.p.substring(0, 1).toUpperCase() + p.p.substring(1);
@@ -2318,7 +3162,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let l =   [
 		"label:Display Attributes",
 		['fields=""','comma separated list of field ids or indices - #1,#2,etc or *'],
-		['fieldsNumeric=true','Only get numeric fields'],
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
 		"layoutHere=\"true\"",
@@ -2335,6 +3178,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["backgroundImage=\"\"","Image url to display in background"],
 		"background=\"color\"",
 		'showProgress=true',
+		['doEntries=true','Make the children entries be data'],
+		['addAttributes=true','Include the extra attributes of the children'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'doFormatNumber=false',
@@ -2343,6 +3188,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		'numberTemplate="${number}%"',
 		'&lt;field_id&gt;.&lt;format&gt;="..."',
 		"label:Filter Data",
+		['fieldsNumeric=true','Only get numeric fields'],
 		"filterFields=\"\"",
 		'filterFieldsToPropagate=""',
 		"hideFilterWidget=true",
@@ -2589,6 +3435,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!colorTable) {
                 colorTable = dflt;
             }
+	    return this.getColorTableInner(justColors, colorTable);
+	},
+	getColorTableInner: function(justColors, colorTable) {
 	    let list;
             if (colorTable) {
                 let ct = null;
@@ -2693,8 +3542,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		cellSizeHBase: this.getProperty("cellSizeHBase",0),
 		cell3D:this.getProperty("cell3D",false),
 		cellShowText:this.getProperty("cellShowText",false),
-		cellFont:this.getProperty("cellFont"),
-		cellLabel:this.getProperty("cellLabel"),
+		cellLabels:Utils.split(this.getProperty("cellLabels")),
+		cellFonts:Utils.split(this.getProperty("cellFonts")),
+		cellLabelColors:Utils.split(this.getProperty("cellLabelColor")),
+		cellLabelPositions:Utils.split(this.getProperty("cellLabelPositions")),
+		cellLabelOffsetsX:Utils.split(this.getProperty("cellLabelOffsetsX")),
+		cellLabelOffsetsY:Utils.split(this.getProperty("cellLabelOffsetsY")),
 		doHeatmap:doHeatmap,
 		operator:this.getProperty("hm.operator","count"),
 		filter:this.getProperty("hm.filter")
@@ -6250,6 +7103,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	},
+	//Make sure to set the title attribute on the elements
 	makeTooltips: function(selector, records, callback, tooltipArg) {
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
@@ -6280,7 +7134,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		show: {
 		    delay: parseFloat(_this.getProperty("tooltipDelay",1000)),
 		    duration: parseFloat(_this.getProperty("tooltipDuration",500)),
-		    
+	    
 		},
 		classes: {
 		    "ui-tooltip": _this.getProperty("tooltipClass", "display-tooltip")
@@ -9489,8 +10343,6 @@ var RecordUtil = {
 	    labels:[],
 	    map:{},
 	}
-
-
 	records.forEach((r,idx)=>{
 	    let key;
 	    let label = null;
@@ -9571,667 +10423,6 @@ var RecordUtil = {
 	});
 	return records;
     },
-    gridPoints: function(rows,cols,points,args) {
-	let debug = displayDebug.gridPoints;
-	let values = [];
-	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
-	    let row = [];
-	    values.push(row);
-	    for(var colIdx=0;colIdx<cols;colIdx++)  {
-		row.push({v:NaN,count:0,total:0,min:NaN,max:NaN,t:""});
-	    }
-	}
-
-	points.map((p,idx)=>{
-	    let cell = values[p.y][p.x];
-	    cell.min = cell.count==0?p.colorValue:Math.min(cell.min,p.colorValue);
-	    cell.max = cell.count==0?p.colorValue:Math.max(cell.max,p.colorValue);
-	    cell.count++;
-	    cell.total += p.colorValue;
-	});
-
-	let minValue = NaN;
-	let maxValue = NaN;
-	let maxCount=0;
-	let minCount=0;
-
-	for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
-	    for(var colIdx=0;colIdx<cols;colIdx++)  {
-		let cell = values[rowIdx][colIdx];
-		if(cell.count==0) continue;
-		let v;
-		if(args.operator=="count")
-		    v = cell.count;
-		else if(args.operator=="min")
-		    v =  cell.min;
-		else if(args.operator=="max")
-		    v =  cell.max;
-		else if(args.operator=="total")
-		    v =  cell.total;
-		else
-		    v =  cell.total/cell.count;
-		cell.v = v;
-		if(!isNaN(v)) {
-		    minValue = isNaN(minValue)?v:Math.min(minValue,v);
-		    maxValue = isNaN(maxValue)?v:Math.max(maxValue,v);
-		}
-		maxCount = Math.max(maxCount, cell.count);
-		minCount = minCount==0?cell.count:Math.min(minCount, cell.count);
-	    }
-	}	
-	if(debug)
-	    console.log("operator:" + args.operator +" values:" + minValue +" - " + maxValue +" counts:" + minCount +" - " + maxCount);
-	values.minValue = minValue;
-	values.maxValue = maxValue;
-	values.minCount = minCount;
-	values.maxCount = maxCount;
-	return values;
-    },
-    draw3DRect:function(canvas,ctx,x,y,width, height, depth) {
-	// Dimetric projection functions
-	var dimetricTx = function(x,y,z) { return x + z/2; };
-	var dimetricTy = function(x,y,z) { return y + z/4; };
-	
-	// Isometric projection functions
-	var isometricTx = function(x,y,z) { return (x -z) * Math.cos(Math.PI/6); };
-	var isometricTy = function(x,y,z) { return y + (x+z) * Math.sin(Math.PI/6); };
-	
-	var drawPoly = (function(ctx,tx,ty) {
-	    return function() {
-		var args = Array.prototype.slice.call(arguments, 0);
-		// Begin the path
-		ctx.beginPath();
-		// Move to the first point
-		var p = args.pop();
-		if(p) {
-		    ctx.moveTo(tx.apply(undefined, p), ty.apply(undefined, p));
-		}
-		// Draw to the next point
-		while((p = args.pop()) !== undefined) {
-		    ctx.lineTo(tx.apply(undefined, p), ty.apply(undefined, p));
-		}
-		ctx.closePath();
-		ctx.stroke();
-		ctx.fill();
-	    };
-	})(ctx, dimetricTx, dimetricTy);
-	
-	// Set some context
-	ctx.save();
-	ctx.scale(1,-1);
-	ctx.translate(0,-canvas.height);
-	ctx.save();
-	
-	// Move our graph
-	ctx.translate(x,y);  
-	// Draw the "container"
-	//back
-	let  baseColor = ctx.fillStyle;
-	//		drawPoly([0,0,depth],[0,height,depth],[width,height,depth],[width,0,depth]);
-	//left
-	//		drawPoly([0,0,0],[0,0,depth],[0,height,depth],[0,height,0]);
-	//right
-	ctx.fillStyle =    Utils.pSBC(-0.5,baseColor);
-	drawPoly([width,0,0],[width,0,depth],[width,height,depth],[width,height,0]);
-	ctx.fillStyle =    baseColor;
-	//front
-	drawPoly([0,0,0],[0,height,0],[width,height,0],[width,0,0]);
-	//top		
-	ctx.fillStyle =    Utils.pSBC(0.5,baseColor);
-	drawPoly([0,height,0],[0,height,depth],[width,height,depth],[width,height,0]);
-	ctx.fillStyle =    baseColor;
-	ctx.restore();
-	ctx.restore();
-    },
-
-
-    xcnt:0,
-    drawArrow:function(context, fromx, fromy, tox, toy,headlen) {
-	let dx = tox - fromx;
-	let dy = toy - fromy;
-	let angle = Math.atan2(dy, dx);
-	context.moveTo(fromx, fromy);
-	context.lineTo(tox, toy);
-	context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-	context.moveTo(tox, toy);
-	context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-    },
-    
-
-
-    drawGridCell: function(opts, canvas, ctx, x,y,args) {
-	let c =  opts.color|| "#ccc";
-	let colorPercent = 1.0;
-	let lengthPercent = 1.0;
-	if(opts.colorBy && Utils.isDefined(args.colorValue)) {
-	    colorPercent = opts.colorBy.getValuePercent(args.colorValue);
-	    if(opts.colorBy.index>=0) {
-		c=  opts.colorBy.getColor(args.colorValue);
-	    }
-	}
-	if(opts.lengthBy && args.lengthValue) {
-	    lengthPercent = opts.lengthBy.getValuePercent(args.lengthValue);
-	} else {
-	    lengthPercent = colorPercent;
-	}
-
-
-	if(args.alphaByCount && args.cell && args.grid) {
-	    if(args.grid.maxCount!=args.grid.minCount) {
-		let countPerc = (args.cell.count-args.grid.minCount)/(args.grid.maxCount-args.grid.minCount);
-		c = Utils.addAlphaToColor(c,countPerc);
-	    }
-	}
-	let offx = +opts.display.getProperty("cellOffsetX",0);
-	let offy = +opts.display.getProperty("cellOffsetY",0);
-
-	if(opts.cellLabel) {
-	    ctx.font = opts.cellFont || "9pt Arial;"
-	    ctx.strokeStyle =    "#000";
-	    ctx.fillStyle =    "#000";
-	    let text = String(opts.cellLabel);
-	    let labelOffX= +opts.display.getProperty("cellLabelOffsetX",0);
-	    let labelOffY= +opts.display.getProperty("cellLabelOffsetY",0);
-	    let pos = opts.display.getProperty("cellLabelPosition","nw");
-
-
-
-	    text =  text.replace(/\${lengthValue}/,args.lengthValue).replace(/\${colorValue}/,args.colorValue);
-	    if(args.record) {
-		args.record.fields.forEach(f=>{
-		    text = text.replace("\${" + f.getId()+"}",args.record.getValue(f.getIndex()));
-		});
-	    }
-	    text = text.split("_nl_");
-	    let labelX= +x;
-	    let labelY= +y;
-	    let h = 0;
-	    let hgap = 2;
-	    let maxw = 0;
-	    text.forEach(t=>{
-		let dim = ctx.measureText(t);
-		maxw=Math.max(maxw,dim.width);
-		h +=dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent+hgap;
-	    });
-	    let pt = Utils.translatePoint(x, y, maxw,  h, pos,{x:labelOffX,y:labelOffY});
-
-	    text.forEach(t=>{
-		let dim = ctx.measureText(t);
-		ctx.fillText(t,pt.x,pt.y);
-		pt.y+=dim.actualBoundingBoxAscent+dim.actualBoundingBoxDescent+hgap;
-	    });
-	    
-	}
-
-
-
-	ctx.fillStyle =c
-	ctx.strokeStyle =c
-
-
-	if(opts.shape == "circle") {
-	    ctx.beginPath();
-	    ctx.arc(x,y, opts.cellSize, 0, 2 * Math.PI);
-	    if(opts.stroke)
-		ctx.stroke();
-	    else
-		ctx.fill();
-	} else if(opts.shape=="rect") {
-	    let crx = x-opts.cellSizeX/2;
-	    let cry = y+opts.cellSizeY/2;
-	    crx=x;
-	    cry=y
-	    if(opts.stroke)
-		ctx.strokeRect(x-opts.cellSizeX/2+offx, y-offy/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-	    //	    ctx.strokeRect(x, y/*+opts.cellSizeY/2*/, opts.cellSizeX, opts.cellSizeY);
-	    else
-		ctx.fillRect(crx+offx, cry-offy, opts.cellSizeX, opts.cellSizeY);
-
-	} else if(opts.shape=="3dbar" || opts.cell3D) {
-	    let base = opts.cellSizeHBase?+opts.cellSizeHBase:0;
-	    let height = lengthPercent*(opts.cellSizeH||20) + base;
-//	    console.log(args.lengthValue +" %:" + lengthPercent  +" h:" + height +" base:" + (opts.cellSizeHBase?opts.cellSizeHBase:0));
-	    ctx.fillStyle =   opts.display.getProperty("cellColor",ctx.fillStyle);
-	    ctx.strokeStyle = "#000";
-	    ctx.strokeStyle = "rgba(0,0,0,0)"
-	    RecordUtil.draw3DRect(canvas,ctx,x+offx, canvas.height-y-offy,+opts.cellSize,height,+opts.cellSize);
-	} else if(opts.shape == "vector") {
-	    let length = opts.cellSizeH;
-	    if(opts.lengthBy && opts.lengthBy.index>=0) {
-		length = opts.lengthBy.scaleToValue(v);
-	    }
-	    let x2=x+length;
-	    let y2=y;
-	    let arrowLength = opts.display.getProperty("arrowLength",-1);
-	    /*
-	      if(opts.angleBy && opts.angleBy.index>=0) {
-	      let perc = opts.angleBy.getValuePercent(v);
-	      let degrees = (360*perc);
-	      let rads = degrees * (Math.PI/360);
-	      x2 = length*Math.cos(rads)-0* Math.sin(rads);
-	      y2 = 0*Math.cos(rads)-length* Math.sin(rads);
-	      x2+=x;
-	      y2+=y;
-	      }
-	    */
-	    if(opts.colorBy && opts.colorBy.index>=0) {
-                let perc = opts.colorBy.getValuePercent(v);
-                let degrees = (180*perc)+90;
-		degrees = degrees*(Math.PI / 360)
-                x2 = length*Math.cos(degrees)-0* Math.sin(degrees);
-		y2 = 0*Math.cos(degrees)-length* Math.sin(degrees);
-                x2+=x;
-                y2+=y;
-            }
-	    //Draw the circle if no arrow
-	    if(arrowLength<=0) {
-		ctx.save();
-		ctx.fillStyle="#000";
-		ctx.beginPath();
-		ctx.arc(x,y, 1, 0, 2 * Math.PI);
-		ctx.fill();
-		ctx.restore();
-	    }
-	    ctx.beginPath();
-	    ctx.moveTo(x,y);
-	    ctx.lineTo(x2,y2);
-	    ctx.lineWidth=opts.display.getProperty("lineWidth",1);
-	    ctx.stroke();
-	    if(arrowLength>0) {
-		ctx.beginPath();
-		this.drawArrow(ctx, x,y,x2,y2,arrowLength);
-		ctx.stroke();
-	    }
-	} else if(opts.shape=="tile"){
-	    let crx = x+opts.cellSizeX/2;
-	    let cry = y+opts.cellSizeY/2;
- 	    if((args.row%2)==0)  {
-		crx = crx+opts.cellSizeX/2;
-		cry = cry-opts.cellSizeY/2;
-	    }
-	    let sizex = opts.cellSizeX/2;
-	    let sizey = opts.cellSizeY/2;
-	    ctx.beginPath();
-	    let quarter = Math.PI/2;
-	    ctx.moveTo(crx + sizex * Math.cos(quarter), cry + sizey * Math.sin(quarter));
-	    for (let side=0; side < 7; side++) {
-		ctx.lineTo(crx + sizex * Math.cos(quarter+side * 2 * Math.PI / 6), cry + sizey * Math.sin(quarter+side * 2 * Math.PI / 6));
-	    }
-	    ctx.strokeStyle = "#000";
-	    //	    ctx.fill();
-	    ctx.stroke();
-	} else {
-	    console.log("Unknwon cell shape:" + opts.shape);
-	}
-	if(opts.cellShowText && v!=null) {
-	    ctx.textAlign = "center";
-	    ctx.fillStyle = opts.cellTextColor||"#000";
-	    ctx.fillText(Utils.formatNumber(v), x,y+10);
-	}
-    },
-    //This gets the value at row/col if its defined. else 0
-    //    sum+=this.getGridValue(src,rowIdx,colIdx,t[0],t[1],t[2],cnt); 
-    getGridValue:function(src,row,col,mult,total,goodones) {
-	if(row>=0 && row<src.length && col>=0 && col<src[row].length) {
-	    if(isNaN(src[row][col])) return 0;
-	    total[0]+=mult;
-	    goodones[0]++;
-	    return src[row][col]*mult;
-	}
-	return 0;
-    },
-    applyKernel: function(src, kernel) {
-	let result = this.cloneGrid(src,null,0);
-	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
-	    let row = result[rowIdx];
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
-		//		if(isNaN(row[colIdx])) continue;
-		if(isNaN(row[colIdx])) row[colIdx] = 0;
-		let total =[0];
-		let goodones =[0];
-		let sum = 0;
-		kernel.every(t=>{
-		    sum+=this.getGridValue(src,rowIdx+t[0],colIdx+t[1],t[2],total,goodones); 
-		    return true;
-		});
-		if(goodones[0]>0)
-		    row[colIdx] = sum/total[0];
-		else
-		    row[colIdx] = NaN;
-	    }
-	}
-	return result;
-    },
-    blurGrid: function(type, src) {
-	let kernels = {
-	    average5: [
-		[0,1,0],
-		[1,1,1],
-		[0,1,0],
-	    ],
-	    average9: [
-		[1,1,1],
-		[1,1,1],
-		[1,1,1],
-	    ],
-	    average25:[
-		[1,1,1,1,1],
-		[1,1,1,1,1],
-		[1,1,1,1,1],
-		[1,1,1,1,1],
-		[1,1,1,1,1],
-	    ],
-	    average49:[
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-		[1,1,1,1,1,1,1],
-	    ],
-	    gauss9:[
-		[0.077847,0.123317,0.077847],
-		[0.123317,0.195346,0.123317],
-		[0.077847,0.123317,0.077847]
-	    ],
-	    gauss25:[
-		[0.003765,0.015019,0.023792,0.015019,0.003765],
-		[0.015019,0.059912,0.094907,0.059912,0.015019],
-		[0.023792,0.094907,0.150342,0.094907,0.023792],
-		[0.015019,0.059912,0.094907,0.059912,0.015019],
-		[0.003765,0.015019,0.023792,0.015019,0.003765],
-	    ],
-	    gauss49: [
-		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067],
-		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
-		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
-		[0.00038771 ,0.01330373 ,0.11098164 ,0.22508352 ,0.11098164 ,0.01330373 ,0.00038771],
-		[0.00019117 ,0.00655965 ,0.05472157 ,0.11098164 ,0.05472157 ,0.00655965 ,0.00019117],
-		[0.00002292 ,0.00078633 ,0.00655965 ,0.01330373 ,0.00655965 ,0.00078633 ,0.00002292],
-		[0.00000067 ,0.00002292 ,0.00019117 ,0.00038771 ,0.00019117 ,0.00002292 ,0.00000067]
-	    ]
-	}
-	let a = kernels[type];
-	if(!a) {
-	    if(type.startsWith("average"))
-		a=kernels.average5;
-	    else if(type.startsWith("gauss"))
-		a=kernels.gauss9;
-	}
-	if(!a) return src;
-	return this.applyKernel(src, this.makeKernel(a));
-    },
-    makeKernel: function(kernel) {
-	let a = [];
-	let mid = (kernel.length-1)/2;
-	for(let rowIdx=0;rowIdx<kernel.length;rowIdx++) {
-	    let row = kernel[rowIdx];
-	    let rowOffset = rowIdx-mid;
-	    for(let colIdx=0;colIdx<row.length;colIdx++) {
-		let colOffset = colIdx-mid;
-		a.push([rowOffset,colOffset,kernel[rowIdx][colIdx]]);
-	    }
-	}
-	return a;
-    },
-    printGrid: function(grid) {
-	console.log("grid:");
-	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
-	    let row = grid[rowIdx];
-	    let h = "";
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
-		if(Utils.isDefined(row[colIdx].v))
-		    h+=row[colIdx].v+",";
-		else
-		    h+=row[colIdx]+",";
-	    }
-	    console.log(h);
-	}
-    },
-    applyFilter(opts, grid) {
-	if(!opts.filter || opts.filter=="" || opts.filter=="none") {
-	    return;
-	}
-
-	let copy = this.cloneGrid(grid,v=>v.v);
-	let filtered = copy;
-	let filterPasses = opts.display.getProperty("hm.filterPasses",1);
-	for(var i=0;i<filterPasses;i++) {
-	    filtered = this.blurGrid(opts.filter,filtered);
-	}
-	let filterThreshold = opts.display.getProperty("hm.filterThreshold",-999);
-	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
-	    let row = grid[rowIdx];
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
-		let cell = row[colIdx];
-		let filterValue = filtered[rowIdx][colIdx];
-		if(filterThreshold!=-999) {
-		    if(filterValue<filterThreshold)
-			filterValue = cell.v;
-		}
-		cell.v = filterValue;
-	    }
-	}
-    },
-    getMinMaxGrid: function(src,valueGetter) {
-	let min = NaN;
-	let max = NaN;
-	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
-	    let row = src[rowIdx];
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
-		let v = row[colIdx]
-		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
-		if(isNaN(v)) continue;
-		min = isNaN(min)?v:Math.min(min,v);
-		max = isNaN(max)?v:Math.max(max,v);
-	    }
-	}
-	return {min:min,max:max};
-    },
-
-
-
-    cloneGrid: function(src,valueGetter,dflt) {
-	let dest = [];
-	let hasDflt = Utils.isDefined(dflt);
-	for(var rowIdx=0;rowIdx<src.length;rowIdx++)  {
-	    let row = src[rowIdx];
-	    let nrow=[];
-	    dest.push(nrow);
-	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
-		let v = row[colIdx]
-		if(valueGetter) v = valueGetter(v,rowIdx,colIdx);
-		if(hasDflt)
-		    nrow.push(dflt);
-		else
-		    nrow.push(v);
-	    }
-	}
-	return dest;
-    },
-    gridData: function(gridId,records,args) {
-	if(!args) args = {};
-	if(isNaN(args.cellSize) || args.cellSize == null)
-	    args.cellSize = args.cellSizeX;
-
-	if(isNaN(args.cellSizeX) || args.cellSizeX == null)
-	    args.cellSizeX= args.cellSize;
-	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
-	    args.cellSizeY= args.cellSizeX;
-	let opts = {
-	    shape:"circle",
-	    color:"blue",
-	    w:800,
-	    h:400,
-	    cellSize:2,
-	    cellSizeX:2,
-	    cellSizeY:2,
-	    operator:"average"
-	}
-	$.extend(opts,args);
-	//	console.log(JSON.stringify(opts,null,2));
-	let id = HtmlUtils.getUniqueId();
-	$(document.body).append('<canvas style="display:none;" id="' + id +'" width="' + opts.w+'" height="' + opts.h +'"></canvas>');
-	let canvas = document.getElementById(id);
-	var ctx = canvas.getContext("2d");
-	//	ctx.strokeStyle= "#000";
-	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
-	let cnt = 0;
-	let earthWidth = args.bounds.east-args.bounds.west;
-	let earthHeight= args.bounds.north-args.bounds.south;
-	ctx.font = opts.cellFont || "8pt Arial;"
-	var gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-	gradient.addColorStop(0,'white');
-	gradient.addColorStop(1,'red');
-
-	let scaleX = (lat,lon)=>{
-	    return Math.floor(opts.w*(lon-args.bounds.west)/earthWidth);
-	};
-	let scaleY;
-	if(opts.display && opts.display.map) {
-	    //Get the global bounds so we can map down to the image
-	    var n1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,85));
-	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
-	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
-	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
-	    //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
-	    scaleY = (lat,lon)=> {
-		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
-		var dy = n2.lat-pt.lat;
-		var perc = dy/(n2.lat-s2.lat)
-		return Math.floor(perc*opts.h);
-	    };
-	} else {
-	    scaleY= (lat,lon)=> {
-		return Math.floor(opts.h*(args.bounds.north-lat)/earthHeight);		
-	    }
-	}
-
-	ctx.lineStyle = "#000";
-	if(opts.doHeatmap) {
-	    let cols = Math.floor(opts.w/opts.cellSizeX);
-	    let rows = Math.floor(opts.h/opts.cellSizeY);
-	    let points = [];
-	    records.map((record,idx)=>{
-		let lat = record.getLatitude();
-		let lon = record.getLongitude();
-		let x = scaleX(lat,lon);
-		let y = scaleY(lat,lon);
-		record[gridId+"_coordinates"] = {x:x,y:y};
-		let colorValue = 0;
-		if(opts.colorBy && opts.colorBy.index>=0) {
-		    colorValue = record.getValue(opts.colorBy.index);
-		}
-		let lengthValue = 0;
-		if(opts.lengthBy && opts.lengthBy.index>=0) {
-		    lengthValue = record.getValue(opts.lengthBy.index);
-		}		
-		x =Math.floor(x/opts.cellSizeX);
-		y =Math.floor(y/opts.cellSizeY);
-		if(x<0) x=0;
-		if(y<0) y=0;
-		if(x>=cols) x=cols-1;
-		if(y>=rows) y=rows-1;
-		points.push({x:x,y:y,colorValue:colorValue,r:record});
-	    });
-
-
-	    let grid = RecordUtil.gridPoints(rows,cols,points,args);
-	    opts.cellSizeX = +opts.cellSizeX;
-	    opts.cellSizeY = +opts.cellSizeY;
-	    this.applyFilter(opts,grid);
-	    //get the new min/max from the filtered grid
-	    let mm = this.getMinMaxGrid(grid,v=>v.v);
-	    if(opts.colorBy) {
-		if(!Utils.isDefined(opts.display.getProperty("colorByMin")))  {
-		    opts.colorBy.setRange(mm.min,mm.max);
-		}  else {
-		    //		    console.log("color by range is already set:" +opts.display.getProperty("colorByMin"));
-		}
-		opts.colorBy.index=0;
-	    }
-
-	    let countThreshold = opts.display.getProperty("hm.countThreshold",opts.operator=="count"?1:0);
-	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
-		let row = grid[rowIdx];
-		for(var colIdx=0;colIdx<cols;colIdx++)  {
-		    let cell = row[colIdx];
-		    let v = cell.v;
-		    if(isNaN(v)) continue;
-		    let x = colIdx*opts.cellSizeX;
-		    let y = rowIdx*opts.cellSizeY;
-		    if(cell.count>=countThreshold)
-			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,{colorValue:cell.v,
-									col:colIdx,
-									row:rowIdx,
-									cell:cell, grid:grid});
-		}
-	    }
-
-	    opts.shape = "rect";
-	    for(var rowIdx=0;rowIdx<rows;rowIdx++)  {
-		let row = grid[rowIdx];
-		for(var colIdx=0;colIdx<cols;colIdx++)  {
-		    let cell = row[colIdx];
-		    let v = cell.v;
-		    if(isNaN(v)) continue;
-		    let x = colIdx*opts.cellSizeX;
-		    let y = rowIdx*opts.cellSizeY;
-		    if(cell.count>=countThreshold)
-			RecordUtil.drawGridCell(opts, canvas, ctx, x,y,{
-			    colorValue:cell.v,
-			    col:colIdx,row:rowIdx,cell:cell, grid:grid});
-		}
-	    }
-	} else {
-	    records.sort((a,b)=>{return b.getLatitude()-a.getLatitude()});
-	    records.map((record,idx)=>{
-		let lat = record.getLatitude();
-		let lon = record.getLongitude();
-		let x = scaleX(lat,lon);
-		let y = scaleY(lat,lon);
-		record[gridId+"_coordinates"] = {x:x,y:y};
-		let colorValue = opts.colorBy? record.getData()[opts.colorBy.index]:null;
-		let lengthValue = opts.lengthBy? record.getData()[opts.lengthBy.index]:null;
-		RecordUtil.drawGridCell(opts, canvas, ctx, x,y,{colorValue:colorValue, lengthValue:lengthValue,record:record});
-	    });
-	}
-
-	let alpha = opts.display.getProperty("colorTableAlpha",-1);
-	//add in the color table alpha
-	if(alpha>0) {
-	    var image = ctx.getImageData(0, 0, opts.w, opts.h);
-	    var imageData = image.data,
-		length = imageData.length;
-	    for(var i=3; i < length; i+=4){  
-		if(imageData[i]) {
-		    imageData[i] = alpha*255;
-		}
-	    }
-	    image.data = imageData;
-	    ctx.putImageData(image, 0, 0);
-	}
-
-	let img =  canvas.toDataURL("image/png");
-	canvas.parentNode.removeChild(canvas);
-	return img;
-    },
-    convertGeoToPixel:function(lat, lon,bounds,mapWidth,mapHeight) {
-	var mapLonLeft = bounds.west;
-	var mapLonRight = bounds.east;
-	var mapLonDelta = mapLonRight - mapLonLeft;
-	var mapLatBottom = bounds.south;
-	var mapLatBottomDegree = mapLatBottom * Math.PI / 180;
-	var x = (lon - mapLonLeft) * (mapWidth / mapLonDelta);
-	var lat = lat * Math.PI / 180;
-	var worldMapWidth = ((mapWidth / mapLonDelta) * 360) / (2 * Math.PI);
-	var mapOffsetY = (worldMapWidth / 2 * Math.log((1 + Math.sin(mapLatBottomDegree)) / (1 - Math.sin(mapLatBottomDegree))));
-	var y = mapHeight - ((worldMapWidth / 2 * Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat)))) - mapOffsetY);
-	return [x, y];
-    },
-
-
     getRanges: function(fields, records) {
         var maxValues = [];
         var minValues = [];
@@ -16774,6 +16965,9 @@ function TableDisplay(displayManager, id, properties) {
 					'frozenColumns=1',
 					'colorCells=field1,field2',
 					'showRowNumber=true',
+					'colorCells="fields"',
+					'&lt;field&gt;.colorTable="',
+					'&lt;field&gt;.colorByMap="value1:color1,value2:color2',
 					'maxHeaderLength=60',
 					'maxHeaderWidth=60',
 					'headerStyle=""']); 
@@ -19925,15 +20119,16 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 }
                 group.members.push(html);
             }
-            var html = HU.div([CLASS,"display-cards-header"],"Total" +" (" + topGroup.getCount()+")");
-            html+=this.makeGroupHtml(topGroup);
-            this.writeHtml(ID_RESULTS, html);
+	    let total = topGroup.getCount();
+            let topHtml = HU.div([CLASS,"display-cards-header"],"Total" +" (" + total+")");
+            topHtml+=this.makeGroupHtml(topGroup, topGroup);
+            this.writeHtml(ID_RESULTS, topHtml);
             this.jq(ID_RESULTS).find("a.display-cards-popup").fancybox({
                 caption : function( instance, item ) {
                     return  $(this).data('caption') || '';
                 }});
         },
-        makeGroupHtml: function(group) {
+        makeGroupHtml: function(group, topGroup) {
             if(group.members.length==0) return "";
             var html="";
             if(group.members[0].isGroup) {
@@ -19950,8 +20145,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		    if(child.field)
 			prefix = child.field.getLabel()+": ";
                     html+=HU.open(TD,[WIDTH, width+"%"]);
-		    html+=HU.div([CLASS,"display-cards-header"],prefix+child.id +" (" + child.getCount()+")");
-		    html+= this.makeGroupHtml(child);
+		    let perc = Math.round(100*child.getCount()/topGroup.getCount());
+		    html+=HU.div([CLASS,"display-cards-header"],prefix+child.id +" (#" + child.getCount()+" - " + perc +"%)");
+		    html+= this.makeGroupHtml(child, topGroup);
                     html+=HU.close(TD);
                 }
                 html +=HU.close(TR, TABLE);
@@ -22028,6 +22224,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
         },
         handleEventRecordSelection: function(source, args) {
 	    this.selectedRecord= args.record;
+	    this.updateUI();
         }
     });
 }
@@ -24911,7 +25108,7 @@ function DisplayManager(argId, argProperties) {
             }
             var record = records[index];
             if (record == null) return;
-            var values = this.getRecordHtml(record, fields);
+            var values = source?source.getRecordHtml(record, fields):"";
             if (source.recordSelectionCallback) {
                 var func = source.recordSelectionCallback;
                 if ((typeof func) == "string") {
@@ -25557,13 +25754,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'lonField2',tt:'Field id for segments'},
 	{label:'Heatmap Attributes'},
 	{p:'doHeatmap',wikiValue:'true',tt:'Grid the data into an image'},
+	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
 	{p:'doGridPoints',wikiValue:'true',tt:'Display a image showing shapes or bars'},
+	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
+	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
+	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
+	{label:'3dbar glyph', p:"glyph1",wikiValue:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
+	{label:'gauge glyph',p:"glyph1",wikiValue:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
 	{p:'htmlLayerField'},
 	{p:'htmlLayerWidth',wikiValue:'30'},
 	{p:'htmlLayerHeight',wikiValue:'15'},
 	{p:'htmlLayerStyle',wikiValue:'css style'},
 	{p:'htmlLayerScale',wikiValue:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
-	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
 	{p:'cellShape',wikiValue:'rect|3dbar|circle|vector'},
 	{p:'cellColor',wikiValue:'color'},
 	{p:'cellFilled',wikiValue:true},
@@ -27115,7 +27317,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 	checkHeatmapReload:function() {
-	    if(!this.getProperty("hm.reloadOnZoom")) return;
+	    return
+	    if(!this.getProperty("hm.reloadOnZoom", this.getProperty("reloadOnZoom"))) return;
 	    let now = new Date ();
 	    //Don't do this the first couple of seconds after we've been created
 	    if(now.getTime()-this.createTime.getTime()<3000) return;
@@ -27137,19 +27340,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.checkHeatmapReloadTime = null;
 	    this.reloadHeatmap = true;
 	    this.haveCalledUpdateUI = false;
+	    console.log("updateUI");
 	    this.updateUI();
 	},
-	createHeatmap(records, bounds) {
+	createHeatmap(records, fields, bounds) {
 	    let debug = displayDebug.displayMapCreateMap;
 	    if(debug) console.log("createHeatmap");
 	    let colorBy = this.getColorByInfo(records, null,null,null,["hm.colorBy","colorBy",""]);
 	    let angleBy = this.getColorByInfo(records, "angleBy",null,null,["hm.angleBy","angleBy",""]);
 	    let lengthBy = this.getColorByInfo(records, "lengthBy",null,null,["hm.lengthBy","lengthBy",""]);
-	    if(angleBy.index<0) angleBy = colorBy;
-
-
-
-	    if(lengthBy.index<0) lengthBy=null;
+	    if(!angleBy.isEnabled()) angleBy = colorBy;
+	    if(!lengthBy.isEnabled()) lengthBy=null;
 	    records = records || this.filterData();
 	    bounds = bounds ||  RecordUtil.getBounds(records);
  	    if(this.heatmapLayers) {
@@ -27171,14 +27372,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.reloadHeatmap) {
 		this.reloadHeatmap = false;
 		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
-		records = RecordUtil.subset(records, bounds);
+//TODO		records = RecordUtil.subset(records, bounds);
 		bounds =  RecordUtil.getBounds(records);
 	    }
 	    bounds = RecordUtil.expandBounds(bounds,this.getProperty("hm.boundsScale",0.05));
 
 	    let dfltArgs = this.getDefaultGridByArgs();
-	    let w = Math.round(this.getProperty("gridWidth",800));
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);
+	    let w = Math.round(this.getProperty("gridWidth",800));
 	    let h = Math.round(w/ratio);
 	    let groupByField = this.getFieldById(null,this.getProperty("hm.groupBy"));
 	    let groupByDate = this.getProperty("hm.groupByDate",null);
@@ -27215,7 +27416,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
-		let img = RecordUtil.gridData(this.getId(),recordsAtTime,args);
+		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
+		$("#test").html(HU.image(img,[WIDTH,"500", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
@@ -27383,7 +27585,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			else
 			    $("#" + info.hoverId).html(pie);
 			let canvas = document.getElementById(id);
-			let color = colorBy&& colorBy.index>=0?colorBy.getColor(info.data[0]):this.getPropertyFillColor("#619FCA");
+			let color = colorBy&& colorBy.isEnabled()?colorBy.getColor(info.data[0]):this.getPropertyFillColor("#619FCA");
 			var ctx = canvas.getContext("2d");
 			if(idx==1) {
 			    ctx.fillStyle= '#fff';
@@ -27435,7 +27637,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.getProperty("hm.showPoints") || this.getProperty("showPoints")) {
 		    this.createPoints(records, fields, points, bounds);
 		}
-		this.createHeatmap(records, bounds);
+		this.createHeatmap(records, fields, bounds);
 		return;
 	    }
 	    if(this.getProperty("htmlLayerField")) {
@@ -27745,11 +27947,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colorByValue = maxValue;
 		    theColor = maxColor;
 		} else {
-		    if(colorBy.index >= 0) {
+		    if(colorBy.isEnabled()) {
 			let value = record.getData()[colorBy.index];
 			colorByValue = value;
+			theColor =  colorBy.getColorFromRecord(record, theColor);
 		    }
-		    theColor =  colorBy.getColorFromRecord(record, theColor);
                 }
 
 		if(theColor) {
@@ -27883,7 +28085,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				if(!icon) icon = this.getMarkerIcon();
 			    }
 			    let size = iconSize;
-			    if(sizeBy.index >= 0) {
+			    if(sizeBy.isEnabled()) {
 				size = props.pointRadius;
 			    }
 			    mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
@@ -28285,14 +28487,14 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    }
 		}
 		//TODO: sort the state data on time
-                if (colorBy.index >= 0) {
+                if (colorBy.isEnabled()) {
                     let value = record.getData()[colorBy.index];
 		    let color = colorBy.getColorFromRecord(record);
 		    let cell = contents.find("#" + cellId);
 		    cell.css("background",color);
 		    cell.attr(RECORD_INDEX,i);
                 }
-		if (strokeColorBy.index >= 0) {
+		if (strokeColorBy.isEnabled()) {
                     let value = record.getData()[strokeColorBy.index];
 		    let color = strokeColorBy.getColor(value, record);
 		    let cell = contents.find("#" + cellId);
@@ -30542,6 +30744,7 @@ const DISPLAY_DATATABLE = "datatable";
 const DISPLAY_PERCENTCHANGE = "percentchange";
 const DISPLAY_SPARKLINE = "sparkline";
 const DISPLAY_POINTIMAGE = "pointimage";
+const DISPLAY_CANVAS = "canvas";
 const DISPLAY_FIELDTABLE = "fieldtable";
 
 addGlobalDisplayType({
@@ -30615,6 +30818,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_SPARKLINE,
     label: "Sparkline",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_CANVAS,
+    label: "Canvas",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -32431,7 +32642,7 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
 
 
 function RamaddaStatsDisplay(displayManager, id, properties, type) {
-    var dflt = Utils.isDefined(properties["showDefault"]) ? properties["showDefault"] : true;
+    let dflt = Utils.isDefined(properties["showDefault"]) ? properties["showDefault"] : true;
     $.extend(this, {
         showMin: dflt,
         showMax: dflt,
@@ -32627,15 +32838,15 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
             var dummy = [SPACE];
             if (!justOne) {
                 header = [""];
-                if (this.showCount) {
+                if (this.getProperty("showCount", dflt)) {
                     header.push("Count");
                     dummy.push(SPACE);
                 }
-                if (this.showMin) {
+                if (this.getProperty("showMin", dflt)) {
                     header.push("Min");
                     dummy.push(SPACE);
                 }
-                if (this.showPercentile) {
+                if (this.getProperty("showPercentile", dflt)) {
                     header.push("25%");
                     dummy.push(SPACE);
                     header.push("50%");
@@ -32643,23 +32854,23 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("75%");
                     dummy.push(SPACE);
                 }
-                if (this.showMax) {
+                if (this.getProperty("showMax", dflt)) {
                     header.push("Max");
                     dummy.push(SPACE);
                 }
-                if (this.showTotal) {
+                if (this.getProperty("showTotal", dflt)) {
                     header.push("Total");
                     dummy.push(SPACE);
                 }
-                if (this.showAverage) {
+                if (this.getProperty("showAverage", dflt)) {
                     header.push("Average");
                     dummy.push(SPACE);
                 }
-                if (this.showStd) {
+                if (this.getProperty("showStd", dflt)) {
                     header.push("Std");
                     dummy.push(SPACE);
                 }
-                if (this.showUnique) {
+                if (this.getProperty("showUnique", dflt)) {
                     header.push("# Unique");
                     dummy.push(SPACE);
                     header.push("Top");
@@ -32667,7 +32878,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("Freq.");
                     dummy.push(SPACE);
                 }
-                if (this.showMissing) {
+                if (this.getProperty("showMissing", dflt)) {
                     header.push("Not&nbsp;Missing");
                     dummy.push(SPACE);
                     header.push("Missing");
@@ -32695,43 +32906,43 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     continue;
                 }
                 var values = [];
-                if (!stats[col].isNumber && this.showText) {
-                    if (this.showCount)
+                if (!stats[col].isNumber && this.getProperty("showText", dflt)) {
+                    if (this.getProperty("showCount", dflt))
                         values.push(stats[col].count);
-                    if (this.showMin)
+                    if (this.getProperty("showMin", dflt))
                         values.push("-");
-                    if (this.showPercentile) {
+                    if (this.getProperty("showPercentile", dflt)) {
                         values.push("-");
                         values.push("-");
                         values.push("-");
                     }
-                    if (this.showMax)
+                    if (this.getProperty("showMax", dflt))
                         values.push("-");
                     values.push("-");
-                    if (this.showAverage) {
+                    if (this.getProperty("showAverage", dflt)) {
                         values.push("-");
                     }
-                    if (this.showStd) {
+                    if (this.getProperty("showStd", dflt)) {
                         values.push("-");
                     }
-                    if (this.showUnique) {
+                    if (this.getProperty("showUnique", dflt)) {
                         values.push(stats[col].unique);
                         values.push(stats[col].uniqueValue);
                         values.push(stats[col].uniqueMax);
                     }
-                    if (this.showMissing) {
+                    if (this.getProperty("showMissing", dflt)) {
                         values.push(stats[col].numNotMissing);
                         values.push(stats[col].numMissing);
                     }
                 } else {
-                    if (this.showCount) {
+                    if (this.getProperty("showCount", dflt)) {
                         values.push(stats[col].count);
                     }
-                    if (this.showMin) {
+                    if (this.getProperty("showMin", dflt)) {
 			var s=this.formatNumber(stats[col].min);
                         values.push(s);
                     }
-                    if (this.showPercentile) {
+                    if (this.getProperty("showPercentile", dflt)) {
                         var range = stats[col].max - stats[col].min;
 			var tmp =p=> {
                             var s = this.formatNumber(stats[col].min + range * p);
@@ -32743,20 +32954,20 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 			var percs = [.25,.5,.75];
 			percs.map(v=>tmp(v));
                     }
-                    if (this.showMax) {
+                    if (this.getProperty("showMax", dflt)) {
 			var s=this.formatNumber(stats[col].max);
                         values.push(s);
                     }
-                    if (this.showTotal) {
+                    if (this.getProperty("showTotal", dflt)) {
                         values.push(total);
                     }
-                    if (this.showAverage) {
+                    if (this.getProperty("showAverage", dflt)) {
                         values.push(avg);
                     }
-                    if (this.showStd) {
+                    if (this.getProperty("showStd", dflt)) {
                         values.push(this.formatNumber(stats[col].std));
                     }
-                    if (this.showUnique) {
+                    if (this.getProperty("showUnique", dflt)) {
                         values.push(stats[col].unique);
                         if (Utils.isNumber(stats[col].uniqueValue)) {
                             values.push(this.formatNumber(stats[col].uniqueValue));
@@ -32765,11 +32976,10 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                         }
                         values.push(stats[col].uniqueMax);
                     }
-                    if (this.showMissing) {
+                    if (this.getProperty("showMissing", dflt)) {
                         values.push(stats[col].numNotMissing);
                         values.push(stats[col].numMissing);
                     }
-
                 }
                 right = HU.tds(["align", "right"], values);
                 var align = (justOne ? "right" : "left");
@@ -33823,6 +34033,90 @@ function RamaddaPointimageDisplay(displayManager, id, properties) {
 		if(closest)
 		    this.propagateEventRecordSelection({record: closest});
 	    });
+	}
+    });
+}
+
+
+function RamaddaCanvasDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CANVAS, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Canvas Properties'},
+	{p:'canvasWidth',d:100,wikiValue:"100",tt:'Canvas width'},
+	{p:'canvasHeight',d:100,wikiValue:"100",tt:'Canvas height'},
+	{p:'canvasStyle',d:"",wikiValue:"",tt:'Canvas CSS style'},
+	{p:'titleTemplate',tt:'Template to show as title'},
+	{p:'topTitleTemplate',tt:'Template to show as top title'},	
+	{p:'urlField',tt:'Url Field'},
+	{p:'canvasOrigin',d:"sw",wikiValue:"center",tt:'Origin point for drawing glyphs'},
+	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
+	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
+	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
+	{label:'3dbar glyph', p:"glyph1",wikiValue:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
+	{label:'gauge glyph',p:"glyph1",wikiValue:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
+    ]);
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+	    let _this = this;
+	    let records = this.filterData();
+	    let fields = this.getFields();
+	    if(!records) return;
+	    let style = this.getPropertyCanvasStyle("");
+	    let columns = this.getProperty("columns");
+	    let html = "";
+	    let canvasWidth = this.getPropertyCanvasWidth();
+	    let canvasHeight = this.getPropertyCanvasHeight();
+	    let titleTemplate= this.getPropertyTitleTemplate();
+	    let topTitleTemplate= this.getPropertyTopTitleTemplate();
+	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
+	    records.forEach((record,idx)=>{
+		let cid = this.getDomId("canvas_" + idx);
+		let c = HU.tag("canvas",[CLASS,"display-canvas-canvas", STYLE,style, 
+					 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
+		let topTitle  =topTitleTemplate?
+		    HU.div([CLASS,"display-canvas-title"], 
+			   this.getRecordHtml(record, null, topTitleTemplate)):"";
+		let title  = titleTemplate?
+		    HU.div([CLASS,"display-canvas-title"], 
+			   this.getRecordHtml(record, null, titleTemplate)):"";	
+	let div =  HU.div([TITLE,"",CLASS,"display-canvas-block", "recordIndex",idx], topTitle+c+title);
+		if(urlField) {
+		    var url = record.getValue(urlField.getIndex());
+		    if(Utils.stringDefined(url))
+			div = HU.href(url,div);
+		}
+		html+=div;
+	    });
+	    this.setContents(html);
+	    let glyphs=[];
+	    let cnt = 1;
+	    while(cnt<11) {
+		let attr = this.getProperty("glyph" + (cnt++));
+		if(!attr)
+		    continue;
+		glyphs.push(new Glyph(this,1.0, fields,records,{
+		    canvasWidth:canvasWidth,
+		    canvasHeight: canvasHeight
+		},attr));
+	    }
+	    let opts = {};
+	    let originX = 0;
+	    let originY=this.getPropertyCanvasOrigin()=="center"?canvasHeight/2:canvasHeight;
+	    records.forEach((record,idx)=>{
+		let cid = this.getDomId("canvas_" + idx);
+		let canvas = document.getElementById(cid);
+		let ctx = canvas.getContext("2d");
+		glyphs.forEach(glyph=>{
+		    glyph.draw(opts, canvas, ctx, originX,originY,{record:record});
+		});
+	    });
+	    var blocks = this.jq(ID_DISPLAY_CONTENTS).find(".display-canvas-block");
+	    this.makeTooltips(blocks,records,null,"${default}");
 	}
     });
 }
