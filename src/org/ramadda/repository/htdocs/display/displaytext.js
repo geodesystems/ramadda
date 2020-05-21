@@ -2929,6 +2929,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
         },
         handleEventRecordSelection: function(source, args) {
 	    this.selectedRecord= args.record;
+	    this.updateUI();
         }
     });
 }
