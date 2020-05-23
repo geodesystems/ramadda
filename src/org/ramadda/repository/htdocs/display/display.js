@@ -1502,8 +1502,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	reloadData: function() {
 	    this.startProgress();
 	    this.haveCalledUpdateUI = false;
-	    if(this.getProperty("okToLoadData",true)) 
-		this.data.loadData(this,true);
+	    if(this.getProperty("okToLoadData",true))  {
+		let pointData = this.dataCollection.getList()[0];
+		pointData.loadData(this,true);
+	    }
 	},
         getMessage: function(msg) {
             return HU.div([ATTR_CLASS, "display-output-message"], msg);
