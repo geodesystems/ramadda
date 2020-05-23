@@ -399,7 +399,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
             if(data.temperature.length==0) {
-                this.displayError("No data is available");
+                this.displayError(this.getNoDataMessage());
                 return;
             }
 
@@ -1320,7 +1320,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		data.push(obj);
 	    });
 	    if(data.length==0) {
-		this.setContents(this.getMessage("No data"));
+		this.setContents(this.getMessage(this.getNoDataMessage()));
 		return;
 	    }
 //	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),bubbleTestData);

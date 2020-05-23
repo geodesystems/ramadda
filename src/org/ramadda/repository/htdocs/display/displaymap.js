@@ -1487,7 +1487,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	handleNoData: function(pointData,reload) {
 	    this.jq(ID_PAGE_COUNT).html("");
             this.addPoints([],[],[]);
-	    this.setMessage("No data available");
+	    this.setMessage(this.getNoDataMessage());
 	},
 	setErrorMessage: function(msg) {
 	    if(this.map)
@@ -1727,7 +1727,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.heatmapLayers = [];
 	    if(records.length==0) {
-		this.errorMessage = "No data available";
+		this.errorMessage = this.getNoDataMessage();
 		this.setMessage(this.errorMessage);
 		return
 	    }

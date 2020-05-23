@@ -3884,6 +3884,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getMessage: function(msg) {
             return HU.div([ATTR_CLASS, "display-output-message"], msg);
         },
+	getNoDataMessage: function() {
+	    return this.getProperty("noDataMessage","No data available");
+	},
         getFieldValue: function(id, dflt) {
             var jq = $("#" + id);
             if (jq.length > 0) {
@@ -7354,7 +7357,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.dataCollection = new DataCollection();
 		this.dataCollection.setData(pointData);
 	    }
-            this.setContents(this.getMessage("No data available"));
+            this.setContents(this.getMessage(this.getNoDataMessage()));
 	},
         pointDataLoadFailed: function(data) {
 	    this.clearProgress();
@@ -7369,7 +7372,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 msg = data.error;
             } else {
                 msg = "<b>An error has occurred:</b>";
-                if (!data) data = "No data returned from server";
+                if (!data) data = this.getNoDataMessage();
                 var error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
                 var tmp = "";
@@ -15149,7 +15152,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (dataList.length == 0) {
                 this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
-					"No data available"));
+					this.getNoDataMessage()));
                 return;
             }
 
@@ -16068,7 +16071,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
             if (!dataTable) {
-                this.setContents(this.getMessage("No data available"));
+                this.setContents(this.getMessage(this.getNoDataMessage()));
                 return null;
             }
 	    if(this.getProperty("animation",false,true)) {
@@ -18360,7 +18363,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
             if(data.temperature.length==0) {
-                this.displayError("No data is available");
+                this.displayError(this.getNoDataMessage());
                 return;
             }
 
@@ -19281,7 +19284,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		data.push(obj);
 	    });
 	    if(data.length==0) {
-		this.setContents(this.getMessage("No data"));
+		this.setContents(this.getMessage(this.getNoDataMessage()));
 		return;
 	    }
 //	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),bubbleTestData);
@@ -27127,7 +27130,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	handleNoData: function(pointData,reload) {
 	    this.jq(ID_PAGE_COUNT).html("");
             this.addPoints([],[],[]);
-	    this.setMessage("No data available");
+	    this.setMessage(this.getNoDataMessage());
 	},
 	setErrorMessage: function(msg) {
 	    if(this.map)
@@ -27367,7 +27370,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.heatmapLayers = [];
 	    if(records.length==0) {
-		this.errorMessage = "No data available";
+		this.errorMessage = this.getNoDataMessage();
 		this.setMessage(this.errorMessage);
 		return
 	    }
@@ -31497,9 +31500,9 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
         },
 	updateUI: function() {
 	    if(this.getProperty("decorate",true)) {
-		this.setContents(this.getMessage(this.getProperty("message","No data available")));
+		this.setContents(this.getMessage(this.getProperty("message",this.getNoDataMessage())));
 	    } else {
-		this.setContents(this.getProperty("message","No data available"));
+		this.setContents(this.getProperty("message",this.getNoDataMessage()));
 	    }
 	}});
 }

@@ -625,7 +625,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             if (dataList.length == 0) {
                 this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
-					"No data available"));
+					this.getNoDataMessage()));
                 return;
             }
 
@@ -1544,7 +1544,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
             if (!dataTable) {
-                this.setContents(this.getMessage("No data available"));
+                this.setContents(this.getMessage(this.getNoDataMessage()));
                 return null;
             }
 	    if(this.getProperty("animation",false,true)) {

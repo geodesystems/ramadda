@@ -1510,6 +1510,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getMessage: function(msg) {
             return HU.div([ATTR_CLASS, "display-output-message"], msg);
         },
+	getNoDataMessage: function() {
+	    return this.getProperty("noDataMessage","No data available");
+	},
         getFieldValue: function(id, dflt) {
             var jq = $("#" + id);
             if (jq.length > 0) {
@@ -4980,7 +4983,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.dataCollection = new DataCollection();
 		this.dataCollection.setData(pointData);
 	    }
-            this.setContents(this.getMessage("No data available"));
+            this.setContents(this.getMessage(this.getNoDataMessage()));
 	},
         pointDataLoadFailed: function(data) {
 	    this.clearProgress();
@@ -4995,7 +4998,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 msg = data.error;
             } else {
                 msg = "<b>An error has occurred:</b>";
-                if (!data) data = "No data returned from server";
+                if (!data) data = this.getNoDataMessage();
                 var error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g, "");
                 var tmp = "";
