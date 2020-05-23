@@ -140,7 +140,6 @@ public class CsvFile extends TextFile {
             }
         }
 
-
         if ((file == null) || !file.exists()) {
             try {
                 ByteArrayOutputStream bos = null;
@@ -279,6 +278,7 @@ public class CsvFile extends TextFile {
                 }
             }
         }
+
         commentLineStart = getProperty("commentLineStart", null);
         if (fieldString == null) {
             setIsHeaderStandard(true);
@@ -287,12 +287,14 @@ public class CsvFile extends TextFile {
         }
 
         if (fieldString == null) {
-            if (failureOk) {
-                return new ArrayList<RecordField>();
-            }
-
-            throw new IllegalArgumentException("Properties must have a "
-                    + PROP_FIELDS + " value");
+	    if(!getProperty("fieldsCanBeNull",false)) {
+		if (failureOk) {
+		    return new ArrayList<RecordField>();
+		}
+		throw new IllegalArgumentException("Properties must have a "
+						   + PROP_FIELDS + " value");
+	    }
+	    fieldString="";
         }
 
         return doMakeFields(fieldString);
