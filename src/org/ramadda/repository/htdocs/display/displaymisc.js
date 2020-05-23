@@ -3755,7 +3755,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 
 		html += HU.close(DIV,TD);
 		html += HU.td([WIDTH, (dotSize*2)]);
-		html += HU.td([ALIGN,"left", WIDTH,"5%"],HU.div([STYLE,HU.css('margin-left','10px')],this.formatNumber(column.max)));
+		html += HU.td([ALIGN,"right", WIDTH,"5%"],HU.div([STYLE,HU.css('margin-left','10px')],this.formatNumber(column.max)));
 		html+=HU.close(TR);
 	    });
 	    let t2 = new Date();

@@ -3501,6 +3501,7 @@ function TextMatcher (pattern) {
 }
 
 
+
 function number_format(number, decimals, dec_point, thousands_sep) {
     // http://kevin.vanzonneveld.net
     // +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
@@ -3520,7 +3521,9 @@ function number_format(number, decimals, dec_point, thousands_sep) {
     var i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
         j = (j = i.length) > 3 ? j % 3 : 0;
 
-    return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+    let v =  s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+    v = v.replace(/0+$/,"");
+    return v;
 }
 
 

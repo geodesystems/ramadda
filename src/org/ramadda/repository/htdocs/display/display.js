@@ -635,14 +635,18 @@ function DisplayThing(argId, argProperties) {
 	    return f;
 	},
         formatNumberInner: function(number,propPrefix) {
+	    number = +number;
 	    let scale = this.getProperty([propPrefix+".formatNumberScale","formatNumberScale"]);
             if (Utils.isDefined(scale))
 		number = number*scale;
 	    let decimals = this.getProperty([propPrefix+".formatNumberDecimals","formatNumberDecimals"]);
-            if (Utils.isDefined(decimals))
+            if (Utils.isDefined(decimals)) {
 		return number_format(number, decimals);
-            if (this.getProperty([propPrefix+".formatNumberComma","formatNumberComma"], false)) 
+	    }
+            if (this.getProperty([propPrefix+".formatNumberComma","formatNumberComma"], false)) {
 		return Utils.formatNumberComma(number);
+
+	    }
             return Utils.formatNumber(number);
 
         },

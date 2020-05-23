@@ -3009,14 +3009,18 @@ function DisplayThing(argId, argProperties) {
 	    return f;
 	},
         formatNumberInner: function(number,propPrefix) {
+	    number = +number;
 	    let scale = this.getProperty([propPrefix+".formatNumberScale","formatNumberScale"]);
             if (Utils.isDefined(scale))
 		number = number*scale;
 	    let decimals = this.getProperty([propPrefix+".formatNumberDecimals","formatNumberDecimals"]);
-            if (Utils.isDefined(decimals))
+            if (Utils.isDefined(decimals)) {
 		return number_format(number, decimals);
-            if (this.getProperty([propPrefix+".formatNumberComma","formatNumberComma"], false)) 
+	    }
+            if (this.getProperty([propPrefix+".formatNumberComma","formatNumberComma"], false)) {
 		return Utils.formatNumberComma(number);
+
+	    }
             return Utils.formatNumber(number);
 
         },
@@ -34483,7 +34487,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 
 		html += HU.close(DIV,TD);
 		html += HU.td([WIDTH, (dotSize*2)]);
-		html += HU.td([ALIGN,"left", WIDTH,"5%"],HU.div([STYLE,HU.css('margin-left','10px')],this.formatNumber(column.max)));
+		html += HU.td([ALIGN,"right", WIDTH,"5%"],HU.div([STYLE,HU.css('margin-left','10px')],this.formatNumber(column.max)));
 		html+=HU.close(TR);
 	    });
 	    let t2 = new Date();
