@@ -558,17 +558,17 @@ var Utils = {
 
     formatDateYYYYMMDDHHMM: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
-	var m = (date.getUTCMonth() + 1);
-	if(m<10) m = "0" + m;
+	var month = (date.getUTCMonth() + 1);
+	if(month<10) month = "0" + month;
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
 	var h = date.getHours()+1;
 	if(h<10) h = "0" + h;
-	var m = date.getMinutes();
-	if(m<10) m = "0" + m;
-	let hhmm=  h+":" +m;
+	var minute = date.getMinutes();
+	if(minute<10) minute = "0" + minute;
+	let hhmm=  h+":" +minute;
 
-        return date.getUTCFullYear() + "-" + m + "-" + d+" " + hhmm;
+        return date.getUTCFullYear() + "-" + month + "-" + d+" " + hhmm;
     },
     formatDateYYYYMMDDHH: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
