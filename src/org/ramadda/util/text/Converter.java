@@ -4645,8 +4645,9 @@ public abstract class Converter extends Processor {
             if ( !gotRow) {
                 return row;
             }
+	    List values = row.getValues();
             for (int col : cols) {
-                row.getValues().set(col, value);
+                if(col<values.size()) values.set(col, value);
             }
 
             return row;
