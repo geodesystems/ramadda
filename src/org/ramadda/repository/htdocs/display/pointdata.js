@@ -373,7 +373,7 @@ function PointData(name, recordFields, records, url, properties) {
 		if(debug)
 		    console.log("\tmaking point data");
 		let t1 = new Date();
-                var newData = makePointData(data, _this.derived, display);
+                var newData = makePointData(data, _this.derived, display,url);
 		let t2 = new Date();
 		if(debug)
 		    Utils.displayTimes("makePointData",[t1,t2],true);
@@ -796,7 +796,7 @@ PointRecord.prototype =  {
 };
 
 
-function makePointData(json, derived, source) {
+function makePointData(json, derived, source,url) {
     let debug  =false;
     if(debug) console.log("makePointData");
     var fields = [];
@@ -1039,7 +1039,7 @@ function makePointData(json, derived, source) {
         }
     });
 
-    let pd =  new PointData(name, fields, pointRecords);
+    let pd =  new PointData(name, fields, pointRecords,url);
     return pd;
 }
 
