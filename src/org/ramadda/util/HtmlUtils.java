@@ -2041,6 +2041,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+
     /**
      * _more_
      *
@@ -4085,6 +4086,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String script(String s) {
         StringBuilder js = new StringBuilder();
         script(js, s);
+
         return js.toString();
     }
 
@@ -4095,8 +4097,10 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param s _more_
      */
     public static void script(Appendable js, String s) {
-	s = s.trim();
-	if(s.length()==0) return;
+        s = s.trim();
+        if (s.length() == 0) {
+            return;
+        }
         try {
             js.append("\n<nowiki>\n");
             js.append(tag(TAG_SCRIPT, attrs(ATTR_TYPE, "text/JavaScript"),
