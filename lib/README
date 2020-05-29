@@ -10,6 +10,9 @@ This was some old javax components that were originally in the giant IDV externa
 
 ij.jar: The iamgej from the IDV
 
+ramadda.jar:
+This is the compiled code. We have it in lib so other packages can link to it
+
 ramaddalib.jar:
   This holds all of the 3rd party libs  used by ramadda. It is made
   with the ant target ramaddalib in src/org/ramadda/repository
