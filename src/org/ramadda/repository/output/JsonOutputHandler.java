@@ -227,8 +227,32 @@ public class JsonOutputHandler extends OutputHandler {
     public void makePointJson(Request request, Entry mainEntry, List<Entry> entries, Appendable sb)
             throws Exception {
 	List<String> fields = new ArrayList<String>();
+
+
+	/*	items.add(Json.quote(entry.getName()));
+	items.add(Json.quote(entry.getDescription()));
+	items.add(Json.quote(entry.getId()));
+	items.add(Json.quote(entry.getTypeHandler().getType()));
+	items.add(Json.quote(entry.getTypeHandler().getLabel()));
+	items.add(Json.quote(formatDate(entry.getStartDate())));
+	items.add(Json.quote(formatDate(entry.getEndDate())));
+	items.add(Json.quote(formatDate(entry.getCreateDate())));
+	items.add(Json.quote(request.getAbsoluteUrl(getPageHandler().getIconUrl(request, entry))));
+	items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
+	*/
+
+
+
 	addPointHeader(fields,"name","Name","string");
         addPointHeader(fields,"description","Description","string");
+	addPointHeader(fields,"id","Id","string","forDisplay","false");
+	addPointHeader(fields,"type","Type","enumeration","forDisplay","false");
+	addPointHeader(fields,"typeName","Type Name","enumeration","forDisplay","false");
+	addPointHeader(fields,"start_date","Start Date","date");
+	addPointHeader(fields,"end_date","End Date","date");
+	addPointHeader(fields,"create_date","Create Date","date","forDisplay","false");
+	addPointHeader(fields,"icon","Icon","image","forDisplay","false");
+	addPointHeader(fields,"entry_url","Entry Url","url","forDisplay","false");
 
         boolean addAttributes = request.get("addAttributes", false);
         if (addAttributes && entries.size()>0) {
@@ -245,13 +269,7 @@ public class JsonOutputHandler extends OutputHandler {
 	    }
 	}
 
-	addPointHeader(fields,"id","Id","string","forDisplay","false");
-	addPointHeader(fields,"type","Type","enumeration","forDisplay","false");
-	addPointHeader(fields,"start_date","Start Date","date");
-	addPointHeader(fields,"end_date","End Date","date");
-	addPointHeader(fields,"create_date","Create Date","date","forDisplay","false");
-	addPointHeader(fields,"icon","Icon","image","forDisplay","false");
-	addPointHeader(fields,"entry_url","Entry Url","url","forDisplay","false");
+
 	boolean showFileUrl = entries.size()==0?false:entries.get(0).getResource().hasResource();
 	if(showFileUrl)
 	    addPointHeader(fields,"file_url","File Url","url");
@@ -365,7 +383,6 @@ public class JsonOutputHandler extends OutputHandler {
         Json.quoteAttr(items, "description", entry.getDescription());
         TypeHandler type     = entry.getTypeHandler();
         String      typeJson = type.getJson(request);
-        //        Json.quoteAttr(items, "type", entry.getType());
         typeJson = Json.mapAndQuote("id", type.getType(), "name",
                                     type.getLabel());
         Json.attr(items, "type", Json.quote(type.getType()));
@@ -629,11 +646,15 @@ public class JsonOutputHandler extends OutputHandler {
 
         List<String> items = new ArrayList<String>();
 	items.add(Json.quote(entry.getName()));
-	String description =entry.getDescription();
-	//TODO
-	//Don't wikify the description. Figure out how to display things
-	//	description = getWikiManager().wikifyEntry(request, entry,description,false,null,null,null);
-	items.add(Json.quote(description));
+	items.add(Json.quote(entry.getDescription()));
+	items.add(Json.quote(entry.getId()));
+	items.add(Json.quote(entry.getTypeHandler().getType()));
+	items.add(Json.quote(entry.getTypeHandler().getLabel()));
+	items.add(Json.quote(formatDate(entry.getStartDate())));
+	items.add(Json.quote(formatDate(entry.getEndDate())));
+	items.add(Json.quote(formatDate(entry.getCreateDate())));
+	items.add(Json.quote(request.getAbsoluteUrl(getPageHandler().getIconUrl(request, entry))));
+	items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
 
         TypeHandler       typeHandler = entry.getTypeHandler();
         if (addAttributes) {
@@ -649,13 +670,6 @@ public class JsonOutputHandler extends OutputHandler {
                 }
             }
         }
-	items.add(Json.quote(entry.getId()));
-	items.add(Json.quote(entry.getTypeHandler().getType()));
-	items.add(Json.quote(formatDate(entry.getStartDate())));
-	items.add(Json.quote(formatDate(entry.getEndDate())));
-	items.add(Json.quote(formatDate(entry.getCreateDate())));
-	items.add(Json.quote(request.getAbsoluteUrl(getPageHandler().getIconUrl(request, entry))));
-	items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
 	if(showFileUrl)
 	    items.add(Json.quote(entry.getTypeHandler().getEntryResourceUrl(request, entry)));
 	items.add("" + (entry.getLatitude()==Entry.NONGEO?"null":entry.getLatitude()));

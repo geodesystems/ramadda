@@ -392,6 +392,40 @@ public class MailManager extends RepositoryManager {
         sendEmailNew(to, from, "test", "message", false, true);
     }
 
+
+    /**
+       Do all this reflection so we don't have a dependency into the plugins
+     */
+    public boolean sendTextEnabled() throws Exception {
+	Object twilio = getRepository().getApiManager().getApiHandler("twilio");
+	if (twilio == null) {
+	    return false;
+	}
+	java.lang.reflect.Method send= Misc.findMethod(twilio.getClass(), "isEnabled",
+						       new Class[]{});
+	if(send==null) return false;
+	return  (boolean) send.invoke(twilio);
+    }
+
+    /**
+       Do all this reflection so we don't have a dependency into the plugins
+     */
+
+    public boolean sendTextMessage(String fromPhone,  String toPhone, String message) throws Exception {
+	Object twilio = getRepository().getApiManager().getApiHandler("twilio");
+	if (twilio == null) {
+	    return false;
+	}
+        Class[]  paramTypes = new Class[]{String.class,String.class,String.class};
+	java.lang.reflect.Method send= Misc.findMethod(twilio.getClass(), "sendTextMessage",
+                                            paramTypes);
+	if(send==null) return false;
+	boolean result = (boolean) send.invoke(twilio,fromPhone,toPhone, message);
+	return result;
+    }
+
+
+
     /**
      * _more_
      *

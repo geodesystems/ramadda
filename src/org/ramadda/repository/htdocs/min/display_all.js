@@ -10645,8 +10645,10 @@ function CsvUtil() {
 		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args[\"" + field.getId() + "\"]);\n";
 		}
             });
+
             let code = "function displayDerivedEval(args) {\n" + setVars +  func + "\n}";
 //	    console.log(code);
+
             eval(code);
 	    records.forEach((record, rowIdx)=>{
 		let newRecord = record.clone();
@@ -16995,6 +16997,13 @@ function TableDisplay(displayManager, id, properties) {
 	    let colorByMap = {};
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let iconField = this.getFieldById(null,this.getProperty("iconField"));
+
+/*
+	    this.getFields().forEach(f=>{
+		console.log("F:" + f);
+	    });
+*/
+
 	    if(colorCells) {
 		colorCells.split(",").forEach(c=>{
 		    let f = this.getFieldById(null,c);
@@ -17016,6 +17025,7 @@ function TableDisplay(displayManager, id, properties) {
 		    f = v.f;
 		    v = v.v;
 		}
+
 
 		if(iconField && record && idx==0) {
 		    let icon = record.getValue(iconField.getIndex());
@@ -20792,7 +20802,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 
 function RamaddaSlidesDisplay(displayManager, id, properties) {
-    constID_SLIDE = "slide";
+    const ID_SLIDE = "slide";
     const ID_PREV = "prev";
     const ID_NEXT = "next";
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
@@ -28094,7 +28104,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				if(!icon) icon = this.getMarkerIcon();
 			    }
 			    let size = iconSize;
-			    if(sizeBy.isEnabled()) {
+			    if(sizeBy.index>=0) {
 				size = props.pointRadius;
 			    }
 			    mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);

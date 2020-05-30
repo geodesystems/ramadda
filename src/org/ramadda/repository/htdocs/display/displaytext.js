@@ -1488,7 +1488,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 
 function RamaddaSlidesDisplay(displayManager, id, properties) {
-    constID_SLIDE = "slide";
+    const ID_SLIDE = "slide";
     const ID_PREV = "prev";
     const ID_NEXT = "next";
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";

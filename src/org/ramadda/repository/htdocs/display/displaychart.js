@@ -2464,6 +2464,13 @@ function TableDisplay(displayManager, id, properties) {
 	    let colorByMap = {};
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let iconField = this.getFieldById(null,this.getProperty("iconField"));
+
+/*
+	    this.getFields().forEach(f=>{
+		console.log("F:" + f);
+	    });
+*/
+
 	    if(colorCells) {
 		colorCells.split(",").forEach(c=>{
 		    let f = this.getFieldById(null,c);
@@ -2485,6 +2492,7 @@ function TableDisplay(displayManager, id, properties) {
 		    f = v.f;
 		    v = v.v;
 		}
+
 
 		if(iconField && record && idx==0) {
 		    let icon = record.getValue(iconField.getIndex());

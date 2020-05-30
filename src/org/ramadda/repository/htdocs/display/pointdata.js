@@ -2032,8 +2032,10 @@ function CsvUtil() {
 		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args[\"" + field.getId() + "\"]);\n";
 		}
             });
+
             let code = "function displayDerivedEval(args) {\n" + setVars +  func + "\n}";
 //	    console.log(code);
+
             eval(code);
 	    records.forEach((record, rowIdx)=>{
 		let newRecord = record.clone();

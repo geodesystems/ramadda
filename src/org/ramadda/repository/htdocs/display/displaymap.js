@@ -2447,7 +2447,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				if(!icon) icon = this.getMarkerIcon();
 			    }
 			    let size = iconSize;
-			    if(sizeBy.isEnabled()) {
+			    if(sizeBy.index>=0) {
 				size = props.pointRadius;
 			    }
 			    mapPoint = this.map.addMarker("pt-" + i, point, icon, "pt-" + i,null,null,size);
