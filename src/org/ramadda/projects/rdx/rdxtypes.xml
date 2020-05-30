@@ -1,6 +1,6 @@
 <types  supercategory="Science and Education">
 
-  <type name="rdx_collection"  description="RDX Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX"   metadata="rdx_notification">
+  <type name="rdx_collection"  description="RDX Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX"   metadata="rdx_notification" >
      <property name="icon" value="/rdx/radiometrics_icon.png"/>
      <wiki><![CDATA[
 +section title={{name}}
@@ -52,7 +52,7 @@ linkField=entry_url titleField=name descriptionField=description
 
 
 
-  <type name="rdx_instrument"  description="RDX Instrument" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX">
+  <type name="rdx_instrument"  description="RDX Instrument" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="RDX" foruser="false">
      <property name="icon" value="/rdx/system-monitor.png"/>
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
@@ -62,9 +62,13 @@ linkField=entry_url titleField=name descriptionField=description
      <property name="form.altitude.show" value="true"/>
      <property name="form.altitude.top.show" value="false"/>
      <column name="instrument_id" type="string"  label="ID"   cansearch="true"  />
-     <column name="type" type="enumeration"  label="Instrument Type"   values="radiometer" cansearch="true" />
+     <column name="ipaddress" type="string"  label="IP Address"  />     
+     <column name="computeros" type="enumerationplus"  label="Computer OS"   />
+     <column name="contact_name" type="string"  label="Contact"   />
+     <column name="contact_email" type="string"  label="Contact Email"   />
      <column name="city" type="enumerationplus"  label="City"   />
      <column name="state" type="enumerationplus"  label="State"   values="file:/org/ramadda/repository/resources/geo/statesmap.txt" cansearch="true" />
+     <column name="last_maintenance" type="datetime"  label="Last Maintenance Time"   />
      <column name="network_up" type="boolean"  label="Network Up" cansearch="true"  default="true">
        <display value="true" background="green"  mapFillColor="green"/>
        <display value="false" background="red"  mapFillColor="red"/>
@@ -72,12 +76,32 @@ linkField=entry_url titleField=name descriptionField=description
      <column name="data_down" type="int"  label="Data Down"   cansearch="true" />
      <column name="last_network_connection" type="datetime"  label="Last Network Connection"   />
      <column name="last_data" type="datetime"  label="Last Data Time"   />
-
      <bubble><![CDATA[
 :heading {{name link=true}}
 {{information details=true}}
 ]]>
 </bubble>
+<!--
+Create a website to display instrument status, including metadata and data status, for a minimum of 17
+instruments, but with capabilities to display over 100 instruments.
+Display instruments on a map with icons to differentiate between data status and instrument type (Wind Profilers,
+Radiometers, Sodars, and combinations of all three). The icons should be clickable to show instrument
+information.
+Instrument Information includes, but should not be limited to: Site Elevation, Lat/Lon, Computer OS, Site Contact
+Information, and Last site maintenance time.
+Send user alerts in the form of email for any data, network, or LDM information older than 1 hour repeating every 8
+hours until acknowledged. Texts older than 1 day should be sent in a text alert repeating once per day.
+Email and text lists should be customizable.
+Data status monitors include the following three components: Data, Network, and LDM.
+The ability to download the latest file from an AWS S3 bucket should also be included.
+Color coding for the instrument statuses should include:
+Green for current data less than 15 minutes old.
+Yellow for data less than 1 hour old.
+Red for data less than 12 hours old.
+Purple for anything older than 12 hours.
+Ability to display basic instrument data alongside instruments including fields such as Temperature, Relative
+Humidity and Pressure.
+-->
 
      <wiki><![CDATA[
 +section title="Instrument: {{name}}"
@@ -98,5 +122,20 @@ linkField=entry_url titleField=name descriptionField=description
 ]]>
 </wiki>
  </type>
+
+ <type name="rdx_instrument_radiometer"  super="rdx_instrument"
+  description="RDX Wind Profiler" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+     <property name="icon" value="/rdx/radiometer.gif"/>
+ </type>
+
+ <type name="rdx_instrument_windprofiler"  super="rdx_instrument" description="RDX Wind Profiler" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+     <property name="icon" value="/rdx/windprofiler.gif"/>
+ </type>
+ 
+ <type ame="rdx_instrument_sodar"  description="RDX Sodar" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+     <property name="icon" value="/rdx/sodar.gif"/>
+ </type>
+
+
 
 </types>

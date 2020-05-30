@@ -39,14 +39,19 @@ import java.util.List;
 public class RdxInstrumentTypeHandler extends ExtensibleGroupTypeHandler {
 
     private static int IDX = 0;
-    public static final int IDX_INSTRUMENT_id = IDX++;
-    public static final int IDX_TYPE = IDX++;
-    public static final int IDX_LOCALE_CITY = IDX++;
-    public static final int IDX_LOCALE_STATE = IDX++;
-    public static final int IDX_NETWORK_UP = IDX++;
-    public static final int IDX_DATA_DOWN = IDX++;
-    public static final int IDX_LAST_NETWORK_CONNECTION = IDX++;
-    public static final int IDX_LAST_DATA = IDX++;
+    public static final int IDX_INSTRUMENT_ID=IDX++;
+    public static final int     IDX_IPADDRESS=IDX++;
+    public static final int     IDX_COMPUTEROS=IDX++;
+    public static final int     IDX_CONTACT_NAME=IDX++;
+    public static final int     IDX_CONTACT_EMAIL=IDX++;
+    public static final int     IDX_CITY=IDX++;
+    public static final int     IDX_STATE=IDX++;
+    public static final int     IDX_LAST_MAINTENANCE=IDX++;
+    public static final int     IDX_NETWORK_UP=IDX++;
+    public static final int     IDX_DATA_DOWN=IDX++;
+    public static final int     IDX_LAST_NETWORK_CONNECTION=IDX++;
+    public static final int     IDX_LAST_DATA=IDX++;
+
 
 
 
@@ -63,6 +68,11 @@ public class RdxInstrumentTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, entryNode);
     }
 
+
+    @Override
+    public boolean canCache(Entry entry) {
+	return false;
+    }
 
     /**
      * _more_
