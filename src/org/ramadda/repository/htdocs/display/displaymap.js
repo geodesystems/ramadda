@@ -1579,6 +1579,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.setMapLabel(onLayer.heatmapLabel);
 	},
         setDateRange: function(min, max) {
+	    //Not sure why we do this
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
 	    } else {
 		SUPER.setDateRange.call(this, min,max);

@@ -356,9 +356,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private Hashtable<String, String> enumMap = new Hashtable<String,
                                                     String>();
 
-    /** _more_ */
-    private Hashtable<Object, Display> displays = new Hashtable<Object,
-                                                      Display>();
+    private List<Display> displays = new ArrayList<Display>();
 
 
     /** _more_ */
@@ -501,8 +499,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         List displayNodes = XmlUtil.findChildren(element, "display");
         for (int i = 0; i < displayNodes.size(); i++) {
             Element node = (Element) displayNodes.get(i);
-            displays.put(XmlUtil.getAttribute(node, "value", ""),
-                         new Display(node));
+            displays.add(new Display(node));
         }
 
 
@@ -599,13 +596,9 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public String getDisplayAttribute(String attr, Object v) {
-	if(v==null) return null;
-        Display d = displays.get(v);
-        if (d == null) {
-            return null;
-        }
-
-        return d.getAttribute(attr);
+	Display d = getDisplay(v);
+	if(d==null) return null;
+	return d.getAttribute(attr);
     }
 
 
@@ -618,7 +611,23 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public Display getDisplay(Object v) {
-        return displays.get(v);
+	if(displays.size()==0) return null;
+	if(v==null) return null;
+	if(isNumeric()) {
+	    double value = new Double(v.toString());
+	    for(Display d: displays)  {
+		if(!Double.isNaN(d.min) && !Double.isNaN(d.max)) {
+    		    if(value>=d.min && value<=d.max) {
+			return d;
+		    }
+		}
+	    }
+	} else {
+	    for(Display d: displays)  {
+		if(d.value.equals(v)) return d;
+	    }
+	}
+	return null;
     }
 
 
@@ -630,11 +639,10 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public String decorate(String v) {
-        Display d = displays.get(v);
+        Display d = getDisplay(v);
         if (d == null) {
             return v;
         }
-
         return d.decorate(v);
     }
 
@@ -3902,8 +3910,11 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public static class Display {
 
+	String value;
         /** _more_ */
         String background;
+
+
 
         /** _more_ */
         String color;
@@ -3917,12 +3928,17 @@ public class Column implements DataTypes, Constants, Cloneable {
         /** _more_ */
         String icon;
 
+	double min;
+
+	double max;
+
         /**
          * _more_
          *
          * @param element _more_
          */
         public Display(Element element) {
+	    value = XmlUtil.getAttribute(element, "value", "");
             background = XmlUtil.getAttribute(element, "background",
                     (String) null);
             color = XmlUtil.getAttribute(element, "color", (String) null);
@@ -3931,6 +3947,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             template = XmlUtil.getAttribute(element, "template",
                                             (String) null);
             icon = XmlUtil.getAttribute(element, "icon", (String) null);
+	    min =  XmlUtil.getAttribute(element, "min", Double.NaN);
+	    max =  XmlUtil.getAttribute(element, "max", Double.isNaN(min)?Double.NaN:Double.MAX_VALUE);
         }
 
         /**
@@ -3950,7 +3968,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (attr.equals("color")) {
                 return color;
             }
-
             return null;
         }
 

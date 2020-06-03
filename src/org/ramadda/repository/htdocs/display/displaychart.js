@@ -779,7 +779,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
         makeDataTable: function(dataList, props, selectedFields) {
 	    let debug =displayDebug.makeDataTable;
-	    let debugRows = 3;
+	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
@@ -788,7 +788,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
             if (dataList.length == 1) {
-                return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
+		return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
 	    var groupField = this.getFieldById(null,  this.getProperty("groupBy"));
 
@@ -2496,11 +2496,14 @@ function TableDisplay(displayManager, id, properties) {
 
 		if(iconField && record && idx==0) {
 		    let icon = record.getValue(iconField.getIndex());
-		    f = HU.image(icon) +" " +f;
+		    f = HU.image(icon) +"&nbsp;" +f;
 		}
 		if(linkField && record) {
 		    let url = record.getValue(linkField.getIndex());
-		    f = HU.href(url,f);
+		    if(f) f = f.trim();
+		    if (Utils.isDefined(f) && f!="") {
+			f = HU.href(url,f);
+		    }
 		}
 
 		if(!this.getFilterHighlight() || !record) {

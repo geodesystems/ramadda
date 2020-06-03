@@ -660,6 +660,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.setRange(this.dates[0],this.dates[this.dates.length-1]);
     }
 
+
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
     if(this.convertAlpha) {
 	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
@@ -809,6 +810,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(steps) {
 	this.steps = steps.split(",");
     }
+
 
     this.colorByLog = this.getProperty("Log", false);
     this.colorByLog10 = this.getProperty("Log10", false);
@@ -1001,6 +1003,7 @@ ColorByInfo.prototype = {
 		    break;
 		}
 	    }
+	    console.log("v:" + v +" index:" + index);
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
@@ -2215,10 +2218,24 @@ Glyph.prototype = {
 		ctx.fillText(this.sizeByInfo.maxValue,cx+this.width/2+2,cy);
 	    }
 	} else if(this.type=="3dbar") {
+	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
 	    let height = lengthPercent*(this.height) + parseFloat(this.baseHeight);
 	    ctx.fillStyle =   color || this.color;
 	    ctx.strokeStyle = this.strokeStyle||"#000";
-	    this.draw3DRect(canvas,ctx,x+this.dx, canvas.height-y-this.dy,+this.width,height,+this.width);
+	    this.draw3DRect(canvas,ctx,pt.x, 
+			    canvas.height-pt.y-this.height,
+			    +this.width,height,+this.width);
+	    
+	} else if(this.type=="axis") {
+	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
+	    let height = lengthPercent*(this.height) + parseFloat(this.baseHeight);
+	    ctx.strokeStyle = this.strokeStyle||"#000";
+	    ctx.beginPath();
+	    ctx.moveTo(pt.x,pt.y);
+	    ctx.lineTo(pt.x,pt.y+this.height);
+	    ctx.lineTo(pt.x+this.width,pt.y+this.height);
+	    ctx.stroke();
+//	    this.draw3DRect(canvas,ctx,x+this.dx, canvas.height-y-this.dy,+this.width,height,+this.width);	    
 	} else if(this.type == "vector") {
 	    let length = opts.cellSizeH;
 	    if(opts.lengthBy && opts.lengthBy.index>=0) {
@@ -15312,7 +15329,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
         makeDataTable: function(dataList, props, selectedFields) {
 	    let debug =displayDebug.makeDataTable;
-	    let debugRows = 3;
+	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
@@ -15321,7 +15338,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
             if (dataList.length == 1) {
-                return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
+		return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
 	    var groupField = this.getFieldById(null,  this.getProperty("groupBy"));
 
@@ -17029,11 +17046,14 @@ function TableDisplay(displayManager, id, properties) {
 
 		if(iconField && record && idx==0) {
 		    let icon = record.getValue(iconField.getIndex());
-		    f = HU.image(icon) +" " +f;
+		    f = HU.image(icon) +"&nbsp;" +f;
 		}
 		if(linkField && record) {
 		    let url = record.getValue(linkField.getIndex());
-		    f = HU.href(url,f);
+		    if(f) f = f.trim();
+		    if (Utils.isDefined(f) && f!="") {
+			f = HU.href(url,f);
+		    }
 		}
 
 		if(!this.getFilterHighlight() || !record) {
@@ -27236,6 +27256,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.setMapLabel(onLayer.heatmapLabel);
 	},
         setDateRange: function(min, max) {
+	    //Not sure why we do this
 	    if(this.getProperty("doGridPoints",false)|| this.getProperty("doHeatmap",false)) {
 	    } else {
 		SUPER.setDateRange.call(this, min,max);

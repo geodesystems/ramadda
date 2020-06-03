@@ -660,6 +660,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	this.setRange(this.dates[0],this.dates[this.dates.length-1]);
     }
 
+
     this.convertAlpha = this.getProperty("convertColorAlpha",false);
     if(this.convertAlpha) {
 	if(!Utils.isDefined(this.getProperty("alphaSourceMin"))) {
@@ -809,6 +810,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if(steps) {
 	this.steps = steps.split(",");
     }
+
 
     this.colorByLog = this.getProperty("Log", false);
     this.colorByLog10 = this.getProperty("Log10", false);
@@ -1001,6 +1003,7 @@ ColorByInfo.prototype = {
 		    break;
 		}
 	    }
+	    console.log("v:" + v +" index:" + index);
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
@@ -2215,10 +2218,24 @@ Glyph.prototype = {
 		ctx.fillText(this.sizeByInfo.maxValue,cx+this.width/2+2,cy);
 	    }
 	} else if(this.type=="3dbar") {
+	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
 	    let height = lengthPercent*(this.height) + parseFloat(this.baseHeight);
 	    ctx.fillStyle =   color || this.color;
 	    ctx.strokeStyle = this.strokeStyle||"#000";
-	    this.draw3DRect(canvas,ctx,x+this.dx, canvas.height-y-this.dy,+this.width,height,+this.width);
+	    this.draw3DRect(canvas,ctx,pt.x, 
+			    canvas.height-pt.y-this.height,
+			    +this.width,height,+this.width);
+	    
+	} else if(this.type=="axis") {
+	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
+	    let height = lengthPercent*(this.height) + parseFloat(this.baseHeight);
+	    ctx.strokeStyle = this.strokeStyle||"#000";
+	    ctx.beginPath();
+	    ctx.moveTo(pt.x,pt.y);
+	    ctx.lineTo(pt.x,pt.y+this.height);
+	    ctx.lineTo(pt.x+this.width,pt.y+this.height);
+	    ctx.stroke();
+//	    this.draw3DRect(canvas,ctx,x+this.dx, canvas.height-y-this.dy,+this.width,height,+this.width);	    
 	} else if(this.type == "vector") {
 	    let length = opts.cellSizeH;
 	    if(opts.lengthBy && opts.lengthBy.index>=0) {

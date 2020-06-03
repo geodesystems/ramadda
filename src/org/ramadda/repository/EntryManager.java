@@ -1327,7 +1327,7 @@ public class EntryManager extends RepositoryManager {
                                                  ARG_EXTEDIT_NEWTYPE, ""));
 
             entry = changeType(request, entry, newTypeHandler);
-            sb.append(
+	    sb.append(
                 getPageHandler().showDialogNote(
                     msg("Entry type has been changed")));
         } else if (request.exists(ARG_EXTEDIT_CHANGETYPE_RECURSE)) {
@@ -10739,6 +10739,7 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
+	    if(request==null) request = getRepository().getTmpRequest();
             return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
