@@ -1,6 +1,0 @@
-
-<api handler="org.ramadda.projects.rdx.RdxApiHandler" id="rdx">
-  <api request="/rdx/status"    method="processStatus" xxxadmin="true"/>
-  <api request="/rdx/test"    method="processTest" admin="true"/>    
-</api>
-
