@@ -1663,7 +1663,6 @@ var Utils = {
 		attrs.push(STYLE);
 		attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%",HEIGHT, options.height,"min-width","1px"));
 		let label = options.labels?options.labels[idx]:"";
-		console.log("LABEL:" + label +"  opts:" + options.labels);
 		if(options.horizontal) 
 		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i]), WIDTH, "1"], HtmlUtils.div(attrs, label||""));
 		else
