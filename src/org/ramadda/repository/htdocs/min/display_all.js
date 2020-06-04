@@ -874,7 +874,6 @@ ColorByInfo.prototype = {
 		stringValues: this.colorByValues});
 	} else {
 	    var colors = this.colors;
-
 	    if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		var tmp = [];
 		for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
@@ -3350,6 +3349,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!args) args = {};
 	    args.showColorTableDots = this.getProperty("showColorTableDots");
 	    args.decimals = this.getProperty("colorTableDotsDecimals",-1);
+	    args.showRange = this.getProperty("colorTableShowRange");
+	    let labels = this.getProperty("colorTableLabels");
+	    args.labels = labels?labels.split(","):null;
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty("showColorTableStride",1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
@@ -25820,7 +25822,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'hm.labelPrefix'},
 	{p:'hm.showToggle'},
 	{p:'hm.toggleLabel'},
-	{p:'hm.boundsScale',wikiValue:'0.1',tt:'Scale up the map bounds'},
+	{p:'boundsScale',wikiValue:'0.1',tt:'Scale up the map bounds'},
 	{p:'hm.filter',wikiValue:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
 	{p:'hm.filterPasses',wikiValue:'1'},
 	{p:'hm.filterThreshold',wikiValue:'1'},
@@ -27415,7 +27417,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 //TODO		records = RecordUtil.subset(records, bounds);
 		bounds =  RecordUtil.getBounds(records);
 	    }
-	    bounds = RecordUtil.expandBounds(bounds,this.getProperty("hm.boundsScale",0.05));
+	    bounds = RecordUtil.expandBounds(bounds,this.getProperty("boundsScale",0.05));
 
 	    let dfltArgs = this.getDefaultGridByArgs();
 	    let ratio = (bounds.east-bounds.west)/(bounds.north-bounds.south);

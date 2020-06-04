@@ -874,7 +874,6 @@ ColorByInfo.prototype = {
 		stringValues: this.colorByValues});
 	} else {
 	    var colors = this.colors;
-
 	    if(this.getProperty("clipColorTable",true) && this.colorByValues.length) {
 		var tmp = [];
 		for(var i=0;i<this.colorByValues.length && i<colors.length;i++) 
