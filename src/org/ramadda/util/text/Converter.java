@@ -3356,6 +3356,7 @@ public abstract class Converter extends Processor {
             if ( !doneHeader) {
                 add(info, row, "Population");
                 doneHeader = true;
+
                 //              System.err.println("pop row:" + row);
                 return row;
             }
@@ -3374,7 +3375,8 @@ public abstract class Converter extends Processor {
                 }
                 didOne = true;
                 //A hack for US
-                if (value.equals("US") || value.toString().startsWith("United States")) {
+                if (value.equals("US")
+                        || value.toString().startsWith("United States")) {
                     add(info, row, new Integer(327000000));
 
                     return row;
@@ -3392,7 +3394,7 @@ public abstract class Converter extends Processor {
             if (place != null) {
                 add(info, row, new Integer(place.getPopulation()));
             } else {
-		//		System.out.println("NOT:" + key);
+                //              System.out.println("NOT:" + key);
                 add(info, row, new Integer(0));
             }
 
@@ -4645,9 +4647,11 @@ public abstract class Converter extends Processor {
             if ( !gotRow) {
                 return row;
             }
-	    List values = row.getValues();
+            List values = row.getValues();
             for (int col : cols) {
-                if(col<values.size()) values.set(col, value);
+                if (col < values.size()) {
+                    values.set(col, value);
+                }
             }
 
             return row;

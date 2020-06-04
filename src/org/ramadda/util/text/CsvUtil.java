@@ -415,6 +415,7 @@ public class CsvUtil {
 
             if (arg.equals("-raw")) {
                 doRaw = true;
+
                 continue;
             }
 
@@ -585,25 +586,26 @@ public class CsvUtil {
     public InputStream getInputStream(String file) throws Exception {
         if (file.endsWith(".xls") || file.endsWith(".xlsx")) {
             String csv = XlsUtil.xlsToCsv(file);
+
             return new BufferedInputStream(
                 new ByteArrayInputStream(csv.getBytes()));
-	} else 	if (file.toLowerCase().endsWith(".zip")) {
-	    InputStream    fis = IO.getInputStream(file.toString());
-	    ZipInputStream zin = new ZipInputStream(fis);
-	    ZipEntry       ze  = null;
-	    while ((ze = zin.getNextEntry()) != null) {
-		if (ze.isDirectory()) {
-		    continue;
-		}
-		String p = ze.getName().toLowerCase();
-		if (p.endsWith(".csv") || p.endsWith(".tsv")) {
-		    return  zin;
-		}
-		//Apple health
-		if (p.endsWith("export.xml")) {
-		    return zin;
-		}
-	    }
+        } else if (file.toLowerCase().endsWith(".zip")) {
+            InputStream    fis = IO.getInputStream(file.toString());
+            ZipInputStream zin = new ZipInputStream(fis);
+            ZipEntry       ze  = null;
+            while ((ze = zin.getNextEntry()) != null) {
+                if (ze.isDirectory()) {
+                    continue;
+                }
+                String p = ze.getName().toLowerCase();
+                if (p.endsWith(".csv") || p.endsWith(".tsv")) {
+                    return zin;
+                }
+                //Apple health
+                if (p.endsWith("export.xml")) {
+                    return zin;
+                }
+            }
         } else {
             if (new File(file).exists()) {
                 try {
@@ -614,9 +616,11 @@ public class CsvUtil {
                     throw exc;
                 }
             }
+
             return IO.getInputStream(file);
         }
-	return null;
+
+        return null;
     }
 
 
@@ -998,7 +1002,6 @@ public class CsvUtil {
      * _more_
      *
      * @param s _more_
-     * @param props _more_
      * @param arrayPath _more_
      * @param objectPath _more_
      *
@@ -1144,25 +1147,28 @@ public class CsvUtil {
         int                        cnt    = 0;
         int                        colCnt = 0;
         Hashtable<String, Integer> colMap = new Hashtable<String, Integer>();
-	System.err.println("NODES:" + nodes.size());
+        System.err.println("NODES:" + nodes.size());
         for (Element parent : nodes) {
             NodeList children = XmlUtil.getElements(parent);
 
-	    if(children.getLength()==0) {
-		//use attrs
-		NamedNodeMap nnm = parent.getAttributes();
-		if (nnm == null) continue;
-		for (int i = 0; i < nnm.getLength(); i++) {
-		    Attr attr = (Attr) nnm.item(i);
-		    String name = attr.getNodeName();
-                    Integer idx = colMap.get(name);
+            if (children.getLength() == 0) {
+                //use attrs
+                NamedNodeMap nnm = parent.getAttributes();
+                if (nnm == null) {
+                    continue;
+                }
+                for (int i = 0; i < nnm.getLength(); i++) {
+                    Attr    attr = (Attr) nnm.item(i);
+                    String  name = attr.getNodeName();
+                    Integer idx  = colMap.get(name);
                     if (idx == null) {
                         colMap.put(name, colCnt++);
                         header.add(name);
                     }
                 }
-		continue;
-	    } 
+
+                continue;
+            }
             for (int i = 0; i < children.getLength(); i++) {
                 Element  child     = (Element) children.item(i);
                 NodeList gchildren = XmlUtil.getElements(child);
@@ -1186,7 +1192,7 @@ public class CsvUtil {
                     }
                 }
             }
-	}
+        }
 
         for (Element parent : nodes) {
             NodeList children = XmlUtil.getElements(parent);
@@ -1195,18 +1201,21 @@ public class CsvUtil {
             for (int i = 0; i < colCnt; i++) {
                 row.add("");
             }
-	    if(children.getLength()==0) {
-		NamedNodeMap nnm = parent.getAttributes();
-		if (nnm == null) continue;
-		for (int i = 0; i < nnm.getLength(); i++) {
-		    Attr attr = (Attr) nnm.item(i);
-		    String name = attr.getNodeName();
-		    String value = attr.getNodeValue();
-		    Integer idx    = colMap.get(name);
-		    row.set(idx, value);
+            if (children.getLength() == 0) {
+                NamedNodeMap nnm = parent.getAttributes();
+                if (nnm == null) {
+                    continue;
                 }
-		continue;
-	    } 
+                for (int i = 0; i < nnm.getLength(); i++) {
+                    Attr    attr  = (Attr) nnm.item(i);
+                    String  name  = attr.getNodeName();
+                    String  value = attr.getNodeValue();
+                    Integer idx   = colMap.get(name);
+                    row.set(idx, value);
+                }
+
+                continue;
+            }
 
             for (int i = 0; i < children.getLength(); i++) {
                 Element  child     = (Element) children.item(i);
@@ -2209,6 +2218,7 @@ public class CsvUtil {
             new Arg(
                 "props",
                 "Name value pairs:\n\t\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t\t<column name>.id <new id for column> <column name>.label <new label>\n\t\t<column name>.type <string|enumeration|double|int|date>\n\t\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\t\tinstall <true|false install the new db table>\n\t\tnukedb <true|false careful! this deletes any prior created dbs", "rows", "6")),
+        new Cmd("-toxml", "Generate XML", new Arg("tag")),
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
     };
@@ -2996,6 +3006,19 @@ public class CsvUtil {
                     continue;
                 }
 
+
+                if (arg.equals("-toxml")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Processor.ToXml(args.get(++i)));
+
+                    continue;
+                }
+
+
+
                 if (arg.equals("-table")) {
                     info.getProcessor().addProcessor(new Processor.Html());
 
@@ -3533,6 +3556,8 @@ public class CsvUtil {
 
                     continue;
                 }
+
+
 
 
                 if (arg.equals("-tcl")) {
@@ -4130,6 +4155,7 @@ public class CsvUtil {
                 pw.print("\n");
             }
             pw.close();
+
             return false;
         }
 

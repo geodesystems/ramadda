@@ -124,7 +124,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private int pruneBytes = 0;
 
-    /** _more_          */
+    /** _more_ */
     private boolean positionStart = false;
 
     /** _more_ */

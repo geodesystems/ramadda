@@ -472,36 +472,40 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public List<Row> finish(TextReader textReader, List<Row> inputRows)
                 throws Exception {
-            while ((remainderProcessors != null)
-                    && (remainderProcessors.size() > 0)) {
-                if (firstProcessors != null) {
-                    for (Processor processor : firstProcessors) {
-                        inputRows = processor.finish(textReader, inputRows);
+            if (inputRows != null) {
+                while ((remainderProcessors != null)
+                        && (remainderProcessors.size() > 0)) {
+                    if (firstProcessors != null) {
+                        for (Processor processor : firstProcessors) {
+                            inputRows = processor.finish(textReader,
+                                    inputRows);
+                        }
                     }
-                }
-                processors          = remainderProcessors;
-                remainderProcessors = null;
-                firstProcessors     = null;
-                for (Row row : inputRows) {
-                    row = processRowInner(textReader, row, "");
-                    if ( !textReader.getOkToRun()) {
-                        break;
-                    }
-                    if (textReader.getExtraRow() != null) {
-                        row = processRowInner(textReader,
-                                textReader.getExtraRow(), null);
-                        textReader.setExtraRow(null);
-                    }
-                    if ( !textReader.getOkToRun()) {
-                        break;
+                    processors          = remainderProcessors;
+                    remainderProcessors = null;
+                    firstProcessors     = null;
+                    for (Row row : inputRows) {
+                        row = processRowInner(textReader, row, "");
+                        if ( !textReader.getOkToRun()) {
+                            break;
+                        }
+                        if (textReader.getExtraRow() != null) {
+                            row = processRowInner(textReader,
+                                    textReader.getExtraRow(), null);
+                            textReader.setExtraRow(null);
+                        }
+                        if ( !textReader.getOkToRun()) {
+                            break;
+                        }
                     }
                 }
             }
             if (firstProcessors != null) {
                 for (Processor processor : firstProcessors) {
-                    inputRows = processor.finish(textReader, inputRows);
-                    if (inputRows == null) {
-                        return null;
+                    List<Row> tmp = processor.finish(textReader, inputRows);
+                    if (tmp != null) {
+                        inputRows = tmp;
+                        //                        return null;
                     }
                 }
             }
@@ -551,14 +555,14 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         public static final int OP_AVERAGE = 3;
 
-        /** _more_          */
+        /** _more_ */
         public static final int OP_COUNT = 3;
 
 
         /** _more_ */
         private int op = OP_SUM;
 
-        /** _more_          */
+        /** _more_ */
         private String opLabel;
 
         /** _more_ */
@@ -595,7 +599,6 @@ rotate -> pass -> pass -> rotate -> pass
          * _more_
          *
          * @param info _more_
-         * @param rows _more_
          * @param r _more_
          *
          *
@@ -1257,6 +1260,7 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @throws Exception _more_
          */
+        @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
             if (suffix != null) {
@@ -1386,6 +1390,8 @@ rotate -> pass -> pass -> rotate -> pass
 
 
 
+
+
     /**
      * Class description
      *
@@ -1434,6 +1440,98 @@ rotate -> pass -> pass -> rotate -> pass
             }
 
             return rows;
+        }
+
+    }
+
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class ToXml extends RowCollector {
+
+        /** _more_          */
+        Row header = null;
+
+        /** _more_          */
+        String tag;
+
+        /**
+         * _more_
+         *
+         * @param tag _more_
+         */
+        public ToXml(String tag) {
+            super();
+            this.tag = tag;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+            PrintWriter writer = info.getWriter();
+            writer.println("</" + tag + ">");
+
+            return rows;
+        }
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line)
+                throws Exception {
+            PrintWriter writer = info.getWriter();
+            if (header == null) {
+                header = row;
+                writer.println("<" + tag + ">");
+
+                return row;
+            }
+            writer.println("<entry>");
+            List values = row.getValues();
+            for (int i = 0; i < values.size(); i++) {
+                Object v = values.get(i);
+                String h = (String) header.get(i);
+                h = h.trim().toLowerCase().replaceAll(" ",
+                        "_").replaceAll("/", "_");
+                if (h.length() == 0) {
+                    continue;
+                }
+                writer.print("<" + h + ">");
+                writer.print("<![CDATA[");
+                writer.print(v.toString().trim());
+                writer.print("]]>");
+                writer.println("</" + h + ">");
+            }
+            writer.println("</entry>");
+
+            return row;
         }
 
     }
@@ -3156,16 +3254,16 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         private String file;
 
-        /** _more_          */
+        /** _more_ */
         private Hashtable<String, Row> map;
 
-        /** _more_          */
+        /** _more_ */
         private Row headerRow1;
 
-        /** _more_          */
+        /** _more_ */
         private List<Integer> values1Indices;
 
-        /** _more_          */
+        /** _more_ */
         private Row headerRow2;
 
         /**
@@ -3237,7 +3335,6 @@ rotate -> pass -> pass -> rotate -> pass
          * _more_
          *
          * @param info _more_
-         * @param rows _more_
          * @param row _more_
          * @param line _more_
          *
@@ -3336,7 +3433,6 @@ rotate -> pass -> pass -> rotate -> pass
          * _more_
          *
          * @param info _more_
-         * @param rows _more_
          * @param finalRows _more_
          *
          *
