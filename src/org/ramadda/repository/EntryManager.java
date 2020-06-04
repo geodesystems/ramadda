@@ -1327,7 +1327,7 @@ public class EntryManager extends RepositoryManager {
                                                  ARG_EXTEDIT_NEWTYPE, ""));
 
             entry = changeType(request, entry, newTypeHandler);
-	    sb.append(
+            sb.append(
                 getPageHandler().showDialogNote(
                     msg("Entry type has been changed")));
         } else if (request.exists(ARG_EXTEDIT_CHANGETYPE_RECURSE)) {
@@ -6058,8 +6058,8 @@ public class EntryManager extends RepositoryManager {
                                 (String) null);
 
 
-        String category = XmlUtil.getAttribute(node, ATTR_CATEGORY, "");
-        String description = XmlUtil.getAttribute(node, ATTR_DESCRIPTION,
+        String category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, "");
+        String description = Utils.getAttributeOrTag(node, ATTR_DESCRIPTION,
                                  (String) null);
         if (description == null) {
             Element descriptionNode = XmlUtil.findChild(node,
@@ -6221,9 +6221,10 @@ public class EntryManager extends RepositoryManager {
 
 
 
-        String type = XmlUtil.getAttribute(node, ATTR_TYPE,
-                                           TypeHandler.TYPE_FILE);
+        String type = Utils.getAttributeOrTag(node, ATTR_TYPE,
+                          TypeHandler.TYPE_FILE);
 
+        System.err.println("TYPE:" + type + ":");
         List<Entry> entries = new ArrayList<Entry>();
         Date        now     = new Date();
         for (Resource resource : resources) {
@@ -6288,13 +6289,13 @@ public class EntryManager extends RepositoryManager {
             if (doAnonymousUpload) {
                 initUploadedEntry(request, entry, parentEntry);
             }
-            if (XmlUtil.hasAttribute(node, ATTR_LATITUDE)
-                    && XmlUtil.hasAttribute(node, ATTR_LONGITUDE)) {
-                entry.setNorth(Utils.decodeLatLon(XmlUtil.getAttribute(node,
-                        ATTR_LATITUDE, "")));
+            String lat = Utils.getAttributeOrTag(node, ATTR_LATITUDE, null);
+            String lon = Utils.getAttributeOrTag(node, ATTR_LONGITUDE, null);
+
+            if ((lat != null) && (lon != null)) {
+                entry.setNorth(Utils.decodeLatLon(lat));
                 entry.setSouth(entry.getNorth());
-                entry.setWest(Utils.decodeLatLon(XmlUtil.getAttribute(node,
-                        ATTR_LONGITUDE, "")));
+                entry.setWest(Utils.decodeLatLon(lon));
                 entry.setEast(entry.getWest());
             } else {
                 entry.setNorth(Utils.decodeLatLon(XmlUtil.getAttribute(node,
@@ -6307,14 +6308,14 @@ public class EntryManager extends RepositoryManager {
                         ATTR_WEST, entry.getWest() + "")));
             }
 
-            entry.setAltitudeTop(XmlUtil.getAttribute(node,
+            entry.setAltitudeTop(Utils.getAttributeOrTag(node,
                     ATTR_ALTITUDE_TOP, entry.getAltitudeTop()));
-            entry.setAltitudeBottom(XmlUtil.getAttribute(node,
+            entry.setAltitudeBottom(Utils.getAttributeOrTag(node,
                     ATTR_ALTITUDE_BOTTOM, entry.getAltitudeBottom()));
-            entry.setAltitudeTop(XmlUtil.getAttribute(node, ATTR_ALTITUDE,
+            entry.setAltitudeTop(Utils.getAttributeOrTag(node, ATTR_ALTITUDE,
                     entry.getAltitudeTop()));
-            entry.setAltitudeBottom(XmlUtil.getAttribute(node, ATTR_ALTITUDE,
-                    entry.getAltitudeBottom()));
+            entry.setAltitudeBottom(Utils.getAttributeOrTag(node,
+                    ATTR_ALTITUDE, entry.getAltitudeBottom()));
 
             NodeList entryChildren = XmlUtil.getElements(node);
             for (Element entryChild : (List<Element>) entryChildren) {
@@ -10739,7 +10740,10 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
-	    if(request==null) request = getRepository().getTmpRequest();
+            if (request == null) {
+                request = getRepository().getTmpRequest();
+            }
+
             return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
