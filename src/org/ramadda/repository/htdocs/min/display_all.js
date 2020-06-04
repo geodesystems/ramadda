@@ -3351,6 +3351,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.decimals = this.getProperty("colorTableDotsDecimals",-1);
 	    args.showRange = this.getProperty("colorTableShowRange");
 	    let labels = this.getProperty("colorTableLabels");
+	    console.log("Labels:" + labels);
 	    args.labels = labels?labels.split(","):null;
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty("showColorTableStride",1);
