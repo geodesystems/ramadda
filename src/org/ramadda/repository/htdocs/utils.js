@@ -1642,7 +1642,7 @@ var Utils = {
 	} else {
             for (var i = ct.length-1; i>=0;i=i-options.stride) nums.push(i);
 	}
-        nums.forEach(i=>{
+        nums.forEach((i,idx)=>{
             var extra = "";
 	    let val = min + step * i;
 	    var attrs = [];
@@ -1661,11 +1661,12 @@ var Utils = {
                     attrs.push(formatter(val));
 		}
 		attrs.push(STYLE);
-		attrs.push(HU.css("background", ct[i], WIDTH,"100%",HEIGHT, options.height,"min-width","1px"));
+		attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%",HEIGHT, options.height,"min-width","1px"));
+		let label = options.labels?options.labels[idx]:"";
 		if(options.horizontal) 
-		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i]), WIDTH, "1"], HtmlUtils.div(attrs, ""));
+		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i]), WIDTH, "1"], HtmlUtils.div(attrs, label||""));
 		else
- 		    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i], WIDTH, options.colorWidth)], HtmlUtils.div(attrs, ""));
+ 		    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i], WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
 	    }
         });
 	if(!options.showColorTableDots) {
