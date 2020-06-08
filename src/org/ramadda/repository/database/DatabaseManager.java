@@ -486,7 +486,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
         Connection conn = DriverManager.getConnection(connectionUrl,
-                              connectionProps);
+						      connectionProps);
         if (conn == null) {
             System.err.println("Got null connection for url:"
                                + connectionUrl);
@@ -963,6 +963,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @throws Exception _more_
      */
     private Connection getConnection(String msg) throws Exception {
+	try {
         Connection connection;
         synchronized (CONNECTION_MUTEX) {
             BasicDataSource tmpDataSource = dataSource;
@@ -983,6 +984,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         }
 
         return connection;
+	} catch(Exception exc) {
+	    StringBuffer sb = new StringBuffer();
+	    addStatistics(null, sb);
+	    System.err.println("DatabaseManager: Error in getConnection.\n" + exc.toString() +"\n" + sb);
+	    throw exc;
+	}
     }
 
     /**
