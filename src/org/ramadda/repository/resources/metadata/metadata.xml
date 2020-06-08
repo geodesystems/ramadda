@@ -111,9 +111,6 @@
     </type>
 
 
-    <type name="Wiki Category" id="wikicategory" foruser="false">
-      <element name="Wiki Category" />
-    </type>
 
     <type name="Property" id="property"  searchable="true" browsable="true"
           displaygroup="Properties" >
@@ -266,6 +263,18 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
       <element name="Alias" />
       <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
     </type>
+
+    <type name="Wiki Category" id="wikicategory" foruser="false">
+      <element name="Wiki Category" />
+    </type>
+
+    <type name="Wiki Attribute" id="wikiattribute">
+      <element name="Attribute Name" />
+      <element name="Attribute Value" />
+      <element name="Tag" suffix="Optional tag"/>
+    </type>    
+
+
 
     <type
        name="Cache Time"
