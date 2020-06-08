@@ -81,7 +81,7 @@ https://geodesystems.com:443/repository/entry/show?entryid=7df13bbc-86f4-4dd4-b6
 https://geodesystems.com:443/repository/entry/show?entryid=292d572d-63df-4c40-8264-1e2d82deab16
 https://geodesystems.com:443/repository/entry/show?entryid=292d572d-63df-4c40-8264-1e2d82deab16&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=073e9afe-f9f4-40da-942c-16a4fcd24e96&max=5000&output=points.product&product=points.json
-20:https://geodesystems.com:443/repository/entry/show?entryid=bd4f71c4-d262-4e30-9231-e00e9b9cb0f4
+https://geodesystems.com:443/repository/entry/show?entryid=bd4f71c4-d262-4e30-9231-e00e9b9cb0f4
 https://geodesystems.com:443/repository/entry/show?entryid=9114a74e-ec17-46c2-8160-658cd35d27d4
 https://geodesystems.com:443/repository/entry/show?entryid=9114a74e-ec17-46c2-8160-658cd35d27d4&latitude=%2524%257Blatitude%257D&longitude=%2524%257Blongitude%257D&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=cec5ea2e-b384-4eb9-9bc7-6a0ff6637f40
@@ -257,7 +257,6 @@ https://geodesystems.com:443/repository/entry/show?entryid=9872769b-1a48-42eb-b4
 https://geodesystems.com:443/repository/entry/show?entryid=9872769b-1a48-42eb-b442-f69cc3a67618&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=63846063-a9b9-449a-b731-59e25e99039a
 https://geodesystems.com:443/repository/entry/show?entryid=63846063-a9b9-449a-b731-59e25e99039a&max=5000&output=points.product&product=points.json
-https://geodesystems.com:443/repository/entry/show?entryid=5ac525f2-742b-44f1-a34f-a7052d45dfaa&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=1467d930-b96e-4ca1-bbeb-dd1dbe132b19&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=52f48e83-f4c1-43f4-afdc-9e1c1edd08f7&max=5000&output=points.product&product=points.json
 https://geodesystems.com:443/repository/entry/show?entryid=4c95036d-a018-4893-8fd4-9367336bc7e7&max=5000&output=points.product&product=points.json
