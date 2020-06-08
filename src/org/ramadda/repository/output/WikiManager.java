@@ -37,6 +37,7 @@ import org.ramadda.repository.Result;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapManager;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.metadata.MetadataType;
 import org.ramadda.repository.search.SearchInfo;
 import org.ramadda.repository.search.SearchManager;
@@ -46,6 +47,7 @@ import org.ramadda.repository.type.LocalFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
+
 
 import org.ramadda.util.Bounds;
 import org.ramadda.util.BufferMapList;
@@ -681,6 +683,32 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 request.putExtraProperty(propertyKey, property);
             }
 
+
+            List<Metadata> metadataAttrs =
+                getMetadataManager().findMetadata(request, entry,
+                    "wikiattribute", true);
+            if (metadataAttrs != null) {
+                for (Metadata metadata : metadataAttrs) {
+                    String mName  = metadata.getAttr1();
+                    String mValue = metadata.getAttr2();
+                    String mTag   = metadata.getAttr3();
+                    if ((mTag.length() > 0) && !mTag.equals(tag)) {
+                        continue;
+                    }
+                    if (props.get("override." + mName) == null) {
+                        props.put(mName, mValue);
+                    }
+                }
+            }
+
+            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+                String key = (String) keys.nextElement();
+                if (key.startsWith("override.")) {
+                    String value = (String) props.get(key);
+                    props.remove(key);
+                    props.put(key.substring(9), value);
+                }
+            }
 
             addWikiLink(wikiUtil, theEntry);
             String include = handleWikiImport(wikiUtil, request, entry,
@@ -6335,6 +6363,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         propList = tmpProps;
 
+        List<Metadata> metadataAttrs =
+            getMetadataManager().findMetadata(request, entry,
+                "wikiattribute", true);
+
+        if (metadataAttrs != null) {
+            for (Metadata metadata : metadataAttrs) {
+                String attrName = metadata.getAttr1();
+                if (props.get(attrName) == null) {
+                    propList.add(attrName);
+                    propList.add(Json.quote(metadata.getAttr2()));
+                }
+            }
+        }
+
         StringBuilder js = new StringBuilder();
 
 
@@ -6816,8 +6858,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
         }
-
-
 
         js.append("displayManager.createDisplay("
                   + HtmlUtils.quote(displayType) + ","
