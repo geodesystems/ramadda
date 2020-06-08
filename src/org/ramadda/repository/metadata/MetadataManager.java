@@ -265,6 +265,7 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getJsonLD(Request request, Entry entry) throws Exception {
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         StringBuilder sb =
             new StringBuilder("\n<script type=\"application/ld+json\">\n");
@@ -285,13 +286,16 @@ public class MetadataManager extends RepositoryManager {
             top.add(Json.quote(Json.cleanString(snippet)));
         }
         if (entry.hasDate()) {
-	    top.add("temporalCoverage");
-	    if(entry.getStartDate() == entry.getEndDate()) {
-		top.add(Json.quote(sdf.format(new Date(entry.getStartDate()))));
-	    } else {
-		top.add(Json.quote(sdf.format(new Date(entry.getStartDate())) + "/"
-				   + sdf.format(new Date(entry.getEndDate()))));
-	    }
+            top.add("temporalCoverage");
+            if (entry.getStartDate() == entry.getEndDate()) {
+                top.add(
+                    Json.quote(sdf.format(new Date(entry.getStartDate()))));
+            } else {
+                top.add(
+                    Json.quote(
+                        sdf.format(new Date(entry.getStartDate())) + "/"
+                        + sdf.format(new Date(entry.getEndDate()))));
+            }
 
         }
         if (entry.isGeoreferenced()) {
@@ -299,28 +303,30 @@ public class MetadataManager extends RepositoryManager {
             geo.add("@type");
             geo.add(Json.quote("Place"));
             geo.add("geo");
-	    if(entry.hasAreaDefined()) {
-		String box = entry.getSouth() + " " + entry.getWest() + " "
-		    + entry.getNorth() + " " + entry.getEast();
-		geo.add(Json.map("@type", Json.quote("GeoShape"), "box",
+            if (entry.hasAreaDefined()) {
+                String box = entry.getSouth() + " " + entry.getWest() + " "
+                             + entry.getNorth() + " " + entry.getEast();
+                geo.add(Json.map("@type", Json.quote("GeoShape"), "box",
                                  Json.quote(box)));
-	    } else {
-		geo.add(Json.map("@type", Json.quote("GeoCoordinates"), 
-				 "latitude",
-                                 Json.quote(""+entry.getLatitude()),
-				 "longitude",
-                                 Json.quote(""+entry.getLongitude())));
-	    }
+            } else {
+                geo.add(Json.map("@type", Json.quote("GeoCoordinates"),
+                                 "latitude",
+                                 Json.quote("" + entry.getLatitude()),
+                                 "longitude",
+                                 Json.quote("" + entry.getLongitude())));
+            }
             top.add("spatialCoverage");
             top.add(Json.map(geo));
         }
 
-	if(entry.isFile()) {
-	    top.add("distribution");
-	    top.add(Json.mapAndQuote("@type","DataDownload",
-				     "contentUrl",
-				     getEntryManager().getEntryResourceUrl(request,  entry, true, false)));
-	}
+        if (entry.isFile()) {
+            top.add("distribution");
+            top.add(
+                Json.mapAndQuote(
+                    "@type", "DataDownload", "contentUrl",
+                    getEntryManager().getEntryResourceUrl(
+                        request, entry, true, false)));
+        }
 
 
         List<String> keywords = null;
@@ -370,6 +376,7 @@ public class MetadataManager extends RepositoryManager {
         sb.append("\n</script>\n");
 
         return sb.toString();
+
     }
 
     /**
@@ -657,9 +664,19 @@ public class MetadataManager extends RepositoryManager {
         if (entry == null) {
             return;
         }
-        //        System.err.println ("ENTRY:" + entry + " metadata:" + getMetadata(entry));
+        if (debug) {
+            System.out.println("metadata:" + type + " entry:" + entry);
+        }
         for (Metadata metadata : getMetadata(entry)) {
+            if (debug) {
+                System.out.println("\ttype:" + metadata.getType() + " "
+                                   + metadata.getInherited());
+            }
             if ( !firstTime && !metadata.getInherited()) {
+                if (debug) {
+                    System.out.println("\tskip1");
+                }
+
                 continue;
             }
             if (type != null) {
