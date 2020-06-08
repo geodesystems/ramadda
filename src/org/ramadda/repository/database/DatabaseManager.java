@@ -1085,7 +1085,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public void closeAndReleaseConnection(Statement statement)
 	throws SQLException {
+	closeAndReleaseConnection(statement, false);
+    }
+
+    public void closeAndReleaseConnection(Statement statement, boolean debug)
+	throws SQLException {	
         if (statement == null) {
+	    if(debug)
+		System.err.println( "CONNECTION: statement is null");
             return;
         }
         Connection connection = null;
@@ -1093,14 +1100,20 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
             connection = statement.getConnection();
             statement.close();
         } catch (Throwable ignore) {
-	    System.err.println( "CONNECTION: Error:" + ignore);
+	    if(debug)
+		System.err.println( "CONNECTION: error closing statement:" + ignore);
 	}
 
         if (connection != null) {
-	    System.err.println( "CONNECTION: Closing connection");
+	    if(debug)
+		System.err.println( "CONNECTION: Closing connection");
             closeConnection(connection);
+	    if(debug)
+		System.err.println( "CONNECTION: Closed connection");
         } else {
-	    Misc.printStack("CONNECTION: statement with no connection");
+	    if(debug)
+		System.err.println("CONNECTION: statement with no connection");
+	    //		Misc.printStack("CONNECTION: statement with no connection");
             //                new IllegalArgumentException());
             //            getLogManager().logError(
             //                "CONNECTION: Tried to close a statement with no connection",
