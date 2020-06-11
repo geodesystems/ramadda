@@ -1661,8 +1661,11 @@ var Utils = {
                     attrs.push(formatter(val));
 		}
 		attrs.push(STYLE);
-		attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%",HEIGHT, options.height,"min-width","1px"));
+		attrs.push(HU.css("text-align","center", "background", ct[i], WIDTH,"100%","min-height", options.height,"min-width","1px"));
 		let label = options.labels?options.labels[idx]:"";
+		if(options.labelStyle) {
+		    label = HU.div([STYLE,options.labelStyle],label);
+		}
 		if(options.horizontal) 
 		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i]), WIDTH, "1"], HtmlUtils.div(attrs, label||""));
 		else
