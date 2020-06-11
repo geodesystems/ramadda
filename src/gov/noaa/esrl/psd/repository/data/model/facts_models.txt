@@ -6,8 +6,10 @@ geos-5:GEOS-5
 AM3:GFDL AM3
 am3:GFDL AM3
 LBNL-CAM5-1-1degree:LBNL CAM5.1 (1deg)
-ESRL-CAM5:ESRL CAM5
-ESRL-CAM5L46:ESRL CAM5 (46-level)
+ESRL-CAM5:PSL CAM5 (1 degree)
+ESRL-CAM5HR:PSL CAM5 (.5 degree)
+ESRL-CAM5L46:PSL CAM5 (46-level)
+PSL-CAM5-.25degree:PSL CAM5 (.25 degree)
 ESRL-GFSv2:ESRL GFS
 CESM1-CAM5:CESM1-CAM5
 CanESM2:CanESM2
@@ -30,7 +32,8 @@ jra55:JRA-55
 era5:ERA5
 
 # Observations
-GPCP:Global Precip Clim Project (GPCP)
+GPCP:GPCP (Global Precip Clim Project)
+GPCC:GPCC (Global Precipitaion Climatology Centre)
 cpc_global_temp:CPC Global Temperature
 cpc_global_precip:CPC Global Precipitation
 gistemp1200c:NASA GISTEMP 1200km Combined
