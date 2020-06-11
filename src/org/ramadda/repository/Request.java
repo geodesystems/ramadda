@@ -1478,6 +1478,15 @@ public class Request implements Constants, Cloneable {
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isAdmin() {
+        return getUser().getAdmin();
+    }
+
 
     /**
      * _more_
@@ -2437,7 +2446,7 @@ public class Request implements Constants, Cloneable {
         }
 
         return ((userAgent.indexOf("googlebot") >= 0)
-		|| (userAgent.indexOf("bot") >=0)
+                || (userAgent.indexOf("bot") >= 0)
                 || (userAgent.indexOf("slurp") >= 0)
                 || (userAgent.indexOf("spider") >= 0));
 
@@ -2504,13 +2513,14 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
     public int getServerPort() {
-        if (!repository.useFixedHostnameForAbsoluteUrls()) {
+        if ( !repository.useFixedHostnameForAbsoluteUrls()) {
             try {
                 if (httpServletRequest != null) {
                     return httpServletRequest.getServerPort();
                 }
             } catch (Exception ignoreThis) {}
         }
+
         return repository.getPort();
     }
 
