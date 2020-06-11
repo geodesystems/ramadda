@@ -91,7 +91,7 @@ public class JsonOutputHandler extends OutputHandler {
                        OutputType.TYPE_FEEDS | OutputType.TYPE_FORSEARCH, "",
                        ICON_JSON);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_JSON_POINT =
         new OutputType("JSON", "json.point", OutputType.TYPE_FEEDS, "",
                        ICON_JSON);
@@ -375,11 +375,22 @@ public class JsonOutputHandler extends OutputHandler {
      * @return _more_
      */
     private String formatDate(long dttm) {
+        return formatDate(new Date(dttm));
+    }
+
+    /**
+     * _more_
+     *
+     * @param dttm _more_
+     *
+     * @return _more_
+     */
+    private String formatDate(Date dttm) {
         if (sdf == null) {
             sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         }
         synchronized (sdf) {
-            return sdf.format(new Date(dttm));
+            return sdf.format(dttm);
         }
     }
 
@@ -569,14 +580,11 @@ public class JsonOutputHandler extends OutputHandler {
                 for (int i = 0; i < extraParameters.length; i++) {
                     Column column     = columns.get(i);
                     String columnName = column.getName();
-
-                    /**
-                     *  not sure why this is here
-                     * if (columnName.endsWith("_id")) {
-                     *   continue;
-                     * }
-                     */
-                    String value = entry.getValue(i, "");
+                    Object v          = entry.getValue(i);
+                    if (v instanceof Date) {
+                        v = formatDate((Date) v);
+                    }
+                    String value = v.toString();
                     columnNames.add(columnName);
                     columnLabels.add(column.getLabel());
                     //                    Json.attr(items, "column." + columnName, Json.quote(value));
@@ -592,23 +600,6 @@ public class JsonOutputHandler extends OutputHandler {
                             Boolean.toString(column.getCanShow())));
                 }
             }
-            /*
-            {
-               "id":"a2280667-f564-4c4f-8527-99e12955b1c1",
-               "label":"Tag",
-               "type":"enum_tag",
-               "attr1":"some tag 2",
-               "attr2":"",
-               "attr3":"",
-               "attr4":""
-            },
-           */
-
-
-            //            Json.attr(items, "columnNames", Json.list(columnNames, true));
-            //            Json.attr(items, "columnNames", Json.list(columnNames, true));
-            //            Json.attr(items, "columnLabels", Json.list(columnLabels, true));
-            //            Json.attr(items, "extraColumns", Json.list(extraColumns));
         }
 
 
@@ -721,11 +712,17 @@ public class JsonOutputHandler extends OutputHandler {
             if (extraParameters != null) {
                 List<Column> columns = entry.getTypeHandler().getColumns();
                 for (int i = 0; i < extraParameters.length; i++) {
-                    String value = entry.getValue(i, "");
-                    if (columns.get(i).isNumeric()) {
-                        items.add(value);
+                    Object v = entry.getValue(i);
+                    if (v == null) {
+                        items.add("null");
                     } else {
-                        items.add(Json.quote(value));
+                        if (columns.get(i).isDate()) {
+                            items.add(Json.quote(formatDate((Date) v)));
+                        } else if (columns.get(i).isNumeric()) {
+                            items.add(v.toString());
+                        } else {
+                            items.add(Json.quote(v.toString()));
+                        }
                     }
                 }
             }
