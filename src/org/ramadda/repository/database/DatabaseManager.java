@@ -3122,23 +3122,23 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
                 if (typeName.equals("varchar")) {
                     type = "String";
-                    init.append(sp2 + varName + "=results.getString(COL_"
+                    init.append(sp2 + varName + "=results.getString(COL_NODOT_"
                                 + COLNAME + ");\n");
                 } else if (typeName.equals("timestamp")) {
                     type = "Date";
                     init.append(sp2 + "Timestamp " + varName
-                                + "_ts = results.getTimestamp(COL_" + COLNAME
+                                + "_ts = results.getTimestamp(COL_NODOT_" + COLNAME
                                 + ");\n");
                     init.append(sp2 + "if(" + varName + "_ts!=null)");
                     init.append(sp2 + varName + "=new Date(" + varName
                                 + "_ts.getTime());\n");
                 } else if (typeName.equals("integer")) {
                     type = "int";
-                    init.append(sp2 + varName + "=results.getInt(COL_"
+                    init.append(sp2 + varName + "=results.getInt(COL_NODOT_"
                                 + COLNAME + ");\n");
                 } else if (typeName.equals("double")) {
                     type = "double";
-                    init.append(sp2 + varName + "=results.getDouble(COL_"
+                    init.append(sp2 + varName + "=results.getDouble(COL_NODOT_"
                                 + COLNAME + ");\n");
                 } else {
                     throw new Exception("Unknown type:" + typeName);
