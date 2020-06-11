@@ -709,6 +709,10 @@ color: #000;
  border: 0px #000 solid;
 }
 
+.google-visualization-table-table th {
+    background:#E4E9F4;
+}
+
 .display-stats, .google-visualization-table-table {
     font-family: inherit;
     font-size: 11pt;

@@ -616,6 +616,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	propPrefix = [theField.getId()+".",""];
 	colorByAttr =theField.getId();
 	this.propPrefix.unshift(theField.getId()+".colorBy");
+	this.propPrefix.push("colorBy");
     }
 
     $.extend(this, {
@@ -806,10 +807,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if (this.display.showPercent) {
         this.setRange(0, 100,true);
     }
+
     var steps = this.getProperty("Steps");
+
     if(steps) {
 	this.steps = steps.split(",");
     }
+
 
 
     this.colorByLog = this.getProperty("Log", false);
@@ -994,6 +998,7 @@ ColorByInfo.prototype = {
 //	    if(tmp>3 && tmp<6)
 //		console.log("ov:" + tmp  +" v:" + v + " perc:" + percent);
         }
+
 
 	var index=0;
 	if(this.steps) {

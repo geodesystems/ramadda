@@ -510,6 +510,9 @@ var Utils = {
 	return  new Date(d);
 
     },
+    minutesSince: function(date) {
+	return Math.round(this.toMinutes(new Date().getTime()-date));
+    },
     toMinutes: function(ms) {
 	return ms/1000/60;
     },

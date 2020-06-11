@@ -486,7 +486,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
 
         Connection conn = DriverManager.getConnection(connectionUrl,
-                              connectionProps);
+						      connectionProps);
         if (conn == null) {
             System.err.println("Got null connection for url:"
                                + connectionUrl);

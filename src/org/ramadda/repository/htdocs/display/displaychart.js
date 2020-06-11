@@ -2450,7 +2450,6 @@ function TableDisplay(displayManager, id, properties) {
 					'maxHeaderWidth=60',
 					'headerStyle=""']); 
 	},
-
         canDoGroupBy: function() {
             return true;
         },
@@ -2464,12 +2463,6 @@ function TableDisplay(displayManager, id, properties) {
 	    let colorByMap = {};
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let iconField = this.getFieldById(null,this.getProperty("iconField"));
-
-/*
-	    this.getFields().forEach(f=>{
-		console.log("F:" + f);
-	    });
-*/
 
 	    if(colorCells) {
 		colorCells.split(",").forEach(c=>{
