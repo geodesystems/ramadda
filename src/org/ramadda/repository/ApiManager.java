@@ -345,7 +345,7 @@ public class ApiManager extends RepositoryManager {
 	    try {
 		processApiNode(apiRoot, apiHandlers, props, "repository");
 	    } catch(Exception exc) {
-		getLogManager().logError("Error processing API node:" + file+"\n" + exc);
+		getLogManager().logError("Error processing API node:" + file+"\n", exc);
 	    }
         }
     }
