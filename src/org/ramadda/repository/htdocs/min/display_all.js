@@ -1002,7 +1002,6 @@ ColorByInfo.prototype = {
 		    break;
 		}
 	    }
-	    console.log("v:" + v +" index:" + index);
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
@@ -2022,6 +2021,10 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	this[name] = value;
 //	console.log("attr:" + name+"=" + value);
     });
+    if(this.type=="image") {
+	this.imageField=display.getFieldById(fields,this.imageField);
+	this.myImage= new Image();
+    }
     this.scale = scale;
     if(this.height==null) {
 	if(this.type == "3dbar")
@@ -2180,6 +2183,18 @@ Glyph.prototype = {
 		ctx.fillRect(pt.x,pt.y, this.width, this.height);
 	    if(this.stroke) 
 		ctx.strokeRect(pt.x,pt.y, this.width, this.height);
+	} else if(this.type=="image") {
+	    if(this.imageField) {
+		let img = args.record.getValue(this.imageField.getIndex());
+		let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
+		let i = new Image();
+		i.src = img;
+		setTimeout(()=>{
+		    ctx.drawImage(i,pt.x,pt.y,40,40);
+		},1000);
+//		ctx.drawImage(this.myImage,pt.x,pt.y);
+//		ctx.drawImage(this.myImage,0,0);
+	    }
 	} else 	if(this.type == "gauge") {
 	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
 	    ctx.fillStyle =  this.fillColor || "#F7F7F7";
@@ -3352,6 +3367,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.showRange = this.getProperty("colorTableShowRange");
 	    let labels = this.getProperty("colorTableLabels");
 	    args.labels = labels?labels.split(","):null;
+	    args.labelStyle=this.getProperty("colorTableLabelStyle");
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty("showColorTableStride",1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
@@ -25747,6 +25763,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'bounds',wikiValue:'north,west,south,east',tt:'initial bounds'},
 	{p:'mapCenter',wikiValue:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',wikiValue:4,tt:"initial zoom"},
+	{p:'zoomTimeout',wikiValue:1000,tt:"initial zoom timeout delay"},
 	{p:'fixedPosition',wikiValue:true,tt:'Keep the initial position'},
 	{p:'initialLocation', wikiValue:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',wikiValue:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
@@ -25948,6 +25965,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("zoomLevel")) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getProperty("zoomLevel");
+		params.initialZoomTimeout = this.getProperty("zoomTimeout");
 	    }
 	    
 
@@ -27459,7 +27477,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
-		$("#test").html(HU.image(img,[WIDTH,"500", STYLE,"border:1px solid blue;"]));
+//		$("#test").html(HU.image(img,[WIDTH,"500", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
@@ -34094,6 +34112,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	{p:'titleTemplate',tt:'Template to show as title'},
 	{p:'topTitleTemplate',tt:'Template to show as top title'},	
 	{p:'urlField',tt:'Url Field'},
+	{p:'iconField',tt:'Icon Field'},
 	{p:'canvasOrigin',d:"sw",wikiValue:"center",tt:'Origin point for drawing glyphs'},
 	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
 	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
@@ -34118,13 +34137,15 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	    let titleTemplate= this.getPropertyTitleTemplate();
 	    let topTitleTemplate= this.getPropertyTopTitleTemplate();
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
+	    let iconField = this.getFieldById(null,this.getPropertyIconField());	    
 	    records.forEach((record,idx)=>{
 		let cid = this.getDomId("canvas_" + idx);
 		let c = HU.tag("canvas",[CLASS,"display-canvas-canvas", STYLE,style, 
 					 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
-		let topTitle  =topTitleTemplate?
-		    HU.div([CLASS,"display-canvas-title"], 
-			   this.getRecordHtml(record, null, topTitleTemplate)):"";
+		let icon = iconField? HU.image(record.getValue(iconField.getIndex()))+"&nbsp;":"";
+		let topTitle  = topTitleTemplate?
+		    HU.div([CLASS,"display-canvas-title"],
+			   icon+this.getRecordHtml(record, null, topTitleTemplate)):icon;
 		let title  = titleTemplate?
 		    HU.div([CLASS,"display-canvas-title"], 
 			   this.getRecordHtml(record, null, titleTemplate)):"";	
