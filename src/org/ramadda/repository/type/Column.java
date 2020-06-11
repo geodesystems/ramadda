@@ -86,7 +86,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /** _more_ */
     private SimpleDateFormat dateTimeFormat =
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        new SimpleDateFormat("yyyy-MM-dd HH:mm Z");
 
     /** _more_ */
     private SimpleDateFormat fullDateTimeFormat =
@@ -356,6 +356,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private Hashtable<String, String> enumMap = new Hashtable<String,
                                                     String>();
 
+    /** _more_          */
     private List<Display> displays = new ArrayList<Display>();
 
 
@@ -584,7 +585,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             dfltDouble = Double.parseDouble(dflt);
         }
 
-
+        dateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
     }
 
     /**
@@ -596,9 +597,12 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public String getDisplayAttribute(String attr, Object v) {
-	Display d = getDisplay(v);
-	if(d==null) return null;
-	return d.getAttribute(attr);
+        Display d = getDisplay(v);
+        if (d == null) {
+            return null;
+        }
+
+        return d.getAttribute(attr);
     }
 
 
@@ -611,38 +615,48 @@ public class Column implements DataTypes, Constants, Cloneable {
      * @return _more_
      */
     public Display getDisplay(Object v) {
-	if(displays.size()==0) return null;
-	if(v==null) return null;
-	if(isNumeric()) {
-	    double value = new Double(v.toString());
-	    for(Display d: displays)  {
-		if(!Double.isNaN(d.min) && !Double.isNaN(d.max)) {
-    		    if(value>=d.min && value<=d.max) {
-			return d;
-		    }
-		}
-	    }
-	} else {
-	    for(Display d: displays)  {
-		if(d.value.equals(v)) return d;
-	    }
-	}
-	return null;
+        if (displays.size() == 0) {
+            return null;
+        }
+        if (v == null) {
+            return null;
+        }
+        if (isNumeric()) {
+            double value = new Double(v.toString());
+            for (Display d : displays) {
+                if ( !Double.isNaN(d.min) && !Double.isNaN(d.max)) {
+                    if ((value >= d.min) && (value <= d.max)) {
+                        return d;
+                    }
+                }
+            }
+        } else {
+            for (Display d : displays) {
+                if (d.value.equals(v)) {
+                    return d;
+                }
+            }
+        }
+
+        return null;
     }
 
 
     /**
      * _more_
      *
-     * @param v 
+     * @param v
      *
      * @return _more_
      */
     public String decorate(String v) {
+
         Display d = getDisplay(v);
         if (d == null) {
             return v;
         }
+
+        //      if(true) throw new IllegalArgumentException("");
         return d.decorate(v);
     }
 
@@ -1242,20 +1256,24 @@ public class Column implements DataTypes, Constants, Cloneable {
                 sb.append(s);
             }
         } else if (isType(DATATYPE_DATETIME)) {
+            String s;
             if (sdf != null) {
-                sb.append(sdf.format((Date) values[offset]));
+                s = sdf.format((Date) values[offset]);
             } else {
-                sb.append(dateTimeFormat.format((Date) values[offset]));
+                s = dateTimeFormat.format((Date) values[offset]);
             }
+            sb.append(s);
         } else if (isType(DATATYPE_DATE)) {
             if (values[offset] == null) {
                 sb.append("null");
             } else {
+                String s = sdf.format((Date) values[offset]);
                 if (sdf != null) {
-                    sb.append(sdf.format((Date) values[offset]));
+                    s = sdf.format((Date) values[offset]);
                 } else {
-                    sb.append(dateFormat.format((Date) values[offset]));
+                    s = dateFormat.format((Date) values[offset]);
                 }
+                sb.append(s);
             }
         } else if (isType(DATATYPE_ENTRY)) {
             String entryId  = toString(values, offset);
@@ -1370,14 +1388,15 @@ public class Column implements DataTypes, Constants, Cloneable {
                     s = label;
                 }
             }
-	    s = typeHandler.decorateValue(null, entry, this, s);
             sb.append(s);
         }
 
+        String s = sb.toString();
+        s = typeHandler.decorateValue(null, entry, this, s);
         if (htmlTemplate != null) {
-            result.append(htmlTemplate.replace("${value}", sb.toString()));
+            result.append(htmlTemplate.replace("${value}", s));
         } else {
-            result.append(sb.toString());
+            result.append(s);
         }
 
     }
@@ -3910,7 +3929,9 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public static class Display {
 
-	String value;
+        /** _more_          */
+        String value;
+
         /** _more_ */
         String background;
 
@@ -3928,9 +3949,11 @@ public class Column implements DataTypes, Constants, Cloneable {
         /** _more_ */
         String icon;
 
-	double min;
+        /** _more_          */
+        double min;
 
-	double max;
+        /** _more_          */
+        double max;
 
         /**
          * _more_
@@ -3938,7 +3961,7 @@ public class Column implements DataTypes, Constants, Cloneable {
          * @param element _more_
          */
         public Display(Element element) {
-	    value = XmlUtil.getAttribute(element, "value", "");
+            value = XmlUtil.getAttribute(element, "value", "");
             background = XmlUtil.getAttribute(element, "background",
                     (String) null);
             color = XmlUtil.getAttribute(element, "color", (String) null);
@@ -3947,8 +3970,10 @@ public class Column implements DataTypes, Constants, Cloneable {
             template = XmlUtil.getAttribute(element, "template",
                                             (String) null);
             icon = XmlUtil.getAttribute(element, "icon", (String) null);
-	    min =  XmlUtil.getAttribute(element, "min", Double.NaN);
-	    max =  XmlUtil.getAttribute(element, "max", Double.isNaN(min)?Double.NaN:Double.MAX_VALUE);
+            min  = XmlUtil.getAttribute(element, "min", Double.NaN);
+            max  = XmlUtil.getAttribute(element, "max", Double.isNaN(min)
+                    ? Double.NaN
+                    : Double.MAX_VALUE);
         }
 
         /**
@@ -3968,6 +3993,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (attr.equals("color")) {
                 return color;
             }
+
             return null;
         }
 
