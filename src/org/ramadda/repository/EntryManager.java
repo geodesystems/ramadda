@@ -6224,7 +6224,7 @@ public class EntryManager extends RepositoryManager {
         String type = Utils.getAttributeOrTag(node, ATTR_TYPE,
                           TypeHandler.TYPE_FILE);
 
-        System.err.println("TYPE:" + type + ":");
+        //System.err.println("TYPE:" + type + ":");
         List<Entry> entries = new ArrayList<Entry>();
         Date        now     = new Date();
         for (Resource resource : resources) {
