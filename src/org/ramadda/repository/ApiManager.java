@@ -342,7 +342,11 @@ public class ApiManager extends RepositoryManager {
             }
             Element   apiRoot = XmlUtil.getRoot(file, getClass());
             Hashtable props   = new Hashtable();
-            processApiNode(apiRoot, apiHandlers, props, "repository");
+	    try {
+		processApiNode(apiRoot, apiHandlers, props, "repository");
+	    } catch(Exception exc) {
+		getLogManager().logError("Error processing API node:" + file+"\n" + exc);
+	    }
         }
     }
 
