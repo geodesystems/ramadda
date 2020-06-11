@@ -3329,6 +3329,7 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	{p:'titleTemplate',tt:'Template to show as title'},
 	{p:'topTitleTemplate',tt:'Template to show as top title'},	
 	{p:'urlField',tt:'Url Field'},
+	{p:'iconField',tt:'Icon Field'},
 	{p:'canvasOrigin',d:"sw",wikiValue:"center",tt:'Origin point for drawing glyphs'},
 	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
 	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
@@ -3353,13 +3354,15 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	    let titleTemplate= this.getPropertyTitleTemplate();
 	    let topTitleTemplate= this.getPropertyTopTitleTemplate();
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
+	    let iconField = this.getFieldById(null,this.getPropertyIconField());	    
 	    records.forEach((record,idx)=>{
 		let cid = this.getDomId("canvas_" + idx);
 		let c = HU.tag("canvas",[CLASS,"display-canvas-canvas", STYLE,style, 
 					 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
-		let topTitle  =topTitleTemplate?
-		    HU.div([CLASS,"display-canvas-title"], 
-			   this.getRecordHtml(record, null, topTitleTemplate)):"";
+		let icon = iconField? HU.image(record.getValue(iconField.getIndex()))+"&nbsp;":"";
+		let topTitle  = topTitleTemplate?
+		    HU.div([CLASS,"display-canvas-title"],
+			   icon+this.getRecordHtml(record, null, topTitleTemplate)):icon;
 		let title  = titleTemplate?
 		    HU.div([CLASS,"display-canvas-title"], 
 			   this.getRecordHtml(record, null, titleTemplate)):"";	
