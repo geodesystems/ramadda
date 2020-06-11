@@ -581,6 +581,7 @@ public class JsonOutputHandler extends OutputHandler {
                     Column column     = columns.get(i);
                     String columnName = column.getName();
                     Object v          = entry.getValue(i);
+		    if(v==null) v = "";
                     if (v instanceof Date) {
                         v = formatDate((Date) v);
                     }
