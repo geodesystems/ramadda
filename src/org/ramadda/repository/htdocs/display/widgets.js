@@ -1002,7 +1002,6 @@ ColorByInfo.prototype = {
 		    break;
 		}
 	    }
-	    console.log("v:" + v +" index:" + index);
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
@@ -2022,6 +2021,10 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	this[name] = value;
 //	console.log("attr:" + name+"=" + value);
     });
+    if(this.type=="image") {
+	this.imageField=display.getFieldById(fields,this.imageField);
+	this.myImage= new Image();
+    }
     this.scale = scale;
     if(this.height==null) {
 	if(this.type == "3dbar")
@@ -2180,6 +2183,18 @@ Glyph.prototype = {
 		ctx.fillRect(pt.x,pt.y, this.width, this.height);
 	    if(this.stroke) 
 		ctx.strokeRect(pt.x,pt.y, this.width, this.height);
+	} else if(this.type=="image") {
+	    if(this.imageField) {
+		let img = args.record.getValue(this.imageField.getIndex());
+		let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
+		let i = new Image();
+		i.src = img;
+		setTimeout(()=>{
+		    ctx.drawImage(i,pt.x,pt.y,40,40);
+		},1000);
+//		ctx.drawImage(this.myImage,pt.x,pt.y);
+//		ctx.drawImage(this.myImage,0,0);
+	    }
 	} else 	if(this.type == "gauge") {
 	    let pt = Utils.translatePoint(x, y, this.width,  this.height, this.pos,{dx:this.dx,dy:this.dy});
 	    ctx.fillStyle =  this.fillColor || "#F7F7F7";
