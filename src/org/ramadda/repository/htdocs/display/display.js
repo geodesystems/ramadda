@@ -962,6 +962,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.showRange = this.getProperty("colorTableShowRange");
 	    let labels = this.getProperty("colorTableLabels");
 	    args.labels = labels?labels.split(","):null;
+	    args.labelStyle=this.getProperty("colorTableLabelStyle");
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty("showColorTableStride",1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
