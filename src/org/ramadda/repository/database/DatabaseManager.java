@@ -826,7 +826,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @throws Exception _more_
      */
-    public void update(String table, String colId, String id, String[] names,
+    public void update(String table, String colId, Object id, String[] names,
                        Object[] values)
             throws Exception {
         PreparedStatement statement =
@@ -846,7 +846,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                 statement.setObject(i + 1, value);
             }
         }
-        statement.setString(values.length + 1, id);
+	statement.setObject(values.length + 1, id);
         statement.execute();
         closeAndReleaseConnection(statement);
     }
