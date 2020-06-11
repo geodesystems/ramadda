@@ -1715,15 +1715,28 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public boolean okToList(Entry entry, String arg, Hashtable props, boolean dflt) {
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param arg _more_
+     * @param props _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public boolean okToList(Entry entry, String arg, Hashtable props,
+                            boolean dflt) {
         String key   = "list." + arg + ".show";
-        String value = getProperty(entry, key, (String)null);
-	if(value!=null)
-	    return value.equals("true");
-	if(props!=null) {
-	    return Utils.getProperty(props, key,  dflt);
-	}
-	return dflt;
+        String value = getProperty(entry, key, (String) null);
+        if (value != null) {
+            return value.equals("true");
+        }
+        if (props != null) {
+            return Utils.getProperty(props, key, dflt);
+        }
+
+        return dflt;
     }
 
 
@@ -4986,10 +4999,10 @@ public class TypeHandler extends RepositoryManager {
         if (columns != null) {
             Object[] values = entry.getValues();
             for (Column column : columns) {
-		String s    = column.getString(values);
-		String attr = column.getDisplayAttribute(attribute, s);
-		if (attr != null) {
-		    return attr;
+                String s    = column.getString(values);
+                String attr = column.getDisplayAttribute(attribute, s);
+                if (attr != null) {
+                    return attr;
                 }
             }
         }
@@ -4997,10 +5010,25 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    public String decorateValue(Request request, Entry entry, Column column, String s) {
-	return column.decorate(s);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param column _more_
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public String decorateValue(Request request, Entry entry, Column column,
+                                String s) {
+        if (parent != null) {
+            return parent.decorateValue(request, entry, column, s);
+        }
+
+        return column.decorate(s);
     }
-    
+
 
     /**
      * _more_
