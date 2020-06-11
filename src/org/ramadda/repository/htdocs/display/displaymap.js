@@ -68,6 +68,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'bounds',wikiValue:'north,west,south,east',tt:'initial bounds'},
 	{p:'mapCenter',wikiValue:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',wikiValue:4,tt:"initial zoom"},
+	{p:'zoomTimeout',wikiValue:1000,tt:"initial zoom timeout delay"},
 	{p:'fixedPosition',wikiValue:true,tt:'Keep the initial position'},
 	{p:'initialLocation', wikiValue:'lat,lon',tt:"initial location"},
 	{p:'defaultMapLayer',wikiValue:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
@@ -269,6 +270,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty("zoomLevel")) {
 		this.hadInitialPosition = true;
                 params.initialZoom = +this.getProperty("zoomLevel");
+		params.initialZoomTimeout = this.getProperty("zoomTimeout");
 	    }
 	    
 
@@ -1780,7 +1782,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
-		$("#test").html(HU.image(img,[WIDTH,"500", STYLE,"border:1px solid blue;"]));
+//		$("#test").html(HU.image(img,[WIDTH,"500", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);

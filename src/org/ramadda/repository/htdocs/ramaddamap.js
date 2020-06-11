@@ -2521,8 +2521,15 @@ RepositoryMap.prototype = {
 	if(this.initialZoom>=0) {
 	    if(debugBounds)
 		console.log("initial zoom:" + this.initialZoom);
-	    this.getMap().zoomTo(this.initialZoom);
+	    let zoom = this.initialZoom;
 	    this.initialZoom=-1;
+	    this.getMap().zoomTo(zoom);
+	    //In case we are in tabs then set the zoom level later
+	    if(this.initialZoomTimeout) {
+		setTimeout(()=>{
+		    this.getMap().zoomTo(zoom);
+		},this.initialZoomTimeout);
+	    }
 	}
     },
 
@@ -2538,21 +2545,20 @@ RepositoryMap.prototype = {
         this.removeSearchMarkers();
         this.searchMarkerList = [];
         if (!this.locationSearchResults) return;
-        var east, west, north, south;
+        let east, west, north, south;
         for (var i = 0; i < this.locationSearchResults.length; i++) {
-            var result = this.locationSearchResults[i];
-            var lonlat = new createLonLat(result.longitude, result.latitude);
-            var icon = result.icon;
+            let result = this.locationSearchResults[i];
+            let lonlat = new createLonLat(result.longitude, result.latitude);
+            let icon = result.icon;
             if (!icon)
                 icon = ramaddaBaseUrl + "/icons/green-dot.png";
             this.searchMarkerList.push(this.addMarker("search", lonlat, icon, "", result.name, 20, 20));
-
             east = i == 0 ? result.longitude : Math.max(east, result.longitude);
             west = i == 0 ? result.longitude : Math.min(west, result.longitude);
             north = i == 0 ? result.latitude : Math.max(north, result.latitude);
             south = i == 0 ? result.latitude : Math.min(south, result.latitude);
         }
-        var bounds = this.transformLLBounds(createBounds(west, south, east, north));
+        let bounds = this.transformLLBounds(createBounds(west, south, east, north));
         this.zoomToExtent(bounds);
     },
 
@@ -3456,8 +3462,6 @@ RepositoryMap.prototype = {
 	this.seenMarkers = {};
     },
 
-
-
     addEntryMarker:  function(id, location, iconUrl, markerName, text, type, props) {
         marker = this.addMarker(id, location, iconUrl, markerName, text);
         marker.entryType = type;
@@ -3474,13 +3478,13 @@ RepositoryMap.prototype = {
     },
 
 
-    createMarker:  function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
+    createMarker:  function(id, location, iconUrl, markerName, text, parentId, size, xoffset, yoffset, canSelect) {
         if (Array.isArray(location)) {
             location = createLonLat(location[0], location[1]);
         }
         if (size == null) size = 16;
-        if (voffset == null) voffset = 0;
-
+        if (xoffset == null) xoffset = 0;
+        if (yoffset == null) yoffset = 0;
         if (!this.markers) {
             this.markers = new OpenLayers.Layer.Vector("Markers");
             this.addVectorLayer(this.markers, canSelect);
@@ -3488,22 +3492,25 @@ RepositoryMap.prototype = {
         if (!iconUrl) {
             iconUrl = ramaddaBaseUrl + '/icons/marker.png';
         }
-        var sz = new OpenLayers.Size(size, size);
-        var calculateOffset = function(size) {
-            return new OpenLayers.Pixel(-(size.w / 2), -(size.h / 2) - voffset);
+        let sz = new OpenLayers.Size(size, size);
+        let calculateOffset = function(size) {
+            let offset = new OpenLayers.Pixel(-(size.w / 2)-xoffset, -(size.h / 2) - yoffset);
+	    return offset;
         };
 
-        var icon = new OpenLayers.Icon(iconUrl, sz, null, calculateOffset);
-        var projPoint = this.transformLLPoint(location);
-        var marker = new OpenLayers.Marker(projPoint, icon);
-        var feature = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Point(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection), {
+        let icon = new OpenLayers.Icon(iconUrl, sz, null, calculateOffset);
+        let projPoint = this.transformLLPoint(location);
+        let marker = new OpenLayers.Marker(projPoint, icon);
+	let pt = new OpenLayers.Geometry.Point(location.lon, location.lat).transform(this.displayProjection, this.sourceProjection);
+        let feature = new OpenLayers.Feature.Vector(
+            pt,
+	    {
                 description: ''
             }, {
                 externalGraphic: iconUrl,
                 graphicHeight: size,
                 graphicWidth: size,
-                graphicXOffset: -size / 2,
+                graphicXOffset: xoffset + (-size / 2),
                 graphicYOffset: -size / 2
             });
 
@@ -3517,9 +3524,9 @@ RepositoryMap.prototype = {
         marker.text = this.getPopupText(text, marker);
         marker.name = markerName;
         marker.location = location;
-        var locationKey = location + "";
+        let locationKey = location + "";
         feature.locationKey = locationKey;
-        var seenMarkers = this.seenMarkers[locationKey];
+        let seenMarkers = this.seenMarkers[locationKey];
         if (seenMarkers == null) {
             seenMarkers = [];
             this.seenMarkers[locationKey] = seenMarkers;
@@ -3528,8 +3535,8 @@ RepositoryMap.prototype = {
         //        console.log("loc:" + locationKey +" " + seenMarkers);
 
 
-        var _this = this;
-        var clickFunc = function(evt) {
+        let _this = this;
+        let clickFunc = function(evt) {
             _this.showMarkerPopup(marker, true);
             if (marker.ramaddaClickHandler != null) {
                 marker.ramaddaClickHandler.call(null, marker);
@@ -3541,19 +3548,17 @@ RepositoryMap.prototype = {
         marker.events.register('touchstart', marker, clickFunc);
 
 
-        var visible = this.isLayerVisible(marker.ramaddaId, marker.parentId);
+        let visible = this.isLayerVisible(marker.ramaddaId, marker.parentId);
         if (!visible) marker.display(false);
         feature.what = "marker";
         return feature;
     },
 
-
-
-    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
+    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect) {
 	if(Utils.isDefined(location.x)) {
 	    location = createLonLat(location.x,location.y);
 	}
-        var marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect);
+        var marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect);
         this.addMarkers([marker]);
         return marker;
     },
@@ -3752,9 +3757,9 @@ RepositoryMap.prototype = {
             cstyle.strokeOpacity = 0.0;
         }
 	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
-        var center = new OpenLayers.Geometry.Point(point.x, point.y);
+        let center = new OpenLayers.Geometry.Point(point.x, point.y);
         center.transform(this.displayProjection, this.sourceProjection);
-        var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
+        let feature = new OpenLayers.Feature.Vector(center, null, cstyle);
         feature.center = center;
         feature.ramaddaId = id;
 	if(text)
