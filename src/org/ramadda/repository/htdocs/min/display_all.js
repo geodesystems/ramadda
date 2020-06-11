@@ -616,6 +616,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	propPrefix = [theField.getId()+".",""];
 	colorByAttr =theField.getId();
 	this.propPrefix.unshift(theField.getId()+".colorBy");
+	this.propPrefix.push("colorBy");
     }
 
     $.extend(this, {
@@ -806,10 +807,13 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     if (this.display.showPercent) {
         this.setRange(0, 100,true);
     }
+
     var steps = this.getProperty("Steps");
+
     if(steps) {
 	this.steps = steps.split(",");
     }
+
 
 
     this.colorByLog = this.getProperty("Log", false);
@@ -994,6 +998,7 @@ ColorByInfo.prototype = {
 //	    if(tmp>3 && tmp<6)
 //		console.log("ov:" + tmp  +" v:" + v + " perc:" + percent);
         }
+
 
 	var index=0;
 	if(this.steps) {
@@ -3080,14 +3085,16 @@ function DisplayThing(argId, argProperties) {
         getProperty: function(key, dflt,skipThis) {
 	    var value =  this.getPropertyInner(key,null,skipThis);
 	    if(this.debugGetProperty)
+		console.log("\tgetProperty:" + key);
+	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
 	    if(!Utils.isDefined(value)) {
 		if(this.debugGetProperty)
-		    console.log("returning dflt:" + dflt);
+		    console.log("\treturning dflt:" + dflt);
 		return dflt;
 	    }
 	    if(this.debugGetProperty)
-		console.log("\returning value:" + value);
+		console.log("\treturning value:" + value);
 	    return value;
 	},
         getPropertyInner: function(keys, dflt,skipThis) {	    
@@ -3367,7 +3374,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.showRange = this.getProperty("colorTableShowRange");
 	    let labels = this.getProperty("colorTableLabels");
 	    args.labels = labels?labels.split(","):null;
-	    args.labelStyle=this.getProperty("colorTableLabelStyle");
+	    args.labelStyle=this.getProperty("colorTableLabelStyle","font-size:12pt;");
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty("showColorTableStride",1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
@@ -17018,7 +17025,6 @@ function TableDisplay(displayManager, id, properties) {
 					'maxHeaderWidth=60',
 					'headerStyle=""']); 
 	},
-
         canDoGroupBy: function() {
             return true;
         },
@@ -17032,12 +17038,6 @@ function TableDisplay(displayManager, id, properties) {
 	    let colorByMap = {};
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let iconField = this.getFieldById(null,this.getProperty("iconField"));
-
-/*
-	    this.getFields().forEach(f=>{
-		console.log("F:" + f);
-	    });
-*/
 
 	    if(colorCells) {
 		colorCells.split(",").forEach(c=>{

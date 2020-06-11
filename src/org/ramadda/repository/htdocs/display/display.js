@@ -675,14 +675,16 @@ function DisplayThing(argId, argProperties) {
         getProperty: function(key, dflt,skipThis) {
 	    var value =  this.getPropertyInner(key,null,skipThis);
 	    if(this.debugGetProperty)
+		console.log("\tgetProperty:" + key);
+	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
 	    if(!Utils.isDefined(value)) {
 		if(this.debugGetProperty)
-		    console.log("returning dflt:" + dflt);
+		    console.log("\treturning dflt:" + dflt);
 		return dflt;
 	    }
 	    if(this.debugGetProperty)
-		console.log("\returning value:" + value);
+		console.log("\treturning value:" + value);
 	    return value;
 	},
         getPropertyInner: function(keys, dflt,skipThis) {	    
@@ -962,7 +964,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    args.showRange = this.getProperty("colorTableShowRange");
 	    let labels = this.getProperty("colorTableLabels");
 	    args.labels = labels?labels.split(","):null;
-	    args.labelStyle=this.getProperty("colorTableLabelStyle");
+	    args.labelStyle=this.getProperty("colorTableLabelStyle","font-size:12pt;");
 	    args.horizontal= this.getColorTableHorizontal();
 	    args.stride = this.getProperty("showColorTableStride",1);
             Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);

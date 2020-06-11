@@ -2278,11 +2278,19 @@ a.ramadda-heading-2-link:visited {
 
 
 .ramadda-footer {
-    margin-left: auto;
-    margin-right: auto;
-    text-align:center;
-    font-size:90%;
+   margin-left: auto;
+   margin-right: auto;
+   text-align:center;
+   font-size:90%;
+   margin:0px;
+   padding:20px;
+   align:center;
+   text-align:center;
+   background-repeat: repeat; 
+   background-image:url(${root}/images/background.png);
+   border-top: 1px #000 solid;
 }
+
 .ramadda-smalllink {
     font-size:80%;
 }
