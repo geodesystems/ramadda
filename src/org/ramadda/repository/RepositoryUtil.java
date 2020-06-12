@@ -44,10 +44,10 @@ public class RepositoryUtil {
     //Make sure to change the fields in the top-level build.properties
 
     /** _more_ */
-    private static final double MAJOR_VERSION = 3.0;
+    private static final double MAJOR_VERSION = 4.0;
 
     /** _more_ */
-    private static final int MINOR_VERSION = 68;
+    private static final int MINOR_VERSION = 1;
 
 
     //When we make any real change to the css or javascript change this version
