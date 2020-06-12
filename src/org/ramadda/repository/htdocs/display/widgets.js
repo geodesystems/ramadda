@@ -896,6 +896,7 @@ ColorByInfo.prototype = {
 	    this.setRange(this.origRange[0],this.origRange[1]);
     },
     setRange: function(minValue,maxValue, force) {
+//	console.log(this.propPrefix +" min:" + minValue + " max:" + maxValue);
 	if(!force && this.overrideRange) return;
 	this.origMinValue = minValue;
 	this.origMaxValue = maxValue;
@@ -1000,6 +1001,7 @@ ColorByInfo.prototype = {
         }
 
 
+
 	var index=0;
 	if(this.steps) {
 	    for(;index<this.steps.length;index++) {
@@ -1010,6 +1012,7 @@ ColorByInfo.prototype = {
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
+//	console.log("v:" + v +" index:" + index +" colors:" + this.colors);
         if (index >= this.colors.length) index = this.colors.length - 1;
         else if (index < 0) index = 0;
 	if(this.stringMap) {
@@ -2110,6 +2113,7 @@ Glyph.prototype = {
 	    } else if(args.colorValue) {
 		color=  this.colorByInfo.getColor(args.colorValue);
 	    }
+
 	}
 	let lengthPercent = 1.0;
 	if(this.sizeByInfo) {

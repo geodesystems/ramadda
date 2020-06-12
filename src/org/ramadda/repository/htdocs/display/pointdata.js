@@ -2157,6 +2157,36 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
+	cut: function(pointData, args) {
+	    let cut  = args.fields?args.fields.split(","):[];
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    let newFields = [];
+	    let newRecords = [];
+	    let indices = [];
+	    fields.forEach((f,fieldIdx)=>{
+//		console.log(f.getId());
+		if(cut.indexOf(f.getId())>=0) return;
+		f = f.clone();
+		let newField = f.clone();
+		indices.push(newField.index);
+		newField.index = newFields.length;
+		newFields.push(newField);
+	    });
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecord.fields =newFields;
+		let data= newRecord.data;
+		let newData=[];
+		indices.forEach(i=>{
+		    newData.push(data[i]);
+		});
+		newRecord.data = newData;
+		newRecords.push(newRecord);
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	},
 	doAverage: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let header = this.display.getDataValues(records[0]);

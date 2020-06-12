@@ -896,6 +896,7 @@ ColorByInfo.prototype = {
 	    this.setRange(this.origRange[0],this.origRange[1]);
     },
     setRange: function(minValue,maxValue, force) {
+//	console.log(this.propPrefix +" min:" + minValue + " max:" + maxValue);
 	if(!force && this.overrideRange) return;
 	this.origMinValue = minValue;
 	this.origMaxValue = maxValue;
@@ -1000,6 +1001,7 @@ ColorByInfo.prototype = {
         }
 
 
+
 	var index=0;
 	if(this.steps) {
 	    for(;index<this.steps.length;index++) {
@@ -1010,6 +1012,7 @@ ColorByInfo.prototype = {
 	} else {
 	    index = parseInt(percent * this.colors.length);
 	}
+//	console.log("v:" + v +" index:" + index +" colors:" + this.colors);
         if (index >= this.colors.length) index = this.colors.length - 1;
         else if (index < 0) index = 0;
 	if(this.stringMap) {
@@ -2110,6 +2113,7 @@ Glyph.prototype = {
 	    } else if(args.colorValue) {
 		color=  this.colorByInfo.getColor(args.colorValue);
 	    }
+
 	}
 	let lengthPercent = 1.0;
 	if(this.sizeByInfo) {
@@ -10809,6 +10813,36 @@ function CsvUtil() {
 		    }
 		}); 
 		newRecord.data=data;
+	    });
+	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	},
+	cut: function(pointData, args) {
+	    let cut  = args.fields?args.fields.split(","):[];
+	    let records = pointData.getRecords(); 
+            let header = this.display.getDataValues(records[0]);
+            let fields  = pointData.getRecordFields();
+	    let newFields = [];
+	    let newRecords = [];
+	    let indices = [];
+	    fields.forEach((f,fieldIdx)=>{
+//		console.log(f.getId());
+		if(cut.indexOf(f.getId())>=0) return;
+		f = f.clone();
+		let newField = f.clone();
+		indices.push(newField.index);
+		newField.index = newFields.length;
+		newFields.push(newField);
+	    });
+	    records.forEach((record, rowIdx)=>{
+		let newRecord = record.clone();
+		newRecord.fields =newFields;
+		let data= newRecord.data;
+		let newData=[];
+		indices.forEach(i=>{
+		    newData.push(data[i]);
+		});
+		newRecord.data = newData;
+		newRecords.push(newRecord);
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
 	},
