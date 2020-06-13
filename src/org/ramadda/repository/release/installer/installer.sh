@@ -70,9 +70,9 @@ if [ "$os" == "${OS_REDHAT}" ]; then
     pgService=postgresql-server
     pgInstall=http://yum.postgresql.org/9.3/redhat/rhel-6-x86_64/pgdg-redhat93-9.3-1.noarch.rpm
 else
-    pgsql=pgsql93
-    pgService=postgresql93
-    pgInstall=postgresql93-server
+    pgsql=pgsql
+    pgService=postgresql
+    pgInstall=postgresql-server
 fi
 
 postgresDir=/var/lib/${pgsql}
@@ -258,11 +258,7 @@ if [ "$response" == "y" ]; then
     yum install -y  ${pgInstall} > /dev/null
     pgdir="${basedir}/${pgsql}"
 
-    if [ "$os" == "${OS_REDHAT}" ]; then
-	postgresql-setup initdb
-    else
-	service ${pgService} initdb
-    fi
+    postgresql-setup initdb
 
     if  [ -d ${postgresDir} ] ; then
 	if  [ ! -h ${postgresDir} ]; then

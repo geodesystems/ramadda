@@ -221,7 +221,7 @@ done
 readit  "Download and install RAMADDA? [y|n]: " tmp  "OK, we will now ssh to the new instance, download and run the RAMADDA installer"
 case $tmp in
     ""|"y")
-        ssh  -i ${pemFile} -t  ec2-user@${ipAddress} "wget ${downloadUrl}"
+        ssh  -i ${pemFile} -t  ec2-user@${ipAddress} "wget -O ramaddainstaller.zip ${downloadUrl}"
         ssh  -i ${pemFile} -t  ec2-user@${ipAddress} "unzip -o ramaddainstaller.zip"
         ssh  -i ${pemFile} -t  ec2-user@${ipAddress} "sudo sh /home/ec2-user/ramaddainstaller/installer.sh; sleep 5;"
         ;;
