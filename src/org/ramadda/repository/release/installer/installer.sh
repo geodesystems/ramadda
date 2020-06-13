@@ -23,8 +23,6 @@ mkdir -p  ${ramaddaDir}
 
 ramaddaDownload="https://geodesystems.com/repository/release/latest/ramaddaserver.zip"
 
-a
-
 serviceDir="/etc/rc.d/init.d"
 basedir=""
 
@@ -36,7 +34,7 @@ usage() {
 
 header() {
     local msg="$1"
-    printf "\n*** ${msg} ***\n";
+    printf "\n\n*** ${msg} ***\n";
 }
 
 
@@ -366,11 +364,13 @@ printf "A self-signed SSL certificate can be created for the IP address ${host}\
 askYesNo "Generate keystore and enable SSL" "y"
 if [ "$response" == "y" ]; then
     password="ssl_${RANDOM}_${RANDOM}_${RANDOM}"
-    echo "Generating new keystore file: ${homedir}/keystore  for host: $host.\nThe password is stored in ${homedir}/ssl.properties"
+    echo "Generating new keystore file: ${homedir}/keystore  for host: $host."
+    echo "The password is stored in ${homedir}/ssl.properties"
     rm -f ${homedir}/keystore
     printf "${password}\n${password}\n${host}\nRAMADDA\nRAMADDA\ncity\nstate\ncountry\nyes\n\n" | keytool -genkey -keyalg RSA -alias ramadda -keystore ${homedir}/keystore > /dev/null 2> /dev/null
     printf "#generated password\n\nramadda.ssl.password=${password}\nramadda.ssl.keypassword=${password}\nramadda.ssl.port=443\n" > ${homedir}/ssl.properties
     printf "\nIf you need to create a new key then delete ${homedir}/keystore and run:\n    keytool -genkey -keyalg RSA -alias ramadda -keystore ${homedir}/keystore\nIf you are installing your own certificate then generate the keystore and copy it to ${homedir}"
+   printf "Note: since this is a self-signed certificate your browser will show that this is an insecure connection"
 fi
 
 
