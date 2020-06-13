@@ -4,7 +4,6 @@
 #This script installs some base packages, Postgres and then RAMADDA
 #
 
-ramaddaVersion=@VERSION@
 
 OS_REDHAT="redhat"
 OS_AMAZON="amazon_linux"
@@ -22,9 +21,9 @@ yumArg=""
 
 mkdir -p  ${ramaddaDir}
 
+ramaddaDownload="https://geodesystems.com/repository/release/latest/ramaddaserver.zip"
 
-ramaddaDownload="https://geodesystems.com/repository/entry/get/ramaddaserver.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFfNC4wL3JhbWFkZGFzZXJ2ZXIuemlw"
-
+a
 
 serviceDir="/etc/rc.d/init.d"
 basedir=""
@@ -318,6 +317,7 @@ header  "RAMADDA Installation"
 askYesNo "Download and install RAMADDA from Geode Systems"  "y"
 if [ "$response" == "y" ]; then
     rm -f ${installerDir}/ramaddaserver.zip
+    echo "Downloading RAMADDA from ${ramaddaDownload}"
     wget -O ${installerDir}/ramaddaserver.zip ${ramaddaDownload}
     rm -r -f ${serverDir}
     unzip -d ${ramaddaDir} -o ${installerDir}/ramaddaserver.zip
@@ -370,7 +370,7 @@ if [ "$response" == "y" ]; then
     rm -f ${homedir}/keystore
     printf "${password}\n${password}\n${host}\nRAMADDA\nRAMADDA\ncity\nstate\ncountry\nyes\n\n" | keytool -genkey -keyalg RSA -alias ramadda -keystore ${homedir}/keystore > /dev/null 2> /dev/null
     printf "#generated password\n\nramadda.ssl.password=${password}\nramadda.ssl.keypassword=${password}\nramadda.ssl.port=443\n" > ${homedir}/ssl.properties
-    printf "\nIf you need to create a new key then delete ${homedir}/keystore and run:\n    keytool -genkey -keyalg RSA -alias ramadda -keystore ${homedir}/keystore\n"
+    printf "\nIf you need to create a new key then delete ${homedir}/keystore and run:\n    keytool -genkey -keyalg RSA -alias ramadda -keystore ${homedir}/keystore\nIf you are installing your own certificate then generate the keystore and copy it to ${homedir}"
 fi
 
 
@@ -379,8 +379,8 @@ printf "RAMADDA is installed. \n\tRAMADDA home directory: ${homedir}\n\tPostgres
 
 
 printf "\n"
-printf "--> Finish the configuration at https://${host}/repository\n"
-printf "--> The installation password is ${install_password}\n"
+printf "Finish the configuration at https://${host}/repository\n"
+printf "The installation password is ${install_password}\n"
 printf "\n"
 
 service ${serviceName} restart
