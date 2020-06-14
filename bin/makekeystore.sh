@@ -5,27 +5,26 @@
 # https://certbot.eff.org/docs/install.html#certbot-auto
 
 #usage:
-#makekeystore.sh new -> make a new certificate
-#makekeystore.sh renew -> renew the certificates (default)
+#makekeystore.sh -help"
 
 
-#This script looks in your RAMADDA home directory for either an ssl.properties or repository.properties file
-#for the ssl password of the form (remove '#'):
+#If no password specified then this script looks in your RAMADDA home directory in each 
+#.properties file for the ssl password of the form (remove '#'):
 #ramadda.ssl.password=some password
 
 
-########################################################################################################
+######################################################################################################
 ## certbot 
 ##This script uses certbot-auto. However, it seems like on some AWS instances certbot-auto doesn't run
 ##From this doc:
 ##https://serverfault.com/questions/890212/looking-for-a-way-to-get-certbot-running-on-amazon-linux-2
 ##To install certbot do:
-## curl -O http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-## sudo yum install epel-release-latest-7.noarch.rpm
-## sudo yum install certbot
+##  curl -O http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+##  sudo yum install epel-release-latest-7.noarch.rpm
+##  sudo yum install certbot
 ##
 ## and run with makekeystore.sh -certbot /path/to/certbot
-
+######################################################################################################
 
 ##params set from args
 
@@ -35,6 +34,7 @@ WHAT=new
 RAMADDA_HOME=/mnt/ramadda/repository 
 FIRST_DOMAIN=
 OTHER_DOMAINS=
+PASSWORD=
 
 
 function usage()
@@ -47,7 +47,33 @@ function usage()
     printf "\t-domain <mydomain.com> (specify the domain)\n"
     printf "\t-other  <www.mydomain.com,someotherdomain.com> (specify other domains)\n"        
     printf "\t-home /mnt/ramadda/repository (specify RAMADDA home dir)\n"
+    printf "\t-password <password>  (keystore password. needs to be set in RAMADDA home dir)\n"
 }
+
+
+promptUser=1
+
+ask() {
+    local msg="$1";
+    local dflt="$2";
+    local extra="$3"
+    if [ $promptUser == 0 ]; then
+	response="$dflt";
+        return;
+    fi
+
+    if [ "$extra" != "" ]; then
+        printf "\n# $extra\n"
+    fi
+
+    read -p "${msg} " response;
+
+    if [ "$response" == "" ]; then
+	response="$dflt";
+    fi
+}
+
+
 
 
 while [[ $# -gt 0 ]]
@@ -61,12 +87,22 @@ do
         -renew)
             WHAT=renew
 	    shift
-            ;;	
+            ;;
+        -dryrun)
+            WHAT=dryrun
+	    shift
+            ;;		
         -home)
 	    shift
             RAMADDA_HOME="$1"
 	    shift
             ;;
+        -password)
+	    shift
+            PASSWORD="$1"
+	    echo "Using password from command line. Don't forget to set it in a RAMADDA home properties file"
+	    shift
+            ;;	
         -domain)
 	    shift
             FIRST_DOMAIN="$1"
@@ -110,22 +146,38 @@ fi
 
 
 
-echo "running with:"
-echo "what:${WHAT}"
-echo "domain:${FIRST_DOMAIN}"
-echo "other domains:${OTHER_DOMAINS}"
-echo "home dir:${RAMADDA_HOME}"
-exit
-
-
-PROPERTY_FILE=${RAMADDA_HOME}/repository.properties
-
-if test -f "${RAMADDA_HOME}/ssl.properties"; then
-    PROPERTY_FILE=${RAMADDA_HOME}/ssl.properties
+##If no password then find the properties file that contains the ssl passwords
+if [ -z "$PASSWORD" ]; then
+    PROPERTY_FILES=${RAMADDA_HOME}/*.properties
+    for f in $PROPERTY_FILES
+    do
+	PASSWORD=`cat $f | egrep "^ramadda.ssl.password" | cut -d'=' -f2`
+	if [ "$PASSWORD" ]; then
+	    break
+	fi
+    done
 fi
 
 
-PASSWORD=`cat $PROPERTY_FILE | egrep "^ramadda.ssl.password" | cut -d'=' -f2`
+if [ -z "$PASSWORD" ]; then
+    echo "No password specified and could not find it in $RAMADDA_HOME"
+    exit 1
+fi
+
+
+printf "Creating certificate with:\n"
+printf "\twhat:${WHAT}\n"
+printf "\tdomain:${FIRST_DOMAIN}\n"
+printf "\tother domains:${OTHER_DOMAINS}\n"
+printf "\thome dir:${RAMADDA_HOME}\n"
+
+
+ask   "Create the certificate? [y|n]"  "y"
+if [ "$response" != "y" ]; then
+    exit
+fi
+
+
 KEYSTORE=keystore.jks
 SRCKEYSTORE=keystore.pkcs12
 
@@ -140,6 +192,13 @@ case ${WHAT} in
 	    ${CERTBOT}  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN}
 	else
 	    ${CERTBOT}  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
+	fi
+	;;
+    "dryrun")
+	if [ -z "$OTHER_DOMAINS" ]; then
+	    ${CERTBOT} --dry-run  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN}
+	else
+	    ${CERTBOT} --dry-run  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
 	fi
 	;;
 esac
