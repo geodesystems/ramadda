@@ -39,14 +39,14 @@ OTHER_DOMAINS=
 
 function usage()
 {
-    echo "usage:"
-    echo "makekeystore.sh"
-    echo "\t-new (create new certificate)"
-    echo "\t-renew (renew certificate)"
-    echo "\t-certbot /path/to/certbot"
-    echo "\t-domain <mydomain.com> (specify the domain)"
-    echo "\t-other  <www.mydomain.com,someotherdomain.com> (specify other domains)"        
-    echo "\t-home /mnt/ramadda/repository (specify RAMADDA home dir)"
+    printf "usage:"
+    printf "makekeystore.sh"
+    printf "\t-new (create new certificate)"
+    printf "\t-renew (renew certificate)"
+    printf "\t-certbot /path/to/certbot"
+    printf "\t-domain <mydomain.com> (specify the domain)"
+    printf "\t-other  <www.mydomain.com,someotherdomain.com> (specify other domains)"        
+    printf "\t-home /mnt/ramadda/repository (specify RAMADDA home dir)"
 }
 
 
