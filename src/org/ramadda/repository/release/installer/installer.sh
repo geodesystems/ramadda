@@ -369,13 +369,13 @@ if [ "$response" == "y" ]; then
     rm -f ${homedir}/keystore
     printf "${password}\n${password}\n${host}\nRAMADDA\nRAMADDA\ncity\nstate\ncountry\nyes\n\n" | keytool -genkey -keyalg RSA -alias ramadda -keystore ${homedir}/keystore > /dev/null 2> /dev/null
     printf "#generated password\n\nramadda.ssl.password=${password}\nramadda.ssl.keypassword=${password}\nramadda.ssl.port=443\n" > ${homedir}/ssl.properties
-    printf "\nIf you need to create a new key then delete ${homedir}/keystore and run:\n    keytool -genkey -keyalg RSA -alias ramadda -keystore ${homedir}/keystore\nIf you are installing your own certificate then generate the keystore and copy it to ${homedir}"
-   printf "Note: since this is a self-signed certificate your browser will show that this is an insecure connection"
+    printf "\nIf you need to create a new key then delete ${homedir}/keystore and run:\n    keytool -genkey -keyalg RSA -alias ramadda -keystore ${homedir}/keystore\nIf you are installing your own certificate then generate the keystore and copy it to ${homedir}\n"
+   printf "Note: since this is a self-signed certificate your browser will show that this is an insecure connection\n"
 fi
 
 
 header "Installation complete";
-printf "RAMADDA is installed. \n\tRAMADDA home directory: ${homedir}\n\tPostgres directory: ${postgresDir}\n\tLog file: ${ramaddaDir}/ramadda.log\n\tService script: ${serviceScript}\n"
+printf "RAMADDA is installed. \n\tRAMADDA home directory: ${homedir}\n\tPostgres data directory: ${postgresDataDir}\n\tPostgres directory: ${postgresDir}\n\tLog file: ${ramaddaDir}/ramadda.log\n\tService script: ${serviceScript}\n"
 
 
 printf "\n"

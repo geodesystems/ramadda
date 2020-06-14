@@ -1,18 +1,38 @@
 #!/bin/sh
 
+############################################################################################################
 #This script uses the Amazon Command Line Interface (CLI) to create and configure an AWS instance for RAMADDA
 #Install the CLI from:
 #http://aws.amazon.com/cli/
+#Note: the first time you run the CLI you will need to provide user credentials
+##these can be set up at:
+##https://console.aws.amazon.com/iam/home#/home
+############################################################################################################
 
 ramaddaVersion=@VERSION@
 
 
-downloadUrl="https://geodesystems.com/repository/entry/get/ramaddainstaller.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFfMy4wL3JhbWFkZGFpbnN0YWxsZXIuemlw"
+downloadUrl="https://geodesystems.com/repository/release/latest/ramaddainstaller.zip"
 securityGroup="ramadda"
 imageId="ami-55a7ea65"
-instanceType="t1.micro"
+instanceType="t2.micro"
 keyPair="ramadda"
 volumeSize="100"
+
+
+usage() {
+##    echo "run with no args to create and setup an instance"
+##    echo "or if you have already created an instance run:"
+    echo "aws.sh <EC2 instance id> <optional .pem file>"
+    echo "Make sure your pem file is readable only by you"    
+    exit
+}
+
+
+if [ "$1" = "-help" ]; then
+    usage
+    exit
+fi
 
 
 comment() {
@@ -38,6 +58,7 @@ fi
 
 
 createInstance() {
+    echo "This will create a new EC2 instance then install RAMADDA on it"
     readit  "Enter the image id [${imageId}]: " tmp "Enter machine info. Note: the installer only works on Amazon Linux AMIs"
 
     if [ "$tmp" != "" ]; then
@@ -136,13 +157,14 @@ newInstance=1;
 if [ "$1" != "" ]; then
     newInstance=0;
     instanceId=$1;
-    pemFile="${keyPair}.pem"
+    PEMFILE="${keyPair}.pem"
     if [ "$2" != "" ]; then
-        pemFile=$2;
+        PEMFILE=$2;
     fi
 else
+    usage
     createInstance
-    pemFile="${keyPair}.pem"
+    PEMFILE="${keyPair}.pem"
 fi
 
 
@@ -180,16 +202,16 @@ fi
 
 
 
-while [ ! -f $pemFile ]; do
-    pemFile="~/${keyPair}.pem"
-    if [ ! -f $pemFile ]; then
+while [ ! -f $PEMFILE ]; do
+    PEMFILE="~/${keyPair}.pem"
+    if [ ! -f $PEMFILE ]; then
         read -p "Enter path to ${keyPair}.pem file: " tmp
         if [ "$tmp" == "" ]; then
             exit
         fi
-        pemFile=$tmp
-        if [ ! -f $pemFile ]; then
-            echo "File doesn't exist: $pemFile"
+        PEMFILE=$tmp
+        if [ ! -f $PEMFILE ]; then
+            echo "File doesn't exist: $PEMFILE"
             exit
         fi
     fi
@@ -198,10 +220,10 @@ done
 echo "We'll keep trying to ssh to the instance and update the OS "
 echo "This may take some time while the instance is coming up so have patience "
 echo "Once you are connected you will see a 'The authenticity of host ...' message. Enter 'yes' and then the update will run"
-echo "trying: ssh -i ${pemFile} -t  ec2-user@${ipAddress} \"sudo yum update -y\" "
+echo "trying: ssh -i ${PEMFILE} -t  ec2-user@${ipAddress} \"sudo yum update -y\" "
 keepGoing=1;
 while [ $keepGoing == 1  ]; do
-    result=`ssh   -i ${pemFile} -t  ec2-user@${ipAddress} "pwd -y" 2> /dev/null`
+    result=`ssh   -i ${PEMFILE} -t  ec2-user@${ipAddress} "pwd -y" 2> /dev/null`
     case ${result} in
         "") 
             echo "Instance isn't ready yet. We'll sleep a bit and then try again";
@@ -209,7 +231,7 @@ while [ $keepGoing == 1  ]; do
             ;;
         *) 
 #Now do the update
-            ssh   -i ${pemFile} -t  ec2-user@${ipAddress} "sudo yum update -y" 
+            ssh   -i ${PEMFILE} -t  ec2-user@${ipAddress} "sudo yum update -y" 
             echo "Instance is ready and updated"
             keepGoing=0;
             ;;
@@ -221,14 +243,15 @@ done
 readit  "Download and install RAMADDA? [y|n]: " tmp  "OK, we will now ssh to the new instance, download and run the RAMADDA installer"
 case $tmp in
     ""|"y")
-        ssh  -i ${pemFile} -t  ec2-user@${ipAddress} "wget -O ramaddainstaller.zip ${downloadUrl}"
-        ssh  -i ${pemFile} -t  ec2-user@${ipAddress} "unzip -o ramaddainstaller.zip"
-        ssh  -i ${pemFile} -t  ec2-user@${ipAddress} "sudo sh /home/ec2-user/ramaddainstaller/installer.sh; sleep 5;"
+	echo "Downloading the installer from ${downloadUrl}"
+        ssh  -i ${PEMFILE} -t  ec2-user@${ipAddress} "wget -O ramaddainstaller.zip ${downloadUrl}"
+        ssh  -i ${PEMFILE} -t  ec2-user@${ipAddress} "unzip -o ramaddainstaller.zip"
+        ssh  -i ${PEMFILE} -t  ec2-user@${ipAddress} "sudo sh /home/ec2-user/ramaddainstaller/installer.sh; sleep 5;"
         ;;
 esac
 
 
 
-printf "Access your instance via:   ssh -i ${keyPair}.pem ec2-user@${ipAddress}\n"
+printf "Access your instance via:   ssh -i ${PEMFILE} ec2-user@${ipAddress}\n"
 
 
