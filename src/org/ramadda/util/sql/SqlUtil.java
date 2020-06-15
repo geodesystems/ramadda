@@ -56,6 +56,10 @@ public class SqlUtil {
     /** _more_ */
     public static boolean debug = false;
 
+    /** _more_          */
+    public static final String WHERE = " WHERE ";
+
+
     /** A calendar to use */
     public static final GregorianCalendar calendar =
         new GregorianCalendar(DateUtil.TIMEZONE_GMT);
@@ -147,7 +151,7 @@ public class SqlUtil {
      */
     public static String makeWhere(List toks) {
         if (toks.size() > 0) {
-            return " WHERE " + StringUtil.join(" AND ", toks);
+            return WHERE + StringUtil.join(" AND ", toks);
         }
 
         return " ";
@@ -659,8 +663,11 @@ public class SqlUtil {
         StringBuffer sb = new StringBuffer();
         sb.append("DELETE FROM   ");
         sb.append(table);
-        sb.append(" WHERE ");
-        sb.append(where);
+        String w = where.toString().trim();
+        if (w.length() > 0) {
+            sb.append(WHERE);
+            sb.append(w);
+        }
 
         return sb.toString();
     }
@@ -680,7 +687,7 @@ public class SqlUtil {
         StringBuffer sb = new StringBuffer();
         sb.append("DELETE FROM   ");
         sb.append(table);
-        sb.append(" WHERE ");
+        sb.append(WHERE);
         sb.append(colId + "=" + id);
 
         return sb.toString();
@@ -793,7 +800,7 @@ public class SqlUtil {
             }
             sb.append(" " + unDot(names[i]) + "=?" + " ");
         }
-        sb.append(" WHERE ");
+        sb.append(WHERE);
         sb.append(colId + " = ?");
 
         return sb.toString();
@@ -822,7 +829,7 @@ public class SqlUtil {
             }
             sb.append(" " + unDot(names[i]) + "=?" + " ");
         }
-        sb.append(" WHERE ");
+        sb.append(WHERE);
         clause.addClause(sb);
 
         return sb.toString();
@@ -1061,7 +1068,7 @@ public class SqlUtil {
         }
         String sql = "SELECT " + what + " FROM " + tableClause
                      + sqlBetweenFromAndWhere + ((where.trim().length() > 0)
-                ? " \nWHERE " + where
+                ? WHERE + where
                 : "") + suffixSql;
 
         return sql;
@@ -2206,7 +2213,9 @@ public class SqlUtil {
             String table, Clause clause)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        clause.addClause(sb);
+        if (clause != null) {
+            clause.addClause(sb);
+        }
         String query = makeDelete(table, sb.toString());
 
         return connection.prepareStatement(query);
@@ -2227,7 +2236,9 @@ public class SqlUtil {
             throws Exception {
         PreparedStatement stmt = getDeleteStatement(connection, table,
                                      clause);
-        clause.setValue(stmt, 1);
+        if (clause != null) {
+            clause.setValue(stmt, 1);
+        }
         stmt.execute();
         close(stmt);
     }
