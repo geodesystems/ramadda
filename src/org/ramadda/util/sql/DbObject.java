@@ -72,12 +72,7 @@ public class DbObject {
 
         Timestamp date_ts = results.getTimestamp(col, cal);
         if (date_ts != null) {
-            Date date = new Date(date_ts.getTime());
-            System.err.println(
-                "TS:"
-                + new SimpleDateFormat("yyyy-MM-dd HH:mm z").format(date));
-
-            return date;
+            return  new Date(date_ts.getTime());
         }
 
         return null;
