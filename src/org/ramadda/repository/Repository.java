@@ -1623,12 +1623,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Constructor ctor = Misc.findConstructor(handlerClass,
                                new Class[] { Repository.class,
                                              Element.class });
-        TypeHandler typeHandler =
-            (TypeHandler) ctor.newInstance(new Object[] { this,
-                entryNode });
-        addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
+	try {
+	    TypeHandler typeHandler =
+		(TypeHandler) ctor.newInstance(new Object[] { this,
+							      entryNode });
+	    addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
+	    return typeHandler;
+	} catch(Exception exc) {
+	    System.err.println ("Error creating type handler:" + XmlUtil.toString(entryNode));
+	    throw exc;
+	}
 
-        return typeHandler;
+
     }
 
 
