@@ -364,7 +364,7 @@ public class TypeHandler extends RepositoryManager {
     private boolean forUser = true;
 
     /** _more_ */
-    private boolean canCache = true;
+    private Boolean canCache;
 
 
     /** Default metadata types to show in Edit->Add Property menu */
@@ -543,8 +543,10 @@ public class TypeHandler extends RepositoryManager {
                         forUser));
 
 
-            canCache = Utils.getAttributeOrTag(node, "canCache",
-                    XmlUtil.getAttributeFromTree(node, "canCache", true));
+	    String tmpCanCache =  Utils.getAttributeOrTag(node, "canCache",
+						  XmlUtil.getAttributeFromTree(node, "canCache", (String)null));
+
+	    if(tmpCanCache!=null) canCache = new Boolean(tmpCanCache.equals("tmpCanCache"));
 
             setProperties(node);
             if ( !Utils.stringDefined(description)) {
@@ -608,8 +610,13 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public boolean canCache(Entry entry) {
-        return canCache;
+    public boolean getCanCache(Entry entry) {
+	if(canCache!=null)
+	    return canCache;
+        if (getParent() != null) {
+	    return getParent().getCanCache(entry);
+	}
+	return true;
     }
 
 
