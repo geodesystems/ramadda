@@ -271,6 +271,17 @@
     </target>
 
 
+    <target name="ramaddaclasses.jar" depends="init,compile">
+        <jar 
+            basedir="${src_dir}"
+            compress="true"
+            update="false"
+	    jarfile="${lib_dir}/ramaddaclasses.jar">
+            <include name="**/*.class"/>
+        </jar>
+    </target>
+    
+
     <target name="zip" depends="init">
         <zip destfile="${dist_dir}/${ramadda_zip}">
           <zipfileset dir="${release_dir}" prefix="${release_name}"/>
