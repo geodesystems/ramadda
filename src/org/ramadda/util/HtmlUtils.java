@@ -2027,6 +2027,27 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /**
      * _more_
      *
+     * @param sb _more_
+     * @param cols _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void thead(Appendable sb, Object... cols) throws Exception {
+        sb.append("<thead>");
+        sb.append("<tr>");
+        for (int i = 0; i < cols.length; i++) {
+            sb.append(tag(TAG_TH, "", cols[i].toString()));
+        }
+        sb.append("</tr>");
+        sb.append("</thead>");
+    }
+
+
+
+
+    /**
+     * _more_
+     *
      * @param columns _more_
      *
      * @return _more_
