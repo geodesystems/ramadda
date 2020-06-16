@@ -3397,7 +3397,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (valueList.size() > 0) {
             List<TwoFacedObject> actions = new ArrayList<TwoFacedObject>();
-            //TODO uncomment            if(dbInfo.getHasEmail() && getRepository().getAdmin().isEmailCapable()) {
+            //TODO uncomment            if(dbInfo.getHasEmail() && getMailManager().isEmailEnabled()) {
             if (dbInfo.getHasEmail()) {
                 actions.add(new TwoFacedObject("Send mail", ACTION_EMAIL));
             }

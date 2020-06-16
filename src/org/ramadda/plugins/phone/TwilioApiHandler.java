@@ -595,12 +595,21 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
     public boolean sendTextMessage(String fromPhone, String toPhone, String msg,
                                 String url)
             throws Exception {
-	if(!sendingEnabled()) return false;
+	if(!isEnabled()) {
+	    System.err.println("Twilio sendTextMessage not enabled - no appid specified");
+	    return false;
+	}
         if (fromPhone == null) {
             fromPhone = getRepository().getProperty(PROP_PHONE, "");
         }
-
         fromPhone = fromPhone.replaceAll("-", "").replaceAll(" ", "");
+
+	if(!Utils.stringDefined(fromPhone)) {
+	    System.err.println("Twilio sendTextMessage not enabled - no from phone specified");
+	    return false;
+	}
+
+
         toPhone   = toPhone.replaceAll("-", "").replaceAll(" ", "");
 
         if ( !fromPhone.startsWith("+1")) {
@@ -613,7 +622,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         String authToken = getRepository().getProperty(PROP_AUTHTOKEN, null);
         String smsUrl = "https://api.twilio.com/2010-04-01/Accounts/" + appId
                         + "/Messages.json";
-        //        -u AC182514c8af787ab441a7ea05940995d9:[AuthToken]
+        //        -u xxxxxx:[AuthToken]
 
         String result = doPost(smsUrl,
                                "From="
@@ -625,7 +634,8 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                                     + URLEncoder.encode(url, "UTF-8")) + "&"
                                         + "Body="
                                         + URLEncoder.encode(msg, "UTF-8"));
-        //        System.err.println("Result:" + result);
+	//TODO: check if the message failed
+	System.err.println("Twilio result:" + result);
 	return true;
     }
 

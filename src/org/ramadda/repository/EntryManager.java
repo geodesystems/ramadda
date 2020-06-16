@@ -3986,7 +3986,7 @@ public class EntryManager extends RepositoryManager {
                 + " from parent folder:" + parentEntry);
         entry.setUser(parentUser);
 
-        if (getAdmin().isEmailCapable()) {
+        if (getMailManager().isEmailEnabled()) {
             StringBuilder contents =
                 new StringBuilder(
                     "A new entry has been uploaded to the RAMADDA server under the folder: ");

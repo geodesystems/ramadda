@@ -169,15 +169,16 @@ public class MailManager extends RepositoryManager {
     }
 
 
+
     /**
      * _more_
      *
      * @return _more_
      */
-    public boolean isEmailCapable() {
+    public boolean isEmailEnabled() {
         if (getRepository().getParentRepository() != null) {
             return getRepository().getParentRepository().getMailManager()
-                .isEmailCapable();
+                .isEmailEnabled();
         }
 
         String smtpServer  = getSmtpServer();
@@ -273,7 +274,7 @@ public class MailManager extends RepositoryManager {
         }
 
 
-        if ( !isEmailCapable()) {
+        if ( !isEmailEnabled()) {
             throw new IllegalStateException(
                 "This RAMADDA server has not been configured to send email");
         }
@@ -396,7 +397,7 @@ public class MailManager extends RepositoryManager {
     /**
        Do all this reflection so we don't have a dependency into the plugins
      */
-    public boolean sendTextEnabled() throws Exception {
+    public boolean isSmsEnabled() throws Exception {
 	Object twilio = getRepository().getApiManager().getApiHandler("twilio");
 	if (twilio == null) {
 	    return false;

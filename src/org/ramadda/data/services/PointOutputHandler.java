@@ -1049,6 +1049,12 @@ public class PointOutputHandler extends RecordOutputHandler {
                               final List<Entry> entries)
             throws Exception {
 
+	if(group.getTypeHandler() instanceof PointTypeHandler) {
+	    return  outputEntry(request,  outputType,group);
+	}
+
+
+
         Result parentResult = super.outputGroup(request, outputType, group,
                                   subGroups, entries);
         if (parentResult != null) {

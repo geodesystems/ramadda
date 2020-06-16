@@ -807,7 +807,7 @@ public class UserManager extends RepositoryManager {
         sb.append(formEntry(request, "", HtmlUtils.submit(msg("Login"))));
         sb.append(HtmlUtils.formClose());
 
-        if (getAdmin().isEmailCapable()) {
+        if (getMailManager().isEmailEnabled()) {
             sb.append(HtmlUtils.formEntry("<p>", ""));
             sb.append(
                 HtmlUtils.formEntry(
@@ -1643,7 +1643,7 @@ public class UserManager extends RepositoryManager {
 
             if ((newUser.getEmail().length() > 0)
                     && request.get(ARG_USER_SENDMAIL, false)
-                    && getAdmin().isEmailCapable()) {
+                    && getMailManager().isEmailEnabled()) {
                 getRepository().getMailManager().sendEmail(
                     newUser.getEmail(), "RAMADDA User Account",
                     msg.toString(), true);
@@ -1847,7 +1847,7 @@ public class UserManager extends RepositoryManager {
         msgSB.append(HtmlUtils.br());
         msgSB.append(HtmlUtils.textArea(ARG_USER_MESSAGE, msg, 5, 50));
 
-        if (getAdmin().isEmailCapable()) {
+        if (getMailManager().isEmailEnabled()) {
             formSB.append(HtmlUtils.formEntryTop(msgLabel("Notification"),
                     msgSB.toString()));
         }
@@ -2715,7 +2715,7 @@ public class UserManager extends RepositoryManager {
         StringBuffer sb    = new StringBuffer();
         String       title = "Find User ID";
 
-        if ( !getAdmin().isEmailCapable()) {
+        if ( !getMailManager().isEmailEnabled()) {
             return addHeader(
                 request,
                 new StringBuffer(
@@ -2862,7 +2862,7 @@ public class UserManager extends RepositoryManager {
             return addHeader(request, sb, msg("Password Reset"));
         }
 
-        if ( !getAdmin().isEmailCapable()) {
+        if ( !getMailManager().isEmailEnabled()) {
             return addHeader(
                 request, new StringBuffer(
                     getPageHandler().showDialogWarning(
@@ -3155,7 +3155,7 @@ public class UserManager extends RepositoryManager {
                             String password = results.getString(1);
                             if ((password == null)
                                     || (password.length() == 0)) {
-                                if (getAdmin().isEmailCapable()) {
+                                if (getMailManager().isEmailEnabled()) {
                                     sb.append(
                                         getPageHandler().showDialogNote(
                                             "Sorry, we were doing some cleanup and have reset your password"));

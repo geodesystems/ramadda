@@ -120,7 +120,7 @@ public class MTTFTypeHandler extends GenericTypeHandler {
             twilioEnabled = new Boolean(twilio != null);
         }
 
-        if ( !getRepository().getAdmin().isEmailCapable()
+        if ( !getMailManager().isEmailEnabled()
                 && !twilioEnabled.booleanValue()) {
             if (column.getName().equals("enabled")) {
                 formBuffer.append(formEntryTop(request, "",
@@ -135,11 +135,11 @@ public class MTTFTypeHandler extends GenericTypeHandler {
                 return;
             }
         } else if (column.getName().equals("from_email")) {
-            if ( !getRepository().getAdmin().isEmailCapable()) {
+            if ( !getMailManager().isEmailEnabled()) {
                 return;
             }
         } else if (column.getName().equals("to_email")) {
-            if ( !getRepository().getAdmin().isEmailCapable()) {
+            if ( !getMailManager().isEmailEnabled()) {
                 return;
             }
         }

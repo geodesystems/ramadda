@@ -1650,16 +1650,6 @@ public class Admin extends RepositoryManager {
             HtmlUtils.cssClass("admin-block"));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isEmailCapable() {
-        return getRepository().getMailManager().isEmailCapable();
-    }
-
-
 
     /**
      * _more_

@@ -298,7 +298,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                    + getRepository().getDateHandler().formatDate(new Date());
         }
         if (toEmail.size() > 0) {
-            if ( !getAdmin().isEmailCapable()) {
+            if ( !getMailManager().isEmailEnabled()) {
                 return "Email not enabled";
             }
             if ( !Utils.stringDefined(fromEmail)) {

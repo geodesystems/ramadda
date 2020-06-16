@@ -784,7 +784,7 @@ public class PointFormHandler extends RecordFormHandler {
         StringBuilder jobSB = new StringBuilder();
         jobSB.append(HtmlUtils.formTable());
         User user = request.getUser();
-        if (getAdmin().isEmailCapable()) {
+        if (getMailManager().isEmailEnabled()) {
             jobSB.append(HtmlUtils.formEntry(msgLabel("Send email to"),
                                              HtmlUtils.input(ARG_JOB_EMAIL,
                                                  user.getEmail(), 40)));

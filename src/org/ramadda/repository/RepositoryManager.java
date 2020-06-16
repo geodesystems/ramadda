@@ -602,6 +602,10 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getAdmin();
     }
 
+    public MailManager getMailManager() {
+        return repository.getMailManager();
+    }    
+
     /**
      * _more_
      *

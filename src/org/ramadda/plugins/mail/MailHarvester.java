@@ -229,7 +229,7 @@ public class MailHarvester extends Harvester {
         delete  = request.get(ATTR_DELETEEMAIL, false);
         subject = request.getString(ATTR_SUBJECT, subject);
         body    = request.getString(ATTR_BODY, body);
-        if (getAdmin().isEmailCapable()) {
+        if (getMailManager().isEmailEnabled()) {
             response = request.getString(ATTR_RESPONSE, response);
         }
     }
@@ -293,7 +293,7 @@ public class MailHarvester extends Harvester {
                 HtmlUtils.checkbox(ATTR_DELETEEMAIL, "true", delete) + " "
                 + msg("Delete email after harvesting")));
 
-        if (getAdmin().isEmailCapable()) {
+        if (getMailManager().isEmailEnabled()) {
             sb.append(
                 HtmlUtils.formEntryTop(
                     msgLabel("Email Response"),
@@ -516,7 +516,7 @@ public class MailHarvester extends Harvester {
                     status.append(HtmlUtils.br());
                 }
 
-                if (getAdmin().isEmailCapable()) {
+                if (getMailManager().isEmailEnabled()) {
                     if (Utils.stringDefined(response)) {
                         String to =
                             InternetAddress.toString(message.getFrom());

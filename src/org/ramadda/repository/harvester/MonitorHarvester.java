@@ -297,7 +297,7 @@ public class MonitorHarvester extends Harvester {
         }
         setActive(false);
         logStatus("Too many failures:" + errorMsg);
-        if ( !getRepository().getMailManager().isEmailCapable()) {
+        if ( !getMailManager().isEmailEnabled()) {
             logStatus("Email is not enabled");
         } else {
             String mail = message.replace("${url}", this.url);

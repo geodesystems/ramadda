@@ -386,7 +386,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         }
 
         final String email = request.getString(ARG_JOB_EMAIL, "");
-        if ((email.length() > 0) && getAdmin().isEmailCapable()) {
+        if ((email.length() > 0) && getMailManager().isEmailEnabled()) {
             final String actionUrl = jobInfo.getJobStatusUrl();
             final String emailContents =
                 "Your RAMADDA point data processing job has completed:\n"
