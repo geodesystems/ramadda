@@ -3703,5 +3703,34 @@ public class Utils extends IO {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param l _more_
+     * @param delim _more_
+     * @param inverse _more_
+     *
+     * @return _more_
+     */
+    public static String join(List l, String delim, boolean inverse) {
+        StringBuilder sb = new StringBuilder();
+        if (inverse) {
+            for (int i = l.size() - 1; i >= 0; i--) {
+                sb.append(l.get(i));
+                sb.append(delim);
+            }
+        } else {
+            for (int i = 0; i < l.size(); i++) {
+                sb.append(l.get(i));
+                sb.append(delim);
+            }
+        }
+
+        return sb.toString();
+
+    }
+
+
+
 
 }
