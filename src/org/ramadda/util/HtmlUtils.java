@@ -555,6 +555,18 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return tag(TAG_CENTER, "", inner);
     }
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param inner _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void center(Appendable sb, String inner) throws Exception {
+        tag(sb, TAG_CENTER, "", inner);
+    }
+
 
 
     /**
