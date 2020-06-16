@@ -1170,7 +1170,11 @@ var Utils = {
         if (!parent) parent = "";
         else parent = parent + " ";
         //tableize
-        HtmlUtils.formatTable(parent + ".ramadda-table");
+	try {
+	    HtmlUtils.formatTable(parent + ".ramadda-table");
+	} catch (e) {
+	    console.log("Error formatting table:" + e);
+	}
         var snippets = $(parent + ".ramadda-snippet-hover");
         snippets.each(function() {
             let snippet = $(this);
