@@ -23,13 +23,16 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
+import org.json.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
+
 
 
 import ucar.unidata.util.Misc;
@@ -636,6 +639,12 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                                         + URLEncoder.encode(msg, "UTF-8"));
 	//TODO: check if the message failed
 	System.err.println("Twilio result:" + result);
+	try {
+	    JSONObject jobj      = new JSONObject(result);
+	    int status = jobj.optInt("status",-1);
+	    System.err.println("status:" + status);
+	} catch(Exception ignore) {
+	}
 	return true;
     }
 
@@ -722,16 +731,14 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         output.writeBytes(args);
         output.close();
 
-        System.err.println("url:" + myurl);
         try {
             return new String(IOUtil.readBytes(huc.getInputStream(), null));
         } catch (Exception exc) {
-            System.err.println("error:" + huc.getResponseMessage());
-            System.err.println(
-                new String(IOUtil.readBytes(huc.getErrorStream(), null)));
-
-            throw exc;
-
+	    String result = 
+                new String(IOUtil.readBytes(huc.getErrorStream(), null));
+            System.err.println("TwilioApiHandler error:" + huc.getResponseMessage());
+	    System.err.println(result);
+	    throw new IllegalArgumentException(result);
         }
     }
 

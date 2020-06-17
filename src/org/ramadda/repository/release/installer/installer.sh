@@ -234,16 +234,16 @@ fi
 
 
 
-echo "Installing base packages - wget, unzip & java. Fixing the localhost name problem"
+echo "Installing base packages - wget, unzip & java"
 yum install -y wget > /dev/null
 yum install -y unzip > /dev/null
 yum install -y java > /dev/null
+
+echo "Fixing the localhost name problem"
 sed -e 's/HOSTNAME=localhost.localdomain/HOSTNAME=ramadda.localdomain/g' /etc/sysconfig/network> dummy.network
 mv dummy.network /etc/sysconfig/network
 sed -e 's/127.0.0.1   localhost localhost.localdomain/127.0.0.1 ramadda.localdomain ramadda localhost localhost.localdomain/g' /etc/hosts> dummy.hosts
 mv dummy.hosts /etc/hosts
-
-
 
 
 

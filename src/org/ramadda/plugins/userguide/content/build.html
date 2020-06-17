@@ -1,0 +1,31 @@
+<html>
+<head>
+  <title>Building from source</title>
+  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
+</head>
+<body>
+<%nochildlist%>
+[ug::subheading {Building from source}  build ]
+
+
+
+RAMADDA is available on <a href="https://github.com/geodesystems/ramadda">GitHub</a>.
+With Java and <a href=https://ant.apache.org/>ANT</a> installed run the following: 
+<pre>
+git clone https://github.com/geodesystems/ramadda.git
+cd ramadda
+ant
+</pre?
+The build files above will be in the dist sub-directory
+<p>
+To run quickly on your local machine do:
+<pre>
+sh dist/ramaddaserver/ramadda.sh
+</pre>
+
+This will create a RAMADDA home directory at ~/.ramadda. To change this do:
+<pre>
+sh dist/ramaddaserver/ramadda.sh -Dramadda_home=/some/other/directory
+</pre>
+RAMADDA will be available at <a href="http://localhost:8080/repository">http://localhost:8080/repository</a>
+</body>
