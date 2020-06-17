@@ -144,7 +144,8 @@ ask() {
 mntDir=""
 
 header  "Volume Installation";
-
+echo "The database and the RAMADDA home directory will be installed on /mnt/ramadda"
+echo "We need to mount the volume as /mnt/ramadda"
 declare -a dirLocations=("/dev/xvdb" )
 for i in "${dirLocations[@]}"
 do
