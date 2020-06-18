@@ -66,7 +66,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
     public static final String PROP_PHONE = "twilio.phone";
 
     /** _more_ */
-    public static final String PROP_APPID = "twilio.appid";
+    public static final String PROP_ACCOUNTSID = "twilio.accountsid";
 
     /** _more_ */
     public static final String PROP_TRANSCRIBE = "twilio.transcribe";
@@ -141,7 +141,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      */
     public TwilioApiHandler(Repository repository) throws Exception {
         super(repository);
-        String appId = repository.getProperty(PROP_APPID, null);
+        String appId = getSid();
         if (appId != null) {
             repository.getAccessManager().setTwoFactorAuthenticator(
                 new TwilioTwoFactorAuthenticator(repository) {}
@@ -163,13 +163,19 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                    ""));
     }
 
+    private String getSid() {
+	return 
+	    getRepository().getProperty(PROP_ACCOUNTSID,
+					getRepository().getProperty("twilio.appid",null));
+    }
+
     /**
      * _more_
      *
      * @return _more_
      */
     public boolean isEnabled() {
-        return Utils.stringDefined(repository.getProperty(PROP_APPID, null));
+        return Utils.stringDefined(getSid());
     }
 
     /**
@@ -349,7 +355,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      * @return _more_
      */
     private boolean callOK(Request request) {
-        String appId = getRepository().getProperty(PROP_APPID, null);
+        String appId = getSid();
         if (appId == null) {
             return false;
         }
@@ -621,7 +627,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         if ( !toPhone.startsWith("+1")) {
             toPhone = "+1" + toPhone;
         }
-        String appId     = getRepository().getProperty(PROP_APPID, null);
+        String appId     = getSid();
         String authToken = getRepository().getProperty(PROP_AUTHTOKEN, null);
         String smsUrl = "https://api.twilio.com/2010-04-01/Accounts/" + appId
                         + "/Messages.json";
@@ -637,14 +643,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                                     + URLEncoder.encode(url, "UTF-8")) + "&"
                                         + "Body="
                                         + URLEncoder.encode(msg, "UTF-8"));
-	//TODO: check if the message failed
-	System.err.println("Twilio result:" + result);
-	try {
-	    JSONObject jobj      = new JSONObject(result);
-	    int status = jobj.optInt("status",-1);
-	    System.err.println("status:" + status);
-	} catch(Exception ignore) {
-	}
+	//	System.err.println("Twilio result:" + result);
 	return true;
     }
 
@@ -655,7 +654,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      */
     private String getApiPrefix() {
         return "https://api.twilio.com/2010-04-01/Accounts/"
-               + getRepository().getProperty(PROP_APPID, null);
+	    + getSid();
 
     }
 
@@ -716,7 +715,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
     private String doPost(String url, String args) throws Exception {
         URL               myurl = new URL(url);
         HttpURLConnection huc   = (HttpURLConnection) myurl.openConnection();
-        String auth = getRepository().getProperty(PROP_APPID, null) + ":"
+        String auth = getSid() + ":"
                       + getRepository().getProperty(PROP_AUTHTOKEN, null);
         String encoding = Utils.encodeBase64(auth);
         huc.addRequestProperty("Authorization", "Basic " + encoding);
