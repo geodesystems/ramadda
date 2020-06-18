@@ -17,8 +17,6 @@ President, Geode Systems
 +col-md-6
 :heading Next Steps
 * <a  href="${root}/user/login">Login</a> to <a href="${root}/admin/settings">administer</a> your RAMADDA.
-* <a target="_registration" href="http://geodesystems.com/alias/ramadda_registration">Purchase a license</a>.
-* Join the <a href="https://lists.sourceforge.net/lists/listinfo/ramadda-users" target=_other>RAMADDA mailing list</a>.
 * <a href="${root}/entry/form?entryid=${topid}">Edit</a> this page (you must login to edit) - <a target="_docs" href="http://geodesystems.com/repository/userguide/wikitext.html">Documentation</a>
 * Create new <a href="${root}/entry/form?group=${topid}&type=group">folders</a> or upload <a href="${root}/entry/form?group=${topid}&type=file">files</a>. 
 * Lots of ways to view and edit this page with the <img src="${root}/icons/menu_arrow.gif"> menu above. 
