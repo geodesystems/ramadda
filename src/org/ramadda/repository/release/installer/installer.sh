@@ -274,7 +274,7 @@ host    all             all             ::1/128                 ident
 
 	printf "create database repository;\ncreate user ramadda;\nalter user ramadda with password '${postgresPassword}';\ngrant all privileges on database repository to ramadda;\n" > /tmp/postgres.sql
 	chmod 644 /tmp/postgres.sql
-	echo "Creating repository database and Adding ramadda user"
+	echo "Creating repository database and adding ramadda user"
 	su -c "psql -f /tmp/postgres.sql"  - postgres > /dev/null
 	rm -f ${INSTALLER_DIR}/postgres.sql
 	printf "ramadda.db=postgres\nramadda.db.postgres.user=ramadda\nramadda.db.postgres.password=${postgresPassword}"  > ${RAMADDA_HOME_DIR}/db.properties
