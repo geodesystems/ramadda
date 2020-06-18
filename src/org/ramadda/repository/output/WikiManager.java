@@ -701,6 +701,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
+
+
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key = (String) keys.nextElement();
                 if (key.startsWith("override.")) {
@@ -710,6 +712,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
+            theEntry.getTypeHandler().addWikiProperties(theEntry, wikiUtil,
+                    tag, props);
             addWikiLink(wikiUtil, theEntry);
             String include = handleWikiImport(wikiUtil, request, entry,
                                  theEntry, tag, props);
@@ -1545,12 +1549,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        String theTag, Hashtable props)
             throws Exception {
 
-
-
-
-
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
-
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
                                       (String) null);
         if (criteria != null) {}
@@ -3297,6 +3296,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return null;
         }
+
 
     }
 

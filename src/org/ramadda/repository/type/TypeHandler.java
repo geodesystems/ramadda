@@ -543,10 +543,13 @@ public class TypeHandler extends RepositoryManager {
                         forUser));
 
 
-	    String tmpCanCache =  Utils.getAttributeOrTag(node, "canCache",
-						  XmlUtil.getAttributeFromTree(node, "canCache", (String)null));
+            String tmpCanCache = Utils.getAttributeOrTag(node, "canCache",
+                                     XmlUtil.getAttributeFromTree(node,
+                                         "canCache", (String) null));
 
-	    if(tmpCanCache!=null) canCache = new Boolean(tmpCanCache.equals("tmpCanCache"));
+            if (tmpCanCache != null) {
+                canCache = new Boolean(tmpCanCache.equals("tmpCanCache"));
+            }
 
             setProperties(node);
             if ( !Utils.stringDefined(description)) {
@@ -611,12 +614,14 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean getCanCache(Entry entry) {
-	if(canCache!=null)
-	    return canCache;
+        if (canCache != null) {
+            return canCache;
+        }
         if (getParent() != null) {
-	    return getParent().getCanCache(entry);
-	}
-	return true;
+            return getParent().getCanCache(entry);
+        }
+
+        return true;
     }
 
 
@@ -716,6 +721,18 @@ public class TypeHandler extends RepositoryManager {
 
         return null;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param wikiUtil _more_
+     * @param tag _more_
+     * @param props _more_
+     */
+    public void addWikiProperties(Entry entry, WikiUtil wikiUtil, String tag,
+                                  Hashtable props) {}
 
 
     /**
