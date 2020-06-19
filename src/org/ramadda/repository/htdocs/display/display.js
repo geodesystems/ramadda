@@ -796,6 +796,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['fields=""','comma separated list of field ids or indices - #1,#2,etc or *'],
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
+		"showEntryIcon=true",
 		"layoutHere=\"true\"",
 		"width=\"100%\"",
 		"height=\"400\"",
@@ -1285,6 +1286,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (this.entryId)
                     titleToShow = HU.href(this.getRamadda().getEntryUrl(this.entryId), titleToShow, [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE), STYLE, titleStyle]);
             }
+	    if(this.getProperty("showEntryIcon")) {
+		let icon = this.getProperty("entryIcon");
+		if(icon) titleToShow  = HU.image(icon) +" " + titleToShow;
+	    }
             return titleToShow;
         },
         handleEventMapClick: function(source, args) {

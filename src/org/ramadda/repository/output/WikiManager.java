@@ -4784,7 +4784,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-	System.err.println("get entries:" + props);
 
 	if(orderBy==null) {
 	    orderBy=(String) props.get("sort");
@@ -6561,6 +6560,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                      "true"));
             props.remove(ATTR_SHOWTITLE);
         }
+
+
+
+
+	if(entry!=null) {
+	    propList.add("entryIcon");
+	    propList.add(Json.quote(entry.getTypeHandler().getEntryIconUrl(request, originalEntry)));
+	}
+
+
 
         String timezone = getEntryUtil().getTimezone(entry);
         if (timezone != null) {
