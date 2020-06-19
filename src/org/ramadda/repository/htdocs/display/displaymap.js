@@ -2243,9 +2243,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let mapBounds = this.map.getBounds();
 		let mapW = mapBounds.right-mapBounds.left;
 		let offset = mapW*parseFloat(this.getProperty("collisionOffsetPercent",0.02));
-		let dotColor = this.getProperty("collisionDotColor","red");
-		let lineColor = this.getProperty("collisionLineColor","red");		
-		let dotRadius = this.getProperty("collisionDotRadius",2);
+		let dotColor = this.getProperty("collisionDotColor","#000");
+		let lineColor = this.getProperty("collisionLineColor","#000");
+		let lineWidth = this.getProperty("collisionLineWidth","2");				
+		let dotRadius = this.getProperty("collisionDotRadius",4);
 //		console.log("checking collisions:" + mapBounds +" offset:" + offset);
 		let seen1={};
 		records.forEach(record=>{
@@ -2272,7 +2273,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    else  seen2[point]++;
 		    let cnt = seen2[point]-1;
 		    let ep = Utils.rotate(point.x,point.y,point.x,point.y-offset,cnt*anglePer-180,true);
-		    let line = this.map.addLine("line-" + idx, "", point.y,point.x, ep.y,ep.x, {strokeColor:lineColor});
+		    let line = this.map.addLine("line-" + idx, "", point.y,point.x, ep.y,ep.x, {strokeColor:lineColor,strokeWidth:lineWidth});
 		    if(cnt==0) {
 			let dot = this.map.addPoint("dot-" + idx, point, {fillColor:dotColor, pointRadius:dotRadius});
                         this.points.push(dot);
