@@ -2224,7 +2224,7 @@ Glyph.prototype = {
             let degrees = (180*lengthPercent);
 	    let ex = cx-this.width*0.4;
 	    let ey = cy;
-	    let ep = this.rotate(cx,cy,ex,ey,degrees);
+	    let ep = Utils.rotate(cx,cy,ex,ey,degrees);
 	    ctx.strokeStyle =  this.color || "#000";
 	    ctx.lineWidth=this.lineWidth||2;
 	    ctx.moveTo(cx,cy);
@@ -2327,21 +2327,6 @@ Glyph.prototype = {
 	} else {
 	    console.log("Unknwon cell shape:" + this.type);
 	}
-    },
-    rotate:function(cx, cy, x, y, angle,anticlock_wise = false) {
-	if(angle == 0){
-            return {x:parseFloat(x), y:parseFloat(y)};
-	}
-	if(anticlock_wise){
-            var radians = (Math.PI / 180) * angle;
-	}else{
-            var radians = (Math.PI / -180) * angle;
-	}
-	var cos = Math.cos(radians);
-	var sin = Math.sin(radians);
-	var nx = (cos * (x - cx)) + (sin * (y - cy)) + cx;
-	var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-	return {x:nx, y:ny};
     },
     draw3DRect:function(canvas,ctx,x,y,width, height, depth) {
 	// Dimetric projection functions

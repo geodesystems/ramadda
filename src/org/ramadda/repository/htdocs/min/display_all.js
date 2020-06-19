@@ -2224,7 +2224,7 @@ Glyph.prototype = {
             let degrees = (180*lengthPercent);
 	    let ex = cx-this.width*0.4;
 	    let ey = cy;
-	    let ep = this.rotate(cx,cy,ex,ey,degrees);
+	    let ep = Utils.rotate(cx,cy,ex,ey,degrees);
 	    ctx.strokeStyle =  this.color || "#000";
 	    ctx.lineWidth=this.lineWidth||2;
 	    ctx.moveTo(cx,cy);
@@ -2327,21 +2327,6 @@ Glyph.prototype = {
 	} else {
 	    console.log("Unknwon cell shape:" + this.type);
 	}
-    },
-    rotate:function(cx, cy, x, y, angle,anticlock_wise = false) {
-	if(angle == 0){
-            return {x:parseFloat(x), y:parseFloat(y)};
-	}
-	if(anticlock_wise){
-            var radians = (Math.PI / 180) * angle;
-	}else{
-            var radians = (Math.PI / -180) * angle;
-	}
-	var cos = Math.cos(radians);
-	var sin = Math.sin(radians);
-	var nx = (cos * (x - cx)) + (sin * (y - cy)) + cx;
-	var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-	return {x:nx, y:ny};
     },
     draw3DRect:function(canvas,ctx,x,y,width, height, depth) {
 	// Dimetric projection functions
@@ -3210,6 +3195,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['fields=""','comma separated list of field ids or indices - #1,#2,etc or *'],
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
+		"showEntryIcon=true",
 		"layoutHere=\"true\"",
 		"width=\"100%\"",
 		"height=\"400\"",
@@ -3699,6 +3685,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (this.entryId)
                     titleToShow = HU.href(this.getRamadda().getEntryUrl(this.entryId), titleToShow, [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE), STYLE, titleStyle]);
             }
+	    if(this.getProperty("showEntryIcon")) {
+		let icon = this.getProperty("entryIcon");
+		if(icon) titleToShow  = HU.image(icon) +" " + titleToShow;
+	    }
             return titleToShow;
         },
         handleEventMapClick: function(source, args) {
@@ -15387,6 +15377,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 
         makeDataTable: function(dataList, props, selectedFields) {
+	    let dateType = this.getProperty("dateType","date");
 	    let debug =displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
@@ -15500,7 +15491,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				dataTable.addColumn('number', headerLabel);
 			    }
 			} else {
-			    dataTable.addColumn('date', headerLabel);
+			    dataTable.addColumn(dateType, headerLabel);
 			}
                     } else {
                         dataTable.addColumn((typeof value), headerLabel);
@@ -15512,7 +15503,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(field.isString()) {
 			    dataTable.addColumn('string', headerLabel);
 			} else if(field.isFieldDate()) {
-			    dataTable.addColumn('date', headerLabel);
+			    dataTable.addColumn(dateType, headerLabel);
 			} else {
 			    dataTable.addColumn('number', headerLabel);
 			}
@@ -16229,6 +16220,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		'annotationFields=""',	
 		'annotationLabelField=""',
 		'indexField="alternate field to use as index"',
+		'dateType=datetime',
 		'forceStrings="if index is a string set to true"',
 		'inlinelabel:Multiples',
 		'doMultiCharts=true',
@@ -25828,6 +25820,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'vectorLayerFillColor',wikiValue:'#ccc'},
 	{p:'vectorLayerFillOpacity',wikiValue:'0.25'},
 	{p:'vectorLayerStrokeWidth',wikiValue:'1'},
+	{p:'handleCollisions',wikiValue:'true',tt:"Handle point collisions"},
+	{p:'collisionOffsetPercent',wikiValue:'0.02',tt:"How big is the offset from the center"},
+	{p:'collisionDotColor',wikiValue:'red',tt:"Color of dot drawn at center"},
+	{p:'collisionDotRadius',wikiValue:'3',tt:"Radius of dot drawn at center"},				
+	{p:'collisionLineColor',wikiValue:'red',tt:"Color of line drawn at center"},
 	{p:'showMarkersToggle',wikiValue:'true',tt:'Show the toggle checkbox for the marker layer'},
 	{p:'showMarkersToggleLabel',wikiValue:'label',tt:'Label to use for checkbox'},
 	{p:'showClipToBounds',wikiValue:'true',tt:'Show the clip bounds checkbox'},
@@ -26078,6 +26075,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 _this.mapBoundsChanged();
 		_this.checkHeatmapReload();
 		_this.updateHtmlLayers();
+		if(!this.haveAddPoints) return;
+		if(this.getHandleCollisions()) {
+		    this.haveCalledUpdateUI = false;
+                    this.updateUI();
+		}
             });
 	    this.createTime = new Date();
 	    this.xcnt = 0;
@@ -26167,6 +26169,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
         },
 
+	getHandleCollisions: function() {
+	    return this.getProperty("handleCollisions",false);
+	},
         getBounds: function() {
 	    return this.map.getBounds();
 	},
@@ -27955,13 +27960,60 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		return null;
 	    };	    
 
+	    this.haveAddPoints = true;
+	    if(this.getHandleCollisions()) {
+		let mapBounds = this.map.getBounds();
+		let mapW = mapBounds.right-mapBounds.left;
+		let offset = mapW*parseFloat(this.getProperty("collisionOffsetPercent",0.02));
+		let dotColor = this.getProperty("collisionDotColor","red");
+		let lineColor = this.getProperty("collisionLineColor","red");		
+		let dotRadius = this.getProperty("collisionDotRadius",2);
+//		console.log("checking collisions:" + mapBounds +" offset:" + offset);
+		let seen1={};
+		records.forEach(record=>{
+		    let point = record.point;
+		    if(!point) {
+			point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
+		    }
+		    record.centerPoint  = point;
+		    if(seen1[point]) {
+			seen1[point]++;
+		    } else {
+			seen1[point]=1;
+		    }
+		});
+		let seen2={};
+		records.forEach((record,idx)=>{
+		    let point = record.centerPoint;
+		    if(seen1[point]==1) {
+			return;
+		    } 
+		    let cntAtPoint = seen1[point];
+		    let anglePer = 360/cntAtPoint;
+		    if(!seen2[point]) seen2[point]=1;
+		    else  seen2[point]++;
+		    let cnt = seen2[point]-1;
+		    let ep = Utils.rotate(point.x,point.y,point.x,point.y-offset,cnt*anglePer-180,true);
+		    let line = this.map.addLine("line-" + idx, "", point.y,point.x, ep.y,ep.x, {strokeColor:lineColor});
+		    if(cnt==0) {
+			let dot = this.map.addPoint("dot-" + idx, point, {fillColor:dotColor, pointRadius:dotRadius});
+                        this.points.push(dot);
+		    }
+		    this.lines.push(line);
+		    point.x=ep.x;
+		    point.y=ep.y;
+		});
+	    }
+
+
             for (let i = 0; i < records.length; i++) {
                 let record = records[i];
 		let recordDate = record.getDate();
                 let tuple = record.getData();
-		if(!record.point)
-                    record.point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
-		let point = record.point;
+		let point  = record.centerPoint || record.point;
+		if(!point)
+                    point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
+
 
 		if(justOneMarker) {
                     if(this.justOneMarker)
@@ -28127,7 +28179,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(highlight) {
 			line.highlightTextGetter = highlightGetter;
 			line.highlightSize = highlightSize;
-		    }
+		    }	
 		    line.record = record;
                     this.lines.push(line);
                     if (showEndPoints) {
@@ -28172,6 +28224,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let mapPoint=null;
 		    let mapPoints =[];
 
+		    //marker
 		    if(usingIcon) {
 			if(iconField) {
 			    let icon = tuple[iconField.getIndex()];

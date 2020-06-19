@@ -56,6 +56,21 @@ var Utils = {
 	if(idx<list.length) return list[idx];
 	return dflt;
     },
+    rotate:function(cx, cy, x, y, angle,anticlock_wise = false) {
+	if(angle == 0){
+            return {x:parseFloat(x), y:parseFloat(y)};
+	}
+	if(anticlock_wise){
+            var radians = (Math.PI / 180) * angle;
+	}else{
+            var radians = (Math.PI / -180) * angle;
+	}
+	var cos = Math.cos(radians);
+	var sin = Math.sin(radians);
+	var nx = (cos * (x - cx)) + (sin * (y - cy)) + cx;
+	var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+	return {x:nx, y:ny};
+    },
     split: function(s) {
 	if(!s) return null;
 	s = String(s).replace(/\\,/g,"_comma_");
