@@ -970,12 +970,22 @@ public class Utils extends IO {
             throws Exception {
         String attrValue = XmlUtil.getAttribute(node, attrOrTag,
                                (String) null);
-        if (attrValue == null) {
-            attrValue = XmlUtil.getGrandChildText(node, attrOrTag, dflt);
+	if (attrValue == null) {
+	    Node child = XmlUtil.findChild(node, attrOrTag);
+	    if (child != null) {
+		attrValue = XmlUtil.getChildText(child);
+		if(attrValue!=null) {
+		    if(XmlUtil.getAttribute(child, "encoded",
+					    false)) {
+			attrValue = new String(Utils.decodeBase64(attrValue));
+		    } 
+		}
+	    }
         }
-
+	if (attrValue == null) {
+	    attrValue = dflt;
+	}
         return attrValue;
-
     }
 
 
