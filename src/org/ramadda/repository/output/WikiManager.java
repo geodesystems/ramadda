@@ -4038,6 +4038,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props = tmp;
         }
 
+
         String userDefinedEntries = getProperty(wikiUtil, props,
                                         attrPrefix + ATTR_ENTRIES,
                                         ID_CHILDREN);
@@ -4284,6 +4285,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
                                   (String) null);
+
         if (sort != null) {
             boolean ascending = getProperty(wikiUtil, props,
                                             attrPrefix + ATTR_SORT_ORDER,
@@ -4413,13 +4415,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (props == null) {
             props = new Hashtable();
         }
+
+
         Hashtable   searchProps = null;
         List<Entry> entries     = new ArrayList<Entry>();
         Request myRequest = new Request(getRepository(), request.getUser());
 
         int         max         = -1;
         String      orderBy     = null;
-        boolean     orderDir    = true;
+        Boolean     orderDir    = null;
         HashSet     nots        = new HashSet();
 
         for (String entryid : StringUtil.split(ids, ",", true, true)) {
@@ -4441,12 +4445,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             if (entryid.startsWith("entries.orderby=")) {
                 orderBy = entryid.substring("entries.orderby=".length());
-
                 continue;
             }
             if (entryid.startsWith("entries.orderdir=")) {
-                orderDir = entryid.substring(
-                    "entries.orderdir=".length()).equals("up");
+                orderDir = new Boolean(entryid.substring(
+							 "entries.orderdir=".length()).equals("up"));
 
                 continue;
             }
@@ -4780,6 +4783,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return rtmp;
         }
 
+
+	System.err.println("get entries:" + props);
+
+	if(orderBy==null) {
+	    orderBy=(String) props.get("sort");
+	}
+
+	if(props.get(ATTR_SORT_ORDER) !=null) {
+	    orderDir = new Boolean(props.get(ATTR_SORT_ORDER).equals("down"));
+	}
+
+	if(orderDir==null) {
+	    orderDir = true;
+	}
 
         if (orderBy != null) {
             if (orderBy.equals("date")) {
