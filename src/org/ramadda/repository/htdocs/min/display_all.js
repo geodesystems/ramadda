@@ -15942,8 +15942,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
             if (!isNaN(range[1])) {
                 chartOptions.vAxis.maxValue = range[1];
-		chartOptions.vAxis.maxValue = null;
+//		chartOptions.vAxis.maxValue = null;
             }
+
             this.chartDimensions = {
                 width: "90%",
                 left: "10%",
@@ -16242,7 +16243,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		"chartRight=\"0\"",
 		"chartTop=\"0\"",
 		"chartBottom=\"0\"",
-		"inlinelabel:Misc Options",
+		"inlinelabel:Misc Chart Options",
 		'lineColor=""',
 		'chartBackground=""',
 		'chart.fill=""',

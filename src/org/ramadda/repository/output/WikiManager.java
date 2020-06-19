@@ -2310,12 +2310,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                 }
                 if (columns > 0) {
-                    if (colCnt++ >= columns) {
+                    colCnt++;
+                    if (colCnt > columns) {
                         buff.append("</tr><tr valign=top>");
-                        colCnt = 0;
+                        colCnt = 1;
                     }
                     buff.append("<td width='" + colWidth + "'>");
                 }
+
                 String header = ((headers != null) && (i < headers.size()))
                                 ? headers.get(i)
                                 : null;
