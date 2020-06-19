@@ -778,6 +778,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 
         makeDataTable: function(dataList, props, selectedFields) {
+	    let dateType = this.getProperty("dateType","date");
 	    let debug =displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
@@ -891,7 +892,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				dataTable.addColumn('number', headerLabel);
 			    }
 			} else {
-			    dataTable.addColumn('date', headerLabel);
+			    dataTable.addColumn(dateType, headerLabel);
 			}
                     } else {
                         dataTable.addColumn((typeof value), headerLabel);
@@ -903,7 +904,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(field.isString()) {
 			    dataTable.addColumn('string', headerLabel);
 			} else if(field.isFieldDate()) {
-			    dataTable.addColumn('date', headerLabel);
+			    dataTable.addColumn(dateType, headerLabel);
 			} else {
 			    dataTable.addColumn('number', headerLabel);
 			}
@@ -1620,6 +1621,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		'annotationFields=""',	
 		'annotationLabelField=""',
 		'indexField="alternate field to use as index"',
+		'dateType=datetime',
 		'forceStrings="if index is a string set to true"',
 		'inlinelabel:Multiples',
 		'doMultiCharts=true',
