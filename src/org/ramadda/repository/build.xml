@@ -271,7 +271,7 @@
     </target>
 
 
-    <target name="ramaddaclasses.jar" depends="init,compile">
+    <target name="ramaddaclasses" depends="init,compile">
         <jar 
             basedir="${src_dir}"
             compress="true"

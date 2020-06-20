@@ -3062,7 +3062,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      *
      * @throws Exception _more_
      */
-    public void generateBeans(String packageName, String match)
+    public void generateBeans(String packageName, Hashtable aliases, String match)
             throws Exception {
 
         String[]         what       = new String[] { "TABLE" };
@@ -3086,10 +3086,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                     || tableType.startsWith("SYSTEM")) {
                 continue;
             }
-            String className = "";
-            for (String tok : StringUtil.split(dbTableName, "_")) {
-                className += Utils.upperCaseFirst(tok);
-            }
+            String className = aliases==null?null:(String) aliases.get(dbTableName.toLowerCase());
+	    if(className == null) {
+		className = "";
+		for (String tok : StringUtil.split(dbTableName, "_")) {
+		    className += Utils.upperCaseFirst(tok);
+		}
+	    }
             System.err.println("Generating:" + className);
             FileOutputStream fos = new FileOutputStream(className + ".java");
             PrintWriter      pw        = new PrintWriter(fos);
