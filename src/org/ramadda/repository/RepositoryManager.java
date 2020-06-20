@@ -936,5 +936,23 @@ public class RepositoryManager implements RepositorySource, Constants,
         return textSuffixes.contains(suffix.toLowerCase());
     }
 
+    public String messageNote(String msg) {
+	return getPageHandler().showDialogNote(msg);
+    }
+
+    public String messageQuestion(String msg, String buttons) {
+	return getPageHandler().showDialogQuestion(msg,buttons);
+    }
+
+    public String messageWarning(String msg) {
+	return getPageHandler().showDialogWarning(msg);
+    }
+
+    public String messageError(String msg) {
+	return getPageHandler().showDialogError(msg);
+    }            
+
+
+
 
 }
