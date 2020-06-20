@@ -3726,6 +3726,24 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /**
      * _more_
      *
+     * @param sb _more_
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void formEntries(Appendable sb, Object... args)
+            throws Exception {
+        for (int i = 0; i < args.length; i += 2) {
+            sb.append(formEntry(args[i].toString(), args[i + 1].toString()));
+        }
+
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param left _more_
      * @param right _more_
      * @param rightColSpan _more_
