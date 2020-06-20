@@ -4944,6 +4944,17 @@ public class TypeHandler extends RepositoryManager {
     }
 
     /**
+     * get the columns to be used for point json
+     *
+     * @return _more_
+     */
+    public List<Column> getColumnsForPointJson() {
+        return getColumns();
+    }
+
+
+
+    /**
      * _more_
      *
      * @param columnName _more_

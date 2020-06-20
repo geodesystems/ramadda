@@ -283,14 +283,16 @@ public class JsonOutputHandler extends OutputHandler {
         addPointHeader(fields, "entry_url", "Entry Url", "url", "forDisplay",
                        "false");
 
-        boolean addAttributes = request.get("addAttributes", false);
+        boolean      addAttributes = request.get("addAttributes", false);
+        TypeHandler  typeHandler   = null;
+        List<Column> columns       = null;
         if (addAttributes && (entries.size() > 0)) {
             Entry    entry           = entries.get(0);
             Object[] extraParameters = entry.getValues();
             if (extraParameters != null) {
-                List<Column> columns = entry.getTypeHandler().getColumns();
-                for (int i = 0; i < extraParameters.length; i++) {
-                    Column column     = columns.get(i);
+                typeHandler = entry.getTypeHandler();
+                columns     = typeHandler.getColumnsForPointJson();
+                for (Column column : columns) {
                     String columnName = column.getName();
                     String type       = column.isDate()
                                         ? "date"
@@ -322,8 +324,10 @@ public class JsonOutputHandler extends OutputHandler {
         List<String> values = new ArrayList<String>();
         for (Entry entry : entries) {
             List<String> entryArray = new ArrayList<String>();
+            //Note: if the entry is a different type than the first one then
+            //the columns will mismatch
             String array = toPointJson(request, entry, addAttributes,
-                                       showFileUrl);
+                                       columns, showFileUrl);
             entryArray.add("values");
             entryArray.add(array);
             values.add(Json.map(entryArray, false));
@@ -581,7 +585,9 @@ public class JsonOutputHandler extends OutputHandler {
                     Column column     = columns.get(i);
                     String columnName = column.getName();
                     Object v          = entry.getValue(i);
-		    if(v==null) v = "";
+                    if (v == null) {
+                        v = "";
+                    }
                     if (v instanceof Date) {
                         v = formatDate((Date) v);
                     }
@@ -682,6 +688,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @param request _more_
      * @param entry _more_
      * @param addAttributes _more_
+     * @param columns _more_
      * @param showFileUrl _more_
      *
      * @return _more_
@@ -689,7 +696,8 @@ public class JsonOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private String toPointJson(Request request, Entry entry,
-                               boolean addAttributes, boolean showFileUrl)
+                               boolean addAttributes, List<Column> columns,
+                               boolean showFileUrl)
             throws Exception {
 
         List<String> items = new ArrayList<String>();
@@ -710,16 +718,15 @@ public class JsonOutputHandler extends OutputHandler {
         TypeHandler typeHandler = entry.getTypeHandler();
         if (addAttributes) {
             Object[] extraParameters = entry.getValues();
-            if (extraParameters != null) {
-                List<Column> columns = entry.getTypeHandler().getColumns();
-                for (int i = 0; i < extraParameters.length; i++) {
-                    Object v = entry.getValue(i);
+            if ((extraParameters != null) && (columns != null)) {
+                for (Column column : columns) {
+                    Object v = extraParameters[column.getOffset()];
                     if (v == null) {
                         items.add("null");
                     } else {
-                        if (columns.get(i).isDate()) {
+                        if (column.isDate()) {
                             items.add(Json.quote(formatDate((Date) v)));
-                        } else if (columns.get(i).isNumeric()) {
+                        } else if (column.isNumeric()) {
                             items.add(v.toString());
                         } else {
                             items.add(Json.quote(v.toString()));
