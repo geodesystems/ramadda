@@ -673,9 +673,9 @@ function DisplayThing(argId, argProperties) {
 	    return null;
         },
         getProperty: function(key, dflt,skipThis) {
-	    var value =  this.getPropertyInner(key,null,skipThis);
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
+	    var value =  this.getPropertyInner(key,null,skipThis);
 	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
 	    if(!Utils.isDefined(value)) {
@@ -689,6 +689,7 @@ function DisplayThing(argId, argProperties) {
 	},
         getPropertyInner: function(keys, dflt,skipThis) {	    
 	    let debug = displayDebug.getProperty;
+	    debug = this.debugGetProperty;
 	    if(!Array.isArray(keys)) keys = [keys];
 	    for(let i=0;i<keys.length;i++) {
 		let key = keys[i];
@@ -700,7 +701,7 @@ function DisplayThing(argId, argProperties) {
 		}
 		var value = this.properties[key];
 		if (value != null) {
-		    if(debug) console.log("\tgetProperty-2:" + value);
+		    if(debug) console.log("\tgot property from this.properties:" + value);
                     return value;
 		}
 	    }
@@ -1218,7 +1219,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return new ColorByInfo(this, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix);
 	},
 	getColorByMap: function(prop) {
-	    return Utils.parseMap(this.getProperty(prop||"colorByMap"));
+	    prop = this.getProperty(prop||"colorByMap");
+	    this.debugGetProperty=false;
+	    return Utils.parseMap(prop);
         },
         toString: function() {
             return "RamaddaDisplay:" + this.type + " - " + this.getId();
@@ -1254,14 +1257,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.entry = entry;
             this.entryId = entry.getId();
             this.clearCachedData();
-            if (this.properties.data) {
+            if (this.properties.theData) {
                 this.dataCollection = new DataCollection();
                 var attrs = {
                     entryId: this.entryId,
                     lat: this.getProperty("latitude"),
                     lon: this.getProperty("longitude"),
                 };
-                this.properties.data = this.data = new PointData(entry.getName(), null, null, this.getRamadda().getRoot() + "/entry/show?entryid=" + entry.getId() + "&output=points.product&product=points.json&max=5000", attrs);
+                this.properties.theData = this.data = new PointData(entry.getName(), null, null, this.getRamadda().getRoot() + "/entry/show?entryid=" + entry.getId() + "&output=points.product&product=points.json&max=5000", attrs);
 		this.startProgress();
                 this.data.loadData(this);
             } else {
@@ -3557,19 +3560,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         loadInitialData: function() {
 	    if(!this.getProperty("okToLoadData",true)) return;
-            if (!this.needsData() || this.properties.data == null) {
+            if (!this.needsData() || this.properties.theData == null) {
                 return;
             }
             if (this.getProperty("latitude")) {
-                this.properties.data.lat = this.getProperty("latitude");
-                this.properties.data.lon = this.getProperty("longitude", "-105");
+                this.properties.theData.lat = this.getProperty("latitude");
+                this.properties.theData.lon = this.getProperty("longitude", "-105");
             }
 
-            if (this.properties.data.hasData()) {
-                this.addData(this.properties.data);
+            if (this.properties.theData.hasData()) {
+                this.addData(this.properties.theData);
                 return;
             }
-            this.properties.data.loadData(this);
+            this.properties.theData.loadData(this);
         },
         getData: function() {
             if (!this.hasData()) return null;

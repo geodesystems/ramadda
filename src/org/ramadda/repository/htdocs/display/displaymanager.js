@@ -413,17 +413,22 @@ function DisplayManager(argId, argProperties) {
             }
 
             if (props.data != null) {
+		props.theData = props.data;
+		props.data = null;
+	    }
+
+            if (props.theData != null) {
                 var haveItAlready = false;
                 for (var i = 0; i < this.dataList.length; i++) {
                     var existingData = this.dataList[i];
-                    if (existingData.equals(props.data)) {
-                        props.data = existingData;
+                    if (existingData.equals(props.theData)) {
+                        props.theData = existingData;
                         haveItAlready = true;
                         break;
                     }
                 }
                 if (!haveItAlready) {
-                    this.dataList.push(props.data);
+                    this.dataList.push(props.theData);
                 }
                 //                console.log("data:" + haveItAlready);
             }
@@ -460,8 +465,8 @@ function DisplayManager(argId, argProperties) {
             let displayId = props.displayId;
 	    if(!displayId) 
 		displayId = this.getUniqueId("display");
-            if (props.data == null && this.dataList.length > 0) {
-                props.data = this.dataList[0];
+            if (props.theData == null && this.dataList.length > 0) {
+                props.theData = this.dataList[0];
             }
             props.createdInteractively = true;
             if (!props.entryId) {
