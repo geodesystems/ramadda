@@ -230,6 +230,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.lastWidth = d.width();
                 this.map.getMap().updateSize();
             }
+	    if(!this.setMapLocationAndZoom && this.mapParams) {
+		this.setMapLocationAndZoom = true;
+		if(this.mapParams.initialZoom>=0) {
+		    this.map.getMap().zoomTo(this.mapParams.initialZoom);
+		}
+		if(this.mapParams.initialLocation) {
+		    let loc = createLonLat(this.mapParams.initialLocation.lon, this.mapParams.initialLocation.lat);
+		    this.map.setCenter(loc);
+		}
+
+	    }
+
+
         },
 
         createMap: function() {
@@ -244,6 +257,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		enableDragPan: this.getProperty("enableDragPan",true),
 		highlightColor: this.getProperty("highlightColor","blue")
             };
+	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
             if (displayDiv) {
                 params.displayDiv = displayDiv;
@@ -2269,6 +2283,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    } 
 		    let cntAtPoint = seen1[point];
 		    let anglePer = 360/cntAtPoint;
+//		    if(cntAtPoint==2)
+//			anglePer = 135;
 		    if(!seen2[point]) seen2[point]=1;
 		    else  seen2[point]++;
 		    let cnt = seen2[point]-1;
