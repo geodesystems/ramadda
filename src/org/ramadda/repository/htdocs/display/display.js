@@ -1288,9 +1288,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 titleToShow = this.getShowTitle() ? this.getDisplayTitle(title) : "";
 		let entryId = this.getProperty("entryId") || this.entryId;
                 if (entryId)
-                    titleToShow = HU.href(this.getRamadda().getEntryUrl(entryId), titleToShow, [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE), STYLE, titleStyle]);
+                    titleToShow = HU.href(this.getRamadda().getEntryUrl(entryId), titleToShow, [ATTR_CLASS, "display-title",  STYLE, titleStyle]);
             }
-
 
 	    if(this.getProperty("showEntryIcon")) {
 		let icon = this.getProperty("entryIcon");
