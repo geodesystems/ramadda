@@ -2765,6 +2765,7 @@ snippet-hide {
 
 .ramadda-links-inner ul {
     padding-left:15px;
+    margin-bottom:0px;
 }
 
 .ramadda-links-inner {
