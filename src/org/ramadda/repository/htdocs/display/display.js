@@ -1286,9 +1286,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var bg = this.getProperty("titleBackground");
                 if (bg) titleStyle += HU.css('background', bg,'padding','2px','padding-right','6px','padding-left','6px');
                 titleToShow = this.getShowTitle() ? this.getDisplayTitle(title) : "";
-                if (this.entryId)
-                    titleToShow = HU.href(this.getRamadda().getEntryUrl(this.entryId), titleToShow, [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE), STYLE, titleStyle]);
+		let entryId = this.getProperty("entryId") || this.entryId;
+                if (entryId)
+                    titleToShow = HU.href(this.getRamadda().getEntryUrl(entryId), titleToShow, [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE), STYLE, titleStyle]);
             }
+
+
 	    if(this.getProperty("showEntryIcon")) {
 		let icon = this.getProperty("entryIcon");
 		if(icon) titleToShow  = HU.image(icon) +" " + titleToShow;
