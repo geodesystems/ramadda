@@ -22,6 +22,8 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 
 import org.ramadda.repository.output.*;
+
+import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -44,7 +46,9 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
 
-import org.ramadda.repository.util.FileWriter;
+
+import java.io.File;
+
 import java.lang.reflect.*;
 
 import java.sql.PreparedStatement;
@@ -52,8 +56,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -174,6 +176,7 @@ public class GenericTypeHandler extends TypeHandler {
 
         return false;
     }
+
 
     /**
      * _more_
@@ -485,16 +488,18 @@ public class GenericTypeHandler extends TypeHandler {
      * @param request _more_
      * @param entry _more_
      * @param node _more_
+     * @param files _more_
      *
      * @throws Exception on badness
      */
     @Override
     public void initializeEntryFromXml(Request request, Entry entry,
-                                       Element node, Hashtable<String, File> files)
+                                       Element node,
+                                       Hashtable<String, File> files)
             throws Exception {
         //Always call getEntryValues here so we get create the correct size array
         Object[] values = getEntryValues(entry);
-        super.initializeEntryFromXml(request, entry, node,files);
+        super.initializeEntryFromXml(request, entry, node, files);
 
         Hashtable<String, Element> nodes    = new Hashtable<String,
                                                   Element>();
@@ -1090,6 +1095,7 @@ public class GenericTypeHandler extends TypeHandler {
      * @param showDescription on badness
      * @param showResource _more_
      * @param linkToDownload _more_
+     * @param props _more_
      *
      * @return _more_
      *
@@ -1099,15 +1105,18 @@ public class GenericTypeHandler extends TypeHandler {
     public StringBuilder getInnerEntryContent(Entry entry, Request request,
             TypeHandler typeHandler, OutputType output,
             boolean showDescription, boolean showResource,
-					      boolean linkToDownload, Hashtable props)
+            boolean linkToDownload, Hashtable props)
             throws Exception {
         if (typeHandler == null) {
             typeHandler = this;
         }
         StringBuilder parentBuff = super.getInnerEntryContent(entry, request,
                                        typeHandler, output, showDescription,
-							      showResource, linkToDownload,props);
-	if(props!=null && Misc.equals(props.get("showDetails"),"false")) return parentBuff;
+                                       showResource, linkToDownload, props);
+        if ((props != null)
+                && Misc.equals(props.get("showDetails"), "false")) {
+            return parentBuff;
+        }
 
         //        if (shouldShowInHtml(request, entry, output)) {
         if (true) {
@@ -1375,13 +1384,17 @@ public class GenericTypeHandler extends TypeHandler {
             return;
         }
 
-        if ((entry != null) && hasValue && !column.getEditable()) {
-            StringBuilder tmpSb = new StringBuilder();
-            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values,
-                               false);
-            formBuffer.append(HtmlUtils.formEntry(column.getLabel() + ":",
-                    tmpSb.toString()));
-        } else {
+        boolean canEdit    = column.getEditable();
+        boolean canDisplay = column.getEditable();
+        if ((entry != null) && hasValue && !canEdit) {
+            if (canDisplay) {
+                StringBuilder tmpSb = new StringBuilder();
+                column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values,
+                                   false);
+                formBuffer.append(HtmlUtils.formEntry(column.getLabel()
+                        + ":", tmpSb.toString()));
+            }
+        } else if (canEdit) {
             addColumnToEntryForm(request, entry, column, formBuffer, values,
                                  state, formInfo, sourceTypeHandler);
         }
@@ -1418,12 +1431,14 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fileWriter _more_
      * @param node _more_
      *
      * @throws Exception on badness
      */
     @Override
-    public void addToEntryNode(Request request, Entry entry, FileWriter fileWriter, Element node)
+    public void addToEntryNode(Request request, Entry entry,
+                               FileWriter fileWriter, Element node)
             throws Exception {
         super.addToEntryNode(request, entry, fileWriter, node);
 

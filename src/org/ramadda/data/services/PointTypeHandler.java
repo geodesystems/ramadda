@@ -143,11 +143,13 @@ public class PointTypeHandler extends RecordTypeHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param fromImport _more_
      *
      * @throws Exception On badness
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
             throws Exception {
 
         if (entry.getXmlNode() != null) {
@@ -155,7 +157,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
 
         if (anySuperTypesOfThisType()) {
-            super.initializeNewEntry(request, entry,fromImport);
+            super.initializeNewEntry(request, entry, fromImport);
 
             return;
         }
@@ -464,12 +466,14 @@ public class PointTypeHandler extends RecordTypeHandler {
 
 
         if ((entry == null) && column.getName().equals("properties")) {
-            if (baseTypeHandler.okToShowInForm(entry, "properties")) {
-                formBuffer.append(
-                    HtmlUtils.formEntry(
-                        msgLabel("Or upload properties"),
-                        HtmlUtils.fileInput(
-                            ARG_PROPERTIES_FILE, HtmlUtils.SIZE_70)));
+            if (column.getEditable()) {
+                if (baseTypeHandler.okToShowInForm(entry, "properties")) {
+                    formBuffer.append(
+                        HtmlUtils.formEntry(
+                            msgLabel("Or upload properties"),
+                            HtmlUtils.fileInput(
+                                ARG_PROPERTIES_FILE, HtmlUtils.SIZE_70)));
+                }
             }
         }
 
