@@ -1669,19 +1669,20 @@ public class WikiUtil {
                 String time = Utils.getProperty(props, "seconds", "60");
                 boolean showCbx = Utils.getProperty(props, "showCheckbox",
                                       true);
+                boolean showLabel = Utils.getProperty(props, "showLabel",
+                                        true);
                 if (showCbx) {
                     HtmlUtils.checkbox(buff, "", "true", true,
                                        HtmlUtils.id(id));
-                    buff.append(" Reload");
+		    buff.append(" ");
                 }
-                boolean showLabel = Utils.getProperty(props, "showLabel",
-                                        true);
-                if (showLabel) {
-                    buff.append(" ");
-                    HtmlUtils.span(buff, "", HtmlUtils.id(id + "_label"));
-                }
+		HtmlUtils.span(buff, showLabel?"":"Reload", HtmlUtils.id(id + "_label"));
+		//                if (showLabel) {
+		//                    buff.append(" ");
+		//                    HtmlUtils.span(buff, "", HtmlUtils.id(id + "_label"));
+		//                }
                 buff.append(HtmlUtils.script("Utils.initPageReload(" + time
-                                             + ",'" + id + "');"));
+                                             + ",'" + id + "'," + showLabel+");"));
 
                 continue;
             }

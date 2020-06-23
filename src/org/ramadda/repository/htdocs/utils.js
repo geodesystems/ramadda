@@ -1093,24 +1093,24 @@ var Utils = {
     },
 
 
-    initPageReload:function(time, id) {
+    initPageReload:function(time, id, showLabel) {
 	let cbx = $("#" + id);
 	let label = $("#" + id+"_label");
 	if(cbx.length>0) {
 	    cbx.change(()=>{
-		label.html("");
+		let text = "Reload" +HtmlUtils.span([STYLE,"color:transparent"]," in 00  seconds")
+		label.html(text);
 		if(cbx.is(':checked')) {
-		    Utils.checkPageReload(time,id);
+		    Utils.checkPageReload(time,id,showLabel);
 		}
 	    });
 	}
-	
 	if(cbx.length==0  || cbx.is(':checked')) {
-	    Utils.checkPageReload(time,id);
+	    Utils.checkPageReload(time,id,showLabel);
 	}
     },
     checkPageReloadPending: false,
-    checkPageReload:function(time, id) {
+    checkPageReload:function(time, id, showLabel) {
 	let cbx = $("#" + id);
 	let label = $("#" + id+"_label");
 	if(cbx.length>0  &&!cbx.is(':checked')) {
@@ -1120,15 +1120,20 @@ var Utils = {
 	    location.reload();
 	    return;
 	}
-
-	if(label.length>0) {
-	    label.html(" in " +time+" seconds");
+	if(showLabel) {
+	    let text = "Reload in " +time+" seconds";
+	    label.html(text);
+	} 
+	if(time<=5) {
+	    label.css("background","#eee");
+	} else {
+	    label.css("background","transparent");
 	}
 	if(!Utils.checkPageReloadPending) {
 	    Utils.checkPageReloadPending=true;
 	    setTimeout(()=>{
 		Utils.checkPageReloadPending=false;
-		Utils.checkPageReload(time-1,id);
+		Utils.checkPageReload(time-1,id,showLabel);
 	    },1000);
 	}
     },
