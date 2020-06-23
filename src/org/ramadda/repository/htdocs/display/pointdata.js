@@ -1451,12 +1451,25 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    cnt++;
 		});
-		var dfltValueMin = this.getProperty(filterField.getId() +".filterValueMin",min);
-		var dfltValueMax = this.getProperty(filterField.getId() +".filterValueMax",max);
+		let tmpMin = this.getProperty(filterField.getId() +".filterValueMin",this.getProperty("filterValueMin"));
+		let tmpMax = this.getProperty(filterField.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
+		let minStyle = "";
+		let maxStyle = "";
+		let dfltValueMin = min;
+		let dfltValueMax = max;
+		if(Utils.isDefined(tmpMin)) {
+		    minStyle = "background:" + HIGHLIGHT_COLOR+";";
+		    dfltValueMin = parseFloat(tmpMin);
+		}
+		if(Utils.isDefined(tmpMax)) {
+		    maxStyle = "background:" + HIGHLIGHT_COLOR+";";
+		    dfltValueMax = parseFloat(tmpMax);
+		}
 
-                widget = HtmlUtils.input("",dfltValueMin,["data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",filterField.getId()]);
+
+                widget = HtmlUtils.input("",dfltValueMin,[STYLE,minStyle,"data-min",min,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_min","size",3,"fieldId",filterField.getId()]);
 		widget += "-";
-                widget += HtmlUtils.input("",dfltValueMax,["data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",filterField.getId()]);
+                widget += HtmlUtils.input("",dfltValueMax,[STYLE,maxStyle,"data-max",max,"class","display-filter-range display-filter-input","style",widgetStyle, "id",widgetId+"_max","size",3,"fieldId",filterField.getId()]);
 	    } else if(filterField.getType() == "date") {
                 widget =HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date1","fieldId",filterField.getId()]) +"-" +
 		    HtmlUtils.datePicker("","",["class","display-filter-input","style",widgetStyle, "id",widgetId+"_date2","fieldId",filterField.getId()]);

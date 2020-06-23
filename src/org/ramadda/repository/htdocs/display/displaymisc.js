@@ -3346,6 +3346,10 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    let fields = this.getFields();
 	    if(!records) return;
+	    if(records.length==0) {
+		this.setContents(this.getMessage(this.getNoDataMessage()));
+		return;
+	    }
 	    let style = this.getPropertyCanvasStyle("");
 	    let columns = this.getProperty("columns");
 	    let html = "";
