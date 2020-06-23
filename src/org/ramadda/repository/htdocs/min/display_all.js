@@ -3213,6 +3213,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		'showProgress=true',
 		['doEntries=true','Make the children entries be data'],
 		['addAttributes=true','Include the extra attributes of the children'],
+		["sortFields=\"\"","Comma separated list of fields to sort the data on"],
+		["sortAscending=true|false",""],
+		["sortByFields=\"\"","Show sort by fields in a menu"],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'doFormatNumber=false',
@@ -6623,6 +6626,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let _this = this;
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
+            this.sortByFields = this.getFieldsByIds(null, this.getProperty("sortByFields", "", true));	    
 	    let pointData = this.getData();
             if (pointData == null) return;
             let fields= pointData.getRecordFields();
@@ -6700,6 +6704,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 += HU.span([CLASS,"display-filter"],
 				   this.makeFilterLabel("Color by: ") + HU.select("",[ID,this.getDomId("colorbyselect")],enums,this.getProperty("colorBy","")))+SPACE;
 	    }
+	    if(this.sortByFields.length>0) {
+		let enums = [];
+		this.sortByFields.forEach(field=>{
+		    if(field.isFieldGeo()) return;
+		    enums.push([field.getId(),field.getLabel()]);
+		});
+		header2 += HU.span([CLASS,"display-filter"],
+				   this.makeFilterLabel("Sort by: ") + HU.select("",[ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
+	    }
+
 	    if(this.sizeByFields.length>0) {
 		let enums = [];
 		this.sizeByFields.forEach(field=>{
@@ -7022,6 +7036,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq("colorbyselect").change(function(){
 		_this.colorByFieldChanged($(this).val());
 	    });
+            this.jq("sortbyselect").change(function(){
+		_this.sortByFieldChanged($(this).val());
+	    });
             this.jq("sizebyselect").change(function(){
 		_this.sizeByFieldChanged($(this).val());
 	    });
@@ -7108,6 +7125,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	colorByFieldChanged:function(field) {
 	    this.setProperty("colorBy", field);
+	    this.updateUI();
+	},
+	sortByFieldChanged:function(field) {
+	    this.setProperty("sortFields", field);
 	    this.updateUI();
 	},
 	sizeByFieldChanged:function(field) {
