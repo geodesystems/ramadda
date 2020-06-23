@@ -86,7 +86,7 @@ public class RepositoryManager implements RepositorySource, Constants,
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final HtmlUtils HU = null;
 
     /**
@@ -602,9 +602,14 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getAdmin();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public MailManager getMailManager() {
         return repository.getMailManager();
-    }    
+    }
 
     /**
      * _more_
@@ -936,21 +941,61 @@ public class RepositoryManager implements RepositorySource, Constants,
         return textSuffixes.contains(suffix.toLowerCase());
     }
 
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     *
+     * @return _more_
+     */
     public String messageNote(String msg) {
-	return getPageHandler().showDialogNote(msg);
+        return getPageHandler().showDialogNote(msg);
     }
 
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     *
+     * @return _more_
+     */
+    public String messageBlank(String msg) {
+        return getPageHandler().showDialogBlank(msg);
+    }
+
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     * @param buttons _more_
+     *
+     * @return _more_
+     */
     public String messageQuestion(String msg, String buttons) {
-	return getPageHandler().showDialogQuestion(msg,buttons);
+        return getPageHandler().showDialogQuestion(msg, buttons);
     }
 
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     *
+     * @return _more_
+     */
     public String messageWarning(String msg) {
-	return getPageHandler().showDialogWarning(msg);
+        return getPageHandler().showDialogWarning(msg);
     }
 
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     *
+     * @return _more_
+     */
     public String messageError(String msg) {
-	return getPageHandler().showDialogError(msg);
-    }            
+        return getPageHandler().showDialogError(msg);
+    }
 
 
 

@@ -74,7 +74,8 @@ import java.util.TimeZone;
 public class PageHandler extends RepositoryManager {
 
 
-    private static boolean debugTemplates = false; 
+    /** _more_          */
+    private static boolean debugTemplates = false;
 
     /** _more_ */
     public static final String DEFAULT_TEMPLATE = "fixedmapheader";
@@ -991,6 +992,7 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
+
         return mobileTemplate;
     }
 
@@ -1013,16 +1015,17 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public synchronized List<HtmlTemplate> getTemplates() {
+
         List<HtmlTemplate> theTemplates = htmlTemplates;
-        if ( !cacheTemplates || theTemplates == null) {
+        if ( !cacheTemplates || (theTemplates == null)) {
             String mobileId =
                 getRepository().getProperty("ramadda.template.mobile",
                                             (String) null);
             HtmlTemplate theMobileTemplate = null;
-	    //use locals here in case of race conditions
-	    HtmlTemplate _defaultTemplate = null;
-	    HtmlTemplate _mobileTemplate  = null;
-            String imports = "";
+            //use locals here in case of race conditions
+            HtmlTemplate _defaultTemplate = null;
+            HtmlTemplate _mobileTemplate  = null;
+            String       imports          = "";
             try {
                 imports = getStorageManager().readSystemResource(
                     "/org/ramadda/repository/resources/web/imports.html");
@@ -1041,8 +1044,9 @@ public class PageHandler extends RepositoryManager {
             String defaultId =
                 getRepository().getProperty(PROP_HTML_TEMPLATE_DEFAULT,
                                             DEFAULT_TEMPLATE);
-	    if(debugTemplates)
-		System.err.println("getTemplates defaultId=" + defaultId);
+            if (debugTemplates) {
+                System.err.println("getTemplates defaultId=" + defaultId);
+            }
             List<String> templatePaths =
                 new ArrayList<String>(
                     getRepository().getPluginManager().getTemplateFiles());
@@ -1116,13 +1120,17 @@ public class PageHandler extends RepositoryManager {
                     if (_defaultTemplate == null) {
                         if (defaultId == null) {
                             _defaultTemplate = template;
-			    if(debugTemplates)
-				System.err.println("\tset-1:" + _defaultTemplate);
-                       } else {
+                            if (debugTemplates) {
+                                System.err.println("\tset-1:"
+                                        + _defaultTemplate);
+                            }
+                        } else {
                             if (Misc.equals(defaultId, template.getId())) {
                                 _defaultTemplate = template;
-				if(debugTemplates)
-				    System.err.println("\tset-2:" + _defaultTemplate);
+                                if (debugTemplates) {
+                                    System.err.println("\tset-2:"
+                                            + _defaultTemplate);
+                                }
                             }
                         }
                         if (mobileId == null) {
@@ -1142,20 +1150,22 @@ public class PageHandler extends RepositoryManager {
             }
             if (_defaultTemplate == null) {
                 _defaultTemplate = theTemplates.get(0);
-		if(debugTemplates)
-		    System.err.println("\tset-3:" + _defaultTemplate);
+                if (debugTemplates) {
+                    System.err.println("\tset-3:" + _defaultTemplate);
+                }
             }
             if (_mobileTemplate == null) {
                 _mobileTemplate = _defaultTemplate;
             }
             //            if (getRepository().getCacheResources()) {
-	    defaultTemplate = _defaultTemplate;
-	    mobileTemplate = _mobileTemplate;
-            htmlTemplates = theTemplates;
+            defaultTemplate = _defaultTemplate;
+            mobileTemplate  = _mobileTemplate;
+            htmlTemplates   = theTemplates;
             //            }
         }
 
         return theTemplates;
+
 
     }
 
@@ -1419,6 +1429,7 @@ public class PageHandler extends RepositoryManager {
                 throw new RuntimeException(exc);
             }
         }
+
         return getTemplate(request, currentEntry);
     }
 
@@ -1435,7 +1446,10 @@ public class PageHandler extends RepositoryManager {
         //this forces the possible reload of the templates
         getTemplates();
         if (request == null) {
-	    if(debugTemplates)System.err.println("getTemplate-1:" + defaultTemplate);
+            if (debugTemplates) {
+                System.err.println("getTemplate-1:" + defaultTemplate);
+            }
+
             return defaultTemplate;
         }
         boolean isMobile = request.isMobile();
@@ -1444,10 +1458,13 @@ public class PageHandler extends RepositoryManager {
         if (Utils.stringDefined(templateId)) {
             HtmlTemplate template = templateMap.get(templateId);
             if (template != null) {
-		if(debugTemplates) System.err.println("getTemplate-2:" + template);
+                if (debugTemplates) {
+                    System.err.println("getTemplate-2:" + template);
+                }
+
                 return template;
             }
-	    templateId = null;
+            templateId = null;
         }
 
         //Check for metadata template definition
@@ -1458,20 +1475,30 @@ public class PageHandler extends RepositoryManager {
                         ContentMetadataHandler.TYPE_TEMPLATE, true);
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
-			HtmlTemplate template =
-			    templateMap.get(metadata.getAttr1());
-			if(template!=null) {
-			    request.put(ARG_TEMPLATE, template.getId());
-			    if (isMobile) {
-				if (template.getTemplateProperty("mobile",false)) {
-				    if(debugTemplates) System.err.println("getTemplate metadata:" + template);
-				    return template;
-				}
-			    } else {
-				if(debugTemplates) System.err.println("getTemplate metadata:" + template);
-				return template;
-			    }
-			}
+                        HtmlTemplate template =
+                            templateMap.get(metadata.getAttr1());
+                        if (template != null) {
+                            request.put(ARG_TEMPLATE, template.getId());
+                            if (isMobile) {
+                                if (template.getTemplateProperty("mobile",
+                                        false)) {
+                                    if (debugTemplates) {
+                                        System.err.println(
+                                            "getTemplate metadata:"
+                                            + template);
+                                    }
+
+                                    return template;
+                                }
+                            } else {
+                                if (debugTemplates) {
+                                    System.err.println(
+                                        "getTemplate metadata:" + template);
+                                }
+
+                                return template;
+                            }
+                        }
                     }
                 }
             } catch (Exception exc) {
@@ -1479,18 +1506,23 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-        if (isMobile && mobileTemplate != null) {
+        if (isMobile && (mobileTemplate != null)) {
             request.put(ARG_TEMPLATE, mobileTemplate.getId());
-	    if(debugTemplates) System.err.println("getTemplate mobile:" + mobileTemplate);
+            if (debugTemplates) {
+                System.err.println("getTemplate mobile:" + mobileTemplate);
+            }
+
             return mobileTemplate;
         }
 
         User user = request.getUser();
         if ((templateId == null) && (user != null) && !user.getAnonymous()) {
             templateId = user.getTemplate();
-	    if (templateId != null) 
-		if(debugTemplates)
-		    System.err.println("getTemplate from user:" + templateId);
+            if (templateId != null) {
+                if (debugTemplates) {
+                    System.err.println("getTemplate from user:" + templateId);
+                }
+            }
         }
 
         if (templateId != null) {
@@ -1499,7 +1531,9 @@ public class PageHandler extends RepositoryManager {
                 return template;
             }
         }
-	if(debugTemplates)	System.err.println("getTemplate default:" + defaultTemplate);
+        if (debugTemplates) {
+            System.err.println("getTemplate default:" + defaultTemplate);
+        }
 
         return defaultTemplate;
     }
@@ -2174,6 +2208,17 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
+    public String showDialogBlank(String h) {
+        return getMessage(h, null, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param h _more_
+     *
+     * @return _more_
+     */
     public String progress(String h) {
         return getMessage(h, Constants.ICON_PROGRESS, false);
     }
@@ -2280,10 +2325,13 @@ public class PageHandler extends RepositoryManager {
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
                                  "ramadda-message", "id", "messageblock"));
-        sb.append(
-            "<table><tr valign=top><td><div class=\"ramadda-message-link\">");
-        sb.append(getIconImage(icon));
-        sb.append("</div></td><td><div class=\"ramadda-message-inner\">");
+        sb.append("<table><tr valign=top>");
+        if (icon != null) {
+            sb.append("<td><div class=\"ramadda-message-link\">");
+            sb.append(getIconImage(icon));
+            sb.append("</div></td>");
+        }
+        sb.append("<td><div class=\"ramadda-message-inner\">");
         sb.append(h);
         sb.append("</div></td>");
         if (showClose) {
