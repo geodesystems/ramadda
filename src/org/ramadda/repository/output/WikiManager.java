@@ -4445,11 +4445,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             if (entryid.startsWith("entries.orderby=")) {
                 orderBy = entryid.substring("entries.orderby=".length());
+
                 continue;
             }
             if (entryid.startsWith("entries.orderdir=")) {
-                orderDir = new Boolean(entryid.substring(
-							 "entries.orderdir=".length()).equals("up"));
+                orderDir = new Boolean(
+                    entryid.substring("entries.orderdir=".length()).equals(
+                        "up"));
 
                 continue;
             }
@@ -4785,17 +4787,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
-	if(orderBy==null) {
-	    orderBy=(String) props.get("sort");
-	}
+        if (orderBy == null) {
+            orderBy = (String) props.get("sort");
+        }
 
-	if(props.get(ATTR_SORT_ORDER) !=null) {
-	    orderDir = new Boolean(props.get(ATTR_SORT_ORDER).equals("down"));
-	}
+        if (props.get(ATTR_SORT_ORDER) != null) {
+            orderDir = new Boolean(props.get(ATTR_SORT_ORDER).equals("down"));
+        }
 
-	if(orderDir==null) {
-	    orderDir = true;
-	}
+        if (orderDir == null) {
+            orderDir = true;
+        }
 
         if (orderBy != null) {
             if (orderBy.equals("date")) {
@@ -5304,7 +5306,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         tags.append(
             addWikiEditButton(
                 textAreaId, "button_blockquote.png", "Accordion",
-                "+accordion decorate=true activeSegment=0 _newline_+segment segment  title_newline_",
+                "+accordion decorate=true collapsible=true activeSegment=0 _newline_+segment segment  title_newline_",
                 "-segment_newline_-accordion_newline_", "Accordion",
                 "mw-editbutton-headline"));
 
@@ -6564,10 +6566,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
-	if(entry!=null) {
-	    propList.add("entryIcon");
-	    propList.add(Json.quote(entry.getTypeHandler().getEntryIconUrl(request, originalEntry)));
-	}
+        if (entry != null) {
+            propList.add("entryIcon");
+            propList.add(
+                Json.quote(
+                    entry.getTypeHandler().getEntryIconUrl(
+                        request, originalEntry)));
+        }
 
 
 

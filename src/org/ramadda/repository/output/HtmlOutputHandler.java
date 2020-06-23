@@ -1155,7 +1155,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 new StringBuffer("\n<div class=\"description\">\n");
             descSB.append(desc);
             descSB.append("</div>\n");
-
             //            sb.append(HU.makeShowHideBlock(msg("Description"),
             //                    descSB.toString(), open));
 
@@ -1164,13 +1163,20 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(desc);
         }
         if (isWiki) {
-            getPageHandler().entrySectionOpen(request, entry, suffix,
-                    "Wiki Text", true);
+            suffix.append(HtmlUtils.sectionOpen("Wiki Text", false));
             entry.getTypeHandler().addReadOnlyWikiEditor(request, entry,
                     suffix, desc);
-            getPageHandler().entrySectionClose(request, entry, suffix);
+            suffix.append(HtmlUtils.sectionClose());
+        } else {
+            String wikiTemplate =
+                entry.getTypeHandler().getWikiTemplate(request, entry);
+            if (Utils.stringDefined(wikiTemplate)) {
+                suffix.append(HtmlUtils.sectionOpen("Wiki Template", false));
+                entry.getTypeHandler().addReadOnlyWikiEditor(request, entry,
+                        suffix, wikiTemplate.trim());
+                suffix.append(HtmlUtils.sectionClose());
+            }
         }
-
     }
 
 
@@ -1440,7 +1446,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List<Entry> allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
-        makeTable(request, allEntries, sb,null);
+        makeTable(request, allEntries, sb, null);
         getPageHandler().entrySectionClose(request, group, sb);
 
         return makeLinksResult(request, group.getName(), sb,
@@ -1652,6 +1658,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param request _more_
      * @param allEntries _more_
      * @param sb _more_
+     * @param props _more_
      *
      * @throws Exception _more_
      */
@@ -1659,13 +1666,17 @@ public class HtmlOutputHandler extends OutputHandler {
                           Appendable sb, Hashtable props)
             throws Exception {
 
-	if(props==null) props = new Hashtable();
+        if (props == null) {
+            props = new Hashtable();
+        }
         boolean showCategories = request.get(ARG_SHOWCATEGORIES, true);
         Hashtable<String, List<Entry>> map = new Hashtable<String,
                                                  List<Entry>>();
-	boolean showDate = Utils.getProperty(props, "showDate",true);
-	boolean showCreateDate = Utils.getProperty(props, "showCreateDate",false);
-	boolean showChangeDate = Utils.getProperty(props, "showChangeDate",true);
+        boolean showDate = Utils.getProperty(props, "showDate", true);
+        boolean showCreateDate = Utils.getProperty(props, "showCreateDate",
+                                     false);
+        boolean showChangeDate = Utils.getProperty(props, "showChangeDate",
+                                     true);
 
         List<String> types = new ArrayList<String>();
         for (Entry entry : allEntries) {
@@ -1731,12 +1742,15 @@ public class HtmlOutputHandler extends OutputHandler {
 
             tableSB.append(HU.th(HU.b(msg("Name"))));
             numCols++;
-	    if(showDate)
-		tableSB.append(HU.th(HU.b(msg("Date"))));
-	    if(showCreateDate)
-		tableSB.append(HU.th(HU.b(msg("Create Date"))));
-	    if(showChangeDate)
-		tableSB.append(HU.th(HU.b(msg("Change Date"))));
+            if (showDate) {
+                tableSB.append(HU.th(HU.b(msg("Date"))));
+            }
+            if (showCreateDate) {
+                tableSB.append(HU.th(HU.b(msg("Create Date"))));
+            }
+            if (showChangeDate) {
+                tableSB.append(HU.th(HU.b(msg("Change Date"))));
+            }
             boolean haveFiles = false;
             for (Entry entry : entries) {
                 if (entry.isFile()) {
@@ -1751,12 +1765,14 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             if (columns != null) {
                 for (Column column : columns) {
-		    if(column.getRows() <= 1 &&  column.getCanShow()) {
-			if (column.getCanList() || Utils.getProperty(props,"show"+ column.getName(),false)) {
-			    numCols++;
-			    tableSB.append(HU.th(HU.b(column.getLabel())));
-			}
-		    }
+                    if ((column.getRows() <= 1) && column.getCanShow()) {
+                        if (column.getCanList()
+                                || Utils.getProperty(props,
+                                    "show" + column.getName(), false)) {
+                            numCols++;
+                            tableSB.append(HU.th(HU.b(column.getLabel())));
+                        }
+                    }
                 }
             }
 
@@ -1771,7 +1787,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                        HU.attrs(new String[] { "class", odd
                         ? "odd"
                         : "even", "valign", "top" })));
- 
+
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
                                           entry, getEntryDisplayName(entry));
 
@@ -1779,31 +1795,31 @@ public class HtmlOutputHandler extends OutputHandler {
                                       " nowrap "
                                       + HU.cssClass("entry-table-name")));
 
-		if(showDate) {
-		    String date = getDateHandler().formatDateShort(request,
-								   entry, entry.getStartDate());
-		    tableSB.append(HU.col(date,
-					  " class=\"entry-table-date\" width=10% align=right "));
-		}
+                if (showDate) {
+                    String date = getDateHandler().formatDateShort(request,
+                                      entry, entry.getStartDate());
+                    tableSB.append(HU.col(date,
+                            " class=\"entry-table-date\" width=10% align=right "));
+                }
 
-		if(showCreateDate) {
-		    String date = getDateHandler().formatDateShort(request,
-								   entry, entry.getCreateDate());
-		    tableSB.append(HU.col(date,
-					  " class=\"entry-table-date\" width=10% align=right "));
-		}
+                if (showCreateDate) {
+                    String date = getDateHandler().formatDateShort(request,
+                                      entry, entry.getCreateDate());
+                    tableSB.append(HU.col(date,
+                            " class=\"entry-table-date\" width=10% align=right "));
+                }
 
-		if(showChangeDate) {
-		    String date = getDateHandler().formatDateShort(request,
-								   entry, entry.getChangeDate());
-		    tableSB.append(HU.col(date,
-					  " class=\"entry-table-date\" width=10% align=right "));
-		}
+                if (showChangeDate) {
+                    String date = getDateHandler().formatDateShort(request,
+                                      entry, entry.getChangeDate());
+                    tableSB.append(HU.col(date,
+                            " class=\"entry-table-date\" width=10% align=right "));
+                }
 
                 if (haveFiles) {
                     String downloadLink =
                         HU.href(
-				entry.getTypeHandler().getEntryResourceUrl(
+                            entry.getTypeHandler().getEntryResourceUrl(
                                 request, entry), HU.img(
                                 getIconUrl(ICON_DOWNLOAD), msg("Download"),
                                 ""));
@@ -1822,22 +1838,25 @@ public class HtmlOutputHandler extends OutputHandler {
                 Object[] values = entry.getValues();
                 if (columns != null) {
                     for (Column column : columns) {
-                        if (column.getCanShow() && column.getRows() <= 1) {
-			    if (column.getCanList() || Utils.getProperty(props,"show"+ column.getName(),false)) {
-				String s = column.getString(values);
-				if (s == null) {
-				    s = "";
-				}
-				s = entry.getTypeHandler().decorateValue(request, entry, column, s);
-				if (column.isNumeric()) {
-				    tableSB.append(HU.colRight(s));
-				} else {
-				    HU.col(tableSB, s);
-				}
-			    }
+                        if (column.getCanShow() && (column.getRows() <= 1)) {
+                            if (column.getCanList()
+                                    || Utils.getProperty(props,
+                                        "show" + column.getName(), false)) {
+                                String s = column.getString(values);
+                                if (s == null) {
+                                    s = "";
+                                }
+                                s = entry.getTypeHandler().decorateValue(
+                                    request, entry, column, s);
+                                if (column.isNumeric()) {
+                                    tableSB.append(HU.colRight(s));
+                                } else {
+                                    HU.col(tableSB, s);
+                                }
+                            }
                         }
-		    }
-		}
+                    }
+                }
                 tableSB.append("</tr>");
                 HU.open(tableSB, "tr", "class", (odd
                         ? "odd"
@@ -1863,7 +1882,7 @@ public class HtmlOutputHandler extends OutputHandler {
             contents.add(tableSB.toString());
             titles.add(typeLabel);
 
-	    }
+        }
         if (types.size() == 1) {
             sb.append(contents.get(0));
         } else {
