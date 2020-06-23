@@ -278,7 +278,8 @@ public class SessionManager extends RepositoryManager {
      */
     public void setLastEntry(Request request, Entry entry) throws Exception {
         if ((entry != null) && (request != null)) {
-            putSessionProperty(request, "lastentry", entry);
+	    //TODO: Don't do this for now
+	    //            putSessionProperty(request, "lastentry", entry);
         }
     }
 
