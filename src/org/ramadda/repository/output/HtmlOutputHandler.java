@@ -704,8 +704,8 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-            List<String> onlyTheseTypes, List<String> notTheseTypes,
-            boolean showTitle)
+						List<String> onlyTheseTypes, List<String> notTheseTypes,
+						boolean showTitle, String separator)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -782,6 +782,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 HU.open(sb, "tr",
                         HU.attr("valign", "top") + HU.cssClass(rowClass));
                 HU.open(sb, "td");
+		if(!first && separator!=null) {
+		    sb.append(separator);
+		}
                 sb.append(HU.tag("div", HU.cssClass("metadata-small-label"),
                                  html[0]));
                 sb.append(HU.tag("div",
@@ -793,6 +796,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 if ( !first) {
                     sb.append("<div class=\"metadata-row-divider\"></div>");
                 }
+		if(!first && separator!=null) {
+		    sb.append(separator);
+		}
                 HU.div(sb, html[1], HU.cssClass(rowClass));
             }
             sb.append("\n");
@@ -1211,7 +1217,7 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
-                getMetadataHtml(request, entry, null, null, true)) {
+		 getMetadataHtml(request, entry, null, null, true, null)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

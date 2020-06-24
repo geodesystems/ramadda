@@ -3851,6 +3851,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String metadataTypesAttr = getProperty(wikiUtil, props,
                                        ATTR_METADATA_TYPES, (String) null);
+	String separator  = getProperty(wikiUtil, props,
+					"separator", (String) null);
         if (metadataTypesAttr != null) {
             onlyTheseTypes = new ArrayList<String>();
             notTheseTypes  = new ArrayList<String>();
@@ -3873,7 +3875,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         for (TwoFacedObject tfo :
                 getRepository().getHtmlOutputHandler().getMetadataHtml(
                     request, entry, onlyTheseTypes, notTheseTypes,
-                    includeTitle)) {
+                    includeTitle, separator)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

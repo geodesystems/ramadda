@@ -942,6 +942,10 @@ a.ramadda-menubar-button:hover {
 }
 
 
+.ramadda-line  {
+    border-bottom:1px #ccc solid;
+}
+
 .ramadda-section-line  {
     border-bottom:1px #ccc solid;
 }
