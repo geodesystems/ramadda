@@ -3359,9 +3359,19 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	    let topTitleTemplate= this.getPropertyTopTitleTemplate();
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
 	    let iconField = this.getFieldById(null,this.getPropertyIconField());	    
+	    let doingHighlight = this.getFilterHighlight();
 	    records.forEach((record,idx)=>{
+		let highlight =  record.isHighlight(this);
 		let cid = this.getDomId("canvas_" + idx);
-		let c = HU.tag("canvas",[CLASS,"display-canvas-canvas", STYLE,style, 
+		let canvasClass = "display-canvas-canvas";
+		if(doingHighlight) {
+		    if(highlight) {
+			canvasClass+= " display-canvas-canvas-highlight";
+		    } else {
+			canvasClass+= " display-canvas-canvas-unhighlight";
+		    }
+		}
+		let c = HU.tag("canvas",[CLASS,canvasClass, STYLE,style, 
 					 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
 		let icon = iconField? HU.image(record.getValue(iconField.getIndex()))+"&nbsp;":"";
 		let topTitle  = topTitleTemplate?

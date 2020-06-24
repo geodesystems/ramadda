@@ -2137,6 +2137,14 @@ table.dataTable tfoot td {
     border:1px solid #999;
 }
 
+.display-canvas-canvas-highlight {
+}
+
+.display-canvas-canvas-unhighlight {
+    background:#ccc;
+}
+
+
 .display-canvas-block {
     display:inline-block;
     text-align:center;
