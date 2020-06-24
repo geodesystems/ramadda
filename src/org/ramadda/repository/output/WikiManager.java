@@ -169,7 +169,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150"),
                             new WikiTag(WIKI_TAG_COMMENTS),
                             new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
-                            new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true"),
+                            new WikiTag(WIKI_TAG_PROPERTIES, null, "message","","metadata.types","",ATTR_METADATA_INCLUDE_TITLE,"true","separator","html"),
                             new WikiTag(WIKI_TAG_BREADCRUMBS),
                             new WikiTag(WIKI_TAG_TOOLS),
                             new WikiTag(WIKI_TAG_TOOLBAR),
@@ -3851,8 +3851,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String metadataTypesAttr = getProperty(wikiUtil, props,
                                        ATTR_METADATA_TYPES, (String) null);
-	String separator  = getProperty(wikiUtil, props,
-					"separator", (String) null);
+        String separator = getProperty(wikiUtil, props, "separator",
+                                       (String) null);
         if (metadataTypesAttr != null) {
             onlyTheseTypes = new ArrayList<String>();
             notTheseTypes  = new ArrayList<String>();
