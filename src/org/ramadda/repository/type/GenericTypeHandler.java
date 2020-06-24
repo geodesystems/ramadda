@@ -1384,8 +1384,8 @@ public class GenericTypeHandler extends TypeHandler {
             return;
         }
 
-        boolean canEdit    = column.getEditable();
-        boolean canDisplay = column.getEditable();
+        boolean canEdit    = sourceTypeHandler.getEditable(column);
+        boolean canDisplay = sourceTypeHandler.getCanDisplay(column);
         if ((entry != null) && hasValue && !canEdit) {
             if (canDisplay) {
                 StringBuilder tmpSb = new StringBuilder();

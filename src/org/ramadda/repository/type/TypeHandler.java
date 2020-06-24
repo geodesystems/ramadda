@@ -6902,6 +6902,37 @@ public class TypeHandler extends RepositoryManager {
      * _more_
      *
      * @param column _more_
+     *
+     * @return _more_
+     */
+    public boolean getEditable(Column column) {
+        if (getParent() != null) {
+            return getParent().getEditable(column);
+        }
+
+        return column.getEditable();
+    }
+
+    /**
+     * _more_
+     *
+     * @param column _more_
+     *
+     * @return _more_
+     */
+    public boolean getCanDisplay(Column column) {
+        if (getParent() != null) {
+            return getParent().getCanDisplay(column);
+        }
+
+        return column.getCanDisplay();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param column _more_
      * @param entry _more_
      *
      * @return _more_
