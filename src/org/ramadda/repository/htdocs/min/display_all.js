@@ -4783,11 +4783,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let logic = this.getProperty("filterLogic","and");
 		this.filters.forEach(f=>f.prepareToFilter());
 		records.forEach((record,rowIdx)=>{
-
 		    let allOk = true;
 		    let anyOk = false;		    
 		    for(var i=0;i<this.filters.length;i++) {
 			var filter= this.filters[i];
+			if(!filter.isEnabled()) continue;
 			let filterOk = filter.isRecordOk(record);
 			if(!filterOk) allOk = false;
 			else anyOk = true;
