@@ -3217,6 +3217,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["sortFields=\"\"","Comma separated list of fields to sort the data on"],
 		["sortAscending=true|false",""],
 		["sortByFields=\"\"","Show sort by fields in a menu"],
+		['sortHighlight=true','Sort based on highlight from the filters'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'doFormatNumber=false',
@@ -4378,6 +4379,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		return result;
 	    });
+	    if(this.getProperty("sortHighlight")) {
+		records.sort((a,b)=>{
+		    let h1 = a.isHighlight(this);
+		    let h2 = b.isHighlight(this);
+		    if(h1 && !h2)
+			return -1;		    
+		    if(!h1 && h2)
+			return 1;		    
+		    return 0;
+		});
+	    }
+
 	    return records;
 	},
         getFieldById: function(fields, id) {
@@ -31882,6 +31895,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     this.defineProperties([
 	{label:'Download Properties'},
 	{p:'csvLabel',wikiValue:'Download CSV'},
+	{p:'useIcon',d:'false',wikiValue:'false'},
 	{p:'fileName',d:'download',wikiValue:'download'},
 	{p:'askFields',d:'false',wikiValue:'true'},		
     ]);
@@ -31891,10 +31905,20 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
         return true;
     },
     updateUI: function() {
-	this.setContents(HU.div([ID,this.getDomId("csv")],this.getPropertyCsvLabel("Download CSV")));
-        this.jq("csv").button().click(() => {
-	    this.doDownload();
-        });
+	let label = this.getPropertyCsvLabel("Download CSV");
+	label = label.replace("${title}",this.getProperty("title",""));
+	let useIcon = this.getPropertyUseIcon(true);
+	label = useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label;
+	this.setContents(HU.div([ID,this.getDomId("csv")],label));
+	if(useIcon) {
+            this.jq("csv").click(() => {
+		this.doDownload();
+            });
+	} else {
+            this.jq("csv").button().click(() => {
+		this.doDownload();
+            });
+	}
     },
     getCsv: function(fields) {
         fields = fields || this.getData().getRecordFields();
@@ -34521,6 +34545,8 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 	{p:'topTitleTemplate',tt:'Template to show as top title'},	
 	{p:'urlField',tt:'Url Field'},
 	{p:'iconField',tt:'Icon Field'},
+	{p:'highlightStyle',tt:'Highlight Style'},
+	{p:'unHighlightStyle',tt:'Unhighlight Style'},	
 	{p:'canvasOrigin',d:"sw",wikiValue:"center",tt:'Origin point for drawing glyphs'},
 	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
 	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
@@ -34542,6 +34568,8 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    let style = this.getPropertyCanvasStyle("");
+	    let highlightStyle = this.getPropertyHighlightStyle("");
+	    let unHighlightStyle = this.getPropertyUnHighlightStyle("");
 	    let columns = this.getProperty("columns");
 	    let html = "";
 	    let canvasWidth = this.getPropertyCanvasWidth();
@@ -34555,14 +34583,18 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
 		let highlight =  record.isHighlight(this);
 		let cid = this.getDomId("canvas_" + idx);
 		let canvasClass = "display-canvas-canvas";
+		let canvasStyle = style;
 		if(doingHighlight) {
 		    if(highlight) {
-			canvasClass+= " display-canvas-canvas-highlight";
+			canvasClass+= " display-canvas-canvas-highlight ";
+			canvasStyle+= " " + highlightStyle;
 		    } else {
-			canvasClass+= " display-canvas-canvas-unhighlight";
+			canvasClass+= " display-canvas-canvas-unhighlight ";
+			canvasStyle+= " " + unHighlightStyle;
 		    }
 		}
-		let c = HU.tag("canvas",[CLASS,canvasClass, STYLE,style, 
+
+		let c = HU.tag("canvas",[CLASS,canvasClass, STYLE,canvasStyle, 
 					 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
 		let icon = iconField? HU.image(record.getValue(iconField.getIndex()))+"&nbsp;":"";
 		let topTitle  = topTitleTemplate?

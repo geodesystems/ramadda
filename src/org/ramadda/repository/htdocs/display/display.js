@@ -818,6 +818,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["sortFields=\"\"","Comma separated list of fields to sort the data on"],
 		["sortAscending=true|false",""],
 		["sortByFields=\"\"","Show sort by fields in a menu"],
+		['sortHighlight=true','Sort based on highlight from the filters'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'doFormatNumber=false',
@@ -1979,6 +1980,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		return result;
 	    });
+	    if(this.getProperty("sortHighlight")) {
+		records.sort((a,b)=>{
+		    let h1 = a.isHighlight(this);
+		    let h2 = b.isHighlight(this);
+		    if(h1 && !h2)
+			return -1;		    
+		    if(!h1 && h2)
+			return 1;		    
+		    return 0;
+		});
+	    }
+
 	    return records;
 	},
         getFieldById: function(fields, id) {
