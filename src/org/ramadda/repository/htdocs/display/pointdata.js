@@ -327,23 +327,33 @@ function PointData(name, recordFields, records, url, properties) {
                 pointDataCache[url] = cacheObject;
             }
 	    //If we are reloading then clear the data
-	    if(reload) {
-		cacheObject.pointData = null;
+	    if(cacheObject.displays.indexOf(display)<0) {
+		cacheObject.displays.push(display);
 	    }
-            cacheObject.displays.push(display);
-            if (cacheObject.pointData != null) {
-		if(debug)
-                   console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
-                display.pointDataLoaded(cacheObject.pointData, url, reload);
-                return;
-            }
-
-            cacheObject.pending.push(display);
-            if (cacheObject.pending.length > 1) {
-		if(debug)
-		    console.log("\tWaiting on callback:" + cacheObject.pending.length +" " + url +" d:" + display);
-                return;
-            }
+	    if(reload) {
+		//If its a reload then add all dependent displays to the pending list
+		cacheObject.pointData = null;
+		cacheObject.pending = [];
+//		console.log("reloading adding to pending");
+		cacheObject.displays.forEach(d=>{
+//		    console.log("\tdisplay;" + d.type);
+		    cacheObject.pending.push(d);
+		});
+	    } else {
+		cacheObject.displays.push(display);
+		if (cacheObject.pointData != null) {
+		    if(debug)
+			console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
+                    display.pointDataLoaded(cacheObject.pointData, url, reload);
+                    return;
+		}
+		cacheObject.pending.push(display);
+		if (cacheObject.pending.length > 1) {
+		    if(debug)
+			console.log("\tWaiting on callback:" + cacheObject.pending.length +" " + url +" d:" + display);
+                    return;
+		}
+	    }
             var fail = function(jqxhr, textStatus, error) {
                 var err = textStatus;
 		if(err) {
@@ -402,6 +412,7 @@ function PointData(name, recordFields, records, url, properties) {
                 for (var i = 0; i < tmp.length; i++) {
 		    if(debug)
 			console.log("\tcalling pointDataLoaded:" + tmp[i].type +" " + tmp[i].getId() +" #:" + pointData.getRecords().length);
+
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
 

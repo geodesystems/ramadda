@@ -6151,8 +6151,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    div.css("vertical-align","bottom");
 		} 
 		let width = this.getWidth("100%");
-		if(width)
+		if(width && width!="-1") {
                     div.css("width",HU.getDimension(width));
+		}
 		div.html(html);
             } else {
                 console.log("error: no div defined for display:" + this.getType());
@@ -9019,23 +9020,33 @@ function PointData(name, recordFields, records, url, properties) {
                 pointDataCache[url] = cacheObject;
             }
 	    //If we are reloading then clear the data
-	    if(reload) {
-		cacheObject.pointData = null;
+	    if(cacheObject.displays.indexOf(display)<0) {
+		cacheObject.displays.push(display);
 	    }
-            cacheObject.displays.push(display);
-            if (cacheObject.pointData != null) {
-		if(debug)
-                   console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
-                display.pointDataLoaded(cacheObject.pointData, url, reload);
-                return;
-            }
-
-            cacheObject.pending.push(display);
-            if (cacheObject.pending.length > 1) {
-		if(debug)
-		    console.log("\tWaiting on callback:" + cacheObject.pending.length +" " + url +" d:" + display);
-                return;
-            }
+	    if(reload) {
+		//If its a reload then add all dependent displays to the pending list
+		cacheObject.pointData = null;
+		cacheObject.pending = [];
+//		console.log("reloading adding to pending");
+		cacheObject.displays.forEach(d=>{
+//		    console.log("\tdisplay;" + d.type);
+		    cacheObject.pending.push(d);
+		});
+	    } else {
+		cacheObject.displays.push(display);
+		if (cacheObject.pointData != null) {
+		    if(debug)
+			console.log("\tdata was in cache:" +cacheObject.pointData.getRecords().length+" url:" + url);
+                    display.pointDataLoaded(cacheObject.pointData, url, reload);
+                    return;
+		}
+		cacheObject.pending.push(display);
+		if (cacheObject.pending.length > 1) {
+		    if(debug)
+			console.log("\tWaiting on callback:" + cacheObject.pending.length +" " + url +" d:" + display);
+                    return;
+		}
+	    }
             var fail = function(jqxhr, textStatus, error) {
                 var err = textStatus;
 		if(err) {
@@ -9094,6 +9105,7 @@ function PointData(name, recordFields, records, url, properties) {
                 for (var i = 0; i < tmp.length; i++) {
 		    if(debug)
 			console.log("\tcalling pointDataLoaded:" + tmp[i].type +" " + tmp[i].getId() +" #:" + pointData.getRecords().length);
+
                     tmp[i].pointDataLoaded(pointData, url, reload);
                 }
 
@@ -30997,6 +31009,7 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_BLANK = "blank";
+const DISPLAY_RELOADER = "reloader";
 const DISPLAY_DOWNLOAD = "download";
 const DISPLAY_MESSAGE = "message";
 const DISPLAY_RECORDS = "records";
@@ -31151,6 +31164,14 @@ addGlobalDisplayType({
     forUser: true,
     category: "Misc"
 });
+addGlobalDisplayType({
+    type: DISPLAY_RELOADER,
+    label: "Reloader",
+    requiresData: true,
+    forUser: true,
+    category: "Misc"
+});
+
 addGlobalDisplayType({
     type: DISPLAY_DOWNLOAD,
     label: "Download",
@@ -31758,6 +31779,98 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    }
 	}});
 }
+
+function RamaddaReloaderDisplay(displayManager, id, properties) {
+    const ID_CHECKBOX= "cbx";
+    const ID_COUNTDOWN= "countdown";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RELOADER, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Reloader Properties'},
+	{p:'interval',wikiValue:'30',d:30,label:"Interval"},
+	{p:'showCheckbox',wikiValue:'false',d:true,label:"Show Checkbox"},
+	{p:'showCountdown',wikiValue:'false',d:true,label:"Show Countdown"},
+    ]);
+
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+        xxpointDataLoaded: function(pointData, url, reload) {
+	},
+	reloadData: function() {
+	    let pointData = this.dataCollection.getList()[0];
+	    pointData.loadData(this,true);
+	},
+	updateUI: function() {
+	    let html = "";
+	    //If we are already displaying then don't update the UI
+	    if(this.jq(ID_COUNTDOWN).length>0) return;
+	    if(this.getPropertyShowCheckbox()) {
+		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
+	    }		
+	    if(this.getPropertyShowCountdown()) {
+		html+=" " + HU.span([CLASS,"display-reloader-label", ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
+	    } else {
+		if(this.getPropertyShowCheckbox()) {
+		    html+=" " + HU.span([ID,this.getDomId(ID_COUNTDOWN)],"Reload");
+		}
+	    }
+	    this.setContents(html);
+	    this.jq(ID_CHECKBOX).change(()=>{
+		let cbx = this.jq(ID_CHECKBOX);
+		if(cbx.is(':checked')) {
+		    this.setTimer(this.lastTime);
+		}
+	    });
+	    this.setTimer(this.getPropertyInterval());
+	},
+	okToRun: function() {
+	    let cbx = this.jq(ID_CHECKBOX);
+	    if(cbx.length==0) return true;
+	    return cbx.is(':checked');
+	},
+	getCountdownLabel: function(time) {
+	    let pad = "";
+	    if(time<10) pad = "&nbsp;";
+	    return "Reload in " + time +" seconds"+pad;
+	},
+	updateCountdown(time) {
+	    if(this.getPropertyShowCountdown()) {
+		this.jq(ID_COUNTDOWN).html(this.getCountdownLabel(time));
+	    } else {
+		this.jq(ID_COUNTDOWN).html("Reload");
+	    }
+	},
+	setTimer(time) {
+	    if(!this.okToRun()) return;
+	    if(this.timerPending) return;
+	    this.lastTime = time;
+	    this.updateCountdown(time);
+	    this.timerPending = true;
+	    setTimeout(()=>{
+		this.timerPending = false;
+		this.checkReload(time);
+	    },1000);
+	},
+	checkReload: function(time) {
+	    time--;
+	    if(time<=0) {
+		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],"xseconds"));
+		this.reloadData();
+		time = this.getPropertyInterval();
+		//Start up again in a bit so the reloading... label is shown
+		setTimeout(()=>{
+		    this.setTimer(time);
+		},1000);
+	    } else {
+		this.setTimer(time);
+	    }
+	}
+    });
+}
+
 
 
 function RamaddaDownloadDisplay(displayManager, id, properties) {

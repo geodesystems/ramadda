@@ -7,6 +7,7 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_BLANK = "blank";
+const DISPLAY_RELOADER = "reloader";
 const DISPLAY_DOWNLOAD = "download";
 const DISPLAY_MESSAGE = "message";
 const DISPLAY_RECORDS = "records";
@@ -161,6 +162,14 @@ addGlobalDisplayType({
     forUser: true,
     category: "Misc"
 });
+addGlobalDisplayType({
+    type: DISPLAY_RELOADER,
+    label: "Reloader",
+    requiresData: true,
+    forUser: true,
+    category: "Misc"
+});
+
 addGlobalDisplayType({
     type: DISPLAY_DOWNLOAD,
     label: "Download",
@@ -768,6 +777,98 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	    }
 	}});
 }
+
+function RamaddaReloaderDisplay(displayManager, id, properties) {
+    const ID_CHECKBOX= "cbx";
+    const ID_COUNTDOWN= "countdown";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RELOADER, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Reloader Properties'},
+	{p:'interval',wikiValue:'30',d:30,label:"Interval"},
+	{p:'showCheckbox',wikiValue:'false',d:true,label:"Show Checkbox"},
+	{p:'showCountdown',wikiValue:'false',d:true,label:"Show Countdown"},
+    ]);
+
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+        xxpointDataLoaded: function(pointData, url, reload) {
+	},
+	reloadData: function() {
+	    let pointData = this.dataCollection.getList()[0];
+	    pointData.loadData(this,true);
+	},
+	updateUI: function() {
+	    let html = "";
+	    //If we are already displaying then don't update the UI
+	    if(this.jq(ID_COUNTDOWN).length>0) return;
+	    if(this.getPropertyShowCheckbox()) {
+		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
+	    }		
+	    if(this.getPropertyShowCountdown()) {
+		html+=" " + HU.span([CLASS,"display-reloader-label", ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
+	    } else {
+		if(this.getPropertyShowCheckbox()) {
+		    html+=" " + HU.span([ID,this.getDomId(ID_COUNTDOWN)],"Reload");
+		}
+	    }
+	    this.setContents(html);
+	    this.jq(ID_CHECKBOX).change(()=>{
+		let cbx = this.jq(ID_CHECKBOX);
+		if(cbx.is(':checked')) {
+		    this.setTimer(this.lastTime);
+		}
+	    });
+	    this.setTimer(this.getPropertyInterval());
+	},
+	okToRun: function() {
+	    let cbx = this.jq(ID_CHECKBOX);
+	    if(cbx.length==0) return true;
+	    return cbx.is(':checked');
+	},
+	getCountdownLabel: function(time) {
+	    let pad = "";
+	    if(time<10) pad = "&nbsp;";
+	    return "Reload in " + time +" seconds"+pad;
+	},
+	updateCountdown(time) {
+	    if(this.getPropertyShowCountdown()) {
+		this.jq(ID_COUNTDOWN).html(this.getCountdownLabel(time));
+	    } else {
+		this.jq(ID_COUNTDOWN).html("Reload");
+	    }
+	},
+	setTimer(time) {
+	    if(!this.okToRun()) return;
+	    if(this.timerPending) return;
+	    this.lastTime = time;
+	    this.updateCountdown(time);
+	    this.timerPending = true;
+	    setTimeout(()=>{
+		this.timerPending = false;
+		this.checkReload(time);
+	    },1000);
+	},
+	checkReload: function(time) {
+	    time--;
+	    if(time<=0) {
+		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],"xseconds"));
+		this.reloadData();
+		time = this.getPropertyInterval();
+		//Start up again in a bit so the reloading... label is shown
+		setTimeout(()=>{
+		    this.setTimer(time);
+		},1000);
+	    } else {
+		this.setTimer(time);
+	    }
+	}
+    });
+}
+
 
 
 function RamaddaDownloadDisplay(displayManager, id, properties) {

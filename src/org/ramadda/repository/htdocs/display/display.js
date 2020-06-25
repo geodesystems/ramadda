@@ -3752,8 +3752,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    div.css("vertical-align","bottom");
 		} 
 		let width = this.getWidth("100%");
-		if(width)
+		if(width && width!="-1") {
                     div.css("width",HU.getDimension(width));
+		}
 		div.html(html);
             } else {
                 console.log("error: no div defined for display:" + this.getType());
