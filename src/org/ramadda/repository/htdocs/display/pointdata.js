@@ -2552,6 +2552,37 @@ function CsvUtil() {
 
 
 var DataUtils = {
+    getCsv: function(fields, records, filename) {
+	let csv = "";
+	fields.forEach((f,idx)=>{
+	    if(idx>0) csv+=",";
+	    csv+=f.getId();
+	});
+	csv+="\n";
+	records.forEach(r=>{
+	    fields.forEach((f,idx)=>{
+		let v = r.getValue(f.getIndex());
+		if(v && v.getTime) {
+		    v  =Utils.formatDateYYYYMMDDHHMM(v);
+		} else {
+		    v = String(v);
+		}
+		if(idx>0) csv+=",";
+		let needToQuote = v.indexOf("\n")>=0 || v.indexOf(",")>=0;
+		if(v.indexOf("\"")>=0) {
+		    needToQuote = true;
+		    v = v.replace(/\"/g,"\"\"");
+		}
+		if(needToQuote) {
+		    v = "\"" + v +"\"";
+		}
+		csv+=v;
+	    });
+	    csv+="\n";
+	});
+	Utils.makeDownloadFile(filename, csv);
+    },
+
     parseCommands: function(commands) {
 	let result = [];
 	if(!commands) return result;

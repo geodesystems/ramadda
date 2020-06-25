@@ -295,14 +295,15 @@ function DisplayThing(argId, argProperties) {
 
 	initDialog: function() {
 	},
-        showDialog: function(text) {
+        showDialog: function(text, from, initDialog) {
 	    if(!this.dialogElement) {
 		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
 		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    this.dialogElement.html(this.makeDialog(text));
-            this.popup(this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
-            this.initDialog();
+            this.popup(from || this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
+	    if(initDialog) initDialog();
+            else this.initDialog();
         },
         getShowMenu: function() {
             if (Utils.isDefined(this.showMenu)) {
@@ -4941,14 +4942,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DIALOG_TABS).tabs();
 
         },
-        showDialog: function(text) {
+        showDialog: function(text, from, initDialog) {
 	    if(!this.dialogElement) {
 		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
 		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    this.dialogElement.html(this.makeDialog(text));
-            this.popup(this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
-            this.initDialog();
+            this.popup(from || this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
+	    if(initDialog) initDialog();
+            else this.initDialog();
         },
         copyDisplay: function() {
             let newOne = {};

@@ -2694,14 +2694,15 @@ function DisplayThing(argId, argProperties) {
 
 	initDialog: function() {
 	},
-        showDialog: function(text) {
+        showDialog: function(text, from, initDialog) {
 	    if(!this.dialogElement) {
 		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
 		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    this.dialogElement.html(this.makeDialog(text));
-            this.popup(this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
-            this.initDialog();
+            this.popup(from || this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
+	    if(initDialog) initDialog();
+            else this.initDialog();
         },
         getShowMenu: function() {
             if (Utils.isDefined(this.showMenu)) {
@@ -7340,14 +7341,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq(ID_DIALOG_TABS).tabs();
 
         },
-        showDialog: function(text) {
+        showDialog: function(text, from, initDialog) {
 	    if(!this.dialogElement) {
 		$(document.body).append(HU.div([ATTR_CLASS, "display-dialog",ID,this.getDomId(ID_DIALOG)]));
 		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    this.dialogElement.html(this.makeDialog(text));
-            this.popup(this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
-            this.initDialog();
+            this.popup(from || this.getDomId(ID_MENU_BUTTON), null,null, this.dialogElement);
+	    if(initDialog) initDialog();
+            else this.initDialog();
         },
         copyDisplay: function() {
             let newOne = {};
@@ -11242,6 +11244,37 @@ function CsvUtil() {
 
 
 var DataUtils = {
+    getCsv: function(fields, records, filename) {
+	let csv = "";
+	fields.forEach((f,idx)=>{
+	    if(idx>0) csv+=",";
+	    csv+=f.getId();
+	});
+	csv+="\n";
+	records.forEach(r=>{
+	    fields.forEach((f,idx)=>{
+		let v = r.getValue(f.getIndex());
+		if(v && v.getTime) {
+		    v  =Utils.formatDateYYYYMMDDHHMM(v);
+		} else {
+		    v = String(v);
+		}
+		if(idx>0) csv+=",";
+		let needToQuote = v.indexOf("\n")>=0 || v.indexOf(",")>=0;
+		if(v.indexOf("\"")>=0) {
+		    needToQuote = true;
+		    v = v.replace(/\"/g,"\"\"");
+		}
+		if(needToQuote) {
+		    v = "\"" + v +"\"";
+		}
+		csv+=v;
+	    });
+	    csv+="\n";
+	});
+	Utils.makeDownloadFile(filename, csv);
+    },
+
     parseCommands: function(commands) {
 	let result = [];
 	if(!commands) return result;
@@ -30964,6 +30997,7 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_BLANK = "blank";
+const DISPLAY_DOWNLOAD = "download";
 const DISPLAY_MESSAGE = "message";
 const DISPLAY_RECORDS = "records";
 const DISPLAY_TSNE = "tsne";
@@ -31113,6 +31147,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_BLANK,
     label: "Blank",
+    requiresData: true,
+    forUser: true,
+    category: "Misc"
+});
+addGlobalDisplayType({
+    type: DISPLAY_DOWNLOAD,
+    label: "Download",
     requiresData: true,
     forUser: true,
     category: "Misc"
@@ -31716,6 +31757,86 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 		colorBy.displayColorTable();
 	    }
 	}});
+}
+
+
+function RamaddaDownloadDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DOWNLOAD, properties);
+    const ID_DOWNLOAD = "download";
+    const ID_CANCEL = "cancel";    
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Download Properties'},
+	{p:'csvLabel',wikiValue:'Download CSV'},
+	{p:'fileName',d:'download',wikiValue:'download'},
+	{p:'askFields',d:'false',wikiValue:'true'},		
+    ]);
+    $.extend(this, {
+	fieldOn:{},
+	needsData: function() {
+        return true;
+    },
+    updateUI: function() {
+	this.setContents(HU.div([ID,this.getDomId("csv")],this.getPropertyCsvLabel("Download CSV")));
+        this.jq("csv").button().click(() => {
+	    this.doDownload();
+        });
+    },
+    getCsv: function(fields) {
+        fields = fields || this.getData().getRecordFields();
+	let records = this.filterData();
+	DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
+    },
+
+    applyFieldSelection: function() {
+	this.getData().getRecordFields().forEach(f=>{
+	    let cbx = this.jq("cbx_" + f.getId());
+	    let on = cbx.is(':checked');
+	    this.fieldOn[f.getId()] = on;
+	});
+    },
+    getDownloadDialog: function() {
+	let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD)],"Download") +"&nbsp;&nbsp;" +
+			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
+	html += "<b>Include:<br></b>";
+	let cbx = "";
+	this.getData().getRecordFields().forEach((f,idx)=>{
+	    let on = this.fieldOn[f.getId()];
+	    if(!Utils.isDefined(on)) on = true;
+	    cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[],on) +" " + f.getLabel() +"<br>";
+	});
+	
+	html = HU.div([STYLE,HU.css("margin","5px")],html);
+	html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin","5px")], cbx);
+	return html;
+    },
+    doDownload: function() {
+	if(this.getPropertyAskFields(true)) {
+	    let html = this.getDownloadDialog();
+	    let init = ()=>{
+		this.jq(ID_DOWNLOAD).button().click(() =>{
+		    this.jq(ID_DIALOG).hide();
+		    let fields = [];
+		    this.applyFieldSelection();
+		    this.getData().getRecordFields().forEach(f=>{
+			if(this.fieldOn[f.getId()]) {
+			    fields.push(f);
+			}
+		    });
+		    this.getCsv(fields);
+		});
+		this.jq(ID_CANCEL).button().click(() =>{
+		    this.applyFieldSelection();
+		    this.jq(ID_DIALOG).hide();
+		});
+	    };
+	    this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init);
+	} else  {
+            this.getCsv();
+	}
+    },
+    });
 }
 
 
