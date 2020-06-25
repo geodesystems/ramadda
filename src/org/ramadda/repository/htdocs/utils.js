@@ -2975,7 +2975,8 @@ var HU = HtmlUtils = {
 	let html= HtmlUtils.div(["id",id,"title","Expand", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:10px;top:0px;margin-top:0px;"],icon);
 	$(selector).append(html);
 	let btn = $("#"+id);
-	btn.attr("data-expanded","false");
+	let expandNow = $(selector).hasClass("ramadda-expand-now");
+	btn.attr("data-expanded",expandNow);
 	let origBackground = $(selector).css("background");
 	$(selector).mouseenter(function() {
 	    btn.css("display","block");
@@ -2983,8 +2984,7 @@ var HU = HtmlUtils = {
 	$(selector).mouseleave(function() {
 	    btn.css("display","none");
 	});
-
-	$("#" +id).click(function() {
+	let expandIt = function() {
 	    let icon;
 	    let expanded = $(this).attr("data-expanded")=="true";
 	    if(expanded) {
@@ -3019,7 +3019,12 @@ var HU = HtmlUtils = {
             if (window["ramaddaMapCheckLayout"]) {
 		ramaddaMapCheckLayout();
             }
-	});
+	};
+	$("#" +id).click(expandIt);
+	
+	if(expandNow) {
+	    expandIt();
+	}
     },
     makeDraggable:function(selector) {
 	let ele = $(selector);
