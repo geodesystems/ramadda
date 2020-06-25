@@ -7000,6 +7000,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 
+
 	    this.initializeRangeSlider(this.jq(ID_FILTERBAR).find(".display-filter-range"), inputFunc, this.getProperty("filterSliderImmediate"));
 
 	    this.jq(ID_FILTER_HIGHLIGHT).change(function() {

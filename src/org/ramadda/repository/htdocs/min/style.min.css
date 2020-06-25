@@ -1726,7 +1726,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-popup {
-    z-index: 1000;
+    z-index: 3000;
     font-size:12pt;
 }
 

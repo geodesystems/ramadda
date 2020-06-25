@@ -3005,8 +3005,9 @@ var HU = HtmlUtils = {
 		$(selector).css("left","5px").css("right","5px").css("top","5px").css("position","fixed").css("z-index","2000").css("background","#fff").css("height",h+"px");
 		$(selector).find(".ramadda-expandable-target").each(function() {
 		    $(this).attr("original-height",$(this).css("height"));
-		    let height = $(this).attr("expandable-height");
 		    $(this).attr("isexpanded","true");
+		    let height = $(this).attr("expandable-height");
+		    if(!height) if(height==-1) return;
 		    $(this).css("height",height || "95vh");
 		});
 		btn.css("display","block");
