@@ -480,6 +480,7 @@ function DisplayManager(argId, argProperties) {
             }
 	    if(props.dummy) return display;
             this.addDisplay(display);
+	    display.doFinalInitialization();
             return display;
         },
         pageHasLoaded: function(display) {

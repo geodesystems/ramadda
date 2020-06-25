@@ -4734,6 +4734,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
+
 	    if(debug)   console.log("R-1:" + records.length);
 	    if(this.getProperty("showLastDate")) {
 		let max = null;
@@ -4761,7 +4762,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!date) return true;
 		return this.dateInRange(date);
 	    });
-	    if(debug)   console.log("filter Fields:" + this.filters.length +" r:" + records.length);
+	    if(debug)   console.log("filter Fields:" + this.filters.length +" #records:" + records.length);
 
 	    if(this.filters.length) {
 		let newData = [];
@@ -6116,6 +6117,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setDisplayReady(true);
 	    }
         },
+	doFinalInitialization:function() {
+	},
         initDisplay: function() {
             this.createUI();
 	    if(this.getAnimation().getEnabled()) {
@@ -7469,6 +7472,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         //callback from the pointData.loadData call
         clearCache: function() {},
         pointDataLoaded: function(pointData, url, reload) {
+//	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
 	    this.clearProgress();
             this.inError = false;
@@ -7486,6 +7490,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.checkSearchBar();
 		//		if(debug) console.log("\done calling checkSearchBar");
             } else {
+		pointData = this.convertPointData(pointData);
 		if(!this.dataCollection)
 		    this.dataCollection = new DataCollection();
 		if(debug) console.log("\tcalling setData");
@@ -8886,11 +8891,17 @@ function convertToPointData(array) {
 */
 function PointData(name, recordFields, records, url, properties) {
     RamaddaUtil.inherit(this, new BasePointData(name, properties));
+    this.parentPointData = properties?properties.parent:null;
     RamaddaUtil.defineMembers(this, {
         recordFields: recordFields,
         records: records,
         url: url,
         loadingCnt: 0,
+	getRootPointData: function() {
+	    if(this.parentPointData)
+		return this.parentPointData.getRootPointData();
+	    return this;
+	},
         equals: function(that) {
 	    if(this.jsonUrl) {
 		return this.jsonUrl == that.jsonUrl;
@@ -8967,7 +8978,8 @@ function PointData(name, recordFields, records, url, properties) {
             return this.getGroupField()!=null;
         },
         loadData: function(display, reload) {
-            if (this.url == null) {
+	    let root = this.getRootPointData();
+            if (root.url == null) {
                 console.log("No URL");
                 return;
             }
@@ -8975,20 +8987,18 @@ function PointData(name, recordFields, records, url, properties) {
                 lat: this.lat,
                 lon: this.lon,
             };
-            var jsonUrl = display.displayManager.getJsonUrl(this.url, display, props);
-	    this.jsonUrl = jsonUrl;
-            this.loadPointJson(jsonUrl, display, reload);
+            var jsonUrl = display.displayManager.getJsonUrl(root.url, display, props);
+	    root.jsonUrl = jsonUrl;
+            root.loadPointJson(jsonUrl, display, reload);
         },
         loadPointJson: function(url, display, reload) {
 	    let debug = displayDebug.loadPointJson;
-	    let doCache = true;
             let pointData = this;
             this.startLoading();
-            var _this = this;
+            let _this = this;
 	    if(debug)
 		console.log("loadPointJson: "+ display.getId());
-            var cacheObject = pointDataCache[url];
-	    if(!doCache) cacheObject = null;
+            let cacheObject = pointDataCache[url];
             if (cacheObject == null) {
                 cacheObject = {
                     pointData: null,
@@ -9005,6 +9015,10 @@ function PointData(name, recordFields, records, url, properties) {
                     console.log("\tcreated new obj in cache: " +url);
                 pointDataCache[url] = cacheObject;
             }
+	    //If we are reloading then clear the data
+	    if(reload) {
+		cacheObject.pointData = null;
+	    }
             cacheObject.displays.push(display);
             if (cacheObject.pointData != null) {
 		if(debug)
@@ -10753,7 +10767,7 @@ function CsvUtil() {
 		    newRecord.data.push(NaN);
 		}
 	    });
-	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 	rotateData: function(pointData, args) {
 	    let records = pointData.getRecords(); 
@@ -10852,7 +10866,7 @@ function CsvUtil() {
 		}); 
 		newRecord.data=data;
 	    });
-	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 	cut: function(pointData, args) {
 	    let cut  = args.fields?args.fields.split(","):[];
@@ -10882,7 +10896,7 @@ function CsvUtil() {
 		newRecord.data = newData;
 		newRecords.push(newRecord);
 	    });
-	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 	doAverage: function(pointData, args) {
 	    let records = pointData.getRecords(); 
@@ -10916,7 +10930,7 @@ function CsvUtil() {
 		    newRecord.data[idx] = sums[idx]/records.length;
 		});
 	    }
-	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 	noop: function(pointData, args) {
 	    return pointData;
@@ -11059,7 +11073,7 @@ function CsvUtil() {
 		newRecords.push(newRecord);
 	    });
 
-	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 	maxDate: function(pointData, args) {
 	    let records = pointData.getRecords(); 
@@ -11100,7 +11114,7 @@ function CsvUtil() {
 		newRecords.push(maxRecord);
 	    });
 
-	    return   new  PointData("pointdata", fields, newRecords,null,null);
+	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
 	},
 
 	unfurl: function(pointData, args) {
@@ -11216,7 +11230,7 @@ function CsvUtil() {
 		newRecords.push(newRecord);
                 cnt++;
             });
- 	    return   new  PointData("pointdata", newFields, newRecords,null,null);
+ 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
 
 
@@ -25564,6 +25578,7 @@ function DisplayManager(argId, argProperties) {
             }
 	    if(props.dummy) return display;
             this.addDisplay(display);
+	    display.doFinalInitialization();
             return display;
         },
         pageHasLoaded: function(display) {

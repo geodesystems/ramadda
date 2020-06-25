@@ -2335,6 +2335,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 records = pointData.extractGroup(this.dataGroup, records);
             }
 
+
 	    if(debug)   console.log("R-1:" + records.length);
 	    if(this.getProperty("showLastDate")) {
 		let max = null;
@@ -2362,7 +2363,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!date) return true;
 		return this.dateInRange(date);
 	    });
-	    if(debug)   console.log("filter Fields:" + this.filters.length +" r:" + records.length);
+	    if(debug)   console.log("filter Fields:" + this.filters.length +" #records:" + records.length);
 
 	    if(this.filters.length) {
 		let newData = [];
@@ -3717,6 +3718,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setDisplayReady(true);
 	    }
         },
+	doFinalInitialization:function() {
+	},
         initDisplay: function() {
             this.createUI();
 	    if(this.getAnimation().getEnabled()) {
@@ -5070,6 +5073,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         //callback from the pointData.loadData call
         clearCache: function() {},
         pointDataLoaded: function(pointData, url, reload) {
+//	    console.log(this.type +".pointDataLoaded");
 	    let debug = displayDebug.pointDataLoaded;
 	    this.clearProgress();
             this.inError = false;
@@ -5087,6 +5091,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.checkSearchBar();
 		//		if(debug) console.log("\done calling checkSearchBar");
             } else {
+		pointData = this.convertPointData(pointData);
 		if(!this.dataCollection)
 		    this.dataCollection = new DataCollection();
 		if(debug) console.log("\tcalling setData");
