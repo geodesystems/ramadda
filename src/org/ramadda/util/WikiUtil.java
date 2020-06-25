@@ -1499,13 +1499,18 @@ public class WikiUtil {
                         ? toks.get(1)
                         : "");
                 dragId = HtmlUtils.getUniqueId("expandable");
-                String header = (String) props.get("header");
-                String clazz  = "ramadda-expandable";
+                String  header = (String) props.get("header");
+                String  clazz  = "ramadda-expandable";
+                String  clazz2 = "";
+                boolean expand = Misc.equals(props.get("expand"), "true");
+                if (expand) {
+                    clazz2 += " ramadda-expand-now";
+                }
                 if (Misc.equals("true", props.get("framed"))) {
                     clazz = "ramadda-expandable-frame";
                 }
                 HtmlUtils.open(buff, "div", "id", dragId, "style",
-                               "position:relative;");
+                               "position:relative;", "class", clazz2);
                 if (header != null) {
                     HtmlUtils.div(buff, header,
                                   HtmlUtils.attrs("class",
@@ -1674,15 +1679,18 @@ public class WikiUtil {
                 if (showCbx) {
                     HtmlUtils.checkbox(buff, "", "true", true,
                                        HtmlUtils.id(id));
-		    buff.append(" ");
+                    buff.append(" ");
                 }
-		HtmlUtils.span(buff, showLabel?"":"Reload", HtmlUtils.id(id + "_label"));
-		//                if (showLabel) {
-		//                    buff.append(" ");
-		//                    HtmlUtils.span(buff, "", HtmlUtils.id(id + "_label"));
-		//                }
+                HtmlUtils.span(buff, showLabel
+                                     ? ""
+                                     : "Reload", HtmlUtils.id(id + "_label"));
+                //                if (showLabel) {
+                //                    buff.append(" ");
+                //                    HtmlUtils.span(buff, "", HtmlUtils.id(id + "_label"));
+                //                }
                 buff.append(HtmlUtils.script("Utils.initPageReload(" + time
-                                             + ",'" + id + "'," + showLabel+");"));
+                                             + ",'" + id + "'," + showLabel
+                                             + ");"));
 
                 continue;
             }
