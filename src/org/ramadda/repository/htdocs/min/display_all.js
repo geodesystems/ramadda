@@ -20430,7 +20430,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 					'${&lt;field&gt;_max}',
 					'${&lt;field&gt;_min}',
 					'${&lt;field&gt;_average}',
-					'highightOnScroll=true',
+					'highlightOnScroll=true',
 				    ]);
 	},
 	dataFilterChanged: function() {
@@ -20789,7 +20789,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    });
 
 
-	    if(this.getProperty("highightOnScroll")) {
+	    if(this.getProperty("highlightOnScroll")) {
 		let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
 		this.jq(ID_DISPLAY_CONTENTS).scroll(()=>{
 		    let topElement = null;
