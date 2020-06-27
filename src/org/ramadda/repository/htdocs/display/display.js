@@ -107,7 +107,7 @@ function addRamaddaDisplay(display) {
 
 async function ramaddaDisplaySetSelectedEntry(entryId) {
     await getGlobalRamadda().getEntry(entryId, e => {
-	Utils.globalDisplays.forEach(d=>{
+	Utils.displaysList.forEach(d=>{
 	    if(d.setEntry) d.setEntry(e);
 	});
     });
