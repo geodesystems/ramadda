@@ -36759,7 +36759,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    }
             let fields = this.getSelectedFields(this.getData().getRecordFields());
             if (fields.length == 0) {
-		let tmp = this.getFieldsOfType(allFields, "numeric");
+		let tmp = this.getFieldsOfType(null, "numeric");
 		if(tmp.length>0) fields.push(tmp[0]);
 	    }
             if (fields.length == 0) {
