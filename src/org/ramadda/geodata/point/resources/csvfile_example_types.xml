@@ -23,7 +23,7 @@ The below type definition supports text files of the form:
 <!-- Your new type should have its own name. 
 Change type_point_datalogger to something else, e.g., type_point_yourtype 
 -->
-  <type name="type_point_cr1000"  description="CR100 Data Logger File" super="type_point" category="Point Data"  handler="org.ramadda.data.services.PointTypeHandler">
+  <type name="type_point_cr1000"  description="CR1000 Data Logger File" super="type_point" category="Point Data"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <property name="form.area.show" value="false"/>
 <!-- If there is lat/lon in your data change  form.location.show to true -->
