@@ -7490,6 +7490,7 @@ public class EntryManager extends RepositoryManager {
     public List<Entry>[] getEntries(Request request, List<Clause> clauses,
                                     TypeHandler typeHandler)
             throws Exception {
+
         int skipCnt = request.get(ARG_SKIP, 0);
         SqlUtil.debug = false;
         List<Entry> entries       = new ArrayList<Entry>();
@@ -7498,18 +7499,17 @@ public class EntryManager extends RepositoryManager {
         Hashtable   seen          = new Hashtable();
         List<Entry> allEntries    = new ArrayList<Entry>();
 
+	String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo());
+	System.err.println("clauses:" + clauses);
+	System.err.println("order:" + order);
         Statement statement = typeHandler.select(request,
                                   Tables.ENTRIES.COLUMNS, clauses,
-                                  getQueryOrderAndLimit(request, false, null,
-                                      new SelectInfo()));
-
+						 order);
         ResultSet        results;
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
 
         long             t1   = System.currentTimeMillis();
         try {
-
-
             while ((results = iter.getNext()) != null) {
                 if ( !canDoSelectOffset && (skipCnt-- > 0)) {
                     continue;
@@ -7528,6 +7528,7 @@ public class EntryManager extends RepositoryManager {
                     continue;
                 }
                 seen.put(entry.getId(), BLANK);
+		System.err.println("\tEntry:" + entry);
                 allEntries.add(entry);
             }
         } finally {
