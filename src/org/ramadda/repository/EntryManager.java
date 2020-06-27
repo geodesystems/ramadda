@@ -7500,8 +7500,6 @@ public class EntryManager extends RepositoryManager {
         List<Entry> allEntries    = new ArrayList<Entry>();
 
 	String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo());
-	System.err.println("clauses:" + clauses);
-	System.err.println("order:" + order);
         Statement statement = typeHandler.select(request,
                                   Tables.ENTRIES.COLUMNS, clauses,
 						 order);

@@ -5747,15 +5747,12 @@ public class TypeHandler extends RepositoryManager {
 
                 List<String> toks = StringUtil.split(groupId, "|", true,
                                         true);
-		System.err.println("GROUP: " + groupId);
-		System.err.println("TOKS: " + toks);
                 if (toks.size() > 1) {
                     List<Clause> ors = new ArrayList<Clause>();
                     for (String tok : toks) {
                         ors.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,
                                           tok));
                     }
-		    System.err.println("ORS: " + ors);
                     where.add(Clause.or(ors));
                 } else {
                     Entry group = getEntryManager().findGroup(request);
