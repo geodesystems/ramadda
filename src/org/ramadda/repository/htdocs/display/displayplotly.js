@@ -990,6 +990,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'xAxisTitle',d:'',wikiValue:''},
 	{p:'xAxisShowGrid',d:'true',wikiValue:'false'},
 	{p:'xAxisShowLine',d:'true',wikiValue:'false'},
+	{p:'yAxisReverse',d:false,wikiValue:'true'},
 	{p:'marginLeft',d:'60',wikiValue:'60'},
 	{p:'marginRight',d:'100',wikiValue:'100'},
 	{p:'marginBottom',d:'50',wikiValue:'50'},
@@ -1051,6 +1052,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    let labelName = indexField.getLabel();
             let layout = {
                 yaxis: {
+		    autorange: this.getProperty("yAxisReverse",false)?"reversed":null,
                     title: this.getProperty("yAxisTitle", labelName),
                     showline: this.getProperty("yAxisShowLine", true),
                     showgrid: this.getProperty("yAxisShowGrid", true),

@@ -99,7 +99,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'vectorLayerFillOpacity',wikiValue:'0.25'},
 	{p:'vectorLayerStrokeWidth',wikiValue:'1'},
 	{p:'handleCollisions',wikiValue:'true',tt:"Handle point collisions"},
-	{p:'collisionOffsetPercent',wikiValue:'0.02',tt:"How big is the offset from the center"},
+	{p:'collisionMinPixels',d:16,wikiValue:'16',tt:"How spread out"},
 	{p:'collisionDotColor',wikiValue:'red',tt:"Color of dot drawn at center"},
 	{p:'collisionDotRadius',wikiValue:'3',tt:"Radius of dot drawn at center"},				
 	{p:'collisionLineColor',wikiValue:'red',tt:"Color of line drawn at center"},
@@ -248,10 +248,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         createMap: function() {
             let _this = this;
             var params = {
-                "defaultMapLayer": this.getPropertyDefaultMapLayer(map_default_layer),
+                defaultMapLayer: this.getPropertyDefaultMapLayer(map_default_layer),
 		showLayerSwitcher: this.getProperty("showLayerSwitcher", true),
 		showScaleLine: this.getProperty("showScaleLine",false),
-		showLatLonPosition: this.getProperty("showLatLonPosition",false),
+		showLatLonPosition: this.getProperty("showLatLonPosition",true),
 		showZoomPanControl: this.getProperty("showZoomPanControl",false),
 		showZoomOnlyControl: this.getProperty("showZoomOnlyControl",true),
 		enableDragPan: this.getProperty("enableDragPan",true),
@@ -325,6 +325,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		if(feature.record && !this.map.doPopup && this.getProperty("showRecordSelection", true)) {
 		    this.highlightPoint(feature.record.getLatitude(),feature.record.getLongitude(),true,false);
+		}
+		if(feature.record && this.getProperty("shareSelected")) {
+		    let idField = this.getFieldById(null,"id");
+		    if(idField) {
+			ramaddaDisplaySetSelectedEntry(feature.record.getValue(idField.getIndex()),this.getDisplayManager().getDisplays());
+		    }
 		}
 	    });
 
@@ -1559,7 +1565,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-
 	    if(!args.dataFilterChanged)
 		this.setMessage("Creating display...");
 	    setTimeout(()=>{
@@ -2256,42 +2261,83 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getHandleCollisions()) {
 		let mapBounds = this.map.getBounds();
 		let mapW = mapBounds.right-mapBounds.left;
-		let offset = mapW*parseFloat(this.getProperty("collisionOffsetPercent",0.02));
+		let divW  = $("#" + this.getProperty(PROP_DIVID)).width();
+		let pixelsPer = divW/mapW;
+		let scaleFactor = 360/pixelsPer;
+		let baseOffset = mapW*0.025;
+		let offset = 0;
+		let cnt = 0;
+		let minPixels = this.getProperty("collisionMinPixels",16);
+		//figure out the offset but use cnt so we don't go crazy
+		while(pixelsPer*offset<minPixels && cnt<100) {
+		    offset+=baseOffset;
+		    cnt++;
+		}
 		let dotColor = this.getProperty("collisionDotColor","#000");
 		let lineColor = this.getProperty("collisionLineColor","#000");
 		let lineWidth = this.getProperty("collisionLineWidth","2");				
 		let dotRadius = this.getProperty("collisionDotRadius",4);
 //		console.log("checking collisions:" + mapBounds +" offset:" + offset);
 		let seen1={};
+//		let decimals =  parseFloat(this.getProperty("collisionRound",1));
+		let decimals = -1;
+		let pixels = [6,12,24,48,96,192];
+		for(let i=0;i<pixels.length;i++) {
+		    if(pixelsPer<pixels[i]) break;
+		    decimals++;
+		}
+//		console.log(pixelsPer  +" decimals:" + decimals);
+		let rnd = (v)=>{
+		    if(decimals>0)
+			return Math.floor(v * decimals + 0.5) / decimals;
+		    v= Math.round(v);
+		    if(decimals<0)
+			if (v%2 != 0)
+			    v--;
+		    return v;
+		};
+		let getPoint = (p=>{
+		    let lat = p.y;
+		    let lon = p.x;
+		    lat = rnd(lat);
+		    lon = rnd(lon);
+//		    console.log(p.y +" " + lat +" " + p.x +" " + lon);
+		    let rpoint = new OpenLayers.Geometry.Point(lon,lat);
+		    return rpoint;
+		});
 		records.forEach(record=>{
 		    let point = record.point;
 		    if(!point) {
 			point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
 		    }
 		    record.centerPoint  = point;
-		    if(seen1[point]) {
-			seen1[point]++;
+		    let rpoint = getPoint(point);
+		    if(rpoint==null) return;
+		    if(seen1[rpoint]) {
+			seen1[rpoint]++;
 		    } else {
-			seen1[point]=1;
+			seen1[rpoint]=1;
 		    }
 		});
 		let seen2={};
 		records.forEach((record,idx)=>{
 		    let point = record.centerPoint;
-		    if(seen1[point]==1) {
+		    let rpoint = getPoint(point);
+		    if(rpoint ==null) return;
+		    if(seen1[rpoint]==1) {
 			return;
 		    } 
-		    let cntAtPoint = seen1[point];
+		    let cntAtPoint = seen1[rpoint];
 		    let anglePer = 360/cntAtPoint;
 //		    if(cntAtPoint==2)
 //			anglePer = 135;
-		    if(!seen2[point]) seen2[point]=1;
-		    else  seen2[point]++;
-		    let cnt = seen2[point]-1;
-		    let ep = Utils.rotate(point.x,point.y,point.x,point.y-offset,cnt*anglePer-180,true);
-		    let line = this.map.addLine("line-" + idx, "", point.y,point.x, ep.y,ep.x, {strokeColor:lineColor,strokeWidth:lineWidth});
+		    if(!seen2[rpoint]) seen2[rpoint]=1;
+		    else  seen2[rpoint]++;
+		    let cnt = seen2[rpoint]-1;
+		    let ep = Utils.rotate(rpoint.x,rpoint.y,rpoint.x,rpoint.y-offset,cnt*anglePer-180,true);
+		    let line = this.map.addLine("line-" + idx, "", rpoint.y,rpoint.x, ep.y,ep.x, {strokeColor:lineColor,strokeWidth:lineWidth});
 		    if(cnt==0) {
-			let dot = this.map.addPoint("dot-" + idx, point, {fillColor:dotColor, pointRadius:dotRadius});
+			let dot = this.map.addPoint("dot-" + idx, rpoint, {fillColor:dotColor, pointRadius:dotRadius});
                         this.points.push(dot);
 		    }
 		    this.lines.push(line);
@@ -2514,8 +2560,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
                     seen[key]++;
 		    //		    continue;
-
-		    let includePoints = true;
+		    let includePoints = colorBy.isEnabled();
 		    let mapPoint=null;
 		    let mapPoints =[];
 

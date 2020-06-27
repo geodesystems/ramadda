@@ -491,6 +491,9 @@ function DisplayManager(argId, argProperties) {
             display.loadInitialData();
             this.getLayoutManager().addDisplay(display);
         },
+	getDisplays: function() {
+	    return this.getLayoutManager().getDisplays();
+	},
         notifyEvent: function(func, source, data) {
             this.getLayoutManager().notifyEvent(func, source, data);
         },

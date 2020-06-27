@@ -254,7 +254,9 @@ function RepositoryMap(mapId, params) {
     };
 
 
+
     $.extend(this, dflt);
+
     $.extend(this, params);
 
 
@@ -2430,6 +2432,7 @@ RepositoryMap.prototype = {
         if (this.showLayerSwitcher) {
             this.getMap().addControl(new OpenLayers.Control.LayerSwitcher());
         }
+
 
         if (this.showLatLonPosition) {
             if (!this.latlonReadout)

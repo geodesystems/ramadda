@@ -105,11 +105,14 @@ function addRamaddaDisplay(display) {
     Utils.addDisplay(display);
 }
 
-async function ramaddaDisplaySetSelectedEntry(entryId) {
+async function ramaddaDisplaySetSelectedEntry(entryId, displays) {
     await getGlobalRamadda().getEntry(entryId, e => {
-	Utils.displaysList.forEach(d=>{
-	    if(d.setEntry) d.setEntry(e);
-	});
+	displays = displays||Utils.displaysList;
+	if(displays) {
+		displays.forEach(d=>{
+		    if(d.setEntry) d.setEntry(e);
+		});
+	}
     });
 }
 
@@ -1272,6 +1275,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         clearCachedData: function() {},
         setEntry: function(entry) {
+	    if(this.getProperty("shareSelected")) {
+		return;
+	    }
             this.entries = [];
             this.addEntry(entry);
             this.entry = entry;
@@ -1967,31 +1973,34 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!sortFields) {
 		sortFields = this.getFieldsByIds(null, this.getProperty("sortFields", "", true));
 	    }
-	    if(sortFields.length==0) return records;
-	    records = Utils.cloneList(records);
-	    var sortAscending = this.getProperty("sortAscending",true);
-	    let cnt = 0;
-	    records.sort((a,b)=>{
-		var row1 = this.getDataValues(a);
-		var row2 = this.getDataValues(b);
-		var result = 0;
-		for(var i=0;i<sortFields.length;i++) {
-		    var sortField = sortFields[i];
-		    var v1 = row1[sortField.getIndex()];
-		    var v2 = row2[sortField.getIndex()];
-		    if(sortField.isNumeric()) {
-			if(v1<v2) result = sortAscending?-1:1;
-			else if(v1>v2) result = sortAscending?1:-1;
-			else result = 0;
-		    } else {
-			result = String(v1).localeCompare(String(v2));
-			if(!sortAscending) result=-result;
+	    if(sortFields.length>0) {
+		records = Utils.cloneList(records);
+		var sortAscending = this.getProperty("sortAscending",true);
+		let cnt = 0;
+		records.sort((a,b)=>{
+		    var row1 = this.getDataValues(a);
+		    var row2 = this.getDataValues(b);
+		    var result = 0;
+		    for(var i=0;i<sortFields.length;i++) {
+			var sortField = sortFields[i];
+			var v1 = row1[sortField.getIndex()];
+			var v2 = row2[sortField.getIndex()];
+			if(sortField.isNumeric()) {
+			    if(v1<v2) result = sortAscending?-1:1;
+			    else if(v1>v2) result = sortAscending?1:-1;
+			    else result = 0;
+			} else {
+			    result = String(v1).localeCompare(String(v2));
+			    if(!sortAscending) result=-result;
+			}
+			if(result!=0) break;
 		    }
-		    if(result!=0) break;
-		}
-		return result;
-	    });
+		    return result;
+		});
+	    }
+
 	    if(this.getProperty("sortHighlight")) {
+		records = Utils.cloneList(records);
 		records.sort((a,b)=>{
 		    let h1 = a.isHighlight(this);
 		    let h2 = b.isHighlight(this);
@@ -2003,32 +2012,45 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 
+	    if(this.getProperty("reverse",false)) {
+		records = Utils.cloneList(records);
+		let tmp = [];
+		for(let i=records.length-1;i>=0;i--)
+		    tmp.push(records[i]);
+		records = tmp;
+	    }
+
 	    return records;
 	},
         getFieldById: function(fields, id) {
             if (!id) return null;
 	    id = String(id).trim();
-            if (!fields) {
+	    if (!fields) {
                 let pointData = this.getData();
                 if (pointData == null) return null;
                 fields = pointData.getRecordFields();
             }
 	    let aliases= {};
-	    var tmp = this.getProperty("fieldAliases");
+	    let tmp = this.getProperty("fieldAliases");
 	    if(tmp) {
 		tmp.split(",").forEach(tok=>{
 		    [name,alias] =   tok.split(":");
 		    aliases[alias] = name;
 		});
 	    }
-	    var alias = aliases[id];
-            for (let i = 0; i < fields.length; i++) {
-                let field = fields[i];
-                if (field.getId() == id || id == ("#" + (i+1)) || field.getId()==alias) {
-                    return field;
-                }
-            }
-            return null;
+	    let theField = null;
+	    id.split("|").every(fieldId=>{
+		let alias = aliases[fieldId];
+		for (let i = 0; i < fields.length; i++) {
+                    let field = fields[i];
+                    if (field.getId() == fieldId || fieldId == ("#" + (i+1)) || field.getId()==alias) {
+			theField =  field;
+			return false;
+                    }
+		}
+		return true;
+	    });
+            return theField;
         },
 
         getFieldsByIds: function(fields, ids) {
@@ -4305,7 +4327,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-	    if(this.getProperty("showChartFieldsMenu",true)) {
+	    if(this.getProperty("showChartFieldsMenu",false)) {
 		let chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {
 		    let fields = this.getSelectedFields();
@@ -4317,7 +4339,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			enums.push([field.getId(),field.getLabel()]);
 		    });
 		    let attrs = [ID,this.getDomId("chartfields")];
-		    if(this.getProperty("chartFieldsMenuMultiple",true)) {
+		    if(this.getProperty("chartFieldsMenuMultiple",false)) {
 			attrs.push("multiple");
 			attrs.push("true");
 			attrs.push("size");
