@@ -1,0 +1,54 @@
+<types supercategory="Geoscience">
+<!-- 
+It is easy to define new types for standard datalogger csv files
+
+Create a file like this. The file name has to end with types.xml. 
+This is how RAMADDA recognizes this is a type definition.
+Copy your file into the RAMADDA homedir/plugins  directory
+
+There can be any number of <type ...> ... </type> type definitons in this file
+
+
+The below type definition supports text files of the form:
+"TOA5","73307","CR1000","73307","CR1000.Std.28.02","CPU:DFAS.CR1","28010","SecondSondeData"
+"TIMESTAMP","RECORD","Temp_C","SpCond_msCm","Sal_psu","Depth_m","pH","Turb_ntu","ODO_%","ODO_mgL","Battery_V","CablePwr_V","SecondSonde(11)","SecondSonde(12)"
+"TS","RN","","","","","","","","","","","",""
+"","","Smp","Smp","Smp","Smp","Smp","Smp","Smp","Smp","Smp","Smp","Smp","Smp"
+"2019-05-02 15:46:05",81791,17.05,7.5,4.16,4.41,7.43,8.34,73.74,6.94,5.98,13.8,0,0
+"2019-05-02 16:01:05",81792,17.04,7.5,4.16,4.42,7.35,10.46,68.95,6.49,5.99,13.17,0,0
+...
+
+-->
+
+<!-- Your new type should have its own now. Change type_point_datalogger to something else, e.g., type_point_yourtype -->
+  <type name="type_point_cr1000"  description="CR100 Data Logger File" super="type_point" category="Point Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="form.area.show" value="false"/>
+<!-- If there is lat/lon in your data change  form.location.show to true -->
+     <property name="form.location.show" value="false"/>
+ <property name="record.properties">
+
+<!-- Change the below properties to suit your file -->
+<![CDATA[
+#This is the row that defines the field names, i.e., the second row (like above) has a comma separated list of names
+fieldRow=2
+
+#total number of header rows to skip over. In the above example there are 4 total header lines. the 2nd line has the field names
+skiplines=4
+
+#This defines the date format for the timestamp field
+#If your data has a different field name for time then use that name
+#the data format follows Java's https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+#If you don't have time then no worries
+timestamp.format=yyyy-MM-dd HH:mm:ss
+
+#You can define units for the fields with
+temp_c.unit=C
+depth_m.unit=M
+
+]]>
+     </property>
+</type>
+
+
+</types>

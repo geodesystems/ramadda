@@ -1932,7 +1932,7 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeID(String label) {
-        label = label.toLowerCase().replaceAll(" ", "_").replaceAll("\\.",
+        label = label.trim().toLowerCase().replaceAll(" ", "_").replaceAll("\\.",
                 "_");
 
         return label;

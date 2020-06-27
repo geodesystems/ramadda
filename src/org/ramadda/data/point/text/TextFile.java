@@ -417,21 +417,30 @@ public abstract class TextFile extends PointFile {
         boolean haveReadHeader  = headerLines.size() > 0;
         String  headerDelimiter = getHeaderDelimiter();
         //TODO
-	boolean isStandard      = getProperty(PROP_HEADER_STANDARD, false);
-	//        boolean isStandard      = getProperty(PROP_HEADER_STANDARD, true);
+        boolean isStandard = getProperty(PROP_HEADER_STANDARD, false);
+        //        boolean isStandard      = getProperty(PROP_HEADER_STANDARD, true);
         boolean firstLineFields = getProperty("firstLineDefinesFields",
                                       false);
+        String sfieldRow         = (String) getProperty("fieldRow", null);
         String lastHeaderPattern = getProperty("lastHeaderPattern", null);
-        if (firstLineFields) {
-            int    fieldRow = Integer.parseInt(getProperty("fieldRow", "1"));
+        if (firstLineFields || (sfieldRow != null)) {
+            int    skipCnt  = getSkipLines(visitInfo);
+            int    fieldRow = Integer.parseInt(sfieldRow);
             String line     = null;
             while (true) {
                 line = visitInfo.getRecordIO().readLine();
+                skipCnt--;
                 fieldRow--;
                 if (fieldRow <= 0) {
                     break;
                 }
             }
+            //Read the rest of the header lines
+            while (skipCnt > 0) {
+                visitInfo.getRecordIO().readLine();
+                skipCnt--;
+            }
+
 
             if (line != null) {
                 List<String> toks    = Utils.tokenizeColumns(line, ",");
@@ -441,25 +450,29 @@ public abstract class TextFile extends PointFile {
                 for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
                     String tok = toks.get(tokIdx);
                     tok = tok.replaceAll("\"", "");
-                    String name = tok;
-                    String id = tok.trim().replaceAll(" ",
-                                    "_").replaceAll(",", "_");
-                    id = id.toLowerCase();
-
+                    String        name  = tok;
+                    String        id    = Utils.makeID(tok);
                     StringBuilder attrs = new StringBuilder();
-
-                    name = name.replaceAll(",", "&#44;");
+                    name = Utils.makeLabel(name.replaceAll(",", "&#44;"));
                     attrs.append(attrLabel(name));
                     boolean isDate =
                         id.matches(
-                            "^(week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter|time)$");
+                            "^(timestamp|week_ended|date|month|year|as_of|end_date|per_end_date|obs_date|quarter|time)$");
                     //                    System.err.println("id:" + id +" isDate:" + isDate);
                     if (isDate) {
                         if ( !didDate) {
-
-                            String format = id.equals("time")
-                                            ? "yyyy-MM-dd'T'HH:mm:ss"
-                                            : "yyyy-MM-dd";
+                            String format = (String) getProperty(id
+                                                + ".format");
+                            if (format == null) {
+                                if (id.equals("timestamp")) {
+                                    format = "BAD";
+                                    format = "yyyy-MM-dd HH:mm:ss";
+                                } else if (id.equals("time")) {
+                                    format = "yyyy-MM-dd'T'HH:mm:ss";
+                                } else {
+                                    format = "yyyy-MM-dd";
+                                }
+                            }
                             attrs.append(attrType(TYPE_DATE));
                             attrs.append(attrFormat(format));
                             didDate = true;
@@ -469,11 +482,14 @@ public abstract class TextFile extends PointFile {
                     } else {
                         attrs.append(attrChartable());
                     }
+                    String unit = (String) getProperty(id + ".unit");
+                    if (unit != null) {
+                        attrs.append(attrUnit(unit));
+                    }
                     cleaned.add(id + "[" + attrs + "]");
                 }
                 String f = makeFields(cleaned);
-
-                //                System.err.println("fields:" + f);
+                //              System.err.println("fields:" + f);
                 putProperty(PROP_FIELDS, f);
             }
         } else if (headerDelimiter != null) {
