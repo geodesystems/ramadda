@@ -8,6 +8,7 @@ const DISPLAY_PLOTLY_WINDROSE = "windrose";
 const DISPLAY_PLOTLY_DENSITY = "density";
 const DISPLAY_PLOTLY_DOTPLOT = "dotplot";
 const DISPLAY_PLOTLY_SPLOM = "splom";
+const DISPLAY_PLOTLY_PROFILE = "profile";
 const DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
 const DISPLAY_PLOTLY_3DMESH = "3dmesh";
 const DISPLAY_PLOTLY_TREEMAP = "ptreemap";
@@ -71,6 +72,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_PLOTLY
+});
+addGlobalDisplayType({
+    type: DISPLAY_PLOTLY_PROFILE,
+    label: "Profile",
     requiresData: true,
     forUser: true,
     category: CATEGORY_PLOTLY
@@ -957,13 +965,162 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             };
             this.setDimensions(layout, 2);
             this.makePlot(plotData, layout);
-
-
-
 	    if(didColorBy) {
 		colorBy.displayColorTable();
 	    }
 
+        },
+    });
+}
+
+
+function RamaddaProfileDisplay(displayManager, id, properties) {
+//    if(!properties.width) properties.width="400px";
+    let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_PROFILE, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Profile Properties'},
+	{p:'indexField',d:null,wikiValue:''},
+	{p:'fields',d:null,wikiValue:''},
+	{p:'profileMode',d:'lines',wikiValue:'lines|markers|lines+markers'},
+	{p:'yAxisTitle',d:'Pressure- Digiquartz',wikiValue:''},
+	{p:'yAxisShowLine',d:'true',wikiValue:'false'},
+	{p:'yAxisShowGrid',d:'true',wikiValue:'false'},
+	{p:'xAxisTitle',d:'',wikiValue:''},
+	{p:'xAxisShowGrid',d:'true',wikiValue:'false'},
+	{p:'xAxisShowLine',d:'true',wikiValue:'false'},
+	{p:'marginLeft',d:'60',wikiValue:'60'},
+	{p:'marginRight',d:'100',wikiValue:'100'},
+	{p:'marginBottom',d:'50',wikiValue:'50'},
+	{p:'marginTop',d:'100',wikiValue:'100'},
+	{p:'showLegend',d:'true',wikiValue:'false'},
+	{p:'legendYAnchor',d:null,wikiValue:'top|middle|bottom'},
+	{p:'legendXAnchor',d:null,wikiValue:'right|center|left'},
+	{p:'chart.fill',d:'rgb(254, 247, 234)',wikiValue:'color'},
+	{p:'chartArea.fill',d:'rgb(254, 247, 234)',wikiValue:'color'},
+	{p:'xAxis2Title',d:'Conductivity',wikiValue:''},
+    ]);
+
+    RamaddaUtil.defineMembers(this, {
+        getDisplayStyle: function() {
+            return "";
+        },
+        updateUI: function() {
+            let records = this.filterData();
+            if (!records) return;
+//	    this.writePropertyDef = "";
+	    let indexField = this.getFieldById(null,this.getProperty("indexField"));
+	    if(indexField==null) {
+                this.setContents(this.getMessage("No indexField specified"));
+		return;
+	    }
+            let fields = this.getSelectedFields(this.getData().getRecordFields());
+            if (fields.length == 0) {
+		let tmp = this.getFieldsOfType(allFields, "numeric");
+		if(tmp.length>0) fields.push(tmp[0]);
+	    }
+            if (fields.length == 0) {
+                this.setContents(this.getMessage("No fields found"));
+		return;
+	    }
+            let index = this.getColumnValues(records, indexField).values;
+            let data = [];
+            fields.forEach((field,idx)=>{
+		let x = this.getColumnValues(records, field).values;
+		let trace =   {
+		    y: index,
+		    x: x,
+		    type: 'scatter',
+		    mode: this.getProperty("profileMode",'lines'),
+                    name: field.getLabel(),
+                    marker: {
+                        line: {
+                            color: 'rgba(156, 165, 196, 1.0)',
+                            width: 1,
+                        },
+                        symbol: 'circle',
+                        size: 16
+                    }
+		};
+		if(idx>0)
+		    trace.xaxis="x2";
+		data.push(trace);
+	    });
+
+	    let labelName = indexField.getLabel();
+            let layout = {
+                yaxis: {
+                    title: this.getProperty("yAxisTitle", labelName),
+                    showline: this.getProperty("yAxisShowLine", true),
+                    showgrid: this.getProperty("yAxisShowGrid", true),
+                },
+                xaxis: {
+                    title: this.getProperty("xAxisTitle", fields[0].getLabel()),
+                    showgrid: this.getProperty("xAxisShowGrid", true),
+                    showline: this.getProperty("xAxisShowLine", true),
+                    linecolor: 'rgb(102, 102, 102)',
+                    titlefont: {
+                        font: {
+                            color: 'rgb(204, 204, 204)'
+                        }
+                    },
+                    tickfont: {
+                        font: {
+                            color: 'rgb(102, 102, 102)'
+                        }
+                    },
+                    autotick: true,
+                    ticks: 'outside',
+                    tickcolor: 'rgb(102, 102, 102)'
+		},
+                margin: {
+                    l: this.getProperty("marginLeft", 60),
+                    r: this.getProperty("marginRight", 100),
+                    b: this.getProperty("marginBottom", 50),
+                    t: this.getProperty("marginTop", 100),
+                },
+                legend: {
+                    font: {
+                        size: 10,
+                    },
+                    yanchor: this.getProperty("legendYAnchor"),
+                    xanchor: this.getProperty("legendXAnchor"),
+                },
+                showlegend: this.getProperty("showLegend",true),
+                paper_bgcolor: this.getProperty("chart.fill", 'rgb(254, 247, 234)'),
+		paper_bgcolor: this.getProperty("chart.fill", 'transparent'),		
+                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
+                hovermode: 'closest'
+            };
+	    if(fields.length>1) {
+                layout.xaxis2 =  {
+		    overlaying: 'x', 
+		    side: 'top',
+                    title: this.getProperty("xAxis2Title", fields[1].getLabel()),
+                    showgrid: this.getProperty("xAxisShowGrid", true),
+                    showline: this.getProperty("xAxisShowLine", true),
+                    linecolor: 'rgb(102, 102, 102)',
+                    titlefont: {
+                        font: {
+                            color: 'rgb(204, 204, 204)'
+                        }
+                    },
+                    tickfont: {
+                        font: {
+                            color: 'rgb(102, 102, 102)'
+                        }
+                    },
+                    autotick: true,
+                    ticks: 'outside',
+                    tickcolor: 'rgb(102, 102, 102)'
+                };
+	    }
+            this.setDimensions(layout, 2);
+            this.makePlot(data, layout);
+	    if(this.writePropertyDef)
+		console.log(this.writePropertyDef);
+	    this.writePropertyDef=null;
         },
     });
 }

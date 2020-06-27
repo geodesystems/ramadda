@@ -3075,9 +3075,19 @@ function DisplayThing(argId, argProperties) {
         getProperty: function(key, dflt,skipThis) {
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
-	    var value =  this.getPropertyInner(key,null,skipThis);
+	    let value =  this.getPropertyInner(key,null,skipThis);
 	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
+	    if(this.writePropertyDef!=null) {
+		if(!this.seenWriteProperty) this.seenWriteProperty = {};
+		if(!this.seenWriteProperty[key]) {
+		    let f = (v)=>{
+			return v?"'" + v+"'":"null";
+		    };
+		    this.writePropertyDef+="{p:'" + key +"',d:" + f(dflt)+",wikiValue:" + f(value||dflt)+"},\n"
+		    this.seenWriteProperty[key] = true;
+		}
+	    }
 	    if(!Utils.isDefined(value)) {
 		if(this.debugGetProperty)
 		    console.log("\treturning dflt:" + dflt);
@@ -3218,6 +3228,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["sortAscending=true|false",""],
 		["sortByFields=\"\"","Show sort by fields in a menu"],
 		['sortHighlight=true','Sort based on highlight from the filters'],
+		['showChartFieldsMenu=true'],
+		['chartFieldsMenuMultiple=true'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'doFormatNumber=false',
@@ -3675,7 +3687,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.startProgress();
                 this.data.loadData(this);
             } else {
-		this.updateUI();
+		this.callUpdateUI();
 	    }
             var title = "";
             if (this.getShowTitle()) {
@@ -3716,14 +3728,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         handleEventMapBoundsChanged: function(source, args) {
 	    if(this.getProperty("acceptBoundsChange")) {
 		this.filterBounds  = args.bounds;
-		this.updateUI();
+		this.callUpdateUI();
             }
         },
 
         handleEventFieldValueSelected: function(source, args) {
             this.setProperty("filterPattern", args.value);
             this.setProperty("patternFilterField", args.field.getId());
-            this.updateUI();
+            this.callUpdateUI();
         },
         setDateRange: function(min, max, doDay) {
 	    this.minDateObj = min;
@@ -3827,7 +3839,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
             }
             this.setProperty(prop.property, prop.value);
-            this.updateUI();
+            this.callUpdateUI();
         },
         handleEventRecordHighlight: function(source, args) {
 	    if(this.getAnimation().getEnabled() &&  !args.skipAnimation) {
@@ -3859,9 +3871,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.selectedRecord) {
 		if(this.getProperty("colorThresholdField")) {
 		    this.haveCalledUpdateUI = false;
-		    this.updateUI();
+		    this.callUpdateUI();
 		}
-
 	    }
 
 
@@ -6120,7 +6131,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var callUpdate = !this.displayReady;
             this.displayReady = true;
 	    if(callUpdate) {
-		this.updateUI();
+		this.callUpdateUI();
 	    }
         },
         getDisplayReady: function() {
@@ -6139,7 +6150,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().makeControls();
             }
             this.checkSearchBar();
-	    this.updateUI();
+	    this.callUpdateUI();
 	    if(this.getProperty("reloadSeconds")) {
 		this.runReload();
 	    }
@@ -6436,12 +6447,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         forceUpdateUI: function() {
 	    this.haveCalledUpdateUI = false;
-	    this.updateUI();
+	    this.callUpdateUI();
+	},
+	callUpdateUI: function() {
+	    try {
+		this.updateUI();
+	    } catch(err) {
+                this.setContents(this.getMessage(err));
+	    }
 	},
         updateUI: function() {
 	},
-
-
 	getFilterId: function(id) {
 	    return  this.getDomId("filterby_" + id);
 	},
@@ -6651,6 +6667,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
             let _this = this;
+
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
             this.sortByFields = this.getFieldsByIds(null, this.getProperty("sortByFields", "", true));	    
@@ -6685,15 +6702,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2+= html;
 
 	    }
-	    if(this.getProperty("showChartFieldsMenu")) {
+
+
+	    if(this.getProperty("showChartFieldsMenu",true)) {
 		let chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {
+		    let fields = this.getSelectedFields();
+		    let selected =[];
+		    fields.forEach(f=>selected.push(f.getId()));
 		    let enums = [];
 		    chartFields.forEach(field=>{
+			if(field.isFieldGeo()) return;
 			enums.push([field.getId(),field.getLabel()]);
 		    });
+		    let attrs = [ID,this.getDomId("chartfields")];
+		    if(this.getProperty("chartFieldsMenuMultiple",true)) {
+			attrs.push("multiple");
+			attrs.push("true");
+			attrs.push("size");
+			attrs.push("4");
+		    }
 		    header2 += HU.span([CLASS,"display-filter"],
-				       this.makeFilterLabel("Display: ") + HU.select("",[ID,this.getDomId("chartfields")],enums,this.getProperty("fields","")))+SPACE;
+				       this.makeFilterLabel("Display: ") + HU.select("",attrs,enums,selected))+SPACE;
 		}
 	    }
 
@@ -6721,6 +6751,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    selectFieldProps.push(prop);
 		});
 	    }
+
 
 	    if(this.colorByFields.length>0) {
 		let enums = [];
@@ -6845,7 +6876,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.initHeader2();
 	    this.jq("test").button().click(()=>{
 		this.haveCalledUpdateUI = false;
-		this.updateUI();
+		this.callUpdateUI();
 	    });
 	    this.createRequestProperties();
  	    let inputFunc = function(input, input2, value){
@@ -7050,8 +7081,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
             this.jq("chartfields").change(function(){
-		_this.setProperty("fields",$(this).val());
-		_this.updateUI();
+		let val = $(this).val();
+		if(Array.isArray(val)) {
+		    val = val.join(",");
+		}
+		_this.setProperty("fields",val);
+		_this.callUpdateUI();
 	    });
 
 
@@ -7060,6 +7095,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    _this.fieldSelectedChanged(prop,$(this).val());
 		});
 	    });
+
 
             this.jq("colorbyselect").change(function(){
 		_this.colorByFieldChanged($(this).val());
@@ -7149,15 +7185,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	fieldSelectedChanged: function(prop,val) {
 	    this.setProperty(prop,val);
 	    this.haveCalledUpdateUI = false;
-	    this.updateUI();
+	    this.callUpdateUI();
 	},
 	colorByFieldChanged:function(field) {
 	    this.setProperty("colorBy", field);
-	    this.updateUI();
+	    this.callUpdateUI();
 	},
 	sortByFieldChanged:function(field) {
 	    this.setProperty("sortFields", field);
-	    this.updateUI();
+	    this.callUpdateUI();
 	},
 	sizeByFieldChanged:function(field) {
 	},
@@ -7165,7 +7201,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.pageSkip = 0;
 	},
 	dataFilterChanged: function() {
-	    this.updateUI();
+	    this.callUpdateUI();
 	},
 	addFieldClickHandler: function(jq, records, addHighlight) {
 	    let _this = this;
@@ -8643,7 +8679,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             if (this.needsData()) {
                 this.setContents(this.getLoadingMessage());
             }
-            this.updateUI();
+            this.callUpdateUI();
         },
         updateUI: function() {
             this.addFieldsCheckboxes();
@@ -18169,7 +18205,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
 
 //Note: I put all of the chart definitions together at the top so one can see everything that is available here
 const DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
-const DISPLAY_D3_PROFILE = "profile";
+//const DISPLAY_D3_PROFILE = "profile";
 const DISPLAY_D3_LINECHART = "D3LineChart";
 const DISPLAY_SKEWT = "skewt";
 const DISPLAY_VENN = "venn";
@@ -18184,6 +18220,7 @@ addGlobalDisplayType({
     requiresData: true,
     category: "Charts"
 });
+/*
 addGlobalDisplayType({
     type: DISPLAY_D3_PROFILE,
     forUser: false,
@@ -18191,6 +18228,7 @@ addGlobalDisplayType({
     requiresData: true,
     category: "Charts"
 });
+*/
 addGlobalDisplayType({
     type: DISPLAY_D3_GLIDER_CROSS_SECTION,
     forUser: false,
@@ -18917,6 +18955,7 @@ function RamaddaD3LineChartDisplay(displayManager, id, properties) {
 }
 
 
+/*
 function RamaddaProfileDisplay(displayManager, id, properties) {
     var dfltProperties = {};
     //Note: use json structures to define the props
@@ -18940,7 +18979,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
     properties = $.extend(dfltProperties, properties);
     return new RamaddaD3Display(displayManager, id, properties);
 }
-
+*/
 
 
 
@@ -35711,6 +35750,7 @@ const DISPLAY_PLOTLY_WINDROSE = "windrose";
 const DISPLAY_PLOTLY_DENSITY = "density";
 const DISPLAY_PLOTLY_DOTPLOT = "dotplot";
 const DISPLAY_PLOTLY_SPLOM = "splom";
+const DISPLAY_PLOTLY_PROFILE = "profile";
 const DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
 const DISPLAY_PLOTLY_3DMESH = "3dmesh";
 const DISPLAY_PLOTLY_TREEMAP = "ptreemap";
@@ -35774,6 +35814,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_PLOTLY
+});
+addGlobalDisplayType({
+    type: DISPLAY_PLOTLY_PROFILE,
+    label: "Profile",
     requiresData: true,
     forUser: true,
     category: CATEGORY_PLOTLY
@@ -36660,13 +36707,162 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             };
             this.setDimensions(layout, 2);
             this.makePlot(plotData, layout);
-
-
-
 	    if(didColorBy) {
 		colorBy.displayColorTable();
 	    }
 
+        },
+    });
+}
+
+
+function RamaddaProfileDisplay(displayManager, id, properties) {
+//    if(!properties.width) properties.width="400px";
+    let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_PROFILE, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Profile Properties'},
+	{p:'indexField',d:null,wikiValue:''},
+	{p:'fields',d:null,wikiValue:''},
+	{p:'profileMode',d:'lines',wikiValue:'lines|markers|lines+markers'},
+	{p:'yAxisTitle',d:'Pressure- Digiquartz',wikiValue:''},
+	{p:'yAxisShowLine',d:'true',wikiValue:'false'},
+	{p:'yAxisShowGrid',d:'true',wikiValue:'false'},
+	{p:'xAxisTitle',d:'',wikiValue:''},
+	{p:'xAxisShowGrid',d:'true',wikiValue:'false'},
+	{p:'xAxisShowLine',d:'true',wikiValue:'false'},
+	{p:'marginLeft',d:'60',wikiValue:'60'},
+	{p:'marginRight',d:'100',wikiValue:'100'},
+	{p:'marginBottom',d:'50',wikiValue:'50'},
+	{p:'marginTop',d:'100',wikiValue:'100'},
+	{p:'showLegend',d:'true',wikiValue:'false'},
+	{p:'legendYAnchor',d:null,wikiValue:'top|middle|bottom'},
+	{p:'legendXAnchor',d:null,wikiValue:'right|center|left'},
+	{p:'chart.fill',d:'rgb(254, 247, 234)',wikiValue:'color'},
+	{p:'chartArea.fill',d:'rgb(254, 247, 234)',wikiValue:'color'},
+	{p:'xAxis2Title',d:'Conductivity',wikiValue:''},
+    ]);
+
+    RamaddaUtil.defineMembers(this, {
+        getDisplayStyle: function() {
+            return "";
+        },
+        updateUI: function() {
+            let records = this.filterData();
+            if (!records) return;
+//	    this.writePropertyDef = "";
+	    let indexField = this.getFieldById(null,this.getProperty("indexField"));
+	    if(indexField==null) {
+                this.setContents(this.getMessage("No indexField specified"));
+		return;
+	    }
+            let fields = this.getSelectedFields(this.getData().getRecordFields());
+            if (fields.length == 0) {
+		let tmp = this.getFieldsOfType(allFields, "numeric");
+		if(tmp.length>0) fields.push(tmp[0]);
+	    }
+            if (fields.length == 0) {
+                this.setContents(this.getMessage("No fields found"));
+		return;
+	    }
+            let index = this.getColumnValues(records, indexField).values;
+            let data = [];
+            fields.forEach((field,idx)=>{
+		let x = this.getColumnValues(records, field).values;
+		let trace =   {
+		    y: index,
+		    x: x,
+		    type: 'scatter',
+		    mode: this.getProperty("profileMode",'lines'),
+                    name: field.getLabel(),
+                    marker: {
+                        line: {
+                            color: 'rgba(156, 165, 196, 1.0)',
+                            width: 1,
+                        },
+                        symbol: 'circle',
+                        size: 16
+                    }
+		};
+		if(idx>0)
+		    trace.xaxis="x2";
+		data.push(trace);
+	    });
+
+	    let labelName = indexField.getLabel();
+            let layout = {
+                yaxis: {
+                    title: this.getProperty("yAxisTitle", labelName),
+                    showline: this.getProperty("yAxisShowLine", true),
+                    showgrid: this.getProperty("yAxisShowGrid", true),
+                },
+                xaxis: {
+                    title: this.getProperty("xAxisTitle", fields[0].getLabel()),
+                    showgrid: this.getProperty("xAxisShowGrid", true),
+                    showline: this.getProperty("xAxisShowLine", true),
+                    linecolor: 'rgb(102, 102, 102)',
+                    titlefont: {
+                        font: {
+                            color: 'rgb(204, 204, 204)'
+                        }
+                    },
+                    tickfont: {
+                        font: {
+                            color: 'rgb(102, 102, 102)'
+                        }
+                    },
+                    autotick: true,
+                    ticks: 'outside',
+                    tickcolor: 'rgb(102, 102, 102)'
+		},
+                margin: {
+                    l: this.getProperty("marginLeft", 60),
+                    r: this.getProperty("marginRight", 100),
+                    b: this.getProperty("marginBottom", 50),
+                    t: this.getProperty("marginTop", 100),
+                },
+                legend: {
+                    font: {
+                        size: 10,
+                    },
+                    yanchor: this.getProperty("legendYAnchor"),
+                    xanchor: this.getProperty("legendXAnchor"),
+                },
+                showlegend: this.getProperty("showLegend",true),
+                paper_bgcolor: this.getProperty("chart.fill", 'rgb(254, 247, 234)'),
+		paper_bgcolor: this.getProperty("chart.fill", 'transparent'),		
+                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
+                hovermode: 'closest'
+            };
+	    if(fields.length>1) {
+                layout.xaxis2 =  {
+		    overlaying: 'x', 
+		    side: 'top',
+                    title: this.getProperty("xAxis2Title", fields[1].getLabel()),
+                    showgrid: this.getProperty("xAxisShowGrid", true),
+                    showline: this.getProperty("xAxisShowLine", true),
+                    linecolor: 'rgb(102, 102, 102)',
+                    titlefont: {
+                        font: {
+                            color: 'rgb(204, 204, 204)'
+                        }
+                    },
+                    tickfont: {
+                        font: {
+                            color: 'rgb(102, 102, 102)'
+                        }
+                    },
+                    autotick: true,
+                    ticks: 'outside',
+                    tickcolor: 'rgb(102, 102, 102)'
+                };
+	    }
+            this.setDimensions(layout, 2);
+            this.makePlot(data, layout);
+	    if(this.writePropertyDef)
+		console.log(this.writePropertyDef);
+	    this.writePropertyDef=null;
         },
     });
 }

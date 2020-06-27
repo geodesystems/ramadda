@@ -676,9 +676,19 @@ function DisplayThing(argId, argProperties) {
         getProperty: function(key, dflt,skipThis) {
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
-	    var value =  this.getPropertyInner(key,null,skipThis);
+	    let value =  this.getPropertyInner(key,null,skipThis);
 	    if(this.debugGetProperty)
 		console.log("\tgot:" + value);
+	    if(this.writePropertyDef!=null) {
+		if(!this.seenWriteProperty) this.seenWriteProperty = {};
+		if(!this.seenWriteProperty[key]) {
+		    let f = (v)=>{
+			return v?"'" + v+"'":"null";
+		    };
+		    this.writePropertyDef+="{p:'" + key +"',d:" + f(dflt)+",wikiValue:" + f(value||dflt)+"},\n"
+		    this.seenWriteProperty[key] = true;
+		}
+	    }
 	    if(!Utils.isDefined(value)) {
 		if(this.debugGetProperty)
 		    console.log("\treturning dflt:" + dflt);
@@ -819,6 +829,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["sortAscending=true|false",""],
 		["sortByFields=\"\"","Show sort by fields in a menu"],
 		['sortHighlight=true','Sort based on highlight from the filters'],
+		['showChartFieldsMenu=true'],
+		['chartFieldsMenuMultiple=true'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'doFormatNumber=false',
@@ -1276,7 +1288,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.startProgress();
                 this.data.loadData(this);
             } else {
-		this.updateUI();
+		this.callUpdateUI();
 	    }
             var title = "";
             if (this.getShowTitle()) {
@@ -1317,14 +1329,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         handleEventMapBoundsChanged: function(source, args) {
 	    if(this.getProperty("acceptBoundsChange")) {
 		this.filterBounds  = args.bounds;
-		this.updateUI();
+		this.callUpdateUI();
             }
         },
 
         handleEventFieldValueSelected: function(source, args) {
             this.setProperty("filterPattern", args.value);
             this.setProperty("patternFilterField", args.field.getId());
-            this.updateUI();
+            this.callUpdateUI();
         },
         setDateRange: function(min, max, doDay) {
 	    this.minDateObj = min;
@@ -1428,7 +1440,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
             }
             this.setProperty(prop.property, prop.value);
-            this.updateUI();
+            this.callUpdateUI();
         },
         handleEventRecordHighlight: function(source, args) {
 	    if(this.getAnimation().getEnabled() &&  !args.skipAnimation) {
@@ -1460,9 +1472,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.selectedRecord) {
 		if(this.getProperty("colorThresholdField")) {
 		    this.haveCalledUpdateUI = false;
-		    this.updateUI();
+		    this.callUpdateUI();
 		}
-
 	    }
 
 
@@ -3721,7 +3732,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    var callUpdate = !this.displayReady;
             this.displayReady = true;
 	    if(callUpdate) {
-		this.updateUI();
+		this.callUpdateUI();
 	    }
         },
         getDisplayReady: function() {
@@ -3740,7 +3751,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.getAnimation().makeControls();
             }
             this.checkSearchBar();
-	    this.updateUI();
+	    this.callUpdateUI();
 	    if(this.getProperty("reloadSeconds")) {
 		this.runReload();
 	    }
@@ -4037,12 +4048,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         forceUpdateUI: function() {
 	    this.haveCalledUpdateUI = false;
-	    this.updateUI();
+	    this.callUpdateUI();
+	},
+	callUpdateUI: function() {
+	    try {
+		this.updateUI();
+	    } catch(err) {
+                this.setContents(this.getMessage(err));
+	    }
 	},
         updateUI: function() {
 	},
-
-
 	getFilterId: function(id) {
 	    return  this.getDomId("filterby_" + id);
 	},
@@ -4252,6 +4268,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let debug = displayDebug.checkSearchBar;
 	    if(debug) console.log("checkSearchBar");
             let _this = this;
+
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
             this.sortByFields = this.getFieldsByIds(null, this.getProperty("sortByFields", "", true));	    
@@ -4286,15 +4303,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2+= html;
 
 	    }
-	    if(this.getProperty("showChartFieldsMenu")) {
+
+
+	    if(this.getProperty("showChartFieldsMenu",true)) {
 		let chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {
+		    let fields = this.getSelectedFields();
+		    let selected =[];
+		    fields.forEach(f=>selected.push(f.getId()));
 		    let enums = [];
 		    chartFields.forEach(field=>{
+			if(field.isFieldGeo()) return;
 			enums.push([field.getId(),field.getLabel()]);
 		    });
+		    let attrs = [ID,this.getDomId("chartfields")];
+		    if(this.getProperty("chartFieldsMenuMultiple",true)) {
+			attrs.push("multiple");
+			attrs.push("true");
+			attrs.push("size");
+			attrs.push("4");
+		    }
 		    header2 += HU.span([CLASS,"display-filter"],
-				       this.makeFilterLabel("Display: ") + HU.select("",[ID,this.getDomId("chartfields")],enums,this.getProperty("fields","")))+SPACE;
+				       this.makeFilterLabel("Display: ") + HU.select("",attrs,enums,selected))+SPACE;
 		}
 	    }
 
@@ -4322,6 +4352,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    selectFieldProps.push(prop);
 		});
 	    }
+
 
 	    if(this.colorByFields.length>0) {
 		let enums = [];
@@ -4446,7 +4477,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.initHeader2();
 	    this.jq("test").button().click(()=>{
 		this.haveCalledUpdateUI = false;
-		this.updateUI();
+		this.callUpdateUI();
 	    });
 	    this.createRequestProperties();
  	    let inputFunc = function(input, input2, value){
@@ -4651,8 +4682,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
             this.jq("chartfields").change(function(){
-		_this.setProperty("fields",$(this).val());
-		_this.updateUI();
+		let val = $(this).val();
+		if(Array.isArray(val)) {
+		    val = val.join(",");
+		}
+		_this.setProperty("fields",val);
+		_this.callUpdateUI();
 	    });
 
 
@@ -4661,6 +4696,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    _this.fieldSelectedChanged(prop,$(this).val());
 		});
 	    });
+
 
             this.jq("colorbyselect").change(function(){
 		_this.colorByFieldChanged($(this).val());
@@ -4750,15 +4786,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	fieldSelectedChanged: function(prop,val) {
 	    this.setProperty(prop,val);
 	    this.haveCalledUpdateUI = false;
-	    this.updateUI();
+	    this.callUpdateUI();
 	},
 	colorByFieldChanged:function(field) {
 	    this.setProperty("colorBy", field);
-	    this.updateUI();
+	    this.callUpdateUI();
 	},
 	sortByFieldChanged:function(field) {
 	    this.setProperty("sortFields", field);
-	    this.updateUI();
+	    this.callUpdateUI();
 	},
 	sizeByFieldChanged:function(field) {
 	},
@@ -4766,7 +4802,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.pageSkip = 0;
 	},
 	dataFilterChanged: function() {
-	    this.updateUI();
+	    this.callUpdateUI();
 	},
 	addFieldClickHandler: function(jq, records, addHighlight) {
 	    let _this = this;
@@ -6244,7 +6280,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             if (this.needsData()) {
                 this.setContents(this.getLoadingMessage());
             }
-            this.updateUI();
+            this.callUpdateUI();
         },
         updateUI: function() {
             this.addFieldsCheckboxes();

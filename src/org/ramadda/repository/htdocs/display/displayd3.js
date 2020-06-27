@@ -5,7 +5,7 @@
 
 //Note: I put all of the chart definitions together at the top so one can see everything that is available here
 const DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
-const DISPLAY_D3_PROFILE = "profile";
+//const DISPLAY_D3_PROFILE = "profile";
 const DISPLAY_D3_LINECHART = "D3LineChart";
 const DISPLAY_SKEWT = "skewt";
 const DISPLAY_VENN = "venn";
@@ -20,6 +20,7 @@ addGlobalDisplayType({
     requiresData: true,
     category: "Charts"
 });
+/*
 addGlobalDisplayType({
     type: DISPLAY_D3_PROFILE,
     forUser: false,
@@ -27,6 +28,7 @@ addGlobalDisplayType({
     requiresData: true,
     category: "Charts"
 });
+*/
 addGlobalDisplayType({
     type: DISPLAY_D3_GLIDER_CROSS_SECTION,
     forUser: false,
@@ -753,6 +755,7 @@ function RamaddaD3LineChartDisplay(displayManager, id, properties) {
 }
 
 
+/*
 function RamaddaProfileDisplay(displayManager, id, properties) {
     var dfltProperties = {};
     //Note: use json structures to define the props
@@ -776,7 +779,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
     properties = $.extend(dfltProperties, properties);
     return new RamaddaD3Display(displayManager, id, properties);
 }
-
+*/
 
 
 
