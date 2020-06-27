@@ -257,7 +257,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                 RecordEntry recordEntry = outputHandler.doMakeEntry(request,
                                               entry);
                 outputHandler.getFormHandler().getEntryMetadata(request,
-                        recordEntry, sb);
+								recordEntry, sb);
                 tabContents.add(sb.toString());
             }
         } catch (Exception exc) {

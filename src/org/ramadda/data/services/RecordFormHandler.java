@@ -327,6 +327,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         }
         StringBuilder forDisplay =
             new StringBuilder("<b>For wiki displays:</b><br>fields=\"");
+	sb.append("<div style=max-height:300px;overflow-y:auto;>\n");
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
             HtmlUtils.b(msg("Field Name")),
@@ -358,6 +359,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                  : typeLabel) })));
         }
         sb.append(HtmlUtils.formTableClose());
+	sb.append("</div>");
         forDisplay.append("\"");
         sb.append("<br>");
         sb.append(forDisplay);
