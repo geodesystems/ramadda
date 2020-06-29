@@ -3979,6 +3979,13 @@ public abstract class Converter extends Processor {
             this.op   = op;
         }
 
+	private double parse(String s) {
+	    s = s.trim().replaceAll(",","");
+	    if(s.equals("")) return 0;
+	    return Double.parseDouble(s);
+	}
+
+
         /**
          * @param info _more_
          * @param row _more_
@@ -3997,7 +4004,6 @@ public abstract class Converter extends Processor {
                 } else {
                     row.getValues().add(name);
                 }
-
                 return row;
             }
             List<Integer> indices = getIndices(info);
@@ -4017,17 +4023,14 @@ public abstract class Converter extends Processor {
                     continue;
                 }
                 if (op.equals("delta")) {
-                    double v1 =
-                        Double.parseDouble(prevRow.get(index).toString());
-                    double v2 = Double.parseDouble(row.get(index).toString());
+                    double v1 = parse(prevRow.get(index).toString());
+                    double v2 = parse(row.get(index).toString());
                     row.add((v2 - v1) + "");
 
                     continue;
                 }
                 String s = row.getValues().get(index).toString();
-                double v = (s.length() == 0)
-                           ? 0
-                           : Double.parseDouble(s.replaceAll(",", ""));
+                double v = parse(s);
                 if (op.equals("+")) {
                     value += v;
                 } else {
