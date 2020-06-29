@@ -126,9 +126,11 @@ public class CsvUtil {
      */
     public CsvUtil(String[] args) throws Exception {
         this.args = new ArrayList<String>();
+
         for (String arg : args) {
             this.args.add(arg);
         }
+	//	System.out.println("Args:" + this.args);
     }
 
     /**
@@ -2468,6 +2470,7 @@ public class CsvUtil {
 
         PrintWriter pw = null;
 
+	boolean seenPrint = false;
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
             currentArg = arg;
@@ -3004,6 +3007,8 @@ public class CsvUtil {
                 }
 
                 if (arg.equals("-print") || arg.equals("-p")) {
+		    if(seenPrint) continue;
+		    seenPrint = true;
                     info.getProcessor().addProcessor(
                         new Processor.Printer(printFields, trim));
 

@@ -98,6 +98,10 @@ public class Row {
     /** _more_ */
     public static boolean doit = false;
 
+    public String getId() {
+	return id;
+    }
+
     /**
      * _more_
      */
