@@ -2488,6 +2488,9 @@ function TableDisplay(displayManager, id, properties) {
 		    f = v.f;
 		    v = v.v;
 		}
+		if(v.getTime) {
+		    f = this.formatDate(v);
+		}
 
 
 		if(iconField && record && idx==0) {
