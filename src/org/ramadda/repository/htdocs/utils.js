@@ -47,6 +47,10 @@ function getHandler(id) {
 
 var Utils = {
     pageLoaded: false,
+    loadFunctions:[],
+    addLoadFunction: function(f) {
+	Utils.loadFunctions.push(f);
+    },
     getIcon: function(icon) {
         return ramaddaBaseUrl + "/icons/" + icon;
     },
@@ -1456,6 +1460,9 @@ var Utils = {
                 this.selectionStart = this.selectionEnd = start + 1;
             }
         });
+	Utils.loadFunctions.forEach(f=>{
+	    f();
+	});
     },
     colorToRgb: {
 	"red":"rgb(255,0,0)",
@@ -2505,6 +2512,17 @@ var HU = HtmlUtils = {
 	    console.log("error:" + e);
 	}
         return info.editor;
+    },
+    makeBreadcrumbsInit: function(id) {
+	//If page isn't loaded then register a callback
+	if(!Utils.getPageLoaded()) {
+	    let theId = id;
+	    Utils.addLoadFunction(() =>{
+		HtmlUtils.makeBreadcrumbs(theId);
+	    });
+	    return;
+	}
+	HtmlUtils.makeBreadcrumbs(id);
     },
     makeBreadcrumbs: function(id) {
         jQuery("#" + id).jBreadCrumb({

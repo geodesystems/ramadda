@@ -2992,8 +2992,7 @@ public class PageHandler extends RepositoryManager {
         }
         sb.append("</ul></div></div></div>");
         HtmlUtils.script(sb,
-                         JQuery.ready("HtmlUtil.makeBreadcrumbs('" + id
-                                      + "');"));
+                         "HtmlUtils.makeBreadcrumbsInit('" + id           + "');");
     }
 
     /** _more_ */
