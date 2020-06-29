@@ -4927,6 +4927,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         int num    = 0;
         int colCnt = 0;
+	String idPrefix = "gallery";
 
         for (Entry child : imageEntries) {
             num++;
@@ -4968,15 +4969,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          "" + (-width) + "%");
             }
             String name = getEntryDisplayName(child);
-            if ((name != null) && !name.isEmpty()) {
-                extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
-            }
-            String img = HtmlUtils.img(url, "", extra);
-
-            String entryUrl =
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
-            buff.append("<div class=\"image-outer\">");
-            buff.append("<div class=\"image-inner\">");
             String theCaption = caption;
             theCaption = theCaption.replace("${count}", "" + num);
             theCaption =
@@ -4987,16 +4979,28 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             theCaption = theCaption.replace("${description}",
                                             child.getDescription());
 
+
+            if ((name != null) && !name.isEmpty()) {
+                extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
+            }
+	    extra = extra +  HtmlUtils.attr("id",idPrefix+"img" +num);
+            String img = HtmlUtils.img(url, "", extra);
+
+            String entryUrl =
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
+            buff.append("<div class=\"image-outer\">");
+            buff.append("<div class=\"image-inner\">");
             if (popup) {
                 String popupExtras = HtmlUtils.cssClass("popup_image")
                                      + HtmlUtils.attr("width", "100%");
                 if ( !captionPos.equals("none")) {
                     popupExtras += HtmlUtils.attr("title", theCaption);
                 }
+		popupExtras += HtmlUtils.attr("data-fancybox",idPrefix) + HtmlUtils.attr("data-caption",theCaption);
                 buff.append(
                     HtmlUtils.href(
                         child.getTypeHandler().getEntryResourceUrl(
-                            request, child), img, popupExtras));
+								   request, child), HtmlUtils.div(img, HtmlUtils.attr("id",idPrefix+"div" +num)), popupExtras));
             } else {
                 buff.append(img);
             }
