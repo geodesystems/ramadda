@@ -1422,9 +1422,11 @@ public abstract class Converter extends Processor {
                     new jdk.nashorn.api.scripting.NashornScriptEngineFactory()
                         .getScriptEngine(new String[] { "--no-java" }, null,
                                          cf);
+                engine.eval("var globalCache = {};");
                 if (js.trim().length() > 0) {
                     engine.eval(js);
                 }
+
                 String testScript =
                     "print(java.lang.System.getProperty(\"java.home\"));"
                     + "print(\"Create file variable\");"
@@ -3961,11 +3963,10 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String op;
 
+        /** _more_          */
+        private Row prevRow;
 
         /**
-         *
-         *
-         *
          *
          * @param indices _more_
          * @param name _more_
@@ -3979,11 +3980,6 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param info _more_
          * @param row _more_
          * @param line _more_
@@ -3993,16 +3989,39 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                row.getValues().add(name);
+                if (op.equals("delta")) {
+                    for (Integer idx : indices) {
+                        int index = idx.intValue();
+                        row.getValues().add("Difference " + row.get(index));
+                    }
+                } else {
+                    row.getValues().add(name);
+                }
 
                 return row;
             }
             List<Integer> indices = getIndices(info);
-            double        value   = 0;
-            int           cnt     = 0;
+            if (op.equals("delta") && (prevRow == null)) {
+                prevRow = row;
+                for (int i : indices) {
+                    prevRow.add("0");
+                }
+
+                return row;
+            }
+            double value = 0;
+            int    cnt   = 0;
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                if (op.equals("delta")) {
+                    double v1 =
+                        Double.parseDouble(prevRow.get(index).toString());
+                    double v2 = Double.parseDouble(row.get(index).toString());
+                    row.add((v2 - v1) + "");
+
                     continue;
                 }
                 String s = row.getValues().get(index).toString();

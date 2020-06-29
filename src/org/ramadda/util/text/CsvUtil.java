@@ -2104,6 +2104,9 @@ public class CsvUtil {
         new Cmd("-generate", "Add row values", "label", "start", "step"),
         new Cmd("-decimals", "", new Arg("column", "", "type", "columns"),
                 "how many decimals to round to"),
+        new Cmd("-delta",
+                "Add column that is the delta from the previous step",
+                new Arg("columns")),
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
                 new Arg("columns"), "new col name", "operator +,-,*,/"),
@@ -2221,6 +2224,7 @@ public class CsvUtil {
         new Cmd("-toxml", "Generate XML", new Arg("tag")),
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
+        new Cmd("-args", "Generate the CSV file commands"),
     };
 
 
@@ -3722,6 +3726,20 @@ public class CsvUtil {
 
                     continue;
                 }
+                if (arg.equals("-delta")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> idxs = getCols(args.get(++i));
+                    String       name = "";
+                    String       op   = "delta";
+                    info.getProcessor().addProcessor(
+                        new Converter.ColumnMathOperator(idxs, name, op));
+
+                    continue;
+                }
+
+
 
                 if (arg.equals("-operator")) {
                     if ( !ensureArg(args, i, 3)) {
