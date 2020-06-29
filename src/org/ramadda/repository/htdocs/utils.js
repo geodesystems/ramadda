@@ -1464,6 +1464,22 @@ var Utils = {
 	    f();
 	});
     },
+    foregroundColors: {
+	purple: "white",
+    },
+    getContrastYIQ: function(hexcolor){
+	//From: https://stackoverflow.com/questions/11867545/change-text-color-based-on-brightness-of-the-covered-background-area
+	hexcolor = hexcolor.replace("#", "");
+	var r = parseInt(hexcolor.substr(0,2),16);
+	var g = parseInt(hexcolor.substr(2,2),16);
+	var b = parseInt(hexcolor.substr(4,2),16);
+	var yiq = ((r*299)+(g*587)+(b*114))/1000;
+	return (yiq >= 128) ? 'black' : 'white';
+    },
+    getForegroundColor: function(c) {
+	if(!this.foregroundColors[c] && c.startsWith("#")) return this.getContrastYIQ(c);
+	return this.foregroundColors[c] ||"#000";
+    },
     colorToRgb: {
 	"red":"rgb(255,0,0)",
 	"green":"rgb(0,255,0)",
@@ -1705,10 +1721,11 @@ var Utils = {
 		if(options.labelStyle) {
 		    label = HU.div([STYLE,options.labelStyle],label);
 		}
+		let fg = Utils.getForegroundColor(ct[i]);
 		if(options.horizontal) 
-		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i]), WIDTH, "1"], HtmlUtils.div(attrs, label||""));
+		    html += HtmlUtils.td(["data-value",val,"class", "display-colortable-slice", "style", HU.css('background', ct[i],"color",fg), WIDTH, "1"], HtmlUtils.div(attrs, label||""));
 		else
- 		    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i], WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
+ 		    html += HU.div(["data-value",val,"class", "display-colortable-slice", STYLE, HU.css("background",ct[i],"color",fg, WIDTH, options.colorWidth)], HtmlUtils.div(attrs, label||""));
 	    }
         });
 	if(!options.showColorTableDots) {
