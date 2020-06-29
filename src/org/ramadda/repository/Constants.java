@@ -27,6 +27,9 @@ public interface Constants {
 
     //j--
 
+    public static final String RESOURCE_ALLCSS = "allcss.css";
+    public static final String RESOURCE_ALLJS = "alljs.js";    
+
     /** _more_ */
     public static final String ICON_ACCESS = "fa-lock";
 
@@ -356,7 +359,7 @@ public interface Constants {
 
 
     /** _more_ */
-    public static final String ARG_SHOWCATEGORIES = "showcategories";
+    public static final String ARG_SHOWCATEGORIES = "showCategories";
 
     /** _more_ */
     public static final String ARG_RETURNFILENAME = "returnfilename";

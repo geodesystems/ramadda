@@ -1020,6 +1020,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         repositoryInitialized = true;
         //Call this here to load initial properties
         initAttributes();
+
+	//This depends on the html templates which depends on the 
+        getMetadataManager().loadMetadataHandlers(getPluginManager());
         clearAllCaches();
         StringBuilder statusMsg =
             new StringBuilder("RAMADDA: repository started:");
@@ -1505,7 +1508,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public void loadPluginResources() throws Exception {
         loadTypeHandlers();
         loadOutputHandlers();
-        getMetadataManager().loadMetadataHandlers(getPluginManager());
         getApiManager().loadApi();
         getPageHandler().loadResources();
         loadSql();
@@ -3870,14 +3872,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param path _more_
      * @param bytes _more_
      */
-    private void putHtdocsCache(String path, byte[] bytes) {
-        if (htdocsCacheSize > htdocsCacheLimit) {
-            return;
-        }
-        if (getCacheResources()) {
-            htdocsCacheSize += bytes.length;
-            htdocsCache.put(path, bytes);
-        }
+    private void putHtdocsCache(String path, byte[] bytes, boolean force) {
+	synchronized(htdocsCache) {
+	    if (!force && htdocsCacheSize > htdocsCacheLimit) {
+		//            htdocsCache =  new Hashtable<String,  byte[]>();
+		//            htdocsCacheSize =0;
+		return;
+	    }
+	    if (getCacheResources()) {
+		htdocsCacheSize += bytes.length;
+		htdocsCache.put(path, bytes);
+	    }
+	}
     }
 
     /**
@@ -3957,7 +3963,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Misc.sleepSeconds(60);
             Result r = new Result("", new StringBuilder());
             r.setResponseCode(Result.RESPONSE_NOTFOUND);
-
             return r;
         }
 
@@ -4024,17 +4029,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         "${root}", urlBase).replace(
                         "${urlroot}", urlBase).replace(
                         "${baseentry}",
-                        getEntryManager().getRootEntry().getId());
-                    js    = js.replace("${hostname}",
-                                       request.getServerName());
+                        getEntryManager().getRootEntry().getId()).replace("${hostname}", request.getServerName());
                     bytes = js.getBytes();
-                    putHtdocsCache(path, bytes);
+                    putHtdocsCache(path, bytes,false);
                     inputStream = new ByteArrayInputStream(bytes);
                 } else if (path.endsWith(".png") || path.endsWith(".gif")
                            || path.endsWith(".jpg")
                            || path.endsWith(".jpeg")) {
                     bytes = IOUtil.readBytes(inputStream);
-                    putHtdocsCache(path, bytes);
+                    putHtdocsCache(path, bytes,false);
                     inputStream = new ByteArrayInputStream(bytes);
                 } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
@@ -4084,12 +4087,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                 urlBase);
                 js    = js.replace("${hostname}", request.getServerName());
                 bytes = js.getBytes();
-                putHtdocsCache(path, bytes);
+                putHtdocsCache(path, bytes,path.endsWith(RESOURCE_ALLCSS));
                 inputStream = new ByteArrayInputStream(bytes);
             } else if (path.endsWith(".png") || path.endsWith(".gif")
                        || path.endsWith(".jpg") || path.endsWith(".jpeg")) {
                 bytes = IOUtil.readBytes(inputStream);
-                putHtdocsCache(path, bytes);
+                putHtdocsCache(path, bytes,false);
                 inputStream = new ByteArrayInputStream(bytes);
             } else if (path.endsWith(".html")) {
                 String html = IOUtil.readInputStream(inputStream);
@@ -4195,6 +4198,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         languageDefault       = getProperty(PROP_LANGUAGE_DEFAULT, "default");
         downloadOk            = getProperty(PROP_DOWNLOAD_OK, true);
         minifiedOk            = getProperty(PROP_MINIFIED, true);
+	System.err.println("MINIFIED:" + minifiedOk);
         cdnOk                 = getProperty(PROP_CDNOK, false);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,
                                             false);

@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 
+
 package org.ramadda.repository;
 
 
@@ -165,6 +166,8 @@ public class PageHandler extends RepositoryManager {
     public static final String MACRO_CONTENT = "content";
 
 
+    private String webImports;
+
     /** _more_ */
     private List<HtmlTemplate> htmlTemplates;
 
@@ -299,6 +302,33 @@ public class PageHandler extends RepositoryManager {
         myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
         cacheTemplates =
             getRepository().getProperty("ramadda.cachetemplates", true);
+
+	initWebResources();
+    }
+
+
+    private void initWebResources() {
+	try {
+	    webImports = "";
+	    String       cssImports          = "";
+	    List<String> cssFiles = StringUtil.split(getStorageManager().readSystemResource(
+										       "/org/ramadda/repository/resources/web/cssimports.html"),"\n",true,true);
+	    String       jsImports          = "";
+	    List<String> jsFiles = StringUtil.split(getStorageManager().readSystemResource(
+											   "/org/ramadda/repository/resources/web/jsimports.html"),"\n",true,true);
+
+	    for(String file: cssFiles) {
+		if(file.startsWith("#")) continue;
+		cssImports +=HtmlUtils.cssLink("${root}" + file).trim()+"\n";
+	    }
+	    for(String file: jsFiles) {
+		if(file.startsWith("#")) continue;
+		jsImports +=HtmlUtils.importJS("${root}" + file).trim() +"\n";
+	    }
+	    webImports =applyBaseMacros(cssImports.trim()  +"\n" + jsImports.trim() +"\n");
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
 
@@ -632,9 +662,7 @@ public class PageHandler extends RepositoryManager {
         if (logoImage == null) {
             logoImage = "${root}/images/logo.png";
         }
-
         logoImage = applyBaseMacros(logoImage);
-
         return logoImage;
     }
 
@@ -1009,35 +1037,47 @@ public class PageHandler extends RepositoryManager {
                + RepositoryUtil.getHtdocsVersion() + url;
     }
 
+    private String concatFiles(List<String> files) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	String prefix = "/org/ramadda/repository/htdocs";
+	for(String path: files) {
+	    if(path.startsWith("#")) continue;
+	    path = applyBaseMacros(path);
+	    System.err.println("file:" + path);
+	    String css = getStorageManager().readSystemResource(prefix + path);
+	    sb.append("/* from " + path +"*/\n");
+	    css = applyBaseMacros(css);
+	    sb.append(css);
+	    sb.append("\n\n");
+	}
+	return sb.toString();
+    }
+
+
+
     /**
      * _more_
      *
      * @return _more_
      */
     public synchronized List<HtmlTemplate> getTemplates() {
+	try {
+	    return getTemplatesInner();
+	}  catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
 
-        List<HtmlTemplate> theTemplates = htmlTemplates;
-        if ( !cacheTemplates || (theTemplates == null)) {
-            String mobileId =
+    private synchronized List<HtmlTemplate> getTemplatesInner() throws Exception {
+	List<HtmlTemplate> theTemplates = htmlTemplates;
+	if ( !cacheTemplates || (theTemplates == null)) {
+	    String mobileId =
                 getRepository().getProperty("ramadda.template.mobile",
                                             (String) null);
             HtmlTemplate theMobileTemplate = null;
             //use locals here in case of race conditions
             HtmlTemplate _defaultTemplate = null;
             HtmlTemplate _mobileTemplate  = null;
-            String       imports          = "";
-            try {
-                imports = getStorageManager().readSystemResource(
-                    "/org/ramadda/repository/resources/web/imports.html");
-                imports = imports.replace(
-                    "${ramadda.bootstrap.version}",
-                    getRepository().getProperty(
-                        "ramadda.bootstrap.version", "bootstrap-3.3"));
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-            }
-
-            imports      = applyBaseMacros(imports);
             theTemplates = new ArrayList<HtmlTemplate>();
             templateMap  = new Hashtable<String, HtmlTemplate>();
 
@@ -1085,7 +1125,7 @@ public class PageHandler extends RepositoryManager {
                                 "${" + changes[i + 1] + "}");
                     }
 
-                    resource = resource.replace("${imports}", imports);
+                    resource = resource.replace("${imports}", webImports);
                     HtmlTemplate template = new HtmlTemplate(getRepository(),
                                                 path, resource);
                     //Check if we got some other ...template.html file from a plugin
@@ -3707,14 +3747,12 @@ Time:14625 cnt:7000
      * @return _more_
      */
     public String applyBaseMacros(String s) {
-
         String dotmini = getRepository().getMinifiedOk()
                          ? ".min"
                          : "";
         String mini    = getRepository().getMinifiedOk()
                          ? "min/"
                          : "";
-        //        System.err.println(mini +" " + getRepository().getMinifiedOk());
         String path;
         if (getRepository().getCdnOk()) {
             path = CDN;
@@ -3723,12 +3761,15 @@ Time:14625 cnt:7000
                    + RepositoryUtil.getHtdocsVersion();
         }
 
-
+	String root = getRepository().getUrlBase() +"/" + RepositoryUtil.getHtdocsVersion();
         String htdocsBase = makeHtdocsUrl("");
 
+	s  =  s.replace("${ramadda.bootstrap.version}",
+			getRepository().getProperty(
+						    "ramadda.bootstrap.version", "bootstrap-3.3"));
         return s.replace("${htdocs}", htdocsBase).replace(
             "${cdnpath}", path).replace(
-            "${root}", getRepository().getUrlBase()).replace(
+            "${root}", root).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
     }

@@ -704,6 +704,9 @@ public class StorageManager extends RepositoryManager implements PointFile
         return iconsDir;
     }
 
+    public String getHtdocsDir() {
+	return htdocsDir;
+    }
 
 
 
