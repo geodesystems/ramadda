@@ -1435,6 +1435,11 @@ var Utils = {
         this.pageLoaded = true;
 	this.initDisplays();
 
+	console.log("Utils.initPage");
+	document.onmousemove = Utils.handleMouseMove;
+	document.onmousedown = Utils.handleMouseDown;
+	document.onmouseup = Utils.handleMouseUp;
+	document.onkeypress = Utils.handleKeyPress;
 
 
 

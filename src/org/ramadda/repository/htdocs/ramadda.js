@@ -860,7 +860,3 @@ function toggleVisibilityOnObject(obj, display) {
 }
 
 
-document.onmousemove = Utils.handleMouseMove;
-document.onmousedown = Utils.handleMouseDown;
-document.onmouseup = Utils.handleMouseUp;
-document.onkeypress = Utils.handleKeyPress;
