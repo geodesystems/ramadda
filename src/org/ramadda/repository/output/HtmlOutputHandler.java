@@ -698,14 +698,15 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param onlyTheseTypes _more_
      * @param notTheseTypes _more_
      * @param showTitle _more_
+     * @param separator _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-						List<String> onlyTheseTypes, List<String> notTheseTypes,
-						boolean showTitle, String separator)
+            List<String> onlyTheseTypes, List<String> notTheseTypes,
+            boolean showTitle, String separator)
             throws Exception {
 
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
@@ -782,9 +783,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 HU.open(sb, "tr",
                         HU.attr("valign", "top") + HU.cssClass(rowClass));
                 HU.open(sb, "td");
-		if(!first && separator!=null) {
-		    sb.append(separator);
-		}
+                if ( !first && (separator != null)) {
+                    sb.append(separator);
+                }
                 sb.append(HU.tag("div", HU.cssClass("metadata-small-label"),
                                  html[0]));
                 sb.append(HU.tag("div",
@@ -796,9 +797,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 if ( !first) {
                     sb.append("<div class=\"metadata-row-divider\"></div>");
                 }
-		if(!first && separator!=null) {
-		    sb.append(separator);
-		}
+                if ( !first && (separator != null)) {
+                    sb.append(separator);
+                }
                 HU.div(sb, html[1], HU.cssClass(rowClass));
             }
             sb.append("\n");
@@ -1217,7 +1218,7 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
-		 getMetadataHtml(request, entry, null, null, true, null)) {
+                getMetadataHtml(request, entry, null, null, true, null)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
@@ -1675,7 +1676,9 @@ public class HtmlOutputHandler extends OutputHandler {
         if (props == null) {
             props = new Hashtable();
         }
-        boolean showCategories = request.get(ARG_SHOWCATEGORIES, true);
+        boolean showCategories = request.get(ARG_SHOWCATEGORIES,
+                                             Utils.getProperty(props,
+                                                 ARG_SHOWCATEGORIES, true));
         Hashtable<String, List<Entry>> map = new Hashtable<String,
                                                  List<Entry>>();
         boolean showDate = Utils.getProperty(props, "showDate", true);
