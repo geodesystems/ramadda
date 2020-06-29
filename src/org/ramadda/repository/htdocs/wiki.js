@@ -366,6 +366,12 @@ var wikiAttributes = {
 	['notlast.&lt;some attribute&gt;="attr for first N tags"'],
 	['notfirst.&lt;some attribute&gt;="attr for last N tags"'],
     ],        
+    menu: [
+	"label:Menu Properties",
+	['menus=file,edit,view,feeds,other'],
+	['popup=true'],
+	['breadcrumbs=true'],
+    ],
     t: [
 	"label:",
 	[''],
