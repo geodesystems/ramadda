@@ -4198,7 +4198,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         languageDefault       = getProperty(PROP_LANGUAGE_DEFAULT, "default");
         downloadOk            = getProperty(PROP_DOWNLOAD_OK, true);
         minifiedOk            = getProperty(PROP_MINIFIED, true);
-	System.err.println("MINIFIED:" + minifiedOk);
         cdnOk                 = getProperty(PROP_CDNOK, false);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,
                                             false);

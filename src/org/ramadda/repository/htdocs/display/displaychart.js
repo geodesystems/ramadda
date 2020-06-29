@@ -2497,7 +2497,7 @@ function TableDisplay(displayManager, id, properties) {
 		    let icon = record.getValue(iconField.getIndex());
 		    f = HU.image(icon) +"&nbsp;" +f;
 		}
-		if(linkField && record) {
+		if(linkField && record&& idx==0) {
 		    let url = record.getValue(linkField.getIndex());
 		    if(f) f = f.trim();
 		    if (Utils.isDefined(f) && f!="") {
@@ -2513,12 +2513,11 @@ function TableDisplay(displayManager, id, properties) {
 		}
 
 
-
 		if(field) {
 		    let colorBy = colorByMap[field.getId()];
 		    if(colorBy && record) {
 			let color =  colorBy.getColorFromRecord(record);
-			f = HU.div([STYLE,HU.css('height','100%','background', color)],f)
+			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',Utils.getForegroundColor(color)+" !important")],f)
 		    }
 		}
 
