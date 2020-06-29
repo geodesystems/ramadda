@@ -257,6 +257,8 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
             try {
                 String realUnitName = MetUnits.makeSymbol(unitIdentifier);
+		//A hack to fix errors with oscar files
+		realUnitName = realUnitName.replace("degrees-","degrees_");
                 u = visad.data.units.Parser.parse(realUnitName);
             } catch (NoSuchUnitException nsu) {
                 if (unitIdentifier.indexOf("_") >= 0) {
@@ -268,6 +270,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
             }
         } catch (Exception exc) {
+	    exc.printStackTrace();
             throw new IllegalArgumentException("Error parsing unit:\""
                     + unitIdentifier + "\"   " + exc);
         }

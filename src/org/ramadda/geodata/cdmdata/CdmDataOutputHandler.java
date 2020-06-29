@@ -1210,8 +1210,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         } else {
             File f = getRepository().getStorageManager().getTmpFile(request,
                          "subset" + ncVersion.getSuffix());
+	    /**
             System.err.println(f.getPath());
-
             List grids = gds.getGrids();
             for (int i = 0; i < grids.size(); i++) {
                 System.err.println(grids.get(i));
@@ -1257,9 +1257,9 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                + llp.getLongitude());
             }
             writer.close();
+	    **/
 
 
-            /*
             NetcdfFileWriter ncFileWriter = null;
             try {
                 ncFileWriter = NetcdfFileWriter.createNew(ncVersion,
@@ -1286,7 +1286,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
 
 
-
             CFGridWriter2.writeFile(gds, varNames, llr, null, hStride,
                                     zRange, ((dates[0] == null)
                                              ? null
@@ -1294,7 +1293,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                              dates[1])), timeStride,
                                                  includeLatLon, ncFileWriter);
 
-            */
             /*
             writer.makeFile(f.toString(), gds, varNames, llr, hStride,
                             zStride,
@@ -1305,6 +1303,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                       timeStride, includeLatLon,
                                           ncVersion);
                                           */
+
             getCdmManager().returnGridDataset(path, gds);
 
 
