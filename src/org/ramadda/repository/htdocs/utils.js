@@ -64,7 +64,7 @@ var Utils =  {
 	if(idx<list.length) return list[idx];
 	return dflt;
     },
-    rotate:function(cx, cy, x, y, angle,anticlock_wise = false) {
+    rotate:function(cx, cy, x, y, angle,anticlock_wise) {
 	if(angle == 0){
             return {x:parseFloat(x), y:parseFloat(y)};
 	}
