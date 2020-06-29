@@ -2,6 +2,7 @@
  * Copyright (c) 2008-2019 Geode Systems LLC
  */
 
+console.log("entry.js loading");
 var OUTPUT_JSON = "json";
 var OUTPUT_CSV = "default.csv";
 var OUTPUT_ZIP = "zip.tree";
@@ -1204,3 +1205,6 @@ function EntryListHolder(ramadda) {
 "attr4":""}]}
 
 */
+
+
+console.log("entry.js done loading");
