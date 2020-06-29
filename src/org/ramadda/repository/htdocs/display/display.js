@@ -1278,6 +1278,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("shareSelected")) {
 		return;
 	    }
+	    if(!this.getProperty("acceptSetEntry",true)) {
+		return;
+	    }	    
             this.entries = [];
             this.addEntry(entry);
             this.entry = entry;

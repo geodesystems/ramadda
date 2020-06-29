@@ -1012,7 +1012,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    if(this.getProperty("onlyShowSelected")) {
 		if(!this.selectedRecord) {
-		    this.writeHtml(ID_DISPLAY_CONTENTS, "");
+		    this.writeHtml(ID_DISPLAY_CONTENTS, "<br>");
 		    return;
 		}
 		records = [this.selectedRecord];

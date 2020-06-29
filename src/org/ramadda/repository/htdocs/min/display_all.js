@@ -3677,6 +3677,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.getProperty("shareSelected")) {
 		return;
 	    }
+	    if(!this.getProperty("acceptSetEntry",true)) {
+		return;
+	    }	    
             this.entries = [];
             this.addEntry(entry);
             this.entry = entry;
@@ -20575,7 +20578,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    if(this.getProperty("onlyShowSelected")) {
 		if(!this.selectedRecord) {
-		    this.writeHtml(ID_DISPLAY_CONTENTS, "");
+		    this.writeHtml(ID_DISPLAY_CONTENTS, "<br>");
 		    return;
 		}
 		records = [this.selectedRecord];
