@@ -2106,7 +2106,7 @@ public class CsvUtil {
                 "how many decimals to round to"),
         new Cmd("-delta",
                 "Add column that is the delta from the previous step",
-                new Arg("columns")),
+                new Arg("key columns"),new Arg("columns")),
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
                 new Arg("columns"), "new col name", "operator +,-,*,/"),
@@ -3727,14 +3727,13 @@ public class CsvUtil {
                     continue;
                 }
                 if (arg.equals("-delta")) {
-                    if ( !ensureArg(args, i, 1)) {
+                    if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
+                    List<String> keyidxs = getCols(args.get(++i));
                     List<String> idxs = getCols(args.get(++i));
-                    String       name = "";
-                    String       op   = "delta";
                     info.getProcessor().addProcessor(
-                        new Converter.ColumnMathOperator(idxs, name, op));
+						     new Converter.Delta(keyidxs, idxs));
 
                     continue;
                 }

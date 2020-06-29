@@ -134,6 +134,14 @@ public abstract class CsvOperator {
     }
 
 
+    public double parse(String s) {
+	s = s.trim().replaceAll(",","");
+	if(s.equals("")) return 0;
+	return Double.parseDouble(s);
+    }
+
+
+
     /**
      * _more_
      *
