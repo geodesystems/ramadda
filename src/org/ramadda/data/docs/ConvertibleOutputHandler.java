@@ -423,7 +423,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     }
                     args.add(arg);
                 }
-                if ( !args.contains("-print") && !args.contains("-explode")
+                if ( !args.contains("-print") && !args.contains("-p") && !args.contains("-explode")
                         && !args.contains("-toxml")
                         && !args.contains("-printheader")
                         && !args.contains("-template")
