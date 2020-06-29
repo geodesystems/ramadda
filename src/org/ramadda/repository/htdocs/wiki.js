@@ -198,8 +198,84 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 
 
 var wikiAttributes = {
+    tree: [
+	"label:Tree Properties",
+	["details=true"],
+	["showcategories=true"],
+	["decorate=true"],	
+	["form=true"],
+    ],
+    links: [
+	"label:Links Properties",
+	['info:List children entries'],
+	['includeIcon=true'],
+	['linkresource=true','Link to the resource'],
+	['separator=""','Separator between links'],
+	['output=""',"Link to output"],
+	['tagopen="html before link'],
+	['tagclose="html after link'],	
+	'innerClass=""',
+	['class="link css class"'],
+	['style="link stye"'],
+    ],
+    list: [
+	"label:List Properties",
+	['info:List children entries'],
+	['includeIcon=true'],
+	['linkresource=true','Link to the resource'],
+	['separator=""','Separator between links'],
+	['output=""',"Link to output"],
+	['tagopen="html before link'],
+	['tagclose="html after link'],	
+	'innerClass=""',
+	['class="link css class"'],
+	['style="link stye"'],
+    ],
+
+    information: [
+	"label:Information Properties",
+	'info:Show entry information',
+	["details=false"],
+	["showTitle=true"],
+	["showResource=true"],
+	["showBase=true"],
+	["showDetails=true"],		
+    ],
+    description: [
+	"label:Description Properties",
+	["wikify=true"],
+	['prefix=""'],
+	['suffix=""'],
+	['convert_newline=true'],		
+    ],
+    resource: [
+	"label:Resource Properties",
+	'info:Link to the resource',
+	['title=""'],
+	['includeIcon=true'],	
+	['url=true','Just include the URL'],
+	['message=""','Message to show when no resource'],
+    ],
+    link: [
+	"label:Link Properties",
+	'info:Link to the entry',
+	['linkresource=true','Link to the resource'],
+	['button=true','Make a button'],
+	['title=""','Title to use'],
+	['output="output type"','Link to the given output'],
+    ],
+    daterange: [
+	"label:Date Range Properties",
+	['format="yyyy-MM-dd HH:mm:ss Z"'],
+	['separator=""'],
+    ],
+    html: [
+	"label:HTML Properties",
+	'info:Include the HTML of the entry',
+	['children=true','Include HTML of children entries'],
+    ],
     map: [
-	"label:Map Attributes",
+	"label:Map Properties",
 	"icon=\"#/icons/dots/green.png\"" ,
  	"width=\"100%\"",
 	"height=\"400\"",
@@ -210,32 +286,91 @@ var wikiAttributes = {
 	"showSearch=\"false\"",
 	"icon=\"#/icons/dots/green.png\"",
 	"iconsonly=\"false\""],
+    name: [
+	'label:Name Properties',
+	['link=true','Link to the entry'],
+    ],
+    property: [
+	'label:Property Properties',
+	'name=""',
+	'value=""'
+    ],
     group: [
-	'label:Group Attributes',
+	'label:Group Properties',
 	"showMenu=\"true\"",	      
 	"showTitle=\"true\"",
 	'layoutType="table|flextable|tabs|columns|rows"',
 	'layoutColumns="1"'
     ],
-    links: [
-	'label:Links Attributes',
-	'showTitle=""',
-	'title=""',
-	'includeicon="true"',
-	'innerClass=""',
-	'linkresource="true"',
-	'separator=" | "',
-	'tagopen=""',
-	'tagclose=""'
-    ],
     tabs:[
-	'label:Tabs Attributes',
+	'label:Tabs Properties',
 	'tag="html"',
 	'tabsStyle="min|center|minarrow"',
 	'showLink="false"', 
 	'includeIcon="true"',
 	'textposition="top|left|right|bottom"', 
-    ]
+    ],
+    grid: [
+	"label:Grid Properties",
+	'tag="card"',
+	'inner-height="100"',
+	'columns="3"',
+	'includeIcon="true"',
+	'weights=""',
+	'showSnippet="false"',
+	'showSnippetHover="true"',
+	'showLink="false"',
+	'showHeading="true"',
+	'showLine="true"'
+    ],
+    frames: [
+	"label:Frames Properties",
+	'info:Show entries in a HTML frame',
+	['width=400'],
+	['height=400'],
+	['noTemplate=true',"Don't use the page template in the frame"]
+    ],    
+    accordian: [
+	"label:Accordian Properties",
+	'tag="html"',
+	'collapse="false"',
+	'border="0"',
+	'showLink="true"',
+	'includeIcon="false"',
+	'textposition="left"',
+    ],
+    table: [
+	"label:Table Properties",
+	['showCategories=true'],
+	['showDate=true'],
+	['showCreateDate=true'],
+	['showChangeDate=true'],
+	['show&lt;column name&gt;=true'],		
+    ],
+    recent: [
+	"label:Recent Properties",
+	['info:List N days recent entries by day'],
+	['days="num days"'],
+    ],        
+    multi: [
+	"label:Multi Properties",
+	['info:Create multiple wiki tags'],
+	['_tag="tag to create"'],
+	['_template="wiki text template. Escape { and } with backslash"'],
+	['_entries="entries"',"entries to apply to"],
+	['_headers="comma separated headers'],
+	['_headerTemplate="...${header}...'],
+	['_columns="number of columns"'],
+	['first.&lt;some attribute&gt;="attr for first tag'],
+	['last.&lt;some attribute&gt;="attr for last tag'],
+	['notlast.&lt;some attribute&gt;="attr for first N tags"'],
+	['notfirst.&lt;some attribute&gt;="attr for last N tags"'],
+    ],        
+    t: [
+	"label:",
+	[''],
+    ],        
+
 }
 
 
@@ -324,7 +459,10 @@ function wikiInitEditor(info) {
 	    if(tmp && tmp.length>1)  tag = tmp[1];
 	    if(tag) {
 		var type;
-		if(tag.startsWith("display_")) {
+		if(tag=="group") {
+		    type="blank"
+		    tag = "display";
+		}  else if(tag.startsWith("display_")) {
 		    type = tag.substring(8);
 		    tag = "display";
 		} else {
@@ -350,17 +488,19 @@ function wikiInitEditor(info) {
 		}
 
 
-		let processTag =tag=>{
+
+		let processTag =(tag)=>{
 		    let tt =null;
 		    let label=null;
 		    if(Array.isArray(tag)) {
+			let a = tag;
 			if(tag.length==3) {
-			    label = tag[0];
-			    tag = tag[1];
-			    tt = tag[2];
+			    label = a[0];
+			    tt = a[2];
+			    tag = a[1];
 			} else {
-			    tag = tag[0];
-			    tt = tag[1];
+			    tt = a[1];
+			    tag = a[0];
 			}
 		    } 
 		    if(tag.inline)  tag = "inlinelabel:" + tag.inline;
@@ -376,6 +516,10 @@ function wikiInitEditor(info) {
 		    if(tag.startsWith("label:")) {
 			handleBlock();
 			toggleLabel = tag.substring(6);
+			return;
+		    }
+		    if(tag.startsWith("info:")) {
+			dmenu+="<i>"+tag.substring(5)+"</i><br>";
 			return;
 		    }
 		    let t = " " + tag.replace(/\"/g,"&quot;")+" ";
