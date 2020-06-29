@@ -7526,7 +7526,6 @@ public class EntryManager extends RepositoryManager {
                     continue;
                 }
                 seen.put(entry.getId(), BLANK);
-		System.err.println("\tEntry:" + entry);
                 allEntries.add(entry);
             }
         } finally {
