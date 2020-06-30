@@ -10430,7 +10430,7 @@ public class EntryManager extends RepositoryManager {
             } catch (Exception ignore) {}
         }
 
-        String  order     = " DESC ";
+	boolean desc = true;
         boolean haveOrder = request.exists(ARG_ASCENDING);
         String  by        = null;
         int     max       = ((select == null)
@@ -10449,9 +10449,9 @@ public class EntryManager extends RepositoryManager {
         if (sortMetadata != null) {
             haveOrder = true;
             if (Misc.equals(sortMetadata.getAttr2(), "true")) {
-                order = " ASC ";
+                desc = false;
             } else {
-                order = " DESC ";
+                desc = true;
             }
             by = sortMetadata.getAttr1();
             String tmp = sortMetadata.getAttr3();
@@ -10467,7 +10467,7 @@ public class EntryManager extends RepositoryManager {
         } else {
             by = request.getString(ARG_ORDERBY, (String) null);
             if (request.get(ARG_ASCENDING, false)) {
-                order = " ASC ";
+                desc = false;
             }
         }
 
@@ -10478,32 +10478,28 @@ public class EntryManager extends RepositoryManager {
         String limitString = BLANK;
         limitString =
             getDatabaseManager().getLimitString(request.get(ARG_SKIP, 0),
-                max);
-
+						max);
 
         String orderBy = BLANK;
         if (addOrderBy) {
-            orderBy = " ORDER BY " + Tables.ENTRIES.COL_FROMDATE + order;
+            orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc);
         }
-        //!!CAREFUL HERE!! - sql injection with the ARG_ORDERBY
-        //Don't just use the by.
         if (by != null) {
             if (by.equals(SORTBY_FROMDATE)) {
-                orderBy = " ORDER BY " + Tables.ENTRIES.COL_FROMDATE + order;
+                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc);
             } else if (by.equals(SORTBY_TODATE)) {
-                orderBy = " ORDER BY " + Tables.ENTRIES.COL_TODATE + order;
+                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_TODATE, desc);
             } else if (by.equals(SORTBY_TYPE)) {
-                orderBy = " ORDER BY " + Tables.ENTRIES.COL_TYPE + order;
+                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_TYPE,desc);
             } else if (by.equals(SORTBY_SIZE)) {
-                orderBy = " ORDER BY " + Tables.ENTRIES.COL_FILESIZE + order;
+                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FILESIZE,desc);
             } else if (by.equals(SORTBY_CREATEDATE)) {
-                orderBy = " ORDER BY " + Tables.ENTRIES.COL_CREATEDATE
-                          + order;
+                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_CREATEDATE,desc);
             } else if (by.equals(SORTBY_NAME)) {
                 if ( !haveOrder) {
-                    order = " ASC ";
+                    desc = false;
                 }
-                orderBy = " ORDER BY " + Tables.ENTRIES.COL_NAME + order;
+                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_NAME,desc);
             }
         }
 

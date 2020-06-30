@@ -34,6 +34,7 @@ import org.ramadda.util.sql.SqlUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -46,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class does most of the work of managing repository content
@@ -135,43 +138,59 @@ public class EntryUtil extends RepositoryManager {
      *
      * @param entries _more_
      * @param descending _more_
-     * @param pattern _more_
+     * @param p _more_
      *
      * @return _more_
      */
     public List<Entry> sortEntriesOnPattern(List<Entry> entries,
                                             final boolean descending,
-                                            final String pattern) {
+                                            String p) {
+	p = p.replaceAll("_LEFT_","[").replaceAll("_RIGHT_","]");
+	final Pattern pattern =  Pattern.compile(p);
+	//	System.err.println("on pattern:" + pattern+":");
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry  e1 = (Entry) o1;
                 Entry  e2 = (Entry) o2;
-                String v1 = StringUtil.findPattern(e1.getName(), pattern);
-                String v2 = StringUtil.findPattern(e2.getName(), pattern);
-                if ((v1 == null) || (v2 == null)) {
-                    //                    System.err.println("no v:" + v1 +" " + v2);
-                    return 0;
-                }
-
-                double dv1    = Double.parseDouble(v1);
-                double dv2    = Double.parseDouble(v2);
-                int    result = (dv1 < dv2)
-                                ? -1
-                                : (dv1 == dv2)
-                                  ? 0
-                                  : 1;
-
-                if (descending) {
-                    if (result >= 1) {
-                        return -1;
-                    } else if (result <= -1) {
-                        return 1;
-                    }
-
-                    return 0;
-                }
-
-                return result;
+		Matcher m1 = pattern.matcher(e1.getName());
+		Matcher m2 = pattern.matcher(e2.getName());
+		if(!m1.find() || !m2.find()) { 
+		    System.err.println("No match: name1: " + e1.getName() +" name2: " + e2.getName());
+		    return 0;
+		}
+		if(m1.groupCount()==0) {
+		    return 0;
+		}
+		if(m1.groupCount()!= m2.groupCount()) {
+		    System.err.println("bad match:");
+		    return 0;
+		}
+		for(int i=1;i<=m1.groupCount();i++) {
+		    String v1 = m1.group(i);
+		    String v2 = m2.group(i);
+		    if ((v1 == null) || (v2 == null)) {
+			return 0;
+		    }
+		    //		    System.err.println("#" + i+" v1:" + v1  +" " + v2);
+		    try {
+			double dv1    = Double.parseDouble(v1);
+			double dv2    = Double.parseDouble(v2);
+			int    result = (dv1 < dv2)
+			    ? -1
+			    : (dv1 == dv2)
+			    ? 0
+			    : 1;
+			if (descending) { 
+			    result = (result >= 1?-1:result<0?1:0);
+			}
+			if(result!=0) return result;
+		    } catch(Exception exc) {
+			System.err.println("Error parsing name:" + e1.getName() 
++" " + e2.getName() +" error:" + exc);
+			return 0;
+		    }
+		}
+                return 0;
             }
             public boolean equals(Object obj) {
                 return obj == this;
@@ -547,6 +566,10 @@ public class EntryUtil extends RepositoryManager {
         }
 
         return result;
+    }
+
+
+    public static void main(String[] args) throws Exception {
     }
 
 
