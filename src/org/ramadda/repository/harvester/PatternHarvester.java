@@ -113,7 +113,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     /** _more_ */
     private boolean ignoreErrors = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean noTree = false;
 
     /** _more_ */
@@ -1431,8 +1431,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                                    !getTestMode()
                                    && (groupTemplate.indexOf("${dirgroup}")
                                        >= 0));
-
-            dirGroup = SqlUtil.cleanName(dirGroup);
+            //Don't do this as it ends up with multiple dir entrys if there is a "." in the dir name
+            //            dirGroup = SqlUtil.cleanName(dirGroup);
             dirGroup = dirGroup.replace("\\", "/");
         }
 
