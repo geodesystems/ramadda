@@ -213,8 +213,7 @@ public class ZipOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
-
-        return toZip(request, "", entries, false, false);
+        return toZip(request, entry.getName(), entries, false, false);
     }
 
 
@@ -293,7 +292,6 @@ public class ZipOutputHandler extends OutputHandler {
     public Result toZip(Request request, String prefix, List<Entry> entries,
                         boolean recurse, boolean forExport)
             throws Exception {
-
         OutputStream os        = null;
         boolean      doingFile = false;
         File         tmpFile   = null;

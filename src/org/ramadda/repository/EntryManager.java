@@ -5589,7 +5589,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
 
-        return getRepository().getZipOutputHandler().toZip(request, "",
+        return getRepository().getZipOutputHandler().toZip(request, entry.getName(),
                 entries, true, true);
     }
 
