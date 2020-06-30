@@ -10128,6 +10128,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 		if(this.displayType!="menu") {
 		    if(debug) console.log("\tnot menu");
+		    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 		    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 		    let buttons = "";
 		    let colorMap = Utils.parseMap(this.getProperty(filterField.getId() +".filterColorByMap"));
@@ -26017,9 +26018,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'vectorLayerFillOpacity',wikiValue:'0.25'},
 	{p:'vectorLayerStrokeWidth',wikiValue:'1'},
 	{p:'handleCollisions',wikiValue:'true',tt:"Handle point collisions"},
+	{p:'collisionFixed',d:true,wikiValue:'false',tt:"Always show markers"},
 	{p:'collisionMinPixels',d:16,wikiValue:'16',tt:"How spread out"},
 	{p:'collisionDotColor',wikiValue:'red',tt:"Color of dot drawn at center"},
-	{p:'collisionDotRadius',wikiValue:'3',tt:"Radius of dot drawn at center"},				
+	{p:'collisionDotRadius',wikiValue:'3',tt:"Radius of dot drawn at center"},
+	{p:'collisionScaleDots',wikiValue:'false',d:true,tt:"Scale the group dots"},					
 	{p:'collisionLineColor',wikiValue:'red',tt:"Color of line drawn at center"},
 	{p:'showMarkersToggle',wikiValue:'true',tt:'Show the toggle checkbox for the marker layer'},
 	{p:'showMarkersToggleLabel',wikiValue:'label',tt:'Label to use for checkbox'},
@@ -26223,6 +26226,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
                 this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
+		//Set this so there is no popup on the off feature
+		this.map.textGetter = (layer,feature) =>{
+		    return null;
+		};
                 this.lastWidth = this.jq(ID_MAP).width();
             }
 
@@ -26238,6 +26245,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
 	    this.map.addFeatureSelectHandler(feature=>{
+		if(feature.collisionInfo)  {
+		    if(this.getPropertyCollisionFixed()) return;
+		    let info = feature.collisionInfo;
+		    info.visible = !info.visible;
+		    this.styleCollisionDot(feature);
+		    feature.layer.drawFeature(feature, feature.style);
+		    info.features.forEach(f=>{
+			f.featureVisible = info.visible;
+			this.map.checkFeatureVisible(f,true);
+		    });
+		    info.records.forEach(record=>{
+			let layoutInfo = this.displayInfo[record];
+			layoutInfo.features.forEach(f=>{
+			    f.featureVisible = info.visible;
+			    this.map.checkFeatureVisible(f,true);
+			});
+		    });
+		}
 		if(feature.record) {
 		    this.propagateEventRecordSelection({record:feature.record});
 		}
@@ -26292,7 +26317,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		_this.checkHeatmapReload();
 		_this.updateHtmlLayers();
 		if(!this.haveAddPoints) return;
-		if(this.getHandleCollisions()) {
+		if(this.getPropertyHandleCollisions()) {
 		    this.haveCalledUpdateUI = false;
                     this.updateUI();
 		}
@@ -26384,10 +26409,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},500);
             }
         },
-
-	getHandleCollisions: function() {
-	    return this.getProperty("handleCollisions",false);
-	},
         getBounds: function() {
 	    return this.map.getBounds();
 	},
@@ -27961,6 +27982,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.createPoints(records, fields, points, bounds);
 	},
+	styleCollisionDot:function(dot) {
+	    let collisionFixed = this.getPropertyCollisionFixed();
+	    let dotColor = this.getProperty("collisionDotColor","#0");
+	    let dotRadius = this.getProperty("collisionDotRadius",5);
+	    if(!collisionFixed) {
+		if(dot.collisionInfo.visible)  {
+		    dotRadius = 5;
+		    dotColor = "#000";
+		    dotColor = this.getProperty("collisionDotColorOn","#000");
+		} else {
+		    if(this.getPropertyCollisionScaleDots()) {
+			dotRadius = Math.min(dot.collisionInfo.numRecords*3,24);
+		    } else {
+//			dotRadius =5;
+		    }
+		    dotColor = this.getProperty("collisionDotColorOff","#CD5C5C");
+		}
+	    }
+	    dot.style.fillColor=dotColor;
+	    dot.style.pointRadius=dotRadius;
+	},
         createPoints: function(records, fields, points,bounds) {
 	    let debug = displayDebug.displayMapAddPoints;
             let colorBy = this.getColorByInfo(records);
@@ -28176,7 +28218,36 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    };	    
 
 	    this.haveAddPoints = true;
-	    if(this.getHandleCollisions()) {
+	    let displayInfo = this.displayInfo = {};
+	    records.forEach(record=>{
+		let recordLayout = displayInfo[record] = {
+		    features:[],
+		    visible:true
+		}
+		let point = record.point;
+		if(!point) {
+		    recordLayout.centerPoint = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
+		} else {
+		    recordLayout.centerPoint = new OpenLayers.Geometry.Point(point.x,point.y);
+		}
+	    });
+
+	    let recordChecker = r=>{};
+	    let collisionVisible = this.getPropertyCollisionFixed();
+	    if(this.getPropertyHandleCollisions()) {
+		//TODO: labels
+		let doLabels = this.getProperty("collisionLabels",false);
+		if(doLabels &!this.map.collisionLabelsLayer) {
+		    this.map.collisionLabelsLayer = new OpenLayers.Layer.Vector("Collision Labels", {
+			styleMap: new OpenLayers.StyleMap({'default':{
+                            label : "${label}"
+			}}),
+                    });
+		    this.map.addVectorLayer(this.map.collisionLabelsLayer, true);
+                    this.map.collisionLabelsLayer.setZIndex(100);
+		}
+
+
 		let mapBounds = this.map.getBounds();
 		let mapW = mapBounds.right-mapBounds.left;
 		let divW  = $("#" + this.getProperty(PROP_DIVID)).width();
@@ -28191,11 +28262,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    offset+=baseOffset;
 		    cnt++;
 		}
-		let dotColor = this.getProperty("collisionDotColor","#000");
-		let lineColor = this.getProperty("collisionLineColor","#000");
 		let lineWidth = this.getProperty("collisionLineWidth","2");				
-		let dotRadius = this.getProperty("collisionDotRadius",4);
-//		console.log("checking collisions:" + mapBounds +" offset:" + offset);
+		let lineColor = this.getProperty("collisionLineColor","#000");
+		//		console.log("checking collisions:" + mapBounds +" offset:" + offset);
 		let seen1={};
 //		let decimals =  parseFloat(this.getProperty("collisionRound",1));
 		let decimals = -1;
@@ -28223,24 +28292,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let rpoint = new OpenLayers.Geometry.Point(lon,lat);
 		    return rpoint;
 		});
+		let recordInfo = {};
 		records.forEach(record=>{
-		    let point = record.point;
-		    if(!point) {
-			point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
-		    }
-		    record.centerPoint  = point;
-		    let rpoint = getPoint(point);
-		    if(rpoint==null) return;
-		    if(seen1[rpoint]) {
-			seen1[rpoint]++;
+		    let recordLayout = displayInfo[record];
+		    recordLayout.rpoint = getPoint(recordLayout.centerPoint);
+		    if(recordLayout.rpoint==null) return;
+		    if(seen1[recordLayout.rpoint]) {
+			seen1[recordLayout.rpoint]++;
 		    } else {
-			seen1[rpoint]=1;
+			seen1[recordLayout.rpoint]=1;
 		    }
 		});
-		let seen2={};
+		let collisionState= this.collisionState = {};
 		records.forEach((record,idx)=>{
-		    let point = record.centerPoint;
-		    let rpoint = getPoint(point);
+		    let recordLayout = displayInfo[record];
+		    let point = recordLayout.centerPoint;
+		    let rpoint = recordLayout.rpoint;
 		    if(rpoint ==null) return;
 		    if(seen1[rpoint]==1) {
 			return;
@@ -28249,15 +28316,32 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let anglePer = 360/cntAtPoint;
 //		    if(cntAtPoint==2)
 //			anglePer = 135;
-		    if(!seen2[rpoint]) seen2[rpoint]=1;
-		    else  seen2[rpoint]++;
-		    let cnt = seen2[rpoint]-1;
+		    let info = collisionState[rpoint];
+		    if(!info) {
+			info = collisionState[rpoint]={
+			    dot:null,
+			    numRecords:seen1[rpoint],
+			    records:[],
+			    features:[],
+			    visible: collisionVisible
+			};
+		    }
+		    recordLayout.visible = info.visible;
+		    info.records.push(record);
+		    let cnt = info.records.length;
 		    let ep = Utils.rotate(rpoint.x,rpoint.y,rpoint.x,rpoint.y-offset,cnt*anglePer-180,true);
 		    let line = this.map.addLine("line-" + idx, "", rpoint.y,rpoint.x, ep.y,ep.x, {strokeColor:lineColor,strokeWidth:lineWidth});
-		    if(cnt==0) {
-			let dot = this.map.addPoint("dot-" + idx, rpoint, {fillColor:dotColor, pointRadius:dotRadius});
-                        this.points.push(dot);
+		    if(!info.visible) {
+			line.featureVisible = false;
+			this.map.checkFeatureVisible(line,true);
 		    }
+		    if(!info.dot)  {
+			info.dot = this.map.addPoint("dot-" + idx, rpoint, {});
+			info.dot.collisionInfo  = info;
+			this.styleCollisionDot(info.dot);
+                        this.points.push(info.dot);
+		    }
+		    info.features.push(line);
 		    this.lines.push(line);
 		    point.x=ep.x;
 		    point.y=ep.y;
@@ -28269,7 +28353,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 let record = records[i];
 		let recordDate = record.getDate();
                 let tuple = record.getData();
-		let point  = record.centerPoint || record.point;
+		let recordLayout = displayInfo[record];
+		let point  = recordLayout.centerPoint;
 		if(!point)
                     point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
 
@@ -28480,7 +28565,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    //		    continue;
 		    let includePoints = colorBy.isEnabled();
 		    let mapPoint=null;
-		    let mapPoints =[];
+		    let mapPoints =recordLayout.features;
 
 		    //marker
 		    if(usingIcon) {
@@ -28531,6 +28616,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    mapPoint.date = date.getTime();
 			}
 			this.points.push(mapPoint);
+			if(!recordLayout.visible) {
+			    mapPoint.featureVisible = false;
+			    this.map.checkFeatureVisible(mapPoint,true);
+			}
 		    });
 		}
 	    }

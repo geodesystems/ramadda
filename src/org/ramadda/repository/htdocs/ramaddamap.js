@@ -1547,6 +1547,9 @@ RepositoryMap.prototype = {
 	if(feature.textGetter) {
 	    return  feature.textGetter(feature);
 	}
+	if(this.textGetter) {
+	    return this.textGetter(layer,feature);
+	}
 
         var style = feature.style || feature.originalStyle || layer.style;
         var p = feature.attributes;
@@ -1618,6 +1621,7 @@ RepositoryMap.prototype = {
 
 	if(!this.doPopup) return;
         var out = this.getFeatureText(layer, feature);
+	if(!out) return;
         if (this.currentPopup) {
             this.getMap().removePopup(this.currentPopup);
             this.currentPopup.destroy();
@@ -3930,11 +3934,15 @@ RepositoryMap.prototype = {
             marker.text = this.getPopupText(marker.inputProps.text);
         }
         let markertext;
+
 	if(marker.textGetter) {
 	    markertext =marker.textGetter(marker);
+	} else if(this.textGetter) {
+	    markertext = this.textGetter(marker.layer, marker);
 	} else {
 	    markertext =marker.text;
 	}
+	if(!markertext) return;
 	if(this.displayDiv) {
 	    $("#" + this.displayDiv).html(markertext);
 	    return;
