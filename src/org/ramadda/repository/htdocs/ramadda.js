@@ -2,7 +2,6 @@
  * Copyright (c) 2008-2019 Geode Systems LLC
  */
 
-console.log("ramadda.js loading");
 var popupObject;
 var dontHideObject=false;
 var tooltipObject;
@@ -861,4 +860,3 @@ function toggleVisibilityOnObject(obj, display) {
 }
 
 
-console.log("ramadda.js done loading");
