@@ -3,7 +3,6 @@
  */
 
 
-console.log("utils.js loading");
 
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
@@ -47,7 +46,7 @@ function getHandler(id) {
     return window.globalHandlers[id];
 }
 
-console.log("creating Utils");
+
 
 var Utils =  {
     pageLoaded: false,
@@ -83,8 +82,8 @@ var Utils =  {
 	if(!s) return null;
 	s = String(s).replace(/\\,/g,"_comma_");
 	let l = [];
-	s.split(",").forEach(t=>{
-	    l.push(t.replace(/_comma_/g,","));
+	s.split(",").forEach((tok)=>{
+	    l.push(tok.replace(/_comma_/g,","));
 	});
 	return l;
     },
@@ -1441,7 +1440,6 @@ var Utils =  {
         this.initContent();
         this.pageLoaded = true;
 	this.initDisplays();
-	console.log("Utils.initPage");
 	document.onmousemove = Utils.handleMouseMove;
 	document.onmousedown = Utils.handleMouseDown;
 	document.onmouseup = Utils.handleMouseUp;
@@ -2086,7 +2084,6 @@ Utils.ColorTables =  {
         },
 };
 
-console.log("done creating Utils");
 
 
 
@@ -2387,7 +2384,6 @@ var SPACE3 = "&nbsp;&nbsp;&nbsp;";
 var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 
-console.log("creating HtmlUtils");
 
 var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     tabLoaded: function(event, ui) {
@@ -3458,7 +3454,6 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 });
 
 
-console.log("done creating HtmlUtils");
 
 window.onbeforeunload = pageIsUnloading;
 
@@ -3589,4 +3584,3 @@ $( document ).ready(function() {
 
 
 
-console.log("utils.js done loading");
