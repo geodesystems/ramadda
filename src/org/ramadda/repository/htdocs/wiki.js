@@ -197,15 +197,29 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
 }
 
 
+let groupAttributes = [
+    "label:Collection Properties",
+    "sort=name|date|changedate|createdate",
+    "sortorder=up|down",
+    ['entries="entryid1,entryid2,entryid3..'],
+     'entries.filter="file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes"',
+     'exclude="entryid1,entryid2,entryid3.."',
+     'first="entryid1,entryid2,entryid3.."',
+     'last="entryid1,entryid2,entryid3.."',
+     'sort="name|date"',
+     'sortorder="up|down"',
+     'max="number of entries to use"',
+];
+
 var wikiAttributes = {
-    tree: [
+    tree: Utils.mergeLists([
 	"label:Tree Properties",
 	["details=true"],
 	["showcategories=true"],
 	["decorate=true"],	
-	["form=true"],
-    ],
-    links: [
+	["form=true"]],
+			   groupAttributes),		   
+    links: Utils.mergeLists([
 	"label:Links Properties",
 	['info:List children entries'],
 	['includeIcon=true'],
@@ -216,9 +230,9 @@ var wikiAttributes = {
 	['tagclose="html after link'],	
 	'innerClass=""',
 	['class="link css class"'],
-	['style="link stye"'],
-    ],
-    list: [
+	['style="link stye"']],
+			    groupAttributes),		   
+    list: Utils.mergeLists([
 	"label:List Properties",
 	['info:List children entries'],
 	['includeIcon=true'],
@@ -229,9 +243,8 @@ var wikiAttributes = {
 	['tagclose="html after link'],	
 	'innerClass=""',
 	['class="link css class"'],
-	['style="link stye"'],
-    ],
-
+	['style="link stye"']],
+			   groupAttributes),
     information: [
 	"label:Information Properties",
 	'info:Show entry information',
@@ -295,22 +308,22 @@ var wikiAttributes = {
 	'name=""',
 	'value=""'
     ],
-    group: [
+    group: Utils.mergeLists([
 	'label:Group Properties',
 	"showMenu=\"true\"",	      
 	"showTitle=\"true\"",
 	'layoutType="table|flextable|tabs|columns|rows"',
-	'layoutColumns="1"'
-    ],
-    tabs:[
+	'layoutColumns="1"'],
+			    groupAttributes),
+    tabs:Utils.mergeLists([
 	'label:Tabs Properties',
 	'tag="html"',
 	'tabsStyle="min|center|minarrow"',
 	'showLink="false"', 
 	'includeIcon="true"',
-	'textposition="top|left|right|bottom"', 
-    ],
-    grid: [
+	'textposition="top|left|right|bottom"', ],
+			  groupAttributes),
+    grid: Utils.mergeLists([
 	"label:Grid Properties",
 	'tag="card"',
 	'inner-height="100"',
@@ -321,37 +334,39 @@ var wikiAttributes = {
 	'showSnippetHover="true"',
 	'showLink="false"',
 	'showHeading="true"',
-	'showLine="true"'
-    ],
-    frames: [
+	'showLine="true"'],
+			   groupAttributes
+			  ),
+    frames: Utils.mergeLists([
 	"label:Frames Properties",
 	'info:Show entries in a HTML frame',
 	['width=400'],
 	['height=400'],
-	['noTemplate=true',"Don't use the page template in the frame"]
-    ],    
-    accordian: [
+	['noTemplate=true',"Don't use the page template in the frame"]],
+			     groupAttributes),
+    accordian: Utils.mergeLists([
 	"label:Accordian Properties",
 	'tag="html"',
 	'collapse="false"',
 	'border="0"',
 	'showLink="true"',
 	'includeIcon="false"',
-	'textposition="left"',
-    ],
-    table: [
+	'textposition="left"',],
+				groupAttributes),
+    table: Utils.mergeLists([
 	"label:Table Properties",
 	['showCategories=true'],
 	['showDate=true'],
 	['showCreateDate=true'],
 	['showChangeDate=true'],
-	['show&lt;column name&gt;=true'],		
-    ],
-    recent: [
+	['show&lt;column name&gt;=true'],],
+			     groupAttributes),
+			    
+    recent: Utils.mergeLists([
 	"label:Recent Properties",
 	['info:List N days recent entries by day'],
-	['days="num days"'],
-    ],        
+	['days="num days"'],],
+			     groupAttributes),
     multi: [
 	"label:Multi Properties",
 	['info:Create multiple wiki tags'],
