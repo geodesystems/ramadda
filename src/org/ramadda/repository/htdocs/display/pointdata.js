@@ -1361,6 +1361,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 		if(this.displayType!="menu") {
 		    if(debug) console.log("\tnot menu");
+		    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
 		    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 		    let buttons = "";
 		    let colorMap = Utils.parseMap(this.getProperty(filterField.getId() +".filterColorByMap"));
