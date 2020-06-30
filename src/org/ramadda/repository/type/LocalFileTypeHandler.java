@@ -227,16 +227,9 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         Metadata sortMetadata = null;
         if (mainEntry != null) {
             try {
-                List<Metadata> metadataList =
-                    getMetadataManager().findMetadata(request, mainEntry,
-                        ContentMetadataHandler.TYPE_SORT, true);
-                if ((metadataList != null) && (metadataList.size() > 0)) {
-                    sortMetadata = metadataList.get(0);
-                }
+		sortMetadata = getMetadataManager().getSortOrderMetadata(request, mainEntry);
             } catch (Exception ignore) {}
         }
-
-
 
         boolean descending = !request.get(ARG_ASCENDING, false);
         String  by         = request.getString(ARG_ORDERBY, SORTBY_FROMDATE);
@@ -252,7 +245,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                 by = sortMetadata.getAttr1();
             }
         }
-
 
 
         if (by.equals(SORTBY_NAME)) {

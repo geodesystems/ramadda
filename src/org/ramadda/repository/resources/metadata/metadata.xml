@@ -247,6 +247,12 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
          default="-1"
          name="Max Count"
          datatype="int"/>
+<!--
+      <element
+         default=""
+         name="Pattern"
+         datatype="string"/>      
+-->
     </type>
 
     <type

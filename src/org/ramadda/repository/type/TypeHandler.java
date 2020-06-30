@@ -6230,7 +6230,7 @@ public class TypeHandler extends RepositoryManager {
                                    List<Entry> subGroups, SelectInfo select)
             throws Exception {
         List<String> ids = getEntryManager().getChildIds(request, group,
-                               select);
+							 select);
         List<Entry> myEntries   = new ArrayList<Entry>();
         List<Entry> mySubGroups = new ArrayList<Entry>();
         for (String id : ids) {
@@ -6246,8 +6246,6 @@ public class TypeHandler extends RepositoryManager {
         }
         subGroups.addAll(postProcessEntries(request, mySubGroups));
         entries.addAll(postProcessEntries(request, myEntries));
-
-
     }
 
     /**

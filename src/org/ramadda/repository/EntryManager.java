@@ -7499,7 +7499,8 @@ public class EntryManager extends RepositoryManager {
         Hashtable   seen          = new Hashtable();
         List<Entry> allEntries    = new ArrayList<Entry>();
 
-	String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo());
+	Metadata[] mtd = new Metadata[]{null};
+	String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo(),mtd);
         Statement statement = typeHandler.select(request,
                                   Tables.ENTRIES.COLUMNS, clauses,
 						 order);
@@ -7537,7 +7538,10 @@ public class EntryManager extends RepositoryManager {
             getDatabaseManager().closeAndReleaseConnection(statement);
         }
 
-
+	if(mtd[0]!=null && Misc.equals(mtd[0].getAttr1(),"number")) {
+	    //TODO: sort
+	    //	    String pattern = "number:" + mtd[0].getAttr4();
+	}
         //Only split them into groups and non-groups if we aren't doing an orderby
         if ( !request.exists(ARG_ORDERBY)) {
             for (Entry entry : allEntries) {
@@ -8710,15 +8714,12 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<String> getChildIdsFromDatabase(Request request, Entry group,
-            SelectInfo select)
+						SelectInfo select)
             throws Exception {
-
         List<Clause> where = ((select == null)
                               ? null
                               : select.getWhere());
         List<String> ids   = new ArrayList<String>();
-
-
         if (where != null) {
             where = new ArrayList<Clause>(where);
         } else {
@@ -8728,7 +8729,7 @@ public class EntryManager extends RepositoryManager {
                             group.getId()));
 
 
-        String orderBy = getQueryOrderAndLimit(request, true, group, select);
+        String orderBy = getQueryOrderAndLimit(request, true, group, select, null);
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         int         skipCnt     = request.get(ARG_SKIP, 0);
@@ -10416,8 +10417,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getQueryOrderAndLimit(Request request, boolean addOrderBy,
-                                        Entry forEntry, SelectInfo select) {
+    private String getQueryOrderAndLimit(Request request, boolean addOrderBy,
+					 Entry forEntry, SelectInfo select,Metadata[]mtdHolder) {
 
         List<Metadata> metadataList = null;
 
@@ -10427,6 +10428,7 @@ public class EntryManager extends RepositoryManager {
                 sortMetadata =
                     getMetadataManager().getSortOrderMetadata(request,
                         forEntry);
+		if(mtdHolder!=null) mtdHolder[0] = sortMetadata;
             } catch (Exception ignore) {}
         }
 

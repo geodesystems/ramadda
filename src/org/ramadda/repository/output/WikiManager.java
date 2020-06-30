@@ -3073,7 +3073,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 checkHeading(request, wikiUtil, props, sb);
             }
             makeGallery(request, wikiUtil, children, props, sb);
-
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_ROOT)) {
             return getRepository().getUrlBase();
