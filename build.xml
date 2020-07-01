@@ -225,8 +225,8 @@
 	<copy overwrite="true" file="${lib_dir}/idv.jar"  todir="${csvutil_destdir}/lib"/>
 	<copy overwrite="true" file="${lib_dir}/json.jar"  todir="${csvutil_destdir}/lib"/>	
 	<zip destfile="${dist_dir}/csvutil.zip">
-          <zipfileset dir="${dist_dir}/csvutil" includes="*"/>
-          <zipfileset dir="${dist_dir}/csvutil" includes="lib/*"/>	  
+          <zipfileset dir="${dist_dir}/csvutil" includes="*" prefix="csvutil"/>
+          <zipfileset dir="${dist_dir}/csvutil" includes="lib/*" prefix="csvutil"/>	  
 	</zip>
     </target>
 
