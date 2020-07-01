@@ -313,8 +313,8 @@ var wikiAttributes = {
 	"showMenu=\"true\"",	      
 	"showTitle=\"true\"",
 	'layoutType="table|flextable|tabs|columns|rows"',
-	'layoutColumns="1"'],
-			    groupAttributes),
+	'layoutColumns="1"',
+	['divid=""','Specify a div id to write displays into']]),
     tabs:Utils.mergeLists([
 	'label:Tabs Properties',
 	'tag="html"',
@@ -480,7 +480,7 @@ function wikiInitEditor(info) {
 	    if(tmp && tmp.length>1)  tag = tmp[1];
 	    if(tag) {
 		var type;
-		if(tag=="group") {
+		if(tag=="xxgroup") {
 		    type="blank"
 		    tag = "display";
 		}  else if(tag.startsWith("display_")) {
