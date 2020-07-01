@@ -28996,6 +28996,10 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    let color = colorBy.getColorFromRecord(record);
 		    let cell = contents.find("#" + cellId);
 		    cell.css("background",color);
+		    let foreground = Utils.getForegroundColor(color);
+		    if(foreground) {
+			cell.css('color', foreground);
+		    }
 		    cell.attr(RECORD_INDEX,i);
                 }
 		if (strokeColorBy.isEnabled()) {
