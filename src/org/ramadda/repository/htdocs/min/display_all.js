@@ -3148,7 +3148,7 @@ function DisplayThing(argId, argProperties) {
 		for(let i=0;i<keys.length;i++) {
 		    let key = keys[i];
 		    value = getGlobalDisplayProperty(key);
-		    if (value) {
+		    if (Utils.isDefined(value)) {
 			if(debug) console.log("\tgetProperty-6:" + value);
 			return value;
 		    }
