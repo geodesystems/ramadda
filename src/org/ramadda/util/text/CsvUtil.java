@@ -2133,6 +2133,7 @@ public class CsvUtil {
                 new Arg("column", "", "type", "columns"),
                 new Arg("csv file", "File to get lat/lon from", "type",
                         "file"), "name idx", "lat idx", "lon idx"),
+        new Cmd("-statename", "Add state name from state ID", new Arg("column")),
         new Cmd("-mercator", "Convert x/y to lon/lat", new Arg("columns")),
         new Cmd("-population", "Add in population from address",
                 new Arg("columns", "", "type", "columns"),
@@ -3280,6 +3281,17 @@ public class CsvUtil {
                     String       suffix = args.get(++i);
                     info.getProcessor().addProcessor(
                         new Converter.DescSearch(cols, suffix));
+
+                    continue;
+                }
+
+                if (arg.equals("-statename")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    String  col   = args.get(++i);
+                    info.getProcessor().addProcessor(
+						     new Converter.StateNamer(col));
 
                     continue;
                 }

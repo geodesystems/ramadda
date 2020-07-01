@@ -3262,6 +3262,63 @@ public abstract class Converter extends Processor {
     }
 
 
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class StateNamer extends Converter {
+
+
+        /** _more_ */
+        private int col=-1;
+
+        /**
+         *
+         * @param col _more_
+         *
+         * @throws Exception _more_
+         */
+        public StateNamer(String col)
+                throws Exception {
+            super(col);
+        }
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+	    if(col<0) {
+		List<Integer> indices = getIndices(info);
+		col = indices.get(0);
+		row.add("State");
+		return row;
+	    }
+	    try {
+		String id =(String) row.get(col);
+		Object o  = GeoUtils.getStatesMap().get(id.toLowerCase());
+		row.add(o==null?id:o.toString());
+		return row;
+	    } catch(Exception exc) { throw new RuntimeException(exc);}
+        }
+
+    }
+    
+
     /**
      * Class description
      *
