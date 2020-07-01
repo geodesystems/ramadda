@@ -27,7 +27,6 @@ import org.ramadda.util.XlsUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -805,7 +804,7 @@ public class CsvUtil {
             pattern = props.get("pattern");
         }
         String  skipAttr       = props.get("skipAttr");
-        boolean removeEntity = Misc.equals(props.get("removeEntity"), "true");
+        boolean removeEntity = Utils.equals(props.get("removeEntity"), "true");
         String  removePattern  = convertPattern(props.get("removePattern"));
         String  removePattern2 = convertPattern(props.get("removePattern2"));
         Pattern attrPattern    = null;
@@ -2705,11 +2704,11 @@ public class CsvUtil {
                     }
                     Hashtable<String, String> props =
                         parseProps(args.get(++i));
-                    this.installPlugin = Misc.equals(props.get("-install"),
-                            "true") || Misc.equals(props.get("install"),
+                    this.installPlugin = Utils.equals(props.get("-install"),
+                            "true") || Utils.equals(props.get("install"),
                                 "true");
-                    this.nukeDb = Misc.equals(props.get("-nukedb"), "true")
-                                  || Misc.equals(props.get("nukedb"), "true");
+                    this.nukeDb = Utils.equals(props.get("-nukedb"), "true")
+                                  || Utils.equals(props.get("nukedb"), "true");
                     info.getProcessor().addProcessor(dbXml =
                         new Processor.DbXml(props));
 
@@ -2975,6 +2974,7 @@ public class CsvUtil {
 
                     continue;
                 }
+		/*
                 if (arg.equals("-processor")) {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
@@ -2985,6 +2985,7 @@ public class CsvUtil {
 
                     continue;
                 }
+		*/
 
                 if (arg.equals("-fields")) {
                     printFields = true;

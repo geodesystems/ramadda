@@ -16,24 +16,11 @@
 
 package org.ramadda.util;
 
-
-import com.drew.imaging.jpeg.*;
-import com.drew.lang.*;
-import com.drew.metadata.*;
-import com.drew.metadata.exif.*;
-import com.drew.metadata.iptc.IptcDirectory;
-
-
 import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.net.ftp.*;
-
 import org.w3c.dom.*;
 
-
-import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -44,10 +31,8 @@ import java.awt.Image;
 
 import java.awt.Toolkit;
 import java.awt.image.*;
-
 import java.awt.image.BufferedImage;
-
-import java.io.*;
+import javax.imageio.*;
 
 import java.io.*;
 
@@ -62,6 +47,8 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Calendar;
 
 import java.util.Collections;
@@ -81,8 +68,7 @@ import java.util.zip.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.imageio.*;
-import javax.imageio.stream.ImageOutputStream;
+
 
 
 /**
@@ -1075,7 +1061,7 @@ public class Utils extends IO {
         for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
             keyList.add((String) keys.nextElement());
         }
-        keyList = (List<String>) Misc.sort(keyList);
+        keyList = (List<String>) Utils.sort(keyList);
         for (String key : keyList) {
             String value = (String) properties.get(key);
             sb.append(key);
@@ -3741,6 +3727,18 @@ public class Utils extends IO {
     }
 
 
+    public static List sort(Collection listToSort) {
+        Object[] array = listToSort.toArray();
+        Arrays.sort(array);
+        return Arrays.asList(array);
+    }
+
+    public static boolean equals(Object o1, Object o2) {
+        if ((o1 != null) && (o2 != null)) {
+            return o1.equals(o2);
+        }
+        return ((o1 == null) && (o2 == null));
+    }
 
 
 }

@@ -17,7 +17,7 @@
 package org.ramadda.util.text;
 
 
-import org.ramadda.data.record.RecordField;
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -47,6 +47,32 @@ import java.util.regex.*;
  */
 
 public abstract class Processor extends CsvOperator {
+
+    //These are copies from
+    //org.ramadda.data.record.RecordField;
+
+    /** _more_ */
+    public static final String TYPE_STRING = "string";
+
+    /** _more_ */
+    public static final String TYPE_URL = "url";
+
+    /** _more_ */
+    public static final String TYPE_ENUMERATION = "enumeration";
+
+    /** _more_ */
+    public static final String TYPE_IMAGE = "image";
+
+    /** _more_ */
+    public static final String TYPE_DATE = "date";
+
+
+    /** _more_ */
+    public static final String TYPE_DOUBLE = "double";
+
+    /** _more_ */
+    public static final String TYPE_INT = "int";
+
 
 
     /**
@@ -141,15 +167,15 @@ public abstract class Processor extends CsvOperator {
         }
         seen.add(id);
 
-        String type = RecordField.TYPE_DOUBLE;
+        String type = TYPE_DOUBLE;
         if (id.indexOf("year") >= 0) {
-            type = RecordField.TYPE_DATE;
+            type = TYPE_DATE;
             extra.append(" format=\"yyyy\" ");
         }
 
         boolean hasName = id.indexOf("name") >= 0;
         if (hasName) {
-            type = RecordField.TYPE_STRING;
+            type = TYPE_STRING;
         } else {
             String sampledType = null;
             if (rows != null) {
@@ -161,13 +187,13 @@ public abstract class Processor extends CsvOperator {
                     String exampleString = example.toString();
                     if (exampleString.matches("^[\\d,]+$")) {
                         if (sampledType == null) {
-                            sampledType = RecordField.TYPE_INT;
+                            sampledType = TYPE_INT;
                         }
                     } else if (exampleString.matches("^[\\d\\.]+$")) {
-                        sampledType = RecordField.TYPE_DOUBLE;
+                        sampledType = TYPE_DOUBLE;
                     } else if (exampleString.length() == 0) {}
                     else {
-                        sampledType = RecordField.TYPE_STRING;
+                        sampledType = TYPE_STRING;
 
                         break;
                     }
@@ -181,10 +207,10 @@ public abstract class Processor extends CsvOperator {
 
         if (id.indexOf("latitude") >= 0) {
             extra.append(" isLatitude=\"true\" ");
-            type = RecordField.TYPE_DOUBLE;
+            type = TYPE_DOUBLE;
         } else if (id.indexOf("longitude") >= 0) {
             extra.append(" isLongitude=\"true\" ");
-            type = RecordField.TYPE_DOUBLE;
+            type = TYPE_DOUBLE;
         }
 
         sb.append(id);

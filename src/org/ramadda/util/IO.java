@@ -16,48 +16,17 @@
 
 package org.ramadda.util;
 
-
-import com.drew.imaging.jpeg.*;
-import com.drew.lang.*;
-import com.drew.metadata.*;
-import com.drew.metadata.exif.*;
-import com.drew.metadata.iptc.IptcDirectory;
-
-
-import org.apache.commons.lang.text.StrTokenizer;
-import org.apache.commons.net.ftp.*;
-
-import org.w3c.dom.*;
-
-
-import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import org.apache.commons.net.ftp.*;
+import org.w3c.dom.*;
 import java.awt.Image;
-
-import java.awt.Toolkit;
-import java.awt.image.*;
-import java.awt.image.BufferedImage;
-
 import java.io.*;
-
 import java.net.*;
-
 import java.util.zip.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
 import javax.imageio.*;
-
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
 
 
 /**
