@@ -521,14 +521,13 @@ function DisplayManager(argId, argProperties) {
     if(this.getShowMenu()) {
         html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
-    let targetDiv = this.getProperty("target");
+    let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
     let _this = this;
     if (targetDiv != null) {
         $(document).ready(function() {
             $("#" + targetDiv).html(displaysHtml);
             _this.getLayoutManager().doLayout();
         });
-
     } else {
         html += displaysHtml;
     }

@@ -167,6 +167,8 @@ function DisplayThing(argId, argProperties) {
     if (argProperties == null) {
         argProperties = {};
     }
+
+
     //check for booleans as strings
     for (var i in argProperties) {
         if (typeof argProperties[i] == "string") {
@@ -204,6 +206,8 @@ function DisplayThing(argId, argProperties) {
             }
         }
     }
+
+    this.ignoreGlobals = argProperties.ignoreGlobals;
 
     this.displayId = null;
     //IMPORTANT: might breqak a bunch of displays
@@ -733,20 +737,22 @@ function DisplayThing(argId, argProperties) {
 		    return fromParent;
 		}
 	    }
-	    if (this.displayParent != null) {
-		if(debug) console.log("\tgetProperty calling parent");
-                return this.displayParent.getPropertyInner(keys, skipThis);
-            }
-            if (this.getDisplayManager) {
-		if(debug) console.log("\tgetProperty-5");
-                return   this.getDisplayManager().getPropertyInner(keys);
-            }
-	    for(let i=0;i<keys.length;i++) {
-		let key = keys[i];
-		value = getGlobalDisplayProperty(key);
-		if (value) {
-		    if(debug) console.log("\tgetProperty-6:" + value);
-		    return value;
+	    if(!this.ignoreGlobals) {
+		if (this.displayParent != null) {
+		    if(debug) console.log("\tgetProperty calling parent");
+                    return this.displayParent.getPropertyInner(keys, skipThis);
+		}
+		if (this.getDisplayManager) {
+		    if(debug) console.log("\tgetProperty-5");
+                    return   this.getDisplayManager().getPropertyInner(keys);
+		}
+		for(let i=0;i<keys.length;i++) {
+		    let key = keys[i];
+		    value = getGlobalDisplayProperty(key);
+		    if (value) {
+			if(debug) console.log("\tgetProperty-6:" + value);
+			return value;
+		    }
 		}
 	    }
 	    if(debug) console.log("\tgetProperty-6 dflt:" + dflt);
@@ -764,6 +770,8 @@ function DisplayThing(argId, argProperties) {
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
+
+    
     RamaddaUtil.defineMembers(this, {
         displayReady: Utils.getPageLoaded(),
         type: argType,
@@ -2668,6 +2676,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             args.push("description_encoded");
+	    console.log(wiki);
             args.push(window.btoa(wiki));
 
 
@@ -4330,8 +4339,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    }
 
-
-	    
 	    if(this.getProperty("showChartFieldsMenu",false)) {
 		let chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {
