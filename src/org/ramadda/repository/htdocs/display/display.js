@@ -834,6 +834,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['sortHighlight=true','Sort based on highlight from the filters'],
 		['showChartFieldsMenu=true'],
 		['chartFieldsMenuMultiple=true'],
+		['chartFieldsMenuSide=left'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'doFormatNumber=false',
@@ -4330,6 +4331,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
+	    
 	    if(this.getProperty("showChartFieldsMenu",false)) {
 		let chartFields =  pointData.getChartableFields();
 		if(chartFields.length) {
@@ -4348,8 +4350,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			attrs.push("size");
 			attrs.push("4");
 		    }
-		    header2 += HU.span([CLASS,"display-filter"],
+		    let html =  HU.span([CLASS,"display-filter"],
 				       this.makeFilterLabel("Display: ") + HU.select("",attrs,enums,selected))+SPACE;
+		    let side = this.getProperty("chartFieldsMenuSide","top");
+		    if(side == "left") {
+			this.jq(ID_LEFT).append(html);
+		    } else {
+			//TODO: do the other sides
+			header2+=html;
+		    }
 		}
 	    }
 

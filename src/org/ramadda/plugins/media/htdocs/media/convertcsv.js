@@ -532,6 +532,7 @@ var Csv = {
 	if(!doExplode &&  cmds.indexOf("-count")<0  && cmds.indexOf("-db") <0 && !haveOutput)  
             args.csvoutput = "-print";
 
+	var raw = args.csvoutput=="-raw";
 	var showHtml = args.csvoutput == "-table";
 	var printHeader = args.csvoutput == "-printheader";
 
@@ -581,7 +582,8 @@ var Csv = {
             } 
             if(Utils.isDefined(data.result)) {
 		var result = window.atob(data.result);
-		if(showHtml) {
+		if(result.match(".*<(table|row|div).*")) showHtml = true;
+		if(!raw && showHtml) {
 		    result = result.replace(/(<th>.*?)(#[0-9]+)/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$2</a>");
                     $("#convertcsv_output").html(result);
                     $("#convertcsv_output .csv_header_field").click(function(event) {
