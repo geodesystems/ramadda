@@ -188,6 +188,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_ROOT)),
         new WikiTagCategory("Displays",
                             new WikiTag(WIKI_TAG_GROUP, "Display group"),
+                            new WikiTag(WIKI_TAG_ATTRS, "Attributes","name1=value1","name2=value2"),			    
                             new WikiTag("display_entrylist", "Search form",
                                         ATTR_TYPE, "entrylist", 
 					ATTR_WIDTH, "800",
@@ -1913,15 +1914,34 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     wikiUtil.removeWikiProperty(name);
                 }
             }
-
             return "";
+        } else if (theTag.equals(WIKI_TAG_ATTRS)) {
+            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+                String key   = (String) keys.nextElement();
+                String value = (String) props.get(key);
+		if(key.equals("clearAttributes")) {
+		    wikiUtil.clearWikiAttributes();
+		    continue;
+		}
+		wikiUtil.putWikiAttribute(key, value);
+            }
+            return "";
+        } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTIES)) {
+            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+                String key   = (String) keys.nextElement();
+                String value = (String) props.get(key);
+                wikiUtil.appendJavascript("addGlobalDisplayProperty('" + key
+                                          + "','" + value + "');\n");
+
+            }
+            return "";
+
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTY)) {
             String name  = (String) props.get("name");
             String value = (String) props.get("value");
             if ((name != null) && (value != null)) {
                 wikiUtil.appendJavascript("addGlobalDisplayProperty('" + name
                                           + "','" + value + "');\n");
-
                 return "";
             }
 
@@ -6898,6 +6918,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
         }
+
+	wikiUtil.addWikiAttributes(propList);
 
         js.append("displayManager.createDisplay("
                   + HtmlUtils.quote(displayType) + ","

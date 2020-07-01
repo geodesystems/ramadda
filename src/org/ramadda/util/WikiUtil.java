@@ -81,6 +81,8 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable wikiProperties = new Hashtable();
 
+    private Hashtable wikiAttributes = new Hashtable();    
+
     /** _more_ */
     private StringBuilder js = new StringBuilder();
 
@@ -214,6 +216,7 @@ public class WikiUtil {
         return wikiProperties.get(key);
     }
 
+    
     /**
      * _more_
      *
@@ -225,8 +228,40 @@ public class WikiUtil {
 
 
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param value _more_
+     */
+    public void putWikiAttribute(Object key, Object value) {
+        wikiAttributes.put(key, value);
+    }
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     *
+     * @return _more_
+     */
+    public Hashtable getWikiAttributes() {
+        return wikiAttributes;
+    }
+
+    public void clearWikiAttributes() {
+        wikiAttributes = new Hashtable();
+    }    
 
 
+    public void addWikiAttributes(List l) throws Exception {
+	for (Enumeration keys = wikiAttributes.keys(); keys.hasMoreElements(); ) {
+	    String key   = (String) keys.nextElement();
+	    String value = (String) wikiAttributes.get(key);
+	    l.add(key);
+	    l.add(Json.quote(value));
+	}
+    }
 
     /**
      * _more_
@@ -840,9 +875,6 @@ public class WikiUtil {
 
                 continue;
             }
-
-
-
 
             if (tline.startsWith("+table")) {
                 List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);

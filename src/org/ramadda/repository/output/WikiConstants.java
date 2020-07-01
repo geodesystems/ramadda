@@ -336,9 +336,6 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_DISPLAY = "display";
 
-    /** _more_ */
-    public static final String WIKI_TAG_DISPLAYPROPERTY = "displayProperty";
-
     /** wiki import */
     public static final String WIKI_TAG_IMPORT = "import";
 
@@ -423,6 +420,14 @@ public interface WikiConstants {
 
     /** _more_ */
     public static final String WIKI_TAG_APPLY = "apply";
+
+    public static final String WIKI_TAG_ATTRS = "attrs";
+
+    /** _more_ */
+    public static final String WIKI_TAG_DISPLAYPROPERTY = "displayProperty";
+    public static final String WIKI_TAG_DISPLAYPROPERTIES = "displayProperties";    
+
+
 
     public static final String WIKI_TAG_MULTI = "multi";
 
