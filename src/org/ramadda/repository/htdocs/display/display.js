@@ -89,6 +89,8 @@ function addGlobalDisplayProperty(name, value) {
     if (window.globalDisplayProperties == null) {
         window.globalDisplayProperties = {};
     }
+    if(value==="true") value = true;
+    else if(value==="false") value=false;
     window.globalDisplayProperties[name] = value;
 }
 
