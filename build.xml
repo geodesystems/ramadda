@@ -23,6 +23,7 @@
     <target name="release" depends="init">
       <antcall target="purge"/>
       <antcall target="plugins"/>
+      <antcall target="csvutil"/>
 <!--
     dont build pointtools for now
       <antcall target="pointtools"/>
@@ -182,6 +183,53 @@
             <include name="${plugin_dir}/**/*.jnlp"/>
 	    </jar>
     </target>
+
+
+    <target name="csvutil" depends="init,clean">
+        <property name="csvutil_destdir" value="${dist_dir}/csvutil"/>
+        <mkdir dir="${csvutil_destdir}"/>
+        <mkdir dir="${csvutil_destdir}/lib"/>	
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            destdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            source="${javac.version}"
+            target="${javac.version}">
+	  <include name="org/ramadda/util/text/*.java"/>
+        </javac>
+
+        <jar 
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${csvutil_destdir}/lib/csvutil.jar">
+            <include name="org/**/*.class"/>
+	    <include name="org/ramadda/repository/resources/geo/*"/>
+           <manifest>
+              <attribute name="Implementation-Title" value="Ramadda CSV Utils"/>
+              <attribute name="Implementation-Version" value="1.0"/>
+              <attribute name="Implementation-Vendor" value="RAMADDA"/>
+              <attribute name="Main-class" value="org.ramadda.util.text.CsvUtil"/>
+              <attribute name="Class-Path" value="idv.jar json.jar"/>
+            </manifest> 
+
+	</jar>
+	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/csv.sh"  todir="${csvutil_destdir}"/>
+	<copy overwrite="true" file="${src_dir}/org/ramadda/util/text/README"  todir="${csvutil_destdir}"/>	
+	<copy overwrite="true" file="${lib_dir}/idv.jar"  todir="${csvutil_destdir}/lib"/>
+	<copy overwrite="true" file="${lib_dir}/json.jar"  todir="${csvutil_destdir}/lib"/>	
+	<zip destfile="${dist_dir}/csvutil.zip">
+          <zipfileset dir="${dist_dir}/csvutil" includes="*"/>
+          <zipfileset dir="${dist_dir}/csvutil" includes="lib/*"/>	  
+	</zip>
+    </target>
+
 
 
 
