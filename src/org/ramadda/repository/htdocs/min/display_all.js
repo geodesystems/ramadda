@@ -4305,19 +4305,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (fixedFields && (typeof fixedFields) == "string") {
                 fixedFields  = fixedFields.split(",");
 	    }
-	    let tmpFields  = [];
-	    fixedFields.forEach(tok=>{
-		if(!tok.match("-")) {
-		    tmpFields.push(tok);
-		    return;
-		}
-		let pair = tok.split("-");
-		let i1 = parseFloat(pair[0].trim().substring(1));
-		let i2 = parseFloat(pair[1].trim().substring(1));
-		for(let i=i1;i<=i2;i++) tmpFields.push("#" + i);
-
-	    });
-	    fixedFields = tmpFields;
+	    if(fixedFields) {
+		let tmpFields  = [];
+		fixedFields.forEach(tok=>{
+		    if(!tok.match("-")) {
+			tmpFields.push(tok);
+			return;
+		    }
+		    let pair = tok.split("-");
+		    let i1 = parseFloat(pair[0].trim().substring(1));
+		    let i2 = parseFloat(pair[1].trim().substring(1));
+		    for(let i=i1;i<=i2;i++) tmpFields.push("#" + i);
+		    
+		});
+		fixedFields = tmpFields;
+	    }
 
 	    let aliases= {};
 	    var tmp = this.getProperty("fieldAliases");
