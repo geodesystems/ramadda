@@ -120,7 +120,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         new LogManager.LogId(
             "org.ramadda.repository.database.DatabaseManager");
 
-    /** _more_          */
+    /** _more_ */
     private static final DbObject dummyToCompile = null;
 
     /** _more_ */
@@ -2892,6 +2892,128 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
+    /**
+     * _more_
+     *
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public StringBuffer getDbMetaData() throws Exception {
+        Connection connection = getDatabaseManager().getConnection();
+        try {
+            return getDbMetaData(connection);
+        } finally {
+            closeConnection(connection);
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param connection _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public StringBuffer getDbMetaData(Connection connection)
+            throws Exception {
+        StringBuffer     sb       = new StringBuffer();
+        DatabaseMetaData dbmd     = connection.getMetaData();
+        ResultSet        catalogs = dbmd.getCatalogs();
+        ResultSet tables = dbmd.getTables(null, null, null,
+                                          new String[] { "TABLE" });
+
+        while (tables.next()) {
+            String tableName = tables.getString("TABLE_NAME");
+
+            //Humm, not sure why I get this table name and its giving me an error
+            if (tableName.equals("ENTRY") || tableName.equals("BASE")
+                    || tableName.equals("AGGGREGATION")) {
+                continue;
+            }
+
+
+            String tableType = tables.getString("TABLE_TYPE");
+            //            System.err.println("table type" + tableType);
+            if (Misc.equals(tableType, "INDEX")) {
+                continue;
+            }
+            if (tableType == null) {
+                continue;
+            }
+
+            if ((tableType != null) && tableType.startsWith("SYSTEM")) {
+                continue;
+            }
+
+
+
+
+            ResultSet columns = dbmd.getColumns(null, null, tableName, null);
+            String encoded = new String(Utils.encodeBase64(("text:?"
+                                 + tableName)));
+
+            int cnt = 0;
+            if (tableName.toLowerCase().indexOf("_index_") < 0) {
+                //TODO                    cnt = getDatabaseManager().getCount(tableName,
+                //                            new Clause());
+            }
+            String tableVar  = null;
+            String TABLENAME = tableName.toUpperCase();
+            //TODO    sb.append("Table:" + tableName + " (#" + cnt + ")");
+            sb.append("Table:" + tableName);
+            sb.append("<ul>");
+            List colVars = new ArrayList();
+
+            while (columns.next()) {
+                String colName = columns.getString("COLUMN_NAME");
+                String colSize = columns.getString("COLUMN_SIZE");
+                sb.append("<li>");
+                sb.append(colName + " (" + columns.getString("TYPE_NAME")
+                          + " " + colSize + ")");
+            }
+
+            ResultSet indices = dbmd.getIndexInfo(null, null, tableName,
+                                    false, true);
+            boolean didone = false;
+            while (indices.next()) {
+                if ( !didone) {
+                    //                            sb.append(
+                    //                                "<br><b>Indices</b> (name,order,type,pages)<br>");
+                    sb.append("<br><b>Indices</b><br>");
+                }
+                didone = true;
+                String indexName  = indices.getString("INDEX_NAME");
+                String asc        = indices.getString("ASC_OR_DESC");
+                int    type       = indices.getInt("TYPE");
+                String typeString = "" + type;
+                int    pages      = indices.getInt("PAGES");
+                if (type == DatabaseMetaData.tableIndexClustered) {
+                    typeString = "clustered";
+                } else if (type == DatabaseMetaData.tableIndexHashed) {
+                    typeString = "hashed";
+                } else if (type == DatabaseMetaData.tableIndexOther) {
+                    typeString = "other";
+                }
+                //                        sb.append("Index:" + indexName + "  " + asc + " "
+                //                                  + typeString + " " + pages + "<br>");
+                sb.append("Index:" + indexName + "<br>");
+
+
+            }
+
+            sb.append("</ul>");
+        }
+
+        return sb;
+    }
+
+
+
+
 
 
     /**
@@ -3058,11 +3180,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * _more_
      *
      * @param packageName _more_
+     * @param aliases _more_
      * @param match _more_
      *
      * @throws Exception _more_
      */
-    public void generateBeans(String packageName, Hashtable aliases, String match)
+    public void generateBeans(String packageName, Hashtable aliases,
+                              String match)
             throws Exception {
 
         String[]         what       = new String[] { "TABLE" };
@@ -3086,13 +3210,16 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                     || tableType.startsWith("SYSTEM")) {
                 continue;
             }
-            String className = aliases==null?null:(String) aliases.get(dbTableName.toLowerCase());
-	    if(className == null) {
-		className = "";
-		for (String tok : StringUtil.split(dbTableName, "_")) {
-		    className += Utils.upperCaseFirst(tok);
-		}
-	    }
+            String className = (aliases == null)
+                               ? null
+                               : (String) aliases.get(
+                                   dbTableName.toLowerCase());
+            if (className == null) {
+                className = "";
+                for (String tok : StringUtil.split(dbTableName, "_")) {
+                    className += Utils.upperCaseFirst(tok);
+                }
+            }
             System.err.println("Generating:" + className);
             FileOutputStream fos = new FileOutputStream(className + ".java");
             PrintWriter      pw        = new PrintWriter(fos);
