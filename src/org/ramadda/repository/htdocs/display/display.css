@@ -234,7 +234,6 @@ svg > g > g:last-child { pointer-events: none }
 .display-header1, .display-header2, .display-header3 {
   text-align:center;
   font-size:90% !important;
-
 }
 
 .display-header-span {
@@ -302,6 +301,15 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-animation-buttons span:hover {
+}
+
+.display-manager-button
+{
+    background:transparent;
+    padding:4px;
+    padding-top:2px;
+    padding-bottom:2px;
+    border:1px solid transparent;
 }
 
 .display-map-inner {
@@ -646,6 +654,13 @@ padding:4px;
 
 
 .display-menu {
+}
+
+
+
+.display-menu-charts {
+    max-height: 200px;
+    overflow-y:auto;
 }
 
 .display-menu-entry {
