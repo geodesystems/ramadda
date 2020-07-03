@@ -12,7 +12,7 @@ set ::html "<title>UI Tests</title><div style='margin:20px;'>"
 set ::loc [file dirname [file normalize [info script]]]
 set ::cnt 0
 set ::tcnt 0
-set ::limit 4
+set ::limit 50
 
 set csv [getUrl https://geodesystems.com/repository/entry/show?ascending=true&orderby=name&entryid=11ff9695-7b5e-4b5c-b6df-3f058bbea5dc&output=default.csv&fields=name,id&showheader=false]
 foreach line [split $csv "\n"] {

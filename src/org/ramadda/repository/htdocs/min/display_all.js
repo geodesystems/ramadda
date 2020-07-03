@@ -36936,7 +36936,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
-            var allFields = this.fieldsByIds(null,this.getProperty("fields"));
+            var allFields = this.getFieldsByIds(null,this.getProperty("fields"));
             var stringField = this.getFieldOfType(allFields, "string");
             if (!stringField) {
                 stringField = allFields[0];
