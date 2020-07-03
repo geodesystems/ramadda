@@ -580,7 +580,6 @@ var Utils =  {
 	if(d<10) d = "0" +d;
         return date.getUTCFullYear() + "-" + m + "-" + d;
     },
-
     formatDateYYYYMMDDHHMM: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
 	var month = (date.getUTCMonth() + 1);

@@ -368,6 +368,7 @@ function DisplayThing(argId, argProperties) {
 	    if(!this.dateFormat && useToStringIfNeeded) {
 		return String(date);
 	    }
+
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
 	    if(this.dateFormat) {
@@ -1891,8 +1892,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //If we have fixed fields then clear them after the first time
             var fixedFields = this.getProperty(PROP_FIELDS);
             if (fixedFields && (typeof fixedFields) == "string") {
-                fixedFields = fixedFields.split(",");
-            }
+                fixedFields  = fixedFields.split(",");
+	    }
+	    let tmpFields  = [];
+	    fixedFields.forEach(tok=>{
+		if(!tok.match("-")) {
+		    tmpFields.push(tok);
+		    return;
+		}
+		let pair = tok.split("-");
+		let i1 = parseFloat(pair[0].trim().substring(1));
+		let i2 = parseFloat(pair[1].trim().substring(1));
+		for(let i=i1;i<=i2;i++) tmpFields.push("#" + i);
+
+	    });
+	    fixedFields = tmpFields;
 
 	    let aliases= {};
 	    var tmp = this.getProperty("fieldAliases");
