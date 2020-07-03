@@ -2422,6 +2422,18 @@ const displayDebug = {
 }
 
 
+const CATEGORY_CHARTS = "Basic Charts";
+const CATEGORY_TABLE = "Tables";
+const CATEGORY_MISC = "Misc Charts";
+const CATEGORY_MAPS_IMAGES = "Maps and Images";
+const CATEGORY_RADIAL_ETC = "Radial, trees, etc";
+const CATEGORY_TEXT = "Text Displays";
+const CATEGORY_ENTRIES = "Entry Displays";
+const CATEGORY_CONTROLS = "Controls";
+const DISPLAY_CATEGORIES = [CATEGORY_CHARTS,CATEGORY_TABLE,CATEGORY_MAPS_IMAGES,CATEGORY_MISC,CATEGORY_TEXT,CATEGORY_RADIAL_ETC,CATEGORY_CONTROLS,CATEGORY_ENTRIES];
+
+
+
 //Ids of DOM components
 const ID_BOTTOM = "bottom";
 const ID_COLORTABLE = "colortable";
@@ -2433,7 +2445,6 @@ const ID_HEADER2 = "header2";
 const ID_HEADER2_PREFIX = "header2prefix";
 const ID_HEADER2_PREPREFIX = "header2preprefix";
 const ID_HEADER2_SUFFIX = "header2suffix";
-const ID_HEADER3 = "header3";
 const ID_FILTERBAR = "filterbar";
 const ID_TITLE = ATTR_TITLE;
 const ID_TITLE_EDIT = "title_edit";
@@ -2468,12 +2479,12 @@ const ID_PAGE_PREV = "pageprev";
 const ID_PAGE_NEXT = "pagenext";
 const ID_FILTER_HIGHLIGHT = "filterhighlight";
 const ID_FILTER_DATE = "filterdate";
-const CATEGORY_MISC = "Misc";
 const ID_ENTRIES_MENU = "entries_menu";
 const ID_ENTRIES_PREV = "entries_prev";
 const ID_ENTRIES_NEXT = "entries_next";
 const PROP_DISPLAY_FILTER = "displayFilter";
 const PROP_EXCLUDE_ZERO = "excludeZero";
+const PROP_EXCLUDE_NAN = "excludeUndefined";
 const PROP_DIVID = "divid";
 const PROP_FIELDS = "fields";
 const PROP_LAYOUT_HERE = "layoutHere";
@@ -3275,6 +3286,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterSort=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
+		['excludeUndefined=true','Exclude any records with an undefined value'],
+		['excludeZero=true','Exclude any records with a 0 value'],
 		['recordSelectFilterFields=""','Set the value of other displays filter fields'],
 		'selectFields=prop:label:field1,...fieldN;prop:....',
 		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
@@ -3284,6 +3297,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['greater than','dataFilters="greaterthan(field=field,value=value,label=,enabled=);"',''],
 		['equals','dataFilters="equals(field=field,value=value,label=,enabled=);"',''],
 		['not equals','dataFilters="notequals(field=field,value=value,label=,enabled=); "',''],
+		['filterLatest=fields','Only show the latest records grouped by fields'],		
 		['filterDate=year',"Show a simple pull down menu to select a year to display"],
 		['filterDateIncludeAll=true',"Include all years"],
 		['startDate="yyyy-MM-dd"',"Filter data on date"],
@@ -3295,6 +3309,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['merge rows','convertData="mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);"',"Merge rows together"],
 		["rotate data", 'convertData="rotateData(includeFields=true,includeDate=true,flipColumns=true);"',"Rotate data"],
 		["add percent", 'convertData="addPercentIncrease(replaceValues=false);"',"Add percent increase"],
+		['doubling rate','convertData="doublingRate(fields=f1\\\\,f2, keyFields=f3);"',"Calculate # days to double"],
 		["unfurl", 'convertData="unfurl(headerField=,uniqueField=,valueFields=);"',"Unfurl"],
 		"label:Color Attributes",
 		["colors=\"color1,...,colorN\"","Comma separated array of colors"],
@@ -4752,14 +4767,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    $.extend(opts,args);
 	    let debug = displayDebug.filterData;
 	    let highlight =  this.getFilterHighlight();
-	    var startDate = this.getProperty("startDate");
-	    var endDate = this.getProperty("endDate");
+	    let startDate = this.getProperty("startDate");
+	    let endDate = this.getProperty("endDate");
 	    if(startDate) {
 		this.startDateObject = Utils.createDate(startDate);
 	    } 
 	    if(endDate) {
 		this.endDateObject = Utils.createDate(endDate);
 	    } 
+
+
 
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
@@ -4783,7 +4800,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-            var pointData = this.getData();
+            let pointData = this.getData();
             if (!records) {
                 if (pointData == null) return null;
                 records = pointData.getRecords();
@@ -4797,19 +4814,31 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    if(debug)   console.log("R-1:" + records.length);
-	    if(this.getProperty("showLastDate")) {
-		let max = null;
+	    if(this.getProperty("filterLatest")) {
+		let fields = this.getFieldsByIds(null,this.getProperty("filterLatest"));
+		let max = {};
+		let keyToRecord = {};
 		let tmp = [];
-		records.forEach(r=>{
-		    if(!r.getTime()) return;
-		    if(!max) max = r.getTime();
-		    else max = r.getTime().getTime()>max.getTime()?r.getTime():max;
+		let keys = [];
+		records.forEach(record=>{
+		    if(!record.getTime()) return;
+		    let key = "";
+		    fields.forEach(f=>{
+			key+="_" + record.getValue(f.getIndex());
+		    });
+		    let maxRecord = keyToRecord[key];
+		    if(!maxRecord) {
+			keyToRecord[key] = record;
+			keys.push(key);
+		    } else {
+			if(record.getDate().getTime()>maxRecord.getDate().getTime()) keyToRecord[key] = record;
+		    }
 		});
 
-		if(max)
-		    records.forEach(record=>{
-			if(record.getTime().getTime() == max.getTime()) tmp.push(record);
-		    });
+
+		keys.forEach(key=>{
+		    tmp.push(keyToRecord[key]);
+		});
 		records  =tmp;
 	    }
 
@@ -4819,7 +4848,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 	    records = records.filter(record=>{
-                var date = record.getDate();
+                let date = record.getDate();
 		if(!date) return true;
 		return this.dateInRange(date);
 	    });
@@ -4832,8 +4861,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records.forEach((record,rowIdx)=>{
 		    let allOk = true;
 		    let anyOk = false;		    
-		    for(var i=0;i<this.filters.length;i++) {
-			var filter= this.filters[i];
+		    for(let i=0;i<this.filters.length;i++) {
+			let filter= this.filters[i];
 			if(!filter.isEnabled()) continue;
 			let filterOk = filter.isRecordOk(record);
 			if(!filterOk) allOk = false;
@@ -5010,8 +5039,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getGet: function() {
             return "getRamaddaDisplay('" + this.getId() + "')";
         },
-        showWikiText: function(type) {
+	assembleWikiText: function(type) {
 	    var wiki =  "";
+	    if(window.globalDisplayProperties) {
+		for(key in window.globalDisplayProperties) {
+		    wiki += '{{displayProperty name="' + key +'" value="' + window.globalDisplayProperties[key]+'"}}\n';
+
+		}
+	    }
             wiki += this.getWikiText();
             for (var i = 0; i < this.displays.length; i++) {
                 var display = this.displays[i];
@@ -5020,12 +5055,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 wiki += display.getWikiText();
             }
+	    return wiki;
+	},
+        showWikiText: function(type) {
+	    var wiki =  this.assembleWikiText();
 	    popupObject = getTooltip();
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	    wiki = HU.pre([STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
 	    this.showDialog(wiki);
 	},
-
+        copyWikiText: function(type) {
+	    Utils.copyText(this.assembleWikiText());
+	    alert("Wiki text has been copied to the clipboard");
+	},
         publish: function(type) {
             if (type == null) type = "wikipage";
             var args = [];
@@ -5049,14 +5091,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 wiki = "<wiki>\n";
             }
             wiki += desc;
-            wiki += this.getWikiText();
-            for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
-                if (display.getIsLayoutFixed()) {
-                    continue;
-                }
-                wiki += display.getWikiText();
-            }
+	    wiki += this.assembleWikiText();
             if (type == "wikipage") {
                 wiki += "-section\n\n";
             } else if (type == "blogentry") {}
@@ -5079,8 +5114,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             args.push("description_encoded");
 	    console.log(wiki);
             args.push(window.btoa(wiki));
-
-
             var url = HU.getUrl(ramaddaBaseUrl + "/entry/publish", args);
             window.open(url, '_blank');
         },
@@ -5142,11 +5175,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         getWikiText: function() {
-            var attrs = ["layoutHere", "false",
+            var attrs = [
+			 "layoutHere", "false",
 			 "type", this.type,
 			 "column", this.getColumn(),
 			 "row", this.getRow()
 			];
+	    if(this.getProperty("entryId")) {
+		attrs.push("entry");
+		attrs.push(this.getProperty("entryId"));
+	    }
             this.getWikiAttributes(attrs);
             var entryId = null;
             if (this.getEntries) {
@@ -5934,7 +5972,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             newMenu += HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
             newMenuItems.push(HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
 
-
+a
             //check if it has point data
             var pointUrl = this.getPointUrl(entry);
             //            console.log("entry:" + entry.getName() + " url:" + pointUrl);
@@ -6268,8 +6306,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             });
             let header =
 		HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "") +
-		HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "") +
-		HU.div([ID,this.getDomId(ID_HEADER3),CLASS,"display-header3"], "");
+		HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
 
 	    top =  header + topCenter + top;
 
@@ -7816,6 +7853,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.indexToRecord = {};
             var pointData = this.getPointData();
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
+            var excludeNan = this.getProperty(PROP_EXCLUDE_NAN, false);	    
             if (fields == null) {
                 fields = pointData.getRecordFields();
 		if(debug) console.log("\tgetRecordFields: " + fields.length);
@@ -7947,7 +7985,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 rowCnt++;
 		this.recordToIndex[record.getId()] = rowCnt;
 		this.indexToRecord[rowCnt] = record;
-                var values = [];
+                let values = [];
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
@@ -7977,6 +8015,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let allNull = true;
                 let allZero = true;
                 let hasNumber = false;
+		let hasNan = false;
                 for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                     let field = fields[fieldIdx];
                     if (field.isFieldNumeric() && field.isFieldDate()) {
@@ -7993,6 +8032,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         allNull = false;
                     }
                     if (typeof value == 'number') {
+			if(excludeNan &&  isNaN(value))  {
+			    hasNan=true;
+			}
                         hasNumber = true;
                         if (value != 0) {
                             allZero = false;
@@ -8002,8 +8044,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         value = this.getDateValue(value, date_formatter);
                     }
                     values.push(value);
-                }
+		}
 
+
+		if(hasNan) {
+		    continue;
+		}
                 if (hasNumber && allZero && excludeZero) {
 		    //		    console.log(" skipping due to zero: " + values);
                     continue;
@@ -8025,7 +8071,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     });
                 else
                     dataList.push(values);
-                //                    console.log("values:" + values);
                 if (!allNull) {
                     nonNullRecords++;
                 }
@@ -8284,8 +8329,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 			 "$entryid_maindiv"
 			];
             let wiki = "";
-            wiki += "<div id=\"{{entryid}}_maindiv\"></div>\n\n";
-            wiki += "{{group " + HU.attrs(attrs) + "}}\n\n"
+            wiki += "<div id=\"{{entryid}}_maindiv\"></div>\n";
+            wiki += "{{group " + HU.attrs(attrs) + "}}\n"
             return wiki;
         },
 
@@ -8409,6 +8454,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 displaysToLayout[i].setProperty(PROP_DIVID,divId);
                 displaysToLayout[i].layoutDiv=div;
             }
+            let tabId = HU.getUniqueId("tabs_");
             if (this.layout == LAYOUT_TABLE) {
                 if  (displaysToLayout.length== 1) {
                     html += displaysToLayout[0].layoutDiv;
@@ -8477,7 +8523,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     }
                 }
             } else if (this.layout == LAYOUT_TABS) {
-                let tabId = HU.getUniqueId("tabs_");
                 html += HU.open(TAG_DIV, [ID, tabId, CLASS, "ui-tabs"]);
                 html += HU.open(TAG_UL, []);
                 let hidden = "";
@@ -11043,6 +11088,65 @@ function CsvUtil() {
 	noop: function(pointData, args) {
 	    return pointData;
 	},
+	doublingRate: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields =  this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    let keyFields =  this.display.getFieldsByIds(allFields, (args.keyFields||"").replace(/_comma_/g,","));
+	    let newRecords  =[]
+	    let newFields = Utils.cloneList(allFields);
+	    fields.map(f=>{
+		if(!f.isNumeric()) return;
+		let newField = f.clone();
+		newField.id = newField.id+"_doubling";
+		newField.unit = "days";
+		newField.label = newField.label+" doubling";
+		newField.index = newFields.length;
+		newFields.push(newField);
+	    });
+	    let keys = [];
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		let key = "";
+		keyFields.forEach(f=>{
+		    key+="_"+record.getValue(f.getIndex());
+		});
+		keys.push(key);
+	    }
+
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		let key = keys[rowIdx];
+		newRecords.push(newRecord);
+		newRecord.fields =newFields;
+		fields.map((f,idx)=>{
+		    if(!f.isNumeric()) return;
+		    let v = record.getValue(f.getIndex());
+		    let v2 = NaN;
+		    let lastDate = null;
+		    for (var j=rowIdx-1; j>=0; j--) {
+			if(keyFields.length>0) {
+			    let key2 = keys[j];
+			    if(key!=key2) continue;
+			}
+			let record2 = records[j];
+			v2 = record2.getValue(f.getIndex());
+			if(v>=v2*2) {
+			    lastDate  = record2.getDate();
+			    break;
+			}
+		    }
+		    let diff = NaN;
+		    if(lastDate) {
+			diff = (record.getDate().getTime()-lastDate.getTime())/1000/60/60/24;
+		    }
+		    newRecord.data.push(diff);
+		});
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
 	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();
@@ -11811,38 +11915,59 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
-var DISPLAY_FILTER = "filter";
-var DISPLAY_ANIMATION = "animation";
-var DISPLAY_LABEL = "label";
-
-
+const DISPLAY_FILTER = "filter";
+const DISPLAY_ANIMATION = "animation";
+const DISPLAY_LABEL = "label";
+const DISPLAY_DOWNLOAD = "download";
+const DISPLAY_LEGEND = "legend";
+const DISPLAY_RELOADER = "reloader";
+const DISPLAY_MESSAGE = "message";
+addGlobalDisplayType({
+    type: DISPLAY_DOWNLOAD,
+    label: "Download",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS
+});
+addGlobalDisplayType({
+    type: DISPLAY_RELOADER,
+    label: "Reloader",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS
+});
 addGlobalDisplayType({
     type: DISPLAY_FILTER,
     label: "Filter",
     requiresData: false,
-    category: "Controls"
+    category: CATEGORY_CONTROLS
 });
 addGlobalDisplayType({
     type: DISPLAY_ANIMATION,
     label: "Animation",
     requiresData: false,
-    category: "Controls"
+    category: CATEGORY_CONTROLS
 });
+addGlobalDisplayType({
+    type: DISPLAY_MESSAGE,
+    label: "Message",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS
+});
+
 addGlobalDisplayType({
     type: DISPLAY_LABEL,
     label: "Text",
     requiresData: false,
-    category: "Misc"
+    category: CATEGORY_CONTROLS
 });
-
-
-var DISPLAY_LEGEND = "legend";
 addGlobalDisplayType({
     type: DISPLAY_LEGEND,
     label: "Legend",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_CONTROLS
 });
 
 function RamaddaFilterDisplay(displayManager, id, properties) {
@@ -11988,6 +12113,25 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 }
 
 
+
+function RamaddaMessageDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MESSAGE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        needsData: function() {
+            return false;
+        },
+	updateUI: function() {
+	    if(this.getProperty("decorate",true)) {
+		this.setContents(this.getMessage(this.getProperty("message",this.getNoDataMessage())));
+	    } else {
+		this.setContents(this.getProperty("message",this.getNoDataMessage()));
+	    }
+	}});
+}
+
+
 function RamaddaLabelDisplay(displayManager, id, properties) {
     var ID_TEXT = "text";
     var ID_EDIT = "edit";
@@ -12104,6 +12248,190 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 	},
     })
 }
+
+
+
+function RamaddaDownloadDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DOWNLOAD, properties);
+    const ID_DOWNLOAD = "download";
+    const ID_CANCEL = "cancel";    
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Download Properties'},
+	{p:'csvLabel',wikiValue:'Download CSV'},
+	{p:'useIcon',d:'false',wikiValue:'false'},
+	{p:'fileName',d:'download',wikiValue:'download'},
+	{p:'askFields',d:'false',wikiValue:'true'},		
+    ]);
+    $.extend(this, {
+	fieldOn:{},
+	needsData: function() {
+        return true;
+    },
+    updateUI: function() {
+	let label = this.getPropertyCsvLabel("Download CSV");
+	label = label.replace("${title}",this.getProperty("title",""));
+	let useIcon = this.getPropertyUseIcon(true);
+	label = useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label;
+	this.setContents(HU.div([ID,this.getDomId("csv")],label));
+	if(useIcon) {
+            this.jq("csv").click(() => {
+		this.doDownload();
+            });
+	} else {
+            this.jq("csv").button().click(() => {
+		this.doDownload();
+            });
+	}
+    },
+    getCsv: function(fields) {
+        fields = fields || this.getData().getRecordFields();
+	let records = this.filterData();
+	DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
+    },
+
+    applyFieldSelection: function() {
+	this.getData().getRecordFields().forEach(f=>{
+	    let cbx = this.jq("cbx_" + f.getId());
+	    let on = cbx.is(':checked');
+	    this.fieldOn[f.getId()] = on;
+	});
+    },
+    getDownloadDialog: function() {
+	let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD)],"Download") +"&nbsp;&nbsp;" +
+			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
+	html += "<b>Include:<br></b>";
+	let cbx = "";
+	this.getData().getRecordFields().forEach((f,idx)=>{
+	    let on = this.fieldOn[f.getId()];
+	    if(!Utils.isDefined(on)) on = true;
+	    cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[],on) +" " + f.getLabel() +"<br>";
+	});
+	
+	html = HU.div([STYLE,HU.css("margin","5px")],html);
+	html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin","5px")], cbx);
+	return html;
+    },
+    doDownload: function() {
+	if(this.getPropertyAskFields(true)) {
+	    let html = this.getDownloadDialog();
+	    let init = ()=>{
+		this.jq(ID_DOWNLOAD).button().click(() =>{
+		    this.jq(ID_DIALOG).hide();
+		    let fields = [];
+		    this.applyFieldSelection();
+		    this.getData().getRecordFields().forEach(f=>{
+			if(this.fieldOn[f.getId()]) {
+			    fields.push(f);
+			}
+		    });
+		    this.getCsv(fields);
+		});
+		this.jq(ID_CANCEL).button().click(() =>{
+		    this.applyFieldSelection();
+		    this.jq(ID_DIALOG).hide();
+		});
+	    };
+	    this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init);
+	} else  {
+            this.getCsv();
+	}
+    },
+    });
+}
+
+function RamaddaReloaderDisplay(displayManager, id, properties) {
+    const ID_CHECKBOX= "cbx";
+    const ID_COUNTDOWN= "countdown";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RELOADER, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Reloader Properties'},
+	{p:'interval',wikiValue:'30',d:30,label:"Interval"},
+	{p:'showCheckbox',wikiValue:'false',d:true,label:"Show Checkbox"},
+	{p:'showCountdown',wikiValue:'false',d:true,label:"Show Countdown"},
+    ]);
+
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+        xxpointDataLoaded: function(pointData, url, reload) {
+	},
+	reloadData: function() {
+	    let pointData = this.dataCollection.getList()[0];
+	    pointData.loadData(this,true);
+	},
+	updateUI: function() {
+	    let html = "";
+	    //If we are already displaying then don't update the UI
+	    if(this.jq(ID_COUNTDOWN).length>0) return;
+	    if(this.getPropertyShowCheckbox()) {
+		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
+	    }		
+	    if(this.getPropertyShowCountdown()) {
+		html+=" " + HU.span([CLASS,"display-reloader-label", ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
+	    } else {
+		if(this.getPropertyShowCheckbox()) {
+		    html+=" " + HU.span([ID,this.getDomId(ID_COUNTDOWN)],"Reload");
+		}
+	    }
+	    this.setContents(html);
+	    this.jq(ID_CHECKBOX).change(()=>{
+		let cbx = this.jq(ID_CHECKBOX);
+		if(cbx.is(':checked')) {
+		    this.setTimer(this.lastTime);
+		}
+	    });
+	    this.setTimer(this.getPropertyInterval());
+	},
+	okToRun: function() {
+	    let cbx = this.jq(ID_CHECKBOX);
+	    if(cbx.length==0) return true;
+	    return cbx.is(':checked');
+	},
+	getCountdownLabel: function(time) {
+	    let pad = "";
+	    if(time<10) pad = "&nbsp;";
+	    return "Reload in " + time +" seconds"+pad;
+	},
+	updateCountdown(time) {
+	    if(this.getPropertyShowCountdown()) {
+		this.jq(ID_COUNTDOWN).html(this.getCountdownLabel(time));
+	    } else {
+		this.jq(ID_COUNTDOWN).html("Reload");
+	    }
+	},
+	setTimer(time) {
+	    if(!this.okToRun()) return;
+	    if(this.timerPending) return;
+	    this.lastTime = time;
+	    this.updateCountdown(time);
+	    this.timerPending = true;
+	    setTimeout(()=>{
+		this.timerPending = false;
+		this.checkReload(time);
+	    },1000);
+	},
+	checkReload: function(time) {
+	    time--;
+	    if(time<=0) {
+		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],"xseconds"));
+		this.reloadData();
+		time = this.getPropertyInterval();
+		//Start up again in a bit so the reloading... label is shown
+		setTimeout(()=>{
+		    this.setTimer(time);
+		},1000);
+	    } else {
+		this.setTimer(time);
+	    }
+	}
+    });
+}
+
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -12113,7 +12441,7 @@ addGlobalDisplayType({
     type: DISPLAY_NOTEBOOK,
     label: "Notebook",
     requiresData: false,
-    category: "Misc"
+    category: CATEGORY_CONTROLS
 });
 
 var pluginDefintions = {
@@ -14798,13 +15126,13 @@ function NotebookChunk(cell, props) {
             }
         });
     this.initChunk(props);
-}/**
+}
+/**
    Copyright 2008-2019 Geode Systems LLC
 */
 
 
-const CATEGORY_CHARTS = "Charts";
-const CATEGORY_OTHER = "Other Charts";
+
 
 const DISPLAY_LINECHART = "linechart";
 const DISPLAY_AREACHART = "areachart";
@@ -14861,9 +15189,14 @@ function waitOnGoogleCharts(object, callback) {
 }
 
 
-
-
-
+addGlobalDisplayType({
+    type: DISPLAY_TABLE,
+    label: "Table",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_TABLE,
+    desc:"Basic tabular display"
+}, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
     label: "Line Chart",
@@ -14919,7 +15252,8 @@ addGlobalDisplayType({
     label: "Bubble Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    wiki: "#fields=label,x,y,color,size",
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
@@ -14948,7 +15282,7 @@ addGlobalDisplayType({
     label: "Sankey Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
@@ -14959,25 +15293,18 @@ addGlobalDisplayType({
     category: CATEGORY_MISC
 });
 addGlobalDisplayType({
-    type: DISPLAY_TABLE,
-    label: "Table",
-    requiresData: true,
-    forUser: true,
-    category: CATEGORY_MISC
-});
-addGlobalDisplayType({
     type: DISPLAY_WORDTREE,
     label: "Word Tree",
     requiresData: true,
     forUser: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 addGlobalDisplayType({
     type: DISPLAY_TREEMAP,
     label: "Tree Map",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_RADIAL_ETC
 });
 
 
@@ -15837,7 +16164,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         tooltip += "<br>";
 		    label = header[j].replace(/ /g, "&nbsp;");
 		    value = row[j];
-		    if (!value) value = "NA";
+		    if (!Utils.isDefined(value)) value = "NA";
 		    if (value && (typeof value) == "object") {
                         if (value.f) {
 			    value = value.f;
@@ -15964,6 +16291,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 justData.push(newRow);
 		//		if(debug && rowIdx>debugRows) break;
 	    }
+
+
             dataTable.addRows(justData);
             if (didColorBy) {
 		colorBy.displayColorTable();
@@ -16342,6 +16671,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
 	    //	    console.log(JSON.stringify(this.chartOptions, null, 2));
+	    if(!chartDiv) return;
 	    var dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;
@@ -18280,7 +18610,7 @@ addGlobalDisplayType({
     forUser: false,
     label: "Glider cross section",
     requiresData: true,
-    category: "Charts"
+    category: CATEGORY_MISC
 });
 
 
@@ -18289,7 +18619,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Venn Diagram",
     requiresData: true,
-    category: "Misc"
+    category: CATEGORY_MISC
 });
 
 addGlobalDisplayType({
@@ -18297,15 +18627,15 @@ addGlobalDisplayType({
     forUser: true,
     label: "Chernoff Faces",
     requiresData: true,
-    category: "Misc"
+    category: CATEGORY_MISC
 });
 
 addGlobalDisplayType({
     type: DISPLAY_D3BUBBLE,
     forUser: true,
-    label: "D3 Bubble Chart",
+    label: "Bubble Chart",
     requiresData: true,
-    category: "Misc"
+    category: CATEGORY_MAPS_IMAGES
 });
 
 
@@ -18314,7 +18644,7 @@ addGlobalDisplayType({
     forUser: false,
     label: "SkewT",
     requiresData: true,
-    category: "Charts"
+    category: CATEGORY_MISC
 });
 
 //Note: define meaningful things as variables not as string literals
@@ -18484,7 +18814,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             this.setContents(html);
             var date = records[0].getDate();
             if(this.jq(ID_DATE_LABEL).length==0) {
-                this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
+                this.jq(ID_TOP_LEFT).append(HtmlUtils.div([ID,this.getDomId(ID_DATE_LABEL)]));
             }
             if(date!=null) {
                 this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
@@ -19605,7 +19935,7 @@ addGlobalDisplayType({
     label: "Text Readout",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TEXT
 });
 
 
@@ -19614,7 +19944,7 @@ addGlobalDisplayType({
     label: "Cards",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -19622,7 +19952,7 @@ addGlobalDisplayType({
     label: "Images",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category:CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -19630,7 +19960,7 @@ addGlobalDisplayType({
     label: "Template",
     requiresData: true,
     forUser: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -19638,7 +19968,7 @@ addGlobalDisplayType({
     label: "Slides",
     requiresData: true,
     forUser: true,
-    category: "Text"
+    category: CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -19654,7 +19984,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Word Cloud",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -19662,7 +19992,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Text Stats",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -19670,14 +20000,14 @@ addGlobalDisplayType({
     forUser: true,
     label: "Frequency",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 addGlobalDisplayType({
     type: DISPLAY_TEXTRAW,
     forUser: true,
     label: "Text Raw",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -19685,7 +20015,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Text Analysis",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -19693,7 +20023,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Blocks",
     requiresData: false,
-    category: "Other Charts"
+    category: CATEGORY_MISC
 });
 
 
@@ -22525,7 +22855,6 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
-
 const DISPLAY_ENTRYLIST = "entrylist";
 const DISPLAY_TESTLIST = "testlist";
 const DISPLAY_ENTRYDISPLAY = "entrydisplay";
@@ -22541,51 +22870,52 @@ const ID_ENTRIES = "entries";
 const ID_DETAILS_INNER = "detailsinner";
 const ID_PROVIDERS = "providers";
 const ID_SEARCH_SETTINGS = "searchsettings";
-const ATTR_ENTRYID = "entryid";
 const ID_TREE_LINK = "treelink";
+const ATTR_ENTRYID = "entryid";
+
 
 addGlobalDisplayType({
     type: DISPLAY_ENTRYLIST,
     label: "Entry List",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_TESTLIST,
     label: "Test  List",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_ENTRYDISPLAY,
     label: "Entry Display",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_ENTRYTITLE,
     label: "Entry Title",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_ENTRY_GALLERY,
     label: "Entry Gallery",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_ENTRY_GRID,
     label: "Entry Date Grid",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
-//addGlobalDisplayType({type: DISPLAY_OPERANDS, label:"Operands",requiresData:false,category:"Entry Displays"});
+//addGlobalDisplayType({type: DISPLAY_OPERANDS, label:"Operands",requiresData:false,category:CATEGORY_ENTRIES});
 addGlobalDisplayType({
     type: DISPLAY_METADATA,
     label: "Metadata Table",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 
 
@@ -23748,7 +24078,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
     var ID_AXIS_LEFT = "axis_left";
     var ID_AXIS_BOTTOM = "axis_bottom";
     var ID_CANVAS = "canvas";
-    var ID_TOP = "top";
+    var ID_LINKS = "links";
     var ID_RIGHT = "right";
 
     var ID_SETTINGS = "gridsettings";
@@ -23932,7 +24262,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         HtmlUtils.image(icon_zoom, ["class", "display-grid-action", "title", "reset zoom", "action", "reset"]) +
                         HtmlUtils.image(icon_zoom_in, ["class", "display-grid-action", "title", "zoom in", "action", "zoomin"]) +
                         HtmlUtils.image(icon_zoom_out, ["class", "display-grid-action", "title", "zoom out", "action", "zoomout"]);
-                    _this.jq(ID_TOP).html(links);
+                    _this.jq(ID_LINKS).html(links);
                     $("#" + _this.getDomId(ID_GRID) + " .display-grid-action").click(function() {
                         var action = $(this).attr("action");
                         _this.doZoom(action);
@@ -24119,7 +24449,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             html += HtmlUtils.openTag("table", ["border", "0", "class", "", "cellspacing", "0", "cellspacing", "0", "width", "100%", "style", "height:100%;"]);
             html += HtmlUtils.openTag("tr", ["valign", "bottom"]);
             html += HtmlUtils.tag("td");
-            html += HtmlUtils.tag("td", [], HtmlUtils.div(["id", this.getDomId(ID_TOP)], ""));
+            html += HtmlUtils.tag("td", [], HtmlUtils.div(["id", this.getDomId(ID_LINKS)], ""));
             html += HtmlUtils.closeTag("tr");
             html += HtmlUtils.openTag("tr", ["style", "height:100%;"]);
             html += HtmlUtils.openTag("td", ["style", "height:100%;"]);
@@ -25252,15 +25582,7 @@ const PROP_SHOW_MAP = "showMap";
 const PROP_SHOW_MENU = "showMenu";
 const PROP_FROMDATE = "fromDate";
 const PROP_TODATE = "toDate";
-
 const DISPLAY_MULTI = "multi";
-addGlobalDisplayType({
-    type: DISPLAY_MULTI,
-    label: "Multi Chart",
-    requiresData: true,
-    forUser: false,
-    category: "Misc"
-});
 
 
 
@@ -25277,12 +25599,46 @@ function addDisplayManager(displayManager) {
 }
 
 
-function addGlobalDisplayType(type) {
+function addGlobalDisplayType(type, front) {
     if (window.globalDisplayTypes == null) {
         window.globalDisplayTypes = [];
+	window.globalDisplayTypesMap = {};
     }
-    window.globalDisplayTypes.push(type);
+    if(type.type) {
+	window.globalDisplayTypesMap[type.type] = type;
+    }
+
+
+    if(front) {
+	window.globalDisplayTypes.unshift(type);
+    } else {
+	window.globalDisplayTypes.push(type);
+    }
 }
+
+
+addGlobalDisplayType({
+    type: "group",
+    label: "Group",
+    requiresData: false,
+    forUser: true,
+    category: "Basic Charts"
+},true);
+
+
+
+
+addGlobalDisplayType({
+    type: DISPLAY_MULTI,
+    label: "Multi Chart",
+    requiresData: true,
+    forUser: false,
+    category: "Misc"
+});
+
+
+
+
 
 //
 //This will get the currently created global displaymanager or will create a new one
@@ -25453,103 +25809,104 @@ function DisplayManager(argId, argProperties) {
 	    if(!this.getShowMenu()) {
 		return "";
 	    }
-	    //            if (!this.getProperty(PROP_SHOW_MENU, true)) {
-	    //                return "";
-	    //            }
             //How else do I refer to this object in the html that I add 
             var get = "getDisplayManager('" + this.getId() + "')";
             var layout = "getDisplayManager('" + this.getId() + "').getLayoutManager()";
             var html = "";
+
             var newMenus = {};
             var cats = [];
-            var chartMenu = "";
             var displayTypes = [];
             if (window.globalDisplayTypes != null) {
                 displayTypes = window.globalDisplayTypes;
             }
+	    DISPLAY_CATEGORIES.forEach(category=>{
+                newMenus[category] = [];
+                cats.push(category);
+	    });
             for (var i = 0; i < displayTypes.length; i++) {
                 //The ids (.e.g., 'linechart' have to match up with some class function with the name 
                 var type = displayTypes[i];
                 if (Utils.isDefined(type.forUser) && !type.forUser) {
                     continue;
                 }
-                var category = type.category;
+		var category = type.category;
                 if (!category) {
-                    category = "Misc";
+                    category = CATEGORY_MISC;
                 }
                 if (newMenus[category] == null) {
-                    newMenus[category] = "";
+                    newMenus[category] = [];
                     cats.push(category);
                 }
-                newMenus[category] += HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["onclick", get + ".userCreateDisplay('" + type.type + "');"], type.label));
+		let menuAttrs = ["onclick", get + ".userCreateDisplay('" + type.type + "');"];
+		if(type.desc) {
+		    menuAttrs.push(TITLE);
+		    menuAttrs.push(type.desc);
+		}
+                newMenus[category].push(HU.tag(TAG_LI, [], HU.tag(TAG_A, menuAttrs, type.label)));
             }
-
-            var newMenu = "";
+            let newMenu = "";
             for (var i = 0; i < cats.length; i++) {
                 var cat = cats[i];
-                if (cat == "Charts") {
-                    chartMenu = newMenus[cat];
-                }
-                var subMenu = HtmlUtils.tag("ul", [], newMenus[cat]);
-                var catLabel = HtmlUtils.tag(TAG_A, [], cat);
-                newMenu += HtmlUtils.tag(TAG_LI, [], catLabel + subMenu);
-                //                    newMenu  += HtmlUtils.tag(TAG_LI,[], "SUB " + i);
+		var menu = Utils.join(newMenus[cat],"");
+                var subMenu = HU.tag("ul", [], menu);
+                var catLabel = HU.tag(TAG_A, [], cat);
+                newMenu += HU.tag(TAG_LI, [], catLabel + subMenu);
             }
+
+
             var publishMenu =
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('media_photoalbum');", "New Photo Album")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('wikipage');", "New Wiki Page")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('blogentry');", "New Blog Post")) + "\n";
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('media_photoalbum');", "New Photo Album")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('wikipage');", "New Wiki Page")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('blogentry');", "New Blog Post")) + "\n";
 
 
             var fileMenu =
-                HtmlUtils.tag(TAG_LI, [], "<a>Publish</a>" + HtmlUtils.tag("ul", [], publishMenu)) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".showWikiText();", "Show Text")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
+                HU.tag(TAG_LI, [], "<a>Publish</a>" + HU.tag("ul", [], publishMenu)) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".showWikiText();", "Show Text")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".copyWikiText();", "Copy Text")) + "\n" +		
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
 
 
-            var titles = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HtmlUtils.onClick(layout + ".titlesOn();", "On") + "/" + HtmlUtils.onClick(layout + ".titlesOff();", "Off"));
-            var dates = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+            var titles = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
+            var dates = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
 				      "Set date range: " +
-				      HtmlUtils.onClick(layout + ".askMinDate();", "Min") + "/" +
-				      HtmlUtils.onClick(layout + ".askMaxDate();", "Max"));
+				      HU.onClick(layout + ".askMinDate();", "Min") + "/" +
+				      HU.onClick(layout + ".askMaxDate();", "Max"));
             var editMenu =
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
 							"Set axis range :" +
-							HtmlUtils.onClick(layout + ".askMinZAxis();", "Min") + "/" +
-							HtmlUtils.onClick(layout + ".askMaxZAxis();", "Max"))) +
-                HtmlUtils.tag(TAG_LI, [], dates) +
-                HtmlUtils.tag(TAG_LI, [], titles) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HtmlUtils.onClick(layout + ".detailsOn();", "On", []) + "/" +
-							HtmlUtils.onClick(layout + ".detailsOff();", "Off", []))) +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
+							HU.onClick(layout + ".askMinZAxis();", "Min") + "/" +
+							HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
+                HU.tag(TAG_LI, [], dates) +
+                HU.tag(TAG_LI, [], titles) + "\n" +
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
+							HU.onClick(layout + ".detailsOff();", "Off", []))) +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
                 "";
 
 
-            var table = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
-				      HtmlUtils.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
-				      HtmlUtils.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
-				      HtmlUtils.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
-				      HtmlUtils.onClick(layout + ".setLayout('table',4);", "4 column"));
+            var table = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
+				      HU.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',4);", "4 column"));
             var layoutMenu =
-                HtmlUtils.tag(TAG_LI, [], table) +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('tabs');", "Tabs"));
+                HU.tag(TAG_LI, [], table) +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('tabs');", "Tabs"));
 
 
-
-            var menuBar = HtmlUtils.tag(TAG_LI, [], "<a>File</a>" + HtmlUtils.tag("ul", [], fileMenu));
-            if (chartMenu != "") {
-                menuBar += HtmlUtils.tag(TAG_LI, [], "<a>Charts</a>" + HtmlUtils.tag("ul", [], chartMenu));
-            }
-            menuBar += HtmlUtils.tag(TAG_LI, [], "<a>Edit</a>" + HtmlUtils.tag("ul", [], editMenu)) +
-                HtmlUtils.tag(TAG_LI, [], "<a>New</a>" + HtmlUtils.tag("ul", [], newMenu)) +
-                HtmlUtils.tag(TAG_LI, [], "<a>Layout</a>" + HtmlUtils.tag("ul", [], layoutMenu));
-            var menu = HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-				     HtmlUtils.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+            var menuBar = HU.tag(TAG_LI, [], "<a>File</a>" + HU.tag("ul", [], fileMenu));
+            menuBar += HU.tag(TAG_LI, [], "<a>Edit</a>" + HU.tag("ul", [], editMenu)) +
+                HU.tag(TAG_LI, [], "<a>New</a>" + HU.tag("ul", [], newMenu)) +
+                HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag("ul", [], layoutMenu));
+            var menu = HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
+				     HU.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
 
             html += menu;
-            //                html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
+            //                html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
             //                html+="<br>";
             return html;
         },
@@ -25754,14 +26111,14 @@ function DisplayManager(argId, argProperties) {
 
     addDisplayManager(this);
 
-    let displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
-    let html = HtmlUtils.openTag(TAG_DIV);
-    html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
+    let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
+    let html = HU.openTag(TAG_DIV);
+    html += HU.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
 
     //    html += this.makeMainMenu();
     if(this.getShowMenu()) {
-        html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
+        html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
     let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
     let _this = this;
@@ -25773,16 +26130,19 @@ function DisplayManager(argId, argProperties) {
     } else {
         html += displaysHtml;
     }
-    html += HtmlUtils.closeTag(TAG_DIV);
+    html += HU.closeTag(TAG_DIV);
     $("#" + this.getId()).html(html)
     this.initializeEntriesMenu();
 
 
-    $("#" + this.getDomId(ID_MENU_BUTTON)).button({
-        icons: {
+    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fa-cog",[TITLE,"Display menu"] )).button({
+        xxicons: {
             primary: "ui-icon-gear",
             secondary: "ui-icon-triangle-1-s"
-        }
+        },
+	classes: {
+	    "ui-button": "display-manager-button",
+	}	
     }).click(function(event) {
         let html = _this.makeMainMenu();
         _this.jq(ID_MENU_CONTAINER).html(html);
@@ -25903,7 +26263,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
                     props[a] = value;
                 }
             }
-            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+            var html = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
             var groupProps = {
                 target: this.getDomId(ID_DISPLAYS),
@@ -25949,12 +26309,14 @@ let displayMapMarkerIcons = {};
 
 addGlobalDisplayType({
     type: DISPLAY_MAP,
-    label: "Map"
+    label: "Map",
+    category:CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
     type: DISPLAY_MAPGRID,
-    label: "Map Grid"
+    label: "Map Grid",
+    category:CATEGORY_MAPS_IMAGES
 });
 
 function MapFeature(source, points) {
@@ -31246,9 +31608,6 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_BLANK = "blank";
-const DISPLAY_RELOADER = "reloader";
-const DISPLAY_DOWNLOAD = "download";
-const DISPLAY_MESSAGE = "message";
 const DISPLAY_RECORDS = "records";
 const DISPLAY_TSNE = "tsne";
 const DISPLAY_HEATMAP = "heatmap";
@@ -31270,21 +31629,21 @@ addGlobalDisplayType({
     label: "Ranking",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,
     label: "Correlation",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
 addGlobalDisplayType({
     type: DISPLAY_CROSSTAB,
     label: "Crosstab",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
 
 addGlobalDisplayType({
@@ -31292,14 +31651,14 @@ addGlobalDisplayType({
     label: "Stats Table",
     requiresData: false,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
 addGlobalDisplayType({
     type: DISPLAY_RECORDS,
     label: "Records",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TEXT
 });
 addGlobalDisplayType({
     type: DISPLAY_TSNE,
@@ -31313,16 +31672,14 @@ addGlobalDisplayType({
     label: "Heatmap",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
-
-
 addGlobalDisplayType({
     type: DISPLAY_GRAPH,
     label: "Graph",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_MISC
 });
 
 addGlobalDisplayType({
@@ -31338,7 +31695,7 @@ addGlobalDisplayType({
     label: "Sparkline",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -31346,7 +31703,7 @@ addGlobalDisplayType({
     label: "Canvas",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -31354,27 +31711,21 @@ addGlobalDisplayType({
     label: "Point Image",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
-
-
 addGlobalDisplayType({
     type: DISPLAY_FIELDTABLE,
     label: "Field Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
-
-
-
-
 addGlobalDisplayType({
     type: DISPLAY_TREE,
     forUser: true,
     label: "Tree",
     requiresData: false,
-    category: "Misc"
+    category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
@@ -31382,7 +31733,7 @@ addGlobalDisplayType({
     label: "Org Chart",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
@@ -31390,62 +31741,35 @@ addGlobalDisplayType({
     label: "Timeline",
     requiresData: true,
     forUser: true,
-    category:  "Misc"
+    category:  CATEGORY_MISC
 });
-
-
 addGlobalDisplayType({
     type: DISPLAY_BLANK,
     label: "Blank",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_CONTROLS
 });
-addGlobalDisplayType({
-    type: DISPLAY_RELOADER,
-    label: "Reloader",
-    requiresData: true,
-    forUser: true,
-    category: "Misc"
-});
-
-addGlobalDisplayType({
-    type: DISPLAY_DOWNLOAD,
-    label: "Download",
-    requiresData: true,
-    forUser: true,
-    category: "Misc"
-});
-addGlobalDisplayType({
-    type: DISPLAY_MESSAGE,
-    label: "Message",
-    requiresData: true,
-    forUser: true,
-    category: "Misc"
-});
-
 addGlobalDisplayType({
     type: DISPLAY_COOCCURENCE,
     label: "Cooccurence",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_TABLE
 });
-
 addGlobalDisplayType({
     type: DISPLAY_BOXTABLE,
     label: "Box Table",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_TABLE
 });
-
 addGlobalDisplayType({
     type: DISPLAY_DATATABLE,
     label: "Date Table",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_TABLE
 });
 
 
@@ -32017,206 +32341,8 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	}});
 }
 
-function RamaddaReloaderDisplay(displayManager, id, properties) {
-    const ID_CHECKBOX= "cbx";
-    const ID_COUNTDOWN= "countdown";
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RELOADER, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
-	{label:'Reloader Properties'},
-	{p:'interval',wikiValue:'30',d:30,label:"Interval"},
-	{p:'showCheckbox',wikiValue:'false',d:true,label:"Show Checkbox"},
-	{p:'showCountdown',wikiValue:'false',d:true,label:"Show Countdown"},
-    ]);
-
-    $.extend(this, {
-        needsData: function() {
-            return true;
-        },
-        xxpointDataLoaded: function(pointData, url, reload) {
-	},
-	reloadData: function() {
-	    let pointData = this.dataCollection.getList()[0];
-	    pointData.loadData(this,true);
-	},
-	updateUI: function() {
-	    let html = "";
-	    //If we are already displaying then don't update the UI
-	    if(this.jq(ID_COUNTDOWN).length>0) return;
-	    if(this.getPropertyShowCheckbox()) {
-		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
-	    }		
-	    if(this.getPropertyShowCountdown()) {
-		html+=" " + HU.span([CLASS,"display-reloader-label", ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
-	    } else {
-		if(this.getPropertyShowCheckbox()) {
-		    html+=" " + HU.span([ID,this.getDomId(ID_COUNTDOWN)],"Reload");
-		}
-	    }
-	    this.setContents(html);
-	    this.jq(ID_CHECKBOX).change(()=>{
-		let cbx = this.jq(ID_CHECKBOX);
-		if(cbx.is(':checked')) {
-		    this.setTimer(this.lastTime);
-		}
-	    });
-	    this.setTimer(this.getPropertyInterval());
-	},
-	okToRun: function() {
-	    let cbx = this.jq(ID_CHECKBOX);
-	    if(cbx.length==0) return true;
-	    return cbx.is(':checked');
-	},
-	getCountdownLabel: function(time) {
-	    let pad = "";
-	    if(time<10) pad = "&nbsp;";
-	    return "Reload in " + time +" seconds"+pad;
-	},
-	updateCountdown(time) {
-	    if(this.getPropertyShowCountdown()) {
-		this.jq(ID_COUNTDOWN).html(this.getCountdownLabel(time));
-	    } else {
-		this.jq(ID_COUNTDOWN).html("Reload");
-	    }
-	},
-	setTimer(time) {
-	    if(!this.okToRun()) return;
-	    if(this.timerPending) return;
-	    this.lastTime = time;
-	    this.updateCountdown(time);
-	    this.timerPending = true;
-	    setTimeout(()=>{
-		this.timerPending = false;
-		this.checkReload(time);
-	    },1000);
-	},
-	checkReload: function(time) {
-	    time--;
-	    if(time<=0) {
-		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],"xseconds"));
-		this.reloadData();
-		time = this.getPropertyInterval();
-		//Start up again in a bit so the reloading... label is shown
-		setTimeout(()=>{
-		    this.setTimer(time);
-		},1000);
-	    } else {
-		this.setTimer(time);
-	    }
-	}
-    });
-}
 
 
-
-function RamaddaDownloadDisplay(displayManager, id, properties) {
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DOWNLOAD, properties);
-    const ID_DOWNLOAD = "download";
-    const ID_CANCEL = "cancel";    
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
-	{label:'Download Properties'},
-	{p:'csvLabel',wikiValue:'Download CSV'},
-	{p:'useIcon',d:'false',wikiValue:'false'},
-	{p:'fileName',d:'download',wikiValue:'download'},
-	{p:'askFields',d:'false',wikiValue:'true'},		
-    ]);
-    $.extend(this, {
-	fieldOn:{},
-	needsData: function() {
-        return true;
-    },
-    updateUI: function() {
-	let label = this.getPropertyCsvLabel("Download CSV");
-	label = label.replace("${title}",this.getProperty("title",""));
-	let useIcon = this.getPropertyUseIcon(true);
-	label = useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label;
-	this.setContents(HU.div([ID,this.getDomId("csv")],label));
-	if(useIcon) {
-            this.jq("csv").click(() => {
-		this.doDownload();
-            });
-	} else {
-            this.jq("csv").button().click(() => {
-		this.doDownload();
-            });
-	}
-    },
-    getCsv: function(fields) {
-        fields = fields || this.getData().getRecordFields();
-	let records = this.filterData();
-	DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
-    },
-
-    applyFieldSelection: function() {
-	this.getData().getRecordFields().forEach(f=>{
-	    let cbx = this.jq("cbx_" + f.getId());
-	    let on = cbx.is(':checked');
-	    this.fieldOn[f.getId()] = on;
-	});
-    },
-    getDownloadDialog: function() {
-	let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD)],"Download") +"&nbsp;&nbsp;" +
-			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
-	html += "<b>Include:<br></b>";
-	let cbx = "";
-	this.getData().getRecordFields().forEach((f,idx)=>{
-	    let on = this.fieldOn[f.getId()];
-	    if(!Utils.isDefined(on)) on = true;
-	    cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[],on) +" " + f.getLabel() +"<br>";
-	});
-	
-	html = HU.div([STYLE,HU.css("margin","5px")],html);
-	html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin","5px")], cbx);
-	return html;
-    },
-    doDownload: function() {
-	if(this.getPropertyAskFields(true)) {
-	    let html = this.getDownloadDialog();
-	    let init = ()=>{
-		this.jq(ID_DOWNLOAD).button().click(() =>{
-		    this.jq(ID_DIALOG).hide();
-		    let fields = [];
-		    this.applyFieldSelection();
-		    this.getData().getRecordFields().forEach(f=>{
-			if(this.fieldOn[f.getId()]) {
-			    fields.push(f);
-			}
-		    });
-		    this.getCsv(fields);
-		});
-		this.jq(ID_CANCEL).button().click(() =>{
-		    this.applyFieldSelection();
-		    this.jq(ID_DIALOG).hide();
-		});
-	    };
-	    this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init);
-	} else  {
-            this.getCsv();
-	}
-    },
-    });
-}
-
-
-function RamaddaMessageDisplay(displayManager, id, properties) {
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MESSAGE, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-        needsData: function() {
-            return false;
-        },
-	updateUI: function() {
-	    if(this.getProperty("decorate",true)) {
-		this.setContents(this.getMessage(this.getProperty("message",this.getNoDataMessage())));
-	    } else {
-		this.setContents(this.getProperty("message",this.getNoDataMessage()));
-	    }
-	}});
-}
 
 
 function RamaddaTsneDisplay(displayManager, id, properties) {
@@ -35929,7 +36055,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
    Copyright 2008-2019 Geode Systems LLC
 */
 
-const CATEGORY_PLOTLY = "More Charts";
+
 const DISPLAY_PLOTLY_RADAR = "radar";
 const DISPLAY_PLOTLY_WINDROSE = "windrose";
 const DISPLAY_PLOTLY_DENSITY = "density";
@@ -35950,21 +36076,28 @@ addGlobalDisplayType({
     label: "Radar",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_WINDROSE,
     label: "Wind Rose",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
+});
+addGlobalDisplayType({
+    type: DISPLAY_PLOTLY_SUNBURST,
+    label: "Sunburst",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DENSITY,
     label: "Density",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_COMBOCHART,
@@ -35979,7 +36112,7 @@ addGlobalDisplayType({
     label: "Parallel Coords",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
@@ -35987,56 +36120,49 @@ addGlobalDisplayType({
     label: "Dot Plot",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_CHARTS
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
     label: "Splom",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PROFILE,
     label: "Profile",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_CHARTS
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
     label: "3D Mesh",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 
-addGlobalDisplayType({
-    type: DISPLAY_PLOTLY_SUNBURST,
-    label: "Suburst",
-    requiresData: true,
-    forUser: true,
-    category: CATEGORY_PLOTLY
-});
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_TEXTCOUNT,
     label: "Text Count",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TEXT
 });
 
 //Ternary doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
 //Treempap doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_PTREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_PTREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {

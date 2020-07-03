@@ -121,6 +121,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-menubar-button {
+    display:inline-block;
     border-right:1px #ccc solid;
     padding-left:8px;
     padding-right:8px;
@@ -1149,18 +1150,28 @@ input, password, fileinput,textarea {
 }
 
 .ramadda-menu-block  {
-    padding:0.75em;
-    padding-top:1.0em;
-    padding-bottom:1.0em;
-
+    padding-left:4px;
+    padding-top:4px;
+    padding-bottom:4px;
+    font-size: 13px;
 }
 
 .ramadda-menu-block a {
+    font-size: 13px;
     display: inline;
     border: 0px #ccc solid;
     padding:0px;
     margin:0px;
 }
+
+.sf-menu a {
+    font-size: 13px;
+    padding: 6px;
+    height: 15px /* for example */
+    line-height: 15px /* You should include this line-height attribute to align the text in the middle of the box, the value is equal to the value of height attr. */
+}
+
+
 
 .entry-type-list {
     margin-top: 2px;
