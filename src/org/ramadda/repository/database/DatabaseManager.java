@@ -2895,6 +2895,77 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /**
      * _more_
      *
+     * @param stmt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String makeTable(Statement stmt) throws Exception {
+        StringBuilder     sb   = new StringBuilder();
+        ResultSetMetaData rsmd = null;
+        SqlUtil.Iterator  iter = new SqlUtil.Iterator(stmt);
+        ResultSet         results;
+        int               cnt = 0;
+        while ((results = iter.getNext()) != null) {
+            if (rsmd == null) {
+                rsmd = results.getMetaData();
+                sb.append(
+                    "<table class='stripe ramadda-table' table-ordering=true>");
+                sb.append("<thead>");
+                for (int col = 1; col <= rsmd.getColumnCount(); col++) {
+                    sb.append("<th>" + rsmd.getColumnName(col) + "</th>");
+                }
+                sb.append("</thead><tbody>");
+            }
+            cnt++;
+            sb.append("<tr valign=top>");
+            for (int col = 1; col <= rsmd.getColumnCount(); col++) {
+                Object obj = results.getObject(col);
+                sb.append(HtmlUtils.td((obj != null)
+                                       ? obj.toString()
+                                       : "null"));
+            }
+            sb.append("</tr>");
+        }
+        sb.append("</tbody></table>");
+        if (cnt == 0) {
+            sb.append("No results");
+        }
+
+        return sb.toString();
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param table _more_
+     * @param connection _more_
+     * @param clause _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String showTable(String table, Connection connection,
+                            Clause clause)
+            throws Exception {
+        StringBuilder sb = new StringBuilder();
+        Statement stmt = SqlUtil.select(connection, "*", Misc.newList(table),
+                                        clause, "", 5000);
+        sb.append(makeTable(stmt));
+        stmt.close();
+
+        return sb.toString();
+    }
+
+
+
+
+    /**
+     * _more_
+     *
      *
      * @return _more_
      *
