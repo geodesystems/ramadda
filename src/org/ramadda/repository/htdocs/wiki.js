@@ -3,6 +3,47 @@
  */
 
 
+let wikiPopup = null;
+
+function  wikiInitDisplaysButton(id) {
+    let button = $("#displays_button"+ id);
+    button.click(() =>{
+	if(!window.globalDisplayTypes) return;
+        var types = window.globalDisplayTypes;
+        var links = {};
+        var cats = [];
+        var displayTypes = [];
+	DISPLAY_CATEGORIES.forEach(category=>{
+            links[category] = [];
+            cats.push(category);
+	});
+	types.forEach(type=>{
+            if (Utils.isDefined(type.forUser) && !type.forUser) {
+		return;
+            }
+	    var category = type.category ||  CATEGORY_MISC;
+            if (links[category] == null) {
+                links[category] = [];
+                cats.push(category);
+            }
+	    let link = HU.href("#",type.label,["onclick", "insertDisplayText('" + id + "','" + type.type+"')"]);
+            links[category].push(link);
+        });
+        let menu = "<table><tr valign=top>";
+        for (var i = 0; i < cats.length; i++) {
+            var cat = cats[i];
+	    menu += HU.td([],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:200px;overflow-y:auto;'>" + Utils.join(links[cat],"<div>"));
+        }
+	menu = HU.div([STYLE,"font-size:10pt;"], menu);
+	let popup = HtmlUtils.makeDraggableDialog(button,menu,{});
+	if(wikiPopup) 
+	    wikiPopup.hide();
+	wikiPopup =  popup;
+    });
+	
+}
+
+
 async function  wikiPreview(entry, id, inPlace) {
     var editor = HtmlUtils.getAceEditor(id);
     var t = editor.getValue();
@@ -43,6 +84,27 @@ function wikiPreviewClose() {
     $("#wikieditpreview").hide();
 }
 
+function insertDisplayText(id, value) {
+    let type = window.globalDisplayTypesMap[value];
+    if(!type) {
+	insertText(value);
+	return;
+    }
+    let t = "{{";
+    if(type.type=="group") {
+	t+="group ";
+    } else  {
+	t +="display_" + type.type +" ";
+    }
+    if(type.wiki)  t += type.wiki;
+    t+="}} ";
+    if(wikiPopup)
+	wikiPopup.hide();
+    insertText(id,t);
+//    xxxxx
+}
+
+
 function insertText(id, value) {
     hidePopupObject();
     var popup = getTooltip();
@@ -54,6 +116,7 @@ function insertText(id, value) {
         return;
     }
 
+    
 
     var editor = HtmlUtils.getAceEditor(id);
     var textComp = GuiUtils.getDomObject(id);
@@ -395,18 +458,14 @@ var wikiAttributes = {
 }
 
 
+
+
 function wikiInitEditor(info) {
     var editor = info.editor
     var toolbar = $("#" + info.id +"_toolbar");
     editor.container.addEventListener("contextmenu", function(e) {
 	e.preventDefault();
 	var cursor = editor.getCursorPosition();
-	var menu = toolbar.html();
-	menu = menu.replace(/(menulink_[0-9]+)/g,"$1_popup");
-	menu = menu.replace(/(_entryid)/g,"popup_entryid");	
-	menu = menu.replace(/(_wikilink)/g,"popup_wikilink");
-	menu = menu.replace(/(_fieldname)/g,"popup_fieldname");
-	menu = HtmlUtils.div(["class","wiki-editor-popup-toolbar"],menu);
 	var t = editor.getValue();
 	var s = "";
 	var lines = t.split("\n");
@@ -417,6 +476,13 @@ function wikiInitEditor(info) {
 
 	}
 	
+	var menu = toolbar.html();
+	menu = menu.replace(/(menulink_[0-9]+)/g,"$1_popup");
+	menu = menu.replace(/(_entryid)/g,"popup_entryid");	
+	menu = menu.replace(/(_wikilink)/g,"popup_wikilink");
+	menu = menu.replace(/(_fieldname)/g,"popup_fieldname");
+	menu = HtmlUtils.div(["class","wiki-editor-popup-toolbar"],menu);
+
 	let dmenu = "";
 	let toggleLabel ="";
 	let blockCnt=-1;
@@ -508,8 +574,6 @@ function wikiInitEditor(info) {
 		    wikiAttributes[tag].map(a=>tags.push(a));
 		}
 
-
-
 		let processTag =(tag)=>{
 		    let tt =null;
 		    let label=null;
@@ -578,7 +642,6 @@ function wikiInitEditor(info) {
 		menu += "</div>";
 	    }
 	}
-	
 
 	popupObject = getTooltip();
 	popupObject.html(menu);
@@ -591,4 +654,113 @@ function wikiInitEditor(info) {
 	});
     });
 }
+
+
+
+function wikiEditorHandlePopup(info, tag) {
+    var type;
+    if(tag=="xxgroup") {
+	type="blank"
+	tag = "display";
+    }  else if(tag.startsWith("display_")) {
+	type = tag.substring(8);
+	tag = "display";
+    } else {
+	tmp = chunk.match(/type *= *\"([^\"]+)\"?/); 
+	if(tmp && tmp.length>1) type=tmp[1];
+    }
+    var tags = [];
+    var extra;
+    if(tag == "display" && type) {
+	try {
+	    var display = 
+		(new DisplayManager()).createDisplay(type,{dummy:true});
+	    if(display) {
+		tags = display.getWikiEditorTags();
+	    }
+	} catch(e) {
+	    console.log("Error getting tags for:" + type +" error:" + e  + " stack:" +e.stack);
+	}
+	extra = Utils.getColorTablePopup(info);
+    }
+    if(wikiAttributes[tag]) {
+	wikiAttributes[tag].map(a=>tags.push(a));
+    }
+	
+    let processTag =(tag)=>{
+	let tt =null;
+	let label=null;
+	if(Array.isArray(tag)) {
+	    let a = tag;
+	    if(tag.length==3) {
+		label = a[0];
+		tt = a[2];
+		tag = a[1];
+	    } else {
+		tt = a[1];
+		tag = a[0];
+	    }
+	} 
+	if(tag.inline)  tag = "inlinelabel:" + tag.inline;
+	if(tag.inlineLabel)  tag = "inlinelabel:" + tag.inlineLabel;
+	if(tag.label) tag="label:" + tag.label;
+	if(!tag.startsWith) console.log(tag);
+	
+	if(tag.startsWith("inlinelabel:")) {
+	    handleBlock();
+	    toggleLabel = tag.substring("inlinelabel:".length);
+	    return;
+	}
+	if(tag.startsWith("label:")) {
+	    handleBlock();
+	    toggleLabel = tag.substring(6);
+	    return;
+	}
+	if(tag.startsWith("info:")) {
+	    dmenu+="<i>"+tag.substring(5)+"</i><br>";
+	    return;
+	}
+	let t = " " + tag.replace(/\"/g,"&quot;")+" ";
+	tag = tag.replace(/=.*$/,"");
+	let tt2 = t.replace(/"/g,"&quot;");
+	if(tt) {
+	    //			tt2 = tt2 +" - " + tt;
+	    tt2 = tt;
+	} else {
+	    tt2 = "";
+	}
+	tag = HtmlUtils.span(["title",tt2],tag);
+	if(label)
+	    label = HtmlUtils.span(["title",tt2],label);
+	dmenu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",label || tag)+"<br>\n";
+    };
+    
+    if(tags.length>0) {
+	menu = HU.open('div',[CLASS,'wiki-editor-popup']);
+	menu = HU.open('div',[CLASS,'wiki-editor-popup-section']);
+    }
+    tags.forEach(t=>{
+	if(t.list) {
+	    t.list.forEach(processTag);
+	} else {
+	    processTag(t);
+	}
+    });
+    handleBlock();
+    if(extra) {
+	menu+=extra;
+    }
+    menu += "</div>";
+    menu += "</div>";
+    popupObject = getTooltip();
+    popupObject.html(menu);
+    popupObject.show();
+    popupObject.position({
+	of: $(window),
+	my: "left top",
+	at: "left+" +e.x +" top+" + (e.y),
+	collision: "fit fit"
+    });
+}
+
 
