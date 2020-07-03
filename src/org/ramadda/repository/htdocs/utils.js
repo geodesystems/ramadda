@@ -1464,6 +1464,14 @@ var Utils =  {
 	    f();
 	});
     },
+    copyText: function(str) {
+	const el = document.createElement('textarea');
+	el.value = str;
+	document.body.appendChild(el);
+	el.select();
+	document.execCommand('copy');
+	document.body.removeChild(el);
+    },
     foregroundColors: {
 	purple: "white",
     },
@@ -2725,6 +2733,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let header = HtmlUtils.div([STYLE,HU.css("text-align","right"),CLASS,"ramadda-popup-header"],closeImage);
 	let html = header +HU.div([STYLE,"margin:8px;"],inner);
 	$(document.body).append(HU.div([ID,id,CLASS,"ramadda-popup"],html));
+	if((typeof target)=="string") {
+	    target = $("#" + target);
+	}
 	let dialog =  $("#" + id);
 	dialog.show();
 	dialog.draggable();
