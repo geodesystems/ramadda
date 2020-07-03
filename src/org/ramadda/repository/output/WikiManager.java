@@ -1914,17 +1914,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     wikiUtil.removeWikiProperty(name);
                 }
             }
+
             return "";
         } else if (theTag.equals(WIKI_TAG_ATTRS)) {
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
                 String value = (String) props.get(key);
-		if(key.equals("clearAttributes")) {
-		    wikiUtil.clearWikiAttributes();
-		    continue;
-		}
-		wikiUtil.putWikiAttribute(key, value);
+                if (key.equals("clearAttributes")) {
+                    wikiUtil.clearWikiAttributes();
+
+                    continue;
+                }
+                wikiUtil.putWikiAttribute(key, value);
             }
+
             return "";
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTIES)) {
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
@@ -1934,6 +1937,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                           + "','" + value + "');\n");
 
             }
+
             return "";
 
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTY)) {
@@ -1942,6 +1946,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if ((name != null) && (value != null)) {
                 wikiUtil.appendJavascript("addGlobalDisplayProperty('" + name
                                           + "','" + value + "');\n");
+
                 return "";
             }
 
@@ -3093,6 +3098,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 checkHeading(request, wikiUtil, props, sb);
             }
             makeGallery(request, wikiUtil, children, props, sb);
+
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_ROOT)) {
             return getRepository().getUrlBase();
@@ -4944,9 +4950,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         for (int i = 0; i < columns; i++) {
             colsSB[i] = new StringBuilder();
         }
-        int num    = 0;
-        int colCnt = 0;
-	String idPrefix = "gallery";
+        int    num      = 0;
+        int    colCnt   = 0;
+        String idPrefix = "gallery";
 
         for (Entry child : imageEntries) {
             num++;
@@ -4987,7 +4993,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                          "" + (-width) + "%");
             }
-            String name = getEntryDisplayName(child);
+            String name       = getEntryDisplayName(child);
             String theCaption = caption;
             theCaption = theCaption.replace("${count}", "" + num);
             theCaption =
@@ -5002,7 +5008,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if ((name != null) && !name.isEmpty()) {
                 extra = extra + HtmlUtils.attr(HtmlUtils.ATTR_ALT, name);
             }
-	    extra = extra +  HtmlUtils.attr("id",idPrefix+"img" +num);
+            extra = extra + HtmlUtils.attr("id", idPrefix + "img" + num);
             String img = HtmlUtils.img(url, "", extra);
 
             String entryUrl =
@@ -5015,11 +5021,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if ( !captionPos.equals("none")) {
                     popupExtras += HtmlUtils.attr("title", theCaption);
                 }
-		popupExtras += HtmlUtils.attr("data-fancybox",idPrefix) + HtmlUtils.attr("data-caption",theCaption);
+                popupExtras += HtmlUtils.attr("data-fancybox", idPrefix)
+                               + HtmlUtils.attr("data-caption", theCaption);
                 buff.append(
                     HtmlUtils.href(
                         child.getTypeHandler().getEntryResourceUrl(
-								   request, child), HtmlUtils.div(img, HtmlUtils.attr("id",idPrefix+"div" +num)), popupExtras));
+                            request, child), HtmlUtils.div(
+                            img,
+                            HtmlUtils.attr(
+                                "id", idPrefix + "div" + num)), popupExtras));
             } else {
                 buff.append(img);
             }
@@ -5539,6 +5549,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String tagsButton2 = getPageHandler().makePopupLink(msg("Displays"),
                                  tags2.toString(), buttonClass);
+        tagsButton2 = HtmlUtils.href("javascript:noop()", "Displays",
+                                     HU.attrs("id",
+                                         "displays_button" + textAreaId,
+                                         "class", "ramadda-menubar-button"));
+        tagsButton2 += HtmlUtils.script("wikiInitDisplaysButton('"
+                                        + textAreaId + "')");
+
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
                               "Entry id", true, "entryid", entry, false,
@@ -6919,7 +6936,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-	wikiUtil.addWikiAttributes(propList);
+        wikiUtil.addWikiAttributes(propList);
 
         js.append("displayManager.createDisplay("
                   + HtmlUtils.quote(displayType) + ","
