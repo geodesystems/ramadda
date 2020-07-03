@@ -7,9 +7,6 @@ const DISPLAY_TREE = "tree";
 const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
 const DISPLAY_BLANK = "blank";
-const DISPLAY_RELOADER = "reloader";
-const DISPLAY_DOWNLOAD = "download";
-const DISPLAY_MESSAGE = "message";
 const DISPLAY_RECORDS = "records";
 const DISPLAY_TSNE = "tsne";
 const DISPLAY_HEATMAP = "heatmap";
@@ -31,21 +28,21 @@ addGlobalDisplayType({
     label: "Ranking",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,
     label: "Correlation",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
 addGlobalDisplayType({
     type: DISPLAY_CROSSTAB,
     label: "Crosstab",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
 
 addGlobalDisplayType({
@@ -53,14 +50,14 @@ addGlobalDisplayType({
     label: "Stats Table",
     requiresData: false,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
 addGlobalDisplayType({
     type: DISPLAY_RECORDS,
     label: "Records",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TEXT
 });
 addGlobalDisplayType({
     type: DISPLAY_TSNE,
@@ -74,16 +71,14 @@ addGlobalDisplayType({
     label: "Heatmap",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
-
-
 addGlobalDisplayType({
     type: DISPLAY_GRAPH,
     label: "Graph",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_MISC
 });
 
 addGlobalDisplayType({
@@ -99,7 +94,7 @@ addGlobalDisplayType({
     label: "Sparkline",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -107,7 +102,7 @@ addGlobalDisplayType({
     label: "Canvas",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -115,27 +110,21 @@ addGlobalDisplayType({
     label: "Point Image",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
-
-
 addGlobalDisplayType({
     type: DISPLAY_FIELDTABLE,
     label: "Field Table",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TABLE
 });
-
-
-
-
 addGlobalDisplayType({
     type: DISPLAY_TREE,
     forUser: true,
     label: "Tree",
     requiresData: false,
-    category: "Misc"
+    category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
@@ -143,7 +132,7 @@ addGlobalDisplayType({
     label: "Org Chart",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
@@ -151,62 +140,35 @@ addGlobalDisplayType({
     label: "Timeline",
     requiresData: true,
     forUser: true,
-    category:  "Misc"
+    category:  CATEGORY_MISC
 });
-
-
 addGlobalDisplayType({
     type: DISPLAY_BLANK,
     label: "Blank",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_CONTROLS
 });
-addGlobalDisplayType({
-    type: DISPLAY_RELOADER,
-    label: "Reloader",
-    requiresData: true,
-    forUser: true,
-    category: "Misc"
-});
-
-addGlobalDisplayType({
-    type: DISPLAY_DOWNLOAD,
-    label: "Download",
-    requiresData: true,
-    forUser: true,
-    category: "Misc"
-});
-addGlobalDisplayType({
-    type: DISPLAY_MESSAGE,
-    label: "Message",
-    requiresData: true,
-    forUser: true,
-    category: "Misc"
-});
-
 addGlobalDisplayType({
     type: DISPLAY_COOCCURENCE,
     label: "Cooccurence",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_TABLE
 });
-
 addGlobalDisplayType({
     type: DISPLAY_BOXTABLE,
     label: "Box Table",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_TABLE
 });
-
 addGlobalDisplayType({
     type: DISPLAY_DATATABLE,
     label: "Date Table",
     requiresData: true,
     forUser: true,
-    category: "Misc"
+    category: CATEGORY_TABLE
 });
 
 
@@ -778,206 +740,8 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
 	}});
 }
 
-function RamaddaReloaderDisplay(displayManager, id, properties) {
-    const ID_CHECKBOX= "cbx";
-    const ID_COUNTDOWN= "countdown";
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RELOADER, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
-	{label:'Reloader Properties'},
-	{p:'interval',wikiValue:'30',d:30,label:"Interval"},
-	{p:'showCheckbox',wikiValue:'false',d:true,label:"Show Checkbox"},
-	{p:'showCountdown',wikiValue:'false',d:true,label:"Show Countdown"},
-    ]);
-
-    $.extend(this, {
-        needsData: function() {
-            return true;
-        },
-        xxpointDataLoaded: function(pointData, url, reload) {
-	},
-	reloadData: function() {
-	    let pointData = this.dataCollection.getList()[0];
-	    pointData.loadData(this,true);
-	},
-	updateUI: function() {
-	    let html = "";
-	    //If we are already displaying then don't update the UI
-	    if(this.jq(ID_COUNTDOWN).length>0) return;
-	    if(this.getPropertyShowCheckbox()) {
-		html += HU.checkbox(this.getDomId(ID_CHECKBOX),[],true);
-	    }		
-	    if(this.getPropertyShowCountdown()) {
-		html+=" " + HU.span([CLASS,"display-reloader-label", ID,this.getDomId(ID_COUNTDOWN)],this.getCountdownLabel(this.getPropertyInterval()));
-	    } else {
-		if(this.getPropertyShowCheckbox()) {
-		    html+=" " + HU.span([ID,this.getDomId(ID_COUNTDOWN)],"Reload");
-		}
-	    }
-	    this.setContents(html);
-	    this.jq(ID_CHECKBOX).change(()=>{
-		let cbx = this.jq(ID_CHECKBOX);
-		if(cbx.is(':checked')) {
-		    this.setTimer(this.lastTime);
-		}
-	    });
-	    this.setTimer(this.getPropertyInterval());
-	},
-	okToRun: function() {
-	    let cbx = this.jq(ID_CHECKBOX);
-	    if(cbx.length==0) return true;
-	    return cbx.is(':checked');
-	},
-	getCountdownLabel: function(time) {
-	    let pad = "";
-	    if(time<10) pad = "&nbsp;";
-	    return "Reload in " + time +" seconds"+pad;
-	},
-	updateCountdown(time) {
-	    if(this.getPropertyShowCountdown()) {
-		this.jq(ID_COUNTDOWN).html(this.getCountdownLabel(time));
-	    } else {
-		this.jq(ID_COUNTDOWN).html("Reload");
-	    }
-	},
-	setTimer(time) {
-	    if(!this.okToRun()) return;
-	    if(this.timerPending) return;
-	    this.lastTime = time;
-	    this.updateCountdown(time);
-	    this.timerPending = true;
-	    setTimeout(()=>{
-		this.timerPending = false;
-		this.checkReload(time);
-	    },1000);
-	},
-	checkReload: function(time) {
-	    time--;
-	    if(time<=0) {
-		this.jq(ID_COUNTDOWN).html("Reloading..." +HU.span([STYLE,"color:transparent;"],"xseconds"));
-		this.reloadData();
-		time = this.getPropertyInterval();
-		//Start up again in a bit so the reloading... label is shown
-		setTimeout(()=>{
-		    this.setTimer(time);
-		},1000);
-	    } else {
-		this.setTimer(time);
-	    }
-	}
-    });
-}
 
 
-
-function RamaddaDownloadDisplay(displayManager, id, properties) {
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DOWNLOAD, properties);
-    const ID_DOWNLOAD = "download";
-    const ID_CANCEL = "cancel";    
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
-	{label:'Download Properties'},
-	{p:'csvLabel',wikiValue:'Download CSV'},
-	{p:'useIcon',d:'false',wikiValue:'false'},
-	{p:'fileName',d:'download',wikiValue:'download'},
-	{p:'askFields',d:'false',wikiValue:'true'},		
-    ]);
-    $.extend(this, {
-	fieldOn:{},
-	needsData: function() {
-        return true;
-    },
-    updateUI: function() {
-	let label = this.getPropertyCsvLabel("Download CSV");
-	label = label.replace("${title}",this.getProperty("title",""));
-	let useIcon = this.getPropertyUseIcon(true);
-	label = useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label;
-	this.setContents(HU.div([ID,this.getDomId("csv")],label));
-	if(useIcon) {
-            this.jq("csv").click(() => {
-		this.doDownload();
-            });
-	} else {
-            this.jq("csv").button().click(() => {
-		this.doDownload();
-            });
-	}
-    },
-    getCsv: function(fields) {
-        fields = fields || this.getData().getRecordFields();
-	let records = this.filterData();
-	DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
-    },
-
-    applyFieldSelection: function() {
-	this.getData().getRecordFields().forEach(f=>{
-	    let cbx = this.jq("cbx_" + f.getId());
-	    let on = cbx.is(':checked');
-	    this.fieldOn[f.getId()] = on;
-	});
-    },
-    getDownloadDialog: function() {
-	let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD)],"Download") +"&nbsp;&nbsp;" +
-			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
-	html += "<b>Include:<br></b>";
-	let cbx = "";
-	this.getData().getRecordFields().forEach((f,idx)=>{
-	    let on = this.fieldOn[f.getId()];
-	    if(!Utils.isDefined(on)) on = true;
-	    cbx += HU.checkbox(this.getDomId("cbx_" + f.getId()),[],on) +" " + f.getLabel() +"<br>";
-	});
-	
-	html = HU.div([STYLE,HU.css("margin","5px")],html);
-	html += HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto","margin","5px")], cbx);
-	return html;
-    },
-    doDownload: function() {
-	if(this.getPropertyAskFields(true)) {
-	    let html = this.getDownloadDialog();
-	    let init = ()=>{
-		this.jq(ID_DOWNLOAD).button().click(() =>{
-		    this.jq(ID_DIALOG).hide();
-		    let fields = [];
-		    this.applyFieldSelection();
-		    this.getData().getRecordFields().forEach(f=>{
-			if(this.fieldOn[f.getId()]) {
-			    fields.push(f);
-			}
-		    });
-		    this.getCsv(fields);
-		});
-		this.jq(ID_CANCEL).button().click(() =>{
-		    this.applyFieldSelection();
-		    this.jq(ID_DIALOG).hide();
-		});
-	    };
-	    this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init);
-	} else  {
-            this.getCsv();
-	}
-    },
-    });
-}
-
-
-function RamaddaMessageDisplay(displayManager, id, properties) {
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MESSAGE, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-        needsData: function() {
-            return false;
-        },
-	updateUI: function() {
-	    if(this.getProperty("decorate",true)) {
-		this.setContents(this.getMessage(this.getProperty("message",this.getNoDataMessage())));
-	    } else {
-		this.setContents(this.getProperty("message",this.getNoDataMessage()));
-	    }
-	}});
-}
 
 
 function RamaddaTsneDisplay(displayManager, id, properties) {

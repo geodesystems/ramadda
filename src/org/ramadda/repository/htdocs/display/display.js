@@ -23,6 +23,18 @@ const displayDebug = {
 }
 
 
+const CATEGORY_CHARTS = "Basic Charts";
+const CATEGORY_TABLE = "Tables";
+const CATEGORY_MISC = "Misc Charts";
+const CATEGORY_MAPS_IMAGES = "Maps and Images";
+const CATEGORY_RADIAL_ETC = "Radial, trees, etc";
+const CATEGORY_TEXT = "Text Displays";
+const CATEGORY_ENTRIES = "Entry Displays";
+const CATEGORY_CONTROLS = "Controls";
+const DISPLAY_CATEGORIES = [CATEGORY_CHARTS,CATEGORY_TABLE,CATEGORY_MAPS_IMAGES,CATEGORY_MISC,CATEGORY_TEXT,CATEGORY_RADIAL_ETC,CATEGORY_CONTROLS,CATEGORY_ENTRIES];
+
+
+
 //Ids of DOM components
 const ID_BOTTOM = "bottom";
 const ID_COLORTABLE = "colortable";
@@ -34,7 +46,6 @@ const ID_HEADER2 = "header2";
 const ID_HEADER2_PREFIX = "header2prefix";
 const ID_HEADER2_PREPREFIX = "header2preprefix";
 const ID_HEADER2_SUFFIX = "header2suffix";
-const ID_HEADER3 = "header3";
 const ID_FILTERBAR = "filterbar";
 const ID_TITLE = ATTR_TITLE;
 const ID_TITLE_EDIT = "title_edit";
@@ -69,12 +80,12 @@ const ID_PAGE_PREV = "pageprev";
 const ID_PAGE_NEXT = "pagenext";
 const ID_FILTER_HIGHLIGHT = "filterhighlight";
 const ID_FILTER_DATE = "filterdate";
-const CATEGORY_MISC = "Misc";
 const ID_ENTRIES_MENU = "entries_menu";
 const ID_ENTRIES_PREV = "entries_prev";
 const ID_ENTRIES_NEXT = "entries_next";
 const PROP_DISPLAY_FILTER = "displayFilter";
 const PROP_EXCLUDE_ZERO = "excludeZero";
+const PROP_EXCLUDE_NAN = "excludeUndefined";
 const PROP_DIVID = "divid";
 const PROP_FIELDS = "fields";
 const PROP_LAYOUT_HERE = "layoutHere";
@@ -876,6 +887,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterSort=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
+		['excludeUndefined=true','Exclude any records with an undefined value'],
+		['excludeZero=true','Exclude any records with a 0 value'],
 		['recordSelectFilterFields=""','Set the value of other displays filter fields'],
 		'selectFields=prop:label:field1,...fieldN;prop:....',
 		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
@@ -885,6 +898,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['greater than','dataFilters="greaterthan(field=field,value=value,label=,enabled=);"',''],
 		['equals','dataFilters="equals(field=field,value=value,label=,enabled=);"',''],
 		['not equals','dataFilters="notequals(field=field,value=value,label=,enabled=); "',''],
+		['filterLatest=fields','Only show the latest records grouped by fields'],		
 		['filterDate=year',"Show a simple pull down menu to select a year to display"],
 		['filterDateIncludeAll=true',"Include all years"],
 		['startDate="yyyy-MM-dd"',"Filter data on date"],
@@ -896,6 +910,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['merge rows','convertData="mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);"',"Merge rows together"],
 		["rotate data", 'convertData="rotateData(includeFields=true,includeDate=true,flipColumns=true);"',"Rotate data"],
 		["add percent", 'convertData="addPercentIncrease(replaceValues=false);"',"Add percent increase"],
+		['doubling rate','convertData="doublingRate(fields=f1\\\\,f2, keyFields=f3);"',"Calculate # days to double"],
 		["unfurl", 'convertData="unfurl(headerField=,uniqueField=,valueFields=);"',"Unfurl"],
 		"label:Color Attributes",
 		["colors=\"color1,...,colorN\"","Comma separated array of colors"],
@@ -2353,14 +2368,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    $.extend(opts,args);
 	    let debug = displayDebug.filterData;
 	    let highlight =  this.getFilterHighlight();
-	    var startDate = this.getProperty("startDate");
-	    var endDate = this.getProperty("endDate");
+	    let startDate = this.getProperty("startDate");
+	    let endDate = this.getProperty("endDate");
 	    if(startDate) {
 		this.startDateObject = Utils.createDate(startDate);
 	    } 
 	    if(endDate) {
 		this.endDateObject = Utils.createDate(endDate);
 	    } 
+
+
 
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
@@ -2384,7 +2401,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-            var pointData = this.getData();
+            let pointData = this.getData();
             if (!records) {
                 if (pointData == null) return null;
                 records = pointData.getRecords();
@@ -2398,19 +2415,31 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 	    if(debug)   console.log("R-1:" + records.length);
-	    if(this.getProperty("showLastDate")) {
-		let max = null;
+	    if(this.getProperty("filterLatest")) {
+		let fields = this.getFieldsByIds(null,this.getProperty("filterLatest"));
+		let max = {};
+		let keyToRecord = {};
 		let tmp = [];
-		records.forEach(r=>{
-		    if(!r.getTime()) return;
-		    if(!max) max = r.getTime();
-		    else max = r.getTime().getTime()>max.getTime()?r.getTime():max;
+		let keys = [];
+		records.forEach(record=>{
+		    if(!record.getTime()) return;
+		    let key = "";
+		    fields.forEach(f=>{
+			key+="_" + record.getValue(f.getIndex());
+		    });
+		    let maxRecord = keyToRecord[key];
+		    if(!maxRecord) {
+			keyToRecord[key] = record;
+			keys.push(key);
+		    } else {
+			if(record.getDate().getTime()>maxRecord.getDate().getTime()) keyToRecord[key] = record;
+		    }
 		});
 
-		if(max)
-		    records.forEach(record=>{
-			if(record.getTime().getTime() == max.getTime()) tmp.push(record);
-		    });
+
+		keys.forEach(key=>{
+		    tmp.push(keyToRecord[key]);
+		});
 		records  =tmp;
 	    }
 
@@ -2420,7 +2449,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    });
 
 	    records = records.filter(record=>{
-                var date = record.getDate();
+                let date = record.getDate();
 		if(!date) return true;
 		return this.dateInRange(date);
 	    });
@@ -2433,8 +2462,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records.forEach((record,rowIdx)=>{
 		    let allOk = true;
 		    let anyOk = false;		    
-		    for(var i=0;i<this.filters.length;i++) {
-			var filter= this.filters[i];
+		    for(let i=0;i<this.filters.length;i++) {
+			let filter= this.filters[i];
 			if(!filter.isEnabled()) continue;
 			let filterOk = filter.isRecordOk(record);
 			if(!filterOk) allOk = false;
@@ -2611,8 +2640,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getGet: function() {
             return "getRamaddaDisplay('" + this.getId() + "')";
         },
-        showWikiText: function(type) {
+	assembleWikiText: function(type) {
 	    var wiki =  "";
+	    if(window.globalDisplayProperties) {
+		for(key in window.globalDisplayProperties) {
+		    wiki += '{{displayProperty name="' + key +'" value="' + window.globalDisplayProperties[key]+'"}}\n';
+
+		}
+	    }
             wiki += this.getWikiText();
             for (var i = 0; i < this.displays.length; i++) {
                 var display = this.displays[i];
@@ -2621,12 +2656,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 wiki += display.getWikiText();
             }
+	    return wiki;
+	},
+        showWikiText: function(type) {
+	    var wiki =  this.assembleWikiText();
 	    popupObject = getTooltip();
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	    wiki = HU.pre([STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
 	    this.showDialog(wiki);
 	},
-
+        copyWikiText: function(type) {
+	    Utils.copyText(this.assembleWikiText());
+	    alert("Wiki text has been copied to the clipboard");
+	},
         publish: function(type) {
             if (type == null) type = "wikipage";
             var args = [];
@@ -2650,14 +2692,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 wiki = "<wiki>\n";
             }
             wiki += desc;
-            wiki += this.getWikiText();
-            for (var i = 0; i < this.displays.length; i++) {
-                var display = this.displays[i];
-                if (display.getIsLayoutFixed()) {
-                    continue;
-                }
-                wiki += display.getWikiText();
-            }
+	    wiki += this.assembleWikiText();
             if (type == "wikipage") {
                 wiki += "-section\n\n";
             } else if (type == "blogentry") {}
@@ -2680,8 +2715,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             args.push("description_encoded");
 	    console.log(wiki);
             args.push(window.btoa(wiki));
-
-
             var url = HU.getUrl(ramaddaBaseUrl + "/entry/publish", args);
             window.open(url, '_blank');
         },
@@ -2743,11 +2776,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         getWikiText: function() {
-            var attrs = ["layoutHere", "false",
+            var attrs = [
+			 "layoutHere", "false",
 			 "type", this.type,
 			 "column", this.getColumn(),
 			 "row", this.getRow()
 			];
+	    if(this.getProperty("entryId")) {
+		attrs.push("entry");
+		attrs.push(this.getProperty("entryId"));
+	    }
             this.getWikiAttributes(attrs);
             var entryId = null;
             if (this.getEntries) {
@@ -3535,7 +3573,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             newMenu += HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display"));
             newMenuItems.push(HU.tag(TAG_LI, [], HU.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay',null,null," + props+");", "New Entry Display")));
 
-
+a
             //check if it has point data
             var pointUrl = this.getPointUrl(entry);
             //            console.log("entry:" + entry.getName() + " url:" + pointUrl);
@@ -3869,8 +3907,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             });
             let header =
 		HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "") +
-		HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "") +
-		HU.div([ID,this.getDomId(ID_HEADER3),CLASS,"display-header3"], "");
+		HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
 
 	    top =  header + topCenter + top;
 
@@ -5417,6 +5454,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.indexToRecord = {};
             var pointData = this.getPointData();
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
+            var excludeNan = this.getProperty(PROP_EXCLUDE_NAN, false);	    
             if (fields == null) {
                 fields = pointData.getRecordFields();
 		if(debug) console.log("\tgetRecordFields: " + fields.length);
@@ -5548,7 +5586,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 rowCnt++;
 		this.recordToIndex[record.getId()] = rowCnt;
 		this.indexToRecord[rowCnt] = record;
-                var values = [];
+                let values = [];
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
@@ -5578,6 +5616,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let allNull = true;
                 let allZero = true;
                 let hasNumber = false;
+		let hasNan = false;
                 for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                     let field = fields[fieldIdx];
                     if (field.isFieldNumeric() && field.isFieldDate()) {
@@ -5594,6 +5633,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         allNull = false;
                     }
                     if (typeof value == 'number') {
+			if(excludeNan &&  isNaN(value))  {
+			    hasNan=true;
+			}
                         hasNumber = true;
                         if (value != 0) {
                             allZero = false;
@@ -5603,8 +5645,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         value = this.getDateValue(value, date_formatter);
                     }
                     values.push(value);
-                }
+		}
 
+
+		if(hasNan) {
+		    continue;
+		}
                 if (hasNumber && allZero && excludeZero) {
 		    //		    console.log(" skipping due to zero: " + values);
                     continue;
@@ -5626,7 +5672,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     });
                 else
                     dataList.push(values);
-                //                    console.log("values:" + values);
                 if (!allNull) {
                     nonNullRecords++;
                 }
@@ -5885,8 +5930,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 			 "$entryid_maindiv"
 			];
             let wiki = "";
-            wiki += "<div id=\"{{entryid}}_maindiv\"></div>\n\n";
-            wiki += "{{group " + HU.attrs(attrs) + "}}\n\n"
+            wiki += "<div id=\"{{entryid}}_maindiv\"></div>\n";
+            wiki += "{{group " + HU.attrs(attrs) + "}}\n"
             return wiki;
         },
 
@@ -6010,6 +6055,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 displaysToLayout[i].setProperty(PROP_DIVID,divId);
                 displaysToLayout[i].layoutDiv=div;
             }
+            let tabId = HU.getUniqueId("tabs_");
             if (this.layout == LAYOUT_TABLE) {
                 if  (displaysToLayout.length== 1) {
                     html += displaysToLayout[0].layoutDiv;
@@ -6078,7 +6124,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     }
                 }
             } else if (this.layout == LAYOUT_TABS) {
-                let tabId = HU.getUniqueId("tabs_");
                 html += HU.open(TAG_DIV, [ID, tabId, CLASS, "ui-tabs"]);
                 html += HU.open(TAG_UL, []);
                 let hidden = "";

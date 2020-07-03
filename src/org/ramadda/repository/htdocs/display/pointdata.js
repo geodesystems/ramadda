@@ -2258,6 +2258,65 @@ function CsvUtil() {
 	noop: function(pointData, args) {
 	    return pointData;
 	},
+	doublingRate: function(pointData, args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fields =  this.display.getFieldsByIds(allFields, (args.fields||"").replace(/_comma_/g,","));
+	    let keyFields =  this.display.getFieldsByIds(allFields, (args.keyFields||"").replace(/_comma_/g,","));
+	    let newRecords  =[]
+	    let newFields = Utils.cloneList(allFields);
+	    fields.map(f=>{
+		if(!f.isNumeric()) return;
+		let newField = f.clone();
+		newField.id = newField.id+"_doubling";
+		newField.unit = "days";
+		newField.label = newField.label+" doubling";
+		newField.index = newFields.length;
+		newFields.push(newField);
+	    });
+	    let keys = [];
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		let key = "";
+		keyFields.forEach(f=>{
+		    key+="_"+record.getValue(f.getIndex());
+		});
+		keys.push(key);
+	    }
+
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		let key = keys[rowIdx];
+		newRecords.push(newRecord);
+		newRecord.fields =newFields;
+		fields.map((f,idx)=>{
+		    if(!f.isNumeric()) return;
+		    let v = record.getValue(f.getIndex());
+		    let v2 = NaN;
+		    let lastDate = null;
+		    for (var j=rowIdx-1; j>=0; j--) {
+			if(keyFields.length>0) {
+			    let key2 = keys[j];
+			    if(key!=key2) continue;
+			}
+			let record2 = records[j];
+			v2 = record2.getValue(f.getIndex());
+			if(v>=v2*2) {
+			    lastDate  = record2.getDate();
+			    break;
+			}
+		    }
+		    let diff = NaN;
+		    if(lastDate) {
+			diff = (record.getDate().getTime()-lastDate.getTime())/1000/60/60/24;
+		    }
+		    newRecord.data.push(diff);
+		});
+	    }
+	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
+	},
 	mergeRows: function(pointData, args) {
 	    let records = pointData.getRecords(); 
             let fields  = pointData.getRecordFields();

@@ -10,15 +10,7 @@ const PROP_SHOW_MAP = "showMap";
 const PROP_SHOW_MENU = "showMenu";
 const PROP_FROMDATE = "fromDate";
 const PROP_TODATE = "toDate";
-
 const DISPLAY_MULTI = "multi";
-addGlobalDisplayType({
-    type: DISPLAY_MULTI,
-    label: "Multi Chart",
-    requiresData: true,
-    forUser: false,
-    category: "Misc"
-});
 
 
 
@@ -35,12 +27,46 @@ function addDisplayManager(displayManager) {
 }
 
 
-function addGlobalDisplayType(type) {
+function addGlobalDisplayType(type, front) {
     if (window.globalDisplayTypes == null) {
         window.globalDisplayTypes = [];
+	window.globalDisplayTypesMap = {};
     }
-    window.globalDisplayTypes.push(type);
+    if(type.type) {
+	window.globalDisplayTypesMap[type.type] = type;
+    }
+
+
+    if(front) {
+	window.globalDisplayTypes.unshift(type);
+    } else {
+	window.globalDisplayTypes.push(type);
+    }
 }
+
+
+addGlobalDisplayType({
+    type: "group",
+    label: "Group",
+    requiresData: false,
+    forUser: true,
+    category: "Basic Charts"
+},true);
+
+
+
+
+addGlobalDisplayType({
+    type: DISPLAY_MULTI,
+    label: "Multi Chart",
+    requiresData: true,
+    forUser: false,
+    category: "Misc"
+});
+
+
+
+
 
 //
 //This will get the currently created global displaymanager or will create a new one
@@ -211,103 +237,104 @@ function DisplayManager(argId, argProperties) {
 	    if(!this.getShowMenu()) {
 		return "";
 	    }
-	    //            if (!this.getProperty(PROP_SHOW_MENU, true)) {
-	    //                return "";
-	    //            }
             //How else do I refer to this object in the html that I add 
             var get = "getDisplayManager('" + this.getId() + "')";
             var layout = "getDisplayManager('" + this.getId() + "').getLayoutManager()";
             var html = "";
+
             var newMenus = {};
             var cats = [];
-            var chartMenu = "";
             var displayTypes = [];
             if (window.globalDisplayTypes != null) {
                 displayTypes = window.globalDisplayTypes;
             }
+	    DISPLAY_CATEGORIES.forEach(category=>{
+                newMenus[category] = [];
+                cats.push(category);
+	    });
             for (var i = 0; i < displayTypes.length; i++) {
                 //The ids (.e.g., 'linechart' have to match up with some class function with the name 
                 var type = displayTypes[i];
                 if (Utils.isDefined(type.forUser) && !type.forUser) {
                     continue;
                 }
-                var category = type.category;
+		var category = type.category;
                 if (!category) {
-                    category = "Misc";
+                    category = CATEGORY_MISC;
                 }
                 if (newMenus[category] == null) {
-                    newMenus[category] = "";
+                    newMenus[category] = [];
                     cats.push(category);
                 }
-                newMenus[category] += HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["onclick", get + ".userCreateDisplay('" + type.type + "');"], type.label));
+		let menuAttrs = ["onclick", get + ".userCreateDisplay('" + type.type + "');"];
+		if(type.desc) {
+		    menuAttrs.push(TITLE);
+		    menuAttrs.push(type.desc);
+		}
+                newMenus[category].push(HU.tag(TAG_LI, [], HU.tag(TAG_A, menuAttrs, type.label)));
             }
-
-            var newMenu = "";
+            let newMenu = "";
             for (var i = 0; i < cats.length; i++) {
                 var cat = cats[i];
-                if (cat == "Charts") {
-                    chartMenu = newMenus[cat];
-                }
-                var subMenu = HtmlUtils.tag("ul", [], newMenus[cat]);
-                var catLabel = HtmlUtils.tag(TAG_A, [], cat);
-                newMenu += HtmlUtils.tag(TAG_LI, [], catLabel + subMenu);
-                //                    newMenu  += HtmlUtils.tag(TAG_LI,[], "SUB " + i);
+		var menu = Utils.join(newMenus[cat],"");
+                var subMenu = HU.tag("ul", [], menu);
+                var catLabel = HU.tag(TAG_A, [], cat);
+                newMenu += HU.tag(TAG_LI, [], catLabel + subMenu);
             }
+
+
             var publishMenu =
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('media_photoalbum');", "New Photo Album")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('wikipage');", "New Wiki Page")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('blogentry');", "New Blog Post")) + "\n";
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('media_photoalbum');", "New Photo Album")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('wikipage');", "New Wiki Page")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".publish('blogentry');", "New Blog Post")) + "\n";
 
 
             var fileMenu =
-                HtmlUtils.tag(TAG_LI, [], "<a>Publish</a>" + HtmlUtils.tag("ul", [], publishMenu)) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".showWikiText();", "Show Text")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
+                HU.tag(TAG_LI, [], "<a>Publish</a>" + HU.tag("ul", [], publishMenu)) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".showWikiText();", "Show Text")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".copyWikiText();", "Copy Text")) + "\n" +		
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
 
 
-            var titles = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HtmlUtils.onClick(layout + ".titlesOn();", "On") + "/" + HtmlUtils.onClick(layout + ".titlesOff();", "Off"));
-            var dates = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+            var titles = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
+            var dates = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
 				      "Set date range: " +
-				      HtmlUtils.onClick(layout + ".askMinDate();", "Min") + "/" +
-				      HtmlUtils.onClick(layout + ".askMaxDate();", "Max"));
+				      HU.onClick(layout + ".askMinDate();", "Min") + "/" +
+				      HU.onClick(layout + ".askMaxDate();", "Max"));
             var editMenu =
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
 							"Set axis range :" +
-							HtmlUtils.onClick(layout + ".askMinZAxis();", "Min") + "/" +
-							HtmlUtils.onClick(layout + ".askMaxZAxis();", "Max"))) +
-                HtmlUtils.tag(TAG_LI, [], dates) +
-                HtmlUtils.tag(TAG_LI, [], titles) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HtmlUtils.onClick(layout + ".detailsOn();", "On", []) + "/" +
-							HtmlUtils.onClick(layout + ".detailsOff();", "Off", []))) +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
+							HU.onClick(layout + ".askMinZAxis();", "Min") + "/" +
+							HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
+                HU.tag(TAG_LI, [], dates) +
+                HU.tag(TAG_LI, [], titles) + "\n" +
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
+							HU.onClick(layout + ".detailsOff();", "Off", []))) +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
                 "";
 
 
-            var table = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
-				      HtmlUtils.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
-				      HtmlUtils.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
-				      HtmlUtils.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
-				      HtmlUtils.onClick(layout + ".setLayout('table',4);", "4 column"));
+            var table = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
+				      HU.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
+				      HU.onClick(layout + ".setLayout('table',4);", "4 column"));
             var layoutMenu =
-                HtmlUtils.tag(TAG_LI, [], table) +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
-                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('tabs');", "Tabs"));
+                HU.tag(TAG_LI, [], table) +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
+                HU.tag(TAG_LI, [], HU.onClick(layout + ".setLayout('tabs');", "Tabs"));
 
 
-
-            var menuBar = HtmlUtils.tag(TAG_LI, [], "<a>File</a>" + HtmlUtils.tag("ul", [], fileMenu));
-            if (chartMenu != "") {
-                menuBar += HtmlUtils.tag(TAG_LI, [], "<a>Charts</a>" + HtmlUtils.tag("ul", [], chartMenu));
-            }
-            menuBar += HtmlUtils.tag(TAG_LI, [], "<a>Edit</a>" + HtmlUtils.tag("ul", [], editMenu)) +
-                HtmlUtils.tag(TAG_LI, [], "<a>New</a>" + HtmlUtils.tag("ul", [], newMenu)) +
-                HtmlUtils.tag(TAG_LI, [], "<a>Layout</a>" + HtmlUtils.tag("ul", [], layoutMenu));
-            var menu = HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-				     HtmlUtils.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+            var menuBar = HU.tag(TAG_LI, [], "<a>File</a>" + HU.tag("ul", [], fileMenu));
+            menuBar += HU.tag(TAG_LI, [], "<a>Edit</a>" + HU.tag("ul", [], editMenu)) +
+                HU.tag(TAG_LI, [], "<a>New</a>" + HU.tag("ul", [], newMenu)) +
+                HU.tag(TAG_LI, [], "<a>Layout</a>" + HU.tag("ul", [], layoutMenu));
+            var menu = HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
+				     HU.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
 
             html += menu;
-            //                html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
+            //                html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
             //                html+="<br>";
             return html;
         },
@@ -512,14 +539,14 @@ function DisplayManager(argId, argProperties) {
 
     addDisplayManager(this);
 
-    let displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
-    let html = HtmlUtils.openTag(TAG_DIV);
-    html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
+    let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
+    let html = HU.openTag(TAG_DIV);
+    html += HU.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
 
     //    html += this.makeMainMenu();
     if(this.getShowMenu()) {
-        html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
+        html += HU.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
     let targetDiv = this.getProperty("target",this.getProperty("targetDiv"));
     let _this = this;
@@ -531,16 +558,19 @@ function DisplayManager(argId, argProperties) {
     } else {
         html += displaysHtml;
     }
-    html += HtmlUtils.closeTag(TAG_DIV);
+    html += HU.closeTag(TAG_DIV);
     $("#" + this.getId()).html(html)
     this.initializeEntriesMenu();
 
 
-    $("#" + this.getDomId(ID_MENU_BUTTON)).button({
-        icons: {
+    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fa-cog",[TITLE,"Display menu"] )).button({
+        xxicons: {
             primary: "ui-icon-gear",
             secondary: "ui-icon-triangle-1-s"
-        }
+        },
+	classes: {
+	    "ui-button": "display-manager-button",
+	}	
     }).click(function(event) {
         let html = _this.makeMainMenu();
         _this.jq(ID_MENU_CONTAINER).html(html);
@@ -661,7 +691,7 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
                     props[a] = value;
                 }
             }
-            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+            var html = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
             var groupProps = {
                 target: this.getDomId(ID_DISPLAYS),

@@ -34,7 +34,7 @@ addGlobalDisplayType({
     forUser: false,
     label: "Glider cross section",
     requiresData: true,
-    category: "Charts"
+    category: CATEGORY_MISC
 });
 
 
@@ -43,7 +43,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Venn Diagram",
     requiresData: true,
-    category: "Misc"
+    category: CATEGORY_MISC
 });
 
 addGlobalDisplayType({
@@ -51,15 +51,15 @@ addGlobalDisplayType({
     forUser: true,
     label: "Chernoff Faces",
     requiresData: true,
-    category: "Misc"
+    category: CATEGORY_MISC
 });
 
 addGlobalDisplayType({
     type: DISPLAY_D3BUBBLE,
     forUser: true,
-    label: "D3 Bubble Chart",
+    label: "Bubble Chart",
     requiresData: true,
-    category: "Misc"
+    category: CATEGORY_MAPS_IMAGES
 });
 
 
@@ -68,7 +68,7 @@ addGlobalDisplayType({
     forUser: false,
     label: "SkewT",
     requiresData: true,
-    category: "Charts"
+    category: CATEGORY_MISC
 });
 
 //Note: define meaningful things as variables not as string literals
@@ -238,7 +238,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             this.setContents(html);
             var date = records[0].getDate();
             if(this.jq(ID_DATE_LABEL).length==0) {
-                this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
+                this.jq(ID_TOP_LEFT).append(HtmlUtils.div([ID,this.getDomId(ID_DATE_LABEL)]));
             }
             if(date!=null) {
                 this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));

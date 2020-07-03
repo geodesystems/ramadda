@@ -3,8 +3,7 @@
 */
 
 
-const CATEGORY_CHARTS = "Charts";
-const CATEGORY_OTHER = "Other Charts";
+
 
 const DISPLAY_LINECHART = "linechart";
 const DISPLAY_AREACHART = "areachart";
@@ -61,9 +60,14 @@ function waitOnGoogleCharts(object, callback) {
 }
 
 
-
-
-
+addGlobalDisplayType({
+    type: DISPLAY_TABLE,
+    label: "Table",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_TABLE,
+    desc:"Basic tabular display"
+}, true);
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
     label: "Line Chart",
@@ -119,7 +123,8 @@ addGlobalDisplayType({
     label: "Bubble Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_CHARTS,
+    wiki: "#fields=label,x,y,color,size",
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
@@ -148,7 +153,7 @@ addGlobalDisplayType({
     label: "Sankey Chart",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
@@ -159,25 +164,18 @@ addGlobalDisplayType({
     category: CATEGORY_MISC
 });
 addGlobalDisplayType({
-    type: DISPLAY_TABLE,
-    label: "Table",
-    requiresData: true,
-    forUser: true,
-    category: CATEGORY_MISC
-});
-addGlobalDisplayType({
     type: DISPLAY_WORDTREE,
     label: "Word Tree",
     requiresData: true,
     forUser: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 addGlobalDisplayType({
     type: DISPLAY_TREEMAP,
     label: "Tree Map",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_RADIAL_ETC
 });
 
 
@@ -1037,7 +1035,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                         tooltip += "<br>";
 		    label = header[j].replace(/ /g, "&nbsp;");
 		    value = row[j];
-		    if (!value) value = "NA";
+		    if (!Utils.isDefined(value)) value = "NA";
 		    if (value && (typeof value) == "object") {
                         if (value.f) {
 			    value = value.f;
@@ -1164,6 +1162,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 justData.push(newRow);
 		//		if(debug && rowIdx>debugRows) break;
 	    }
+
+
             dataTable.addRows(justData);
             if (didColorBy) {
 		colorBy.displayColorTable();
@@ -1542,6 +1542,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	makeGoogleChartInner: function(dataList, chartId, props, selectedFields) {
 	    let chartDiv = document.getElementById(chartId);
 	    //	    console.log(JSON.stringify(this.chartOptions, null, 2));
+	    if(!chartDiv) return;
 	    var dataTable = this.makeDataTable(dataList, props, selectedFields, this.chartOptions);
             let chart = this.doMakeGoogleChart(dataList, props, chartDiv, selectedFields, this.chartOptions);
             if (chart == null) return null;

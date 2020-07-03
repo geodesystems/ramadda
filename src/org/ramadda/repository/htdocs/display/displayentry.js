@@ -3,7 +3,6 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
-
 const DISPLAY_ENTRYLIST = "entrylist";
 const DISPLAY_TESTLIST = "testlist";
 const DISPLAY_ENTRYDISPLAY = "entrydisplay";
@@ -19,51 +18,52 @@ const ID_ENTRIES = "entries";
 const ID_DETAILS_INNER = "detailsinner";
 const ID_PROVIDERS = "providers";
 const ID_SEARCH_SETTINGS = "searchsettings";
-const ATTR_ENTRYID = "entryid";
 const ID_TREE_LINK = "treelink";
+const ATTR_ENTRYID = "entryid";
+
 
 addGlobalDisplayType({
     type: DISPLAY_ENTRYLIST,
     label: "Entry List",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_TESTLIST,
     label: "Test  List",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_ENTRYDISPLAY,
     label: "Entry Display",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_ENTRYTITLE,
     label: "Entry Title",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_ENTRY_GALLERY,
     label: "Entry Gallery",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 addGlobalDisplayType({
     type: DISPLAY_ENTRY_GRID,
     label: "Entry Date Grid",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
-//addGlobalDisplayType({type: DISPLAY_OPERANDS, label:"Operands",requiresData:false,category:"Entry Displays"});
+//addGlobalDisplayType({type: DISPLAY_OPERANDS, label:"Operands",requiresData:false,category:CATEGORY_ENTRIES});
 addGlobalDisplayType({
     type: DISPLAY_METADATA,
     label: "Metadata Table",
     requiresData: false,
-    category: "Entry Displays"
+    category: CATEGORY_ENTRIES
 });
 
 
@@ -1226,7 +1226,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
     var ID_AXIS_LEFT = "axis_left";
     var ID_AXIS_BOTTOM = "axis_bottom";
     var ID_CANVAS = "canvas";
-    var ID_TOP = "top";
+    var ID_LINKS = "links";
     var ID_RIGHT = "right";
 
     var ID_SETTINGS = "gridsettings";
@@ -1410,7 +1410,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         HtmlUtils.image(icon_zoom, ["class", "display-grid-action", "title", "reset zoom", "action", "reset"]) +
                         HtmlUtils.image(icon_zoom_in, ["class", "display-grid-action", "title", "zoom in", "action", "zoomin"]) +
                         HtmlUtils.image(icon_zoom_out, ["class", "display-grid-action", "title", "zoom out", "action", "zoomout"]);
-                    _this.jq(ID_TOP).html(links);
+                    _this.jq(ID_LINKS).html(links);
                     $("#" + _this.getDomId(ID_GRID) + " .display-grid-action").click(function() {
                         var action = $(this).attr("action");
                         _this.doZoom(action);
@@ -1597,7 +1597,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             html += HtmlUtils.openTag("table", ["border", "0", "class", "", "cellspacing", "0", "cellspacing", "0", "width", "100%", "style", "height:100%;"]);
             html += HtmlUtils.openTag("tr", ["valign", "bottom"]);
             html += HtmlUtils.tag("td");
-            html += HtmlUtils.tag("td", [], HtmlUtils.div(["id", this.getDomId(ID_TOP)], ""));
+            html += HtmlUtils.tag("td", [], HtmlUtils.div(["id", this.getDomId(ID_LINKS)], ""));
             html += HtmlUtils.closeTag("tr");
             html += HtmlUtils.openTag("tr", ["style", "height:100%;"]);
             html += HtmlUtils.openTag("td", ["style", "height:100%;"]);

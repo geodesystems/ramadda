@@ -13,12 +13,14 @@ let displayMapMarkerIcons = {};
 
 addGlobalDisplayType({
     type: DISPLAY_MAP,
-    label: "Map"
+    label: "Map",
+    category:CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
     type: DISPLAY_MAPGRID,
-    label: "Map Grid"
+    label: "Map Grid",
+    category:CATEGORY_MAPS_IMAGES
 });
 
 function MapFeature(source, points) {

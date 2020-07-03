@@ -20,7 +20,7 @@ addGlobalDisplayType({
     label: "Text Readout",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TEXT
 });
 
 
@@ -29,7 +29,7 @@ addGlobalDisplayType({
     label: "Cards",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -37,7 +37,7 @@ addGlobalDisplayType({
     label: "Images",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category:CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -45,7 +45,7 @@ addGlobalDisplayType({
     label: "Template",
     requiresData: true,
     forUser: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -53,7 +53,7 @@ addGlobalDisplayType({
     label: "Slides",
     requiresData: true,
     forUser: true,
-    category: "Text"
+    category: CATEGORY_MAPS_IMAGES
 });
 
 addGlobalDisplayType({
@@ -69,7 +69,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Word Cloud",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -77,7 +77,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Text Stats",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -85,14 +85,14 @@ addGlobalDisplayType({
     forUser: true,
     label: "Frequency",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 addGlobalDisplayType({
     type: DISPLAY_TEXTRAW,
     forUser: true,
     label: "Text Raw",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -100,7 +100,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Text Analysis",
     requiresData: true,
-    category: "Text"
+    category: CATEGORY_TEXT
 });
 
 addGlobalDisplayType({
@@ -108,7 +108,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Blocks",
     requiresData: false,
-    category: "Other Charts"
+    category: CATEGORY_MISC
 });
 
 

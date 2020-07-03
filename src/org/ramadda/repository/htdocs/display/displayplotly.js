@@ -2,7 +2,7 @@
    Copyright 2008-2019 Geode Systems LLC
 */
 
-const CATEGORY_PLOTLY = "More Charts";
+
 const DISPLAY_PLOTLY_RADAR = "radar";
 const DISPLAY_PLOTLY_WINDROSE = "windrose";
 const DISPLAY_PLOTLY_DENSITY = "density";
@@ -23,21 +23,28 @@ addGlobalDisplayType({
     label: "Radar",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_WINDROSE,
     label: "Wind Rose",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
+});
+addGlobalDisplayType({
+    type: DISPLAY_PLOTLY_SUNBURST,
+    label: "Sunburst",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_DENSITY,
     label: "Density",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_COMBOCHART,
@@ -52,7 +59,7 @@ addGlobalDisplayType({
     label: "Parallel Coords",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_CHARTS
+    category: CATEGORY_RADIAL_ETC
 });
 
 addGlobalDisplayType({
@@ -60,56 +67,49 @@ addGlobalDisplayType({
     label: "Dot Plot",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_CHARTS
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_SPLOM,
     label: "Splom",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DSCATTER,
     label: "3D Scatter",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_PROFILE,
     label: "Profile",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_CHARTS
 });
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_3DMESH,
     label: "3D Mesh",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_PLOTLY
+    category: CATEGORY_RADIAL_ETC
 });
 
-addGlobalDisplayType({
-    type: DISPLAY_PLOTLY_SUNBURST,
-    label: "Suburst",
-    requiresData: true,
-    forUser: true,
-    category: CATEGORY_PLOTLY
-});
 addGlobalDisplayType({
     type: DISPLAY_PLOTLY_TEXTCOUNT,
     label: "Text Count",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: CATEGORY_TEXT
 });
 
 //Ternary doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
 //Treempap doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_PTREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_PTREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_RADIAL_ETC});
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {

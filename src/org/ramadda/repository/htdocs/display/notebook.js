@@ -7,7 +7,7 @@ addGlobalDisplayType({
     type: DISPLAY_NOTEBOOK,
     label: "Notebook",
     requiresData: false,
-    category: "Misc"
+    category: CATEGORY_CONTROLS
 });
 
 var pluginDefintions = {
