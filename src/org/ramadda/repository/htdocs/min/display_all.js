@@ -3229,7 +3229,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getWikiEditorTags: function() {
 	    let l =   [
 		"label:Display Attributes",
-		['fields=""','comma separated list of field ids or indices - #1,#2,etc or *'],
+		['fields=""','comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'],
+		['notFields="regexp"','regexp to not include fields'],		
 		"showMenu=\"true\"",	      
 		"showTitle=\"true\"",
 		"showEntryIcon=true",
@@ -4242,6 +4243,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             this.debugSelected = debug;
             this.lastSelectedFields = this.getSelectedFieldsInner(dfltList);
+	    let notFields = this.getProperty("notFields");
+	    if(notFields) {
+		let tmp = [];
+		this.lastSelectedFields.forEach(f=>{
+		    if(f.getId().match(notFields) || f.getLabel().match(notFields)) return;
+		    tmp.push(f);
+		});
+		this.lastSelectedFields = tmp;
+	    }
+
+
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + this.lastSelectedFields);
             var fixedFields = this.getProperty(PROP_FIELDS);
