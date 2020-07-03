@@ -646,6 +646,8 @@ var Utils =  {
             return Utils.formatDateYYYY(date);
         } else if (fmt == "yyyymmdd") {
             return Utils.formatDateYYYYMMDD(date);
+        } else if (fmt == "yyyy-mm-dd") {
+            return Utils.formatDateYYYYMMDD(date);	    
 	} else if (fmt == "yyyymmddhh") { 
 	    return Utils.formatDateYYYYMMDDHH(date);
 	} else if (fmt == "yyyymmddhhmm") { 
