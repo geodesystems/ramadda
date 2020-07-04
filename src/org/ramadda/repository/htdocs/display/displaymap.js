@@ -2798,6 +2798,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             for (var i = 0; i < records.length; i++) {
 		var record = records[i];
                 var point = record.point;
+		if(!point) continue;
                 if(seen[point]) continue;
                 seen[point] = true;
                 var center = new OpenLayers.Geometry.Point(point.x, point.y);

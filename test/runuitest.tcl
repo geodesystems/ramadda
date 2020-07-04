@@ -56,34 +56,32 @@ proc runit {name id} {
 
 
 proc finish {} {
-    append ::html "</div>"
-    puts [open uiimages.html w] $::html
+    set final "$::html </div>"
+    puts [open uiimages.html w] $final
 }
 
-runit "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
+proc processGroup {root} {
+    set csv [getUrl "https://geodesystems.com/repository/entry/show?entryid=${root}&ascending=true&orderby=name&output=default.csv&fields=name,id&showheader=false"]
+    foreach line [split $csv "\n"] {
+	set line [string trim $line]
+	if {$line==""} continue;
+	incr ::tcnt
+	foreach     {name id} [split $line ,] break
+	puts stderr "processing $name"
+	runit $name $id
+	if {$name=="Features" || $name=="Latest"} continue;
+    }
+    finish();
+}
+    
+
+set chartId 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
+set mapId 1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687
+
+#runit "Charts" $chartId
+runit "Maps" $mapId
 finish
 exit
-
-set root "3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d"
-#set root "11ff9695-7b5e-4b5c-b6df-3f058bbea5dc"
-
-set csv [getUrl "https://geodesystems.com/repository/entry/show?entryid=${root}&ascending=true&orderby=name&output=default.csv&fields=name,id&showheader=false"]
-puts $csv
-exit
-foreach line [split $csv "\n"] {
-    set line [string trim $line]
-    if {$line==""} continue;
-    incr ::tcnt
-    foreach     {name id} [split $line ,] break
-    puts "NAME: $name"
-    runit $name $id
-    if {$name=="Features" || $name=="Latest"} continue;
-    puts stderr "processing $name"
-}
-finish();
-exit
-
-
 
 
 set urls [read [open $loc/uiurls.txt r]]
