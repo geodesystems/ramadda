@@ -16590,8 +16590,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    try {
 		this.doMakeGoogleChartInner(dataList,props,selectedFields);
 	    } catch(err) {
-		this.setErrorMessage(err);
-		console.log("Error:" + err);
+		this.setErrorMessage("Error creating chart: " + err);
+		console.log(this.type+ " Error creating chart:" + err);
 		console.log(err.stack);
 	    }
 	},
