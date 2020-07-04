@@ -15859,7 +15859,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             try {
                 this.makeGoogleChart(dataList, props, selectedFields);
             } catch (e) {
-		console.log("Error making chart:\n" + e +"\n" + e.stack);
+		console.log(this.type+" Error making chart:\n" + e +"\n" + e.stack);
                 return;
             }
             var container = this.jq(ID_CHART);
@@ -16591,6 +16591,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.doMakeGoogleChartInner(dataList,props,selectedFields);
 	    } catch(err) {
 		this.setErrorMessage("Error creating chart: " + err);
+		console.log("********************");
 		console.log(this.type+ " Error creating chart:" + err);
 		console.log(err.stack);
 	    }
