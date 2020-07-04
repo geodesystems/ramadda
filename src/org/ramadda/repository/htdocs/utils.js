@@ -750,7 +750,12 @@ var Utils =  {
             if (roundUp)
                 date.setHours(24);
         } else {
-            date = new Date(Date.parse(s));
+	    let d = Date.parse(s);
+	    if(isNaN(d)) {
+		let a = s.split(/[^0-9]/).map(s=>{ return parseInt(s, 10)});
+		return new Date(a[0], a[1]-1 || 0, a[2] || 1, a[3] || 0, a[4] || 0, a[5] || 0, a[6] || 0);
+	    }
+            return new Date(d);
         }
         if (offset != 0) {
             date.setDate(date.getDate() + offset);
