@@ -2559,7 +2559,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    let t1 = new Date();
             this.showText();
 	    let t2 = new Date();
-	    Utils.displayTimes("T",[t1,t2]);
+//	    Utils.displayTimes("T",[t1,t2]);
         },
         handleEventPropertyChanged: function(source, prop) {
             if (prop.property == "pattern") {
