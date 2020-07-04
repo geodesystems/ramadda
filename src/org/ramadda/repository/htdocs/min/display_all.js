@@ -16723,9 +16723,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 	    } else {
 		try {
-		    console.log(this.type+" drawing chart");
 		    chart.draw(dataTable, this.chartOptions);
-		    console.log(this.type+" done drawing chart");
 		} catch(err) {
 		    this.setErrorMessage("Error creating chart: " + err);
 		    console.log(this.type+ " Error creating chart:" + err);
