@@ -150,6 +150,9 @@ public class EntrezSearchProvider extends SearchProvider {
 
         Element      root    = XmlUtil.getRoot(xml);
         Element      idList  = XmlUtil.getElement(root, "IdList");
+	if(idList == null) {
+	    return entries;
+	}
         NodeList     idNodes = XmlUtil.getElements(idList, "Id");
         List<String> ids     = new ArrayList<String>();
         for (int childIdx = 0; childIdx < idNodes.getLength(); childIdx++) {
@@ -158,17 +161,24 @@ public class EntrezSearchProvider extends SearchProvider {
         }
 
 
+
         if (ids.size() > 0) {
             Entry       parent      = getSynthTopLevelEntry();
             TypeHandler typeHandler = getLinkTypeHandler();
             String summaryUrl = HtmlUtils.url(URL_SUMMARY, ARG_DB, db,
                                     ARG_ID, StringUtil.join(",", ids));
-            System.err.println(getName() + " summary url:" + summaryUrl);
+	    //            System.err.println(getName() + " summary url:" + summaryUrl);
             is  = getInputStream(summaryUrl);
             xml = IOUtil.readContents(is);
             IOUtil.close(is);
-            NodeList docSums = XmlUtil.getElements(XmlUtil.getRoot(xml),
-                                   "DocSum");
+	    //	    System.out.println(xml);
+	    Element docRoot = XmlUtil.getElement(XmlUtil.getRoot(xml),"DocumentSummarySet");
+	    if(docRoot==null) {
+		System.err.println("Entrez: no DocumentSummarySet found");
+		return entries;
+	    }
+            NodeList docSums = XmlUtil.getElements(docRoot,
+						   "DocumentSummary");
             for (int childIdx = 0; childIdx < docSums.getLength();
                     childIdx++) {
                 Element docSum   = (Element) docSums.item(childIdx);
@@ -178,14 +188,18 @@ public class EntrezSearchProvider extends SearchProvider {
                 Entry   newEntry = new Entry(makeSynthId(db, id),
                                              typeHandler);
                 newEntry.setIcon("/entrez/entrez.png");
+	    
 
-                String        name       = null;
+                String        name       = XmlUtil.getGrandChildText(docSum,"Project_Name",null);
+		if(name==null) name       = XmlUtil.getGrandChildText(docSum,"Project_Title",null);
                 String        backupName = null;
 
                 StringBuilder desc       = new StringBuilder();
+		desc.append(XmlUtil.getGrandChildText(docSum,"Project_Description",""));
                 StringBuilder table =
                     new StringBuilder(HtmlUtils.formTable());
 
+		//TODO: None of this is valid with their latest xml
                 NodeList items = XmlUtil.getElements(docSum, "Item");
                 for (int itemIdx = 0; itemIdx < items.getLength();
                         itemIdx++) {
