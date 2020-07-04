@@ -61,7 +61,7 @@ proc finish {} {
 }
 
 runit "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
-finish();
+finish
 exit
 
 set root "3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d"
