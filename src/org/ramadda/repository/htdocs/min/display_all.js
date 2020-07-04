@@ -22502,7 +22502,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    let t1 = new Date();
             this.showText();
 	    let t2 = new Date();
-	    Utils.displayTimes("T",[t1,t2]);
+//	    Utils.displayTimes("T",[t1,t2]);
         },
         handleEventPropertyChanged: function(source, prop) {
             if (prop.property == "pattern") {
@@ -22953,6 +22953,13 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, type, properties));
 
+    this.defineProperties([
+	{label:'Entry Search Properties'},
+	{p:'providers',wikiValue:'',tt:'List of search providers'},
+    ]);
+
+
+
     this.ramaddas = new Array();
     var repos = this.getProperty("repositories", this.getProperty("repos", null));
     if (repos != null) {
@@ -22987,14 +22994,14 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
         entryList: properties.entryList,
         entryMap: {},
         getSearchSettings: function() {
-            if (this.providers != null) {
+            if (this.getPropertyProviders() != null) {
                 var provider = this.searchSettings.provider;
 		var select = this.jq(ID_PROVIDERS);
                 var fromSelect = select.val();
                 if (fromSelect != null) {
                     provider = fromSelect;
                 } else {
-                    var toks = this.providers.split(",");
+                    var toks = this.getPropertyProviders().split(",");
                     if (toks.length > 0) {
                         var tuple = toks[0].split(":");
                         provider = tuple[0];
@@ -23442,10 +23449,10 @@ function RamaddaSearcher(displayManager, id, type, properties) {
 
 
             this.providerMap = {};
-            if (this.providers != null) {
+            if (this.getPropertyProviders() != null) {
                 var options = "";
                 var selected = Utils.getUrlArgs(document.location.search).provider;
-                var toks = this.providers.split(",");
+                var toks = this.getPropertyProviders().split(",");
                 var currentCategory = null;
                 var catToBuff = {};
                 var cats = [];
