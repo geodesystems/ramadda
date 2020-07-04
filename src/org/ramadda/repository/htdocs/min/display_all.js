@@ -16591,7 +16591,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		this.doMakeGoogleChartInner(dataList,props,selectedFields);
 	    } catch(err) {
 		this.setErrorMessage("Error creating chart: " + err);
-		console.log("********************");
 		console.log(this.type+ " Error creating chart:" + err);
 		console.log(err.stack);
 	    }
@@ -16723,7 +16722,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		});
 	    } else {
-		chart.draw(dataTable, this.chartOptions);
+		try {
+		    chart.draw(dataTable, this.chartOptions);
+		} catch(err) {
+		    this.setErrorMessage("Error creating chart: " + err);
+		    console.log(this.type+ " Error creating chart:" + err);
+		    console.log(err.stack);
+		    return null;
+		}
 	    }
 	    this.addEvents(chart);
 	    return chart;
