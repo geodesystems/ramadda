@@ -1964,9 +1964,10 @@ public class SqlUtil {
         if (value == null) {
             return null;
         }
+	String s = value.toString();
+	if(s.equals("*")) return s;
         //IMPORTANT: this screws up and we can have sql injection attacks
-        String s = value.toString().replaceAll("[^\\.a-zA-Z0-9_]", "");
-
+        s = s.replaceAll("[^\\.a-zA-Z0-9_]", "");
         return s;
     }
 
