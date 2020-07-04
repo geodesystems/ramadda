@@ -1097,16 +1097,20 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	    .style("cursor", "pointer");
     }
 
+    let getNum = n=>{
+	if(isNaN(n)) return 0;
+	return n;
+    };
     if(showBars) {
 	defaultShowEndPoints = false;
 	svg.selectAll('.bar').data(data)
 	    .enter()
 	    .append('rect')
 	    .attr('class', 'bar')
-	    .attr('x', (d, i) => x(i))
-	    .attr('y', d => y(d))
+	    .attr('x', (d, i) => getNum(x(i)))
+	    .attr('y', d => getNum(y(d)))
 	    .attr('width', BAR_WIDTH)
-	    .attr('height', d => h-y(d))
+	    .attr('height', d => getNum(h-y(d)))
 	    .attr('fill', (d,i)=>getColor(d,i,barColor))
 	    .style("cursor", "pointer")
     }
@@ -1114,8 +1118,8 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     if(attrs.showCircles || display.getProperty("sparklineShowCircles",false)) {
 	svg.selectAll('circle').data(data).enter().append("circle")
 	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
-	    .attr('cx', (d,i)=>{return x(i)})
-	    .attr('cy', (d,i)=>{return y(d)})
+	    .attr('cx', (d,i)=>{return getNum(x(i))})
+	    .attr('cy', (d,i)=>{return getNum(y(d))})
 	    .attr('fill', (d,i)=>getColor(d,i,circleColor))
 	    .style("cursor", "pointer");
     }
