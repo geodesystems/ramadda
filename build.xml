@@ -211,6 +211,8 @@
             jarfile="${csvutil_destdir}/lib/csvutil.jar">
             <include name="org/**/*.class"/>
 	    <include name="org/ramadda/repository/resources/geo/*"/>
+	    <include name="org/ramadda/util/text/*.csv"/>
+	    <include name="org/ramadda/util/text/*.properties"/>
            <manifest>
               <attribute name="Implementation-Title" value="Ramadda CSV Utils"/>
               <attribute name="Implementation-Version" value="1.0"/>

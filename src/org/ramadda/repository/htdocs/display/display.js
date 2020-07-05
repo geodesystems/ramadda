@@ -890,6 +890,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterSort=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
+		['&lt;field&gt;.filterOps="<,5000000,label1;>,5000000"','Add menu with fixed filters'],
 		['excludeUndefined=true','Exclude any records with an undefined value'],
 		['excludeZero=true','Exclude any records with a 0 value'],
 		['recordSelectFilterFields=""','Set the value of other displays filter fields'],
@@ -4594,6 +4595,10 @@ a
  	    let inputFunc = function(input, input2, value){
 		if(this.ignoreFilterChange) return;
                 var id = input.attr(ID);
+		if(!id) {
+		    console.log("No ID attribute");
+		    return;
+		}
 		if(!input2) {
 		    if(id.endsWith("_min")) {
 			input2 = $("#" + id.replace(/_min$/,"_max"));

@@ -129,7 +129,7 @@ public class CsvUtil {
         for (String arg : args) {
             this.args.add(arg);
         }
-	//	System.out.println("Args:" + this.args);
+        //      System.out.println("Args:" + this.args);
     }
 
     /**
@@ -803,8 +803,9 @@ public class CsvUtil {
         if ((pattern == null) || (pattern.trim().length() == 0)) {
             pattern = props.get("pattern");
         }
-        String  skipAttr       = props.get("skipAttr");
-        boolean removeEntity = Utils.equals(props.get("removeEntity"), "true");
+        String  skipAttr     = props.get("skipAttr");
+        boolean removeEntity = Utils.equals(props.get("removeEntity"),
+                                            "true");
         String  removePattern  = convertPattern(props.get("removePattern"));
         String  removePattern2 = convertPattern(props.get("removePattern2"));
         Pattern attrPattern    = null;
@@ -2107,7 +2108,7 @@ public class CsvUtil {
                 "how many decimals to round to"),
         new Cmd("-delta",
                 "Add column that is the delta from the previous step",
-                new Arg("key columns"),new Arg("columns")),
+                new Arg("key columns"), new Arg("columns")),
         new Cmd("-operator",
                 "Apply the operator to the given columns and create new one",
                 new Arg("columns"), "new col name", "operator +,-,*,/"),
@@ -2132,8 +2133,11 @@ public class CsvUtil {
                 new Arg("column", "", "type", "columns"),
                 new Arg("csv file", "File to get lat/lon from", "type",
                         "file"), "name idx", "lat idx", "lon idx"),
-        new Cmd("-statename", "Add state name from state ID", new Arg("column")),
+        new Cmd("-statename", "Add state name from state ID",
+                new Arg("column")),
         new Cmd("-mercator", "Convert x/y to lon/lat", new Arg("columns")),
+        new Cmd("-region", "Add the state's region",
+                new Arg("columns", "", "type", "columns")),
         new Cmd("-population", "Add in population from address",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("prefix", "e.g., state: or county:"), "suffix"),
@@ -2468,9 +2472,9 @@ public class CsvUtil {
             info.setDelimiter(delimiter);
         }
 
-        PrintWriter pw = null;
+        PrintWriter pw        = null;
 
-	boolean seenPrint = false;
+        boolean     seenPrint = false;
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
             currentArg = arg;
@@ -2708,7 +2712,8 @@ public class CsvUtil {
                             "true") || Utils.equals(props.get("install"),
                                 "true");
                     this.nukeDb = Utils.equals(props.get("-nukedb"), "true")
-                                  || Utils.equals(props.get("nukedb"), "true");
+                                  || Utils.equals(props.get("nukedb"),
+                                      "true");
                     info.getProcessor().addProcessor(dbXml =
                         new Processor.DbXml(props));
 
@@ -2974,7 +2979,7 @@ public class CsvUtil {
 
                     continue;
                 }
-		/*
+                /*
                 if (arg.equals("-processor")) {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
@@ -2985,7 +2990,7 @@ public class CsvUtil {
 
                     continue;
                 }
-		*/
+                */
 
                 if (arg.equals("-fields")) {
                     printFields = true;
@@ -3009,8 +3014,10 @@ public class CsvUtil {
                 }
 
                 if (arg.equals("-print") || arg.equals("-p")) {
-		    if(seenPrint) continue;
-		    seenPrint = true;
+                    if (seenPrint) {
+                        continue;
+                    }
+                    seenPrint = true;
                     info.getProcessor().addProcessor(
                         new Processor.Printer(printFields, trim));
 
@@ -3290,9 +3297,9 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    String  col   = args.get(++i);
+                    String col = args.get(++i);
                     info.getProcessor().addProcessor(
-						     new Converter.StateNamer(col));
+                        new Converter.StateNamer(col));
 
                     continue;
                 }
@@ -3367,6 +3374,18 @@ public class CsvUtil {
 
                     continue;
                 }
+
+                if (arg.equals("-region")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    info.getProcessor().addProcessor(
+                        new Converter.Regionator(cols));
+
+                    continue;
+                }
+
 
                 if (arg.equals("-change")) {
                     if ( !ensureArg(args, i, 3)) {
@@ -3749,9 +3768,9 @@ public class CsvUtil {
                         return false;
                     }
                     List<String> keyidxs = getCols(args.get(++i));
-                    List<String> idxs = getCols(args.get(++i));
+                    List<String> idxs    = getCols(args.get(++i));
                     info.getProcessor().addProcessor(
-						     new Converter.Delta(keyidxs, idxs));
+                        new Converter.Delta(keyidxs, idxs));
 
                     continue;
                 }

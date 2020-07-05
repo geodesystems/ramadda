@@ -78,11 +78,10 @@ var Utils =  {
 	var ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
 	return {x:nx, y:ny};
     },
-    split: function(s,trim,excludeEmpty) {
+    split: function(s,delim,trim,excludeEmpty) {
 	if(!s) return null;
-	s = String(s).replace(/\\,/g,"_comma_");
 	let l = [];
-	s.split(",").forEach((tok)=>{
+	s.split(delim||",").forEach((tok)=>{
 	    tok = tok.replace(/_comma_/g,",");
 	    if(trim) tok = tok.trim();
 	    if(excludeEmpty && tok == "") return;
@@ -801,7 +800,7 @@ var Utils =  {
 	return  !(typeof v === 'undefined');
     },
     makeLabel: function(s) {
-        s  = s+"";
+        s  = String(s);
         s = s.trim();
         return this.camelCase(s.replace(/_/g," "));
     },

@@ -3275,7 +3275,7 @@ public abstract class Converter extends Processor {
 
 
         /** _more_ */
-        private int col=-1;
+        private int col = -1;
 
         /**
          *
@@ -3283,8 +3283,7 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        public StateNamer(String col)
-                throws Exception {
+        public StateNamer(String col) throws Exception {
             super(col);
         }
 
@@ -3302,22 +3301,28 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-	    if(col<0) {
-		List<Integer> indices = getIndices(info);
-		col = indices.get(0);
-		row.add("State");
-		return row;
-	    }
-	    try {
-		String id =(String) row.get(col);
-		Object o  = GeoUtils.getStatesMap().get(id.toLowerCase());
-		row.add(o==null?id:o.toString());
-		return row;
-	    } catch(Exception exc) { throw new RuntimeException(exc);}
+            if (col < 0) {
+                List<Integer> indices = getIndices(info);
+                col = indices.get(0);
+                row.add("State");
+
+                return row;
+            }
+            try {
+                String id = (String) row.get(col);
+                Object o  = GeoUtils.getStatesMap().get(id.toLowerCase());
+                row.add((o == null)
+                        ? id
+                        : o.toString());
+
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
         }
 
     }
-    
+
 
     /**
      * Class description
@@ -3458,6 +3463,96 @@ public abstract class Converter extends Processor {
             }
 
             //      System.err.println("pop row:" + row);
+            return row;
+        }
+
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Mar 14, '20
+     * @author         Enter your name here...
+     */
+    public static class Regionator extends Converter {
+
+        /** _more_          */
+        private boolean doneHeader = false;
+
+        /** _more_          */
+        private Properties props;
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param cols _more_
+         * @throws Exception _more_
+         */
+        public Regionator(List<String> cols) throws Exception {
+            super(cols);
+            props = new Properties();
+            try {
+                InputStream inputStream =
+                    Utils.getInputStream(
+                        "/org/ramadda/util/text/state_regions.properties",
+                        getClass());
+                props.load(inputStream);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+
+        /**
+         *
+         *
+         *
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if ( !doneHeader) {
+                row.add("Region");
+                doneHeader = true;
+
+                return row;
+            }
+            List<Integer> indices = getIndices(info);
+            StringBuilder keyb    = new StringBuilder();
+            boolean       didOne  = false;
+            //Really only need one
+            for (int i : indices) {
+                Object value = row.get(i);
+                if (didOne) {
+                    keyb.append(" ");
+                }
+                didOne = true;
+                keyb.append(value);
+            }
+            String key    = keyb.toString();
+            String region = (String) props.get(key);
+            if (region == null) {
+                region = (String) props.get(key.toUpperCase());
+            }
+            if (region == null) {
+                region = (String) props.get(key.toLowerCase());
+            }
+            if (region == null) {
+                region = "NA";
+            }
+            row.add(region);
+
             return row;
         }
 
@@ -4044,12 +4139,13 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-		row.getValues().add(name);
+                row.getValues().add(name);
+
                 return row;
             }
             List<Integer> indices = getIndices(info);
-            double value = 0;
-            int    cnt   = 0;
+            double        value   = 0;
+            int           cnt     = 0;
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
@@ -4083,7 +4179,7 @@ public abstract class Converter extends Processor {
 
 
 
-    
+
     /**
      * Class description
      *
@@ -4093,24 +4189,33 @@ public abstract class Converter extends Processor {
      */
     public static class Delta extends Converter {
 
-	List<String> keys;
+        /** _more_          */
+        List<String> keys;
 
 
-	private Hashtable<String,Row> prevRows = new Hashtable<String,Row>();
-	List<Integer> indices;
-	List<Integer> keyindices;
+        /** _more_          */
+        private Hashtable<String, Row> prevRows = new Hashtable<String,
+                                                      Row>();
+
+        /** _more_          */
+        List<Integer> indices;
+
+        /** _more_          */
+        List<Integer> keyindices;
 
 
 
         /**
          *
+         *
+         * @param keys _more_
          * @param indices _more_
          * @param name _more_
          * @param op _more_
          */
         public Delta(List<String> keys, List<String> indices) {
             super(indices);
-	    this.keys = keys;
+            this.keys = keys;
         }
 
 
@@ -4123,44 +4228,47 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-	    if(indices==null) {
-		indices = getIndices(info);
-		keyindices = getIndices(keys);
-	    }
+            if (indices == null) {
+                indices    = getIndices(info);
+                keyindices = getIndices(keys);
+            }
             if (rowCnt++ == 0) {
-		for (Integer idx : indices) {
-		    int index = idx.intValue();
-		    row.getValues().add("Difference " + row.get(index));
-		}
+                for (Integer idx : indices) {
+                    int index = idx.intValue();
+                    row.getValues().add("Difference " + row.get(index));
+                }
+
                 return row;
             }
-	    String key = "";
-	    for (Integer idx : keyindices) {
+            String key = "";
+            for (Integer idx : keyindices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
                     continue;
                 }
-		key +=row.get(index).toString()+"_";
-	    }
-	    Row prevRow = prevRows.get(key);
-	    if(prevRow==null) {
+                key += row.get(index).toString() + "_";
+            }
+            Row prevRow = prevRows.get(key);
+            if (prevRow == null) {
                 prevRow = row;
                 for (int i : indices) {
                     prevRow.add("0");
                 }
-		prevRows.put(key,prevRow);
+                prevRows.put(key, prevRow);
+
                 return row;
             }
-	    prevRows.put(key,row);
+            prevRows.put(key, row);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index < 0) || (index >= row.size())) {
                     continue;
                 }
-		double v1 = parse(prevRow.get(index).toString());
-		double v2 = parse(row.get(index).toString());
-		row.add((v2 - v1) + "");
-	    }
+                double v1 = parse(prevRow.get(index).toString());
+                double v2 = parse(row.get(index).toString());
+                row.add((v2 - v1) + "");
+            }
+
             return row;
         }
 

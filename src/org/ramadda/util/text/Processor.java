@@ -484,14 +484,24 @@ rotate -> pass -> pass -> rotate -> pass
             return row;
         }
 
+        /**
+         * _more_
+         *
+         * @param textReader _more_
+         * @param inputRows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
         public List<Row> finish(TextReader textReader, List<Row> inputRows)
                 throws Exception {
-	    //	    return finishOld(textReader, inputRows);
-	    return finishNew(textReader, inputRows);	    
-	}
+            //      return finishOld(textReader, inputRows);
+            return finishNew(textReader, inputRows);
+        }
 
 
-         /**
+        /**
          * _more_
          *
          *
@@ -505,7 +515,7 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finishOld(TextReader textReader, List<Row> inputRows)
                 throws Exception {
             while ((remainderProcessors != null)
-		   && (remainderProcessors.size() > 0)) {
+                    && (remainderProcessors.size() > 0)) {
                 if (firstProcessors != null) {
                     for (Processor processor : firstProcessors) {
                         inputRows = processor.finish(textReader, inputRows);
@@ -540,51 +550,51 @@ rotate -> pass -> pass -> rotate -> pass
 
             textReader.flush();
             this.rows = inputRows;
+
             return this.rows;
         }
 
 
-       /**
-         * _more_
-         *
-         *
-         * @param textReader _more_
-         * @param inputRows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
+        /**
+         *  _more_
+         * 
+         * 
+         *  @param textReader _more_
+         *  @param inputRows _more_
+         * 
+         * 
+         *  @return _more_
+         *  @throws Exception On badness
          */
         public List<Row> finishNew(TextReader textReader, List<Row> inputRows)
                 throws Exception {
-	    //            if (inputRows != null) {
-                while ((remainderProcessors != null)
-                        && (remainderProcessors.size() > 0)) {
-                    if (firstProcessors != null) {
-                        for (Processor processor : firstProcessors) {
-                            inputRows = processor.finish(textReader,
-                                    inputRows);
-                        }
-                    }
-                    processors          = remainderProcessors;
-                    remainderProcessors = null;
-                    firstProcessors     = null;
-                    for (Row row : inputRows) {
-                        row = processRowInner(textReader, row, "");
-                        if ( !textReader.getOkToRun()) {
-                            break;
-                        }
-                        if (textReader.getExtraRow() != null) {
-                            row = processRowInner(textReader,
-                                    textReader.getExtraRow(), null);
-                            textReader.setExtraRow(null);
-                        }
-                        if ( !textReader.getOkToRun()) {
-                            break;
-                        }
+            //            if (inputRows != null) {
+            while ((remainderProcessors != null)
+                    && (remainderProcessors.size() > 0)) {
+                if (firstProcessors != null) {
+                    for (Processor processor : firstProcessors) {
+                        inputRows = processor.finish(textReader, inputRows);
                     }
                 }
-		//            }
+                processors          = remainderProcessors;
+                remainderProcessors = null;
+                firstProcessors     = null;
+                for (Row row : inputRows) {
+                    row = processRowInner(textReader, row, "");
+                    if ( !textReader.getOkToRun()) {
+                        break;
+                    }
+                    if (textReader.getExtraRow() != null) {
+                        row = processRowInner(textReader,
+                                textReader.getExtraRow(), null);
+                        textReader.setExtraRow(null);
+                    }
+                    if ( !textReader.getOkToRun()) {
+                        break;
+                    }
+                }
+            }
+            //            }
             if (firstProcessors != null) {
                 for (Processor processor : firstProcessors) {
                     List<Row> tmp = processor.finish(textReader, inputRows);

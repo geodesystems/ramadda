@@ -930,6 +930,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    let value = values[groupField.getIndex()];
 		    if(!seen[value]) {
 			seen[value]  = true;
+			seen[Utils.makeId(value)]  = true;			
 			groupValues.push(value);
 		    }
 		    let newValues =dateToValue[record.getDate()];
@@ -948,7 +949,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let highlightFields = this.getHighlightFields();
 		let tmpMap ={};
 		highlightFields.forEach(f=>{
-		    tmp.push(Utils.makeLabel(f));
+		    if(seen[f]) {
+			tmp.push(Utils.makeLabel(f));
+		    }
 		});
 
 		groupValues = Utils.mergeLists(tmp,groupValues);

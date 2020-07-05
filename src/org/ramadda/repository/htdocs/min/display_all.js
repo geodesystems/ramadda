@@ -3293,6 +3293,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterSort=false",
 		"&lt;field&gt;.filterStartsWith=\"true\"",
 		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
+		['&lt;field&gt;.filterOps="<,5000000,label1;>,5000000"','Add menu with fixed filters'],
 		['excludeUndefined=true','Exclude any records with an undefined value'],
 		['excludeZero=true','Exclude any records with a 0 value'],
 		['recordSelectFilterFields=""','Set the value of other displays filter fields'],
@@ -6997,6 +6998,10 @@ a
  	    let inputFunc = function(input, input2, value){
 		if(this.ignoreFilterChange) return;
                 var id = input.attr(ID);
+		if(!id) {
+		    console.log("No ID attribute");
+		    return;
+		}
 		if(!input2) {
 		    if(id.endsWith("_min")) {
 			input2 = $("#" + id.replace(/_min$/,"_max"));
@@ -9989,8 +9994,26 @@ function RecordFilter(display,filterFieldId, properties) {
 	dateIds: [],
 	prefix:display.getProperty(this.id +".filterPrefix"),
 	suffix:display.getProperty(this.id +".filterSuffix"),
-	startsWith:display.getProperty(this.id +".filterStartsWith",false)
+	startsWith:display.getProperty(this.id +".filterStartsWith",false),
+	ops:Utils.split(display.getProperty(this.id +".filterOps"),";",true,true)
     });
+
+    if(this.ops) {
+	let tmp = [];
+	this.ops.forEach(tok=>{
+	    let tuple  = tok.split(",");
+	    tmp.push({
+		op: tuple[0],
+		value: tuple[1],
+		label: tuple[2]||this.id+tuple[0] +tuple[1]
+	    });
+	});
+	this.ops = tmp;
+	this.ops.forEach(op=>{
+//            console.log("op:" + op.value +" " + op.op +" " + op.label);
+	});
+    }
+
 
     RamaddaUtil.defineMembers(this, {
 	
@@ -10023,7 +10046,17 @@ function RecordFilter(display,filterFieldId, properties) {
 	    var _values =[];
 	    var values=null;
 	    var matchers =[];
-	    if(this.field.isNumeric()) {
+	    if(this.ops) {
+		let v = $("#" + this.getFilterId(filterField.getId())).val();
+		if(v==FILTER_ALL) {
+		    this.mySearch = null;
+		    return;
+		}
+		this.mySearch =  {
+		    index: parseFloat(v)
+		};
+		return;
+	    } else  if(this.field.isNumeric()) {
 		var minField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_min"));
 		var maxField = $("#" + this.display.getDomId("filterby_" + this.field.getId()+"_max"));
 		if(!minField.val() || !maxField.val()) return;
@@ -10081,10 +10114,19 @@ function RecordFilter(display,filterFieldId, properties) {
 	},
 	isRecordOk:function(record,debug) {
 	    let ok = true;
-	    if(!this.isEnabled() || !this.mySearch) return ok;
+	    if(!this.isEnabled() || !this.mySearch) {
+		return ok;
+	    }
 	    var rowValue = record.getValue(this.field.getIndex());
 	    let filterField = this.field;
-	    if(filterField.getType() == "enumeration") {
+	    if(this.ops) {
+		let op = this.ops[this.mySearch.index];
+		if(op.op=="<") ok =  rowValue<op.value;
+		else if(op.op=="<=") ok = rowValue<=op.value;
+		else if(op.op==">") ok= rowValue>op.value;
+		else if(op.op==">=") ok= rowValue>=op.value;
+		else if(op.op=="==") ok= rowValue==op.value;				
+	    } else   if(filterField.getType() == "enumeration") {
 		ok = this.mySearch.values.includes(""+rowValue);
 	    } else if(filterField.isNumeric()) {
 		if(isNaN(this.mySearch.value[0]) && isNaN(this.mySearch.value[0])) return ok;
@@ -10221,7 +10263,15 @@ function RecordFilter(display,filterFieldId, properties) {
 	    };
             let widget;
 	    let widgetId = this.getFilterId(filterField.getId());
-            if(filterField.getType() == "enumeration") {
+            if(this.ops) {
+		let labels =[];
+		this.ops.forEach((op,idx)=>{
+		    labels.push([idx,op.label]);
+		});
+		let enums = Utils.mergeLists([FILTER_ALL],labels);
+		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
+		widget = HU.select("",attrs,enums);
+	    } else   if(filterField.getType() == "enumeration") {
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.defaultValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
@@ -16103,6 +16153,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    let value = values[groupField.getIndex()];
 		    if(!seen[value]) {
 			seen[value]  = true;
+			seen[Utils.makeId(value)]  = true;			
 			groupValues.push(value);
 		    }
 		    let newValues =dateToValue[record.getDate()];
@@ -16121,7 +16172,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let highlightFields = this.getHighlightFields();
 		let tmpMap ={};
 		highlightFields.forEach(f=>{
-		    tmp.push(Utils.makeLabel(f));
+		    if(seen[f]) {
+			tmp.push(Utils.makeLabel(f));
+		    }
 		});
 
 		groupValues = Utils.mergeLists(tmp,groupValues);
