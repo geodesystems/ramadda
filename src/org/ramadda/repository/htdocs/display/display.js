@@ -860,6 +860,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['chartFieldsMenuSide=left'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
+		'dateFormatDaysAgo=true',
 		'doFormatNumber=false',
  		'formatNumberDecimals=0',
 		'formatNumberScale=100',
@@ -908,6 +909,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"inlinelabel:Convert Data",
 		['binDate="day|month|year"',"Bin the dates"],
 		'binType="count|average|total"',
+		['groupBy=field','Group the data'],
 		['derived data', 'convertData="derived(field=new_field_id, function=foo*bar);"','Add derived field'],
 		['merge rows','convertData="mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);"',"Merge rows together"],
 		["rotate data", 'convertData="rotateData(includeFields=true,includeDate=true,flipColumns=true);"',"Rotate data"],
@@ -3927,17 +3929,18 @@ a
                     topLeft = HU.div(["class","display-header"], button + SPACE + titleDiv);
                 }
             }
-            topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT)], topLeft);
-            let topCenter = HU.div([ID, this.getDomId(ID_TOP)], "");
+            topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT),CLASS,"display-header-block"], topLeft);
+	    let h2Separate = this.getAnimationEnabled();
+	    let h1 = 	HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
+	    let h2 = HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
+            let topCenter = HU.div([ID, this.getDomId(ID_TOP),CLASS,"display-header-block"], h2Separate?"":h2);
             let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
-	    let top =  HU.leftRightTable(topLeft, topRight, null, null, {
+	    let top =  HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
                 valign: "bottom"
             });
-            let header =
-		HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "") +
-		HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
-
-	    top =  header + topCenter + top;
+            let header = h1;
+	    if(h2Separate) header+=h2;
+	    top =  header +  top;	    
 
 
 	    let colorTable = HU.div([ID,this.getDomId(ID_COLORTABLE)]);
@@ -5516,6 +5519,7 @@ a
             //The first entry in the dataList is the array of names
             //The first field is the domain, e.g., time or index
             var fieldNames = [];
+            var fieldsForTuple = [];	    
 	    if(this.getProperty("binDate")) {
 		if(debug)
 		    console.log("binning date");
@@ -5557,10 +5561,12 @@ a
                 //                    name = name.replace(/!!/g,"<br><hr>&nbsp;&nbsp;&nbsp;")
                 name = name.replace(/!!/g, " -- ")
                 fieldNames.push(name);
+		fieldsForTuple.push(field);
             }
             if (props.makeObject) {
                 dataList.push({
                     tuple: fieldNames,
+		    fields:fieldsForTuple,
                     record: null
                 });
             } else {
@@ -5892,9 +5898,15 @@ a
                 date = arg;
             }
 	    if(isNaN(date.getUTCFullYear())) return {v:date,f:"NA"};
+	    if(this.getProperty("dateFormatDaysAgo",false)) {
+		let now = new Date();
+		let diff = Math.round((now.getTime()-date.getTime())/1000/60/60/24);
+		return {v:date,f:diff+" days ago"};
+	    }
             if (!formatter) {
                 formatter = this.fmt_yyyymmddhhmm;
             }
+
             var s = formatter.formatValue(date);
             date = {
                 v: date,
@@ -6250,7 +6262,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     display.initDisplay();
 		} catch (e) {
                     display.displayError("Error creating display:<br>" + e);
-                    console.log("error creating display: " + this.displays[i].getType());
+                    console.log("error creating display: " + display.type);
                     console.log(e.stack)
 		}
             });

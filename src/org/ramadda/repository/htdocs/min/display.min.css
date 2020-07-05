@@ -231,6 +231,19 @@ svg > g > g:last-child { pointer-events: none }
    overflow-y:auto;
 }
 
+.display-header-block {
+}
+
+.display-header {
+     text-align:left;
+}
+
+.display-header {
+   margin-top:10px;
+   font-weight: bold; 
+}
+
+
 .display-header1, .display-header2, .display-header3 {
   text-align:center;
   font-size:90% !important;
@@ -528,9 +541,7 @@ svg > g > g:last-child { pointer-events: none }
    border-bottom: 1px #ccc solid;
 }
 
-.display-header {
-     text-align:left;
-}
+
 .display-dialog-button {
     padding-left: 6px;
     padding-right: 6px;
@@ -1235,10 +1246,6 @@ color: #000;
 
 
 
-.display-header {
-   margin-top:10px;
-   font-weight: bold; 
-}
 
 .chart-submenu
 {

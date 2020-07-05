@@ -3263,6 +3263,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['chartFieldsMenuSide=left'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
+		'dateFormatDaysAgo=true',
 		'doFormatNumber=false',
  		'formatNumberDecimals=0',
 		'formatNumberScale=100',
@@ -3311,6 +3312,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"inlinelabel:Convert Data",
 		['binDate="day|month|year"',"Bin the dates"],
 		'binType="count|average|total"',
+		['groupBy=field','Group the data'],
 		['derived data', 'convertData="derived(field=new_field_id, function=foo*bar);"','Add derived field'],
 		['merge rows','convertData="mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);"',"Merge rows together"],
 		["rotate data", 'convertData="rotateData(includeFields=true,includeDate=true,flipColumns=true);"',"Rotate data"],
@@ -6330,17 +6332,18 @@ a
                     topLeft = HU.div(["class","display-header"], button + SPACE + titleDiv);
                 }
             }
-            topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT)], topLeft);
-            let topCenter = HU.div([ID, this.getDomId(ID_TOP)], "");
+            topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT),CLASS,"display-header-block"], topLeft);
+	    let h2Separate = this.getAnimationEnabled();
+	    let h1 = 	HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
+	    let h2 = HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
+            let topCenter = HU.div([ID, this.getDomId(ID_TOP),CLASS,"display-header-block"], h2Separate?"":h2);
             let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
-	    let top =  HU.leftRightTable(topLeft, topRight, null, null, {
+	    let top =  HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
                 valign: "bottom"
             });
-            let header =
-		HU.div([ID,this.getDomId(ID_HEADER1),CLASS,"display-header1"], "") +
-		HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header2"], "");
-
-	    top =  header + topCenter + top;
+            let header = h1;
+	    if(h2Separate) header+=h2;
+	    top =  header +  top;	    
 
 
 	    let colorTable = HU.div([ID,this.getDomId(ID_COLORTABLE)]);
@@ -7919,6 +7922,7 @@ a
             //The first entry in the dataList is the array of names
             //The first field is the domain, e.g., time or index
             var fieldNames = [];
+            var fieldsForTuple = [];	    
 	    if(this.getProperty("binDate")) {
 		if(debug)
 		    console.log("binning date");
@@ -7960,10 +7964,12 @@ a
                 //                    name = name.replace(/!!/g,"<br><hr>&nbsp;&nbsp;&nbsp;")
                 name = name.replace(/!!/g, " -- ")
                 fieldNames.push(name);
+		fieldsForTuple.push(field);
             }
             if (props.makeObject) {
                 dataList.push({
                     tuple: fieldNames,
+		    fields:fieldsForTuple,
                     record: null
                 });
             } else {
@@ -8295,9 +8301,15 @@ a
                 date = arg;
             }
 	    if(isNaN(date.getUTCFullYear())) return {v:date,f:"NA"};
+	    if(this.getProperty("dateFormatDaysAgo",false)) {
+		let now = new Date();
+		let diff = Math.round((now.getTime()-date.getTime())/1000/60/60/24);
+		return {v:date,f:diff+" days ago"};
+	    }
             if (!formatter) {
                 formatter = this.fmt_yyyymmddhhmm;
             }
+
             var s = formatter.formatValue(date);
             date = {
                 v: date,
@@ -8653,7 +8665,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     display.initDisplay();
 		} catch (e) {
                     display.displayError("Error creating display:<br>" + e);
-                    console.log("error creating display: " + this.displays[i].getType());
+                    console.log("error creating display: " + display.type);
                     console.log(e.stack)
 		}
             });
@@ -15353,9 +15365,12 @@ var DFLT_HEIGHT = "200px";
   pointData - A PointData object (see below)
 */
 function RamaddaGoogleChart(displayManager, id, chartType, properties) {
-    var ID_TRENDS_CBX = "trends_cbx";
-    var ID_PERCENT_CBX = "percent_cbx";
-    var ID_COLORS = "colors";
+    const ID_TRENDS_CBX = "trends_cbx";
+    const ID_PERCENT_CBX = "percent_cbx";
+    const ID_COLORS = "colors";
+    const ID_HIGHLIGHTFIELDSHOLDER = "highlightfieldsholder";
+    const ID_HIGHLIGHTFIELDS = "highlightfields";	    
+
 
     var _this = this;
 
@@ -15371,6 +15386,34 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
 
+
+    this.defineProperties([
+	{label:'Chart Highlight'},
+	{p:'highlightFields',d:null,wikiValue:'fields'},
+	{p:'highlightShowFields',d:null,wikiValue:'true'},
+	{p:'highlightShowFieldsSize',d:"4",wikiValue:'4'},
+	{p:"acceptHighlightFieldsEvent",d:true,wikiValue:'true'},
+	{p:'highlightDim',d:'true',wikiValue:'true',tt:'Dim the non highlight lines'},
+	{p:'lineDashStyle',d:null,wikiValue:'2,2,20,2,20'},
+	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},
+	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},	
+	{p:'some_field.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},
+	{p:'pointSize',d:null,wikiValue:'0'},
+	{p:'highlight.pointSize',d:'0',wikiValue:'4'},
+	{p:'nohighlight.pointSize',d:'0',wikiValue:'4'},	
+	{p:'some_field.pointSize',d:'4',wikiValue:'4'},
+	{p:'lineWidth',d:null,wikiValue:null},
+	{p:'highlight.lineWidth',d:null,wikiValue:'2'},
+	{p:'nohighlight.lineWidth',d:null,wikiValue:'2'},	
+	{p:'some_field.lineWidth',d:'2',wikiValue:'2'},
+	{p:'highlight.color',d:null,wikiValue:null},
+	{p:'nohighlight.color',d:null,wikiValue:null},
+	{p:'some_field.color',d:null,wikiValue:null},
+	{p:'pointShape',d:null,wikiValue:null},
+	{p:'highlight.pointShape',d:null,wikiValue:null},
+	{p:'nohighlight.pointShape',d:null,wikiValue:null},	
+	{p:'some_field.pointShape',d:null,wikiValue:null},
+    ]);
 
 
     RamaddaUtil.defineMembers(this, {
@@ -15935,8 +15978,102 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         getDataTableValueGetter: function() {
 	    return (v)=>{return v;}
 	},
+	getHighlightFields:function() {
+	    return  Utils.split(this.getProperty("highlightFields"),",",true,true)||[];
+	},
+        handleEventPropertyChanged: function(source, prop) {
+	    if(prop.property == "highlightFields") {
+		if(this.getProperty("acceptHighlightFieldsEvent",true)) {
+		    this.setProperty("highlightFields",prop.value);
+		    this.forceUpdateUI();
+		    let v = Utils.split(prop.value,",",true,true);
+		    this.jq(ID_HIGHLIGHTFIELDS).val(v);
+		}
+		return;
+	    }
+            SUPER.handleEventPropertyChanged.call(this, source,prop);
+	},
+	makeSeriesInfo: function(dataTable) {
+	    let seriesNames =[];
+	    //Assume first one is the index
+	    this.writePropertyDef = "";
+	    for(let i=1;i<dataTable.getNumberOfColumns();i++) {
+		//Styles, etc
+		if(dataTable.getColumnRole(i)!="") continue;
+		seriesNames.push(dataTable.getColumnLabel(i));
+	    }
+	    let colors = this.getColorList();
+	    let highlightMap  ={};
+	    let highlightFields = this.getHighlightFields();
+	    let highlightDim = this.getProperty("highlightDim",false);
+	    highlightFields.forEach(f=>{highlightMap[f] = true});
+	    let seriesInfo = {};
+	    seriesNames.forEach((name,idx)=>{
+		let id = Utils.makeId(name);
+		let highlight = highlightMap[id];
+		let s = {
+		};
+		["lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
+		    let dflt = this.getProperty((highlight?"highlight.":"nohighlight.") + a,this.getProperty(a));
+		    let value = this.getProperty(id+"." + a,dflt);
+		    if(value && a=="lineDashStyle") {
+			let tmp = [];
+			Utils.split(value,",",true,true).forEach(tok=>{
+			    tmp.push(parseFloat(tok));
+			});
+			value=tmp;
+		    }
+		    s[a] = value;
+		});
+		if(!s.color) s.color = colors[idx%colors.length];
+		if(highlightFields.length>0) {
+		    if(!highlight && highlightDim) {
+			s.color = Utils.pSBC(0.75,s.color);
+		    }
+		}
+		seriesInfo[idx] = s;
+	    });
 
-        makeDataTable: function(dataList, props, selectedFields) {
+
+	    if(this.getProperty("highlightShowFields",false)) {
+		if(this.jq(ID_HIGHLIGHTFIELDSHOLDER).length==0) {
+		    this.jq(ID_HEADER2).append(HU.span([ID,this.getDomId(ID_HIGHLIGHTFIELDSHOLDER)]));
+		}
+		
+		if(this.jq(ID_HIGHLIGHTFIELDS).length==0) {
+		    let seriesValues = [];
+		    seriesNames.forEach(n=>{
+			seriesValues.push([Utils.makeId(n),n]);
+		    });
+		    seriesValues.sort((a,b)=>{
+			return a[1].localeCompare(b[1]);
+			
+		    });
+		    let select =  HU.span([CLASS,"display-filter",STYLE,""],
+					  SPACE + "Highlight: " +
+					  HU.select("",[ID,this.getDomId(ID_HIGHLIGHTFIELDS),"multiple","true","size",this.getProperty("highlightShowFieldsSize","4")],seriesValues,highlightFields));
+		    this.jq(ID_HIGHLIGHTFIELDSHOLDER).html(select);
+		    this.jq(ID_HIGHLIGHTFIELDS).change(()=>{
+			let v = Utils.makeArray(this.jq(ID_HIGHLIGHTFIELDS).val());
+			v = Utils.join(v,",");
+			this.setProperty("highlightFields",v);
+			this.forceUpdateUI();
+			let props = {
+			    property: "highlightFields",
+			    value:v
+			};
+
+			this.propagateEvent("handleEventPropertyChanged", props);
+		    });
+		}
+	    }
+//	    console.log(this.writePropertyDef);
+	    this.writePropertyDef=null;
+	    return seriesInfo;
+	},
+	    
+
+        makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =displayDebug.makeDataTable;
 	    let debugRows = 4;
@@ -15950,25 +16087,25 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (dataList.length == 1) {
 		return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
-	    var groupField = this.getFieldById(null,  this.getProperty("groupBy"));
 
+	    let groupField = this.getFieldById(null,  this.getProperty("groupBy"));
 	    if(groupField) {
 		dataList = this.filterData();
-		var groupedData =[];
-		var groupValues = [];
-		var seen = {};
-		var cnt =0;
-		var dateToValue =  {};
-		var dates = [];
+		let groupedData =[];
+		let groupValues = [];
+		let seen = {};
+		let cnt =0;
+		let dateToValue =  {};
+		let dates = [];
 		dataList.map(record=>{
 		    if(cnt++==0) return;
-		    var values = this.getDataValues(record);
-		    var value = values[groupField.getIndex()];
+		    let values = this.getDataValues(record);
+		    let value = values[groupField.getIndex()];
 		    if(!seen[value]) {
 			seen[value]  = true;
 			groupValues.push(value);
 		    }
-		    var newValues =dateToValue[record.getDate()];
+		    let newValues =dateToValue[record.getDate()];
 		    if(!newValues) {
 			dates.push(record.getDate());
 			newValues = {};
@@ -15977,26 +16114,34 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    newValues[value] = values[selectedFields[0].getIndex()];
 		});
 
-
-
-		var data = [];
-		var dataTable = new google.visualization.DataTable();
-		
-
+		let data = [];
+		let dataTable = new google.visualization.DataTable();
 		dataTable.addColumn("date", "Date");
-		groupValues.map(group=>{
-		    dataTable.addColumn("number",group);
+		let tmp = [];
+		let highlightFields = this.getHighlightFields();
+		let tmpMap ={};
+		highlightFields.forEach(f=>{
+		    tmp.push(Utils.makeLabel(f));
 		});
+
+		groupValues = Utils.mergeLists(tmp,groupValues);
+		groupValues = groupValues.filter(v=>{
+		    if(tmpMap[v]) return false;
+		    tmpMap[v] = true;
+		    return true;
+		});
+		groupValues.forEach(group=>dataTable.addColumn("number",group));
 		dates.map(date=>{
-		    var tuple=[date];
+		    let tuple=[this.getDateValue(date)];
 		    data.push(tuple);
-		    var valueMap = dateToValue[date];
+		    let valueMap = dateToValue[date];
 		    groupValues.map(group=>{
-			var value = valueMap[group];
+			let value = valueMap[group];
 			tuple.push(value);
 		    });
 		});
 		dataTable.addRows(data);
+		if(chartOptions) chartOptions.series = this.makeSeriesInfo(dataTable);
 		return dataTable;
 	    }
 
@@ -16329,6 +16474,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (didColorBy) {
 		colorBy.displayColorTable();
             }
+	    if(chartOptions) chartOptions.series = this.makeSeriesInfo(dataTable);
             return dataTable;
         },
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -16431,10 +16577,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.legend.textStyle, "legend.text.color", "color", textColor);
 
 	    if(this.getProperty("hAxis.ticks") || this.getProperty("hAxis.ticks")=="")  {
-		chartOptions.hAxis.ticks  = this.getProperty("hAxis.ticks").split(",").filter(v=>v!="");
+		chartOptions.hAxis.ticks  = Utils.split(this.getProperty("hAxis.ticks"),",",true,true);
 	    }
 	    if(this.getProperty("vAxis.ticks") || this.getProperty("vAxis.ticks")=="")  {
-		chartOptions.vAxis.ticks  = this.getProperty("vAxis.ticks").split(",").filter(v=>v!="");
+		chartOptions.vAxis.ticks  = Utils.split(this.getProperty("vAxis.ticks"),",",true,true);
 	    }
 
 
@@ -16727,6 +16873,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 	    } else {
 		try {
+//		    console.log(JSON.stringify(this.chartOptions, null,2));
+		    this.chart = chart; this.dataTable = dataTable;
 		    chart.draw(dataTable, this.chartOptions);
 		} catch(err) {
 		    this.setErrorMessage("Error creating chart: " + err);
@@ -16874,7 +17022,9 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
         makeChartOptions: function(dataList, props, selectedFields) {
             chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
 
-            var useMultipleAxes = this.getProperty("useMultipleAxes", true);
+	    let dataFields = dataList[0].fields;
+
+            let useMultipleAxes = this.getProperty("useMultipleAxes", true);
 	    let expandedHeight  = this.getProperty("expandedHeight");
             chartOptions.height = expandedHeight || this.getProperty("chartHeight", this.getProperty("height", "150"));
 
@@ -16885,13 +17035,13 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	    this.setChartArea(chartOptions);
 	    
             if (useMultipleAxes) {
-                $.extend(chartOptions, {
-                    series: [{
-                        targetAxisIndex: 0
+		//TODO: 
+                chartOptions.series = [
+		    {
+			targetAxisIndex: 0
                     }, {
-                        targetAxisIndex: 1
-                    }]
-                });
+			targetAxisIndex: 1
+                    }];
             }
 
 	    if (!chartOptions.hAxis) {
@@ -16933,6 +17083,17 @@ function RamaddaSeriesChart(displayManager, id, chartType, properties) {
         },
         trendLineEnabled: function() {
             return true;
+        },
+    });
+}
+
+
+function BlankchartDisplay(displayManager, id, properties) {
+    RamaddaUtil.inherit(this, new RamaddaSeriesChart(displayManager, id, "blankchart", properties));
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
+            return null;
         },
     });
 }
@@ -18077,7 +18238,7 @@ function TreemapDisplay(displayManager, id, properties) {
         },
 
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
-            var dataTable = this.makeDataTable(dataList, props, selectedFields);
+            var dataTable = this.makeDataTable(dataList, props, selectedFields, chartOptions);
             if (!dataTable) return null;
             return new google.visualization.TreeMap(chartDiv);
         },
