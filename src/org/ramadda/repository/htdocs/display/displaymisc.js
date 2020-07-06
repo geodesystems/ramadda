@@ -1857,7 +1857,8 @@ function RamaddaRecordsDisplay(displayManager, id, properties, type) {
                 for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                     let field = fields[fieldIdx];
                     let v = tuple[field.getIndex()];
-                    div += HU.b(field.getLabel()) + ": " + v + HU.tag(BR);
+		    if(v.getTime) v = this.formatDate(v);
+                    div += HU.b(field.getLabel()) + ": " + v + "<br>" +"\n";
                 }
                 html += HU.div([CLASS,"display-records-record",RECORD_INDEX,rowIdx], div);
             }
