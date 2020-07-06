@@ -943,8 +943,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 
 		let data = [];
-		let dataTable = new google.visualization.DataTable();
-		dataTable.addColumn("date", "Date");
 		let tmp = [];
 		let highlightFields = this.getHighlightFields();
 		let tmpMap ={};
@@ -960,7 +958,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tmpMap[v] = true;
 		    return true;
 		});
-		groupValues.forEach(group=>dataTable.addColumn("number",group));
 		dates.map(date=>{
 		    let tuple=[this.getDateValue(date)];
 		    data.push(tuple);
@@ -970,6 +967,28 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			tuple.push(value);
 		    });
 		});
+
+		let header = Utils.mergeLists(["Date"],groupValues);
+		let dataTable = new google.visualization.DataTable();
+		if(data.length>0) {
+		    //TODO: figure out type of columns with null values
+		    let tuple = data[0];
+		    tuple.forEach((t,idx)=>{
+			let name = header[idx];
+			let type = t==null?"number":(typeof t);
+			if(type =="number")
+			    dataTable.addColumn("number", name);
+			else if(type =="string")
+			    dataTable.addColumn("string", name);
+			else if(t.getTime || (t.v && t.v.getTime))
+			    dataTable.addColumn("date", name);						
+			else {
+			    console.log("Unknown type:" + t);
+			    console.log(JSON.stringify(t,null,2));
+			    sdfdsfdf()
+			}
+		    });
+		}
 		dataTable.addRows(data);
 		if(chartOptions) chartOptions.series = this.makeSeriesInfo(dataTable);
 		return dataTable;
