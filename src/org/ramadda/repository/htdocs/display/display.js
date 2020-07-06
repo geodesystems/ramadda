@@ -4161,6 +4161,8 @@ a
 		this.updateUI();
 	    } catch(err) {
                 this.setContents(this.getMessage(err));
+		console.log("Error:" + err);
+		console.log(err.stack);
 	    }
 	},
         updateUI: function() {
