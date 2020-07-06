@@ -914,6 +914,30 @@ var Utils =  {
 			    s+=t.s;
 			} else {
 			    let value = source[t.tag];
+			    if(t.tag=="func") {
+				let f = t.attrs.f;
+				if(!f) {
+				    s+="&lt;no function defined&gt;";
+				    return;
+				}
+				let code = "function macroFunc() {\n"
+				for(a in source) {
+				    let v = source[a];
+				    if((typeof v)!="number") v = '"' + v +'"';
+				    code += a +"=" + v+";\n";
+				}
+				code+= "return " + f+";\n}\n"
+				code+="macroFunc()";
+				try {
+				    let result = eval(code);
+				    s+=result;
+				    return;
+				} catch(err) {
+				    s+="&lt;Error:" + err+"&gt;";
+				    return;
+				}
+
+			    }
 			    if(!Utils.isDefined(value)) {
 				s+="${" + t.macro+"}";
 				return;
@@ -942,7 +966,9 @@ var Utils =  {
 				if(t.attrs["format"]) {
 				    let fmt = t.attrs["format"]
 				    if(fmt == "comma") {
-					value = Utils.formatNumberComma(value);
+					if(isNaN(value)) value=0;
+					else if(value!=0)
+					    value = Utils.formatNumberComma(value);
 				    }
 				}
 				if(t.attrs["toggle"]) {
