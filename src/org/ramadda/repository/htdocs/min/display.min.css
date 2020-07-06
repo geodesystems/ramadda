@@ -1719,13 +1719,18 @@ text-align:center;
 }
 
 .display-block {
-background:#efefef;
 background:#423E3B;
 width: 8px;
-height:8px;
+hight:8px;
 display: inline-block;
 margin:1px;
 }
+
+.display-block-icon {
+display: inline-block;
+margin:1px;
+}
+
 
 .display-blocks-footer {
 margin-top:6px;

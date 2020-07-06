@@ -94,7 +94,6 @@ addGlobalDisplayType({
     requiresData: true,
     category: CATEGORY_TEXT
 });
-
 addGlobalDisplayType({
     type: DISPLAY_TEXTANALYSIS,
     forUser: true,
@@ -102,12 +101,11 @@ addGlobalDisplayType({
     requiresData: true,
     category: CATEGORY_TEXT
 });
-
 addGlobalDisplayType({
     type: DISPLAY_BLOCKS,
     forUser: true,
     label: "Blocks",
-    requiresData: false,
+    requiresData: true,
     category: CATEGORY_MISC
 });
 
@@ -1026,8 +1024,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    var selected = [];
 	    var summary = {};
 	    var goodRecords = [];
-	    records.map(record=>{
-		r  =  this.getDataValues(record);
+	    records.forEach(record=>{
+		let r  =  this.getDataValues(record);
 		if(uniqueFields.length>0) {
 		    var key= "";
 		    uniqueFields.map(uf=>{
@@ -1299,11 +1297,17 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			s= this.applyRecordTemplate(row,fields,s,props);
 		    }
 
+
 		    let macros = Utils.tokenizeMacros(s);
 		    let rowAttrs = {};
 		    rowAttrs["selectCount"] = selected.length;
 		    rowAttrs["totalCount"] = records.length;
 		    rowAttrs["recordIndex"] = rowIdx+1;
+		    let dataFilters = this.getDataFilters();
+		    this.filters.forEach(f=>{
+			if(!f.isEnabled() || !f.getField) return;
+			rowAttrs["filter." + f.getField().getId()] =  f.getFieldValues();
+		    });
 		    var recordStyle = style;
 		    if(color) {
 			if(this.getProperty("colorBackground",false)) {
@@ -1312,7 +1316,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			rowAttrs["color"] = color;
 		    }
 		    var tag = HU.openTag("div",[STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",CLASS,"display-template-record","recordIndex",rowIdx]);
+
 		    s = macros.apply(rowAttrs);
+
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
@@ -1733,96 +1739,158 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
     const ID_BLOCKS_HEADER = "blocks_header";
     const ID_BLOCKS = "blocks";
     const ID_BLOCKS_FOOTER = "blocks_footer";
-    let animStep=1000;
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Block Properties'},
+	{p:'animStep',d:1000,wikiValue:"1000",tt:'Delay'},
+	{p:'doSum',d:true,wikiValue:"false",tt:''},
+	{p:'header',d:true,wikiValue:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
+
+//	{p:'counts',d:100,wikiValue:"100",tt:''},	
+	{p:'blockIcon',d:null,wikiValue:"fa-male",tt:'Use an icon'},
+//	{p:'',d:"",wikiValue:"",tt:''},
+    ]);
+
     $.extend(this, {
         getContentsStyle: function() {
             return "";
         },
         updateUI: function() {
+	    let f = this.getProperty("fields");
+	    let records;
+	    if(f) {
+		records = this.filterData();
+		if(!records) return;
+	    }
 	    this.counts = [];
 	    this.counts2 = [];
-	    var counts = this.getProperty("counts","100",true).split(";");
-	    for(var i=0;i<counts.length;i++) 
-		this.counts.push(parseFloat(counts[i]));
-	    var doSum = this.getProperty("doSum","true") == "true";
-	    if(doSum) {
-		this.counts2 = this.counts;
-	    } else {
-		var total = 0;
-		for(var i=0;i<this.counts.length;i++) {
-		    var tmp = this.counts[i];
-		    this.counts2.push(this.counts[i]-total);
-		    total+= tmp;
-		}
-	    }
+	    if(f) {
+		let fields = this.getFieldsByIds(null,f);
+		if(!fields) return;
+		this.footers = [];
+		this.headers = [];
+		let numBlocks  = this.getProperty("numBlocks",1000);
+		this.total = 0;
+		fields.forEach(f=>{
+		    this.footers.push("${count} " + f.getLabel());
+		    let v = records[0].getValue(f.getIndex());
+		    if(!isNaN(v)) this.total+=v;
+		    this.counts.push(v);
+		});
 
-	    this.footers = this.getProperty("footers","",true).split(";");
-	    this.headers = this.getProperty("headers","",true).split(";");
+		if(this.total>0) {
+		    this.blockValue = this.total/numBlocks;
+		    this.counts.forEach(v=>{
+			let percent = isNaN(v)?0:v/this.total;
+			let scaledValue = percent*numBlocks;
+			this.counts2.push(scaledValue);
+		    });
+		}
+	    } else {
+		//todo: set this
+		this.blockValue = 0;
+		let counts = this.getProperty("counts","100",true).split(";");
+		for(var i=0;i<counts.length;i++) 
+		    this.counts.push(parseFloat(counts[i]));
+		let doSum = this.getPropertyDoSum();
+		if(doSum) {
+		    this.counts2 = this.counts;
+		} else {
+		    this.total = 0;
+		    for(var i=0;i<this.counts.length;i++) {
+			let tmp = this.counts[i];
+			this.counts2.push(this.counts[i]-this.total);
+			this.total+= tmp;
+		    }
+		}
+		this.footers = this.getProperty("footers","",true).split(";");
+		this.headers = this.getProperty("headers","",true).split(";");
+	    }
 	    while(this.footers.length< this.counts.length)
 		this.footers.push("");
 	    while(this.headers.length< this.counts.length)
 		this.headers.push("");
 	    this.showBlocks(true);
+
 	    this.writeHtml(ID_DISPLAY_CONTENTS, 
 			   HU.div([CLASS,"display-blocks-header",STYLE, this.getProperty("headerStyle","", true),ID,this.getDomId(ID_BLOCKS_HEADER)]) +
 			   HU.div([CLASS,"display-blocks-blocks",ID,this.getDomId(ID_BLOCKS)])+
 			   HU.div([CLASS,"display-blocks-footer", STYLE, this.getProperty("footerStyle","", true), ID,this.getDomId(ID_BLOCKS_FOOTER)]));
 	    //Show the outline
-	    this.showBlocks(true);
-	    HU.callWhenScrolled(this.getDomId(ID_DISPLAY_CONTENTS),()=>{
-		if(!this.displayedBlocks) {
-		    this.displayedBlocks = true;
-		    setTimeout(()=>{this.showBlocks(false)},animStep);
-		}
-	    },500);
-
+	    this.showBlocks(false);
+	    if(this.getProperty("displayOnScroll")) {
+		HU.callWhenScrolled(this.getDomId(ID_DISPLAY_CONTENTS),()=>{
+		    if(!this.displayedBlocks) {
+			this.displayedBlocks = true;
+			setTimeout(()=>{this.showBlocks(false)},this.getPropertyAnimStep());
+		    }
+		},500);
+	    }
 	},
 	showBlocks: function(initial, step) {
 	    if(!Utils.isDefined(step)) {
 		if(initial)step = this.counts.length;
 		else step = 0;
 	    }
-	    var contents = "";
+	    let contents = "";
 	    contents += HU.openDiv([CLASS,"display-blocks"]);
-	    var tmp =this.getProperty("colors","red,blue,gray,green",true); 
-	    var ct = (typeof tmp) =="string"?tmp.split(","):tmp;
-	    var footer ="";
+	    let tmp =this.getProperty("colors","#d73027,#fdae61,#74add1,#423E3B,red,green,blue",true); 
+	    let ct = (typeof tmp) =="string"?tmp.split(","):tmp;
+	    let footer ="";
 	    while(ct.length<this.counts.length) {
 		ct.push(ct[ct.length-1]);
 	    }
-	    var multiplier = parseFloat(this.getProperty("multiplier","1",true));
-	    var dim=this.getProperty("blockDimensions","8",true);
-	    var labelStyle = this.getProperty("labelStyle","", true);
-	    var blockCnt = 0;
+
+
+	    let multiplier = parseFloat(this.getProperty("multiplier","1",true));
+	    let dim=this.getProperty("blockDimensions","8",true);
+	    let labelStyle = this.getProperty("labelStyle","", true);
+	    let blockCnt = 0;
+	    let iconProp = this.getProperty("blockIcon");
+	    let clazz = iconProp?"display-block-icon":"display-block";
 	    for(var i=0;i<this.counts2.length;i++) {
-		var label = this.footers[i].replace("${count}",multiplier*this.counts[i]) ;
-		var style =  "width:" + dim+"px;height:" + dim+"px;";
+		let num = multiplier*this.counts[i];
+		if(isNaN(num)) num = 0;
+		let label = this.footers[i].replace("${count}",Utils.formatNumberComma(num));
+		let style =  iconProp?"":"width:" + dim+"px;height:" + dim+"px;";
+		let iconStyle = "";
 		if(!initial) {
 		    if(i<step) {
-			style += "background:" + ct[i]+";" ;
-			footer += HU.div([CLASS,"display-block",STYLE,style],"") +" " + HU.span([STYLE,labelStyle], label)+"&nbsp;&nbsp;";
+			if(!iconProp)
+			    style += "background:" + ct[i]+";" ;
+			else
+			    iconStyle+="color:" + ct[i]+";";
+			let footerIcon =  iconProp?HU.getIconImage(iconProp, null, [STYLE, iconStyle]):"";
+			footer += HU.div([CLASS,clazz,STYLE,style],footerIcon) +" " + HU.span([STYLE,labelStyle], label)+"&nbsp;&nbsp;";
 		    } else {
 			footer += "&nbsp;&nbsp;";
 		    }
 		}
-		var cnt = this.counts2[i];
-		for(var j=0;j<this.counts2[i];j++) {
-		    contents += HU.div([CLASS,"display-block",STYLE,style,TITLE,label],"");
+		let icon = iconProp?HU.getIconImage(iconProp, null, [STYLE, iconStyle]):"";
+		let cnt = this.counts2[i];
+		for(let j=0;j<10000 && j<this.counts2[i];j++) {
+		    contents += HU.div([CLASS,clazz,STYLE,style,TITLE,label],icon);
 		}
 		blockCnt++;
 	    }
+
 	    contents += HU.closeDiv();
-	    this.jq(ID_BLOCKS_HEADER).html(this.getProperty("header",""));
+	    let header = this.getProperty("header","");
+	    header = header.replace("${total}",Utils.formatNumberComma(this.total)).replace("${blockValue}", Utils.formatNumberComma(Math.round(this.blockValue)));
+
+	    this.jq(ID_BLOCKS_HEADER).html(header);
 	    this.jq(ID_BLOCKS).html(contents);
 	    this.jq(ID_BLOCKS_FOOTER).html(footer);
 	    if(step < this.counts.length) {
-		setTimeout(()=>{this.showBlocks(false, step+1)},animStep);
+		if(this.getPropertyAnimStep()==0) {
+		    this.showBlocks(false, step+1);
+		} else {
+		    setTimeout(()=>{this.showBlocks(false, step+1)},this.getPropertyAnimStep());
+		}
 	    }
 	}
-    }
-	    )
+    });
 }
 
 
