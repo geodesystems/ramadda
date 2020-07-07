@@ -797,21 +797,21 @@ var Csv = {
 	inner+=HU.formTable();
 	Csv.columnInput = null;
 	cmd.args.forEach((a,idx)=>{
-	    let v = opts.values&& idx<opts.values.length?opts.values[idx]:"";
+	    let v = opts.values && idx<opts.values.length?opts.values[idx]:"";
 	    let label = a.label || Utils.makeLabel(a.id);
 	    let id = "csvcommand" + idx;
 	    let desc = a.description==null?"": HU.div([STYLE,HU.css('max-width','300px','vertical-align','top')],a.description);
 	    if(a.rows) {
 		inner+=HU.formEntryTop(label,
-				       HU.hbox(HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,id,"size",10]),desc));		
+				       HU.hbox([HU.textarea("",v,["cols", a.columns || "40", "rows",a.rows,ID,id,"size",10]),desc]));		
 	    } else if(a.type=="list" || a.type=="columns" || a.type=="rows") {
 		v = v.replace(/,/g,"\n");
 		if(!Csv.columnInput && (a.type == "columns" || a.type == "column")) Csv.columnInput = id;
-		inner+=HU.formEntryTop(label,HU.hbox(HU.textarea("",v,["cols", a.size || "10", "rows",a.rows||"5",ID,id]),
-						     desc));
+		inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "10", "rows",a.rows||"5",ID,id]),
+						     desc]));
 		
 	    } else if(a.values) {
-		inner+=HU.formEntry(label,HU.hbox(HU.select("",[ID,id],a.values.split(",")),desc));
+		inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],a.values.split(",")),desc]));
 	    } else {
 		let size = a.size ||30;
 		if(a.type=="number") size=a.size||5;
@@ -821,7 +821,8 @@ var Csv = {
 		if(a.type=="pattern" && !a.placeholder)
 		    title = "Escapes- _leftparen_, _rightparen_, _leftbracket_, _rightbracket_, _dot_, _dollar_, _star_, _plus_, _nl_"
 		if(!Csv.columnInput && (a.type == "columns" || a.type == "column")) Csv.columnInput = id;
-		inner+=HU.formEntry(label,HU.hbox(HU.input("",v,[ID,id,"size",size,TITLE, title, "placeholder",placeholder]), desc));
+		let input = HU.input("",v,[ID,id,"size",size,TITLE, title, "placeholder",placeholder]);
+		inner+=HU.formEntry(label,HU.hbox([input, desc]));
 	    }
 	});
 	inner+=HU.formTableClose();
