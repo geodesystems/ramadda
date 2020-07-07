@@ -1631,7 +1631,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    if(labelField==null) {
 		labelField = this.getFieldById(fields, "name");
 	    }
-	    var fieldsToUse = this.getFieldsByIds(fields,this.getProperty("fields"));
+	    var fieldsToUse = this.getFieldsByIds(fields,this.getPropertyFields());
 	    if(fieldsToUse.length==0) fieldsToUse = fields;
 	    var html = "";
 	    var fieldCount = +this.getProperty("fieldCount",10);
@@ -1757,7 +1757,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
             return "";
         },
         updateUI: function() {
-	    let f = this.getProperty("fields");
+	    let f = this.getPropertyFields();
 	    let records;
 	    if(f) {
 		records = this.filterData();

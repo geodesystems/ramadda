@@ -3416,7 +3416,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) return;
-	    let fields = this.getFieldsByIds(null,this.getProperty("fields"));
+	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
 	    if(fields.length==0) 
 		fields = this.getFieldsOfType(null, "numeric");
 	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
@@ -3669,7 +3669,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(!records) return;
 	    let keyField = this.getFieldById(null,this.getPropertyKeyField());
-	    let fields = this.getFieldsByIds(null,this.getProperty("fields"));
+	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
  	    if(fields.length==0) {
 		fields = this.getPointData().getRecordFields();
 	    }

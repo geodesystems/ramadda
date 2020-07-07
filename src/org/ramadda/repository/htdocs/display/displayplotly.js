@@ -855,7 +855,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
-            var allFields = this.getFieldsByIds(null,this.getProperty("fields"));
+            var allFields = this.getFieldsByIds(null,this.getPropertyFields());
             var stringField = this.getFieldOfType(allFields, "string");
             if (!stringField) {
                 stringField = allFields[0];
@@ -1562,7 +1562,7 @@ function CombochartDisplay(displayManager, id, properties) {
 		paper_bgcolor: this.getProperty("chartBackground", 'rgb(255,255,255,0)'),
 		plot_bgcolor: this.getProperty("plottBackground", 'rgb(255,255,255,0)'),
 	    };
-	    let fields   = this.getFieldsByIds(null, this.getProperty("fields","",true));
+	    let fields   = this.getFieldsByIds(null, this.getPropertyFields("",true));
 	    var data = [];
 	    var domain = [];
 	    records.map((r,idx)=>{
@@ -1612,7 +1612,7 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
-	    let fields   = this.getFieldsByIds(null, this.getProperty("fields","",true));
+	    let fields   = this.getFieldsByIds(null, this.getPropertyFields(""));
             if (fields.length == 0) {
                 this.displayError("No fields specified");
                 return;

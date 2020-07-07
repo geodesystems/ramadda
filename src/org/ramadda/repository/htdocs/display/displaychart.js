@@ -806,7 +806,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return (v)=>{return v;}
 	},
 	getHighlightFields:function() {
-	    return  Utils.split(this.getProperty("highlightFields"),",",true,true)||[];
+	    let p = this.getPropertyFromUrl("highlightFields");
+	    return  Utils.split(this.getPropertyFromUrl("highlightFields"),",",true,true)||[];
 	},
         handleEventPropertyChanged: function(source, prop) {
 	    if(prop.property == "highlightFields") {
@@ -884,6 +885,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			let v = Utils.makeArray(this.jq(ID_HIGHLIGHTFIELDS).val());
 			v = Utils.join(v,",");
 			this.setProperty("highlightFields",v);
+			this.addToDocumentUrl("highlightFields",v);
 			this.forceUpdateUI();
 			let props = {
 			    property: "highlightFields",

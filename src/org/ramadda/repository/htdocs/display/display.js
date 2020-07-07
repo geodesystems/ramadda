@@ -96,6 +96,7 @@ const HIGHLIGHT_COLOR = "yellow";
 const RECORD_INDEX = "recordIndex";
 
 
+let globalDisplayCount = 0;
 function addGlobalDisplayProperty(name, value) {
     if (window.globalDisplayProperties == null) {
         window.globalDisplayProperties = {};
@@ -116,6 +117,7 @@ function getGlobalDisplayProperty(name) {
 
 function addRamaddaDisplay(display) {
     Utils.addDisplay(display);
+    display.displayCount=globalDisplayCount++;
 }
 
 async function ramaddaDisplaySetSelectedEntry(entryId, displays) {
@@ -177,6 +179,7 @@ function ramaddaDisplayStepAnimation() {
    Base class for all displays oriented things
 */
 function DisplayThing(argId, argProperties) {
+    
     if (argProperties == null) {
         argProperties = {};
     }
@@ -522,7 +525,7 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
 	    if(template=="${fields}") {
-		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getProperty("fields")));
+		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
 	    }
 
 	    let values = "";
@@ -694,7 +697,15 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return null;
         },
-        getProperty: function(key, dflt,skipThis) {
+        getPropertyFromUrl: function(key, dflt) {
+	    let fromUrl = HU.getUrlArgument("display"+ this.displayCount+"." + key);
+	    if(fromUrl) return fromUrl;
+	    return this.getProperty(key,dflt);
+	},
+	getPropertyFields: function(dflt) {
+	    return this.getPropertyFromUrl(PROP_FIELDS,dflt);
+	},
+        getProperty: function(key, dflt, skipThis) {
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
 	    let value =  this.getPropertyInner(key,null,skipThis);
@@ -982,6 +993,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
+        addToDocumentUrl: function(key, value) {
+	    HU.addToDocumentUrl("display"+ this.displayCount+"." + key,value);
+	},
+
+
 	getAnimationEnabled: function() {
 	    return this.getProperty("doAnimation", false);
 	},
@@ -1629,7 +1645,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!this.hasData()) {
                 return;
             }
-            var fixedFields = this.getProperty(PROP_FIELDS);
+            var fixedFields = this.getPropertyFields()
             if (fixedFields != null) {
                 if (fixedFields.length == 0) {
                     fixedFields = null;
@@ -1860,7 +1876,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + this.lastSelectedFields);
-            var fixedFields = this.getProperty(PROP_FIELDS);
+            var fixedFields = this.getPropertyFields();
 
 	    //NOT NOW as this nukes the fields property
             //if (fixedFields) fixedFields.length = 0;
@@ -1905,7 +1921,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var df = [];
             var dataList = this.dataCollection.getList();
             //If we have fixed fields then clear them after the first time
-            var fixedFields = this.getProperty(PROP_FIELDS);
+            var fixedFields = this.getPropertyFields();
             if (fixedFields && (typeof fixedFields) == "string") {
                 fixedFields  = fixedFields.split(",");
 	    }
@@ -4399,7 +4415,7 @@ a
 	    header2+=HU.div([ID,this.getDomId(ID_REQUEST_PROPERTIES),CLASS,"display-header-span"],"");
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
-		let fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getProperty("fields", this.getProperty("sumFields"))));
+		let fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getPropertyFields(this.getProperty("sumFields"))));
 		let html = "";
 		let colorCnt = 0;
 		fields.forEach((f)=>{
@@ -4650,6 +4666,8 @@ a
 		_this.settingFilterValue = true;
 		_this.dataFilterChanged();
 
+//		console.log("id:" + fieldId +" value:" + value);
+		_this.addToDocumentUrl(fieldId+".filterValue",value);
 		var args = {
 		    property: PROP_FILTER_VALUE,
 		    id:id,
@@ -4804,7 +4822,8 @@ a
 		if(Array.isArray(val)) {
 		    val = val.join(",");
 		}
-		_this.setProperty("fields",val);
+		_this.addToDocumentUrl(PROP_FIELDS,val);
+		_this.setProperty(PROP_FIELDS,val);
 		_this.callUpdateUI();
 	    });
 
@@ -6431,7 +6450,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         getWikiAttributes: function(attrs) {
             SUPER.getWikiAttributes.call(this, attrs);
             if (this.lastSelectedFields) {
-                attrs.push("fields");
+                attrs.push(PROP_FIELDS);
                 var v = "";
                 for (var i = 0; i < this.lastSelectedFields.length; i++) {
                     v += this.lastSelectedFields[i].getId();

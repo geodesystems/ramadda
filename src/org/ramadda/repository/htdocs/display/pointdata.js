@@ -1130,9 +1130,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    });
 	});
 	this.ops = tmp;
-	this.ops.forEach(op=>{
-//            console.log("op:" + op.value +" " + op.op +" " + op.label);
-	});
     }
 
 
@@ -1156,6 +1153,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	getProperty: function(key, dflt) {
 	    return this.display.getProperty(key, dflt);
 	},
+	getPropertyFromUrl: function(key, dflt) {
+	    return this.display.getPropertyFromUrl(key, dflt);
+	},	
 	prepareToFilter: function() {
 	    if(this.depend) {
 		this.checkDependency();
@@ -1387,14 +1387,15 @@ function RecordFilter(display,filterFieldId, properties) {
             if(this.ops) {
 		let labels =[];
 		this.ops.forEach((op,idx)=>{
-		    labels.push([idx,op.label]);
+		    labels.push([String(idx),op.label]);
 		});
+		let selected = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
 		let enums = Utils.mergeLists([FILTER_ALL],labels);
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
-		widget = HU.select("",attrs,enums);
+		widget = HU.select("",attrs,enums,selected);
 	    } else   if(filterField.getType() == "enumeration") {
 		if(debug) console.log("\tis enumeration");
-		let dfltValue = this.defaultValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
+		let dfltValue = this.defaultValue = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
 		if(this.getProperty(filterField.getId() +".filterMultiple",false)) {
@@ -1517,8 +1518,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    cnt++;
 		});
-		let tmpMin = this.getProperty(filterField.getId() +".filterValueMin",this.getProperty("filterValueMin"));
-		let tmpMax = this.getProperty(filterField.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
+		let tmpMin = this.getPropertyFromUrl(filterField.getId() +".filterValueMin",this.getProperty("filterValueMin"));
+		let tmpMax = this.getPropertyFromUrl(filterField.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
 		let minStyle = "";
 		let maxStyle = "";
 		let dfltValueMin = min;
@@ -1542,7 +1543,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.dateIds.push(widgetId+"_date1");
 		this.dateIds.push(widgetId+"_date2");
             } else {
-		var dfltValue = this.getProperty(filterField.getId() +".filterValue","");
+		var dfltValue = this.getPropertyFromUrl(filterField.getId() +".filterValue","");
 		var attrs =["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId(),"class","display-filter-input"];
 		var placeholder = this.getProperty(filterField.getId() +".filterPlaceholder");
 		if(placeholder) {
