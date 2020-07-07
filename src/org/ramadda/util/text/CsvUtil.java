@@ -2717,6 +2717,7 @@ public class CsvUtil {
                     info.getProcessor().addProcessor(dbXml =
                         new Processor.DbXml(props));
 
+                    info.setMaxRows(30);
                     continue;
                 }
 
