@@ -2127,7 +2127,7 @@ public class CsvUtil {
                 new Arg("prefix", "e.g., state: or county:"),
                 new Arg("suffix")),
         new Cmd("-geocodeaddressdb", new Label("Geocode address for DB"), "",
-                new Arg("columns"), "prefix", "suffix> "),
+                new Arg("columns"), "prefix", "suffix"),
         new Cmd("-geocodejoin", new Label("Geocode with file"),
                 "Geocode with file",
                 new Arg("column", "", "type", "columns"),
@@ -4369,8 +4369,16 @@ public class CsvUtil {
         Hashtable<String, String> props = new Hashtable<String, String>();
         for (int j = 0; j < toks.size(); j += 2) {
             if (j >= toks.size() - 1) {
+		StringBuilder err = new StringBuilder();
+		for (int k = 0; k < toks.size(); k += 2) {
+		    if (k >= toks.size() - 1) {
+			err.append("\t" +toks.get(k) +"=NONE\n");
+		    } else {
+			err.append("\t" +toks.get(k) +"="+toks.get(k+1)+"\n");
+		    }
+		}
                 throw new IllegalArgumentException(
-                    "Error: Odd number of arguments:" + toks);
+                    "Error: Odd number of arguments:\n" + err);
             }
             props.put(toks.get(j), toks.get(j + 1));
         }

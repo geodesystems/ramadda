@@ -1986,7 +1986,7 @@ rotate -> pass -> pass -> rotate -> pass
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",
-                            "label", "value", "true" })));
+                            "islabel", "value", "true" })));
                 }
 
                 if (inner.length() > 0) {
