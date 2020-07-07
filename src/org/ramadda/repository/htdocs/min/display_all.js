@@ -15470,6 +15470,17 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},
 	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},	
 	{p:'some_field.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},
+
+	{p:'labelInLegend',d:null,wikiValue:'label'},
+	{p:'highlight.labelInLegend',d:null,wikiValue:'label'},
+	{p:'nohighlight.labelInLegend',d:null,wikiValue:'label'},	
+	{p:'some_field.labelInLegend',d:null,wikiValue:'label'},
+
+	{p:'seriesType',d:null,wikiValue:'line|area|bars'},
+	{p:'highlight.seriesType',d:null,wikiValue:'line|area|bars'},
+	{p:'nohighlight.seriesType',d:null,wikiValue:'line|area|bars'},	
+	{p:'some_field.seriesType',d:null,wikiValue:'line|area|bars'},	
+
 	{p:'pointSize',d:null,wikiValue:'0'},
 	{p:'highlight.pointSize',d:'0',wikiValue:'4'},
 	{p:'nohighlight.pointSize',d:'0',wikiValue:'4'},	
@@ -15485,6 +15496,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'highlight.pointShape',d:null,wikiValue:null},
 	{p:'nohighlight.pointShape',d:null,wikiValue:null},	
 	{p:'some_field.pointShape',d:null,wikiValue:null},
+
+	{label:'Trendlines'},
+	{p:'showTrendline',d:null,wikiValue:"true"},
+	{p:"trendlineType",wikiValue:"exponential"},
+	{p:"trendlineVisibleInLegend",wikiValue:"true"},
+	{p:"trendlineColor",wikiValue:""},
+	{p:"trendlineLineWidth",wikiValue:"true"},
+	{p:"trendlineOpacity",wikiValue:"0.3"}		    		    		    
     ]);
 
 
@@ -16069,7 +16088,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	makeSeriesInfo: function(dataTable) {
 	    let seriesNames =[];
 	    //Assume first one is the index
-	    this.writePropertyDef = "";
 	    for(let i=1;i<dataTable.getNumberOfColumns();i++) {
 		//Styles, etc
 		if(dataTable.getColumnRole(i)!="") continue;
@@ -16081,12 +16099,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let highlightDim = this.getProperty("highlightDim",false);
 	    highlightFields.forEach(f=>{highlightMap[f] = true});
 	    let seriesInfo = {};
+            let useMultipleAxes = this.getProperty("useMultipleAxes", true);
 	    seriesNames.forEach((name,idx)=>{
 		let id = Utils.makeId(name);
 		let highlight = highlightMap[id];
 		let s = {
 		};
-		["lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
+		["labelInLegend ", "seriesType","lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
 		    let dflt = this.getProperty((highlight?"highlight.":"nohighlight.") + a,this.getProperty(a));
 		    let value = this.getProperty(id+"." + a,dflt);
 		    if(value && a=="lineDashStyle") {
@@ -16096,12 +16115,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			});
 			value=tmp;
 		    }
+		    if(a=="seriesType") a = "type";
 		    s[a] = value;
 		});
 		if(!s.color) s.color = colors[idx%colors.length];
 		if(highlightFields.length>0) {
 		    if(!highlight && highlightDim) {
 			s.color = Utils.pSBC(0.75,s.color);
+		    }
+		}
+		if (useMultipleAxes) {
+		    if(idx%2==0) {
+			s.targetAxisIndex=0;
+		    }  else  {
+			s.targetAxisIndex=1;
 		    }
 		}
 		seriesInfo[idx] = s;
@@ -16141,11 +16168,34 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    });
 		}
 	    }
-//	    console.log(this.writePropertyDef);
-	    this.writePropertyDef=null;
+	    //	    console.log(JSON.stringify(seriesInfo,null,2));
 	    return seriesInfo;
 	},
 	    
+	makeTrendlinesInfo: function(dataTable) {
+	    let seriesNames =[];
+	    //Assume first one is the index
+	    for(let i=1;i<dataTable.getNumberOfColumns();i++) {
+		//Styles, etc
+		if(dataTable.getColumnRole(i)!="") continue;
+		seriesNames.push(dataTable.getColumnLabel(i));
+	    }
+	    let trendlinesInfo = {};
+	    seriesNames.forEach((name,idx)=> {
+		let id = Utils.makeId(name);
+		if(this.getProperty("showTrendline." + id, this.getProperty("showTrendline"))) {
+		    let s = {
+		    };
+		    trendlinesInfo[idx] = s;
+		    s.type = this.getProperty("trendlineType." + id,this.getProperty("trendlineType"));
+		    s.visibleInLegend = this.getProperty("trendlineVisibleInLegend." + id,this.getProperty("trendlineVisibleInLegend"));
+		    s.color = this.getProperty("trendlineColor." + id,this.getProperty("trendlineColor"));
+		    s.lineWidth = this.getProperty("trendlineLineWidth." + id,this.getProperty("trendlineLineWidth"));
+		    s.opacity = this.getProperty("trendlineOpacity." + id,this.getProperty("trendlineOpacity"));		    		    		    
+		}
+	    });
+	    return trendlinesInfo;
+	},
 
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
@@ -16237,7 +16287,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    });
 		}
 		dataTable.addRows(data);
-		if(chartOptions) chartOptions.series = this.makeSeriesInfo(dataTable);
+		if(chartOptions) {
+		    chartOptions.series = this.makeSeriesInfo(dataTable);
+		    chartOptions.trendlines = this.makeTrendlinesInfo(dataTable);		    
+		}
 		return dataTable;
 	    }
 
@@ -16570,7 +16623,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (didColorBy) {
 		colorBy.displayColorTable();
             }
-	    if(chartOptions) chartOptions.series = this.makeSeriesInfo(dataTable);
+	    if(chartOptions) {
+		chartOptions.series = this.makeSeriesInfo(dataTable);
+		chartOptions.trendlines = this.makeTrendlinesInfo(dataTable);
+	    }
+
             return dataTable;
         },
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -17120,7 +17177,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 	    let dataFields = dataList[0].fields;
 
-            let useMultipleAxes = this.getProperty("useMultipleAxes", true);
+
 	    let expandedHeight  = this.getProperty("expandedHeight");
             chartOptions.height = expandedHeight || this.getProperty("chartHeight", this.getProperty("height", "150"));
 
@@ -17130,6 +17187,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	    this.setPropertyOn(chartOptions.legend, "legend.position", "position", this.getProperty("legendPosition", 'bottom'));
 	    this.setChartArea(chartOptions);
 	    
+            let useMultipleAxes = this.getProperty("useMultipleAxes", true);
             if (useMultipleAxes) {
 		//TODO: 
                 chartOptions.series = [
