@@ -2499,6 +2499,7 @@ const HIGHLIGHT_COLOR = "yellow";
 const RECORD_INDEX = "recordIndex";
 
 
+let globalDisplayCount = 0;
 function addGlobalDisplayProperty(name, value) {
     if (window.globalDisplayProperties == null) {
         window.globalDisplayProperties = {};
@@ -2519,6 +2520,7 @@ function getGlobalDisplayProperty(name) {
 
 function addRamaddaDisplay(display) {
     Utils.addDisplay(display);
+    display.displayCount=globalDisplayCount++;
 }
 
 async function ramaddaDisplaySetSelectedEntry(entryId, displays) {
@@ -2580,6 +2582,7 @@ function ramaddaDisplayStepAnimation() {
    Base class for all displays oriented things
 */
 function DisplayThing(argId, argProperties) {
+    
     if (argProperties == null) {
         argProperties = {};
     }
@@ -2925,7 +2928,7 @@ function DisplayThing(argId, argProperties) {
 		}
 	    }
 	    if(template=="${fields}") {
-		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getProperty("fields")));
+		fields = this.getFieldsByIds(null,this.getProperty("tooltipFields",this.getPropertyFields()));
 	    }
 
 	    let values = "";
@@ -3097,7 +3100,15 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return null;
         },
-        getProperty: function(key, dflt,skipThis) {
+        getPropertyFromUrl: function(key, dflt) {
+	    let fromUrl = HU.getUrlArgument("display"+ this.displayCount+"." + key);
+	    if(fromUrl) return fromUrl;
+	    return this.getProperty(key,dflt);
+	},
+	getPropertyFields: function(dflt) {
+	    return this.getPropertyFromUrl(PROP_FIELDS,dflt);
+	},
+        getProperty: function(key, dflt, skipThis) {
 	    if(this.debugGetProperty)
 		console.log("\tgetProperty:" + key);
 	    let value =  this.getPropertyInner(key,null,skipThis);
@@ -3385,6 +3396,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
+        addToDocumentUrl: function(key, value) {
+	    HU.addToDocumentUrl("display"+ this.displayCount+"." + key,value);
+	},
+
+
 	getAnimationEnabled: function() {
 	    return this.getProperty("doAnimation", false);
 	},
@@ -4032,7 +4048,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!this.hasData()) {
                 return;
             }
-            var fixedFields = this.getProperty(PROP_FIELDS);
+            var fixedFields = this.getPropertyFields()
             if (fixedFields != null) {
                 if (fixedFields.length == 0) {
                     fixedFields = null;
@@ -4263,7 +4279,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + this.lastSelectedFields);
-            var fixedFields = this.getProperty(PROP_FIELDS);
+            var fixedFields = this.getPropertyFields();
 
 	    //NOT NOW as this nukes the fields property
             //if (fixedFields) fixedFields.length = 0;
@@ -4308,7 +4324,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var df = [];
             var dataList = this.dataCollection.getList();
             //If we have fixed fields then clear them after the first time
-            var fixedFields = this.getProperty(PROP_FIELDS);
+            var fixedFields = this.getPropertyFields();
             if (fixedFields && (typeof fixedFields) == "string") {
                 fixedFields  = fixedFields.split(",");
 	    }
@@ -6802,7 +6818,7 @@ a
 	    header2+=HU.div([ID,this.getDomId(ID_REQUEST_PROPERTIES),CLASS,"display-header-span"],"");
 	    if(this.getProperty("legendFields") || this.getProperty("showFieldLegend",false)) {
 		let colors = this.getColorList();
-		let fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getProperty("fields", this.getProperty("sumFields"))));
+		let fields =  this.getFieldsByIds(null, this.getProperty("legendFields", this.getPropertyFields(this.getProperty("sumFields"))));
 		let html = "";
 		let colorCnt = 0;
 		fields.forEach((f)=>{
@@ -7053,6 +7069,8 @@ a
 		_this.settingFilterValue = true;
 		_this.dataFilterChanged();
 
+//		console.log("id:" + fieldId +" value:" + value);
+		_this.addToDocumentUrl(fieldId+".filterValue",value);
 		var args = {
 		    property: PROP_FILTER_VALUE,
 		    id:id,
@@ -7207,7 +7225,8 @@ a
 		if(Array.isArray(val)) {
 		    val = val.join(",");
 		}
-		_this.setProperty("fields",val);
+		_this.addToDocumentUrl(PROP_FIELDS,val);
+		_this.setProperty(PROP_FIELDS,val);
 		_this.callUpdateUI();
 	    });
 
@@ -8834,7 +8853,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         getWikiAttributes: function(attrs) {
             SUPER.getWikiAttributes.call(this, attrs);
             if (this.lastSelectedFields) {
-                attrs.push("fields");
+                attrs.push(PROP_FIELDS);
                 var v = "";
                 for (var i = 0; i < this.lastSelectedFields.length; i++) {
                     v += this.lastSelectedFields[i].getId();
@@ -10011,9 +10030,6 @@ function RecordFilter(display,filterFieldId, properties) {
 	    });
 	});
 	this.ops = tmp;
-	this.ops.forEach(op=>{
-//            console.log("op:" + op.value +" " + op.op +" " + op.label);
-	});
     }
 
 
@@ -10037,6 +10053,9 @@ function RecordFilter(display,filterFieldId, properties) {
 	getProperty: function(key, dflt) {
 	    return this.display.getProperty(key, dflt);
 	},
+	getPropertyFromUrl: function(key, dflt) {
+	    return this.display.getPropertyFromUrl(key, dflt);
+	},	
 	prepareToFilter: function() {
 	    if(this.depend) {
 		this.checkDependency();
@@ -10268,14 +10287,15 @@ function RecordFilter(display,filterFieldId, properties) {
             if(this.ops) {
 		let labels =[];
 		this.ops.forEach((op,idx)=>{
-		    labels.push([idx,op.label]);
+		    labels.push([String(idx),op.label]);
 		});
+		let selected = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
 		let enums = Utils.mergeLists([FILTER_ALL],labels);
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
-		widget = HU.select("",attrs,enums);
+		widget = HU.select("",attrs,enums,selected);
 	    } else   if(filterField.getType() == "enumeration") {
 		if(debug) console.log("\tis enumeration");
-		let dfltValue = this.defaultValue = this.getProperty(filterField.getId() +".filterValue",FILTER_ALL);
+		let dfltValue = this.defaultValue = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
                 let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()];
 		if(this.getProperty(filterField.getId() +".filterMultiple",false)) {
@@ -10398,8 +10418,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    cnt++;
 		});
-		let tmpMin = this.getProperty(filterField.getId() +".filterValueMin",this.getProperty("filterValueMin"));
-		let tmpMax = this.getProperty(filterField.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
+		let tmpMin = this.getPropertyFromUrl(filterField.getId() +".filterValueMin",this.getProperty("filterValueMin"));
+		let tmpMax = this.getPropertyFromUrl(filterField.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
 		let minStyle = "";
 		let maxStyle = "";
 		let dfltValueMin = min;
@@ -10423,7 +10443,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.dateIds.push(widgetId+"_date1");
 		this.dateIds.push(widgetId+"_date2");
             } else {
-		var dfltValue = this.getProperty(filterField.getId() +".filterValue","");
+		var dfltValue = this.getPropertyFromUrl(filterField.getId() +".filterValue","");
 		var attrs =["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId(),"class","display-filter-input"];
 		var placeholder = this.getProperty(filterField.getId() +".filterPlaceholder");
 		if(placeholder) {
@@ -16031,7 +16051,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return (v)=>{return v;}
 	},
 	getHighlightFields:function() {
-	    return  Utils.split(this.getProperty("highlightFields"),",",true,true)||[];
+	    let p = this.getPropertyFromUrl("highlightFields");
+	    return  Utils.split(this.getPropertyFromUrl("highlightFields"),",",true,true)||[];
 	},
         handleEventPropertyChanged: function(source, prop) {
 	    if(prop.property == "highlightFields") {
@@ -16109,6 +16130,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			let v = Utils.makeArray(this.jq(ID_HIGHLIGHTFIELDS).val());
 			v = Utils.join(v,",");
 			this.setProperty("highlightFields",v);
+			this.addToDocumentUrl("highlightFields",v);
 			this.forceUpdateUI();
 			let props = {
 			    property: "highlightFields",
@@ -21820,7 +21842,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    if(labelField==null) {
 		labelField = this.getFieldById(fields, "name");
 	    }
-	    var fieldsToUse = this.getFieldsByIds(fields,this.getProperty("fields"));
+	    var fieldsToUse = this.getFieldsByIds(fields,this.getPropertyFields());
 	    if(fieldsToUse.length==0) fieldsToUse = fields;
 	    var html = "";
 	    var fieldCount = +this.getProperty("fieldCount",10);
@@ -21946,7 +21968,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
             return "";
         },
         updateUI: function() {
-	    let f = this.getProperty("fields");
+	    let f = this.getPropertyFields();
 	    let records;
 	    if(f) {
 		records = this.filterData();
@@ -35367,7 +35389,7 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) return;
-	    let fields = this.getFieldsByIds(null,this.getProperty("fields"));
+	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
 	    if(fields.length==0) 
 		fields = this.getFieldsOfType(null, "numeric");
 	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
@@ -35620,7 +35642,7 @@ function RamaddaDotbarDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(!records) return;
 	    let keyField = this.getFieldById(null,this.getPropertyKeyField());
-	    let fields = this.getFieldsByIds(null,this.getProperty("fields"));
+	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
  	    if(fields.length==0) {
 		fields = this.getPointData().getRecordFields();
 	    }
@@ -36333,8 +36355,8 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             if (!icon) {
                 icon = icon_information;
             }
-            var html = HtmlUtils.hbox(HtmlUtils.image(icon, ["align", "left"]),
-                HtmlUtils.inset(msg, 10, 10, 5, 10));
+            var html = HtmlUtils.hbox([HtmlUtils.image(icon, ["align", "left"]),
+                HtmlUtils.inset(msg, 10, 10, 5, 10)]);
             html = HtmlUtils.div(["class", "note"], html);
             this.jq(ID_TABLE_HOLDER).html(html);
         },
@@ -37259,7 +37281,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
-            var allFields = this.getFieldsByIds(null,this.getProperty("fields"));
+            var allFields = this.getFieldsByIds(null,this.getPropertyFields());
             var stringField = this.getFieldOfType(allFields, "string");
             if (!stringField) {
                 stringField = allFields[0];
@@ -37966,7 +37988,7 @@ function CombochartDisplay(displayManager, id, properties) {
 		paper_bgcolor: this.getProperty("chartBackground", 'rgb(255,255,255,0)'),
 		plot_bgcolor: this.getProperty("plottBackground", 'rgb(255,255,255,0)'),
 	    };
-	    let fields   = this.getFieldsByIds(null, this.getProperty("fields","",true));
+	    let fields   = this.getFieldsByIds(null, this.getPropertyFields("",true));
 	    var data = [];
 	    var domain = [];
 	    records.map((r,idx)=>{
@@ -38016,7 +38038,7 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
         updateUI: function() {
             var records = this.filterData();
             if (!records) return;
-	    let fields   = this.getFieldsByIds(null, this.getProperty("fields","",true));
+	    let fields   = this.getFieldsByIds(null, this.getPropertyFields(""));
             if (fields.length == 0) {
                 this.displayError("No fields specified");
                 return;
