@@ -471,7 +471,6 @@ var Utils =  {
 	if(!Array.isArray(v)) return [v];
 	return v;
     },
-
     join: function(l, delimiter, offset) {
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";
@@ -2628,14 +2627,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     join: function(items, separator) {
-        if(!Array.isArray(items)) {
+        if(!items.forEach) {
 	    items=[items];
 	}
-        var html = "";
-        for (var i = 0; i < items.length; i++) {
-            if (i > 0 & separator != null) html += separator;
-            html += items[i];
-        }
+        let html = "";
+	items.forEach((item,idx)=>{
+            if (idx > 0 & separator != null) html += separator;
+            html += item;
+        });
         return html;
     },
     qt: function(value) {
@@ -2694,10 +2693,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             $(id).accordion(ctorArgs);
         });
     },
-    hbox: function() {
+    hbox: function(args) {
         var row = HtmlUtils.openTag("tr", ["valign", "top"]);
         row += "<td>";
-        row += HtmlUtils.join(arguments, "</td><td>");
+        row += HtmlUtils.join(args, "</td><td>");
         row += "</td></tr>";
         return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
 			row);
@@ -2814,6 +2813,35 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    if(opts.remove) dialog.remove();
 	});
 	return dialog;
+    },
+    addToDocumentUrl:function(name,value,append) {
+        var url = String(window.location);
+	if(!append) {
+	    let regex = new RegExp("(\\&|\\?)?" + name+"=[^\&]+(\\&|$)+", 'g');
+	    url = url.replace(regex,"");
+	}
+        if (!url.includes("?")) url += "?";
+        url += "&" + HtmlUtils.urlArg(name,value);
+        try {
+            if (window.history.replaceState)
+                window.history.replaceState("", "", url);
+        } catch (e) {
+            console.log("err:" + e);
+        }
+    },
+    removeFromDocumentUrl:function(arg) {
+        try {
+            var url = String(window.location);
+	    url = url.replace("\&?" + arg+"=[^\&]+\&?","");
+            if (window.history.replaceState)
+                window.history.replaceState("", "", url);
+        } catch (e) {
+            console.log("err:" + e);
+        }
+    },
+    getUrlArgument: function(arg) {
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.get(arg);
     },
     pre: function(attrs, inner) {
         return this.tag("pre", attrs, inner);
@@ -3670,6 +3698,10 @@ $( document ).ready(function() {
     HU.documentReady = true;
     Utils.checkForResize();
 });
+
+
+
+
 
 
 
