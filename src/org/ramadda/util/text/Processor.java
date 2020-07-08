@@ -3235,8 +3235,10 @@ rotate -> pass -> pass -> rotate -> pass
                 List          values = row.getValues();
                 StringBuilder keySB  = new StringBuilder();
                 for (int i : uniqueIndices) {
-                    keySB.append(values.get(i));
-                    keySB.append("_");
+		    if(i>=-0 && i<values.size()) {
+			keySB.append(values.get(i));
+			keySB.append("_");
+		    }
                 }
                 String    key      = keySB.toString();
                 List<Row> rowGroup = rowMap.get(key);
