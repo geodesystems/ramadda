@@ -11796,8 +11796,10 @@ function RequestMacro(display, macro) {
     let enums = this.getProperty("request." +macro+".values");
     if(enums) {
 	values =[]	
+	let includeAll = false;
 	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
 	    values.push(["","All"]);
+	    includeAll = true;
 	}
 	if(this.getProperty("request." + macro+".includeNone",false)) {
 	    values.push(["","None"]);
@@ -11806,9 +11808,11 @@ function RequestMacro(display, macro) {
 	    let toks = tok.split(":");
 	    let id = toks[0];
 	    let label = toks[1];
+	    if(!includeAll && id=="_all_") return;
 	    values.push([id,label||id]);
 	});
     }
+
     let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
     //    console.log(macro +" type:" + macroType +" v:" + values);
     let dflt =this.getProperty("request." +macro+".default",null);
@@ -12862,7 +12866,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             }
             if (Utils.isDefined(data.cells)) {
                 this.cells = [];
-                data.cells.map(cell => this.addCell(cell.outputHtml, cell, true));
+                data.cells.forEach(cell => this.addCell(cell.outputHtml, cell, true));
                 this.layoutCells();
             }
             if (this.cells.length == 0) {
@@ -12944,7 +12948,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     entryId: e.entryId
                 };
             }
-            this.cells.map(cell => obj.cells.push(cell.getJson(output)));
+            this.cells.forEach(cell => obj.cells.push(cell.getJson(output)));
             return obj;
         },
         initConsole: function() {
@@ -13217,7 +13221,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             return cell;
         },
         clearOutput: function() {
-            this.cells.map(cell => cell.clearOutput());
+            this.cells.forEach(cell => cell.clearOutput());
         },
         getIndex: function(cell) {
             var idx = 0;
@@ -13288,7 +13292,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         deleteCell: function(cell) {
             cell.jq(ID_CELL).remove();
             var cells = [];
-            this.cells.map(c => {
+            this.cells.forEach(c => {
                 if (cell.id != c.id) {
                     cells.push(c);
                 }
@@ -13321,7 +13325,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 }
                 this.inGlobalChanged=true;
                 if(top) {
-                    this.cells.map(cell=>cell.prepareToRun());
+                    this.cells.forEach(cell=>cell.prepareToRun());
                 }
                 for(var i=0;i<this.cells.length;i++) {
                     await this.cells[i].globalChanged(name,value);
@@ -13387,7 +13391,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             return true;
         },
         toggleAll: function(on) {
-            this.cells.map(cell => {
+            this.cells.forEach(cell => {
                 cell.showInput = on;
                 cell.applyStyle();
             });
@@ -14185,7 +14189,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         prepareToRun: function() {
             this.hasRun = false;
             if(this.chunks) {
-                this.chunks.map(chunk=>chunk.hasRun = false);
+                this.chunks.forEach(chunk=>chunk.hasRun = false);
             }
         },
         runInner: async function(value, doRows, doingAll) {
@@ -14359,7 +14363,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         clearOutput: function() {
             if (this.chunks)
-                this.chunks.map(chunk => chunk.div.set(""));
+                this.chunks.forEach(chunk => chunk.div.set(""));
             this.outputHtml = "";
         },
         processHtml: async function(chunk) {

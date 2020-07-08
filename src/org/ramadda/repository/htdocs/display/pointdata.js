@@ -2896,8 +2896,10 @@ function RequestMacro(display, macro) {
     let enums = this.getProperty("request." +macro+".values");
     if(enums) {
 	values =[]	
+	let includeAll = false;
 	if(this.getProperty("request." + macro+".includeAll",this.getProperty("request.includeAll",false))) {
 	    values.push(["","All"]);
+	    includeAll = true;
 	}
 	if(this.getProperty("request." + macro+".includeNone",false)) {
 	    values.push(["","None"]);
@@ -2906,9 +2908,11 @@ function RequestMacro(display, macro) {
 	    let toks = tok.split(":");
 	    let id = toks[0];
 	    let label = toks[1];
+	    if(!includeAll && id=="_all_") return;
 	    values.push([id,label||id]);
 	});
     }
+
     let macroType = this.getProperty("request." +macro+".type",values!=null?"enumeration":macro=="bounds"?"bounds":"string");
     //    console.log(macro +" type:" + macroType +" v:" + values);
     let dflt =this.getProperty("request." +macro+".default",null);
