@@ -5303,7 +5303,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             throws Exception {
 
         StringBuilder buttons = new StringBuilder();
-        addDisplayImports(request, buttons);
+	if (request.get("doImports", true)) {
+	    addDisplayImports(request, buttons);
+	}
 
         StringBuilder tags = new StringBuilder();
         tags.append(

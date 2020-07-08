@@ -2,7 +2,7 @@
 Copyright 2008-2019 Geode Systems LLC
 */
 
-var DISPLAY_NOTEBOOK = "notebook";
+const DISPLAY_NOTEBOOK = "notebook";
 addGlobalDisplayType({
     type: DISPLAY_NOTEBOOK,
     label: "Notebook",
@@ -1135,7 +1135,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             html = HtmlUtils.div(["id", this.getDomId(ID_CELL)], html);
             $("#" + this.id + "_cellinput").html(html);
             $("#" + this.id + "_celloutput").html(output);
-            var url = ramaddaBaseUrl + "/wikitoolbar?entryid=" + this.entryId + "&handler=" + this.editId;
+            var url = ramaddaBaseUrl + "/wikitoolbar?doImports=false&entryid=" + this.entryId + "&handler=" + this.editId;
             url += "&extrahelp=" + ramaddaBaseUrl + "/userguide/notebook.html|Notebook Help";
             GuiUtils.loadHtml(url, h => {
                 this.inputToolbar = h;
