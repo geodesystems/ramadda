@@ -20,13 +20,13 @@ var SqlLite = {
 
         var id = HtmlUtils.getUniqueId();
         var table = HtmlUtils.openTag("table", ["id",id, "width", "100%", "class", "stripe hover "]) + HtmlUtils.openTag("thead", []);
-        columns.map(v=>table+="<th>"+Utils.makeLabel(v)+"</th>");
+        columns.forEach(v=>table+="<th>"+Utils.makeLabel(v)+"</th>");
         table+"</tr>";
         table += HtmlUtils.closeTag("thead");
         table += HtmlUtils.openTag("tbody");
-        values.map(row=>{
+        values.forEach(row=>{
                 table+="<tr>";
-                row.map(v=>table+="<td>"+v+"</td>");
+                row.forEach(v=>table+="<td>"+v+"</td>");
                 table+="</tr>";
             });
         table+"</tr>";
