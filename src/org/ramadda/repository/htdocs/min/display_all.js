@@ -12919,11 +12919,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             });
         },
         showInput: function() {
-            if (this.displayMode && !this.user) {
+            if (this.displayMode && !this.getProperty("user")) {
                 return false;
             }
-            if (this.getProperty("showInput", true) == false)
+            if (this.getProperty("showInput", true) == false) {
                 return false;
+	    }
             return true;
         },
         getJson: function(output) {
