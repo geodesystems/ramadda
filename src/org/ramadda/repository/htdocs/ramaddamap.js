@@ -3573,7 +3573,7 @@ RepositoryMap.prototype = {
     addMarkers:  function(markers) {
         if (!this.markers) {
             this.markers = new OpenLayers.Layer.Vector("Markers");
-            this.addVectorLayer(this.markers, canSelect);
+            this.addVectorLayer(this.markers, true);
         }
         this.markers.addFeatures(markers);
     },
