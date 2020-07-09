@@ -3730,14 +3730,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         List<Column> groupByColumns = new ArrayList<Column>();
         List<String> args = (List<String>) (request.get(ARG_GROUPBY,
-							new ArrayList()));
+                                new ArrayList()));
         for (int i = 0; i < args.size(); i++) {
             String col    = args.get(i);
             Column column = getColumn(col);
-	    if(column == null) {
-		System.err.println("DbTypeHandler: could not find column:" + col);
-		continue;
-	    }
+            if (column == null) {
+                System.err.println("DbTypeHandler: could not find column:"
+                                   + col);
+
+                continue;
+            }
             groupByColumns.add(column.cloneColumn());
         }
         if (includeAgg) {
@@ -4237,7 +4239,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         if (request.defined("zoomLevel")) {
             props.put("zoomLevel", request.getString("zoomLevel", ""));
-        }	
+        }
         if (request.defined("mapCenter")) {
             props.put("mapCenter", request.getString("mapCenter", ""));
         }
@@ -4587,11 +4589,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     }
 
 
-    private void addProp(String key, String value, Hashtable props, List<String> displayProps) {
-	if(props.get(key) == null &&!displayProps.contains(key)) {
-	    displayProps.add(key);
-	    displayProps.add(value);
-	}
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param value _more_
+     * @param props _more_
+     * @param displayProps _more_
+     */
+    private void addProp(String key, String value, Hashtable props,
+                         List<String> displayProps) {
+        if ((props.get(key) == null) && !displayProps.contains(key)) {
+            displayProps.add(key);
+            displayProps.add(value);
+        }
     }
 
     /**
@@ -4608,6 +4619,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> displayProps) {
+
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.startsWith("display_")
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
@@ -4630,43 +4642,61 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        String    all         = "";
-	String prefix = "request.";
-        DbInfo        dbInfo = getDbInfo();
-	List<Column> columns =  dbInfo.getColumnsToUse();
+        String       all                = "";
+        String       prefix             = "request.";
+        DbInfo       dbInfo             = getDbInfo();
+        List<Column> columns            = dbInfo.getColumnsToUse();
 
-	String groupBy = null;
-	String aggBy = null;
-	Column firstColumn = null;
-	boolean includeNumericAggs = true;
+        String       groupBy            = null;
+        String       aggBy              = null;
+        Column       firstColumn        = null;
+        boolean      includeNumericAggs = true;
         for (Column column : columns) {
             if (column.getCanSearch()) {
-		if(firstColumn==null) firstColumn=column;
-		groupBy=Utils.appendList(groupBy, column.getName()+":" + column.getLabel());
-		if(column.isNumeric()) {
-		    aggBy=Utils.appendList(aggBy, column.getName()+":" + column.getLabel());
-		}
-	    }
-	}
+                if (firstColumn == null) {
+                    firstColumn = column;
+                }
+                groupBy = Utils.appendList(groupBy,
+                                           column.getName() + ":"
+                                           + column.getLabel());
+                if (column.isNumeric()) {
+                    aggBy = Utils.appendList(aggBy,
+                                             column.getName() + ":"
+                                             + column.getLabel());
+                }
+            }
+        }
 
 
-	if(aggBy==null && firstColumn!=null) {
-	    includeNumericAggs = false;
-	    aggBy=Utils.appendList(aggBy, firstColumn.getName()+":" + firstColumn.getLabel());
-	}
+        if ((aggBy == null) && (firstColumn != null)) {
+            includeNumericAggs = false;
+            aggBy = Utils.appendList(aggBy,
+                                     firstColumn.getName() + ":"
+                                     + firstColumn.getLabel());
+        }
 
-	if(!Misc.equals("false", props.get("showGroupBy")) && groupBy!=null) {
-	    groupBy = ":None," + groupBy;
-	    all =Utils.appendList(all, "group_by");
-	    all =Utils.appendList(all, "group_agg");
-	    all = Utils.appendList(all,"group_agg_type");
-	    addProp(prefix+"group_by.values", Json.quote(groupBy), props, displayProps);
-	    addProp(prefix+"group_agg.values", Json.quote(aggBy), props, displayProps);
-	    addProp(prefix+"group_agg.label", Json.quote("Aggregate"), props, displayProps);
-	    addProp(prefix+"group_agg.multiple", "true", props, displayProps);
-	    addProp(prefix+"group_agg_type.values", Json.quote(!includeNumericAggs?"count:Count": "sum:Sum,max:Max,count:Count,min:Min,avg:Average"), props, displayProps);
-	    addProp(prefix+"group_agg_type.label", Json.quote("Type"), props, displayProps);
-	}
+        if ( !Misc.equals("false", props.get("showGroupBy"))
+                && (groupBy != null)) {
+            groupBy = ":None," + groupBy;
+            all     = Utils.appendList(all, "group_by");
+            all     = Utils.appendList(all, "group_agg");
+            all     = Utils.appendList(all, "group_agg_type");
+            addProp(prefix + "group_by.values", Json.quote(groupBy), props,
+                    displayProps);
+            addProp(prefix + "group_agg.values", Json.quote(aggBy), props,
+                    displayProps);
+            addProp(prefix + "group_agg.label", Json.quote("Aggregate"),
+                    props, displayProps);
+            addProp(prefix + "group_agg.multiple", "true", props,
+                    displayProps);
+            addProp(prefix + "group_agg_type.values",
+                    Json.quote( !includeNumericAggs
+                                ? "count:Count"
+                                : "sum:Sum,max:Max,count:Count,min:Min,avg:Average"), props,
+                                displayProps);
+            addProp(prefix + "group_agg_type.label", Json.quote("Type"),
+                    props, displayProps);
+        }
 
 
         Hashtable recordProps = null;
@@ -4680,25 +4710,31 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 
-	boolean includeAll = true;
+        boolean includeAll = true;
         for (Column column : columns) {
-	    if (column.getCanSearch() && recordProps.get(column.getName() + ".display")!=null ||
-	       column.getProperty("isDisplayProperty")!=null) {
-		includeAll = false;
-		break;
-            }
-	}
+            if ((column.getCanSearch()
+                    && (recordProps.get(column.getName() + ".display")
+                        != null)) || (column.getProperty("isDisplayProperty")
+                                      != null)) {
+                includeAll = false;
 
-	for (Column column : columns) {
-	    if (!column.getCanSearch()) continue;
-	    if(!includeAll) {
-		if ( !Misc.equals(
-				  recordProps.get(column.getName() + ".display"),
-				  "true") && !Misc.equals(
-							  column.getProperty("isDisplayProperty"), "true")) {
-		    continue;
-		}
-	    }
+                break;
+            }
+        }
+
+        for (Column column : columns) {
+            if ( !column.getCanSearch()) {
+                continue;
+            }
+            if ( !includeAll) {
+                if ( !Misc.equals(
+                        recordProps.get(column.getName() + ".display"),
+                        "true") && !Misc.equals(
+                            column.getProperty("isDisplayProperty"),
+                            "true")) {
+                    continue;
+                }
+            }
             String type = column.isEnumeration()
                           ? "enumeration"
                           : column.isNumeric()
@@ -4707,11 +4743,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                               ? "date"
                               : "string";
 
-	    
-	    all = Utils.appendList(all,column.getName());
-	    addProp(prefix + column.getName() + ".label",Json.quote(column.getLabel()),props, displayProps);
-	    addProp(prefix + column.getName() + ".urlarg",Json.quote(column.getSearchArg()),props, displayProps);
-	    addProp(prefix + column.getName() + ".type",Json.quote(type),props, displayProps);
+
+            all = Utils.appendList(all, column.getName());
+            addProp(prefix + column.getName() + ".label",
+                    Json.quote(column.getLabel()), props, displayProps);
+            addProp(prefix + column.getName() + ".urlarg",
+                    Json.quote(column.getSearchArg()), props, displayProps);
+            addProp(prefix + column.getName() + ".type", Json.quote(type),
+                    props, displayProps);
             if (column.isEnumeration()) {
                 String enums = "_all_:All";
                 List<TwoFacedObject> tfos = getEnumValues(request, entry,
@@ -4725,16 +4764,19 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     enums += tfo.getId() + ":" + tfo.getLabel();
                 }
                 if (enums != null) {
-		    addProp(prefix + column.getName() + ".values",Json.quote(enums),props,displayProps);
-		    addProp(prefix + column.getName() + ".default",Json.quote("_all_"), props, displayProps);
+                    addProp(prefix + column.getName() + ".values",
+                            Json.quote(enums), props, displayProps);
+                    addProp(prefix + column.getName() + ".default",
+                            Json.quote("_all_"), props, displayProps);
                 }
 
             }
         }
 
-	addProp("requestFields",Json.quote(all),props,displayProps);
+        addProp("requestFields", Json.quote(all), props, displayProps);
 
         return super.getUrlForWiki(request, entry, tag, props, displayProps);
+
     }
 
 
@@ -4907,7 +4949,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (zoom != null) {
                 newRequest.put("zoomLevel", zoom);
             }
-	    String mapCenter = (String) props.get("mapCenter");
+            String mapCenter = (String) props.get("mapCenter");
             if (mapCenter != null) {
                 newRequest.put("mapCenter", mapCenter);
             }
@@ -5070,8 +5112,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     return enums;
                 }
             }
-	    List<TwoFacedObject> enums = tableHandler.getEnumValues(request, column, entry);
-	    return enums;
+            List<TwoFacedObject> enums = tableHandler.getEnumValues(request,
+                                             column, entry);
+
+            return enums;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -6024,6 +6068,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } finally {
             SqlUtil.debug = false;
         }
+
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
@@ -6576,7 +6621,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
-        return new DbRecordFile(request, entry);
+        return new DbRecordFile(request, this, entry);
     }
 
 
@@ -6592,6 +6637,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         /** _more_ */
         private Request request;
 
+        /** _more_          */
+        private DbTypeHandler typeHandler;
+
         /** _more_ */
         private Entry entry;
 
@@ -6599,13 +6647,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
          * _more_
          *
          * @param request _more_
+         * @param typeHandler _more_
          * @param entry _more_
          *
          * @throws IOException _more_
          */
-        public DbRecordFile(Request request, Entry entry) throws IOException {
-            this.request = request;
-            this.entry   = entry;
+        public DbRecordFile(Request request, DbTypeHandler typeHandler,
+                            Entry entry)
+                throws IOException {
+            this.request     = request;
+            this.typeHandler = typeHandler;
+            this.entry       = entry;
         }
 
         /**
@@ -6660,7 +6712,25 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             List<Clause>  where = new ArrayList<Clause>();
             where.add(Clause.eq(COL_ID, entry.getId()));
             StringBuilder searchCriteria = new StringBuilder();
+            System.err.println("R:" + request);
+
+            Hashtable recordProps = null;
+            try {
+                recordProps = typeHandler.getRecordProperties(entry);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
             for (Column column : getColumns()) {
+                String dflt = (String) ((recordProps == null)
+                                        ? null
+                                        : recordProps.get(column.getName()
+                                            + ".default"));
+                if (dflt != null) {
+                    String arg = column.getSearchArg();
+                    if ( !request.exists(arg)) {
+                        request.put(arg, dflt);
+                    }
+                }
                 column.assembleWhereClause(request, where, searchCriteria);
             }
             List<Object[]> valueList = readValues(request, entry,
