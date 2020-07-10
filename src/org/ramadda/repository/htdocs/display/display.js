@@ -866,9 +866,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		["sortAscending=true|false",""],
 		["sortByFields=\"\"","Show sort by fields in a menu"],
 		['sortHighlight=true','Sort based on highlight from the filters'],
-		['showChartFieldsMenu=true'],
-		['chartFieldsMenuMultiple=true'],
-		['chartFieldsMenuSide=left'],
+		['showDisplayFieldsMenu=true'],
+		['displayFieldsMenuMultiple=true'],
+		['displayFieldsMenuSide=left'],
+		['acceptDisplayFieldsChangeEvent=true'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'dateFormatDaysAgo=true',
@@ -1407,6 +1408,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.haveCalledUpdateUI = false;
 	    this.dataFilterChanged();
 	},
+	displayFieldsChanged:  function(val, fromElsewhere) {
+	    this.addToDocumentUrl(PROP_FIELDS,val);
+	    this.setProperty(PROP_FIELDS,val);
+	    this.callUpdateUI();
+    
+	    if(this.displayFieldsMenuEnums && fromElsewhere && this.getProperty("showDisplayFieldsMenu")) {
+		let selected = [];
+		this.jq("displayfields").val(val);
+	    }
+	},
         handleEventPropertyChanged: function(source, prop) {
 	    let debug = displayDebug.handleEventPropertyChanged;
 	    if(prop.property == "dateRange") {
@@ -1414,6 +1425,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.handleDateRangeChanged(source, prop);
 		}
 		return;
+	    }
+
+	    
+	    if(prop.property == "displayFields") {
+		if(!this.getProperty("acceptDisplayFieldsChangeEvent",false)) {
+		    return;
+		}
+		this.displayFieldsChanged(prop.value, true);
+		return
 	    }
 
 	    if(prop.property == "macroValue") {
@@ -4428,27 +4448,28 @@ a
 
 	    }
 
-	    if(this.getProperty("showChartFieldsMenu",false)) {
-		let chartFields =  pointData.getChartableFields();
-		if(chartFields.length) {
+	    if(this.getProperty("showDisplayFieldsMenu",false)) {
+		let displayFields =  pointData.getChartableFields();
+		if(displayFields.length) {
 		    let fields = this.getSelectedFields();
 		    let selected =[];
 		    fields.forEach(f=>selected.push(f.getId()));
 		    let enums = [];
-		    chartFields.forEach(field=>{
+		    displayFields.forEach(field=>{
 			if(field.isFieldGeo()) return;
 			enums.push([field.getId(),field.getLabel()]);
 		    });
-		    let attrs = [ID,this.getDomId("chartfields")];
-		    if(this.getProperty("chartFieldsMenuMultiple",false)) {
+		    let attrs = [ID,this.getDomId("displayfields")];
+		    if(this.getProperty("displayFieldsMenuMultiple",false)) {
 			attrs.push("multiple");
 			attrs.push("true");
 			attrs.push("size");
 			attrs.push("4");
 		    }
+		    this.displayFieldsMenuEnums = enums;
 		    let html =  HU.span([CLASS,"display-filter"],
 				       this.makeFilterLabel("Display: ") + HU.select("",attrs,enums,selected))+SPACE;
-		    let side = this.getProperty("chartFieldsMenuSide","top");
+		    let side = this.getProperty("displayFieldsMenuSide","top");
 		    if(side == "left") {
 			this.jq(ID_LEFT).append(html);
 		    } else {
@@ -4817,14 +4838,16 @@ a
 		_this.stepFilterDateAnimation(inputFunc,1);
 	    });
 
-            this.jq("chartfields").change(function(){
+            this.jq("displayfields").change(function(){
 		let val = $(this).val();
 		if(Array.isArray(val)) {
 		    val = val.join(",");
 		}
-		_this.addToDocumentUrl(PROP_FIELDS,val);
-		_this.setProperty(PROP_FIELDS,val);
-		_this.callUpdateUI();
+		_this.displayFieldsChanged(val);
+		_this.propagateEvent("handleEventPropertyChanged", {
+		    property:'displayFields',
+		    value: val
+		});
 	    });
 
 
