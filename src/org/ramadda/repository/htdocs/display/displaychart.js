@@ -1529,14 +1529,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
             }
 
-	    if(this.getProperty("vAxisSharedRange")) {
-		let records = this.getPointData().getRecords();
-		let max = 0;
-		defaultRanges.forEach((r,idx)=>{
-		    max = idx==0?r[1]:Math.max(max,r[1]);
-		});
-                range[1] = max;
-	    } else if (!isNaN(this.getVAxisMaxValue())) {
+	    if (!isNaN(this.getVAxisMaxValue())) {
                 range[1] = this.getVAxisMaxValue();
             } else if (defaultRanges.length>0) {
 //                range[1] = defaultRanges[0][1];
@@ -1551,6 +1544,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 chartOptions.vAxis.maxValue = range[1];
 //		chartOptions.vAxis.maxValue = null;
             }
+
+//	    console.log(chartOptions.vAxis.maxValue);
 
             this.chartDimensions = {
                 width: "90%",
@@ -1765,6 +1760,19 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.setContents(this.getMessage(this.getNoDataMessage()));
                 return null;
             }
+	    if(this.getProperty("vAxisSharedRange")) {
+		let max = NaN;
+		for(let i=0;i<dataTable.getNumberOfColumns();i++) {
+		    let minmax = dataTable.getColumnRange(i);
+		    if(!isNaN(minmax.max) && minmax.max!=null && (typeof minmax.max) == "number") {
+			max = max==null|| isNaN(max)?minmax.max:Math.max(max, minmax.max);
+		    }
+		}
+                chartOptions.vAxis.maxValue = max;
+            }
+
+
+
 	    if(this.getProperty("animation",false,true)) {
 		this.chartOptions.animation = {
 		    startup: true,
@@ -1838,7 +1846,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 		'indexField=field',
 		"vAxisMinValue=\"\"",
 		"vAxisMaxValue=\"\"", 
-		['vAxisSharedRange=true','use the same max value'],
+		['vAxisSharedRange=true','use the same max value across all time series'],
 		'vAxisLogScale=true',
 		'hAxisLogScale=true',
 		'tooltipFields=""',
