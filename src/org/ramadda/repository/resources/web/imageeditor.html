@@ -53,13 +53,12 @@ label {
          function imageEditorSave() {
              if (!imageEditor) return;
              var form = $("#imageeditform");
-             if (form.size() == 0) return;
+             if (form.length == 0) return;
              var contents = $("#imagecontents");
              var entryid = form.children(":input[name=entryid]").val();
              imageEditorMessage("Saving image...");
 
              function imageEditorSaveInner() {
-                 console.log("getting image from editor");
                  var image = imageEditor.toDataURL();
                  var data = new FormData(form[0]);
                  data.append("imagecontents", image);
@@ -117,7 +116,7 @@ label {
 
          function imageEditorUndo() {
              var form = $("#imageeditform");
-             if (form.size() == 0) return;
+             if (form.length == 0) return;
              var entryid = form.children(":input[name=entryid]").val();
              $.post(form.attr("action"), {
                      entryid: entryid,
