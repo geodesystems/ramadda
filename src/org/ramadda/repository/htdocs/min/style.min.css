@@ -400,6 +400,11 @@ a.ramadda-menubar-button:hover {
 }
 
 
+.ramadda-grid {
+    vertical-align:top;
+}
+
+
 .ramadda-grid-box .ramadda-subheading {
     max-width:100%;
     overflow-x:auto;
@@ -417,6 +422,7 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-grid-box {
+    vertical-align:top;
     margin-top:10px;
     margin-bottom:10px;
     padding:10px;
@@ -425,6 +431,7 @@ a.ramadda-menubar-button:hover {
     border : 1px #ddd solid;
     background: #FbFbFb;
     border-radius: 4px;
+
 }
 
 
