@@ -2067,7 +2067,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 	sortRecords: function(records, sortFields) {
 	    if(!sortFields) {
-		sortFields = this.getFieldsByIds(null, this.getProperty("sortFields", "", true));
+		let f = this.getProperty("sortFields", "", true);
+		if(f=="${fields}") f = this.getProperty("fields", "", true);
+		sortFields = this.getFieldsByIds(null, f);
 	    }
 	    if(sortFields.length>0) {
 		records = Utils.cloneList(records);

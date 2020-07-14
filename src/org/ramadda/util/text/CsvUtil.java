@@ -4193,7 +4193,6 @@ public class CsvUtil {
                             + arg);
                 }
                 if (addFiles) {
-                    System.err.println("adding file:" + arg);
                     files.add(arg);
                 } else {
                     throw new IllegalArgumentException("Unknown arg:" + arg);
