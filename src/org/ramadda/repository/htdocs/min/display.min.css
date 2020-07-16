@@ -2076,6 +2076,12 @@ display:inline-block;
     vertical-align:bottom;
 }
 
+.display-sparkline-value {
+    display:inline-block;
+    font-size:9pt;
+    vertical-align:bottom;
+}
+
 .display-sparkline-sparkline {
     display:inline-block;
     font-size:9pt;

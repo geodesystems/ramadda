@@ -1083,24 +1083,32 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     };
     let showBars = attrs.showBars|| display.getProperty("sparklineShowBars",false);
 
-    if(!showBars && (attrs.showLines|| display.getProperty("sparklineShowLines",true))) {
-	svg.selectAll('line').data(data).enter().append("line")
-	    .attr('x1', (d,i)=>{return x(i)})
-	    .attr('y1', (d,i)=>{return y(d)})
-	    .attr('x2', (d,i)=>{return x(i+1)})
-	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
-	    .attr("stroke-width", lineWidth)
-            .attr("stroke", (d,i)=>{
-		if(isNaN(d)) return "rgba(0,0,0,0)";
-		return getColor(d,i,lineColor)
-	    })
-	    .style("cursor", "pointer");
-    }
+    
+
+    svg.append('line')
+	.attr('x1',0)
+	.attr('y1', 0)
+	.attr('x2', 0)
+	.attr('y2', h)    
+	.attr("stroke-width", 1)
+    	.attr("stroke", '#ccc');
+
+    svg.append('line')
+	.attr('x1',0)
+	.attr('y1', h)
+	.attr('x2', w)
+	.attr('y2', h)    
+	.attr("stroke-width", 1)
+    	.attr("stroke", '#ccc');
+    
+
+
 
     let getNum = n=>{
 	if(isNaN(n)) return 0;
 	return n;
     };
+
     if(showBars) {
 	defaultShowEndPoints = false;
 	svg.selectAll('.bar').data(data)
@@ -1115,6 +1123,22 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	    .style("cursor", "pointer")
     }
 
+
+    if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
+	svg.selectAll('line').data(data).enter().append("line")
+	    .attr('x1', (d,i)=>{return x(i)})
+	    .attr('y1', (d,i)=>{return y(d)})
+	    .attr('x2', (d,i)=>{return x(i+1)})
+	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
+	    .attr("stroke-width", lineWidth)
+            .attr("stroke", (d,i)=>{
+		if(isNaN(d)) return "rgba(0,0,0,0)";
+		return getColor(d,i,lineColor)
+	    })
+	    .style("cursor", "pointer");
+    }
+
+
     if(attrs.showCircles || display.getProperty("sparklineShowCircles",false)) {
 	svg.selectAll('circle').data(data).enter().append("circle")
 	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
@@ -1124,11 +1148,13 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	    .style("cursor", "pointer");
     }
 
+
+
     if(attrs.showEndpoints || display.getProperty("sparklineShowEndPoints",defaultShowEndPoints)) {
 	let fidx=0;
 	while(isNaN(data[fidx]) && fidx<data.length) fidx++;
 	let lidx=data.length-1;
-	while(isNaN(data[lidx]) && fidx>=0) lidx--;	
+	while(isNaN(data[lidx]) && lidx>=0) lidx--;	
 	svg.append('circle')
 	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
 	    .attr('cx', x(fidx))
@@ -1150,6 +1176,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 		_display.propagateEventRecordSelection({select:true,record: record});
 	}
     });
+
 
 
     if(doTooltip) {
@@ -6410,9 +6437,13 @@ a
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
             let table =   HU.open("table", ["width","100%","border",0]);
-	    table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
+	    if(this.getProperty("showDisplayTop",true)) {
+		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
+	    }
 	    table+= HU.tr([],HU.td(["width",sideWidth],left) + HU.td(["width","99%"],contents) +HU.td(["width",sideWidth],right));
-	    table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],bottom) +HU.td(["width",sideWidth]));
+	    if(this.getProperty("showDisplayBottom",true)) {
+		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],bottom) +HU.td(["width",sideWidth]));
+	    }
 	    table+=HU.close("table");
 
             let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
@@ -7778,7 +7809,12 @@ a
 	    
 	    this.haveCalledUpdateUI = false;
 	    if(debug) console.log("\tcalling updateUI");
-            this.updateUI({reload:reload});
+	    try {
+		this.updateUI({reload:reload});
+	    } catch(err) {
+                this.displayError("Error creating display:<br>" + err);
+		return;
+	    }
             if (!reload) {
                 this.lastPointData = pointData;
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
@@ -7865,6 +7901,11 @@ a
         getPointData: function() {
             if (this.dataCollection.getList().length == 0) return null;
             return this.dataCollection.getList()[0];
+        },
+	getRecords: function() {
+            let pointData = this.getData();
+            if (pointData == null) return null;
+            return  pointData.getRecords();
         },
         //get an array of arrays of data 
         getDataValues: function(obj) {
@@ -15786,6 +15827,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    } 
 	    return value;
 	},
+	getFieldsToDisplay: function(fields) {
+	    return fields;
+	},
+
         displayData: function(reload) {
 	    let debug = false;
 	    if(debug)
@@ -15929,7 +15974,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
-            let dataList = this.getStandardData(fieldsToSelect, props);
+            let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             this.computedData = dataList;
@@ -18184,6 +18229,23 @@ function BubbleDisplay(displayManager, id, properties) {
             divAttrs.push(style);
             return HU.div(divAttrs, "");
         },
+
+	getFieldsToDisplay: function(fields) {
+	    if(fields.length>=4) return fields;
+	    let labelField=this.getFieldById(null, this.getProperty("labelField"));
+	    let colorField=this.getFieldById(null, this.getProperty("labelField"));
+	    let sizeField=this.getFieldById(null, this.getProperty("sizeField"));
+	    let xField=this.getFieldById(null, this.getProperty("xField"));
+	    let yField=this.getFieldById(null, this.getProperty("yField"));	    	    	    	    
+	    if(!labelField) throw new Error("Need to specify labelField");
+	    if(!xField) throw new Error("Need to specify xField");
+	    if(!yField) throw new Error("Need to specify yField");	    
+	    let f = [labelField, xField, yField];
+	    if(colorField) f.push(colorField);
+	    if(sizeField) f.push(sizeField);
+	    console.log("F:" + f);
+	    return f;
+	},
 
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let debug =displayDebug.makeDataTable;
@@ -35162,12 +35224,21 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
     const ID_INNER = "inner";
     if(!properties.groupBy)
 	properties.displayInline = true;
+    if(!Utils.isDefined(properties.showDisplayTop))
+	properties.showDisplayTop = false;
+    if(!Utils.isDefined(properties.showDisplayBottom))
+	properties.showDisplayBottom = false;
+
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
+
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Sparkline Properties'},
 	{p:'showDate',wikiValue:'true'},
+	{p:'showMin',wikiValue:'true'},
+	{p:'showMax',wikiValue:'true'},
+	{p:'labelStyle',wikiValue:''},			
 	{p:'sparklineWidth',d:60},
 	{p:'sparklineHeight',d:20},
 	{p:'sparklineLineColor',wikiValue:'#000'},
@@ -35197,17 +35268,30 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	    let h = this.getPropertySparklineHeight(20);
 	    let records = this.filteredRecords = this.filterData();
 	    if(!records) return;
+
+
+
 	    let field = this.getFieldById(null, this.getProperty("field"));
 	    if(field==null) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
 		return;
 	    }
+	    let t1 = new Date();
+
 	    let showDate = this.getPropertyShowDate();
 	    let id = this.getDomId(ID_INNER);
 	    let colorBy = this.getColorByInfo(records);
 	    let groupByField = this.getFieldById(null,this.getProperty("groupBy"));
 	    let groups = groupByField?RecordUtil.groupBy(records, this, null, groupByField):null;
 	    let col = this.getColumnValues(records, field);
+	    let min = col.min;
+	    let max = col.max;
+	    if(this.getProperty("useAllRecords")) {
+		let col2 = this.getColumnValues(this.getRecords(), field);
+		min  = col2.min;
+		max = col2.max;
+	    }
+
 	    if(groups) {
 		let labelPosition = this.getProperty("labelPosition","bottom");
 		html = HU.div([ID,this.getDomId(ID_INNER)]);
@@ -35223,7 +35307,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 			c =  c + HU.tag(BR) + label;
 		    $("#"+id).append(HU.div([STYLE,HU.css('display','inline-block','margin','4px')],c));
 		    let gcol = this.getColumnValues(grecords, field);
-		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,col.min,col.max,colorBy);
+		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,min,max,colorBy);
 		});		
 	    } else {
 		html = HU.div([CLASS,"display-sparkline-sparkline",ID,this.getDomId(ID_INNER),STYLE,HU.css('width', w+'px','height', h+'px')]);
@@ -35231,9 +35315,16 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		    html = HU.div([CLASS,"display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
 			HU.div([CLASS,"display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))
 		}
+		let left = this.getProperty("showMin")? HU.div([CLASS,"display-sparkline-value",STYLE, this.getPropertyLabelStyle("")],this.formatNumber(col.values[0])):"";
+		let right = this.getProperty("showMax",true)? HU.div([CLASS,"display-sparkline-value",STYLE, this.getPropertyLabelStyle("")],this.formatNumber(col.values[col.values.length-1])):"";
+		if(left!=""  || right!="")
+		    html = HU.leftCenterRight(left,html,right,"1%","99%","1%",null,"padding:2px 2px;");
 		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-		drawSparkLine(this, "#"+id,w,h,col.values,records,col.min,col.max,colorBy);
+		drawSparkLine(this, "#"+id,w,h,col.values,records,min,max,colorBy);
 	    }
+	    let t2 = new Date();
+//	    Utils.displayTimes("sparkline",[t1,t2],true);
+
 	}
     });
 }
