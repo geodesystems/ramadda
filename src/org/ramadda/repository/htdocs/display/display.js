@@ -4007,9 +4007,13 @@ a
 	    let sideWidth = "1%";
             let contents = this.getContentsDiv();
             let table =   HU.open("table", ["width","100%","border",0]);
-	    table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
+	    if(this.getProperty("showDisplayTop",true)) {
+		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],top) +HU.td(["width",sideWidth]));
+	    }
 	    table+= HU.tr([],HU.td(["width",sideWidth],left) + HU.td(["width","99%"],contents) +HU.td(["width",sideWidth],right));
-	    table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],bottom) +HU.td(["width",sideWidth]));
+	    if(this.getProperty("showDisplayBottom",true)) {
+		table+= HU.tr([],HU.td(["width",sideWidth]) + HU.td(["width","99%"],bottom) +HU.td(["width",sideWidth]));
+	    }
 	    table+=HU.close("table");
 
             let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
@@ -5375,7 +5379,12 @@ a
 	    
 	    this.haveCalledUpdateUI = false;
 	    if(debug) console.log("\tcalling updateUI");
-            this.updateUI({reload:reload});
+	    try {
+		this.updateUI({reload:reload});
+	    } catch(err) {
+                this.displayError("Error creating display:<br>" + err);
+		return;
+	    }
             if (!reload) {
                 this.lastPointData = pointData;
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
@@ -5462,6 +5471,11 @@ a
         getPointData: function() {
             if (this.dataCollection.getList().length == 0) return null;
             return this.dataCollection.getList()[0];
+        },
+	getRecords: function() {
+            let pointData = this.getData();
+            if (pointData == null) return null;
+            return  pointData.getRecords();
         },
         //get an array of arrays of data 
         getDataValues: function(obj) {
