@@ -16,7 +16,9 @@
 
 package org.ramadda.util;
 
+
 import org.apache.commons.lang.text.StrTokenizer;
+
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
@@ -32,7 +34,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.*;
 import java.awt.image.BufferedImage;
-import javax.imageio.*;
 
 import java.io.*;
 
@@ -48,8 +49,8 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Calendar;
+import java.util.Collection;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,6 +68,8 @@ import java.util.regex.Pattern;
 import java.util.zip.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import javax.imageio.*;
 
 
 
@@ -956,21 +959,21 @@ public class Utils extends IO {
             throws Exception {
         String attrValue = XmlUtil.getAttribute(node, attrOrTag,
                                (String) null);
-	if (attrValue == null) {
-	    Node child = XmlUtil.findChild(node, attrOrTag);
-	    if (child != null) {
-		attrValue = XmlUtil.getChildText(child);
-		if(attrValue!=null) {
-		    if(XmlUtil.getAttribute(child, "encoded",
-					    false)) {
-			attrValue = new String(Utils.decodeBase64(attrValue));
-		    } 
-		}
-	    }
+        if (attrValue == null) {
+            Node child = XmlUtil.findChild(node, attrOrTag);
+            if (child != null) {
+                attrValue = XmlUtil.getChildText(child);
+                if (attrValue != null) {
+                    if (XmlUtil.getAttribute(child, "encoded", false)) {
+                        attrValue = new String(Utils.decodeBase64(attrValue));
+                    }
+                }
+            }
         }
-	if (attrValue == null) {
-	    attrValue = dflt;
-	}
+        if (attrValue == null) {
+            attrValue = dflt;
+        }
+
         return attrValue;
     }
 
@@ -1918,8 +1921,8 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeID(String label) {
-        label = label.trim().toLowerCase().replaceAll(" ", "_").replaceAll("\\.",
-                "_");
+        label = label.trim().toLowerCase().replaceAll(" ",
+                "_").replaceAll("\\.", "_");
 
         return label;
     }
@@ -2694,22 +2697,6 @@ public class Utils extends IO {
 
 
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        String cmd = "-addheader {} -print";
-        cmd = "-change \"\" \"\"";
-        for (Object tok : parseMultiLineCommandLine(cmd)) {
-            System.err.println("\ttok:"
-                               + tok.toString().replaceAll("\n", "_NL_")
-                               + ":");
-        }
-    }
 
     /**
      * _more_
@@ -3727,17 +3714,143 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param listToSort _more_
+     *
+     * @return _more_
+     */
     public static List sort(Collection listToSort) {
         Object[] array = listToSort.toArray();
         Arrays.sort(array);
+
         return Arrays.asList(array);
     }
 
+    /**
+     * _more_
+     *
+     * @param o1 _more_
+     * @param o2 _more_
+     *
+     * @return _more_
+     */
     public static boolean equals(Object o1, Object o2) {
         if ((o1 != null) && (o2 != null)) {
             return o1.equals(o2);
         }
+
         return ((o1 == null) && (o2 == null));
+    }
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param baseIdx _more_
+     * @param p _more_
+     *
+     * @return _more_
+     */
+    public static int findNext(String s, int baseIdx, String p) {
+        int     len      = s.length();
+        boolean inEscape = false;
+        boolean inQuote  = false;
+        int     pIdx     = 0;
+        char[]  ps       = p.toCharArray();
+        for (int idx = baseIdx; idx < len; idx++) {
+            char c = s.charAt(idx);
+            if (inEscape) {
+                inEscape = false;
+
+                continue;
+            }
+            if (c == '\\') {
+                inEscape = true;
+
+                continue;
+            }
+            if (c == '\"') {
+                if (inQuote) {
+                    inQuote = false;
+                } else {
+                    inQuote = true;
+                }
+
+                continue;
+            }
+            if (inQuote) {
+                pIdx = 0;
+
+                continue;
+            }
+            if (ps[pIdx] == c) {
+                pIdx++;
+                if (pIdx >= ps.length) {
+                    return idx - ps.length + 1;
+                }
+
+                continue;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static String unescape(String s) {
+        if (s.indexOf("\\") < 0) {
+            return s;
+        }
+        StringBuilder buff     = new StringBuilder();
+        int           len      = s.length();
+        boolean       inEscape = false;
+        for (int idx = 0; idx < len; idx++) {
+            char c = s.charAt(idx);
+            if (inEscape) {
+                inEscape = false;
+                buff.append(c);
+
+                continue;
+            }
+            if (c == '\\') {
+                inEscape = true;
+
+                continue;
+            }
+            buff.append(c);
+        }
+
+        return buff.toString();
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        String s =
+            "hello {{there template=\\\"foo bar {{ }} \"   }} I am fine";
+        String p   = "}}";
+        int    idx = findNext(s, 0, p);
+        if (idx < 0) {
+            System.err.println("failed");
+        } else {
+            System.err.println("idx:" + idx + " s:" + s.substring(idx));
+        }
+        System.exit(0);
     }
 
 
