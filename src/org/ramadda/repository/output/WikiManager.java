@@ -579,6 +579,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        String[] notTags) {
 
         try {
+
             Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request = (Request) wikiUtil.getProperty(ATTR_REQUEST);
             //Check for infinite loop
@@ -1264,6 +1265,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String result = getWikiIncludeInner(wikiUtil, request, originalEntry,
                                             entry, tag, props);
+
         if (result == null) {
             result = getMessage(wikiUtil, props,
                                 "Could not process tag: " + tag);
@@ -1555,6 +1557,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         boolean wikify  = getProperty(wikiUtil, props, ATTR_WIKIFY, true);
         String criteria = getProperty(wikiUtil, props, ATTR_IF,
                                       (String) null);
+	//	System.err.println("tag:"+ theTag);
         if (criteria != null) {}
 
         StringBuilder sb = new StringBuilder();
@@ -2232,6 +2235,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MULTI)) {
+	    //	    wikiUtil = initWikiUtil(request, new WikiUtil(wikiUtil), entry);
             Hashtable props2        = new Hashtable();
             Hashtable firstProps    = new Hashtable();
             Hashtable lastProps     = new Hashtable();
@@ -2239,12 +2243,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Hashtable notFirstProps = new Hashtable();
             Hashtable<String, List<String>> multiAttrs =
                 new Hashtable<String, List<String>>();
-            StringBuilder buff           = new StringBuilder();
+            StringBuilder buff           = new StringBuilder("");
             String        tag            = null;
             int           max            = 0;
             String        template       = null;
             int           columns        = -1;
             List<String>  headers        = null;
+            String        headerProp = null;
+	    String        footerProp = null;
             String        headerTemplate = null;
             List<Entry>   entries        = null;
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
@@ -2262,6 +2268,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     headers = StringUtil.split(value, ",");
                 } else if (key.equals("_headerTemplate")) {
                     headerTemplate = value;
+                } else if (key.equals("_header")) {
+                    headerProp = value;		    
+                } else if (key.equals("_footer")) {
+                    footerProp = value;		    
                 } else if (key.equals("_columns")) {
                     columns = Integer.parseInt(value);
                 } else if (key.startsWith("_")) {
@@ -2285,6 +2295,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     props2.put(key, value);
                 }
             }
+
+	    if(headerProp == null)
+		headerProp = getProperty(wikiUtil, props, "_header",(String) null);
+	    if(footerProp == null)
+		footerProp = getProperty(wikiUtil, props, "_footer",(String) null);	    
+            if ((tag == null) && (template == null)) {
+		template = getProperty(wikiUtil, props, "_template",(String) null);
+	    }
+
+
             if ((tag == null) && (template == null)) {
                 return getPageHandler().showDialogError(
                     "No _tag or _template attribute specified");
@@ -2293,10 +2313,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (multiCount > 0) {
                 max = multiCount;
             }
+			       
             if (template != null) {
                 template = template.replaceAll("\\\\\\{",
                         "{").replaceAll("\\\\\\}", "}");
             }
+	    if(headerProp!=null)
+		buff.append(headerProp);
             if (columns > 0) {
                 buff.append("<table width=100%><tr valign=top>\n");
             }
@@ -2320,6 +2343,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     _props.putAll(notLastProps);
                 }
                 String s = template;
+
                 for (Enumeration keys = multiAttrs.keys();
                         keys.hasMoreElements(); ) {
                     String       key    = (String) keys.nextElement();
@@ -2329,6 +2353,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         value = value.replaceAll("_comma_", ",");
                         _props.put(key, value);
                         if (s != null) {
+			    //			    System.err.println("\t" +key +"=" + value);
                             s = s.replaceAll(
                                 "\\$\\{" + key + "\\}", value).replaceAll(
                                 "\\$\\{" + "multiIndex" + "\\}",
@@ -2359,8 +2384,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     theEntry = entries.get(i);
                 }
                 if (s != null) {
-                    buff.append(wikifyEntry(request, theEntry, wikiUtil, s,
-                                            false, null, null, null));
+		    //		    System.err.println("WIKIFY:" + tmp.trim());
+		    String tmp  = wikifyEntry(request, theEntry, wikiUtil, s, false, null, null, null, false);
+		    buff.append(tmp);
                 } else {
                     buff.append(getWikiIncludeInner(wikiUtil, request,
                             originalEntry, theEntry, tag, _props));
@@ -2373,6 +2399,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 buff.append("</tr></table>\n");
             }
 
+	    if(footerProp!=null)
+		buff.append(footerProp);
             return buff.toString();
         } else if (theTag.equals(WIKI_TAG_APPLY)) {
             StringBuilder style = new StringBuilder(getProperty(wikiUtil,
@@ -3788,7 +3816,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     private WikiUtil makeWikiUtil(Request request, boolean makeHeadings) {
         WikiUtil wikiUtil = new WikiUtil();
         wikiUtil.setMakeHeadings(makeHeadings);
-
         return initWikiUtil(request, wikiUtil, null);
     }
 
@@ -5980,7 +6007,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                              myRequest, ATTR_ENTRY, entry })), entry);
 
         return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
-                           subGroups, subEntries, notTags);
+                           subGroups, subEntries, notTags,true);
     }
 
 
@@ -6003,7 +6030,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String wikifyEntry(Request request, Entry entry,
                               WikiUtil wikiUtil, String wikiContent,
                               boolean wrapInDiv, List<Entry> subGroups,
-                              List<Entry> subEntries, String[] notTags)
+                              List<Entry> subEntries, String[] notTags, boolean includeJavascript)
             throws Exception {
         List children = new ArrayList();
         if (subGroups != null) {
@@ -6023,13 +6050,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             content = HtmlUtils.div(content,
                                     HtmlUtils.cssClass("wikicontent")) + "\n";
         }
-        String js = wikiUtil.getJavascript();
-        if (js.length() > 0) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(content);
-            sb.append(HtmlUtils.script(js));
-            content = sb.toString();
-        }
+	if(includeJavascript) {
+	    String js = wikiUtil.getJavascript();
+	    if (js.length() > 0) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(content);
+		sb.append(HtmlUtils.script(js));
+		content = sb.toString();
+	    }
+	}
 
         return content;
     }
@@ -6734,13 +6763,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             sb.append("\n");
             HU.div(sb, "", HU.id(mainDivId));
             sb.append("\n");
-            request.putExtraProperty("added displaymanager", "true");
+            request.putExtraProperty(PROP_ADDED_GROUP, "true");
             topProps.addAll(propList);
             js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
-
             return;
         }
 
@@ -6778,7 +6806,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         props.remove("layoutHere");
 
         boolean needToCreateGroup =
-            request.getExtraProperty("added displaymanager") == null;
+            request.getExtraProperty(PROP_ADDED_GROUP) == null;
 
         //Put the main div after the display div
         if (needToCreateGroup) {
@@ -6855,7 +6883,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             "This gets the global display manager or creates it if not created");
 
         if (needToCreateGroup) {
-            request.putExtraProperty("added displaymanager", "true");
+            request.putExtraProperty(PROP_ADDED_GROUP, "true");
             Utils.concatBuff(
                 js, "\nvar displayManager = getOrCreateDisplayManager(",
                 HtmlUtils.quote(mainDivId), ",", Json.map(topProps, false),
@@ -6939,7 +6967,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         wikiUtil.addWikiAttributes(propList);
-
         js.append("displayManager.createDisplay("
                   + HtmlUtils.quote(displayType) + ","
                   + Json.map(propList, false) + ");\n");

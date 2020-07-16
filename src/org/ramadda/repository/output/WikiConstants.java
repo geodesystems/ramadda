@@ -579,6 +579,8 @@ public interface WikiConstants {
     /** property delimiter */
     public static final String PROP_DELIM = ":";
 
+    public static final String PROP_ADDED_GROUP = "added group";
+
     /** the id for this */
     public static final String ID_THIS = "this";
 
