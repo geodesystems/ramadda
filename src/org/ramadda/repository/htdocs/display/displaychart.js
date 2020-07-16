@@ -511,6 +511,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    } 
 	    return value;
 	},
+	getFieldsToDisplay: function(fields) {
+	    return fields;
+	},
+
         displayData: function(reload) {
 	    let debug = false;
 	    if(debug)
@@ -654,7 +658,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
-            let dataList = this.getStandardData(fieldsToSelect, props);
+            let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
             this.computedData = dataList;
@@ -2909,6 +2913,23 @@ function BubbleDisplay(displayManager, id, properties) {
             divAttrs.push(style);
             return HU.div(divAttrs, "");
         },
+
+	getFieldsToDisplay: function(fields) {
+	    if(fields.length>=4) return fields;
+	    let labelField=this.getFieldById(null, this.getProperty("labelField"));
+	    let colorField=this.getFieldById(null, this.getProperty("labelField"));
+	    let sizeField=this.getFieldById(null, this.getProperty("sizeField"));
+	    let xField=this.getFieldById(null, this.getProperty("xField"));
+	    let yField=this.getFieldById(null, this.getProperty("yField"));	    	    	    	    
+	    if(!labelField) throw new Error("Need to specify labelField");
+	    if(!xField) throw new Error("Need to specify xField");
+	    if(!yField) throw new Error("Need to specify yField");	    
+	    let f = [labelField, xField, yField];
+	    if(colorField) f.push(colorField);
+	    if(sizeField) f.push(sizeField);
+	    console.log("F:" + f);
+	    return f;
+	},
 
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let debug =displayDebug.makeDataTable;
