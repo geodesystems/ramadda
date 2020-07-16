@@ -1229,8 +1229,9 @@ var Utils =  {
     },
     initDisplays: function() {
 	this.displaysList.forEach(d=>{
-	    if(d.pageHasLoaded)
+	    if(d.pageHasLoaded) {
 		d.pageHasLoaded();
+	    }
 	});
     },
     getPageLoaded: function() {
@@ -2708,18 +2709,18 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 			this.div(["class", "col-md-" + leftWeight], left) +
 			this.div(["class", "col-md-" + rightWeight, "style", "text-align:right;"], right));
     },
-    leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs) {
+    leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs,cellStyle) {
         if (!attrs) attrs = {};
         if (!attrs.valign) attrs.valign = "top";
 //        if (leftWidth == null) leftWidth = "33%";
 //        if (centerWidth == null) centerWidth = "33%";
 //        if (rightWidth == null) rightWidth = "33%";
-
+	if(!cellStyle) cellStyle = "";
         return this.tag("table", ["border", 0, "width", "100%", "cellspacing", "0", "cellpadding", "0"],
 			this.tr(["valign", attrs.valign],
-				this.td(["align", "left", "width", leftWidth], left) +
-				this.td(["align", "center", "width", centerWidth], center) +
-				this.td(["align", "right", "width", rightWidth], right)));
+				this.td(["align", "left", "width", leftWidth, STYLE,cellStyle], left) +
+				this.td(["align", "center", "width", centerWidth, STYLE,cellStyle], center) +
+				this.td(["align", "right", "width", rightWidth, STYLE,cellStyle], right)));
     },
 
     hrow: function() {
