@@ -72,6 +72,10 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 
 
+.ramadda-hflow {
+    display:inline-block;
+}
+
 .ramadda-menubar {
     max-width:100%;
     white-space:nowrap;
