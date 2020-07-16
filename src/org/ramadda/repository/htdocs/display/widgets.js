@@ -1083,24 +1083,32 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
     };
     let showBars = attrs.showBars|| display.getProperty("sparklineShowBars",false);
 
-    if(!showBars && (attrs.showLines|| display.getProperty("sparklineShowLines",true))) {
-	svg.selectAll('line').data(data).enter().append("line")
-	    .attr('x1', (d,i)=>{return x(i)})
-	    .attr('y1', (d,i)=>{return y(d)})
-	    .attr('x2', (d,i)=>{return x(i+1)})
-	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
-	    .attr("stroke-width", lineWidth)
-            .attr("stroke", (d,i)=>{
-		if(isNaN(d)) return "rgba(0,0,0,0)";
-		return getColor(d,i,lineColor)
-	    })
-	    .style("cursor", "pointer");
-    }
+    
+
+    svg.append('line')
+	.attr('x1',0)
+	.attr('y1', 0)
+	.attr('x2', 0)
+	.attr('y2', h)    
+	.attr("stroke-width", 1)
+    	.attr("stroke", '#ccc');
+
+    svg.append('line')
+	.attr('x1',0)
+	.attr('y1', h)
+	.attr('x2', w)
+	.attr('y2', h)    
+	.attr("stroke-width", 1)
+    	.attr("stroke", '#ccc');
+    
+
+
 
     let getNum = n=>{
 	if(isNaN(n)) return 0;
 	return n;
     };
+
     if(showBars) {
 	defaultShowEndPoints = false;
 	svg.selectAll('.bar').data(data)
@@ -1115,6 +1123,22 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	    .style("cursor", "pointer")
     }
 
+
+    if(attrs.showLines|| display.getProperty("sparklineShowLines",true)) {
+	svg.selectAll('line').data(data).enter().append("line")
+	    .attr('x1', (d,i)=>{return x(i)})
+	    .attr('y1', (d,i)=>{return y(d)})
+	    .attr('x2', (d,i)=>{return x(i+1)})
+	    .attr('y2', (d,i)=>{return y(i<data.length-1?data[i+1]:data[i])})
+	    .attr("stroke-width", lineWidth)
+            .attr("stroke", (d,i)=>{
+		if(isNaN(d)) return "rgba(0,0,0,0)";
+		return getColor(d,i,lineColor)
+	    })
+	    .style("cursor", "pointer");
+    }
+
+
     if(attrs.showCircles || display.getProperty("sparklineShowCircles",false)) {
 	svg.selectAll('circle').data(data).enter().append("circle")
 	    .attr('r', (d,i)=>{return isNaN(d)?0:circleRadius})
@@ -1124,11 +1148,13 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	    .style("cursor", "pointer");
     }
 
+
+
     if(attrs.showEndpoints || display.getProperty("sparklineShowEndPoints",defaultShowEndPoints)) {
 	let fidx=0;
 	while(isNaN(data[fidx]) && fidx<data.length) fidx++;
 	let lidx=data.length-1;
-	while(isNaN(data[lidx]) && fidx>=0) lidx--;	
+	while(isNaN(data[lidx]) && lidx>=0) lidx--;	
 	svg.append('circle')
 	    .attr('r', attrs.endPointRadius|| display.getProperty("sparklineEndPointRadius",2))
 	    .attr('cx', x(fidx))
@@ -1150,6 +1176,7 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 		_display.propagateEventRecordSelection({select:true,record: record});
 	}
     });
+
 
 
     if(doTooltip) {
