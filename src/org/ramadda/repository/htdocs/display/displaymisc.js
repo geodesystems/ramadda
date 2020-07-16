@@ -3093,12 +3093,21 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
     const ID_INNER = "inner";
     if(!properties.groupBy)
 	properties.displayInline = true;
+    if(!Utils.isDefined(properties.showDisplayTop))
+	properties.showDisplayTop = false;
+    if(!Utils.isDefined(properties.showDisplayBottom))
+	properties.showDisplayBottom = false;
+
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SPARKLINE, properties);
     RamaddaUtil.inherit(this,SUPER);
+
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Sparkline Properties'},
 	{p:'showDate',wikiValue:'true'},
+	{p:'showMin',wikiValue:'true'},
+	{p:'showMax',wikiValue:'true'},
+	{p:'labelStyle',wikiValue:''},			
 	{p:'sparklineWidth',d:60},
 	{p:'sparklineHeight',d:20},
 	{p:'sparklineLineColor',wikiValue:'#000'},
@@ -3128,17 +3137,30 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 	    let h = this.getPropertySparklineHeight(20);
 	    let records = this.filteredRecords = this.filterData();
 	    if(!records) return;
+
+
+
 	    let field = this.getFieldById(null, this.getProperty("field"));
 	    if(field==null) {
 		this.jq(ID_DISPLAY_CONTENTS).html("No field specified");
 		return;
 	    }
+	    let t1 = new Date();
+
 	    let showDate = this.getPropertyShowDate();
 	    let id = this.getDomId(ID_INNER);
 	    let colorBy = this.getColorByInfo(records);
 	    let groupByField = this.getFieldById(null,this.getProperty("groupBy"));
 	    let groups = groupByField?RecordUtil.groupBy(records, this, null, groupByField):null;
 	    let col = this.getColumnValues(records, field);
+	    let min = col.min;
+	    let max = col.max;
+	    if(this.getProperty("useAllRecords")) {
+		let col2 = this.getColumnValues(this.getRecords(), field);
+		min  = col2.min;
+		max = col2.max;
+	    }
+
 	    if(groups) {
 		let labelPosition = this.getProperty("labelPosition","bottom");
 		html = HU.div([ID,this.getDomId(ID_INNER)]);
@@ -3154,7 +3176,7 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 			c =  c + HU.tag(BR) + label;
 		    $("#"+id).append(HU.div([STYLE,HU.css('display','inline-block','margin','4px')],c));
 		    let gcol = this.getColumnValues(grecords, field);
-		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,col.min,col.max,colorBy);
+		    drawSparkLine(this, "#"+gid,w,h,gcol.values,grecords,min,max,colorBy);
 		});		
 	    } else {
 		html = HU.div([CLASS,"display-sparkline-sparkline",ID,this.getDomId(ID_INNER),STYLE,HU.css('width', w+'px','height', h+'px')]);
@@ -3162,9 +3184,16 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 		    html = HU.div([CLASS,"display-sparkline-date"],this.formatDate(records[0].getTime())) + html+
 			HU.div([CLASS,"display-sparkline-date"],this.formatDate(records[records.length-1].getTime()))
 		}
+		let left = this.getProperty("showMin")? HU.div([CLASS,"display-sparkline-value",STYLE, this.getPropertyLabelStyle("")],this.formatNumber(col.values[0])):"";
+		let right = this.getProperty("showMax",true)? HU.div([CLASS,"display-sparkline-value",STYLE, this.getPropertyLabelStyle("")],this.formatNumber(col.values[col.values.length-1])):"";
+		if(left!=""  || right!="")
+		    html = HU.leftCenterRight(left,html,right,"1%","99%","1%",null,"padding:2px 2px;");
 		this.writeHtml(ID_DISPLAY_CONTENTS, html); 
-		drawSparkLine(this, "#"+id,w,h,col.values,records,col.min,col.max,colorBy);
+		drawSparkLine(this, "#"+id,w,h,col.values,records,min,max,colorBy);
 	    }
+	    let t2 = new Date();
+//	    Utils.displayTimes("sparkline",[t1,t2],true);
+
 	}
     });
 }
