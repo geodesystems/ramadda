@@ -1806,13 +1806,12 @@ public class EntryManager extends RepositoryManager {
     private Entry changeType(Request request, Entry entry,
                              TypeHandler newTypeHandler)
             throws Exception {
-        addSessionType(request, newTypeHandler.getType());
-
         if ( !getAccessManager().canDoAction(request, entry,
                                              Permission.ACTION_EDIT)) {
             throw new AccessException("Cannot edit:" + entry.getLabel(),
                                       request);
         }
+        addSessionType(request, newTypeHandler.getType());
 
         Connection connection = getDatabaseManager().getConnection();
         try {
@@ -1829,7 +1828,6 @@ public class EntryManager extends RepositoryManager {
                                     new String[] { Tables.ENTRIES.COL_TYPE },
                                     new String[] {
                                         newTypeHandler.getType() });
-
         removeFromCache(entry);
         entry = newTypeHandler.changeType(request, entry);
 
@@ -4876,9 +4874,6 @@ public class EntryManager extends RepositoryManager {
             TypeHandler newTypeHandler = getRepository().getTypeHandler(
                                              request.getString(
                                                  ARG_EXTEDIT_NEWTYPE, ""));
-
-
-
             request.ensureAuthToken();
 
             sb.append(msgLabel("The following entries have been changed"));

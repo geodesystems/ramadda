@@ -1958,17 +1958,30 @@ public class TypeHandler extends RepositoryManager {
      */
     public Entry changeType(Request request, Entry entry) throws Exception {
         //Recreate the entry. This will fill in any extra entry type db tables
+	Object[] origValues =  entry.getTypeHandler().getEntryValues(entry);
+	List<Column> origColumns = entry.getTypeHandler().getColumns();
+	List<Column> columns = this.getColumns();	
         entry = getEntryManager().getEntry(request, entry.getId());
         //Then initialize it, e.g., point data type will read the file and set the entry values, etc.
         initializeNewEntry(request, entry, false);
-        //        Object[] values =  getEntryValues(entry);
-        //        System.err.println("type:" + this);
-        //        for(int i=0;i<values.length;i++) {
-        //            System.err.println("value[" + i +"] = " + values[i]);
-        //        }
+	Object[] values =  getEntryValues(entry);
+	for(int i=0;i<origColumns.size();i++) {
+	    if(i>=columns.size()) break;
+	    Column origColumn = origColumns.get(i);
+	    Column column = columns.get(i);
+    	    if(!origColumn.getName().equals(column.getName())) break;
+	    if(origColumn.getOffset()!= column.getOffset()) break;
+	    values[origColumn.getOffset()] = origValues[origColumn.getOffset()];
+	}
+
+	/*
+	System.err.println("type:" + this);
+	for(int i=0;i<values.length;i++) {
+	    System.err.println("value[" + i +"] = " + values[i]);
+	}
+	*/
         //Now store the changes
         getEntryManager().updateEntry(request, entry);
-
         return entry;
     }
 
