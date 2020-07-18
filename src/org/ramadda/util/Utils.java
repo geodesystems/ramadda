@@ -3854,4 +3854,68 @@ public class Utils extends IO {
     }
 
 
+    /**
+     * Utility to get the elapsed minutes
+     *
+     * @param date date
+     *
+     * @return Elapsed minutes
+     */
+    public static int getElapsedMinutes(Date date) {
+        return getElapsedMinutes(new Date(), date);
+    }
+
+    /**
+     * Utility to the the minutes between the given dates
+     *
+     * @param now date 1
+     * @param date date 2
+     *
+     * @return elapsed minutes
+     */
+    public static int getElapsedMinutes(Date now, Date date) {
+        if (date == null) {
+            return 0;
+        }
+
+        return (int) (now.getTime() - date.getTime()) / 1000 / 60;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param count _more_
+     * @param label _more_
+     *
+     * @return _more_
+     */
+    public static String plural(int count, String label) {
+        if (count == 1) {
+            return count + " " + label;
+        }
+
+        return count + " " + label + "s";
+    }
+
+    /**
+     * _more_
+     *
+     * @param minutes _more_
+     *
+     * @return _more_
+     */
+    public static String formatMinutes(int minutes) {
+        if (minutes < 60) {
+            return plural(minutes, "minute");
+        }
+        int hours = minutes / 60;
+        int rem   = minutes - (hours * 60);
+        if (rem == 0) {
+            return plural(hours, "hour");
+        }
+
+        return plural(hours, "hour") + " " + plural(rem, "minute");
+    }
+
 }
