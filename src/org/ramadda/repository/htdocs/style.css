@@ -475,6 +475,25 @@ a.ramadda-menubar-button:hover {
 }
 
 
+.ramadda-draft-container {
+    pointer-events: none;
+    position:absolute;
+    z-index:3000;
+    display:block;
+    height:200px;
+    width:50%;
+}
+
+
+.ramadda-draft {
+    pointer-events: none;
+    color:rgba(200,200,200,0.5);
+    font-size:120px;
+    transform:rotate(325deg);
+    -webkit-transform:rotate(325deg);
+}
+
+
 .ramadda-callout { 
     display: inline-block;
     padding: 5px;

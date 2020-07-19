@@ -2091,6 +2091,13 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith(":draft")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+		String label = toks.size()>1?toks.get(1):"Draft";
+		buff.append("<div class=ramadda-draft-container><div class=ramadda-draft>" + label+"</div></div>\n");
+		continue;
+	    }
+
             if (tline.startsWith(":heading") || tline.startsWith(":block")
                     || tline.startsWith(":credit")
                     || tline.startsWith(":note") || tline.startsWith(":box")
