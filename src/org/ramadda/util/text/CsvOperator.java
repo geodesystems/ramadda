@@ -77,6 +77,7 @@ public abstract class CsvOperator {
     /** _more_ */
     protected int rowCnt = 0;
 
+
     /** _more_ */
     public static final int INDEX_ALL = -9999;
 
@@ -131,6 +132,47 @@ public abstract class CsvOperator {
      */
     public CsvOperator(List<String> cols) {
         this.sindices = cols;
+    }
+
+
+    /** _more_          */
+    private Hashtable<String, Integer> debugCounts = new Hashtable<String,
+                                                         Integer>();
+
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     */
+    public void debug(String msg) {
+        debug(msg, null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param msg _more_
+     * @param extra _more_
+     */
+    public void debug(String msg, Object extra) {
+        if (true) {
+            return;
+        }
+        Integer cnt = debugCounts.get(msg);
+        if (cnt == null) {
+            cnt = new Integer(0);
+        } else {
+            if (cnt > 5) {
+                return;
+            }
+            cnt = new Integer(cnt + 1);
+        }
+        debugCounts.put(msg, cnt);
+        String c = getClass().getName();
+        c = c.substring(c.indexOf("$") + 1);
+        System.err.println(c + ":" + msg + ((extra != null)
+                                            ? " " + extra
+                                            : ""));
     }
 
 
@@ -203,10 +245,32 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
+     * @param row _more_
+     */
+    public void setHeaderIfNeeded(Row row) {
+        if (header == null) {
+            setHeader(row.getValues());
+        }
+    }
+
+
+    /**
+     * _more_
+     *
      * @param header _more_
      */
     public void setHeader(List header) {
         this.header = header;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean hasHeader() {
+        return header != null;
     }
 
 
@@ -315,6 +379,8 @@ public abstract class CsvOperator {
         } catch (NumberFormatException exc) {
             if (columnNames == null) {
                 if (header == null) {
+                    debug("no names or header");
+
                     return;
                 }
                 columnMap = new Hashtable<String, Integer>();
@@ -406,6 +472,7 @@ public abstract class CsvOperator {
      * @return _more_
      */
     public List<Integer> getIndices(List<String> cols) {
+        debug("getIndices:" + cols);
         if (cols == null) {
             return null;
         }

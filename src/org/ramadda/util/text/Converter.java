@@ -193,9 +193,10 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-
             List<Integer> indices = getIndices(info);
             if (indices.size() == 0) {
+                debug("processRow- no indices");
+
                 return row;
             }
             List<String> result = new ArrayList<String>();
@@ -204,6 +205,8 @@ public abstract class Converter extends Processor {
                     result.add(row.getString(i));
                 }
             }
+
+            debug("processRow", new Row(result));
 
             return new Row(result);
         }
@@ -1451,8 +1454,8 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-            //      System.err.println("func row:" + row);
             rowCnt++;
+            debug("processRow");
             if (rowCnt == 1) {
                 headerRow = new Row(row);
                 for (String s : names) {
@@ -4743,6 +4746,7 @@ public abstract class Converter extends Processor {
 
                 return null;
             }
+            debug("date latest.processRow");
             String key = "";
             for (Integer idx : keyindices) {
                 int index = idx.intValue();
@@ -4790,8 +4794,9 @@ public abstract class Converter extends Processor {
         @Override
         public List<Row> finish(TextReader info, List<Row> tmp)
                 throws Exception {
+            debug("date latest.finish");
             List<Row> result = new ArrayList<Row>();
-	    result.add(header);
+            result.add(header);
             for (String key : keyValues) {
                 result.add(rows.get(key));
             }

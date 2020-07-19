@@ -404,9 +404,7 @@ public abstract class Processor extends CsvOperator {
 
                     continue;
                 }
-                if (firstRow) {
-                    processor.setHeader(row.getValues());
-                }
+                processor.setHeaderIfNeeded(row);
                 //Always do this here so the indexes don't get screwed up 
                 processor.getIndices(info);
                 if (Row.xcnt == 5) {
@@ -473,7 +471,7 @@ rotate -> pass -> pass -> rotate -> pass
                     continue;
                 }
 
-
+                processor.setHeaderIfNeeded(row);
                 row = processor.processRow(info, row, line);
                 if (row == null) {
                     return null;
@@ -1302,6 +1300,7 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public Row processRow(TextReader info, Row row, String line)
                 throws Exception {
+            debug("processRow");
             if (addPointHeader) {
                 addPointHeader = false;
                 handleHeaderRow(info.getWriter(), row, null /*exValues*/);
@@ -1358,6 +1357,7 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
+            debug("finish");
             if (suffix != null) {
                 info.getWriter().print(suffix);
             }
