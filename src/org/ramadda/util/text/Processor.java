@@ -557,12 +557,12 @@ rotate -> pass -> pass -> rotate -> pass
 
         /**
          *  _more_
-         * 
-         * 
+         *
+         *
          *  @param textReader _more_
          *  @param inputRows _more_
-         * 
-         * 
+         *
+         *
          *  @return _more_
          *  @throws Exception On badness
          */
@@ -3235,10 +3235,10 @@ rotate -> pass -> pass -> rotate -> pass
                 List          values = row.getValues();
                 StringBuilder keySB  = new StringBuilder();
                 for (int i : uniqueIndices) {
-		    if(i>=-0 && i<values.size()) {
-			keySB.append(values.get(i));
-			keySB.append("_");
-		    }
+                    if ((i >= -0) && (i < values.size())) {
+                        keySB.append(values.get(i));
+                        keySB.append("_");
+                    }
                 }
                 String    key      = keySB.toString();
                 List<Row> rowGroup = rowMap.get(key);

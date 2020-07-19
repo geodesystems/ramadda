@@ -1990,6 +1990,10 @@ public class CsvUtil {
         new Cmd("-after", new Label("After date"), "",
                 new Arg("column", "", "type", "column"), new Arg("format"),
                 new Arg("date"), new Arg("format2")),
+        new Cmd("-latest", new Label("Latest date"), "",
+                new Arg("columns", "Key columns", "type", "columns"),
+                new Arg("column", "Date column", "type", "column"),
+                new Arg("format")),
         new Cmd("-countvalue", new Label("Max unique values"),
                 "No more than count unique values",
                 new Arg("column", "", "type", "column"), new Arg("count")),
@@ -2718,6 +2722,7 @@ public class CsvUtil {
                         new Processor.DbXml(props));
 
                     info.setMaxRows(30);
+
                     continue;
                 }
 
@@ -3553,6 +3558,21 @@ public class CsvUtil {
                     continue;
                 }
 
+                if (arg.equals("-latest")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols = getCols(args.get(++i));
+                    int          col  = Integer.parseInt(args.get(++i));
+                    String       sdf  = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.DateLatest(
+                            cols, col, new SimpleDateFormat(sdf)));
+
+                    continue;
+                }
+
+
 
                 if (arg.equals("-debug")) {
                     System.err.println("CsvUtil args:" + this.args);
@@ -4369,14 +4389,16 @@ public class CsvUtil {
         Hashtable<String, String> props = new Hashtable<String, String>();
         for (int j = 0; j < toks.size(); j += 2) {
             if (j >= toks.size() - 1) {
-		StringBuilder err = new StringBuilder();
-		for (int k = 0; k < toks.size(); k += 2) {
-		    if (k >= toks.size() - 1) {
-			err.append("\t" +toks.get(k) +"=NONE\n");
-		    } else {
-			err.append("\t" +toks.get(k) +"="+toks.get(k+1)+"\n");
-		    }
-		}
+                StringBuilder err = new StringBuilder();
+                for (int k = 0; k < toks.size(); k += 2) {
+                    if (k >= toks.size() - 1) {
+                        err.append("\t" + toks.get(k) + "=NONE\n");
+                    } else {
+                        err.append("\t" + toks.get(k) + "=" + toks.get(k + 1)
+                                   + "\n");
+                    }
+                }
+
                 throw new IllegalArgumentException(
                     "Error: Odd number of arguments:\n" + err);
             }

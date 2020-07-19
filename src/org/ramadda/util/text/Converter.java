@@ -3479,10 +3479,10 @@ public abstract class Converter extends Processor {
      */
     public static class Regionator extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         private boolean doneHeader = false;
 
-        /** _more_          */
+        /** _more_ */
         private Properties props;
 
 
@@ -4189,18 +4189,18 @@ public abstract class Converter extends Processor {
      */
     public static class Delta extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         List<String> keys;
 
 
-        /** _more_          */
+        /** _more_ */
         private Hashtable<String, Row> prevRows = new Hashtable<String,
                                                       Row>();
 
-        /** _more_          */
+        /** _more_ */
         List<Integer> indices;
 
-        /** _more_          */
+        /** _more_ */
         List<Integer> keyindices;
 
 
@@ -4210,8 +4210,6 @@ public abstract class Converter extends Processor {
          *
          * @param keys _more_
          * @param indices _more_
-         * @param name _more_
-         * @param op _more_
          */
         public Delta(List<String> keys, List<String> indices) {
             super(indices);
@@ -4676,6 +4674,130 @@ public abstract class Converter extends Processor {
 
             return row;
         }
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Jul 18, '20
+     * @author         Enter your name here...
+     */
+    public static class DateLatest extends RowCollector {
+
+        /** _more_ */
+        List<String> keys;
+
+        /** _more_ */
+        private Hashtable<String, Row> rows = new Hashtable<String, Row>();
+
+        /** _more_ */
+        private List<Integer> indices;
+
+        /** _more_ */
+        private List<Integer> keyindices;
+
+        /** _more_ */
+        private List<String> keyValues = new ArrayList<String>();
+
+        /** _more_ */
+        private int col;
+
+        /** _more_ */
+        private SimpleDateFormat sdf;
+
+        /** _more_ */
+        private Row header;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param col _more_
+         * @param sdf _more_
+         */
+        public DateLatest(List<String> cols, int col, SimpleDateFormat sdf) {
+            this.keys = cols;
+            this.col  = col;
+            this.sdf  = sdf;
+        }
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if (indices == null) {
+                keyindices = getIndices(keys);
+            }
+            if (rowCnt++ == 0) {
+                header = row;
+
+                return null;
+            }
+            String key = "";
+            for (Integer idx : keyindices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                key += row.get(index).toString() + "_";
+            }
+            Row prevRow = rows.get(key);
+            if (prevRow == null) {
+                prevRow = row;
+                rows.put(key, prevRow);
+                keyValues.add(key);
+
+                return null;
+            }
+            try {
+                Date d1 = sdf.parse(prevRow.get(col).toString());
+                Date d2 = sdf.parse(row.get(col).toString());
+                if (d2.getTime() >= d1.getTime()) {
+                    //              System.err.println("update date:" + row.get(col)+" d:" + d2);
+                    rows.put(key, row);
+                }
+
+            } catch (Exception exc) {
+                System.err.println("Error:" + exc + "\nrow1:" + prevRow
+                                   + "\nrow2:" + row);
+            }
+
+            return null;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param tmp _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> tmp)
+                throws Exception {
+            List<Row> result = new ArrayList<Row>();
+            for (String key : keyValues) {
+                result.add(rows.get(key));
+            }
+
+            return result;
+        }
+
     }
 
 
