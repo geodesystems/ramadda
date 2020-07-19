@@ -4791,6 +4791,7 @@ public abstract class Converter extends Processor {
         public List<Row> finish(TextReader info, List<Row> tmp)
                 throws Exception {
             List<Row> result = new ArrayList<Row>();
+	    result.add(header);
             for (String key : keyValues) {
                 result.add(rows.get(key));
             }
