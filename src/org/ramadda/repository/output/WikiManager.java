@@ -2384,6 +2384,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     theEntry = entries.get(i);
                 }
                 if (s != null) {
+		    s = s.replaceAll("_dollar_","\\$");
 		    //		    System.err.println("WIKIFY:" + tmp.trim());
 		    String tmp  = wikifyEntry(request, theEntry, wikiUtil, s, false, null, null, null, false);
 		    buff.append(tmp);
