@@ -4113,46 +4113,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var seenLabels = {};
 
 
-            var allFields = this.dataCollection.getList()[0].getRecordFields();
-            var badFields = {};
-            var flags = null;
-            /*
-              var tuples = this.getStandardData(null, {
-              includeIndex: false
-              });
-              for (var rowIdx = 1; rowIdx < tuples.length; rowIdx++) {
-              var tuple = this.getDataValues(tuples[rowIdx]);
-              if (flags == null) {
-              flags = [];
-              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-              flags.push(false);
-              }
-              }
-
-              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-              if (!flags[tupleIdx]) {
-              if (tuple[tupleIdx] != null) {
-              flags[tupleIdx] = true;
-              //                                console.log("Flag[" + tupleIdx+"] value:" + tuple[tupleIdx]);
-              }
-              }
-              }
-
-              }
-
-              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-              //                    console.log("#" + tupleIdx + " " + (tupleIdx<allFields.length?allFields[tupleIdx].getId():"") +" ok:" + flags[tupleIdx] );
-              }
-            */
-
+            let badFields = {};
+            let flags = null;
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
-                var pointData = dataList[collectionIdx];
-                var fields = this.getFieldsToSelect(pointData);
+                let pointData = dataList[collectionIdx];
+                let fields = this.getFieldsToSelect(pointData);
                 if (this.canDoGroupBy()) {
-                    var allFields = pointData.getRecordFields();
-                    var cnt = 0;
+                    let allFields = pointData.getRecordFields();
+                    let cnt = 0;
                     for (i = 0; i < allFields.length; i++) {
-                        var field = allFields[i];
+                        let field = allFields[i];
                         if (field.getType() != "string") continue;
                         if (cnt == 0) {
                             html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Group By");
@@ -4472,16 +4442,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getDefaultSelectedFields: function(fields, dfltList) {
 	    let debug = displayDebug.getDefaultSelectedFields;
-            if (this.defaultSelectedToAll() && this.allFields != null) {
-                var tmp = [];
-                for (i = 0; i < this.allFields.length; i++) {
-                    var field = this.allFields[i];
-                    if (!field.isFieldGeo()) {
-                        tmp.push(field);
+	    if(debug)
+		console.log("getDefaultSelectedFields");
+            if (this.defaultSelectedToAll()) {
+		let allFields = this.getFields();
+		if(allFields) {
+                    var tmp = [];
+                    for (i = 0; i < allFields.length; i++) {
+			var field = allFields[i];
+			if (!field.isFieldGeo()) {
+                            tmp.push(field);
+			}
                     }
-                }
+		}
 		if(debug)
-		    console.log("\treturning this.allFields:" + tmp);
+		    console.log("\treturning allFields:" + tmp);
                 return tmp;
             }
             if (dfltList != null) {
@@ -5117,6 +5092,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var record = records[i];
 		this.recordToIndex[record.getId()] = i;
 		this.indexToRecord[i] = record;
+	    }
+
+
+
+	    let convertPost = this.getProperty("convertDataPost");
+	    if(convertPost) {
+		let newPointData = new  PointData("pointdata", pointData.getRecordFields(), records,null,{parent:pointData});
+		this.pointData =  new CsvUtil().process(this, newPointData, convertPost);
+		records = this.pointData.getRecords();
+//		console.log("post:" + this.pointData.getRecordFields());
 	    }
 	    if(debug)
 		console.log("filtered:" + records.length);
@@ -7732,7 +7717,6 @@ a
 		console.log("\tclearing last selected fields");
 	    
 	    this.lastSelectedFields = null;
-	    this.allFields = null;
             if (!reload) {
 		if(debug) console.log("\tcalling addData");
                 this.addData(pointData);
@@ -7973,6 +7957,7 @@ a
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
+	    if(!args) args = {};
 	    let debug = displayDebug.getStandardData;
 	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
 	    let showUnit  = this.getProperty("showUnit",true);
@@ -8089,25 +8074,25 @@ a
 
 
 
-            var offset = 0;
+            let offset = 0;
             if (Utils.isDefined(this.offset)) {
                 offset = parseFloat(this.offset);
             }
 
-            var nonNullRecords = 0;
-            var records = this.filterData();
+            let nonNullRecords = 0;
+            let records = args.records?args.records:this.filterData();
 	    if(debug)
 		console.log("getStandardData #fields:" + fields.length +" #records:" + records.length);
-            var allFields = pointData.getRecordFields();
+            let allFields = pointData.getRecordFields();
 
             //Check if there are dates and if they are different
             this.hasDate = this.getHasDate(records);
-            var date_formatter = this.getDateFormatter();
-            var rowCnt = -1;
-            var indexField = this.getFieldById(null,this.getProperty("indexField"));
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var record = records[rowIdx];
-                var date = record.getDate();
+            let date_formatter = this.getDateFormatter();
+            let rowCnt = -1;
+            let indexField = this.getFieldById(null,this.getProperty("indexField"));
+            for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let record = records[rowIdx];
+                let date = record.getDate();
 		
                 if (!this.dateInRange(date)) {
 		    continue;
@@ -8119,7 +8104,7 @@ a
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
-			var value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),rowIdx);
+			let value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),rowIdx);
                         values.push(value);
                         indexName = indexField.getLabel();
                     } else {
@@ -10356,7 +10341,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    labels.push([String(idx),op.label]);
 		});
 		let selected = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
-		let enums = Utils.mergeLists([FILTER_ALL],labels);
+		let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
+		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
 		widget = HU.select("",attrs,enums,selected);
 	    } else   if(filterField.getType() == "enumeration") {
@@ -10545,6 +10532,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	getEnums: function(records) {
 	    let enums = null;
 	    let filterValues = this.getProperty(filterField.getId()+".filterValues");
+	    let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
+
 	    if (filterValues) {
 		let toks;
 		if ((typeof filterValues) == "string") {
@@ -10559,7 +10548,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(tmp.length>1) {
 			tok = [tmp[0],tmp[1]];
 		    } else if(tok == FILTER_ALL) {
-			tok = [tmp[0],"All"];
+			let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+			tok = [tmp[0],allName];
 		    }
 		    enums.push({value:tok});
 		})
@@ -10570,7 +10560,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(depend) {
 		    depend=this.depend = this.display.getRecordFilter(depend);
 		}
-		let allName = this.getProperty(filterField.getId() +".allName","All");
+		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
 		enums = [];
 		if(includeAll) {
 		    enums.push({value:[FILTER_ALL,allName]});
@@ -11157,34 +11147,43 @@ function CsvUtil() {
 	    let firstRecord= records[0];
 	    let replaceValues = args["replaceValues"]=="true";
 	    let newFields = [];
-	    fields.map((f,fieldIdx)=>{
+	    let fieldOk = f=>{
+		return !f.isFieldGeo() && f.isNumeric();
+	    };
+	    fields.forEach((f,fieldIdx)=>{
 		f = f.clone();
 		let newField = f.clone();
+		f.index = newFields.length;
+		if(!fieldOk(newField)) {
+		    newFields.push(f);
+		    return;
+		}
 		if(!replaceValues) {
-		    f.index = newFields.length;
 		    newFields.push(f);
 		}
-		if(f.isNumeric()) {
-		    newField.unit = "%";
-		    newField.index = newFields.length;
-		    newFields.push(newField);
-		    newField.id = newField.id +"_percent";
-		    newField.label = newField.label+" % increase";
-		}
+		newField.unit = "%";
+		newField.index = newFields.length;
+		newField.id = newField.id +"_percent";
+		newField.label = newField.label+" % increase";
+		newFields.push(newField);
 	    });
-	    /*
-	      newFields.map((f,fieldIdx)=>{
-	      if(fieldIdx>3) return;
-	      console.log("F:" + f.getLabel() +" " + f.index);
-	      });*/
-	    records.map((record, rowIdx)=>{
+	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
+//	    newFields.forEach((f,fieldIdx)=>{
+//		if(fieldIdx>3) return;
+//		console.log("F:" + f.getLabel() +" " + f.index);
+//	    });
+	    records.forEach((record, rowIdx)=>{
 		let data = [];
 		let newRecord = record.clone();
+		newRecord.data=data;
 		newRecord.fields =newFields;
 		newRecords.push(newRecord);
-		fields.map((f,fieldIdx)=>{
+		fields.forEach((f,fieldIdx)=>{
 		    let value = record.data[f.getIndex()];
-		    if(!f.isNumeric()) {
+		    if(!fieldOk(f)) {
+			if(rowIdx==records.length-1) {
+	//		    console.log(f +" ==" +  value);
+			}
 			data.push(value);
 			return;
 		    }
@@ -11197,9 +11196,11 @@ function CsvUtil() {
 			let basev = firstRecord.data[f.getIndex()];
 			let perc = basev==0?0:(value-basev)/basev;
 			data.push(perc);
+			if(rowIdx==records.length-1) {
+//			    console.log(f +" =" + basev +" " + value +" perc:" + perc);
+			}
 		    }
 		}); 
-		newRecord.data=data;
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
@@ -11240,13 +11241,13 @@ function CsvUtil() {
 	    var newRecords  =[];
 	    var newFields = [];
 	    var firstRow = records[0];
-	    fields.map(f=>{
+	    fields.forEach(f=>{
 		var newField = f.clone();
 		newFields.push(newField);
 		newField.label = newField.label+" (avg)";
 	    });
 	    var sums=[];
-	    fields.map(f=>{sums.push(0)});
+	    fields.forEach(f=>{sums.push(0)});
 	    var newRecord;
 	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
 		var record = records[rowIdx];
@@ -11255,7 +11256,7 @@ function CsvUtil() {
 		    newRecords.push(newRecord);
 		    newRecord.fields =newFields;
 		}
-		fields.map((f,idx)=>{
+		fields.forEach((f,idx)=>{
 		    if(!f.isNumeric()) return;
 		    var v = record.data[f.getIndex()];
 		    sums[idx]+=v;
@@ -15579,10 +15580,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
     RamaddaUtil.defineMembers(this, {
-        clearCachedData: function() {
-            SUPER.clearCachedData();
-            this.computedData = null;
-        },
 	//Override so we don't include the expandable class
 	getContentsClass: function() {
 	    return "display-contents-inner display-" + this.type;
@@ -15809,7 +15806,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         clearCache: function() {
-            this.computedData = null;
         },
         googleChartCallbackPending: false,
         includeIndexInData: function() {
@@ -15883,17 +15879,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
 				    "Building display..."));
 
-            this.allFields = this.dataCollection.getList()[0].getRecordFields();
-            var pointData = this.dataCollection.getList()[0];
-
 	    if(debug)
 		console.log("\tpointData #records:" + pointData.getRecords().length);
 
 
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
-            var selectedFields = this.getSelectedFields();
-	    
-
+	    let records =this.filterData();
+            let selectedFields = this.getSelectedFields();
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
 	    
@@ -15918,7 +15910,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    
                     selectedFields = this.getSelectedFields();
 		    if(selectedFields.length==0) {
-			this.allFields.every(f=>{
+			this.getFields().every(f=>{
 			    if(f.isNumeric() && !f.isFieldGeo()) {
 				selectedFields = [f];
 				return false;
@@ -15955,14 +15947,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var groupBy = this.getGroupBy();
             if (groupBy) {
-                for (var i = 0; i < this.allFields.length; i++) {
-                    var field = this.allFields[i];
+		this.getFields().every(field=>{
                     if (field.getId() == groupBy) {
                         props.groupByIndex = field.getIndex();
                         props.groupByField = field;
-                        break;
+			return false;
                     }
-                }
+		    return true;
+                });
             }
 
             var fieldsToSelect = selectedFields;
@@ -15977,7 +15969,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
-            this.computedData = dataList;
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
                 var chartableFields = this.getFieldsToSelect(pointData);
@@ -17562,7 +17553,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	},
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
-                var stringField = this.getFieldOfType(this.allFields, "string");
+                var stringField = this.getFieldOfType(this.getFields(), "string");
                 if (stringField) {
                     this.groupBy = stringField.getId();
                 }
@@ -18517,8 +18508,7 @@ function TreemapDisplay(displayManager, id, properties) {
         },
 
         valueClicked: function(field, value) {
-            var allFields = this.getData().getRecordFields();
-            field = this.getFieldById(allFields, field);
+            field = this.getFieldById(this.getFields(), field);
             this.propagateEvent("handleEventFieldValueSelect", {
                 field: field,
                 value: value
@@ -18529,7 +18519,7 @@ function TreemapDisplay(displayManager, id, properties) {
             if (!records) {
                 return null;
             }
-            var allFields = this.getData().getRecordFields();
+            var allFields = this.getFields();
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
@@ -21366,10 +21356,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
-	    var pointData = this.getData();
-	    if (pointData == null) return;
-	    var records = this.filterData();
+	    let records = this.filterData();
 	    if(!records) return;
+	    let pointData = this.getData();
 	    if(this.getProperty("onlyShowSelected")) {
 		if(!this.selectedRecord) {
 		    if(this.getProperty("showFirst",true)) {

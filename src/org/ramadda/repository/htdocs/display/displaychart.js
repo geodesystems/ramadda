@@ -263,10 +263,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
     RamaddaUtil.defineMembers(this, {
-        clearCachedData: function() {
-            SUPER.clearCachedData();
-            this.computedData = null;
-        },
 	//Override so we don't include the expandable class
 	getContentsClass: function() {
 	    return "display-contents-inner display-" + this.type;
@@ -493,7 +489,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             return false;
         },
         clearCache: function() {
-            this.computedData = null;
         },
         googleChartCallbackPending: false,
         includeIndexInData: function() {
@@ -567,17 +562,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setContents(HU.div([ATTR_CLASS, "display-output-message"],
 				    "Building display..."));
 
-            this.allFields = this.dataCollection.getList()[0].getRecordFields();
-            var pointData = this.dataCollection.getList()[0];
-
 	    if(debug)
 		console.log("\tpointData #records:" + pointData.getRecords().length);
 
 
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
-            var selectedFields = this.getSelectedFields();
-	    
-
+	    let records =this.filterData();
+            let selectedFields = this.getSelectedFields();
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
 	    
@@ -602,7 +593,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    
                     selectedFields = this.getSelectedFields();
 		    if(selectedFields.length==0) {
-			this.allFields.every(f=>{
+			this.getFields().every(f=>{
 			    if(f.isNumeric() && !f.isFieldGeo()) {
 				selectedFields = [f];
 				return false;
@@ -639,14 +630,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var groupBy = this.getGroupBy();
             if (groupBy) {
-                for (var i = 0; i < this.allFields.length; i++) {
-                    var field = this.allFields[i];
+		this.getFields().every(field=>{
                     if (field.getId() == groupBy) {
                         props.groupByIndex = field.getIndex();
                         props.groupByField = field;
-                        break;
+			return false;
                     }
-                }
+		    return true;
+                });
             }
 
             var fieldsToSelect = selectedFields;
@@ -661,7 +652,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             let dataList = this.getStandardData(this.getFieldsToDisplay(fieldsToSelect), props);
 	    if(debug)
 		console.log(this.type +" fields:" + fieldsToSelect.length +" dataList:" + dataList.length);
-            this.computedData = dataList;
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
                 var chartableFields = this.getFieldsToSelect(pointData);
@@ -2246,7 +2236,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	},
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
-                var stringField = this.getFieldOfType(this.allFields, "string");
+                var stringField = this.getFieldOfType(this.getFields(), "string");
                 if (stringField) {
                     this.groupBy = stringField.getId();
                 }
@@ -3201,8 +3191,7 @@ function TreemapDisplay(displayManager, id, properties) {
         },
 
         valueClicked: function(field, value) {
-            var allFields = this.getData().getRecordFields();
-            field = this.getFieldById(allFields, field);
+            field = this.getFieldById(this.getFields(), field);
             this.propagateEvent("handleEventFieldValueSelect", {
                 field: field,
                 value: value
@@ -3213,7 +3202,7 @@ function TreemapDisplay(displayManager, id, properties) {
             if (!records) {
                 return null;
             }
-            var allFields = this.getData().getRecordFields();
+            var allFields = this.getFields();
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;

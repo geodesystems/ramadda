@@ -1683,46 +1683,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var seenLabels = {};
 
 
-            var allFields = this.dataCollection.getList()[0].getRecordFields();
-            var badFields = {};
-            var flags = null;
-            /*
-              var tuples = this.getStandardData(null, {
-              includeIndex: false
-              });
-              for (var rowIdx = 1; rowIdx < tuples.length; rowIdx++) {
-              var tuple = this.getDataValues(tuples[rowIdx]);
-              if (flags == null) {
-              flags = [];
-              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-              flags.push(false);
-              }
-              }
-
-              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-              if (!flags[tupleIdx]) {
-              if (tuple[tupleIdx] != null) {
-              flags[tupleIdx] = true;
-              //                                console.log("Flag[" + tupleIdx+"] value:" + tuple[tupleIdx]);
-              }
-              }
-              }
-
-              }
-
-              for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
-              //                    console.log("#" + tupleIdx + " " + (tupleIdx<allFields.length?allFields[tupleIdx].getId():"") +" ok:" + flags[tupleIdx] );
-              }
-            */
-
+            let badFields = {};
+            let flags = null;
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
-                var pointData = dataList[collectionIdx];
-                var fields = this.getFieldsToSelect(pointData);
+                let pointData = dataList[collectionIdx];
+                let fields = this.getFieldsToSelect(pointData);
                 if (this.canDoGroupBy()) {
-                    var allFields = pointData.getRecordFields();
-                    var cnt = 0;
+                    let allFields = pointData.getRecordFields();
+                    let cnt = 0;
                     for (i = 0; i < allFields.length; i++) {
-                        var field = allFields[i];
+                        let field = allFields[i];
                         if (field.getType() != "string") continue;
                         if (cnt == 0) {
                             html += HU.div([ATTR_CLASS, "display-dialog-subheader"], "Group By");
@@ -2042,16 +2012,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getDefaultSelectedFields: function(fields, dfltList) {
 	    let debug = displayDebug.getDefaultSelectedFields;
-            if (this.defaultSelectedToAll() && this.allFields != null) {
-                var tmp = [];
-                for (i = 0; i < this.allFields.length; i++) {
-                    var field = this.allFields[i];
-                    if (!field.isFieldGeo()) {
-                        tmp.push(field);
+	    if(debug)
+		console.log("getDefaultSelectedFields");
+            if (this.defaultSelectedToAll()) {
+		let allFields = this.getFields();
+		if(allFields) {
+                    var tmp = [];
+                    for (i = 0; i < allFields.length; i++) {
+			var field = allFields[i];
+			if (!field.isFieldGeo()) {
+                            tmp.push(field);
+			}
                     }
-                }
+		}
 		if(debug)
-		    console.log("\treturning this.allFields:" + tmp);
+		    console.log("\treturning allFields:" + tmp);
                 return tmp;
             }
             if (dfltList != null) {
@@ -2687,6 +2662,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var record = records[i];
 		this.recordToIndex[record.getId()] = i;
 		this.indexToRecord[i] = record;
+	    }
+
+
+
+	    let convertPost = this.getProperty("convertDataPost");
+	    if(convertPost) {
+		let newPointData = new  PointData("pointdata", pointData.getRecordFields(), records,null,{parent:pointData});
+		this.pointData =  new CsvUtil().process(this, newPointData, convertPost);
+		records = this.pointData.getRecords();
+//		console.log("post:" + this.pointData.getRecordFields());
 	    }
 	    if(debug)
 		console.log("filtered:" + records.length);
@@ -5302,7 +5287,6 @@ a
 		console.log("\tclearing last selected fields");
 	    
 	    this.lastSelectedFields = null;
-	    this.allFields = null;
             if (!reload) {
 		if(debug) console.log("\tcalling addData");
                 this.addData(pointData);
@@ -5543,6 +5527,7 @@ a
 	    return value+offset;
 	},
         getStandardData: function(fields, args) {
+	    if(!args) args = {};
 	    let debug = displayDebug.getStandardData;
 	    if(debug) console.log("getStandardData:" + this.type +"  fields:" + fields);
 	    let showUnit  = this.getProperty("showUnit",true);
@@ -5659,25 +5644,25 @@ a
 
 
 
-            var offset = 0;
+            let offset = 0;
             if (Utils.isDefined(this.offset)) {
                 offset = parseFloat(this.offset);
             }
 
-            var nonNullRecords = 0;
-            var records = this.filterData();
+            let nonNullRecords = 0;
+            let records = args.records?args.records:this.filterData();
 	    if(debug)
 		console.log("getStandardData #fields:" + fields.length +" #records:" + records.length);
-            var allFields = pointData.getRecordFields();
+            let allFields = pointData.getRecordFields();
 
             //Check if there are dates and if they are different
             this.hasDate = this.getHasDate(records);
-            var date_formatter = this.getDateFormatter();
-            var rowCnt = -1;
-            var indexField = this.getFieldById(null,this.getProperty("indexField"));
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var record = records[rowIdx];
-                var date = record.getDate();
+            let date_formatter = this.getDateFormatter();
+            let rowCnt = -1;
+            let indexField = this.getFieldById(null,this.getProperty("indexField"));
+            for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let record = records[rowIdx];
+                let date = record.getDate();
 		
                 if (!this.dateInRange(date)) {
 		    continue;
@@ -5689,7 +5674,7 @@ a
                 if (props && (props.includeIndex || props.includeIndexIfDate)) {
                     var indexName = null;
                     if (indexField) {
-			var value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),rowIdx);
+			let value = this.makeIndexValue(indexField,record.getValue(indexField.getIndex()),rowIdx);
                         values.push(value);
                         indexName = indexField.getLabel();
                     } else {

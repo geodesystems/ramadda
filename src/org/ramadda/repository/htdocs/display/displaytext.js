@@ -997,10 +997,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
-	    var pointData = this.getData();
-	    if (pointData == null) return;
-	    var records = this.filterData();
+	    let records = this.filterData();
 	    if(!records) return;
+	    let pointData = this.getData();
 	    if(this.getProperty("onlyShowSelected")) {
 		if(!this.selectedRecord) {
 		    if(this.getProperty("showFirst",true)) {
