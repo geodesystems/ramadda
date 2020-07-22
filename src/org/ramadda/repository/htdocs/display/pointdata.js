@@ -1390,7 +1390,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    labels.push([String(idx),op.label]);
 		});
 		let selected = this.getPropertyFromUrl(filterField.getId() +".filterValue",FILTER_ALL);
-		let enums = Utils.mergeLists([FILTER_ALL],labels);
+		let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
+		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
 		let attrs= [STYLE,widgetStyle, ID,widgetId,"fieldId",filterField.getId()];
 		widget = HU.select("",attrs,enums,selected);
 	    } else   if(filterField.getType() == "enumeration") {
@@ -1579,6 +1581,8 @@ function RecordFilter(display,filterFieldId, properties) {
 	getEnums: function(records) {
 	    let enums = null;
 	    let filterValues = this.getProperty(filterField.getId()+".filterValues");
+	    let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
+
 	    if (filterValues) {
 		let toks;
 		if ((typeof filterValues) == "string") {
@@ -1593,7 +1597,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    if(tmp.length>1) {
 			tok = [tmp[0],tmp[1]];
 		    } else if(tok == FILTER_ALL) {
-			tok = [tmp[0],"All"];
+			let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
+			tok = [tmp[0],allName];
 		    }
 		    enums.push({value:tok});
 		})
@@ -1604,7 +1609,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(depend) {
 		    depend=this.depend = this.display.getRecordFilter(depend);
 		}
-		let allName = this.getProperty(filterField.getId() +".allName","All");
+		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
 		enums = [];
 		if(includeAll) {
 		    enums.push({value:[FILTER_ALL,allName]});
@@ -2191,34 +2196,43 @@ function CsvUtil() {
 	    let firstRecord= records[0];
 	    let replaceValues = args["replaceValues"]=="true";
 	    let newFields = [];
-	    fields.map((f,fieldIdx)=>{
+	    let fieldOk = f=>{
+		return !f.isFieldGeo() && f.isNumeric();
+	    };
+	    fields.forEach((f,fieldIdx)=>{
 		f = f.clone();
 		let newField = f.clone();
+		f.index = newFields.length;
+		if(!fieldOk(newField)) {
+		    newFields.push(f);
+		    return;
+		}
 		if(!replaceValues) {
-		    f.index = newFields.length;
 		    newFields.push(f);
 		}
-		if(f.isNumeric()) {
-		    newField.unit = "%";
-		    newField.index = newFields.length;
-		    newFields.push(newField);
-		    newField.id = newField.id +"_percent";
-		    newField.label = newField.label+" % increase";
-		}
+		newField.unit = "%";
+		newField.index = newFields.length;
+		newField.id = newField.id +"_percent";
+		newField.label = newField.label+" % increase";
+		newFields.push(newField);
 	    });
-	    /*
-	      newFields.map((f,fieldIdx)=>{
-	      if(fieldIdx>3) return;
-	      console.log("F:" + f.getLabel() +" " + f.index);
-	      });*/
-	    records.map((record, rowIdx)=>{
+	    let keyFields =  this.display.getFieldsByIds(fields, (args.keyFields||"").replace(/_comma_/g,","));
+//	    newFields.forEach((f,fieldIdx)=>{
+//		if(fieldIdx>3) return;
+//		console.log("F:" + f.getLabel() +" " + f.index);
+//	    });
+	    records.forEach((record, rowIdx)=>{
 		let data = [];
 		let newRecord = record.clone();
+		newRecord.data=data;
 		newRecord.fields =newFields;
 		newRecords.push(newRecord);
-		fields.map((f,fieldIdx)=>{
+		fields.forEach((f,fieldIdx)=>{
 		    let value = record.data[f.getIndex()];
-		    if(!f.isNumeric()) {
+		    if(!fieldOk(f)) {
+			if(rowIdx==records.length-1) {
+	//		    console.log(f +" ==" +  value);
+			}
 			data.push(value);
 			return;
 		    }
@@ -2231,9 +2245,11 @@ function CsvUtil() {
 			let basev = firstRecord.data[f.getIndex()];
 			let perc = basev==0?0:(value-basev)/basev;
 			data.push(perc);
+			if(rowIdx==records.length-1) {
+//			    console.log(f +" =" + basev +" " + value +" perc:" + perc);
+			}
 		    }
 		}); 
-		newRecord.data=data;
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
@@ -2274,13 +2290,13 @@ function CsvUtil() {
 	    var newRecords  =[];
 	    var newFields = [];
 	    var firstRow = records[0];
-	    fields.map(f=>{
+	    fields.forEach(f=>{
 		var newField = f.clone();
 		newFields.push(newField);
 		newField.label = newField.label+" (avg)";
 	    });
 	    var sums=[];
-	    fields.map(f=>{sums.push(0)});
+	    fields.forEach(f=>{sums.push(0)});
 	    var newRecord;
 	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
 		var record = records[rowIdx];
@@ -2289,7 +2305,7 @@ function CsvUtil() {
 		    newRecords.push(newRecord);
 		    newRecord.fields =newFields;
 		}
-		fields.map((f,idx)=>{
+		fields.forEach((f,idx)=>{
 		    if(!f.isNumeric()) return;
 		    var v = record.data[f.getIndex()];
 		    sums[idx]+=v;
