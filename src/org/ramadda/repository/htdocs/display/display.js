@@ -4022,7 +4022,8 @@ a
             var style = "";
             var height = this.getHeightForStyle();
             if (height) {
-                style += " height:" + height + ";overflow-y:auto;";
+//                style += " height:" + height + ";overflow-y:auto;";
+                style += HU.css(HEIGHT, height);
             }
 	    //            var width = this.getWidthForStyle();
 	    //            if (width) {
