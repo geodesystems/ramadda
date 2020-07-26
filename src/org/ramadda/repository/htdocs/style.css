@@ -406,8 +406,14 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-grid {
     vertical-align:top;
+    display:flex;
+    flex-wrap: wrap;
 }
 
+
+.ramadda-grid-box {
+    flex-grow:1;
+}
 
 .ramadda-grid-box .ramadda-subheading {
     max-width:100%;
