@@ -1308,7 +1308,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (valueList == null) {
 	    valueList = readValues(request, entry, clause);
 	    long t2 = System.currentTimeMillis();
-	    id(debugTimes) {
+	    if(debugTimes) {
 		System.err.println("Clause:" + clause);
 		Utils.printTimes(
 				 "DbTypeHandler.readValues: ", t1, t2);
