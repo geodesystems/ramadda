@@ -1307,8 +1307,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			     "DbTypeHandler.getCacheObject: " + valueList.size(), t1, tt1);
 	}
         if (valueList == null) {
+	    valueList = readValues(request, entry, clause);
 	    long t2 = System.currentTimeMillis();
-            valueList = readValues(request, entry, clause);
 	    Utils.printTimes(
 			     "DbTypeHandler.readValues: ", t1, t2);
             getStorageManager().putCacheObject(entry.getId(), request,
