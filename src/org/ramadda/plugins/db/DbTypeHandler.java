@@ -106,7 +106,7 @@ import java.util.zip.*;
 public class DbTypeHandler extends PointTypeHandler implements DbConstants /* BlobTypeHandler*/ {
 
 
-    public static final boolean debugTimes = true;
+    public static final boolean debugTimes = false;
     
     /** _more_ */
     public static final int IDX_DBID = 0;
