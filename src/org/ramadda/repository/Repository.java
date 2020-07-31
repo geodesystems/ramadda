@@ -6689,7 +6689,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public static String encodeObject(Object object) {
-        return getEncoder().toXml(object);
+        return getEncoder().toXml(object,false);
     }
 
     /**
