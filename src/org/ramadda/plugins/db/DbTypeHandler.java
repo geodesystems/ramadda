@@ -106,6 +106,8 @@ import java.util.zip.*;
 public class DbTypeHandler extends PointTypeHandler implements DbConstants /* BlobTypeHandler*/ {
 
 
+    public static final boolean debugTimes = true;
+    
     /** _more_ */
     public static final int IDX_DBID = 0;
 
@@ -1295,11 +1297,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (view.equals(VIEW_KML) && !request.defined(ARG_MAX)) {
             request.put(ARG_MAX, "10000");
         }
+	long t1 = System.currentTimeMillis();
         valueList = (List<Object[]>) getStorageManager().getCacheObject(
             entry.getId(), request);
-        //        System.err.println("Cached:" + valueList);
+
+	if(valueList!=null && debugTimes) {
+	    long tt1 = System.currentTimeMillis();
+	    Utils.printTimes(
+			     "DbTypeHandler.getCacheObject: " + valueList.size(), t1, tt1);
+	}
         if (valueList == null) {
+	    long t2 = System.currentTimeMillis();
             valueList = readValues(request, entry, clause);
+	    Utils.printTimes(
+			     "DbTypeHandler.readValues: ", t1, t2);
             getStorageManager().putCacheObject(entry.getId(), request,
                     valueList);
         }
@@ -3624,7 +3635,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String label = formatTableValue(request, entry, hb, column,
                                    values, sdf);
                 hb.append("&nbsp;");
-                HtmlUtils.close(hb, HtmlUtils.TAG_DIV);
+		HtmlUtils.close(hb, HtmlUtils.TAG_DIV);
                 HtmlUtils.close(hb, HtmlUtils.TAG_TD);
 
 
@@ -6712,8 +6723,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             List<Clause>  where = new ArrayList<Clause>();
             where.add(Clause.eq(COL_ID, entry.getId()));
             StringBuilder searchCriteria = new StringBuilder();
-            System.err.println("R:" + request);
-
             Hashtable recordProps = null;
             try {
                 recordProps = typeHandler.getRecordProperties(entry);
