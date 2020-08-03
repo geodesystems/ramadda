@@ -23,7 +23,9 @@ import org.ramadda.data.point.PointFile;
 
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.job.JobManager;
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
@@ -48,6 +50,7 @@ import java.nio.charset.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -936,7 +939,8 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @return _more_
      */
     public String getCacheKey(Request request) {
-        String key = request.getUrlArgs();
+	HashSet<String> except = (HashSet<String>)Utils.makeHashSet(TypeHandler.ALL);
+        String key = request.getUrlArgs(null,except,null);
         key = key.replaceAll("&", "_").replaceAll("\\.",
                              "_").replaceAll("\\?", "_").replaceAll("/",
                                              "_").replaceAll("=", "_");
@@ -1006,7 +1010,6 @@ public class StorageManager extends RepositoryManager implements PointFile
             FileInputStream fis = new FileInputStream(f);
             String          xml = IOUtil.readContents(fis);
             IOUtil.close(fis);
-
             return Repository.decodeObject(xml);
         }
 
