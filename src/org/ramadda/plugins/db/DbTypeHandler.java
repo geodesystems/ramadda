@@ -107,6 +107,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
     public static final boolean debugTimes = false;
+
     
     /** _more_ */
     public static final int IDX_DBID = 0;
@@ -747,8 +748,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return handleDeleteConfirm(request, entry);
         }
 
-
-
         if (request.exists(ARG_DB_DELETE) || action.equals(ACTION_DELETE)
                 || action.equals(ACTION_DELETEALL)) {
             if ( !canEdit) {
@@ -1173,7 +1172,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
         DbInfo         dbInfo = getDbInfo();
-        List<Object[]> valueList;
+        List<Object[]> valueList = null;
 
 
         if (request.defined(ARG_DB_ITERATE)
@@ -1262,6 +1261,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
+        boolean doGroupBy = isGroupBy(request);
+	if (view.equals(VIEW_SEARCH)) {
+	    return handleSearchForm(request, entry);
+	}
+
         if ((dbInfo.getDateColumns().size() > 0) && request.defined(ARG_YEAR)
                 && request.defined(ARG_MONTH)) {
             int year  = request.get(ARG_YEAR, 0);
@@ -1298,16 +1302,23 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             request.put(ARG_MAX, "10000");
         }
 	long t1 = System.currentTimeMillis();
-        valueList = (List<Object[]>) getStorageManager().getCacheObject(
-            entry.getId(), request);
+	//Only cache the group by as these can be slow
+	boolean doCache = isGroupBy(request);
 
-	if(valueList!=null && debugTimes) {
-	    Utils.printTimes(
-			     "DbTypeHandler.getCacheObject: " + valueList.size(), t1, System.currentTimeMillis());
+	if(doCache) {
+	    valueList = (List<Object[]>) getStorageManager().getCacheObject(
+									    entry.getId(), request);
+	    //	    System.err.println (valueList!=null?"Got cache":"NO cache");
+	    if(valueList!=null && debugTimes) {
+		Utils.printTimes(
+				 "DbTypeHandler.getCacheObject: " + valueList.size(), t1, System.currentTimeMillis());
+	    }
 	}
         if (valueList == null) {
-	    if(debugTimes)
+	    if(debugTimes && doCache) {
+		System.err.println("Not in cache");
 		SqlUtil.debug = true;
+	    }
 	    valueList = readValues(request, entry, clause);
 	    SqlUtil.debug = false;
 	    long t2 = System.currentTimeMillis();
@@ -1315,9 +1326,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		Utils.printTimes(
 				 "DbTypeHandler.readValues: ", t1, t2);
 	    }
-            getStorageManager().putCacheObject(entry.getId(), request,
-                    valueList);
-        }
+	    if(doCache) {
+		if(debugTimes) {
+		    System.err.println("Writing to cache");
+		}
+		getStorageManager().putCacheObject(entry.getId(), request,
+						   valueList);
+	    }
+	    //	    System.err.println("results:" + valueList.size());
+	}
 
         return makeListResults(request, entry, view, action, fromSearch,
                                valueList);
@@ -1375,6 +1392,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (action.equals(ACTION_EMAIL)) {
                 return handleListEmail(request, entry, valueList);
             }
+
+
             if (view.equals(VIEW_SEARCH)) {
                 return handleSearchForm(request, entry);
             }
@@ -1871,7 +1890,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private void getSearchFormInner(Request request, Entry entry,
                                     Appendable sb, boolean normalForm)
             throws Exception {
-
         sb.append(
             formEntry(
                 request, "",
@@ -6067,9 +6085,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
                 System.err.println("cols:" + SqlUtil.comma(colNames));
-                System.err.println("extra:" + extra);
-                System.err.println("max:" + max);
-                System.err.println("limit:" + limitString);
+                System.err.println("extra:" + extra +" max:" + max +" limit:" + limitString);
             }
             stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                     Misc.newList(tableHandler.getTableName()), clause, extra,
