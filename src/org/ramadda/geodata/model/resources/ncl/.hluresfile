@@ -29,5 +29,5 @@
 ! Increase the default (16mb) contour memory
 ! For example, if you have gridded data that
 ! is larger than 500 x 500, you may need this.
-*wsMaximumSize: 32556688
+*wsMaximumSize: 100000000  
 !==========================================
