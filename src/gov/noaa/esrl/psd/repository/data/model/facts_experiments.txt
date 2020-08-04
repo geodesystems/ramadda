@@ -10,6 +10,8 @@ amip_clim_polar:AMIP with Observed Radiative Forcing, Climatological Sea Ice and
 amip_clim_o3:AMIP with Observed Radiative Forcing, Climatological Ozone
 eof1_sst:Leading Pattern of Global SST Variabilty with Observed Radiative Forcing
 eof1+eof2_sst:First 2 Leading Patterns of Global SST Variabilty with Observed Radiative Forcing
+amip_1900_rf_2d:AMIP with 1900 Radiative Forcing/2D SSTs
+amip_1900_rf_zonal:AMIP with 1900 Radiative Forcing/Zonal SSTs
 # 
 # old names
 #
