@@ -137,6 +137,10 @@ public interface DbConstants extends Constants {
     public static final String OUTPUT_JSON = "json";
 
 
+    /** _more_          */
+    public static final String VIEW_EDIT = "edit";
+
+
     /** _more_ */
     public static final String VIEW_NEW = "new";
 
@@ -275,6 +279,9 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_NEWFORM = "db.newform";
 
+    /** _more_          */
+    public static final String ARG_DB_EDITFORM = "db.editform";
+
     /** _more_ */
     public static final String ARG_DB_CSVFILE = "db.csvfile";
 
@@ -288,7 +295,7 @@ public interface DbConstants extends Constants {
     public static final String ARG_DB_LIST = "db.list";
 
     /** _more_ */
-    public static final String ARG_DB_EDITFORM = "db.editform";
+    public static final String ARG_DB_EDITSQL = "db.editsql";
 
     /** _more_ */
     public static final String ARG_DB_SETPOS = "db.setpos";
@@ -307,6 +314,29 @@ public interface DbConstants extends Constants {
 
     /** _more_ */
     public static final String ARG_DB_COLUMN = "db.column";
+
+
+    /** _more_          */
+    public static final String ARG_DB_SETVALUE = "db.setvalue";
+
+    /** _more_          */
+    public static final String ARG_DB_TEST = "db.test";
+
+    /** _more_          */
+    public static final String ARG_DB_WHERECOLUMN = "db.wherecolumn";
+
+    /** _more_          */
+    public static final String ARG_DB_WHEREVALUE = "db.wherevalue";
+
+    /** _more_          */
+    public static final String ARG_DB_WHEREOP = "db.whereop";
+
+    /** _more_          */
+    public static final String ARG_DB_CONFIRM = "db.confirm";
+
+    /** _more_          */
+    public static final String ARG_DB_APPLY = "db.apply";
+
 
 
     /** _more_ */
