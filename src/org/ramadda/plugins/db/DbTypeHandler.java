@@ -6428,6 +6428,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         clause, new String[] { column },
                         new Object[] { setValue });
 
+		getStorageManager().clearCacheGroup(entry.getId());
                 sb.append(getPageHandler().showDialogNote(cnt
                         + " rows updated"));
             }
