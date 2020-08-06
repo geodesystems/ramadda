@@ -1005,6 +1005,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      * @throws Exception _more_
      */
     public Object getCacheObject(String group, String key) throws Exception {
+	if(true) return null;
         File f = getCacheFile(group, key);
         if (f.exists()) {
             FileInputStream fis = new FileInputStream(f);
