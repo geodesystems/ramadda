@@ -2042,6 +2042,8 @@ public class Admin extends RepositoryManager {
             Hashtable         map    = new Hashtable();
             int               unique = 0;
             ResultSetMetaData rsmd   = null;
+	    StringBuilder raw = null;
+	    StringBuilder table = new StringBuilder();
             while ((results = iter.getNext()) != null) {
                 if (rsmd == null) {
                     rsmd = results.getMetaData();
@@ -2052,44 +2054,55 @@ public class Admin extends RepositoryManager {
                 }
                 int colcnt = 0;
                 if (cnt == 1) {
-                    sb.append("<table><tr>");
+                    table.append("<table><tr>");
                     for (int i = 0; i < rsmd.getColumnCount(); i++) {
-                        sb.append(
+			String col =rsmd.getColumnLabel(i + 1);
+			if(col.equals("QUERY PLAN")) raw = new StringBuilder();
+                        table.append(
                             HtmlUtils.col(
-                                HtmlUtils.bold(rsmd.getColumnLabel(i + 1))));
+					  HtmlUtils.bold(col)));
                     }
-                    sb.append("</tr>");
+                    table.append("</tr>");
                 }
-                sb.append("<tr valign=\"top\">");
+                table.append("<tr valign=\"top\">");
                 while (colcnt < rsmd.getColumnCount()) {
                     colcnt++;
                     if (rsmd.getColumnType(colcnt)
                             == java.sql.Types.TIMESTAMP) {
                         Date dttm = results.getTimestamp(colcnt,
                                         Repository.calendar);
-                        sb.append(HtmlUtils.col(formatDate(request, dttm)));
+                        table.append(HtmlUtils.col(formatDate(request, dttm)));
                     } else {
                         String s = results.getString(colcnt);
                         if (s == null) {
                             s = "_null_";
                         }
                         s = HtmlUtils.entityEncode(s);
+			if(raw!=null) {
+			    raw.append(s);
+			    raw.append("\n");
+			}
+				       
                         if (s.length() > 100) {
-                            sb.append(
+                            table.append(
                                 HtmlUtils.col(
                                     HtmlUtils.textArea("dummy", s, 5, 50)));
                         } else {
-                            sb.append(HtmlUtils.col(HtmlUtils.pre(s)));
+                            table.append(HtmlUtils.col(HtmlUtils.pre(s)));
                         }
                     }
                 }
-                sb.append("</tr>\n");
+                table.append("</tr>\n");
                 //                if (cnt++ > 1000) {
-                //                    sb.append(HtmlUtils.row("..."));
+                //                    table.append(HtmlUtils.row("..."));
                 //                    break;
                 //                }
             }
-            sb.append("</table>");
+            table.append("</table>");
+	    if(raw!=null)
+		sb.append(HtmlUtils.pre(raw.toString()));
+	    else
+		sb.append(table);
             long t2 = System.currentTimeMillis();
             getRepository().clearCache();
             getRepository().readDatabaseProperties();
