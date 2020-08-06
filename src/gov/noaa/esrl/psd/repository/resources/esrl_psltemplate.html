@@ -45,7 +45,7 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 
     <!-- Custom Fonts -->
     <!--
-    <link href="/psd/css/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
     -->
           <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
           <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet">
@@ -55,21 +55,20 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
     ================================================== -->
     <!-- Placed at the end of the document so the pages load fater -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) 
-    <script src="/psd/jquery/js/jquery-1.12.4.min.js"></script>
+    <script src="/jquery/js/jquery-1.12.4.min.js"></script>
     -->
     <!-- Include all compiled plugins (below), or include individual files as needed 
-    <script src="/psd/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     -->
     <script src="${root}/psdtheme/js/bootstrap-hover-dropdown.js"></script>
 
          <!--jQuery core JavaScript
-     ================================================== 
-        <script type="text/javascript" src="/psd/jquery/js/jquery.cookie.js"></script>
-     -->
+     ================================================== -->
+        <script type="text/javascript" src="/jquery/js/jquery.cookie.js"></script>
 
 <!--
-        <script type="text/javascript" src="/psd/js/highslide/highslide-full.js"></script>
-  <link rel="stylesheet" type="text/css" href="/psd/js/highslide/highslide.css" />
+        <script type="text/javascript" src="/js/highslide/highslide-full.js"></script>
+  <link rel="stylesheet" type="text/css" href="/js/highslide/highslide.css" />
   <script type="text/javascript">
     hs.registerOverlay({
             html: '<div class="closebutton" onclick="return hs.close(this)" title="Close"></div>',
@@ -77,7 +76,7 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
             fade: 2 // fading the semi-transparent overlay looks bad in IE
     });
 
-    hs.graphicsDir = '/psd/js/highslide/graphics/';
+    hs.graphicsDir = '/js/highslide/graphics/';
     hs.showCredits = 0;
     hs.align = 'center';
     hs.dimmingOpacity = .75;
@@ -182,8 +181,6 @@ nav.shrink .navbar-toggle {
 }
 
 
-
-
 </style>
 
 
@@ -191,10 +188,12 @@ nav.shrink .navbar-toggle {
 </head>
 
 <body>
+
 <div id="banner">
+
         <style>
 
-.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
+  .navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
   background-color: transparent;
   color:#73c779 !important;
 }
@@ -326,9 +325,77 @@ nav.shrink .navbar-toggle {
   background: #888;
 }
 
+
+.tooltip-inner {
+  font-size:15px;
+  box-shadow: 0px 1px 3px 3px rgba(150,150,150, 0.175);
+  background: #0f0f0f;
+  border: 1px solid #888;
+}
+
+.alert-primary {
+  color: #004085;
+  background-color: #cce5ff;
+  text-align:left;
+  margin-top:-10px;
+  border-radius: 0px;
+}
+
+.alert {
+  padding: .75rem 1.25rem;
+  margin-bottom: 10px;
+  border: 1px solid transparent;
+  z-index:100;
+  top:0;
+  width:100%;
+  padding-right:20px;
+}
+
+.alert-primary a:visited, .alert-primary a {
+  color:#0056b3 !important;
+}
+
 </style>
 
+<script>
+  // This sets the focus when the search field shows.
+$(function() {
+  $('#query-field').mouseover(function() {
+      $(this).focus();
+  })
+
+  $('#close_alert_primary').click(function( e ){
+    e.preventDefault();
+
+    $.cookie('alert-primary', 'closed', { expires: 1,  path: '/' });
+    $("body").removeClass("body_alert");
+
+  });
+
+
+  if( $.cookie('alert-primary') === 'closed' ){
+    $('.alert-primary').hide();
+    $("body").removeClass("body_alert");
+  }
+
+});
+</script>
+
 <nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+
+<!--
+ <div class="alert alert-primary alert-dismissible">
+    <script>
+      $("body").addClass("body_alert");
+    </script>
+
+    <i class="fas fa-info-circle"></i> <strong>Our name has changed.</strong> <a href="https://www.esrl.noaa.gov/news/2020/name_change.html">Learn more <i class="fas fa-angle-double-right"></i></a>
+    <button id="close_alert_primary" type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-right:21px;color:#0056b3;opacity:.8;">
+      <span aria-hidden="true" style="font-size:24px;color:#0056b3;">&times;</span>
+    </button>
+
+  </div>
+-->
 
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -408,7 +475,7 @@ nav.shrink .navbar-toggle {
                   <li><a href="/aqpi/">AQPI</a></li>
                   <li><a href="/atomic/">ATOMIC</a></li>
                   <li><a href="/enso/rapid_response/">ENRR</a></li>
-                  <li><a href="/psd/mosaic/">MOSAiC</a></li>
+                  <li><a href="/mosaic/">MOSAiC</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
@@ -510,7 +577,7 @@ nav.shrink .navbar-toggle {
     <div>
       <table width="100%">
       <tr valign="bottom">
-      <td align="left" width="50%"><div class="title"><a href="${root}">NOAA/PSL Climate Data Repository</a></div></td>
+      <td align="left" width="50%"><div class="title"><a href="${root}">PSL Climate Data Repository</a></div></td>
       <td align="right">${links}</td>
       </tr>
       </table>
@@ -573,8 +640,6 @@ nav.shrink .navbar-toggle {
 
                         <div class="col-md-3 col-sm-3">
                         <h4>More</h4>
-                                
-                                <p><a href="https://intranet.psd.esrl.noaa.gov" target="intranet">Intranet</a></p>
                                 
                                 <p><a href="http://www.noaa.gov/privacy.html">Privacy Policy</a></p>
                                 <p><a href="/disclaimer/">Disclaimer</a></p>
