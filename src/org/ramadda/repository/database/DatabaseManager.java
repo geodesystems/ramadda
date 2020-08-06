@@ -863,14 +863,16 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @param names _more_
      * @param values _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
-    public void update(String table, Clause clause, String[] names,
-                       Object[] values)
+    public int update(String table, Clause clause, String[] names,
+                      Object[] values)
             throws Exception {
         Connection connection = getConnection();
         try {
-            SqlUtil.update(connection, table, clause, names, values);
+            return SqlUtil.update(connection, table, clause, names, values);
         } finally {
             closeConnection(connection);
         }
