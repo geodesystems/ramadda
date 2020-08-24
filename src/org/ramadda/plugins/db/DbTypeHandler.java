@@ -106,9 +106,10 @@ import java.util.zip.*;
 public class DbTypeHandler extends PointTypeHandler implements DbConstants /* BlobTypeHandler*/ {
 
 
+    /** _more_          */
     public static final boolean debugTimes = false;
 
-    
+
     /** _more_ */
     public static final int IDX_DBID = 0;
 
@@ -698,6 +699,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return handleForm(request, entry, null, true, false);
         }
 
+        if (request.exists(ARG_DB_EDITSQL) || view.equals(VIEW_EDIT)) {
+            if ( !canEdit) {
+                throw new AccessException("You cannot edit this database",
+                                          request);
+            }
+
+            return handleEdit(request, entry);
+        }
+
+
         if (request.exists(ARG_DB_CREATE)) {
             if ( !canEdit) {
                 throw new AccessException("You cannot edit this database",
@@ -995,6 +1006,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
+        if (canEdit) {
+            if (view.equals(VIEW_EDIT)) {
+                headerToks.add(HtmlUtils.b(msg("Edit")));
+            } else {
+                headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_VIEW
+                        + "=" + VIEW_EDIT, msg("Edit")));
+            }
+        }
+
 
 
         /*
@@ -1171,7 +1191,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                               String action, boolean fromSearch)
             throws Exception {
 
-        DbInfo         dbInfo = getDbInfo();
+        DbInfo         dbInfo    = getDbInfo();
         List<Object[]> valueList = null;
 
 
@@ -1262,9 +1282,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         boolean doGroupBy = isGroupBy(request);
-	if (view.equals(VIEW_SEARCH)) {
-	    return handleSearchForm(request, entry);
-	}
+        if (view.equals(VIEW_SEARCH)) {
+            return handleSearchForm(request, entry);
+        }
 
         if ((dbInfo.getDateColumns().size() > 0) && request.defined(ARG_YEAR)
                 && request.defined(ARG_MONTH)) {
@@ -1301,40 +1321,40 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (view.equals(VIEW_KML) && !request.defined(ARG_MAX)) {
             request.put(ARG_MAX, "10000");
         }
-	long t1 = System.currentTimeMillis();
-	//Only cache the group by as these can be slow
-	boolean doCache = isGroupBy(request);
+        long t1 = System.currentTimeMillis();
+        //Only cache the group by as these can be slow
+        boolean doCache = isGroupBy(request);
 
-	if(doCache) {
-	    valueList = (List<Object[]>) getStorageManager().getCacheObject(
-									    entry.getId(), request);
-	    //	    System.err.println (valueList!=null?"Got cache":"NO cache");
-	    if(valueList!=null && debugTimes) {
-		Utils.printTimes(
-				 "DbTypeHandler.getCacheObject: " + valueList.size(), t1, System.currentTimeMillis());
-	    }
-	}
+        if (doCache) {
+            valueList = (List<Object[]>) getStorageManager().getCacheObject(
+                entry.getId(), request);
+            //      System.err.println (valueList!=null?"Got cache":"NO cache");
+            if ((valueList != null) && debugTimes) {
+                Utils.printTimes("DbTypeHandler.getCacheObject: "
+                                 + valueList.size(), t1,
+                                     System.currentTimeMillis());
+            }
+        }
         if (valueList == null) {
-	    if(debugTimes && doCache) {
-		System.err.println("Not in cache");
-		SqlUtil.debug = true;
-	    }
-	    valueList = readValues(request, entry, clause);
-	    SqlUtil.debug = false;
-	    long t2 = System.currentTimeMillis();
-	    if(debugTimes) {
-		Utils.printTimes(
-				 "DbTypeHandler.readValues: ", t1, t2);
-	    }
-	    if(doCache) {
-		if(debugTimes) {
-		    System.err.println("Writing to cache");
-		}
-		getStorageManager().putCacheObject(entry.getId(), request,
-						   valueList);
-	    }
-	    //	    System.err.println("results:" + valueList.size());
-	}
+            if (debugTimes && doCache) {
+                System.err.println("Not in cache");
+                SqlUtil.debug = true;
+            }
+            valueList     = readValues(request, entry, clause);
+            SqlUtil.debug = false;
+            long t2 = System.currentTimeMillis();
+            if (debugTimes) {
+                Utils.printTimes("DbTypeHandler.readValues: ", t1, t2);
+            }
+            if (doCache) {
+                if (debugTimes) {
+                    System.err.println("Writing to cache");
+                }
+                getStorageManager().putCacheObject(entry.getId(), request,
+                        valueList);
+            }
+            //      System.err.println("results:" + valueList.size());
+        }
 
         return makeListResults(request, entry, view, action, fromSearch,
                                valueList);
@@ -1890,6 +1910,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private void getSearchFormInner(Request request, Entry entry,
                                     Appendable sb, boolean normalForm)
             throws Exception {
+
         sb.append(
             formEntry(
                 request, "",
@@ -2104,6 +2125,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         */
 
         sb.append(advanced);
+
     }
 
 
@@ -3657,7 +3679,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String label = formatTableValue(request, entry, hb, column,
                                    values, sdf);
                 hb.append("&nbsp;");
-		HtmlUtils.close(hb, HtmlUtils.TAG_DIV);
+                HtmlUtils.close(hb, HtmlUtils.TAG_DIV);
                 HtmlUtils.close(hb, HtmlUtils.TAG_TD);
 
 
@@ -6085,11 +6107,19 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 System.err.println("table:" + tableHandler.getTableName());
                 System.err.println("clause:" + clause);
                 System.err.println("cols:" + SqlUtil.comma(colNames));
-                System.err.println("extra:" + extra +" max:" + max +" limit:" + limitString);
+                System.err.println("extra:" + extra + " max:" + max
+                                   + " limit:" + limitString);
             }
+	    long t1 = System.currentTimeMillis();
+	    SqlUtil.debug = true;
             stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                     Misc.newList(tableHandler.getTableName()), clause, extra,
                     max);
+	    SqlUtil.debug = false;
+	    long t2 = System.currentTimeMillis();
+	    Utils.printTimes(
+			     "DbTypeHandler select: "+ clause,t1,t2);
+
         } catch (Exception exc) {
             System.err.println("Error in select:");
             System.err.println("table:" + tableHandler.getTableName());
@@ -6300,6 +6330,163 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         return new Result(getTitle(request, entry), sb);
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result handleEdit(Request request, Entry entry) throws Exception {
+
+        StringBuilder sb = new StringBuilder();
+        addViewHeader(request, entry, sb, VIEW_EDIT, 0, false);
+        List<Column>         columns = dbInfo.getColumnsToUse();
+
+
+
+        List<TwoFacedObject> tfos    = new ArrayList<TwoFacedObject>();
+        List<TwoFacedObject> ops     = new ArrayList<TwoFacedObject>();
+        List<TwoFacedObject> tfos1   = new ArrayList<TwoFacedObject>();
+        ops.add(new TwoFacedObject("=", "="));
+        ops.add(new TwoFacedObject("!=", "!="));
+        ops.add(new TwoFacedObject("like", "like"));
+        ops.add(new TwoFacedObject("&lt;", "<"));
+        ops.add(new TwoFacedObject("&gt;", ">"));
+        tfos1.add(new TwoFacedObject("----", ""));
+        for (Column column : dbInfo.getColumnsToUse()) {
+            tfos.add(new TwoFacedObject(column.getLabel(), column.getName()));
+            tfos1.add(new TwoFacedObject(column.getLabel(),
+                                         column.getName()));
+        }
+        String formId = makeForm(request, entry, sb);
+        sb.append(HtmlUtils.hidden(ARG_DB_EDITSQL, "true"));
+
+        boolean        showApply = true;
+        List<Object[]> values    = null;
+        if (request.exists(ARG_DB_APPLY) || request.exists(ARG_DB_TEST)
+                || request.exists(ARG_DB_CONFIRM)) {
+            String       column     = request.getString(ARG_DB_COLUMN, "");
+            String       setValue   = request.getString(ARG_DB_SETVALUE, "");
+
+            Clause       clause     = Clause.eq(COL_ID, entry.getId());
+            List<Clause> subClauses = new ArrayList<Clause>();
+            for (int i = 1; i <= 3; i++) {
+                String whereColumn = request.getString(ARG_DB_WHERECOLUMN
+                                         + i, "");
+                if (whereColumn.length() == 0) {
+                    continue;
+                }
+                String op = request.getString(ARG_DB_WHEREOP + i, "=");
+                String whereValue = request.getString(ARG_DB_WHEREVALUE + i,
+                                        "");
+                Clause subClause = null;
+                if (whereColumn.length() > 0) {
+                    if (op.equals("like")) {
+                        subClause = Clause.like(whereColumn,
+                                "%" + whereValue + "%");
+                    } else if (op.equals("=")) {
+                        subClause = Clause.eq(whereColumn, whereValue);
+                    } else if (op.equals("!=")) {
+                        subClause = Clause.neq(whereColumn, whereValue);
+                    } else if (op.equals("<")) {
+                        subClause = Clause.lt(whereColumn,
+                                new Double(whereValue));
+                    } else if (op.equals(">")) {
+                        subClause = Clause.gt(whereColumn,
+                                new Double(whereValue));
+                    } else {
+                        throw new RuntimeException("Unknown operator:" + op);
+                    }
+                }
+                if (subClause != null) {
+                    subClauses.add(subClause);
+                }
+            }
+            if (subClauses.size() > 0) {
+                clause = Clause.and(clause, Clause.and(subClauses));
+            }
+            System.err.println("Clause:" + clause);
+            if ( !request.exists(ARG_DB_CONFIRM)) {
+                if (request.exists(ARG_DB_APPLY)) {
+                    sb.append(
+                        getPageHandler().showDialogQuestion(
+                            "Are you sure you want to apply the update?",
+                            HtmlUtils.submit(msg("Yes"), ARG_DB_CONFIRM)
+                            + " "
+                            + HtmlUtils.submit(msg("Cancel"), ARG_CANCEL)));
+                    showApply = false;
+                }
+                try {
+                    //read the sample
+                    values = readValues(request, entry, clause);
+                } catch (Exception exc) {
+                    System.err.println("Error reading db sample:" + exc);
+                }
+            } else {
+                //              if(false)
+                int cnt =
+                    getDatabaseManager().update(tableHandler.getTableName(),
+                        clause, new String[] { column },
+                        new Object[] { setValue });
+
+		getStorageManager().clearCacheGroup(entry.getId());
+                sb.append(getPageHandler().showDialogNote(cnt
+                        + " rows updated"));
+            }
+        }
+
+
+        sb.append(HtmlUtils.formTable());
+        if (showApply) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    "",
+                    HtmlUtils.submit(msg("Apply"), ARG_DB_APPLY) + " "
+                    + HtmlUtils.submit(msg("Test"), ARG_DB_TEST)));
+        }
+        sb.append(
+            HtmlUtils.formEntry(
+                "Set:",
+                HtmlUtils.select(
+                    ARG_DB_COLUMN, tfos,
+                    request.getString(ARG_DB_COLUMN, "")) + " = "
+                        + HtmlUtils.input(
+                            ARG_DB_SETVALUE,
+                            request.getString(ARG_DB_SETVALUE, ""),
+                            HtmlUtils.SIZE_20)));
+
+        for (int i = 1; i <= 3; i++) {
+            sb.append(HtmlUtils.formEntry((i == 1)
+                                          ? "Where:"
+                                          : "", HtmlUtils.select(ARG_DB_WHERECOLUMN
+                                          + i, tfos1, request.getString(ARG_DB_WHERECOLUMN
+                                              + i, "")) + HtmlUtils.select(ARG_DB_WHEREOP
+                                                  + i, ops, request.getString(ARG_DB_WHEREOP
+                                                      + i, "=")) + HtmlUtils.input(ARG_DB_WHEREVALUE
+                                                          + i, request.getString(ARG_DB_WHEREVALUE
+                                                              + i, ""), HtmlUtils.SIZE_20)));
+        }
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.formClose());
+
+
+        if (values != null) {
+            makeTable(request, entry, values, false, sb, false, true);
+        }
+
+        addViewFooter(request, entry, sb);
+
+        return new Result(getTitle(request, entry), sb);
+
+    }
+
+
 
 
     /**
@@ -6668,7 +6855,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         /** _more_ */
         private Request request;
 
-        /** _more_          */
+        /** _more_ */
         private DbTypeHandler typeHandler;
 
         /** _more_ */
@@ -6743,7 +6930,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             List<Clause>  where = new ArrayList<Clause>();
             where.add(Clause.eq(COL_ID, entry.getId()));
             StringBuilder searchCriteria = new StringBuilder();
-            Hashtable recordProps = null;
+            Hashtable     recordProps    = null;
             try {
                 recordProps = typeHandler.getRecordProperties(entry);
             } catch (Exception exc) {

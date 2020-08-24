@@ -56,7 +56,7 @@ public class SqlUtil {
     /** _more_ */
     public static boolean debug = false;
 
-    /** _more_          */
+    /** _more_ */
     public static final String WHERE = " WHERE ";
 
 
@@ -705,11 +705,13 @@ public class SqlUtil {
      * @param values _more_
      *
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
-    public static void update(Connection connection, String table,
-                              String colId, String id, String[] names,
-                              Object[] values)
+    public static int update(Connection connection, String table,
+                             String colId, String id, String[] names,
+                             Object[] values)
             throws Exception {
         String            query = makeUpdate(table, colId, names);
         PreparedStatement stmt  = connection.prepareStatement(query);
@@ -717,8 +719,11 @@ public class SqlUtil {
             SqlUtil.setValue(stmt, values[i], i + 1);
         }
         stmt.setString(values.length + 1, id);
-        stmt.execute();
-        close(stmt);
+        try {
+            return stmt.executeUpdate();
+        } finally {
+            close(stmt);
+        }
     }
 
 
@@ -731,10 +736,12 @@ public class SqlUtil {
      * @param names _more_
      * @param values _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
-    public static void update(Connection connection, String table,
-                              Clause clause, String[] names, Object[] values)
+    public static int update(Connection connection, String table,
+                             Clause clause, String[] names, Object[] values)
             throws Exception {
         String            query  = makeUpdate(table, clause, names);
         PreparedStatement stmt   = connection.prepareStatement(query);
@@ -745,8 +752,11 @@ public class SqlUtil {
         }
         clause.setValue(stmt, colCnt);
 
-        stmt.execute();
-        close(stmt);
+        try {
+            return stmt.executeUpdate();
+        } finally {
+            close(stmt);
+        }
     }
 
 
@@ -1964,10 +1974,13 @@ public class SqlUtil {
         if (value == null) {
             return null;
         }
-	String s = value.toString();
-	if(s.equals("*")) return s;
+        String s = value.toString();
+        if (s.equals("*")) {
+            return s;
+        }
         //IMPORTANT: this screws up and we can have sql injection attacks
         s = s.replaceAll("[^\\.a-zA-Z0-9_]", "");
+
         return s;
     }
 
