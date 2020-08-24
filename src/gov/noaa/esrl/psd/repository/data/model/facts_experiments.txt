@@ -12,6 +12,8 @@ eof1_sst:Leading Pattern of Global SST Variabilty with Observed Radiative Forcin
 eof1+eof2_sst:First 2 Leading Patterns of Global SST Variabilty with Observed Radiative Forcing
 amip_1900_rf_2d:AMIP with 1900 Radiative Forcing/2D SSTs
 amip_1900_rf_zonal:AMIP with 1900 Radiative Forcing/Zonal SSTs
+amip_goga:Global AMIP
+amip_toga:Tropical AMIP
 # 
 # old names
 #
