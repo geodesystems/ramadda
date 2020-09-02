@@ -4740,13 +4740,12 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-            if (indices == null) {
-                keyindices = getIndices(keys);
-            }
             if (rowCnt++ == 0) {
                 header = row;
-
                 return null;
+            }
+            if (keyindices == null) {
+                keyindices = getIndices(keys);
             }
             debug("date latest.processRow");
             String key = "";

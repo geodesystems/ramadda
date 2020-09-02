@@ -393,6 +393,7 @@ public abstract class CsvOperator {
                 for (int i = 0; i < header.size(); i++) {
                     String colName = (String) header.get(i);
                     columnMap.put(colName, i);
+		    columnMap.put(Utils.makeID(colName), i);
                     columnMap.put(colName.toLowerCase(), i);
                 }
             }
