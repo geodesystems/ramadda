@@ -4705,8 +4705,10 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private List<String> keyValues = new ArrayList<String>();
 
+	private String colName;
+
         /** _more_ */
-        private int col;
+        private int col=-1;
 
         /** _more_ */
         private SimpleDateFormat sdf;
@@ -4721,9 +4723,9 @@ public abstract class Converter extends Processor {
          * @param col _more_
          * @param sdf _more_
          */
-        public DateLatest(List<String> cols, int col, SimpleDateFormat sdf) {
+        public DateLatest(List<String> cols, String  colName, SimpleDateFormat sdf) {
             this.keys = cols;
-            this.col  = col;
+            this.colName  = colName;
             this.sdf  = sdf;
         }
 
@@ -4764,6 +4766,9 @@ public abstract class Converter extends Processor {
                 return null;
             }
             try {
+		if(col==-1) {
+		    col = getColumnIndex(colName);
+		}
                 Date d1 = sdf.parse(prevRow.get(col).toString());
                 Date d2 = sdf.parse(row.get(col).toString());
                 if (d2.getTime() >= d1.getTime()) {

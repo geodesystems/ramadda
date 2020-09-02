@@ -1858,6 +1858,9 @@ public class CsvUtil {
         new Cmd("-columns", new Label("Select columns"),
                 "Only include the given columns",
                 new Arg("columns", "", "type", "columns")),
+        new Cmd("-notcolumns", new Label("Deselect columns"),
+                "Don't include given columns",
+                new Arg("columns", "", "type", "columns")),	
         new Cmd("-delete", new Label("Delete columns"), "Remove the columns",
                 new Arg("columns", "", "type", "columns")),
         new Cmd("-cut", new Label("Drop rows"), "",
@@ -3563,7 +3566,7 @@ public class CsvUtil {
                         return false;
                     }
                     List<String> cols = getCols(args.get(++i));
-                    int          col  = Integer.parseInt(args.get(++i));
+                    String       col  = args.get(++i);
                     String       sdf  = args.get(++i);
                     info.getProcessor().addProcessor(
                         new Converter.DateLatest(
