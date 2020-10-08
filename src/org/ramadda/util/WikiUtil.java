@@ -1717,6 +1717,14 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith(":wikip")) {
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 3);
+		String page = toks.get(1).trim();
+		String label = toks.size()>2?toks.get(2).trim():Utils.makeLabel(page);
+		HtmlUtils.href(buff, "https://en.wikipedia.org/wiki/" + page, label);
+		continue;
+	    }
+
             if (tline.startsWith(":reload")) {
                 String       id   = HtmlUtils.getUniqueId("reload");
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
@@ -2424,6 +2432,12 @@ public class WikiUtil {
                 makeHeadings = true;
             } else if (property.equals(PROP_NOP)) {
                 replaceNewlineWithP = false;
+            } else if (property.startsWith("wikip ")) {
+		//the wikipedia link
+                List<String> toks = StringUtil.splitUpTo(property, " ", 3);
+		String page = toks.get(1).trim();
+		String label = toks.size()>2?toks.get(2).trim():Utils.makeLabel(page);
+		HtmlUtils.href(sb, "https://en.wikipedia.org/wiki/" + page, label);
             } else if (property.equals(PROP_DOP)) {
                 replaceNewlineWithP = true;
             } else {

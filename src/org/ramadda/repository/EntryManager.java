@@ -83,6 +83,8 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -115,13 +117,6 @@ public class EntryManager extends RepositoryManager {
     public static boolean debug = false;
 
     //In sql
-
-    /** _more_ */
-    public static final int MAX_NAME_LENGTH = 200;
-
-    /** _more_ */
-    public static final int MAX_DESCRIPTION_LENGTH = 15000;
-
 
     /** How many entries to we keep in the cache */
     public static final int ENTRY_CACHE_LIMIT = 2000;
@@ -282,11 +277,12 @@ public class EntryManager extends RepositoryManager {
                 if (topEntry == null) {
                     if (entry.getType().equals(TypeHandler.TYPE_GROUP)) {
                         topEntry = entry;
+			continue;
                     }
                 }
                 System.err.println("entry:" + entry.getType() + " - "
-                                   + entry.getName() + " " + entry.getId()
-                                   + " - " + new Date(entry.getCreateDate()));
+                                   + entry.getName() + " " + entry.getId());
+		//		deleteEntry(null, entry);
             }
         }
 
@@ -5947,7 +5943,34 @@ public class EntryManager extends RepositoryManager {
                     entries, origFileToStorage);
         }
 
-        //Replace any entry re
+	for (Enumeration keys = entries.keys();
+	     keys.hasMoreElements(); ) {
+	    Object key = keys.nextElement();
+	    Entry value = entries.get(key);
+	    idList.add(new String[] {
+		    key.toString(),
+		    value.getId() });
+
+	}
+
+	//Sort the idList so the longest strings are first
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                String[] s1     = (String[]) o1;
+                String[] s2     = (String[]) o2;		
+		return s2[0].length()-s1[0].length();
+            }
+        };
+        Object[] array = idList.toArray();
+        Arrays.sort(array, comp);
+	idList = (List<String[]>) Misc.toList(array);
+	if(!didone) {
+	    didone = true;
+	    for(String [] tuple: idList) {
+		//		System.out.println(tuple[0]);
+	    }
+	}
+        //Replace any references to old entries
         for (Entry newEntry : newEntries) {
             newEntry.getTypeHandler().convertIdsFromImport(newEntry, idList);
         }
@@ -5957,6 +5980,7 @@ public class EntryManager extends RepositoryManager {
         return newEntries;
     }
 
+    static boolean didone  = false;
     /**
      * _more_
      *
@@ -5988,7 +6012,7 @@ public class EntryManager extends RepositoryManager {
         }
         if (parentEntry == null) {
             // Lets not check for now. Some entry xml doesn't have a parent
-            //            throw new RepositoryUtil.MissingEntryException("Could not find parent:" + parentId);
+	    throw new RepositoryUtil.MissingEntryException("Could not find parent:" + parentId +" xml:" + XmlUtil.toString(node));
         }
 
         List<Entry> entryList = createEntryFromXml(request, node,
@@ -6000,6 +6024,14 @@ public class EntryManager extends RepositoryManager {
                 entries.put(tmpid, entry);
             }
         }
+        String aliases = XmlUtil.getAttribute(node, "aliases", (String) null);
+        if (aliases != null) {
+	    for(String alias: StringUtil.split(aliases,",",true,true)) {
+		for (Entry entry : entryList) {
+		    entries.put(alias, entry);
+		}
+            }
+        }	
 
         return entryList;
     }
@@ -6056,6 +6088,7 @@ public class EntryManager extends RepositoryManager {
         String category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, "");
         String description = Utils.getAttributeOrTag(node, ATTR_DESCRIPTION,
                                  (String) null);
+
         if (description == null) {
             Element descriptionNode = XmlUtil.findChild(node,
                                           TAG_DESCRIPTION);
@@ -6072,6 +6105,10 @@ public class EntryManager extends RepositoryManager {
             description = "";
         }
 
+	description = description.replaceAll("_rightbracket_","]");
+	if(description.length()>10000) {
+	    //	    System.err.println("l:" + name + " " + description.length());
+	}
 
         if (checkAccess && (parentEntry != null)) {
             if ( !getAccessManager().canDoAction(request, parentEntry,
@@ -7868,8 +7905,8 @@ public class EntryManager extends RepositoryManager {
                               boolean isNew, TypeHandler typeHandler)
             throws Exception {
         String description = entry.getDescription();
-        checkColumnSize("name", entry.getName(), MAX_NAME_LENGTH);
-        checkColumnSize("description", description, MAX_DESCRIPTION_LENGTH);
+        checkColumnSize("name", entry.getName(), Entry.MAX_NAME_LENGTH);
+        checkColumnSize("description", description, Entry.MAX_DESCRIPTION_LENGTH);
 
 
         int col = 1;

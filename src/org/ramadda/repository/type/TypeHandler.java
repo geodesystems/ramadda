@@ -4394,7 +4394,7 @@ public class TypeHandler extends RepositoryManager {
                 if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
                     domId = HtmlUtils.getUniqueId("entryinput");
                     formInfo.addMaxSizeValidation("Name", domId,
-                            EntryManager.MAX_NAME_LENGTH);
+                            Entry.MAX_NAME_LENGTH);
                     String nameDefault = request.getString(ARG_NAME,
                                              getFormDefault(entry, ARG_NAME,
                                                  ""));
@@ -4437,7 +4437,7 @@ public class TypeHandler extends RepositoryManager {
                                       ARG_DESCRIPTION + "_editor",
                                       ARG_DESCRIPTION, desc, "Description",
                                       false,
-                                      EntryManager.MAX_DESCRIPTION_LENGTH);
+                                      Entry.MAX_DESCRIPTION_LENGTH);
                     } else {
                         desc = desc.trim();
                         boolean isTextWiki = isWikiText(desc);
@@ -4465,7 +4465,7 @@ public class TypeHandler extends RepositoryManager {
                         addWikiEditor(request, entry, tmpSB, formInfo,
                                       wikiId, ARG_WIKITEXT, desc, null,
                                       false,
-                                      EntryManager.MAX_DESCRIPTION_LENGTH);
+                                      Entry.MAX_DESCRIPTION_LENGTH);
                         HtmlUtils.close(tmpSB, "div");
                         HtmlUtils.open(tmpSB, "div",
                                        HtmlUtils.attrs("style", !isTextWiki

@@ -5847,6 +5847,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
 
+
+	    boolean doUrl = name.startsWith("url:");
+	    if(doUrl) {
+		name = name.substring("url:".length());
+	    }
+	    
             if (name.startsWith("Category:")) {
                 String category = name.substring("Category:".length());
                 String url =
@@ -5881,7 +5887,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 theEntry = findWikiEntry(request, wikiUtil, name, parent);
             }
 
+            if (theEntry == null && doUrl) {
+		return  "/";
+	    }
+
             if (theEntry != null) {
+		if(doUrl) {
+		    return  request.entryUrl(getRepository().URL_ENTRY_SHOW,
+					     theEntry);
+		}
                 addWikiLink(wikiUtil, theEntry);
                 if (label.trim().length() == 0) {
                     label = getEntryDisplayName(theEntry);
@@ -5911,6 +5925,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
 
+	    System.err.println("missing:" + name);
             //If its an anonymous user then jusst show the label or the name
             if (request.isAnonymous()) {
                 String extra = HtmlUtils.cssClass("wiki-link-noexist");
@@ -6735,6 +6750,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         topProps.add("defaultMapLayer");
         topProps.add(Json.quote(defaultLayer));
+	System.err.println("tp1:" + topProps);
 
         String displayDiv = getProperty(wikiUtil, props, "displayDiv");
         if (displayDiv != null) {
@@ -6831,10 +6847,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         //Only add the default layer to the display if its been specified
         defaultLayer = getProperty(wikiUtil, props, "defaultLayer",
                                    (String) null);
+	//If its a map then check for the default layer
+	if(displayType.equals("map")) {
+            List<Metadata> layers =
+                getMetadataManager().findMetadata(request, entry,
+                    "map_layer", true);
+            if ((layers != null) && (layers.size() > 0)) {
+                defaultLayer = layers.get(0).getAttr1();
+            }
+	}
+
+	System.err.println("default layer:" + defaultLayer);
+
         if (defaultLayer != null) {
             Utils.add(propList, "defaultMapLayer", Json.quote(defaultLayer));
             props.remove("defaultLayer");
         }
+
 
 
         if (request.getExtraProperty("added plotly") == null) {
@@ -6968,6 +6997,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         wikiUtil.addWikiAttributes(propList);
+	System.err.println("PROPLIST:" + propList);
         js.append("displayManager.createDisplay("
                   + HtmlUtils.quote(displayType) + ","
                   + Json.map(propList, false) + ");\n");
