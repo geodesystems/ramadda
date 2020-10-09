@@ -215,6 +215,26 @@
 </type>
 
 
+  <type name="media_zoomify"  
+        description="Zoomify" 
+        handler="org.ramadda.plugins.media.ZoomifyTypeHandler" 
+        category="Documents" >
+     <property name="icon" value="/icons/image.gif"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="false"/>
+     <column name="image_width" type="int" label="Image Width"/>
+     <column name="image_height" type="int" label="Image Height"/>     
+     <column name="tiles_url" type="string" label="Tiles URL" />
+     <wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
+{{zoomify}}
+]]>
+</wiki>
+</type>
 
 
 </types>
