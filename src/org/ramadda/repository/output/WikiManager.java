@@ -5893,8 +5893,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (theEntry != null) {
 		if(doUrl) {
-		    return  request.entryUrl(getRepository().URL_ENTRY_SHOW,
-					     theEntry);
+		    return  getEntryManager().getEntryUrl(request, theEntry);
 		}
                 addWikiLink(wikiUtil, theEntry);
                 if (label.trim().length() == 0) {
