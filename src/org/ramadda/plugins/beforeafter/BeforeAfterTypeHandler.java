@@ -186,6 +186,7 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             String height = "366";
 	    String swidth = (String) group.getValue(0,"800");
 	    if(swidth!=null) swidth= swidth.trim();
+	    if(!Utils.stringDefined(swidth)) swidth="800";
 	    Dimension dim    = getDimensions(entry1);
 	    if(Misc.equals(swidth,"default")) {
 		width = ""+dim.width;
