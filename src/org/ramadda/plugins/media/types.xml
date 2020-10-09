@@ -228,6 +228,7 @@
      <column name="image_width" type="int" label="Image Width"/>
      <column name="image_height" type="int" label="Image Height"/>     
      <column name="tiles_url" type="string" label="Tiles URL" />
+     <column name="style" type="string" label="Style" rows="5"/>
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}

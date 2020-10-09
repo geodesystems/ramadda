@@ -85,18 +85,31 @@ public class ZoomifyTypeHandler extends GenericTypeHandler {
                                         entry, tag, props);
         }
         StringBuilder sb = new StringBuilder();
-	HU.cssLink(sb, getPageHandler().makeHtdocsUrl("/lib/openseadragon/style.css"));	
-	HU.importJS(sb, getPageHandler().makeHtdocsUrl("/lib/openseadragon/openseadragon.min.js"));
-	String id = Utils.getGuid();
-	sb.append("<center>\n");
-	HU.div(sb,""," id=" + id +" class=openseadragon ");
-	sb.append("\n</center>\n");
-	String template = "OpenSeadragon({id:\"" + id +"\",prefixUrl: \"/repository/lib/openseadragon/images/\",\nshowNavigator:  true,\n        tileSources:    [{\ntype:\"zoomifytileservice\",\nwidth:      ${image_width},\nheight:     ${image_height},\n tilesUrl:   \"${tiles_url}\"}]});";
+        String style =
+            "width:800px;height:600px;border:1px solid black;color:#333;background-color: black;";
+        String s = (String) entry.getValue(3);
+        if (Utils.stringDefined(s)) {
+            style += s;
+        }
+        style = style.replaceAll("\n", " ");
+        //      sb.append(HU.importCss( ".openseadragon {" + style +"}"));
+        HU.importJS(
+            sb,
+            getPageHandler().makeHtdocsUrl(
+                "/lib/openseadragon/openseadragon.min.js"));
+        String id = Utils.getGuid();
+        sb.append("<center>\n");
+        HU.div(sb, "", " id=" + id + " style='" + style + "'");
+        sb.append("\n</center>\n");
+        String template =
+            "OpenSeadragon({id:\"" + id
+            + "\",prefixUrl: \"/repository/lib/openseadragon/images/\",\nshowNavigator:  true,\n        tileSources:    [{\ntype:\"zoomifytileservice\",\nwidth:      ${image_width},\nheight:     ${image_height},\n tilesUrl:   \"${tiles_url}\"}]});";
 
-	template = template.replace("${image_width}", ""+entry.getValue(0));
-    	template = template.replace("${image_height}", ""+entry.getValue(1));
-	template = template.replace("${tiles_url}", ""+entry.getValue(2));	
-	HU.script(sb, template);
+        template = template.replace("${image_width}", "" + entry.getValue(0));
+        template = template.replace("${image_height}",
+                                    "" + entry.getValue(1));
+        template = template.replace("${tiles_url}", "" + entry.getValue(2));
+        HU.script(sb, template);
 
         return sb.toString();
     }
