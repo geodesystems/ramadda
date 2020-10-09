@@ -122,6 +122,21 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
     private static int cnt = 0;
 
 
+    private Dimension getDimensions(Entry entry) throws Exception {
+	Dimension dim    = dimensions.get(entry.getId());
+	if (dim == null) {
+	    Image image = ImageIO.read(new FileInputStream(entry.getFile()));
+	    dim = new Dimension(image.getWidth(null),
+				image.getHeight(null));
+	    if ((dim.width > 0) && (dim.height > 0)) {
+		dimensions.put(entry.getId(), dim);
+	    }
+	}
+	return dim;
+    }
+
+
+
     /**
      * _more_
      *
@@ -171,24 +186,17 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             String height = "366";
 	    String swidth = (String) group.getValue(0,"800");
 	    if(swidth!=null) swidth= swidth.trim();
-	    if(Utils.stringDefined(swidth) && !Misc.equals(swidth,"default")) {
-		width = swidth; 
+	    Dimension dim    = getDimensions(entry1);
+	    if(Misc.equals(swidth,"default")) {
+		width = ""+dim.width;
+		height = ""+dim.height;
 	    } else {
-		Dimension dim    = dimensions.get(entry1.getId());
-		if (dim == null) {
-		    Image image = ImageIO.read(new FileInputStream(entry1.getFile()));
-		    dim = new Dimension(image.getWidth(null),
-					image.getHeight(null));
-		    if ((dim.width > 0) && (dim.height > 0)) {
-			dimensions.put(entry1.getId(), dim);
-		    }
-		}
 		if ((dim.width > 0) && (dim.height > 0)) {
 		    if(dim.height> dim.width) {
 			height =   "600";
 			width = Integer.toString(600*dim.width/dim.height);
 		    } else {
-			width  = Integer.toString(Math.max(800, dim.width));
+			width  = swidth;
 			height = Integer.toString((int) (dim.height * new Integer(width) / (float) dim.width));
 		    }
 		}
@@ -215,11 +223,13 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             divs.append(
                     "<img src=\"" + url1 + "\""
                     + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,  width)
+                    + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT,  height)		    
                     + ">\n");
 
             divs.append(
                     "<img src=\"" + url2 + "\""
 		    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,  width)
+		    + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT,  height)
                     + ">\n");
 
             divs.append("</div>\n");
