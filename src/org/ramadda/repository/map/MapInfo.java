@@ -336,6 +336,13 @@ public class MapInfo {
 
 
 
+    public boolean addSpatialMetadata(Entry entry,
+                                      List<Metadata> metadataList) {
+	return addSpatialMetadata(entry, metadataList, false);
+    }
+
+
+
     /**
      * Add spatial metadata
      *
@@ -345,9 +352,9 @@ public class MapInfo {
      * @return true if we added some metadata
      */
     public boolean addSpatialMetadata(Entry entry,
-                                      List<Metadata> metadataList) {
+                                      List<Metadata> metadataList, boolean force) {
         boolean didone = false;
-        if (entry.getTypeHandler().shouldShowPolygonInMap()) {
+        if (force || entry.getTypeHandler().shouldShowPolygonInMap()) {
             for (Metadata metadata : metadataList) {
                 if (metadata.getType().equals(
                         MetadataHandler.TYPE_SPATIAL_POLYGON)) {
@@ -356,6 +363,8 @@ public class MapInfo {
                     Utils.parsePointString(metadata.getAttr2(), points);
                     Utils.parsePointString(metadata.getAttr3(), points);
                     Utils.parsePointString(metadata.getAttr4(), points);
+                    Utils.parsePointString(metadata.getAttr(5), points);
+                    Utils.parsePointString(metadata.getAttr(6), points);		    		    
                     this.addLines(entry, entry.getId() /* + "_polygon"*/,
                                   points, null);
                     didone = true;

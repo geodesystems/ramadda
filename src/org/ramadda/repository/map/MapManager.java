@@ -1301,6 +1301,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
         addToMap(request, map, entriesToUse, theProps);
 
+
+
         Rectangle2D.Double bounds = null;
         if (viewBounds != null) {
             List<String> toks = StringUtil.split(viewBounds, ",");
@@ -1469,6 +1471,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         boolean screenBigRects = Misc.getProperty(props, PROP_SCREENBIGRECTS,
                                      false);
 
+        boolean showLines = Utils.getProperty(props, "showLines", false);
+	//            map.addLines(entry, "", polyLine, null);
+
+
         if ((entriesToUse.size() == 1) && detailed) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request,
@@ -1500,6 +1506,20 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
         screenBigRects = false;
         int cnt = 0;
+	if(showLines) {
+	    for (Entry entry : entriesToUse) {
+		List<Metadata> metadataList =
+		    getMetadataManager().findMetadata(request, entry,
+						      MetadataHandler.TYPE_SPATIAL_POLYGON, true);
+
+		if ((metadataList == null) || (metadataList.size() == 0)) {
+		    continue;
+		}
+		map.addSpatialMetadata(entry,metadataList,true);
+
+	    }
+	}
+
         for (Entry entry : entriesToUse) {
             if (entry.hasAreaDefined()) {
                 cnt++;
