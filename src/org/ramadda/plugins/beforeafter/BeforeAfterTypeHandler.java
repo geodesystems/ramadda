@@ -24,6 +24,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
 
 import org.ramadda.util.Utils;
 
@@ -166,29 +167,32 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             }
             Entry     entry1 = entriesToUse.get(i);
             Entry     entry2 = entriesToUse.get(i + 1);
-            Dimension dim    = dimensions.get(entry1.getId());
-
-            if (dim == null) {
-                Image image = ImageIO.read(new FileInputStream(entry1.getFile()));
-                dim = new Dimension(image.getWidth(null),
-                                    image.getHeight(null));
-                if ((dim.width > 0) && (dim.height > 0)) {
-                    dimensions.put(entry1.getId(), dim);
-                }
-            }
-
-            int width  = 800;
-            int height = 366;
-
-            if ((dim.width > 0) && (dim.height > 0)) {
-                if(dim.height> dim.width) {
-                    height =   600;
-                    width = height*dim.width/dim.height;
-                } else {
-                    width  = Math.max(width, dim.width);
-                    height = (int) (dim.height * width / (float) dim.width);
-                }
-            }
+            String width  = "800";
+            String height = "366";
+	    String swidth = (String) group.getValue(0,"800");
+	    if(swidth!=null) swidth= swidth.trim();
+	    if(Utils.stringDefined(swidth) && !Misc.equals(swidth,"default")) {
+		width = swidth; 
+	    } else {
+		Dimension dim    = dimensions.get(entry1.getId());
+		if (dim == null) {
+		    Image image = ImageIO.read(new FileInputStream(entry1.getFile()));
+		    dim = new Dimension(image.getWidth(null),
+					image.getHeight(null));
+		    if ((dim.width > 0) && (dim.height > 0)) {
+			dimensions.put(entry1.getId(), dim);
+		    }
+		}
+		if ((dim.width > 0) && (dim.height > 0)) {
+		    if(dim.height> dim.width) {
+			height =   "600";
+			width = Integer.toString(600*dim.width/dim.height);
+		    } else {
+			width  = Integer.toString(Math.max(800, dim.width));
+			height = Integer.toString((int) (dim.height * new Integer(width) / (float) dim.width));
+		    }
+		}
+	    }
 
 
             if (entry1.getCreateDate() > entry2.getCreateDate()) {
@@ -207,26 +211,24 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
                               + getStorageManager().getFileTail(
                                   entry2), ARG_ENTRYID, entry2.getId());
 
-            divs.append(
-                HtmlUtils.div(
-                    "<img src=\"" + url1 + "\""
-                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width)
-                    + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT, "" + height)
-                    + ">", ""));
 
             divs.append(
-                HtmlUtils.div(
+                    "<img src=\"" + url1 + "\""
+                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,  width)
+                    + ">\n");
+
+            divs.append(
                     "<img src=\"" + url2 + "\""
-                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width)
-                    + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT, "" + height)
-                    + ">", ""));
+		    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,  width)
+                    + ">\n");
+
             divs.append("</div>\n");
             String path = getRepository().getUrlBase() + "/beforeandafter/";
             String args = "{imagePath:'" + path + "'}";
             sb.append("\n");
-            jq.append(HtmlUtils.script("\n$(function(){$('#" + id
-                                       + "').beforeAfter(" + args
-                                       + ");});\n"));
+            jq.append(HtmlUtils.script(JQuery.ready("\n$(function(){$('#" + id
+						    + "').beforeAfter(" + args
+						    + ");});\n")));
         }
         sb.append("\n");
         sb.append(divs);
