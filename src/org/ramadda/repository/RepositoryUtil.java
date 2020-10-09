@@ -22,7 +22,7 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 import java.io.UnsupportedEncodingException;
-import java.net.*;a
+import java.net.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
