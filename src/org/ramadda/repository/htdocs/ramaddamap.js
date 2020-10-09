@@ -290,7 +290,9 @@ function RepositoryMap(mapId, params) {
         if ((typeof params.initialBounds) == "string") {
             params.initialBounds = params.initialBounds.split(",");
         }
+	//xxxxx
         this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
+	this.defaultLocation = null;
 	if(debugBounds)
 	    console.log("setting default bounds-1:" + this.defaultBounds);
     }
@@ -3813,8 +3815,17 @@ RepositoryMap.prototype = {
     },
 
     addLines:  function(id, name, attrs, values, info) {
+	attrs = attrs || {};
+	if (!attrs.strokeWidth)
+	    attrs.strokeWidth = this.strokeWidth;
+
+	if (!attrs.strokeColor)
+	    attrs.strokeColor = this.strokeColor;
+	    
+
         var points = [];
         for (var i = 0; i < values.length; i += 2) {
+//	    console.log("pt:" + values[i+1] + " " + values[i]);
             points.push(new OpenLayers.Geometry.Point(values[i + 1], values[i]));
         }
         return this.addPolygon(id, name, points, attrs, info);
