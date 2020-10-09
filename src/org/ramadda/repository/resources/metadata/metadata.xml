@@ -356,7 +356,7 @@ This gets draw in maps as a direction indicator.
 
     <type
        name="Spatial Polygon Coordinates"
-       foruser="false"
+       foruser="true"
        category="Map"
        showinhtml="false"
        id="spatial.polygon">
@@ -364,6 +364,8 @@ This gets draw in maps as a direction indicator.
       <element name="polygon2" suffix="..."/>
       <element name="polygon3" suffix="..."/>
       <element name="polygon4" suffix="..."/>
+      <element name="polygon5" suffix="..."/>
+      <element name="polygon6" suffix="..."/>      
     </type>
 
     <type
