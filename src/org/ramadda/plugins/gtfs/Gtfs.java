@@ -2008,7 +2008,7 @@ public class Gtfs implements Constants {
                     newEntry.initEntry(
                         name, "", agencyEntry,
                         repository.getUserManager().getLocalFileUser(),
-                        new Resource(), "", vdttm.getTime(), vdttm.getTime(),
+                        new Resource(), "", Entry.DEFAULT_ORDER,vdttm.getTime(), vdttm.getTime(),
                         vdttm.getTime(), vdttm.getTime(), values);
                     repository.getEntryManager().cacheSynthEntry(newEntry);
                     vehicles.add(newEntry);

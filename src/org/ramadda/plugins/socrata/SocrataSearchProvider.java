@@ -229,7 +229,7 @@ public class SocrataSearchProvider extends SearchProvider {
             entries.add(newEntry);
             newEntry.initEntry(name, desc.toString(), parent,
                                getUserManager().getLocalFileUser(), resource,
-                               "", dttm.getTime(), dttm.getTime(),
+                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), values);
             getEntryManager().cacheSynthEntry(newEntry);
         }
@@ -400,7 +400,7 @@ public class SocrataSearchProvider extends SearchProvider {
         newEntry.setIcon("/socrata/socrata.png");
         Entry parent = getSynthTopLevelEntry();
         newEntry.initEntry(name, desc, parent,
-                           getUserManager().getLocalFileUser(), resource, "",
+                           getUserManager().getLocalFileUser(), resource, "",Entry.DEFAULT_ORDER,
                            dttm.getTime(), dttm.getTime(),
                            fromDate.getTime(), toDate.getTime(), values);
         getEntryManager().cacheSynthEntry(newEntry);

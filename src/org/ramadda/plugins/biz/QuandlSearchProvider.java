@@ -186,7 +186,7 @@ public class QuandlSearchProvider extends SearchProvider {
             entries.add(newEntry);
             newEntry.initEntry(entryName, desc.toString(), parent,
                                getUserManager().getLocalFileUser(), resource,
-                               "", dttm.getTime(), dttm.getTime(),
+                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), values);
             getEntryManager().cacheSynthEntry(newEntry);
         }

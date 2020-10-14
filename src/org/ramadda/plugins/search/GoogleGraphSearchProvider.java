@@ -217,7 +217,7 @@ public class GoogleGraphSearchProvider extends SearchProvider {
             Date dttm = new Date();
             newEntry.initEntry(name + ex, desc.toString(), parent,
                                getUserManager().getLocalFileUser(), resource,
-                               "", dttm.getTime(), dttm.getTime(),
+                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                dttm.getTime(), dttm.getTime(), null);
             getEntryManager().cacheSynthEntry(newEntry);
         }

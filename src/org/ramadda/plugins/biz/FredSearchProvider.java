@@ -164,7 +164,7 @@ public class FredSearchProvider extends SearchProvider {
             entries.add(newEntry);
             newEntry.initEntry(name, desc, parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(entryUrl)), "",
+                               new Resource(new URL(entryUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), values);
             getEntryManager().cacheSynthEntry(newEntry);

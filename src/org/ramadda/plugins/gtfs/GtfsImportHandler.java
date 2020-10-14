@@ -449,7 +449,7 @@ public class GtfsImportHandler extends ImportHandler {
                         (Entry) agencyEntry.getProperty("stopsEntry");
 
                     entry.initEntry(name, desc, stopsEntry, user, resource,
-                                    "", now.getTime(), now.getTime(),
+                                    "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
                                     now.getTime(), now.getTime(), values);
                     entry.setLocation(lat, lon, 0);
                     String agencyId =
@@ -844,7 +844,7 @@ public class GtfsImportHandler extends ImportHandler {
                             GtfsAgencyTypeHandler.IDX_AGENCY_ID, "");
 
                     entry.initEntry(name, "", routesEntry, user, resource,
-                                    "", now.getTime(), now.getTime(),
+                                    "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
                                     now.getTime(), now.getTime(), values);
                     routesEntry.getChildren().add(entry);
                     entry.putProperty("seen_stops", new HashSet());
@@ -981,7 +981,7 @@ public class GtfsImportHandler extends ImportHandler {
                                         : new Resource();
 
                     entry.initEntry(name, "", parentEntry, user, resource,
-                                    "", now.getTime(), now.getTime(),
+                                    "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
                                     now.getTime(), now.getTime(), values);
                     entry.setChildren(new ArrayList<Entry>());
                     entries.add(entry);
@@ -998,7 +998,7 @@ public class GtfsImportHandler extends ImportHandler {
 
                     entry.getChildren().add(routesEntry);
                     routesEntry.initEntry("Routes", "", entry, user,
-                                          new Resource(), "", now.getTime(),
+                                          new Resource(), "", Entry.DEFAULT_ORDER,now.getTime(),
                                           now.getTime(), now.getTime(),
                                           now.getTime(), null);
                     entries.add(routesEntry);
@@ -1012,7 +1012,7 @@ public class GtfsImportHandler extends ImportHandler {
                     String stopsDesc = "";
                     //                    getRepository().getResource("/org/ramadda/plugins/gtfs/stops.txt");
                     stopsEntry.initEntry("Stops", stopsDesc, entry, user,
-                                         new Resource(), "", now.getTime(),
+                                         new Resource(), "", Entry.DEFAULT_ORDER,now.getTime(),
                                          now.getTime(), now.getTime(),
                                          now.getTime(), null);
                     entries.add(stopsEntry);
@@ -1410,7 +1410,7 @@ public class GtfsImportHandler extends ImportHandler {
                     name.append(endTime.replaceAll(":[^:]+$", ""));
                     Resource resource = new Resource();
                     entry.initEntry(name.toString(), desc.toString(), route,
-                                    user, resource, "", now.getTime(),
+                                    user, resource, "", Entry.DEFAULT_ORDER,now.getTime(),
                                     now.getTime(), (serviceInfo.start != null)
                             ? serviceInfo.start.getTime()
                             : now.getTime(), (serviceInfo.end != null)

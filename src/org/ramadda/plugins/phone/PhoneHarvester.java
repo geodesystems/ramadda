@@ -1015,7 +1015,7 @@ public class PhoneHarvester extends Harvester {
         entry.initEntry(name, cleanedInputText, currentEntry, getUser(),
                         (resource != null)
                         ? new Resource(resource)
-                        : new Resource(), "", date.getTime(), date.getTime(),
+                        : new Resource(), "", Entry.DEFAULT_ORDER,date.getTime(), date.getTime(),
                                           date.getTime(), date.getTime(),
                                           values);
 
@@ -1141,7 +1141,7 @@ public class PhoneHarvester extends Harvester {
         Resource resource = new Resource(voiceFile.toString(),
                                          Resource.TYPE_STOREDFILE);
         entry.initEntry(name, cleanedInputText, parent, getUser(), resource,
-                        "", date.getTime(), date.getTime(), date.getTime(),
+                        "", Entry.DEFAULT_ORDER,date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
 
 

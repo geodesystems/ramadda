@@ -133,7 +133,7 @@ public class LocationPhoneHarvester extends PhoneHarvester {
         String      name        = "";
         values[0] = info.getFromPhone();
         values[1] = info.getToPhone();
-        entry.initEntry(name, desc, parent, getUser(), new Resource(), "",
+        entry.initEntry(name, desc, parent, getUser(), new Resource(), "",Entry.DEFAULT_ORDER,
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
 

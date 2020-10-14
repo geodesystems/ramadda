@@ -342,7 +342,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
         Object[] values = roomTypeHandler.makeEntryValues(null);
         values[HipchatRoomTypeHandler.IDX_ROOM_ID] = roomId;
         roomEntry.initEntry(name, desc, groupEntry, groupEntry.getUser(),
-                            resource, "", dttm.getTime(), dttm.getTime(),
+                            resource, "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                             dttm.getTime(), dttm.getTime(), values);
         roomEntry.setMasterTypeHandler(this);
 
@@ -400,7 +400,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
         values[HipchatMessageTypeHandler.IDX_COLOR]   = color;
 
         messageEntry.initEntry(name, desc, roomEntry, groupEntry.getUser(),
-                               resource, "", now.getTime(), now.getTime(),
+                               resource, "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
                                dttm.getTime(), dttm.getTime(), values);
 
         messageEntry.setMasterTypeHandler(this);

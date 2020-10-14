@@ -204,7 +204,7 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
             //Tue, 25 Jan 2011 05:00:00 GMT
             Resource resource = new Resource(link);
             entry.initEntry(title, desc, mainEntry, mainEntry.getUser(),
-                            resource, "", dttm.getTime(), dttm.getTime(),
+                            resource, "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                             dttm.getTime(), dttm.getTime(), null);
 
             items.add(entry);
@@ -306,7 +306,7 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
 
             Resource resource = new Resource(resourcePath);
             entry.initEntry(title, desc, mainEntry, mainEntry.getUser(),
-                            resource, "", dttm.getTime(), dttm.getTime(),
+                            resource, "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                             dttm.getTime(), dttm.getTime(), null);
 
             items.add(entry);

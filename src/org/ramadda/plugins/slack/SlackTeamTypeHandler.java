@@ -316,7 +316,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
         values[SlackChannelTypeHandler.IDX_CHANNEL_PURPOSE] = purpose;
 
         channelEntry.initEntry(name, desc, teamEntry, teamEntry.getUser(),
-                               resource, "", dttm.getTime(), dttm.getTime(),
+                               resource, "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                dttm.getTime(), dttm.getTime(), values);
 
         channelEntry.setMasterTypeHandler(this);
@@ -401,7 +401,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
 
 
         messageEntry.initEntry(name, desc, channelEntry, teamEntry.getUser(),
-                               resource, "", dttm.getTime(), dttm.getTime(),
+                               resource, "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                dttm.getTime(), dttm.getTime(), values);
 
         messageEntry.setMasterTypeHandler(this);

@@ -499,6 +499,10 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         */
         addDateToEntryForm(request, sb, entry);
         addAreaWidget(request, entry, sb, formInfo);
+	sb.append(formEntry(request, msgLabel("Order"),
+			    HtmlUtils.input(ARG_ENTRYORDER,
+					    ((entry != null)
+					     ? entry.getEntryOrder():999),HtmlUtils.SIZE_5)+" 1-N"));
         //super.addToEntryForm(request, sb, parentEntry, entry, formInfo);
     }
 

@@ -217,7 +217,7 @@ public class ConfluenceSearchProvider extends SearchProvider {
 
             newEntry.initEntry(name, desc, parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(resultUrl)), "",
+                               new Resource(new URL(resultUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), values);
             getEntryManager().cacheSynthEntry(newEntry);

@@ -208,7 +208,7 @@ public class SitesTypeHandler extends GdataTypeHandler {
             Date now = new Date();
 
             newEntry.initEntry(title, blob, null, mainEntry.getUser(),
-                               resource, "", now.getTime(), now.getTime(),
+                               resource, "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
                                now.getTime(), now.getTime(), null);
             newEntry.setParentEntryId(parentId);
             newEntry.setChildIds(new ArrayList<String>());

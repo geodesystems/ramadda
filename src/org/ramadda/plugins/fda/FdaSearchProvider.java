@@ -212,7 +212,7 @@ public class FdaSearchProvider extends SearchProvider {
             Object[] values = typeHandler.makeEntryValues(null);
             newEntry.initEntry(name, desc, parent,
                                getUserManager().getLocalFileUser(), resource,
-                               "", dttm.getTime(), dttm.getTime(),
+                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), values);
             getEntryManager().cacheSynthEntry(newEntry);
             entries.add(newEntry);

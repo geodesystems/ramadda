@@ -174,7 +174,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
             //            System.err.println ("Desc:" + desc);
             newEntry.initEntry(title, desc.toString(), entry,
                                getUserManager().getLocalFileUser(),
-                               new Resource(), "", dttm.getTime(),
+                               new Resource(), "", Entry.DEFAULT_ORDER,dttm.getTime(),
                                dttm.getTime(), dttm.getTime(),
                                dttm.getTime(), null);
             getEntryManager().cacheSynthEntry(newEntry);
@@ -283,7 +283,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
 
             newEntry.initEntry(name, desc.toString(), parentEntry,
                                getUserManager().getLocalFileUser(), resource,
-                               "", dttm.getTime(), dttm.getTime(),
+                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                timestamp.getTime(), timestamp.getTime(),
                                null);
             com.google.gdata.data.geo.Point point = photo.getGeoLocation();

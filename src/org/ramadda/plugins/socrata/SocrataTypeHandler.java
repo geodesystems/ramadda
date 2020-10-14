@@ -224,7 +224,7 @@ public class SocrataTypeHandler extends ExtensibleGroupTypeHandler {
         Object[] values   = this.makeEntryValues(null);
         values[SocrataCategoryTypeHandler.IDX_CATEGORY_ID] = categoryId;
         entry.initEntry(name, desc, categoryEntry, categoryEntry.getUser(),
-                        resource, "", dttm.getTime(), dttm.getTime(),
+                        resource, "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                         dttm.getTime(), dttm.getTime(), values);
 
         getEntryManager().cacheSynthEntry(entry);
@@ -268,7 +268,7 @@ public class SocrataTypeHandler extends ExtensibleGroupTypeHandler {
         values[SocrataSeriesTypeHandler.IDX_SERIES_ID] = seriesId;
 
         entry.initEntry(name, desc, parentEntry, parentEntry.getUser(),
-                        new Resource(), "", dttm.getTime(), dttm.getTime(),
+                        new Resource(), "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                         dttm.getTime(), dttm.getTime(), values);
         getEntryManager().cacheSynthEntry(entry);
 

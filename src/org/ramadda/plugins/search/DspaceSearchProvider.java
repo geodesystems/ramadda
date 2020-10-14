@@ -208,7 +208,7 @@ public class DspaceSearchProvider extends SearchProvider {
 
             newEntry.initEntry(title, desc, parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(itemUrl)), "",
+                               new Resource(new URL(itemUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), null);
 
@@ -260,7 +260,7 @@ public class DspaceSearchProvider extends SearchProvider {
 
                     rEntry.initEntry(rname, rdesc, newEntry,
                                      getUserManager().getLocalFileUser(),
-                                     new Resource(new URL(rUrl)), "",
+                                     new Resource(new URL(rUrl)), "",Entry.DEFAULT_ORDER,
                                      dttm.getTime(), dttm.getTime(),
                                      fromDate.getTime(), toDate.getTime(),
                                      null);

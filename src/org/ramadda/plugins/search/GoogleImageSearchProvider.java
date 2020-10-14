@@ -140,7 +140,7 @@ public class GoogleImageSearchProvider extends SearchProvider {
             Date dttm = new Date();
             newEntry.initEntry(name, desc, parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(resultUrl)), "",
+                               new Resource(new URL(resultUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                dttm.getTime(), dttm.getTime(), null);
             getEntryManager().cacheSynthEntry(newEntry);

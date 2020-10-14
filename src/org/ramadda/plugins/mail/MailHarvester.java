@@ -473,7 +473,7 @@ public class MailHarvester extends Harvester {
                     typeHandler.createEntry(getRepository().getGUID());
                 entry.initEntry(entryInfo.name, entryInfo.text.toString(),
                                 entryInfo.parentEntry, getUser(), resource,
-                                "", now.getTime(), now.getTime(),
+                                "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
                                 now.getTime(), now.getTime(), null);
 
                 entryInfo.newEntry = entry;
@@ -653,7 +653,7 @@ public class MailHarvester extends Harvester {
                         entry.initEntry(entryInfo.name,
                                         entryInfo.text.toString(),
                                         entryInfo.parentEntry, getUser(),
-                                        resource, "", now.getTime(),
+                                        resource, "", Entry.DEFAULT_ORDER,now.getTime(),
                                         now.getTime(), date.getTime(),
                                         date.getTime(), values);
 
@@ -767,7 +767,7 @@ public class MailHarvester extends Harvester {
         Date     date   = new Date();
         Entry    entry  = typeHandler.createEntry(getRepository().getGUID());
         Object[] values = typeHandler.makeEntryValues(new Hashtable());
-        entry.initEntry(name, "", parentEntry, getUser(), resource, "",
+        entry.initEntry(name, "", parentEntry, getUser(), resource, "",Entry.DEFAULT_ORDER,
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
         typeHandler.initializeEntryFromForm(getRequest(), entry, parentEntry,

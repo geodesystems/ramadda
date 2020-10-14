@@ -215,7 +215,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
             Resource resource = new Resource();
             Date     now      = new Date();
             newEntry.initEntry(title, desc.toString(), entry,
-                               entry.getUser(), resource, "", now.getTime(),
+                               entry.getUser(), resource, "", Entry.DEFAULT_ORDER,now.getTime(),
                                now.getTime(), now.getTime(), now.getTime(),
                                null);
             getEntryManager().cacheSynthEntry(newEntry);
@@ -328,7 +328,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
 
             Resource resource = new Resource(event.getHtmlLink().getHref());
             newEntry.initEntry(title, desc.toString(), entry,
-                               entry.getUser(), resource, "", now.getTime(),
+                               entry.getUser(), resource, "", Entry.DEFAULT_ORDER,now.getTime(),
                                now.getTime(), from.getTime(), to.getTime(),
                                null);
             getEntryManager().cacheSynthEntry(newEntry);

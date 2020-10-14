@@ -239,7 +239,7 @@ public class BloggerTypeHandler extends GdataTypeHandler {
             Date     publishTime = new Date(entry.getPublished().getValue());
             Date     editTime    = new Date(entry.getUpdated().getValue());
             newEntry.initEntry(title, desc.toString(), mainEntry,
-                               mainEntry.getUser(), resource, "",
+                               mainEntry.getUser(), resource, "",Entry.DEFAULT_ORDER,
                                publishTime.getTime(), editTime.getTime(),
                                publishTime.getTime(), editTime.getTime(),
                                null);

@@ -279,7 +279,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
             Date editTime = new Date(docListEntry.getUpdated().getValue());
             newEntry.initEntry(docListEntry.getTitle().getPlainText(),
                                desc.toString(), null, mainEntry.getUser(),
-                               resource, "", publishTime.getTime(),
+                               resource, "", Entry.DEFAULT_ORDER,publishTime.getTime(),
                                editTime.getTime(), publishTime.getTime(),
                                lastViewedTime.getTime(), null);
 

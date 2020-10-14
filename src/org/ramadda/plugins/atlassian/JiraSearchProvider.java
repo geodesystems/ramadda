@@ -201,7 +201,7 @@ public class JiraSearchProvider extends SearchProvider {
 
             newEntry.initEntry(name, desc, parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(issueUrl)), "",
+                               new Resource(new URL(issueUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), values);
             getEntryManager().cacheSynthEntry(newEntry);

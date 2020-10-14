@@ -365,7 +365,7 @@ public class WolframSearchProvider extends SearchProvider {
             Resource resource = new Resource("");
             newEntry.initEntry(name, desc.toString(), parent,
                                getUserManager().getLocalFileUser(), resource,
-                               "", dttm.getTime(), dttm.getTime(),
+                               "", Entry.DEFAULT_ORDER,dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), null);
             getEntryManager().cacheSynthEntry(newEntry);
         }
