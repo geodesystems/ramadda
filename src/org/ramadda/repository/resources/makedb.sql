@@ -15,7 +15,7 @@
 CREATE TABLE entries (id varchar(200),
                    type varchar(200),
 	           name varchar(200),
-                   description varchar(25000),
+                   description varchar(30000),
                    parent_group_id varchar(200),
    		   user_id varchar(200),
 	           resource varchar(500),	           
@@ -23,6 +23,7 @@ CREATE TABLE entries (id varchar(200),
                    md5           varchar(32),
                    filesize ramadda.bigint,
 		   datatype varchar(200),
+		   entryorder int,
 	           createdate ramadda.datetime, 
                    changedate ramadda.datetime, 
 	           fromdate ramadda.datetime, 
@@ -35,15 +36,16 @@ CREATE TABLE entries (id varchar(200),
                    altitudebottom ramadda.double); 
 
 
+----update the table
+ALTER table entries add column entryorder int;
+
+
 ---- Note: if you change the description length make sure to change in Entry.java:
 ----    public static final int MAX_DESCRIPTION_LENGTH = 25000;
-
----- ALTER table entries add column changedate ramadda.datetime;
 --- for mysql
 --- alter table entries modify column resource varchar(500);
 --- for derby
 ---alter table entries alter column resource set data type varchar(500);
-
 --- alter table entries modify column description varchar(25000);
 --- alter table entries alter column description set data type varchar(25000);
 
