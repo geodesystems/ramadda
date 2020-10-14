@@ -55,17 +55,6 @@ import java.util.regex.Pattern;
  */
 public class EntryUtil extends RepositoryManager {
 
-    /** sort date attribute */
-    public static final String SORT_DATE = "date";
-
-    /** change date attribute */
-    public static final String SORT_CHANGEDATE = "changedate";
-
-    /** change date attribute */
-    public static final String SORT_CREATEDATE = "createdate";
-
-    /** sort name attribute */
-    public static final String SORT_NAME = "name";
 
 
 
@@ -323,6 +312,34 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    public List<Entry> sortEntriesOnEntryOrder(List<Entry> entries,
+            final boolean descending) {
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Entry e1 = (Entry) o1;
+                Entry e2 = (Entry) o2;
+                if (e1.getEntryOrder() < e2.getEntryOrder()) {
+                    return (descending
+                            ? 1
+                            : -1);
+                }
+                if (e1.getEntryOrder() > e2.getEntryOrder()) {
+                    return (descending
+                            ? -1
+                            : 1);
+                }
+
+                return 0;
+            }
+            public boolean equals(Object obj) {
+                return obj == this;
+            }
+        };
+        Object[] array = entries.toArray();
+        Arrays.sort(array, comp);
+        return (List<Entry>) Misc.toList(array);
+    }
+
     /**
      * _more_
      *
@@ -361,6 +378,65 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    private int compare(long l1, long l2) {
+	if(l1<l2) return -1;
+	else if(l1>l2) return 1;
+	return 0;
+    }
+
+    public int compareEntries(Entry e1, Entry e2, String on) {
+	if(on.equals(SORTBY_DATE) || on.equals(SORTBY_FROMDATE)) {
+	    return compare(e1.getStartDate(), e2.getStartDate());
+	} else 	if(on.equals(SORTBY_TODATE)) {
+	    return compare(e1.getEndDate(),  e2.getEndDate());
+	} else 	if(on.equals(SORTBY_CHANGEDATE)) {
+	    return compare(e1.getChangeDate(),  e2.getChangeDate());
+	} else 	if(on.equals(SORTBY_CREATEDATE)) {
+	    return compare(e1.getCreateDate(),  e2.getCreateDate());
+	} else 	if(on.equals(SORTBY_NAME)) {
+	    return e1.getName().compareToIgnoreCase(e2.getName());
+	} else 	if(on.equals(SORTBY_ENTRYORDER)) {	    
+	    return e1.getEntryOrder()-e2.getEntryOrder();
+	} else 	if(on.equals(SORTBY_TYPE)) {	    
+	    return e1.getTypeHandler().getType().compareToIgnoreCase(e2.getTypeHandler().getType());
+	} else 	if(on.equals(SORTBY_SIZE)) {	    
+	    return compare(e1.getResource().getFileSize(),e2.getResource().getFileSize());
+	}
+	return 0;
+    }
+
+
+
+
+    public List<Entry> sortEntriesOn(List<Entry> entries,
+				     final List<String> ons,
+				     final boolean descending) {
+        Comparator comp = new Comparator() {
+            public int compare(Object o1, Object o2) {
+                Entry e1 = (Entry) o1;
+                Entry e2 = (Entry) o2;
+		for(String on: ons) {
+		    int result = compareEntries(e1,e2,on);
+		    if(result!=0) {
+			if(descending) return -result;
+			return result;
+		    }
+		}
+                return 0;
+	    }
+            public boolean equals(Object obj) {
+                return obj == this;
+            }
+        };
+        Object[] array = entries.toArray();
+        Arrays.sort(array, comp);
+	
+
+
+        return (List<Entry>) Misc.toList(array);
+    }
+    
+
 
 
     /**
@@ -372,26 +448,14 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Entry> sortEntries(List<Entry> entries, String sort,
+    public List<Entry> sortEntries(List<Entry> entries, String sorts,
                                    final boolean descending) {
-
-        if (sort.equals(SORT_DATE)) {
-            entries = sortEntriesOnDate(entries, descending);
-        } else if (sort.equals(SORT_CHANGEDATE)) {
-            entries = sortEntriesOnChangeDate(entries, descending);
-        } else if (sort.equals(SORT_CREATEDATE)) {
-            entries = sortEntriesOnCreateDate(entries, descending);
-        } else if (sort.equals(SORT_NAME)) {
-            entries = sortEntriesOnName(entries, descending);
-        } else if (sort.startsWith("number:")) {
-            entries = sortEntriesOnPattern(entries, descending,
-                                           sort.substring(7));
-        } else {
-            throw new IllegalArgumentException("Unknown sort:" + sort);
-        }
-
-        return entries;
+	if (sorts.startsWith("number:")) {
+	    return  sortEntriesOnPattern(entries, descending, sorts.substring(7));
+	}
+	return sortEntriesOn(entries, StringUtil.split(sorts,",",true,true), descending);
     }
+
 
     /**
      * _more_

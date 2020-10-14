@@ -2399,7 +2399,7 @@ public class EntryManager extends RepositoryManager {
             category = request.getString(ARG_CATEGORY_SELECT, "");
         }
 
-
+	int entryOrder = request.get(ARG_ENTRYORDER,entry!=null?entry.getEntryOrder():Entry.DEFAULT_ORDER);
         File serverFile = null;
         if (request.defined(ARG_SERVERFILE)) {
             //IMPORTANT:
@@ -2661,7 +2661,6 @@ public class EntryManager extends RepositoryManager {
             }
 
             String description = getEntryDescription(request);
-
             Date   createDate  = new Date();
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
                                    createDate);
@@ -2805,7 +2804,8 @@ public class EntryManager extends RepositoryManager {
 
                 entry.initEntry(name, description, parent, request.getUser(),
                                 new Resource(theResource, resourceType),
-                                category, createDate.getTime(),
+                                category, entryOrder,
+				createDate.getTime(),
                                 createDate.getTime(),
                                 theDateRange[0].getTime(),
                                 theDateRange[1].getTime(), null);
@@ -2885,6 +2885,7 @@ public class EntryManager extends RepositoryManager {
                 }
             } else {
                 entry.setCategory(category);
+		entry.setEntryOrder(entryOrder);
             }
 
 
@@ -5042,6 +5043,7 @@ public class EntryManager extends RepositoryManager {
                                    oldEntry.getDescription(),
                                    (Entry) newParent, request.getUser(),
                                    newResource, oldEntry.getCategory(),
+				   oldEntry.getEntryOrder(),
                                    oldEntry.getCreateDate(),
                                    new Date().getTime(),
                                    oldEntry.getStartDate(),
@@ -5443,7 +5445,7 @@ public class EntryManager extends RepositoryManager {
                 }
 
                 entry.initEntry(name, desc, parent, request.getUser(),
-                                new Resource(), "", date.getTime(),
+                                new Resource(), "", 999,date.getTime(),
                                 date.getTime(), date.getTime(),
                                 date.getTime(), values);
 
@@ -6086,6 +6088,7 @@ public class EntryManager extends RepositoryManager {
 
 
         String category = Utils.getAttributeOrTag(node, ATTR_CATEGORY, "");
+        int entryOrder = Utils.getAttributeOrTag(node, ATTR_ENTRYORDER, Entry.DEFAULT_ORDER);	
         String description = Utils.getAttributeOrTag(node, ATTR_DESCRIPTION,
                                  (String) null);
 
@@ -6315,6 +6318,7 @@ public class EntryManager extends RepositoryManager {
 
             entry.initEntry(entryName, description, parentEntry,
                             request.getUser(), resource, category,
+			    entryOrder,
                             createDate.getTime(), changeDate.getTime(),
                             fromDate.getTime(), toDate.getTime(), null);
 
@@ -7443,7 +7447,7 @@ public class EntryManager extends RepositoryManager {
             if ( !results.next()) {
                 return null;
             }
-            String entryType = results.getString(2);
+            String entryType = results.getString(Tables.ENTRIES.COL_NODOT_TYPE);
             TypeHandler typeHandler =
                 getRepository().getTypeHandler(entryType, true);
             entry = typeHandler.createEntryFromDatabase(results, abbreviated);
@@ -7783,8 +7787,8 @@ public class EntryManager extends RepositoryManager {
 
 
         Date  dttm  = new Date();
-        entry.initEntry(name, "", group, request.getUser(), resource,
-                        description, dttm.getTime(), dttm.getTime(),
+        entry.initEntry(name, description, group, request.getUser(), resource,
+                        "", Entry.DEFAULT_ORDER, dttm.getTime(), dttm.getTime(),
                         dttm.getTime(), dttm.getTime(), null);
 
         if (initializer != null) {
@@ -7910,14 +7914,11 @@ public class EntryManager extends RepositoryManager {
 
 
         int col = 1;
-        //id,type,name,desc,group,user,file,createdata,fromdate,todate
+	//Note: these have to be in the same order as Tables.ENTRIES
+        //id,type,name,desc,group,user,file,category,order,createdata,fromdate,todate
         statement.setString(col++, entry.getId());
         statement.setString(col++, typeHandler.getType());
         statement.setString(col++, entry.getName());
-
-
-
-
         statement.setString(col++, description);
         statement.setString(col++, entry.getParentEntryId());
         //        statement.setString(col++, entry.getCollectionGroupId());
@@ -7932,9 +7933,9 @@ public class EntryManager extends RepositoryManager {
         statement.setString(col++, entry.getResource().getMd5());
         statement.setLong(col++, entry.getResource().getFileSize());
         statement.setString(col++, entry.getCategory());
-        //create date
-        getDatabaseManager().setDate(statement, col++, entry.getCreateDate());
+        statement.setInt(col++, entry.getEntryOrder());
 
+        getDatabaseManager().setDate(statement, col++, entry.getCreateDate());
         long updateTime = entry.getChangeDate();
         getDatabaseManager().setDate(statement, col++, updateTime);
         try {
@@ -8144,15 +8145,11 @@ public class EntryManager extends RepositoryManager {
         long              t1          = System.currentTimeMillis();
         int               cnt         = 0;
         int               metadataCnt = 0;
-
-
-
-        PreparedStatement entryStmt   = connection.prepareStatement(isNew
+	PreparedStatement entryStmt   = connection.prepareStatement(isNew
                 ? Tables.ENTRIES.INSERT
                 : SqlUtil.makeUpdate(Tables.ENTRIES.NAME,
                                      Tables.ENTRIES.COL_ID,
                                      Tables.ENTRIES.ARRAY));
-
         PreparedStatement metadataStmt =
             connection.prepareStatement(Tables.METADATA.INSERT);
 
@@ -8184,8 +8181,8 @@ public class EntryManager extends RepositoryManager {
                     typeStatements.put(tif.getSql(), typeStatement);
                 }
                 tif.setStatement(typeStatement);
-            }
-            setStatement(entry, entryStmt, isNew, typeHandler);
+            } 
+           setStatement(entry, entryStmt, isNew, typeHandler);
 
 
             batchCnt++;
@@ -10523,6 +10520,8 @@ public class EntryManager extends RepositoryManager {
                 orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_FROMDATE,desc);
             } else if (by.equals(SORTBY_TODATE)) {
                 orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_TODATE, desc);
+            } else if (by.equals(SORTBY_ENTRYORDER)) {
+                orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_ENTRYORDER, desc);		
             } else if (by.equals(SORTBY_TYPE)) {
                 orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_TYPE,desc);
             } else if (by.equals(SORTBY_SIZE)) {
@@ -10536,8 +10535,7 @@ public class EntryManager extends RepositoryManager {
                 orderBy = SqlUtil.orderBy(Tables.ENTRIES.COL_NAME,desc);
             }
         }
-
-        return orderBy + limitString;
+	return orderBy + limitString;
     }
 
 

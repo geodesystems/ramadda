@@ -49,6 +49,7 @@ import java.util.List;
  */
 public class Entry implements Cloneable {
 
+
     /** ID delimiter */
     public static final String IDDELIMITER = ":";
 
@@ -60,10 +61,12 @@ public class Entry implements Cloneable {
 
 
     /** _more_ */
-    public static final int MAX_DESCRIPTION_LENGTH = 25000;
+    public static final int MAX_DESCRIPTION_LENGTH = 30000;
 
     /** _more_ */
     public static final int MAX_NAME_LENGTH = 200;
+
+    public static final int DEFAULT_ORDER=999;
 
     /** List of comments */
     List<Comment> comments;
@@ -106,6 +109,8 @@ public class Entry implements Cloneable {
     /** the user (owner) */
     private User user;
 
+    private int entryOrder = DEFAULT_ORDER;
+    
     /** the create date */
     private long createDate = 0L;
 
@@ -539,15 +544,15 @@ public class Entry implements Cloneable {
      */
     public void initEntry(String name, String description, Entry parentEntry,
                           User user, Resource resource, String category,
+			  int entryOrder,
                           long createDate, long changeDate, long startDate,
                           long endDate, Object[] values) {
-        //        super.init(name, description, parentEntry, user, createDate,changeDate);
         this.id = id;
         setName(name);
         setDescription(description);
         this.parentEntry = parentEntry;
         this.user        = user;
-
+	this.entryOrder = entryOrder;
         setCreateDate(createDate);
         setChangeDate(changeDate);
 
@@ -1764,6 +1769,25 @@ public class Entry implements Cloneable {
         return (createDate == startDate) && (createDate == endDate);
     }
 
+    /**
+       Set the EntryOrder property.
+
+       @param value The new value for EntryOrder
+    **/
+    public void setEntryOrder (int value) {
+	entryOrder = value;
+    }
+
+    /**
+       Get the EntryOrder property.
+
+       @return The EntryOrder
+    **/
+    public int getEntryOrder () {
+	return entryOrder;
+    }
+
+
 
     /**
      * Set the CreateDate property.
@@ -1925,7 +1949,7 @@ public class Entry implements Cloneable {
         description = value;
         if (description.length() > MAX_DESCRIPTION_LENGTH) {
             description = description.substring(0,
-                    MAX_DESCRIPTION_LENGTH - 1);
+						MAX_DESCRIPTION_LENGTH - 1);
         }
     }
 

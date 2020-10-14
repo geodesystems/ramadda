@@ -1633,6 +1633,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return typeHandler;
 	} catch(Exception exc) {
 	    System.err.println ("Error creating type handler:" + XmlUtil.toString(entryNode));
+	    exc.printStackTrace();
 	    throw exc;
 	}
 

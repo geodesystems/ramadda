@@ -418,6 +418,8 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_CATEGORY = "category";
 
+    public static final String ATTR_ENTRYORDER = "entryorder";    
+
     /** _more_ */
     public static final String ATTR_EAST = "east";
 
@@ -710,6 +712,9 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_CONTRIBUTION_FROMNAME =
         "contribution.fromname";
+
+    public static final String ARG_ENTRYORDER = "entryorder";
+
 
     /** _more_ */
     public static final String ARG_CREATEDATE = "createdate";
@@ -2233,6 +2238,8 @@ public interface Constants {
     public static final String ARG_IMPORT_TYPE = "import.type";
 
 
+    public static final String SORTBY_DATE = "date";
+
     /** _more_ */
     public static final String SORTBY_FROMDATE = "fromdate";
 
@@ -2240,10 +2247,15 @@ public interface Constants {
     public static final String SORTBY_TODATE = "todate";
 
     /** _more_ */
+    public static final String SORTBY_CHANGEDATE = "changedate";    
+
+    /** _more_ */
     public static final String SORTBY_SIZE = "size";
 
     /** _more_ */
     public static final String SORTBY_TYPE = "type";
+
+    public static final String SORTBY_ENTRYORDER = "entryorder";
 
     /** _more_ */
     public static final String SORTBY_CREATEDATE = "createdate";
