@@ -508,7 +508,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
 
         Date now = new Date();
         entry.initEntry(name, "", (Entry) parentEntry,
-                        getUserManager().getLocalFileUser(), resource, "",
+                        getUserManager().getLocalFileUser(), resource, "",Entry.DEFAULT_ORDER,
                         now.getTime(), now.getTime(), now.getTime(),
                         now.getTime(), null);
 

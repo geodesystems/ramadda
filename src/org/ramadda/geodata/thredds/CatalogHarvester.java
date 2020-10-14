@@ -700,7 +700,7 @@ public class CatalogHarvester extends Harvester {
         Entry entry      = typeHandler.createEntry(repository.getGUID());
         long  createDate = new Date().getTime();
 
-        entry.initEntry(name, "", parent, getUser(), resource, "",
+        entry.initEntry(name, "", parent, getUser(), resource, "",Entry.DEFAULT_ORDER,
                         createDate, createDate, createDate, createDate, null);
 
         entries.add(entry);

@@ -376,7 +376,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
 
             title = title.replaceAll("_", " ");
             layerEntry.initEntry(title, desc, entry, entry.getUser(),
-                                 resource, "", now.getTime(), now.getTime(),
+                                 resource, "", Entry.DEFAULT_ORDER,now.getTime(), now.getTime(),
                                  date.getTime(), date.getTime(), values);
             children.add(layerEntry);
         }

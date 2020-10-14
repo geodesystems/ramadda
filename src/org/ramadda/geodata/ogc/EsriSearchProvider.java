@@ -186,7 +186,7 @@ public class EsriSearchProvider extends SearchProvider {
 
                 newEntry.initEntry(title, desc, parent,
                                    getUserManager().getLocalFileUser(),
-                                   new Resource(new URL(file)), "",
+                                   new Resource(new URL(file)), "",Entry.DEFAULT_ORDER,
                                    dttm.getTime(), dttm.getTime(),
                                    fromDate.getTime(), toDate.getTime(),
                                    null);
