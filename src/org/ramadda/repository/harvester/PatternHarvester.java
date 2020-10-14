@@ -1642,7 +1642,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             if (entry.hasCreateDate()) {
                 createTime = entry.getCreateDate();
             }
-            entry.initEntry(name, desc, group, getUser(), resource, "",
+            entry.initEntry(name, desc, group, getUser(), resource, "",Entry.DEFAULT_ORDER,
                             createTime, changeDate.getTime(),
                             fromDate.getTime(), toDate.getTime(), values);
         }

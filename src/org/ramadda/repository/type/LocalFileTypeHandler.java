@@ -601,7 +601,8 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                         getUserManager().getLocalFileUser(),
                         new Resource(targetFile, (targetFile.isDirectory()
                 ? Resource.TYPE_LOCAL_DIRECTORY
-                : Resource.TYPE_LOCAL_FILE)), "", targetFile.lastModified(),
+                : Resource.TYPE_LOCAL_FILE)), "", Entry.DEFAULT_ORDER,
+			targetFile.lastModified(),
                 targetFile.lastModified(), targetFile.lastModified(),
                 targetFile.lastModified(), values);
         //        System.err.println ("Done:" + entry);

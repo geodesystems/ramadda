@@ -2239,35 +2239,39 @@ public class TypeHandler extends RepositoryManager {
             boolean abbreviated)
             throws Exception {
         if (parent != null) {}
-
-        //id,type,name,desc,group, user,file,createdata,fromdate,todate
-        int             col        = 3;
-        String          id         = results.getString(1);
-        Entry           entry      = createEntry(id);
         DatabaseManager dbm        = getDatabaseManager();
-        Date            createDate = null;
-
-        String          entryId    = results.getString(col++);
-        String          name       = results.getString(col++);
-        String          parentId   = results.getString(col++);
-
+        String          entryId    = results.getString(Tables.ENTRIES.COL_NODOT_ID);
+        Entry           entry      = createEntry(entryId);
+        Date            createDate =  dbm.getDate(results, Tables.ENTRIES.COL_NODOT_CREATEDATE);
+        String          parentId   = results.getString(Tables.ENTRIES.COL_NODOT_PARENT_GROUP_ID);
         Entry           parent = getEntryManager().findGroup(null, parentId);
-        entry.initEntry(entryId, name, parent, getUserManager()
-            .findUser(results
-                .getString(col++), true), new Resource(getStorageManager()
-                .resourceFromDB(results.getString(col++)), results
-                .getString(col++), results.getString(col++), results
-                .getLong(col++)), results.getString(col++), (createDate =
-                    dbm.getDate(results, col++)).getTime(), dbm
-                        .getDate(results, col++, createDate).getTime(), dbm
-                        .getDate(results, col++).getTime(), dbm
-                        .getDate(results, col++).getTime(), null);
-        entry.setSouth(results.getDouble(col++));
-        entry.setNorth(results.getDouble(col++));
-        entry.setEast(results.getDouble(col++));
-        entry.setWest(results.getDouble(col++));
-        entry.setAltitudeTop(results.getDouble(col++));
-        entry.setAltitudeBottom(results.getDouble(col++));
+	Resource resource = new Resource(
+					 getStorageManager().resourceFromDB(results.getString(Tables.ENTRIES.COL_NODOT_RESOURCE)),
+					 results.getString(Tables.ENTRIES.COL_NODOT_RESOURCE_TYPE),
+					 results.getString(Tables.ENTRIES.COL_NODOT_MD5),
+					 results.getLong(Tables.ENTRIES.COL_NODOT_FILESIZE));
+	User user = 	getUserManager().findUser(results.getString(Tables.ENTRIES.COL_NODOT_USER_ID), true); 
+	int order = results.getInt(Tables.ENTRIES.COL_NODOT_ENTRYORDER);
+	if(order ==0) order=999;
+	entry.initEntry(results.getString(Tables.ENTRIES.COL_NODOT_NAME), 
+			results.getString(Tables.ENTRIES.COL_NODOT_DESCRIPTION),
+			parent,
+			user,
+			resource,
+			results.getString(Tables.ENTRIES.COL_NODOT_DATATYPE),
+			order,
+			createDate.getTime(), 
+			dbm.getDate(results, Tables.ENTRIES.COL_NODOT_CHANGEDATE, createDate).getTime(),
+			dbm.getDate(results, Tables.ENTRIES.COL_NODOT_FROMDATE).getTime(),
+			dbm.getDate(results, Tables.ENTRIES.COL_NODOT_TODATE).getTime(),
+			null);
+
+        entry.setSouth(results.getDouble(Tables.ENTRIES.COL_NODOT_SOUTH));
+        entry.setNorth(results.getDouble(Tables.ENTRIES.COL_NODOT_NORTH));
+        entry.setEast(results.getDouble(Tables.ENTRIES.COL_NODOT_EAST));
+        entry.setWest(results.getDouble(Tables.ENTRIES.COL_NODOT_WEST));
+        entry.setAltitudeTop(results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDETOP));
+        entry.setAltitudeBottom(results.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDEBOTTOM));
 
         if ( !abbreviated) {
             initializeEntryFromDatabase(entry);
@@ -4014,6 +4018,10 @@ public class TypeHandler extends RepositoryManager {
             addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
                                   this);
 
+	    sb.append(formEntry(request, msgLabel("Order"),
+				HtmlUtils.input(ARG_ENTRYORDER,
+                                        ((entry != null)
+                                         ? entry.getEntryOrder():999),HtmlUtils.SIZE_5)+" 1-N"));
             if ((entry != null) && request.getUser().getAdmin()
                     && okToShowInForm(entry, "owner", true)) {
                 sb.append(formEntry(request, msgLabel("Owner"),

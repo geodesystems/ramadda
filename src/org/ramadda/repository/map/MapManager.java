@@ -1286,6 +1286,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 	}
 	if(props.get("zoomLevel")!=null)
 	    map.getMapProps().put("zoomLevel",props.get("zoomLevel"));
+	if(props.get("doMouseOver")!=null)
+	    map.getMapProps().put("doMouseOver",props.get("doMouseOver"));
 	if(props.get("mapCenter")!=null)
 	    map.getMapProps().put("mapCenter",Json.quote((String)props.get("mapCenter")));
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
@@ -1473,7 +1475,6 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         boolean showLines = Utils.getProperty(props, "showLines", false);
 	//            map.addLines(entry, "", polyLine, null);
-
 
         if ((entriesToUse.size() == 1) && detailed) {
             List<Metadata> metadataList =

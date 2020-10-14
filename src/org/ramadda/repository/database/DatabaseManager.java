@@ -2128,6 +2128,16 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return date;
     }
 
+    public Date getDate(ResultSet results, String col, Date dflt)
+            throws Exception {
+        Date date = getDate(results, col, false);
+        if (date == null) {
+            return dflt;
+        }
+
+        return date;
+    }
+    
 
     /**
      * _more_
@@ -2143,6 +2153,21 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return getDate(results, col, true);
     }
 
+
+    /**
+     * _more_
+     *
+     * @param results _more_
+     * @param col _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Date getDate(ResultSet results, String col) throws Exception {
+        return getDate(results, col, true);
+    }
+    
     /**
      * _more_
      *
@@ -2155,6 +2180,35 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @throws Exception _more_
      */
     public Date getDate(ResultSet results, int col, boolean makeDflt)
+            throws Exception {
+        //        if (!db.equals(DB_MYSQL)) {
+        if (true || !db.equals(DB_MYSQL)) {
+            return getTimestamp(results, col, makeDflt);
+        }
+        Date date = results.getTime(col, Repository.calendar);
+        if (date != null) {
+            return date;
+        }
+        if (makeDflt) {
+            return new Date();
+        }
+
+        return null;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param results _more_
+     * @param col _more_
+     * @param makeDflt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Date getDate(ResultSet results, String col, boolean makeDflt)
             throws Exception {
         //        if (!db.equals(DB_MYSQL)) {
         if (true || !db.equals(DB_MYSQL)) {

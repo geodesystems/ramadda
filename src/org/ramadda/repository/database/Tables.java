@@ -151,6 +151,8 @@ public abstract class Tables {
         public static final String COL_NODOT_FILESIZE =   "filesize";
         public static final String COL_DATATYPE =  NAME + ".datatype";
         public static final String COL_NODOT_DATATYPE =   "datatype";
+        public static final String COL_ENTRYORDER =  NAME + ".entryorder";
+        public static final String COL_NODOT_ENTRYORDER =   "entryorder";
         public static final String COL_CREATEDATE =  NAME + ".createdate";
         public static final String COL_NODOT_CREATEDATE =   "createdate";
         public static final String COL_CHANGEDATE =  NAME + ".changedate";
@@ -173,7 +175,7 @@ public abstract class Tables {
         public static final String COL_NODOT_ALTITUDEBOTTOM =   "altitudebottom";
 
         public static final String[] ARRAY = new String[] {
-            COL_ID,COL_TYPE,COL_NAME,COL_DESCRIPTION,COL_PARENT_GROUP_ID,COL_USER_ID,COL_RESOURCE,COL_RESOURCE_TYPE,COL_MD5,COL_FILESIZE,COL_DATATYPE,COL_CREATEDATE,COL_CHANGEDATE,COL_FROMDATE,COL_TODATE,COL_SOUTH,COL_NORTH,COL_EAST,COL_WEST,COL_ALTITUDETOP,COL_ALTITUDEBOTTOM
+            COL_ID,COL_TYPE,COL_NAME,COL_DESCRIPTION,COL_PARENT_GROUP_ID,COL_USER_ID,COL_RESOURCE,COL_RESOURCE_TYPE,COL_MD5,COL_FILESIZE,COL_DATATYPE,COL_ENTRYORDER,COL_CREATEDATE,COL_CHANGEDATE,COL_FROMDATE,COL_TODATE,COL_SOUTH,COL_NORTH,COL_EAST,COL_WEST,COL_ALTITUDETOP,COL_ALTITUDEBOTTOM
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
@@ -205,7 +207,7 @@ public abstract class Tables {
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
         public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
-    public static final FAVORITES table  = new  FAVORITES();
+	public static final FAVORITES table  = new  FAVORITES();
     }
 
 

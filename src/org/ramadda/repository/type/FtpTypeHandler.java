@@ -813,7 +813,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
             resource.setFileSize(ftpFile.getSize());
         }
         entry.initEntry(name, "", parent,
-                        getUserManager().getLocalFileUser(), resource, "",
+                        getUserManager().getLocalFileUser(), resource, "",999,
                         dttm, dttm, dttm, dttm, null);
 
 

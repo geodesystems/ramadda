@@ -767,7 +767,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (entryId.startsWith("alias:")) {
             String alias = entryId.substring("alias:".length());
-
             return getEntryManager().getEntryFromAlias(request, alias);
         }
 
@@ -861,6 +860,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             theEntry = getEntryManager().findEntryFromPath(request, entry,
                     entryId);
         }
+
+	//Finally try it as an alias
+	if(theEntry == null) {
+            theEntry = getEntryManager().getEntryFromAlias(request, entryId);
+	}
 
         return theEntry;
 
@@ -4340,15 +4344,36 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        String sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
-                                  (String) null);
+	//Only do the sort if the user has not done an entry sort
+	String sort = null;
 
-        if (sort != null) {
-            boolean ascending = getProperty(wikiUtil, props,
-                                            attrPrefix + ATTR_SORT_ORDER,
-                                            "up").equals("up");
-            entries = getEntryUtil().sortEntries(entries, sort, !ascending);
-        }
+	if(request.exists(ARG_ORDERBY)) {
+	    sort = request.getString(ARG_ORDERBY,SORTBY_NAME);
+	}
+	if(sort == null)
+	    sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
+			       (String) null);
+	    
+	if (sort != null) {
+	    String dir = null;
+	    if(request.exists(ARG_ASCENDING)) {
+		dir = request.get(ARG_ASCENDING,true)?"up":"down";
+		
+	    }
+	    if(dir == null)
+		dir = getProperty(wikiUtil, props,
+				  attrPrefix + ATTR_SORT_ORDER, null);
+	    //If no dir specified then do ascending if we are sorting by name else do descending
+	    if(dir==null) {
+		if(sort.indexOf(SORTBY_NAME)>=0 || sort.indexOf(SORTBY_ENTRYORDER) >=0) {
+		    dir = "up";
+		} else {
+		    dir = "down";
+		}
+	    }
+	    boolean descending = dir.equals("down");
+	    entries = getEntryUtil().sortEntries(entries, sort, descending);
+	}
 
         String firstEntries = getProperty(wikiUtil, props,
                                           attrPrefix + ATTR_FIRST,
@@ -6749,7 +6774,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         topProps.add("defaultMapLayer");
         topProps.add(Json.quote(defaultLayer));
-	System.err.println("tp1:" + topProps);
 
         String displayDiv = getProperty(wikiUtil, props, "displayDiv");
         if (displayDiv != null) {
@@ -6996,7 +7020,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         wikiUtil.addWikiAttributes(propList);
-	System.err.println("PROPLIST:" + propList);
         js.append("displayManager.createDisplay("
                   + HtmlUtils.quote(displayType) + ","
                   + Json.map(propList, false) + ");\n");

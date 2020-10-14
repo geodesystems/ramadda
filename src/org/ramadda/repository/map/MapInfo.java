@@ -1027,8 +1027,6 @@ public class MapInfo {
         StringBuilder attrs = new StringBuilder("{");
         entry.getTypeHandler().initMapAttrs(entry, this, attrs);
         attrs.append("}");
-
-
         for (int i = 1; i < pts.length; i++) {
             addLine(entry, id, pts[i - 1][0], pts[i - 1][1], pts[i][0],
                     pts[i][1], info);

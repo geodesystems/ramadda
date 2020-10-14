@@ -638,7 +638,7 @@ public class WebHarvester extends Harvester {
 
 
         //        System.err.println ("WebHarvester: " + getName() +" adding entry: " + name);
-        entry.initEntry(name, desc, group, getUser(), resource, "",
+        entry.initEntry(name, desc, group, getUser(), resource, "",Entry.DEFAULT_ORDER,
                         createDate.getTime(), createDate.getTime(),
                         fromDate.getTime(), toDate.getTime(), null);
         if (tag.length() > 0) {

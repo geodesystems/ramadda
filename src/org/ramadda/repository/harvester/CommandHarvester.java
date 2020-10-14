@@ -1612,7 +1612,7 @@ public class CommandHarvester extends Harvester {
             values[0] = desc;
             desc      = "";
         }
-        entry.initEntry(name, desc, parent, getUser(), new Resource(""), "",
+        entry.initEntry(name, desc, parent, getUser(), new Resource(""), "",Entry.DEFAULT_ORDER,
                         date.getTime(), date.getTime(), date.getTime(),
                         date.getTime(), values);
         List<Entry> entries = (List<Entry>) Misc.newList(entry);

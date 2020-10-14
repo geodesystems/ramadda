@@ -157,7 +157,8 @@ public class TestGenerator extends Harvester {
                     entry.initEntry("test_" + i + "_" + j + "_" + k, "",
                                     group, user,
                                     new Resource("", Resource.TYPE_UNKNOWN),
-                                    "", createDate.getTime(),
+                                    "", Entry.DEFAULT_ORDER,
+				    createDate.getTime(),
                                     createDate.getTime(),
                                     createDate.getTime(),
                                     createDate.getTime(), null);

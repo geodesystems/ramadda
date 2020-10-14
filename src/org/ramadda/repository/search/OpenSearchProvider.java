@@ -213,7 +213,7 @@ public class OpenSearchProvider extends SearchProvider {
 
             newEntry.initEntry(name, desc, parent,
                                getUserManager().getLocalFileUser(),
-                               new Resource(new URL(itemUrl)), "",
+                               new Resource(new URL(itemUrl)), "",Entry.DEFAULT_ORDER,
                                dttm.getTime(), dttm.getTime(),
                                fromDate.getTime(), toDate.getTime(), null);
 
