@@ -562,6 +562,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'titleField',wikiValue:''},
 	{p:'startAtSlide',wikiValue:'0'},
 	{p:'startAtEnd',wikiValue:'true'},
+	{p:'scaleFactor',wikiValue:'10'},
 	{p:'navHeight',wikiValue:'150'},
 	{p:'titleField',wikiValue:''},
 	{p:'startDateField',wikiValue:''},
@@ -587,6 +588,10 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
         },
 	loadCnt:0,
 	timelineLoaded: false,
+        checkLayout: function() {
+	    //Update the ui when the tab this is in is activated
+	    this.updateUI();
+	},
 	updateUI: function() {
 	    if(!this.timelineLoaded) {
 		try {
@@ -609,8 +614,11 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,timelineId]));
 	    this.timelineReady = false;
 	    let opts = {
-		start_at_end: this.getPropertyStartAtEnd(false),
+//		debug:true,
+//		start_at_end: this.getPropertyStartAtEnd(false),
 		start_at_slide: this.getPropertyStartAtSlide(0),
+		scale_factor:this.getPropertyScaleFactor(15),
+//		initial_zoom:10,
 		//		default_bg_color: {r:0, g:0, b:0},
 		timenav_height: this.getPropertyNavHeight(150),
 		//		menubar_height:100,
@@ -648,9 +656,18 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		let tuple = record.getData();
 		let event = {
 		};	
-		let text =  this.getRecordHtml(record, null, textTemplate);
+		let headline = titleField? tuple[titleField.getIndex()]:" record:" + (i+1);
+		let debug = false;
+		let text =  this.getRecordHtml(record, null, textTemplate,debug);
+
+		if(urlField) {
+		    let url  = record.getValue(urlField.getIndex());
+//		    text = HU.href(url,text);
+		    headline = HU.href(url,headline);
+		}
+
 		event.text = {
-		    headline: titleField? tuple[titleField.getIndex()]:" record:" + (i+1),
+		    headline: headline,
 		    text:text
 		};
 		if(groupField) {
