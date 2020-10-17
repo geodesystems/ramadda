@@ -3408,9 +3408,9 @@ public class TypeHandler extends RepositoryManager {
         if (desc == null) {
             return false;
         }
-
-        return (desc.trim().startsWith("<wiki_inner>")
-                || desc.trim().startsWith("<wiki>"));
+	desc = desc.trim();
+        return (desc.startsWith("<wiki_inner>")
+                || desc.startsWith("<wiki>"));
     }
 
 
@@ -4465,7 +4465,7 @@ public class TypeHandler extends RepositoryManager {
                                                      ICON_WIKI), "title",
                                                          "Wikify text");
 
-                        HtmlUtils.open(tmpSB, "div",
+			HtmlUtils.open(tmpSB, "div",
                                        HtmlUtils.attrs("style", isTextWiki
                                 ? ""
                                 : "display:none;", "id", wikiId + "_block"));
@@ -4899,7 +4899,7 @@ public class TypeHandler extends RepositoryManager {
                               String hiddenId, String text, String label,
                               boolean readOnly, int length)
             throws Exception {
-        if (text.startsWith("<wiki>")) {
+	if (text.startsWith("<wiki>")) {
             text = text.substring(6).trim();
         }
         String sidebar = "";

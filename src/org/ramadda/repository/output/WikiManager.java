@@ -2055,6 +2055,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (getProperty(wikiUtil, props, "addAttributes", false)) {
                     jsonUrl += "&addAttributes=true";
                 }
+                if (getProperty(wikiUtil, props, "addThumbnails", false)) {
+                    jsonUrl += "&addThumbnails=true";
+                }
+                if (getProperty(wikiUtil, props, "addSnippets", false)) {
+                    jsonUrl += "&addSnippets=true";
+                }				
             }
             if (theTag.startsWith("display_")) {
                 String newType = theTag.substring(8);
@@ -2539,7 +2545,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 StringBuilder content = new StringBuilder();
                 content.append(prefix);
                 HtmlUtils.open(content, HtmlUtils.TAG_DIV, divExtra);
-                content.append(getSnippet(request, child));
+                content.append(getSnippet(request, child,true));
                 content.append(childsHtml);
                 content.append(suffix);
                 if (includeLinkAfter) {
@@ -3577,13 +3583,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @return _more_
      */
-    public String getSnippet(Request request, Entry child) {
-        String snippet = getRawSnippet(request, child);
+    public String getSnippet(Request request, Entry child, boolean wikify) throws Exception {
+        String snippet = getRawSnippet(request, child, wikify);
         if (snippet == null) {
             return "";
         }
-
-        return HtmlUtils.div(snippet, HtmlUtils.cssClass("ramadda-snippet"));
+	return HtmlUtils.div(snippet, HtmlUtils.cssClass("ramadda-snippet"));
     }
 
 
@@ -3595,9 +3600,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @return _more_
      */
-    public String getRawSnippet(Request request, Entry child) {
+    public String getRawSnippet(Request request, Entry child, boolean wikify) throws Exception {
         String snippet = child.getSnippet();
         if (snippet != null) {
+	    if(wikify)
+		snippet = wikifyEntry(request, child, snippet);
             return snippet;
         }
         String text = child.getTypeHandler().getEntryText(child);
@@ -3607,7 +3614,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 text, "(?s)<snippet-hide>(.*)</snippet-hide>");
         }
         child.setSnippet(snippet);
-
+        if(snippet!=null && wikify) {
+	    snippet = wikifyEntry(request, child, snippet);
+	}
         return snippet;
     }
 
@@ -3646,7 +3655,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         boolean showSnippetHover = getProperty(wikiUtil, props,
                                        "showSnippetHover", false);
         if (showSnippet || showSnippetHover) {
-            String snippet = getSnippet(request, entry);
+            String snippet = getSnippet(request, entry,false);
             if (Utils.stringDefined(snippet)) {
                 snippet = wikifyEntry(request, entry, snippet, false, null,
                                       null, wikiUtil.getNotTags());
@@ -6880,7 +6889,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 	}
 
-	System.err.println("default layer:" + defaultLayer);
 
         if (defaultLayer != null) {
             Utils.add(propList, "defaultMapLayer", Json.quote(defaultLayer));

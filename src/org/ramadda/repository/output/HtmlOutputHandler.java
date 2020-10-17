@@ -2159,7 +2159,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request,
-                                  entry);
+								     entry);
         if (wikiTemplate == null) {
             PageStyle pageStyle = request.getPageStyle(entry);
             wikiTemplate = pageStyle.getWikiTemplate(entry);

@@ -268,9 +268,13 @@ public class JsonOutputHandler extends OutputHandler {
         */
 
 
+        boolean      addSnippets = request.get("addSnippets", false);		
 
         addPointHeader(fields, "name", "Name", "string");
         addPointHeader(fields, "description", "Description", "string");
+	if(addSnippets)
+	    addPointHeader(fields, "snippet", "Snippet", "string", "forDisplay",
+			   "false");
         addPointHeader(fields, "id", "Id", "string", "forDisplay", "false");
         addPointHeader(fields, "typeid", "Type ID", "enumeration");
         addPointHeader(fields, "type", "Type", "enumeration");
@@ -284,6 +288,13 @@ public class JsonOutputHandler extends OutputHandler {
                        "false");
 
         boolean      addAttributes = request.get("addAttributes", false);
+
+
+        boolean      addThumbnails = request.get("addThumbnails", false);
+	if(addThumbnails)
+	    addPointHeader(fields, "thumbnail", "Thumbnail", "image", "forDisplay",
+			   "false");
+
         TypeHandler  typeHandler   = null;
         List<Column> columns       = null;
         if (addAttributes && (entries.size() > 0)) {
@@ -326,7 +337,7 @@ public class JsonOutputHandler extends OutputHandler {
             List<String> entryArray = new ArrayList<String>();
             //Note: if the entry is a different type than the first one then
             //the columns will mismatch
-            String array = toPointJson(request, entry, addAttributes,
+            String array = toPointJson(request, entry, addSnippets, addAttributes,addThumbnails,
                                        columns, showFileUrl);
             entryArray.add("values");
             entryArray.add(array);
@@ -695,14 +706,18 @@ public class JsonOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private String toPointJson(Request request, Entry entry,
-                               boolean addAttributes, List<Column> columns,
+    private String toPointJson(Request request, Entry entry,boolean addSnippets,
+                               boolean addAttributes, boolean addThumbnails, List<Column> columns,
                                boolean showFileUrl)
             throws Exception {
 
         List<String> items = new ArrayList<String>();
         items.add(Json.quote(entry.getName()));
         items.add(Json.quote(entry.getDescription()));
+	if(addSnippets) {
+	    String snippet= getWikiManager().getRawSnippet(request, entry,true);
+	    items.add(Json.quote(snippet!=null?snippet:""));
+	}
         items.add(Json.quote(entry.getId()));
         items.add(Json.quote(entry.getTypeHandler().getType()));
         items.add(Json.quote(entry.getTypeHandler().getLabel()));
@@ -714,6 +729,15 @@ public class JsonOutputHandler extends OutputHandler {
                 request.getAbsoluteUrl(
                     getPageHandler().getIconUrl(request, entry))));
         items.add(Json.quote(getEntryManager().getEntryUrl(request, entry)));
+
+	if(addThumbnails) {
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, entry, urls);
+	    if(urls.size()>0)
+		items.add(Json.quote(urls.get(0)));
+	    else
+		items.add("null");
+	}
 
         TypeHandler typeHandler = entry.getTypeHandler();
         if (addAttributes) {

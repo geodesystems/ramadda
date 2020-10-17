@@ -280,7 +280,7 @@ public class MetadataManager extends RepositoryManager {
         top.add("url");
         top.add(Json.quote(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                             entry)));
-        String snippet = getWikiManager().getRawSnippet(request, entry);
+        String snippet = getWikiManager().getRawSnippet(request, entry,false);
         if ((snippet != null) && (snippet.length() > 0)) {
             top.add("description");
             top.add(Json.quote(Json.cleanString(snippet)));

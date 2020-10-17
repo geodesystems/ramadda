@@ -245,9 +245,10 @@ public class CalendarOutputHandler extends OutputHandler {
         } else if (outputType.equals(OUTPUT_TIMELINE)) {
             //            sb.append(getHtmlHeader(request,  group));
             List allEntries = new ArrayList(entries);
-            allEntries.addAll(subGroups);
             //            makeTimeline(request, allEntries, sb, "height: 300px;");
             getPageHandler().entrySectionOpen(request, group, sb, "Timeline");
+	    
+
             makeTimeline(request, group, allEntries, sb, "height: 300px;",
                          new Hashtable());
             getPageHandler().entrySectionClose(request, group, sb);
@@ -351,6 +352,7 @@ public class CalendarOutputHandler extends OutputHandler {
                              List<Entry> entries, Appendable sb,
                              String style, Hashtable props)
             throws Exception {
+	
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         long             minDate = 0;
         long             maxDate = 0;
