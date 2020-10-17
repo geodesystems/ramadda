@@ -3960,9 +3960,9 @@ a
 	    let h2 = HU.div([ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
             let topCenter = HU.div([ID, this.getDomId(ID_TOP),CLASS,"display-header-block"], h2Separate?"":h2);
             let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], "");
-	    let top =  HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
+	    let top =  this.getProperty("showHeader",true)?HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
                 valign: "bottom"
-            });
+            }):"";
             let header = h1;
 	    if(h2Separate) header+=h2;
 	    top =  header +  top;	    
