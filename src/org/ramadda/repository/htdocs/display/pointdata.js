@@ -1705,7 +1705,7 @@ function MonthFilter(param) {
 
 
 
-var A = {
+var ArrayUtil = {
     add: function(v1, v2) {
         if (isNaN(v1) || isNaN(v2)) return NaN;
         return v1 + v2;
@@ -1739,8 +1739,27 @@ var A = {
             props = {};
         }
         if (!props.step) props.step = 5;
+	if(values.length==0) return values;
         var newValues = [];
         console.log("STEP:" + props.step);
+	let tupleGetter = values[0].tuple?v=>{return v.tuple}:v=>{return  v};
+	let isNumeric = tupleGetter(values[0]).map((v,idx)=>{return Utils.isNumber(v);});
+	dataList.forEach((o,rowIdx)=>{
+		    if(rowIdx==0) return;
+		    let tuple = Utils.mergeLists(o.tuple);
+		    tmp.push({
+			record:o.record,
+			tuple:tuple});
+		    tuple[0] = "x"; tuple[1] = 5;
+		    tuple.forEach((v,colIdx)=>{
+			if(!isNumeric[colIdx]) return;
+			tuple[colIdx]=5;
+		    });
+		});
+		dataList = tmp;
+
+
+
         for (var i = props.step; i < values.length; i++) {
             var total = 0;
             var cnt = 0;
@@ -1767,7 +1786,7 @@ var A = {
             props = {};
         }
         if (!props.step) props.step = 5;
-        var sma = A.movingAverage(values, props);
+        var sma = ArrayUtil.movingAverage(values, props);
         var mult = (2.0 / (props.step + 1));
         var newValues = [];
         console.log("STEP:" + props.step);
@@ -1815,6 +1834,9 @@ var A = {
 }
 
 var RecordUtil = {
+
+
+
     groupBy:function(records, display, dateBin, field) {
 	let debug = displayDebug.groupBy;
 	if(debug) console.log("groupBy");
