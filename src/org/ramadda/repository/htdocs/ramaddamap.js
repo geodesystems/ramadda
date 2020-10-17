@@ -245,7 +245,7 @@ function RepositoryMap(mapId, params) {
         fillOpacity: 0.8,
         fillColor: "#e6e6e6",
         fill: true,
-        strokeColor: "#999",
+        strokeColor: "blue",
         strokeWidth: 1,
         scrollToZoom: false,
         selectOnHover: false,
@@ -838,29 +838,33 @@ RepositoryMap.prototype = {
         this.centerOnMarkers(this.dfltBounds);
     },
     handleFeatureover: function(feature, skipText) {
-	if(feature.highlightText || feature.highlightTextGetter) {
+	if(this.xxdoMouseOver || feature.highlightText || feature.highlightTextGetter) {
 	    var location = feature.location;
 	    if (location) {
 		if(this.highlightFeature != feature) {
 		    this.closeHighlightPopup();
 		    var projPoint = this.transformLLPoint(location);
 		    let text = feature.highlightTextGetter?feature.highlightTextGetter(feature):feature.highlightText;
-		    text =HtmlUtils.div(["style","padding:2px;"],text);
-		    this.highlightPopup = new OpenLayers.Popup("popup",
-							       projPoint,
-							       feature.highlightSize,
-							       text,
-							       false);
+		    if (!Utils.stringDefined(text))  {text = feature.text;}
+		    if (Utils.stringDefined(text)) {
+			text =HtmlUtils.div(["style","padding:2px;"],text);
 
-
-		    this.highlightPopup.backgroundColor=this.highlightBackgroundColor||"#fff";
-		    this.highlightPopup.autoSize=false;
-		    this.highlightPopup.keepInMap=true;
-		    this.highlightPopup.padding=0;
-		    this.getMap().addPopup(this.highlightPopup);
+			this.highlightPopup = new OpenLayers.Popup("popup",
+								   projPoint,
+								   feature.highlightSize,
+								   text,
+								   false);
+			this.highlightPopup.backgroundColor=this.highlightBackgroundColor||"#ffffcc";
+			this.highlightPopup.autoSize=true;
+			this.highlightPopup.keepInMap=true;
+			this.highlightPopup.padding=0;
+			this.getMap().addPopup(this.highlightPopup);
+		    }
 		}
 	    }
 	}
+
+
 
         var layer = feature.layer;
         if (!(layer.isMapLayer === true)) {
@@ -869,21 +873,22 @@ RepositoryMap.prototype = {
             }
             return;
         }
-
 	//            if (layer.canSelect === false || !(layer.isMapLayer === true)) return;
 	if (layer.canSelect === false) return;
         var _this = this;
-	
 
+	//xxxx
         if (!feature.isSelected) {
             feature.originalStyle = feature.style;
             feature.style = null;
-            layer.drawFeature(feature, "temporary");
+	    //"temporary"
+            layer.drawFeature(feature, {strokeColor:'red'});
             if (this.displayDiv) {
                 this.displayedFeature = feature;
                 var callback = function() {
                     if (_this.displayedFeature == feature) {
-                        _this.showText(_this.getFeatureText(layer, feature));
+			let text = _this.getFeatureText(layer, feature);
+                        _this.showText(text);
                         _this.dateFeatureOver(feature);
                     }
                 }
@@ -911,7 +916,7 @@ RepositoryMap.prototype = {
                     this.hideFeatureText(feature);
                 }
             }
-            return;
+//            return;
         }
         if (layer == null || layer.canSelect === false) return;
         feature.style = feature.originalStyle;
@@ -945,6 +950,7 @@ RepositoryMap.prototype = {
             this.unselectFeature(layer.selectedFeature);
         }
 	if(!this.doSelect) return;
+
 
         this.selectedFeature = feature;
         layer.selectedFeature = feature;
@@ -3681,7 +3687,6 @@ RepositoryMap.prototype = {
             $.extend(myattrs, attrs);
         var _this = this;
         this.showFeatureText(marker);
-
         return this.addPoint(id + "_circle", marker.location, myattrs);
     },
 
@@ -3703,8 +3708,9 @@ RepositoryMap.prototype = {
     },
 
     showFeatureText:  function(feature) {
-	if(this.featureHighlightHandler)
+	if(this.featureHighlightHandler) {
 	    this.featureHighlightHandler(feature,true);
+	}
         var _this = this;
         if (feature.text && this.displayDiv) {
             this.textFeature = feature;
@@ -3875,6 +3881,8 @@ RepositoryMap.prototype = {
          * line.events.register("click", line, function (e) { alert("box
          * click"); _this.showMarkerPopup(box); OpenLayers.Event.stop(evt); });
          */
+	if(!marker) marker = name;
+
         line.text = marker;
         line.ramaddaId = id;
         line.location = location;
@@ -3938,6 +3946,7 @@ RepositoryMap.prototype = {
 	if(!this.doPopup) {
 	    return;
 	}
+
 
         this.hiliteBox(id);
         var _this = this;
