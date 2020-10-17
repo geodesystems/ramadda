@@ -905,7 +905,8 @@ var Utils =  {
 	return {tokens:tokens,
 		//This gets a modified version of the source string with:
 		//s...${m0}...${m1} ...
-		apply: function(source) {
+		apply: function(source, debug) {
+		    //		    if(debug) console.log("macro:" + JSON.stringify(source,null,2));
 		    let cnt = 0;
 		    let s ="";
 		    this.tokens.map(t=>{
@@ -913,6 +914,7 @@ var Utils =  {
 			    s+=t.s;
 			} else {
 			    let value = source[t.tag];
+//			    if(debug) console.log("macro tag:" + t.tag +" value:" + value);
 			    if(t.tag=="func") {
 				let f = t.attrs.f;
 				if(!f) {
