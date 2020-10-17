@@ -425,7 +425,7 @@ function DisplayThing(argId, argProperties) {
 		colorByMap: this.getColorByMap()
 	    }
 	},
-	applyRecordTemplate: function(row, fields, template, props,macros) {
+	applyRecordTemplate: function(row, fields, template, props,macros, debug) {
 	    fields = this.getFields(fields);
 	    if(!props) {
 		props = this.getTemplateProps(fields);
@@ -442,6 +442,7 @@ function DisplayThing(argId, argProperties) {
 	    for (var col = 0; col < fields.length; col++) {
 		var f = fields[col];
 		var value = row[f.getIndex()];
+		if(debug) console.log("macro:" + col +" field:" + f.getId() +" value:" + value);
 		if(props.iconMap) {
 		    var icon = props.iconMap[f.getId()+"."+value];
 		    if(icon) {
@@ -492,7 +493,7 @@ function DisplayThing(argId, argProperties) {
 		    attrs[f.getId() +"_format"] = Utils.formatNumberComma(value);
 		}
 	    }
-	    return macros.apply(attrs);
+	    return macros.apply(attrs,debug);
 	},
 	getFields: function(fields) {
             if (!fields) {
@@ -504,7 +505,7 @@ function DisplayThing(argId, argProperties) {
 	    }
 	    return fields;
 	},
-        getRecordHtml: function(record, fields, template) {
+        getRecordHtml: function(record, fields, template, debug) {
 	    fields = this.getFields(fields);
 	    if(!fields) return "";
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
@@ -521,7 +522,7 @@ function DisplayThing(argId, argProperties) {
 		template = this.getProperty("recordTemplate");
 	    if(template) {
 		if(template!="${default}" && template!="${fields}") {
-		    return this.applyRecordTemplate(this.getDataValues(record), fields, template);
+		    return this.applyRecordTemplate(this.getDataValues(record), fields, template, null, null,debug);
 		}
 	    }
 	    if(template=="${fields}") {
@@ -5905,7 +5906,24 @@ a
             }
 
 	    //	    console.log("display.getStandardData returning "+ dataList.length);
-	    
+	    if(this.getProperty("movingAverageSteps")) {
+		let steps = +this.getProperty("movingAverageSteps");
+		let tmp = [dataList[i]];
+		let isNumeric = dataList[1].tuple.map((v,idx)=>{return Utils.isNumber(v);});
+		dataList.forEach((o,rowIdx)=>{
+		    if(rowIdx==0) return;
+		    let tuple = Utils.mergeLists(o.tuple);
+		    tmp.push({
+			record:o.record,
+			tuple:tuple});
+		    tuple[0] = "x"; tuple[1] = 5;
+		    tuple.forEach((v,colIdx)=>{
+			if(!isNumeric[colIdx]) return;
+			tuple[colIdx]=5;
+		    });
+		});
+		dataList = tmp;
+	    }
             return dataList;
         },
         isGoogleLoaded: function() {
