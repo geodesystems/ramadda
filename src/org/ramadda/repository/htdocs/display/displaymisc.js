@@ -614,6 +614,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,timelineId]));
 	    this.timelineReady = false;
 	    let opts = {
+		timenav_position: this.getProperty("timelinePosition","bottom"),
 //		debug:true,
 //		start_at_end: this.getPropertyStartAtEnd(false),
 		start_at_slide: this.getPropertyStartAtSlide(0),
