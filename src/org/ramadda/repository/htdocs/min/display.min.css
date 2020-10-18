@@ -467,6 +467,11 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
+
+.display-template-record a {
+    text-decoration: underline;
+}
+
 .display-template-record {
     cursor:pointer;
     padding:1px;

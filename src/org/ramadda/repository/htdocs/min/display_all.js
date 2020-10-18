@@ -3402,7 +3402,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"animationShowSlider=\"false\"",
 		"animationWidgetShort=\"true\""
 	    ];
-	    return  Utils.mergeLists(l,this._wikiTags);
+//	    return  Utils.mergeLists(l,this._wikiTags);
+	    return  Utils.mergeLists(this._wikiTags,l);	    
         },
 
 	defineSizeByProperties: function() {
@@ -4578,12 +4579,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return result;
         },
 
-        getFieldOfType: function(fields, type) {
-            fields = this.getFieldsOfType(fields, type);
+        getFieldByType: function(fields, type) {
+            fields = this.getFieldsByType(fields, type);
             if (fields.length == 0) return null;
             return fields[0];
         },
-        getFieldsOfType: function(fields, type) {
+        getFieldsByType: function(fields, type) {
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) return null;
@@ -6445,7 +6446,7 @@ a
         getHeightForStyle: function(dflt) {
             var height = this.getProperty("height", -1);
             if (height == -1) return dflt;
-            if (height.match("^[0-9]+$"))
+            if (new String(height).match("^[0-9]+$"))
                 height = height + "px";
             return height;
         },
@@ -10593,7 +10594,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		}
 		let enumValues = [];
-		let imageField=this.display.getFieldOfType(null, "image");
+		let imageField=this.display.getFieldByType(null, "image");
 		let valuesAreNumbers = true;
 
 		if(depend) {
@@ -17594,7 +17595,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	},
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
-                var stringField = this.getFieldOfType(this.getFields(), "string");
+                var stringField = this.getFieldByType(this.getFields(), "string");
                 if (stringField) {
                     this.groupBy = stringField.getId();
                 }
@@ -18564,7 +18565,7 @@ function TreemapDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             if (strings.length < 2) {
                 this.displayError("No string fields specified");
                 return null;
@@ -18572,7 +18573,7 @@ function TreemapDisplay(displayManager, id, properties) {
             var addPrefix = this.getProperty("addPrefix", true);
             var sizeField = this.getFieldById(allFields, this.getProperty("sizeBy"));
             var colorField = this.getFieldById(allFields, this.getProperty("colorBy"));
-            var values = this.getFieldsOfType(fields, "numeric");
+            var values = this.getFieldsByType(fields, "numeric");
             if (!sizeField && values.length > 0)
                 sizeField = values[0];
             if (!colorField && values.length > 1)
@@ -18659,9 +18660,9 @@ function TimerangechartDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
 	    var records = this.filterData(null,null,{skipFirst:true});
             var strings = [];
-            var stringField = this.getFieldOfType(selectedFields, "string");
+            var stringField = this.getFieldByType(selectedFields, "string");
             if (!stringField)
-                stringField = this.getFieldOfType(null, "string");
+                stringField = this.getFieldByType(null, "string");
             var showLabel = this.getProperty("showLabel", true);
             var labelFields = [];
             var labelFieldsTemplate = this.getProperty("labelFieldsTemplate");
@@ -18671,9 +18672,9 @@ function TimerangechartDisplay(displayManager, id, properties) {
                 if (field)
                     labelFields.push(field);
             }
-            var dateFields = this.getFieldsOfType(selectedFields, "date");
+            var dateFields = this.getFieldsByType(selectedFields, "date");
             if (dateFields.length == 0)
-                dateFields = this.getFieldsOfType(null, "date");
+                dateFields = this.getFieldsByType(null, "date");
             var values = [];
             var dataTable = new google.visualization.DataTable();
             if (dateFields.length < 2) {
@@ -19903,7 +19904,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
                 return;
@@ -20036,14 +20037,14 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
             }
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
-            var numericFields = this.getFieldsOfType(fields, "numeric");
+            var numericFields = this.getFieldsByType(fields, "numeric");
             if (numericFields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
             }
             if (fields.length == 0)
                 fields = allFields;
-            var string = this.getFieldOfType(fields, "string");
+            var string = this.getFieldByType(fields, "string");
             var legend = "";
             var colorField = this.getFieldById(allFields, this.getProperty("colorBy"));
             var colorscale;
@@ -20525,7 +20526,7 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
                 return null;
@@ -20726,7 +20727,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             let _this = this;
             var divs = "";
             var words = [];
@@ -20944,8 +20945,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 	    this.initGrouping  = this.getFieldsByIds(fields, this.getProperty("initGroupFields","",true));
             this.groupByFields = this.getFieldsByIds(fields, this.getProperty("groupByFields","",true));
             this.groupByMenus= +this.getProperty("groupByMenus",this.groupByFields.length);
-            this.imageField = this.getFieldOfType(fields, "image");
-            this.urlField = this.getFieldOfType(fields, "url");
+            this.imageField = this.getFieldByType(fields, "image");
+            this.urlField = this.getFieldByType(fields, "url");
             this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true));
             this.labelFields = this.getFieldsByIds(fields, this.getProperty("labelFields", null, true));
 	    if(this.labelFields.length==0) {
@@ -21294,7 +21295,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if(!records) return;
             var fields = pointData.getRecordFields();
-	    var imageField = this.getFieldOfType(fields,"image");
+	    var imageField = this.getFieldByType(fields,"image");
             var labelFields = this.getFieldsByIds(fields, this.getProperty("labelFields", null, true));
             var tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields", null, true));
 	    if(!imageField) {
@@ -21359,9 +21360,6 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 
 
-
-
-
 function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.showTitle)) properties.showTitle=false;
     if(!Utils.isDefined(properties.showMenu)) properties.showMenu=false;
@@ -21369,26 +21367,27 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:"Template Attributes"},
+	{p: "template"},
+	{p:"headerTemplate",wikiValue:"... ${totalCount} ... ${selectedCount}"},
+	{p:"footerTemplate",wikiValue:"... ${totalCount} ... ${selectedCount}"},
+	{p:"emptyMessage"},
+	{p:"select",wikiValue:"max|min|<|>|=|<=|>=|contains"},
+	{p:"selectField"},
+	{p:"selectValue"},
+	{p:'onlyShowSelected',wikiValue:'true'},
+	{p:"groupByField"},
+	{p:"groupDelimiter",wikiValue:"<br>"},	
+	{p:"groupTemplate",wikivalue:"<b>${group}</b><ul>${contents}</ul>"},
+	{p:"sortGroups",wikivalue:"true"},
+	{p:'${&lt;field&gt;_total}'},
+	{p:'${&lt;field&gt;_max}'},
+	{p:'${&lt;field&gt;_min}'},
+	{p:'${&lt;field&gt;_average}'},
+	{p:'highlightOnScroll',wikiValue:'true'}]);
+
     $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Template Attributes",
-					"template=\"\"",
-					"headerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
-					"footerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
-					"emptyMessage=\"\"",
-					"select=\"max|min|<|>|=|<=|>=|contains\"",
-					"selectField=\"\"",
-					"selectValue=\"\"",
-					'onlyShowSelected=true',
-					'${&lt;field&gt;_total}',
-					'${&lt;field&gt;_max}',
-					'${&lt;field&gt;_min}',
-					'${&lt;field&gt;_average}',
-					'highlightOnScroll=true',
-				    ]);
-	},
 	dataFilterChanged: function() {
 	    if(this.getProperty("onlyShowSelected") && this.selectedRecord ) {
 		this.selectedRecord = null;
@@ -21415,6 +21414,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		records = [this.selectedRecord];
 	    }
 	    records= this.sortRecords(records);
+
 	    var fields = pointData.getRecordFields();
 	    var uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    var uniqueMap ={};
@@ -21574,6 +21574,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    attrs["selectedCount"] = selected.length;
 	    attrs["totalCount"] = records.length;
 
+
 	    for(var i=0;i<fields.length;i++) {
 		var f = fields[i];
 		var s = summary[f.getId()];
@@ -21660,6 +21661,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		contents+= headerTemplate;
 	    }
 	    if(template!= "") {
+		let groupByField  =this.getFieldById(null, this.getProperty("groupByField"));
+		let groupDelimiter  = this.getProperty("groupDelimiter"," ");
+		let groupTemplate  = this.getProperty("groupTemplate","<b>${group}</b><ul>${contents}</ul>");
+		let groupList = [];
+		let groups = {};
 		var props = this.getTemplateProps(fields);
 		var max = parseFloat(this.getProperty("maxNumber",-1));
 		var cols = parseFloat(this.getProperty("templateColumns",-1));
@@ -21718,20 +21724,42 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 		    s = macros.apply(rowAttrs);
 
+
+
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
-			contents += s;
 		    } else if(s.startsWith("<tr")) {
 			s = s.replace(/<td([^>]*)>/g,"<td $1>"+tag);
 			s = s.replace(/<\/td>/g,"</div></td>");
-			contents += s;
 		    }  else {
-			contents += tag +s +HU.close(DIV);
+			s = tag +s +HU.close(DIV);
 		    }
+		    if (groupByField) {
+			let groupValue =record.getValue(groupByField.getIndex());
+			if(groupValue.getTime) groupValue = this.formatDate(groupValue);
+			if(!groups[groupValue]) {
+			    groupList.push(groupValue);
+			    groups[groupValue] = "";
+			} else {
+			    groups[groupValue]+=groupDelimiter;
+			}
+			groups[groupValue]+=s;
+		    } else {
+			contents+=s;
+		    }
+
+
 		    if(cols>0) {
 			contents+=HU.close(DIV);
 		    }
+		}
+		if (groupByField) {
+		    if(this.getPropertySortGroups(false))
+			groupList = groupList.sort();
+		    groupList.forEach(group=>{
+			contents+=  groupTemplate.replace("${group}",group).replace("${contents}",groups[group]);
+		    });
 		}
 		if(cols>0) {
 		    contents += HU.close(DIV);
@@ -21739,6 +21767,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    if(selected.length>0) 
 		contents+= footerTemplate;
+	    
+
+
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.addFieldClickHandler(null,null,false);
 	    var recordElements = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
@@ -21752,7 +21783,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    });
 
 
-	    if(this.getProperty("highlightOnScroll")) {
+	    if(this.getPropertyHighlightOnScroll(false)) {
 		let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
 		this.jq(ID_DISPLAY_CONTENTS).scroll(()=>{
 		    let topElement = null;
@@ -21779,7 +21810,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	},
 	highlightCount:0,
         handleEventRecordSelection: function(source, args) {
-//	    console.log(this.type+".recordSelection " + args);
 	    this.selectedRecord = args.record;
 	    if(this.getProperty("onlyShowSelected")) {
 		this.updateUI();
@@ -21789,7 +21819,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
-//	    console.log(this.type+ ".recordHighlight " + args.record);
 	    this.currentTopRecord = null;
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
@@ -22311,7 +22340,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
             if (fields.length == 0)
                 fields = allFields;
 
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             let _this = this;
             var divs = "";
             var words = [];
@@ -22816,7 +22845,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 fields = allFields;
 	    var strings = this.getFieldsByIds(fields,"fields");
             if (strings.length == 0) {
-		strings = this.getFieldsOfType(fields, "string");
+		strings = this.getFieldsByType(fields, "string");
 	    }
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
@@ -23070,7 +23099,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
                 return null;
@@ -32391,7 +32420,7 @@ function RamaddaGraphDisplay(displayManager, id, properties) {
 	    let valueFields   = this.getFieldsByIds(null, this.getProperty("valueFields","",true));
 	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
 	    if(!labelField) {
-		let strings = this.getFieldsOfType(null, "string");
+		let strings = this.getFieldsByType(null, "string");
 		if(strings.length>0) labelField = strings[0];
 	    }
 	    let sourceField = this.getFieldById(null, this.getProperty("sourceField","source"));
@@ -32714,6 +32743,7 @@ function OrgchartDisplay(displayManager, id, properties) {
 
 function RamaddaTimelineDisplay(displayManager, id, properties) {
     const ID_TIMELINE = "timeline";
+    if(!properties.height) properties.height=400;
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TIMELINE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -32721,21 +32751,21 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     this.defineProperties([
 	{label:'Timeline Properties'},
 	{p:'titleField',wikiValue:''},
+	{p:'imageField',wikiValue:''},
+	{p:'textTemplate',wikiValue:''},
+	{p:'startDateField',wikiValue:''},
+	{p:'endDateField',wikiValue:''},
 	{p:'startAtSlide',wikiValue:'0'},
 	{p:'startAtEnd',wikiValue:'true'},
 	{p:'scaleFactor',wikiValue:'10'},
+	{p:'initialZoom',wikiValue:'10'},	
 	{p:'navHeight',wikiValue:'150'},
-	{p:'titleField',wikiValue:''},
-	{p:'startDateField',wikiValue:''},
-	{p:'endDateField',wikiValue:''},
-	{p:'imageField',wikiValue:''},
+	{p:'backgroundColor',wikiValue:'#ccc'},
 	{p:'groupField',wikiValue:''},
 	{p:'urlField',wikiValue:''},
-	{p:'textTemplate',wikiValue:''},
 	{p:'timeTo',wikiValue:'year|day|hour|second'},
 	{p:'justTimeline',wikiVaklue:"true"},
-	{p:'hideBanner',wikiVaklue:"true"},
-	{p:'hideBanner',wikiVaklue:"true"},	
+	{p:'hideBanner',wikiValue:"true"},
     ]);
 
     Utils.importJS(ramaddaBaseUrl+"/lib/timeline3/timeline.js");
@@ -32775,24 +32805,28 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,timelineId]));
 	    this.timelineReady = false;
 	    let opts = {
-		timenav_position: this.getProperty("timelinePosition","bottom"),
+//		timenav_position: this.getProperty("timelinePosition","bottom"),
 //		debug:true,
 //		start_at_end: this.getPropertyStartAtEnd(false),
 		start_at_slide: this.getPropertyStartAtSlide(0),
-		scale_factor:this.getPropertyScaleFactor(15),
-//		initial_zoom:10,
-		//		default_bg_color: {r:0, g:0, b:0},
 		timenav_height: this.getPropertyNavHeight(150),
 		//		menubar_height:100,
 		gotoCallback: (slide)=>{
 		    if(this.timelineReady) {
 			let record = records[slide];
 			if(record) {
-			    this.propagateEventRecordSelection({record: record});
+		    this.propagateEventRecordSelection({record: record});
 			}
 		    }
 		}
             };
+	    if(this.getPropertyBackgroundColor())
+		opts.default_bg_color = this.getPropertyBackgroundColor();
+	    if(this.getPropertyScaleFactor(0))
+		opts.scale_factor = this.getPropertyScaleFactor();
+	    if(this.getPropertyInitialZoom(0))
+		opts.scale_factor = this.getPropertyInitialZoom();
+
 	    let json = {};
 	    let events = [];
 	    json.events = events;
@@ -32805,12 +32839,14 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    }
 
 	    let startDateField = this.getFieldById(null,this.getPropertyStartDateField());
+	    if(!startDateField) startDateField = this.getFieldByType(null,"date");
 	    let endDateField = this.getFieldById(null,this.getPropertyEndDateField());
 	    let imageField = this.getFieldById(null,this.getPropertyImageField());
 	    let groupField = this.getFieldById(null,this.getPropertyGroupField());
 	    let urlField = this.getFieldById(null,this.getPropertyUrlField());
 	    let textTemplate = this.getPropertyTextTemplate("${default}");
 	    let timeTo = this.getPropertyTimeTo("day");
+	    let showYears = this.getProperty("showYears",false);
 	    this.recordToIndex = {};
 	    for(let i=0;i<records.length;i++) {
 		let record = records[i]; 
@@ -32821,6 +32857,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		let headline = titleField? tuple[titleField.getIndex()]:" record:" + (i+1);
 		let debug = false;
 		let text =  this.getRecordHtml(record, null, textTemplate,debug);
+		text= "";
 
 		if(urlField) {
 		    let url  = record.getValue(urlField.getIndex());
@@ -32845,12 +32882,16 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 			event.media.link_target = "_timelinemedia";
 		    }
 		}
-		if(startDateField)
-		    event.start_date = tuple[startDateField.getIndex()];
-		else
-		    event.start_date = this.getDate(record.getTime());
-		if(endDateField) {
-		    event.end_date = tuple[endDateField.getIndex()];
+		let startDate =this.getDate(startDateField? tuple[startDateField.getIndex()]: record.getTime());
+		if (showYears) {
+		    event.start_date = {
+			year: startDate.year
+		    }
+		} else {
+		    event.start_date  = startDate;
+		    if(endDateField) {
+			event.end_date = tuple[endDateField.getIndex()];
+		    }
 		}
 		//		console.log(JSON.stringify(event));
 		events.push(event);
@@ -33019,7 +33060,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
             if (!this.fields) {
                 this.fields = this.getSelectedFields([]);
                 if (this.fields.length == 0) this.fields = allFields;
-                let strings = this.getFieldsOfType(this.fields, "string");
+                let strings = this.getFieldsByType(this.fields, "string");
                 if (strings.length > 0)
                     this.textField = strings[0];
             }
@@ -33409,7 +33450,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             let allFields = this.dataCollection.getList()[0].getRecordFields();
             let fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
-            let numericFields = this.getFieldsOfType(fields, "numeric");
+            let numericFields = this.getFieldsByType(fields, "numeric");
             let sortField = this.getFieldById(numericFields, this.getProperty("sortField","",true));
             if (numericFields.length == 0) {
                 this.setContents("No fields specified");
@@ -33429,7 +33470,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 		if(tmp) stringFields.push(tmp);
 	    }
             if(stringFields.length==0) {
-                let stringField = this.getFieldOfType(allFields, "string");
+                let stringField = this.getFieldByType(allFields, "string");
 		if(stringField) stringFields.push(stringField);
 	    }
             let menu = HU.open("select",[CLASS,'ramadda-pulldown',ID, this.getDomId("sortfields")]);
@@ -34749,7 +34790,7 @@ function RamaddaPercentchangeDisplay(displayManager, id, properties) {
 	    if(!records) return;
             let allFields = this.getData().getRecordFields();
             let fields = this.getSelectedFields(allFields);
-	    fields = this.getFieldsOfType(fields, "numeric");
+	    fields = this.getFieldsByType(fields, "numeric");
 	    let  record1 = records[0];
 	    let  record2 = records[records.length-1];
 	    let template = this.getProperty("template",null);
@@ -35626,9 +35667,9 @@ function RamaddaFieldtableDisplay(displayManager, id, properties) {
 	    if(!records) return;
 	    let fields = this.getFieldsByIds(null,this.getPropertyFields());
 	    if(fields.length==0) 
-		fields = this.getFieldsOfType(null, "numeric");
+		fields = this.getFieldsByType(null, "numeric");
 	    let labelField = this.getFieldById(null, this.getProperty("labelField"));
-	    if(!labelField) labelField = this.getFieldsOfType(null, "string")[0];
+	    if(!labelField) labelField = this.getFieldsByType(null, "string")[0];
 	    let html = HU.open(TABLE,[CLASS, "", "border",0,ID,this.getDomId(ID_TABLE)]);
 	    html += HU.open(THEAD);
 	    let width = this.getProperty("columnWidth",150)
@@ -36892,7 +36933,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
                 return;
             }
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-	    var numericFields = this.getFieldsOfType(fields, "numeric");
+	    var numericFields = this.getFieldsByType(fields, "numeric");
             if (numericFields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -37000,7 +37041,7 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var numericFields = this.getFieldsOfType(fields, "numeric");
+            var numericFields = this.getFieldsByType(fields, "numeric");
             if (numericFields.length < 2) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -37088,8 +37129,8 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var stringField = this.getFieldOfType(fields, "string");
-            var fields = this.getFieldsOfType(fields, "numeric");
+            var stringField = this.getFieldByType(fields, "string");
+            var fields = this.getFieldsByType(fields, "numeric");
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -37362,8 +37403,8 @@ function RamaddaTernaryDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var stringField = this.getFieldOfType(fields, "string");
-            var fields = this.getFieldsOfType(fields, "numeric");
+            var stringField = this.getFieldByType(fields, "string");
+            var fields = this.getFieldsByType(fields, "numeric");
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -37517,14 +37558,14 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var allFields = this.getFieldsByIds(null,this.getPropertyFields());
-            var stringField = this.getFieldOfType(allFields, "string");
+            var stringField = this.getFieldByType(allFields, "string");
             if (!stringField) {
                 stringField = allFields[0];
             }
 
-            var fields = this.getFieldsOfType(allFields, "numeric");
+            var fields = this.getFieldsByType(allFields, "numeric");
             if (fields.length == 0) {
-		fields = this.getFieldsOfType(allFields, "date");
+		fields = this.getFieldsByType(allFields, "date");
 	    }
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
@@ -37679,7 +37720,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    }
             let fields = this.getSelectedFields(this.getData().getRecordFields());
             if (fields.length == 0) {
-		let tmp = this.getFieldsOfType(null, "numeric");
+		let tmp = this.getFieldsByType(null, "numeric");
 		if(tmp.length>0) fields.push(tmp[0]);
 	    }
             if (fields.length == 0) {
@@ -37886,7 +37927,7 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
                 this.displayColorTable(colors, ID_DISPLAY_BOTTOM, min, max);
             }
 
-            var stringField = this.getFieldOfType(fields, "string");
+            var stringField = this.getFieldByType(fields, "string");
             if (stringField) {
                 var l = this.getColumnValues(records, stringField).values;
                 dataObj.text = [];
@@ -37948,7 +37989,7 @@ function RamaddaPTreemapDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var selectedFields = this.getSelectedFields(this.getData().getRecordFields());
-            var field = this.getFieldOfType(selectedFields, "numeric");
+            var field = this.getFieldByType(selectedFields, "numeric");
             if (!field) {
                 this.displayError("No numeric field specified");
                 return;
@@ -38085,7 +38126,7 @@ function TextcountDisplay(displayManager, id, properties) {
 
 	    this.textField = this.getFieldById(null, this.getProperty("textField"));
 	    if(!this.textField) {
-		this.textField = this.getFieldOfType(null, "string");
+		this.textField = this.getFieldByType(null, "string");
 	    }
 	    if(!this.textField) {
 		this.setContents(this.getMessage("No text field in data"));
