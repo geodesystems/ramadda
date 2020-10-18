@@ -1623,7 +1623,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		}
 		let enumValues = [];
-		let imageField=this.display.getFieldOfType(null, "image");
+		let imageField=this.display.getFieldByType(null, "image");
 		let valuesAreNumbers = true;
 
 		if(depend) {

@@ -972,7 +972,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"animationShowSlider=\"false\"",
 		"animationWidgetShort=\"true\""
 	    ];
-	    return  Utils.mergeLists(l,this._wikiTags);
+//	    return  Utils.mergeLists(l,this._wikiTags);
+	    return  Utils.mergeLists(this._wikiTags,l);	    
         },
 
 	defineSizeByProperties: function() {
@@ -2148,12 +2149,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return result;
         },
 
-        getFieldOfType: function(fields, type) {
-            fields = this.getFieldsOfType(fields, type);
+        getFieldByType: function(fields, type) {
+            fields = this.getFieldsByType(fields, type);
             if (fields.length == 0) return null;
             return fields[0];
         },
-        getFieldsOfType: function(fields, type) {
+        getFieldsByType: function(fields, type) {
             if (!fields) {
                 var pointData = this.getData();
                 if (pointData == null) return null;
@@ -4015,7 +4016,7 @@ a
         getHeightForStyle: function(dflt) {
             var height = this.getProperty("height", -1);
             if (height == -1) return dflt;
-            if (height.match("^[0-9]+$"))
+            if (new String(height).match("^[0-9]+$"))
                 height = height + "px";
             return height;
         },

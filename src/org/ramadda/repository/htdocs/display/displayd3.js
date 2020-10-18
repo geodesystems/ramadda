@@ -842,7 +842,7 @@ function RamaddaVennDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
                 return;
@@ -975,14 +975,14 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
             }
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
-            var numericFields = this.getFieldsOfType(fields, "numeric");
+            var numericFields = this.getFieldsByType(fields, "numeric");
             if (numericFields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
             }
             if (fields.length == 0)
                 fields = allFields;
-            var string = this.getFieldOfType(fields, "string");
+            var string = this.getFieldByType(fields, "string");
             var legend = "";
             var colorField = this.getFieldById(allFields, this.getProperty("colorBy"));
             var colorscale;

@@ -231,7 +231,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
                 return;
             }
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-	    var numericFields = this.getFieldsOfType(fields, "numeric");
+	    var numericFields = this.getFieldsByType(fields, "numeric");
             if (numericFields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -339,7 +339,7 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var numericFields = this.getFieldsOfType(fields, "numeric");
+            var numericFields = this.getFieldsByType(fields, "numeric");
             if (numericFields.length < 2) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -427,8 +427,8 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var stringField = this.getFieldOfType(fields, "string");
-            var fields = this.getFieldsOfType(fields, "numeric");
+            var stringField = this.getFieldByType(fields, "string");
+            var fields = this.getFieldsByType(fields, "numeric");
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -701,8 +701,8 @@ function RamaddaTernaryDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
-            var stringField = this.getFieldOfType(fields, "string");
-            var fields = this.getFieldsOfType(fields, "numeric");
+            var stringField = this.getFieldByType(fields, "string");
+            var fields = this.getFieldsByType(fields, "numeric");
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
@@ -856,14 +856,14 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var allFields = this.getFieldsByIds(null,this.getPropertyFields());
-            var stringField = this.getFieldOfType(allFields, "string");
+            var stringField = this.getFieldByType(allFields, "string");
             if (!stringField) {
                 stringField = allFields[0];
             }
 
-            var fields = this.getFieldsOfType(allFields, "numeric");
+            var fields = this.getFieldsByType(allFields, "numeric");
             if (fields.length == 0) {
-		fields = this.getFieldsOfType(allFields, "date");
+		fields = this.getFieldsByType(allFields, "date");
 	    }
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
@@ -1018,7 +1018,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    }
             let fields = this.getSelectedFields(this.getData().getRecordFields());
             if (fields.length == 0) {
-		let tmp = this.getFieldsOfType(null, "numeric");
+		let tmp = this.getFieldsByType(null, "numeric");
 		if(tmp.length>0) fields.push(tmp[0]);
 	    }
             if (fields.length == 0) {
@@ -1225,7 +1225,7 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
                 this.displayColorTable(colors, ID_DISPLAY_BOTTOM, min, max);
             }
 
-            var stringField = this.getFieldOfType(fields, "string");
+            var stringField = this.getFieldByType(fields, "string");
             if (stringField) {
                 var l = this.getColumnValues(records, stringField).values;
                 dataObj.text = [];
@@ -1287,7 +1287,7 @@ function RamaddaPTreemapDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if (!records) return;
             var selectedFields = this.getSelectedFields(this.getData().getRecordFields());
-            var field = this.getFieldOfType(selectedFields, "numeric");
+            var field = this.getFieldByType(selectedFields, "numeric");
             if (!field) {
                 this.displayError("No numeric field specified");
                 return;
@@ -1424,7 +1424,7 @@ function TextcountDisplay(displayManager, id, properties) {
 
 	    this.textField = this.getFieldById(null, this.getProperty("textField"));
 	    if(!this.textField) {
-		this.textField = this.getFieldOfType(null, "string");
+		this.textField = this.getFieldByType(null, "string");
 	    }
 	    if(!this.textField) {
 		this.setContents(this.getMessage("No text field in data"));

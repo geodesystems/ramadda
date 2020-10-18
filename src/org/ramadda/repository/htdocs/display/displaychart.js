@@ -2236,7 +2236,7 @@ function PiechartDisplay(displayManager, id, properties) {
 	},
         getGroupBy: function() {
             if (!this.groupBy && this.groupBy != "") {
-                var stringField = this.getFieldOfType(this.getFields(), "string");
+                var stringField = this.getFieldByType(this.getFields(), "string");
                 if (stringField) {
                     this.groupBy = stringField.getId();
                 }
@@ -3206,7 +3206,7 @@ function TreemapDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             if (strings.length < 2) {
                 this.displayError("No string fields specified");
                 return null;
@@ -3214,7 +3214,7 @@ function TreemapDisplay(displayManager, id, properties) {
             var addPrefix = this.getProperty("addPrefix", true);
             var sizeField = this.getFieldById(allFields, this.getProperty("sizeBy"));
             var colorField = this.getFieldById(allFields, this.getProperty("colorBy"));
-            var values = this.getFieldsOfType(fields, "numeric");
+            var values = this.getFieldsByType(fields, "numeric");
             if (!sizeField && values.length > 0)
                 sizeField = values[0];
             if (!colorField && values.length > 1)
@@ -3301,9 +3301,9 @@ function TimerangechartDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
 	    var records = this.filterData(null,null,{skipFirst:true});
             var strings = [];
-            var stringField = this.getFieldOfType(selectedFields, "string");
+            var stringField = this.getFieldByType(selectedFields, "string");
             if (!stringField)
-                stringField = this.getFieldOfType(null, "string");
+                stringField = this.getFieldByType(null, "string");
             var showLabel = this.getProperty("showLabel", true);
             var labelFields = [];
             var labelFieldsTemplate = this.getProperty("labelFieldsTemplate");
@@ -3313,9 +3313,9 @@ function TimerangechartDisplay(displayManager, id, properties) {
                 if (field)
                     labelFields.push(field);
             }
-            var dateFields = this.getFieldsOfType(selectedFields, "date");
+            var dateFields = this.getFieldsByType(selectedFields, "date");
             if (dateFields.length == 0)
-                dateFields = this.getFieldsOfType(null, "date");
+                dateFields = this.getFieldsByType(null, "date");
             var values = [];
             var dataTable = new google.visualization.DataTable();
             if (dateFields.length < 2) {

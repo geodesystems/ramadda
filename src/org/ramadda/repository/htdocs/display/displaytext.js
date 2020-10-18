@@ -125,7 +125,7 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
                 return null;
@@ -326,7 +326,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             let _this = this;
             var divs = "";
             var words = [];
@@ -544,8 +544,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 	    this.initGrouping  = this.getFieldsByIds(fields, this.getProperty("initGroupFields","",true));
             this.groupByFields = this.getFieldsByIds(fields, this.getProperty("groupByFields","",true));
             this.groupByMenus= +this.getProperty("groupByMenus",this.groupByFields.length);
-            this.imageField = this.getFieldOfType(fields, "image");
-            this.urlField = this.getFieldOfType(fields, "url");
+            this.imageField = this.getFieldByType(fields, "image");
+            this.urlField = this.getFieldByType(fields, "url");
             this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true));
             this.labelFields = this.getFieldsByIds(fields, this.getProperty("labelFields", null, true));
 	    if(this.labelFields.length==0) {
@@ -894,7 +894,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if(!records) return;
             var fields = pointData.getRecordFields();
-	    var imageField = this.getFieldOfType(fields,"image");
+	    var imageField = this.getFieldByType(fields,"image");
             var labelFields = this.getFieldsByIds(fields, this.getProperty("labelFields", null, true));
             var tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields", null, true));
 	    if(!imageField) {
@@ -959,9 +959,6 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 
 
-
-
-
 function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.showTitle)) properties.showTitle=false;
     if(!Utils.isDefined(properties.showMenu)) properties.showMenu=false;
@@ -969,26 +966,27 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:"Template Attributes"},
+	{p: "template"},
+	{p:"headerTemplate",wikiValue:"... ${totalCount} ... ${selectedCount}"},
+	{p:"footerTemplate",wikiValue:"... ${totalCount} ... ${selectedCount}"},
+	{p:"emptyMessage"},
+	{p:"select",wikiValue:"max|min|<|>|=|<=|>=|contains"},
+	{p:"selectField"},
+	{p:"selectValue"},
+	{p:'onlyShowSelected',wikiValue:'true'},
+	{p:"groupByField"},
+	{p:"groupDelimiter",wikiValue:"<br>"},	
+	{p:"groupTemplate",wikivalue:"<b>${group}</b><ul>${contents}</ul>"},
+	{p:"sortGroups",wikivalue:"true"},
+	{p:'${&lt;field&gt;_total}'},
+	{p:'${&lt;field&gt;_max}'},
+	{p:'${&lt;field&gt;_min}'},
+	{p:'${&lt;field&gt;_average}'},
+	{p:'highlightOnScroll',wikiValue:'true'}]);
+
     $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Template Attributes",
-					"template=\"\"",
-					"headerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
-					"footerTemplate=\"... ${totalCount} ... ${selectedCount}\"",
-					"emptyMessage=\"\"",
-					"select=\"max|min|<|>|=|<=|>=|contains\"",
-					"selectField=\"\"",
-					"selectValue=\"\"",
-					'onlyShowSelected=true',
-					'${&lt;field&gt;_total}',
-					'${&lt;field&gt;_max}',
-					'${&lt;field&gt;_min}',
-					'${&lt;field&gt;_average}',
-					'highlightOnScroll=true',
-				    ]);
-	},
 	dataFilterChanged: function() {
 	    if(this.getProperty("onlyShowSelected") && this.selectedRecord ) {
 		this.selectedRecord = null;
@@ -1015,6 +1013,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		records = [this.selectedRecord];
 	    }
 	    records= this.sortRecords(records);
+
 	    var fields = pointData.getRecordFields();
 	    var uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    var uniqueMap ={};
@@ -1174,6 +1173,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    attrs["selectedCount"] = selected.length;
 	    attrs["totalCount"] = records.length;
 
+
 	    for(var i=0;i<fields.length;i++) {
 		var f = fields[i];
 		var s = summary[f.getId()];
@@ -1260,6 +1260,11 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		contents+= headerTemplate;
 	    }
 	    if(template!= "") {
+		let groupByField  =this.getFieldById(null, this.getProperty("groupByField"));
+		let groupDelimiter  = this.getProperty("groupDelimiter"," ");
+		let groupTemplate  = this.getProperty("groupTemplate","<b>${group}</b><ul>${contents}</ul>");
+		let groupList = [];
+		let groups = {};
 		var props = this.getTemplateProps(fields);
 		var max = parseFloat(this.getProperty("maxNumber",-1));
 		var cols = parseFloat(this.getProperty("templateColumns",-1));
@@ -1318,20 +1323,42 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 		    s = macros.apply(rowAttrs);
 
+
+
 		    if(s.startsWith("<td")) {
 			s = s.replace(/<td([^>]*)>/,"<td $1>"+tag);
 			s = s.replace(/<\/td>$/,"</div></td>");
-			contents += s;
 		    } else if(s.startsWith("<tr")) {
 			s = s.replace(/<td([^>]*)>/g,"<td $1>"+tag);
 			s = s.replace(/<\/td>/g,"</div></td>");
-			contents += s;
 		    }  else {
-			contents += tag +s +HU.close(DIV);
+			s = tag +s +HU.close(DIV);
 		    }
+		    if (groupByField) {
+			let groupValue =record.getValue(groupByField.getIndex());
+			if(groupValue.getTime) groupValue = this.formatDate(groupValue);
+			if(!groups[groupValue]) {
+			    groupList.push(groupValue);
+			    groups[groupValue] = "";
+			} else {
+			    groups[groupValue]+=groupDelimiter;
+			}
+			groups[groupValue]+=s;
+		    } else {
+			contents+=s;
+		    }
+
+
 		    if(cols>0) {
 			contents+=HU.close(DIV);
 		    }
+		}
+		if (groupByField) {
+		    if(this.getPropertySortGroups(false))
+			groupList = groupList.sort();
+		    groupList.forEach(group=>{
+			contents+=  groupTemplate.replace("${group}",group).replace("${contents}",groups[group]);
+		    });
 		}
 		if(cols>0) {
 		    contents += HU.close(DIV);
@@ -1339,6 +1366,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    if(selected.length>0) 
 		contents+= footerTemplate;
+	    
+
+
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.addFieldClickHandler(null,null,false);
 	    var recordElements = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
@@ -1352,7 +1382,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    });
 
 
-	    if(this.getProperty("highlightOnScroll")) {
+	    if(this.getPropertyHighlightOnScroll(false)) {
 		let items = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
 		this.jq(ID_DISPLAY_CONTENTS).scroll(()=>{
 		    let topElement = null;
@@ -1379,7 +1409,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	},
 	highlightCount:0,
         handleEventRecordSelection: function(source, args) {
-//	    console.log(this.type+".recordSelection " + args);
 	    this.selectedRecord = args.record;
 	    if(this.getProperty("onlyShowSelected")) {
 		this.updateUI();
@@ -1389,7 +1418,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
-//	    console.log(this.type+ ".recordHighlight " + args.record);
 	    this.currentTopRecord = null;
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
@@ -1911,7 +1939,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
             if (fields.length == 0)
                 fields = allFields;
 
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             let _this = this;
             var divs = "";
             var words = [];
@@ -2416,7 +2444,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 fields = allFields;
 	    var strings = this.getFieldsByIds(fields,"fields");
             if (strings.length == 0) {
-		strings = this.getFieldsOfType(fields, "string");
+		strings = this.getFieldsByType(fields, "string");
 	    }
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
@@ -2670,7 +2698,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
+            var strings = this.getFieldsByType(fields, "string");
             if (strings.length == 0) {
                 this.displayError("No string fields specified");
                 return null;
