@@ -2880,6 +2880,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     h3: function(h) {
 	return HU.tag("h3",[],h);
     },
+    cssTag: function(css) {
+        return '<style type="text/css">\n' + css + '</style>';
+    },
+
     getDimension(d) {
 	if(!d) return null;
 	d = String(d);

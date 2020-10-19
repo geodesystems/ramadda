@@ -583,6 +583,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     //    css =  ramaddaBaseUrl+"/lib/timeline3/timeline.css";
     $(HU.tag('link',['rel','stylesheet','href', css,'type','text/css'] )).appendTo("head");
 
+    
     $.extend(this, {
         needsData: function() {
             return true;
@@ -612,7 +613,9 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
             let records = this.filterData();
 	    if(records==null) return;
 	    let timelineId = this.getDomId(ID_TIMELINE);
-	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,timelineId]));
+	    let html = HU.cssTag("h2 a, h2 a:visited, h2 a:link {color:#c34528;}");
+	    html+=HU.div([ID,timelineId]);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    this.timelineReady = false;
 	    let opts = {
 //		timenav_position: this.getProperty("timelinePosition","bottom"),
