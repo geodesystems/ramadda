@@ -618,12 +618,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    this.timelineReady = false;
 	    let opts = {
-//		timenav_position: this.getProperty("timelinePosition","bottom"),
+		timenav_position: this.getProperty("timelinePosition","bottom"),
 //		debug:true,
-//		start_at_end: this.getPropertyStartAtEnd(false),
+		start_at_end: this.getPropertyStartAtEnd(false),
 		start_at_slide: this.getPropertyStartAtSlide(0),
 		timenav_height: this.getPropertyNavHeight(150),
-		//		menubar_height:100,
+		menubar_height:100,
 		gotoCallback: (slide)=>{
 		    if(this.timelineReady) {
 			let record = records[slide];
