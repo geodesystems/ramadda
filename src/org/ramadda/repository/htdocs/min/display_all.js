@@ -32860,8 +32860,6 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		let headline = titleField? tuple[titleField.getIndex()]:" record:" + (i+1);
 		let debug = false;
 		let text =  this.getRecordHtml(record, null, textTemplate,debug);
-		text= "";
-
 		if(urlField) {
 		    let url  = record.getValue(urlField.getIndex());
 //		    text = HU.href(url,text);
