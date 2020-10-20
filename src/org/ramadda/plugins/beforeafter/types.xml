@@ -4,7 +4,24 @@
      <property name="icon" value="/icons/jpeg.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.resource.show" value="false"/>
-     <column name="image_width" type="string" label="Optional image width" default="800"/>
+     <column name="image_width" type="string" label="Optional image width" columns="5" default="800"/>
+</type>
+
+
+  <type name="type_imageoverlay"  description="Image Overlay" handler="org.ramadda.plugins.beforeafter.ImageOverlayTypeHandler" >
+     <property name="icon" value="/icons/jpeg.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="image_width" type="string" label="Optional image width" columns="5" default="800"/>
+     <wiki><![CDATA[
++section title={{name}} 
+{{description wikify="true"}}
+{{imageoverlay}}
+----
+{{links message="" prefix="Images"}}
+-section
+]]>
+     </wiki>
 </type>
 
 
