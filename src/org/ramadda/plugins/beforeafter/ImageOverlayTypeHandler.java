@@ -148,9 +148,6 @@ public class ImageOverlayTypeHandler extends GenericTypeHandler {
      *
      * @param wikiUtil _more_
      * @param request _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      * @param originalEntry _more_
      * @param entry _more_
      * @param tag _more_
@@ -215,12 +212,16 @@ public class ImageOverlayTypeHandler extends GenericTypeHandler {
             Dimension dim2 = getDimensions(entry2);
             Dimension dim = new Dimension(Math.max(dim1.width, dim2.width),
                                           Math.max(dim1.height, dim2.height));
-            double ratio = dim.width / (double) dim.height;
+            double ratio1 = dim1.width / (double) dim1.height;
+            double ratio2 = dim2.width / (double) dim2.height;
+
             //Put a min height for when showing in tabs. add 20 for the slider
-            int fixedHeight = (int) (dwidth / ratio) + 20;
+            int h1 = (int) (dwidth / ratio1) + 20;
+            int h2 = (int) (dwidth / ratio2) + 20;
+            int h  = Math.max(h1, h2);
             HtmlUtils.open(sb, "div", "style",
                            "position:relative;width:" + width
-                           + ";min-height:" + fixedHeight + "px;");
+                           + ";min-height:" + h + "px;");
             HtmlUtils.center(sb,
                              HtmlUtils.div("",
                                            " id='slider_" + baseId
