@@ -50,6 +50,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
  * This class does most of the work of managing repository content
  */
@@ -93,8 +94,8 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Entry> sortEntriesOnName(List<Entry> entries,
-                                         final boolean descending) {
+    public static List<Entry> sortEntriesOnName(List<Entry> entries,
+            final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1     = (Entry) o1;
@@ -132,54 +133,65 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Entry> sortEntriesOnPattern(List<Entry> entries,
-                                            final boolean descending,
-                                            String p) {
-	p = p.replaceAll("_LEFT_","[").replaceAll("_RIGHT_","]");
-	final Pattern pattern =  Pattern.compile(p);
-	//	System.err.println("on pattern:" + pattern+":");
+    public static List<Entry> sortEntriesOnPattern(List<Entry> entries,
+            final boolean descending, String p) {
+        p = p.replaceAll("_LEFT_", "[").replaceAll("_RIGHT_", "]");
+        final Pattern pattern = Pattern.compile(p);
+        //      System.err.println("on pattern:" + pattern+":");
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
-                Entry  e1 = (Entry) o1;
-                Entry  e2 = (Entry) o2;
-		Matcher m1 = pattern.matcher(e1.getName());
-		Matcher m2 = pattern.matcher(e2.getName());
-		if(!m1.find() || !m2.find()) { 
-		    System.err.println("No match: name1: " + e1.getName() +" name2: " + e2.getName());
-		    return 0;
-		}
-		if(m1.groupCount()==0) {
-		    return 0;
-		}
-		if(m1.groupCount()!= m2.groupCount()) {
-		    System.err.println("bad match:");
-		    return 0;
-		}
-		for(int i=1;i<=m1.groupCount();i++) {
-		    String v1 = m1.group(i);
-		    String v2 = m2.group(i);
-		    if ((v1 == null) || (v2 == null)) {
-			return 0;
-		    }
-		    //		    System.err.println("#" + i+" v1:" + v1  +" " + v2);
-		    try {
-			double dv1    = Double.parseDouble(v1);
-			double dv2    = Double.parseDouble(v2);
-			int    result = (dv1 < dv2)
-			    ? -1
-			    : (dv1 == dv2)
-			    ? 0
-			    : 1;
-			if (descending) { 
-			    result = (result >= 1?-1:result<0?1:0);
-			}
-			if(result!=0) return result;
-		    } catch(Exception exc) {
-			System.err.println("Error parsing name:" + e1.getName() 
-+" " + e2.getName() +" error:" + exc);
-			return 0;
-		    }
-		}
+                Entry   e1 = (Entry) o1;
+                Entry   e2 = (Entry) o2;
+                Matcher m1 = pattern.matcher(e1.getName());
+                Matcher m2 = pattern.matcher(e2.getName());
+                if ( !m1.find() || !m2.find()) {
+                    System.err.println("No match: name1: " + e1.getName()
+                                       + " name2: " + e2.getName());
+
+                    return 0;
+                }
+                if (m1.groupCount() == 0) {
+                    return 0;
+                }
+                if (m1.groupCount() != m2.groupCount()) {
+                    System.err.println("bad match:");
+
+                    return 0;
+                }
+                for (int i = 1; i <= m1.groupCount(); i++) {
+                    String v1 = m1.group(i);
+                    String v2 = m2.group(i);
+                    if ((v1 == null) || (v2 == null)) {
+                        return 0;
+                    }
+                    //              System.err.println("#" + i+" v1:" + v1  +" " + v2);
+                    try {
+                        double dv1    = Double.parseDouble(v1);
+                        double dv2    = Double.parseDouble(v2);
+                        int    result = (dv1 < dv2)
+                                        ? -1
+                                        : (dv1 == dv2)
+                                          ? 0
+                                          : 1;
+                        if (descending) {
+                            result = ((result >= 1)
+                                      ? -1
+                                      : (result < 0)
+                                        ? 1
+                                        : 0);
+                        }
+                        if (result != 0) {
+                            return result;
+                        }
+                    } catch (Exception exc) {
+                        System.err.println("Error parsing name:"
+                                           + e1.getName() + " "
+                                           + e2.getName() + " error:" + exc);
+
+                        return 0;
+                    }
+                }
+
                 return 0;
             }
             public boolean equals(Object obj) {
@@ -201,8 +213,8 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Entry> doGroupAndNameSort(List<Entry> entries,
-                                          final boolean descending) {
+    public static List<Entry> doGroupAndNameSort(List<Entry> entries,
+            final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1     = (Entry) o1;
@@ -244,8 +256,8 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Entry> sortEntriesOnDate(List<Entry> entries,
-                                         final boolean descending) {
+    public static List<Entry> sortEntriesOnDate(List<Entry> entries,
+            final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
@@ -282,7 +294,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
+    public static List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -312,7 +324,15 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
-    public List<Entry> sortEntriesOnEntryOrder(List<Entry> entries,
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
+    public static List<Entry> sortEntriesOnEntryOrder(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -337,6 +357,7 @@ public class EntryUtil extends RepositoryManager {
         };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
+
         return (List<Entry>) Misc.toList(array);
     }
 
@@ -348,7 +369,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
+    public static List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -378,64 +399,113 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
-    private int compare(long l1, long l2) {
-	if(l1<l2) return -1;
-	else if(l1>l2) return 1;
-	return 0;
+    /**
+     * _more_
+     *
+     * @param l1 _more_
+     * @param l2 _more_
+     *
+     * @return _more_
+     */
+    private static int compare(long l1, long l2) {
+        if (l1 < l2) {
+            return -1;
+        } else if (l1 > l2) {
+            return 1;
+        }
+
+        return 0;
     }
 
-    public int compareEntries(Entry e1, Entry e2, String on) {
-	if(on.equals(SORTBY_DATE) || on.equals(SORTBY_FROMDATE)) {
-	    return compare(e1.getStartDate(), e2.getStartDate());
-	} else 	if(on.equals(SORTBY_TODATE)) {
-	    return compare(e1.getEndDate(),  e2.getEndDate());
-	} else 	if(on.equals(SORTBY_CHANGEDATE)) {
-	    return compare(e1.getChangeDate(),  e2.getChangeDate());
-	} else 	if(on.equals(SORTBY_CREATEDATE)) {
-	    return compare(e1.getCreateDate(),  e2.getCreateDate());
-	} else 	if(on.equals(SORTBY_NAME)) {
-	    return e1.getName().compareToIgnoreCase(e2.getName());
-	} else 	if(on.equals(SORTBY_ENTRYORDER)) {	    
-	    return e1.getEntryOrder()-e2.getEntryOrder();
-	} else 	if(on.equals(SORTBY_TYPE)) {	    
-	    return e1.getTypeHandler().getType().compareToIgnoreCase(e2.getTypeHandler().getType());
-	} else 	if(on.equals(SORTBY_SIZE)) {	    
-	    return compare(e1.getResource().getFileSize(),e2.getResource().getFileSize());
-	}
-	return 0;
+    /**
+     * _more_
+     *
+     * @param e1 _more_
+     * @param e2 _more_
+     * @param on _more_
+     *
+     * @return _more_
+     */
+    public static int compareEntries(Entry e1, Entry e2, String on) {
+        if (on.equals(SORTBY_DATE) || on.equals(SORTBY_FROMDATE)) {
+            return compare(e1.getStartDate(), e2.getStartDate());
+        } else if (on.equals(SORTBY_TODATE)) {
+            return compare(e1.getEndDate(), e2.getEndDate());
+        } else if (on.equals(SORTBY_CHANGEDATE)) {
+            return compare(e1.getChangeDate(), e2.getChangeDate());
+        } else if (on.equals(SORTBY_CREATEDATE)) {
+            return compare(e1.getCreateDate(), e2.getCreateDate());
+        } else if (on.equals(SORTBY_NAME)) {
+            return e1.getName().compareToIgnoreCase(e2.getName());
+        } else if (on.equals(SORTBY_ENTRYORDER)) {
+            return e1.getEntryOrder() - e2.getEntryOrder();
+        } else if (on.equals(SORTBY_TYPE)) {
+            return e1.getTypeHandler().getType().compareToIgnoreCase(
+                e2.getTypeHandler().getType());
+        } else if (on.equals(SORTBY_SIZE)) {
+            return compare(e1.getResource().getFileSize(),
+                           e2.getResource().getFileSize());
+        }
+
+        return 0;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param ons _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
+    public static List<Entry> sortEntriesOn(List<Entry> entries, String ons,
+                                            boolean descending) {
+        return sortEntriesOn(entries, StringUtil.split(ons, ",", true, true),
+                             descending);
+    }
 
-
-    public List<Entry> sortEntriesOn(List<Entry> entries,
-				     final List<String> ons,
-				     final boolean descending) {
+    /**
+     * _more_
+     *
+     * @param entries _more_
+     * @param ons _more_
+     * @param descending _more_
+     *
+     * @return _more_
+     */
+    public static List<Entry> sortEntriesOn(List<Entry> entries,
+                                            final List<String> ons,
+                                            final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
                 Entry e2 = (Entry) o2;
-		for(String on: ons) {
-		    int result = compareEntries(e1,e2,on);
-		    if(result!=0) {
-			if(descending) return -result;
-			return result;
-		    }
-		}
+                for (String on : ons) {
+                    int result = compareEntries(e1, e2, on);
+                    if (result != 0) {
+                        if (descending) {
+                            return -result;
+                        }
+
+                        return result;
+                    }
+                }
+
                 return 0;
-	    }
+            }
             public boolean equals(Object obj) {
                 return obj == this;
             }
         };
         Object[] array = entries.toArray();
         Arrays.sort(array, comp);
-	
+
 
 
         return (List<Entry>) Misc.toList(array);
     }
-    
 
 
 
@@ -443,17 +513,21 @@ public class EntryUtil extends RepositoryManager {
      * _more_
      *
      * @param entries _more_
-     * @param sort _more_
+     * @param sorts _more_
      * @param descending _more_
      *
      * @return _more_
      */
-    public List<Entry> sortEntries(List<Entry> entries, String sorts,
-                                   final boolean descending) {
-	if (sorts.startsWith("number:")) {
-	    return  sortEntriesOnPattern(entries, descending, sorts.substring(7));
-	}
-	return sortEntriesOn(entries, StringUtil.split(sorts,",",true,true), descending);
+    public static List<Entry> sortEntries(List<Entry> entries, String sorts,
+                                          final boolean descending) {
+        if (sorts.startsWith("number:")) {
+            return sortEntriesOnPattern(entries, descending,
+                                        sorts.substring(7));
+        }
+
+        return sortEntriesOn(entries,
+                             StringUtil.split(sorts, ",", true, true),
+                             descending);
     }
 
 
@@ -467,10 +541,9 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public List<Entry> sortEntriesOnField(List<Entry> entries,
-                                          final boolean descending,
-                                          final String type,
-                                          final int sortOrderFieldIndex) {
+    public static List<Entry> sortEntriesOnField(List<Entry> entries,
+            final boolean descending, final String type,
+            final int sortOrderFieldIndex) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry   e1 = (Entry) o1;
@@ -634,8 +707,14 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
-    public static void main(String[] args) throws Exception {
-    }
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {}
 
 
 
