@@ -207,7 +207,8 @@ public class XmlOutputHandler extends OutputHandler {
             getDateHandler().formatDate(new Date(entry.getCreateDate())),
             ATTR_CHANGEDATE,
             getDateHandler().formatDate(new Date(entry.getChangeDate())),
-            ATTR_PATH, entry.getFullName(false)
+            ATTR_PATH, entry.getFullName(false), ATTR_ENTRYORDER,
+            "" + entry.getEntryOrder()
         });
 
 
@@ -289,7 +290,8 @@ public class XmlOutputHandler extends OutputHandler {
         }
         getMetadataManager().addMetadata(request, entry, fileWriter, doc,
                                          node);
-        entry.getTypeHandler().addToEntryNode(request, entry, fileWriter, node);
+        entry.getTypeHandler().addToEntryNode(request, entry, fileWriter,
+                node);
 
         return node;
     }
