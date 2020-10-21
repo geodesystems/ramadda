@@ -28,33 +28,16 @@ import org.ramadda.util.JQuery;
 
 import org.ramadda.util.Utils;
 
-import org.ramadda.util.sql.Clause;
 import javax.imageio.ImageIO;
 
 
-import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.sql.SqlUtil;
-
-
 import org.w3c.dom.*;
-
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.HttpServer;
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.WikiUtil;
-import ucar.unidata.xml.XmlUtil;
 
 import java.awt.Dimension;
 import java.io.FileInputStream;
 
-
 import java.awt.Image;
-
-
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,13 +51,11 @@ import java.util.Properties;
  *
  *
  */
-public class BeforeAfterTypeHandler extends GenericTypeHandler {
-
-    /** _more_ */
-    private Hashtable<String, Dimension> dimensions = new Hashtable<String,
-                                                          Dimension>();
+public class BeforeAfterTypeHandler extends BeforeAfterBase {
 
 
+    private static int cnt=0;
+    
     /**
      * _more_
      *
@@ -88,14 +69,6 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isGroup() {
-        return true;
-    }
 
     /**
      * _more_
@@ -113,28 +86,9 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             return null;
         }
         List<Entry> children = getEntryManager().getChildren(request, entry);
-
         return getHtmlDisplay(request, entry, new ArrayList<Entry>(),
                               children);
     }
-
-    /** _more_ */
-    private static int cnt = 0;
-
-
-    private Dimension getDimensions(Entry entry) throws Exception {
-	Dimension dim    = dimensions.get(entry.getId());
-	if (dim == null) {
-	    Image image = ImageIO.read(new FileInputStream(entry.getFile()));
-	    dim = new Dimension(image.getWidth(null),
-				image.getHeight(null));
-	    if ((dim.width > 0) && (dim.height > 0)) {
-		dimensions.put(entry.getId(), dim);
-	    }
-	}
-	return dim;
-    }
-
 
 
     /**
@@ -250,7 +204,6 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
 
         return new Result(msg("Before/After Image"), sb);
     }
-
 
 
 
