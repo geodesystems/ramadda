@@ -1017,10 +1017,11 @@ public class CsvUtil {
 
         List<Row> rows  = new ArrayList<Row>();
         JSONArray array = null;
+	JSONObject root = null;
         try {
-            JSONObject obj = new JSONObject(s);
+            root = new JSONObject(s);
             if (arrayPath != null) {
-                array = Json.readArray(obj, arrayPath);
+                array = Json.readArray(root, arrayPath);
             }
         } catch (Exception exc) {
             System.err.println("exc:" + exc);
@@ -1034,8 +1035,8 @@ public class CsvUtil {
         for (int i = 0; i < array.length(); i++) {
             //            List<JSONObject> jrows = new ArrayList<JSONObject>();
             List       jrows = new ArrayList();
-            JSONObject jrow  = array.getJSONObject(i);
             if (Utils.stringDefined(objectPath)) {
+		JSONObject jrow  = array.getJSONObject(i);
                 for (String tok :
                         StringUtil.split(objectPath, ",", true, true)) {
                     if (tok.equals("*")) {
@@ -1049,7 +1050,7 @@ public class CsvUtil {
                     }
                 }
             } else {
-                jrows.add(jrow);
+                jrows.add(array.getJSONArray(i));
             }
 
             if (names == null) {
@@ -1081,9 +1082,16 @@ public class CsvUtil {
                             row.add(name);
                         }
                     } else {
-                        for (int k = 0; k < jarray.length(); k++) {
-                            row.add("Index " + k);
-                        }
+			//Try "fields"
+			JSONArray fields = root.optJSONArray("fields");
+			if(fields!=null) {
+			    for(int k=0;k<fields.length();k++)
+				row.add(fields.getString(k));
+			} else  {
+			    for (int k = 0; k < jarray.length(); k++) {
+				row.add("Index " + k);
+			    }
+			}
                         //
                     }
                 }
