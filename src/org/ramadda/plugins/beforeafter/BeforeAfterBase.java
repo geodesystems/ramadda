@@ -204,7 +204,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
         HtmlUtils.importJS(
             sb,
             getPageHandler().makeHtdocsUrl("/beforeafter/imageoverlay.js"));
-        String width = entry.getValue(1, "800").trim();
+        String width = entry.getValue(0, "800").trim();
         if (width.length() == 0) {
             width = "800";
         }
@@ -249,7 +249,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             HtmlUtils.center(sb,
                              HtmlUtils.div("",
                                            " id='slider_" + baseId
-                                           + "' style='width:200px;' "));
+                                           + "' style='margin-bottom:2px;width:200px;' "));
             sb.append(HtmlUtils.img(url1, "",
                                     "id='before_" + baseId + "' width="
                                     + width + " style='position:absolute;'"));
@@ -302,7 +302,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             Entry  entry2 = entries.get(i + 1);
             String width  = "800";
             String height = "366";
-            String swidth = (String) entry.getValue(1, "800");
+            String swidth = (String) entry.getValue(0, "800");
             if (swidth != null) {
                 swidth = swidth.trim();
             }

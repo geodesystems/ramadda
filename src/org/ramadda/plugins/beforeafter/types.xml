@@ -4,7 +4,9 @@
      <property name="icon" value="/icons/jpeg.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.resource.show" value="false"/>
+<!--
      <column name="display_type" type="enumeration"  values="beforafter,imageoverlay" label="Display Type" />
+-->
   </type>
 
   <type name="beforeafter"  super="beforeafterbase" description="Before and After Images" >
