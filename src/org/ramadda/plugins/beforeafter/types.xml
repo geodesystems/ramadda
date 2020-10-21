@@ -1,17 +1,28 @@
 <types   category="Imagery">
 
-  <type name="beforeafter"  description="Before and After Images" handler="org.ramadda.plugins.beforeafter.BeforeAfterTypeHandler" >
+  <type name="beforeafterbase"  foruser="false" handler="org.ramadda.plugins.beforeafter.BeforeAfterBase" >
      <property name="icon" value="/icons/jpeg.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.resource.show" value="false"/>
+     <column name="display_type" type="enumeration"  values="beforafter,imageoverlay" label="Display Type" />
+  </type>
+
+  <type name="beforeafter"  super="beforeafterbase" description="Before and After Images" >
+     <property name="form.resource.show" value="false"/>
      <column name="image_width" type="string" label="Optional image width" columns="5" default="800"/>
+     <wiki><![CDATA[
++section title={{name}} 
+{{description wikify="true"}}
+{{beforeafter}}
+----
+{{links message="" prefix="Images"}}
+-section
+]]>
+     </wiki>
 </type>
 
 
-  <type name="type_imageoverlay"  description="Image Overlay" handler="org.ramadda.plugins.beforeafter.ImageOverlayTypeHandler" >
-     <property name="icon" value="/icons/jpeg.png"/>
-     <property name="form.description.rows" value="5"/>
-     <property name="form.resource.show" value="false"/>
+  <type name="type_imageoverlay"  super="beforeafterbase" description="Image Overlay"  >
      <column name="image_width" type="string" label="Optional image width" columns="5" default="800"/>
      <wiki><![CDATA[
 +section title={{name}} 

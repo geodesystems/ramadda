@@ -71,6 +71,9 @@ public class BeforeAfterBase extends GenericTypeHandler {
                                                           Dimension>();
 
 
+    /** _more_          */
+    private static int cnt = 0;
+
     /**
      * _more_
      *
@@ -142,6 +145,10 @@ public class BeforeAfterBase extends GenericTypeHandler {
             return getImageOverlay(wikiUtil, request, originalEntry, entry,
                                    tag, props);
         }
+        if (tag.equals("beforeafter")) {
+            return getBeforeAfter(wikiUtil, request, originalEntry, entry,
+                                  tag, props);
+        }
 
         return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
                                     tag, props);
@@ -197,7 +204,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
         HtmlUtils.importJS(
             sb,
             getPageHandler().makeHtdocsUrl("/beforeafter/imageoverlay.js"));
-        String width = entry.getValue(0, "800").trim();
+        String width = entry.getValue(1, "800").trim();
         if (width.length() == 0) {
             width = "800";
         }
@@ -260,7 +267,109 @@ public class BeforeAfterBase extends GenericTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getBeforeAfter(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        StringBuffer sb   = new StringBuffer();
+        StringBuffer divs = new StringBuffer();
+        int          col  = 1;
+        sb.append("\n");
+        sb.append(HtmlUtils.importJS(getRepository().getUrlBase()
+                                     + "/beforeafter/jquery.beforeafter.js"));
 
+        StringBuffer jq      = new StringBuffer();
+        List<Entry>  entries = getEntries(request, entry);
+        for (int i = 0; i < entries.size(); i += 2) {
+            if (i >= entries.size() - 1) {
+                break;
+            }
+            Entry  entry1 = entries.get(i);
+            Entry  entry2 = entries.get(i + 1);
+            String width  = "800";
+            String height = "366";
+            String swidth = (String) entry.getValue(1, "800");
+            if (swidth != null) {
+                swidth = swidth.trim();
+            }
+            if ( !Utils.stringDefined(swidth)) {
+                swidth = "800";
+            }
+            Dimension dim = getDimensions(entry1);
+            if (Misc.equals(swidth, "default")) {
+                width  = "" + dim.width;
+                height = "" + dim.height;
+            } else {
+                if ((dim.width > 0) && (dim.height > 0)) {
+                    if (dim.height > dim.width) {
+                        height = "600";
+                        width = Integer.toString(600 * dim.width
+                                / dim.height);
+                    } else {
+                        width = swidth;
+                        height = Integer.toString((int) (dim.height
+                                * new Integer(width) / (float) dim.width));
+                    }
+                }
+            }
+
+
+            if (entry1.getCreateDate() > entry2.getCreateDate()) {
+                Entry tmp = entry1;
+                entry1 = entry2;
+                entry2 = tmp;
+            }
+            String id = "bandacontainer" + (cnt++);
+            divs.append("<div id=\"" + id + "\">\n");
+            String url1 = HtmlUtils.url(
+                              request.makeUrl(repository.URL_ENTRY_GET) + "/"
+                              + getStorageManager().getFileTail(
+                                  entry1), ARG_ENTRYID, entry1.getId());
+            String url2 = HtmlUtils.url(
+                              request.makeUrl(repository.URL_ENTRY_GET) + "/"
+                              + getStorageManager().getFileTail(
+                                  entry2), ARG_ENTRYID, entry2.getId());
+
+
+            divs.append("<img src=\"" + url1 + "\""
+                        + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width)
+                        + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT, height)
+                        + ">\n");
+
+            divs.append("<img src=\"" + url2 + "\""
+                        + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width)
+                        + HtmlUtils.attr(HtmlUtils.ATTR_HEIGHT, height)
+                        + ">\n");
+
+            divs.append("</div>\n");
+            String path = getRepository().getUrlBase() + "/beforeafter/";
+            String args = "{imagePath:'" + path + "'}";
+            sb.append("\n");
+            jq.append(HtmlUtils.script(JQuery.ready("\n$(function(){$('#"
+                    + id + "').beforeAfter(" + args + ");});\n")));
+        }
+        sb.append("\n");
+        sb.append(divs);
+        sb.append("\n");
+        sb.append(jq);
+        sb.append("\n");
+
+        return sb.toString();
+    }
 
 
 }
