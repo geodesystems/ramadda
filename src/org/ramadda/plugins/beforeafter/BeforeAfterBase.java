@@ -16,10 +16,7 @@
 
 package org.ramadda.plugins.beforeafter;
 
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
-import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
@@ -29,42 +26,34 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
-import org.ramadda.util.sql.Clause;
-
-
-import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.sql.SqlUtil;
-
+import ucar.unidata.util.Misc;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.Misc;
-
 import java.awt.Dimension;
-
-
 import java.awt.Image;
-
 import java.io.FileInputStream;
-
-
-
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 import javax.imageio.ImageIO;
-
 
 /**
  *
  *
  */
 public class BeforeAfterBase extends GenericTypeHandler {
+
+    public static final String ARG_IMAGELAYOUT = "imagelayout";
+    public static final String TAG_IMAGEPAIR_DEFAULT = "imagepair_default";
+    public static final String TAG_IMAGEOVERLAY = "imageoverlay";
+    public static final String TAG_BEFOREAFTER = "beforeafter";
+    public static final String TAG_LEFTRIGHT = "leftright";        
+
 
     /** _more_ */
     private Hashtable<String, Dimension> dimensions = new Hashtable<String,
@@ -114,11 +103,41 @@ public class BeforeAfterBase extends GenericTypeHandler {
             if ((dim.width > 0) && (dim.height > 0)) {
                 dimensions.put(entry.getId(), dim);
             }
-        }
+        }  
 
         return dim;
     }
 
+
+    public void getLinks(Appendable sb, Request request, Hashtable props, Entry entry, String tag) throws Exception {
+
+	if(!Utils.getProperty(props,"showLinks",false))  return;
+	if(request.get("embedded", false)) return;
+
+	HashSet<String> except = (HashSet<String>)Utils.makeHashSet(ARG_IMAGELAYOUT);
+	String url;
+	if(!tag.equals(TAG_BEFOREAFTER)) {
+	    url = request.getUrl(except,null);
+	    url+="&" + ARG_IMAGELAYOUT+ "=" + TAG_BEFOREAFTER;
+	    sb.append(HtmlUtils.href(url,"Switch to Before/After"));
+	    sb.append(HtmlUtils.space(2));
+	}
+
+	if(!tag.equals(TAG_IMAGEOVERLAY)) {
+	    url = request.getUrl(except,null);
+	    url+="&" + ARG_IMAGELAYOUT+ "=" + TAG_IMAGEOVERLAY;
+	    sb.append(HtmlUtils.href(url,"Switch to Overlay"));
+	    sb.append(HtmlUtils.space(2));
+	}
+
+	if(!tag.equals(TAG_LEFTRIGHT)) {
+	    url = request.getUrl(except,null);
+	    url+="&" + ARG_IMAGELAYOUT+ "=" + TAG_LEFTRIGHT;
+	    sb.append(HtmlUtils.href(url,"Switch to Side by Side"));
+	    sb.append(HtmlUtils.space(2));
+	}
+	
+    }
 
 
     /**
@@ -141,15 +160,30 @@ public class BeforeAfterBase extends GenericTypeHandler {
                                  String tag, Hashtable props)
             throws Exception {
 
-        if (tag.equals("imageoverlay")) {
+	String beforeAfterTag =  request.getString(ARG_IMAGELAYOUT,null);
+	if(!Utils.stringDefined(beforeAfterTag)) {
+	    beforeAfterTag = tag;
+	}
+	if(beforeAfterTag.equals(TAG_IMAGEPAIR_DEFAULT)) {
+	    beforeAfterTag = entry.getValue(0,TAG_BEFOREAFTER);
+	}
+	if(!Utils.stringDefined(beforeAfterTag)) {
+	    beforeAfterTag = TAG_IMAGEOVERLAY;
+	}
+
+
+        if (beforeAfterTag.equals(TAG_IMAGEOVERLAY)) {
             return getImageOverlay(wikiUtil, request, originalEntry, entry,
                                    tag, props);
         }
-        if (tag.equals("beforeafter")) {
+        if (beforeAfterTag.equals(TAG_BEFOREAFTER)) {
             return getBeforeAfter(wikiUtil, request, originalEntry, entry,
                                   tag, props);
         }
-
+        if (beforeAfterTag.equals(TAG_LEFTRIGHT)) {
+            return getLeftRight(wikiUtil, request, originalEntry, entry,
+                                   tag, props);
+        }
         return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
                                     tag, props);
     }
@@ -204,7 +238,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
         HtmlUtils.importJS(
             sb,
             getPageHandler().makeHtdocsUrl("/beforeafter/imageoverlay.js"));
-        String width = entry.getValue(0, "800").trim();
+        String width = entry.getValue(1, "800").trim();
         if (width.length() == 0) {
             width = "800";
         }
@@ -263,6 +297,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             HtmlUtils.script(sb, script);
         }
 
+	getLinks(sb,request, props, entry,TAG_IMAGEOVERLAY);
         return sb.toString();
     }
 
@@ -302,7 +337,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             Entry  entry2 = entries.get(i + 1);
             String width  = "800";
             String height = "366";
-            String swidth = (String) entry.getValue(0, "800");
+            String swidth = (String) entry.getValue(1, "800");
             if (swidth != null) {
                 swidth = swidth.trim();
             }
@@ -325,13 +360,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
                                 * new Integer(width) / (float) dim.width));
                     }
                 }
-            }
-
-
-            if (entry1.getCreateDate() > entry2.getCreateDate()) {
-                Entry tmp = entry1;
-                entry1 = entry2;
-                entry2 = tmp;
             }
             String id = "bandacontainer" + (cnt++);
             divs.append("<div id=\"" + id + "\">\n");
@@ -357,7 +385,10 @@ public class BeforeAfterBase extends GenericTypeHandler {
 
             divs.append("</div>\n");
             String path = getRepository().getUrlBase() + "/beforeafter/";
-            String args = "{imagePath:'" + path + "'}";
+            String args = "{";
+	    //	    args+="showFullLinks:" + (!request.get("embedded",false))+",\n";
+	    args+="showFullLinks:false,\n";
+	    args+="imagePath:'" + path + "'}";
             sb.append("\n");
             jq.append(HtmlUtils.script(JQuery.ready("\n$(function(){$('#"
                     + id + "').beforeAfter(" + args + ");});\n")));
@@ -368,8 +399,65 @@ public class BeforeAfterBase extends GenericTypeHandler {
         sb.append(jq);
         sb.append("\n");
 
+	getLinks(sb, request, props, entry,TAG_BEFOREAFTER);
         return sb.toString();
     }
 
+
+
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getLeftRight(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        StringBuffer sb   = new StringBuffer();
+        List<Entry>  entries = getEntries(request, entry);
+        for (int i = 0; i < entries.size(); i += 2) {
+            if (i >= entries.size() - 1) {
+                break;
+            }
+            Entry  entry1 = entries.get(i);
+            Entry  entry2 = entries.get(i + 1);
+            String width = "50%";
+            String url1 = HtmlUtils.url(
+                              request.makeUrl(repository.URL_ENTRY_GET) + "/"
+                              + getStorageManager().getFileTail(
+                                  entry1), ARG_ENTRYID, entry1.getId());
+            String url2 = HtmlUtils.url(
+                              request.makeUrl(repository.URL_ENTRY_GET) + "/"
+                              + getStorageManager().getFileTail(
+                                  entry2), ARG_ENTRYID, entry2.getId());
+
+
+            sb.append("<table width=100%><tr valign=top>\n");
+            sb.append("<td width=50%>");
+	    sb.append("<img src=\"" + url1 + "\""
+		      + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%")
+                        + ">\n");
+	    sb.append("</td>");
+            sb.append("<td width=50%>");
+	    sb.append("<img src=\"" + url2 + "\""
+		      + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "100%")
+                        + ">\n");
+	    sb.append("</td>");
+            sb.append("</tr></table>\n");
+        }
+	getLinks(sb, request, props, entry,TAG_LEFTRIGHT);
+        return sb.toString();
+    }
+    
 
 }
