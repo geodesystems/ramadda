@@ -333,6 +333,7 @@ function RepositoryMap(mapId, params) {
         }
     };
 
+
     this.mapOptions = options;
     this.finishMapInit();
     jQuery(document).ready(function($) {
@@ -340,6 +341,30 @@ function RepositoryMap(mapId, params) {
             _this.getMap().updateSize();
         }
     });
+
+
+    if (false) {
+    this.polygon="";
+    this.polyPoints = [];
+    //addclick
+    this.clickHandler =  this.addClickHandler();
+    this.clickHandler.addListener(ll=>{
+	if(this.poly) this.removePolygon(this.poly);
+	this.polyPoints.push(ll);
+	let tmp = [];
+	this.polyPoints.forEach(ll=>{
+	    tmp.push(new OpenLayers.Geometry.Point(ll.lon,ll.lat));
+	});
+	this.poly = this.addPolygon("poly","poly",tmp,{strokeColor:'red',strokeWidth:2});
+	if(this.polygon!="")this.polygon+=" ";
+	ll.lat = Math.round(ll.lat*100000)/100000.0;
+	ll.lon = Math.round(ll.lon*100000)/100000.0;	
+	this.polygon+=ll.lon+","+ll.lat;
+	console.log("defineLine {} {Main Ditch} {"+this.polygon+"}");
+
+    });
+    }
+
 
 }
 
@@ -838,7 +863,8 @@ RepositoryMap.prototype = {
         this.centerOnMarkers(this.dfltBounds);
     },
     handleFeatureover: function(feature, skipText) {
-	if(this.xxdoMouseOver || feature.highlightText || feature.highlightTextGetter) {
+	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
+	console.log("doMouseOVer-2");
 	    var location = feature.location;
 	    if (location) {
 		if(this.highlightFeature != feature) {
@@ -916,7 +942,7 @@ RepositoryMap.prototype = {
                     this.hideFeatureText(feature);
                 }
             }
-//            return;
+            return;
         }
         if (layer == null || layer.canSelect === false) return;
         feature.style = feature.originalStyle;
@@ -1645,13 +1671,6 @@ RepositoryMap.prototype = {
         popup.feature = feature;
         this.getMap().addPopup(popup);
         this.currentPopup = popup;
-
-
-	
-
-
-
-
     },
 
     onFeatureUnselect:  function(layer) {
@@ -2482,8 +2501,6 @@ RepositoryMap.prototype = {
 
 	this.applyDefaultLocation();
 
-
-
         for (var i = 0; i < this.initialLayers.length; i++) {
             this.addLayer(this.initialLayers[i]);
         }
@@ -2743,15 +2760,18 @@ RepositoryMap.prototype = {
     addClickHandler:  function(lonfld, latfld, zoomfld, object) {
         this.lonFldId = lonfld;
         this.latFldId = latfld;
+
         if (this.clickHandler)
             return;
-        if (!this.map)
+        if (!this.map) {
             return;
+	}
         this.clickHandler = new OpenLayers.Control.Click();
         this.clickHandler.setLatLonZoomFld(lonfld, latfld, zoomfld, object);
         this.clickHandler.setTheMap(this);
         this.getMap().addControl(this.clickHandler);
         this.clickHandler.activate();
+	return this.clickHandler;
     },
 
     setSelection:  function(argBase, doRegion, absolute) {
