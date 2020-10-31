@@ -1798,9 +1798,32 @@ font-weight:bold;
   background: #efefef;
 }
 
+.display-images-label {
+    color:#666;
+    font-size:10pt;
+}
 .display-images-block {
-display: inline-block;
-margin:10px;
+    text-align:center;
+    display: inline-block;
+    margin:10px;
+}
+
+.display-imageoverview-thumb {
+    border:1px solid #ccc;
+    margin:5px;
+    cursor:pointer;
+    border:1px solid transparent;
+}
+
+.display-imageoverview-thumb:hover {
+//    border:1px solid #000;
+}
+
+.display-imagesoverview-popup {
+    border: 1px solid #ccc;
+    margin-left:5px;
+    padding:1px;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 
 .display-slides-arrow-left  {

@@ -288,12 +288,14 @@ public class JsonOutputHandler extends OutputHandler {
                        "false");
 
         boolean      addAttributes = request.get("addAttributes", false);
-
-
         boolean      addThumbnails = request.get("addThumbnails", false);
+        boolean      addImages = request.get("addImages", false);	
 	if(addThumbnails)
 	    addPointHeader(fields, "thumbnail", "Thumbnail", "image", "forDisplay",
 			   "false");
+	if(addImages)
+	    addPointHeader(fields, "image", "Image", "image", "forDisplay",
+			   "false");	
 
         TypeHandler  typeHandler   = null;
         List<Column> columns       = null;
@@ -337,7 +339,7 @@ public class JsonOutputHandler extends OutputHandler {
             List<String> entryArray = new ArrayList<String>();
             //Note: if the entry is a different type than the first one then
             //the columns will mismatch
-            String array = toPointJson(request, entry, addSnippets, addAttributes,addThumbnails,
+            String array = toPointJson(request, entry, addSnippets, addAttributes,addThumbnails, addImages,
                                        columns, showFileUrl);
             entryArray.add("values");
             entryArray.add(array);
@@ -707,7 +709,7 @@ public class JsonOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private String toPointJson(Request request, Entry entry,boolean addSnippets,
-                               boolean addAttributes, boolean addThumbnails, List<Column> columns,
+                               boolean addAttributes, boolean addThumbnails, boolean addImages, List<Column> columns,
                                boolean showFileUrl)
             throws Exception {
 
@@ -739,6 +741,17 @@ public class JsonOutputHandler extends OutputHandler {
 		items.add("null");
 	}
 
+
+	if(addImages) {
+	    if(entry.isImage()) {
+		items.add(
+			  Json.quote(
+				     entry.getTypeHandler().getEntryResourceUrl(
+										request, entry)));
+	    } else {
+		items.add("null");
+	    }
+	}
         TypeHandler typeHandler = entry.getTypeHandler();
         if (addAttributes) {
             Object[] extraParameters = entry.getValues();

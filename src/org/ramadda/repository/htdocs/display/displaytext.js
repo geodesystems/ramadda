@@ -13,6 +13,7 @@ const DISPLAY_BLOCKS = "blocks";
 const DISPLAY_TEMPLATE = "template";
 const DISPLAY_SLIDES = "slides";
 const DISPLAY_IMAGES = "images";
+const DISPLAY_IMAGEOVERVIEW = "imageoverview";
 const DISPLAY_TOPFIELDS = "topfields";
 
 addGlobalDisplayType({
@@ -35,6 +36,14 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_IMAGES,
     label: "Images",
+    requiresData: true,
+    forUser: true,
+    category:CATEGORY_MAPS_IMAGES
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_IMAGEOVERVIEW,
+    label: "Image Overview",
     requiresData: true,
     forUser: true,
     category:CATEGORY_MAPS_IMAGES
@@ -894,7 +903,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             var records = this.filterData();
             if(!records) return;
             var fields = pointData.getRecordFields();
-	    var imageField = this.getFieldByType(fields,"image");
+	    var imageField = this.getFieldById(fields,"image");
+	    if(!imageField)
+		imageField = this.getFieldByType(fields,"image");
             var labelFields = this.getFieldsByIds(fields, this.getProperty("labelFields", null, true));
             var tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields", null, true));
 	    if(!imageField) {
@@ -907,6 +918,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    var cnt = 1;
 	    if(this.startIndex<0) this.startIndex=0;
 	    if(this.startIndex>records.length) this.startIndex=records.length-number;
+	    let uid = HtmlUtils.getUniqueId();
+	    let base = "gallery"+uid;
             for (var rowIdx = this.startIndex; rowIdx < records.length; rowIdx++) {
 		if(cnt>number) break;
 		cnt++;
@@ -919,16 +932,16 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		var tt = "";
 		if(labelFields.length>0) {
 		    labelFields.map(l=>{label += " " + row[l.getIndex()]});
-		    label = HU.div([CLASS,"display-images-label"], label.trim());
 		}
 		if(tooltipFields.length>0) {
 		    tooltipFields.map(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		}
 		tt = tt.trim();
-		contents += HU.div([CLASS, "display-images-block",TITLE,tt],
-					  HU.image(image,["width",width])+
-					  label);
-
+		let block = HU.div([ID,base+"div"+  rowIdx, CLASS, "image-outer display-images-block",TITLE,tt],
+				   HU.div([CLASS,"image-inner"], HU.image(image,["alt",label,ID,base+"image" + rowIdx, WIDTH,width])+
+					  HU.div([CLASS,"display-images-label"], label.trim())));
+		block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",label]);
+		contents += block;
 	    }
 	    var header = "";
 	    if(this.startIndex>0) {
@@ -938,9 +951,10 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		header += HU.span([ID,this.getDomId(ID_NEXT)],"Next") +" ";
 	    }
 	    cnt--;
-	    header += "Showing images " + (this.startIndex+1) +" - " +(this.startIndex+cnt);
-	    if(number<records.length)
+	    if(number<records.length) {
+		header += "Showing images " + (this.startIndex+1) +" - " +(this.startIndex+cnt);
 		header += " of " + records.length + " total images";
+	    }
 
 	    if(header!="") header  = header +"<br>";
 
@@ -954,6 +968,175 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		this.updateUI();
 	    });
 	}
+    })
+}
+
+
+
+function RamaddaImageoverviewDisplay(displayManager, id, properties) {
+    const ID_THUMBS = "thumbs";
+    const ID_IMAGE = "image";
+    const ID_IMAGEINNER = "imageinner";    
+    const ID_POPUP = "imagepopup";
+    const ID_POPUPIMAGE = "imagepopupimage";
+    const ID_RECT = "imagerect";            
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGEOVERVIEW, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:"Image Overview Attributes"},
+	{p:'labelFields'},
+	{p:'thumbField'},
+	{p:'thumbWidth',wikiValue:'100'},
+	{p:'imageWidth',wikiValue:'150'},
+	{p:'popupWidth'},
+	{p:'popupHeight'},	
+	{p:"popupImageWidth"},
+    ]);
+
+
+    $.extend(this, {
+	dataFilterChanged: function() {
+	    this.updateUI();
+	},
+        updateUI: function() {
+            let pointData = this.getData();
+            if (pointData == null) return;
+            let records = this.filterData();
+            if(!records) return;
+            let fields = pointData.getRecordFields();
+	    this.imageField = this.getFieldById(fields,"image");
+	    if(!this.imageField)
+		this.imageField = this.getFieldByType(fields,"image");
+	    if(!this.imageField) {
+		this.setContents(this.getMessage("No image field in data"));
+		return;
+	    }
+	    this.labelFields = this.getFieldsByIds(fields, this.getPropertyLabelFields());
+
+            let thumbField = this.getFieldById(fields, this.getProperty("thumbField", "thumb")) || this.imageField;
+	    let thumbWidth = parseFloat(this.getProperty("thumbWidth",100));
+	    let height=this.getHeightForStyle();
+	    let imageWidth = this.getProperty("imageWidth",500);
+	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
+	    this.popupHeight = +this.getProperty("popupHeight",300);
+
+	    let rect = HU.div([STYLE,HU.css("border","1px solid red","width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ID, this.getDomId(ID_RECT)]);
+	    let imageDiv = HU.div(["style","position:relative"],
+				  rect+
+				  HU.div([ID,this.getDomId(ID_IMAGE),STYLE,HU.css("position","relative") ]) +
+				  HU.div([ID,this.getDomId(ID_POPUP),CLASS,"display-imagesoverview-popup",STYLE,HU.css("z-index","100","display","none",WIDTH,this.popupWidth+"px",HEIGHT,this.popupHeight+"px","overflow-y","hidden","overflow-x","hidden", "position","absolute","top","0px","left", imageWidth+"px")],""));
+
+	    let contents = HU.table(["border",0,WIDTH,"100%"],
+				    HU.tr(["valign","top"],
+					  HU.td([WIDTH,"2%"],
+						HU.div([ID,this.getDomId(ID_THUMBS), STYLE,HU.css("max-height",height,"overflow-y","auto","display","inline-block")],"")) +
+					  HU.td([WIDTH,"90%"],
+						imageDiv)));
+	    let thumbsHtml = "";
+	    let first = null;
+            for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let row = this.getDataValues(records[rowIdx]);
+		let image = row[this.imageField.getIndex()];
+		if(image=="") {
+		    continue;
+		}
+		if(!first) first=records[rowIdx];
+		let thumb = row[thumbField.getIndex()];		
+		thumbsHtml += HU.image(thumb,["recordIndex",rowIdx,ID,this.getDomId("image")+rowIdx,WIDTH, thumbWidth,CLASS,"display-imageoverview-thumb"])+"<br>\n";
+	    }
+            this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+	    this.jq(ID_THUMBS).html(thumbsHtml);
+	    let _this = this;
+	    let thumbs = this.jq(ID_THUMBS).find(".display-imageoverview-thumb");
+	    thumbs.mouseover(function() {
+		thumbs.css("border","1px solid transparent");
+		$(this).css("border","1px solid red");
+		var record = records[parseFloat($(this).attr('recordIndex'))];
+		_this.handleImage(record);
+	    });
+	    this.jq(ID_THUMBS).css("border","1px solid transparent");
+	    _this.handleImage(first);
+	},
+	showPopup: function() {
+	    if(!this.currentRecord) return;
+	    let row = this.getDataValues(this.currentRecord);
+	    let image = row[this.imageField.getIndex()];
+	    this.jq(ID_POPUP).css("display","block");
+	    let imageAttrs = [ID,this.getDomId(ID_POPUPIMAGE),STYLE,HU.css("xposition","absolute")];
+	    if(this.getPropertyPopupImageWidth()) {
+		imageAttrs.push(WIDTH);
+		imageAttrs.push(this.getPropertyPopupImageWidth());
+	    } 
+	    this.jq(ID_POPUP).html(HU.image(image,imageAttrs));
+	},
+	handleImage: function(record, offset) {
+	    let _this = this;
+	    this.currentRecord = record;
+            let row = this.getDataValues(record);
+	    let image = row[this.imageField.getIndex()];
+	    let width = this.getProperty("imageWidth",500);
+    	    let label = "";
+	    if(this.labelFields.length>0) {
+		this.labelFields.map(l=>{label += " " + row[l.getIndex()]});
+	    }
+	    let html =  HU.image(image,[STYLE,HU.css("z-index",1000),WIDTH, width,ID,this.getDomId(ID_IMAGEINNER)]);
+	    if(label!="")
+		html+=HU.div([STYLE,"color:#000"],label);
+	    this.jq(ID_IMAGE).html(html);
+	    this.jq(ID_POPUP).html("");
+	    this.jq(ID_POPUP).css("display","none");
+	    this.jq(ID_IMAGEINNER).mouseover(()=>{
+		this.showPopup();
+	    });
+	    this.jq(ID_IMAGEINNER).mouseout(()=>{
+		this.jq(ID_POPUP).html("");
+		this.jq(ID_POPUP).css("display","none");
+		this.jq(ID_RECT).css("display","none");		
+	    });
+
+	    this.jq(ID_IMAGEINNER).mousemove((e)=>{
+		this.handleMouseMove(e);
+	    });
+	    if(offset)
+		this.jq(ID_POPUPIMAGE).offset(offset);
+	},
+	handleMouseMove(e) {
+	    this.currentMouseEvent=e;
+	    let image = this.jq(ID_IMAGEINNER);
+	    let w = image.width();
+	    let h = image.height();
+	    let parentOffset = image.parent().offset();
+	    let popupImage = this.jq(ID_POPUPIMAGE);
+	    let popupWidth = popupImage.parent().width();
+	    let popupHeight = popupImage.parent().height(); 	    	    
+	    let iw = popupImage.width();
+	    let ih = popupImage.height();		
+	    let scaleX = w/iw;
+	    let scaleY = h/ih;
+	    let scaledWidth = scaleX*popupWidth;
+	    let scaledHeight = scaleY*popupHeight;
+	    let sw2 = scaledWidth/2;
+	    let sh2 = scaledHeight/2;	    
+	    let x = e.pageX - parentOffset.left;
+	    let y = e.pageY - parentOffset.top;
+	    if(x<sw2) x=sw2;
+	    if(y<sh2) y=sh2;
+	    if(x>w-sw2) x=w-sw2;
+	    if(y>h-sh2) y=h-sh2;	    	    
+	    let offX = scaleX*iw/2;
+	    let offY = scaleY*ih/2;		
+	    let pw = x/w;
+	    let ph = y/h;
+	    let pp = popupImage.parent().offset();
+	    let offset = {
+		left:pp.left-pw*iw+offX,
+		top:pp.top-ph*ih+offY};
+	    this.jq(ID_POPUPIMAGE).offset(offset);		    
+	    let rect = this.jq(ID_RECT);
+	    rect.css({"display":"block",top:y-scaledHeight/2+"px",left:x-scaledWidth/2+"px",width:scaledWidth+"px",height:scaledHeight+"px"});
+	},
+
     })
 }
 
@@ -1014,14 +1197,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    records= this.sortRecords(records);
 
-	    var fields = pointData.getRecordFields();
-	    var uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
-	    var uniqueMap ={};
-	    var template = this.getProperty("template","");
-	    var select = this.getProperty("select","all");
-	    var selected = [];
-	    var summary = {};
-	    var goodRecords = [];
+	    let fields = pointData.getRecordFields();
+	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
+	    let uniqueMap ={};
+	    let template = this.getProperty("template","");
+	    let select = this.getProperty("select","all");
+	    let selected = [];
+	    let summary = {};
+	    let goodRecords = [];
 	    records.forEach(record=>{
 		let r  =  this.getDataValues(record);
 		if(uniqueFields.length>0) {
