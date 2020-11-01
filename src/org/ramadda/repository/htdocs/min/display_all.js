@@ -21393,6 +21393,7 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 	{p:'thumbField'},
 	{p:'thumbWidth',wikiValue:'100'},
 	{p:'imageWidth',wikiValue:'150'},
+	{p:'urlField'},
 	{p:'popupWidth'},
 	{p:'popupHeight'},	
 	{p:"popupImageWidth"},
@@ -21409,6 +21410,7 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
             let records = this.filterData();
             if(!records) return;
             let fields = pointData.getRecordFields();
+            this.urlField = this.getFieldById(fields, this.getProperty("urlField", "url"));
 	    this.imageField = this.getFieldById(fields,"image");
 	    if(!this.imageField)
 		this.imageField = this.getFieldByType(fields,"image");
@@ -21483,6 +21485,13 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
     	    let label = "";
 	    if(this.labelFields.length>0) {
 		this.labelFields.map(l=>{label += " " + row[l.getIndex()]});
+		if(this.urlField) {
+                    var url = this.urlField.getValue(row);
+                    if(url && url!="") {
+                        label = "<a style='color:inherit;'  href='" +url+"' target=_other>" +label+ "</a>";
+
+                    }
+		}
 	    }
 	    let html =  HU.image(image,[STYLE,HU.css("z-index",1000),WIDTH, width,ID,this.getDomId(ID_IMAGEINNER)]);
 	    if(label!="")
