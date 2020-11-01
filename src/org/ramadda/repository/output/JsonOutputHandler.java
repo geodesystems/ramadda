@@ -749,7 +749,7 @@ public class JsonOutputHandler extends OutputHandler {
 				     entry.getTypeHandler().getEntryResourceUrl(
 										request, entry)));
 	    } else {
-		items.add("null");
+		items.add(Json.quote(""));
 	    }
 	}
         TypeHandler typeHandler = entry.getTypeHandler();

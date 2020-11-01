@@ -1054,6 +1054,7 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 		$(this).css("border","1px solid red");
 		var record = records[parseFloat($(this).attr('recordIndex'))];
 		_this.handleImage(record);
+		_this.propagateEventRecordSelection({record: record});
 	    });
 	    this.jq(ID_THUMBS).css("border","1px solid transparent");
 	    _this.handleImage(first);
