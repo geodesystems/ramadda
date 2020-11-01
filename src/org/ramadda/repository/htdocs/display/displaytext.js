@@ -1013,7 +1013,6 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    this.labelFields = this.getFieldsByIds(fields, this.getPropertyLabelFields());
-
             let thumbField = this.getFieldById(fields, this.getProperty("thumbField", "thumb")) || this.imageField;
 	    let thumbWidth = parseFloat(this.getProperty("thumbWidth",100));
 	    let height=this.getHeightForStyle();

@@ -67,6 +67,45 @@ public class JpegMetadataHandler extends MetadataHandler {
     }
 
 
+    public Metadata getThumbnail(Request request, Entry entry) throws Exception {
+        if ( !entry.getResource().isImage()) {
+            return null;
+        }
+
+        String path = entry.getResource().getPath();
+	Image image = Utils.readImage(path);
+	if (image == null) {
+	    System.err.print("JpegMetadataHandler: image is null:"
+			     + entry.getResource());
+	    
+	    return null;
+	}
+	//            Image newImage = ImageUtils.resize(image, 300, -1);
+	Image newImage = image.getScaledInstance(300, -1,
+						 Image.SCALE_FAST);
+	ImageUtils.waitOnImage(newImage);
+	newImage = ImageUtils.toBufferedImage(newImage,
+					      BufferedImage.TYPE_INT_RGB);
+	
+	String thumbFile = IOUtil.stripExtension(entry.getName())
+	    + "_thumb.";
+	if (path.toLowerCase().endsWith("gif")) {
+	    thumbFile += "gif";
+	} else {
+	    thumbFile += "jpg";
+	}
+	
+
+	File f = getStorageManager().getTmpFile(request, thumbFile);
+	ImageUtils.writeImageToFile(newImage, f);
+	String fileName = getStorageManager().copyToEntryDir(entry,f).getName();
+	return
+	    new Metadata(getRepository().getGUID(), entry.getId(),
+			 ContentMetadataHandler.TYPE_THUMBNAIL, false,
+			 fileName, null, null, null, null);
+	}
+
+
     /**
      * Get the initial metadata
      *
@@ -88,44 +127,13 @@ public class JpegMetadataHandler extends MetadataHandler {
             return;
         }
 
+
         String path = entry.getResource().getPath();
         try {
-            Image image = Utils.readImage(path);
-            if (image == null) {
-                System.err.print("JpegMetadataHandler: image is null:"
-                                 + entry.getResource());
-
-                return;
-            }
-            //            Image newImage = ImageUtils.resize(image, 300, -1);
-            Image newImage = image.getScaledInstance(300, -1,
-                                 Image.SCALE_FAST);
-            ImageUtils.waitOnImage(newImage);
-            newImage = ImageUtils.toBufferedImage(newImage,
-                    BufferedImage.TYPE_INT_RGB);
-
-            String thumbFile = IOUtil.stripExtension(entry.getName())
-                               + "_thumb.";
-            if (path.toLowerCase().endsWith("gif")) {
-                thumbFile += "gif";
-            } else {
-                thumbFile += "jpg";
-            }
-
-
-            File f = getStorageManager().getTmpFile(request, thumbFile);
-            ImageUtils.writeImageToFile(newImage, f);
-
-
-            String fileName = getStorageManager().copyToEntryDir(entry,
-                                  f).getName();
-            Metadata thumbnailMetadata =
-                new Metadata(getRepository().getGUID(), entry.getId(),
-                             ContentMetadataHandler.TYPE_THUMBNAIL, false,
-                             fileName, null, null, null, null);
-
-            metadataList.add(thumbnailMetadata);
-
+	    Metadata thumbnailMetadata = getThumbnail(request, entry);
+	    if(thumbnailMetadata!=null) {
+		metadataList.add(thumbnailMetadata);
+	    }
         } catch (Exception exc) {
             getLogManager().logError("JpgeMetadataHandler", exc);
 

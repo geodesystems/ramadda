@@ -4544,12 +4544,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 	    let theField = null;
+//	    console.log("Looking for:" + id);
 	    id.split("|").every(fieldId=>{
 		let alias = aliases[fieldId];
 		for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
+//		    console.log("\tField:" + field.getId());
                     if (field.getId() == fieldId || fieldId == ("#" + (i+1)) || field.getId()==alias) {
 			theField =  field;
+//			console.log("\tgot it:" + theField);
 			return false;
                     }
 		}
@@ -21414,7 +21417,6 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    this.labelFields = this.getFieldsByIds(fields, this.getPropertyLabelFields());
-
             let thumbField = this.getFieldById(fields, this.getProperty("thumbField", "thumb")) || this.imageField;
 	    let thumbWidth = parseFloat(this.getProperty("thumbWidth",100));
 	    let height=this.getHeightForStyle();

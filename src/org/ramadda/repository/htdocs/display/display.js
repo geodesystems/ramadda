@@ -2114,12 +2114,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 	    }
 	    let theField = null;
+//	    console.log("Looking for:" + id);
 	    id.split("|").every(fieldId=>{
 		let alias = aliases[fieldId];
 		for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
+//		    console.log("\tField:" + field.getId());
                     if (field.getId() == fieldId || fieldId == ("#" + (i+1)) || field.getId()==alias) {
 			theField =  field;
+//			console.log("\tgot it:" + theField);
 			return false;
                     }
 		}

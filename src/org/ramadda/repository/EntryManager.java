@@ -27,6 +27,7 @@ import org.ramadda.repository.harvester.Harvester;
 import org.ramadda.repository.metadata.AdminMetadataHandler;
 import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.XmlOutputHandler;
@@ -1157,6 +1158,8 @@ public class EntryManager extends RepositoryManager {
     /** _more_ */
     public static final String ARG_EXTEDIT_EDIT = "extedit.edit";
 
+    public static final String ARG_EXTEDIT_THUMBNAIL= "extedit.thumbnail";    
+
 
     /** _more_ */
     public static final String ARG_EXTEDIT_URL_TO = "extedit.url.to";
@@ -1243,8 +1246,10 @@ public class EntryManager extends RepositoryManager {
         final EntryManager entryManager = this;
 
         if (request.exists(ARG_EXTEDIT_EDIT)) {
+	    final JpegMetadataHandler jpegMetadataHandler = (JpegMetadataHandler) getMetadataManager().getHandler(JpegMetadataHandler.class);
             final boolean doMd5     = request.get(ARG_EXTEDIT_MD5, false);
             final boolean doSpatial = request.get(ARG_EXTEDIT_SPATIAL, false);
+            final boolean doThumbnail = request.get(ARG_EXTEDIT_THUMBNAIL, false);
             final boolean doTemporal = request.get(ARG_EXTEDIT_TEMPORAL,
                                            false);
             ActionManager.Action action = new ActionManager.Action() {
@@ -1256,11 +1261,24 @@ public class EntryManager extends RepositoryManager {
                                 List<Entry> children)
                                 throws Exception {
                             boolean changed = false;
+                            if (doThumbnail) {
+				List<String> urls = new ArrayList<String>();
+				getMetadataManager().getThumbnailUrls(request, entry, urls);
+				//Only add a thumbnail if there isn't one
+				if(urls.size()==0 && entry.isImage()) {
+				    Metadata thumbnailMetadata = jpegMetadataHandler.getThumbnail(request, entry);
+				    if(thumbnailMetadata!=null) {
+					getMetadataManager().addMetadata(entry,thumbnailMetadata);
+                                        changed = true;
+				    }
+				}
+			    }
+
                             if (doSpatial) {
                                 Rectangle2D.Double rect = getBounds(children);
                                 if (rect != null) {
                                     if ( !Misc.equals(rect,
-                                            entry.getBounds())) {
+						      entry.getBounds())) {
                                         entry.setBounds(rect);
                                         changed = true;
                                     }
@@ -1279,7 +1297,6 @@ public class EntryManager extends RepositoryManager {
                                 append(HtmlUtils.br());
                                 updateEntry(getRequest(), entry);
                             }
-
                             return true;
                         }
                     };
@@ -1534,12 +1551,15 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_TEMPORAL, "true",
                                             false, "Set temporal metadata"));
         sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_THUMBNAIL, "true",
+                                            false, "Add image thumbnails"));	
+        sb.append(HtmlUtils.p());
         sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",
                                             true, "Recurse"));
         sb.append(HtmlUtils.p());
         //        sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_MD5,"true", false, "Set MD5 checksums"));
         //        sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.submit(msg("Set spatial and temporal metadata"),
+        sb.append(HtmlUtils.submit(msg("Set metadata"),
                                    ARG_EXTEDIT_EDIT));
 
 
