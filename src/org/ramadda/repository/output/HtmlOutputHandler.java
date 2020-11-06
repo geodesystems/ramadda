@@ -1500,7 +1500,7 @@ public class HtmlOutputHandler extends OutputHandler {
             if (urls.size() > 0) {
                 sb.append(HU.href(url,
                                   HU.img(urls.get(0), "",
-                                         HU.attr(HU.ATTR_WIDTH, "100","loading","lazy"))));
+                                         HU.attr(HU.ATTR_WIDTH, "100")+HU.attr("loading","lazy"))));
                 sb.append(HU.br());
             } else if (entry.isImage()) {
                 String thumburl = HU.url(request.makeUrl(
