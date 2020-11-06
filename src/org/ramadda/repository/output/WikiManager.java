@@ -3696,7 +3696,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (imageUrl != null) {
             String img = HtmlUtils.img(imageUrl, "",
-                                       HtmlUtils.style("width:100%;"));
+                                       HU.attr("loading","lazy") + HtmlUtils.style("width:100%;"));
             String  inner;
             boolean popup = getProperty(wikiUtil, props, "popup", true);
             if (popup) {
