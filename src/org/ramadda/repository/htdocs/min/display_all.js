@@ -21519,35 +21519,38 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 	    let image = this.jq(ID_IMAGEINNER);
 	    let w = image.width();
 	    let h = image.height();
-	    let parentOffset = image.parent().offset();
 	    let popupImage = this.jq(ID_POPUPIMAGE);
-	    let popupWidth = popupImage.parent().width();
-	    let popupHeight = popupImage.parent().height(); 	    	    
 	    let iw = popupImage.width();
 	    let ih = popupImage.height();		
+	    let popupWidth = popupImage.parent().width();
+	    let popupHeight = popupImage.parent().height(); 	    	    
 	    let scaleX = w/iw;
 	    let scaleY = h/ih;
 	    let scaledWidth = scaleX*popupWidth;
 	    let scaledHeight = scaleY*popupHeight;
 	    let sw2 = scaledWidth/2;
 	    let sh2 = scaledHeight/2;	    
+
+	    let parentOffset = image.parent().offset();
 	    let x = e.pageX - parentOffset.left;
 	    let y = e.pageY - parentOffset.top;
 	    if(x<sw2) x=sw2;
 	    if(y<sh2) y=sh2;
 	    if(x>w-sw2) x=w-sw2;
 	    if(y>h-sh2) y=h-sh2;	    	    
+	    
 	    let offX = scaleX*iw/2;
 	    let offY = scaleY*ih/2;		
-	    let pw = x/w;
-	    let ph = y/h;
+	    let percentW = (x-sw2)/w;
+	    let percentH = (y-sh2)/h;
+
 	    let pp = popupImage.parent().offset();
 	    let offset = {
-		left:pp.left-pw*iw+offX,
-		top:pp.top-ph*ih+offY};
+		left:pp.left-percentW*iw,
+		top:pp.top-percentH*ih};
 	    this.jq(ID_POPUPIMAGE).offset(offset);		    
 	    let rect = this.jq(ID_RECT);
-	    rect.css({"display":"block",top:y-scaledHeight/2+"px",left:x-scaledWidth/2+"px",width:scaledWidth+"px",height:scaledHeight+"px"});
+	    rect.css({"display":"block",top:y-sh2+"px",left:x-sw2+"px",width:scaledWidth+"px",height:scaledHeight+"px"});
 	},
 
     })
