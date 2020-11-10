@@ -1808,18 +1808,14 @@ font-weight:bold;
     margin:10px;
 }
 
-.display-imageoverview-thumb {
+.display-imagezoom-thumb {
     border:1px solid #ccc;
-    margin:5px;
+    margin-bottom:4px;
     cursor:pointer;
     border:1px solid transparent;
 }
 
-.display-imageoverview-thumb:hover {
-//    border:1px solid #000;
-}
-
-.display-imagesoverview-popup {
+.display-imagezoom-popup {
     border: 1px solid #ccc;
     margin-left:5px;
     padding:1px;

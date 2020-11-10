@@ -20417,7 +20417,7 @@ const DISPLAY_BLOCKS = "blocks";
 const DISPLAY_TEMPLATE = "template";
 const DISPLAY_SLIDES = "slides";
 const DISPLAY_IMAGES = "images";
-const DISPLAY_IMAGEOVERVIEW = "imageoverview";
+const DISPLAY_IMAGEZOOM = "imagezoom";
 const DISPLAY_TOPFIELDS = "topfields";
 
 addGlobalDisplayType({
@@ -20446,8 +20446,8 @@ addGlobalDisplayType({
 });
 
 addGlobalDisplayType({
-    type: DISPLAY_IMAGEOVERVIEW,
-    label: "Image Overview",
+    type: DISPLAY_IMAGEZOOM,
+    label: "Image Zoom",
     requiresData: true,
     forUser: true,
     category:CATEGORY_MAPS_IMAGES
@@ -21377,18 +21377,18 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaImageoverviewDisplay(displayManager, id, properties) {
+function RamaddaImagezoomDisplay(displayManager, id, properties) {
     const ID_THUMBS = "thumbs";
     const ID_IMAGE = "image";
     const ID_IMAGEINNER = "imageinner";    
     const ID_POPUP = "imagepopup";
     const ID_POPUPIMAGE = "imagepopupimage";
     const ID_RECT = "imagerect";            
-    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGEOVERVIEW, properties);
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGEZOOM, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineProperties([
-	{label:"Image Overview Attributes"},
+	{label:"Image Zoom Attributes"},
 	{p:'labelFields'},
 	{p:'thumbField'},
 	{p:'thumbWidth',wikiValue:'100'},
@@ -21396,7 +21396,7 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 	{p:'urlField'},
 	{p:'popupWidth'},
 	{p:'popupHeight'},	
-	{p:"popupImageWidth"},
+	{p:"popupImageWidth"}
     ]);
 
 
@@ -21430,7 +21430,7 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 	    let imageDiv = HU.div(["style","position:relative"],
 				  rect+
 				  HU.div([ID,this.getDomId(ID_IMAGE),STYLE,HU.css("position","relative") ]) +
-				  HU.div([ID,this.getDomId(ID_POPUP),CLASS,"display-imagesoverview-popup",STYLE,HU.css("z-index","100","display","none",WIDTH,this.popupWidth+"px",HEIGHT,this.popupHeight+"px","overflow-y","hidden","overflow-x","hidden", "position","absolute","top","0px","left", imageWidth+"px")],""));
+				  HU.div([ID,this.getDomId(ID_POPUP),CLASS,"display-imagezoom-popup",STYLE,HU.css("z-index","100","display","none",WIDTH,this.popupWidth+"px",HEIGHT,this.popupHeight+"px","overflow-y","hidden","overflow-x","hidden", "position","absolute","top","0px","left", imageWidth+"px")],""));
 
 	    let contents = HU.table(["border",0,WIDTH,"100%"],
 				    HU.tr(["valign","top"],
@@ -21448,13 +21448,13 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 		}
 		if(!first) first=records[rowIdx];
 		let thumb = row[thumbField.getIndex()];		
-		thumbsHtml += HU.image(thumb,["recordIndex",rowIdx,ID,this.getDomId("image")+rowIdx,WIDTH, thumbWidth,CLASS,"display-imageoverview-thumb"])+"<br>\n";
+		thumbsHtml += HU.image(thumb,["recordIndex",rowIdx,ID,this.getDomId("image")+rowIdx,WIDTH, thumbWidth,CLASS,"display-imagezoom-thumb"])+"<br>\n";
 	    }
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.jq(ID_THUMBS).html(thumbsHtml);
 	    let _this = this;
-	    let thumbs = this.jq(ID_THUMBS).find(".display-imageoverview-thumb");
-	    thumbs.mouseover(function() {
+	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
+	    thumbs.mouseover(function() {	
 		thumbs.css("border","1px solid transparent");
 		$(this).css("border","1px solid red");
 		var record = records[parseFloat($(this).attr('recordIndex'))];
@@ -21463,6 +21463,16 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 	    });
 	    this.jq(ID_THUMBS).css("border","1px solid transparent");
 	    _this.handleImage(first);
+	    this.jq(ID_IMAGE).click((e)=>{
+		let width = +this.getProperty("popupImageWidth",500);
+                if (event.shiftKey) {
+		    this.setProperty("popupImageWidth",Math.max(width*0.9,500));
+		} else {
+		    this.setProperty("popupImageWidth",width*1.2);
+		}
+		this.showPopup();
+		this.handleMouseMove();
+	    });
 	},
 	showPopup: function() {
 	    if(!this.currentRecord) return;
@@ -21493,13 +21503,14 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
                     }
 		}
 	    }
-	    let html =  HU.image(image,[STYLE,HU.css("z-index",1000),WIDTH, width,ID,this.getDomId(ID_IMAGEINNER)]);
+	    let html =  HU.image(image,["x","+:zoom in/-:zoom out",STYLE,HU.css("z-index",1000),WIDTH, width,ID,this.getDomId(ID_IMAGEINNER)]);
 	    if(label!="")
 		html+=HU.div([STYLE,"color:#000"],label);
 	    this.jq(ID_IMAGE).html(html);
+
 	    this.jq(ID_POPUP).html("");
 	    this.jq(ID_POPUP).css("display","none");
-	    this.jq(ID_IMAGEINNER).mouseover(()=>{
+	    this.jq(ID_IMAGEINNER).mouseenter(()=>{
 		this.showPopup();
 	    });
 	    this.jq(ID_IMAGEINNER).mouseout(()=>{
@@ -21515,6 +21526,7 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 		this.jq(ID_POPUPIMAGE).offset(offset);
 	},
 	handleMouseMove(e) {
+	    if(!e) e =  this.currentMouseEvent;
 	    this.currentMouseEvent=e;
 	    let image = this.jq(ID_IMAGEINNER);
 	    let w = image.width();
@@ -21544,6 +21556,7 @@ function RamaddaImageoverviewDisplay(displayManager, id, properties) {
 	    let percentW = (x-sw2)/w;
 	    let percentH = (y-sh2)/h;
 
+	    if(popupImage.parent().length==0) return;
 	    let pp = popupImage.parent().offset();
 	    let offset = {
 		left:pp.left-percentW*iw,
