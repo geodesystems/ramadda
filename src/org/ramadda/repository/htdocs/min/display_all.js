@@ -21379,6 +21379,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
 function RamaddaImagezoomDisplay(displayManager, id, properties) {
     const ID_THUMBS = "thumbs";
+    const ID_THUMB = "thumb";    
     const ID_IMAGE = "image";
     const ID_IMAGEINNER = "imageinner";    
     const ID_POPUP = "imagepopup";
@@ -21448,21 +21449,38 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		}
 		if(!first) first=records[rowIdx];
 		let thumb = row[thumbField.getIndex()];		
-		thumbsHtml += HU.image(thumb,["recordIndex",rowIdx,ID,this.getDomId("image")+rowIdx,WIDTH, thumbWidth,CLASS,"display-imagezoom-thumb"])+"<br>\n";
+		thumbsHtml += HU.image(thumb,["recordIndex",rowIdx,ID,this.getDomId(ID_THUMB)+rowIdx,WIDTH, thumbWidth,CLASS,"display-imagezoom-thumb"])+"<br>\n";
 	    }
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.jq(ID_THUMBS).html(thumbsHtml);
 	    let _this = this;
 	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
-	    thumbs.mouseover(function() {	
+	    let thumbSelect = (thumb=>{
 		thumbs.css("border","1px solid transparent");
-		$(this).css("border","1px solid red");
-		var record = records[parseFloat($(this).attr('recordIndex'))];
+		thumb.css("border","1px solid red");
+		let index = parseFloat(thumb.attr('recordIndex'));
+		HU.addToDocumentUrl("imagezoom_thumb",index);
+		let record = records[index]
 		_this.handleImage(record);
 		_this.propagateEventRecordSelection({record: record});
 	    });
+
+	    thumbs.mouseover(function() {	
+		thumbSelect($(this));
+	    });
 	    this.jq(ID_THUMBS).css("border","1px solid transparent");
-	    _this.handleImage(first);
+	    let selectedIndex =  HU.getUrlArgument("imagezoom_thumb");
+	    let x = HU.getUrlArgument("imagezoom_x");
+	    let y = HU.getUrlArgument("imagezoom_y");	    
+	    let selectedThumb = this.jq(ID_THUMB+(selectedIndex||"0"));
+	    thumbSelect(selectedThumb);
+	    if(selectedIndex) this.showPopup();
+	    if(Utils.isDefined(x)) {
+		setTimeout(()=>{
+		    this.handleMouseMove({x:parseFloat(x),y:parseFloat(y)});
+		},250);
+	    }
+
 	    this.jq(ID_IMAGE).click((e)=>{
 		let width = +this.getProperty("popupImageWidth",500);
                 if (event.shiftKey) {
@@ -21520,20 +21538,22 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    });
 
 	    this.jq(ID_IMAGEINNER).mousemove((e)=>{
-		this.handleMouseMove(e);
+		this.handleMouseMove({
+		    event:e});
 	    });
 	    if(offset)
 		this.jq(ID_POPUPIMAGE).offset(offset);
 	},
-	handleMouseMove(e) {
-	    if(!e) e =  this.currentMouseEvent;
-	    this.currentMouseEvent=e;
+	handleMouseMove(params) {
+	    if(!params) params = {event:this.currentMouseEvent};
+	    this.currentMouseEvent=params.event;
 	    let image = this.jq(ID_IMAGEINNER);
 	    let w = image.width();
 	    let h = image.height();
 	    let popupImage = this.jq(ID_POPUPIMAGE);
 	    let iw = popupImage.width();
 	    let ih = popupImage.height();		
+	    if(h==0 || ih==0) return false;
 	    let popupWidth = popupImage.parent().width();
 	    let popupHeight = popupImage.parent().height(); 	    	    
 	    let scaleX = w/iw;
@@ -21544,17 +21564,24 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let sh2 = scaledHeight/2;	    
 
 	    let parentOffset = image.parent().offset();
-	    let x = e.pageX - parentOffset.left;
-	    let y = e.pageY - parentOffset.top;
-	    if(x<sw2) x=sw2;
-	    if(y<sh2) y=sh2;
-	    if(x>w-sw2) x=w-sw2;
-	    if(y>h-sh2) y=h-sh2;	    	    
+	    if(!Utils.isDefined(params.x)) 
+		params.x = params.event.pageX - parentOffset.left;
+	    if(!Utils.isDefined(params.y)) 
+		params.y = params.event.pageY - parentOffset.top;
+	    if(params.x<sw2) params.x=sw2;
+	    if(params.y<sh2) params.y=sh2;
+	    if(params.x>w-sw2) params.x=w-sw2;
+	    if(params.y>h-sh2) params.y=h-sh2;	    	    
 	    
+
+
+	    HU.addToDocumentUrl("imagezoom_x",params.x);
+	    HU.addToDocumentUrl("imagezoom_y",params.y);	    
+
 	    let offX = scaleX*iw/2;
 	    let offY = scaleY*ih/2;		
-	    let percentW = (x-sw2)/w;
-	    let percentH = (y-sh2)/h;
+	    let percentW = (params.x-sw2)/w;
+	    let percentH = (params.y-sh2)/h;
 
 	    if(popupImage.parent().length==0) return;
 	    let pp = popupImage.parent().offset();
@@ -21563,7 +21590,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		top:pp.top-percentH*ih};
 	    this.jq(ID_POPUPIMAGE).offset(offset);		    
 	    let rect = this.jq(ID_RECT);
-	    rect.css({"display":"block",top:y-sh2+"px",left:x-sw2+"px",width:scaledWidth+"px",height:scaledHeight+"px"});
+	    rect.css({"display":"block",top:params.y-sh2+"px",left:params.x-sw2+"px",width:scaledWidth+"px",height:scaledHeight+"px"});
+	    return true;
 	},
 
     })

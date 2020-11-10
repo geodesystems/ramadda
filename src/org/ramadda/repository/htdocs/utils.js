@@ -2820,11 +2820,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     addToDocumentUrl:function(name,value,append) {
         var url = String(window.location);
 	if(!append) {
-	    let regex = new RegExp("(\\&|\\?)?" + name+"=[^\&]+(\\&|$)+", 'g');
-	    url = url.replace(regex,"");
+	    url = new URL(url);
+	    url.searchParams.set(name,value);
+//	    let regex = new RegExp("(\\&|\\?)?" + name+"=[^\&]+(\\&|$)+", 'g');
+//	    url = url.replace(regex,"");
+	} else  {
+            if (!url.includes("?")) url += "?";
+            url += "&" + HtmlUtils.urlArg(name,value);
 	}
-        if (!url.includes("?")) url += "?";
-        url += "&" + HtmlUtils.urlArg(name,value);
+
         try {
             if (window.history.replaceState)
                 window.history.replaceState("", "", url);

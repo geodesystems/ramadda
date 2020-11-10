@@ -180,6 +180,12 @@ public class ImageOutputHandler extends OutputHandler {
                        ICON_IMAGES);
 
     /** _more_ */
+    public static final OutputType OUTPUT_ZOOM =
+        new OutputType("Image Zoom", "image.zoom",
+                       OutputType.TYPE_VIEW, "",
+                       ICON_IMAGES);    
+
+    /** _more_ */
     public static final OutputType OUTPUT_COLLAGE =
         new OutputType("Make Collage", "image.collage",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -252,6 +258,7 @@ public class ImageOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_GALLERY);
+        addType(OUTPUT_ZOOM);
         addType(OUTPUT_PLAYER);
         //        addType(OUTPUT_SLIDESHOW);
         addType(OUTPUT_CAPTION);
@@ -329,6 +336,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (state.getEntry() != null) {
             //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));	    
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
             links.add(makeLink(request, state.getEntry(), OUTPUT_LABELER));
@@ -966,7 +974,7 @@ public class ImageOutputHandler extends OutputHandler {
      * @return _more_
      */
     public String getMimeType(OutputType output) {
-        if (output.equals(OUTPUT_GALLERY) || output.equals(OUTPUT_PLAYER)
+        if (output.equals(OUTPUT_GALLERY) || output.equals(OUTPUT_ZOOM) || output.equals(OUTPUT_PLAYER)
                 || output.equals(OUTPUT_SLIDESHOW)) {
             return repository.getMimeTypeFromSuffix(".html");
         }
@@ -1000,6 +1008,14 @@ public class ImageOutputHandler extends OutputHandler {
 
             return new Result("Query Results", sb);
         }
+
+        if (output.equals(OUTPUT_ZOOM)) {
+            getPageHandler().entrySectionOpen(request, group, sb, "Image Zoom");
+	    String zoomTemplate = "{{display_imagezoom height=\"300\" doEntries=\"true\" addThumbnails=\"true\" addImages=\"true\" \npopupImageWidth=2000 \nlabelFields=\"name\" \n thumbField=\"thumbnail\" \n imageField=\"image\"  urlField=\"entry_url\" \n}}";
+	    sb.append(getWikiManager().wikifyEntry(request, group,zoomTemplate));
+            getPageHandler().entrySectionClose(request, group, sb);
+	}
+
 
         if (output.equals(OUTPUT_GALLERY)) {
             boolean useAttachment = request.get("useAttachment", false);
