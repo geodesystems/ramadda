@@ -65,7 +65,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     public static final String ARG_THUMBNAIL_SCALEDOWN =
         "metadata_thumbnail_scaledown";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_THUMBNAIL_WIDTH =
         "metadata_thumbnail_width";
 
@@ -840,9 +840,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         }
         String arg = ARG_METADATA_ATTR + getIndex() + suffix;
 
-        value = (((value == null) || (value.length() == 0))
-                 ? dflt
-                 : value);
+        if ((value == null) || (value.length() == 0)) {
+            value = request.getString(arg, dflt);
+        }
+
         if (isString(dataType)) {
             if (dataType.equals(DATATYPE_WIKI)) {
                 String buttons =
