@@ -27601,6 +27601,60 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
 
+
+
+	    for(var markerIdx=1;true;markerIdx++) {
+		let marker = this.getProperty("marker" + markerIdx);
+		if(!marker) break;
+		let props = {};
+		if(marker.startsWith("base64:")) {
+		    marker = window.atob(marker.substring(7));
+		}
+		if (marker.indexOf("{") == 0) {
+		    props = JSON.parse(marker);
+		} else {
+		    let [lat,lon,text] = marker.split(",");
+		    props.lat = lat;props.lon = lon; props.text = text;
+		}
+		let point = new OpenLayers.LonLat(parseFloat(props.lon), parseFloat(props.lat));
+		if(props.size==null || props.size=="") props.size=16;
+		let type = props.type || "icon"
+
+		
+		let attrs = props;
+		attrs.pointRadius=props.size||"16";
+		attrs.labelYOffset = -8-attrs.pointRadius;
+		/*
+		if(!props.description) props.description = "";
+		if(!Utils.isAnonymous()) {
+		    props.description +="<br>" + "edit";
+		}
+		*/
+
+		if(type == "icon") {
+		    let icon = props.icon || "/markers/marker-red.png";
+		    //addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect) {
+		    this.map.addMarker("", point,icon,props.description,props.description,"",parseFloat(props.size||"16"),null,true,attrs);
+		} else {
+		    //addPoint:  function(id, point, attrs, text, notReally, textGetter)
+		    attrs.fillColor=attrs.fillColor||"blue";
+		    attrs.strokeWidth=attrs.strokeWidth||"1";		    
+		    attrs.graphicName=type;
+		    if(type=="none") {
+			attrs.graphicName = "circle";
+			attrs.pointRadius=0;
+			attrs.fillColor="transparent";
+		    }
+		    this.map.addPoint("", point, attrs, props.description);
+		    if(attrs.graphicName!="circle") 
+			this.map.addPoint("", point, {pointRadius:attrs.pointRadius, strokeColor:"transparent", fillColor:"transparent"},props.description);
+		}
+		this.map.doPopup=true;
+	    }
+
+
+
+
             if (this.getPropertyShowLayers()) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
@@ -27945,7 +27999,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             this.map.clearRegionSelector();
         },
-        handleClick: function(theMap, lon, lat) {
+        handleClick: function(theMap, event, lon, lat) {
+	    if(event.shiftKey) {
+		if(Utils.isAnonymous()) return;
+		let text = prompt("Marker text", "");
+		if(!text) return;
+		let url = ramaddaBaseUrl +"/metadata/addform?entryid=" + this.getProperty("entryId")+"&metadata_type=map_marker&metadata_attr1=" +
+		    encodeURIComponent(text) +"&metadata_attr2=" + lat +"&metadata_attr3=" + lon; 
+		window.location = url;
+		return
+	    }
+
             if (!this.map) {
                 return;
             }
@@ -29921,8 +29985,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             for (var i = 0; i < records.length; i++) {
 		var record = records[i];
                 var point = record.point;
-		if(!point) continue;
-                if(seen[point]) continue;
+		//For now just set the lat/lon
+		point = {x:record.getLongitude(),y:record.getLatitude()};
+                if(seen[point]) {
+//		    console.log("seen");
+//		    continue;
+		}
                 seen[point] = true;
                 var center = new OpenLayers.Geometry.Point(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
