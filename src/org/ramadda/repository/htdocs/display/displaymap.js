@@ -2192,7 +2192,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     strokeWidth: 2,
                     strokeColor: "blue"
                 }
-                this.map.addPolygon(ID, "", points, attrs, null);
+		if(points.length==1) {
+		    this.map.addPoint(ID,  points[0], attrs, null);
+		} else {
+                    this.map.addPolygon(ID, "", points, attrs, null);
+		}
                 return;
             }
 

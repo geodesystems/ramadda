@@ -1020,9 +1020,33 @@ public class GpxTypeHandler extends PointTypeHandler {
                         trackInfo.setPoint(lat, lon, elevation, dttm, time,
                                            s);
                     }
-                }
-            }
+                } else {
+		    TrackInfo trackInfo = new TrackInfo();
+		    for (Element child :
+			     ((List<Element>) XmlUtil.findChildren(root,
+								   GpxUtil.TAG_WPT))) {
+			String name = XmlUtil.getGrandChildText(child,
+								GpxUtil.TAG_NAME, "");
+			String desc = XmlUtil.getGrandChildText(child,
+								GpxUtil.TAG_DESC, "");
+			String time = XmlUtil.getGrandChildText(child,
+								GpxUtil.TAG_TIME, "");			
+			double lat = XmlUtil.getAttribute(child, GpxUtil.ATTR_LAT,
+							  0.0);
+			double lon = XmlUtil.getAttribute(child, GpxUtil.ATTR_LON,
+							  0.0);
 
+                        double elevation =
+                            Double.parseDouble(XmlUtil.getGrandChildText(child,
+                                "ele", "0"));
+                        Date dttm = ((time == null)
+                                     ? null
+                                     : sdf.parse(time));
+                        trackInfo.setPoint(lat, lon, elevation, dttm, time,
+                                           s);
+		    }
+		}
+	    }
 
             //                System.err.println(s);
             ByteArrayInputStream bais =
