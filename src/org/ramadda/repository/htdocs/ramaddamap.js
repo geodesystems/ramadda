@@ -342,7 +342,7 @@ function RepositoryMap(mapId, params) {
         }
     });
 
-
+    
     if (false) {
     this.polygon="";
     this.polyPoints = [];
@@ -361,7 +361,6 @@ function RepositoryMap(mapId, params) {
 	ll.lon = Math.round(ll.lon*100000)/100000.0;	
 	this.polygon+=ll.lon+","+ll.lat;
 	console.log("defineLine {} {Main Ditch} {"+this.polygon+"}");
-
     });
     }
 
@@ -431,7 +430,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         //                this.setSelectionMarker(lonlat.lon, lonlat.lat);
 
         if (this.clickListener != null) {
-            this.clickListener.handleClick(this, lonlat.lon, lonlat.lat);
+            this.clickListener.handleClick(this, e, lonlat.lon, lonlat.lat);
         }
 
 
@@ -864,7 +863,6 @@ RepositoryMap.prototype = {
     },
     handleFeatureover: function(feature, skipText) {
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
-	console.log("doMouseOVer-2");
 	    var location = feature.location;
 	    if (location) {
 		if(this.highlightFeature != feature) {
@@ -970,26 +968,25 @@ RepositoryMap.prototype = {
         if (!layer)
             layer = feature.layer;
         this.dateFeatureSelect(feature);
-
         if (layer.canSelect === false) return;
         if (layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
         }
 	if(!this.doSelect) return;
-
-
         this.selectedFeature = feature;
         layer.selectedFeature = feature;
         layer.selectedFeature.isSelected = true;
 	let style = $.extend({},feature.style);
 	$.extend(style, {
 	    strokeColor:this.highlightColor,
-	    fillColor: this.highlightColor,
 	    strokeOpacity: 0.75,
 	    fillOpacity: 0.75,
 	    fill: true,
 	});
 
+	if(style.fillColor!="transparent") {
+	    style.fillColor  = this.highlightColor;
+	} 
 
 	if(Utils.isDefined(style.pointRadius)) {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
@@ -3160,7 +3157,7 @@ RepositoryMap.prototype = {
             },
 
             down: function(pt) {
-                this.firstPoint = this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
+                this.firstPoint = _this.getMap().getLonLatFromPixel(new OpenLayers.Pixel(
                     pt.x, pt.y));
                 this.firstPoint = _this.transformProjPoint(this.firstPoint);
                 _this.findSelectionFields();
@@ -3476,7 +3473,6 @@ RepositoryMap.prototype = {
     },
 
 
-
     getPopupText:  function(text, marker) {
         if (text == null) return null;
         if (text.indexOf("base64:") == 0) {
@@ -3513,7 +3509,8 @@ RepositoryMap.prototype = {
     },
 
 
-    createMarker:  function(id, location, iconUrl, markerName, text, parentId, size, xoffset, yoffset, canSelect) {
+    createMarker:  function(id, location, iconUrl, markerName, text, parentId, size, xoffset, yoffset, canSelect,attrs) {
+	if(!attrs) attrs  = {};
         if (Array.isArray(location)) {
             location = createLonLat(location[0], location[1]);
         }
@@ -3546,7 +3543,10 @@ RepositoryMap.prototype = {
                 graphicHeight: size,
                 graphicWidth: size,
                 graphicXOffset: xoffset + (-size / 2),
-                graphicYOffset: -size / 2
+                graphicYOffset: -size / 2,
+		labelYOffset:-size,
+		label:attrs.label
+
             });
 
         feature.ramaddaId = id;
@@ -3589,11 +3589,11 @@ RepositoryMap.prototype = {
         return feature;
     },
 
-    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect) {
+    addMarker:  function(id, location, iconUrl, markerName, text, parentId, size, yoffset, canSelect, attrs) {
 	if(Utils.isDefined(location.x)) {
 	    location = createLonLat(location.x,location.y);
 	}
-        var marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect);
+        var marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
         this.addMarkers([marker]);
         return marker;
     },
@@ -3963,6 +3963,9 @@ RepositoryMap.prototype = {
 	if(this.shareSelected &&  window["ramaddaDisplaySetSelectedEntry"]) {
 	    ramaddaDisplaySetSelectedEntry(id);
 	}
+
+
+
 	if(!this.doPopup) {
 	    return;
 	}
@@ -3979,7 +3982,8 @@ RepositoryMap.prototype = {
 	    markertext =marker.textGetter(marker);
 	} else if(this.textGetter) {
 	    markertext = this.textGetter(marker.layer, marker);
-	} else {
+	}
+	if(!markertext) {
 	    markertext =marker.text;
 	}
 	if(!markertext) return;
@@ -3991,7 +3995,7 @@ RepositoryMap.prototype = {
 
         if (fromClick && marker.locationKey != null) {
             markers = this.seenMarkers[marker.locationKey];
-            if (markers.length > 1) {
+            if (markers && markers.length > 1) {
                 markertext = "";
                 for (var i = 0; i < markers.length; i++) {
                     otherMarker = markers[i];
