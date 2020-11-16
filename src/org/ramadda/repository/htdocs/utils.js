@@ -54,6 +54,9 @@ var Utils =  {
     addLoadFunction: function(f) {
 	Utils.loadFunctions.push(f);
     },
+    isAnonymous: function() {
+	return ramaddaUser =="anonymous";
+    },
     getIcon: function(icon) {
         return ramaddaBaseUrl + "/icons/" + icon;
     },

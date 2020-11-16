@@ -4031,8 +4031,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         "${urlroot}", urlBase).replace(
                         "${baseentry}",
                         getEntryManager().getRootEntry().getId()).replace("${hostname}", request.getServerName());
-                    bytes = js.getBytes();
-                    putHtdocsCache(path, bytes,false);
+		    //If its the base js then don't cache and add in the user info
+		    if(path.endsWith("base.js")) {
+			js = js.replace("${ramadda.user}",request.getUser().getId());
+			bytes = js.getBytes();
+		    } else {
+			bytes = js.getBytes();
+			putHtdocsCache(path, bytes,false);
+		    }
                     inputStream = new ByteArrayInputStream(bytes);
                 } else if (path.endsWith(".png") || path.endsWith(".gif")
                            || path.endsWith(".jpg")
