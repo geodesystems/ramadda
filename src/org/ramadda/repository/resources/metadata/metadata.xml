@@ -354,6 +354,27 @@ This gets draw in maps as a direction indicator.
       <element name="value"/>
     </type>
 
+
+
+    <type
+       name="Map Marker"
+       foruser="true"
+       category="Map"
+       showinhtml="false"
+       id="map_marker">
+<!-- todo: sometime implement a change facility 
+      <change generation="1" type="insert" index="0" value=""/>
+-->
+      <element name="Description" rows="3" />
+      <element name="Latitude" datatype="double"/>
+      <element name="Longitude" datatype="double"/>      
+      <element name="Type" datatype="enumeration" default="icon" values="icon,circle,square,rectangle,star,cross,triangle,none"/>
+      <element name="Icon" datatype="enumerationplus" default="/markers/marker-red.png" values="/markers/marker-red.png:red,/markers/marker-green.png:green,/markers/marker-blue.png:blue,/markers/marker-gold.png:gold"/>
+      <element name="Attributes" rows="6" suffix="e.g.,&lt;br&gt;label=&lt;br&gt;size=16&lt;br&gt;strokeColor=red&lt;br&gt;strokeWidth=4&lt;br&gt;fillColor=blue&lt;br&gt;"/>      
+    </type>
+
+
+
     <type
        name="Spatial Polygon Coordinates"
        foruser="true"
