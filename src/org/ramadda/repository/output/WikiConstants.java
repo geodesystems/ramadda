@@ -328,6 +328,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_EMBED = "embed";
 
+    /** _more_          */
     public static final String WIKI_TAG_ODOMETER = "odometer";
 
     /** _more_ */
@@ -382,6 +383,9 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_TREE = "tree";
 
+    /** _more_          */
+    public static final String WIKI_TAG_FULLTREE = "fulltree";
+
     /** _more_ */
     public static final String WIKI_TAG_TREEVIEW = "treeview";
 
@@ -421,14 +425,19 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_APPLY = "apply";
 
+    /** _more_          */
     public static final String WIKI_TAG_ATTRS = "attrs";
 
     /** _more_ */
     public static final String WIKI_TAG_DISPLAYPROPERTY = "displayProperty";
-    public static final String WIKI_TAG_DISPLAYPROPERTIES = "displayProperties";    
+
+    /** _more_          */
+    public static final String WIKI_TAG_DISPLAYPROPERTIES =
+        "displayProperties";
 
 
 
+    /** _more_          */
     public static final String WIKI_TAG_MULTI = "multi";
 
     /** _more_ */
@@ -579,6 +588,7 @@ public interface WikiConstants {
     /** property delimiter */
     public static final String PROP_DELIM = ":";
 
+    /** _more_          */
     public static final String PROP_ADDED_GROUP = "added group";
 
     /** the id for this */

@@ -115,7 +115,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"false"),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
-                            new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"), 
+                            new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"),
+                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","true","showroot","true"), 			    
                             new WikiTag(WIKI_TAG_LINKS, null),
                             new WikiTag(WIKI_TAG_LIST), 
                             new WikiTag(WIKI_TAG_TABS, null), 
@@ -3154,6 +3155,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_ROOT)) {
             return getRepository().getUrlBase();
+        } else if (theTag.equals(WIKI_TAG_FULLTREE)) {
+            int depth = getProperty(wikiUtil, props, "depth", 10);
+            boolean addPrefix = getProperty(wikiUtil, props, "addPrefix",
+                                            false);
+            boolean showRoot = getProperty(wikiUtil, props, "showroot",
+                                           false);
+            if (addPrefix) {
+                sb.append("<ul style='list-style-type:none;'>\n");
+            } else {
+                sb.append("<ul>");
+            }
+            doFullTree(request, wikiUtil, originalEntry, entry, props,
+                       addPrefix, "", showRoot, depth, sb);
+            sb.append("</ul>");
+
+            return sb.toString();
         } else if (theTag.equals(WIKI_TAG_CHILDREN_GROUPS)
                    || theTag.equals(WIKI_TAG_CHILDREN_ENTRIES)
                    || theTag.equals(WIKI_TAG_CHILDREN)
@@ -3647,6 +3664,62 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         return snippet;
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param wikiUtil _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param props _more_
+     * @param addPrefix _more_
+     * @param prefix _more_
+     * @param showRoot _more_
+     * @param depth _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    private void doFullTree(Request request, WikiUtil wikiUtil,
+                            Entry originalEntry, Entry entry,
+                            Hashtable props, boolean addPrefix,
+                            String prefix, boolean showRoot, int depth,
+                            Appendable sb)
+            throws Exception {
+        if ((prefix.length() > 0) || showRoot) {
+            if (addPrefix) {
+                sb.append("<li> ");
+                sb.append(prefix + " ");
+            } else {
+                sb.append("<li> ");
+            }
+            sb.append(getEntryManager().getEntryLink(request, entry));
+            sb.append("\n");
+        }
+        if (depth-- < 0) {
+            return;
+        }
+        List<Entry> children = getEntries(request, wikiUtil, originalEntry,
+                                          entry, props);
+
+        if (children.size() > 0) {
+            if (addPrefix) {
+                sb.append("<ul style='list-style-type:none;'>\n");
+            } else {
+                sb.append("<ul>\n");
+            }
+            int cnt = 1;
+            for (Entry child : children) {
+                String p = ((prefix.length() > 0)
+                            ? prefix + "."
+                            : "") + (cnt++);
+                doFullTree(request, wikiUtil, originalEntry, child, props,
+                           addPrefix, p, showRoot, depth, sb);
+            }
+            sb.append("</ul>\n");
+        }
+    }
 
     /**
      * _more_
