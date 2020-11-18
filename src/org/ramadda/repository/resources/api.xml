@@ -50,9 +50,10 @@
 
   <group handler="wikimanager">
       <api request="/wikify"             method="processWikify" />
-      <api request="/wikitoolbar"       method="processGetWikiToolbar" />
+      <api request="/wikitoolbar"        method="processGetWikiToolbar" />
       <api request="/getnotebook"        method="processGetNotebook" />
-      <api request="/savenotebook"        method="processSaveNotebook" />
+      <api request="/savenotebook"       method="processSaveNotebook" />
+      <api request="/wikitags"           method="processWikiTags" />
    </group>
 
   <group handler="commentmanager">

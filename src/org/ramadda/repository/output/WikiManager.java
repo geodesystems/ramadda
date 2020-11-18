@@ -89,9 +89,6 @@ import java.util.TimeZone;
 public class WikiManager extends RepositoryManager implements WikiConstants,
         WikiUtil.WikiPageHandler {
 
-    /** layout attributes */
-    public static final String ATTRS_LAYOUT = attrs(ATTR_TEXTPOSITION,
-                                                  POS_LEFT);
 
     /** list of import items for the text editor menu */
     //J--
@@ -116,7 +113,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
                             new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"),
-                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","true","showroot","true"), 			    
+                            new WikiTag(WIKI_TAG_FULLTREE, null,"depth","10","addprefix","true","showroot","true","showicon","true","types","group,file,...."), 			    
                             new WikiTag(WIKI_TAG_LINKS, null),
                             new WikiTag(WIKI_TAG_LIST), 
                             new WikiTag(WIKI_TAG_TABS, null), 
@@ -130,7 +127,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_MAP,
                                         null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "400"), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500"), 
-                            new WikiTag(WIKI_TAG_ACCORDION, null, attrs(ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
+                            new WikiTag(WIKI_TAG_ACCORDION, null, ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false",ATTR_TEXTPOSITION, POS_LEFT), 
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE), 
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
@@ -1364,6 +1361,43 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String toolbar   = makeWikiEditBar(request, entry, handlerId);
         toolbar = getPageHandler().translate(request, toolbar);
         Result result = new Result("", new StringBuilder(toolbar));
+        result.setShouldDecorate(false);
+
+        return result;
+    }
+
+
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processWikiTags(Request request) throws Exception {
+        StringBuilder sb   = new StringBuilder();
+        List<String>  tags = new ArrayList<String>();
+        for (int i = 0; i < WIKITAGS.length; i++) {
+            WikiTagCategory cat = WIKITAGS[i];
+            for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
+                WikiTag      tag = cat.tags[tagIdx];
+                List<String> tmp = new ArrayList<String>();
+                tmp.add(Json.quote("label:" + tag.tag + " properties"));
+                for (int j = 0; j < tag.attrsList.size(); j += 2) {
+                    tmp.add(Json.quote(tag.attrsList.get(j) + "=\""
+                                       + tag.attrsList.get(j + 1) + "\""));
+                }
+                tags.add(tag.tag);
+                tags.add(Json.list(tmp));
+            }
+        }
+        sb.append(Json.map(tags, false));
+        Result result = new Result("", sb, Json.MIMETYPE);
         result.setShouldDecorate(false);
 
         return result;
@@ -3161,13 +3195,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                             false);
             boolean showRoot = getProperty(wikiUtil, props, "showroot",
                                            false);
+            boolean showIcon = getProperty(wikiUtil, props, "showicon",
+                                           false);
+            List<String> types = StringUtil.split(getProperty(wikiUtil,
+                                     props, "types", ""), ",", true, true);
             if (addPrefix) {
                 sb.append("<ul style='list-style-type:none;'>\n");
             } else {
                 sb.append("<ul>");
             }
             doFullTree(request, wikiUtil, originalEntry, entry, props,
-                       addPrefix, "", showRoot, depth, sb);
+                       addPrefix, "", showRoot, showIcon, depth, types, sb);
             sb.append("</ul>");
 
             return sb.toString();
@@ -3676,7 +3714,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @param addPrefix _more_
      * @param prefix _more_
      * @param showRoot _more_
+     * @param showIcon _more_
      * @param depth _more_
+     * @param types _more_
      * @param sb _more_
      *
      * @throws Exception _more_
@@ -3684,7 +3724,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     private void doFullTree(Request request, WikiUtil wikiUtil,
                             Entry originalEntry, Entry entry,
                             Hashtable props, boolean addPrefix,
-                            String prefix, boolean showRoot, int depth,
+                            String prefix, boolean showRoot,
+                            boolean showIcon, int depth, List<String> types,
                             Appendable sb)
             throws Exception {
         if ((prefix.length() > 0) || showRoot) {
@@ -3693,6 +3734,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 sb.append(prefix + " ");
             } else {
                 sb.append("<li> ");
+            }
+            if (showIcon) {
+                sb.append(
+                    HtmlUtils.image(
+                        entry.getTypeHandler().getEntryIconUrl(
+                            request, entry)) + "&nbsp;");
             }
             sb.append(getEntryManager().getEntryLink(request, entry));
             sb.append("\n");
@@ -3711,11 +3758,30 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             int cnt = 1;
             for (Entry child : children) {
+                if (types.size() > 0) {
+                    boolean ok = false;
+                    for (String type : types) {
+                        if (child.getTypeHandler().isType(type)) {
+                            ok = true;
+
+                            break;
+                        }
+                    }
+                    if ( !ok) {
+                        continue;
+                    }
+                }
+
+
+
+
+
                 String p = ((prefix.length() > 0)
                             ? prefix + "."
                             : "") + (cnt++);
                 doFullTree(request, wikiUtil, originalEntry, child, props,
-                           addPrefix, p, showRoot, depth, sb);
+                           addPrefix, p, showRoot, showIcon, depth, types,
+                           sb);
             }
             sb.append("</ul>\n");
         }
@@ -7361,6 +7427,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         /** _more_ */
         String attrs;
 
+        /** _more_          */
+        List<String> attrsList = new ArrayList<String>();
+
         /**
          * _more_
          *
@@ -7385,6 +7454,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 label = StringUtil.camelCase(tag);
             }
             this.label = label;
+            for (String attr : attrs) {
+                attrsList.add(attr);
+            }
             if (attrs.length == 1) {
                 this.attrs = attrs[0];
             } else {

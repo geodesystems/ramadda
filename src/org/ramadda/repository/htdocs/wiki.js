@@ -274,6 +274,7 @@ let groupAttributes = [
      'max="number of entries to use"',
 ];
 
+let wikiAttributesFromServer = null;
 var wikiAttributes = {
     tree: Utils.mergeLists([
 	"label:Tree Properties",
@@ -466,8 +467,7 @@ var wikiAttributes = {
 function wikiInitEditor(info) {
     var editor = info.editor
     var toolbar = $("#" + info.id +"_toolbar");
-    editor.container.addEventListener("contextmenu", function(e) {
-	e.preventDefault();
+    let eventHandler = (e=>{
 	var cursor = editor.getCursorPosition();
 	var t = editor.getValue();
 	var s = "";
@@ -573,6 +573,22 @@ function wikiInitEditor(info) {
 		    }
 		    extra = Utils.getColorTablePopup(info);
 		}
+		if(!wikiAttributes[tag]) {
+		    if(!wikiAttributesFromServer) {
+			let url = ramaddaBaseUrl + "/wikitags";
+			$.getJSON(url, function(data) {
+			    wikiAttributesFromServer = data;
+			    eventHandler(e);
+			});
+			return
+		    }
+		    if(wikiAttributesFromServer) {
+			wikiAttributes[tag] = wikiAttributesFromServer[tag];
+			console.log(JSON.stringify(wikiAttributes[tag]));
+			
+		    }
+		}
+
 		if(wikiAttributes[tag]) {
 		    wikiAttributes[tag].map(a=>tags.push(a));
 		}
@@ -656,6 +672,15 @@ function wikiInitEditor(info) {
             collision: "fit fit"
 	});
     });
+
+
+    editor.container.addEventListener("contextmenu", function(e) {
+	e.preventDefault();
+	eventHandler(e);
+    })
+
+
+
 }
 
 
