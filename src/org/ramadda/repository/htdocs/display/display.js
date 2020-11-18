@@ -5373,6 +5373,7 @@ a
 		this.updateUI({reload:reload});
 	    } catch(err) {
                 this.displayError("Error creating display:<br>" + err);
+		console.log(err);
 		return;
 	    }
             if (!reload) {
