@@ -584,8 +584,6 @@ function wikiInitEditor(info) {
 		    }
 		    if(wikiAttributesFromServer) {
 			wikiAttributes[tag] = wikiAttributesFromServer[tag];
-			console.log(JSON.stringify(wikiAttributes[tag]));
-			
 		    }
 		}
 

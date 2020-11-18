@@ -7803,6 +7803,7 @@ a
 		this.updateUI({reload:reload});
 	    } catch(err) {
                 this.displayError("Error creating display:<br>" + err);
+		console.log(err);
 		return;
 	    }
             if (!reload) {
@@ -21473,7 +21474,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let x = HU.getUrlArgument("imagezoom_x");
 	    let y = HU.getUrlArgument("imagezoom_y");	    
 	    let selectedThumb = this.jq(ID_THUMB+(selectedIndex||"0"));
-	    thumbSelect(selectedThumb);
+	    if(selectedThumb.length)
+		thumbSelect(selectedThumb);
 	    if(selectedIndex) this.showPopup();
 	    if(Utils.isDefined(x)) {
 		setTimeout(()=>{
