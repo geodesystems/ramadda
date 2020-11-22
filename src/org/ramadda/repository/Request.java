@@ -969,11 +969,11 @@ public class Request implements Constants, Cloneable {
                 sb.append("&");
             }
             try {
-                svalue = java.net.URLEncoder.encode(svalue, "UTF-8");
+                HtmlUtils.arg(sb, arg, svalue, true);
             } catch (Exception exc) {  /*noop*/
             }
-            HtmlUtils.arg(sb, arg, svalue, true);
         }
+
         String s = sb.toString();
 
         return HtmlUtils.sanitizeString(s);
