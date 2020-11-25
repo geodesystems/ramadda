@@ -36,3 +36,9 @@ historical:Historical Observed Radiative Forcing
 historicalNat:Historical Natural Radiative Forcing
 historicalMisc:Historical Anthropogenic Aerosol-Only Forcing
 historicalMisc-ozone:Historical Stratospheric Ozone-Only Forcing
+
+#
+# Pacemaker
+io_pacemaker:Indian Ocean Pacemaker
+tpac_pacemaker:Tropical Pacific Pacemaker
+natl_pacemaker:North Atlantic Pacemaker
