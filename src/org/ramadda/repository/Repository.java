@@ -2628,7 +2628,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 dbProperties = new TTLObject<Properties>(5 * 60 * 1000);
             }
             dbProperties.put(tmp);
-
             return tmp;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -4427,6 +4426,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private String getPropertyValue(String name, boolean checkDb,
                                     boolean needsToBeNonEmpty) {
 
+        //        propdebug = name.equals(PROP_REGISTRY_SERVERS);
         if (propdebug) {
             System.err.println("getPropertyValue:" + name);
         }

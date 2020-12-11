@@ -905,7 +905,7 @@ public class LasFile extends LidarFile {
      * @param visitInfo read state
      * @return new record
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         return doMakePointRecord();
     }
 

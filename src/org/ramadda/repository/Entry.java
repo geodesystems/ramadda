@@ -702,7 +702,6 @@ public class Entry implements Cloneable {
      * Is this the top (first) group?
      *
      * @return true if it is
-     * @deprecated use isTopEntry
      */
     public boolean isTopGroup() {
         return isTopEntry();
@@ -1834,7 +1833,6 @@ public class Entry implements Cloneable {
      * Set the Group property.
      *
      * @param value The new value for Group
-     * @deprecated use setParentEntry
      */
     public void setParentEntry(Entry value) {
         parentEntry = value;

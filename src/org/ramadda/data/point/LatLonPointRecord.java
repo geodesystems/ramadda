@@ -73,11 +73,11 @@ public class LatLonPointRecord extends org.ramadda.data.record.GeoRecord {
                 "latitude", "", ATTR_LATITUDE, "", "double", "double", 0,
                 SEARCHABLE_NO, CHARTABLE_NO));
         RECORDATTR_LATITUDE.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
+            public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
                 return (double) ((LatLonPointRecord) record).latitude;
             }
-            public String getStringValue(Record record, RecordField field,
+            public String getStringValue(BaseRecord record, RecordField field,
                                          VisitInfo visitInfo) {
                 return "" + ((LatLonPointRecord) record).latitude;
             }
@@ -86,11 +86,11 @@ public class LatLonPointRecord extends org.ramadda.data.record.GeoRecord {
                 "longitude", "", ATTR_LONGITUDE, "", "double", "double", 0,
                 SEARCHABLE_NO, CHARTABLE_NO));
         RECORDATTR_LONGITUDE.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
+            public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
                 return (double) ((LatLonPointRecord) record).longitude;
             }
-            public String getStringValue(Record record, RecordField field,
+            public String getStringValue(BaseRecord record, RecordField field,
                                          VisitInfo visitInfo) {
                 return "" + ((LatLonPointRecord) record).longitude;
             }
@@ -99,11 +99,11 @@ public class LatLonPointRecord extends org.ramadda.data.record.GeoRecord {
                 "altitude", "", ATTR_ALTITUDE, "", "double", "double", 0,
                 SEARCHABLE_NO, CHARTABLE_NO));
         RECORDATTR_ALTITUDE.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
+            public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
                 return (double) ((LatLonPointRecord) record).altitude;
             }
-            public String getStringValue(Record record, RecordField field,
+            public String getStringValue(BaseRecord record, RecordField field,
                                          VisitInfo visitInfo) {
                 return "" + ((LatLonPointRecord) record).altitude;
             }

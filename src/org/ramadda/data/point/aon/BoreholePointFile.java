@@ -88,7 +88,7 @@ public class BoreholePointFile extends SingleSiteTextFile {
      * @return _more_
      */
     @Override
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = new TextRecord(this, getFields()) {
             public boolean lineOk(String line) {
                 if ( !super.lineOk(line)) {

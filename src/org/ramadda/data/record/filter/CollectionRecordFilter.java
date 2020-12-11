@@ -130,7 +130,7 @@ public class CollectionRecordFilter implements RecordFilter {
      *
      * @return _more_
      */
-    public boolean isRecordOk(Record record, VisitInfo visitInfo) {
+    public boolean isRecordOk(BaseRecord record, VisitInfo visitInfo) {
         boolean anyTrue = false;
         for (RecordFilter filter : filters) {
             boolean v = filter.isRecordOk(record, visitInfo);

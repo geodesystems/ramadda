@@ -75,7 +75,7 @@ public class CsvFileInfo extends PointFileInfo {
      *
      * @throws Exception _more_
      */
-    public void writeRecord(Record record) throws Exception {
+    public void writeRecord(BaseRecord record) throws Exception {
         if ( !wroteHeader) {
             record.printCsvHeader(visitInfo, recordOutput.getPrintWriter());
             wroteHeader = true;

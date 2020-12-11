@@ -100,7 +100,7 @@ public class MultiMonthFile extends CsvFile {
      *
      * @return _more_
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         MultiMonthRecord record = new MultiMonthRecord(this, varName,
                                       varDesc, unit, missing);
         record.setFirstDataLine(firstDataLine);
@@ -120,7 +120,7 @@ public class MultiMonthFile extends CsvFile {
      * @throws Exception _more_
      */
     @Override
-    public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+    public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
         MultiMonthRecord mmr = (MultiMonthRecord) record;
 

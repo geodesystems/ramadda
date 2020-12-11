@@ -20,7 +20,7 @@ package org.ramadda.data.services;
 import org.ramadda.data.point.PointRecord;
 import org.ramadda.data.record.CsvVisitor;
 import org.ramadda.data.record.GeoRecord;
-import org.ramadda.data.record.Record;
+import org.ramadda.data.record.BaseRecord;
 import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordVisitor;
@@ -634,7 +634,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 RecordVisitorGroup groupVisitor =
                     new RecordVisitorGroup(visitors) {
                     public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, Record record)
+                            VisitInfo visitInfo, BaseRecord record)
                             throws Exception {
                         if ( !super.visitRecord(file, visitInfo, record)) {
                             return false;
@@ -1319,7 +1319,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             private CsvVisitor csvVisitor = null;
             int                cnt        = 0;
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, Record record)
+                                         VisitInfo visitInfo, BaseRecord record)
                     throws Exception {
                 if (csvVisitor == null) {
                     //Set the georeference flag
@@ -1347,7 +1347,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 }
                 synchronized (visitInfo) {
                     if (visitInfo.getCount() == 0) {
-                        visitInfo.putProperty(Record.PROP_INCLUDEVECTOR,
+                        visitInfo.putProperty(BaseRecord.PROP_INCLUDEVECTOR,
                                 new Boolean(request.get(ARG_INCLUDEWAVEFORM,
                                     false)));
                     }
@@ -1541,7 +1541,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
             @Override
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, Record record) {
+                                         VisitInfo visitInfo, BaseRecord record) {
                 try {
                     if ( !jobOK(jobId)) {
                         return false;
@@ -1606,7 +1606,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
             @Override
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, Record record) {
+                                         VisitInfo visitInfo, BaseRecord record) {
                 try {
                     if ( !jobOK(jobId)) {
                         return false;
@@ -1667,7 +1667,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         RecordVisitor visitor = new BridgeRecordVisitor(this, request, jobId,
                                     mainEntry, "latlonalt.csv") {
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, Record record)
+                                         VisitInfo visitInfo, BaseRecord record)
                     throws Exception {
                 if ( !jobOK(jobId)) {
                     return false;
@@ -1747,7 +1747,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         RecordVisitor visitor = new BridgeRecordVisitor(this, jobId) {
 
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, Record record) {
+                                         VisitInfo visitInfo, BaseRecord record) {
                 try {
                     if ( !jobOK(jobId)) {
                         return false;
@@ -2219,7 +2219,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             RecordVisitor     visitor  = new BridgeRecordVisitor(this) {
                 public boolean doVisitRecord(RecordFile file,
                                              VisitInfo visitInfo,
-                                             Record record) {
+                                             BaseRecord record) {
                     PointRecord pointRecord = (PointRecord) record;
                     float[][]   kmlCoords   = coords[0];
                     if (pointCnt[0] >= kmlCoords[0].length) {

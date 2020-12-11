@@ -404,7 +404,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         RecordVisitor visitor = new BridgeRecordVisitor(getOutputHandler()) {
 
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, Record record) {
+                                         VisitInfo visitInfo, BaseRecord record) {
 
                 if (cnt[0] == 0) {
                     String style = HtmlUtils.style("background: #c3d9ff;");

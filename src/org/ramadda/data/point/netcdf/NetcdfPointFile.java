@@ -314,7 +314,7 @@ public class NetcdfPointFile extends PointFile {
      * @param visitInfo the visit info
      * @return the new record
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         try {
             FeatureDatasetPoint pod = getDataset(getFileToUse());
             if (pod == null) {
@@ -345,12 +345,12 @@ public class NetcdfPointFile extends PointFile {
      * @throws Exception _more_
      */
     @Override
-    public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+    public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
         visitInfo.addRecordIndex(howMany);
         while (howMany-- >= 0) {
             if (record.read(visitInfo.getRecordIO())
-                    == Record.ReadStatus.EOF) {
+                    == BaseRecord.ReadStatus.EOF) {
                 return false;
             }
         }

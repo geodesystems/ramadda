@@ -56,55 +56,55 @@ public class LceRecordV1_2 extends LvisRecord {
     static {
     FIELDS.add(RECORDATTR_LFID = new RecordField("lfid", "lfid", "", ATTR_LFID, "", "int", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LFID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LceRecordV1_2)record).lfid;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LceRecordV1_2)record).lfid;
     }
     });
     FIELDS.add(RECORDATTR_SHOTNUMBER = new RecordField("shotnumber", "shotnumber", "", ATTR_SHOTNUMBER, "", "int", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_SHOTNUMBER.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LceRecordV1_2)record).shotnumber;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LceRecordV1_2)record).shotnumber;
     }
     });
     FIELDS.add(RECORDATTR_LVISTIME = new RecordField("lvisTime", "lvisTime", "", ATTR_LVISTIME, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LVISTIME.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LceRecordV1_2)record).lvisTime;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LceRecordV1_2)record).lvisTime;
     }
     });
     FIELDS.add(RECORDATTR_TLON = new RecordField("tlon", "tlon", "", ATTR_TLON, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_TLON.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LceRecordV1_2)record).tlon;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LceRecordV1_2)record).tlon;
     }
     });
     FIELDS.add(RECORDATTR_TLAT = new RecordField("tlat", "tlat", "", ATTR_TLAT, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_TLAT.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LceRecordV1_2)record).tlat;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LceRecordV1_2)record).tlat;
     }
     });
     FIELDS.add(RECORDATTR_ZT = new RecordField("zt", "zt", "", ATTR_ZT, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_ZT.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LceRecordV1_2)record).zt;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LceRecordV1_2)record).zt;
     }
     });
@@ -192,10 +192,10 @@ public class LceRecordV1_2 extends LvisRecord {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
-        ReadStatus status= super.read(recordIO);
-        if(status!=ReadStatus.OK)  return status;
+        BaseRecord.ReadStatus status= super.read(recordIO);
+        if(status!=BaseRecord.ReadStatus.OK)  return status;
         lfid =  readInt(dis);
         shotnumber =  readInt(dis);
         lvisTime =  readDouble(dis);
@@ -207,7 +207,7 @@ public class LceRecordV1_2 extends LvisRecord {
         setAltitude(zt);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

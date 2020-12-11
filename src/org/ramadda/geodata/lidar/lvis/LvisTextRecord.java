@@ -68,109 +68,109 @@ public class LvisTextRecord extends org.ramadda.geodata.lidar.lvis.LvisRecord {
     static {
     FIELDS.add(RECORDATTR_LFID = new RecordField("lfid", "lfid", "", ATTR_LFID, "", "int", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LFID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).lfid;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).lfid;
     }
     });
     FIELDS.add(RECORDATTR_SHOTNUMBER = new RecordField("SHOTNUMBER", "SHOTNUMBER", "", ATTR_SHOTNUMBER, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_SHOTNUMBER.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).SHOTNUMBER;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).SHOTNUMBER;
     }
     });
     FIELDS.add(RECORDATTR_LVISTIME = new RecordField("lvisTime", "lvisTime", "", ATTR_LVISTIME, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LVISTIME.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).lvisTime;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).lvisTime;
     }
     });
     FIELDS.add(RECORDATTR_LONGITUDE_CENTROID = new RecordField("LONGITUDE_CENTROID", "LONGITUDE_CENTROID", "", ATTR_LONGITUDE_CENTROID, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LONGITUDE_CENTROID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).LONGITUDE_CENTROID;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).LONGITUDE_CENTROID;
     }
     });
     FIELDS.add(RECORDATTR_LATITUDE_CENTROID = new RecordField("LATITUDE_CENTROID", "LATITUDE_CENTROID", "", ATTR_LATITUDE_CENTROID, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LATITUDE_CENTROID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).LATITUDE_CENTROID;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).LATITUDE_CENTROID;
     }
     });
     FIELDS.add(RECORDATTR_ELEVATION_CENTROID = new RecordField("ELEVATION_CENTROID", "ELEVATION_CENTROID", "", ATTR_ELEVATION_CENTROID, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_ELEVATION_CENTROID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).ELEVATION_CENTROID;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).ELEVATION_CENTROID;
     }
     });
     FIELDS.add(RECORDATTR_LONGITUDE_LOW = new RecordField("LONGITUDE_LOW", "LONGITUDE_LOW", "", ATTR_LONGITUDE_LOW, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LONGITUDE_LOW.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).LONGITUDE_LOW;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).LONGITUDE_LOW;
     }
     });
     FIELDS.add(RECORDATTR_LATITUDE_LOW = new RecordField("LATITUDE_LOW", "LATITUDE_LOW", "", ATTR_LATITUDE_LOW, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LATITUDE_LOW.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).LATITUDE_LOW;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).LATITUDE_LOW;
     }
     });
     FIELDS.add(RECORDATTR_ELEVATION_LOW = new RecordField("ELEVATION_LOW", "ELEVATION_LOW", "", ATTR_ELEVATION_LOW, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_ELEVATION_LOW.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).ELEVATION_LOW;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).ELEVATION_LOW;
     }
     });
     FIELDS.add(RECORDATTR_LONGITUDE_HIGH = new RecordField("LONGITUDE_HIGH", "LONGITUDE_HIGH", "", ATTR_LONGITUDE_HIGH, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LONGITUDE_HIGH.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).LONGITUDE_HIGH;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).LONGITUDE_HIGH;
     }
     });
     FIELDS.add(RECORDATTR_LATITUDE_HIGH = new RecordField("LATITUDE_HIGH", "LATITUDE_HIGH", "", ATTR_LATITUDE_HIGH, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LATITUDE_HIGH.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).LATITUDE_HIGH;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).LATITUDE_HIGH;
     }
     });
     FIELDS.add(RECORDATTR_ELEVATION_HIGH = new RecordField("ELEVATION_HIGH", "ELEVATION_HIGH", "", ATTR_ELEVATION_HIGH, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_ELEVATION_HIGH.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LvisTextRecord)record).ELEVATION_HIGH;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LvisTextRecord)record).ELEVATION_HIGH;
     }
     });
@@ -293,10 +293,10 @@ public class LvisTextRecord extends org.ramadda.geodata.lidar.lvis.LvisRecord {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
-        ReadStatus status = ReadStatus.OK;
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
+        BaseRecord.ReadStatus status = BaseRecord.ReadStatus.OK;
         String line = recordIO.readLine();
-        if(line == null) return ReadStatus.EOF;
+        if(line == null) return BaseRecord.ReadStatus.EOF;
         line = line.trim();
         if(line.length()==0) return status;
         String[] toks = line.split(" +");

@@ -56,7 +56,7 @@ import java.util.List;
 
 
 /**
- * A Record visitor that holds the IdwGrid
+ * A BaseRecord visitor that holds the IdwGrid
  *
  *
  */
@@ -159,7 +159,7 @@ public class GridVisitor extends BridgeRecordVisitor {
      * @return _more_
      */
     public boolean doVisitRecord(RecordFile file, VisitInfo visitInfo,
-                                 Record record) {
+                                 BaseRecord record) {
 
         PointRecord pointRecord = (PointRecord) record;
         double      value;

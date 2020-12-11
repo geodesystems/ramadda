@@ -45,10 +45,10 @@ public class LasHeader_V13 extends LasHeader_V12 {
     static {
     FIELDS.add(RECORDATTR_STARTOFWAVEFORMDATAPACKETRECORD = new RecordField("startOfWaveformDataPacketRecord", "startOfWaveformDataPacketRecord", "", ATTR_STARTOFWAVEFORMDATAPACKETRECORD, "", "long", "long", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_STARTOFWAVEFORMDATAPACKETRECORD.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V13)record).startOfWaveformDataPacketRecord;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V13)record).startOfWaveformDataPacketRecord;
     }
     });
@@ -117,14 +117,14 @@ public class LasHeader_V13 extends LasHeader_V12 {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
-        ReadStatus status= super.read(recordIO);
-        if(status!=ReadStatus.OK)  return status;
+        BaseRecord.ReadStatus status= super.read(recordIO);
+        if(status!=BaseRecord.ReadStatus.OK)  return status;
         startOfWaveformDataPacketRecord =  readLong(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

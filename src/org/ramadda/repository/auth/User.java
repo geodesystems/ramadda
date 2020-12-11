@@ -476,7 +476,6 @@ public class User {
 
     /**
      * Set the Password property.
-     * @deprecated use setHashedPassword
      *
      * @param value The new value for Password
      */
@@ -487,7 +486,6 @@ public class User {
     /**
      * Get the Password property.
      *
-     * @deprecated use getHashedPassword
      * @return The Password
      */
     public String getPassword() {

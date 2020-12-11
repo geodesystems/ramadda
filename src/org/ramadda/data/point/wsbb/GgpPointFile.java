@@ -237,7 +237,7 @@ public class GgpPointFile extends CsvFile {
      * @throws Exception on badness
      */
     @Override
-    public void getDateTimeString(Record record, StringBuffer dttm,
+    public void getDateTimeString(BaseRecord record, StringBuffer dttm,
                                   int dateIndex, int timeIndex)
             throws Exception {
         dttm.append(getString(record, dateIndex));

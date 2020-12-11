@@ -131,7 +131,7 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
      *
      * @throws Exception _more_
      */
-    private void init(RecordFile file, Record record) throws Exception {
+    private void init(RecordFile file, BaseRecord record) throws Exception {
         now     = new Date();
         hasTime = record.hasRecordTime();
         fields  = new ArrayList<RecordField>();
@@ -246,7 +246,7 @@ public class NetcdfVisitor extends BridgeRecordVisitor {
      * @throws Exception _more_
      */
     public boolean doVisitRecord(RecordFile file, VisitInfo visitInfo,
-                                 Record record)
+                                 BaseRecord record)
             throws Exception {
         if (tmpFileIO == null) {
             init(file, record);

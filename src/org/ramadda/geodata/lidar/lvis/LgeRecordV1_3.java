@@ -70,118 +70,118 @@ public class LgeRecordV1_3 extends LvisRecord {
     static {
     FIELDS.add(RECORDATTR_LFID = new RecordField("lfid", "lfid", "", ATTR_LFID, "", "int", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LFID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).lfid;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).lfid;
     }
     });
     FIELDS.add(RECORDATTR_SHOTNUMBER = new RecordField("shotnumber", "shotnumber", "", ATTR_SHOTNUMBER, "", "int", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_SHOTNUMBER.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).shotnumber;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).shotnumber;
     }
     });
     FIELDS.add(RECORDATTR_AZIMUTH = new RecordField("azimuth", "azimuth", "", ATTR_AZIMUTH, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_AZIMUTH.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).azimuth;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).azimuth;
     }
     });
     FIELDS.add(RECORDATTR_INCIDENTANGLE = new RecordField("incidentangle", "incidentangle", "", ATTR_INCIDENTANGLE, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_INCIDENTANGLE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).incidentangle;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).incidentangle;
     }
     });
     FIELDS.add(RECORDATTR_RANGE = new RecordField("range", "range", "", ATTR_RANGE, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RANGE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).range;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).range;
     }
     });
     FIELDS.add(RECORDATTR_LVISTIME = new RecordField("lvisTime", "lvisTime", "", ATTR_LVISTIME, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_LVISTIME.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).lvisTime;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).lvisTime;
     }
     });
     FIELDS.add(RECORDATTR_GLON = new RecordField("glon", "glon", "", ATTR_GLON, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_GLON.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).glon;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).glon;
     }
     });
     FIELDS.add(RECORDATTR_GLAT = new RecordField("glat", "glat", "", ATTR_GLAT, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_GLAT.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).glat;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).glat;
     }
     });
     FIELDS.add(RECORDATTR_ZG = new RecordField("zg", "zg", "", ATTR_ZG, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_ZG.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).zg;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).zg;
     }
     });
     FIELDS.add(RECORDATTR_RH25 = new RecordField("rh25", "rh25", "", ATTR_RH25, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RH25.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).rh25;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).rh25;
     }
     });
     FIELDS.add(RECORDATTR_RH50 = new RecordField("rh50", "rh50", "", ATTR_RH50, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RH50.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).rh50;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).rh50;
     }
     });
     FIELDS.add(RECORDATTR_RH75 = new RecordField("rh75", "rh75", "", ATTR_RH75, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RH75.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).rh75;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).rh75;
     }
     });
     FIELDS.add(RECORDATTR_RH100 = new RecordField("rh100", "rh100", "", ATTR_RH100, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RH100.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LgeRecordV1_3)record).rh100;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LgeRecordV1_3)record).rh100;
     }
     });
@@ -301,10 +301,10 @@ public class LgeRecordV1_3 extends LvisRecord {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
-        ReadStatus status= super.read(recordIO);
-        if(status!=ReadStatus.OK)  return status;
+        BaseRecord.ReadStatus status= super.read(recordIO);
+        if(status!=BaseRecord.ReadStatus.OK)  return status;
         if(!getQuickScan()) {
         lfid =  readInt(dis);
         shotnumber =  readInt(dis);
@@ -331,7 +331,7 @@ public class LgeRecordV1_3 extends LvisRecord {
         }
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

@@ -33,8 +33,8 @@ import java.util.HashSet;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class GeoKeyDouble extends Record {
-    public static final int ATTR_FIRST = Record.ATTR_LAST;
+public class GeoKeyDouble extends BaseRecord {
+    public static final int ATTR_FIRST = BaseRecord.ATTR_LAST;
     public static final List<RecordField> FIELDS = new ArrayList<RecordField>();
     public static final int ATTR_VALUE =  ATTR_FIRST + 1;
     public static final RecordField RECORDATTR_VALUE;
@@ -44,10 +44,10 @@ public class GeoKeyDouble extends Record {
     static {
     FIELDS.add(RECORDATTR_VALUE = new RecordField("value", "value", "", ATTR_VALUE, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_VALUE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKeyDouble)record).value;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKeyDouble)record).value;
     }
     });
@@ -116,12 +116,12 @@ public class GeoKeyDouble extends Record {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
         value =  readDouble(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

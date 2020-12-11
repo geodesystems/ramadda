@@ -61,7 +61,7 @@ public class LvisMetadataHarvester extends RecordVisitor {
      * @return _more_
      */
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                               Record record) {
+                               BaseRecord record) {
         LidarRecord lvisRecord = (LidarRecord) record;
         if ((minLatitude != minLatitude)
                 || (minLatitude > lvisRecord.getLatitude())) {

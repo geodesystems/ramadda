@@ -82,7 +82,7 @@ public class WaterMLFile extends PointFile {
      *
      * @return _more_
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         DataRecord dataRecord = new DataRecord(this);
         if (fields == null) {
             doQuickVisit();
@@ -279,14 +279,14 @@ public class WaterMLFile extends PointFile {
      *
      * @throws IOException _more_
      */
-    public Record.ReadStatus readNextRecord(VisitInfo visitInfo,
-                                            Record record)
+    public BaseRecord.ReadStatus readNextRecord(VisitInfo visitInfo,
+                                            BaseRecord record)
             throws IOException {
         visitInfo.addRecordIndex(1);
         int        currentIdx = visitInfo.getRecordIndex();
         DataRecord dataRecord = (DataRecord) record;
         if (currentIdx >= values[0].length) {
-            return Record.ReadStatus.EOF;
+            return BaseRecord.ReadStatus.EOF;
         }
         for (int i = 0; i < values.length; i++) {
             dataRecord.setValue(i + 1 + OFFSET, values[i][currentIdx]);
@@ -297,7 +297,7 @@ public class WaterMLFile extends PointFile {
         dataRecord.setLongitude(longitude);
         dataRecord.setAltitude(altitude);
 
-        return Record.ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

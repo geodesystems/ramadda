@@ -310,13 +310,13 @@ public class DataRecord extends PointRecord {
      */
     public static void initField(RecordField field) {
         field.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
+            public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
                 DataRecord dataRecord = (DataRecord) record;
 
                 return dataRecord.getValue(field.getParamId());
             }
-            public String getStringValue(Record record, RecordField field,
+            public String getStringValue(BaseRecord record, RecordField field,
                                          VisitInfo visitInfo) {
                 DataRecord dataRecord = (DataRecord) record;
 

@@ -57,64 +57,64 @@ public class PointRecord5 extends PointRecord3 {
     static {
     FIELDS.add(RECORDATTR_WAVEPACKETDESCRIPTORINDEX = new RecordField("wavePacketDescriptorIndex", "wavePacketDescriptorIndex", "", ATTR_WAVEPACKETDESCRIPTORINDEX, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_WAVEPACKETDESCRIPTORINDEX.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord5)record).wavePacketDescriptorIndex;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord5)record).wavePacketDescriptorIndex;
     }
     });
     FIELDS.add(RECORDATTR_BYTEOFFSETTOWAVEFORMDATA = new RecordField("byteOffsetToWaveformData", "byteOffsetToWaveformData", "", ATTR_BYTEOFFSETTOWAVEFORMDATA, "", "long", "long", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_BYTEOFFSETTOWAVEFORMDATA.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord5)record).byteOffsetToWaveformData;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord5)record).byteOffsetToWaveformData;
     }
     });
     FIELDS.add(RECORDATTR_WAVEFORMPACKETSIZEINBYTES = new RecordField("waveformPacketSizeInBytes", "waveformPacketSizeInBytes", "", ATTR_WAVEFORMPACKETSIZEINBYTES, "", "uint", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_WAVEFORMPACKETSIZEINBYTES.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord5)record).waveformPacketSizeInBytes;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord5)record).waveformPacketSizeInBytes;
     }
     });
     FIELDS.add(RECORDATTR_RETURNPOINTWAVEFORMLOCATION = new RecordField("returnPointWaveformLocation", "returnPointWaveformLocation", "", ATTR_RETURNPOINTWAVEFORMLOCATION, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RETURNPOINTWAVEFORMLOCATION.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord5)record).returnPointWaveformLocation;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord5)record).returnPointWaveformLocation;
     }
     });
     FIELDS.add(RECORDATTR_XT = new RecordField("Xt", "Xt", "", ATTR_XT, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_XT.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord5)record).Xt;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord5)record).Xt;
     }
     });
     FIELDS.add(RECORDATTR_YT = new RecordField("Yt", "Yt", "", ATTR_YT, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_YT.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord5)record).Yt;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord5)record).Yt;
     }
     });
     FIELDS.add(RECORDATTR_ZT = new RecordField("Zt", "Zt", "", ATTR_ZT, "", "float", "float", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_ZT.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord5)record).Zt;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord5)record).Zt;
     }
     });
@@ -207,10 +207,10 @@ public class PointRecord5 extends PointRecord3 {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
-        ReadStatus status= super.read(recordIO);
-        if(status!=ReadStatus.OK)  return status;
+        BaseRecord.ReadStatus status= super.read(recordIO);
+        if(status!=BaseRecord.ReadStatus.OK)  return status;
         wavePacketDescriptorIndex =  readByte(dis);
         byteOffsetToWaveformData =  readLong(dis);
         waveformPacketSizeInBytes =  readUnsignedInt(dis);
@@ -220,7 +220,7 @@ public class PointRecord5 extends PointRecord3 {
         Zt =  readFloat(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

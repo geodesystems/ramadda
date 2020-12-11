@@ -185,7 +185,7 @@ public class AmerifluxLevel2PointFile extends CsvFile {
      * @throws Exception _more_
      */
     @Override
-    public boolean processAfterReading(VisitInfo visitInfo, Record record)
+    public boolean processAfterReading(VisitInfo visitInfo, BaseRecord record)
             throws Exception {
         int        offset     = 5;
         TextRecord textRecord = (TextRecord) record;
@@ -209,7 +209,7 @@ public class AmerifluxLevel2PointFile extends CsvFile {
      *
      * @return _more_
      */
-    public boolean isMissingValue(Record record, RecordField field,
+    public boolean isMissingValue(BaseRecord record, RecordField field,
                                   double v) {
         if ((v == -9999) || (v == -6999)) {
             return true;

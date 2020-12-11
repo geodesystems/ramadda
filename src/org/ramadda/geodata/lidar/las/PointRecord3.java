@@ -51,37 +51,37 @@ public class PointRecord3 extends PointRecord0 {
     static {
     FIELDS.add(RECORDATTR_GPSTIME = new RecordField("gpsTime", "gpsTime", "", ATTR_GPSTIME, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_GPSTIME.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord3)record).gpsTime;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord3)record).gpsTime;
     }
     });
     FIELDS.add(RECORDATTR_RED = new RecordField("red", "red", "", ATTR_RED, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RED.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord3)record).red;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord3)record).red;
     }
     });
     FIELDS.add(RECORDATTR_GREEN = new RecordField("green", "green", "", ATTR_GREEN, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_GREEN.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord3)record).green;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord3)record).green;
     }
     });
     FIELDS.add(RECORDATTR_BLUE = new RecordField("blue", "blue", "", ATTR_BLUE, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_BLUE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord3)record).blue;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord3)record).blue;
     }
     });
@@ -181,17 +181,17 @@ public class PointRecord3 extends PointRecord0 {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
-        ReadStatus status= super.read(recordIO);
-        if(status!=ReadStatus.OK)  return status;
+        BaseRecord.ReadStatus status= super.read(recordIO);
+        if(status!=BaseRecord.ReadStatus.OK)  return status;
         gpsTime =  readDouble(dis);
         red =  readUnsignedShort(dis);
         green =  readUnsignedShort(dis);
         blue =  readUnsignedShort(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

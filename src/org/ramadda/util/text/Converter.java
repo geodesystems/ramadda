@@ -1392,13 +1392,13 @@ public abstract class Converter extends Processor {
         String code;
 
         /** _more_ */
-        ScriptEngine engine;
-
-        /** _more_ */
         List<String> names;
 
         /** _more_ */
         Row headerRow;
+
+        org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
+        org.mozilla.javascript.Scriptable scope = cx.initSafeStandardObjects();
 
         /**
          *
@@ -1415,31 +1415,30 @@ public abstract class Converter extends Processor {
             }
             this.code = code;
             try {
-                jdk.nashorn.api.scripting.ClassFilter cf =
-                    new jdk.nashorn.api.scripting.ClassFilter() {
-                    public boolean exposeToScripts(String s) {
-                        return false;
-                    }
-                };
-                engine =
-                    new jdk.nashorn.api.scripting.NashornScriptEngineFactory()
-                        .getScriptEngine(new String[] { "--no-java" }, null,
-                                         cf);
-                engine.eval("var globalCache = {};");
+                cx = org.mozilla.javascript.Context.enter();
+                scope = cx.initSafeStandardObjects();
+                eval("var globalCache = {};");
                 if (js.trim().length() > 0) {
-                    engine.eval(js);
+                    eval(js);
                 }
-
                 String testScript =
                     "print(java.lang.System.getProperty(\"java.home\"));"
                     + "print(\"Create file variable\");"
                     + "var File = Java.type(\"java.io.File\");";
-                //              engine.eval(testScript);
+                //                eval(testScript);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
-
         }
+
+        private Object eval(String s) throws Exception {
+            return cx.evaluateString(scope, s, "<cmd>", 1, null);
+        }
+
+        private void put(String name, Object value) throws Exception {
+            scope.put(name,scope, value);
+        }
+
 
         /**
          *
@@ -1473,16 +1472,15 @@ public abstract class Converter extends Processor {
                     Object o   = row.get(i);
                     String var = hdr.get(i).toString();
                     var = Utils.makeID(var.toLowerCase());
-                    engine.put("_" + var, o);
-                    engine.put("_" + var + "_idx", i);
-                    engine.put("_col" + i, o);
+                    put("_" + var, o);
+                    put("_" + var + "_idx", i);
+                    put("_col" + i, o);
                 }
-                engine.put("_header", hdr);
-                engine.put("_values", row.getValues());
-                engine.put("_rowidx", rowCnt - 1);
-
+                put("_header", hdr);
+                put("_values", row.getValues());
+                put("_rowidx", rowCnt - 1);
                 // evaluate JavaScript code
-                Object o = engine.eval(code);
+                Object o = eval(code);
                 if (names.size() == 0) {
                     if (o == null) {
                         return row;
@@ -1497,22 +1495,8 @@ public abstract class Converter extends Processor {
                 if (o == null) {
                     return null;
                 }
-                if (o instanceof jdk.nashorn.api.scripting
-                        .ScriptObjectMirror) {
-                    jdk.nashorn.api.scripting.ScriptObjectMirror som =
-                        (jdk.nashorn.api.scripting.ScriptObjectMirror) o;
-                    if (som.isArray()) {
-                        Collection<Object> values = som.values();
-                        for (Object v : values) {
-                            row.add(v);
-                        }
-                    } else {
-                        row.add(o);
-                    }
-                } else {
-                    row.add(o);
-                }
 
+                row.add(org.mozilla.javascript.Context.toString(o));
                 //              System.err.println("func row:" + row);
                 return row;
             } catch (Exception exc) {
@@ -5253,13 +5237,16 @@ public abstract class Converter extends Processor {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String              s       = "1*x+y";
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine        engine  = manager.getEngineByName("nashorn");
-        engine.put("x", 1);
-        engine.put("y", 2);
-        // evaluate JavaScript code
-        System.err.println(engine.eval(s));
+        String s = "x";
+        try {
+            org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
+            org.mozilla.javascript.Scriptable scope = cx.initSafeStandardObjects();
+            scope.put("x",scope,"33");
+            Object result = cx.evaluateString(scope, s, "<cmd>", 1, null);
+            System.err.println(org.mozilla.javascript.Context.toString(result));
+        } finally {
+            org.mozilla.javascript.Context.exit();
+        }
     }
 
 

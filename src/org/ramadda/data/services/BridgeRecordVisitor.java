@@ -250,7 +250,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
      * @return Everything is cool
      */
     public final boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                     Record record) {
+                                     BaseRecord record) {
         numPoints++;
         if ((handler != null) && !handler.jobOK(processId)) {
             return false;
@@ -277,7 +277,7 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
      * @throws Exception On badness
      */
     public abstract boolean doVisitRecord(RecordFile file,
-                                          VisitInfo visitInfo, Record record)
+                                          VisitInfo visitInfo, BaseRecord record)
      throws Exception;
 
     /**

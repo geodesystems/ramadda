@@ -33,8 +33,8 @@ import java.util.HashSet;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class GeoKey extends Record {
-    public static final int ATTR_FIRST = Record.ATTR_LAST;
+public class GeoKey extends BaseRecord {
+    public static final int ATTR_FIRST = BaseRecord.ATTR_LAST;
     public static final List<RecordField> FIELDS = new ArrayList<RecordField>();
     public static final int ATTR_KEYID =  ATTR_FIRST + 1;
     public static final RecordField RECORDATTR_KEYID;
@@ -50,37 +50,37 @@ public class GeoKey extends Record {
     static {
     FIELDS.add(RECORDATTR_KEYID = new RecordField("keyId", "keyId", "", ATTR_KEYID, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_KEYID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKey)record).keyId;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKey)record).keyId;
     }
     });
     FIELDS.add(RECORDATTR_TIFFTAGLOCATION = new RecordField("tiffTagLocation", "tiffTagLocation", "", ATTR_TIFFTAGLOCATION, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_TIFFTAGLOCATION.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKey)record).tiffTagLocation;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKey)record).tiffTagLocation;
     }
     });
     FIELDS.add(RECORDATTR_COUNT = new RecordField("Count", "Count", "", ATTR_COUNT, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_COUNT.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKey)record).Count;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKey)record).Count;
     }
     });
     FIELDS.add(RECORDATTR_VALUEOFFSET = new RecordField("valueOffset", "valueOffset", "", ATTR_VALUEOFFSET, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_VALUEOFFSET.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKey)record).valueOffset;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKey)record).valueOffset;
     }
     });
@@ -198,7 +198,7 @@ public class GeoKey extends Record {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
         keyId =  readUnsignedShort(dis);
         tiffTagLocation =  readUnsignedShort(dis);
@@ -206,7 +206,7 @@ public class GeoKey extends Record {
         valueOffset =  readUnsignedShort(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

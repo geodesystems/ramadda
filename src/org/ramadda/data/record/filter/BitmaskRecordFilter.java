@@ -70,7 +70,7 @@ public class BitmaskRecordFilter implements RecordFilter {
      *
      * @return _more_
      */
-    public boolean isRecordOk(Record record, VisitInfo visitInfo) {
+    public boolean isRecordOk(BaseRecord record, VisitInfo visitInfo) {
         int     v        = (int) record.getValue(attrId);
         boolean bitSet   = (v & mask) != 0;
         boolean recordOk = false;

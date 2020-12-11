@@ -68,7 +68,7 @@ public class AltitudeFilter implements RecordFilter {
      *
      * @return _more_
      */
-    public boolean isRecordOk(Record record, VisitInfo visitInfo) {
+    public boolean isRecordOk(BaseRecord record, VisitInfo visitInfo) {
         GeoRecord geoRecord = (GeoRecord) record;
         double    altitude  = geoRecord.getAltitude();
         if ( !Double.isNaN(minHeight) && (altitude < minHeight)) {

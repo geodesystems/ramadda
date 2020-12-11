@@ -167,7 +167,7 @@ public class QfitFile extends PointFile {
      *
      * @return _more_
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         //If we haven't determined the type then explicitly call prepareToVisit
         if (type == TYPE_UNDEFINED) {
             try {

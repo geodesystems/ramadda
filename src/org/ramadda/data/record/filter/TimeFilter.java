@@ -38,10 +38,10 @@ public class TimeFilter implements RecordFilter {
 
 
     /** _more_ */
-    public long minTime = Record.UNDEFINED_TIME;
+    public long minTime = BaseRecord.UNDEFINED_TIME;
 
     /** _more_ */
-    public long maxTime = Record.UNDEFINED_TIME;
+    public long maxTime = BaseRecord.UNDEFINED_TIME;
 
 
     /**
@@ -84,15 +84,15 @@ public class TimeFilter implements RecordFilter {
      *
      * @return _more_
      */
-    public boolean isRecordOk(Record record, VisitInfo visitInfo) {
+    public boolean isRecordOk(BaseRecord record, VisitInfo visitInfo) {
         long time = record.getRecordTime();
-        if (time == Record.UNDEFINED_TIME) {
+        if (time == BaseRecord.UNDEFINED_TIME) {
             return false;
         }
-        if ((minTime != Record.UNDEFINED_TIME) && (time < minTime)) {
+        if ((minTime != BaseRecord.UNDEFINED_TIME) && (time < minTime)) {
             return false;
         }
-        if ((maxTime != Record.UNDEFINED_TIME) && (time > maxTime)) {
+        if ((maxTime != BaseRecord.UNDEFINED_TIME) && (time > maxTime)) {
             return false;
         }
 

@@ -199,7 +199,7 @@ public class Point2Csv extends RecordTool {
         //Make the visitor
         RecordVisitor visitor = new RecordVisitor() {
                 public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                                        PointRecord   pointRecord = (PointRecord) record;
                 double        lat         = pointRecord.getLatitude();
                 double        lon         = pointRecord.getLongitude();
@@ -222,7 +222,7 @@ public class Point2Csv extends RecordTool {
 
         final RecordVisitor visitor  = new RecordVisitor() {
             public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                 PointRecord pointRecord = (PointRecord) record;
                 if ((pointRecord.getLatitude() < -90)
                         || (pointRecord.getLatitude() > 90)) {

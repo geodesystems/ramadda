@@ -82,7 +82,7 @@ public class FloatLatLonAltBinaryFile extends PointFile {
             new DataOutputStream(new BufferedOutputStream(fos, 10000));
         RecordVisitor visitor = new RecordVisitor() {
             public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                 try {
                     GeoRecord geoRecord = (GeoRecord) record;
                     dos.writeFloat((float) geoRecord.getLatitude());
@@ -143,7 +143,7 @@ public class FloatLatLonAltBinaryFile extends PointFile {
      * @param visitInfo _more_
      * @return _more_
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         return new FloatLatLonAltRecord(this);
     }
 
@@ -169,7 +169,7 @@ public class FloatLatLonAltBinaryFile extends PointFile {
                 final int[]   cnt      = { 0 };
                 RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, Record record) {
+                            VisitInfo visitInfo, BaseRecord record) {
                         cnt[0]++;
 
                         //                      if((cnt[0]%10000) == 0) System.err.print(".");

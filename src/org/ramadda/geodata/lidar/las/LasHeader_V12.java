@@ -108,65 +108,65 @@ public class LasHeader_V12 extends LasHeader {
     FIELDS.add(RECORDATTR_FILESIGNATURE = new RecordField("fileSignature", "fileSignature", "", ATTR_FILESIGNATURE, "", "string[4]", "byte", 4, SEARCHABLE_NO,CHARTABLE_NO));
     FIELDS.add(RECORDATTR_FILESOURCEID = new RecordField("fileSourceId", "fileSourceId", "", ATTR_FILESOURCEID, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_FILESOURCEID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).fileSourceId;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).fileSourceId;
     }
     });
     FIELDS.add(RECORDATTR_GLOBALENCODING = new RecordField("globalEncoding", "globalEncoding", "", ATTR_GLOBALENCODING, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_GLOBALENCODING.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).globalEncoding;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).globalEncoding;
     }
     });
     FIELDS.add(RECORDATTR_PROJECTIDGUIDDATA1 = new RecordField("projectIdGuidData1", "projectIdGuidData1", "", ATTR_PROJECTIDGUIDDATA1, "", "uint", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_PROJECTIDGUIDDATA1.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).projectIdGuidData1;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).projectIdGuidData1;
     }
     });
     FIELDS.add(RECORDATTR_PROJECTIDGUIDDATA2 = new RecordField("projectIdGuidData2", "projectIdGuidData2", "", ATTR_PROJECTIDGUIDDATA2, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_PROJECTIDGUIDDATA2.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).projectIdGuidData2;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).projectIdGuidData2;
     }
     });
     FIELDS.add(RECORDATTR_PROJECTIDGUIDDATA3 = new RecordField("projectIdGuidData3", "projectIdGuidData3", "", ATTR_PROJECTIDGUIDDATA3, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_PROJECTIDGUIDDATA3.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).projectIdGuidData3;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).projectIdGuidData3;
     }
     });
     FIELDS.add(RECORDATTR_PROJECTIDGUIDDATA4 = new RecordField("projectIdGuidData4", "projectIdGuidData4", "", ATTR_PROJECTIDGUIDDATA4, "", "string[8]", "byte", 8, SEARCHABLE_NO,CHARTABLE_NO));
     FIELDS.add(RECORDATTR_VERSIONMAJOR = new RecordField("versionMajor", "versionMajor", "", ATTR_VERSIONMAJOR, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_VERSIONMAJOR.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).versionMajor;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).versionMajor;
     }
     });
     FIELDS.add(RECORDATTR_VERSIONMINOR = new RecordField("versionMinor", "versionMinor", "", ATTR_VERSIONMINOR, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_VERSIONMINOR.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).versionMinor;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).versionMinor;
     }
     });
@@ -174,182 +174,182 @@ public class LasHeader_V12 extends LasHeader {
     FIELDS.add(RECORDATTR_GENERATINGSOFTWARE = new RecordField("generatingSoftware", "generatingSoftware", "", ATTR_GENERATINGSOFTWARE, "", "string[32]", "byte", 32, SEARCHABLE_NO,CHARTABLE_NO));
     FIELDS.add(RECORDATTR_FILECREATIONDAYOFYEAR = new RecordField("fileCreationDayOfYear", "fileCreationDayOfYear", "", ATTR_FILECREATIONDAYOFYEAR, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_FILECREATIONDAYOFYEAR.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).fileCreationDayOfYear;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).fileCreationDayOfYear;
     }
     });
     FIELDS.add(RECORDATTR_FILECREATIONYEAR = new RecordField("fileCreationYear", "fileCreationYear", "", ATTR_FILECREATIONYEAR, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_FILECREATIONYEAR.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).fileCreationYear;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).fileCreationYear;
     }
     });
     FIELDS.add(RECORDATTR_HEADERSIZE = new RecordField("headerSize", "headerSize", "", ATTR_HEADERSIZE, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_HEADERSIZE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).headerSize;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).headerSize;
     }
     });
     FIELDS.add(RECORDATTR_OFFSETTOPOINTDATA = new RecordField("offsetToPointData", "offsetToPointData", "", ATTR_OFFSETTOPOINTDATA, "", "uint", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_OFFSETTOPOINTDATA.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).offsetToPointData;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).offsetToPointData;
     }
     });
     FIELDS.add(RECORDATTR_NUMBEROFVARIABLELENGTHRECORDS = new RecordField("numberOfVariableLengthRecords", "numberOfVariableLengthRecords", "", ATTR_NUMBEROFVARIABLELENGTHRECORDS, "", "uint", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_NUMBEROFVARIABLELENGTHRECORDS.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).numberOfVariableLengthRecords;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).numberOfVariableLengthRecords;
     }
     });
     FIELDS.add(RECORDATTR_POINTDATAFORMATID = new RecordField("pointDataFormatId", "pointDataFormatId", "", ATTR_POINTDATAFORMATID, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_POINTDATAFORMATID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).pointDataFormatId;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).pointDataFormatId;
     }
     });
     FIELDS.add(RECORDATTR_POINTDATARECORDLENGTH = new RecordField("pointDataRecordLength", "pointDataRecordLength", "", ATTR_POINTDATARECORDLENGTH, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_POINTDATARECORDLENGTH.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).pointDataRecordLength;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).pointDataRecordLength;
     }
     });
     FIELDS.add(RECORDATTR_NUMBEROFPOINTRECORDS = new RecordField("numberOfPointRecords", "numberOfPointRecords", "", ATTR_NUMBEROFPOINTRECORDS, "", "uint", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_NUMBEROFPOINTRECORDS.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).numberOfPointRecords;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).numberOfPointRecords;
     }
     });
     FIELDS.add(RECORDATTR_NUMBEROFPOINTSBYRETURN = new RecordField("numberOfPointsByReturn", "numberOfPointsByReturn", "", ATTR_NUMBEROFPOINTSBYRETURN, "", "uint[5]", "int", 5, SEARCHABLE_NO,CHARTABLE_NO));
     FIELDS.add(RECORDATTR_XSCALEFACTOR = new RecordField("xScaleFactor", "xScaleFactor", "", ATTR_XSCALEFACTOR, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_XSCALEFACTOR.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).xScaleFactor;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).xScaleFactor;
     }
     });
     FIELDS.add(RECORDATTR_YSCALEFACTOR = new RecordField("yScaleFactor", "yScaleFactor", "", ATTR_YSCALEFACTOR, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_YSCALEFACTOR.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).yScaleFactor;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).yScaleFactor;
     }
     });
     FIELDS.add(RECORDATTR_ZSCALEFACTOR = new RecordField("zScaleFactor", "zScaleFactor", "", ATTR_ZSCALEFACTOR, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_ZSCALEFACTOR.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).zScaleFactor;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).zScaleFactor;
     }
     });
     FIELDS.add(RECORDATTR_XOFFSET = new RecordField("xOffset", "xOffset", "", ATTR_XOFFSET, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_XOFFSET.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).xOffset;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).xOffset;
     }
     });
     FIELDS.add(RECORDATTR_YOFFSET = new RecordField("yOffset", "yOffset", "", ATTR_YOFFSET, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_YOFFSET.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).yOffset;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).yOffset;
     }
     });
     FIELDS.add(RECORDATTR_ZOFFSET = new RecordField("zOffset", "zOffset", "", ATTR_ZOFFSET, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_ZOFFSET.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).zOffset;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).zOffset;
     }
     });
     FIELDS.add(RECORDATTR_MAXX = new RecordField("maxX", "maxX", "", ATTR_MAXX, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_MAXX.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).maxX;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).maxX;
     }
     });
     FIELDS.add(RECORDATTR_MINX = new RecordField("minX", "minX", "", ATTR_MINX, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_MINX.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).minX;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).minX;
     }
     });
     FIELDS.add(RECORDATTR_MAXY = new RecordField("maxY", "maxY", "", ATTR_MAXY, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_MAXY.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).maxY;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).maxY;
     }
     });
     FIELDS.add(RECORDATTR_MINY = new RecordField("minY", "minY", "", ATTR_MINY, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_MINY.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).minY;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).minY;
     }
     });
     FIELDS.add(RECORDATTR_MAXZ = new RecordField("maxZ", "maxZ", "", ATTR_MAXZ, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_MAXZ.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).maxZ;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).maxZ;
     }
     });
     FIELDS.add(RECORDATTR_MINZ = new RecordField("minZ", "minZ", "", ATTR_MINZ, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_MINZ.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasHeader_V12)record).minZ;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasHeader_V12)record).minZ;
     }
     });
@@ -581,10 +581,10 @@ public class LasHeader_V12 extends LasHeader {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
-        ReadStatus status= super.read(recordIO);
-        if(status!=ReadStatus.OK)  return status;
+        BaseRecord.ReadStatus status= super.read(recordIO);
+        if(status!=BaseRecord.ReadStatus.OK)  return status;
         readBytes(dis,fileSignature);
         fileSourceId =  readUnsignedShort(dis);
         globalEncoding =  readUnsignedShort(dis);
@@ -619,7 +619,7 @@ public class LasHeader_V12 extends LasHeader {
         minZ =  readDouble(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

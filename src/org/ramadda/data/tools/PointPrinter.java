@@ -68,7 +68,7 @@ public class PointPrinter extends RecordTool {
                 int cnt = 0;
                 public boolean visitRecord(RecordFile file,
                                            VisitInfo visitInfo,
-                                           Record record) {
+                                           BaseRecord record) {
                     try {
                         StringBuffer buff = new StringBuffer();
                         record.print(buff);

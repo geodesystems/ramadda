@@ -33,8 +33,8 @@ import java.util.HashSet;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class GeoKeyHeader extends Record {
-    public static final int ATTR_FIRST = Record.ATTR_LAST;
+public class GeoKeyHeader extends BaseRecord {
+    public static final int ATTR_FIRST = BaseRecord.ATTR_LAST;
     public static final List<RecordField> FIELDS = new ArrayList<RecordField>();
     public static final int ATTR_KEYDIRECTORYVERSION =  ATTR_FIRST + 1;
     public static final RecordField RECORDATTR_KEYDIRECTORYVERSION;
@@ -50,37 +50,37 @@ public class GeoKeyHeader extends Record {
     static {
     FIELDS.add(RECORDATTR_KEYDIRECTORYVERSION = new RecordField("keyDirectoryVersion", "keyDirectoryVersion", "", ATTR_KEYDIRECTORYVERSION, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_KEYDIRECTORYVERSION.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKeyHeader)record).keyDirectoryVersion;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKeyHeader)record).keyDirectoryVersion;
     }
     });
     FIELDS.add(RECORDATTR_KEYREVISION = new RecordField("keyRevision", "keyRevision", "", ATTR_KEYREVISION, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_KEYREVISION.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKeyHeader)record).keyRevision;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKeyHeader)record).keyRevision;
     }
     });
     FIELDS.add(RECORDATTR_MINORREVISION = new RecordField("minorRevision", "minorRevision", "", ATTR_MINORREVISION, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_MINORREVISION.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKeyHeader)record).minorRevision;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKeyHeader)record).minorRevision;
     }
     });
     FIELDS.add(RECORDATTR_NUMBEROFKEYS = new RecordField("numberOfKeys", "numberOfKeys", "", ATTR_NUMBEROFKEYS, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_NUMBEROFKEYS.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((GeoKeyHeader)record).numberOfKeys;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((GeoKeyHeader)record).numberOfKeys;
     }
     });
@@ -161,7 +161,7 @@ public class GeoKeyHeader extends Record {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
         keyDirectoryVersion =  readUnsignedShort(dis);
         keyRevision =  readUnsignedShort(dis);
@@ -169,7 +169,7 @@ public class GeoKeyHeader extends Record {
         numberOfKeys =  readUnsignedShort(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

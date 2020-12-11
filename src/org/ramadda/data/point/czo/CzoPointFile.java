@@ -81,7 +81,7 @@ public class CzoPointFile extends CsvFile {
      *
      * @throws Exception _more_
      */
-    public boolean processAfterReading(VisitInfo visitInfo, Record record)
+    public boolean processAfterReading(VisitInfo visitInfo, BaseRecord record)
             throws Exception {
         if ( !super.processAfterReading(visitInfo, record)) {
             return false;

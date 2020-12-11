@@ -30,10 +30,10 @@ import java.util.List;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class PointDataRecord extends Record {
+public class PointDataRecord extends BaseRecord {
 
     /** _more_ */
-    public static final int ATTR_FIRST = Record.ATTR_LAST;
+    public static final int ATTR_FIRST = BaseRecord.ATTR_LAST;
 
     /** _more_ */
     public static final List<RecordField> FIELDS =
@@ -84,11 +84,11 @@ public class PointDataRecord extends Record {
                 "Latitude", "", ATTR_LATITUDE, "", "double", "double", 0,
                 SEARCHABLE_NO, CHARTABLE_NO));
         RECORDATTR_LATITUDE.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
+            public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
                 return (double) ((PointDataRecord) record).Latitude;
             }
-            public String getStringValue(Record record, RecordField field,
+            public String getStringValue(BaseRecord record, RecordField field,
                                          VisitInfo visitInfo) {
                 return "" + ((PointDataRecord) record).Latitude;
             }
@@ -97,11 +97,11 @@ public class PointDataRecord extends Record {
                 "Longitude", "", ATTR_LONGITUDE, "", "double", "double", 0,
                 SEARCHABLE_NO, CHARTABLE_NO));
         RECORDATTR_LONGITUDE.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
+            public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
                 return (double) ((PointDataRecord) record).Longitude;
             }
-            public String getStringValue(Record record, RecordField field,
+            public String getStringValue(BaseRecord record, RecordField field,
                                          VisitInfo visitInfo) {
                 return "" + ((PointDataRecord) record).Longitude;
             }
@@ -110,11 +110,11 @@ public class PointDataRecord extends Record {
                 "Altitude", "", ATTR_ALTITUDE, "", "double", "double", 0,
                 SEARCHABLE_NO, CHARTABLE_NO));
         RECORDATTR_ALTITUDE.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
+            public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
                 return (double) ((PointDataRecord) record).Altitude;
             }
-            public String getStringValue(Record record, RecordField field,
+            public String getStringValue(BaseRecord record, RecordField field,
                                          VisitInfo visitInfo) {
                 return "" + ((PointDataRecord) record).Altitude;
             }
@@ -123,11 +123,11 @@ public class PointDataRecord extends Record {
                 ATTR_TIME, "", "long", "long", 0, SEARCHABLE_NO,
                 CHARTABLE_NO));
         RECORDATTR_TIME.setValueGetter(new ValueGetter() {
-            public double getValue(Record record, RecordField field,
+            public double getValue(BaseRecord record, RecordField field,
                                    VisitInfo visitInfo) {
                 return (double) ((PointDataRecord) record).Time;
             }
-            public String getStringValue(Record record, RecordField field,
+            public String getStringValue(BaseRecord record, RecordField field,
                                          VisitInfo visitInfo) {
                 //                return AtomUtil.format(((PointDataRecord) record).Time);
                 return "" + ((PointDataRecord) record).Time;

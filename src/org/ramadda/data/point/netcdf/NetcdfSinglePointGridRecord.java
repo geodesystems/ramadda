@@ -18,7 +18,7 @@ package org.ramadda.data.point.netcdf;
 
 
 import org.ramadda.data.point.DataRecord;
-import org.ramadda.data.record.Record.ReadStatus;
+import org.ramadda.data.record.BaseRecord;
 import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordIO;
@@ -109,9 +109,9 @@ public class NetcdfSinglePointGridRecord extends DataRecord {
      * @throws IOException _more_
      */
     @Override
-    public ReadStatus read(RecordIO recordIO) throws IOException {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws IOException {
         if ( !timeIterator.hasNext()) {
-            return ReadStatus.EOF;
+            return BaseRecord.ReadStatus.EOF;
         }
         setLocation(lon, lat, 0);
         CalendarDate date = timeIterator.next();
@@ -129,7 +129,7 @@ public class NetcdfSinglePointGridRecord extends DataRecord {
             cnt++;
         }
 
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

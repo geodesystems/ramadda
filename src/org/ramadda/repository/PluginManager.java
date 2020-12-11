@@ -882,7 +882,6 @@ public class PluginManager extends RepositoryManager {
                 pluginStat("Admin handler", c.getName());
                 adminHandlerClasses.add(c);
             } else if (Harvester.class.isAssignableFrom(c)) {
-                //                                System.out.println("class:" + c.getName());
                 pluginStat("Harvester", c.getName());
                 getHarvesterManager().addHarvesterType(c);
             } else {

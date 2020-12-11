@@ -454,7 +454,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         final int[]   cnt     = { 0 };
         RecordVisitor visitor = new RecordVisitor() {
             public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                 cnt[0]++;
                 ((PointRecord) record).printCsv(visitInfo, pw);
 
@@ -536,7 +536,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                                      getPropertiesForFile(arg));
                 final RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, Record record) {
+                            VisitInfo visitInfo, BaseRecord record) {
                         cnt[0]++;
                         PointRecord pointRecord = (PointRecord) record;
                         if ((pointRecord.getLatitude() < -90)
@@ -619,7 +619,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         final int[]                  cnt      = { 0 };
         final PointMetadataHarvester metadata = new PointMetadataHarvester() {
             public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                 cnt[0]++;
 
                 return super.visitRecord(file, visitInfo, record);

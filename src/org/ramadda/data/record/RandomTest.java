@@ -31,7 +31,7 @@ import java.util.List;
  * @version        Enter version here..., Fri, May 21, '10
  * @author         Enter your name here...
  */
-public class RandomTest extends Record {
+public class RandomTest extends BaseRecord {
 
     /** _more_ */
     byte b = (byte) (Math.random() * 1000);

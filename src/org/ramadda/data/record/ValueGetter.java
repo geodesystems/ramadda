@@ -42,7 +42,7 @@ public interface ValueGetter {
      *
      * @return _more_
      */
-    public double getValue(Record record, RecordField field,
+    public double getValue(BaseRecord record, RecordField field,
                            VisitInfo visitInfo);
 
     /**
@@ -54,6 +54,6 @@ public interface ValueGetter {
      *
      * @return _more_
      */
-    public String getStringValue(Record record, RecordField field,
+    public String getStringValue(BaseRecord record, RecordField field,
                                  VisitInfo visitInfo);
 }

@@ -308,7 +308,7 @@ public class CsvFile extends TextFile {
      * @return _more_
      */
     @Override
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = new TextRecord(this, getFields());
         if (getBaseDate() != null) {
             record.setBaseDate(getBaseDate());
@@ -346,7 +346,7 @@ public class CsvFile extends TextFile {
                 CsvFile             file     = new CsvFile(arg);
                 final RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, Record record) {
+                            VisitInfo visitInfo, BaseRecord record) {
                         cnt[0]++;
                         PointRecord pointRecord = (PointRecord) record;
                         if ((pointRecord.getLatitude() < -90)

@@ -65,66 +65,66 @@ public class PointRecord0 extends BasePointRecord {
     static {
     FIELDS.add(RECORDATTR_X = new RecordField("X", "X", "", ATTR_X, "", "int", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_X.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     LasPointRecord lasRecord = ((LasPointRecord)record);if(visitInfo.getProperty("georeference",false)) return lasRecord.getLongitude();return lasRecord.getScaledAndOffsetX();
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ getValue(record, field, visitInfo);
     }
     });
     FIELDS.add(RECORDATTR_Y = new RecordField("Y", "Y", "", ATTR_Y, "", "int", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_Y.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     LasPointRecord lasRecord = ((LasPointRecord)record);if(visitInfo.getProperty("georeference",false)) return lasRecord.getLatitude();return lasRecord.getScaledAndOffsetY();
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ getValue(record, field, visitInfo);
     }
     });
     FIELDS.add(RECORDATTR_Z = new RecordField("Z", "Z", "", ATTR_Z, "", "int", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_Z.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     LasPointRecord lasRecord = ((LasPointRecord)record);if(visitInfo.getProperty("georeference",false)) return lasRecord.getAltitude();return lasRecord.getScaledAndOffsetZ();
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ getValue(record, field, visitInfo);
     }
     });
     FIELDS.add(RECORDATTR_INTENSITY = new RecordField("Intensity", "Intensity", "", ATTR_INTENSITY, "", "ushort", "short", 0, SEARCHABLE_YES,CHARTABLE_YES));
     RECORDATTR_INTENSITY.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord0)record).Intensity;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord0)record).Intensity;
     }
     });
     RECORDATTR_INTENSITY.setProperty(RecordField.PROP_SEARCH_SUFFIX,"Pulse return magnitude");
     FIELDS.add(RECORDATTR_RETURNANDFLAGS = new RecordField("returnAndFlags", "returnAndFlags", "", ATTR_RETURNANDFLAGS, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RETURNANDFLAGS.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord0)record).returnAndFlags;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord0)record).returnAndFlags;
     }
     });
     FIELDS.add(RECORDATTR_CLASSIFICATIONBITFIELD = new RecordField("classificationBitField", "classificationBitField", "", ATTR_CLASSIFICATIONBITFIELD, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_CLASSIFICATIONBITFIELD.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord0)record).classificationBitField;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord0)record).classificationBitField;
     }
     });
     FIELDS.add(RECORDATTR_CLASSIFICATION = new RecordField("Classification", "Classification", "", ATTR_CLASSIFICATION, "", "int", "int", 0, SEARCHABLE_YES,CHARTABLE_NO));
     RECORDATTR_CLASSIFICATION.setSynthetic(true);
     RECORDATTR_CLASSIFICATION.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord0)record).getClassification();
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord0)record).getClassification();
     }
     });
@@ -150,10 +150,10 @@ public class PointRecord0 extends BasePointRecord {
     FIELDS.add(RECORDATTR_SYNTHETIC = new RecordField("Synthetic", "Synthetic", "", ATTR_SYNTHETIC, "", "int", "int", 0, SEARCHABLE_YES,CHARTABLE_NO));
     RECORDATTR_SYNTHETIC.setSynthetic(true);
     RECORDATTR_SYNTHETIC.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord0)record).getSynthetic();
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord0)record).getSynthetic();
     }
     });
@@ -163,28 +163,28 @@ public class PointRecord0 extends BasePointRecord {
     RECORDATTR_SYNTHETIC.setEnumeratedValues(Synthetic_enums);
     FIELDS.add(RECORDATTR_SCANANGLERANK = new RecordField("scanAngleRank", "scanAngleRank", "", ATTR_SCANANGLERANK, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_SCANANGLERANK.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord0)record).scanAngleRank;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord0)record).scanAngleRank;
     }
     });
     FIELDS.add(RECORDATTR_USERDATA = new RecordField("userData", "userData", "", ATTR_USERDATA, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_USERDATA.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord0)record).userData;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord0)record).userData;
     }
     });
     FIELDS.add(RECORDATTR_POINTSOURCEID = new RecordField("pointSourceId", "pointSourceId", "", ATTR_POINTSOURCEID, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_POINTSOURCEID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((PointRecord0)record).pointSourceId;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((PointRecord0)record).pointSourceId;
     }
     });
@@ -312,10 +312,10 @@ public class PointRecord0 extends BasePointRecord {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
-        ReadStatus status= super.read(recordIO);
-        if(status!=ReadStatus.OK)  return status;
+        BaseRecord.ReadStatus status= super.read(recordIO);
+        if(status!=BaseRecord.ReadStatus.OK)  return status;
         X =  readInt(dis);
         Y =  readInt(dis);
         Z =  readInt(dis);
@@ -329,7 +329,7 @@ public class PointRecord0 extends BasePointRecord {
         ((LasFile)getRecordFile()).initRecord(this);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

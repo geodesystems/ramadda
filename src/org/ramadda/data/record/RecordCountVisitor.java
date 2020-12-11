@@ -47,7 +47,7 @@ public class RecordCountVisitor extends RecordVisitor {
      * @return _more_
      */
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                               Record record) {
+                               BaseRecord record) {
         cnt++;
 
         return true;

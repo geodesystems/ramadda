@@ -165,7 +165,7 @@ public class RecordFileFactory {
             final RecordVisitor visitor = new RecordVisitor() {
                 public boolean visitRecord(RecordFile file,
                                            VisitInfo visitInfo,
-                                           Record record) {
+                                           BaseRecord record) {
                     cnt[0]++;
 
                     return true;

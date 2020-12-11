@@ -266,7 +266,7 @@ public class PointTiler extends RecordTool {
         //Make the visitor
         RecordVisitor visitor = new RecordVisitor() {
             public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                 PointRecord pointRecord = (PointRecord) record;
                 if ( !pointRecord.isValidPosition()) {
                     badcnt[0]++;

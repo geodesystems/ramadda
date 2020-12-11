@@ -334,7 +334,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
          * @return _more_
          */
         @Override
-        public Record doMakeRecord(VisitInfo visitInfo) {
+        public BaseRecord doMakeRecord(VisitInfo visitInfo) {
             try {
                 Connection connection = getConnection(entry);
 
@@ -541,7 +541,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
          * @throws Exception _more_
          */
         @Override
-        public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+        public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
                 throws Exception {
             //noop as the DB call does this
             return true;

@@ -364,7 +364,7 @@ public class LvisFile extends LidarFile {
      * @throws Exception _more_
      */
     @Override
-    public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+    public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
         if ( !fileType.equals(FileType.TEXT)) {
             return super.skip(visitInfo, record, howMany);
@@ -392,7 +392,7 @@ public class LvisFile extends LidarFile {
      * @return _more_
      */
     @Override
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
 
         if (fileType == FileType.TEXT) {
             return new LvisTextRecord(this);
@@ -461,7 +461,7 @@ public class LvisFile extends LidarFile {
                 final int[]   cnt      = { 0 };
                 RecordVisitor metadata = new RecordVisitor() {
                     public boolean visitRecord(RecordFile file,
-                            VisitInfo visitInfo, Record record) {
+                            VisitInfo visitInfo, BaseRecord record) {
                         cnt[0]++;
                         if ((cnt[0] % 10000) == 0) {
                             System.err.print(".");

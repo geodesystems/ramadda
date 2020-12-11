@@ -137,7 +137,7 @@ public class MultiMonthRecord extends TextRecord {
      *
      * @throws Exception _more_
      */
-    public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+    public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
         RecordIO recordIO = visitInfo.getRecordIO();
         while (howMany-- > 0) {

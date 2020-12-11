@@ -136,7 +136,7 @@ public class LasConverter {
         RecordVisitor  visitor = new RecordVisitor() {
 
             public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                 try {
                     PointRecord pointRecord = (PointRecord) record;
                     long        time        = pointRecord.getRecordTime();

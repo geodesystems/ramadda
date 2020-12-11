@@ -141,7 +141,7 @@ public class M88PointFile extends CsvFile {
      *
      * @return _more_
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         TextRecord record = (TextRecord) super.doMakeRecord(visitInfo);
         record.setBePickyAboutTokens(false);
 
@@ -247,7 +247,7 @@ public class M88PointFile extends CsvFile {
      *
      * @throws Exception _more_
      */
-    public boolean processAfterReading(VisitInfo visitInfo, Record record)
+    public boolean processAfterReading(VisitInfo visitInfo, BaseRecord record)
             throws Exception {
         if ( !super.processAfterReading(visitInfo, record)) {
             return false;

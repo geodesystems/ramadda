@@ -34,8 +34,8 @@ import org.ramadda.geodata.lidar.*;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class WaveFormDescriptor extends Record {
-    public static final int ATTR_FIRST = Record.ATTR_LAST;
+public class WaveFormDescriptor extends BaseRecord {
+    public static final int ATTR_FIRST = BaseRecord.ATTR_LAST;
     public static final List<RecordField> FIELDS = new ArrayList<RecordField>();
     public static final int ATTR_BITSPERSAMPLE =  ATTR_FIRST + 1;
     public static final RecordField RECORDATTR_BITSPERSAMPLE;
@@ -55,55 +55,55 @@ public class WaveFormDescriptor extends Record {
     static {
     FIELDS.add(RECORDATTR_BITSPERSAMPLE = new RecordField("bitsPerSample", "bitsPerSample", "", ATTR_BITSPERSAMPLE, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_BITSPERSAMPLE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((WaveFormDescriptor)record).bitsPerSample;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((WaveFormDescriptor)record).bitsPerSample;
     }
     });
     FIELDS.add(RECORDATTR_WAVEFORMCOMPRESSIONTYPE = new RecordField("waveformCompressionType", "waveformCompressionType", "", ATTR_WAVEFORMCOMPRESSIONTYPE, "", "byte", "byte", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_WAVEFORMCOMPRESSIONTYPE.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((WaveFormDescriptor)record).waveformCompressionType;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((WaveFormDescriptor)record).waveformCompressionType;
     }
     });
     FIELDS.add(RECORDATTR_NUMBEROFSAMPLES = new RecordField("numberOfSamples", "numberOfSamples", "", ATTR_NUMBEROFSAMPLES, "", "uint", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_NUMBEROFSAMPLES.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((WaveFormDescriptor)record).numberOfSamples;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((WaveFormDescriptor)record).numberOfSamples;
     }
     });
     FIELDS.add(RECORDATTR_TEMPORALSAMPLESPACING = new RecordField("temporalSampleSpacing", "temporalSampleSpacing", "", ATTR_TEMPORALSAMPLESPACING, "", "uint", "int", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_TEMPORALSAMPLESPACING.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((WaveFormDescriptor)record).temporalSampleSpacing;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((WaveFormDescriptor)record).temporalSampleSpacing;
     }
     });
     FIELDS.add(RECORDATTR_DIGITIZERGAIN = new RecordField("digitizerGain", "digitizerGain", "", ATTR_DIGITIZERGAIN, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_DIGITIZERGAIN.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((WaveFormDescriptor)record).digitizerGain;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((WaveFormDescriptor)record).digitizerGain;
     }
     });
     FIELDS.add(RECORDATTR_DIGITIZEROFFSET = new RecordField("digitizerOffset", "digitizerOffset", "", ATTR_DIGITIZEROFFSET, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_DIGITIZEROFFSET.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((WaveFormDescriptor)record).digitizerOffset;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((WaveFormDescriptor)record).digitizerOffset;
     }
     });
@@ -192,7 +192,7 @@ public class WaveFormDescriptor extends Record {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
         bitsPerSample =  readByte(dis);
         waveformCompressionType =  readByte(dis);
@@ -202,7 +202,7 @@ public class WaveFormDescriptor extends Record {
         digitizerOffset =  readDouble(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

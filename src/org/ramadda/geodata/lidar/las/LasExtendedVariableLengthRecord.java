@@ -34,8 +34,8 @@ import org.ramadda.geodata.lidar.*;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class LasExtendedVariableLengthRecord extends Record {
-    public static final int ATTR_FIRST = Record.ATTR_LAST;
+public class LasExtendedVariableLengthRecord extends BaseRecord {
+    public static final int ATTR_FIRST = BaseRecord.ATTR_LAST;
     public static final List<RecordField> FIELDS = new ArrayList<RecordField>();
     public static final int ATTR_RESERVED =  ATTR_FIRST + 1;
     public static final RecordField RECORDATTR_RESERVED;
@@ -53,29 +53,29 @@ public class LasExtendedVariableLengthRecord extends Record {
     static {
     FIELDS.add(RECORDATTR_RESERVED = new RecordField("Reserved", "Reserved", "", ATTR_RESERVED, "", "short", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RESERVED.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasExtendedVariableLengthRecord)record).Reserved;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasExtendedVariableLengthRecord)record).Reserved;
     }
     });
     FIELDS.add(RECORDATTR_USERID = new RecordField("userId", "userId", "", ATTR_USERID, "", "string[16]", "byte", 16, SEARCHABLE_NO,CHARTABLE_NO));
     FIELDS.add(RECORDATTR_RECORDID = new RecordField("recordId", "recordId", "", ATTR_RECORDID, "", "short", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RECORDID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasExtendedVariableLengthRecord)record).recordId;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasExtendedVariableLengthRecord)record).recordId;
     }
     });
     FIELDS.add(RECORDATTR_RECORDLENGTHAFTERHEADER = new RecordField("recordLengthAfterHeader", "recordLengthAfterHeader", "", ATTR_RECORDLENGTHAFTERHEADER, "", "short", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_RECORDLENGTHAFTERHEADER.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((LasExtendedVariableLengthRecord)record).recordLengthAfterHeader;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((LasExtendedVariableLengthRecord)record).recordLengthAfterHeader;
     }
     });
@@ -161,7 +161,7 @@ public class LasExtendedVariableLengthRecord extends Record {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
         Reserved =  readShort(dis);
         readBytes(dis,userId);
@@ -170,7 +170,7 @@ public class LasExtendedVariableLengthRecord extends Record {
         readBytes(dis,Description);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

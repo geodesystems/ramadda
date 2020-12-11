@@ -34,8 +34,8 @@ import org.ramadda.geodata.lidar.*;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class Test extends Record {
-    public static final int ATTR_FIRST = Record.ATTR_LAST;
+public class Test extends BaseRecord {
+    public static final int ATTR_FIRST = BaseRecord.ATTR_LAST;
     public static final List<RecordField> FIELDS = new ArrayList<RecordField>();
     public static final int ATTR_FILESOURCEID =  ATTR_FIRST + 1;
     public static final RecordField RECORDATTR_FILESOURCEID;
@@ -49,20 +49,20 @@ public class Test extends Record {
     static {
     FIELDS.add(RECORDATTR_FILESOURCEID = new RecordField("fileSourceId", "fileSourceId", "", ATTR_FILESOURCEID, "", "ushort", "short", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_FILESOURCEID.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((Test)record).fileSourceId;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((Test)record).fileSourceId;
     }
     });
     FIELDS.add(RECORDATTR_NUMBEROFPOINTSBYRETURN = new RecordField("numberOfPointsByReturn", "numberOfPointsByReturn", "", ATTR_NUMBEROFPOINTSBYRETURN, "", "uint[5]", "int", 5, SEARCHABLE_NO,CHARTABLE_NO));
     FIELDS.add(RECORDATTR_MINZ = new RecordField("minZ", "minZ", "", ATTR_MINZ, "", "double", "double", 0, SEARCHABLE_NO,CHARTABLE_NO));
     RECORDATTR_MINZ.setValueGetter(new ValueGetter() {
-    public double getValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return (double) ((Test)record).minZ;
     }
-    public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {
+    public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {
     return ""+ ((Test)record).minZ;
     }
     });
@@ -138,14 +138,14 @@ public class Test extends Record {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
         fileSourceId =  readUnsignedShort(dis);
         readUnsignedInts(dis,numberOfPointsByReturn);
         minZ =  readDouble(dis);
         
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 

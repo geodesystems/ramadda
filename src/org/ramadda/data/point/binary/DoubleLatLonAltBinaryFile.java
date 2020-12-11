@@ -115,7 +115,7 @@ public class DoubleLatLonAltBinaryFile extends PointFile {
      * @param visitInfo _more_
      * @return _more_
      */
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         String filename = getFilename().toLowerCase();
         if (filename.endsWith(".llai")) {
             return new DoubleLatLonAltIntensityRecord(this);
@@ -179,7 +179,7 @@ public class DoubleLatLonAltBinaryFile extends PointFile {
             new DataOutputStream(new BufferedOutputStream(fos, 10000));
         RecordVisitor visitor = new RecordVisitor() {
             public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                 try {
                     GeoRecord geoRecord = (GeoRecord) record;
                     dos.writeDouble(geoRecord.getLatitude());

@@ -126,7 +126,7 @@ public class NumericRecordFilter implements RecordFilter {
      *
      * @return _more_
      */
-    public boolean isRecordOk(Record record, VisitInfo visitInfo) {
+    public boolean isRecordOk(BaseRecord record, VisitInfo visitInfo) {
         return evaluate(operator, record.getValue(attrId));
     }
 

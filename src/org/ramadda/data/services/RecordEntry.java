@@ -137,7 +137,7 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
      *
      * @throws Exception _more_
      */
-    public Record getRecord(int index) throws Exception {
+    public BaseRecord getRecord(int index) throws Exception {
         return getRecordFile().getRecord(index);
     }
 

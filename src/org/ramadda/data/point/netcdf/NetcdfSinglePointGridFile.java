@@ -18,7 +18,7 @@ package org.ramadda.data.point.netcdf;
 
 
 import org.ramadda.data.point.PointFile;
-import org.ramadda.data.record.Record;
+import org.ramadda.data.record.BaseRecord;
 import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordIO;
 import org.ramadda.data.record.VisitInfo;
@@ -87,7 +87,7 @@ public class NetcdfSinglePointGridFile extends PointFile {
      * @return the Record
      */
     @Override
-    public Record doMakeRecord(VisitInfo visitInfo) {
+    public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         try {
             GridDataset gds = getDataset(getFilename());
             NetcdfSinglePointGridRecord record =

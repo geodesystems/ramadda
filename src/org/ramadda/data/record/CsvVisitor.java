@@ -137,7 +137,7 @@ public class CsvVisitor extends RecordVisitor {
      * @throws Exception _more_
      */
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                               Record record)
+                               BaseRecord record)
             throws Exception {
         if (fields == null) {
             fields = record.getFields();

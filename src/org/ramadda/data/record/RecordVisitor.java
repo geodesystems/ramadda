@@ -41,7 +41,7 @@ public abstract class RecordVisitor {
      * @throws Exception _more_
      */
     public abstract boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                        Record record)
+                                        BaseRecord record)
      throws Exception;
 
     /**

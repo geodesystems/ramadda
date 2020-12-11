@@ -132,7 +132,7 @@ public class PointMetadataHarvester extends RecordVisitor {
      */
     @Override
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                               Record record) {
+                               BaseRecord record) {
 
 
         PointRecord pointRecord = (PointRecord) record;
@@ -210,7 +210,7 @@ public class PointMetadataHarvester extends RecordVisitor {
         }
 
         long time = record.getRecordTime();
-        if (Record.UNDEFINED_TIME != time) {
+        if (BaseRecord.UNDEFINED_TIME != time) {
             minTime = Math.min(minTime, time);
             maxTime = Math.max(maxTime, time);
         }

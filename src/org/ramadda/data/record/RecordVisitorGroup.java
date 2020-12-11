@@ -71,7 +71,7 @@ public class RecordVisitorGroup extends RecordVisitor {
      */
     @Override
     public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                               Record record)
+                               BaseRecord record)
             throws Exception {
         count++;
         for (RecordVisitor visitor : visitors) {

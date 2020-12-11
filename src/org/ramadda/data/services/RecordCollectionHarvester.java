@@ -157,7 +157,7 @@ public abstract class RecordCollectionHarvester extends PatternHarvester {
         super.createEditForm(request, sb);
         sb.append(
             HtmlUtils.formEntry(
-                msgLabel("Make Record Collection"),
+                msgLabel("Make BaseRecord Collection"),
                 HtmlUtils.checkbox(
                     ATTR_MAKERECORDCOLLECTION, "true",
                     makeRecordCollection)));

@@ -261,7 +261,7 @@ public class PointFormHandler extends RecordFormHandler {
                 int      cnt           = 0;
                 public boolean doVisitRecord(RecordFile file,
                                              VisitInfo visitInfo,
-                                             Record record) {
+                                             BaseRecord record) {
                     PointRecord pointRecord = (PointRecord) record;
                     double[] pt = new double[] { pointRecord.getLatitude(),
                             pointRecord.getLongitude() };
@@ -1707,7 +1707,7 @@ ARG_WAVEFORM_DISPLAY, waveformDisplay, ARG_WAVEFORM_NAME, waveformName
 
         RecordVisitor visitor = new BridgeRecordVisitor(getOutputHandler()) {
             public boolean doVisitRecord(RecordFile file,
-                                         VisitInfo visitInfo, Record record) {
+                                         VisitInfo visitInfo, BaseRecord record) {
                 PointRecord pointRecord = (PointRecord) record;
                 for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
                     RecordField field = fields.get(fieldCnt);

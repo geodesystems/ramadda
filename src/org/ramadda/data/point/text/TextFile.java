@@ -753,7 +753,7 @@ public abstract class TextFile extends PointFile {
      * @throws Exception _more_
      */
     @Override
-    public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+    public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
         TextRecord textRecord = (TextRecord) record;
         for (int i = 0; i < howMany; i++) {

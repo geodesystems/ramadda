@@ -30,7 +30,7 @@ import java.io.*;
  * @version        Enter version here..., Fri, May 21, '10
  * @author         Enter your name here...
  */
-public abstract class GeoRecord extends Record {
+public abstract class GeoRecord extends BaseRecord {
 
 
     /**

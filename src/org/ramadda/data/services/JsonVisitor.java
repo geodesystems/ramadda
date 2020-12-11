@@ -21,7 +21,7 @@ import org.ramadda.data.point.PointRecord;
 
 
 import org.ramadda.data.point.text.*;
-import org.ramadda.data.record.Record;
+import org.ramadda.data.record.BaseRecord;
 import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.ValueGetter;
@@ -93,7 +93,7 @@ public class JsonVisitor extends BridgeRecordVisitor {
      * @throws Exception _more_
      */
     public boolean doVisitRecord(RecordFile file, VisitInfo visitInfo,
-                                 Record record)
+                                 BaseRecord record)
             throws Exception {
 
         boolean debug = false;

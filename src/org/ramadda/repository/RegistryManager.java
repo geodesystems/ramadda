@@ -742,7 +742,7 @@ public class RegistryManager extends RepositoryManager {
     public List<String> getServersToRegisterWith() {
         List<String> urls = StringUtil.split(
                                 getRepository().getProperty(
-                                    PROP_REGISTRY_SERVERS, ""), "\n", true,
+                                                            PROP_REGISTRY_SERVERS, ""), "\n", true,
                                         true);
 
         return urls;

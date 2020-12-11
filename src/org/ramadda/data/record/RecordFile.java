@@ -719,8 +719,8 @@ public abstract class RecordFile {
      *
      * @return The record
      */
-    public Record makeRecord(VisitInfo visitInfo) {
-        Record record = doMakeRecord(visitInfo);
+    public BaseRecord makeRecord(VisitInfo visitInfo) {
+        BaseRecord record = doMakeRecord(visitInfo);
         if (visitInfo.getQuickScan()) {
             //            System.err.println("quick scan");
             record.setQuickScan(true);
@@ -733,13 +733,13 @@ public abstract class RecordFile {
 
 
     /**
-     * Factory method for creating a Record object.
+     * Factory method for creating a BaseRecord object.
      *
      *
      * @param visitInfo Visit state
-     * @return The Record object
+     * @return The BaseRecord object
      */
-    public abstract Record doMakeRecord(VisitInfo visitInfo);
+    public abstract BaseRecord doMakeRecord(VisitInfo visitInfo);
 
 
     /** _more_ */
@@ -789,7 +789,7 @@ public abstract class RecordFile {
      * @return _more_
      */
     public List<RecordField> doMakeFields(boolean failureOk) {
-        Record            record = makeRecord(new VisitInfo());
+        BaseRecord            record = makeRecord(new VisitInfo());
         List<RecordField> fields = record.getFields();
 
         return new ArrayList<RecordField>(fields);
@@ -841,7 +841,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public Record makeNextRecord(Record currentRecord) {
+    public BaseRecord makeNextRecord(BaseRecord currentRecord) {
         return currentRecord;
     }
 
@@ -907,11 +907,11 @@ public abstract class RecordFile {
      *
      * @throws Exception _more_
      */
-    public Record.ReadStatus readNextRecord(VisitInfo visitInfo,
-                                            Record record)
+    public BaseRecord.ReadStatus readNextRecord(VisitInfo visitInfo,
+                                            BaseRecord record)
             throws Exception {
         visitInfo.addRecordIndex(1);
-        Record.ReadStatus status =
+        BaseRecord.ReadStatus status =
             record.readNextRecord(visitInfo.getRecordIO());
 
         return status;
@@ -991,7 +991,7 @@ public abstract class RecordFile {
         visitInfo.setRecordIndex(-1);
         boolean ok = true;
         try {
-            Record record = makeRecord(visitInfo);
+            BaseRecord record = makeRecord(visitInfo);
             if (visitInfo.getStart() > 0) {
                 skip(visitInfo, record, visitInfo.getStart());
                 visitInfo.setRecordIndex(visitInfo.getStart());
@@ -1007,13 +1007,13 @@ public abstract class RecordFile {
                 }
                 try {
                     //This sets the record index
-                    Record.ReadStatus status = readNextRecord(visitInfo,
+                    BaseRecord.ReadStatus status = readNextRecord(visitInfo,
                                                    record);
-                    if (status == Record.ReadStatus.EOF) {
+                    if (status == BaseRecord.ReadStatus.EOF) {
                         break;
                     }
                     record.index = visitInfo.getRecordIndex();
-                    if (status == Record.ReadStatus.OK) {
+                    if (status == BaseRecord.ReadStatus.OK) {
                         if ( !processAfterReading(visitInfo, record)) {
                             continue;
                         }
@@ -1088,7 +1088,7 @@ public abstract class RecordFile {
      *
      * @throws Exception On badness
      */
-    public boolean processAfterReading(VisitInfo visitInfo, Record record)
+    public boolean processAfterReading(VisitInfo visitInfo, BaseRecord record)
             throws Exception {
 
 
@@ -1128,7 +1128,7 @@ public abstract class RecordFile {
         final int[]   cnt     = { 0 };
         RecordVisitor visitor = new RecordVisitor() {
             public boolean visitRecord(RecordFile file, VisitInfo visitInfo,
-                                       Record record) {
+                                       BaseRecord record) {
                 if (cnt[0] == 0) {
                     record.printCsvHeader(visitInfo, pw);
                 }
@@ -1169,7 +1169,7 @@ public abstract class RecordFile {
      *
      * @throws Exception _more_
      */
-    public boolean skip(VisitInfo visitInfo, Record record, int howMany)
+    public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
         visitInfo.addRecordIndex(howMany);
         //        System.err.println ("RecordFile.skip: io.skip= " + howMany);
@@ -1189,11 +1189,11 @@ public abstract class RecordFile {
      *
      * @throws Exception On badness
      */
-    public Record getRecord(int index) throws Exception {
+    public BaseRecord getRecord(int index) throws Exception {
         //TODO: not sure about the visitInfo
         VisitInfo visitInfo = new VisitInfo();
         RecordIO  recordIO  = doMakeInputIO(visitInfo, false);
-        Record    record    = (Record) makeRecord(new VisitInfo());
+        BaseRecord    record    = (BaseRecord) makeRecord(new VisitInfo());
         skip(new VisitInfo(recordIO), record, index);
         record.readNextRecord(recordIO);
 
@@ -1276,7 +1276,7 @@ public abstract class RecordFile {
     public void writeRecords(RecordIO recordInput, RecordIO recordOutput,
                              VisitInfo visitInfo, RecordFilter filter)
             throws Exception {
-        Record record = makeRecord(visitInfo);
+        BaseRecord record = makeRecord(visitInfo);
         int    index  = 0;
         if (visitInfo.getStart() > 0) {
             skip(visitInfo, record, visitInfo.getStart());
@@ -1288,8 +1288,8 @@ public abstract class RecordFile {
                 break;
             }
             try {
-                Record.ReadStatus status = record.readNextRecord(recordInput);
-                if (status != Record.ReadStatus.OK) {
+                BaseRecord.ReadStatus status = record.readNextRecord(recordInput);
+                if (status != BaseRecord.ReadStatus.OK) {
                     break;
                 }
 
@@ -1443,7 +1443,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public boolean isMissingValue(Record record, RecordField field,
+    public boolean isMissingValue(BaseRecord record, RecordField field,
                                   double v) {
         double missing = field.getMissingValue();
 
@@ -1461,7 +1461,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public boolean isMissingValue(Record record, RecordField field,
+    public boolean isMissingValue(BaseRecord record, RecordField field,
                                   String s) {
         //I really shouldn't be doing this here
         return (s.length() == 0) || s.equals("---") || s.equals("n.v.")
@@ -1532,7 +1532,7 @@ public abstract class RecordFile {
      *
      * @throws Exception On badness
      */
-    private void setDateFromYMDHMS(Record record, int[] indices)
+    private void setDateFromYMDHMS(BaseRecord record, int[] indices)
             throws Exception {
         dttm.setLength(0);
         for (int i = 0; i < indices.length; i++) {
@@ -1556,7 +1556,7 @@ public abstract class RecordFile {
      *
      * @throws Exception On badness
      */
-    public void setDateFromDateAndTimeIndex(Record record) throws Exception {
+    public void setDateFromDateAndTimeIndex(BaseRecord record) throws Exception {
         dttm.setLength(0);
         getDateTimeString(record, dttm, dateIndex, timeIndex);
 
@@ -1573,7 +1573,7 @@ public abstract class RecordFile {
      *
      * @throws Exception _more_
      */
-    private Date setDate(Record record, String dttm) throws Exception {
+    private Date setDate(BaseRecord record, String dttm) throws Exception {
         if (mySdfs != null) {
             for (SimpleDateFormat sdf : mySdfs) {
                 try {
@@ -1602,7 +1602,7 @@ public abstract class RecordFile {
      *
      * @throws Exception _more_
      */
-    public void getDateTimeString(Record record, StringBuffer dttm,
+    public void getDateTimeString(BaseRecord record, StringBuffer dttm,
                                   int dateIndex, int timeIndex)
             throws Exception {
         if (dateIndex >= 0) {
@@ -1634,7 +1634,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public String getString(Record record, int index) {
+    public String getString(BaseRecord record, int index) {
         if (record.hasObjectValue(index)) {
             return record.getObjectValue(index).toString();
         } else {

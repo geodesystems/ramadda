@@ -34,8 +34,8 @@ import org.ramadda.geodata.lidar.*;
 
 
 /** This is generated code from generate.tcl. Do not edit it! */
-public class LasHeader extends Record {
-    public static final int ATTR_FIRST = Record.ATTR_LAST;
+public class LasHeader extends BaseRecord {
+    public static final int ATTR_FIRST = BaseRecord.ATTR_LAST;
     public static final List<RecordField> FIELDS = new ArrayList<RecordField>();
     public static final int ATTR_LAST = ATTR_FIRST + 1;
     
@@ -101,10 +101,10 @@ public class LasHeader extends Record {
 
 
 
-    public ReadStatus read(RecordIO recordIO) throws Exception  {
+    public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception  {
         DataInputStream dis = recordIO.getDataInputStream();
         
-        return ReadStatus.OK;
+        return BaseRecord.ReadStatus.OK;
     }
 
 
