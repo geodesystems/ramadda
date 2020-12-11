@@ -79,11 +79,11 @@ proc getJavaType {type} {
 
 
 proc generateRecordClass {class args} {
-    array set A {-super {Record} -extraBody {} -extraCopyCtor {} -extraImport {} -fields {} -readPost {} -readPre {} -writePre {} -writePost {} -lineoriented 0 -delimiter {,} -makefile 0 -filesuper {PointFile} -skiplines {0} -capability {} }
+    array set A {-super {BaseRecord} -extraBody {} -extraCopyCtor {} -extraImport {} -fields {} -readPost {} -readPre {} -writePre {} -writePost {} -lineoriented 0 -delimiter {,} -makefile 0 -filesuper {PointFile} -skiplines {0} -capability {} }
     set SUPER [string toupper $A(-super)]
     array set A $args
     set list $A(-fields)
-    set baseClass [string equal "$A(-super)"  "Record"]
+    set baseClass [string equal "$A(-super)"  "BaseRecord"]
 
     set delimiterString $A(-delimiter)
     regsub  -all {\+} $delimiterString {} delimiterString
@@ -97,7 +97,6 @@ proc generateRecordClass {class args} {
         regsub -all {Record} $fileClass {File} fileClass
         set javaFile $fileClass.java
     }
-
 
     set fp [open $javaFile w]
     puts $fp $::header
@@ -124,7 +123,7 @@ proc generateRecordClass {class args} {
         puts $fp  "public class $fileClass extends $A(-filesuper) \{"
         puts $fp "public ${fileClass}()  {}"
         puts $fp "public ${fileClass}(String filename) throws java.io.IOException {super(filename);}"
-        puts $fp "public Record doMakeRecord(VisitInfo visitInfo) {return new ${class}(this);}"
+        puts $fp "public BaseRecord doMakeRecord(VisitInfo visitInfo) {return new ${class}(this);}"
         puts $fp "public static void main(String\[\]args) throws Exception \{PointFile.test(args, ${fileClass}.class);\n\}\n"
         if {$A(-skiplines)} {
             puts $fp "\n@Override\npublic int getSkipLines(VisitInfo visitInfo) \{\nreturn  $A(-skiplines);\n\}\n\n"
@@ -493,14 +492,14 @@ proc generateRecordClass {class args} {
             }
 
             append recordStatics "$recordAttrName.setValueGetter(new ValueGetter() {\n"
-            append recordStatics "public double getValue(Record record, RecordField field, VisitInfo visitInfo) {\n"
+            append recordStatics "public double getValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {\n"
             if {$A(-valuegetter) != ""} {
                 append recordStatics " $A(-valuegetter)\n"
             } else {
                 append recordStatics "     return (double) (($class)record).$getter;\n"
             }
             append recordStatics "}\n"
-            append recordStatics "public String getStringValue(Record record, RecordField field, VisitInfo visitInfo) {\n"
+            append recordStatics "public String getStringValue(BaseRecord record, RecordField field, VisitInfo visitInfo) {\n"
             if {$A(-valuegetter) != ""} {
                 append recordStatics "     return \"\"+ getValue(record, field, visitInfo);\n"
 
@@ -573,14 +572,14 @@ proc generateRecordClass {class args} {
     append writes $A(-writePost)
     if {$A(-lineoriented)} {
         append writes "printWriter.print(\"\\n\");\n"
-        puts $fp [method "public ReadStatus read(RecordIO recordIO) throws Exception" "ReadStatus status = ReadStatus.OK; \nString line = recordIO.readLine();\nif(line == null) return ReadStatus.EOF;\nline = line.trim();\nif(line.length()==0) return status;\n$extraRead[readHeader][indent $readCode]\nreturn status;"]
+        puts $fp [method "public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception" "BaseRecord.ReadStatus status = BaseRecord.ReadStatus.OK; \nString line = recordIO.readLine();\nif(line == null) return BaseRecord.ReadStatus.EOF;\nline = line.trim();\nif(line.length()==0) return status;\n$extraRead[readHeader][indent $readCode]\nreturn status;"]
         puts $fp [method "public void write(RecordIO recordIO) throws IOException" "String delimiter = \"$delimiterString\";\nPrintWriter  printWriter= recordIO.getPrintWriter();\n${extraWrite}${writes}"]
     } else {
         if {!$baseClass} {
-            set extraRead "ReadStatus status= super.read(recordIO);\nif(status!=ReadStatus.OK)  return status;\n"
+            set extraRead "BaseRecord.ReadStatus status= super.read(recordIO);\nif(status!=BaseRecord.ReadStatus.OK)  return status;\n"
             set extraWrite "super.write(recordIO);\n"
         }
-        puts $fp [method "public ReadStatus read(RecordIO recordIO) throws Exception" "DataInputStream dis = recordIO.getDataInputStream();\n$extraRead[readHeader][indent $readCode]\nreturn ReadStatus.OK;"]
+        puts $fp [method "public BaseRecord.ReadStatus read(RecordIO recordIO) throws Exception" "DataInputStream dis = recordIO.getDataInputStream();\n$extraRead[readHeader][indent $readCode]\nreturn BaseRecord.ReadStatus.OK;"]
         puts $fp [method "public void write(RecordIO recordIO) throws IOException" "DataOutputStream dos = recordIO.getDataOutputStream();\n${extraWrite}${writes}"]
     }
 
