@@ -22,8 +22,8 @@
         <property name="compiledir" value="${srcdir}"/>
         <property  name="build.sysclasspath" value="ignore"/>
         <property name="failonerror" value="true"/>
-        <property name="srcversion" value="1.6"/>
-        <property name="javatarget" value="1.6"/>
+        <property name="srcversion" value="1.7"/>
+        <property name="javatarget" value="1.7"/>
     </target>
 
 
