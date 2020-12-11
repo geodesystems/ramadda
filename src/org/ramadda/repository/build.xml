@@ -403,6 +403,8 @@
 <!--
         <unjar src="${lib_dir}/httpmime-4.5.5.jar" dest="${tmpjar_dir}"/>
 -->
+        <unjar src="${lib_dir}/rhino-1.7.13.jar" dest="${tmpjar_dir}"/>
+
         <unjar src="${lib_dir}/httpmime-4.5.7.jar" dest="${tmpjar_dir}"/>
 
 <!--
