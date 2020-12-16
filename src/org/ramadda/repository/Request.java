@@ -1252,7 +1252,10 @@ public class Request implements Constants, Cloneable {
                 parameters.put(key, newList);
             }
         } else {
-            parameters.put(key, value);
+	    if(value==null)
+		parameters.remove(key);
+	    else
+		parameters.put(key, value);
         }
     }
 
