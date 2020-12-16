@@ -361,6 +361,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SHOWCATEGORIES = "showCategories";
 
+    public static final String ARG_SHOWNEXT = "showNext";
     /** _more_ */
     public static final String ARG_RETURNFILENAME = "returnfilename";
 
@@ -1937,7 +1938,7 @@ public interface Constants {
     public static final int DB_MAX_ROWS = 1000;
 
     /** _more_ */
-    public static final int DB_VIEW_ROWS = 100;
+    public static final int DB_VIEW_ROWS = 10;
 
     /** _more_ */
     public static final int VIEW_MAX_ROWS = DB_VIEW_ROWS;

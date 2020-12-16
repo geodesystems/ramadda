@@ -330,16 +330,27 @@ public class OutputHandler extends RepositoryManager {
      *
      * @throws Exception  problem showing them
      */
-    public void showNext(Request request, int cnt, Appendable sb)
+    public void showNext(Request request, int cnt, Appendable sb, String...message)
             throws Exception {
-
-        //        Misc.printStack("Show next", 10);
         int max = request.get(ARG_MAX, VIEW_MAX_ROWS);
-        if ((cnt > 0) && ((cnt == max) || request.defined(ARG_SKIP))) {
-            int skip = Math.max(0, request.get(ARG_SKIP, 0));
+	showNext(request,cnt,max,sb,message);
+    }
+
+    public void showNext(Request request, int cnt, int max, Appendable sb, String ...message)
+	throws Exception {		
+	//	Misc.printStack("Show next", 10);
+	boolean haveSkip= request.defined(ARG_SKIP);
+	boolean haveMax = request.defined(ARG_MAX);
+	boolean show = (cnt > 0 && cnt == max) || haveSkip || haveMax;
+	int skip = Math.max(0, request.get(ARG_SKIP, 0));
+	if (show) {  
             sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
                                      "entry-table-page"));
-            sb.append(msgLabel("Showing") + (skip + 1) + "-" + (skip + cnt));
+	    if(message!=null && message.length>0 && message[0]!=null) {
+		sb.append(message[0]);
+	    } else {
+		sb.append(msgLabel("Showing") + (skip + 1) + "-" + (skip + cnt));
+	    }
             sb.append(HtmlUtils.space(2));
             List<String> toks = new ArrayList<String>();
             if (skip > 0) {
@@ -349,13 +360,13 @@ public class OutputHandler extends RepositoryManager {
                         + (skip - max), HtmlUtils.faIcon(
                             "fa-step-backward", "title", "View previous")));
             }
-            if (cnt >= max) {
+	    //	    if (cnt >= max) {
                 toks.add(
                     HtmlUtils.href(
                         request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
                         + (skip + max), HtmlUtils.faIcon(
                             "fa-step-forward", "title", "View next")));
-            }
+		//            }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
                 moreMax = 10;
@@ -365,7 +376,7 @@ public class OutputHandler extends RepositoryManager {
                 lessMax = 1;
             }
             request.put(ARG_MAX, "" + moreMax);
-            if (cnt >= max) {
+	    //	    if (cnt >= max) {
                 toks.add(HtmlUtils.href(request.getUrl(),
                                         HtmlUtils.faIcon("fa-plus", "title",
                                             "View more")));
@@ -374,7 +385,7 @@ public class OutputHandler extends RepositoryManager {
                 toks.add(HtmlUtils.href(request.getUrl(),
                                         HtmlUtils.faIcon("fa-minus", "title",
                                             "View less")));
-            }
+		//	    }
             if (toks.size() > 0) {
                 sb.append(StringUtil.join(" ", toks));
 
@@ -1530,7 +1541,9 @@ public class OutputHandler extends RepositoryManager {
             showDate       = false;
         }
 
-        showNext(request, entries.size(), sb);
+	if(request.get(ARG_SHOWNEXT,true)) {
+	    showNext(request, entries.size(), sb,entries.size()==0?"No entries available":null);
+	}
 
         if (showDetails) {
             String cls = isMobile

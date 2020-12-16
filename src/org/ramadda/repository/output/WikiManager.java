@@ -3222,12 +3222,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
-
-
-
             if (children.size() == 0) {
                 //              return makeCard(request, wikiUtil, props, entry);
-                return null;
+		//		return getMessage(wikiUtil, props,
+		//				  "No entries available");
             }
             boolean showCategories = getProperty(wikiUtil, props,
                                          ARG_SHOWCATEGORIES, false);
@@ -3252,6 +3250,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 checkHeading(request, wikiUtil, props, sb);
             }
 
+            int max = getProperty(wikiUtil, props, ATTR_MAX,-1);
+	    if(!getProperty(wikiUtil,props,ARG_SHOWNEXT,true)) {
+		newRequest.put(ARG_SHOWNEXT,"false");
+	    } else  if(max>0) {
+		newRequest.put(ARG_MAX, max+"");
+	    }
             String link = getHtmlOutputHandler().getEntriesList(newRequest,
                               sb, children, true, false, showDetails);
             if (getProperty(wikiUtil, props, "form", false)) {
@@ -3271,7 +3275,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return null;
             }
             boolean noTemplate = getProperty(wikiUtil, props, "noTemplate",
-                                             true);
+                                            true);
             getHtmlOutputHandler().makeTreeView(request, children, sb, width,
                     height, noTemplate);
 
@@ -4457,12 +4461,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         //If there is a max property then clone the request and set the max
         //For some reason we are using both count and max as attrs
         int count = getProperty(wikiUtil, props, attrPrefix + ATTR_COUNT, -1);
-        int max   = getProperty(wikiUtil, props, attrPrefix + ATTR_MAX,
+
+	//Override the max from the url args
+	int max = request.get(ARG_MAX,-1);
+	if(max==-1)
+	    max  = getProperty(wikiUtil, props, attrPrefix + ATTR_MAX,
                                 count);
         if (max > 0) {
             request.put(ARG_MAX, "" + max);
         }
-
 
         List<Entry> entries = getEntries(request, wikiUtil, entry,
                                          userDefinedEntries, props);
@@ -5550,7 +5557,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "Section", "mw-editbutton-bold"));
 
 
-        tags.append(
+
+	tags.append(
             addWikiEditButton(
                 textAreaId, "button_section.png", "Frame",
                 "+frame background=#fff frameSize=0 shadow title=_title_",

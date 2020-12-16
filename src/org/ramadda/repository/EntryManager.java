@@ -10523,9 +10523,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        max = request.get(ARG_MAX, max);
-        //        System.err.println ("Max:" + max);
-
+	max = request.get(ARG_MAX, max);
         String limitString = BLANK;
         limitString =
             getDatabaseManager().getLimitString(request.get(ARG_SKIP, 0),
