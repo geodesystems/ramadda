@@ -1192,9 +1192,11 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getSortLinks(Request request) {
         StringBuilder sb           = new StringBuilder();
-        String oldOrderBy = request.getString(ARG_ORDERBY, SORTBY_FROMDATE);
-        String        oldAscending = request.getString(ARG_ASCENDING,
-                                         "false");
+        String oldOrderBy = request.getString(ARG_ORDERBY, null);
+        String orderBy = request.getString(ARG_ORDERBY, SORTBY_FROMDATE);
+        String oldAscending = request.getString(ARG_ASCENDING,null);
+        String ascending = request.getString(ARG_ASCENDING,
+						       "false");
 
         //J--
         String[] order = {
@@ -1232,8 +1234,8 @@ public class OutputHandler extends RepositoryManager {
                 sb.append(HtmlUtils.space(1));
             }
             cnt++;
-            if (Misc.equals(order[i], oldOrderBy)
-                    && Misc.equals(order[i + 1], oldAscending)) {
+            if (Misc.equals(order[i], orderBy)
+                    && Misc.equals(order[i + 1], ascending)) {
                 sb.append(HtmlUtils.span(order[i + 2],
                                          HtmlUtils.cssClass("sortlinkon")));
             } else {
@@ -1256,9 +1258,7 @@ public class OutputHandler extends RepositoryManager {
         request.remove(ARG_SHOWENTRYSELECTFORM);
         request.put(ARG_ORDERBY, oldOrderBy);
         request.put(ARG_ASCENDING, oldAscending);
-
         return sb.toString();
-
     }
 
 
@@ -1515,6 +1515,7 @@ public class OutputHandler extends RepositoryManager {
         String link        = "";
         String base        = "";
         String afterHeader = "";
+
 
         if (doForm) {
             long x1 = System.currentTimeMillis();
