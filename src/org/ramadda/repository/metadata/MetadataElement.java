@@ -19,6 +19,8 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.DataTypes;
+import org.ramadda.repository.map.MapManager;
+import org.ramadda.repository.map.MapInfo;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -863,6 +865,23 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                            "" + columns));
             }
 
+	} else if (dataType.equals(DATATYPE_LATITUDE)) {
+	    return HtmlUtils.input(arg, value,
+				   HtmlUtils.attr("id","latitude_" + suffix) +
+				   HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
+						  "10"));
+
+
+	} else if (dataType.equals(DATATYPE_LONGITUDE)) {	    
+	    String widget  = HtmlUtils.input(arg, value,
+					     HtmlUtils.attr("id","longitude_" + suffix) +
+					     HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
+							    "10"));
+            MapInfo map = getMapManager().createMap(request, entry, true,null);
+            String mapSelector = map.makeSelector(ARG_LOCATION, true, new String[]{"40","-107"},
+                                     "", "");
+
+	    return widget+mapSelector;
         } else if (dataType.equals(DATATYPE_COLORTABLE)) {
             List names =
                 StringUtil.split(
@@ -873,7 +892,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
             return HtmlUtils.select(arg, names, value) + " "
                    + HtmlUtils.href(getRepository().getUrlBase()
-                                    + "/colortables", "View",
+				    + "/colortables", "View",
                                         "target=_colortables");
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
             return HtmlUtils.checkbox(arg, "true",

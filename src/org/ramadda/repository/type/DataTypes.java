@@ -77,6 +77,10 @@ public interface DataTypes {
     /** _more_ */
     public static final String DATATYPE_LATLON = "latlon";
 
+    public static final String DATATYPE_LATITUDE = "latitude";
+
+    public static final String DATATYPE_LONGITUDE = "longitude";        
+
     /** _more_ */
     public static final String DATATYPE_SKIP = "skip";
 
