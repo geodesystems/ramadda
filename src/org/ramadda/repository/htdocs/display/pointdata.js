@@ -3027,6 +3027,7 @@ RequestMacro.prototype = {
 		    attrs.push(null);
 		    attrs.push("size");
 		    attrs.push(Math.min(this.rows,values.length));
+		    console.log("m:" + attrs);
 		}
 		if(debug)
 		    console.log("\tselect: dflt:" + this.dflt +" values:" + this.values);
