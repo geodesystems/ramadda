@@ -2707,6 +2707,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
 			row);
     },
+    vbox: function(args) {
+        let col = HtmlUtils.join(args, "<br>");
+        return this.div([STYLE,HU.css("display","inline-block")],col);
+    },    
     leftRight: function(left, right, leftWeight, rightWeight) {
         if (leftWeight == null) leftWeight = "6";
         if (rightWeight == null) rightWeight = "6";
