@@ -1502,8 +1502,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		} else {
 		    if(debug) console.log("\tis select");
 		    var tmp = [];
-		    enums.map(e=>tmp.push(e.value));
+		    enums.map(e=>tmp.push(e.value)); 
                     widget = HtmlUtils.select("",attrs,tmp,dfltValue);
+		    if(this.getProperty(filterField.getId() +".filterLabel")) {
+			widget=HU.vbox([this.getProperty(filterField.getId() +".filterLabel"),widget]);
+		    }
 		}
 	    } else if(filterField.isNumeric()) {
 		if(debug) console.log("\tis numeric");
@@ -1611,7 +1614,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 		let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
 		enums = [];
-		if(includeAll) {
+		if(includeAll && !this.getProperty(filterField.getId() +".filterLabel")) {
 		    enums.push({value:[FILTER_ALL,allName]});
 		}
 		let seen = {};

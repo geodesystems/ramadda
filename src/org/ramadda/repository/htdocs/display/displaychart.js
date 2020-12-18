@@ -898,9 +898,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			return a[1].localeCompare(b[1]);
 			
 		    });
-		    let select =  HU.span([CLASS,"display-filter",STYLE,""],
-					  SPACE + "Highlight: " +
-					  HU.select("",[ID,this.getDomId(ID_HIGHLIGHTFIELDS),"multiple","true","size",this.getProperty("highlightShowFieldsSize","4")],seriesValues,highlightFields));
+		    let highlightWidget = SPACE + HU.vbox(["Highlight",
+							  HU.select("",[ID,this.getDomId(ID_HIGHLIGHTFIELDS),"multiple","true","size",this.getProperty("highlightShowFieldsSize","4")],seriesValues,highlightFields)]);
+		    let select =  HU.span([CLASS,"display-filter",STYLE,""],highlightWidget);
 		    this.jq(ID_HIGHLIGHTFIELDSHOLDER).html(select);
 		    this.jq(ID_HIGHLIGHTFIELDS).change(()=>{
 			let v = Utils.makeArray(this.jq(ID_HIGHLIGHTFIELDS).val());
