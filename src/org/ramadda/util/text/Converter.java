@@ -1397,8 +1397,16 @@ public abstract class Converter extends Processor {
         /** _more_ */
         Row headerRow;
 
-        org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
-        org.mozilla.javascript.Scriptable scope = cx.initSafeStandardObjects();
+        /** _more_          */
+        org.mozilla.javascript.Context cx =
+            org.mozilla.javascript.Context.enter();
+
+        /** _more_          */
+        org.mozilla.javascript.Scriptable scope =
+            cx.initSafeStandardObjects();
+
+        /** _more_          */
+        org.mozilla.javascript.Script script;
 
         /**
          *
@@ -1415,7 +1423,7 @@ public abstract class Converter extends Processor {
             }
             this.code = code;
             try {
-                cx = org.mozilla.javascript.Context.enter();
+                cx    = org.mozilla.javascript.Context.enter();
                 scope = cx.initSafeStandardObjects();
                 eval("var globalCache = {};");
                 if (js.trim().length() > 0) {
@@ -1426,24 +1434,43 @@ public abstract class Converter extends Processor {
                     + "print(\"Create file variable\");"
                     + "var File = Java.type(\"java.io.File\");";
                 //                eval(testScript);
+                script = cx.compileString(code, "code", 0, null);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
 
+        /**
+         * _more_
+         *
+         * @param s _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
         private Object eval(String s) throws Exception {
+            if (s == null) {
+                return script.exec(cx, scope);
+            }
+
             return cx.evaluateString(scope, s, "<cmd>", 1, null);
         }
 
+        /**
+         * _more_
+         *
+         * @param name _more_
+         * @param value _more_
+         *
+         * @throws Exception _more_
+         */
         private void put(String name, Object value) throws Exception {
-            scope.put(name,scope, value);
+            scope.put(name, scope, value);
         }
 
 
         /**
-         *
-         *
-         *
          *
          * @param info _more_
          * @param row _more_
@@ -1479,8 +1506,7 @@ public abstract class Converter extends Processor {
                 put("_header", hdr);
                 put("_values", row.getValues());
                 put("_rowidx", rowCnt - 1);
-                // evaluate JavaScript code
-                Object o = eval(code);
+                Object o = eval(null);
                 if (names.size() == 0) {
                     if (o == null) {
                         return row;
@@ -1497,6 +1523,7 @@ public abstract class Converter extends Processor {
                 }
 
                 row.add(org.mozilla.javascript.Context.toString(o));
+
                 //              System.err.println("func row:" + row);
                 return row;
             } catch (Exception exc) {
@@ -4689,10 +4716,11 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private List<String> keyValues = new ArrayList<String>();
 
-	private String colName;
+        /** _more_          */
+        private String colName;
 
         /** _more_ */
-        private int col=-1;
+        private int col = -1;
 
         /** _more_ */
         private SimpleDateFormat sdf;
@@ -4704,13 +4732,14 @@ public abstract class Converter extends Processor {
          * _more_
          *
          * @param cols _more_
-         * @param col _more_
+         * @param colName _more_
          * @param sdf _more_
          */
-        public DateLatest(List<String> cols, String  colName, SimpleDateFormat sdf) {
-            this.keys = cols;
-            this.colName  = colName;
-            this.sdf  = sdf;
+        public DateLatest(List<String> cols, String colName,
+                          SimpleDateFormat sdf) {
+            this.keys    = cols;
+            this.colName = colName;
+            this.sdf     = sdf;
         }
 
         /**
@@ -4726,6 +4755,7 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
                 header = row;
+
                 return null;
             }
             if (keyindices == null) {
@@ -4749,9 +4779,9 @@ public abstract class Converter extends Processor {
                 return null;
             }
             try {
-		if(col==-1) {
-		    col = getColumnIndex(colName);
-		}
+                if (col == -1) {
+                    col = getColumnIndex(colName);
+                }
                 Date d1 = sdf.parse(prevRow.get(col).toString());
                 Date d2 = sdf.parse(row.get(col).toString());
                 if (d2.getTime() >= d1.getTime()) {
@@ -5239,11 +5269,14 @@ public abstract class Converter extends Processor {
     public static void main(String[] args) throws Exception {
         String s = "x";
         try {
-            org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
-            org.mozilla.javascript.Scriptable scope = cx.initSafeStandardObjects();
-            scope.put("x",scope,"33");
+            org.mozilla.javascript.Context cx =
+                org.mozilla.javascript.Context.enter();
+            org.mozilla.javascript.Scriptable scope =
+                cx.initSafeStandardObjects();
+            scope.put("x", scope, "33");
             Object result = cx.evaluateString(scope, s, "<cmd>", 1, null);
-            System.err.println(org.mozilla.javascript.Context.toString(result));
+            System.err.println(
+                org.mozilla.javascript.Context.toString(result));
         } finally {
             org.mozilla.javascript.Context.exit();
         }
