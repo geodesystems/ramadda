@@ -487,6 +487,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(marker.startsWith("base64:")) {
 		    marker = window.atob(marker.substring(7));
 		}
+		console.log(marker);
 		if (marker.indexOf("{") == 0) {
 		    props = JSON.parse(marker);
 		} else {
@@ -882,7 +883,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let text = prompt("Marker text", "");
 		if(!text) return;
 		let url = ramaddaBaseUrl +"/metadata/addform?entryid=" + this.getProperty("entryId")+"&metadata_type=map_marker&metadata_attr1=" +
-		    encodeURIComponent(text) +"&metadata_attr2=" + lat +"&metadata_attr3=" + lon; 
+		    encodeURIComponent(text) +"&metadata_attr2=" + lat +"," + lon; 
 		window.location = url;
 		return
 	    }

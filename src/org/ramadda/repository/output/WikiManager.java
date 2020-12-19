@@ -7077,18 +7077,24 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     int idx = 1;
                     //The order is defined in resources/metadata.xml Map Marker metadata
                     List<String> attrs = new ArrayList<String>();
+		    String markerDesc = mtd.getAttr(idx++);
+		    List<String> toks = StringUtil.splitUpTo(mtd.getAttr(idx++),",",2);
+		    String lat = toks.size()>0?toks.get(0):"";
+		    String lon = toks.size()>1?toks.get(1):"";
+		    String markerType = mtd.getAttr(idx++);
+		    String markerIcon = mtd.getAttr(idx++);		    
                     Utils.add(attrs, "metadataId", mtd.getId(),
-                              "description", mtd.getAttr(idx++), "lat",
-                              mtd.getAttr(idx++), "lon", mtd.getAttr(idx++),
-                              "type", mtd.getAttr(idx++), "icon",
-                              mtd.getAttr(idx++));
+                              "description", markerDesc, "lat",
+                              lat, "lon", lon,
+                              "type", markerType, "icon",
+                              markerIcon);
                     for (String attr :
                             StringUtil.split(mtd.getAttr(idx++), "\n", true,
                                              true)) {
                         if (attr.startsWith("#")) {
                             continue;
                         }
-                        List<String> pair = StringUtil.splitUpTo(attr, "=",
+			List<String> pair = StringUtil.splitUpTo(attr, "=",
                                                 2);
                         attrs.addAll(pair);
                         if (pair.size() == 1) {

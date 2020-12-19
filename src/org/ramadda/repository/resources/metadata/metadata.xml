@@ -366,8 +366,7 @@ This gets draw in maps as a direction indicator.
       <change generation="1" type="insert" index="0" value=""/>
 -->
       <element name="Description" rows="3" />
-      <element name="Latitude" datatype="latitude"/>
-      <element name="Longitude" datatype="longitude"/>      
+      <element name="Position" datatype="latlon"/>
       <element name="Type" datatype="enumeration" default="icon" values="icon,circle,square,rectangle,star,cross,triangle,none"/>
       <element name="Icon" datatype="enumerationplus" default="/markers/marker-red.png" values="/markers/marker-red.png:red,/markers/marker-green.png:green,/markers/marker-blue.png:blue,/markers/marker-gold.png:gold"/>
       <element name="Attributes" rows="6" suffix="e.g.,&lt;br&gt;label=&lt;br&gt;size=16&lt;br&gt;strokeColor=red&lt;br&gt;strokeWidth=4&lt;br&gt;fillColor=blue&lt;br&gt;"/>      

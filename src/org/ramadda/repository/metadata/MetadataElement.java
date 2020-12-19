@@ -661,6 +661,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         String arg = ARG_METADATA_ATTR + getIndex() + suffix;
 
+        if (getDataType().equals(DATATYPE_LATLON)) {
+	    return request.getString(arg+".latitude","")+"," +request.getString(arg+".longitude","");
+	}
+
+
         if (getDataType().equals(DATATYPE_BOOLEAN)) {
             boolean value = request.get(arg, false);
 
@@ -864,24 +869,13 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                        HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
                                            "" + columns));
             }
-
-	} else if (dataType.equals(DATATYPE_LATITUDE)) {
-	    return HtmlUtils.input(arg, value,
-				   HtmlUtils.attr("id","latitude_" + suffix) +
-				   HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
-						  "10"));
-
-
-	} else if (dataType.equals(DATATYPE_LONGITUDE)) {	    
-	    String widget  = HtmlUtils.input(arg, value,
-					     HtmlUtils.attr("id","longitude_" + suffix) +
-					     HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
-							    "10"));
+	} else if (dataType.equals(DATATYPE_LATLON)) {
+	    List<String> toks = StringUtil.splitUpTo(value,",",2);
             MapInfo map = getMapManager().createMap(request, entry, true,null);
-            String mapSelector = map.makeSelector(ARG_LOCATION, true, new String[]{"40","-107"},
-                                     "", "");
+            String mapSelector = map.makeSelector(arg, true, new String[]{toks.size()>0?toks.get(0):"40",toks.size()>1?toks.get(1):"-107"},
+						  "", "");
 
-	    return widget+mapSelector;
+	    return mapSelector;
         } else if (dataType.equals(DATATYPE_COLORTABLE)) {
             List names =
                 StringUtil.split(
@@ -1049,8 +1043,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return sb.toString();
         } else {
             System.err.println("Unknown data type:" + dataType);
-
-            return null;
+	    return "Unknown data type:" + dataType;
         }
 
     }
