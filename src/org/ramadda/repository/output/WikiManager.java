@@ -3249,8 +3249,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (children.size() > 0) {
                 checkHeading(request, wikiUtil, props, sb);
             }
-
-            int max = getProperty(wikiUtil, props, ATTR_MAX,-1);
+            int max = request.get(ARG_MAX, getProperty(wikiUtil, props, ATTR_MAX,-1));
 	    if(!getProperty(wikiUtil,props,ARG_SHOWNEXT,true)) {
 		newRequest.put(ARG_SHOWNEXT,"false");
 	    } else  if(max>0) {

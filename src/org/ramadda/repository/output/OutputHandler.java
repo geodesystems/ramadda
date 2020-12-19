@@ -377,9 +377,9 @@ public class OutputHandler extends RepositoryManager {
             }
             request.put(ARG_MAX, "" + moreMax);
 	    //	    if (cnt >= max) {
-                toks.add(HtmlUtils.href(request.getUrl(),
-                                        HtmlUtils.faIcon("fa-plus", "title",
-                                            "View more")));
+	    toks.add(HtmlUtils.href(request.getUrl(),
+				    HtmlUtils.faIcon("fa-plus", "title",
+						     "View more")));
 
                 request.put(ARG_MAX, "" + lessMax);
                 toks.add(HtmlUtils.href(request.getUrl(),
@@ -1543,7 +1543,7 @@ public class OutputHandler extends RepositoryManager {
         }
 
 	if(request.get(ARG_SHOWNEXT,true)) {
-	    showNext(request, entries.size(), sb,entries.size()==0?"No entries available":null);
+	    showNext(request, entries.size(), sb, entries.size()==0?"No entries available":null);
 	}
 
         if (showDetails) {
