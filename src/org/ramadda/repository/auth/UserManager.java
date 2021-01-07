@@ -529,7 +529,7 @@ public class UserManager extends RepositoryManager {
 
                 return;
             }
-            User   user        = new User(toks.get(0), "", false);
+            User   user        = new User(toks.get(0).trim(), "", true);
             String rawPassword = toks.get(1).trim();
             if (rawPassword.equals("random")) {
                 rawPassword = getRepository().getGUID();
@@ -537,9 +537,17 @@ public class UserManager extends RepositoryManager {
             }
             user.setPassword(hashPassword(rawPassword));
             if ( !userExistsInDatabase(user)) {
+                System.err.println("Creating new admin user:" + user);
                 makeOrUpdateUser(user, true);
             } else {
+                System.err.println("Updating password for admin user:"
+                                   + user);
                 changePassword(user);
+                //And set the admin flag to true
+                getDatabaseManager().update(
+                    Tables.USERS.NAME, Tables.USERS.COL_ID, user.getId(),
+                    new String[] { Tables.USERS.COL_ADMIN },
+                    new Object[] { new Boolean(true) });
             }
             logInfo("Password for:" + user.getId() + " has been updated");
         }
