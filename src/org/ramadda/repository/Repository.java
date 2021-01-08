@@ -3452,6 +3452,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (request.getSessionHasBeenHandled()) {
             okToAddCookie = false;
         }
+
         if (okToAddCookie && (result != null)
                 && (request.getSessionIdWasSet()
                     || (request.getSessionId() == null))) {
@@ -3487,7 +3488,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                              + cookieExpirationDate + " 23:59:59 GMT"
                              + (isSSLEnabled(request)
                                 ? "; secure"
-                                : "") + "; HttpOnly");
+                                : "") + "; HttpOnly;SameSite=Strict");
             /*
             result.addCookie(getSessionManager().getSessionCookieName(),
                              sessionId + "; path=" + path + "; expires="
