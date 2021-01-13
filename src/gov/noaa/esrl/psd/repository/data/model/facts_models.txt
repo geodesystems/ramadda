@@ -43,3 +43,4 @@ gistemp250c:NASA GISTEMP 250km Combined
 gistemp1200l:NASA GISTEMP 1200km Land Only
 gistemp250l:NASA GISTEMP 250km Land Only
 noaa_oisst_v2:NOAA OISST V2
+HadCRUT5:HadCRUT5 Analysis

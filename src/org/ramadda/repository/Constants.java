@@ -1938,7 +1938,7 @@ public interface Constants {
     public static final int DB_MAX_ROWS = 1000;
 
     /** _more_ */
-    public static final int DB_VIEW_ROWS = 10;
+    public static final int DB_VIEW_ROWS = 100;
 
     /** _more_ */
     public static final int VIEW_MAX_ROWS = DB_VIEW_ROWS;
