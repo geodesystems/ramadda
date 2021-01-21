@@ -125,13 +125,22 @@ function CollectionForm(formId, plottype, args) {
 
                             //Now, one more callback function (just a function, not an object) that will
                             //get called when the children entries are retrieved
+                            var count = 10;
                             var finalCallback  = function(entries) {
+                                if (entries.length == 0) {
+                                    console.log("CollectionForm: no entries found");
+                                    if (count--<0) { return; }
+                                    console.log("CollectionForm: calling search again");
+                                     //Wait 500 ms and try again
+                                    setTimeout(function(){
+                                        processEntry.getChildrenEntries(finalCallback, "ascending=false&orderby=name&max=9999");
+                                    },500);
+                                    return;
+                                }
                                 theCollectionForm.handleProcessEntries(processEntry, entries);
                             };
-
                             //This will go back to the server and get the children 
                             processEntry.getChildrenEntries(finalCallback, "ascending=false&orderby=name&max=9999");
-                            
                         }
                     };
                     //Just create the entry list, passing in the callback object
