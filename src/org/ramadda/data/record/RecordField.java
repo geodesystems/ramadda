@@ -93,6 +93,9 @@ public class RecordField {
     public static final String TYPE_IMAGE = "image";
 
     /** _more_ */
+    public static final String TYPE_MOVIE = "movie";    
+
+    /** _more_ */
     public static final String TYPE_DATE = "date";
 
 
@@ -1091,6 +1094,7 @@ public class RecordField {
                         || value.equals(TYPE_INT);
         isTypeString = value.equals(TYPE_STRING) || value.equals(TYPE_URL)
                        || value.equals(TYPE_IMAGE)
+                       || value.equals(TYPE_MOVIE)	    
                        || value.equals(TYPE_ENUMERATION);
         isTypeDate = value.equals(TYPE_DATE);
         //      System.err.println("set type:" + type + " is:" +isTypeNumeric +" " + isTypeString +" " + isTypeDate);
