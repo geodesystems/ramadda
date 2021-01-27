@@ -92,6 +92,14 @@ var Utils =  {
 	});
 	return l;
     },
+    sortNumbers:function(l) {
+	l.sort((a,b)=>{return +a - +b});
+	return l;
+    },
+    sortDates:function(l) {
+	l.sort((a,b)=>{return a.getTime()-b.getTime()});
+	return l;
+    },    
     mergeLists: function(l1,l2,l3,l4,l5) {
 	let l = [];
 	if(l1) l1.map(e=>l.push(e));
@@ -519,8 +527,9 @@ var Utils =  {
     monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],
     monthNamesShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
     createDate: function(d) {
+	d = d.trim();
 	let regexp = new RegExp("^(\\+|-)?([0-9]+) *(minute|hour|day|week|month|year)$");
-	let toks = d.trim().match(regexp);
+	let toks = d.match(regexp);
 	if(toks) {
 	    let mult = parseFloat(toks[1]+toks[2]);
 	    let what = toks[3];
@@ -539,14 +548,30 @@ var Utils =  {
 		return new Date(date+mult*1000*60*60*24*7*31);
 	    return new Date(date+mult*1000*60*60*24*365);
 	}
+	if(d.match(/^[0-9,]+/)) {
+	    toks = d.split(",");
+	    let idx = 0;
+	    let f = (i)=>{
+		if(i>=toks.length) return null;
+		if(i==1) return +toks[i]-1;
+		return +toks[i];
+	    };
+	    return new Date(Date.UTC(f(idx++),f(idx++),f(idx++),f(idx++),f(idx++),f(idx++)));
+	}
 	return  new Date(d);
-
     },
     minutesSince: function(date) {
 	return Math.round(this.toMinutes(new Date().getTime()-date));
     },
     toMinutes: function(ms) {
 	return ms/1000/60;
+    },
+    formatHour: function(h,nospace) {
+	let space = nospace?"":"&nbsp;";
+	if(h==0) return "12" + space +"am";
+	if(h==12) return "12" + space+"pm";
+	if(h>12) return (h-12)+space+"pm";
+	return h +space+"am";
     },
     formatDateMonthDayYear: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
@@ -610,9 +635,8 @@ var Utils =  {
 	if(m<10) m = "0" + m;
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
-	var h = date.getHours()+1;
-	if(h<10) h = "0" + h;
-        return date.getUTCFullYear() + "-" + m + "-" + d+" " + hh;
+	var h = Utils.formatHour(date.getUTCHours(),true);
+        return date.getUTCFullYear() + "-" + m + "-" + d+" " + h;
     },
 
     formatDateYYYYMM: function(date, options, args) {
@@ -642,7 +666,7 @@ var Utils =  {
     formatDateYYYYWeek: function(date, options, args) {
         return date.getUTCFullYear() + " week:" + this.formatDateWeek(date);
     },
-    formatDateWeek: function(date) {
+    formatDateWeek: function(date) { 
 	var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
 	return   Math.ceil(( ( (date - yearStart) / 86400000) + 1)/7);
     },
@@ -693,7 +717,7 @@ var Utils =  {
                 minute: 'numeric'
             };
         }
-        var suffix = args.suffix;
+        let suffix = args.suffix;
         if (!suffix) suffix = "";
         else suffix = " " + suffix;
         if (args.timeZone) {
@@ -2422,6 +2446,8 @@ var ID = "id";
 var STYLE = "style";
 var TITLE = "title";
 var CLASS = "class";
+var BACKGROUND = "background";
+var POSITION = "position";
 var WIDTH = "width";
 var ALIGN = "align";
 var VALIGN = "valign";
@@ -2868,6 +2894,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     span: function(attrs, inner) {
         return this.tag("span", attrs, inner);
+    },
+    movie:function(path, attrs) {
+	let a = "";
+	if(attrs) a=HU.attrs(attrs);
+	return "<video src='" + path +"' " + a +" controls='controls'></video>";
     },
     image: function(path, attrs) {
         return "<img " + this.attrs(["src", path, "border", "0"]) + " " + this.attrs(attrs) + "/>";
@@ -3716,10 +3747,3 @@ $( document ).ready(function() {
     HU.documentReady = true;
     Utils.checkForResize();
 });
-
-
-
-
-
-
-
