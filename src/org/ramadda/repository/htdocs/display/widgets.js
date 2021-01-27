@@ -391,23 +391,26 @@ function DisplayAnimation(display, enabled) {
                 this.toggleAnimation();
             });
             this.btnBegin.button().click(() => {
+		let diff = this.getDiff();
+		let fullRange = this.fullRange();
 		this.begin = this.dateMin;
 		if (this.mode == MODE_SLIDING) {
-		    this.end = new Date(this.dateMin.getTime()+this.window);
+		    this.end = new Date(this.begin.getTime()+(fullRange?this.window:diff));
 		} else if (this.mode == MODE_FRAME) {
 		    this.frameIndex = 0;
 		    this.begin = this.end = this.deltaFrame(0);
 		} else {
 		    this.end = new Date(this.dateMin.getTime()+this.window);
-		    //			this.end =this.begin;
 		}
 		this.stopAnimation();
 		this.dateRangeChanged();
             });
             this.btnEnd.button().click(() => {
+		let diff = this.getDiff();
+		let fullRange = this.fullRange();
 		this.end = this.dateMax;
 		if (this.mode == MODE_SLIDING) {
-		    this.begin = new Date(this.dateMax.getTime()-this.window);
+		    this.begin = new Date(this.end.getTime()-(fullRange?this.window:diff));
 		} else if (this.mode == MODE_FRAME) {
 		    this.frameIndex = this.dates.length+1;
 		    this.begin = this.end = this.deltaFrame(0);
@@ -418,21 +421,8 @@ function DisplayAnimation(display, enabled) {
 		this.dateRangeChanged();
             });
             this.btnPrev.button().click(() => {
-		if (this.mode == MODE_SLIDING) {
-		    this.begin = new Date(this.begin.getTime()-this.window);
-		    if(this.begin.getTime()<this.dateMin.getTime())
-			this.begin = this.dateMin;
-		    this.end = new Date(this.begin.getTime()+this.window);
-		} else if (this.mode == MODE_FRAME) {
-		    this.begin = this.end = this.deltaFrame(-1);
-		} else {
-		    this.end = new Date(this.end.getTime()-this.window);
-		    if(this.end.getTime()<=this.begin.getTime()) {
-			this.end = new Date(this.begin.getTime()+this.window);
-		    }
-		}
 		this.stopAnimation();
-		this.dateRangeChanged();
+		this.doPrev();
             });
             this.btnNext.button().click(() => {
 		this.stopAnimation();
@@ -448,19 +438,47 @@ function DisplayAnimation(display, enabled) {
 		this.dateRangeChanged();
             });
         },
+	fullRange: function() {
+	    return this.atBegin() && this.atEnd();
+	},
 	atEnd: function() {
 	    return this.end.getTime()>=this.dateMax.getTime();
+	},
+	atBegin: function() {
+	    return this.begin.getTime()<=this.dateMin.getTime();
+	},	
+	getDiff: function() {
+	    return  this.end.getTime()-this.begin.getTime();
+	},
+	doPrev: function() {
+	    let diff = this.getDiff()||this.window;
+	    if (this.mode == MODE_SLIDING) {
+		this.begin = new Date(this.begin.getTime()-diff);
+		if(this.begin.getTime()<this.dateMin.getTime())
+		    this.begin = this.dateMin;
+		this.end = new Date(this.begin.getTime()+diff);
+	    } else if (this.mode == MODE_FRAME) {
+		this.begin = this.end = this.deltaFrame(-1);
+	    } else {
+		this.end = new Date(this.end.getTime()-this.window);
+		if(this.end.getTime()<=this.begin.getTime()) {
+		    this.end = new Date(this.begin.getTime()+this.window);
+		}
+	    }
+	    this.dateRangeChanged();
 	},
 	doNext: function() {
 	    let debug = false;
 	    let wasAtEnd = this.atEnd();
-	    if(debug) console.log("animation.doNext atEnd=" + wasAtEnd);
+	    if(debug) console.log("animation.doNext:" + this.mode +" atEnd=" + wasAtEnd);
 	    if (this.mode == MODE_SLIDING) {
+		let diff = this.getDiff()||this.window;
 		this.begin = this.end;
-		this.end = new Date(this.end.getTime()+this.window);
+		this.end = new Date(this.begin.getTime()+diff);
+		//this.end.getTime()+this.window);		
 		if(this.atEnd()) {
 		    this.end = this.dateMax;
-		    this.begin = new Date(this.end.getTime()-this.window);
+		    this.begin = new Date(this.end.getTime()-diff);
 		    this.inAnimation = false;
 		    this.stopAnimation();
 		}
@@ -490,7 +508,6 @@ function DisplayAnimation(display, enabled) {
 	    }
 	    this.dateRangeChanged();
 	},
-
 	deltaFrame: function(delta) {
 	    this.frameIndex+=delta;
 	    if(!this.dates) return;
@@ -512,7 +529,6 @@ function DisplayAnimation(display, enabled) {
 		    this.doNext();
 		    return;
 		}
-
                 var date = this.dateMin;
                 this.begin = date;
                 var unit = this.windowUnit;
@@ -534,7 +550,9 @@ function DisplayAnimation(display, enabled) {
                         this.begin = new Date(date.getUTCFullYear(), date.getMonth(), date.getDay(), date.getHours(), date.getSeconds());
                     }
                 } 
-                this.end = this.begin;
+                if(this.fullRange()) {
+		    this.end = new Date(this.begin.getTime()+this.window);
+		}
 		this.display.animationStart();
             }
 	    this.doNext();
