@@ -2290,22 +2290,36 @@ public class CsvUtil {
             String cmd = c.getLine();
             if (match != null) {
                 String text = c.cmd;
+		String desc = null;
+		String label = null;		
                 if (c.category) {
                     matchedCategory = false;
                     text            = c.desc;
                 } else {
                     text = c.cmd;
+		    desc = c.desc;
+		    label = c.label;
+		    if(desc!=null) desc = desc.toLowerCase();
+		    if(label!=null) label = label.toLowerCase();
                 }
                 boolean ok = true;
                 text = text.toLowerCase();
                 if (exact && !text.equals(match)) {
                     ok = false;
-                } else if ( !exact && (text.indexOf(match) < 0)) {
-                    ok = false;
+                } else if ( !exact) {
+		    if(text.indexOf(match) < 0) {
+			ok = false;
+		    }
+		    if(!ok && label!=null) {
+			ok = label.indexOf(match)>=0;
+		    }
+		    if(!ok && desc!=null) {
+			ok = desc.indexOf(match)>=0;
+		    }		    
                 }
+
                 if (c.category) {
                     matchedCategory = ok;
-
                     continue;
                 } else {
                     ok = ok || matchedCategory;
