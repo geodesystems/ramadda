@@ -3,6 +3,8 @@
 */
 
 
+var xcnt=0;
+
 const displayDebug = {
     getProperty:false,
     handleEventPropertyChanged:false,
@@ -94,6 +96,7 @@ const PROP_WIDTH = "width";
 const PROP_FILTER_VALUE = "fitlerValue";
 const HIGHLIGHT_COLOR = "yellow";
 const RECORD_INDEX = "recordIndex";
+const RECORD_ID = "recordid";
 
 
 let globalDisplayCount = 0;
@@ -451,15 +454,34 @@ function DisplayThing(argId, argProperties) {
 		}
 		if(f.getType()=="image") {
 		    if(value && value.trim().length>1) {
-			var imgAttrs = [];
-			imgAttrs.push("width");
-			imgAttrs.push(this.getProperty("imageWidth","100%")) ;
-			var img =  HU.image(value, imgAttrs);
+			var imageAttrs = [];
+			if(this.getProperty("imageWidth")) {
+			    imageAttrs.push("width");
+			    imageAttrs.push(this.getProperty("imageWidth")); 
+			} else  {
+			    imageAttrs.push("width");
+			    imageAttrs.push("100%");
+			}
+			imageAttrs.push("style");
+			imageAttrs.push("vertical-align:top");
+			var img =  HU.image(value, imageAttrs);
 			attrs[f.getId() +"_image"] =  img;
 			attrs[f.getId() +"_url"] =  value;
 		    } else {
 			attrs[f.getId() +"_url"] =  ramaddaBaseUrl+"/icons/blank.gif";
 			attrs[f.getId() +"_image"] =  "";
+		    }
+		}
+		else if(f.getType()=="movie") {
+		    if(value && value.trim().length>0) {
+			var movieAttrs = [];
+			if(this.getProperty("movieWidth")) {
+			    movieAttrs.push("width");
+			    movieAttrs.push(this.getProperty("movieWidth"));
+			}
+			var movie =  HU.movie(value,movieAttrs);
+			attrs[f.getId() +"_movie"] =  movie;
+			attrs[f.getId() +"_url"] =  value;
 		    }
 		} else if(f.getType()=="url") {
 		    if(value && value.trim().length>1) {
@@ -514,6 +536,7 @@ function DisplayThing(argId, argProperties) {
 	    let link  = linkField?record.getValue(linkField.getIndex()):null;
 	    let showDate = this.getProperty("showDate", true);
 	    let showImage = this.getProperty("showImage", true);
+	    let showMovie = this.getProperty("showMovie", true);	    
             let showGeo = false;
             if (Utils.isDefined(this.showGeo)) {
                 showGeo = ("" + this.showGeo) == "true";
@@ -554,9 +577,7 @@ function DisplayThing(argId, argProperties) {
 			continue;
 		    }
 		    if(!showDate) {
-                        if (field.isFieldDate()) {
-                            continue;
-                        }
+			if(field.isRecordDate()) continue;
 		    }
                     if (!showGeo) {
                         if (field.isFieldGeo()) {
@@ -573,8 +594,25 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    if(field.getType() == "image" && value!="") {
 			if(!showImage) continue;
-			value = HU.image(value,["width","200"]);
+			let imageAttrs = [];
+			if(this.getProperty("imageWidth")) {
+			    imageAttrs.push("width");
+			    imageAttrs.push(this.getProperty("imageWidth")); 
+			} else  {
+			    imageAttrs.push("width");
+			    imageAttrs.push("200");
+			}
+			imageAttrs.push("align");
+			imageAttrs.push("top");
+			value = HU.image(value,imageAttrs);
 		    }
+		    if(field.getType() == "movie" && value!="") {
+			if(!showMovie) continue;
+			var movieAttrs = [];
+			movieAttrs.push("width");
+			movieAttrs.push("200");
+			value = HU.movie(value,movieAttrs);
+		    }		    
 		    if(field.getType() == "url") {
 			value = HU.href(value,value);
 		    }
@@ -918,8 +956,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['filterLatest=fields','Only show the latest records grouped by fields'],		
 		['filterDate=year',"Show a simple pull down menu to select a year to display"],
 		['filterDateIncludeAll=true',"Include all years"],
-		['startDate="yyyy-MM-dd"',"Filter data on date"],
-		['endDate="yyyy-MM-dd"',"Filter data on date"],
+		['startDate="yyyy,MM,dd,hh,mm,ss"',"Filter data on date"],
+		['endDate="yyyy,MM,dd,hh,mm,ss"',"Filter data on date"],
 		"inlinelabel:Convert Data",
 		['binDate="day|month|year"',"Bin the dates"],
 		'binType="count|average|total"',
@@ -961,6 +999,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		'alphaTargetMax=1',
 		"inlinelabel:Animation Attributes",
 		"doAnimation=true",
+		"animationHighlightRecord=true",
+		"acceptAnimationChangeEvent=false",
 		"acceptDateRangeChange=true",
 		"animationDateFormat=\"yyyy\"",
 		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
@@ -1523,6 +1563,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         handleEventRecordHighlight: function(source, args) {
 	    if(this.getAnimation().getEnabled() &&  !args.skipAnimation) {
 		this.getAnimation().handleEventRecordHighlight(source, args);
+	    }
+	},
+        handleEventAnimationChanged: function(source, args) {
+	    if(!this.getProperty("acceptAnimationChangeEvent",true)) return;
+	    if(this.getAnimation().getEnabled()) {
+		this.getAnimation().handleEventAnimationChanged(args);
 	    }
 	},
         propagateEventRecordSelection: function(args) {
@@ -2422,6 +2468,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let endDate = this.getProperty("endDate");
 	    if(startDate) {
 		this.startDateObject = Utils.createDate(startDate);
+		let timeZoneOffset = +this.getProperty("timeZoneOffset",0);
+		if(timeZoneOffset) {
+		    let d = this.startDateObject;
+		    this.startDateObject = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(),d.getUTCDate(),d.getUTCHours()-timeZoneOffset,d.getUTCMinutes(),d.getUTCSeconds()));
+		}
 	    } 
 	    if(endDate) {
 		this.endDateObject = Utils.createDate(endDate);
@@ -4031,6 +4082,11 @@ a
 //                style += " height:" + height + ";overflow-y:auto;";
                 style += HU.css(HEIGHT, height);
             }
+            var maxheight = this.getProperty("maxHeight");
+            if (maxheight) {
+//                style += " height:" + height + ";overflow-y:auto;";
+                style += HU.css("max-height", HU.getDimension(maxheight),"overflow-y","auto");
+            }	    
 	    //            var width = this.getWidthForStyle();
 	    //            if (width) {
 	    //                style += " width:" + width + ";";
@@ -4998,7 +5054,8 @@ a
 
 	},
 	//Make sure to set the title attribute on the elements
-	makeTooltips: function(selector, records, callback, tooltipArg) {
+	makeTooltips: function(selector, records, callback, tooltipArg,propagateHighlight) {
+	    if(!Utils.isDefined(propagateHighlight)) propagateHighlight = true;
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
@@ -5009,7 +5066,8 @@ a
 		content: function() {
 		    var record = records[parseFloat($(this).attr('recordIndex'))];
 		    if(callback) callback(true, record);
-		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
+		    if(propagateHighlight)
+			_this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
 		    let style = _this.getProperty("tooltipStyle");
 		    let tt =  _this.getRecordHtml(record,null,tooltip);
 		    if(style) tt=HU.div([STYLE,style],tt);
@@ -5018,7 +5076,8 @@ a
 		close: function(event,ui) {
 		    var record = records[parseFloat($(this).attr('recordIndex'))];
 		    if(callback) callback(true, record);
-		    _this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
+		    if(propagateHighlight)
+			_this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
 		},
 		position: {
 		    my: _this.getProperty("tooltipPositionMy", "left top"),
@@ -5445,12 +5504,15 @@ a
 		    }
                 }
 		
+//		let str =  date.toUTCString() +" " +(date.getTime() < this.startDateObject.getTime());
 		if (this.startDateObject != null && date.getTime() < this.startDateObject.getTime()) {
 		    if(debug) {
-			console.log("    startDate:\n\t" + date.getTime() +"\n\t" + this.startDateObject.getTime());
+//			console.log("    startDate:\n\t" + date.getTime() +"\n\t" + this.startDateObject.getTime());
 		    }
+//		    console.log("skip " + str);
                     return false;
                 }
+//		console.log("no skip " + str +" " + date);
                 if (this.endDateObject != null && date.getTime() > this.endDateObject.getTime()) {
 		    if(debug) {
 			console.log("    endDate:\n\t" + date.getTime() +"\n\t" + this.endDateObject.getTime());
