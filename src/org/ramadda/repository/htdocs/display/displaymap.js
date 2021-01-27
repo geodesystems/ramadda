@@ -328,6 +328,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
             });
 	    this.map.addFeatureSelectHandler(feature=>{
+		this.lastFeatureSelectTime = new Date();
+
 		if(feature.collisionInfo)  {
 		    if(this.getPropertyCollisionFixed()) return;
 		    let info = feature.collisionInfo;
@@ -878,6 +880,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.map.clearRegionSelector();
         },
         handleClick: function(theMap, event, lon, lat) {
+	    if(this.lastFeatureSelectTime) {
+		let diff = new Date().getTime()-this.lastFeatureSelectTime.getTime();
+		this.lastFeatureSelectTime = null;
+		if(diff<1000) {
+//		    console.log("too soon to handle click");
+		    return;
+		}
+	    }
+
 	    if(event.shiftKey) {
 		if(Utils.isAnonymous()) return;
 		let text = prompt("Marker text", "");
@@ -911,7 +922,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    //If we are highlighting a record then change the marker
 	    if(this.highlightMarker) {
-		this.highlightPoint(closest.getLatitude(),closest.getLongitude(),true,true);
+		this.highlightPoint(closest.getLatitude(),closest.getLongitude(),true,false);
 	    }
 	    
 	    let fields = this.getFieldsByIds(null, this.getProperty("filterFieldsToPropagate"));
