@@ -6,6 +6,7 @@ const DISPLAY_GRAPH = "graph";
 const DISPLAY_TREE = "tree";
 const DISPLAY_ORGCHART = "orgchart";
 const DISPLAY_TIMELINE = "timeline";
+const DISPLAY_HOURS = "hours";
 const DISPLAY_BLANK = "blank";
 const DISPLAY_RECORDS = "records";
 const DISPLAY_TSNE = "tsne";
@@ -138,6 +139,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_TIMELINE,
     label: "Timeline",
+    requiresData: true,
+    forUser: true,
+    category:  CATEGORY_MISC
+});
+addGlobalDisplayType({
+    type: DISPLAY_HOURS,
+    label: "Hours",
     requiresData: true,
     forUser: true,
     category:  CATEGORY_MISC
@@ -744,6 +752,206 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	}
     });
 }
+
+function RamaddaHoursDisplay(displayManager, id, properties) {
+    const ID_TIMELINE = "timeline";
+
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HOURS, properties);
+    const BOX_COLOR = "lightblue";
+    const HIGHLIGHT_COLOR = "red";
+    const MULTI_ID = "multiid";
+
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    
+    this.defineProperties([
+	{label:'Hours Properties'},
+	{p:'dateField',wikiValue:''},
+	{p:'boxWidth',wikiValue:''},
+	{p:'boxColor',wikiValue:'blue'},	
+	{p:'rowBackground',wikiValue:''},
+	{p:'dayLabelStyle',wikiValue:''},
+	{p:'fillHours',wikiValue:'false'},			
+    ]);
+
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+	updateUI: function() {
+            let records = this.filterData();
+	    if(records==null) return;
+	    let _this =this;
+	    let html = "";
+	    let dateField = this.getFieldById(null,this.getPropertyDateField());
+	    let days = [];
+	    let dayToHours = {};
+	    let dateFormat = this.getProperty("dateFormat","mdy");
+	    this.recordToIndex = {};
+	    let timeZoneOffset = +this.getProperty("timeZoneOffset",0);
+	    records.forEach((record,idx)=>{
+		this.recordToIndex[record.getId()] = idx;
+		let dttm0 =dateField? recordtuple[dateField.getIndex()]: record.getTime();
+		let dttm = dttm0;
+		let newHours = dttm.getUTCHours()+timeZoneOffset;
+		dttm = new Date(Date.UTC(dttm.getUTCFullYear(),dttm.getUTCMonth(),dttm.getUTCDate(),newHours));
+		let hour = +dttm.getUTCHours();
+		let dayDate = new Date(Date.UTC(dttm.getUTCFullYear(),dttm.getUTCMonth(),dttm.getUTCDate()));
+		let dayInfo = dayToHours[dayDate];
+
+		if(!dayInfo) {
+		    dayInfo = dayToHours[dayDate] = {
+			dttm:dttm,
+			hours:[],
+			minutesCount:{},
+			hourToRecords:{},
+			minHour: hour,
+			maxHour:hour
+		    };
+		    days.push(dayDate);
+		}
+		dayInfo.minHour = Math.min(dayInfo.minHour,hour);
+		dayInfo.maxHour = Math.max(dayInfo.maxHour,hour);		
+		let minutes = dttm0.getMinutes();
+		let key  = hour+"_"+minutes;
+		if(!dayInfo.minutesCount[key]) dayInfo.minutesCount[key] = 0;
+		dayInfo.minutesCount[key]++;
+		if(!dayInfo.hourToRecords[hour]) {
+		    dayInfo.hours.push(hour);
+		    dayInfo.hourToRecords[hour] = [];
+		}
+		dayInfo.hourToRecords[hour].push(record);
+	    });
+	    Utils.sortDates(days);
+	    html = HU.open("div",[STYLE,"position:relative;"]) + HU.open("table",["width","100%"]);
+	    let boxWidth = this.getPropertyBoxWidth(10);
+	    let boxColor = this.getPropertyBoxColor(BOX_COLOR);
+	    let extra = "";
+	    days.forEach(day=>{
+		let dayInfo = dayToHours[day];
+		if(this.getPropertyFillHours(true)) {
+		    for(let i=dayInfo.minHour;i<dayInfo.maxHour;i++) {
+			if(!dayInfo.hourToRecords[i]) {
+			    dayInfo.hours.push(i);
+			    dayInfo.hourToRecords[i] = [];
+			}
+		    }
+		}
+		let dayLabel = Utils.formatDateWithFormat(day,dateFormat,true);
+		html +=  HU.tr([STYLE,"border-bottom:1px solid #ccc;"],HU.tds([],["",HU.div([CLASS,"display-hours-label"], dayLabel),"#"]));
+		let multiCount = 0;
+		Utils.sortNumbers(dayInfo.hours).forEach(hour=>{
+		    let row = "<tr style='border-top:1px solid #ccc;'>";
+//		    if(hour!=9) return
+		    let hourLabel  = HU.div([STYLE,this.getPropertyDayLabelStyle("")], Utils.formatHour(hour));
+		    row += HU.td([WIDTH,"10","align","right"],hourLabel);
+		    row += HU.open("td",[STYLE,HU.css('background','#efefef'),WIDTH,"100%"]);
+		    row += HU.open("div",[STYLE, HU.css(HEIGHT,"100%",POSITION,"relative",WIDTH,"100%",BACKGROUND,this.getPropertyRowBackground("#eee"))]);
+		    row += "&nbsp;";
+		    let displayed = {};
+		    let didOne= false;
+		    dayInfo.hourToRecords[hour].forEach(record=>{
+			let dttm =dateField? record.getValue(dateField.getIndex()): record.getTime();
+			let minutes = dttm.getMinutes();
+			//pad a bit on the left
+			let left =  Math.round(minutes/61.0*100)+"%";
+			let key = hour+"_"+minutes;
+			if(dayInfo.minutesCount[key]>1) {
+			    if(!displayed[minutes])  {
+				let multiId = this.getDomId("multi"+ (multiCount++));
+				displayed[minutes] = {
+				    multiid:multiId,
+				    contents:""};
+				row+= HU.div([ID,multiId, TITLE,"Click to view multiples","dttm",dayInfo.dttm.getTime(), "hour",hour,"minute",minutes, STYLE, HU.css('top','0px','left',left),CLASS,'display-hours-box-multi'],dayInfo.minutesCount[key]);
+			    }
+			    displayed[minutes].contents +=
+				HU.div([MULTI_ID,displayed[minutes].multiid,RECORD_ID, record.getId(), RECORD_INDEX,_this.recordToIndex[record.getId()],
+					TITLE,"",STYLE,
+					HU.css(WIDTH,boxWidth+"px",BACKGROUND,boxColor),
+					CLASS,'display-hours-box'],"");
+			} else {
+			    let css = HU.css("position","absolute","top","0px",WIDTH,boxWidth+"px",'background',boxColor,'left',left);
+			    row+= HU.div([RECORD_ID, record.getId(), RECORD_INDEX,_this.recordToIndex[record.getId()],
+					  TITLE,"",STYLE, css,CLASS,'display-hours-box']);
+			}
+			didOne=true;
+		    });
+		    for(minute in displayed) {
+			let id = dayInfo.dttm.getTime()+"_" + hour +"_"+minute;
+			extra+=HU.div([ID,this.getDomId(id), CLASS,"display-hours-box-extra"],displayed[minute].contents);
+		    }
+		    row+="</div></td>";
+		    row+=HU.td([],dayInfo.hourToRecords[hour].length);
+		    row +="</tr>"
+ 		    if(didOne) html+=row;
+		});
+	    });
+	    html+="</table>";
+	    html+=extra;
+	    html+="&nbsp;</div>";
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    this.multis = this.jq(ID_DISPLAY_CONTENTS).find(".display-hours-box-multi");
+	    this.multis.click(function() {
+		let id = $(this).attr("dttm")+"_" + $(this).attr("hour") +"_"+$(this).attr("minute");
+		let div = _this.jq(id);
+		if($(this).attr("showing")=="true") {
+		    div.hide();
+		    $(this).css("border","1px solid #ccc");
+		    $(this).attr("showing",false);
+		    return;
+		}
+		$(this).css("border","1px solid " + HIGHLIGHT_COLOR);
+		$(this).attr("showing",true);
+		div.show();
+		div.position({
+                    of: $(this),
+                    my: "left top",
+                    at: "left bottom+2",
+                    collision: "none none"
+		});
+	    });
+	    this.boxes = this.jq(ID_DISPLAY_CONTENTS).find(".display-hours-box");
+	    this.boxes.click(function() {
+		let state = (/true/i).test($(this).attr("toggle-state"));
+		state = !state;
+		_this.boxes.css("background",BOX_COLOR);
+		if(state)  {
+		    $(this).css("background",HIGHLIGHT_COLOR);
+		}
+		let record = records[+$(this).attr(RECORD_INDEX)];
+		if(record) {
+		    _this.propagateEventRecordSelection({record: record});
+		}
+	    });
+	    this.makeTooltips(this.boxes,records,null,null,false);
+	},
+        handleEventRecordSelection: function(source, args) {
+	    if(!args.record) return;
+	    let select = ".display-hours-box[" + RECORD_ID +"='" + args.record.getId()+"']";
+	    let box = this.jq(ID_DISPLAY_CONTENTS).find(select);
+	    if(box.length) {
+		this.boxes.css("background",BOX_COLOR);
+		this.multis.css("background","#efefef");		
+		let multiId = 	box.attr(MULTI_ID);
+		if(multiId) {
+		    let multi = this.jq(ID_DISPLAY_CONTENTS).find("#" + multiId);
+		    console.log("multi:" + multi.length + " " + multiId);
+		    if(multi.length>0) {
+			box = multi;
+			box.css("background",HIGHLIGHT_COLOR);
+		    }
+		}
+		box.css("background",HIGHLIGHT_COLOR);
+		this.jq(ID_DISPLAY_CONTENTS).animate({
+		    scrollTop: box.offset().top
+		}, 2000);
+	    }
+	},
+    });
+}
+
+
+
 
 
 function RamaddaBlankDisplay(displayManager, id, properties) {
