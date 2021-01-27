@@ -896,6 +896,7 @@ function makePointData(json, derived, source,url) {
     let isArray = false;
     let hasGeo = false;
     json.data.forEach((tuple,i)=>{
+	//	if(i>100) return;
 	if(debug && i>0 && (i%10000)==0) console.log("\tprocessed:" + i);
 	if(i==0) {
 	    isArray = Array.isArray(tuple);
@@ -909,11 +910,13 @@ function makePointData(json, derived, source,url) {
         let date = null;
         if (isArray || (typeof tuple.date === 'undefined')) {
             if (dateIdx >= 0) {
-                date = new Date(values[dateIdx]);
+		date = new Date(0);
+		date.setUTCMilliseconds(values[dateIdx]);
             }
         } else {
             if (tuple.date != null && tuple.date != 0) {
-                date = new Date(tuple.date);
+		date = new Date(0);
+		date.setUTCMilliseconds(tuple.date);
             }
         }
         if (isArray || (typeof tuple.latitude === 'undefined')) {
