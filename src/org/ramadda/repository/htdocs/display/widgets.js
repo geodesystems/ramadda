@@ -268,7 +268,7 @@ function DisplayAnimation(display, enabled) {
 		stop: function(event,ui) {
 		    _this.stopAnimation();
 		    _this.setSliderValues(ui.values);
-		    _this.applyAnimation(true);
+		    _this.dateRangeChanged(true);
 		}
 	    });
 
@@ -293,12 +293,14 @@ function DisplayAnimation(display, enabled) {
 		}
 		this.jq(ID_TICKS).html(ticks);
 		if(debug)console.log("animation.init done making ticks");
+		let propagateHighlight = display.getProperty("animationHighlightRecord",false);
 		this.display.makeTooltips(this.jq(ID_TICKS).find(".display-animation-tick"), this.records,(open,record) =>{
-		    this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
-		});
+		    if(propagateHighlight) {
+			this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
+		    }
+		},null,propagateHighlight);
 	    }
 	    if(debug)console.log("animation.init-3");
-
 	    this.updateLabels();
 	    if(debug)console.log("animation.init-done");
 	},
@@ -308,11 +310,17 @@ function DisplayAnimation(display, enabled) {
 	getBeginTime: function() {
 	    return this.begin;
 	},
+	handleEventAnimationChanged(args) {
+//	    console.log(this.display.type+" animationChange " + JSON.stringify(args));
+	    this.begin = args.begin;
+	    this.end = args.end;
+	    this.stopAnimation();
+	    this.applyAnimation();
+	},
 	setSliderValues: function(v) {
 	    let debug = false;
 	    if(debug)
-		console.log("animation.setSliderValues");
-
+		console.log(this.display.type+" animation.setSliderValues");
 	    if(this.mode != MODE_FRAME) {
 		this.begin = new Date(v[0]);
 		this.end = new Date(v[1]);
@@ -394,7 +402,7 @@ function DisplayAnimation(display, enabled) {
 		    //			this.end =this.begin;
 		}
 		this.stopAnimation();
-		this.applyAnimation();
+		this.dateRangeChanged();
             });
             this.btnEnd.button().click(() => {
 		this.end = this.dateMax;
@@ -407,7 +415,7 @@ function DisplayAnimation(display, enabled) {
 		    this.end =this.dateMax;
 		}
 		this.stopAnimation();
-		this.applyAnimation();
+		this.dateRangeChanged();
             });
             this.btnPrev.button().click(() => {
 		if (this.mode == MODE_SLIDING) {
@@ -424,7 +432,7 @@ function DisplayAnimation(display, enabled) {
 		    }
 		}
 		this.stopAnimation();
-		this.applyAnimation();
+		this.dateRangeChanged();
             });
             this.btnNext.button().click(() => {
 		this.stopAnimation();
@@ -437,7 +445,7 @@ function DisplayAnimation(display, enabled) {
 		this.running = false;
 		if(this.btnRun)
 		    this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
-		this.applyAnimation();
+		this.dateRangeChanged();
             });
         },
 	atEnd: function() {
@@ -480,7 +488,7 @@ function DisplayAnimation(display, enabled) {
 		    this.stopAnimation();
 		}
 	    }
-	    this.applyAnimation();
+	    this.dateRangeChanged();
 	},
 
 	deltaFrame: function(delta) {
@@ -542,6 +550,13 @@ function DisplayAnimation(display, enabled) {
 	    this.stopAnimation();
 	    this.updateUI();
 	},
+	dateRangeChanged: function(skipSlider) {
+	    this.applyAnimation(skipSlider);
+	    this.display.getDisplayManager().notifyEvent("handleEventAnimationChanged", this.display, {
+		begin:this.begin,
+		end: this.end
+	    });
+	},
 	applyAnimation: function(skipSlider) {
 	    this.display.animationApply(this);
 	    this.updateUI();
@@ -580,6 +595,13 @@ function DisplayAnimation(display, enabled) {
 
 	},
         formatAnimationDate: function(date) {
+	    let timeZoneOffset =this.display.getProperty("timeZoneOffset");
+	    if(timeZoneOffset) {
+		date = new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth(), date.getUTCDate(), date.getUTCHours()+timeZoneOffset,date.getUTCMinutes(),
+					 date.getUTCSeconds()));
+	    }
+
+
 	    return Utils.formatDateWithFormat(date,this.dateFormat,true);
         },
 
@@ -775,14 +797,30 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	}
     }
 
+    if(!this.field) {
+	if(this.id == "hour")
+	    this.timeField="hour";
+	else if(this.id == "day")
+	    this.timeField="day";	
+    }
+
+
     if(this.field && this.field.isString()) this.isString = true;
     this.index = this.field != null ? this.field.getIndex() : -1;
     this.stringMap = this.display.getColorByMap(colorByMapProp);
-    if(this.index>=0) {
+    if(this.index>=0 || this.timeField) {
 	var cnt = 0;
 	records.forEach(record=>{
             var tuple = record.getData();
-            var v = tuple[this.index];
+	    let v;
+            if(this.timeField) {
+		if(this.timeField=="hour")
+		    v = record.getTime().getHours();
+		else
+		    v = record.getTime().getTime();
+	    } else {
+		v = tuple[this.index];		
+	    }
             if (this.isString) {
 		if (!Utils.isDefined(this.colorByMap[v])) {
 		    var index = this.colorByValues.length;
@@ -833,7 +871,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     this.range = this.maxValue - this.minValue;
     this.toMinValue = this.getProperty("ToMin", this.toMinValue);
     this.toMaxValue = this.getProperty("ToMax", this.toMaxValue);
-    this.enabled = this.getProperty("doColorBy",true) && this.index>=0;
+    this.enabled = this.timeField!=null || (this.getProperty("doColorBy",true) && this.index>=0);
 }
 
 
@@ -928,7 +966,6 @@ ColorByInfo.prototype = {
 	let perc = this.getValuePercent(v);
 	return this.toMinValue + (perc*(this.toMaxValue-this.toMinValue));
     },
-
     getColorFromRecord: function(record, dflt) {
 	if(this.display.getFilterHighlight() && !record.isHighlight(this.display)) {
 	    return this.display.getProperty("unhighlightColor","#eee");
@@ -944,7 +981,16 @@ ColorByInfo.prototype = {
 	if (this.index >= 0) {
 	    let value = record.getData()[this.index];
 	    return  this.getColor(value, record);
-	}
+	} else if(this.timeField) {
+	    let value;
+	    if(this.timeField=="hour") {
+		value = record.getTime().getHours();
+	    }  else {
+		value = record.getTime().getTime();
+	    }
+//	    console.log(value);
+	    return  this.getColor(value, record);
+	} 
 	if(this.fieldValue == "year") {
 	    let value = record.getDate().getUTCFullYear();
 	    return this.getColor(value, record);
