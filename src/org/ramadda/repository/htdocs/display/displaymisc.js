@@ -755,7 +755,6 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 function RamaddaHoursDisplay(displayManager, id, properties) {
     const ID_TIMELINE = "timeline";
-
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HOURS, properties);
     const BOX_COLOR = "lightblue";
     const HIGHLIGHT_COLOR = "red";
@@ -935,16 +934,18 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		let multiId = 	box.attr(MULTI_ID);
 		if(multiId) {
 		    let multi = this.jq(ID_DISPLAY_CONTENTS).find("#" + multiId);
-		    console.log("multi:" + multi.length + " " + multiId);
 		    if(multi.length>0) {
 			box = multi;
 			box.css("background",HIGHLIGHT_COLOR);
 		    }
 		}
+		
 		box.css("background",HIGHLIGHT_COLOR);
-		this.jq(ID_DISPLAY_CONTENTS).animate({
-		    scrollTop: box.offset().top
-		}, 2000);
+		let contents = this.jq(ID_DISPLAY_CONTENTS);
+		let diff = box.offset().top-contents.offset().top;
+		contents.animate({
+		    scrollTop: diff+contents.scrollTop()
+		}, 1000);
 	    }
 	},
     });
