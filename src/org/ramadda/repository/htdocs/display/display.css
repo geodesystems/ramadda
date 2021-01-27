@@ -2213,3 +2213,53 @@ table.dataTable tfoot td {
 
 .display-reloader-label {
 }
+
+
+
+.display-hours-label {
+    font-weight:bold;
+}
+
+.display-hours-box-container {
+    display:inline-block;
+    position:absolute;
+}
+
+
+.display-hours-box {
+    display:inline-block;
+    height: 20px;
+    cursor:pointer;
+    border:1px solid transparent;
+}
+
+.display-hours-box-extra .display-hours-box {
+    margin-right:2px;
+}
+
+.display-hours-box-multi {
+    font-size:8pt;
+    background: #efefef;
+    user-select:none;
+    margin-bottom:2px;
+    border: 1px solid #ccc;
+    display:inline-block;
+    position:absolute;
+    cursor:pointer;
+    padding:2px;
+}
+
+.display-hours-box-multi:hover,.display-hours-box:hover {
+    z-index:100;
+    border:1px solid red;
+}
+
+
+
+.display-hours-box-extra {
+    display:none;
+    position:absolute;
+    line-height:0.25em;
+    background:#efefef;
+}
+
