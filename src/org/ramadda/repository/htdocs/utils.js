@@ -526,7 +526,16 @@ var Utils =  {
     dayNamesShortShort:["S","M","T","W","Th","F","Sa"],
     monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],
     monthNamesShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-    createDate: function(d) {
+    createDate: function(d,timeZoneOffset) {
+	let date = Utils.createDateInner(d);
+	if(date && timeZoneOffset) {
+	     date = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),date.getUTCDate(),date.getUTCHours()-timeZoneOffset,date.getUTCMinutes(),date.getUTCSeconds()));
+	}
+	return date;
+    },
+    createDateInner: function(d) {
+	if(!d) return d;
+	if(d.getTime) return d;
 	d = d.trim();
 	let regexp = new RegExp("^(\\+|-)?([0-9]+) *(minute|hour|day|week|month|year)$");
 	let toks = d.match(regexp);
@@ -568,10 +577,10 @@ var Utils =  {
     },
     formatHour: function(h,nospace) {
 	let space = nospace?"":"&nbsp;";
-	if(h==0) return "12" + space +"am";
-	if(h==12) return "12" + space+"pm";
-	if(h>12) return (h-12)+space+"pm";
-	return h +space+"am";
+	if(h==0) return "12" + space +"AM";
+	if(h==12) return "12" + space+"PM";
+	if(h>12) return (h-12)+space+"PM";
+	return h +space+"AM";
     },
     formatDateMonthDayYear: function(date, options, args) {
 	if(isNaN(date.getUTCMonth())) return "Unknown";
