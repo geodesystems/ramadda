@@ -2467,15 +2467,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let startDate = this.getProperty("startDate");
 	    let endDate = this.getProperty("endDate");
 	    if(startDate) {
-		this.startDateObject = Utils.createDate(startDate);
-		let timeZoneOffset = +this.getProperty("timeZoneOffset",0);
-		if(timeZoneOffset) {
-		    let d = this.startDateObject;
-		    this.startDateObject = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(),d.getUTCDate(),d.getUTCHours()-timeZoneOffset,d.getUTCMinutes(),d.getUTCSeconds()));
-		}
+		this.startDateObject = Utils.createDate(startDate,+this.getProperty("timeZoneOffset",0));
+//		console.log("start:" +this.startDateObject.toUTCString());
 	    } 
 	    if(endDate) {
-		this.endDateObject = Utils.createDate(endDate);
+		this.endDateObject = Utils.createDate(endDate,+this.getProperty("timeZoneOffset",0));
+//		console.log("end:" +this.endDateObject.toUTCString());
 	    } 
 
 
@@ -4964,6 +4961,7 @@ a
 		var animation = this.getAnimation();
 		if(animation.getEnabled()) {
 		    if(debug) console.log("checkSearchBar-calling animation.init");
+//		    console.log("dateMin:" + dateMin.toUTCString());
 		    animation.init(dateMin, dateMax,filteredRecords);
 		    if(debug) console.log("checkSearchBar-done calling animation.init");
 		    if(!this.minDateObj) {

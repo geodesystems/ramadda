@@ -612,15 +612,17 @@ function DisplayAnimation(display, enabled) {
 
 
 	},
-        formatAnimationDate: function(date) {
+        formatAnimationDate: function(date,debug) {
 	    let timeZoneOffset =this.display.getProperty("timeZoneOffset");
+	    let timeZone =this.display.getProperty("timeZone");	    
 	    if(timeZoneOffset) {
-		date = new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth(), date.getUTCDate(), date.getUTCHours()+timeZoneOffset,date.getUTCMinutes(),
-					 date.getUTCSeconds()));
+		if(debug) console.log("date before:" + date.toUTCString());
+		date = Utils.createDate(date, -timeZoneOffset);
+		if(debug) console.log("date after:" + date.toUTCString());
 	    }
-
-
-	    return Utils.formatDateWithFormat(date,this.dateFormat,true);
+	    let fmt =  Utils.formatDateWithFormat(date,this.dateFormat,true);
+	    if(timeZone) return fmt +" " + timeZone;
+	    return fmt;
         },
 
     });
