@@ -757,7 +757,6 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
     const ID_TIMELINE = "timeline";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HOURS, properties);
     const BOX_COLOR = "lightblue";
-    const HIGHLIGHT_COLOR = "red";
     const MULTI_ID = "multiid";
 
     RamaddaUtil.inherit(this,SUPER);
@@ -942,10 +941,8 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
 		
 		box.css("background",HIGHLIGHT_COLOR);
 		let contents = this.jq(ID_DISPLAY_CONTENTS);
-		let diff = box.offset().top-contents.offset().top;
-		contents.animate({
-		    scrollTop: diff+contents.scrollTop()
-		}, 1000);
+
+		HU.scrollVisible(contents, box);
 	    }
 	},
     });
