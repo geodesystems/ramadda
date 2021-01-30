@@ -1533,11 +1533,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		let dfltValueMin = min;
 		let dfltValueMax = max;
 		if(Utils.isDefined(tmpMin)) {
-		    minStyle = "background:" + HIGHLIGHT_COLOR+";";
+		    minStyle = "background:" + TEXT_HIGHLIGHT_COLOR+";";
 		    dfltValueMin = parseFloat(tmpMin);
 		}
 		if(Utils.isDefined(tmpMax)) {
-		    maxStyle = "background:" + HIGHLIGHT_COLOR+";";
+		    maxStyle = "background:" + TEXT_HIGHLIGHT_COLOR+";";
 		    dfltValueMax = parseFloat(tmpMax);
 		}
 
