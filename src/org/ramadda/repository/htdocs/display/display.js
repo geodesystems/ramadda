@@ -94,10 +94,11 @@ const PROP_LAYOUT_HERE = "layoutHere";
 const PROP_HEIGHT = "height";
 const PROP_WIDTH = "width";
 const PROP_FILTER_VALUE = "fitlerValue";
-const HIGHLIGHT_COLOR = "yellow";
+
 const RECORD_INDEX = "recordIndex";
 const RECORD_ID = "recordid";
-
+const TEXT_HIGHLIGHT_COLOR = "yellow";
+const HIGHLIGHT_COLOR = "red";
 
 let globalDisplayCount = 0;
 function addGlobalDisplayProperty(name, value) {
@@ -454,8 +455,13 @@ function DisplayThing(argId, argProperties) {
 		}
 		if(f.getType()=="image") {
 		    if(value && value.trim().length>1) {
+			let tokenAttrs  = macros.getAttributes(f.getId()+"_image");
 			var imageAttrs = [];
-			if(this.getProperty("imageWidth")) {
+			let width = tokenAttrs?tokenAttrs["width"]:null;
+			if(width) {
+			    imageAttrs.push("width");
+			    imageAttrs.push(width);
+			} else if(this.getProperty("imageWidth")) {
 			    imageAttrs.push("width");
 			    imageAttrs.push(this.getProperty("imageWidth")); 
 			} else  {
@@ -471,8 +477,7 @@ function DisplayThing(argId, argProperties) {
 			attrs[f.getId() +"_url"] =  ramaddaBaseUrl+"/icons/blank.gif";
 			attrs[f.getId() +"_image"] =  "";
 		    }
-		}
-		else if(f.getType()=="movie") {
+		} else if(f.getType()=="movie") {
 		    if(value && value.trim().length>0) {
 			var movieAttrs = [];
 			if(this.getProperty("movieWidth")) {
@@ -908,7 +913,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['showDisplayFieldsMenu=true'],
 		['displayFieldsMenuMultiple=true'],
 		['displayFieldsMenuSide=left'],
-		['acceptDisplayFieldsChangeEvent=true'],
+		['acceptEventDisplayFieldsChange=true'],
 		'inlinelabel:Formatting',
 		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
 		'dateFormatDaysAgo=true',
@@ -924,8 +929,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"hideFilterWidget=true",
 		['filterHighlight=true',"Highlight the records"],
 		['showFilterHighlight=false',"show/hide the filter highlight widget"],
-		"acceptFilterEvent=false",
-		"propagateHighlightEvent=true",
+		"acceptEventFilter=false",
+		"propagateEventRecordHighlight=true",
+		"acceptEventRecordHighlight=true",		
+		"propagateEventRecordList=true",
+		"acceptEventRecordList=true",
 		['filterSliderImmediate=true',"Apply the change while sliding"],
 		['filterLogic=and|or',"Specify logic to apply filters"],		
 		"&lt;field&gt;.filterValue=\"\"",
@@ -1000,7 +1008,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"inlinelabel:Animation Attributes",
 		"doAnimation=true",
 		"animationHighlightRecord=true",
-		"acceptAnimationChangeEvent=false",
+		"animationHighlightRecordList=true",
+		"acceptEventAnimationChange=false",
 		"acceptDateRangeChange=true",
 		"animationDateFormat=\"yyyy\"",
 		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
@@ -1417,7 +1426,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return titleToShow;
         },
         handleEventMapClick: function(source, args) {
-	    console.log(this.type+".mapClick");
             if (!this.dataCollection) return;
             var pointData = this.dataCollection.getList();
             for (var i = 0; i < pointData.length; i++) {
@@ -1468,10 +1476,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		return;
 	    }
-
 	    
 	    if(prop.property == "displayFields") {
-		if(!this.getProperty("acceptDisplayFieldsChangeEvent",false)) {
+		if(!this.getProperty("acceptEventDisplayFieldsChange",false)) {
 		    return;
 		}
 		this.displayFieldsChanged(prop.value, true);
@@ -1512,7 +1519,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    if (prop.property == PROP_FILTER_VALUE) {
-		if(!this.getProperty("acceptFilterEvent",true)) {
+		if(!this.getProperty("acceptEventFilter",true)) {
 		    return;
 		}
 		this.haveCalledUpdateUI = false;
@@ -1560,13 +1567,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setProperty(prop.property, prop.value);
             this.callUpdateUI();
         },
+        handleEventRecordList: function(source, args) {
+	    if(this.getAnimationEnabled() && this.getProperty("animationHighlightRecordList")) {
+		this.getAnimation().setRecordListHighlight(args.recordList);
+	    }
+	    if(this.getProperty("acceptEventRecordList",false)) {
+		this.recordListOverride = args.recordList;
+		this.haveCalledUpdateUI = false;
+		this.callUpdateUI();
+	    }
+	},
         handleEventRecordHighlight: function(source, args) {
 	    if(this.getAnimation().getEnabled() &&  !args.skipAnimation) {
 		this.getAnimation().handleEventRecordHighlight(source, args);
 	    }
 	},
         handleEventAnimationChanged: function(source, args) {
-	    if(!this.getProperty("acceptAnimationChangeEvent",true)) return;
+	    if(!this.getProperty("acceptEventAnimationChange",true)) return;
 	    if(this.getAnimation().getEnabled()) {
 		this.getAnimation().handleEventAnimationChanged(args);
 	    }
@@ -2107,7 +2124,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var sortField = sortFields[i];
 			var v1 = row1[sortField.getIndex()];
 			var v2 = row2[sortField.getIndex()];
-			if(sortField.isNumeric()) {
+			if(sortField.isNumeric() || sortField.isFieldDate()) {
 			    if(v1<v2) result = sortAscending?-1:1;
 			    else if(v1>v2) result = sortAscending?1:-1;
 			    else result = 0;
@@ -2120,6 +2137,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return result;
 		});
 	    }
+
 
 	    if(this.getProperty("sortHighlight")) {
 		records = Utils.cloneList(records);
@@ -2145,6 +2163,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return records;
 	},
         getFieldById: function(fields, id) {
+	    //Support one arg
+	    if(fields!=null && id==null) {
+		id = fields;
+		fields=null;
+	    }
             if (!id) return null;
 	    id = String(id).trim();
 	    if (!fields) {
@@ -2455,6 +2478,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return this.getProperty("filterHighlight",false);
 	},
 	filterData: function(records, fields, args) {
+	    if(this.recordListOverride) return this.recordListOverride;
 	    if(!args) args = {};
 	    let opts = {
 		doGroup:false,
@@ -4830,7 +4854,7 @@ a
 			var match = item[0];
 			item =  item[1];
 			if(item.length>50) return;
-			var label = item.replace(regexp,"<span style='background:" + HIGHLIGHT_COLOR +";'>" + match +"</span>");
+			var label = item.replace(regexp,"<span style='background:" + TEXT_HIGHLIGHT_COLOR +";'>" + match +"</span>");
 			item = item.replace(/\'/g,"\'");
 			html+=HU.div([CLASS,"display-filter-popup-item","item",item],label)+"\n";
 			itemCnt++;
@@ -4982,13 +5006,13 @@ a
 	    var value = f.val();
 	    if(Utils.isDefined(min)) {
 		if(value != min) {
-		    f.css("background",HIGHLIGHT_COLOR);
+		    f.css("background",TEXT_HIGHLIGHT_COLOR);
 		} else {
 		    f.css("background","white");
 		}
 	    } else if(Utils.isDefined(max)) {
 		if(value != max) {
-		    f.css("background",HIGHLIGHT_COLOR);
+		    f.css("background",TEXT_HIGHLIGHT_COLOR);
 		} else {
 		    f.css("background","white");
 		}
@@ -5053,19 +5077,28 @@ a
 	},
 	//Make sure to set the title attribute on the elements
 	makeTooltips: function(selector, records, callback, tooltipArg,propagateHighlight) {
-	    if(!Utils.isDefined(propagateHighlight)) propagateHighlight = true;
+	    if(!Utils.isDefined(propagateHighlight))
+		propagateHighlight = this.getProperty("propagateEventRecordHighlight",false);
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
 	    }
 	    var tooltip = tooltipArg || this.getProperty("tooltip");
-	    if(!tooltip) return;
+	    if(tooltip==null) {
+		return;
+	    }
 	    let _this = this;
+	    let idToRecord = {};
+	    records.forEach(r=>idToRecord[r.getId()] = r);
 	    selector.tooltip({
 		content: function() {
-		    var record = records[parseFloat($(this).attr('recordIndex'))];
+		    let record = idToRecord[$(this).attr(RECORD_ID)];
+		    if(!record)  record = records[parseFloat($(this).attr(RECORD_INDEX))];
+		    if(!record) return null;
 		    if(callback) callback(true, record);
-		    if(propagateHighlight)
+		    if(propagateHighlight) {
 			_this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
+		    }
+		    if(tooltip=="" || tooltip=="none") return null;
 		    let style = _this.getProperty("tooltipStyle");
 		    let tt =  _this.getRecordHtml(record,null,tooltip);
 		    if(style) tt=HU.div([STYLE,style],tt);
@@ -6602,5 +6635,4 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         }
     })
 }
-
 
