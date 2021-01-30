@@ -273,33 +273,7 @@ function DisplayAnimation(display, enabled) {
 	    });
 
 
-	    if(this.records && this.display.getProperty("animationShowTicks",true)) {
-		if(debug)console.log("animation.init making ticks: #records=" + records.length +" date:" + this.dateMin + " " + this.dateMax);
-		let tickStyle = this.display.getProperty("animationTickStyle","");
-		var ticks = "";
-		var min = this.dateMin.getTime();
-		var max = this.dateMax.getTime();
-		var p = 0;
-		let seenDate={};
-		for(var i=0;i<this.records.length;i++) {
-		    var record = this.records[i];
-		    var date = record.getDate().getTime();
-		    if(seenDate[date]) continue;
-		    seenDate[date] = true;
-		    if(debug)console.log("\ttick:" + record.getDate());
-		    var perc = (date-min)/(max-min)*100;
-		    var tt = this.formatAnimationDate(record.getDate());
-		    ticks+=HtmlUtils.div([ID,this.display.getId()+"-"+record.getId(), CLASS,"display-animation-tick",STYLE,HU.css('left', perc+'%')+tickStyle,TITLE,tt,"recordIndex",i],"");
-		}
-		this.jq(ID_TICKS).html(ticks);
-		if(debug)console.log("animation.init done making ticks");
-		let propagateHighlight = display.getProperty("animationHighlightRecord",false);
-		this.display.makeTooltips(this.jq(ID_TICKS).find(".display-animation-tick"), this.records,(open,record) =>{
-		    if(propagateHighlight) {
-			this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
-		    }
-		},null,propagateHighlight);
-	    }
+	    this.updateTicks();
 	    if(debug)console.log("animation.init-3");
 	    this.updateLabels();
 	    if(debug)console.log("animation.init-done");
@@ -340,8 +314,9 @@ function DisplayAnimation(display, enabled) {
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
-	    var element = $("#" + this.display.getId()+"-"+args.record.getId());
-	    //	    console.log(args.highlight +" " + element.length);
+	    let element = $("#" + this.display.getId()+"-"+args.record.getId());
+	    if(this.ticks)
+		this.ticks.removeClass("display-animation-tick-highlight");
 	    if(args.highlight) {
 		element.addClass("display-animation-tick-highlight");
 	    } else {
@@ -579,13 +554,57 @@ function DisplayAnimation(display, enabled) {
 	    this.display.animationApply(this);
 	    this.updateUI();
 	},
+	setRecordListHighlight: function(recordList) {
+	    this.recordListHighlight = recordList;
+	    this.updateTicks();
+	},
+	updateTicks: function() {
+	    let debug = false;
+	    if(!this.records || !this.display.getProperty("animationShowTicks",true)) return;
+	    this.highlightRecords = {};
+	    if(this.recordListHighlight) {
+		this.recordListHighlight.forEach(r=>{
+		    this.highlightRecords[r.getId()] = true;
+		});
+	    }
+	    if(debug)console.log("animation.init making ticks: #records=" + records.length +" date:" + this.dateMin + " " + this.dateMax);
+	    let tickStyle = this.display.getProperty("animationTickStyle","");
+	    let ticks = "";
+	    let min = this.dateMin.getTime();
+	    let max = this.dateMax.getTime();
+	    let p = 0;
+	    let seenDate={};
+	    for(let i=0;i<this.records.length;i++) {
+		let record = this.records[i];
+		let date = record.getDate().getTime();
+		if(seenDate[date]) continue;
+		seenDate[date] = true;
+		if(debug)console.log("\ttick:" + record.getDate());
+		let perc = (date-min)/(max-min)*100;
+		let tt = this.formatAnimationDate(record.getDate());
+		let clazz = "display-animation-tick";
+		if(this.highlightRecords[record.getId()]) {
+		    clazz+=" display-animation-tick-highlight-base ";
+		}
+		ticks+=HtmlUtils.div([TITLE,record.getId(),ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css('left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
+	    }
+	    this.jq(ID_TICKS).html(ticks);
+	    if(debug)console.log("animation.init done making ticks");
+	    let propagateHighlight = display.getProperty("animationHighlightRecord",false);
+	    this.ticks = this.jq(ID_TICKS).find(".display-animation-tick");
+	    this.display.makeTooltips(this.ticks, this.records,(open,record) =>{
+		if(propagateHighlight) {
+		    this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
+		}
+	    },null,propagateHighlight);
+	},
 	updateUI: function(skipSlider) {
 	    if(!skipSlider) {
 		this.jq(ID_SLIDER).slider('values',0,this.begin.getTime());
 		this.jq(ID_SLIDER).slider('values',1,this.end.getTime());
 	    }
 	    this.updateLabels();
-            var windowEnd = this.end.getTime();
+            let windowEnd = this.end.getTime();
             if (windowEnd <= this.dateMax.getTime()) {
                 if (this.running) {
                     setTimeout(() => {

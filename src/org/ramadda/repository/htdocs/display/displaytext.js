@@ -878,72 +878,132 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
     const ID_GALLERY = "gallery";
     const ID_NEXT = "next";
     const ID_PREV = "prev";
+    const ID_IMAGES = "images";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
     
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Image Gallery Properties'},
+	{p:'imageField',wikiValue:''},
+	{p:'labelFields',wikiValue:''},
+	{p:'tooltipFields',wikiValue:''},
+	{p:'numberOfImages',wikiValue:'100'},	
+	{p:'includeBlanks',wikiValue:'true'},
+	{p:'imageWidth',wikiValue:'150'},
+	{p:'imageMargin',wikiValue:'10px'},
+	{p:'decorate',wikiValue:'false'},
+	{p:'doPopup',wikiValue:'false'},
+	{p:'imageStyle',wikiValue:''},			
+	{p:'minHeightGallery',wikiValue:150},
+	{p:'maxHeightGallery',wikiValue:150},	
+	{p:'columns',wikiValue:'5'},
+    ]);
     $.extend(this, {
 	startIndex:0,
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Gallery Attributes",
-					'labelFields=""',
-					'tooltipFields=""',
-					"numberOfImages=\"100\"",
-					"imageWidth=\"150\"",
-				    ])},
 	dataFilterChanged: function() {
 	    this.startIndex=0;
 	    this.updateUI();
 	},
+        handleEventRecordSelection: function(source, args) {
+	    let blocks = this.jq(ID_DISPLAY_CONTENTS).find(".display-images-block");
+	    let select = HU.attrSelect(RECORD_ID, args.record.getId());
+	    let block = this.jq(ID_DISPLAY_CONTENTS).find(select);
+	    blocks.css('background','transparent');
+	    block.css('background',HIGHLIGHT_COLOR);
+	    HU.scrollVisible(this.jq(ID_IMAGES),block);
+	},
         updateUI: function() {
-            var pointData = this.getData();
-            if (pointData == null) return;
-            var records = this.filterData();
+            let records = this.filterData();
             if(!records) return;
-            var fields = pointData.getRecordFields();
-	    var imageField = this.getFieldById(fields,"image");
+	    let includeBlanks  = this.getPropertyIncludeBlanks(false);
+	    let imageField = this.getFieldById("image") || this.getFieldById("imageField");
 	    if(!imageField)
-		imageField = this.getFieldByType(fields,"image");
-            var labelFields = this.getFieldsByIds(fields, this.getProperty("labelFields", null, true));
-            var tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields", null, true));
+		imageField = this.getFieldByType(null,"image");
+            let labelFields = this.getFieldsByIds(null, this.getProperty("labelFields", null, true));
+            let tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields", null, true));
 	    if(!imageField) {
 		this.setContents(this.getMessage("No image field in data"));
 		return;
 	    }
-	    var number = parseFloat(this.getProperty("numberOfImages",100));
-	    var width = parseFloat(this.getProperty("imageWidth",150));
-	    var contents = "";
-	    var cnt = 1;
-	    if(this.startIndex<0) this.startIndex=0;
-	    if(this.startIndex>records.length) this.startIndex=records.length-number;
+	    let decorate = this.getPropertyDecorate(true);
+	    let columns = +this.getPropertyColumns(0);
+	    let number = +this.getPropertyNumberOfImages(50);
+	    let width = this.getPropertyImageWidth("150");
+	    let imageStyle = this.getPropertyImageStyle("");
+	    let contents = "";
 	    let uid = HtmlUtils.getUniqueId();
 	    let base = "gallery"+uid;
-            for (var rowIdx = this.startIndex; rowIdx < records.length; rowIdx++) {
-		if(cnt>number) break;
-		cnt++;
-                var row = this.getDataValues(records[rowIdx]);
-		var image = row[imageField.getIndex()];
-		if(image=="") {
+	    let displayedRecords = [];
+	    let doPopup = this.getPropertyDoPopup(true);
+	    let recordIndex = 0;
+	    let columnCnt = -1;
+	    let columnMap = {};
+	    let class1= "display-images-image-outer display-images-block ";
+	    let class2 = "display-images-image-inner";
+	    let style = "";
+	    let idToRecord = {};
+	    if(!decorate) {
+		class2 = "";
+		class1 = "display-images-block";
+		style = HU.css("margin",this.getPropertyImageMargin("10px"));
+	    }
+	    if(columns) {
+		if(width.endsWith("%"))
+		    style+=HU.css(WIDTH,width);
+	    }
+	    if(this.startIndex<0) this.startIndex=0;
+	    if(this.startIndex>records.length) this.startIndex=records.length-number;
+	    let cnt = 1;
+            for (let rowIdx = this.startIndex; rowIdx < records.length; rowIdx++) {
+		let record = records[rowIdx];
+                let row = this.getDataValues(record);
+		let image = record.getValue(imageField.getIndex());
+		if(image=="" && !includeBlanks) {
 		    continue;
 		}
-		var label = "";
-		var tt = "";
-		if(labelFields.length>0) {
-		    labelFields.map(l=>{label += " " + row[l.getIndex()]});
-		}
-		if(tooltipFields.length>0) {
-		    tooltipFields.map(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
-		}
+		if(cnt++>number) break;
+		displayedRecords.push(record);
+		idToRecord[record.getId()] = record;
+		let label = "";
+		labelFields.forEach(l=>{
+		    let value  = record.getValue(l.getIndex());
+		    if(value.getTime) {
+			value = this.formatDate(value);
+		    } 
+		    label += " " + value; 
+		});
+		let tt = "";
+		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
-		let block = HU.div([ID,base+"div"+  rowIdx, CLASS, "image-outer display-images-block",TITLE,tt],
-				   HU.div([CLASS,"image-inner"], HU.image(image,["alt",label,ID,base+"image" + rowIdx, WIDTH,width])+
-					  HU.div([CLASS,"display-images-label"], label.trim())));
-		block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",label]);
-		contents += block;
+		let img = image==""?SPACE1:HU.image(image,[STYLE,imageStyle,"alt",label,ID,base+"image" + rowIdx, WIDTH,width]);
+		let lbl = HU.div([CLASS,"display-images-label"], label.trim());
+		let block = 
+		    HU.div([STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,ID,base+"div"+  rowIdx, CLASS, class1,TITLE,tt],
+			   HU.div([CLASS,class2], img + lbl));
+		if(doPopup) {
+		    block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",label]);
+		}
+		if(columns) {
+		    if(++columnCnt>=columns) {
+			columnCnt=0;
+		    }
+		    if(!columnMap[columnCnt]) columnMap[columnCnt] = "";
+		    columnMap[columnCnt] += block;
+		} else {
+		    contents += block;
+		}
 	    }
-	    var header = "";
+	    if(columns) {
+		contents = "<table border=0 width=100%><tr valign=top>";
+		for(let col=0;true;col++) {
+		    if(!columnMap[col]) break;
+		    contents+=HU.td(['align','center'],columnMap[col]);
+		}
+		contents+="</tr></table>";
+	    }
+
+	    let header = "";
 	    if(this.startIndex>0) {
 		header += HU.span([ID,this.getDomId(ID_PREV)],"Previous")+" ";
 	    }
@@ -952,13 +1012,31 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    }
 	    cnt--;
 	    if(number<records.length) {
-		header += "Showing images " + (this.startIndex+1) +" - " +(this.startIndex+cnt);
-		header += " of " + records.length + " total images";
+		header += "Showing " + (this.startIndex+1) +" - " +(this.startIndex+cnt);
+		header += " of " + records.length +" images";
 	    }
 
 	    if(header!="") header  = header +"<br>";
 
+	    if(this.getPropertyMinHeightGallery() || this.getPropertyMaxHeightGallery()) {
+		let css = "";
+		if(this.getPropertyMinHeightGallery()) css+=HU.css("min-height",HU.getDimension(this.getPropertyMinHeightGallery()));
+		if(this.getPropertyMinHeightGallery())	css+= HU.css("max-height",HU.getDimension(this.getPropertyMaxHeightGallery()));
+		contents = HU.div([ID,this.getDomId(ID_IMAGES),STYLE,css+HU.css("overflow-y","auto")], contents);
+	    }
+
             this.writeHtml(ID_DISPLAY_CONTENTS, header + contents);
+	    let blocks = this.jq(ID_DISPLAY_CONTENTS).find(".display-images-block");
+	    this.makeTooltips(blocks,displayedRecords);
+	    if(!doPopup) {
+		let _this = this;
+		blocks.click(function() {
+		    let record = idToRecord[$(this).attr(RECORD_ID)];
+		    if(record) {
+			_this.propagateEventRecordSelection({record: record});
+		    }
+		});
+	    }
 	    this.jq(ID_PREV).button().click(()=>{
 		this.startIndex-=number;
 		this.updateUI();
@@ -967,6 +1045,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		this.startIndex+=number;
 		this.updateUI();
 	    });
+
+	    if(this.getProperty("propagateEventRecordList",false)) {
+		this.getDisplayManager().notifyEvent("handleEventRecordList", this, {
+		    recordList: displayedRecords,
+		});
+	    }
 	}
     })
 }
@@ -1023,7 +1107,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupWidth =  +this.getProperty("popupWidth",imageWidth);
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
-	    let rect = HU.div([STYLE,HU.css("border","1px solid red","width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ID, this.getDomId(ID_RECT)]);
+	    let rect = HU.div([STYLE,HU.css("border","1px solid " + HIGHLIGHT_COLOR,"width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ID, this.getDomId(ID_RECT)]);
 	    let imageDiv = HU.div(["style","position:relative"],
 				  rect+
 				  HU.div([ID,this.getDomId(ID_IMAGE),STYLE,HU.css("position","relative") ]) +
@@ -1053,7 +1137,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let thumbs = this.jq(ID_THUMBS).find(".display-imagezoom-thumb");
 	    let thumbSelect = (thumb=>{
 		thumbs.css("border","1px solid transparent");
-		thumb.css("border","1px solid red");
+		thumb.css("border","1px solid " + HIGHLIGHT_COLOR);
 		let index = parseFloat(thumb.attr('recordIndex'));
 		HU.addToDocumentUrl("imagezoom_thumb",index);
 		let record = records[index]
@@ -1232,9 +1316,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    SUPER.dataFilterChanged.call(this);
 	},
 	updateUI: function() {
+	    let pointData = this.getData();
+	    if(pointData==null) return;
 	    let records = this.filterData();
 	    if(!records) return;
-	    let pointData = this.getData();
 	    if(this.getProperty("onlyShowSelected")) {
 		if(!this.selectedRecord) {
 		    if(this.getProperty("showFirst",true)) {
@@ -1961,7 +2046,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    rows.hover(function() {
 		rows.removeClass("display-topfields-highlight");
 		var value = $(this).attr("data-value");
-		_this.jq(ID_DISPLAY_CONTENTS).find("[data-value='" + value +"']").addClass("display-topfields-highlight");
+		_this.jq(ID_DISPLAY_CONTENTS).find(HU.attrSelect("data-value", value)).addClass("display-topfields-highlight");
 		
 	    });
 	    rows.click(function() {
