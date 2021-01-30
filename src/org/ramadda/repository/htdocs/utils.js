@@ -892,6 +892,7 @@ var Utils =  {
     },
     tokenizeMacros:function(s) {
 	let tokens = [];
+	let tokenMap = {};
 	let cnt = 0;
 	while(s.length>0) {
 	    let idx = s.indexOf("${");
@@ -930,8 +931,9 @@ var Utils =  {
 		let attrString = macro.substring(idx).trim();
 		attrs = Utils.parseAttributes(attrString);
 	    }
-
-	    tokens.push({id:String(cnt++), attrs:attrs,tag:tag,macro:macro});
+	    let token = {id:String(cnt++), attrs:attrs,tag:tag,macro:macro};
+	    tokens.push(token);
+	    tokenMap[tag] = token;
 	}
 	if(s!="") {
 	    tokens.push({type:"string",s:s});
@@ -939,13 +941,19 @@ var Utils =  {
 
 
 	return {tokens:tokens,
+		tokenMap: tokenMap,
 		//This gets a modified version of the source string with:
 		//s...${m0}...${m1} ...
+		getAttributes: function(t) {
+		    let token = this.tokenMap[t];
+		    if(token) return token.attrs;
+		    return null;
+		},
 		apply: function(source, debug) {
 		    //		    if(debug) console.log("macro:" + JSON.stringify(source,null,2));
 		    let cnt = 0;
 		    let s ="";
-		    this.tokens.map(t=>{
+		    this.tokens.forEach(t=>{
 			if(t.type=="string") {
 			    s+=t.s;
 			} else {
@@ -2476,7 +2484,6 @@ var TAG_DIV = "div";
 var SELECT = "select";
 var OPTION = "option";
 var VALUE = "value";
-
 var TAG_IMG = "img";
 var TAG_INPUT = "input";
 var TAG_LI = "li";
@@ -2487,7 +2494,6 @@ var TAG_TR = "tr";
 var TAG_TD = "td";
 var TAG_UL = "ul";
 var TAG_OL = "ol";
-
 var ATTR_WIDTH = "width";
 var ATTR_HREF = "href";
 var ATTR_BORDER = "border";
@@ -2999,6 +3005,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     th: function(attrs, inner) {
         return this.tag("th", attrs, inner);
+    },
+    attrSelect:function(name,value) {
+	return  "[" + name+"=\"" + value +"\"]";
+    },
+    scrollVisible: function(contents, child) {
+	if(child.length==0 || contents.length==0)  return;
+	let diff = child.offset().top-contents.offset().top;
+	contents.animate({
+	    scrollTop: diff+contents.scrollTop()
+	}, 1000);
     },
     setFormValue: function(id, val) {
         $("#" + id).val(val);
