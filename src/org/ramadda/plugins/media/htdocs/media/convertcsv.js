@@ -581,15 +581,22 @@ var Csv = {
 		return;
             } 
             if(Utils.isDefined(data.result)) {
-		var result = window.atob(data.result);
+		let result = window.atob(data.result);
 		if(result.match(".*<(table|row|div).*")) showHtml = true;
 		if(!raw && showHtml) {
-		    result = result.replace(/(<th>.*?)(#[0-9]+)/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$2</a>");
+  		    let newresult = result.replace(/(<th>.*?)(#[0-9]+)(.*?<.*?>)([^<>]*?)(<.*?)<\/th>/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$2</a>$3<a href='#' label='$4' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$4</a>$5</th>");
+		    result = newresult;
                     $("#convertcsv_output").html(result);
                     $("#convertcsv_output .csv_header_field").click(function(event) {
 			$(this).attr(STYLE,"color:black;");
-			var index = $(this).attr("index").replace("#","").trim();
-			Csv.insertColumnIndex(index);
+			let label = $(this).attr("label");
+			if(!label) {
+			    let index = $(this).attr("index");
+			    if(index) label = index.replace("#","").trim();
+			} else {
+			    label = Utils.makeId(label);
+			}
+			Csv.insertColumnIndex(label);
 		    });
                     HtmlUtils.formatTable(".ramadda-table",{xordering:true});
 		} else {
