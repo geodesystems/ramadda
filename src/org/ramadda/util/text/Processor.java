@@ -2419,6 +2419,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         int xcnt = 0;
+	int maxCount = 0;
 
         /**
          * _more_
@@ -2448,11 +2449,11 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         public void printRow(TextReader info, Row row) throws Exception {
-            if (cnt == 0) {
-                info.getWriter().println(
-                    "<table  class='stripe hover ramadda-table ramadda-csv-table' >");
-            }
             List   values = row.getValues();
+            if (cnt == 0) {
+                info.getWriter().println("<table  class='stripe hover ramadda-table ramadda-csv-table' >");
+            }
+	    maxCount =  Math.max(maxCount, values.size());
             String open   = "<td>";
             String close  = "</td>";
 
@@ -2470,6 +2471,7 @@ rotate -> pass -> pass -> rotate -> pass
             //Check for the width
             int    lineWidth = 0;
             String s         = "";
+
             for (int i = 0; i < values.size(); i++) {
                 lineWidth += values.get(i).toString().length();
                 s         += " " + values.get(i);
@@ -2481,42 +2483,45 @@ rotate -> pass -> pass -> rotate -> pass
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
                     info.getWriter().print(open);
-                    info.getWriter().print("<div style='" + style + "'>");
+		    info.getWriter().print("<div style='" + style + "'>");
                     if (cnt == 0) {
-                        info.getWriter().print("&nbsp;");
+			info.getWriter().print("&nbsp;");
                     } else {
-                        info.getWriter().print("#" + cnt);
+			info.getWriter().print("#" + cnt);
                     }
-                    info.getWriter().print("</div>");
+		    info.getWriter().print("");
+		    info.getWriter().print("</div>");
                     info.getWriter().print(close);
                 }
                 info.getWriter().print(open);
-                info.getWriter().print("<div style='" + style + "'>");
+		info.getWriter().print("<div style='" + style + "'>");
                 if (cnt == 0) {
-                    info.getWriter().print("#" + i + "&nbsp;");
+		    info.getWriter().print("#" + i + "&nbsp;");
+                    info.getWriter().print("");		    
                     String label = Utils.makeLabel(""
                                        + values.get(i)).replaceAll(" ",
+
                                            "&nbsp;");
-                    info.getWriter().print(HtmlUtils.span(label,
-                            HtmlUtils.attr("title",
-                                           label.replaceAll("\"",
-                                               "&quot;"))));
+		    info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title",
+									       label.replaceAll("\"","&quot;"))));
                 } else {
                     Object value = values.get(i);
                     String label = ((value == null)
                                     ? ""
                                     : value.toString());
-                    info.getWriter().print(HtmlUtils.span(label,
-                            HtmlUtils.attr("title", label)));
+		    info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title", label)));
                 }
-                info.getWriter().print("</div>");
+		info.getWriter().print("</div>");
                 info.getWriter().print(close);
             }
+	    info.getWriter().print("\n");
             if (cnt == 0) {
                 info.getWriter().println("</tr>");
                 info.getWriter().println("</thead>");
-                info.getWriter().println("</tbody>");
+                info.getWriter().println("<tbody>");
             } else {
+		for(int i=values.size();i<maxCount;i++)
+		    info.getWriter().print("<td></td>");
                 info.getWriter().println("</tr>");
             }
             cnt++;

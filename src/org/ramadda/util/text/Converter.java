@@ -122,22 +122,14 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnSelector extends Converter {
 
-
         /**
-         *
-         *
-         *
-         *
          * @param cols _more_
          */
         public ColumnSelector(List<String> cols) {
             super(cols);
         }
 
-
-
         /**
-         *
          * @param info _more_
          * @param row _more_
          * @param line _more_
@@ -157,22 +149,18 @@ public abstract class Converter extends Processor {
                     result.add(s);
                 }
             }
-
             return new Row(result);
         }
     }
 
 
-
     /**
      * Class description
-     *
      *
      * @version        $version$, Mon, Oct 14, '19
      * @author         Enter your name here...
      */
     public static class ColumnNotSelector extends Converter {
-
 
         /**
          *

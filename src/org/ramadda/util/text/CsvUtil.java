@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -871,7 +872,7 @@ public class CsvUtil {
                                          "colspan *= *\"?([0-9]+)\"?");
                     int inserts = 1;
                     if (colspan != null) {
-                        inserts = Integer.parseInt(colspan);
+			inserts = Integer.parseInt(colspan);
                     }
 
                     int idx = td.indexOf(">");
@@ -1015,6 +1016,7 @@ public class CsvUtil {
                                   String objectPath)
             throws Exception {
 
+	int xcnt = 0;
         List<Row> rows  = new ArrayList<Row>();
         JSONArray array = null;
 	JSONObject root = null;
@@ -1030,103 +1032,86 @@ public class CsvUtil {
             array = new JSONArray(s);
         }
 
-
-        List<List<String>> names = null;
-        for (int i = 0; i < array.length(); i++) {
-            //            List<JSONObject> jrows = new ArrayList<JSONObject>();
-            List       jrows = new ArrayList();
-            if (Utils.stringDefined(objectPath)) {
-		JSONObject jrow  = array.getJSONObject(i);
-                for (String tok :
-                        StringUtil.split(objectPath, ",", true, true)) {
+	List<String> objectPathList =null;
+	if (Utils.stringDefined(objectPath)) {
+	    objectPathList = StringUtil.split(objectPath, ",", true, true);
+	}
+        List<String> names = null;
+        for (int arrayIdx = 0; arrayIdx < array.length(); arrayIdx++) {
+	    if(arrayIdx>0) break;
+	    Hashtable primary = new Hashtable();
+	    List<Hashtable> secondary = new ArrayList<Hashtable>();
+            if (objectPathList!=null) {
+		JSONObject jrow  = array.getJSONObject(arrayIdx);
+                for (String tok :objectPathList) {
                     if (tok.equals("*")) {
-                        jrows.add(jrow);
-                    } else {
-                        try {
-                            jrows.add(Json.readObject(jrow, tok));
-                        } catch (Exception exc) {
-                            jrows.add(Json.readArray(jrow, tok));
-                        }
+			primary.putAll(Json.getHashtable(jrow, true));
+                    } else if(tok.endsWith("[]")) {
+			JSONArray a = Json.readArray(jrow, tok.substring(0,tok.length()-2));
+			for (int j = 0; j < a.length(); j++) {
+			    secondary.add(Json.getHashtable(a.getJSONObject(j),true));
+			}
+		    } else {
+			try {
+			    Object o = Json.readObject(jrow, tok);
+			    if(o!=null) {
+				primary.putAll(Json.getHashtable(o, true));
+			    }
+			} catch (Exception exc) {
+			    Object o = Json.readArray(jrow, tok);
+			    if(o!=null) {
+				primary.putAll(Json.getHashtable(o, true));
+			    }
+			}
                     }
                 }
             } else {
-                jrows.add(array.getJSONArray(i));
-            }
+		try {
+		    primary.putAll(Json.getHashtable(array.getJSONArray(arrayIdx), true));
+		} catch (Exception exc) {
+		    primary.putAll(Json.getHashtable(array.getJSONObject(arrayIdx), true));
+		}
+	    }
 
             if (names == null) {
-                names = new ArrayList<List<String>>();
+		if(secondary.size()==0) {
+		    secondary.add(primary);
+		} else {
+		    for(Hashtable h: secondary) h.putAll(primary);
+		}
+                names = new ArrayList<String>();
                 Row row = new Row();
                 rows.add(row);
-                for (int j = 0; j < jrows.size(); j++) {
-                    Object     o      = jrows.get(j);
-                    JSONObject jobj   = null;
-                    JSONArray  jarray = null;
-                    if (o instanceof JSONObject) {
-                        jobj = (JSONObject) o;
-                    } else {
-                        jarray = (JSONArray) o;
-                    }
-                    List<String> objNames = new ArrayList<String>();
-                    names.add(objNames);
-                    if (jobj != null) {
-                        String[] tmp = JSONObject.getNames(jobj);
-                        for (String name : tmp) {
-                            Object obj = jobj.opt(name);
-                            if (obj != null) {
-                                if ((obj instanceof JSONObject)
-                                        || (obj instanceof JSONArray)) {
-                                    continue;
-                                }
-                            }
-                            objNames.add(name);
-                            row.add(name);
-                        }
-                    } else {
-			//Try "fields"
-			JSONArray fields = root.optJSONArray("fields");
-			if(fields!=null) {
-			    for(int k=0;k<fields.length();k++)
-				row.add(fields.getString(k));
-			} else  {
-			    for (int k = 0; k < jarray.length(); k++) {
-				row.add("Index " + k);
-			    }
-			}
-                        //
-                    }
-                }
-            }
-            Row row = new Row();
-            rows.add(row);
-            for (int j = 0; j < jrows.size(); j++) {
-                Object     o      = jrows.get(j);
-                JSONObject jobj   = null;
-                JSONArray  jarray = null;
-                if (o instanceof JSONObject) {
-                    jobj = (JSONObject) o;
-                } else {
-                    jarray = (JSONArray) o;
-                }
-                if (jobj != null) {
-                    List<String> objNames = names.get(j);
-                    for (String name : objNames) {
-                        Object obj = jobj.opt(name);
-                        if (obj == null) {
-                            obj = "";
-                        } else if ((obj instanceof JSONObject)
-                                   || (obj instanceof JSONArray)) {
-                            continue;
-                        }
-                        row.add(obj.toString());
-                    }
-                } else {
-                    for (int k = 0; k < jarray.length(); k++) {
-                        row.add(jarray.get(k));
-                    }
-                }
-            }
-        }
+		for (Enumeration keys = secondary.get(0).keys(); keys.hasMoreElements(); ) {
+		    names.add((String) keys.nextElement());
+		}
+		names = (List<String>)Utils.sort(names);
+		for(String name: names) row.add(name);
+	    }
+	    /*
+	      JSONArray fields = root.optJSONArray("fields");
+	      if(fields!=null) {
+	      for(int k=0;k<fields.length();k++)
+	      row.add(fields.getString(k));
+	      } else  {
+	      for (int k = 0; k < jarray.length(); k++) {
+	      row.add("Index " + k);
+	      }
+	    ***/
 
+	    for(Hashtable h: secondary)  {
+		Row row = new Row();
+		rows.add(row);
+		for(String name: names) {
+		    Object value = h.get(name);
+		    if(value==null) value="NULL";
+		    row.add(value);
+                }
+	    }
+	}
+	//	System.out.println(rows.get(0).print(null));
+	//	System.out.println(rows.get(1).print(rows.get(0)));
+	//	System.out.println(rows.get(2).print(rows.get(0)));
         return rows;
 
 
@@ -2025,7 +2010,8 @@ public class CsvUtil {
                 new Arg("substitution string")),
         new Cmd("-set", "Write the value into the cells",
                 new Arg("columns", "", "type", "columns"),
-                new Arg("rows", "", "type", "list"), new Arg("value")),
+                new Arg("rows", "", "type", "list"), 
+		new Arg("value")),
         new Cmd(
             "-macro",
             "Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header",
