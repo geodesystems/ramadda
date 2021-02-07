@@ -1226,5 +1226,39 @@ public class Json {
     }
 
 
+    public static Hashtable getHashtable(Object obj, boolean primitiveOnly) {
+	if(obj instanceof JSONObject) {
+	    return getHashtableFromObject((JSONObject) obj, primitiveOnly);
+	} else if(obj instanceof JSONArray) {
+	    return getHashtableFromArray((JSONArray) obj, primitiveOnly);
+	}
+	throw new IllegalArgumentException("Unknown object type");
+    }
+
+
+    public static Hashtable getHashtableFromObject(JSONObject obj, boolean primitiveOnly) {
+	Hashtable hashtable = new Hashtable();
+	JSONArray names = obj.names();
+	for(int i=0;i<names.length();i++) {
+	    String name = (String)names.get(i);
+	    Object value = obj.get(name);
+	    if(primitiveOnly && (value instanceof JSONObject ||  value instanceof JSONArray)) continue;
+	    hashtable.put(name,value);
+	}
+	return hashtable;
+    }
+
+
+    public static Hashtable getHashtableFromArray(JSONArray obj, boolean primitiveOnly) {
+	Hashtable hashtable = new Hashtable();
+	for(int i=0;i<obj.length();i++) {
+	    Object value = obj.get(i);
+	    if(primitiveOnly && (value instanceof JSONObject ||  value instanceof JSONArray)) continue;
+	    hashtable.put("Index " + i,value);
+	}
+	return hashtable;
+    }
+    
+
 
 }
