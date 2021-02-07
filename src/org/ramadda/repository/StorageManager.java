@@ -653,7 +653,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     /**
      * Get the temporary directory file
      *
-     * @param tmpDir  the direcgtory
+     * @param tmpDir  the directory
      * @param file    the file name
      *
      * @return  the file
@@ -724,10 +724,14 @@ public class StorageManager extends RepositoryManager implements PointFile
             tmpDir = getFileFromProperty(PROP_TMPDIR);
             addOkToWriteToDirectory(tmpDir);
         }
-
         return tmpDir;
     }
 
+
+    protected void  clearTmpDir() {
+	tmpDir = null;
+    }
+    
     /**
      * Get the scratch directory
      *
