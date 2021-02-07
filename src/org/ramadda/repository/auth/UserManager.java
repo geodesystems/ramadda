@@ -730,7 +730,7 @@ public class UserManager extends RepositoryManager {
     public boolean isRequestOk(Request request) {
         User user = request.getUser();
         if (getRepository().getAdminOnly() && !user.getAdmin()) {
-            getRepository().debugSession("isRequestOK: Admin only");
+            getRepository().debugSession(request, "isRequestOK: Admin only");
             if ( !request.getRequestPath().startsWith(
                     getRepository().getUrlBase() + "/user/")) {
                 return false;
@@ -741,7 +741,7 @@ public class UserManager extends RepositoryManager {
             if ( !request.getRequestPath().startsWith(
                     getRepository().getUrlBase() + "/user/")) {
                 getRepository().debugSession(
-                    "isRequestOk: login is required ");
+                    request, "isRequestOk: login is required ");
 
                 return false;
             }
@@ -1933,10 +1933,11 @@ public class UserManager extends RepositoryManager {
 
         if (request.exists(ARG_REMOVESESSIONID)) {
             getSessionManager().debugSession(
+                request,
                 "RAMADDA.adminUserList: removing session:"
                 + request.getString(ARG_REMOVESESSIONID));
-            getSessionManager().removeSession(
-                request.getString(ARG_REMOVESESSIONID));
+            getSessionManager().removeSession(request,
+                    request.getString(ARG_REMOVESESSIONID));
 
             return new Result(
                 request.makeUrl(
@@ -3653,7 +3654,8 @@ public class UserManager extends RepositoryManager {
      */
     public Result processLogout(Request request) throws Exception {
         addActivity(request, request.getUser(), ACTIVITY_LOGOUT, "");
-        getSessionManager().debugSession("RAMADDA.processLogout: "
+        getSessionManager().debugSession(request,
+                                         "RAMADDA.processLogout: "
                                          + request.getSessionId());
         getSessionManager().removeUserSession(request);
         request.setSessionId(getSessionManager().createSessionId());

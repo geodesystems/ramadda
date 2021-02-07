@@ -425,7 +425,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     /** _more_ */
-    public static boolean debug = true;
+    public static boolean debug = false;
 
 
     /** _more_ */
@@ -1016,12 +1016,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         CacheManager.setDoCache(false);
         initProperties(properties);
+        //Clear the tmp dir as it gets set by the plugin manager and any tmp dir set in a properties file will be ignored
+        getStorageManager().clearTmpDir();
+
+
         initServer();
         repositoryInitialized = true;
         //Call this here to load initial properties
         initAttributes();
 
-	//This depends on the html templates which depends on the 
+        //This depends on the html templates which depends on the 
         getMetadataManager().loadMetadataHandlers(getPluginManager());
         clearAllCaches();
         StringBuilder statusMsg =
@@ -1052,15 +1056,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         });
 
-	/*
-	try {
-	    System.err.println("sending test email");
-	    getMailManager().sendEmail("jeff.mcwhirter@gmail.com","test it","contents", true);
-	} catch(Exception exc) {
-	    System.err.println("Error:" + exc);
-	    exc.printStackTrace();
-	}
-	*/
+        /*
+        try {
+            System.err.println("sending test email");
+            getMailManager().sendEmail("jeff.mcwhirter@gmail.com","test it","contents", true);
+        } catch(Exception exc) {
+            System.err.println("Error:" + exc);
+            exc.printStackTrace();
+        }
+        */
 
 
     }
@@ -1179,6 +1183,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 usage("Unknown argument: " + args[i]);
             }
         }
+
+
 
         //Load the context and the command line properties now 
         //so the storage manager can get to them
@@ -1524,7 +1530,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String file : getPluginManager().getTypeDefFiles()) {
             try {
                 file = getStorageManager().localizePath(file);
-		//		System.err.println(file);
+                //              System.err.println(file);
                 if (getPluginManager().haveSeen("types:" + file, false)) {
                     continue;
                 }
@@ -1625,17 +1631,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Constructor ctor = Misc.findConstructor(handlerClass,
                                new Class[] { Repository.class,
                                              Element.class });
-	try {
-	    TypeHandler typeHandler =
-		(TypeHandler) ctor.newInstance(new Object[] { this,
-							      entryNode });
-	    addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
-	    return typeHandler;
-	} catch(Exception exc) {
-	    System.err.println ("Error creating type handler:" + XmlUtil.toString(entryNode));
-	    exc.printStackTrace();
-	    throw exc;
-	}
+        try {
+            TypeHandler typeHandler =
+                (TypeHandler) ctor.newInstance(new Object[] { this,
+                    entryNode });
+            addTypeHandler(typeHandler.getType(), typeHandler, overwrite);
+
+            return typeHandler;
+        } catch (Exception exc) {
+            System.err.println("Error creating type handler:"
+                               + XmlUtil.toString(entryNode));
+            exc.printStackTrace();
+
+            throw exc;
+        }
 
 
     }
@@ -2628,6 +2637,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 dbProperties = new TTLObject<Properties>(5 * 60 * 1000);
             }
             dbProperties.put(tmp);
+
             return tmp;
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -3301,9 +3311,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private Result handleRequestInner(Request request) throws Exception {
 
-
         if (debugSession) {
-            debugSession("RAMADDA.handleRequest:" + request.getRequestPath());
+            debugSession(request,
+                         "RAMADDA.handleRequest:" + request.getRequestPath());
         }
         if (request.getIsRobot()) {
             if ( !acceptRobots()) {
@@ -3471,7 +3481,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             //            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
             if (debugSession) {
-                debugSession("Cookie:"
+                debugSession(request,
+                             "Cookie:"
                              + getSessionManager().getSessionCookieName()
                              + "=" + sessionId + " path=" + getUrlBase());
             }
@@ -3544,6 +3555,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else {
             msg = "Error:" + inner.getMessage();
         }
+
         return makeErrorResult(request, msg);
     }
 
@@ -3691,10 +3703,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param msg _more_
      */
-    public void debugSession(String msg) {
+    public void debugSession(Request request, String msg) {
         if (debugSession) {
+            if ((request != null)
+                    && !request.getRequestPath().equals(
+                        "/repository/entry/show")) {
+                return;
+            }
             System.err.println(debugPrefix() + msg);
         }
     }
@@ -3717,7 +3736,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
         if (sslRedirect != null) {
-            debugSession("redirecting to ssl:" + request.getUrl());
+            debugSession(request, "redirecting to ssl:" + request.getUrl());
 
             return sslRedirect;
         }
@@ -3872,19 +3891,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
      *
      * @param path _more_
      * @param bytes _more_
+     * @param force _more_
      */
     private void putHtdocsCache(String path, byte[] bytes, boolean force) {
-	synchronized(htdocsCache) {
-	    if (!force && htdocsCacheSize > htdocsCacheLimit) {
-		//            htdocsCache =  new Hashtable<String,  byte[]>();
-		//            htdocsCacheSize =0;
-		return;
-	    }
-	    if (getCacheResources()) {
-		htdocsCacheSize += bytes.length;
-		htdocsCache.put(path, bytes);
-	    }
-	}
+        synchronized (htdocsCache) {
+            if ( !force && (htdocsCacheSize > htdocsCacheLimit)) {
+                //            htdocsCache =  new Hashtable<String,  byte[]>();
+                //            htdocsCacheSize =0;
+                return;
+            }
+            if (getCacheResources()) {
+                htdocsCacheSize += bytes.length;
+                htdocsCache.put(path, bytes);
+            }
+        }
     }
 
     /**
@@ -3964,6 +3984,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Misc.sleepSeconds(60);
             Result r = new Result("", new StringBuilder());
             r.setResponseCode(Result.RESPONSE_NOTFOUND);
+
             return r;
         }
 
@@ -4004,6 +4025,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
             InputStream inputStream = new ByteArrayInputStream(bytes);
+
             return makeResult(request, path, inputStream, mimeType, true);
         }
 
@@ -4030,21 +4052,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         "${root}", urlBase).replace(
                         "${urlroot}", urlBase).replace(
                         "${baseentry}",
-                        getEntryManager().getRootEntry().getId()).replace("${hostname}", request.getServerName());
-		    //If its the base js then don't cache and add in the user info
-		    if(path.endsWith("base.js")) {
-			js = js.replace("${ramadda.user}",request.getUser().getId());
-			bytes = js.getBytes();
-		    } else {
-			bytes = js.getBytes();
-			putHtdocsCache(path, bytes,false);
-		    }
+                        getEntryManager().getRootEntry().getId()).replace(
+                            "${hostname}", request.getServerName());
+                    //If its the base js then don't cache and add in the user info
+                    if (path.endsWith("base.js")) {
+                        js = js.replace("${ramadda.user}",
+                                        request.getUser().getId());
+                        bytes = js.getBytes();
+                    } else {
+                        bytes = js.getBytes();
+                        putHtdocsCache(path, bytes, false);
+                    }
                     inputStream = new ByteArrayInputStream(bytes);
                 } else if (path.endsWith(".png") || path.endsWith(".gif")
                            || path.endsWith(".jpg")
                            || path.endsWith(".jpeg")) {
                     bytes = IOUtil.readBytes(inputStream);
-                    putHtdocsCache(path, bytes,false);
+                    putHtdocsCache(path, bytes, false);
                     inputStream = new ByteArrayInputStream(bytes);
                 } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
@@ -4094,12 +4118,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                 urlBase);
                 js    = js.replace("${hostname}", request.getServerName());
                 bytes = js.getBytes();
-                putHtdocsCache(path, bytes,path.endsWith(RESOURCE_ALLCSS));
+                putHtdocsCache(path, bytes, path.endsWith(RESOURCE_ALLCSS));
                 inputStream = new ByteArrayInputStream(bytes);
             } else if (path.endsWith(".png") || path.endsWith(".gif")
                        || path.endsWith(".jpg") || path.endsWith(".jpeg")) {
                 bytes = IOUtil.readBytes(inputStream);
-                putHtdocsCache(path, bytes,false);
+                putHtdocsCache(path, bytes, false);
                 inputStream = new ByteArrayInputStream(bytes);
             } else if (path.endsWith(".html")) {
                 String html = IOUtil.readInputStream(inputStream);
@@ -6697,7 +6721,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public static String encodeObject(Object object) {
-        return getEncoder().toXml(object,false);
+        return getEncoder().toXml(object, false);
     }
 
     /**

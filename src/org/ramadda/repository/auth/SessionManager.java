@@ -140,10 +140,12 @@ public class SessionManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param msg _more_
      */
-    public void debugSession(String msg) {
-        getRepository().debugSession(msg);
+    public void debugSession(Request request, String msg) {
+        getRepository().debugSession(request, msg);
     }
 
     /**
@@ -152,7 +154,7 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void deleteAllSessions() throws Exception {
-        debugSession("RAMADDA.deleteAllSessions");
+        debugSession(null, "RAMADDA.deleteAllSessions");
         sessionMap = new Hashtable<String, UserSession>();
         anonymousSessionMap.clearCache();
     }
@@ -247,9 +249,10 @@ public class SessionManager extends RepositoryManager {
             } else {}
         }
         for (UserSession session : sessionsToDelete) {
-            debugSession("RAMADDA.cullSessions: removing old session:"
+            debugSession(null,
+                         "RAMADDA.cullSessions: removing old session:"
                          + session);
-            removeSession(session.getId());
+            removeSession(null, session.getId());
         }
 
     }
@@ -278,7 +281,7 @@ public class SessionManager extends RepositoryManager {
      */
     public void setLastEntry(Request request, Entry entry) throws Exception {
         if ((entry != null) && (request != null)) {
-	    putSessionProperty(request, "lastentry", entry);
+            putSessionProperty(request, "lastentry", entry);
         }
     }
 
@@ -326,7 +329,7 @@ public class SessionManager extends RepositoryManager {
 
             return;
         }
-        UserSession session = getSession(id);
+        UserSession session = getSession(request, id);
         if (session == null) {
             request.putExtraProperty(key, value);
 
@@ -355,7 +358,7 @@ public class SessionManager extends RepositoryManager {
         if (id == null) {
             return;
         }
-        UserSession session = getSession(id);
+        UserSession session = getSession(request, id);
         if (session == null) {
             return;
         }
@@ -405,7 +408,7 @@ public class SessionManager extends RepositoryManager {
 
             return dflt;
         }
-        UserSession session = getSession(id);
+        UserSession session = getSession(request, id);
         if (session == null) {
             Object obj = request.getExtraProperty(key);
             if (obj != null) {
@@ -425,19 +428,24 @@ public class SessionManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param sessionId _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public UserSession getSession(String sessionId) throws Exception {
-        return getSession(sessionId, true);
+    public UserSession getSession(Request request, String sessionId)
+            throws Exception {
+        return getSession(request, sessionId, true);
     }
 
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param sessionId _more_
      * @param checkAnonymous _more_
      *
@@ -445,14 +453,17 @@ public class SessionManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public UserSession getSession(String sessionId, boolean checkAnonymous)
+    public UserSession getSession(Request request, String sessionId,
+                                  boolean checkAnonymous)
             throws Exception {
-        return getSession(sessionId, checkAnonymous, false);
+        return getSession(request, sessionId, checkAnonymous, false);
     }
 
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param sessionId _more_
      * @param checkAnonymous _more_
      * @param debug _more_
@@ -461,17 +472,18 @@ public class SessionManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public UserSession getSession(String sessionId, boolean checkAnonymous,
-                                  boolean debug)
+    private UserSession getSession(Request request, String sessionId,
+                                   boolean checkAnonymous, boolean debug)
             throws Exception {
         UserSession session = sessionMap.get(sessionId);
         if (session != null) {
-            //            debugSession("RAMADDA.getSession got session from session map:" + session);
+            //            debugSession(request, "RAMADDA.getSession got session from session map:" + session);
             return session;
         }
         session = anonymousSessionMap.get(sessionId);
         if (session != null) {
             debugSession(
+                request,
                 "RAMADDA.getSession got session from anonymous session map: "
                 + session);
 
@@ -487,11 +499,12 @@ public class SessionManager extends RepositoryManager {
             ResultSet        results;
             while ((results = iter.getNext()) != null) {
                 session = makeSession(results);
-                debugSession("RAMADDA.getSession got session from database:"
+                debugSession(request,
+                             "RAMADDA.getSession got session from database:"
                              + session);
                 session.setLastActivity(new Date());
                 //Remove it from the DB and then re-add it so we update the lastActivity
-                removeSession(session.getId());
+                removeSession(request, session.getId());
                 addSession(session);
 
                 break;
@@ -535,12 +548,15 @@ public class SessionManager extends RepositoryManager {
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param sessionId _more_
      *
      * @throws Exception _more_
      */
-    public void removeSession(String sessionId) throws Exception {
-        debugSession("RAMADDA.removeSession:" + sessionId);
+    public void removeSession(Request request, String sessionId)
+            throws Exception {
+        debugSession(request, "RAMADDA.removeSession:" + sessionId);
         sessionMap.remove(sessionId);
         anonymousSessionMap.remove(sessionId);
         getDatabaseManager().delete(Tables.SESSIONS.NAME,
@@ -556,7 +572,7 @@ public class SessionManager extends RepositoryManager {
      * @throws Exception _more_
      */
     private void addSession(UserSession session) throws Exception {
-        //        debugSession("RAMADDA.addSession:" + session);
+        //        debugSession(null,"RAMADDA.addSession:" + session);
         sessionMap.put(session.getId(), session);
         getDatabaseManager().executeInsert(Tables.SESSIONS.INSERT,
                                            new Object[] { session.getId(),
@@ -598,23 +614,24 @@ public class SessionManager extends RepositoryManager {
      */
     public void checkSession(Request request) throws Exception {
 
-        debugSession("RAMADDA: checkSession");
+        debugSession(request, "RAMADDA: checkSession");
         User         user    = request.getUser();
         List<String> cookies = getCookies(request);
         for (String cookieValue : cookies) {
             if (Repository.debugSession) {
-                getRepository().debugSession("checkSession: cookie:"
+                getRepository().debugSession(request,
+                                             "checkSession: cookie:"
                                              + cookieValue);
             }
             if (user == null) {
-                UserSession session = getSession(cookieValue, false);
+                UserSession session = getSession(request, cookieValue, false);
                 if (session != null) {
                     session.setLastActivity(new Date());
                     user = getUserManager().getCurrentUser(session.getUser());
                     session.setUser(user);
                     request.setSessionId(cookieValue);
-                    getRepository().debugSession(
-                        "checkSession: got session from cookie");
+                    getRepository().debugSession(request,
+                            "checkSession: got session from cookie");
 
                     break;
                 }
@@ -625,19 +642,23 @@ public class SessionManager extends RepositoryManager {
         if (request.defined(ARG_SESSIONID)) {
             if (user != null) {
                 debugSession(
+                    request,
                     "RAMADDA: has sessionid argument but also has a user:"
                     + user);
             }
             String sessionId = request.getString(ARG_SESSIONID);
-            debugSession("RAMADDA: has sessionid argument:" + sessionId);
-            UserSession session = getSession(sessionId, false, true);
+            debugSession(request,
+                         "RAMADDA: has sessionid argument:" + sessionId);
+            UserSession session = getSession(request, sessionId, false, true);
             if (session != null) {
                 session.setLastActivity(new Date());
                 user = getUserManager().getCurrentUser(session.getUser());
                 session.setUser(user);
-                debugSession("RAMADDA: found sesssion user =" + user);
+                debugSession(request,
+                             "RAMADDA: found sesssion user =" + user);
             } else {
-                debugSession("RAMADDA: could not find session:" + sessionId);
+                debugSession(request,
+                             "RAMADDA: could not find session:" + sessionId);
 
                 //Puke out of here
                 throw new IllegalStateException("Invalid session:"
@@ -733,6 +754,7 @@ public class SessionManager extends RepositoryManager {
                 anonymousSessionMap.get(request.getSessionId());
             if (session == null) {
                 getRepository().debugSession(
+                    request,
                     "checkSession: adding anonymous session:"
                     + request.getSessionId());
                 session = new UserSession(request.getSessionId(), user,
@@ -743,6 +765,7 @@ public class SessionManager extends RepositoryManager {
 
 
         request.setUser(user);
+
 
 
     }
@@ -846,11 +869,11 @@ public class SessionManager extends RepositoryManager {
      */
     public void removeUserSession(Request request) throws Exception {
         if (request.getSessionId() != null) {
-            removeSession(request.getSessionId());
+            removeSession(request, request.getSessionId());
         }
         List<String> cookies = getCookies(request);
         for (String cookieValue : cookies) {
-            removeSession(cookieValue);
+            removeSession(request, cookieValue);
         }
         request.setUser(getUserManager().getAnonymousUser());
     }
