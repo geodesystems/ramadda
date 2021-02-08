@@ -11,6 +11,7 @@ const DISPLAY_SKEWT = "skewt";
 const DISPLAY_VENN = "venn";
 const DISPLAY_CHERNOFF = "chernoff";
 const DISPLAY_D3BUBBLE = "d3bubble";
+const DISPLAY_MINIDOTS = "minidots";
 
 //Note: Added requiresData and category
 addGlobalDisplayType({
@@ -42,6 +43,14 @@ addGlobalDisplayType({
     type: DISPLAY_VENN,
     forUser: true,
     label: "Venn Diagram",
+    requiresData: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_MINIDOTS,
+    forUser: true,
+    label: "Mini Dots",
     requiresData: true,
     category: CATEGORY_MISC
 });
@@ -930,6 +939,109 @@ function RamaddaVennDisplay(displayManager, id, properties) {
                 })
                 .style("font-size", this.getProperty("fontSize", "16px"))
                 .style("font-weight", this.getProperty("fontWeight", "100"));
+
+        }
+    });
+}
+
+
+function RamaddaMinidotsDisplay(displayManager, id, properties) {
+    const ID_MINIDOTS = "minidots";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MINIDOTS, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Minidots Properties'},
+	{p:'dateField',wikiValue:''},
+	{p:'valueField',wikiValue:''},
+    ]);
+
+    $.extend(this, {
+        getContentsStyle: function() {
+            return "";
+        },
+        checkLayout: function() {
+            this.updateUI();
+        },
+        updateUI: function() {
+            let records = this.filterData();
+            if (!records) {
+                return;
+            }
+	    let dotsWidth = +this.getProperty("dotsWidth",500);
+	    let dotsHeight = +this.getProperty("dotsHeight",200);	    
+	    let valueField = this.getFieldById(null,this.getPropertyValueField());
+	    let dateField = this.getFieldById(null,this.getPropertyDateField());
+	    let groupByField = this.getFieldById(null,this.getProperty("groupBy"));
+	    let divisor = +this.getProperty("divisor",1);
+	    if(!valueField) {
+                this.displayError("No value field specified");
+		return;
+	    }
+	    if(!dateField) dateField = this.getFieldByType(null,"date");
+	    let dateToCount = {};
+	    let minDate=null, maxDate = null;
+	    let groups = {};
+
+	    records.forEach(record=>{
+		let date = dateField?record.getValue(dateField.getIndex()):record.getDate();
+		minDate = minDate!=null?Math.min(minDate,date.getTime()):date;
+		maxDate = maxDate!=null?Math.max(maxDate,date.getTime()):date;
+	    });
+	    records.forEach(record=>{
+		let groupByValue = groupByField?record.getValue(groupByField.getIndex()):"all";
+		let date = dateField?record.getValue(dateField.getIndex()):record.getDate();
+		minDate = minDate!=null?Math.min(minDate,date.getTime()):date;
+		maxDate = maxDate!=null?Math.max(maxDate,date.getTime()):date;
+		let data = groups[groupByValue];
+		if(!data) {
+		    groups[groupByValue] = data = {
+			records:[],
+			total:0,
+			list:[],
+			seen:{}
+		    }
+		}
+		data.records.push(record);
+		let value = record.getValue(valueField.getIndex());
+		data.total+=value;
+		value = value/divisor;
+		if(data.list.length>5000) return;
+		for(let i=0;i<value;i++) {
+		    data.list.push({x:date.getTime(),
+				    y:Math.random(),
+				    record:record});
+		}
+	    });
+	    let range = {
+		minx:minDate,
+		maxx:maxDate,
+		miny:0,
+		maxy:1
+	    }
+	    let groupList = Object.keys(groups).sort();
+	    if(!groupByField) {
+		let data = groups["all"];
+		this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div([CLASS,"display-minidots-dots", ID, this.getDomId(ID_MINIDOTS), STYLE, HU.css(HEIGHT,HU.getDimension(dotsHeight),WIDTH,HU.getDimension(dotsWidth))], ""));
+		drawDots(this,"#"+ this.getDomId(ID_MINIDOTS),dotsWidth,dotsHeight,data.list,range,null/*colorBy*/);
+	    } else {
+		let container = this.jq(ID_MINIDOTS);
+		let table = "<table border=1>";
+		groupList.forEach((key,idx)=>{
+		    let data = groups[key];
+		    table+="<tr>";
+		    table += HU.td([],key +" (" + data.total+")");
+		    let id = this.getDomId(ID_MINIDOTS+"_"+idx);
+		    table += HU.td([],HtmlUtils.div([CLASS,"display-minidots-dots", ID, id, STYLE, HU.css(HEIGHT,HU.getDimension(dotsHeight),WIDTH,HU.getDimension(dotsWidth))], ""));
+		    table+="</tr>\n";
+		});
+		this.writeHtml(ID_DISPLAY_CONTENTS, table);
+		groupList.forEach((key,idx)=>{
+		    let data = groups[key];
+		    let id = this.getDomId(ID_MINIDOTS+"_"+idx);
+		    drawDots(this,"#"+ id,dotsWidth,dotsHeight,data.list,range,null/*colorBy*/);
+		});
+	    }
 
         }
     });
