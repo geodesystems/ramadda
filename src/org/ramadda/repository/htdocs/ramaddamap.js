@@ -3759,14 +3759,14 @@ RepositoryMap.prototype = {
     
     addPoint:  function(id, point, attrs, text, notReally, textGetter) {
         //Check if we have a LonLat instead of a Point
-        var location = point;
+        let location = point;
         if (typeof point.x === 'undefined') {
             point = new OpenLayers.Geometry.Point(point.lon, point.lat);
         } else {
-            location = createLonLat(location.x, location.y);
+            location = createLonLat(point.x, point.y);
         }
 
-        var _this = this;
+        let _this = this;
 	if(!this.basePointStyle) {
 	    this.basePointStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style['default']);
             $.extend(this.basePointStyle, {
@@ -3780,7 +3780,9 @@ RepositoryMap.prototype = {
 		fillOpacity: 0.75,
             });
 	}
-        var cstyle = $.extend({},this.basePointStyle);
+
+        let cstyle = $.extend({},this.basePointStyle);
+
         if (attrs) {
             $.extend(cstyle, attrs);
             if (cstyle.pointRadius <= 0) cstyle.pointRadius = 1;
@@ -3791,6 +3793,7 @@ RepositoryMap.prototype = {
         if (cstyle.strokeColor == "" || cstyle.strokeColor == "none") {
             cstyle.strokeOpacity = 0.0;
         }
+
 	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
         let center = new OpenLayers.Geometry.Point(point.x, point.y);
         center.transform(this.displayProjection, this.sourceProjection);
