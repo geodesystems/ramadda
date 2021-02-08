@@ -1773,13 +1773,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    this.map.clearSeenMarkers();
 	    var t2= new Date();
+//	    debug = true;
 	    if(debug) console.log("displaymap calling addPoints");
             this.addPoints(records,fields,points,pointBounds);
 	    var t3= new Date();
             this.addLabels(records,fields,points);
             this.applyVectorMap(true, this.textGetter,args);
 	    var t4= new Date();
-	    if(debug) Utils.displayTimes("time pts=" + points.length,[t1,t2,t3, t4], true);
+	    if(debug) Utils.displayTimes("time pts=" + points.length,[t2,t3], true);
 	    this.lastUpdateTime = new Date();
 	},
 	heatmapCnt:0,
@@ -2163,7 +2164,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    dot.style.pointRadius=dotRadius;
 	},
         createPoints: function(records, fields, points,bounds) {
+	    let t1  =new Date();
 	    let debug = displayDebug.displayMapAddPoints;
+	    let features = [];
             let colorBy = this.getColorByInfo(records);
 	    let cidx=0
 	    let polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
@@ -2195,6 +2198,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		}
 	    }
+
+
             let strokeWidth = +this.getPropertyStrokeWidth();
             let strokeColor = this.getPropertyStrokeColor();
             let sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
@@ -2239,6 +2244,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		field:null,
 		map: {}
 	    }
+
 
 	    if(this.getDisplayProp(source, "shapeByMap", null)) {
 		this.getDisplayProp(source, "shapeByMap", null).split(",").forEach((pair)=>{
@@ -2287,8 +2293,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let dates = [];
             let justOneMarker = this.getProperty("justOneMarker",false);
-
-
             for (let i = 0; i < records.length; i++) {
                 let pointRecord = records[i];
 		dates.push(pointRecord.getDate());
@@ -2315,6 +2319,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
             }
 
+
+
             if (this.points) {
 		this.points.forEach(point=>{
 		    if(point.isMarker)
@@ -2339,9 +2345,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.lines = [];
             }
 
+
             let dontAddPoint = this.doDisplayMap();
             let didColorBy = false;
             let seen = {};
+	    let xnct =0;
 	    let lastPoint;
 	    let pathAttrs ={
 		strokeColor: this.getProperty("pathColor",lineColor),
@@ -2379,24 +2387,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		return null;
 	    };	    
-
 	    this.haveAddPoints = true;
 	    let displayInfo = this.displayInfo = {};
 	    records.forEach(record=>{
-		let recordLayout = displayInfo[record] = {
+		let recordLayout = displayInfo[record.getId()] = {
 		    features:[],
 		    visible:true
 		}
-		let point = record.point;
-		if(!point) {
-		    recordLayout.centerPoint = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
+		if(!record.point) {
+		    recordLayout.x = record.getLongitude();
+		    recordLayout.y = record.getLatitude();
 		} else {
-		    recordLayout.centerPoint = new OpenLayers.Geometry.Point(point.x,point.y);
+		    recordLayout.x = record.point.x;
+		    recordLayout.y = record.point.y;
 		}
 	    });
+//	    return
 
-	    let recordChecker = r=>{};
-	    let collisionVisible = this.getPropertyCollisionFixed();
 	    if(this.getPropertyHandleCollisions()) {
 		//TODO: labels
 		let doLabels = this.getProperty("collisionLabels",false);
@@ -2447,19 +2454,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    return v;
 		};
 		let getPoint = (p=>{
-		    let lat = p.y;
-		    let lon = p.x;
-		    lat = rnd(lat);
-		    lon = rnd(lon);
-//		    console.log(p.y +" " + lat +" " + p.x +" " + lon);
-		    let rpoint = new OpenLayers.Geometry.Point(lon,lat);
-		    return rpoint;
+		    let lat = rnd(p.y);
+		    let lon = rnd(p.x);
+		    return new OpenLayers.Geometry.Point(lon,lat);
 		});
 		let recordInfo = {};
 		records.forEach(record=>{
-		    let recordLayout = displayInfo[record];
-		    recordLayout.rpoint = getPoint(recordLayout.centerPoint);
-		    if(recordLayout.rpoint==null) return;
+		    let recordLayout = displayInfo[record.getId()];
+		    recordLayout.rpoint = getPoint(recordLayout);
 		    if(seen1[recordLayout.rpoint]) {
 			seen1[recordLayout.rpoint]++;
 		    } else {
@@ -2467,9 +2469,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		});
 		let collisionState= this.collisionState = {};
+		let collisionVisible = this.getPropertyCollisionFixed();
+
+
 		records.forEach((record,idx)=>{
-		    let recordLayout = displayInfo[record];
-		    let point = recordLayout.centerPoint;
+		    let recordLayout = displayInfo[record.getId()];
+		    let point = recordLayout;
 		    let rpoint = recordLayout.rpoint;
 		    if(rpoint ==null) return;
 		    if(seen1[rpoint]==1) {
@@ -2511,16 +2516,37 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 	    }
 
+	    let t2  =new Date();
+//	    Utils.displayTimes("map points 1:",[t1,t2], true);
 
-            for (let i = 0; i < records.length; i++) {
-                let record = records[i];
-		let recordDate = record.getDate();
-                let tuple = record.getData();
-		let recordLayout = displayInfo[record];
-		let point  = recordLayout.centerPoint;
+	    let t3,t4,t5,t6;
+	    let i=0;
+	    let sizeByFunc = function(percent, size) {
+                if (sizeEndPoints &&!isNaN(percent)) {
+		    endPointSize = dfltEndPointSize + parseInt(10 * percent);
+                }
+                if (sizeSegments) {
+		    if(isNaN(percent)) {
+			segmentWidth = dfltSegmentWidth + size;
+		    } else {
+			segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+			segmentWidth=size;
+			if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
+		    }
+                }
+	    };
+
+
+
+	    let colorByEnabled = colorBy.isEnabled();
+	    let graphicName = this.getPropertyShape();
+	    records.forEach(record=>{
+		i++;
+		let recordLayout = displayInfo[record.getId()];
+		if(!recordLayout) return;
+		let point  = recordLayout;
 		if(!point)
                     point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
-
 
 		if(justOneMarker) {
                     if(this.justOneMarker)
@@ -2529,7 +2555,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         this.justOneMarker= this.map.addMarker(id, [point.x,point.y], null, "", "");
                         return;
                     } else {
-                        continue;
+			return;
                     }
                 }
 
@@ -2564,26 +2590,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
                 segmentWidth = dfltSegmentWidth;
-		let sizeByFunc = function(percent, size) {
-                    if (sizeEndPoints &&!isNaN(percent)) {
-			endPointSize = dfltEndPointSize + parseInt(10 * percent);
-                    }
-                    if (sizeSegments) {
-			if(isNaN(percent)) {
-			    segmentWidth = dfltSegmentWidth + size;
-			} else {
-			    segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
-			    segmentWidth=size;
-			    if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
-			}
-                    }
-		};
                 props.pointRadius = sizeBy.getSize(values, props.pointRadius,sizeByFunc);
+		if(props.pointRadius<0) return;
 
 
-		if(props.pointRadius<0) continue;
 		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
-
 		let hasColorByValue = false;
 		let colorByValue;
 		let colorByColor;
@@ -2601,7 +2612,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colorByValue = maxValue;
 		    theColor = maxColor;
 		} else {
-		    if(colorBy.isEnabled()) {
+		    if(colorByEnabled) {
 			let value = record.getData()[colorBy.index];
 			colorByValue = value;
 			theColor =  colorBy.getColorFromRecord(record, theColor);
@@ -2621,8 +2632,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(unhighlightRadius>0)
 			props.pointRadius = unhighlightRadius;
 		}
-
-
 
 
 		if(polygonField) {
@@ -2659,6 +2668,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			let poly = this.map.addPolygon("polygon" + pIdx, "",p,polygonProps);
 			poly.textGetter = textGetter;
 			poly.record = record;
+			let recordDate = record.getDate();
 			if (recordDate) {
 			    poly.date = recordDate.getTime();
 			}
@@ -2717,22 +2727,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 
+
+
                 if (showPoints) {
                     //We do this because openlayers gets really slow when there are lots of features at one point
-		    let key = String(point);
-		    if (!seen[key]) seen[key] = 1;
-                    if (seen[key] > 500) {
-			continue;
+		    let key = point.x*10000 + point.y;
+		    if (!seen[key]) {
+			seen[key] = 1;
+		    }  else {
+			if (seen[key] > 500) {
+			    return;
+			}
+			seen[key]++;
 		    }
-                    seen[key]++;
-		    //		    continue;
-		    let includePoints = colorBy.isEnabled();
+
 		    let mapPoint=null;
 		    let mapPoints =recordLayout.features;
-
 		    //marker
 		    if(usingIcon) {
 			if(iconField) {
+			    let tuple = record.getData();
 			    let icon = tuple[iconField.getIndex()];
 			    if(iconMap) {
 				icon = iconMap[icon];
@@ -2751,19 +2765,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    mapPoints.push(mapPoint);
 			}
 		    } 
-		    if(!usingIcon || includePoints)  {
+
+
+
+		    if(!usingIcon || colorByEnabled)  {
 			if(!props.graphicName)
-			    props.graphicName = this.getPropertyShape();
+			    props.graphicName = graphicName;
 			if(radius>0) {
 			    mapPoint = this.map.addPoint("pt-" + i, point, props, null, dontAddPoint);
-			    mapPoints.push(mapPoint);
+			    if(mapPoint)
+				mapPoints.push(mapPoint);
 			}
 		    }
 		    if(isPath && lastPoint) {
 			this.lines.push(this.map.addLine("line-" + i, "", lastPoint.y, lastPoint.x, point.y,point.x,pathAttrs));
 		    }
 		    lastPoint = point;
-
+		    if(features) {
+			mapPoints.forEach(f=>{features.push(f);});
+		    }
                     let date = record.getDate();
 		    mapPoints.forEach(mapPoint=>{
 			if(highlight) {
@@ -2785,14 +2805,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			}
 		    });
 		}
-	    }
+	    });
 
+	    t3  =new Date();
+//	    Utils.displayTimes("map points 2:",[t2,t3], true);
 	    if (showSegments) {
 		this.map.centerOnMarkers();
 	    }
 
-	    if(this.map.circles)
-		this.map.circles.redraw();
+//Don't think we have to do this here. Saves lots of draw time
+//	    if(this.map.circles)
+//		this.map.circles.redraw();
+
+
 
 	    let legendSide = this.getProperty("sizeByLegendSide");
 	    if(legendSide) {
@@ -2840,7 +2865,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.getAnimation().doNext();
 	    }
 
-
         },
 
         addLabels:function(records, fields, points) {
@@ -2880,11 +2904,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var point = record.point;
 		//For now just set the lat/lon
 		point = {x:record.getLongitude(),y:record.getLatitude()};
-                if(seen[point]) {
-//		    console.log("seen");
-//		    continue;
-		}
-                seen[point] = true;
                 var center = new OpenLayers.Geometry.Point(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
                 var tuple = record.getData();
@@ -3012,6 +3031,11 @@ function MapEntryInfo(entry) {
 
     });
 }
+
+
+
+
+
 
 
 
@@ -3150,7 +3174,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 		    }
 		}
 		//TODO: sort the state data on time
-                if (colorBy.isEnabled()) {
+                if (colorByEnabled) {
                     let value = record.getData()[colorBy.index];
 		    let color = colorBy.getColorFromRecord(record);
 		    let cell = contents.find("#" + cellId);
@@ -5388,3 +5412,145 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
     })}
 
 
+
+
+
+
+
+
+
+
+
+const DISPLAY_MAPCHART = "mapchart";
+//Note: Added requiresData and category
+addGlobalDisplayType({
+    type: DISPLAY_MAPCHART,
+    forUser: false,
+    label: "Map chart",
+    requiresData: true,
+    category:CATEGORY_MAPS_IMAGES
+});
+
+
+
+function RamaddaMapchartDisplay(displayManager, id, properties) {
+    const ID_MAPCHART = "mapchart";
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MAPCHART, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Map chart Properties'},
+	{p:'dateField',wikiValue:''},
+	{p:'valueField',wikiValue:''},
+    ]);
+
+    this.mapJson = null;
+    var jqxhr = $.getJSON(ramaddaBaseUrl+"/display/usmap.json", (data) =>{
+	this.mapJson = data;
+	this.updateUI();
+    });
+
+    $.extend(this, {
+        checkLayout: function() {
+            this.updateUI();
+        },
+        updateUI: function() {
+	    if(!this.mapJson) return;
+            let records = this.filterData();
+            if (!records) {
+//                return;
+            }
+	    let range  = {
+		minLon:null,
+		maxLon:null,
+		minLat:null,
+		maxLat:null
+	    };
+	    let states = {};
+	    this.mapJson.states.forEach(state=>{
+//		if(state!="Colorado") return;
+		let s = this.mapJson.statePathLookup[state];
+		let coords = s.geometry.coordinates;
+		let info = {
+		    name:state,
+		    polygons:[]
+		};
+		states[state] = info;
+		if(s.geometry.type  == "MultiPolygon") {
+		    coords.forEach(group=>{
+			group.forEach(polygon=>{
+			    info.polygons.push(polygon);
+			});
+		    });
+		} else {
+		    coords.forEach(polygon=>{
+			info.polygons.push(polygon);
+		    });
+		}
+		if(state == "Alaska" || state == "Hawaii") return;
+		info.polygons.forEach(polygon=>{
+		    polygon.forEach(point=>{
+			let lon = point[0];
+			let lat = point[1];
+			if(isNaN(lon) || isNaN(lat)) return;
+			range.minLon= range.minLon===null?lon:Math.min(range.minLon,lon);
+			range.maxLon= range.maxLon===null?lon:Math.max(range.maxLon,lon);
+			range.minLat= range.minLat===null?lat:Math.min(range.minLat,lat);
+			range.maxLat= range.maxLat===null?lat:Math.max(range.maxLat,lat);						
+		    });
+		});
+	    });
+	    let width = +this.getProperty("mapWidth",800);
+	    let mw = range.maxLon-range.minLon;
+	    let mh = range.maxLat-range.minLat;
+	    let height = mh/mw*width;
+//	    let height = +this.getProperty("mapHeight",400);	    
+	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,this.getDomId(ID_MAPCHART),STYLE,HU.css(BACKGROUND,"#ccc",WIDTH,HU.getDimension(width),HEIGHT, HU.getDimension(height))]));
+
+	    const svg = d3.select("#" + this.getDomId(ID_MAPCHART)).append('svg')
+		  .attr('width', width)
+		  .attr('height', height)
+		  .append('g')
+	    	  .attr('transform', 'translate(' + width/2+"," + height/2+')' + ',scale(0.9),rotate(0),' + 'translate(' + -width/2+"," + -height/2+')');
+	    let padx = 50;
+	    let pady = padx*mh/mw;
+	    let scaleX  = d3.scaleLinear().domain([range.minLon, range.maxLon]).range([50, width-padx]);
+	    let scaleY  = d3.scaleLinear().domain([range.maxLat, range.minLat]).range([50, height-pady]);
+	    console.log(JSON.stringify(range) + " " + scaleX(range.minLon) + " " + scaleX(range.maxLon) +" " + scaleY(range.minLat) + " " + scaleY(range.maxLat));
+	    this.mapJson.states.forEach(state=>{
+		if(state == "Alaska" || state == "Hawaii") return;
+		let  iters = 10;
+//		if(state=="Colorado") iters=10;
+		let info = states[state];
+		let s = this.mapJson.statePathLookup[state];
+		let cnt = 0
+		for(let i=0;i<iters;i++) {
+		info.polygons.forEach(polygon=>{
+		    cnt++;
+		    let poly = [];
+		    polygon.forEach(point=>{
+			let lon = point[0];
+			let lat = point[1];
+			if(isNaN(lon) || isNaN(lat)) return;
+			poly.push({x:lon,y:lat});
+		    });
+		    svg.selectAll(state+cnt)
+			.data([poly])
+			.enter().append("polygon")
+			.attr("points",function(d) { 
+			    let pts = d.map(function(d) {
+				return [-i+scaleX(d.x),-i+scaleY(d.y)].join(",");
+			    }).join(" ");
+			    return pts;
+			})
+			.attr("fill",i==iters-1?"red":"transparent")
+			.attr("opacity",1)
+			.attr("stroke","blue")
+			.attr("stroke-width",1);
+		});
+		}
+		});
+
+	}
+    });
+}
