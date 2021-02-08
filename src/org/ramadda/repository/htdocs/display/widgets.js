@@ -154,6 +154,7 @@ function DisplayAnimation(display, enabled) {
     const ID_END= "animend";
     const ID_SLIDER = "slider";
     const ID_TICKS = "ticks";
+    const ID_TOOLTIP = "tooltip";    
     const ID_SHOWALL = "showall";
     const ID_ANIMATION_LABEL = "animationlabel";
     const MODE_FRAME = "frame";
@@ -224,7 +225,6 @@ function DisplayAnimation(display, enabled) {
 		this.end = this.begin;
 	    }
 
-	    
             this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 	    this.steps= parseFloat(this.display.getProperty("animationSteps", 60));
 	    this.windowUnit = this.display.getProperty("animationWindow", "");
@@ -255,7 +255,7 @@ function DisplayAnimation(display, enabled) {
 		this.window = this.dateRange / this.steps;
 	    }
 	    var sliderValues = this.mode != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
-	    this.jq(ID_SLIDER).slider({
+	    let slider = this.jq(ID_SLIDER).slider({
 		range: _this.mode != MODE_FRAME,
 		min: _this.dateMin.getTime(),
 		max: _this.dateMax.getTime(),
@@ -272,6 +272,30 @@ function DisplayAnimation(display, enabled) {
 		}
 	    });
 
+	    let xx = true;
+	    this.jq(ID_SLIDER).on({
+		mouseleave: function(e) {
+		    if(_this.tooltip)
+			_this.tooltip.hide();
+		},
+		mousemove: function(e) {
+		    if(!_this.tooltip) return;
+		    if(e.offsetX>=0) {
+			let parentWidth = _this.tooltip.parent().width();
+			let parentLeft = _this.tooltip.parent().offset().left; 
+			let percent = (e.pageX-parentLeft)/parentWidth;
+			let dttm = new Date(_this.dateMin.getTime() + percent*_this.dateRange);
+			dttm = _this.formatAnimationDate(dttm,_this.tooltipDateFormat);
+			_this.tooltip.html(dttm);
+			_this.tooltip.show();
+			_this.tooltip.position({
+			    of: e.target,
+			    my: "left top",
+			    at: "left+" + e.offsetX +" bottom",
+			    collision: "fit fit"
+			});
+		    }
+		}});
 
 	    this.updateTicks();
 	    if(debug)console.log("animation.init-3");
@@ -348,13 +372,20 @@ function DisplayAnimation(display, enabled) {
             buttons = HtmlUtils.div([ CLASS,"display-animation-buttons"], buttons);
 	    if(showSlider) {
 		let style= display.getProperty("animationSliderStyle","");
+		let tooltip  = HU.div([ID,this.getDomId(ID_TOOLTIP),CLASS,"display-animation-tooltip"],"");
 		buttons +=   HtmlUtils.div([CLASS,"display-animation-slider",STYLE,style,ID,this.getDomId(ID_SLIDER)],
-					   HtmlUtils.div([CLASS,"display-animation-ticks",ID,this.getDomId(ID_TICKS)]));
+					   tooltip + HtmlUtils.div([CLASS,"display-animation-ticks",ID,this.getDomId(ID_TICKS)]));
 	    }
 
 	    if(this.display.getProperty("animationShow",true)) {
 		this.jq(ID_TOP_LEFT).append(HtmlUtils.div([STYLE,this.display.getProperty("animationStyle")], buttons));
 	    }
+
+	    if(this.display.getProperty("animationTooltipShow",false)) {
+		this.tooltip = this.jq(ID_TOOLTIP);
+		this.tooltipDateFormat = this.display.getProperty("animationTooltipDateFormat");
+	    }
+
             this.btnRun = this.jq(ID_RUN);
             this.btnPrev = this.jq(ID_PREV);
             this.btnNext = this.jq(ID_NEXT);
@@ -586,8 +617,9 @@ function DisplayAnimation(display, enabled) {
 		if(this.highlightRecords[record.getId()]) {
 		    clazz+=" display-animation-tick-highlight-base ";
 		}
-		ticks+=HtmlUtils.div([TITLE,record.getId(),ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css('left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
+		ticks+=HtmlUtils.div([TITLE,"",ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css('left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
 	    }
+
 	    this.jq(ID_TICKS).html(ticks);
 	    if(debug)console.log("animation.init done making ticks");
 	    let propagateHighlight = display.getProperty("animationHighlightRecord",false);
@@ -631,7 +663,7 @@ function DisplayAnimation(display, enabled) {
 
 
 	},
-        formatAnimationDate: function(date,debug) {
+        formatAnimationDate: function(date,format,debug) {
 	    let timeZoneOffset =this.display.getProperty("timeZoneOffset");
 	    let timeZone =this.display.getProperty("timeZone");	    
 	    if(timeZoneOffset) {
@@ -639,7 +671,7 @@ function DisplayAnimation(display, enabled) {
 		date = Utils.createDate(date, -timeZoneOffset);
 		if(debug) console.log("date after:" + date.toUTCString());
 	    }
-	    let fmt =  Utils.formatDateWithFormat(date,this.dateFormat,true);
+	    let fmt =  Utils.formatDateWithFormat(date,format||this.dateFormat,true);
 	    if(timeZone) return fmt +" " + timeZone;
 	    return fmt;
         },
@@ -1286,6 +1318,89 @@ function drawSparkLine(display, dom,w,h,data, records,min,max,colorBy,attrs, mar
 	    });
     }
 }
+
+
+
+function drawDots(display, dom,w,h,data, range, colorBy,attrs, margin) {
+    attrs = attrs ||  {};
+    margin = margin || { top: 0, right: 0, bottom: 0, left: 0 };
+    const INNER_WIDTH  = w - margin.left - margin.right;
+    const INNER_HEIGHT = h - margin.top - margin.bottom;
+    const x    = d3.scaleLinear().domain([range.minx, range.maxx]).range([0, INNER_WIDTH]);
+    const y    = d3.scaleLinear().domain([range.miny, range.maxy]).range([INNER_HEIGHT, 0]);
+    var tt = d3.select("body").append("div").attr(CLASS, "sparkline-tooltip").style("opacity", 0);
+    const svg = d3.select(dom).append('svg')
+	  .attr('width', w)
+	  .attr('height', h)
+	  .append('g')
+//	  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    let circleColor = attrs.circleColor ||display.getProperty("sparklineCircleColor","#000");
+    let circleRadius = attrs.circleRadius ||display.getProperty("sparklineCircleRadius",1);
+    let getColor = (d,i,dflt)=>{
+	return "#000"
+	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
+    };
+    console.log(JSON.stringify(range));
+
+    let getNum = n=>{
+	if(isNaN(n)) return 0;
+	return n;
+    };
+
+    
+    let recordMap = {};
+    
+    svg.selectAll('circle').data(data).enter().append("circle")
+	.attr('r', (d,i)=>{return circleRadius})
+	.attr('cx', (d,i)=>{return getNum(x(d.x))})
+	.attr('cy', (d,i)=>{return getNum(y(d.y))})
+	.attr('fill', (d,i)=>{return getColor(d,i,circleColor)})
+	.attr(RECORD_ID, (d,i)=>{
+	    return "XX";
+	    recordMap[d.record.getId()] =d.record;
+	    return d.record.getId()})
+	.style("cursor", "pointer");
+
+    let _display = display;
+    let doTooltip = display.getProperty("sparklineDoTooltip", true)  || attrs.doTooltip;
+    svg.on("click", function() {
+	var coords = d3.mouse(this);
+	if(records) {
+	    let record = records[Math.round(x.invert(coords[0]))]
+	    if(record)
+		_display.propagateEventRecordSelection({select:true,record: record});
+	}
+    });
+
+
+    if(doTooltip) {
+	svg.on("mouseover", function() {
+	    d3.select(this).attr("r", 10).style("fill", "red");
+	    let ele = $(dom);
+	    ele.attr('r', 20);
+	    console.log("mouse over:" + d3.select(this).attr(RECORD_ID));
+	    return
+	    let record = recordMap[ele.attr(RECORD_ID)];
+	    console.log(ele.attr(RECORD_ID) +" " + record);
+	    var coords = d3.mouse(this);
+	    if(!record) return;
+	    let html = _display.getRecordHtml(record);
+	    let offset = ele.offset().top + ele.height();
+	    let left = ele.offset().left;
+	    tt.transition().duration(200).style("opacity", .9);		
+	    tt.html(html)
+		.style("left", left + "px")		
+		.style("top", offset + "px");	
+	})
+	    .on("mouseout", function(d) {		
+		tt.transition()		
+		    .duration(500)		
+		    .style("opacity", 0);
+	    });
+    }
+}
+
 
 
 
@@ -2216,6 +2331,10 @@ function Glyph(display, scale, fields, records, args, attrs) {
 
 
 }
+
+
+
+
 
 
 
