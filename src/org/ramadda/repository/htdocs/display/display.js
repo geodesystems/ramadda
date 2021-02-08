@@ -1012,6 +1012,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"acceptEventAnimationChange=false",
 		"acceptDateRangeChange=true",
 		"animationDateFormat=\"yyyy\"",
+		"animationTooltipShow=\"true\"",
+		"animationTooltipDateFormat=\"yyyymmddhhmm\"",		
 		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
 		"animationMode=\"sliding|frame|cumulative\"",
 		"animationSpeed=\"500\"",
