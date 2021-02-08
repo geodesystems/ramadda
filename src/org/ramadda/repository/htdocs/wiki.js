@@ -181,6 +181,8 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
     var selText, isSample = false;
     tagOpen = tagOpen.replace(/&quote;/gi, '\"');
     tagClose = tagClose.replace(/&quote;/gi, '\"');
+    tagOpen = tagOpen.replace(/_quote_/gi, '\"');
+    tagClose = tagClose.replace(/_quote_/gi, '\"');    
 
     tagOpen = tagOpen.replace(/_newline_/gi, '\n');
     tagOpen = tagOpen.replace(/newline/gi, '\n');

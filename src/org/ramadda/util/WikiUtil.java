@@ -745,6 +745,8 @@ public class WikiUtil {
         String           afterFade       = null;
         boolean          inPropertyTag   = false;
         String           dragId          = null;
+        boolean dragToggle  = false;
+        boolean dragToggleVisible  = false;	
         //      System.err.println("S:"+ s+":");
         s = s.replaceAll("\r", "");
         for (String line :
@@ -803,14 +805,12 @@ public class WikiUtil {
             if (tline.equals("+pre")) {
                 inPre = true;
                 buff.append("<pre>\n");
-
                 continue;
             }
 
             if (tline.equals("-pre")) {
                 inPre = false;
                 buff.append("</pre>\n");
-
                 continue;
             }
 
@@ -1409,24 +1409,11 @@ public class WikiUtil {
 
                 continue;
             }
-
-
-
-
-
-
-
-
-
-
             if (tline.startsWith("-div")) {
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
                 continue;
             }
-
-
-
 
             if (tline.startsWith("+gridboxes")) {
                 tline = tline.substring(1);
@@ -1516,24 +1503,34 @@ public class WikiUtil {
                         ? toks.get(1)
                         : "");
                 dragId = HtmlUtils.getUniqueId("draggable");
+
+                dragToggle = Utils.getProperty(props, "toggle",false);
+                dragToggleVisible = Utils.getProperty(props,"toggleVisible",true);
+                String  style = (String) props.get("style");
                 String header = (String) props.get("header");
                 String clazz  = "ramadda-draggable";
                 if (Misc.equals("true", props.get("framed"))) {
                     clazz = "ramadda-draggable-frame";
                 }
-                HtmlUtils.open(buff, "div", "id", dragId);
+		if(style==null) style="";
+                HtmlUtils.open(buff, "div", "id", dragId,"style","display:inline-block;z-index:1000;"+style);
                 if (header != null) {
+		    if(dragToggle) {
+			header = HtmlUtils.image("","id",dragId+"_img") +" " + header;
+		    }
                     HtmlUtils.div(buff, header,
                                   HtmlUtils.attrs("class",
-                                      "ramadda-draggable-header"));
+						  "ramadda-draggable-header"));
                 }
-                HtmlUtils.open(buff, "div", "class", clazz);
-
+                HtmlUtils.open(buff, "div", "class", clazz,"id",dragId+"_frame");
+		if(dragToggle) {
+		    HtmlUtils.script(buff, "HtmlUtils.makeToggle('" + dragId+"_img','" + dragId+"_frame'," + dragToggleVisible+");");
+		}
                 continue;
             }
 
             if (tline.startsWith("-draggable")) {
-                if (dragId != null) {
+		if (dragId != null) {
                     HtmlUtils.close(buff, "div");
                     HtmlUtils.close(buff, "div");
                     //              HtmlUtils.script(buff, "$('#" + dragId +"').draggable();\n");
@@ -1702,18 +1699,14 @@ public class WikiUtil {
                     buff,
                     handler.getHtdocsUrl(
                         "/lib/scrollify/jquery.scrollify.js"));
-
                 continue;
             }
-
-
 
             if (tline.startsWith("-scroll")) {
                 buff.append("\n");
                 inScroll = false;
                 HtmlUtils.importJS(
                     buff, handler.getHtdocsUrl("/lib/scrollify/template.js"));
-
                 continue;
             }
 

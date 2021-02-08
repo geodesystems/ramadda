@@ -5591,6 +5591,45 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "-segment_newline_-accordion_newline_", "Accordion",
                 "mw-editbutton-headline"));
 
+	tags.append(
+            addWikiEditButton(
+                textAreaId, "button_section.png", "Draggable",
+		"+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
+                "-draggable", "Draggable", "mw-editbutton-bold"));
+
+	tags.append(
+            addWikiEditButton(
+                textAreaId, "", "Expandable",
+		"+expandable header=_quote_quote_ expand=true_newline_",
+                "-expandable", "Expandable", ""));	
+
+	tags.append(addWikiEditButton(textAreaId, "", "Grid box",
+				      "+gridboxes-2_newline_+gridbox Title 1_newline_-gridbox_newline_+gridbox Title 2_newline_-gridbox_newline_",
+				      "-gridboxes", "Gird box", ""));
+
+
+	tags.append(
+            addWikiEditButton(
+                textAreaId, "", "Scroll panels",
+		"+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_",
+                "-scroll", "Scroll panels", ""));	
+
+
+	tags.append(addWikiEditButton(textAreaId, "", "CSS",
+				      "+css_newline_",
+				      "-css", "CSS", ""));
+	tags.append(addWikiEditButton(textAreaId, "", "Inset",
+				      "+inset top=0 bottom=0 left=0 right=0 _newline_",
+				      "-inset", "Inset", ""));	
+	tags.append(addWikiEditButton(textAreaId, "", "Div",
+				      "+div class=_quote__quote_ style=_quote__quote_ background=_quote__quote_ _newline_",
+				      "-div", "Div", ""));
+	
+
+
+
+
+
         tags.append(addWikiEditButton(textAreaId, "button_bold.png",
                                       "Bold text", "\\'\\'\\'", "\\'\\'\\'",
                                       "Bold text", "mw-editbutton-bold"));
@@ -5778,6 +5817,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 textAreaId, "", "Reload",
                 "\\n:reload seconds=30 showCheckbox=true showLabel=true", "",
                 "", ""));
+
+	misc.append(addWikiEditButton(textAreaId, "", "After",
+				      "+after pause=0 afterFade=5000_newline__newline_",
+				      "-after", "After", ""));
+
+	
+        misc.append(addWikiEditButton(textAreaId, "",
+                                      "Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", "",
+                                      "", ""));
+
+
 
         String miscButton = getPageHandler().makePopupLink(msg("Misc"),
                                 misc.toString(), buttonClass);

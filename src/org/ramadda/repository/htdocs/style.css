@@ -306,16 +306,17 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-draggable-frame {
-    z-index:500;
+    z-index:1000;
     border:1px solid #ccc;
     padding:4px;
+    position:relative;
 }
 
 
 .ramadda-draggable-header {
     background:#efefef;
     border:1px solid #ccc;    
-    border-bottom:0px solid #ccc;
+    border-bottom:1px solid #ccc;
     cursor:grab;
     padding:4px;
 }

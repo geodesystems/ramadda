@@ -3233,28 +3233,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
     },
     makeDraggable:function(selector) {
-	let ele = $(selector);
-	ele.draggable({
+	$(selector).draggable({
+	    zIndex:1000,
 	    start: function( event, ui ) {
+		//Make the draggable be absolute
 		if(!$(this).attr("started")) {
 		    $(this).attr("started",true);
-		    let pos = $(this).offset();
-		    let bodyo = $(document.body).offset().top;
-		    let bodyh = $(document.body).height();
-		    $(this).attr("pos_top",pos.top);
-		    $(this).attr("bodyh",bodyh+bodyo);		    
-		    $(document.body).append($(this));
-		} else {
-		    $(this).attr("pos_top",0);
-		    $(this).attr("bodyh",0);		    
+		    let o = $(this).offset();		    
+		    $(this).css("position","absolute").css("left",o.left+"px").css("top",o.top+"px");
 		}
 	    },
-	    drag: function( event, ui ) {
-		let pos = $(this).offset();
-		let pos_top = +$(this).attr("pos_top");
-		let bodyh = +$(this).attr("bodyh");
-		ui.position.top = pos_top + ui.position.top-bodyh;
-	    }
 	});
     },
     idAttr: function(s) {
@@ -3506,6 +3494,36 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     squote: function(s) {
         return "'" + s + "'";
+    },
+    makeToggle: function(imageId,blockId,visible) {
+	if(visible===null) visible = true;
+        let img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
+        let img2 = ramaddaBaseUrl + "/icons/togglearrowright.gif";
+	$("#" + imageId).attr("state","open");
+	$("#" + imageId).attr("src",img1);
+	$("#" + imageId).css("cursor","pointer");	
+	let open = (img) =>{
+	    img.attr("state","open");
+	    img.attr("src",img1);
+	    $("#" + blockId).show();
+	};
+	let close = (img) =>{
+	    img.attr("state","close");
+	    img.attr("src",img2);
+	    $("#" + blockId).hide();
+	};
+	$("#" + imageId).click(function(e){
+	    let state = $(this).attr("state");
+	    if(state=="open") {
+		close($(this));
+	    } else {
+		open($(this));
+	    }
+            e.preventDefault();
+	});
+	if(!visible) {
+	    close($("#" + imageId));
+	}
     },
     toggleBlock: function(label, contents, visible) {
         var id = "block_" + (uniqueCnt++);
