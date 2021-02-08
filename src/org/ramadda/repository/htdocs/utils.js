@@ -840,7 +840,8 @@ var Utils =  {
         return this.camelCase(s.replace(/_/g," "));
     },
     makeId: function(s) {
-        s  = String(s);
+	s  = String(s);
+	s = s.replace(/[^\x00-\x7F]/g, "_");
         s = s.trim().toLowerCase().replace(/ /g,"_");
         return s;
     },    
