@@ -2508,7 +2508,6 @@ public class TypeHandler extends RepositoryManager {
 
         if (parent != null) {
             parent.getEntryLinks(request, entry, links);
-
             return;
         }
 
@@ -2571,8 +2570,6 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (canDoNew) {
-
-
             List<String> pastTypes =
                 (List<String>) getSessionManager().getSessionProperty(
                     request, ARG_TYPE);
@@ -2649,7 +2646,8 @@ public class TypeHandler extends RepositoryManager {
                         entry), ICON_METADATA_EDIT, "Edit Properties",
                                 OutputType.TYPE_EDIT));
 
-            if (getMetadataTypes().size() > 0) {
+	    List<String> metadataTypes = entry.getTypeHandler().getMetadataTypes();
+            if (metadataTypes.size() > 0) {
                 links.add(makeHRLink(OutputType.TYPE_EDIT));
             }
 
@@ -2660,8 +2658,8 @@ public class TypeHandler extends RepositoryManager {
                         entry), ICON_METADATA_ADD, "Add Property...",
                                 OutputType.TYPE_EDIT));
 
-            if (getMetadataTypes().size() > 0) {
-                for (String metadataType : getMetadataTypes()) {
+            if (metadataTypes.size() > 0) {
+                for (String metadataType : metadataTypes) {
                     MetadataType type =
                         getMetadataManager().findType(metadataType);
                     links.add(
