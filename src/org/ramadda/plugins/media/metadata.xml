@@ -14,5 +14,13 @@
       <element name="Screen shot" datatype="file" thumbnail="false"/>
       <template type="xxxhtml"><![CDATA[<b>${attr1}</b><br>${attr2}]]></template>
     </type>
+    <type name="3D Label" id="3d_label"  searchable="false" browsable="true">
+      <element name="Label" />
+      <element name="Width"  default="6" suffix=""/>      
+      <element name="Position"  default="-1 1 -1" suffix="X Y Z"/>
+      <element name="Rotation"  default="0 0 0" suffix=""/>            
+    </type>
+
+
 </handler>
 </metadata>

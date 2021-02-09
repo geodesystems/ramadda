@@ -19,12 +19,16 @@ package org.ramadda.plugins.media;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
-
 import ucar.unidata.util.IOUtil;
 
+import java.util.List;
+import java.util.Hashtable;
 
 /**
  *
@@ -32,6 +36,11 @@ import ucar.unidata.util.IOUtil;
  */
 public class ImageTypeHandler extends GenericTypeHandler {
 
+
+    public static final int IDX_PROXY = 0;
+    public static final int IDX_FILENAME = 1;
+    public static final int IDX_LAST = 1;    
+    
 
     /**
      * _more_
@@ -76,4 +85,44 @@ public class ImageTypeHandler extends GenericTypeHandler {
         return path;
     }
 
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+
+        if (tag.equals("360image")) {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("\n\n");
+	    request.putExtraProperty("aframejs","true");
+	    HU.importJS(
+			sb,
+			"https://aframe.io/releases/0.8.0/aframe.min.js");
+	    String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request,  entry);
+	    String width = Utils.getProperty(props,"width","600px");
+	    String height = Utils.getProperty(props,"height","200px");
+	    sb.append("\n");
+	    sb.append(HtmlUtils.importCss("a-scene {height: " + height +";width:" +width+";}"));
+	    sb.append("\n<a-scene embedded>\n");
+	    List<Metadata> metadataList =
+		getMetadataManager().findMetadata(request, entry, "3d_label",
+						  true);
+	    if ((metadataList != null) && (metadataList.size() > 0)) {
+		for (Metadata metadata : metadataList) {
+		    sb.append("<a-text  value='" + metadata.getAttr1()+"' width='" + metadata.getAttr2() +"' position='" + metadata.getAttr3() + "' rotation='" + metadata.getAttr4()+"'></a-text>\n");
+		}
+	    }
+	    String rotation = (String) entry.getValue(IDX_LAST+1,"");
+	    sb.append("<a-sky src='" + imgUrl +"'");
+	    if(rotation!=null && rotation.trim().length()>0) {
+		sb.append(" rotation='" + rotation +"' ");
+	    }
+	    sb.append(" ></a-sky>\n ");
+	    sb.append("</a-scene>\n ");
+	    return sb.toString();
+        }
+	return super.getWikiInclude(wikiUtil, request, originalEntry,
+				    entry, tag, props);
+
+    }
 }
