@@ -1449,6 +1449,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			} else {
 			    label = v;
 			}
+
 			var style = this.getProperty(filterField.getId() +".filterItemStyle","");
 			if(color) {
 			    style += " background-color:" + color +"; ";
@@ -1505,7 +1506,19 @@ function RecordFilter(display,filterFieldId, properties) {
 		} else {
 		    if(debug) console.log("\tis select");
 		    var tmp = [];
-		    enums.map(e=>tmp.push(e.value)); 
+		    enums.map(e=>{
+			let count  = e.count;
+			let v = e.value;
+			let label = v;
+			if(Array.isArray(v)) {
+			    v = e.value[0];
+			    label = e.value[1];
+			    if(v == "")
+				label = "-blank-";
+			}
+			if(count) label = label +" (" + count+")";
+			tmp.push([v,label]);
+		    }); 
                     widget = HtmlUtils.select("",attrs,tmp,dfltValue);
 		    if(this.getProperty(filterField.getId() +".filterLabel")) {
 			widget=HU.vbox([this.getProperty(filterField.getId() +".filterLabel"),widget]);
@@ -1579,12 +1592,21 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 		else
 		    label = label+" ";
+		let vertical = this.getProperty(filterField.getId()+".filterVertical",false)  || this.getProperty("filterVertical",false);
+
 		widget = HtmlUtils.div(["style","display:inline-block;"],
-				       this.display.makeFilterLabel(label,tt) + widget+suffix);
+				       this.display.makeFilterLabel(label,tt) + (vertical?"<br>":"") + widget+suffix);
 	    }
             return widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
 	},
 	getEnums: function(records) {
+	    let counts = {};
+	    records.forEach((record,idx)=>{
+		let v = record.getValue(filterField.getIndex());
+		if(!counts[v]) counts[v]=1;
+		else   counts[v]++;
+	    });
+
 	    let enums = null;
 	    let filterValues = this.getProperty(filterField.getId()+".filterValues");
 	    let showLabel = this.getProperty(filterField.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
@@ -1605,8 +1627,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		    } else if(tok == FILTER_ALL) {
 			let allName = this.getProperty(filterField.getId() +".allName",!showLabel?filterField.getLabel():"All");
 			tok = [tmp[0],allName];
+		    } else {
+			tok = [tok,tok];
 		    }
-		    enums.push({value:tok});
+		    let count = counts[tok[0]];
+		    enums.push({value:tok,count:count});
 		})
 	    }
 	    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
@@ -1625,7 +1650,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(dflt) {
 		    for(let v in dflt) {
 			seen[v] = true;
-			enums.push({value:[v,dflt[v]]});
+			let count = counts[v];
+			enums.push({value:[v,dflt[v]],count:count});
 		    }
 		}
 		let enumValues = [];
@@ -1656,11 +1682,16 @@ function RecordFilter(display,filterFieldId, properties) {
 			    value = value.replace(/\'/g,"&apos;");
 			let tuple = [value, label];
 			obj.value = tuple;
+			obj.count =  counts[value];
 			enumValues.push(obj);
 		    }
 		});
 		if(this.getProperty(filterField.getId() +".filterSort",true)) {
+		    let sortCount = this.getProperty(filterField.getId() +".filterSortCount",true);
 		    enumValues.sort((a,b)  =>{
+			if(sortCount && a.count && b.count) {
+			    return b.count-a.count;
+			}
 			a= a.value;
 			b = b.value;
 			if(valuesAreNumbers) {
