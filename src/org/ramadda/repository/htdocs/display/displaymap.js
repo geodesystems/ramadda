@@ -5445,7 +5445,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
     ]);
 
     this.mapJson = null;
-    var jqxhr = $.getJSON(ramaddaBaseUrl+"/display/usmap.json", (data) =>{
+    var jqxhr = $.getJSON(ramaddaBaseUrl+"/display/resources/usmap.json", (data) =>{
 	this.mapJson = data;
 	this.updateUI();
     });
