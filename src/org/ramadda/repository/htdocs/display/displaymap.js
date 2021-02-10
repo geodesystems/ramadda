@@ -5788,6 +5788,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 			});
 
 			polys.on('mouseout', function (d, i) {
+			    _this.tooltipDiv.transition();
 			    let poly = d3.select(this);
 			    poly.attr("stroke",poly.attr("lastStroke"))
 				.attr("fill",poly.attr("lastFill"))
