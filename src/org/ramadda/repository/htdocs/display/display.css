@@ -2319,3 +2319,16 @@ table.dataTable tfoot td {
     background:#ccc;
 
 }
+
+
+.display-maparray-blocks {
+    margin-bottom:10px;
+}
+
+.display-maparray-block {
+    display:inline-block;
+    margin-top:8px;
+    margin:5px;
+    font-size:8pt;
+    text-align:center;
+}
