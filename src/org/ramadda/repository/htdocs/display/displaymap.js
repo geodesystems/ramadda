@@ -23,12 +23,28 @@ addGlobalDisplayType({
     category:CATEGORY_MAPS_IMAGES
 });
 
+
+
+const DISPLAY_MAPCHART = "mapchart";
+//Note: Added requiresData and category
+addGlobalDisplayType({
+    type: DISPLAY_MAPCHART,
+    forUser: false,
+    label: "Map chart",
+    requiresData: true,
+    category:CATEGORY_MAPS_IMAGES
+});
+
+
+
+
 function MapFeature(source, points) {
     RamaddaUtil.defineMembers(this, {
         source: source,
         points: points
     });
 }
+
 
 
 function RamaddaMapDisplay(displayManager, id, properties) {
@@ -5412,27 +5428,6 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
     })}
 
 
-
-
-
-
-
-
-
-
-
-const DISPLAY_MAPCHART = "mapchart";
-//Note: Added requiresData and category
-addGlobalDisplayType({
-    type: DISPLAY_MAPCHART,
-    forUser: false,
-    label: "Map chart",
-    requiresData: true,
-    category:CATEGORY_MAPS_IMAGES
-});
-
-
-
 function RamaddaMapchartDisplay(displayManager, id, properties) {
     const ID_MAPCHART = "mapchart";
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MAPCHART, properties);
@@ -5441,116 +5436,368 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
     this.defineProperties([
 	{label:'Map chart Properties'},
 	{p:'dateField',wikiValue:''},
+	{p:'regionField',wikiValue:''},
+	{p:'mapFile',wikiValue:'',d:ramaddaBaseUrl+"/display/resources/usmap.json"},
+	{p:'skipRegions',wikiValue:'Alaska,Hawaii'},
+	{p:'pruneMissing',wikiValue:'true'},				
 	{p:'valueField',wikiValue:''},
+	{p:'maxLayers',wikiValue:'10'},
+	{p:'mapWidth',wikiValue:''},
+	{p:'mapHeight',wikiValue:''},	
+	{p:'mapBackground',wikiValue:'transparent'},
+	{p:'translateX',wikiValue:'0'},
+	{p:'translateY',wikiValue:'0'},	
+	{p:'skewX',wikiValue:'-10'},
+	{p:'rotate',wikiValue:'10'},
+	{p:'scale',wikiValue:'0'},
+	{p:'fillColor',wikiValue:'red'},
+	{p:'lineColor',wikiValue:'rgba(0,0,255,0.5)'},
+	{p:'blur',wikiValue:'4'},			
+	{p:'transforms',wikiValue:"Alaska,0.4,30,-40;Hawaii,2,50,5;Region,scale,offsetX,offsetY"},
+	{p:'prunes',wikiValue:'Alaska,100;Region,maxCount'}
     ]);
 
     this.mapJson = null;
-    var jqxhr = $.getJSON(ramaddaBaseUrl+"/display/resources/usmap.json", (data) =>{
-	this.mapJson = data;
-	this.updateUI();
-    });
 
     $.extend(this, {
         checkLayout: function() {
             this.updateUI();
         },
         updateUI: function() {
-	    if(!this.mapJson) return;
-            let records = this.filterData();
-            if (!records) {
-//                return;
-            }
-	    let range  = {
-		minLon:null,
-		maxLon:null,
-		minLat:null,
-		maxLat:null
-	    };
-	    let states = {};
-	    this.mapJson.states.forEach(state=>{
-//		if(state!="Colorado") return;
-		let s = this.mapJson.statePathLookup[state];
-		let coords = s.geometry.coordinates;
-		let info = {
-		    name:state,
-		    polygons:[]
-		};
-		states[state] = info;
-		if(s.geometry.type  == "MultiPolygon") {
-		    coords.forEach(group=>{
-			group.forEach(polygon=>{
-			    info.polygons.push(polygon);
-			});
-		    });
-		} else {
-		    coords.forEach(polygon=>{
-			info.polygons.push(polygon);
+	    let debug = this.getProperty("debug");
+	    if(!this.mapJson) {
+		if(!this.gettingFile) {
+		    this.gettingFile = true;
+		    let mapFile = this.getPropertyMapFile();
+		    var jqxhr = $.getJSON(mapFile, (data) =>{
+			this.mapJson = data;
+			this.regionNames=[];
+			this.updateUI();
 		    });
 		}
-		if(state == "Alaska" || state == "Hawaii") return;
-		info.polygons.forEach(polygon=>{
-		    polygon.forEach(point=>{
-			let lon = point[0];
-			let lat = point[1];
-			if(isNaN(lon) || isNaN(lat)) return;
-			range.minLon= range.minLon===null?lon:Math.min(range.minLon,lon);
-			range.maxLon= range.maxLon===null?lon:Math.max(range.maxLon,lon);
-			range.minLat= range.minLat===null?lat:Math.min(range.minLat,lat);
-			range.maxLat= range.maxLat===null?lat:Math.max(range.maxLat,lat);						
+		return;
+	    }
+            let records = this.filterData();
+            if (!records) {
+                return;
+            }
+	    let allRecords = this.getData().getRecords()
+
+	    let pruneMissing = this.getPropertyPruneMissing(false);
+	    let regionField=this.getFieldById(null,this.getPropertyRegionField());
+	    let valueField=this.getFieldById(null,this.getPropertyValueField());	    
+	    if(!regionField) {
+                this.displayError("No region field specified");
+		return
+	    }
+	    if(!valueField) {
+                this.displayError("No value field specified");
+		return
+	    }	    
+	    let valueMap = {};
+	    let valueRange = {
+		min: null,
+		max:null
+	    };
+	    records.forEach(record=>{
+		let value = record.getValue(valueField.getIndex());
+		valueMap[record.getValue(regionField.getIndex())] = {
+		    value:value
+		}
+		valueRange.min = valueRange.min===null?value:Math.min(value,valueRange.min);
+		valueRange.max = valueRange.max===null?value:Math.max(value,valueRange.max);		
+	    });
+
+	    if(!this.tooltipDiv) {
+		this.tooltipDiv = d3.select("body").append("div")
+		    .attr("class", "display-tooltip")
+		    .style("opacity", 0)
+		    .style("position", "absolute")
+		    .style("background", "#fff")
+	    }
+	    this.tooltipDiv.style("opacity", 0);
+
+	    if(!this.regions) {
+		let allRegions = {};
+		allRecords.forEach(record=>{
+		    allRegions[record.getValue(regionField.getIndex())] = true;
+		});
+		this.regions = {};
+		this.mapRange  = {
+		    minLon:null,
+		    maxLon:null,
+		    minLat:null,
+		    maxLat:null
+		};
+
+
+		let transforms = {}
+		let prunes = {}	    
+		this.getPropertyTransforms("").split(";").map(t=>t.split(",")).forEach(tuple=>{
+		    let region = tuple[0];
+		    transforms[region] = {
+			scale:tuple[1]!=null?+tuple[1]:1,
+			dx:tuple[2]!=null?+tuple[2]:0,
+			dy:tuple[3]!=null?+tuple[3]:0}
+		});
+
+		this.getPropertyPrunes("").split(";").map(t=>t.split(",")).forEach(tuple=>{
+		    let region = tuple[0];
+		    prunes[region] =  +tuple[1];
+		});
+
+		let tfunc=(region,polygon)=>{
+		    let prune = prunes[region];
+		    if(prune>0) {
+			if(polygon.length<prune) return null;
+		    }
+
+
+		    let transform = transforms[region];
+		    if(!transform) 
+			return polygon;
+		    let bounds = Utils.getBounds(polygon);
+		    let centerx = bounds.minx + (bounds.maxx-bounds.minx)/2;
+		    let centery = bounds.miny + (bounds.maxy-bounds.miny)/2;		
+		    polygon.map(pair=>{
+			pair[0]= (pair[0]-centerx)*transform.scale+centerx;
+			pair[1]= (pair[1]-centery)*transform.scale+centery;		    		    
+			pair[0] += transform.dx;
+			pair[1] += transform.dy;
+			return pair;
+		    });
+		    return polygon;		
+		};
+		
+		this.skipRegions = this.getPropertySkipRegions("").split(",").map(r=>r.replace(/_comma_/g,","));
+		let features = this.mapJson.geojson;
+		if(!features)
+		    features = this.mapJson.features;
+
+		features.forEach(blob=>{
+		    let region = blob.properties.name || blob.properties.name_long || blob.properties.NAME; 
+		    if(!blob.geometry) {
+			if(debug)
+			    console.log(region +" no geometry");
+			return;
+		    }
+		    if(debug)
+			console.log("region:" + region);
+		    if(!allRegions[region]) {
+			if(pruneMissing) return;
+		    }
+		    this.regionNames.push(region);
+		    let coords = blob.geometry.coordinates;
+		    let info = {
+			name:region,
+			polygons:[]
+		    };
+		    this.regions[region] = info;
+		    if(blob.geometry.type  == "MultiPolygon") {
+			coords.forEach(group=>{
+			    group.forEach(polygon=>{
+				polygon  = tfunc(region,polygon);
+				if(polygon)info.polygons.push(polygon);
+			    });
+			});
+		    } else {
+			coords.forEach(polygon=>{
+			    info.polygons.push(tfunc(region,polygon));
+			});
+		    }
+		    if(this.skipRegions.includes(region)) return;
+		    info.polygons.forEach(polygon=>{
+			polygon.forEach(point=>{
+			    let lon = point[0];
+			    let lat = point[1];
+			    if(isNaN(lon) || isNaN(lat)) return;
+			    this.mapRange.minLon= this.mapRange.minLon===null?lon:Math.min(this.mapRange.minLon,lon);
+			    this.mapRange.maxLon= this.mapRange.maxLon===null?lon:Math.max(this.mapRange.maxLon,lon);
+			    this.mapRange.minLat= this.mapRange.minLat===null?lat:Math.min(this.mapRange.minLat,lat);
+			    this.mapRange.maxLat= this.mapRange.maxLat===null?lat:Math.max(this.mapRange.maxLat,lat);						
+			});
 		    });
 		});
+	    }
+
+	    let tooltip = this.getProperty("tooltip");
+	    let maxLayers = +this.getPropertyMaxLayers(20);
+	    let idToRecord = {};
+	    records.forEach(record=>{
+		let region = record.getValue(regionField.getIndex());
+		let value = valueMap[region].value
+		let percent = (value-valueRange.min)/(valueRange.max-valueRange.min);
+		let layers = Math.round(percent*(maxLayers-1))+1;
+		idToRecord[record.getId()] = record;
+		valueMap[region] = {
+		    record:record,
+		    value:value,
+		    layers:layers,
+		    percent:percent};
 	    });
-	    let width = +this.getProperty("mapWidth",800);
-	    let mw = range.maxLon-range.minLon;
-	    let mh = range.maxLat-range.minLat;
-	    let height = mh/mw*width;
-//	    let height = +this.getProperty("mapHeight",400);	    
-	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,this.getDomId(ID_MAPCHART),STYLE,HU.css(BACKGROUND,"#ccc",WIDTH,HU.getDimension(width),HEIGHT, HU.getDimension(height))]));
+
+	    if(this.getProperty("colorBy")==null) this.setProperty("colorBy",valueField.getId());
+	    this.colorBy = this.getColorByInfo(allRecords);
+	    let width = +this.getProperty("mapWidth",this.getProperty("width",800));
+	    let height = this.getProperty("mapWidth", this.getProperty("height"));
+	    let mw = this.mapRange.maxLon-this.mapRange.minLon;
+	    let mh = this.mapRange.maxLat-this.mapRange.minLat;
+	    if(!height)
+		height = mh/mw*width;
+	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,this.getDomId(ID_MAPCHART),STYLE,HU.css(BACKGROUND,this.getPropertyMapBackground("transparent"),WIDTH,HU.getDimension(width),HEIGHT, HU.getDimension(height))]));
 
 	    const svg = d3.select("#" + this.getDomId(ID_MAPCHART)).append('svg')
 		  .attr('width', width)
 		  .attr('height', height)
 		  .append('g')
-	    	  .attr('transform', 'translate(' + width/2+"," + height/2+')' + ',scale(0.9),rotate(0),' + 'translate(' + -width/2+"," + -height/2+')');
+	    	  .attr('transform', 'translate(' + width/2+"," + height/2+')' + ' scale(0.9)  rotate(' + this.getPropertyRotate(0)+') ' + 'translate(' + -width/2+"," + -height/2+') translate(' + this.getPropertyTranslateX(30) +',' + this.getPropertyTranslateY(0) +') skewX(' + this.getPropertySkewX(-10)+') scale(' + this.getPropertyScale(1)+')');
+	    //Container for the gradients
+	    var defs = svg.append("defs");
+	    var filter = svg.append("defs")
+		.append("filter")
+		.attr("id", "blur")
+		.append("feGaussianBlur")
+		.attr("stdDeviation", this.getPropertyBlur(3));
 	    let padx = 50;
 	    let pady = padx*mh/mw;
-	    let scaleX  = d3.scaleLinear().domain([range.minLon, range.maxLon]).range([50, width-padx]);
-	    let scaleY  = d3.scaleLinear().domain([range.maxLat, range.minLat]).range([50, height-pady]);
-	    console.log(JSON.stringify(range) + " " + scaleX(range.minLon) + " " + scaleX(range.maxLon) +" " + scaleY(range.minLat) + " " + scaleY(range.maxLat));
-	    this.mapJson.states.forEach(state=>{
-		if(state == "Alaska" || state == "Hawaii") return;
-		let  iters = 10;
-//		if(state=="Colorado") iters=10;
-		let info = states[state];
-		let s = this.mapJson.statePathLookup[state];
-		let cnt = 0
-		for(let i=0;i<iters;i++) {
-		info.polygons.forEach(polygon=>{
-		    cnt++;
-		    let poly = [];
-		    polygon.forEach(point=>{
-			let lon = point[0];
-			let lat = point[1];
-			if(isNaN(lon) || isNaN(lat)) return;
-			poly.push({x:lon,y:lat});
-		    });
-		    svg.selectAll(state+cnt)
-			.data([poly])
-			.enter().append("polygon")
-			.attr("points",function(d) { 
-			    let pts = d.map(function(d) {
-				return [-i+scaleX(d.x),-i+scaleY(d.y)].join(",");
-			    }).join(" ");
-			    return pts;
-			})
-			.attr("fill",i==iters-1?"red":"transparent")
-			.attr("opacity",1)
-			.attr("stroke","blue")
-			.attr("stroke-width",1);
-		});
-		}
-		});
+	    let scaleX  = d3.scaleLinear().domain([this.mapRange.minLon, this.mapRange.maxLon]).range([50, width-padx]);
+	    let scaleY  = d3.scaleLinear().domain([this.mapRange.maxLat, this.mapRange.minLat]).range([50, height-pady]);
+	    let cnt = 0
+	    let baseLineColor = this.getPropertyLineColor("rgba(0,0,255,0.5)");
+	    let _this = this;
+	    
 
+	    for(let layer=0;layer<maxLayers;layer++) {
+		this.regionNames.forEach(region=>{
+		    if(this.skipRegions.includes(region)) return;
+		    let values = valueMap[region];
+		    let maxLayer = 1;
+		    let value = NaN;
+		    let missing = values==null;
+		    let record = null;
+		    if(!missing) {
+			maxLayer = values.layers;
+			value = values.value;
+			record = values.record;
+		    } else {
+			if(pruneMissing) return;
+			maxLayer = 1;
+			if(layer>0) return;
+		    }
+
+		    let recordId = record?record.getId():"";
+		    if(!Utils.isDefined(maxLayer)) maxLayer = 1;
+		    if(layer>maxLayer) return;
+		    let info = this.regions[region];
+		    info.polygons.forEach(polygon=>{
+			cnt++;
+			let poly = [];
+			polygon.forEach(point=>{
+			    let lon = point[0];
+			    let lat = point[1];
+			    if(isNaN(lon) || isNaN(lat)) return;
+			    poly.push({x:lon,y:lat});
+			});
+			let fillColor = "transparent";
+			if(missing) {
+			    fillColor = "#ccc";
+			    lineColor="#000" 
+			} else {
+			    lineColor = baseLineColor;
+			    lineColor = this.colorBy.getColor(value);
+			    lineColor  = Utils.pSBC(-0.3,lineColor);
+			    if(layer==maxLayer-1) {
+				fillColor = this.colorBy.getColor(value);
+				lineColor  = Utils.pSBC(0.1,fillColor);
+			    }
+			}
+			    
+			if(missing) {
+			    svg.selectAll(region+"base"+cnt)
+				.data([poly])
+				.enter().append("polygon")
+				.attr("points",function(d) { 
+				    let pts = d.map(function(d) {
+					return [-layer+scaleX(d.x),-layer+scaleY(d.y)].join(",");
+				    }).join(" ");
+				    return pts;
+				})
+				.attr("fill","#ccc")
+		    		.attr("stroke-width",1)
+			    	.attr("stroke","black");
+			    return;
+			}
+			if(layer==0) {
+			    svg.selectAll(region+"base"+cnt)
+				.data([poly])
+				.enter().append("polygon")
+				.attr("points",function(d) { 
+				    let pts = d.map(function(d) {
+					return [-layer+scaleX(d.x),-layer+scaleY(d.y)].join(",");
+				    }).join(" ");
+				    return pts;
+				})
+		    		.attr("stroke-width",3)
+				.attr("stroke","black")
+				.style("filter","url(#blur)");
+			}
+			let polys = 
+			    svg.selectAll(region+cnt)
+			    .data([poly])
+			    .enter().append("polygon")
+			    .attr("points",function(d) { 
+				let pts = d.map(function(d) {
+				    return [-layer+scaleX(d.x),-layer+scaleY(d.y)].join(",");
+				}).join(" ");
+				return pts;
+			    })
+			    .attr("fill",fillColor)
+			    .attr("opacity",1)
+			    .attr("stroke",lineColor)
+			    .attr("stroke-width",1)
+			    .style("cursor", "pointer")
+			    .attr(RECORD_ID,recordId);
+
+
+			polys.on('click', function (d, i) {
+			    let poly = d3.select(this);
+			    let record = idToRecord[poly.attr(RECORD_ID)];
+			    if(record)
+				_this.propagateEventRecordSelection({record: record});
+			});
+
+			polys.on('mouseover', function (d, i) {
+			    let poly = d3.select(this);
+			    let record = idToRecord[poly.attr(RECORD_ID)];
+			    poly.attr("lastStroke",poly.attr("stroke"))
+				.attr("lastFill",poly.attr("fill"));
+			    poly.attr("stroke","blue").attr("stroke-width",1)
+				.attr("fill","blue");
+			    if(!tooltip) return;
+			    if(record) {
+				_this.propagateEventRecordSelection({highlight:true,record: record});
+				let tt =  _this.getRecordHtml(record,null,tooltip);
+				_this.tooltipDiv.html(tt)
+				    .style("left", (d3.event.pageX + 10) + "px")
+				    .style("top", (d3.event.pageY + 20) + "px");
+				_this.tooltipDiv.transition()
+				    .delay(500)
+				    .duration(500)
+				    .style("opacity", 1);
+			    }
+			});
+
+			polys.on('mouseout', function (d, i) {
+			    let poly = d3.select(this);
+			    poly.attr("stroke",poly.attr("lastStroke"))
+				.attr("fill",poly.attr("lastFill"))
+			    	.attr("stroke-width",1);
+			    _this.tooltipDiv.style("opacity", 0);
+			});
+		    });
+		});
+	    }
+	    this.colorBy.displayColorTable();
 	}
     });
 }
