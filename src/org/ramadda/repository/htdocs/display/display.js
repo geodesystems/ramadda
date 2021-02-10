@@ -1122,6 +1122,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		$(popup).find(".ramadda-colortable-select").click(function() {
 		    let ct = $(this).attr("colortable");
 		    if(ct) {
+			console.log("color table:" + ct);
 			_this.setProperty("colorTable",ct);
 			_this.forceUpdateUI();
 		    }		    
