@@ -54,6 +54,17 @@ var Utils =  {
     addLoadFunction: function(f) {
 	Utils.loadFunctions.push(f);
     },
+    //list of 2-tuples
+    getBounds: function(polygon) {
+	let minx = null,  maxx=null, miny=null, maxy=null;
+	polygon.forEach(pair=>{
+	    minx = minx===null?pair[0]:Math.min(minx,pair[0]);
+	    maxx = maxx===null?pair[0]:Math.max(maxx, pair[0]);
+	    miny = miny===null?pair[1]:Math.min(miny,pair[1]);
+	    maxy = maxy===null?pair[1]:Math.max(maxy, pair[1]);	    
+	});
+	return {minx:minx,maxx:maxx,miny:miny,maxy:maxy};
+    },
     isAnonymous: function() {
 	return ramaddaUser =="anonymous";
     },
