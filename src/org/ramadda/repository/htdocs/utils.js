@@ -65,6 +65,17 @@ var Utils =  {
 	});
 	return {minx:minx,maxx:maxx,miny:miny,maxy:maxy};
     },
+    mergeBounds(b1,b2) {
+	if(!b1) return b2;
+	if(!b2) return b1;
+	let b3 = {
+	    minx:Math.min(b1.minx,b2.minx),
+	    maxx:Math.max(b1.maxx,b2.maxx),
+	    miny:Math.min(b1.miny,b2.miny),
+	    maxy:Math.max(b1.maxy,b2.maxy),	    
+	}
+	return b3;
+    },
     isAnonymous: function() {
 	return ramaddaUser =="anonymous";
     },
