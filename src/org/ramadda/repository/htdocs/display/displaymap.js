@@ -5448,6 +5448,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 	{p:'translateX',wikiValue:'0'},
 	{p:'translateY',wikiValue:'0'},	
 	{p:'skewX',wikiValue:'-10'},
+	{p:'skewY',wikiValue:'0'},	
 	{p:'rotate',wikiValue:'10'},
 	{p:'scale',wikiValue:'0'},
 	{p:'fillColor',wikiValue:'red'},
