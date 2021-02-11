@@ -887,6 +887,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{label:'Image Gallery Properties'},
 	{p:'imageField',wikiValue:''},
 	{p:'labelFields',wikiValue:''},
+	{p:'labelTemplate',wikiValue:''},	
 	{p:'tooltipFields',wikiValue:''},
 	{p:'numberOfImages',wikiValue:'100'},	
 	{p:'includeBlanks',wikiValue:'true'},
@@ -922,7 +923,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		imageField = this.getFieldByType(null,"image");
 	    }
 
+            let pointData = this.getData();
+            let fields = pointData.getRecordFields();
+
             let labelFields = this.getFieldsByIds(null, this.getProperty("labelFields", null, true));
+            let labelTemplate = this.getPropertyLabelTemplate();
             let tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields", null, true));
 	    if(!imageField) {
 		this.setContents(this.getMessage("No image field in data"));
@@ -968,13 +973,17 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		displayedRecords.push(record);
 		idToRecord[record.getId()] = record;
 		let label = "";
-		labelFields.forEach(l=>{
-		    let value  = record.getValue(l.getIndex());
-		    if(value.getTime) {
-			value = this.formatDate(value);
-		    } 
-		    label += " " + value; 
-		});
+		if(labelTemplate) {
+		    label = this.getRecordHtml(record,fields,labelTemplate);
+		} else {
+		    labelFields.forEach(l=>{
+			let value  = record.getValue(l.getIndex());
+			if(value.getTime) {
+			    value = this.formatDate(value);
+			} 
+			label += " " + value; 
+		    });
+		}
 		let tt = "";
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
