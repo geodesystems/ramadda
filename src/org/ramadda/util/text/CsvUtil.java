@@ -2739,18 +2739,17 @@ public class CsvUtil {
 
 
                 if (arg.equals("-unfurl")) {
-
                     if ( !ensureArg(args, i, 5)) {
                         return false;
                     }
-                    int          idx1      = Integer.parseInt(args.get(++i));
+		    String mainCol =args.get(++i);
                     List<String> valueCols = getCols(args.get(++i));
                     //                int          idx2 = Integer.parseInt(args.get(++i));
-                    int          idx3      = Integer.parseInt(args.get(++i));
+                    String uniqueCol   = args.get(++i);
                     List<String> extraCols = getCols(args.get(++i));
                     info.getProcessor().addProcessor(
                         new Processor.Unfurler(
-                            idx1, valueCols, idx3, extraCols));
+					       mainCol, valueCols, uniqueCol, extraCols));
 
                     continue;
                 }

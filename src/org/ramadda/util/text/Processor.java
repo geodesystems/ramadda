@@ -2563,10 +2563,12 @@ rotate -> pass -> pass -> rotate -> pass
     public static class Unfurler extends RowCollector {
 
         /** _more_ */
-        private int unfurlIndex;
+        private int unfurlIndex=-1;
+	private String unfurlCol;
 
         /** _more_ */
-        private int uniqueIndex;
+        private int uniqueIndex=-1;
+	private String uniqueCol;
 
         /** _more_ */
         //        private int valueIndex;
@@ -2592,12 +2594,13 @@ rotate -> pass -> pass -> rotate -> pass
          * @param uniqueIndex _more_
          * @param extraCols _more_
          */
-        public Unfurler(int unfurlIndex, List<String> valueCols,
-                        int uniqueIndex, List<String> extraCols) {
+        public Unfurler(String unfurlIndex, List<String> valueCols,
+                        String uniqueCol, List<String> extraCols) {
             super(extraCols);
-            this.unfurlIndex = unfurlIndex;
+            this.unfurlCol = unfurlIndex;
             this.valueCols   = valueCols;
-            this.uniqueIndex = uniqueIndex;
+	    this.unfurlCol = unfurlCol;
+	    this.uniqueCol = uniqueCol;
         }
 
         /**
@@ -2624,7 +2627,12 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
 
-            valueIndices = getIndices(valueCols);
+	    if(valueIndices==null) {
+		valueIndices = getIndices(valueCols);
+		this.unfurlIndex = getIndex(unfurlCol);
+		this.uniqueIndex = getIndex(uniqueCol);	    
+
+	    }
 
             List<Integer>   includes     = getIndices(info);
             HashSet<String> seen         = new HashSet<String>();
