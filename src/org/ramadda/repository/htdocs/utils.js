@@ -56,6 +56,7 @@ var Utils =  {
     },
     //list of 2-tuples
     getBounds: function(polygon) {
+	if(!polygon) return null;
 	let minx = null,  maxx=null, miny=null, maxy=null;
 	polygon.forEach(pair=>{
 	    minx = minx===null?pair[0]:Math.min(minx,pair[0]);
@@ -63,17 +64,28 @@ var Utils =  {
 	    miny = miny===null?pair[1]:Math.min(miny,pair[1]);
 	    maxy = maxy===null?pair[1]:Math.max(maxy, pair[1]);	    
 	});
-	return {minx:minx,maxx:maxx,miny:miny,maxy:maxy};
+	return {
+	    getWidth: function() {return this.maxx-this.minx;},
+	    getHeight: function() {return this.maxy-this.miny;},	    
+	    getCenter: function() {
+		let x = this.minx+(this.maxx-this.minx)/2;
+		let y = this.miny+(this.maxy-this.miny)/2;		
+		return {x:x,y:y};
+	    },
+	    minx:minx,maxx:maxx,miny:miny,maxy:maxy
+	};
     },
     mergeBounds(b1,b2) {
-	if(!b1) return b2;
-	if(!b2) return b1;
-	let b3 = {
+	if(b1==null) return b2;
+	if(b2==null) return b1;
+	let b3 = {}
+	b3 = $.extend(b3,b1);
+	$.extend(b3,{
 	    minx:Math.min(b1.minx,b2.minx),
 	    maxx:Math.max(b1.maxx,b2.maxx),
 	    miny:Math.min(b1.miny,b2.miny),
-	    maxy:Math.max(b1.maxy,b2.maxy),	    
-	}
+	    maxy:Math.max(b1.maxy,b2.maxy),
+	});
 	return b3;
     },
     isAnonymous: function() {
@@ -3809,7 +3821,39 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 }
 
 
+//SVG Utils
+var SU = SvgUtils  = {
+    translate: function(x,y) {
+	return ' translate(' + x + ',' + y+') ';
+    },
+    scale: function(s) {
+	return ' scale(' + s + ') ';
+    },
+    rotate: function(s) {
+	return ' rotate(' + s + ') ';
+    },
+    skewX: function(s) {
+	return ' skewX(' + s + ') ';
+    },   
+    transform: function(svg,...args) {
+	svg.attr('transform',args.join(" "));
+	return svg;
+    },
+    makeBlur:function(svg,id,blur) {
+	var filter = svg.append("defs")
+	    .append("filter")
+	    .attr("id", id)
+	    .append("feGaussianBlur")
+	    .attr("stdDeviation", blur);
+	return filter;
+    }
+    
+}
+
+
 $( document ).ready(function() {
     HU.documentReady = true;
     Utils.checkForResize();
 });
+
+
