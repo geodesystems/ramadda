@@ -917,9 +917,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             let records = this.filterData();
             if(!records) return;
 	    let includeBlanks  = this.getPropertyIncludeBlanks(false);
-	    let imageField = this.getFieldById("image") || this.getFieldById("imageField");
-	    if(!imageField)
+	    let imageField = this.getFieldById(null, this.getProperty("imageField"));
+	    if(!imageField) {
 		imageField = this.getFieldByType(null,"image");
+	    }
+
             let labelFields = this.getFieldsByIds(null, this.getProperty("labelFields", null, true));
             let tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields", null, true));
 	    if(!imageField) {
