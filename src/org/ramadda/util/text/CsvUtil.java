@@ -3269,7 +3269,7 @@ public class CsvUtil {
                     }
                     String col = args.get(++i);
                     info.getProcessor().addProcessor(
-                        new Processor.Exploder(Integer.parseInt(col)));
+						     new Processor.Exploder(col));
 
                     continue;
                 }

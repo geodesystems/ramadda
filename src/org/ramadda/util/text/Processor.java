@@ -954,6 +954,10 @@ rotate -> pass -> pass -> rotate -> pass
          */
         public RowCollector() {}
 
+        public RowCollector(String col) {
+	    super(col);
+	}	
+
         /**
          * _more_
          *
@@ -1644,10 +1648,6 @@ rotate -> pass -> pass -> rotate -> pass
      */
     public static class Exploder extends RowCollector {
 
-        /** _more_ */
-        private int column;
-
-
 
         /**
          * ctor
@@ -1655,8 +1655,8 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param col _more_
          */
-        public Exploder(int col) {
-            this.column = col;
+        public Exploder(String col) {
+	    super(col);
         }
 
 
@@ -1675,6 +1675,7 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
+            int column = getIndex(info);
             rows = getRows(rows);
             if (rows.size() == 0) {
                 return rows;
