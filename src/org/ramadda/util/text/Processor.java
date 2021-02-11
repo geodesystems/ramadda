@@ -2474,8 +2474,13 @@ rotate -> pass -> pass -> rotate -> pass
             String s         = "";
 
             for (int i = 0; i < values.size(); i++) {
-                lineWidth += values.get(i).toString().length();
-                s         += " " + values.get(i);
+		Object value = values.get(i);
+		if(value!=null) {
+		    lineWidth += value.toString().length();
+		    s    += " " + values.get(i);
+		} else {
+		    s    += " " + "";
+		}
             }
             if (lineWidth > 200) {
                 style += "max-width:120px;";
@@ -2631,7 +2636,6 @@ rotate -> pass -> pass -> rotate -> pass
 		valueIndices = getIndices(valueCols);
 		this.unfurlIndex = getIndex(unfurlCol);
 		this.uniqueIndex = getIndex(uniqueCol);	    
-
 	    }
 
             List<Integer>   includes     = getIndices(info);
