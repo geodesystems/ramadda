@@ -945,7 +945,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    });
 	    return trendlinesInfo;
 	},
-
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =displayDebug.makeDataTable;
@@ -1203,10 +1202,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    var colors =  this.getColorTable(true);
             var colorBy = this.getColorByInfo(records);
 	    let valueGetter = this.getDataTableValueGetter(records);
-
-
-
-
 	    var didColorBy = false;
 	    var tuples = [];
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
@@ -1784,7 +1779,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    } else {
 		try {
 //		    console.log(JSON.stringify(this.chartOptions, null,2));
-		    this.chart = chart; this.dataTable = dataTable;
+		    this.chart = chart;
+		    this.dataTable = dataTable;
 		    chart.draw(dataTable, this.chartOptions);
 		} catch(err) {
 		    this.setErrorMessage("Error creating chart: " + err);
@@ -2678,22 +2674,21 @@ function TableDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TABLE, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Table Properties'},
+	{p:'imageField',wikiValue:''},
+	{p:'tableWidth=',wikiValue:'100%'},
+	{p:'frozenColumns',wikiValue:'1'},
+	{p:'colorCells',wikiValue:'field1,field2'},
+	{p:'showRowNumber',wikiValue:true},
+	{p:'colorCells',wikiValue:'fields'},
+	{p:'field.colorTable',wikiValue:''},
+	{p:'field.colorByMap',wikiValue:'value1:color1,value2:color2'},
+	{p:'maxHeaderLength',wikiValue:'60'},
+	{p:'maxHeaderWidth',wikiValue:'60'},
+	{p:'headerStyle'}]);
+
     $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Table Attributes",
-					'tableWidth=100%',
-					'frozenColumns=1',
-					'colorCells=field1,field2',
-					'showRowNumber=true',
-					'colorCells="fields"',
-					'&lt;field&gt;.colorTable="',
-					'&lt;field&gt;.colorByMap="value1:color1,value2:color2',
-					'maxHeaderLength=60',
-					'maxHeaderWidth=60',
-					'headerStyle=""']); 
-	},
         canDoGroupBy: function() {
             return true;
         },
@@ -2732,8 +2727,6 @@ function TableDisplay(displayManager, id, properties) {
 		if(v.getTime) {
 		    f = this.formatDate(v);
 		}
-
-
 		if(iconField && record && idx==0) {
 		    let icon = record.getValue(iconField.getIndex());
 		    f = HU.image(icon) +"&nbsp;" +f;
@@ -2760,6 +2753,18 @@ function TableDisplay(displayManager, id, properties) {
 			let color =  colorBy.getColorFromRecord(record);
 			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',Utils.getForegroundColor(color)+" !important")],f)
 		    }
+		    if(field.getType()=="url") {
+			return {
+			    v:v,
+			    f:HU.href(v,v)
+			};
+		    }
+		    if(field.getType()=="image") {
+			return {
+			    v:v,
+			    f:HU.href(v,HU.image(v,[WIDTH,this.getProperty("imageWidth",100)]))
+			};
+		    }		    
 		}
 
 		return {
@@ -2810,9 +2815,6 @@ function TableDisplay(displayManager, id, properties) {
 		chartOptions.cssClassNames.headerCell= 'display-table-cell';
 		chartOptions.cssClassNames.tableCell= 'display-table-cell';
 	    }
-
-
-
             return new google.visualization.Table(chartDiv); 
         },
 	getAddToolTip: function() {
