@@ -5802,8 +5802,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 		    let recordId = record?record.getId():"";
 		    if(!Utils.isDefined(maxLayer)) maxLayer = 1;
 		    if(layer>maxLayer) return;
-		    let info = this.regions[region];
-		    info.polygons.forEach(polygon=>{
+		    this.regions[region].polygons.forEach(polygon=>{
 			cnt++;
 			let poly = this.makePoly(polygon);
 			let fillColor = "transparent";
@@ -5866,7 +5865,8 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 
 
 function RamaddaMaparrayDisplay(displayManager, id, properties) {
-    const ID_MAPBLOCK = "mapblock";    
+    const ID_MAPBLOCK = "mapblock";
+    const ID_MAPLABEL = "maplabel";        
     const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPARRAY, properties);
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
@@ -5874,6 +5874,8 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 	{p:'blockWidth',wikiValue:''},
 	{p:'sortByValue',wikiValue:'true'},
 	{p:'fillColor',wikiValue:'red'},
+	{p:'showValue',wikiValue:'true'},	
+	
     ]);
 
     $.extend(this, {
@@ -5901,9 +5903,17 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 
 	    let html = "";
 	    sortedRegions.forEach((region,idx)=>{
-		html+=HU.div([ID,this.getDomId(ID_MAPBLOCK+"_"+idx),CLASS,"display-maparray-block",STYLE,HU.css(WIDTH,blockWidth+"px",HEIGHT,blockHeight+"px")],region);
+		html+= HU.div([CLASS,"display-maparray-block"],
+			      HU.div([CLASS,"display-maparray-header"],region) +
+			      HU.div([ID,this.getDomId(ID_MAPBLOCK+"_"+idx),CLASS,"display-maparray-map",STYLE,HU.css(WIDTH,blockWidth+"px",HEIGHT,blockHeight+"px")]) +
+			      HU.div([ID,this.getDomId(ID_MAPLABEL+"_"+idx),"display-maparray-label"]));			      
+
+
+		    
 	    });
 	    this.jq(ID_BASEMAP).html(html+"<p>");
+
+	    let showValue = this.getPropertyShowValue(true);
 
 	    sortedRegions.forEach((region,idx)=>{
 		let info = this.regions[region];
@@ -5931,6 +5941,9 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 		if(!missing) {
 		    value = values.value;
 		    record = values.record;
+		    if(showValue) {
+			this.jq(ID_MAPLABEL+"_"+idx).html(value);
+		    }
 		} else {
 		    if(pruneMissing) return;
 		}
@@ -6020,8 +6033,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			if(layer>0) return;
 		    }
 		    let recordId = record?record.getId():"";
-		    let info = this.regions[region];
-		    info.polygons.forEach(polygon=>{
+		    this.regions[region].polygons.forEach(polygon=>{
 			cnt++;
 			let poly = this.makePoly(polygon);
 			let fillColor = "red";
@@ -6126,8 +6138,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	    this.regionNames.forEach((region,idx)=>{
 		let values = valueMap[region];
 		let recordId = values!=null?values.record.getId():"";
-		let info = this.regions[region];
-		info.polygons.forEach(polygon=>{
+		this.regions[region].polygons.forEach(polygon=>{
 		    cnt++;
 		    if(values!=null) {
 			let bounds = Utils.getBounds(polygon);
@@ -6143,9 +6154,8 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 			    .attr("x", 0)
 			    .attr("y", 0);
 		    }
-		    let poly = this.makePoly(polygon);
 		    let polys = svg.selectAll(region+"base"+cnt)
-			.data([poly])
+			.data([this.makePoly(polygon)])
 			.enter().append("polygon")
 			.attr("points",function(d) { 
 			    return d.map(d=>{return [scaleX(d.x),scaleY(d.y)].join(",");}).join(" ");
