@@ -405,16 +405,17 @@ var Csv = {
 	cmds = " " + cmds +" ";
 	Csv.insertText(cmds);
     },
-    insertColumnIndex:function(index) {
+    insertColumnIndex:function(index,plain) {
 	if(Csv.columnInput && $("#" + Csv.columnInput).length>0) {
 	    let v = $("#" + Csv.columnInput).val()||"";
 	    v = v.trim();
-	    if(v!="" && !v.endsWith(",")) v +=",";
+	    if(v!="" && !v.endsWith(",")) v +=plain?"":",";
 	    v+=index;
 	    $("#" + Csv.columnInput).val(v);	    
 	    return;
 	}
-	Csv.insertText(index+",");
+	if(!plain) index = index+",";
+	Csv.insertText(index);
     },
     insertText:function(text) {
 	if (Csv.editor) {
@@ -628,7 +629,22 @@ var Csv = {
 			}
 		    }
  		    if(printHeader) {
-			result = result.replace(/(#[0-9]+) /g,"<a href='#' index='$1' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$1</a> ");
+			let tmp = "";
+			result = result.replace("#fields=","");
+			result.split("\n").forEach(line=>{
+			    line = line.trim();
+			    if(line=="") return;
+			    let regexp = new RegExp("([^ ]+) ([^ \\[]+)\\[(.*)\\]$");
+			    let toks = line.match(regexp);
+			    if(!toks)  return;
+			    let index = toks[1];
+			    let id = toks[2];
+			    let attrs = toks[3];
+			    id = "<a href='#' plain='true' index='" + id+"' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>" + id +"</a>";
+			    line = "<tr>" + HU.tds([],[index,"",id,attrs]) +"</tr>";
+			    tmp+=line;
+			});
+			result = "<table><tr><td><b>Index</b></td><td>&nbsp;</td><td><b>ID</b></td><td><b>Attributes</b></td></tr>" + tmp +"</table>"; 
 		    } else if(isHeader) {
 			var toks = result.split("\n");
 			var line = toks[0];
@@ -682,7 +698,7 @@ var Csv = {
 			result = result.replace(/</g,"&lt;");
 			result = result.replace(/>/,"&gt;");
                     }
-                    var html = "<pre>" + result +"</pre>";
+                    var html = printHeader?result:"<pre>" + result +"</pre>";
                     if(isDb || isHeader) {
 			html+="<div class=\"ramadda-popup\" xstyle=\"display: none;position:absolute;\" id=csv_popup></div>" ;
 		    }
@@ -691,7 +707,7 @@ var Csv = {
 			$("#convertcsv_output .csv_header_field").click(function(event) {
 			    $(this).attr(STYLE,"color:black;");
 			    var index = $(this).attr("index").replace("#","").trim();
-			    Csv.insertColumnIndex(index);
+			    Csv.insertColumnIndex(index,$(this).attr("plain"));
 			});
 		    }			
 		    if(isHeader) {
