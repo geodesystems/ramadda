@@ -894,6 +894,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"width=\"100%\"",
 		"height=\"400\"",
 		'tooltip=${default}',
+		'tooltipPositionMy="left top"',
+		'tooltipPositionAt="left bottom+2"',		
 		['displayStyle="css styles"',"Specify styles for display"],
 		"title=\"\"",
 		"titleBackground=\"color\"",
@@ -4497,6 +4499,8 @@ a
             this.colorByFields = this.getFieldsByIds(null, this.getProperty("colorByFields", "", true));
             this.sizeByFields = this.getFieldsByIds(null, this.getProperty("sizeByFields", "", true));
             this.sortByFields = this.getFieldsByIds(null, this.getProperty("sortByFields", "", true));	    
+
+
 	    let pointData = this.getData();
             if (pointData == null) return;
             let fields= pointData.getRecordFields();
@@ -4613,6 +4617,8 @@ a
 		header2 += HU.span([CLASS,"display-filter"],
 				   this.makeFilterLabel("Size by: ") + HU.select("",[ID,this.getDomId("sizebyselect")],enums,this.getProperty("sizeBy","")))+SPACE;
 	    }
+
+
 	    let  highlight = this.getFilterHighlight();
 	    if(this.getProperty("showFilterHighlight")) {
 		let enums =[["filter","Filter"],["highlight","Highlight"]];
@@ -5040,6 +5046,8 @@ a
 	},
 	sizeByFieldChanged:function(field) {
 	},
+	someFieldChanged:function(type,field) {
+	},	
 	macroChanged: function() {
 	    this.pageSkip = 0;
 	},
