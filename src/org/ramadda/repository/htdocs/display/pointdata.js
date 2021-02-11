@@ -2775,6 +2775,24 @@ var DataUtils = {
 	});
 	Utils.makeDownloadFile(filename, csv);
     },
+    getJson: function(fields, records, filename) {
+	let json = [];
+	records.forEach(r=>{
+	    let obj = {};
+	    json.push(obj);
+	    fields.forEach((f,idx)=>{
+		let v = r.getValue(f.getIndex());
+		if(v && v.getTime) {
+		    v  =Utils.formatDateYYYYMMDDHHMM(v);
+		} else {
+		    v = String(v);
+		}
+		obj[f.getId()] = v;
+	    });
+	});
+	Utils.makeDownloadFile(filename, JSON.stringify(json,null,2));
+    },
+
 
     parseCommands: function(commands) {
 	let result = [];
