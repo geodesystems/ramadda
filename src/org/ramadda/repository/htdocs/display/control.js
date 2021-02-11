@@ -341,13 +341,14 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 
 function RamaddaDownloadDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_DOWNLOAD, properties);
-    const ID_DOWNLOAD = "download";
+    const ID_DOWNLOAD_CSV = "downloadcsv";
+    const ID_DOWNLOAD_JSON = "downloadjson";    
     const ID_CANCEL = "cancel";    
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Download Properties'},
-	{p:'csvLabel',wikiValue:'Download CSV'},
+	{p:'csvLabel',wikiValue:'Download'},
 	{p:'useIcon',d:'false',wikiValue:'false'},
 	{p:'fileName',d:'download',wikiValue:'download'},
 	{p:'askFields',d:'false',wikiValue:'true'},		
@@ -358,11 +359,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
         return true;
     },
     updateUI: function() {
-	let label = this.getPropertyCsvLabel("Download CSV");
+	let label = this.getPropertyCsvLabel("Download Data");
 	label = label.replace("${title}",this.getProperty("title",""));
 	let useIcon = this.getPropertyUseIcon(true);
 	label = useIcon?HU.getIconImage("fa-download",[STYLE,"cursor:pointer;",TITLE,label]):label;
-	this.setContents(HU.div([ID,this.getDomId("csv")],label));
+	this.setContents(HU.div([],HU.span([ID,this.getDomId("csv")],label)));
 	if(useIcon) {
             this.jq("csv").click(() => {
 		this.doDownload();
@@ -378,6 +379,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	let records = this.filterData();
 	DataUtils.getCsv(fields, records,this.getPropertyFileName()+".csv");
     },
+    getJson: function(fields) {
+        fields = fields || this.getData().getRecordFields();
+	let records = this.filterData();
+	DataUtils.getJson(fields, records,this.getPropertyFileName()+".json");
+    },
 
     applyFieldSelection: function() {
 	this.getData().getRecordFields().forEach(f=>{
@@ -387,8 +393,8 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	});
     },
     getDownloadDialog: function() {
-	let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD)],"Download") +"&nbsp;&nbsp;" +
-			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
+	let html = HU.center(HU.div([ID,this.getDomId(ID_DOWNLOAD_CSV)],"Download CSV") +"&nbsp;&nbsp;" +
+			     HU.div([ID,this.getDomId(ID_DOWNLOAD_JSON)],"Download JSON") +"&nbsp;&nbsp;" +			     			     HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel"));
 	html += "<b>Include:<br></b>";
 	let cbx = "";
 	this.getData().getRecordFields().forEach((f,idx)=>{
@@ -402,28 +408,37 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	return html;
     },
     doDownload: function() {
+	let func = json=>{
+	    this.jq(ID_DIALOG).hide();
+	    let fields = [];
+	    this.applyFieldSelection();
+	    this.getData().getRecordFields().forEach(f=>{
+		if(this.fieldOn[f.getId()]) {
+		    fields.push(f);
+		}
+	    });
+	    if(json) 
+		this.getJson(fields);
+	    else
+		this.getCsv(fields);
+	};
 	if(this.getPropertyAskFields(true)) {
 	    let html = this.getDownloadDialog();
 	    let init = ()=>{
-		this.jq(ID_DOWNLOAD).button().click(() =>{
-		    this.jq(ID_DIALOG).hide();
-		    let fields = [];
-		    this.applyFieldSelection();
-		    this.getData().getRecordFields().forEach(f=>{
-			if(this.fieldOn[f.getId()]) {
-			    fields.push(f);
-			}
-		    });
-		    this.getCsv(fields);
-		});
 		this.jq(ID_CANCEL).button().click(() =>{
 		    this.applyFieldSelection();
 		    this.jq(ID_DIALOG).hide();
 		});
+		this.jq(ID_DOWNLOAD_CSV).button().click(() =>{
+		    func(false);
+		});
+		this.jq(ID_DOWNLOAD_JSON).button().click(() =>{
+		    func(true);
+		});		
 	    };
 	    this.showDialog(html,this.getDomId(ID_DISPLAY_CONTENTS),init);
 	} else  {
-            this.getCsv();
+	    this.getCsv();
 	}
     },
     });
