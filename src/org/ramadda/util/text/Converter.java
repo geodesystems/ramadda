@@ -995,13 +995,19 @@ public abstract class Converter extends Processor {
                 } else if (id.equals("year")) {
                     type   = "date";
                     format = "yyyy";
-                } else if (id.equals("url") || id.endsWith("_url")) {
-                    type = "url";
-
-                } else if (id.equals("state") || id.equals("country")
-                           || id.equals("category")) {
+                } else if (id.startsWith("date_")) {
+		    type = "date";
+		    format= "yyyy-MM-dd";
+                } else if (id.equals("url") || id.endsWith("_url") || id.equals("website")) {
+		    if(id.indexOf("photo")>=0) type= "image";
+		    else type = "url";
+                } else if (id.equals("state") || id.startsWith("state_") || id.equals("country")
+                           || id.equals("category") || id.equals("party") || id.equals("class")) {
                     type = "enumeration";
-
+                } else if (id.equals("city") || id.endsWith("_city")) {
+                    type = "enumeration";
+                } else if (id.equals("gender") || id.equals("ethnicity") || id.equals("religion")) {
+		    type = "enumeration";
                 } else if (id.equals("latitude") || id.equals("longitude")) {
                     type      = "double";
                     isGeo     = true;
@@ -1019,6 +1025,9 @@ public abstract class Converter extends Processor {
                         } else if (sample.matches(
                                 "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
                             type = "double";
+			} else if(sample.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+			    type="date";
+			    format="yyyy-MM-dd";
                         } else {}
                     } catch (Exception exc) {}
                 }
@@ -1040,9 +1049,8 @@ public abstract class Converter extends Processor {
                     attrs.append(" enumeratedValues=\"" + enumeratedValues
                                  + "\"");
                 }
-
-
-                if ((format != null) && Misc.equals(type, "date")) {
+                if (Misc.equals(type, "date")) {
+		    if(format == null) format="yyyy-MM-dd";
                     attrs.append(" format=\"" + format + "\" ");
                 }
                 if (type.equals("double") || type.equals("integer")) {
