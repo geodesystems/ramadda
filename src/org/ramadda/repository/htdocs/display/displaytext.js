@@ -887,7 +887,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{label:'Image Gallery Properties'},
 	{p:'imageField',wikiValue:''},
 	{p:'labelFields',wikiValue:''},
-	{p:'labelTemplate',wikiValue:''},	
+	{p:'topLabelTemplate',wikiValue:''},	
+	{p:'bottomLabelTemplate',wikiValue:''},	
 	{p:'tooltipFields',wikiValue:''},
 	{p:'numberOfImages',wikiValue:'100'},	
 	{p:'includeBlanks',wikiValue:'true'},
@@ -927,7 +928,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             let fields = pointData.getRecordFields();
 
             let labelFields = this.getFieldsByIds(null, this.getProperty("labelFields", null, true));
-            let labelTemplate = this.getPropertyLabelTemplate();
+            let topLabelTemplate = this.getPropertyTopLabelTemplate();
+            let bottomLabelTemplate = this.getPropertyBottomLabelTemplate();	    
             let tooltipFields = this.getFieldsByIds(null, this.getProperty("tooltipFields", null, true));
 	    if(!imageField) {
 		this.setContents(this.getMessage("No image field in data"));
@@ -972,9 +974,13 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		if(cnt++>number) break;
 		displayedRecords.push(record);
 		idToRecord[record.getId()] = record;
+		let topLabel = null;
+		if(topLabelTemplate) {
+		    topLabel = this.getRecordHtml(record,fields,topLabelTemplate);
+		}
 		let label = "";
-		if(labelTemplate) {
-		    label = this.getRecordHtml(record,fields,labelTemplate);
+		if(bottomLabelTemplate) {
+		    label = this.getRecordHtml(record,fields,bottomLabelTemplate);
 		} else {
 		    labelFields.forEach(l=>{
 			let value  = record.getValue(l.getIndex());
@@ -988,10 +994,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
 		let img = image==""?SPACE1:HU.image(image,[STYLE,imageStyle,"alt",label,ID,base+"image" + rowIdx, WIDTH,width]);
+		let topLbl = (topLabel!=null?HU.div([CLASS,"display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"display-images-label"], label.trim());
 		let block = 
 		    HU.div([STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,ID,base+"div"+  rowIdx, CLASS, class1,TITLE,tt],
-			   HU.div([CLASS,class2], img + lbl));
+			   HU.div([CLASS,class2], topLbl + img + lbl));
 		if(doPopup) {
 		    block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",label]);
 		}

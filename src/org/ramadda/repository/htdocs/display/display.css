@@ -1823,6 +1823,12 @@ font-weight:bold;
   background: #efefef;
 }
 
+.display-images-toplabel {
+    font-weight:bold;
+    color:#666;
+    font-size:10pt;
+}
+
 .display-images-label {
     color:#666;
     font-size:10pt;
