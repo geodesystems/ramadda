@@ -1141,6 +1141,25 @@ public class Utils extends IO {
     /**
      * _more_
      *
+     * @param md _more_
+     *
+     * @return _more_
+     */
+    public static String encodeMD(byte[] md) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < md.length; i++) {
+            sb.append(Integer.toString((md[i] & 0xff) + 0x100,
+                                       16).substring(1));
+        }
+
+        return sb.toString();
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param path _more_
      *
      * @return _more_
