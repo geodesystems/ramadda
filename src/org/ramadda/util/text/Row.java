@@ -167,12 +167,24 @@ public class Row {
         return " id:" + id + " v:" + values.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @param r _more_
+     *
+     * @return _more_
+     */
     public String print(Row r) {
-	StringBuilder sb = new StringBuilder("***** row:" + values.size()+"\n");
-	for(int i=0;i<values.size();i++) 
-	    sb.append("\t" + (r!=null?r.get(i):"") +"[" + i +"]=" + values.get(i)+"\n");
-	return sb.toString();
-    }    
+        StringBuilder sb = new StringBuilder("***** row:" + values.size()
+                                             + "\n");
+        for (int i = 0; i < values.size(); i++) {
+            sb.append("\t" + ((r != null)
+                              ? r.get(i)
+                              : "") + "[" + i + "]=" + values.get(i) + "\n");
+        }
+
+        return sb.toString();
+    }
 
     /**
      * Set the Values property.

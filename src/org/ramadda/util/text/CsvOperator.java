@@ -77,12 +77,14 @@ public abstract class CsvOperator {
     /** _more_ */
     protected int rowCnt = 0;
 
+    /** _more_          */
+    public static final int UNDEFINED_INDEX = -1;
 
     /** _more_ */
     public static final int INDEX_ALL = -9999;
 
     /** _more_ */
-    protected int index = -1;
+    private int index = UNDEFINED_INDEX;
 
     /** _more_ */
     protected List<String> sindices;
@@ -135,7 +137,7 @@ public abstract class CsvOperator {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, Integer> debugCounts = new Hashtable<String,
                                                          Integer>();
 
@@ -282,7 +284,12 @@ public abstract class CsvOperator {
      * @return _more_
      */
     public int getIndex(TextReader info) {
-        return getIndices(info).get(0);
+        if (index != UNDEFINED_INDEX) {
+            return index;
+        }
+        index = getIndices(info).get(0);
+
+        return index;
     }
 
 
@@ -356,10 +363,18 @@ public abstract class CsvOperator {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public int getColumnIndex(String s) {
-	List<Integer> indices = new ArrayList<Integer>();
-	getColumnIndex(indices,s);
-	return indices.get(0);
+        List<Integer> indices = new ArrayList<Integer>();
+        getColumnIndex(indices, s);
+
+        return indices.get(0);
     }
 
     /**
@@ -386,13 +401,14 @@ public abstract class CsvOperator {
             if (columnNames == null) {
                 if (header == null) {
                     debug("no names or header");
+
                     return;
                 }
                 columnMap = new Hashtable<String, Integer>();
                 for (int i = 0; i < header.size(); i++) {
                     String colName = (String) header.get(i);
                     columnMap.put(colName, i);
-		    columnMap.put(Utils.makeID(colName), i);
+                    columnMap.put(Utils.makeID(colName), i);
                     columnMap.put(colName.toLowerCase(), i);
                 }
             }
@@ -404,7 +420,8 @@ public abstract class CsvOperator {
                             colsSeen.add(i);
                             indices.add(i);
                         }
-		    }
+                    }
+
                     return;
                 }
                 if (StringUtil.containsRegExp(tok)) {
@@ -424,9 +441,9 @@ public abstract class CsvOperator {
                 if (iv != null) {
                     start = end = iv;
                 } else {
-		    //Not sure whether we should throw an error
-		    throw new RuntimeException("Could not find index:" + tok);
-		}
+                    //Not sure whether we should throw an error
+                    throw new RuntimeException("Could not find index:" + tok);
+                }
             } else {
                 Integer iv1 = columnMap.get(toks.get(0));
                 Integer iv2 = columnMap.get(toks.get(1));
@@ -483,7 +500,7 @@ public abstract class CsvOperator {
             return null;
         }
         List<Integer> indices = new ArrayList<Integer>();
-	for (String s : cols) {
+        for (String s : cols) {
             getColumnIndex(indices, s);
         }
 

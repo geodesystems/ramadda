@@ -872,7 +872,7 @@ public class CsvUtil {
                                          "colspan *= *\"?([0-9]+)\"?");
                     int inserts = 1;
                     if (colspan != null) {
-			inserts = Integer.parseInt(colspan);
+                        inserts = Integer.parseInt(colspan);
                     }
 
                     int idx = td.indexOf(">");
@@ -1016,10 +1016,10 @@ public class CsvUtil {
                                   String objectPath)
             throws Exception {
 
-	int xcnt = 0;
-        List<Row> rows  = new ArrayList<Row>();
-        JSONArray array = null;
-	JSONObject root = null;
+        int        xcnt  = 0;
+        List<Row>  rows  = new ArrayList<Row>();
+        JSONArray  array = null;
+        JSONObject root  = null;
         try {
             root = new JSONObject(s);
             if (arrayPath != null) {
@@ -1032,86 +1032,102 @@ public class CsvUtil {
             array = new JSONArray(s);
         }
 
-	List<String> objectPathList =null;
-	if (Utils.stringDefined(objectPath)) {
-	    objectPathList = StringUtil.split(objectPath, ",", true, true);
-	}
+        List<String> objectPathList = null;
+        if (Utils.stringDefined(objectPath)) {
+            objectPathList = StringUtil.split(objectPath, ",", true, true);
+        }
         List<String> names = null;
         for (int arrayIdx = 0; arrayIdx < array.length(); arrayIdx++) {
-	    if(arrayIdx>0) break;
-	    Hashtable primary = new Hashtable();
-	    List<Hashtable> secondary = new ArrayList<Hashtable>();
-            if (objectPathList!=null) {
-		JSONObject jrow  = array.getJSONObject(arrayIdx);
-                for (String tok :objectPathList) {
+            if (arrayIdx > 0) {
+                break;
+            }
+            Hashtable       primary   = new Hashtable();
+            List<Hashtable> secondary = new ArrayList<Hashtable>();
+            if (objectPathList != null) {
+                JSONObject jrow = array.getJSONObject(arrayIdx);
+                for (String tok : objectPathList) {
                     if (tok.equals("*")) {
-			primary.putAll(Json.getHashtable(jrow, true));
-                    } else if(tok.endsWith("[]")) {
-			JSONArray a = Json.readArray(jrow, tok.substring(0,tok.length()-2));
-			for (int j = 0; j < a.length(); j++) {
-			    secondary.add(Json.getHashtable(a.getJSONObject(j),true));
-			}
-		    } else {
-			try {
-			    Object o = Json.readObject(jrow, tok);
-			    if(o!=null) {
-				primary.putAll(Json.getHashtable(o, true));
-			    }
-			} catch (Exception exc) {
-			    Object o = Json.readArray(jrow, tok);
-			    if(o!=null) {
-				primary.putAll(Json.getHashtable(o, true));
-			    }
-			}
+                        primary.putAll(Json.getHashtable(jrow, true));
+                    } else if (tok.endsWith("[]")) {
+                        JSONArray a = Json.readArray(jrow,
+                                          tok.substring(0, tok.length() - 2));
+                        for (int j = 0; j < a.length(); j++) {
+                            secondary.add(
+                                Json.getHashtable(a.getJSONObject(j), true));
+                        }
+                    } else {
+                        try {
+                            Object o = Json.readObject(jrow, tok);
+                            if (o != null) {
+                                primary.putAll(Json.getHashtable(o, true));
+                            }
+                        } catch (Exception exc) {
+                            Object o = Json.readArray(jrow, tok);
+                            if (o != null) {
+                                primary.putAll(Json.getHashtable(o, true));
+                            }
+                        }
                     }
                 }
             } else {
-		try {
-		    primary.putAll(Json.getHashtable(array.getJSONArray(arrayIdx), true));
-		} catch (Exception exc) {
-		    primary.putAll(Json.getHashtable(array.getJSONObject(arrayIdx), true));
-		}
-	    }
+                try {
+                    primary.putAll(
+                        Json.getHashtable(
+                            array.getJSONArray(arrayIdx), true));
+                } catch (Exception exc) {
+                    primary.putAll(
+                        Json.getHashtable(
+                            array.getJSONObject(arrayIdx), true));
+                }
+            }
 
             if (names == null) {
-		if(secondary.size()==0) {
-		    secondary.add(primary);
-		} else {
-		    for(Hashtable h: secondary) h.putAll(primary);
-		}
+                if (secondary.size() == 0) {
+                    secondary.add(primary);
+                } else {
+                    for (Hashtable h : secondary) {
+                        h.putAll(primary);
+                    }
+                }
                 names = new ArrayList<String>();
                 Row row = new Row();
                 rows.add(row);
-		for (Enumeration keys = secondary.get(0).keys(); keys.hasMoreElements(); ) {
-		    names.add((String) keys.nextElement());
-		}
-		names = (List<String>)Utils.sort(names);
-		for(String name: names) row.add(name);
-	    }
-	    /*
-	      JSONArray fields = root.optJSONArray("fields");
-	      if(fields!=null) {
-	      for(int k=0;k<fields.length();k++)
-	      row.add(fields.getString(k));
-	      } else  {
-	      for (int k = 0; k < jarray.length(); k++) {
-	      row.add("Index " + k);
-	      }
-	    ***/
-
-	    for(Hashtable h: secondary)  {
-		Row row = new Row();
-		rows.add(row);
-		for(String name: names) {
-		    Object value = h.get(name);
-		    if(value==null) value="NULL";
-		    row.add(value);
+                for (Enumeration keys = secondary.get(0).keys();
+                        keys.hasMoreElements(); ) {
+                    names.add((String) keys.nextElement());
                 }
-	    }
-	}
-	//	System.out.println(rows.get(0).print(null));
-	//	System.out.println(rows.get(1).print(rows.get(0)));
-	//	System.out.println(rows.get(2).print(rows.get(0)));
+                names = (List<String>) Utils.sort(names);
+                for (String name : names) {
+                    row.add(name);
+                }
+            }
+            /*
+              JSONArray fields = root.optJSONArray("fields");
+              if(fields!=null) {
+              for(int k=0;k<fields.length();k++)
+              row.add(fields.getString(k));
+              } else  {
+              for (int k = 0; k < jarray.length(); k++) {
+              row.add("Index " + k);
+              }
+            ***/
+
+            for (Hashtable h : secondary) {
+                Row row = new Row();
+                rows.add(row);
+                for (String name : names) {
+                    Object value = h.get(name);
+                    if (value == null) {
+                        value = "NULL";
+                    }
+                    row.add(value);
+                }
+            }
+        }
+
+        //      System.out.println(rows.get(0).print(null));
+        //      System.out.println(rows.get(1).print(rows.get(0)));
+        //      System.out.println(rows.get(2).print(rows.get(0)));
         return rows;
 
 
@@ -1847,13 +1863,15 @@ public class CsvUtil {
         new Cmd("-help", "print this help)"),
         new Cmd("-help:<topic search string>",
                 "print help that matches topic"),
+
+        /** *  Slice and dice * */
         new Cmd(true, "Slice and Dice"),
         new Cmd("-columns", new Label("Select columns"),
                 "Only include the given columns",
                 new Arg("columns", "", "type", "columns")),
         new Cmd("-notcolumns", new Label("Deselect columns"),
                 "Don't include given columns",
-                new Arg("columns", "", "type", "columns")),	
+                new Arg("columns", "", "type", "columns")),
         new Cmd("-delete", new Label("Delete columns"), "Remove the columns",
                 new Arg("columns", "", "type", "columns")),
         new Cmd("-cut", new Label("Drop rows"), "",
@@ -1928,6 +1946,8 @@ public class CsvUtil {
                 new Arg("value_columns", "value columns"),
                 new Arg("file", "File to join with", "type", "file"),
                 new Arg("source_columns", "source key columns")),
+
+        /** *  Filter * */
         new Cmd(true, "Filter"),
         new Cmd("-start", "Start at pattern in source file",
                 new Arg("start pattern", "", "type", "pattern")),
@@ -1998,6 +2018,8 @@ public class CsvUtil {
                 new Arg("skip", "skip factor")),
         new Cmd("-skipline", "Skip any line that matches the pattern",
                 new Arg("pattern", "", "type", "pattern")),
+
+        /** *  Change values * */
         new Cmd(true, "Change Values"),
         new Cmd("-change", "Change columns",
                 new Arg("columns", "", "type", "columns"),
@@ -2010,8 +2032,7 @@ public class CsvUtil {
                 new Arg("substitution string")),
         new Cmd("-set", "Write the value into the cells",
                 new Arg("columns", "", "type", "columns"),
-                new Arg("rows", "", "type", "list"), 
-		new Arg("value")),
+                new Arg("rows", "", "type", "list"), new Arg("value")),
         new Cmd(
             "-macro",
             "Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header",
@@ -2028,10 +2049,10 @@ public class CsvUtil {
             "Append prefix from the previous element to rows that match pattern",
             new Arg("column", "", "type", "column"),
             new Arg("pattern", "", "type", "pattern"), new Arg("delimiter")),
-        new Cmd("-letter", "Add 'A','B', ... as column"),
         new Cmd("-case", "Change case of column",
-                new Arg("type", "", "values", "lower,upper,camel"),
-                new Arg("column", "", "type", "column")),
+                new Arg("type", "", "values",
+                        "lower,upper,camel,capitalize"), new Arg("column",
+                            "", "type", "column")),
         new Cmd("-width", "Limit the string size of the columns",
                 new Arg("columns", "", "type", "columns"), new Arg("size")),
         new Cmd(
@@ -2044,29 +2065,18 @@ public class CsvUtil {
                 new Arg("column", "", "type", "column"), new Arg("prefix")),
         new Cmd("-suffix", "Add suffix to column",
                 new Arg("column", "", "type", "column"), "suffix"),
-        new Cmd("-js", "Define Javascript (e.g., functions) to use later in the -func call",
-                new Arg("javascript", "", "rows", "6")),
-        new Cmd("-func", "Apply the javascript function. Use _colname or _col#",
+        new Cmd(
+            "-js",
+            "Define Javascript (e.g., functions) to use later in the -func call",
+            new Arg("javascript", "", "rows", "6")),
+        new Cmd("-func",
+                "Apply the javascript function. Use _colname or _col#",
                 new Arg("names", "New column names", "type", "list"),
                 new Arg("javascript", "javascript expression", "size", "60")),
         new Cmd("-endswith", "Ensure that each column ends with the string",
                 new Arg("column", "", "type", "column"), new Arg("string")),
         new Cmd("-trim", "Trim the string values",
                 new Arg("columns", "", "type", "columns")),
-        new Cmd("-convertdate", new Label("Convert date"), "",
-                new Arg("column", "", "type", "columns"),
-                new Arg("sourceformat", "Source format"),
-                new Arg("destformat", "Target format")),
-        new Cmd(
-            "-extractdate", new Label("Extract date"), "",
-            new Arg("date column", "", "type", "column"),
-            new Arg("format", "Date format"), new Arg("timezone"),
-            new Arg(
-                "what", "What to extract", "values",
-                "era,year,month,day_of_month,day_of_week,week_of_month,day_of_week_in_month,am_pm,hour,hour_of_day,minute,second,millisecond")),
-        new Cmd("-formatdate", new Label("Format date"), "",
-                new Arg("columns"), "intial date format",
-                "target date format"),
         new Cmd("-truncate", "", new Arg("column", "", "type", "columns"),
                 "max length", "suffix"),
         new Cmd("-extract", "Extract text from column and make a new column",
@@ -2094,12 +2104,48 @@ public class CsvUtil {
             "from value idx", "to idx", "new col name", "mode replace add"),
         new Cmd("-break", "Break apart column values and make new rows",
                 "label1", "label2", "columns"),
-        new Cmd("-desc", "Add a description from wikipedia",
+
+        /** *  Add values * */
+        new Cmd(true, "Add Values"),
+        new Cmd("-md", "Make a message digest of the column values",
+                new Arg("columns", "", "type", "columns"),
+                new Arg("type", "", "values", "MD5,SHA-1,SHA-256")),
+        new Cmd("-uuid", "Add a UUID field"),
+        new Cmd("-number", "Add 1,2,3... as column"),
+        new Cmd("-letter", "Add 'A','B', ... as column"),
+
+        /** *  Dates * */
+        new Cmd(true, "Dates"),
+        new Cmd("-convertdate", new Label("Convert date"), "",
+                new Arg("column", "", "type", "columns"),
+                new Arg("sourceformat", "Source format"),
+                new Arg("destformat", "Target format")),
+        new Cmd(
+            "-extractdate", new Label("Extract date"), "",
+            new Arg("date column", "", "type", "column"),
+            new Arg("format", "Date format"), new Arg("timezone"),
+            new Arg(
+                "what", "What to extract", "values",
+                "era,year,month,day_of_month,day_of_week,week_of_month,day_of_week_in_month,am_pm,hour,hour_of_day,minute,second,millisecond")),
+        new Cmd("-formatdate", new Label("Format date"), "",
+                new Arg("columns"), "intial date format",
+                "target date format"),
+
+        /** *  Lookup * */
+        new Cmd(true, "Lookup"),
+        new Cmd("-wikidesc", "Add a description from wikipedia",
                 new Arg("column", "", "type", "columns"), "suffix"),
         new Cmd("-image", "Search for an image",
                 new Arg("column", "", "type", "columns"), "suffix"),
+        new Cmd(
+            "-imagefill",
+            "Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. ",
+            new Arg("querycolumn", "", "type", "columns"), "suffix",
+            new Arg("imagecolumn", "", "type", "column")),
         new Cmd("-gender", "Figure out the gender of the name in the column",
                 new Arg("column", "", "type", "columns")),
+
+        /** *  Numeric * */
         new Cmd(true, "Numeric"),
         new Cmd("-scale", "Set value={value+delta1}*scale+delta2",
                 new Arg("column", "", "type", "columns"), "delta1", "scale",
@@ -2123,6 +2169,8 @@ public class CsvUtil {
                 new Arg("column", "", "type", "columns"), "how far back"),
         new Cmd("-average", "Calculate a moving average", "columns",
                 "period", "label"),
+
+        /** * Geocode  * */
         new Cmd(true, "Geocode"),
         new Cmd("-geocode", "", new Arg("columns", "", "type", "columns"),
                 new Arg("prefix", "e.g., state: or county:"),
@@ -2142,16 +2190,23 @@ public class CsvUtil {
         new Cmd("-population", "Add in population from address",
                 new Arg("columns", "", "type", "columns"),
                 new Arg("prefix", "e.g., state: or county:"), "suffix"),
+
+        /** * Other  * */
         new Cmd(true, "Other Commands"),
         new Cmd("-sort", "",
                 new Arg("column", "Column to sort on", "type", "column")),
+        new Cmd("-descsort", "",
+                new Arg("column", "Column to descending sort on", "type",
+                        "column")),
         new Cmd("-count", "Show count"),
         new Cmd("-maxrows", "", "Max rows to print"),
         new Cmd("-changeline", new Label("Change line"), "Change the line",
                 "from", "to"),
         new Cmd("-changeraw", new Label("Change input"), "Change input text",
                 "from", "to"),
-	new Cmd("-crop",new Label("Crop string"),"Crop last part of string after any of the patterns", "columns","pattern1,pattern2"),
+        new Cmd("-crop", new Label("Crop string"),
+                "Crop last part of string after any of the patterns",
+                "columns", "pattern1,pattern2"),
         new Cmd(
             "-strict",
             "Be strict on columns. any rows that are not the size of the other rows are dropped"),
@@ -2167,6 +2222,8 @@ public class CsvUtil {
         new Cmd("-comment", "", "string"),
         new Cmd("-verify",
                 "Verify that all of the rows have the same # of columns"),
+
+        /** * Input   * */
         new Cmd(true, "Input"),
         new Cmd("-delimiter", "Specify a delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab",
@@ -2209,6 +2266,8 @@ public class CsvUtil {
         new Cmd("-prune", "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", "type",
                         "number")),
+
+        /** * Output  * */
         new Cmd(true, "Output"), new Cmd("-print", "Output the rows"),
         new Cmd("-template", "Apply the template to make the output",
                 new Arg("prefix", "", "size", "40"),
@@ -2276,37 +2335,42 @@ public class CsvUtil {
         for (Cmd c : commands) {
             String cmd = c.getLine();
             if (match != null) {
-                String text = c.cmd;
-		String desc = null;
-		String label = null;		
+                String text  = c.cmd;
+                String desc  = null;
+                String label = null;
                 if (c.category) {
                     matchedCategory = false;
                     text            = c.desc;
                 } else {
-                    text = c.cmd;
-		    desc = c.desc;
-		    label = c.label;
-		    if(desc!=null) desc = desc.toLowerCase();
-		    if(label!=null) label = label.toLowerCase();
+                    text  = c.cmd;
+                    desc  = c.desc;
+                    label = c.label;
+                    if (desc != null) {
+                        desc = desc.toLowerCase();
+                    }
+                    if (label != null) {
+                        label = label.toLowerCase();
+                    }
                 }
                 boolean ok = true;
                 text = text.toLowerCase();
                 if (exact && !text.equals(match)) {
                     ok = false;
                 } else if ( !exact) {
-		    if(text.indexOf(match) < 0) {
-			ok = false;
-		    }
-		    if(!ok && label!=null) {
-			ok = label.indexOf(match)>=0;
-		    }
-		    if(!ok && desc!=null) {
-			ok = desc.indexOf(match)>=0;
-		    }		    
+                    if (text.indexOf(match) < 0) {
+                        ok = false;
+                    }
+                    if ( !ok && (label != null)) {
+                        ok = label.indexOf(match) >= 0;
+                    }
+                    if ( !ok && (desc != null)) {
+                        ok = desc.indexOf(match) >= 0;
+                    }
                 }
 
                 if (c.category) {
                     matchedCategory = ok;
+
                     continue;
                 } else {
                     ok = ok || matchedCategory;
@@ -2743,14 +2807,13 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 5)) {
                         return false;
                     }
-		    String mainCol =args.get(++i);
+                    String       mainCol   = args.get(++i);
                     List<String> valueCols = getCols(args.get(++i));
-                    //                int          idx2 = Integer.parseInt(args.get(++i));
-                    String uniqueCol   = args.get(++i);
+                    String       uniqueCol = args.get(++i);
                     List<String> extraCols = getCols(args.get(++i));
                     info.getProcessor().addProcessor(
                         new Processor.Unfurler(
-					       mainCol, valueCols, uniqueCol, extraCols));
+                            mainCol, valueCols, uniqueCol, extraCols));
 
                     continue;
                 }
@@ -2788,9 +2851,18 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    int idx = Integer.parseInt(args.get(++i));
                     info.getProcessor().addProcessor(
-                        new Processor.Sorter(idx, true));
+                        new Processor.Sorter(args.get(++i), true));
+
+                    continue;
+                }
+
+                if (arg.equals("-descsort")) {
+                    if ( !ensureArg(args, i, 1)) {
+                        return false;
+                    }
+                    info.getProcessor().addProcessor(
+                        new Processor.Sorter(args.get(++i), false));
 
                     continue;
                 }
@@ -3209,8 +3281,8 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-                    int col  = Integer.parseInt(args.get(++i));
-                    int step = Integer.parseInt(args.get(++i));
+                    String col  = args.get(++i);
+                    int    step = Integer.parseInt(args.get(++i));
                     info.getProcessor().addProcessor(
                         new Converter.ColumnIncrease(col, step));
 
@@ -3269,7 +3341,7 @@ public class CsvUtil {
                     }
                     String col = args.get(++i);
                     info.getProcessor().addProcessor(
-						     new Processor.Exploder(col));
+                        new Processor.Exploder(col));
 
                     continue;
                 }
@@ -3279,9 +3351,8 @@ public class CsvUtil {
                         return false;
                     }
                     String col = args.get(++i);
-
                     info.getProcessor().addProcessor(
-                        new Converter.Genderizer(new Integer(col)));
+                        new Converter.Genderizer(col));
 
                     continue;
                 }
@@ -3298,14 +3369,27 @@ public class CsvUtil {
                     continue;
                 }
 
-                if (arg.equals("-desc")) {
+                if (arg.equals("-imagefill")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    List<String> cols        = getCols(args.get(++i));
+                    String       suffix      = args.get(++i);
+                    String       imageColumn = args.get(++i);
+                    info.getProcessor().addProcessor(
+                        new Converter.ImageSearch(cols, suffix, imageColumn));
+
+                    continue;
+                }
+
+                if (arg.equals("-wikidesc") || arg.equals("-desc")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
                     List<String> cols   = getCols(args.get(++i));
                     String       suffix = args.get(++i);
                     info.getProcessor().addProcessor(
-                        new Converter.DescSearch(cols, suffix));
+                        new Converter.WikiDescSearch(cols, suffix));
 
                     continue;
                 }
@@ -3408,14 +3492,14 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-                    List<String> cols    = getCols(args.get(++i));
-                    List<String>       patterns = StringUtil.split(args.get(++i),",",true,true);
+                    List<String> cols = getCols(args.get(++i));
+                    List<String> patterns = StringUtil.split(args.get(++i),
+                                                ",", true, true);
                     info.getProcessor().addProcessor(
-                        new Converter.Cropper(
-						    cols, patterns));
+                        new Converter.Cropper(cols, patterns));
 
                     continue;
-		}
+                }
 
                 if (arg.equals("-change")) {
                     if ( !ensureArg(args, i, 3)) {
@@ -3507,7 +3591,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
-                    int    col  = Integer.parseInt(args.get(++i));
+                    String col  = args.get(++i);
                     String sdf1 = args.get(++i);
                     String sdf2 = args.get(++i);
                     info.getProcessor().addProcessor(
@@ -3522,7 +3606,7 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 4)) {
                         return false;
                     }
-                    int    col  = Integer.parseInt(args.get(++i));
+                    String col  = args.get(++i);
                     String sdf  = args.get(++i);
                     String tz   = args.get(++i);
                     String what = args.get(++i);
@@ -3685,7 +3769,7 @@ public class CsvUtil {
                     }
                     info.getProcessor().addProcessor(
                         new Converter.ColumnInserter(
-                            Integer.parseInt(args.get(++i)), args.get(++i)));
+                            args.get(++i), args.get(++i)));
 
                     continue;
                 }
@@ -3881,6 +3965,18 @@ public class CsvUtil {
 
                     continue;
                 }
+                if (arg.equals("-md")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> idxs   = getCols(args.get(++i));
+                    String       action = args.get(++i);
+                    info.getProcessor().addProcessor(new Converter.MD(idxs,
+                            action));
+
+                    continue;
+                }
+
 
                 if (arg.equals("-case")) {
                     if ( !ensureArg(args, i, 2)) {
@@ -3946,8 +4042,21 @@ public class CsvUtil {
                     continue;
                 }
 
+                if (arg.equals("-number")) {
+                    info.getProcessor().addProcessor(new Converter.Number());
+
+                    continue;
+                }
+
+
                 if (arg.equals("-letter")) {
                     info.getProcessor().addProcessor(new Converter.Letter());
+
+                    continue;
+                }
+
+                if (arg.equals("-uuid")) {
+                    info.getProcessor().addProcessor(new Converter.UUID());
 
                     continue;
                 }
@@ -4228,8 +4337,6 @@ public class CsvUtil {
 
                     continue;
                 }
-
-
 
 
                 if (arg.length() == 0) {

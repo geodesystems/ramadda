@@ -954,9 +954,14 @@ rotate -> pass -> pass -> rotate -> pass
          */
         public RowCollector() {}
 
+        /**
+         * _more_
+         *
+         * @param col _more_
+         */
         public RowCollector(String col) {
-	    super(col);
-	}	
+            super(col);
+        }
 
         /**
          * _more_
@@ -1656,7 +1661,7 @@ rotate -> pass -> pass -> rotate -> pass
          * @param col _more_
          */
         public Exploder(String col) {
-	    super(col);
+            super(col);
         }
 
 
@@ -2420,7 +2425,9 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         int xcnt = 0;
-	int maxCount = 0;
+
+        /** _more_          */
+        int maxCount = 0;
 
         /**
          * _more_
@@ -2450,13 +2457,14 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         public void printRow(TextReader info, Row row) throws Exception {
-            List   values = row.getValues();
+            List values = row.getValues();
             if (cnt == 0) {
-                info.getWriter().println("<table  class='stripe hover ramadda-table ramadda-csv-table' >");
+                info.getWriter().println(
+                    "<table  class='stripe hover ramadda-table ramadda-csv-table' >");
             }
-	    maxCount =  Math.max(maxCount, values.size());
-            String open   = "<td>";
-            String close  = "</td>";
+            maxCount = Math.max(maxCount, values.size());
+            String open  = "<td>";
+            String close = "</td>";
 
             if (cnt == 0) {
                 info.getWriter().println("<thead>");
@@ -2474,13 +2482,13 @@ rotate -> pass -> pass -> rotate -> pass
             String s         = "";
 
             for (int i = 0; i < values.size(); i++) {
-		Object value = values.get(i);
-		if(value!=null) {
-		    lineWidth += value.toString().length();
-		    s    += " " + values.get(i);
-		} else {
-		    s    += " " + "";
-		}
+                Object value = values.get(i);
+                if (value != null) {
+                    lineWidth += value.toString().length();
+                    s         += " " + values.get(i);
+                } else {
+                    s += " " + "";
+                }
             }
             if (lineWidth > 200) {
                 style += "max-width:120px;";
@@ -2489,45 +2497,48 @@ rotate -> pass -> pass -> rotate -> pass
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
                     info.getWriter().print(open);
-		    info.getWriter().print("<div style='" + style + "'>");
+                    info.getWriter().print("<div style='" + style + "'>");
                     if (cnt == 0) {
-			info.getWriter().print("&nbsp;");
+                        info.getWriter().print("&nbsp;");
                     } else {
-			info.getWriter().print("#" + cnt);
+                        info.getWriter().print("#" + cnt);
                     }
-		    info.getWriter().print("");
-		    info.getWriter().print("</div>");
+                    info.getWriter().print("");
+                    info.getWriter().print("</div>");
                     info.getWriter().print(close);
                 }
                 info.getWriter().print(open);
-		info.getWriter().print("<div style='" + style + "'>");
+                info.getWriter().print("<div style='" + style + "'>");
                 if (cnt == 0) {
-		    info.getWriter().print("#" + i + "&nbsp;");
-                    info.getWriter().print("");		    
+                    info.getWriter().print("#" + i + "&nbsp;");
+                    info.getWriter().print("");
                     String label = Utils.makeLabel(""
                                        + values.get(i)).replaceAll(" ",
-
                                            "&nbsp;");
-		    info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title",
-									       label.replaceAll("\"","&quot;"))));
+                    info.getWriter().print(HtmlUtils.span(label,
+                            HtmlUtils.attr("title",
+                                           label.replaceAll("\"",
+                                               "&quot;"))));
                 } else {
                     Object value = values.get(i);
                     String label = ((value == null)
                                     ? ""
                                     : value.toString());
-		    info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title", label)));
+                    info.getWriter().print(HtmlUtils.span(label,
+                            HtmlUtils.attr("title", label)));
                 }
-		info.getWriter().print("</div>");
+                info.getWriter().print("</div>");
                 info.getWriter().print(close);
             }
-	    info.getWriter().print("\n");
+            info.getWriter().print("\n");
             if (cnt == 0) {
                 info.getWriter().println("</tr>");
                 info.getWriter().println("</thead>");
                 info.getWriter().println("<tbody>");
             } else {
-		for(int i=values.size();i<maxCount;i++)
-		    info.getWriter().print("<td></td>");
+                for (int i = values.size(); i < maxCount; i++) {
+                    info.getWriter().print("<td></td>");
+                }
                 info.getWriter().println("</tr>");
             }
             cnt++;
@@ -2568,12 +2579,16 @@ rotate -> pass -> pass -> rotate -> pass
     public static class Unfurler extends RowCollector {
 
         /** _more_ */
-        private int unfurlIndex=-1;
-	private String unfurlCol;
+        private int unfurlIndex = -1;
+
+        /** _more_          */
+        private String unfurlCol;
 
         /** _more_ */
-        private int uniqueIndex=-1;
-	private String uniqueCol;
+        private int uniqueIndex = -1;
+
+        /** _more_          */
+        private String uniqueCol;
 
         /** _more_ */
         //        private int valueIndex;
@@ -2597,15 +2612,16 @@ rotate -> pass -> pass -> rotate -> pass
          * @param unfurlIndex _more_
          * @param valueCols _more_
          * @param uniqueIndex _more_
+         * @param uniqueCol _more_
          * @param extraCols _more_
          */
         public Unfurler(String unfurlIndex, List<String> valueCols,
                         String uniqueCol, List<String> extraCols) {
             super(extraCols);
             this.unfurlCol = unfurlIndex;
-            this.valueCols   = valueCols;
-	    this.unfurlCol = unfurlCol;
-	    this.uniqueCol = uniqueCol;
+            this.valueCols = valueCols;
+            this.unfurlCol = unfurlCol;
+            this.uniqueCol = uniqueCol;
         }
 
         /**
@@ -2632,11 +2648,11 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
 
-	    if(valueIndices==null) {
-		valueIndices = getIndices(valueCols);
-		this.unfurlIndex = getIndex(unfurlCol);
-		this.uniqueIndex = getIndex(uniqueCol);	    
-	    }
+            if (valueIndices == null) {
+                valueIndices     = getIndices(valueCols);
+                this.unfurlIndex = getIndex(unfurlCol);
+                this.uniqueIndex = getIndex(uniqueCol);
+            }
 
             List<Integer>   includes     = getIndices(info);
             HashSet<String> seen         = new HashSet<String>();
@@ -3103,8 +3119,6 @@ rotate -> pass -> pass -> rotate -> pass
      */
     public static class Sorter extends RowCollector {
 
-        /** _more_ */
-        private int index;
 
         /** _more_ */
         private boolean asc = true;
@@ -3114,11 +3128,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          *
          * @param index _more_
+         *
+         * @param col _more_
          * @param asc _more_
          */
-        public Sorter(int index, boolean asc) {
-            this.index = index;
-            this.asc   = asc;
+        public Sorter(String col, boolean asc) {
+            super(col);
+            this.asc = asc;
         }
 
 
@@ -3135,6 +3151,7 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
+            int index = getIndex(info);
             rows = new ArrayList<Row>(getRows(rows));
             if (rows.size() == 0) {
                 return rows;
