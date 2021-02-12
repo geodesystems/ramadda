@@ -371,7 +371,7 @@ public abstract class CsvOperator {
      *
      */
     public void getColumnIndex(List<Integer> indices, String s) {
-        s = s.toLowerCase();
+        s = s.toLowerCase().trim();
         List<String> toks  = StringUtil.splitUpTo(s, "-", 2);
         int          start = -1;
         int          end   = -1;
@@ -386,7 +386,6 @@ public abstract class CsvOperator {
             if (columnNames == null) {
                 if (header == null) {
                     debug("no names or header");
-
                     return;
                 }
                 columnMap = new Hashtable<String, Integer>();
@@ -405,8 +404,7 @@ public abstract class CsvOperator {
                             colsSeen.add(i);
                             indices.add(i);
                         }
-                    }
-
+		    }
                     return;
                 }
                 if (StringUtil.containsRegExp(tok)) {
@@ -422,12 +420,13 @@ public abstract class CsvOperator {
 
                     return;
                 }
-
-
                 Integer iv = columnMap.get(tok);
                 if (iv != null) {
                     start = end = iv;
-                }
+                } else {
+		    //Not sure whether we should throw an error
+		    throw new RuntimeException("Could not find index:" + tok);
+		}
             } else {
                 Integer iv1 = columnMap.get(toks.get(0));
                 Integer iv2 = columnMap.get(toks.get(1));
@@ -484,7 +483,8 @@ public abstract class CsvOperator {
             return null;
         }
         List<Integer> indices = new ArrayList<Integer>();
-        for (String s : cols) {
+	System.err.println("INDICES:" + cols);
+	        for (String s : cols) {
             getColumnIndex(indices, s);
         }
 

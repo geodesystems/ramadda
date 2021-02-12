@@ -4124,6 +4124,7 @@ public abstract class Converter extends Processor {
 
         /** _more_ */
         private String op;
+	
 
         /**
          *
@@ -4150,7 +4151,6 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
                 row.getValues().add(name);
-
                 return row;
             }
             List<Integer> indices = getIndices(info);
