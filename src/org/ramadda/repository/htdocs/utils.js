@@ -1078,6 +1078,11 @@ var Utils =  {
 			    if(t.attrs["template"]) {
 				value = t.attrs["template"].replace("{value}",value);
 			    }
+			    if(t.attrs["maxwidth"]) {
+				let width = t.attrs["maxwidth"];
+				value =  HU.div([STYLE,HU.css("display","inline-block","white-space","nowrap","max-width",HU.getDimension(width),"overflow-x","auto")],value);
+			    }
+
 			    s+=value;
 			}
 		    });
