@@ -483,8 +483,7 @@ public abstract class CsvOperator {
             return null;
         }
         List<Integer> indices = new ArrayList<Integer>();
-	System.err.println("INDICES:" + cols);
-	        for (String s : cols) {
+	for (String s : cols) {
             getColumnIndex(indices, s);
         }
 

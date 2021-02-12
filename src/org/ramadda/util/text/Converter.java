@@ -254,7 +254,6 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
                 add(info, row, "image");
-
                 return row;
             }
 
@@ -1682,6 +1681,60 @@ public abstract class Converter extends Processor {
         }
 
     }
+
+
+    public static class Cropper extends Converter {
+
+        /** _more_ */
+        private List<String> patterns;
+
+        /**
+         *
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         */
+        public Cropper(List<String> cols, List<String> patterns) {
+            super(cols);
+            this.patterns = new ArrayList<String>();
+	    for(String s: patterns)
+		this.patterns.add(s.replaceAll("_comma_",","));
+        }
+
+        /**
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+                if ( !info.getAllData()) {
+                    return row;
+                }
+            }
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                if (idx >= 0 && idx < row.size()) {
+                    String s  = row.getString(idx).trim();
+		    for(String pattern: patterns) {
+			s= Utils.prune(s,pattern);
+		    }
+                    row.set(idx, s);
+                } else {
+		    //		    System.out.println("bad idx:" + idx +" " + row.size());
+		}
+            }
+            return row;
+        }
+
+    }
+
+
+
 
 
     /**

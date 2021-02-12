@@ -2151,6 +2151,7 @@ public class CsvUtil {
                 "from", "to"),
         new Cmd("-changeraw", new Label("Change input"), "Change input text",
                 "from", "to"),
+	new Cmd("-crop",new Label("Crop string"),"Crop last part of string after any of the patterns", "columns","pattern1,pattern2"),
         new Cmd(
             "-strict",
             "Be strict on columns. any rows that are not the size of the other rows are dropped"),
@@ -3402,6 +3403,19 @@ public class CsvUtil {
                     continue;
                 }
 
+
+                if (arg.equals("-crop")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    List<String> cols    = getCols(args.get(++i));
+                    List<String>       patterns = StringUtil.split(args.get(++i),",",true,true);
+                    info.getProcessor().addProcessor(
+                        new Converter.Cropper(
+						    cols, patterns));
+
+                    continue;
+		}
 
                 if (arg.equals("-change")) {
                     if ( !ensureArg(args, i, 3)) {
