@@ -1922,10 +1922,13 @@ public class Utils extends IO {
      */
     public static String makeID(String label) {
         label = label.trim().toLowerCase().replaceAll(" ",
-						      "_").replaceAll("\\.", "_").replaceAll("\n","_").replaceAll("\\(","_").replaceAll("\\)","_");
+                "_").replaceAll("\\.", "_").replaceAll("\n",
+                                "_").replaceAll("\\(", "_").replaceAll("\\)",
+                                    "_");
 
-	label=label.replaceAll("__+","_");
-	label=label.replaceAll("_$","");
+        label = label.replaceAll("__+", "_");
+        label = label.replaceAll("_$", "");
+
         return label;
     }
 
@@ -2618,6 +2621,24 @@ public class Utils extends IO {
 
     /** _more_ */
     private static List<SimpleDateFormat> dateFormats;
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param pattern _more_
+     *
+     * @return _more_
+     */
+    public static String prune(String s, String pattern) {
+        int index = s.indexOf(pattern);
+        if (index > 0) {
+            s = s.substring(0, index);
+        }
+
+        return s;
+    }
+
 
     /**
      * _more_
@@ -3843,16 +3864,10 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
         String s =
             "hello {{there template=\\\"foo bar {{ }} \"   }} I am fine";
-        String p   = "}}";
-        int    idx = findNext(s, 0, p);
-        if (idx < 0) {
-            System.err.println("failed");
-        } else {
-            System.err.println("idx:" + idx + " s:" + s.substring(idx));
-        }
-        System.exit(0);
+        System.err.println(prune(s, "{") + ":");
     }
 
 
