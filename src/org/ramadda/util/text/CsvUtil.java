@@ -977,6 +977,7 @@ public class CsvUtil {
         }
         //      System.out.println("***** FINAL:"+s);
         Pattern p = Pattern.compile(pattern);
+	int cnt = 0;
         while (true) {
             Matcher m = p.matcher(s);
             if ( !m.find()) {
