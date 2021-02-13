@@ -10,6 +10,8 @@ const DISPLAY_DOWNLOAD = "download";
 const DISPLAY_LEGEND = "legend";
 const DISPLAY_RELOADER = "reloader";
 const DISPLAY_MESSAGE = "message";
+const DISPLAY_TICKS = "ticks";
+
 addGlobalDisplayType({
     type: DISPLAY_DOWNLOAD,
     label: "Download",
@@ -53,6 +55,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_LEGEND,
     label: "Legend",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_CONTROLS
+});
+addGlobalDisplayType({
+    type: DISPLAY_TICKS,
+    label: "Ticks",
     requiresData: true,
     forUser: true,
     category: CATEGORY_CONTROLS
@@ -534,4 +543,72 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 	}
     });
 }
+
+function RamaddaTicksDisplay(displayManager, id, properties) {
+    if(!properties.animationHeight) properties.animationHeight = "30px";
+    properties.doAnimation =  false;
+    properties.animationShowButtons = false;
+    properties.animationMakeSlider = false;
+    const ID_ANIMATION = "animation";
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TICKS, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+
+    this.defineProperties([
+	{label:'Time Ticks Properties'},
+	{p:'animationHeight',wikiValue:'30px'},
+	{p:'showYears',wikiValue:'true'},
+    ]);
+
+    $.extend(this, {
+        needsData: function() {
+            return true;
+        },
+	dataFilterChanged: function() {
+	    SUPER.dataFilterChanged.call(this);
+	},
+	updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) return;
+	    let dateInfo = this.getDateInfo(records);
+	    let years = {
+	    }
+	    if(!this.getPropertyShowYears(false)) {
+		years["all"] = {
+		    records:records,
+		    yearCnt:"all"
+		}
+	    } else {
+		let yearCnt=0;
+		records.forEach(record=>{
+		    if(!record.getDate()) return;
+		    let year = record.getDate().getUTCFullYear();
+		    if(years[year] == null) {
+			years[year] = {
+			    records:[],
+			}
+		    }
+		    years[year].records.push(record);
+		});
+	    }
+	    let html = "";
+	    Object.keys(years).sort().forEach(year=>{
+		html+=HU.div([CLASS,'display-ticks-ticks', ID,this.getDomId(ID_ANIMATION+year)]);
+	    })
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    Object.keys(years).sort().forEach((year,idx)=>{		 
+		let info=years[year];
+		let dateInfo = this.getDateInfo(info.records);
+		let animation = new DisplayAnimation(this,true,{baseDomId:ID_ANIMATION+year,targetDiv:this.jq(ID_ANIMATION+year)});
+		animation.makeControls();
+		if(year!="all") {
+		    dateInfo.dateMin = new Date(Date.UTC(year,0,1));
+		    dateInfo.dateMax = new Date(Date.UTC(year,11,31));
+		}
+		animation.init(dateInfo.dateMin, dateInfo.dateMax,info.records);
+	     });
+	}
+    });
+}
+
 

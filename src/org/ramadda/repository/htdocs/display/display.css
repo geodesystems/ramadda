@@ -257,6 +257,10 @@ svg > g > g:last-child { pointer-events: none }
     cursor:pointer;
 }
 
+.display-animation-ticks {
+}
+
+
 .display-animation-tick {
    cursor:pointer;
    width:4px;
@@ -2337,4 +2341,8 @@ table.dataTable tfoot td {
     margin:5px;
     font-size:8pt;
     text-align:center;
+}
+
+.display-ticks-ticks {
+    margin-bottom:2px;
 }

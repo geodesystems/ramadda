@@ -146,7 +146,11 @@ function DateRangeWidget(display) {
 
 
 
-function DisplayAnimation(display, enabled) {
+function DisplayAnimation(display, enabled,attrs) {
+    let dflt = {
+    };
+    attrs = attrs||{};
+    $.extend(dflt,attrs);
     const ID_RUN = "animrun";
     const ID_NEXT = "animnext";
     const ID_PREV= "animprev";
@@ -162,6 +166,10 @@ function DisplayAnimation(display, enabled) {
     $.extend(this,{
 	display:display,
 	enabled: enabled,
+	targetDiv:attrs.targetDiv,
+	baseDomId:attrs.baseDomId,
+	labelSize:display.getProperty("animationLabelSize","14pt"),
+	labelStyle:display.getProperty("animationLabelStyle",""),
         running: false,
         inAnimation: false,
         begin: null,
@@ -184,10 +192,10 @@ function DisplayAnimation(display, enabled) {
 		this.startAnimation();
 	},
         getDomId: function(id) {
-	    return this.display.getDomId(id);
+	    return this.display.getDomId(id+(this.baseDomId?this.baseDomId:""));
 	},
 	jq: function(id) {
-	    return this.display.jq(id);
+	    return this.display.jq(id+(this.baseDomId?this.baseDomId:""));
 	},
 	init: function(dateMin, dateMax, records) {
 	    let debug = false;
@@ -255,47 +263,54 @@ function DisplayAnimation(display, enabled) {
 		this.window = this.dateRange / this.steps;
 	    }
 	    var sliderValues = this.mode != MODE_FRAME?[this.begin.getTime(),this.end.getTime()]:[this.begin.getTime()];
-	    let slider = this.jq(ID_SLIDER).slider({
-		range: _this.mode != MODE_FRAME,
-		min: _this.dateMin.getTime(),
-		max: _this.dateMax.getTime(),
-		values: sliderValues,
-		slide: function( event, ui ) {
-		    _this.stopAnimation();
-		    _this.setSliderValues(ui.values);
-		    _this.updateLabels();
-		},
-		stop: function(event,ui) {
-		    _this.stopAnimation();
-		    _this.setSliderValues(ui.values);
-		    _this.dateRangeChanged(true);
-		}
-	    });
+	    let tooltipFunc = {
+		    mouseleave: function(e) {
+			if(_this.tooltip)
+			    _this.tooltip.hide();
+		    },
+		    mousemove: function(e) {
+			if(!_this.tooltip) return;
+			if(e.offsetX>=0) {
+			    let parentWidth = _this.tooltip.parent().width();
+			    let parentLeft = _this.tooltip.parent().offset().left; 
+			    let percent = (e.pageX-parentLeft)/parentWidth;
+			    let dttm = new Date(_this.dateMin.getTime() + percent*_this.dateRange);
+			    dttm = _this.formatAnimationDate(dttm,_this.tooltipDateFormat);
+			    if(!_this.makeSlider) {
+				dttm+="<br>+/-:zoom";
+			    }
+			    _this.tooltip.html(dttm);
+			    _this.tooltip.show();
+			    _this.tooltip.position({
+				of: e.target,
+				my: "left top",
+				at: "left+" + e.offsetX +" bottom",
+				collision: "fit fit"
+			    });
+			}
+		    }};
 
-	    let xx = true;
-	    this.jq(ID_SLIDER).on({
-		mouseleave: function(e) {
-		    if(_this.tooltip)
-			_this.tooltip.hide();
-		},
-		mousemove: function(e) {
-		    if(!_this.tooltip) return;
-		    if(e.offsetX>=0) {
-			let parentWidth = _this.tooltip.parent().width();
-			let parentLeft = _this.tooltip.parent().offset().left; 
-			let percent = (e.pageX-parentLeft)/parentWidth;
-			let dttm = new Date(_this.dateMin.getTime() + percent*_this.dateRange);
-			dttm = _this.formatAnimationDate(dttm,_this.tooltipDateFormat);
-			_this.tooltip.html(dttm);
-			_this.tooltip.show();
-			_this.tooltip.position({
-			    of: e.target,
-			    my: "left top",
-			    at: "left+" + e.offsetX +" bottom",
-			    collision: "fit fit"
-			});
+	    if(this.makeSlider) {
+		let slider = this.jq(ID_SLIDER).slider({
+		    range: _this.mode != MODE_FRAME,
+		    min: _this.dateMin.getTime(),
+		    max: _this.dateMax.getTime(),
+		    values: sliderValues,
+		    slide: function( event, ui ) {
+			_this.stopAnimation();
+			_this.setSliderValues(ui.values);
+			_this.updateLabels();
+		    },
+		    stop: function(event,ui) {
+			_this.stopAnimation();
+			_this.setSliderValues(ui.values);
+			_this.dateRangeChanged(true);
 		    }
-		}});
+		});
+		this.jq(ID_SLIDER).on(tooltipFunc);
+	    } else {
+		this.jq(ID_TICKS).on(tooltipFunc);
+	    }
 
 	    this.updateTicks();
 	    if(debug)console.log("animation.init-3");
@@ -348,6 +363,8 @@ function DisplayAnimation(display, enabled) {
 	    }
 	},
 	makeControls:function() {
+	    this.tickHeight = this.display.getProperty("animationHeight","15px");
+	    this.makeSlider = this.display.getProperty("animationMakeSlider",true);
             let buttons =  "";
 	    let showButtons  = this.display.getProperty("animationShowButtons",true);
 	    let showSlider = display.getProperty("animationShowSlider",true);
@@ -364,21 +381,103 @@ function DisplayAnimation(display, enabled) {
 		if(!short)
 		    buttons += HtmlUtils.span([ID, this.getDomId(ID_SHOWALL), TITLE,"Show all"], HtmlUtils.getIconImage("fa-sync"));
 	    }
+
 	    if(showButtons) {
-		buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label"]);
+		buttons+=HtmlUtils.span([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("font-size",this.labelSize)]);
 	    } else {
-		buttons+=HtmlUtils.div([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "xxdisplay-animation-label",STYLE,HU.css("text-align","center","font-size","14pt")]);
+		buttons+=HtmlUtils.div([ID, this.getDomId(ID_ANIMATION_LABEL), CLASS, "display-animation-label",STYLE,this.labelStyle+HU.css("text-align","center","font-size",this.labelSize)]);
 	    }
             buttons = HtmlUtils.div([ CLASS,"display-animation-buttons"], buttons);
 	    if(showSlider) {
-		let style= display.getProperty("animationSliderStyle","");
+		let style= HU.css("height",this.tickHeight) +display.getProperty("animationSliderStyle","");
 		let tooltip  = HU.div([ID,this.getDomId(ID_TOOLTIP),CLASS,"display-animation-tooltip"],"");
+		let tickContainerStyle = HU.css("height",this.tickHeight);
+		if(!this.makeSlider) {
+		    tickContainerStyle += HU.css("background","efefef","border","1px solid #ccc");
+		}
+		if(!this.makeSlider) {
+		    style+=HU.css("cursor","move");
+		}
 		buttons +=   HtmlUtils.div([CLASS,"display-animation-slider",STYLE,style,ID,this.getDomId(ID_SLIDER)],
-					   tooltip + HtmlUtils.div([CLASS,"display-animation-ticks",ID,this.getDomId(ID_TICKS)]));
+					   tooltip + HtmlUtils.div([STYLE, tickContainerStyle,CLASS,"display-animation-ticks","tabindex","0",ID,this.getDomId(ID_TICKS)]));
 	    }
-
+	    this.html = HtmlUtils.div([STYLE,this.display.getProperty("animationStyle")], buttons);
 	    if(this.display.getProperty("animationShow",true)) {
-		this.jq(ID_TOP_LEFT).append(HtmlUtils.div([STYLE,this.display.getProperty("animationStyle")], buttons));
+		if(this.targetDiv) this.targetDiv.append(this.html);
+		else this.jq(ID_TOP_LEFT).append(this.html);
+	    }
+	    if(!this.makeSlider) {
+		let _this = this;
+		this.jq(ID_TICKS).mouseenter(function(event) {
+		    $(this).focus();
+		});
+		this.lastKeyTime = 0;
+		let ticks = this.jq(ID_TICKS);
+		ticks.mousedown(function(e) {
+		    _this.mouseIsDown = true;
+		    var parentOffset = $(this).parent().offset(); 
+		    _this.mouseX = e.pageX - parentOffset.left;
+		});
+
+		ticks.mousemove(function(e) {
+		    if(!_this.mouseIsDown) return;
+		    var parentOffset = $(this).parent().offset(); 
+		    var relX = e.pageX - parentOffset.left;
+		    let range = _this.dateMax.getTime() - _this.dateMin.getTime();
+		    let width = $(this).width();
+		    let dx = (_this.mouseX-relX);
+		    var parentOffset = $(this).parent().offset(); 
+		    _this.mouseX = e.pageX - parentOffset.left;
+		    if(dx==0) return;
+		    let dt = range*dx/width 
+		    if(!_this.originaDateMin) {
+			_this.originaDateMin = _this.dateMin;
+			_this.originaDateMax = _this.dateMax;		
+		    }
+		    _this.dateMin = new Date(_this.dateMin.getTime()+dt);
+		    _this.dateMax = new Date(_this.dateMax.getTime()+dt);			
+		    let t1 = new Date();
+		    _this.updateTicks();
+		    let t2 = new Date();
+//		    Utils.displayTimes("update ticks",[t1,t2],true);
+		    _this.updateLabels();
+
+		});
+		ticks.mouseup(function(e) {
+		    _this.mouseIsDown = false;
+		});
+		ticks.keypress(function(event) {
+		    let now = new Date();
+		    let diff = now.getTime()-_this.lastKeyTime;
+		    _this.lastKeyTime = now.getTime();
+		    if(event.which==43)
+			_this.zoom(true);
+		    else if(event.which==45)
+			_this.zoom(false);		    
+		    else if(event.which==61)
+			_this.zoomReset();
+
+		});
+
+		this.jq(ID_TICKS).bind('xwheel', function(e){		    
+		    $(this).focus();
+		    if(e.originalEvent.deltaY<0) {
+			let range = _this.dateMax.getTime() - _this.dateMin.getTime();
+			let newRange = range*0.9;
+			let diff = range-newRange;
+			_this.dateMin = new Date(_this.dateMin.getTime()+diff);
+			_this.dateMax = new Date(_this.dateMax.getTime()-diff);			
+			_this.updateTicks();
+			_this.updateLabels();
+		    } else if(e.originalEvent.deltaY>0) {
+			//zoom out 
+		    } else {
+		    }
+		    e.stopPropagation();
+		    e.stopImmediatePropagation();
+		    e.preventDefault();
+		});
+
 	    }
 
 	    if(this.display.getProperty("animationTooltipShow",false)) {
@@ -589,8 +688,30 @@ function DisplayAnimation(display, enabled) {
 	    this.recordListHighlight = recordList;
 	    this.updateTicks();
 	},
+	zoomReset: function() {
+	    if(this.originaDateMin) {
+		this.dateMax = this.originaDateMax;		
+		this.dateMin = this.originaDateMin;
+		this.updateTicks();
+		this.updateLabels();
+	    }
+	},
+	zoom: function(zoomin) {
+	    let range = this.dateMax.getTime() - this.dateMin.getTime();
+	    let newRange = range*(zoomin?0.9:1.1);
+	    let diff = range-newRange;
+	    if(!this.originaDateMin) {
+		this.originaDateMin = this.dateMin;
+		this.originaDateMax = this.dateMax;		
+	    }
+	    this.dateMin = new Date(this.dateMin.getTime()+diff);
+	    this.dateMax = new Date(this.dateMax.getTime()-diff);			
+	    this.updateTicks();
+	    this.updateLabels();
+	},
 	updateTicks: function() {
 	    let debug = false;
+	    this.tickCount = 0;
 	    if(!this.records || !this.display.getProperty("animationShowTicks",true)) return;
 	    this.highlightRecords = {};
 	    if(this.recordListHighlight) {
@@ -605,35 +726,49 @@ function DisplayAnimation(display, enabled) {
 	    let max = this.dateMax.getTime();
 	    let p = 0;
 	    let seenDate={};
+	    let t1 = new Date();
 	    for(let i=0;i<this.records.length;i++) {
 		let record = this.records[i];
 		let date = record.getDate().getTime();
 		if(seenDate[date]) continue;
 		seenDate[date] = true;
 		if(debug)console.log("\ttick:" + record.getDate());
+		if(date<min) continue;
+		if(date>max) continue;
+		this.tickCount++;
 		let perc = (date-min)/(max-min)*100;
 		let tt = this.formatAnimationDate(record.getDate());
 		let clazz = "display-animation-tick";
 		if(this.highlightRecords[record.getId()]) {
 		    clazz+=" display-animation-tick-highlight-base ";
 		}
-		ticks+=HtmlUtils.div([TITLE,"",ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css('left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
+		ticks+=HtmlUtils.div([TITLE,"",ID,this.display.getId()+"-"+record.getId(), CLASS,clazz,STYLE,HU.css("height",this.tickHeight,'left', perc+'%')+tickStyle,TITLE,tt,RECORD_ID,record.getId()],"");
 	    }
-
+	    let t2 = new Date();
 	    this.jq(ID_TICKS).html(ticks);
+	    let t3 = new Date();
 	    if(debug)console.log("animation.init done making ticks");
 	    let propagateHighlight = display.getProperty("animationHighlightRecord",false);
 	    this.ticks = this.jq(ID_TICKS).find(".display-animation-tick");
 	    this.display.makeTooltips(this.ticks, this.records,(open,record) =>{
-		if(propagateHighlight) {
+		if(record && propagateHighlight) {
 		    this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
 		}
 	    },null,propagateHighlight);
+	    let propagateSelect = display.getProperty("animationSelectRecord",true);
+	    if(propagateSelect) {
+		this.display.makeRecordSelect(this.ticks,this.display.makeIdToRecords(this.records));
+	    }
+
+	    let t4 = new Date();
+//	    Utils.displayTimes("",[t1,t2,t3,t4],true);
 	},
 	updateUI: function(skipSlider) {
 	    if(!skipSlider) {
-		this.jq(ID_SLIDER).slider('values',0,this.begin.getTime());
-		this.jq(ID_SLIDER).slider('values',1,this.end.getTime());
+		if(this.makeSlider) {
+		    this.jq(ID_SLIDER).slider('values',0,this.begin.getTime());
+		    this.jq(ID_SLIDER).slider('values',1,this.end.getTime());
+		}
 	    }
 	    this.updateLabels();
             let windowEnd = this.end.getTime();
@@ -651,17 +786,22 @@ function DisplayAnimation(display, enabled) {
                     this.btnRun.html(HtmlUtils.getIconImage("fa-play"));
             }
 	},
+	makeLabel: function(label) {
+	    return HU.span([STYLE,this.labelStyle+HU.css("font-weidth","bold","font-size",this.labelSize)],label);
+	},
 
 	updateLabels: function() {
 	    if(this.label) {
-		if (this.mode == MODE_FRAME && this.begin == this.end) {
-		    this.label.html(this.formatAnimationDate(this.begin));
+		if(!this.makeSlider) {
+		    this.label.html(HU.leftCenterRight(this.makeLabel(this.formatAnimationDate(this.dateMin)),this.makeLabel("# " +this.tickCount), this.makeLabel(this.formatAnimationDate(this.dateMax))));
 		} else {
-		    this.label.html(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end));
+		    if (this.mode == MODE_FRAME && this.begin == this.end) {
+			this.label.html(this.makeLabel(this.formatAnimationDate(this.begin)));
+		    } else {
+			this.label.html(this.makeLabel(this.formatAnimationDate(this.begin) + " - " + this.formatAnimationDate(this.end)));
+		    }
 		}
 	    }
-
-
 	},
         formatAnimationDate: function(date,format,debug) {
 	    let timeZoneOffset =this.display.getProperty("timeZoneOffset");

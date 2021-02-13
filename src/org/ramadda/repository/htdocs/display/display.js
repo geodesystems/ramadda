@@ -95,7 +95,7 @@ const PROP_HEIGHT = "height";
 const PROP_WIDTH = "width";
 const PROP_FILTER_VALUE = "fitlerValue";
 
-const RECORD_INDEX = "recordIndex";
+const RECORD_INDEX = "recordindex";
 const RECORD_ID = "recordid";
 const TEXT_HIGHLIGHT_COLOR = "yellow";
 const HIGHLIGHT_COLOR = "red";
@@ -1017,6 +1017,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"acceptEventAnimationChange=false",
 		"acceptDateRangeChange=true",
 		"animationDateFormat=\"yyyy\"",
+		"animationLabelSize=\"12pt\"",
+		"animationStyle=\"\"",				
 		"animationTooltipShow=\"true\"",
 		"animationTooltipDateFormat=\"yyyymmddhhmm\"",		
 		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
@@ -4968,13 +4970,37 @@ a
 		inputFunc($(this));
 	    });
 	    
-	    var dateMin = null;
-	    var dateMax = null;
+
 	    var dates = [];
 	    if(debug) console.log("checkSearchBar-getting filtered data");
 	    let filteredRecords  = this.filterData();
 	    if(debug) console.log("checkSearchBar-done getting filtered data");
-	    filteredRecords.every(record=>{
+	    let dateInfo = this.getDateInfo(filteredRecords);
+	    if(debug) console.log("checkSearchBar-11");
+            if (dateInfo.dateMax) {
+		if(debug) console.log("checkSearchBar-getAnimation");
+		var animation = this.getAnimation();
+		if(animation.getEnabled()) {
+		    if(debug) console.log("checkSearchBar-calling animation.init");
+//		    console.log("dateMin:" + dateMin.toUTCString());
+		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
+		    if(debug) console.log("checkSearchBar-done calling animation.init");
+		    if(!this.minDateObj) {
+			if(debug) console.log("checkSearchBar-calling setDateRange");
+			if(this.getProperty("animationFilter", true)) {
+			    this.setDateRange(animation.begin, animation.end);
+			}
+			if(debug) console.log("checkSearchBar-done calling setDateRange");
+		    }
+		}
+            }
+	    if(debug) console.log("checkSearchBar-done");
+        },
+	getDateInfo:function(records) {
+	    let dateMin = null;
+	    let dateMax = null;
+	    let dates =[];
+	    records.every(record=>{
 		if (dateMin == null) {
 		    dateMin = record.getDate();
 		    dateMax = record.getDate();
@@ -4990,28 +5016,9 @@ a
 		}
 		return true;
 	    });
-
-	    if(debug) console.log("checkSearchBar-11");
-            if (dateMax) {
-		if(debug) console.log("checkSearchBar-getAnimation");
-		var animation = this.getAnimation();
-		if(animation.getEnabled()) {
-		    if(debug) console.log("checkSearchBar-calling animation.init");
-//		    console.log("dateMin:" + dateMin.toUTCString());
-		    animation.init(dateMin, dateMax,filteredRecords);
-		    if(debug) console.log("checkSearchBar-done calling animation.init");
-		    if(!this.minDateObj) {
-			if(debug) console.log("checkSearchBar-calling setDateRange");
-			if(this.getProperty("animationFilter", true)) {
-			    this.setDateRange(animation.begin, animation.end);
-			}
-			if(debug) console.log("checkSearchBar-done calling setDateRange");
-		    }
-		}
-            }
-
-	    if(debug) console.log("checkSearchBar-done");
-        },
+	    return { dateMin:dateMin, dateMax:dateMax, dates:dates};
+	},
+	    
 	checkFilterField: function(f) {
 	    var min = f.attr("data-min");
 	    var max = f.attr("data-max");
@@ -5067,7 +5074,7 @@ a
 		    if(record)
 			_this.propagateEventRecordSelection({record:record});
 		};
-		let children = jq.find("[recordIndex]");
+		let children = jq.find("[" +RECORD_INDEX+"]");
 		if(!children.length) children = jq;
 		children.click(func);
 	    }
@@ -5089,6 +5096,11 @@ a
 	    }
 
 	},
+	makeIdToRecords: function(records) {
+	    let idToRecord = {};
+	    records.forEach(r=>idToRecord[r.getId()] = r);	    
+	    return idToRecord;
+	},
 	//Make sure to set the title attribute on the elements
 	makeTooltips: function(selector, records, callback, tooltipArg,propagateHighlight) {
 	    if(!Utils.isDefined(propagateHighlight))
@@ -5101,9 +5113,8 @@ a
 		return;
 	    }
 	    let _this = this;
-	    let idToRecord = {};
-	    records.forEach(r=>idToRecord[r.getId()] = r);
-	    selector.tooltip({
+	    let idToRecord = this.makeIdToRecords(records);
+	    let tooltipFunc = {
 		content: function() {
 		    let record = idToRecord[$(this).attr(RECORD_ID)];
 		    if(!record)  record = records[parseFloat($(this).attr(RECORD_INDEX))];
@@ -5119,8 +5130,10 @@ a
 		    return tt;
 		},
 		close: function(event,ui) {
-		    var record = records[parseFloat($(this).attr('recordIndex'))];
-		    if(callback) callback(true, record);
+		    let record = idToRecord[$(this).attr(RECORD_ID)];
+		    if(!record)
+			record = records[parseFloat($(this).attr(RECORD_INDEX))];
+		    if(callback) callback(false, record);
 		    if(propagateHighlight)
 			_this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
 		},
@@ -5137,6 +5150,28 @@ a
 		classes: {
 		    "ui-tooltip": _this.getProperty("tooltipClass", "display-tooltip")
 		}
+	    };
+	    //A hack to fix really slow tooltip calls when there are lots of elements
+	    selector.mouseenter(function() {
+		let tooltip = $(this).tooltip(tooltipFunc);
+		tooltip.tooltip('open');
+	    });
+	    selector.mouseleave(function() {
+		let tooltip = $(this).tooltip({});
+		tooltip.tooltip('close');
+	    });
+
+	    return;
+	    selector.tooltip(tooltipFunc);
+	},
+	makeRecordSelect: function(selector,idToRecords, callback) {
+	    let _this = this;
+	    selector.click(function(event){
+		var record = idToRecords[$(this).attr(RECORD_ID)];
+		console.log("click:" + record);
+		if(!record) return;
+		if(callback) callback(record);
+		_this.propagateEventRecordSelection({select:true,record: record});
 	    });
 	},
 	makePopups: function(selector, records, callback, popupTemplate) {
@@ -5145,7 +5180,7 @@ a
 	    if(!popupTemplate) return;
 	    let _this = this;
 	    selector.click(function(event){
-		var record = records[parseFloat($(this).attr('recordIndex'))];
+		var record = records[parseFloat($(this).attr(RECORD_INDEX))];
 		if(!record) return;
 		if(callback) callback(record);
 		_this.propagateEventRecordSelection({select:true,record: record});

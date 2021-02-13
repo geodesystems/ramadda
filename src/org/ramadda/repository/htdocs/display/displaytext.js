@@ -1147,7 +1147,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 		}
 		if(!first) first=records[rowIdx];
 		let thumb = row[thumbField.getIndex()];		
-		thumbsHtml += HU.image(thumb,["recordIndex",rowIdx,ID,this.getDomId(ID_THUMB)+rowIdx,WIDTH, thumbWidth,CLASS,"display-imagezoom-thumb"])+"<br>\n";
+		thumbsHtml += HU.image(thumb,[RECORD_INDEX,rowIdx,ID,this.getDomId(ID_THUMB)+rowIdx,WIDTH, thumbWidth,CLASS,"display-imagezoom-thumb"])+"<br>\n";
 	    }
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.jq(ID_THUMBS).html(thumbsHtml);
@@ -1156,7 +1156,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    let thumbSelect = (thumb=>{
 		thumbs.css("border","1px solid transparent");
 		thumb.css("border","1px solid " + HIGHLIGHT_COLOR);
-		let index = parseFloat(thumb.attr('recordIndex'));
+		let index = parseFloat(thumb.attr(RECORD_INDEX));
 		HU.addToDocumentUrl("imagezoom_thumb",index);
 		let record = records[index]
 		_this.handleImage(record);
@@ -1315,6 +1315,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"selectField"},
 	{p:"selectValue"},
 	{p:'onlyShowSelected',wikiValue:'true'},
+	{p:'showFirst',wikiValue:'false'},	
+	{p:'selectHighlight',wikiValue:'true'},	
 	{p:"groupByField"},
 	{p:"groupDelimiter",wikiValue:"<br>"},	
 	{p:"groupTemplate",wikivalue:"<b>${group}</b><ul>${contents}</ul>"},
@@ -1327,7 +1329,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
     $.extend(this, {
 	dataFilterChanged: function() {
-	    if(this.getProperty("onlyShowSelected") && this.selectedRecord ) {
+	    if(this.getPropertyOnlyShowSelected() && this.selectedRecord ) {
 		this.selectedRecord = null;
 		this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    }
@@ -1338,14 +1340,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    if(pointData==null) return;
 	    let records = this.filterData();
 	    if(!records) return;
-	    if(this.getProperty("onlyShowSelected")) {
+	    if(this.getPropertyOnlyShowSelected()) {
 		if(!this.selectedRecord) {
-		    if(this.getProperty("showFirst",true)) {
+		    if(this.getPropertyShowFirst(true)) {
 			this.selectedRecord = records[0];
 		    }
 		}
 	    }
-	    if(this.getProperty("onlyShowSelected")) {
+	    if(this.getPropertyOnlyShowSelected()) {
 		if(!this.selectedRecord) {
 		    this.writeHtml(ID_DISPLAY_CONTENTS, "<br>");
 		    return;
@@ -1353,7 +1355,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		records = [this.selectedRecord];
 	    }
 	    records= this.sortRecords(records);
-
 	    let fields = pointData.getRecordFields();
 	    let uniqueFields  = this.getFieldsByIds(fields, this.getProperty("uniqueFields"));
 	    let uniqueMap ={};
@@ -1646,7 +1647,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    let rowAttrs = {};
 		    rowAttrs["selectCount"] = selected.length;
 		    rowAttrs["totalCount"] = records.length;
-		    rowAttrs["recordIndex"] = rowIdx+1;
+		    rowAttrs[RECORD_INDEX] = rowIdx+1;
 		    let dataFilters = this.getDataFilters();
 		    this.filters.forEach(f=>{
 			if(!f.isEnabled() || !f.getField) return;
@@ -1659,7 +1660,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			}
 			rowAttrs["color"] = color;
 		    }
-		    var tag = HU.openTag("div",[STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",CLASS,"display-template-record","recordIndex",rowIdx]);
+		    var tag = HU.openTag("div",[STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",CLASS,"display-template-record",RECORD_INDEX,rowIdx]);
 
 		    s = macros.apply(rowAttrs);
 
@@ -1716,7 +1717,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    this.makePopups(recordElements, selected);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
-		var record = selected[$(this).attr("recordIndex")];
+		var record = selected[$(this).attr(RECORD_INDEX)];
 		_this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
 		_this.propagateEventRecordSelection({highlight:true,record: record});
 	    });
@@ -1733,7 +1734,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			}
 		    });
 		    if(topElement) {
-			var record = selected[topElement.attr("recordIndex")];
+			var record = selected[topElement.attr(RECORD_INDEX)];
 			if(record && this.currentTopRecord && record!=this.currentTopRecord) {
 			    this.propagateEventRecordSelection({highlight:true,record: record});
 			}
@@ -1758,6 +1759,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	},
         handleEventRecordHighlight: function(source, args) {
+	    if(this.getPropertySelectHighlight()) {
+		this.selectedRecord=args.record;
+		this.callUpdateUI();
+		return
+	    }
+
 	    this.currentTopRecord = null;
 	    let myCount = ++this.highlightCount;
 	    var id = "#" + this.getId()+"-"+args.record.getId();
@@ -1765,7 +1772,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		this.unhighlightElement(this.highlightedElement);
 		this.highlightedElement = null;
 	    }
-
+//	    console.log(this.type+ " handleEventRecordHighlight " + args.highlight); 
 	    if(args.highlight) {
 		if(args.immediate) {
 		    this.highlightElement(args);
@@ -1795,16 +1802,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			v = element.attr("prev-" + a);
 		    }
 		    if(v) {
-			//			    console.log("un highlight css:" + element.css("background")+ " idx:" + element.attr("recordIndex"));
+			//			    console.log("un highlight css:" + element.css("background")+ " idx:" + element.attr(RECORD_INDEX));
 			element.css(a,v);
 		    }
 		});
 	    } 
 	},
 	highlightElement: function(args) {
-
-
-//	    console.log(this.type+".highlightElement");
+	    console.log(this.type+".highlightElement");
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;
@@ -2045,14 +2050,14 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 		    var field = data[j].field;
 		    contents += HU.div(["field-id",field.getId(), "data-value",field.getLabel(), TITLE,"Value: " + value, CLASS,"display-topfields-row",STYLE,"font-size:" + fontSize+";"], field.getLabel());
 		}
-		div += HU.div([CLASS,"display-topfields-header","recordIndex",i],header);
+		div += HU.div([CLASS,"display-topfields-header",RECORD_INDEX,i],header);
 		div += HU.div([CLASS,"display-topfields-values"], contents);
 		html+=HU.div([CLASS,"display-topfields-record"], div);
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-header").click(function(){
-		var idx = $(this).attr("recordIndex");
+		var idx = $(this).attr(RECORD_INDEX);
 		_this.jq(ID_DISPLAY_CONTENTS).find(".display-topfields-record").removeClass("display-topfields-selected");
 		$(this).parent().addClass("display-topfields-selected");
 		var record = records[idx];
@@ -2079,7 +2084,7 @@ function RamaddaTopfieldsDisplay(displayManager, id, properties) {
 	    if(!Utils.isDefined(index)) return;
 	    var container = this.jq(ID_DISPLAY_CONTENTS);
 	    container.find(".display-topfields-record").removeClass("display-topfields-selected");
-	    var element =   container.find("[recordIndex='" + index +"']").parent();
+	    var element =   container.find(HU.attrSelect(RECORD_INDEX, index)).parent();
 	    element.addClass("display-topfields-selected");
 	    var c = container.offset().top;
 	    var s = container.scrollTop();
@@ -3165,7 +3170,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 line = patternMatch.highlight(line);
                 displayedLineCnt++;
                 if (displayedLineCnt > maxLines) break;
-		let lineAttrs = [TITLE," ",CLASS, " display-raw-line ","recordIndex",rowIdx]
+		let lineAttrs = [TITLE," ",CLASS, " display-raw-line ",RECORD_INDEX,rowIdx]
 		if(bubble) line = HU.div([CLASS,"ramadda-bubble"],line);
 		if(fromField) line+=HU.div([CLASS,"ramadda-bubble-from"],  ""+row[fromField.getIndex()]);
 
@@ -3249,7 +3254,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    }
 	    let lines =this.jq(ID_TEXT).find(".display-raw-line");
 	    lines.click(function() {
-		var idx = $(this).attr("recordIndex");
+		var idx = $(this).attr(RECORD_INDEX);
 		var record = _this.indexToRecord[idx];
 		if(record) {
 		    _this.showRecordPopup($(this),record);
@@ -3262,7 +3267,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	highlightLine: function(index) {
 	    var container = this.jq(ID_TEXT);
 	    container.find(".display-raw-line").removeClass("display-raw-line-selected");
-	    var sel = "[recordIndex='" + index+"']";
+	    var sel = HU.attrSelect(RECORD_INDEX,index);
 	    var element =  container.find(sel);
 	    element.addClass("display-raw-line-selected");
 
@@ -3274,7 +3279,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    }
 	    this.highlightLine(index);
 	    var container = this.jq(ID_TEXT);
-	    var sel = "[recordIndex='" + index+"']";
+	    var sel = HU.attrSelect(RECORD_INDEX,index);
 	    var element =  container.find(sel);
 	    var c = container.offset().top;
 	    var s = container.scrollTop();

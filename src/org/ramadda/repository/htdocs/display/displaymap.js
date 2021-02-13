@@ -3262,7 +3262,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 	    }
 	    let index = this.recordToIndex[args.record.getId()];
 	    if(!Utils.isDefined(index)) return;
-	    this.selectedCell = contents.find("[recordIndex='" + index+"']");
+	    this.selectedCell = contents.find(HU.attrSelect(RECORD_INDEX, index));
 	    this.selectedBorder = this.selectedCell.css("border");
 	    this.selectedCell.css("border","1px solid red");
 	},
