@@ -1016,7 +1016,6 @@ var Utils =  {
 				    s+="&lt;Error:" + err+"&gt;";
 				    return;
 				}
-
 			    }
 			    if(!Utils.isDefined(value)) {
 				s+="${" + t.macro+"}";
@@ -1029,6 +1028,23 @@ var Utils =  {
 				    s+= t.attrs["missing"]
 				    return;
 				} 
+				if(t.attrs["youtube"]) {
+				    let toks = value.match(/.*watch\?v=(.*)$/);
+				    if(!toks || toks.length!=2) {
+					s +=  HU.href(value,value);
+				    } else {
+					let id = toks[1];
+					let playerId = "video_1";
+					let embedUrl = "//www.youtube.com/embed/" + id +
+					    "?enablejsapi=1&autoplay=1&playerapiid=" + playerId;
+					s +=  HU.href(value,"Link") +"<br>";
+					s+=  HU.tag("iframe",[ID,"ytplayer", 'type','text/html','frameborder','0',
+							      WIDTH,t.attrs['width']||400,HEIGHT,t.attrs["height"]||400, 
+							      SRC,embedUrl
+							     ]);
+				    }
+				    return;
+				}
 				if(t.attrs["offset1"]) {
 				    value = value+ parseFloat(t.attrs["offset1"]);
 				}
@@ -2500,17 +2516,18 @@ var GuiUtils = {
 
 
 var ID = "id";
-var STYLE = "style";
-var TITLE = "title";
-var CLASS = "class";
 var BACKGROUND = "background";
+var CLASS = "class";
+var DIV = "div";
 var POSITION = "position";
 var WIDTH = "width";
 var ALIGN = "align";
 var VALIGN = "valign";
 var HEIGHT = "height";
-var DIV = "div";
+var SRC = "src";
+var STYLE = "style";
 var TABLE = "table";
+var TITLE = "title";
 var THEAD = "thead";
 var TBODY = "tbody";
 var TFOOT = "tfoot";
@@ -3165,6 +3182,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     urlArg: function(name, value) {
         return name + "=" + encodeURIComponent(value);
+    },
+    attrSelect: function(name, value) {
+	if(!Utils.isDefined(value)) return "[" + name +"]";
+	return "[" + name +"='" + value+ "']";
     },
     attr: function(name, value) {
         return " " + name + "=" + this.qt(value) + " ";
