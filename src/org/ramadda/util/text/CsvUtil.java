@@ -343,6 +343,7 @@ public class CsvUtil {
         boolean      doConcat = false;
         boolean      doHeader = false;
         boolean      doRaw    = false;
+	int rawCut = 0;
         Hashtable    dbProps  = new Hashtable<String, String>();
         boolean      doPoint  = false;
         boolean      htmlPattern;
@@ -417,7 +418,6 @@ public class CsvUtil {
 
             if (arg.equals("-raw")) {
                 doRaw = true;
-
                 continue;
             }
 
@@ -946,10 +946,12 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    public List<Row> tokenizeHtmlPattern(String s, String cols, String start,
+    public List<Row> tokenizeHtmlPattern(TextReader info,String s, String cols, String start,
                                          String end, String pattern)
             throws Exception {
 
+        int         numLines = info.getMaxRows();
+	pattern =convertPattern(pattern);
         List<Row> rows = new ArrayList<Row>();
         if (cols.length() > 0) {
             rows.add(new Row(StringUtil.split(cols, ",")));
@@ -979,6 +981,7 @@ public class CsvUtil {
         Pattern p = Pattern.compile(pattern);
 	int cnt = 0;
         while (true) {
+	    long t1 = System.currentTimeMillis();
             Matcher m = p.matcher(s);
             if ( !m.find()) {
                 break;
@@ -986,17 +989,18 @@ public class CsvUtil {
             Row row = new Row();
             rows.add(row);
             for (int i = 1; i <= m.groupCount(); i++) {
-                String tok = m.group(i).trim();
-                row.add(tok);
+                String tok = m.group(i);
+		if(tok==null) tok = "";
+                row.add(tok.trim());
             }
             String s2 = s.substring(m.end());
             if (s.length() == s2.length()) {
                 break;
             }
             s = s2;
-            //      if(rows.size()>2) return rows;
+	    if(numLines>=0 && rows.size()>=numLines) break;
+	    long t2 = System.currentTimeMillis();
         }
-
         return rows;
     }
 
@@ -1027,7 +1031,7 @@ public class CsvUtil {
                 array = Json.readArray(root, arrayPath);
             }
         } catch (Exception exc) {
-            System.err.println("exc:" + exc);
+	                System.err.println("exc:" + exc);
         }
         if (array == null) {
             array = new JSONArray(s);
@@ -1306,6 +1310,9 @@ public class CsvUtil {
         int         numLines = info.getMaxRows();
         PrintWriter writer   = info.getWriter();
         String      prepend  = info.getPrepend();
+	int chars = 0;
+	int LINE_LIMIT = 2000;
+	int CHARS_LIMIT = 3000000;
         for (String file : files) {
             int                  lineCnt = 0;
             List<BufferedReader> readers = new ArrayList<BufferedReader>();
@@ -1321,13 +1328,27 @@ public class CsvUtil {
                 new BufferedReader(
                     new InputStreamReader(getInputStream(file))));
             for (BufferedReader br : readers) {
-                while (lineCnt < numLines) {
+                while (lineCnt < numLines && chars<CHARS_LIMIT) {
                     String line = br.readLine();
                     if (line == null) {
                         break;
                     }
-                    writer.println(line);
+		    System.err.println("line:"+line.length());
+		    while(line.length()>LINE_LIMIT) {
+			String tmp= line.substring(0,LINE_LIMIT-1);
+			line = line.substring(LINE_LIMIT-1);
+			lineCnt++;
+			writer.println(tmp);
+			chars+=tmp.length();
+			if(chars>CHARS_LIMIT) {
+			    break;
+			}
+		    }
+		    if(chars>CHARS_LIMIT) break;
+		    writer.println(line);
                     lineCnt++;
+		    chars+=line.length();
+		    System.err.println("chars:" + chars +" lines:" + lineCnt+" max lines:" + numLines); 
                 }
                 br.close();
             }
@@ -2454,21 +2475,6 @@ public class CsvUtil {
         pw.flush();
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception On badness
-     */
-    public static void main(String[] args) throws Exception {
-        CsvUtil csvUtil = new CsvUtil(args);
-        csvUtil.run(null);
-        System.exit(0);
-    }
-
-
-
 
 
     /**
@@ -2799,7 +2805,6 @@ public class CsvUtil {
                         new Processor.DbXml(props));
 
                     info.setMaxRows(30);
-
                     continue;
                 }
 
@@ -4378,8 +4383,9 @@ public class CsvUtil {
             } else {
                 throw new IllegalArgumentException("No file given");
             }
-            tokenizedRows.add(tokenizeHtmlPattern(s, htmlCols, startPattern,
-                    endPattern, htmlPattern));
+            tokenizedRows.add(tokenizeHtmlPattern(info, s, htmlCols, startPattern,
+                    endPattern, htmlPattern
+));
         } else if (doText) {
             tokenizedRows.add(tokenizeText(files.get(0), textHeader,
                                            chunkPattern, tokenPattern));
@@ -4582,6 +4588,10 @@ public class CsvUtil {
                          "\\\\)");
         p = p.replaceAll("_leftbracket_",
                          "\\\\[").replaceAll("_rightbracket_", "\\\\]");
+	String hr =  "<a[^>]*?href *= *\"?([^ <\"]+)";
+	p= p.replaceAll("_href_",hr);
+	//<a href=\"http://foobar\">Label</a>";
+	p= p.replaceAll("_hrefandlabel_",hr+"[^>]*>([^<]+)</a>");
         p = p.replaceAll("_dot_", "\\\\.");
         p = p.replaceAll("_dollar_", "\\\\\\$");
         p = p.replaceAll("_dot_", "\\\\.");
@@ -4589,9 +4599,42 @@ public class CsvUtil {
         p = p.replaceAll("_plus_", "\\\\+");
         p = p.replaceAll("_nl_", "\n");
         p = p.replaceAll("_quote_", "\"");
-
         return p;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception On badness
+     */
+    public static void main(String[] args) throws Exception {
+	if(false) {
+	    String pp  = ".*?Watched.?_hrefandlabel_( *<br> *_hrefandlabel_)?<br>(.*?)</div>";
+	    String  p = convertPattern(pp);
+	    Pattern pattern = Pattern.compile(p);
+	    String s = "hello <a href=\"http://foobar\">Label</a>";
+	    s = "	<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1\">Watched <a href=\"https://www.youtube.com/watch?v=NyKntOXIINI\">Alan Watts ~ Listen &amp; Breathe (Guided Meditation)</a>" +
+		"<br><a href=\"https://www.youtube.com/channel/UCCgCK4HAhzjD3IFw9cdXuOw\">Wiara</a><br>Feb 13, 2021, 6:28:27 PM MST</div>"	+
+		"<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>	<div class=\"content-cell mdl-cell mdl-cell--12-col mdl-typography--caption\"><b>Products:</b><br>&emsp;YouTube<br></div></div></div>	<div class=\"header-cell mdl-cell mdl-cell--12-col\"><p class=\"mdl-typography--title\">YouTube<br></p></div>	<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1\">" +
+"Watched <a href=\"https://www.youtube.com/watch?v=z6Pn9u4-pxE\">Alan Watts - How to melt anxiety</a><br><a href=\"https://www.youtube.com/channel/UCU4A50dYCKa1wpXiHspywSA\">Infinite Wisdom</a><br>Feb 13, 2021, 6:28:16 PM MST</div>	<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>";
+	    s = "   Watched <a href=\"https://www.youtube.com/watch?v=z6Pn9u4-pxE\">Alan Watts - How to melt anxiety</a><br>Feb 13, 2021, 6:28:16 PM MST</div>	<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>";
+
+	    Matcher matcher = pattern.matcher(s);
+	    System.err.println("p:" + p + "  " + matcher.find() +" x");
+	    for (int i = 0; i < matcher.groupCount(); i++) {
+		System.err.println(i+"="+matcher.group(i + 1));
+	    }
+
+	}
+
+	CsvUtil csvUtil = new CsvUtil(args);
+	csvUtil.run(null);
+	System.exit(0);
+    }
+
 
 
 }
