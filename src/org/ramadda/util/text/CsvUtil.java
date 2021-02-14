@@ -721,7 +721,7 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    public List<Row> tokenizeText(String file, String header,
+    public List<Row> tokenizeText2(String file, String header,
                                   String chunkPattern, String tokenPattern)
             throws Exception {
         chunkPattern = convertPattern(chunkPattern);
@@ -735,16 +735,20 @@ public class CsvUtil {
         }
         try {
             Pattern p1 = Pattern.compile(chunkPattern);
+	    Pattern p2  = Pattern.compile(tokenPattern);
             while (true) {
                 Matcher m1 = p1.matcher(s);
                 if ( !m1.find()) {
+		    //		    System.err.println(" no chunk match");
                     break;
                 }
                 s = s.substring(m1.end());
+		//		System.err.println("REMAINDER:" + s);
                 for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
                     String chunk = m1.group(i1).trim();
+		    //		    System.err.println("CHUNK[" + i1 +"]=" + chunk+"\n**********");
                     //              System.err.println("CHUNK:");
-                    Pattern p2  = Pattern.compile(tokenPattern);
+		    //		    System.exit(0);
                     int     cnt = 1;
                     while (true) {
                         Matcher m2 = p2.matcher(chunk);
@@ -776,6 +780,65 @@ public class CsvUtil {
         return rows;
     }
 
+
+    public List<Row> tokenizeText(String file, String header,
+                                  String chunkPattern, String tokenPattern)
+            throws Exception {
+        chunkPattern = convertPattern(chunkPattern);
+        tokenPattern = convertPattern(tokenPattern);
+        String    s         = IO.readContents(file);
+        List<Row> rows      = new ArrayList<Row>();
+        Row       headerRow = new Row();
+        rows.add(headerRow);
+        for (String tok : StringUtil.split(header, ",")) {
+            headerRow.add(tok);
+        }
+        try {
+            Pattern p1 = Pattern.compile(chunkPattern);
+	    Pattern p2  = Pattern.compile(tokenPattern);
+            while (true) {
+                Matcher m1 = p1.matcher(s);
+                if ( !m1.find()) {
+		    //		    System.err.println(" no chunk match");
+                    break;
+                }
+                s = s.substring(m1.end());
+		//		System.err.println("REMAINDER:" + s);
+                for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
+                    String chunk = m1.group(i1).trim();
+		    //		    System.err.println("CHUNK[" + i1 +"]=" + chunk+"\n**********");
+                    //              System.err.println("CHUNK:");
+		    //		    System.exit(0);
+                    int     cnt = 1;
+                    while (true) {
+                        Matcher m2 = p2.matcher(chunk);
+                        if ( !m2.find()) {
+                            break;
+                        }
+                        Row row = null;
+                        if (cnt < rows.size()) {
+                            row = rows.get(cnt);
+                        } else {
+                            row = new Row();
+                            rows.add(row);
+                        }
+                        cnt++;
+                        for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
+                            String tok = m2.group(i2).trim();
+                            //                      System.err.println("\ttok:" + tok);
+                            row.add(tok);
+                        }
+                        chunk = chunk.substring(m2.end());
+                    }
+                }
+            }
+        } catch (Exception exc) {
+            System.err.println("error: pattern:\"" + chunkPattern + "\"  "
+                               + exc);
+        }
+
+        return rows;
+    }
 
 
 
@@ -2282,6 +2345,10 @@ public class CsvUtil {
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", "type", "pattern"),
                 new Arg("token pattern", "", "type", "pattern")),
+        new Cmd("-text2", "Extract rows from the text",
+                new Arg("comma separated header"),
+                new Arg("chunk pattern", "", "type", "pattern"),
+                new Arg("token pattern", "", "type", "pattern")),
         new Cmd("-tokenize", "Tokenize the input from the pattern",
                 new Arg("header", "header1,header2..."),
                 new Arg("pattern", "", "type", "pattern")),
@@ -2527,6 +2594,7 @@ public class CsvUtil {
         //info.getFilter();
 
         boolean      doText          = false;
+        boolean      doText2         = false;	
         String       textHeader      = null;
         String       chunkPattern    = null;
         String       tokenPattern    = null;
@@ -2629,6 +2697,18 @@ public class CsvUtil {
 
                     continue;
                 }
+                if (arg.equals("-text2")) {
+                    if ( !ensureArg(args, i, 3)) {
+                        return false;
+                    }
+                    doText2       = true;
+                    textHeader   = args.get(++i);
+                    chunkPattern = args.get(++i);
+                    tokenPattern = args.get(++i);
+
+                    continue;
+                }
+
                 if (arg.equals("-json")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
@@ -4389,6 +4469,9 @@ public class CsvUtil {
         } else if (doText) {
             tokenizedRows.add(tokenizeText(files.get(0), textHeader,
                                            chunkPattern, tokenPattern));
+        } else if (doText2) {
+            tokenizedRows.add(tokenizeText2(files.get(0), textHeader,
+                                           chunkPattern, tokenPattern));	    
         } else if (doJson) {
             //xxxx
             String s = null;
