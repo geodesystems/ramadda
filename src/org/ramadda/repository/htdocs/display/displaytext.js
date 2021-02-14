@@ -1815,7 +1815,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    } 
 	},
 	highlightElement: function(args) {
-	    console.log(this.type+".highlightElement");
 	    var id = "#" + this.getId()+"-"+args.record.getId();
 	    var element = $(id);
 	    this.highlightedElement = element;

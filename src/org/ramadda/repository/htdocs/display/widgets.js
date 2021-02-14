@@ -749,15 +749,30 @@ function DisplayAnimation(display, enabled,attrs) {
 	    let t3 = new Date();
 	    if(debug)console.log("animation.init done making ticks");
 	    let propagateHighlight = display.getProperty("animationHighlightRecord",false);
+	    let propagateSelect = display.getProperty("animationSelectRecord",true);
 	    this.ticks = this.jq(ID_TICKS).find(".display-animation-tick");
+	    let _this = this;
 	    this.display.makeTooltips(this.ticks, this.records,(open,record) =>{
+		if(_this.display.animationLastRecordSelectTime) {
+		    let now = new Date();
+		    //If we recently selected a recordwith a click then don't do the highlight record from the mouse overs
+		    //for a couple more seconds
+		    if(now.getTime()-_this.display.animationLastRecordSelectTime.getTime()<1500) {
+			return false;
+		    }
+		}
 		if(record && propagateHighlight) {
+		    if(propagateSelect) {
+			_this.display.propagateEventRecordSelection({select:false,record: null});
+		    }
 		    this.display.handleEventRecordHighlight(this, {highlight: open,record:record, skipAnimation:true});
 		}
+		return true;
 	    },null,propagateHighlight);
-	    let propagateSelect = display.getProperty("animationSelectRecord",true);
 	    if(propagateSelect) {
-		this.display.makeRecordSelect(this.ticks,this.display.makeIdToRecords(this.records));
+		this.display.makeRecordSelect(this.ticks,this.display.makeIdToRecords(this.records),record=>{
+		    _this.display.animationLastRecordSelectTime = new Date();
+		});
 	    }
 
 	    let t4 = new Date();

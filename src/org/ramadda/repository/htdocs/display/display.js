@@ -5102,8 +5102,8 @@ a
 	    return idToRecord;
 	},
 	//Make sure to set the title attribute on the elements
-	makeTooltips: function(selector, records, callback, tooltipArg,propagateHighlight) {
-	    if(!Utils.isDefined(propagateHighlight))
+	makeTooltips: function(selector, records, callback, tooltipArg,propagateHighlight) {		
+	    if(!Utils.isDefined(propagateHighlight) || propagateHighlight==null)
 		propagateHighlight = this.getProperty("propagateEventRecordHighlight",false);
 	    if(!this.getProperty("showTooltips",true)) {
 		return;
@@ -5119,8 +5119,11 @@ a
 		    let record = idToRecord[$(this).attr(RECORD_ID)];
 		    if(!record)  record = records[parseFloat($(this).attr(RECORD_INDEX))];
 		    if(!record) return null;
-		    if(callback) callback(true, record);
-		    if(propagateHighlight) {
+		    let propagateOk = true;
+		    if(callback && callback(true, record) === false) {
+			propagateOk = false;
+		    }
+		    if(propagateOk && propagateHighlight) {
 			_this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:true,record: record});
 		    }
 		    if(tooltip=="" || tooltip=="none") return null;
@@ -5133,8 +5136,11 @@ a
 		    let record = idToRecord[$(this).attr(RECORD_ID)];
 		    if(!record)
 			record = records[parseFloat($(this).attr(RECORD_INDEX))];
-		    if(callback) callback(false, record);
-		    if(propagateHighlight)
+		    let propagateOk = true;
+		    if(callback && callback(false, record) === false) {
+			propagateOk = false;
+		    }
+		    if(propagateOk && propagateHighlight)
 			_this.getDisplayManager().notifyEvent("handleEventRecordHighlight", _this, {highlight:false,record: record});
 		},
 		position: {
@@ -5168,7 +5174,6 @@ a
 	    let _this = this;
 	    selector.click(function(event){
 		var record = idToRecords[$(this).attr(RECORD_ID)];
-		console.log("click:" + record);
 		if(!record) return;
 		if(callback) callback(record);
 		_this.propagateEventRecordSelection({select:true,record: record});
