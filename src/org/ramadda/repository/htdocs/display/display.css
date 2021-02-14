@@ -257,9 +257,6 @@ svg > g > g:last-child { pointer-events: none }
     cursor:pointer;
 }
 
-.display-animation-ticks {
-}
-
 
 .display-animation-tick {
    cursor:pointer;

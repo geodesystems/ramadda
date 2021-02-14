@@ -1317,6 +1317,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'onlyShowSelected',wikiValue:'true'},
 	{p:'showFirst',wikiValue:'false'},	
 	{p:'selectHighlight',wikiValue:'true'},	
+	{p:'handleSelectOnClick'},
 	{p:"groupByField"},
 	{p:"groupDelimiter",wikiValue:"<br>"},	
 	{p:"groupTemplate",wikivalue:"<b>${group}</b><ul>${contents}</ul>"},
@@ -1616,6 +1617,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 		var colCnt = 0;
 		var style = this.getProperty("templateStyle","");
+		let handleSelectOnClick = this.getPropertyHandleSelectOnClick(true);
 
 		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 		    if(max!=-1 && rowIdx>=max) break;
@@ -1656,11 +1658,13 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var recordStyle = style;
 		    if(color) {
 			if(this.getProperty("colorBackground",false)) {
-			    recordStyle = "background: " + color+";" + recordStyle;
+			    recordStyle = HU.css("background",color) + recordStyle;
 			}
 			rowAttrs["color"] = color;
 		    }
-		    var tag = HU.openTag("div",[STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",CLASS,"display-template-record",RECORD_INDEX,rowIdx]);
+		    if(!handleSelectOnClick)
+			recordStyle+=HU.css("cursor","default");
+		    var tag = HU.openTag("div",[CLASS,"display-template-record",STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_INDEX,rowIdx]);
 
 		    s = macros.apply(rowAttrs);
 
@@ -1716,11 +1720,13 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    this.makeTooltips(recordElements, selected);
 	    this.makePopups(recordElements, selected);
 	    let _this = this;
-	    this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
-		var record = selected[$(this).attr(RECORD_INDEX)];
-		_this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
-		_this.propagateEventRecordSelection({highlight:true,record: record});
-	    });
+	    if(this.getPropertyHandleSelectOnClick(true)) {
+		this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record").click(function() {
+		    var record = selected[$(this).attr(RECORD_INDEX)];
+		    _this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
+		    _this.propagateEventRecordSelection({highlight:true,record: record});
+		});
+	    }
 
 
 	    if(this.getPropertyHighlightOnScroll(false)) {

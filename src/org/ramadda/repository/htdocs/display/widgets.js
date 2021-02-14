@@ -393,7 +393,7 @@ function DisplayAnimation(display, enabled,attrs) {
 		let tooltip  = HU.div([ID,this.getDomId(ID_TOOLTIP),CLASS,"display-animation-tooltip"],"");
 		let tickContainerStyle = HU.css("height",this.tickHeight);
 		if(!this.makeSlider) {
-		    tickContainerStyle += HU.css("background","efefef","border","1px solid #ccc");
+		    tickContainerStyle += HU.css("background","efefef","border","1px solid #aaa");
 		}
 		if(!this.makeSlider) {
 		    style+=HU.css("cursor","move");
