@@ -1034,9 +1034,10 @@ var Utils =  {
 					s +=  HU.href(value,value);
 				    } else {
 					let id = toks[1];
+					let autoplay  = t.attrs["autoplay"]||"false";
 					let playerId = "video_1";
 					let embedUrl = "//www.youtube.com/embed/" + id +
-					    "?enablejsapi=1&autoplay=1&playerapiid=" + playerId;
+					    "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
 					s +=  HU.href(value,"Link") +"<br>";
 					s+=  HU.tag("iframe",[ID,"ytplayer", 'type','text/html','frameborder','0',
 							      WIDTH,t.attrs['width']||400,HEIGHT,t.attrs["height"]||400, 
@@ -1045,6 +1046,22 @@ var Utils =  {
 				    }
 				    return;
 				}
+				if(t.attrs["urlField"]) {
+				    let url =  source[t.attrs["urlField"]];
+				    if(Utils.stringDefined(url)) {
+					value = HU.href(url,value);
+				    }
+				}
+				if(t.attrs["nonblank"]) {
+				    if(String(value).length==0) return;
+				}
+				if(t.attrs["suffix"]) {
+				    value = value+t.attrs["suffix"];
+				}
+				if(t.attrs["prefix"]) {
+				    value = t.attrs["prefix"]+value;
+				}
+
 				if(t.attrs["offset1"]) {
 				    value = value+ parseFloat(t.attrs["offset1"]);
 				}
