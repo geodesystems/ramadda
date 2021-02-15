@@ -280,7 +280,8 @@ public class MetadataManager extends RepositoryManager {
         top.add("url");
         top.add(Json.quote(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                             entry)));
-        String snippet = getWikiManager().getRawSnippet(request, entry,false);
+        String snippet = getWikiManager().getRawSnippet(request, entry,
+                             false);
         if ((snippet != null) && (snippet.length() > 0)) {
             top.add("description");
             top.add(Json.quote(Json.cleanString(snippet)));
@@ -469,6 +470,29 @@ public class MetadataManager extends RepositoryManager {
             handler.getThumbnailUrls(request, entry, urls, metadata);
         }
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getThumbnailUrl(Request request, Entry entry)
+            throws Exception {
+        List<String> urls = new ArrayList<String>();
+        getThumbnailUrls(request, entry, urls);
+        if (urls.size() > 0) {
+            return urls.get(0);
+        }
+
+        return null;
+    }
+
 
 
 
