@@ -2712,6 +2712,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             boolean useCookies = getProperty(wikiUtil, props, "cookie",
                                              false);
+
             String linklabel = getProperty(wikiUtil, props, ATTR_LINKLABEL,
                                            "");
 
@@ -3039,13 +3040,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 return sb.toString();
             }
-        } else if (false && theTag.equals(WIKI_TAG_GRID)) {
-            getHtmlOutputHandler().makeGrid(request,
-                                            getEntries(request, wikiUtil,
-                                                originalEntry, entry,
-                                                    props), sb);
-
-            return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TABLE)) {
             List<Entry> entries = getEntries(request, wikiUtil,
                                              originalEntry, entry, props);
@@ -3818,11 +3812,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                           HtmlUtils.title(entry.getName())
                           + HtmlUtils.cssClass("ramadda-subheading"));
         }
+	boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail",
+					   true);	    
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
                                           false);
 
         boolean showSnippetHover = getProperty(wikiUtil, props,
                                        "showSnippetHover", false);
+
         if (showSnippet || showSnippetHover) {
             String snippet = getSnippet(request, entry, false);
             if (Utils.stringDefined(snippet)) {
@@ -3843,17 +3840,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         String imageUrl = null;
-        if (entry.isImage()) {
-            imageUrl =
-                getRepository().getHtmlOutputHandler().getImageUrl(request,
-                    entry);
-        } else {
-            List<String> urls = new ArrayList<String>();
-            getMetadataManager().getThumbnailUrls(request, entry, urls);
-            if (urls.size() > 0) {
-                imageUrl = urls.get(0);
-            }
-        }
+	if(useThumbnail) {
+	    imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+	}
+
+	if(imageUrl == null) {
+	    if (entry.isImage()) {
+		imageUrl =
+		    getRepository().getHtmlOutputHandler().getImageUrl(request,
+								       entry);
+	    } else if(!useThumbnail) {
+		imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+	    }
+	}
 
         //Default to the type icon
         if (imageUrl == null) {
