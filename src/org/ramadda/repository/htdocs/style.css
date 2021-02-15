@@ -993,7 +993,11 @@ a.ramadda-menubar-button:hover {
     margin-bottom:5px;
 }
 
-
+thin_hr {
+    border-top:1px solid #ccc;
+    height:1px;
+    display:block;
+}
 
 
 .ramadda-documentation  {
@@ -1039,7 +1043,6 @@ textarea, input {
 .ui-dialog {
     z-index: 10000;
 }
-
 
 
 
@@ -1568,6 +1571,11 @@ pre {
     border-radius: 3px;
 }
 
+.thin_pre {
+    margin:0px;
+    margin-top:2px;
+    margin-bottom:2px;    
+}
 
 .ramadda-pre {
     max-height: 300px; 
