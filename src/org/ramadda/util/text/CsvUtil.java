@@ -709,6 +709,54 @@ public class CsvUtil {
     }
     //            System.err.println("files:" + files + " os:" + outputStream.getClass());
 
+    public List<Row> tokenizeText(String file, String header,
+                                  String chunkPattern, String tokenPattern)
+            throws Exception {
+        chunkPattern = convertPattern(chunkPattern);
+        tokenPattern = convertPattern(tokenPattern);
+        String    s         = IO.readContents(file);
+        List<Row> rows      = new ArrayList<Row>();
+        Row       headerRow = new Row();
+        rows.add(headerRow);
+        for (String tok : StringUtil.split(header, ",")) {
+            headerRow.add(tok);
+        }
+        try {
+            Pattern p1 = Pattern.compile(chunkPattern);
+	    Pattern p2  = Pattern.compile(tokenPattern);
+            while (true) {
+                Matcher m1 = p1.matcher(s);
+                if (!m1.find()) {
+                    break;
+                }
+                s = s.substring(m1.end());
+		if(m1.groupCount()>2) throw new IllegalArgumentException("There should only be one sub-pattern in the chunk");
+		String chunk = m1.group(1).trim();
+		Matcher m2 = p2.matcher(chunk);
+		if ( !m2.find()) {
+		    break;
+		}
+		Row row = new Row();
+		rows.add(row);
+		for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
+		    String tok =  m2.group(i2);
+		    if(tok==null) tok = "";
+		    //                      System.err.println("\ttok:" + tok);
+		    row.add(tok);
+		}		
+		if(true) return rows;
+            }
+        } catch (Exception exc) {
+            System.err.println("error: pattern:\"" + chunkPattern + "\"  "
+                               + exc);
+	    exc.printStackTrace();
+	    throw exc;
+        }
+        return rows;
+    }
+
+
+
     /**
      * _more_
      *
@@ -781,64 +829,6 @@ public class CsvUtil {
     }
 
 
-    public List<Row> tokenizeText(String file, String header,
-                                  String chunkPattern, String tokenPattern)
-            throws Exception {
-        chunkPattern = convertPattern(chunkPattern);
-        tokenPattern = convertPattern(tokenPattern);
-        String    s         = IO.readContents(file);
-        List<Row> rows      = new ArrayList<Row>();
-        Row       headerRow = new Row();
-        rows.add(headerRow);
-        for (String tok : StringUtil.split(header, ",")) {
-            headerRow.add(tok);
-        }
-        try {
-            Pattern p1 = Pattern.compile(chunkPattern);
-	    Pattern p2  = Pattern.compile(tokenPattern);
-            while (true) {
-                Matcher m1 = p1.matcher(s);
-                if ( !m1.find()) {
-		    //		    System.err.println(" no chunk match");
-                    break;
-                }
-                s = s.substring(m1.end());
-		//		System.err.println("REMAINDER:" + s);
-                for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
-                    String chunk = m1.group(i1).trim();
-		    //		    System.err.println("CHUNK[" + i1 +"]=" + chunk+"\n**********");
-                    //              System.err.println("CHUNK:");
-		    //		    System.exit(0);
-                    int     cnt = 1;
-                    while (true) {
-                        Matcher m2 = p2.matcher(chunk);
-                        if ( !m2.find()) {
-                            break;
-                        }
-                        Row row = null;
-                        if (cnt < rows.size()) {
-                            row = rows.get(cnt);
-                        } else {
-                            row = new Row();
-                            rows.add(row);
-                        }
-                        cnt++;
-                        for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
-                            String tok = m2.group(i2).trim();
-                            //                      System.err.println("\ttok:" + tok);
-                            row.add(tok);
-                        }
-                        chunk = chunk.substring(m2.end());
-                    }
-                }
-            }
-        } catch (Exception exc) {
-            System.err.println("error: pattern:\"" + chunkPattern + "\"  "
-                               + exc);
-        }
-
-        return rows;
-    }
 
 
 
