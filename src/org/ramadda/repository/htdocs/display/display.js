@@ -2653,6 +2653,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let record = records[0];
 		let map ={};
 		let counts ={};
+		this.binRecordToRecords = {};
+		let keyToRecord={};
 		for (var i = 0; i < records.length; i++) {
 		    let record = records[i];
 		    var tuple = this.getDataValues(record);
@@ -2682,9 +2684,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 			var newRecord = new  PointRecord(fields, record.getLatitude(),record.getLongitude(),
 							 record.getElevation(),date,data);
+
+			keyToRecord[key] = newRecord;
+			this.binRecordToRecords[newRecord.getId()] = {
+			    records:[record],
+			}
+
 			map[key] = data;
 			binned.push(newRecord);
 		    } else {
+			let newRecord = keyToRecord[key];
+			this.binRecordToRecords[newRecord.getId()].records.push(record);
 			counts[key]++;
 			var tuple1 = map[key];
 			if(binCount) {
@@ -2766,6 +2776,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		console.log("filtered:" + records.length);
             return records;
         },
+	getBinnedRecords: function(record) {
+	    return this.binRecordToRecords[record.getId()].records;
+	},
         canDoGroupBy: function() {
             return false;
         },

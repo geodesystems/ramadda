@@ -1332,6 +1332,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	dataFilterChanged: function() {
 	    if(this.getPropertyOnlyShowSelected() && this.selectedRecord ) {
 		this.selectedRecord = null;
+		this.selectedRecords = null;		
 		this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    }
 	    SUPER.dataFilterChanged.call(this);
@@ -1342,18 +1343,19 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let records = this.filterData();
 	    if(!records) return;
 	    if(this.getPropertyOnlyShowSelected()) {
-		if(!this.selectedRecord) {
+		if(!this.selectedRecord && !this.selectedRecords) {
 		    if(this.getPropertyShowFirst(true)) {
 			this.selectedRecord = records[0];
 		    }
 		}
 	    }
 	    if(this.getPropertyOnlyShowSelected()) {
-		if(!this.selectedRecord) {
+		if(!this.selectedRecord && !this.selectedRecords) {
 		    this.writeHtml(ID_DISPLAY_CONTENTS, "<br>");
 		    return;
 		}
-		records = [this.selectedRecord];
+		
+		records = this.selectedRecords|| [this.selectedRecord];
 	    }
 	    records= this.sortRecords(records);
 	    let fields = pointData.getRecordFields();
@@ -1711,9 +1713,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    }
 	    if(selected.length>0) 
 		contents+= footerTemplate;
-	    
-
-
 	    this.writeHtml(ID_DISPLAY_CONTENTS, contents);
 	    this.addFieldClickHandler(null,null,false);
 	    var recordElements = this.jq(ID_DISPLAY_CONTENTS).find(".display-template-record");
@@ -1756,6 +1755,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	},
 	highlightCount:0,
         handleEventRecordSelection: function(source, args) {
+	    this.selectedRecords = args.records;
 	    this.selectedRecord = args.record;
 	    if(this.getProperty("onlyShowSelected")) {
 		this.updateUI();

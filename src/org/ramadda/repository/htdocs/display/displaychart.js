@@ -563,7 +563,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				    "Building display..."));
 
 	    if(debug)
-		console.log("\tpointData #records:" + pointData.getRecords().length);
+		console.log("\tpointData #records:" +(!pointData?"NULL": pointData.getRecords().length));
 
 
             //            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
@@ -1812,7 +1812,17 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             let index = selected[0].row;
 			    let record = _this.indexToRecord[index];
 			    if(record) {
-				_this.propagateEventRecordSelection({record: record});
+				let records = _this.getBinnedRecords(record);
+				if(records) {
+				    if(records.length==1)  {
+					_this.propagateEventRecordSelection({record: records[0]});
+				    } else {
+					_this.propagateEventRecordSelection({record: records[0],
+									     records:records});
+				    }
+				} else {
+				    _this.propagateEventRecordSelection({record: record});
+				}
 			    }
 			}
 		    }});
@@ -3386,23 +3396,58 @@ function TimerangechartDisplay(displayManager, id, properties) {
 function CalendarDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_CALENDAR, properties));
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Calendar Properties'},
+	{p:'cellSize',d:15,wikiValue:"15"},
+	{p:'missingValue',wikiValue:""},	
+	{p:'strokeColor',d: '#76a7fa', wikiValue:'#76a7fa'},
+	{p:'strokeWidth',wikiValue:'1'},
+	{p:'strokeOpacity',d:0.5,wikiValue:'0.5'},	    		
+	{p:'noDataBackground',wikiValue:'green'},
+	{p:'noDataColor',wikiValue:'red'},
+	{p:'colorAxis',wikiValue:'red,blue'},	
+
+	 
+    ]);
+
     RamaddaUtil.inherit(this, {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
-            chartOptions.calendar = {
-                cellSize: parseInt(this.getProperty("cellSize", 15))
-            };
+	    let opts = {
+		calendar: {
+                    cellSize: parseInt(this.getPropertyCellSize()),
+		    cellColor: {
+			stroke: this.getPropertyStrokeColor(),
+			strokeOpacity: this.getPropertyStrokeOpacity(),
+			strokeWidth: this.getPropertyStrokeWidth(1),
+		    },
+		},
+		height: this.getProperty("height", 800),
+		noDataPattern: {
+		    backgroundColor: this.getPropertyNoDataBackground(),
+		    color: this.getPropertyNoDataColor()
+		},
+	    };
+	    let colors = this.getPropertyColorAxis();
+	    if(colors) {
+		opts.colorAxis =  {
+		    colors:colors.split(",")
+		}
+	    }
+	    $.extend(chartOptions, opts);
             //If a calendar is show in tabs then it never returns from the draw
             if (this.jq(ID_CHART).width() == 0) {
                 return;
             }
-            return new google.visualization.Calendar(chartDiv);
-        },
 
+            let cal =  new google.visualization.Calendar(chartDiv);
+	    return cal;
+
+        },
         defaultSelectedToAll: function() {
             return true;
         },
-        xgetContentsStyle: function() {
-            var height = this.getProperty("height", 200);
+        getContentsStyle: function() {
+            var height = this.getProperty("height", 800);
             if (height > 0) {
                 return " height:" + height + "px; " + " max-height:" + height + "px; overflow-y: auto;";
             }
@@ -3434,7 +3479,7 @@ function CalendarDisplay(displayManager, id, properties) {
                 }
             });
             var haveMissing = false;
-            var missing = this.getProperty("missingValue", null);
+            var missing = this.getPropertyMissingValue();
             if (missing) {
                 haveMissing = true;
                 missing = parseFloat(missing);
@@ -3447,26 +3492,32 @@ function CalendarDisplay(displayManager, id, properties) {
                 month: 'long',
                 day: 'numeric'
             };
+	    this.dateToRecords = {};
             for (var i = 1; i < dataList.length; i++) {
-                var value = this.getDataValues(dataList[i])[1];
+		let records = this.getBinnedRecords(dataList[i].record);
+		let obj = dataList[i];
+		if(!records && obj.record) records  = [obj.record];
+                var value = this.getDataValues(obj)[1];
                 if (value == NaN) continue;
                 if (haveMissing && value == missing) {
                     continue;
                 }
                 cnt++;
-                var dttm = this.formatDate(this.getDataValues(dataList[i])[0], {
-                    options: options
-                });
-                dttm = dttm.replace(/ /g, SPACE);
-                var tooltip = "<center><b>" + dttm + "</b></center>" +
+
+		let dttm = this.getDataValues(dataList[i])[0];
+		this.dateToRecords[dttm.v.getTime()] = records;
+                var tooltip = "<center><b>" + dttm.f + "</b></center>" +
                     "<b>" + header[1].replace(/ /g, "&nbsp;") + "</b>:&nbsp;" + this.formatNumber(value);
                 tooltip = HU.div([STYLE, HU.css('padding','5px')], tooltip);
                 list.push([this.getDataValues(dataList[i])[0], value, tooltip]);
             }
             dataTable.addRows(list);
             return dataTable;
-        }
+	}
+
     });
+
+
 }
 
 
