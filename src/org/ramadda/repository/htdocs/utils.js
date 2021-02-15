@@ -1028,6 +1028,25 @@ var Utils =  {
 				    s+= t.attrs["missing"]
 				    return;
 				} 
+				if(t.attrs["pre"]) {
+				    value = String(value);
+				    if(value.trim()!="") 
+					value = "<pre class=thin_pre>" + value.trim()+"</pre>"
+				    s+=value;
+				    return;
+				}
+				if(t.attrs["list"]) {
+				    value = String(value);
+				    s+="<ul>"
+				    value.split("\n").forEach(line=>{
+					line = line.trim();
+					if(line!="") {
+					    s+="<li> " + line
+					}
+				    });
+				    s+="</ul>"
+				    return;
+				}
 				if(t.attrs["youtube"]) {
 				    let toks = value.match(/.*watch\?v=(.*)$/);
 				    if(!toks || toks.length!=2) {
