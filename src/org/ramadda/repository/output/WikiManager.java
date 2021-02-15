@@ -7408,6 +7408,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     getPageHandler().getCdnPath("/display/displaytext.js"));
                 HtmlUtils.importJS(
                     sb,
+                    getPageHandler().getCdnPath("/display/displayimages.js"));		
+                HtmlUtils.importJS(
+                    sb,
                     getPageHandler().getCdnPath("/display/displayext.js"));
             }
             HtmlUtils.importJS(
