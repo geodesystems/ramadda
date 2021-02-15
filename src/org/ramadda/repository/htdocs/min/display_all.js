@@ -37688,7 +37688,6 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
 }
 
 
-
 function RamaddaPointimageDisplay(displayManager, id, properties) {
     if(!properties.width) properties.width="200";
     properties.displayInline = true;
