@@ -42,12 +42,14 @@ CD	-4.038333	21.758664	Congo
 CD	-4.038333	21.758664	Congo (Dem. Rep.)
 CD	-4.038333	21.758664	Congo, Dem. Rep.
 CD	-4.038333	21.758664	Democratic Republic of the Congo
+CD	-4.038333	21.758664	Democratic Republic of Congo
 CD	-4.038333	21.758664	Zaire
 CD	0	0	World
 CF	6.611111	20.939444	Central African Republic
 CG	-0.228021	15.827659	Congo (Rep.)
 CG	-0.228021	15.827659	Congo, Rep.
 CG	-0.228021	15.827659	Congo (Republic)
+CG	-0.228021	15.827659	Republic of Congo
 CG	-0.228021	15.827659	Republic of the Congo
 CH	46.818188	8.227512	Switzerland
 CI	7.539989	-5.54708	Cote d'Ivoire
@@ -57,6 +59,7 @@ CL	-35.675147	-71.542969	Chile
 CM	7.369722	12.354722	Cameroon
 CN	35.86166	104.195397	China
 CN	35.86166	104.195397	Mainland China
+CN	35.86166	104.195397	Republic of China
 CO	4.570868	-74.297333	Colombia
 CR	9.748917	-83.753428	Costa Rica
 CU	21.521757	-77.781167	Cuba
@@ -64,6 +67,7 @@ CV	16.002082	-24.013197	Cape Verde
 CV	16.002082	-24.013197	Cabo Verde
 CX	-10.447525	105.690449	Christmas Island
 CY	35.126413	33.429859	Cyprus
+CY	35.126413	33.429859	Turkish Republic of Northern Cyprus
 CZ	49.817492	15.472962	Czech Republic
 DE	51.165691	10.451526	Germany
 DE	51.165691	10.451526	West Germany (FRG)
@@ -99,6 +103,7 @@ GI	36.137741	-5.345374	Gibraltar
 GL	71.706936	-42.604303	Greenland
 GM	13.443182	-15.310139	Gambia
 GM	13.443182	-15.310139	Gambia, The
+GM	13.443182	-15.310139	The Gambia
 GN	9.945587	-9.696645	Guinea
 GP	16.995971	-62.067641	Guadeloupe
 GQ	1.650801	10.267895	Equatorial Guinea
@@ -210,6 +215,7 @@ PM	46.941936	-56.27111	Saint Pierre and Miquelon
 PN	-24.703615	-127.439308	Pitcairn Islands
 PR	18.220833	-66.590149	Puerto Rico
 PS	31.952162	35.233154	Palestinian Territories
+PS	31.952162	35.233154	Palestine
 PT	39.399872	-8.224454	Portugal
 PW	7.51498	134.58252	Palau
 PY	-23.442503	-58.443832	Paraguay
@@ -252,6 +258,7 @@ TH	15.870032	100.992541	Thailand
 TJ	38.861034	71.276093	Tajikistan
 TK	-8.967363	-171.855881	Tokelau
 TL	-8.874217	125.727539	Timor-Leste
+TL	-8.874217	125.727539	East Timor
 TM	38.969719	59.556278	Turkmenistan
 TN	33.886917	9.537499	Tunisia
 TO	-21.178986	-175.198242	Tonga
@@ -267,6 +274,7 @@ UY	-32.522779	-55.765835	Uruguay
 UZ	41.377491	64.585262	Uzbekistan
 VA	41.902916	12.453389	Vatican City
 VC	12.984305	-61.287228	Saint Vincent and the Grenadines
+VC	12.984305	-61.287228	Saint Vincent and Grenadines
 VC	12.984305	-61.287228	St. Vincent and the Grenadines
 VE	6.42375	-66.58973	Venezuela
 VG	18.420695	-64.639968	British Virgin Islands
