@@ -9,6 +9,13 @@
     height:100%;
 }
 
+.display-table  td {
+    padding-top: 3px;
+    padding-bottom: 2px;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+}
+
 .display-row-highlight  {
     background:#efefef !important;
 }

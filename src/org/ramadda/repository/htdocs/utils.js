@@ -992,6 +992,7 @@ var Utils =  {
 			if(t.type=="string") {
 			    s+=t.s;
 			} else {
+			    console.log(t.tag);
 			    let value = source[t.tag];
 //			    if(debug) console.log("macro tag:" + t.tag +" value:" + value);
 			    if(t.tag=="func") {

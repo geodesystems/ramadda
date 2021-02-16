@@ -7,6 +7,7 @@ const DISPLAY_MAPGRID = "mapgrid";
 const DISPLAY_MAPCHART = "mapchart";
 const DISPLAY_MAPARRAY = "maparray";
 const DISPLAY_MAPSHRINK = "mapshrink";
+const DISPLAY_MAPIMAGES = "mapimages";
 
 let displayMapMarkers = ["marker.png", "marker-blue.png", "marker-gold.png", "marker-green.png"];
 let displayMapCurrentMarker = -1;
@@ -44,6 +45,12 @@ addGlobalDisplayType({
 
 addGlobalDisplayType({
     type: DISPLAY_MAPARRAY,
+    label: "Map array",
+    requiresData: true,
+    category:CATEGORY_MAPS_IMAGES
+});
+addGlobalDisplayType({
+    type: DISPLAY_MAPIMAGES,
     label: "Map array",
     requiresData: true,
     category:CATEGORY_MAPS_IMAGES
@@ -6103,33 +6110,56 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 
 
 function RamaddaMapimagesDisplay(displayManager, id, properties) {
-    const SUPER = new RamaddaBasemapDisplay(displayManager, id, "mapimages", properties);
+    const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPIMAGES, properties);
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
 	{label:'Map images Properties'},
-	{p:'imageFields',wikiValue:''},
+	{p:'imageField',wikiValue:''},
     ]);
     $.extend(this, {
+	addMacroAttributes:function(macros,row,attrs) {
+	    SUPER.addMacroAttributes.call(this,macros,row,attrs);
+	    if(!this.imageField) return;
+	    let f = this.imageField;
+	    let value = row[f.getIndex()];
+	    let imageAttrs = [];
+	    let tokenAttrs  = macros.getAttributes("imageField_image");
+	    let width = tokenAttrs?tokenAttrs["width"]:null;
+	    if(width) {
+		imageAttrs.push("width");
+		imageAttrs.push(width);
+	    } else if(this.getProperty("imageWidth")) {
+		imageAttrs.push("width");
+		imageAttrs.push(this.getProperty("imageWidth")); 
+	    } else  {
+		imageAttrs.push("width");
+		imageAttrs.push("100%");
+	    }
+	    imageAttrs.push("style");
+	    imageAttrs.push("vertical-align:top");
+	    let img =  HU.image(value, imageAttrs);
+	    attrs["imageField" +"_image"] =  img;
+	    attrs["imageField" +"_url"] =  value;
+	},
         makeMap: function() {
             let records = this.filterData();
             if (!records) {
                 return;
             }
-	    let allRecords = this.getData().getRecords()
-	    let pruneMissing = this.getPropertyPruneMissing(false);
-	    let imageFields=this.getFieldsByIds(null,this.getPropertyImageFields());	    
-	    if(imageFields.length==0) {
-		imageFields =  this.getFieldsByType(null, "image");
+	    this.imageField = this.getFieldById(null,this.getPropertyImageField());	    
+	    if(this.imageField == null) {
+		this.imageField =  this.getFieldByType(null, "image");
 	    }
-	    if(imageFields.length==0) {
+
+	    if(this.imageField==null) {
                 this.displayError("No image fields");
 		return
 	    }
 	    let valueMap = this.makeValueMap(records);
 	    if(!valueMap) return;
-	    Object.keys(valueMap).forEach(region=>{r
+	    Object.keys(valueMap).forEach(region=>{
 		let values = valueMap[region];
-		values.image = values.record.getValue(imageFields[0].getIndex());
+		values.image = values.record.getValue(this.imageField.getIndex());
 	    });
 	    let [width, height] = this.writeMap();
 	    let [svg, scaleX, scaleY] = this.makeSvg(width,height);
@@ -6142,17 +6172,21 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 		    cnt++;
 		    if(values!=null) {
 			let bounds = Utils.getBounds(polygon);
+			
 			defs.append("svg:pattern")
 			    .attr("id", "bgimage"+ cnt)
-			    .attr("width", 100)
-		            .attr("height", 100)
-			    .attr("patternUnits", "objectBoundingBox")
+			    .attr("x", "1")
+			    .attr("y", "1")
+			    .attr("width", "100%")
+		            .attr("height", "100%")
+			    .attr("patternContentUnits","objectBoundingBox")
 			    .append("svg:image")
 			    .attr("xlink:href", values.image)
-			    .attr("width", 100)
-			    .attr("height", 100)
-			    .attr("x", 0)
-			    .attr("y", 0);
+			    .attr("preserveAspectRatio","none")
+			    .attr("width", 1)
+			    .attr("height", 1)
+			    .attr("x", "0")
+			    .attr("y", "0");
 		    }
 		    let polys = svg.selectAll(region+"base"+cnt)
 			.data([this.makePoly(polygon)])

@@ -444,6 +444,52 @@ function DisplayThing(argId, argProperties) {
 		    attrs[props.iconField.getId() +"_icon"] =  HU.image(icon,["width",props.iconSize]);
 		}
 	    }
+
+	    let makeImage = (f, value) =>{
+		let tokenAttrs  = macros.getAttributes(f.getId()+"_image");
+		let imageAttrs = [];
+		let width = tokenAttrs?tokenAttrs["width"]:null;
+		if(width) {
+		    imageAttrs.push("width");
+		    imageAttrs.push(width);
+		} else if(this.getProperty("imageWidth")) {
+		    imageAttrs.push("width");
+		    imageAttrs.push(this.getProperty("imageWidth")); 
+		} else  {
+		    imageAttrs.push("width");
+		    imageAttrs.push("300");
+		}
+		imageAttrs.push("style");
+		imageAttrs.push("vertical-align:top");
+		return HU.image(value, imageAttrs);
+	    };
+
+
+
+	    let idToField = {}
+	    fields.forEach(f=>idToField[f.getId()] = f);
+	    //Look for a list
+	    macros.tokens.forEach(t=>{
+		if(!t.attrs) return;
+		if(t.attrs["type"]=="list" && t.attrs["fields"]) {
+		    let html = "<table class=display-table>";
+		    t.attrs.fields.split(",").forEach(fieldName=>{
+			let f = idToField[fieldName];
+			let value = row[f.getIndex()];
+			if(f.getType()=="image") {
+			    value = makeImage(f,value);
+			} else  if(f.getType()=="url") {
+			    if(value!="") 
+				value =  HU.href(value,value);
+			}
+			html+="<tr><td align=right><b>" +f.getLabel()+"</b>:</td><td>  " + value+"</td></tr>";
+		    });
+		    html +="</table>";
+		    attrs[t.tag] = html;
+		}
+	    });
+
+
 	    for (var col = 0; col < fields.length; col++) {
 		var f = fields[col];
 		var value = row[f.getIndex()];
@@ -457,7 +503,7 @@ function DisplayThing(argId, argProperties) {
 		if(f.getType()=="image") {
 		    if(value && value.trim().length>1) {
 			let tokenAttrs  = macros.getAttributes(f.getId()+"_image");
-			var imageAttrs = [];
+			let imageAttrs = [];
 			let width = tokenAttrs?tokenAttrs["width"]:null;
 			if(width) {
 			    imageAttrs.push("width");
@@ -472,6 +518,7 @@ function DisplayThing(argId, argProperties) {
 			imageAttrs.push("style");
 			imageAttrs.push("vertical-align:top");
 			var img =  HU.image(value, imageAttrs);
+
 			attrs[f.getId() +"_image"] =  img;
 			attrs[f.getId() +"_url"] =  value;
 		    } else {
@@ -521,7 +568,10 @@ function DisplayThing(argId, argProperties) {
 		    attrs[f.getId() +"_format"] = Utils.formatNumberComma(value);
 		}
 	    }
+	    this.addMacroAttributes(macros,row,attrs);
 	    return macros.apply(attrs,debug);
+	},
+	addMacroAttributes:function(macros,row,attrs) {
 	},
 	getFields: function(fields) {
             if (!fields) {
