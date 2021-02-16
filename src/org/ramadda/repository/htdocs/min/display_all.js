@@ -28145,6 +28145,7 @@ let displayMapUrlToVectorListeners = {};
 let displayMapMarkerIcons = {};
 
 
+
 addGlobalDisplayType({
     type: DISPLAY_MAP,
     label: "Map",
@@ -33575,6 +33576,8 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
     })}
 
 
+
+
 const ID_BASEMAP = "basemap";
 function RamaddaBasemapDisplay(displayManager, id, type, properties) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
@@ -33590,8 +33593,17 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	{p:'transforms',wikiValue:"Alaska,0.4,30,-40;Hawaii,2,50,5;Region,scale,offsetX,offsetY"},
 	{p:'prunes',wikiValue:'Alaska,100;Region,maxCount'},
 	{p:'mapWidth',wikiValue:''},
-	{p:'mapHeight',wikiValue:''},	
-	{p:'lineColor',wikiValue:'rgba(0,0,255,0.5)'},	
+	{p:'mapHeight',wikiValue:''},
+	{p:'maxLon'},
+	{p:'minLon'},
+	{p:'maxLat'},
+	{p:'minLat'},			
+	{p:"strokeColor"},
+	{p:"strokeWidth"},
+	{p:"highlightStrokeColor"},
+	{p:"highlightStrokeWidth"},
+	{p:"highlightFill"},
+	{p:"missingFill"},			
     ]);
 
     $.extend(this, {
@@ -33679,6 +33691,12 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		css+=HU.css(HEIGHT,HU.getDimension(height));
 	    }
 	    
+	    this.mapRange.maxLon= this.getPropertyMaxLon(this.mapRange.maxLon);
+	    this.mapRange.minLon= this.getPropertyMinLon(this.mapRange.minLon);
+	    this.mapRange.maxLat= this.getPropertyMaxLat(this.mapRange.maxLat);
+	    this.mapRange.minLat= this.getPropertyMinLat(this.mapRange.minLat);	    	    
+
+
 	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,this.getDomId(ID_BASEMAP),STYLE,css]));
 	    return [width,height];
 
@@ -33726,12 +33744,19 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		let record = idToRecord[poly.attr(RECORD_ID)];
 		poly.attr("lastStroke",poly.attr("stroke"))
 		    .attr("lastFill",poly.attr("fill"));
-		poly.attr("stroke","blue").attr("stroke-width",1)
-		    .attr("fill","blue");
+		poly.attr("stroke",_this.getPropertyHighlightStrokeColor("blue")).attr("stroke-width",_this.getPropertyHighlightStrokeWidth(1))
+		    .attr("fill",_this.getPropertyHighlightFill("blue"));
 		if(!tooltip) return;
-		if(record) {
+		let regionName = poly.attr("regionName");
+		let tt = null;
+		if(!record) {
+		    tt = regionName;
+		    console.log("no record found for region:" +regionName);
+		} else {
 		    _this.propagateEventRecordSelection({highlight:true,record: record});
-		    let tt =  _this.getRecordHtml(record,null,tooltip);
+		    tt =  _this.getRecordHtml(record,null,tooltip);
+		}
+		if(tt) {
 		    _this.tooltipDiv.html(tt)
 			.style("left", (d3.event.pageX + 10) + "px")
 			.style("top", (d3.event.pageY + 20) + "px");
@@ -33785,7 +33810,9 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		return false;
 	    }
 	    allRecords.forEach(record=>{
-		allRegions[record.getValue(regionField.getIndex())] = true;
+		let v = record.getValue(regionField.getIndex());
+//		console.log("data region:" + v);
+		allRegions[v] = true;
 	    });
 	    this.regions = {};
 	    this.mapRange  = {
@@ -33838,9 +33865,17 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 
 	    this.aliasMap = {};
 	    features.forEach(blob=>{
-		let region = blob.properties.name || blob.properties.name_long || blob.properties.NAME; 
+		let region = blob.properties.name || blob.properties.name_long || blob.properties.NAME || blob.properties.ADMIN; 
 		let aliases = [region];
+		//Some hacks
+		if(region=="United States of America") aliases.push("United States");
+		if(region=="United Republic of Tanzania") aliases.push("Tanzania");
+		if(region=="Democratic Republic of the Congo") aliases.push("Democratic Republic of Congo");
+		if(region=="Czech Rep.") aliases.push("Czech Republic");
+		if(region=="Bosnia and Herz.") aliases.push("Bosnia and Herzegovina");
 		this.aliasMap[region] = aliases;
+		if(blob.properties.ISO_A3)
+		    aliases.push(blob.properties.ISO_A3);
 		if(blob.properties.STUSPS)
 		    aliases.push(blob.properties.STUSPS);
 		if(blob.properties.STATEFP)
@@ -33855,12 +33890,15 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		let ok = true;
 		aliases.forEach(alias=>{
 		    if(this.skipRegions.includes(alias)) ok = false;});
-		if(!ok) return;
+		if(!ok) {
+		    return;
+		}
 		ok = false;
 		aliases.forEach(alias=>{
 		    if(allRegions[alias]) {
 			ok =true;
 		    }});
+		if(!ok) console.log("Missing data for map region:" + region);
 		if(pruneMissing && !ok) return;
 		this.regionNames.push(region);
 		let coords = blob.geometry.coordinates;
@@ -33946,7 +33984,6 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 	    SU.transform(svg,SU.translate(width/2, height/2), SU.scale(0.9), SU.rotate(this.getPropertyRotate(0)), SU.translate(-width/2,-height/2), SU.translate(this.getPropertyTranslateX(30),this.getPropertyTranslateY(0)), SU.skewX(this.getPropertySkewX(-10)), SU.scale(this.getPropertyScale(1)));
 	    var defs = svg.append("defs");
 	    SU.makeBlur(svg,"blur", this.getPropertyBlur(3));
-	    let cnt = 0
 	    for(let layer=0;layer<maxLayers;layer++) {
 		this.regionNames.forEach(region=>{
 		    let values= this.findValues(region, valueMap);
@@ -33967,7 +34004,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 		    if(!Utils.isDefined(maxLayer)) maxLayer = 1;
 		    if(layer>maxLayer) return;
 		    this.regions[region].polygons.forEach(polygon=>{
-			cnt++;
+			let uid = HtmlUtils.getUniqueId();
 			let poly = this.makePoly(polygon);
 			let fillColor = "transparent";
 			if(missing) {
@@ -33982,19 +34019,20 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 			    }
 			}
 			if(missing) {
-			    svg.selectAll(region+"base"+cnt)
+			    svg.selectAll(region+uid)
 				.data([poly])
 				.enter().append("polygon")
 				.attr("points",function(d) { 
 				    return d.map(d=>{return [-layer+scaleX(d.x),-layer+scaleY(d.y)].join(",");}).join(" ");
 				})
+				.attr("regionName",region)
 				.attr("fill","#ccc")
 		    		.attr("stroke-width",1)
 			    	.attr("stroke","black");
 			    return;
 			}
 			if(layer==0) {
-			    svg.selectAll(region+"base"+cnt)
+			    svg.selectAll(region+uid)
 				.data([poly])
 				.enter().append("polygon")
 				.attr("points",function(d) { 
@@ -34005,7 +34043,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 				.style("filter","url(#blur)");
 			}
 			let polys = 
-			    svg.selectAll(region+cnt)
+			    svg.selectAll(region+uid)
 			    .data([poly])
 			    .enter().append("polygon")
 			    .attr("points",function(d) { 
@@ -34114,7 +34152,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 
 		let recordId = record?record.getId():"";
 		info.polygons.forEach(polygon=>{
-		    cnt++;
+		    let uid = HtmlUtils.getUniqueId();
 		    let poly = this.makePoly(polygon);
 		    let fillColor = "transparent";
 		    if(missing) {
@@ -34125,7 +34163,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			lineColor = "#ccc";
 		    }
 		    if(missing) {
-			svg.selectAll(region+"base"+cnt)
+			svg.selectAll(region+uid)
 			    .data([poly])
 			    .enter().append("polygon")
 			    .attr("points",function(d) { 
@@ -34137,7 +34175,7 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 			return;
 		    }
 		    let polys = 
-			svg.selectAll(region+cnt)
+			svg.selectAll(region+uid)
 			.data([poly])
 			.enter().append("polygon")
 			.attr("points",function(d) { 
@@ -34182,7 +34220,6 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 	    let [width,height] = this.writeMap();
 	    let [svg, scaleX, scaleY] = this.makeSvg(width,height);
 
-	    let cnt = 0
 	    for(let layer=0;layer<2;layer++) {
 		this.regionNames.forEach(region=>{
 		    let values= this.findValues(region, valueMap);
@@ -34198,7 +34235,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 		    }
 		    let recordId = record?record.getId():"";
 		    this.regions[region].polygons.forEach(polygon=>{
-			cnt++;
+			let uid = HtmlUtils.getUniqueId();
 			let poly = this.makePoly(polygon);
 			let fillColor = "red";
 			let transform  = "";
@@ -34219,7 +34256,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			    transform = SU.translate(scaleX(center.x),scaleY(center.y)) + SU.scale(percent) + SU.translate(-scaleX(center.x),-scaleY(center.y))
 			}
 			if(missing) {
-			    svg.selectAll(region+"base"+cnt)
+			    svg.selectAll(region+"base"+uid)
 				.data([poly])
 				.enter().append("polygon")
 				.attr("points",function(d) { 
@@ -34231,7 +34268,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 			    return;
 			}
 			if(layer==0) {
-			    svg.selectAll(region+"base"+cnt)
+			    svg.selectAll(region+"base"+uid)
 				.data([poly])
 				.enter().append("polygon")
 				.attr("points",function(d) { 
@@ -34242,7 +34279,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 				.attr('transform',transform);
 			}
 			let polys = 
-			    svg.selectAll(region+cnt)
+			    svg.selectAll(region+uid)
 			    .data([poly])
 			    .enter().append("polygon")
 			    .attr("points",function(d) { 
@@ -34319,16 +34356,15 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	    });
 	    let [width, height] = this.writeMap();
 	    let [svg, scaleX, scaleY] = this.makeSvg(width,height);
-	    let cnt = 0
 	    var defs = svg.append("defs");
 	    this.regionNames.forEach((region,idx)=>{
 		let values= this.findValues(region, valueMap);
 		let recordId = values!=null?values.record.getId():"";
 		this.regions[region].polygons.forEach(polygon=>{
-		    cnt++;
+		    let uid = HtmlUtils.getUniqueId();
 		    if(values!=null) {
 			defs.append("svg:pattern")
-			    .attr("id", "bgimage"+ cnt)
+			    .attr("id", "bgimage"+ uid)
 			    .attr("x", "1")
 			    .attr("y", "1")
 			    .attr("width", "100%")
@@ -34342,16 +34378,20 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 			    .attr("x", "0")
 			    .attr("y", "0");
 		    }
-		    let polys = svg.selectAll(region+"base"+cnt)
+		    let polys = svg.selectAll(region+"base"+uid)
 			.data([this.makePoly(polygon)])
 			.enter().append("polygon")
+			.attr("regionName",region)
 			.attr("points",function(d) { 
 			    return d.map(d=>{return [scaleX(d.x),scaleY(d.y)].join(",");}).join(" ");
 			})
 			.attr(RECORD_ID,recordId)
-		    	.attr("stroke-width",1)
-			.attr("stroke","black")
-			.style("fill", "url(#bgimage"+ cnt+")")
+		    	.attr("stroke-width",this.getPropertyStrokeWidth(1))
+			.attr("stroke",this.getPropertyStrokeColor("#000"));
+		    if(values!=null)
+			polys.style("fill", "url(#bgimage"+ uid+")")
+		    else
+			polys.style("fill",this.getPropertyMissingFill("#fff"));
 		    this.addEvents(polys);
 		});
 	    });
