@@ -33610,6 +33610,17 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	    });
 	    return poly;
 	},
+	findValues:function(region, valueMap) {
+	    if(valueMap[region]) return valueMap[region];
+	    let values = null;
+	    if(!this.aliasMap[region]) {
+		return null;
+	    }
+	    this.aliasMap[region].forEach(alias=>{
+		if(valueMap[alias]) values = valueMap[alias];
+	    });
+	    return values;
+	},
 	makeValueMap: function(records,needsValue) {
 	    let regionField=this.getFieldById(null,this.getPropertyRegionField());
 	    let valueField=this.getFieldById(null,this.getPropertyValueField());	    
@@ -33777,104 +33788,120 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		allRegions[record.getValue(regionField.getIndex())] = true;
 	    });
 	    this.regions = {};
-		this.mapRange  = {
-		    minLon:null,
-		    maxLon:null,
-		    minLat:null,
-		    maxLat:null
-		};
-		let transforms = {}
-		let prunes = {}	    
-		this.getPropertyTransforms("").split(";").map(t=>t.split(",")).forEach(tuple=>{
-		    let region = tuple[0];
-		    transforms[region] = {
-			scale:tuple[1]!=null?+tuple[1]:1,
-			dx:tuple[2]!=null?+tuple[2]:0,
-			dy:tuple[3]!=null?+tuple[3]:0}
+	    this.mapRange  = {
+		minLon:null,
+		maxLon:null,
+		minLat:null,
+		maxLat:null
+	    };
+	    let transforms = {}
+	    let prunes = {}	    
+	    this.getPropertyTransforms("").split(";").map(t=>t.split(",")).forEach(tuple=>{
+		let region = tuple[0];
+		transforms[region] = {
+		    scale:tuple[1]!=null?+tuple[1]:1,
+		    dx:tuple[2]!=null?+tuple[2]:0,
+		    dy:tuple[3]!=null?+tuple[3]:0}
+	    });
+
+	    this.getPropertyPrunes("").split(";").map(t=>t.split(",")).forEach(tuple=>{
+		let region = tuple[0];
+		prunes[region] =  +tuple[1];
+	    });
+
+	    let tfunc=(region,polygon)=>{
+		let prune = prunes[region];
+		if(prune>0) {
+		    if(polygon.length<prune) return null;
+		}
+
+		let transform = transforms[region];
+		if(!transform) 
+		    return polygon;
+		let bounds = Utils.getBounds(polygon);
+		let centerx = bounds.minx + (bounds.maxx-bounds.minx)/2;
+		let centery = bounds.miny + (bounds.maxy-bounds.miny)/2;		
+		polygon.map(pair=>{
+		    pair[0]= (pair[0]-centerx)*transform.scale+centerx;
+		    pair[1]= (pair[1]-centery)*transform.scale+centery;		    		    
+		    pair[0] += transform.dx;
+		    pair[1] += transform.dy;
+		    return pair;
 		});
+		return polygon;		
+	    };
+	    
+	    this.skipRegions = this.getPropertySkipRegions("").split(",").map(r=>r.replace(/_comma_/g,","));
+	    let features = this.mapJson.geojson;
+	    if(!features)
+		features = this.mapJson.features;
 
-		this.getPropertyPrunes("").split(";").map(t=>t.split(",")).forEach(tuple=>{
-		    let region = tuple[0];
-		    prunes[region] =  +tuple[1];
-		});
-
-		let tfunc=(region,polygon)=>{
-		    let prune = prunes[region];
-		    if(prune>0) {
-			if(polygon.length<prune) return null;
-		    }
-
-		    let transform = transforms[region];
-		    if(!transform) 
-			return polygon;
-		    let bounds = Utils.getBounds(polygon);
-		    let centerx = bounds.minx + (bounds.maxx-bounds.minx)/2;
-		    let centery = bounds.miny + (bounds.maxy-bounds.miny)/2;		
-		    polygon.map(pair=>{
-			pair[0]= (pair[0]-centerx)*transform.scale+centerx;
-			pair[1]= (pair[1]-centery)*transform.scale+centery;		    		    
-			pair[0] += transform.dx;
-			pair[1] += transform.dy;
-			return pair;
-		    });
-		    return polygon;		
-		};
-		
-		this.skipRegions = this.getPropertySkipRegions("").split(",").map(r=>r.replace(/_comma_/g,","));
-		let features = this.mapJson.geojson;
-		if(!features)
-		    features = this.mapJson.features;
-
-		features.forEach(blob=>{
-		    let region = blob.properties.name || blob.properties.name_long || blob.properties.NAME; 
-		    if(!blob.geometry) {
-			if(debug)
-			    console.log(region +" no geometry");
-			return;
-		    }
+	    this.aliasMap = {};
+	    features.forEach(blob=>{
+		let region = blob.properties.name || blob.properties.name_long || blob.properties.NAME; 
+		let aliases = [region];
+		this.aliasMap[region] = aliases;
+		if(blob.properties.STUSPS)
+		    aliases.push(blob.properties.STUSPS);
+		if(blob.properties.STATEFP)
+		    aliases.push(blob.properties.STATEFP);		
+		if(!blob.geometry) {
 		    if(debug)
-			console.log("region:" + region);
-		    if(this.skipRegions.includes(region)) return;
-		    if(!allRegions[region]) {
-			if(pruneMissing) return;
-		    }
-		    this.regionNames.push(region);
-		    let coords = blob.geometry.coordinates;
-		    let info = {
-			name:region,
-			polygons:[],
-			bounds:null
-		    };
-		    this.regions[region] = info;
-		    if(blob.geometry.type  == "MultiPolygon") {
-			coords.forEach(group=>{
-			    group.forEach(polygon=>{
-				polygon  = tfunc(region,polygon);
-				if(polygon)info.polygons.push(polygon);
-			    });
-			});
-		    } else {
-			coords.forEach(polygon=>{
-			    info.polygons.push(tfunc(region,polygon));
-			});
-		    }
-		    info.polygons.forEach(polygon=>{
-			polygon.forEach(point=>{
-			    let lon = point[0];
-			    let lat = point[1];
-			    if(isNaN(lon) || isNaN(lat)) return;
-			    this.mapRange.minLon= this.mapRange.minLon===null?lon:Math.min(this.mapRange.minLon,lon);
-			    this.mapRange.maxLon= this.mapRange.maxLon===null?lon:Math.max(this.mapRange.maxLon,lon);
-			    this.mapRange.minLat= this.mapRange.minLat===null?lat:Math.min(this.mapRange.minLat,lat);
-			    this.mapRange.maxLat= this.mapRange.maxLat===null?lat:Math.max(this.mapRange.maxLat,lat);						
-			});
-		    });
-		    let bounds = null;
-		    info.polygons.forEach(polygon=>{
-			bounds = Utils.mergeBounds(bounds, Utils.getBounds(polygon));
-		    });
-		    info.bounds = bounds;
+			console.log(region +" no geometry");
+		    return;
+		}
+		if(debug)
+		    console.log("region:" + region);
+		let ok = true;
+		aliases.forEach(alias=>{
+		    if(this.skipRegions.includes(alias)) ok = false;});
+		if(!ok) return;
+		ok = false;
+		aliases.forEach(alias=>{
+		    if(allRegions[alias]) {
+			ok =true;
+		    }});
+		if(pruneMissing && !ok) return;
+		this.regionNames.push(region);
+		let coords = blob.geometry.coordinates;
+		let info = {
+		    name:region,
+		    aliases: aliases,
+		    polygons:[],
+		    bounds:null
+		};
+		aliases.forEach(alias=>{
+		    this.regions[alias] = info;
 		});
+		if(blob.geometry.type  == "MultiPolygon") {
+		    coords.forEach(group=>{
+			group.forEach(polygon=>{
+			    polygon  = tfunc(region,polygon);
+			    if(polygon)info.polygons.push(polygon);
+			});
+		    });
+		} else {
+		    coords.forEach(polygon=>{
+			info.polygons.push(tfunc(region,polygon));
+		    });
+		}
+		info.polygons.forEach(polygon=>{
+		    polygon.forEach(point=>{
+			let lon = point[0];
+			let lat = point[1];
+			if(isNaN(lon) || isNaN(lat)) return;
+			this.mapRange.minLon= this.mapRange.minLon===null?lon:Math.min(this.mapRange.minLon,lon);
+			this.mapRange.maxLon= this.mapRange.maxLon===null?lon:Math.max(this.mapRange.maxLon,lon);
+			this.mapRange.minLat= this.mapRange.minLat===null?lat:Math.min(this.mapRange.minLat,lat);
+			this.mapRange.maxLat= this.mapRange.maxLat===null?lat:Math.max(this.mapRange.maxLat,lat);						
+		    });
+		});
+		let bounds = null;
+		info.polygons.forEach(polygon=>{
+		    bounds = Utils.mergeBounds(bounds, Utils.getBounds(polygon));
+		});
+		info.bounds = bounds;
+	    });
 	    return true;
 	},
 	
@@ -33922,7 +33949,7 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 	    let cnt = 0
 	    for(let layer=0;layer<maxLayers;layer++) {
 		this.regionNames.forEach(region=>{
-		    let values = valueMap[region];
+		    let values= this.findValues(region, valueMap);
 		    let maxLayer = 1;
 		    let value = NaN;
 		    let missing = values==null;
@@ -34158,7 +34185,7 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 	    let cnt = 0
 	    for(let layer=0;layer<2;layer++) {
 		this.regionNames.forEach(region=>{
-		    let values = valueMap[region];
+		    let values= this.findValues(region, valueMap);
 		    let value = NaN;
 		    let missing = values==null;
 		    let record = null;
@@ -34280,7 +34307,6 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	    if(this.imageField == null) {
 		this.imageField =  this.getFieldByType(null, "image");
 	    }
-
 	    if(this.imageField==null) {
                 this.displayError("No image fields");
 		return
@@ -34296,13 +34322,11 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	    let cnt = 0
 	    var defs = svg.append("defs");
 	    this.regionNames.forEach((region,idx)=>{
-		let values = valueMap[region];
+		let values= this.findValues(region, valueMap);
 		let recordId = values!=null?values.record.getId():"";
 		this.regions[region].polygons.forEach(polygon=>{
 		    cnt++;
 		    if(values!=null) {
-			let bounds = Utils.getBounds(polygon);
-			
 			defs.append("svg:pattern")
 			    .attr("id", "bgimage"+ cnt)
 			    .attr("x", "1")
