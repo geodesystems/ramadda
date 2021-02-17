@@ -1752,6 +1752,7 @@ public class CsvUtil {
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
         new Cmd("-args", "Generate the CSV file commands"),
+        new Cmd("-args2", "Print out the args"),	
     };
 
 
@@ -1961,6 +1962,7 @@ public class CsvUtil {
         Filter.FilterGroup filterToAddTo = null;
 
         boolean            doArgs        = false;
+        boolean            doArgs2        = false;	
         int                doArgsCnt     = 0;
         int                doArgsIndex   = 1;
         if (comment != null) {
@@ -1984,9 +1986,12 @@ public class CsvUtil {
             try {
                 if (arg.equals("-args")) {
                     doArgs = true;
-
                     continue;
                 }
+                if (arg.equals("-args2")) {
+                    doArgs2 = true;
+                    continue;
+                }		
                 if (doArgs) {
                     if (pw == null) {
                         pw = new PrintWriter(getOutputStream());
@@ -2007,6 +2012,17 @@ public class CsvUtil {
 
                     continue;
                 }
+                if (doArgs2) {
+                    if (pw == null) {
+                        pw = new PrintWriter(getOutputStream());
+                    } 
+		    if(!arg.equals("-table")) {
+			arg = arg.replaceAll("\"", "\\\\\"");
+			pw.print("\"" + arg+"\",");
+		    }
+                    continue;
+                }
+
                 if (arg.equals("-dummy")) {
                     continue;
                 }
@@ -2207,7 +2223,7 @@ public class CsvUtil {
                 }
 
                 if (arg.equals("-unfurl")) {
-                    if ( !ensureArg(args, i, 5)) {
+                    if ( !ensureArg(args, i, 4)) {
                         return false;
                     }
                     String       mainCol   = args.get(++i);
@@ -3062,7 +3078,6 @@ public class CsvUtil {
 
                 if (arg.equals("-debug")) {
                     System.err.println("CsvUtil args:" + this.args);
-
                     continue;
                 }
 
@@ -3743,6 +3758,15 @@ public class CsvUtil {
 
             return false;
         }
+
+        if (doArgs2) {
+            if (pw != null) {
+		pw.print("\"-print\"");
+                pw.print("\n");
+            }
+            pw.close();
+            return false;
+        }	
 
 
         return true;
