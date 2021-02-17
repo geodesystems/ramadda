@@ -1020,8 +1020,8 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
             }
             await Utils.importJS(ramaddaBaseUrl + "/lib/tsne.js");
             //Height is the height of the overall display including the menu bar
-            let height = this.getProperty("height");
-            if (height.endsWith("px")) height = height.replace("px", "");
+            let height = this.getProperty("height",400);
+            if (String(height).endsWith("px")) height = String(height).replace("px", "");
             height = parseInt(height);
             //            height-=30;
             let details = HU.div([STYLE, HU.css('height', height + 'px','max-height', height + "px"), CLASS, "display-tnse-details", ID, this.getDomId(ID_DETAILS)], "");
@@ -1033,7 +1033,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
 
             buttons = HU.div([CLASS, "display-tnse-toolbar"], buttons);
             this.jq(ID_TOP_LEFT).append(buttons);
-            this.setContents(HU.table([WIDTH,'100'], HU.tr(['valign','top'], HU.td(['width','80%'], canvas) + HU.td(['width','20%'], details))));
+            this.setContents(HU.table([WIDTH,'100%'], HU.tr(['valign','top'], HU.td(['width','80%'], canvas) + HU.td(['width','20%'], details))));
             this.search = this.jq(ID_SEARCH);
             this.search.keyup(e => {
                 let v = this.search.val().trim();

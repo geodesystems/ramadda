@@ -3265,7 +3265,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    return;
 	}
 //	let version = "current";
-	let	version = "44";
+	let	version = "49";
         google.charts.load(version, {
             packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', /*'sankey',*/ 'wordtree', 'timeline', 'gauge','orgchart']
         });

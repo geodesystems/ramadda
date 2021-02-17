@@ -853,15 +853,17 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         },
 
         updateUI: function() {
-            var records = this.filterData();
+            let records = this.filterData();
             if (!records) return;
-            var allFields = this.getFieldsByIds(null,this.getPropertyFields());
-            var stringField = this.getFieldByType(allFields, "string");
+            var pointData = this.getData();
+            if (pointData == null) return;
+            let allFields = pointData.getRecordFields();
+            let stringField = this.getFieldByType(allFields, "string");
             if (!stringField) {
                 stringField = allFields[0];
             }
 
-            var fields = this.getFieldsByType(allFields, "numeric");
+            let fields = this.getFieldsByType(allFields, "numeric");
             if (fields.length == 0) {
 		fields = this.getFieldsByType(allFields, "date");
 	    }
@@ -870,8 +872,8 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 return;
             }
 
-            var labels = null;
-            var labelName = "";
+            let labels = null;
+            let labelName = "";
             if (stringField) {
                 labels = this.getColumnValues(records, stringField).values;
                 labelName = stringField.getLabel();

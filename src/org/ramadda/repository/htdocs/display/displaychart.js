@@ -2458,7 +2458,12 @@ function PiechartDisplay(displayManager, id, properties) {
 
 
 //TODO: this is broken because we don't load the sankey package because it loads an old version of d3
+
 function SankeyDisplay(displayManager, id, properties) {
+    this.tries = 0;
+    google.charts.load('49', {
+        packages: ['sankey']
+    });
     RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -2478,7 +2483,17 @@ function SankeyDisplay(displayManager, id, properties) {
                     }
                 }
             }
-            return new google.visualization.Sankey(chartDiv);
+	    try {
+		return new google.visualization.Sankey(chartDiv);
+	    } catch(e) {
+		//maybe sankey hasn't been loaded
+		if(this.tries++<5) {
+		    setTimeout(()=>{
+			this.callUpdateUI();
+		    },1000);
+		}
+		return null;
+	    }
         },
         defaultSelectedToAll: function() {
             return true;

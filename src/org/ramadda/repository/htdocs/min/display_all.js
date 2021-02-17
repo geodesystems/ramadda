@@ -18545,7 +18545,12 @@ function PiechartDisplay(displayManager, id, properties) {
 
 
 //TODO: this is broken because we don't load the sankey package because it loads an old version of d3
+
 function SankeyDisplay(displayManager, id, properties) {
+    this.tries = 0;
+    google.charts.load('49', {
+        packages: ['sankey']
+    });
     RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -18565,7 +18570,17 @@ function SankeyDisplay(displayManager, id, properties) {
                     }
                 }
             }
-            return new google.visualization.Sankey(chartDiv);
+	    try {
+		return new google.visualization.Sankey(chartDiv);
+	    } catch(e) {
+		//maybe sankey hasn't been loaded
+		if(this.tries++<5) {
+		    setTimeout(()=>{
+			this.callUpdateUI();
+		    },1000);
+		}
+		return null;
+	    }
         },
         defaultSelectedToAll: function() {
             return true;
@@ -22862,24 +22877,22 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 				    ]);
 	},
 
-
-
         updateUI: function() {
             let records = this.filterData();
 	    if(!records) return;
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
+            let allFields = this.getData().getRecordFields();
+            let fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-	    var summary={};
-	    for (var col = 0; col < fields.length; col++) {
-		var f = fields[col];
+	    let summary={};
+	    for (let col = 0; col < fields.length; col++) {
+		let f = fields[col];
 		if(!Utils.isDefined(summary[f.getId()])) {
 		    summary[f.getId()] = {
 			counts:{},
 			values:[],
-			min:value,
-			max:value,
+			min:null,
+			max:null,
 			total:0,
 			numbers:[],
 			field:f
@@ -22887,17 +22900,17 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		}
 	    }
 
-	    var showCount = this.getProperty("showCount",true);
-	    var showPercent = this.getProperty("showPercent",true);
-	    var showBars = this.getProperty("showBars",false);
-	    var barWidth = +this.getProperty("barWidth",200);
+	    let showCount = this.getProperty("showCount",true);
+	    let showPercent = this.getProperty("showPercent",true);
+	    let showBars = this.getProperty("showBars",false);
+	    let barWidth = +this.getProperty("barWidth",200);
 
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var row = this.getDataValues(records[rowIdx]);
-                for (var col = 0; col < fields.length; col++) {
-                    var f = fields[col];
-		    var s = summary[f.getId()];
-                    var value =  row[f.getIndex()];
+            for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let row = this.getDataValues(records[rowIdx]);
+                for (let col = 0; col < fields.length; col++) {
+                    let f = fields[col];
+		    let s = summary[f.getId()];
+                    let value =  row[f.getIndex()];
 		    if(!Utils.isDefined(s.min)) {
 			s.min=value;
 			s.max=value;
@@ -22910,7 +22923,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 			else if(!isNaN(value))s.min = Math.min(value,s.min);
 		    } else {
 			if(!Utils.isDefined(s.counts[value])) {
-			    var tuple = {value:value,count:0}
+			    let tuple = {value:value,count:0}
 			    s.counts[value] = tuple;
 			    s.values.push(tuple);
 			}
@@ -22919,54 +22932,54 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    }
                 }
 	    }
-	    var html = "";
-	    var bannerHtml = "";
-	    for (var col = 0; col < fields.length; col++) {
+	    let html = "";
+	    let bannerHtml = "";
+	    for (let col = 0; col < fields.length; col++) {
 		bannerHtml += "<div style='text-align:center;'>";
-		var f = fields[col];
-		var s = summary[f.getId()];
+		let f = fields[col];
+		let s = summary[f.getId()];
 		//		if(col>0) html+="<br>";
 		if(f.isNumeric()) {
-		    var numBins = parseFloat(this.getProperty("numBins",10,true));
+		    let numBins = parseFloat(this.getProperty("numBins",10,true));
 		    s.bins = [];
-		    var range = s.max-s.min;
-		    var binWidth = (s.max-s.min)/numBins;
-		    var label = "Not defined";
+		    let range = s.max-s.min;
+		    let binWidth = (s.max-s.min)/numBins;
+		    let label = "Not defined";
 		    s.bins.push(label);
-		    var tuple = {value:label,count:0}
+		    let tuple = {value:label,count:0}
 		    s.counts[label] = tuple;
 		    s.values.push(tuple);
-                    var binsProp = this.getProperty(f.getId() +".bins");
-		    var hasBins = Utils.stringDefined(binsProp);
-		    var binValues;
+                    let binsProp = this.getProperty(f.getId() +".bins");
+		    let hasBins = Utils.stringDefined(binsProp);
+		    let binValues;
                     if(hasBins) {
-                        var l  = binsProp.split(",");
+                        let l  = binsProp.split(",");
 			binValues = [];
 			l.map(v=>binValues.push(+v));
-                        for(var i=0;i<l.length-1;i++) {
-			    var v1 = +l[i];
-			    var v2 = +l[i+1];
-			    var label = v1 +" - " + v2;
+                        for(let i=0;i<l.length-1;i++) {
+			    let v1 = +l[i];
+			    let v2 = +l[i+1];
+			    let label = v1 +" - " + v2;
 			    s.bins.push(label);
-			    var tuple = {value:label,count:0}
+			    let tuple = {value:label,count:0}
 			    s.counts[label] = tuple;
 			    s.values.push(tuple);
                         }
 		    } else {
-			for(var i=0;i<numBins;i++) {
-			    var label = (Utils.formatNumber(s.min+binWidth*i)) +" - " + Utils.formatNumber(s.min+binWidth*(i+1));
+			for(let i=0;i<numBins;i++) {
+			    let label = (Utils.formatNumber(s.min+binWidth*i)) +" - " + Utils.formatNumber(s.min+binWidth*(i+1));
 			    s.bins.push(label);
-			    var tuple = {value:label,count:0}
+			    let tuple = {value:label,count:0}
 			    s.counts[label] = tuple;
 			    s.values.push(tuple);
 			}
 		    }
-		    for(var i=0;i<s.numbers.length;i++) {
-			var value = s.numbers[i];
-			var bin=0;
+		    for(let i=0;i<s.numbers.length;i++) {
+			let value = s.numbers[i];
+			let bin=0;
 			if(!isNaN(value)) {
 			    if(binValues) {
-				for(var j=0;j<binValues.length-1;j++) {
+				for(let j=0;j<binValues.length-1;j++) {
 				    if(value>=binValues[j] && value< binValues[j+1]) {
 					bin = j;
 					break;
@@ -22974,15 +22987,15 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 				}
 			    } else {
 				if(binWidth!=0) {
-				    var perc = (value-s.min)/range;
+				    let perc = (value-s.min)/range;
 				    bin = Math.round(perc/(1/numBins))+1;
 				    if(bin>numBins) bin = numBins;
 				}
 			    }
 			}
-			var label = s.bins[bin]; 
+			let label = s.bins[bin]; 
 			if(!Utils.isDefined(s.counts[label])) {
-			    var tuple = {value:s.bins[bin],count:0}
+			    let tuple = {value:s.bins[bin],count:0}
 			    s.counts[label] = tuple;
 			    s.values.push(tuple);
 			}
@@ -22991,8 +23004,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    }
 		}
 
-		var hor = this.getProperty("orientation","") != "vertical";
-		var doBanner = this.getProperty("banner",false);
+		let hor = this.getProperty("orientation","") != "vertical";
 		if(this.getProperty("floatTable") !=null) {
 		    hor = this.getProperty("floatTable")==true;
 		}
@@ -23000,23 +23012,23 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		html += HU.openTag("table", ["cellpadding","3",ID,this.getDomId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), CLASS, "stripe row-border nowrap ramadda-table"]);
 		if(this.getProperty("showHeader",true)) {
 		    html += HU.openTag("thead", []);
-		    var label =  HU.span([TITLE,"Click to reset",CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
+		    let label =  HU.span([TITLE,"Click to reset",CLASS,"display-frequency-label","data-field",s.field.getId()],f.getLabel());
 
 		    
 		    label = HU.div([STYLE,"max-width:500px;overflow-x:auto;"], label);
-		    var count = showCount? HU.th(["align","right","width","20%"],HU.div([STYLE,"text-align:right"],"Count")):"";
-		    var percent  = showPercent?HU.th(["align","right","width","20%"],  HU.div([STYLE,"text-align:right"],"Percent")):"";
-		    var bars = showBars? HU.th(["align","right","width",barWidth],HU.div([STYLE,"text-align:right"],"&nbsp;")):"";
+		    let count = showCount? HU.th(["align","right","width","20%"],HU.div([STYLE,"text-align:right"],"Count")):"";
+		    let percent  = showPercent?HU.th(["align","right","width","20%"],  HU.div([STYLE,"text-align:right"],"Percent")):"";
+		    let bars = showBars? HU.th(["align","right","width",barWidth],HU.div([STYLE,"text-align:right"],"&nbsp;")):"";
 		    html += HU.tr([], HU.th(["xxwidth","60%"],  label+ count+ percent+bars));
 		    html += HU.closeTag("thead");
 		}
 
 		html += HU.openTag("tbody", []);
-		var colors = this.getColorTable(true);
-		var dfltColor = this.getProperty("barColor","blue");
+		let colors = this.getColorTable(true);
+		let dfltColor = this.getProperty("barColor","blue");
 		if(colors) {
-		    for(var i=0;i<s.values.length;i++) {
-			var value = s.values[i].value;
+		    for(let i=0;i<s.values.length;i++) {
+			let value = s.values[i].value;
 			if(i<colors.length)
 			    s.values[i].color = colors[i];
 			else
@@ -23032,33 +23044,33 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    });
 		}
 
-		var maxPercent = 0;
-		for(var i=0;i<s.values.length;i++) {
-		    var count = s.values[i].count;
+		let maxPercent = 0;
+		for(let i=0;i<s.values.length;i++) {
+		    let count = s.values[i].count;
 		    if(count==0) continue;
-		    var perc = count/s.total;
+		    let perc = count/s.total;
 		    maxPercent = Math.max(maxPercent, perc);
 		}
 
-		for(var i=0;i<s.values.length;i++) {
-		    var value = s.values[i].value;
-		    var label = value;
+		for(let i=0;i<s.values.length;i++) {
+		    let value = s.values[i].value;
+		    let label = value;
 		    if(label=="") label="&lt;blank&gt;";
-		    var count = s.values[i].count;
+		    let count = s.values[i].count;
 		    if(count==0) continue;
-		    var perc = count/s.total;
+		    let perc = count/s.total;
 		    value = value.replace(/\'/g,"&apos;");
-		    var countLabel = HU.span([TITLE,"Click to select",CLASS,"display-frequency-value","data-field",s.field.getId(),"data-value",value],count);
+		    let countLabel = HU.span([TITLE,"Click to select",CLASS,"display-frequency-value","data-field",s.field.getId(),"data-value",value],count);
 		    value = HU.span([TITLE,"Click to select",CLASS,"display-frequency-value","data-field",s.field.getId(),"data-value",value],label);
-		    var color = s.values[i].color;
+		    let color = s.values[i].color;
 		    if(!color) color = dfltColor;
 		    if(showPercent) countLabel+=" (" + Math.round(perc*100)+"%)";
 		    bannerHtml += HU.div([CLASS, "display-frequency-banner-element"], value +"<br>" + countLabel);
-		    var tdv = HU.td([], value);
-		    var tdc =  (showCount?HU.td(["align", "right"], count):"");
-		    var tdp =  showPercent?HU.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
-		    var bw = perc/maxPercent;
-		    var tdb = showBars?HU.td(["valign","center","width",barWidth], HU.div([TITLE,Math.round(perc*100)+"%",STYLE,"background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
+		    let tdv = HU.td([], value);
+		    let tdc =  (showCount?HU.td(["align", "right"], count):"");
+		    let tdp =  showPercent?HU.td(["align", "right"], s.total==0?"0":Math.round(perc*100)+"%"):"";
+		    let bw = perc/maxPercent;
+		    let tdb = showBars?HU.td(["valign","center","width",barWidth], HU.div([TITLE,Math.round(perc*100)+"%",STYLE,"background:" + color+";height:10px;width:"+ (Math.round(bw*barWidth))+"px"],"")):"";
 		    html += HU.tr([], 
 					 tdv + tdc + tdp + tdb
 					);
@@ -23067,17 +23079,18 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		bannerHtml += HU.close(TD);
 	    }
 
+	    let doBanner = this.getProperty("banner",false);
 	    if(doBanner) html = HU.div([CLASS,"display-frequency-banner"], bannerHtml);
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    let _this = this;
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-value").click(function(){
-		var click = _this.getProperty("clickFunction")
-		var value = $(this).attr("data-value");
-		var fieldId = $(this).attr("data-field");
-		var parent = $(this).parent();
+		let click = _this.getProperty("clickFunction")
+		let value = $(this).attr("data-value");
+		let fieldId = $(this).attr("data-field");
+		let parent = $(this).parent();
 		if(parent.hasClass("display-frequency-banner-element")) {
-		    var banner = parent.parent();
-		    var isSelected = parent.hasClass("display-frequency-banner-element-selected");
+		    let banner = parent.parent();
+		    let isSelected = parent.hasClass("display-frequency-banner-element-selected");
 		    banner.find(".display-frequency-banner-element").removeClass("display-frequency-banner-element-selected");
 		    if(!isSelected) {
 			parent.addClass("display-frequency-banner-element-selected");
@@ -23102,7 +23115,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		}
 	    });
 	    this.jq(ID_DISPLAY_CONTENTS).find(".display-frequency-label").click(function(){
-		var field = $(this).attr("data-field");
+		let field = $(this).attr("data-field");
 		//		    _this.jq(ID_DISPLAY_CONTENTS).find("[data-field=" + field+"]").css("color","black");
 		_this.handleEventPropertyChanged(_this,{
 		    property: PROP_FILTER_VALUE,
@@ -23113,7 +23126,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    });
 
 	    if(this.getProperty("showHeader",true)) {
-		for (var col = 0; col < fields.length; col++) {
+		for (let col = 0; col < fields.length; col++) {
 		    HU.formatTable("#" +this.getDomId("summary"+col),{});
 		}
 	    }
@@ -35427,8 +35440,8 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
             }
             await Utils.importJS(ramaddaBaseUrl + "/lib/tsne.js");
             //Height is the height of the overall display including the menu bar
-            let height = this.getProperty("height");
-            if (height.endsWith("px")) height = height.replace("px", "");
+            let height = this.getProperty("height",400);
+            if (String(height).endsWith("px")) height = String(height).replace("px", "");
             height = parseInt(height);
             //            height-=30;
             let details = HU.div([STYLE, HU.css('height', height + 'px','max-height', height + "px"), CLASS, "display-tnse-details", ID, this.getDomId(ID_DETAILS)], "");
@@ -35440,7 +35453,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
 
             buttons = HU.div([CLASS, "display-tnse-toolbar"], buttons);
             this.jq(ID_TOP_LEFT).append(buttons);
-            this.setContents(HU.table([WIDTH,'100'], HU.tr(['valign','top'], HU.td(['width','80%'], canvas) + HU.td(['width','20%'], details))));
+            this.setContents(HU.table([WIDTH,'100%'], HU.tr(['valign','top'], HU.td(['width','80%'], canvas) + HU.td(['width','20%'], details))));
             this.search = this.jq(ID_SEARCH);
             this.search.keyup(e => {
                 let v = this.search.val().trim();
@@ -39978,15 +39991,17 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         },
 
         updateUI: function() {
-            var records = this.filterData();
+            let records = this.filterData();
             if (!records) return;
-            var allFields = this.getFieldsByIds(null,this.getPropertyFields());
-            var stringField = this.getFieldByType(allFields, "string");
+            var pointData = this.getData();
+            if (pointData == null) return;
+            let allFields = pointData.getRecordFields();
+            let stringField = this.getFieldByType(allFields, "string");
             if (!stringField) {
                 stringField = allFields[0];
             }
 
-            var fields = this.getFieldsByType(allFields, "numeric");
+            let fields = this.getFieldsByType(allFields, "numeric");
             if (fields.length == 0) {
 		fields = this.getFieldsByType(allFields, "date");
 	    }
@@ -39995,8 +40010,8 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 return;
             }
 
-            var labels = null;
-            var labelName = "";
+            let labels = null;
+            let labelName = "";
             if (stringField) {
                 labels = this.getColumnValues(records, stringField).values;
                 labelName = stringField.getLabel();
