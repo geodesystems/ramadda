@@ -496,6 +496,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public void addOkToReadFromDirectory(File dir) {
         if ( !okToReadFromDirs.contains(dir)) {
             okToReadFromDirs.add(dir);
+	    org.ramadda.util.text.CsvUtil.setOkToReadFromDirs(okToReadFromDirs);
         }
     }
 
@@ -509,6 +510,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public void addOkToWriteToDirectory(File dir) {
         if ( !okToWriteToDirs.contains(dir)) {
             okToWriteToDirs.add(dir);
+	    org.ramadda.util.text.CsvUtil.setOkToWriteToDirs(okToWriteToDirs);
         }
         addOkToReadFromDirectory(dir);
     }

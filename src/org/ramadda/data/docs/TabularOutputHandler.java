@@ -37,10 +37,12 @@ import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.DataProvider;
 import org.ramadda.util.text.Filter;
 import org.ramadda.util.text.Processor;
 import org.ramadda.util.text.SearchField;
 import org.ramadda.util.text.TextReader;
+import org.ramadda.util.NamedInputStream;
 
 import org.w3c.dom.*;
 
@@ -683,13 +685,12 @@ public class TabularOutputHandler extends OutputHandler {
 
         ByteArrayOutputStream    bos  = new ByteArrayOutputStream();
 
-        textReader.setInput(new BufferedInputStream(inputStream));
+        textReader.setInput(new NamedInputStream("input",new BufferedInputStream(inputStream)));
         textReader.setOutput(bos);
         textReader.getProcessor().addProcessor(new Processor() {
             @Override
             public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row,
-                    String line)
+                    TextReader textReader, org.ramadda.util.text.Row row)
                     throws Exception {
                 //                System.err.println("TabularOutputHandler.processRow:" + line);
                 List obj = new ArrayList();
@@ -744,7 +745,8 @@ public class TabularOutputHandler extends OutputHandler {
             textReader.getFilter().addFilter(new Filter.PatternFilter(-1,
                     "(?i:.*" + searchText + ".*)"));
         }
-        new CsvUtil(new ArrayList<String>()).process(textReader);
+	CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        csvUtil.process(textReader);
         visitor.visit(textReader, entry.getName(), rows);
     }
 

@@ -58,7 +58,9 @@ import org.ramadda.util.XlsUtil;
 import org.ramadda.util.XmlUtils;
 import org.ramadda.util.sql.*;
 
+import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.text.CsvUtil;
+import org.ramadda.util.text.DataProvider;
 import org.ramadda.util.text.Filter;
 import org.ramadda.util.text.Processor;
 import org.ramadda.util.text.Row;
@@ -2495,15 +2497,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         final Bounds bounds = new Bounds(Double.NaN, Double.NaN, Double.NaN,
                                          Double.NaN);
 
-        textReader.setInput(new BufferedInputStream(source));
+        textReader.setInput(new NamedInputStream("input",new BufferedInputStream(source)));
         textReader.setSkip(skip);
         textReader.setDelimiter(delimiter);
         Processor.ProcessorGroup myProcessor =
             new Processor.ProcessorGroup() {
             @Override
             public org.ramadda.util.text.Row processRow(
-                    TextReader textReader, org.ramadda.util.text.Row row,
-                    String line) {
+                    TextReader textReader, org.ramadda.util.text.Row row) {
                 try {
                     Object[] values = tableHandler.makeEntryValueArray();
                     cnt[0]++;
@@ -2511,17 +2512,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
                     List<String> toks = row.getValues();
                     if (toks.size() != dbInfo.getColumnsToUse().size()) {
-                        System.err.println("bad count: " + toks.size()
-                                           + " line length:" + ((line != null)
-                                ? "" + line.length()
-                                : "null") + " " + toks);
-                        System.err.println("line:" + line);
-
+                        System.err.println("bad count: " + toks.size()   + " " + toks);
                         throw new IllegalArgumentException(
                             "Wrong number of values. Given line has: "
                             + toks.size() + " Expected:"
-                            + dbInfo.getColumnsToUse().size() + "<br>"
-                            + line);
+                            + dbInfo.getColumnsToUse().size());
                     }
                     String keyValue = null;
 
@@ -2597,7 +2592,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         };
         textReader.setProcessor(myProcessor);
         CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
-        csvUtil.process(textReader);
+	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(csvUtil,0);
+        csvUtil.process(textReader, provider);
 
         if (false) {
             for (Object[] tuple : valueList) {
