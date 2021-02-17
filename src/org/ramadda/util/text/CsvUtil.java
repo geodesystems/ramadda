@@ -56,6 +56,11 @@ import java.util.zip.*;
 
 public class CsvUtil {
 
+    private static boolean debugFiles = false;
+    private static boolean debugArgs= false;    
+
+
+
     /** a hack for debugging */
     private String theLine;
 
@@ -132,7 +137,11 @@ public class CsvUtil {
         for (String arg : args) {
             this.args.add(arg);
         }
-        //      System.out.println("Args:" + this.args);
+	if(debugArgs) {
+	    System.out.println("Initial args");
+	    for(String arg: this.args) 
+		System.out.println("Arg:" + arg);
+	}
     }
 
     /**
@@ -628,6 +637,8 @@ public class CsvUtil {
      */
     private List<NamedInputStream> getStreams(List<String> files)
             throws Exception {
+	if(debugFiles)
+	    System.err.println("getStreams:" + files);
         ArrayList<NamedInputStream> streams =
             new ArrayList<NamedInputStream>();
         for (String file : files) {
@@ -1961,8 +1972,14 @@ public class CsvUtil {
 
         PrintWriter pw        = null;
         boolean     seenPrint = false;
+	if(debugArgs) {
+	    System.err.println("ParseArgs");
+	}
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
+	    if(debugArgs) {
+		System.err.println("\targ[" + i +"]=" + arg)
+	    }
             currentArg = arg;
             try {
                 if (arg.equals("-args")) {
@@ -2834,7 +2851,6 @@ public class CsvUtil {
                     String       suffix = args.get(++i).trim();
                     info.getProcessor().addProcessor(
                         new Converter.Populator(cols, prefix, suffix));
-
                     continue;
                 }
 
@@ -3706,6 +3722,8 @@ public class CsvUtil {
                             + arg);
                 }
                 if (addFiles) {
+		    if(debugFiles)
+			System.err.println("adding file:" + arg);
                     files.add(arg);
                 } else {
                     throw new IllegalArgumentException("Unknown arg:" + arg);
