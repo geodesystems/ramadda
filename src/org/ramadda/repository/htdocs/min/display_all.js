@@ -3785,6 +3785,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterValues=\"\"",
 		"&lt;field&gt;.filterMultiple=\"true\"",
 		"&lt;field&gt;.filterMultipleSize=\"5\"",
+		"filterShowCount=false",
 		"&lt;field&gt;.filterLabel=\"\"",
 		"&lt;field&gt;.showFilterLabel=\"false\"",
 		"&lt;field&gt;.filterVertical=\"true\"",
@@ -4468,6 +4469,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.callUpdateUI();
 		}
 	    }
+
 
 
             if (!source.getEntries) {
@@ -10961,6 +10963,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    attrs.push(this.getProperty(filterField.getId() +".filterMultipleSize","3"));
 		    dfltValue = dfltValue.split(",");
 		}
+
 		if(this.displayType!="menu") {
 		    if(debug) console.log("\tnot menu");
 		    let includeAll = this.getProperty(filterField.getId() +".includeAll",this.getProperty("filter.includeAll", true));
@@ -11056,7 +11059,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    //			    console.log(widget);
 		} else {
 		    if(debug) console.log("\tis select");
-		    var tmp = [];
+		    let tmp = [];
+		    let showCount = this.getProperty(filterField.getId()+".filterShowCount",this.getProperty("filterShowCount",true));
 		    enums.map(e=>{
 			let count  = e.count;
 			let v = e.value;
@@ -11067,13 +11071,14 @@ function RecordFilter(display,filterFieldId, properties) {
 			    if(v == "")
 				label = "-blank-";
 			}
-			if(count) label = label +" (" + count+")";
+			if(count) label = label +(showCount?" (" + count+")":"");
 			tmp.push([v,label]);
 		    }); 
                     widget = HtmlUtils.select("",attrs,tmp,dfltValue);
-		    if(this.getProperty(filterField.getId() +".filterLabel")) {
-			widget=HU.vbox([this.getProperty(filterField.getId() +".filterLabel"),widget]);
-		    }
+//Don't think we need this as the label gets set later on
+//		    if(this.getProperty(filterField.getId() +".filterLabel")) {
+//			widget=HU.vbox([this.getProperty(filterField.getId() +".filterLabel"),widget]);
+//		    }
 		}
 	    } else if(filterField.isNumeric()) {
 		if(debug) console.log("\tis numeric");
@@ -11115,6 +11120,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.dateIds.push(widgetId+"_date1");
 		this.dateIds.push(widgetId+"_date2");
             } else {
+
 		var dfltValue = this.getPropertyFromUrl(filterField.getId() +".filterValue","");
 		var attrs =["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId(),"class","display-filter-input"];
 		var placeholder = this.getProperty(filterField.getId() +".filterPlaceholder");
@@ -11122,6 +11128,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    attrs.push("placeholder");
 		    attrs.push(placeholder);
 		}
+
                 widget =HtmlUtils.input("",dfltValue,attrs);
 		var values=fieldMap[filterField.getId()].values;
 		var seen = {};
@@ -11145,8 +11152,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		    label = label+" ";
 		let vertical = this.getProperty(filterField.getId()+".filterVertical",false)  || this.getProperty("filterVertical",false);
 
-		widget = HtmlUtils.div(["style","display:inline-block;"],
-				       this.display.makeFilterLabel(label,tt) + (vertical?"<br>":"") + widget+suffix);
+
+		label = this.display.makeFilterLabel(label,tt);
+		widget = HtmlUtils.div(["style","display:inline-block;"],label + (vertical?"<br>":"") + widget+suffix);
 	    }
             return widget +(this.hideFilterWidget?"":"&nbsp;&nbsp;");
 	},
