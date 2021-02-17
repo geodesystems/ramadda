@@ -996,6 +996,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterValues=\"\"",
 		"&lt;field&gt;.filterMultiple=\"true\"",
 		"&lt;field&gt;.filterMultipleSize=\"5\"",
+		"filterShowCount=false",
 		"&lt;field&gt;.filterLabel=\"\"",
 		"&lt;field&gt;.showFilterLabel=\"false\"",
 		"&lt;field&gt;.filterVertical=\"true\"",
@@ -1679,6 +1680,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    this.callUpdateUI();
 		}
 	    }
+
 
 
             if (!source.getEntries) {
