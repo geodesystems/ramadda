@@ -2364,7 +2364,9 @@ function CsvUtil() {
 		    newRecord = record.clone();
 		    newRecords.push(newRecord);
 		    newRecord.fields =newFields;
+		    newRecord.parentRecords=[];
 		}
+		newRecord.parentRecords.push(record);
 		fields.forEach((f,idx)=>{
 		    if(!f.isNumeric()) return;
 		    var v = record.data[f.getIndex()];

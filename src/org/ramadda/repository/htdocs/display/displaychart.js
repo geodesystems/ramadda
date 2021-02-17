@@ -1377,7 +1377,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         makeChartOptions: function(dataList, props, selectedFields) {
             let chartOptions = {
                 tooltip: {
-                    isHtml: true
+                    isHtml: true,
+//		    ignoreBounds: true, 
+		    trigger: 'both' 
                 },
             };
 

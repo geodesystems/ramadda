@@ -2703,6 +2703,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let record = records[0];
 		let map ={};
 		let counts ={};
+		console.log("binDate");
 		this.binRecordToRecords = {};
 		let keyToRecord={};
 		for (var i = 0; i < records.length; i++) {
@@ -2827,7 +2828,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return records;
         },
 	getBinnedRecords: function(record) {
-	    return this.binRecordToRecords[record.getId()].records;
+	    if(this.binRecordToRecords)
+		return this.binRecordToRecords[record.getId()].records;
+	    return record.parentRecords;
 	},
         canDoGroupBy: function() {
             return false;

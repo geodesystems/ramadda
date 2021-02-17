@@ -5492,6 +5492,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let record = records[0];
 		let map ={};
 		let counts ={};
+		console.log("binDate");
 		this.binRecordToRecords = {};
 		let keyToRecord={};
 		for (var i = 0; i < records.length; i++) {
@@ -5616,7 +5617,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return records;
         },
 	getBinnedRecords: function(record) {
-	    return this.binRecordToRecords[record.getId()].records;
+	    if(this.binRecordToRecords)
+		return this.binRecordToRecords[record.getId()].records;
+	    return record.parentRecords;
 	},
         canDoGroupBy: function() {
             return false;
@@ -11909,7 +11912,9 @@ function CsvUtil() {
 		    newRecord = record.clone();
 		    newRecords.push(newRecord);
 		    newRecord.fields =newFields;
+		    newRecord.parentRecords=[];
 		}
+		newRecord.parentRecords.push(record);
 		fields.forEach((f,idx)=>{
 		    if(!f.isNumeric()) return;
 		    var v = record.data[f.getIndex()];
@@ -17459,7 +17464,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         makeChartOptions: function(dataList, props, selectedFields) {
             let chartOptions = {
                 tooltip: {
-                    isHtml: true
+                    isHtml: true,
+//		    ignoreBounds: true, 
+		    trigger: 'both' 
                 },
             };
 
@@ -30725,7 +30732,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 }
 
-
                 let values = record.getData();
                 let props = {
                     pointRadius: radius,
@@ -30734,8 +30740,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillColor: fillColor,
 		    fillOpacity: fillOpacity
                 };
-
-
 
 		if(shapeBy.field) {
 		    let gv = values[shapeBy.index];
@@ -31337,6 +31341,9 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 			stateData[state].records.push(record);
 		    }
 		}
+
+		let colorByEnabled = colorBy.isEnabled();
+
 		//TODO: sort the state data on time
                 if (colorByEnabled) {
                     let value = record.getData()[colorBy.index];

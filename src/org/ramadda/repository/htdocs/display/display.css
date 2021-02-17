@@ -1,4 +1,4 @@
-.display-container {
+a.display-container {
     display:inline-block;
 }
 
@@ -23,6 +23,7 @@
 /* fixes the tooltip clicker bug */
 .google-visualization-tooltip {
     pointer-events: none;
+    position:absolute !important; top:100% !important; z-index:+1; 
 }
 
 /** Don't do this for now as it disables the annotation tooltip

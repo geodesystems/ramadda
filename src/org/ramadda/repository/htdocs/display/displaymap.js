@@ -2595,7 +2595,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 }
 
-
                 let values = record.getData();
                 let props = {
                     pointRadius: radius,
@@ -2604,8 +2603,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    fillColor: fillColor,
 		    fillOpacity: fillOpacity
                 };
-
-
 
 		if(shapeBy.field) {
 		    let gv = values[shapeBy.index];
@@ -3207,6 +3204,9 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 			stateData[state].records.push(record);
 		    }
 		}
+
+		let colorByEnabled = colorBy.isEnabled();
+
 		//TODO: sort the state data on time
                 if (colorByEnabled) {
                     let value = record.getData()[colorBy.index];
