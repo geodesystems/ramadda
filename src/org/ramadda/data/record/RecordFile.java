@@ -645,6 +645,8 @@ public abstract class RecordFile {
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         //      System.err.println("****  RecordFile reading:" + filename);
         String path = getNormalizedFilename();
+	if(debug)
+	    System.err.println("RecordFile.doMakeInputStream path:" + path);
         //A hack for snotel data
         if (path.startsWith("http://www.wcc.nrcs.usda.gov")) {
             path = path.replace("http://www.wcc.nrcs.usda.gov",

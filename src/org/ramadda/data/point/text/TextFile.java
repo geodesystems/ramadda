@@ -425,7 +425,7 @@ public abstract class TextFile extends PointFile {
         String lastHeaderPattern = getProperty("lastHeaderPattern", null);
         if (firstLineFields || (sfieldRow != null)) {
             int    skipCnt  = getSkipLines(visitInfo);
-            int    fieldRow = Integer.parseInt(sfieldRow);
+            int    fieldRow =sfieldRow!=null? Integer.parseInt(sfieldRow):0;
             String line     = null;
             while (true) {
                 line = visitInfo.getRecordIO().readLine();
