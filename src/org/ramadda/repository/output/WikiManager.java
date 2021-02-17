@@ -202,6 +202,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 					"cellStyle", "border:1px solid #ccc; color:#ccc;",
 					"popupTemplate","${default}"
                                         ),
+                            new WikiTag("display_mapchart", "Map 3D Chart"),
+                            new WikiTag("display_maparray", "Map Array"),	                            new WikiTag("display_mapshrink", "Map Shrink"),
+                            new WikiTag("display_mapimage", "Map Images"),			    
+		    
                             new WikiTag("display_table",
                                         "Table",
                                         ATTR_HEIGHT, "400"),
@@ -294,6 +298,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 	new WikiTagCategory("Misc Charts",
 			    new WikiTag("display_cards", "Cards"),
                             new WikiTag("display_blank",   "Blank"),
+                            new WikiTag("display_ticks",   "Timeline Ticks"),			    
 			    new WikiTag("display_percentchange",
                                         "Percent Change"),
 			    new WikiTag("display_timerangechart", 
@@ -3218,8 +3223,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        originalEntry, entry, props);
             if (children.size() == 0) {
                 //              return makeCard(request, wikiUtil, props, entry);
-		//		return getMessage(wikiUtil, props,
-		//				  "No entries available");
+                //              return getMessage(wikiUtil, props,
+                //                                "No entries available");
             }
             boolean showCategories = getProperty(wikiUtil, props,
                                          ARG_SHOWCATEGORIES, false);
@@ -3243,12 +3248,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (children.size() > 0) {
                 checkHeading(request, wikiUtil, props, sb);
             }
-            int max = request.get(ARG_MAX, getProperty(wikiUtil, props, ATTR_MAX,-1));
-	    if(!getProperty(wikiUtil,props,ARG_SHOWNEXT,true)) {
-		newRequest.put(ARG_SHOWNEXT,"false");
-	    } else  if(max>0) {
-		newRequest.put(ARG_MAX, max+"");
-	    }
+            int max = request.get(ARG_MAX,
+                                  getProperty(wikiUtil, props, ATTR_MAX, -1));
+            if ( !getProperty(wikiUtil, props, ARG_SHOWNEXT, true)) {
+                newRequest.put(ARG_SHOWNEXT, "false");
+            } else if (max > 0) {
+                newRequest.put(ARG_MAX, max + "");
+            }
             String link = getHtmlOutputHandler().getEntriesList(newRequest,
                               sb, children, true, false, showDetails);
             if (getProperty(wikiUtil, props, "form", false)) {
@@ -3268,7 +3274,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return null;
             }
             boolean noTemplate = getProperty(wikiUtil, props, "noTemplate",
-                                            true);
+                                             true);
             getHtmlOutputHandler().makeTreeView(request, children, sb, width,
                     height, noTemplate);
 
@@ -3812,8 +3818,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                           HtmlUtils.title(entry.getName())
                           + HtmlUtils.cssClass("ramadda-subheading"));
         }
-	boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail",
-					   true);	    
+        boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail",
+                                           true);
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
                                           false);
 
@@ -3840,19 +3846,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         String imageUrl = null;
-	if(useThumbnail) {
-	    imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
-	}
+        if (useThumbnail) {
+            imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+        }
 
-	if(imageUrl == null) {
-	    if (entry.isImage()) {
-		imageUrl =
-		    getRepository().getHtmlOutputHandler().getImageUrl(request,
-								       entry);
-	    } else if(!useThumbnail) {
-		imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
-	    }
-	}
+        if (imageUrl == null) {
+            if (entry.isImage()) {
+                imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
+                    request, entry);
+            } else if ( !useThumbnail) {
+                imageUrl = getMetadataManager().getThumbnailUrl(request,
+                        entry);
+            }
+        }
 
         //Default to the type icon
         if (imageUrl == null) {
@@ -4460,11 +4466,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         //For some reason we are using both count and max as attrs
         int count = getProperty(wikiUtil, props, attrPrefix + ATTR_COUNT, -1);
 
-	//Override the max from the url args
-	int max = request.get(ARG_MAX,-1);
-	if(max==-1)
-	    max  = getProperty(wikiUtil, props, attrPrefix + ATTR_MAX,
-                                count);
+        //Override the max from the url args
+        int max = request.get(ARG_MAX, -1);
+        if (max == -1) {
+            max = getProperty(wikiUtil, props, attrPrefix + ATTR_MAX, count);
+        }
         if (max > 0) {
             request.put(ARG_MAX, "" + max);
         }
@@ -5556,7 +5562,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
-	tags.append(
+        tags.append(
             addWikiEditButton(
                 textAreaId, "button_section.png", "Frame",
                 "+frame background=#fff frameSize=0 shadow title=_title_",
@@ -5590,40 +5596,44 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "-segment_newline_-accordion_newline_", "Accordion",
                 "mw-editbutton-headline"));
 
-	tags.append(
+        tags.append(
             addWikiEditButton(
                 textAreaId, "button_section.png", "Draggable",
-		"+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
+                "+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
                 "-draggable", "Draggable", "mw-editbutton-bold"));
 
-	tags.append(
+        tags.append(
             addWikiEditButton(
                 textAreaId, "", "Expandable",
-		"+expandable header=_quote_quote_ expand=true_newline_",
-                "-expandable", "Expandable", ""));	
+                "+expandable header=_quote_quote_ expand=true_newline_",
+                "-expandable", "Expandable", ""));
 
-	tags.append(addWikiEditButton(textAreaId, "", "Grid box",
-				      "+gridboxes-2_newline_+gridbox Title 1_newline_-gridbox_newline_+gridbox Title 2_newline_-gridbox_newline_",
-				      "-gridboxes", "Gird box", ""));
+        tags.append(
+            addWikiEditButton(
+                textAreaId, "", "Grid box",
+                "+gridboxes-2_newline_+gridbox Title 1_newline_-gridbox_newline_+gridbox Title 2_newline_-gridbox_newline_",
+                "-gridboxes", "Gird box", ""));
 
 
-	tags.append(
+        tags.append(
             addWikiEditButton(
                 textAreaId, "", "Scroll panels",
-		"+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_",
-                "-scroll", "Scroll panels", ""));	
+                "+scroll_newline_+panel color=gradient1 name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll", "Scroll panels", ""));
 
 
-	tags.append(addWikiEditButton(textAreaId, "", "CSS",
-				      "+css_newline_",
-				      "-css", "CSS", ""));
-	tags.append(addWikiEditButton(textAreaId, "", "Inset",
-				      "+inset top=0 bottom=0 left=0 right=0 _newline_",
-				      "-inset", "Inset", ""));	
-	tags.append(addWikiEditButton(textAreaId, "", "Div",
-				      "+div class=_quote__quote_ style=_quote__quote_ background=_quote__quote_ _newline_",
-				      "-div", "Div", ""));
-	
+        tags.append(addWikiEditButton(textAreaId, "", "CSS", "+css_newline_",
+                                      "-css", "CSS", ""));
+        tags.append(
+            addWikiEditButton(
+                textAreaId, "", "Inset",
+                "+inset top=0 bottom=0 left=0 right=0 _newline_", "-inset",
+                "Inset", ""));
+        tags.append(
+            addWikiEditButton(
+                textAreaId, "", "Div",
+                "+div class=_quote__quote_ style=_quote__quote_ background=_quote__quote_ _newline_",
+                "-div", "Div", ""));
+
 
 
 
@@ -5817,14 +5827,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "\\n:reload seconds=30 showCheckbox=true showLabel=true", "",
                 "", ""));
 
-	misc.append(addWikiEditButton(textAreaId, "", "After",
-				      "+after pause=0 afterFade=5000_newline__newline_",
-				      "-after", "After", ""));
+        misc.append(
+            addWikiEditButton(
+                textAreaId, "", "After",
+                "+after pause=0 afterFade=5000_newline__newline_", "-after",
+                "After", ""));
 
-	
-        misc.append(addWikiEditButton(textAreaId, "",
-                                      "Odometer", "{{odometer initCount=0 count=100 immediate=true pause=1000}}", "",
-                                      "", ""));
+
+        misc.append(
+            addWikiEditButton(
+                textAreaId, "", "Odometer",
+                "{{odometer initCount=0 count=100 immediate=true pause=1000}}",
+                "", "", ""));
 
 
 
@@ -7125,25 +7139,28 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 for (Metadata mtd : markers) {
                     int idx = 1;
                     //The order is defined in resources/metadata.xml Map Marker metadata
-                    List<String> attrs = new ArrayList<String>();
-		    String markerDesc = mtd.getAttr(idx++);
-		    List<String> toks = StringUtil.splitUpTo(mtd.getAttr(idx++),",",2);
-		    String lat = toks.size()>0?toks.get(0):"";
-		    String lon = toks.size()>1?toks.get(1):"";
-		    String markerType = mtd.getAttr(idx++);
-		    String markerIcon = mtd.getAttr(idx++);		    
+                    List<String> attrs      = new ArrayList<String>();
+                    String       markerDesc = mtd.getAttr(idx++);
+                    List<String> toks =
+                        StringUtil.splitUpTo(mtd.getAttr(idx++), ",", 2);
+                    String lat        = (toks.size() > 0)
+                                        ? toks.get(0)
+                                        : "";
+                    String lon        = (toks.size() > 1)
+                                        ? toks.get(1)
+                                        : "";
+                    String markerType = mtd.getAttr(idx++);
+                    String markerIcon = mtd.getAttr(idx++);
                     Utils.add(attrs, "metadataId", mtd.getId(),
-                              "description", markerDesc, "lat",
-                              lat, "lon", lon,
-                              "type", markerType, "icon",
-                              markerIcon);
+                              "description", markerDesc, "lat", lat, "lon",
+                              lon, "type", markerType, "icon", markerIcon);
                     for (String attr :
                             StringUtil.split(mtd.getAttr(idx++), "\n", true,
                                              true)) {
                         if (attr.startsWith("#")) {
                             continue;
                         }
-			List<String> pair = StringUtil.splitUpTo(attr, "=",
+                        List<String> pair = StringUtil.splitUpTo(attr, "=",
                                                 2);
                         attrs.addAll(pair);
                         if (pair.size() == 1) {
@@ -7407,7 +7424,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     getPageHandler().getCdnPath("/display/displaytext.js"));
                 HtmlUtils.importJS(
                     sb,
-                    getPageHandler().getCdnPath("/display/displayimages.js"));		
+                    getPageHandler().getCdnPath("/display/displayimages.js"));
                 HtmlUtils.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displayext.js"));
@@ -7492,7 +7509,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         /** _more_ */
         String attrs;
 
-        /** _more_          */
+        /** _more_ */
         List<String> attrsList = new ArrayList<String>();
 
         /**
