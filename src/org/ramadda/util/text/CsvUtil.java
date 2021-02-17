@@ -1978,7 +1978,7 @@ public class CsvUtil {
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
 	    if(debugArgs) {
-		System.err.println("\targ[" + i +"]=" + arg)
+		System.err.println("\targ[" + i +"]=" + arg);
 	    }
             currentArg = arg;
             try {
