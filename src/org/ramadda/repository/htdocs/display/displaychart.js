@@ -621,7 +621,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + selectedFields);
             this.lastSelectedFields = selectedFields;
-
+	    //Do this here because the title, if displayed, may hold a {field} macro
+	    //that doesn't get set before we've loaded the data
+	    if(this.lastSelectedFields && this.lastSelectedFields.length>0) {
+		this.jq(ID_TITLE_FIELD).html(this.lastSelectedFields[0].getLabel());
+	    }
 
             var props = {
                 includeIndex: this.includeIndexInData()
