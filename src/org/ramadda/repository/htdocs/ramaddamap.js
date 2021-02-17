@@ -3967,13 +3967,9 @@ RepositoryMap.prototype = {
 	    ramaddaDisplaySetSelectedEntry(id);
 	}
 
-
-
 	if(!this.doPopup) {
 	    return;
 	}
-
-
         this.hiliteBox(id);
         var _this = this;
         if (marker.inputProps) {

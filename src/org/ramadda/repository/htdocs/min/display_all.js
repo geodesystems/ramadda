@@ -2843,6 +2843,7 @@ const ID_TITLE = ATTR_TITLE;
 const ID_TITLE_EDIT = "title_edit";
 const ID_LEFT = "left";
 const ID_RIGHT = "right";
+const ID_TITLE_FIELD="titlefield";
 const ID_TOP = "top";
 const ID_TOP_RIGHT = "topright";
 const ID_TOP_LEFT = "topleft";
@@ -4253,20 +4254,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jq(ID_TITLE).html(entry.getName());
             }
         },
-        getTextColor: function(property) {
-            if (property) return this.getProperty(property, this.getProperty("textColor"));
+        getTextColor: function(property, dflt) {
+            if (property) return this.getProperty(property, this.getProperty("textColor",dflt));
             return this.getProperty("textColor", "#000");
         },
         getTitleHtml: function(title) {
             var titleToShow = "";
             if (this.getShowTitle()) {
-                var titleStyle = HU.css("color" , this.getTextColor("titleColor"));
+                var titleStyle = HU.css("color" , this.getTextColor("titleColor","#000"));
                 var bg = this.getProperty("titleBackground");
                 if (bg) titleStyle += HU.css('background', bg,'padding','2px','padding-right','6px','padding-left','6px');
                 titleToShow = this.getShowTitle() ? this.getDisplayTitle(title) : "";
 		let entryId = this.getProperty("entryId") || this.entryId;
-                if (entryId)
+                if (entryId) {
                     titleToShow = HU.href(this.getRamadda().getEntryUrl(entryId), titleToShow, [ATTR_CLASS, "display-title",  STYLE, titleStyle]);
+		}
             }
 
 	    if(this.getProperty("showEntryIcon")) {
@@ -6896,6 +6898,7 @@ a
                 } else {
                     topLeft = HU.div(["class","display-header"], button + SPACE + titleDiv);
                 }
+		
             }
             topLeft = HU.div([ID, this.getDomId(ID_TOP_LEFT),CLASS,"display-header-block"], topLeft);
 	    let h2Separate = this.getAnimationEnabled();
@@ -7041,7 +7044,7 @@ a
             if (fields && fields.length > 0)
                 text = text.replace("{field}", fields[0].getLabel());
             else
-                text = text.replace("{field}", "");
+                text = text.replace("{field}", HU.span([ID,this.getDomId(ID_TITLE_FIELD)],"&nbsp;"));
             return text;
         },
 
@@ -16708,7 +16711,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    if(debug)
 		console.log("\tsetting lastSelectedFields:" + selectedFields);
             this.lastSelectedFields = selectedFields;
-
+	    //Do this here because the title, if displayed, may hold a {field} macro
+	    //that doesn't get set before we've loaded the data
+	    if(this.lastSelectedFields && this.lastSelectedFields.length>0) {
+		this.jq(ID_TITLE_FIELD).html(this.lastSelectedFields[0].getLabel());
+	    }
 
             var props = {
                 includeIndex: this.includeIndexInData()
