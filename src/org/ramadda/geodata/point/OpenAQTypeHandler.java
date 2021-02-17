@@ -153,7 +153,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                      + HtmlUtils.arg("date_from", startDate) + "&"
                      + HtmlUtils.arg("location", location);
 
-        //      System.err.println(url);
+	System.err.println(url);
         return url;
     }
 
@@ -208,10 +208,9 @@ public class OpenAQTypeHandler extends PointTypeHandler {
             PipedOutputStream     out  = new PipedOutputStream(in);
             ByteArrayOutputStream bos  = new ByteArrayOutputStream();
             String[]              args = new String[] {
-                "-columns", "3,5,6,7,8,9", "-combineinplace", "1,3", " ",
-                "parameter", "-unfurl", "1", "2", "0", "3,4", "-addheader",
-                "date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" utc.id date",
-                "-print"
+		"-columns","location,utc,parameter,value,latitude,longitude",
+		"-unfurl","parameter","value","utc","location,latitude,longitude",
+		"-addheader","utc.id date date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" ","-print" 
             };
             CsvUtil csvUtil = new CsvUtil(args,
                                           new BufferedOutputStream(bos),
