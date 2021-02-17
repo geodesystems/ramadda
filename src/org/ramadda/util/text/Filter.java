@@ -72,17 +72,15 @@ public class Filter extends Processor {
      *
      * @param info _more_
      * @param row _more_
-     * @param line _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     @Override
-    public Row processRow(TextReader info, Row row, String line)
-            throws Exception {
+    public Row processRow(TextReader info, Row row) throws Exception {
         info.setCurrentOperator(this);
-        if (rowOk(info, row, line)) {
+        if (rowOk(info, row)) {
             return row;
         } else {
             return null;
@@ -98,11 +96,10 @@ public class Filter extends Processor {
      *
      * @param info _more_
      * @param row _more_
-     * @param line _more_
      *
      * @return _more_
      */
-    public boolean rowOk(TextReader info, Row row, String line) {
+    public boolean rowOk(TextReader info, Row row) {
         return true;
     }
 
@@ -249,17 +246,16 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (filters.size() == 0) {
                 return true;
             }
             for (Filter filter : filters) {
-                if ( !filter.rowOk(info, row, line)) {
+                if ( !filter.rowOk(info, row)) {
                     if (andLogic) {
                         return false;
                     }
@@ -351,15 +347,8 @@ public class Filter extends Processor {
          * @param pattern _more_
          */
         public void setPattern(String pattern) {
-            blank   = pattern.equals("");
-            pattern = pattern.replaceAll("_dollar_", "\\$");
-            pattern =
-                pattern.replaceAll("_leftbracket_",
-                                   "\\\\[").replaceAll("_rightbracket_",
-                                       "\\\\]");
-            pattern = pattern.replaceAll("_leftcurly_",
-                                         "\\{").replaceAll("_rightcurly_",
-                                             "\\}");
+            blank    = pattern.equals("");
+            pattern  = CsvUtil.convertPattern(pattern);
             spattern = pattern;
             if (pattern.startsWith("!")) {
                 pattern = pattern.substring(1);
@@ -368,9 +357,7 @@ public class Filter extends Processor {
             if (pattern.indexOf("${") >= 0) {
                 isTemplate = true;
             } else {
-                isTemplate = false;
-                //                if(pattern.equals("1996")) debug = true;
-                //                System.err.println("p:" + pattern);
+                isTemplate   = false;
                 this.pattern = Pattern.compile(pattern);
             }
         }
@@ -382,12 +369,11 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (cnt++ == 0) {
                 return true;
             }
@@ -401,7 +387,6 @@ public class Filter extends Processor {
                 for (int i = 0; i < row.size(); i++) {
                     tmp = tmp.replace("${" + i + "}", (String) row.get(i));
                 }
-                //                System.out.println("tmp:" + tmp);
                 pattern = Pattern.compile(tmp);
             }
 
@@ -473,12 +458,11 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (cnt++ == 0) {
                 return true;
             }
@@ -534,12 +518,11 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (start > 0) {
                 start--;
 
@@ -587,15 +570,15 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (seenStop) {
                 return false;
             }
+            String line = row.toString();
             if (line.matches(pattern) || (line.indexOf(pattern) >= 0)) {
                 seenStop = true;
                 info.stopRunning();
@@ -642,16 +625,15 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (seenStart) {
                 return true;
             }
-            if (line.matches(pattern)) {
+            if (row.toString().matches(pattern)) {
                 seenStart = true;
 
                 return false;
@@ -693,12 +675,11 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (row.size() < cnt) {
                 return false;
             }
@@ -736,12 +717,11 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (row.size() > cnt) {
                 return false;
             }
@@ -795,12 +775,11 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             if (cnt++ == 0) {
                 return true;
             }
@@ -889,12 +868,11 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             boolean inRange = false;
             for (int rowIdx : rows) {
                 if ((rowIdx == -1) && cutOne) {
@@ -957,12 +935,11 @@ public class Filter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public boolean rowOk(TextReader info, Row row, String line) {
+        public boolean rowOk(TextReader info, Row row) {
             boolean       inRange = false;
             StringBuilder sb      = new StringBuilder();
             for (int i : cols) {

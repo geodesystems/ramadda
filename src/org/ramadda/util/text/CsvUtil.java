@@ -22,11 +22,13 @@ import org.json.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
+import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -97,7 +99,7 @@ public class CsvUtil {
     private boolean okToRun = true;
 
     /** _more_ */
-    private boolean verbose = false;
+    public static boolean verbose = false;
 
     /** _more_ */
     private int rawLines = 0;
@@ -284,11 +286,11 @@ public class CsvUtil {
                 textReader.getDestDir();
                 textReader.addFile(outputFile.toString());
             }
-            this.outputStream = new FileOutputStream(outputFile);
+            this.outputStream = makeOutputStream(outputFile.toString());
         }
-
         return this.outputStream;
     }
+
 
     /**
      * _more_
@@ -340,13 +342,12 @@ public class CsvUtil {
         if (files == null) {
             files = new ArrayList<String>();
         }
-        boolean      doConcat = false;
-        boolean      doHeader = false;
-        boolean      doRaw    = false;
-	int rawCut = 0;
-        Hashtable    dbProps  = new Hashtable<String, String>();
-        boolean      doPoint  = false;
-        boolean      htmlPattern;
+        boolean      doConcat      = false;
+        boolean      doHeader      = false;
+        boolean      doRaw         = false;
+        int          rawCut        = 0;
+        Hashtable    dbProps       = new Hashtable<String, String>();
+        boolean      doPoint       = false;
         String       iterateColumn = null;
         List<String> iterateValues = new ArrayList<String>();
 
@@ -412,7 +413,6 @@ public class CsvUtil {
 
             if (arg.equals("-cat")) {
                 doConcat = true;
-
                 continue;
             }
 
@@ -423,30 +423,26 @@ public class CsvUtil {
 
             if (arg.equals("-commentChar")) {
                 textReader.setCommentChar(args.get(++i));
-
                 continue;
             }
 
             if (arg.startsWith("-header")) {
                 textReader.setFirstRow(
                     new Row(StringUtil.split(args.get(++i), ",")));
-
                 continue;
             }
 
             if (arg.startsWith("-iter")) {
                 iterateColumn = args.get(++i);
                 iterateValues = StringUtil.split(args.get(++i), ",");
-
                 continue;
             }
             extra.add(arg);
         }
 
-        List<List<Row>> rows = new ArrayList<List<Row>>();
-        if ( !parseArgs(extra, textReader, files, rows)) {
+        List<DataProvider> providers = new ArrayList<DataProvider>();
+        if (!parseArgs(extra, textReader, files, providers)) {
             currentArg = null;
-
             return;
         }
         currentArg = null;
@@ -459,9 +455,6 @@ public class CsvUtil {
             }
             System.out.println("");
         }
-        if (rows.size() > 0) {
-            textReader.setRows(rows.get(0));
-        }
 
         if (doConcat) {
             concat(files, getOutputStream());
@@ -470,8 +463,9 @@ public class CsvUtil {
         } else if (doRaw) {
             raw(files, textReader);
         } else {
-            if (files.size() == 0) {
-                files.add("stdin");
+            if (providers.size() == 0) {
+                providers.add(new DataProvider.CsvDataProvider(this,
+                        rawLines));
             }
             Filter.PatternFilter iteratePattern = null;
             if (iterateColumn == null) {
@@ -485,34 +479,173 @@ public class CsvUtil {
                 if (iteratePattern != null) {
                     iteratePattern.setPattern(pattern);
                 }
-                for (String file : files) {
-                    //                    System.err.println("FILE:" + file);
-                    textReader.getProcessor().reset();
-                    InputStream is      = null;
-                    boolean     closeIS = true;
-                    if (this.inputStream != null) {
-                        is = this.inputStream;
-                    } else {
-                        if (file.equals("stdin")) {
-                            closeIS = false;
-                            is      = System.in;
-                        } else {
-                            is = getInputStream(file);
-                        }
-                    }
-                    process(textReader.cloneMe(is, file, outputFile,
-                            outputStream));
-                    if (closeIS) {
-                        IO.close(is);
-                    }
-                    if (this.inputStream != null) {
-                        break;
+                for (DataProvider provider : providers) {
+                    for (NamedInputStream input : getStreams(files)) {
+                        textReader.getProcessor().reset();
+                        TextReader clone = textReader.cloneMe(input,
+                                               outputFile, outputStream);
+                        process(clone, provider);
+                        input.close();
+                        provider.finish();
                     }
                 }
             }
         }
-
     }
+
+
+    public void process(TextReader textReader)
+            throws Exception {
+	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(this,0);
+	process(textReader, provider);
+    }
+
+
+    /**
+     * Run through the csv file in the TextReader
+     *
+     * @param textReader Holds input, output, skip, delimiter, etc
+     * @param provider _more_
+     *
+     * @throws Exception On badness
+     */
+    public void process(TextReader textReader, DataProvider provider)
+            throws Exception {
+        try {
+            errorDescription = null;
+	    provider.initialize(textReader, textReader.getInput());
+            processInner(textReader, provider);
+        } catch (Exception exc) {
+            CsvOperator op = (textReader == null)
+                             ? null
+                             : textReader.getCurrentOperator();
+            System.err.println("error:" + op);
+            if (op != null) {
+                errorDescription = "Error processing text with operator: "
+                                   + op.getDescription();
+            }
+
+            throw exc;
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param textReader _more_
+     * @param provider _more_
+     *
+     * @throws Exception _more_
+     */
+    private void processInner(TextReader textReader, DataProvider provider)
+            throws Exception {
+        int rowCnt   = 0;
+        Row firstRow = textReader.getFirstRow();
+        textReader.setFirstRow(null);
+        if (firstRow != null) {
+            processRow(textReader, firstRow);
+            rowCnt++;
+        }
+        Row row;
+        while ((row = provider.readRow()) != null) {
+            rowCnt++;
+            if (rowCnt <= textReader.getSkip()) {
+                continue;
+            }
+            if ( !processRow(textReader, row)) {
+                break;
+            }
+        }
+        if (okToRun) {
+            if (textReader.getProcessor() != null) {
+                textReader.getProcessor().finish(textReader, null);
+            }
+        }
+        textReader.flush();
+        textReader.close();
+    }
+
+    /**
+     * _more_
+     *
+     * @param textReader _more_
+     * @param row _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private boolean processRow(TextReader textReader, Row row)
+            throws Exception {
+        if ((textReader.getFilter() != null)) {
+            if ( !textReader.getFilter().rowOk(textReader, row)) {
+                return true;
+            }
+        }
+
+        textReader.initRow(row);
+        if ((textReader.getMaxRows() >= 0)
+                && (textReader.getVisitedRows() > textReader.getMaxRows())) {
+            return false;
+        }
+        if (textReader.getProcessor() != null) {
+            textReader.setCurrentOperator(null);
+            currentRow = row;
+            row        = textReader.getProcessor().processRow(textReader,
+                    row);
+            currentRow = null;
+            if ( !textReader.getOkToRun()) {
+                return false;
+            }
+            if (textReader.getExtraRow() != null) {
+                row = textReader.getProcessor().processRow(textReader,
+                        textReader.getExtraRow());
+                textReader.setExtraRow(null);
+            }
+            if ( !textReader.getOkToRun()) {
+                return false;
+            }
+        } else {
+            textReader.getWriter().println(columnsToString(row.getValues(),
+                    textReader.getOutputDelimiter()));
+            textReader.getWriter().flush();
+        }
+        textReader.incrRow();
+
+        return true;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param files _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private List<NamedInputStream> getStreams(List<String> files)
+            throws Exception {
+        ArrayList<NamedInputStream> streams =
+            new ArrayList<NamedInputStream>();
+        for (String file : files) {
+            streams.add(new NamedInputStream(file, makeInputStream(file)));
+        }
+        if (inputStream != null) {
+            streams.add(new NamedInputStream("input", inputStream));
+        }
+        if (streams.size() == 0) {
+            streams.add(new NamedInputStream("stdin", System.in));
+        }
+
+        return streams;
+    }
+
+
+
+
 
 
     /**
@@ -576,6 +709,42 @@ public class CsvUtil {
         return textReader.getFiles();
     }
 
+    private static List<File> okToWriteToDirs = new ArrayList<File>();
+    private static List<File> okToReadFromDirs = new ArrayList<File>();
+
+
+    public static void setOkToWriteToDirs(List<File> files) {
+	okToWriteToDirs = files;
+    }
+
+    public static void setOkToReadFromDirs(List<File> files) {
+	okToReadFromDirs = files;
+    }    
+
+    
+    /**
+       Check if this is an OK path to write to
+       TODO:
+     */
+    public OutputStream makeOutputStream(String file) throws Exception {
+	File f = new File(file);
+	if(okToWriteToDirs.size()>0) {
+	    boolean ok = false;
+	    for (File dir : okToWriteToDirs) {
+		if (IOUtil.isADescendent(dir, f)) {
+		    ok = true;
+		}
+	    }
+	    if(!ok) {
+		throw new IllegalArgumentException("Cannot write to file:" + file);
+	    }
+	}
+	return new FileOutputStream(file);
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -585,10 +754,24 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    public InputStream getInputStream(String file) throws Exception {
+    public InputStream makeInputStream(String file) throws Exception {
+	File f = new File(file);
+	if(okToReadFromDirs.size()>0) {
+	    boolean ok = false;
+	    for (File dir : okToReadFromDirs) {
+		if (IOUtil.isADescendent(dir, f)) {
+		    ok = true;
+		}
+	    }
+	    if(!ok) {
+		throw new IllegalArgumentException("Cannot read file:" + file);
+	    }
+	}
+
+
+
         if (file.endsWith(".xls") || file.endsWith(".xlsx")) {
             String csv = XlsUtil.xlsToCsv(file);
-
             return new BufferedInputStream(
                 new ByteArrayInputStream(csv.getBytes()));
         } else if (file.toLowerCase().endsWith(".zip")) {
@@ -647,7 +830,7 @@ public class CsvUtil {
         for (String file : files) {
             readers.add(
                 new BufferedReader(
-                    new InputStreamReader(getInputStream(file))));
+                    new InputStreamReader(makeInputStream(file))));
         }
         for (BufferedReader br : readers) {
             String line = new TextReader(br).readLine();
@@ -709,646 +892,6 @@ public class CsvUtil {
     }
     //            System.err.println("files:" + files + " os:" + outputStream.getClass());
 
-    public List<Row> tokenizeText(String file, String header,
-                                  String chunkPattern, String tokenPattern)
-            throws Exception {
-        chunkPattern = convertPattern(chunkPattern);
-        tokenPattern = convertPattern(tokenPattern);
-        String    s         = IO.readContents(file);
-        List<Row> rows      = new ArrayList<Row>();
-        Row       headerRow = new Row();
-        rows.add(headerRow);
-        for (String tok : StringUtil.split(header, ",")) {
-            headerRow.add(tok);
-        }
-        try {
-            Pattern p1 = Pattern.compile(chunkPattern);
-	    Pattern p2  = Pattern.compile(tokenPattern);
-            while (true) {
-                Matcher m1 = p1.matcher(s);
-                if (!m1.find()) {
-                    break;
-                }
-                s = s.substring(m1.end());
-		if(m1.groupCount()>2) throw new IllegalArgumentException("There should only be one sub-pattern in the chunk");
-		String chunk = m1.group(1).trim();
-		Matcher m2 = p2.matcher(chunk);
-		if ( !m2.find()) {
-		    break;
-		}
-		Row row = new Row();
-		rows.add(row);
-		for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
-		    String tok =  m2.group(i2);
-		    if(tok==null) tok = "";
-		    //                      System.err.println("\ttok:" + tok);
-		    row.add(tok);
-		}		
-		if(true) return rows;
-            }
-        } catch (Exception exc) {
-            System.err.println("error: pattern:\"" + chunkPattern + "\"  "
-                               + exc);
-	    exc.printStackTrace();
-	    throw exc;
-        }
-        return rows;
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param header _more_
-     * @param chunkPattern _more_
-     * @param tokenPattern _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Row> tokenizeText2(String file, String header,
-                                  String chunkPattern, String tokenPattern)
-            throws Exception {
-        chunkPattern = convertPattern(chunkPattern);
-        tokenPattern = convertPattern(tokenPattern);
-        String    s         = IO.readContents(file);
-        List<Row> rows      = new ArrayList<Row>();
-        Row       headerRow = new Row();
-        rows.add(headerRow);
-        for (String tok : StringUtil.split(header, ",")) {
-            headerRow.add(tok);
-        }
-        try {
-            Pattern p1 = Pattern.compile(chunkPattern);
-	    Pattern p2  = Pattern.compile(tokenPattern);
-            while (true) {
-                Matcher m1 = p1.matcher(s);
-                if ( !m1.find()) {
-		    //		    System.err.println(" no chunk match");
-                    break;
-                }
-                s = s.substring(m1.end());
-		//		System.err.println("REMAINDER:" + s);
-                for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
-                    String chunk = m1.group(i1).trim();
-		    //		    System.err.println("CHUNK[" + i1 +"]=" + chunk+"\n**********");
-                    //              System.err.println("CHUNK:");
-		    //		    System.exit(0);
-                    int     cnt = 1;
-                    while (true) {
-                        Matcher m2 = p2.matcher(chunk);
-                        if ( !m2.find()) {
-                            break;
-                        }
-                        Row row = null;
-                        if (cnt < rows.size()) {
-                            row = rows.get(cnt);
-                        } else {
-                            row = new Row();
-                            rows.add(row);
-                        }
-                        cnt++;
-                        for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
-                            String tok = m2.group(i2).trim();
-                            //                      System.err.println("\ttok:" + tok);
-                            row.add(tok);
-                        }
-                        chunk = chunk.substring(m2.end());
-                    }
-                }
-            }
-        } catch (Exception exc) {
-            System.err.println("error: pattern:\"" + chunkPattern + "\"  "
-                               + exc);
-        }
-
-        return rows;
-    }
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param sSkip _more_
-     * @param pattern _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Row> tokenizeHtml(String file, String sSkip, String pattern,
-                                  Hashtable<String, String> props)
-            throws Exception {
-
-        int count = Utils.getProperty(props, "count", 1);
-        int skip  = 0;
-        if ((sSkip != null) && (sSkip.trim().length() > 0)) {
-            skip = Integer.parseInt(sSkip.trim());
-        }
-        if ((pattern == null) || (pattern.trim().length() == 0)) {
-            pattern = props.get("pattern");
-        }
-        String  skipAttr     = props.get("skipAttr");
-        boolean removeEntity = Utils.equals(props.get("removeEntity"),
-                                            "true");
-        String  removePattern  = convertPattern(props.get("removePattern"));
-        String  removePattern2 = convertPattern(props.get("removePattern2"));
-        Pattern attrPattern    = null;
-        if (skipAttr != null) {
-            skipAttr    = skipAttr.replaceAll("_quote_", "\"");
-            attrPattern = Pattern.compile(skipAttr, Pattern.MULTILINE);
-        }
-        boolean   debug = false;
-        List<Row> rows  = new ArrayList<Row>();
-        String    s     = IO.readContents(file);
-        for (int i = 0; i < changeFrom.size(); i++) {
-            s = s.replaceAll(changeFrom.get(i), changeTo.get(i));
-        }
-
-        //        System.err.println("HTML:" + file);
-        //        System.out.println("TABLE:" + s);
-
-        String[] toks;
-        if (Utils.stringDefined(pattern)) {
-            int idx = s.indexOf(pattern);
-            if (idx < 0) {
-                return rows;
-            }
-            s = s.substring(idx + pattern.length());
-        }
-
-        while (true) {
-            toks = Utils.tokenizeChunk(s, "<table", "</table");
-            if (toks == null) {
-                break;
-            }
-            String table = toks[0];
-            s = toks[1];
-            if (skip > 0) {
-                skip--;
-
-                continue;
-            }
-            if (debug) {
-                System.out.println("table");
-            }
-            while (true) {
-                toks = Utils.tokenizeChunk(table, "<tr", "</tr");
-                if (toks == null) {
-                    break;
-                }
-                String tr = toks[0];
-                table = toks[1];
-                if (debug) {
-                    System.out.println("\trow: " + tr);
-                }
-                Row     row         = new Row();
-                boolean checkHeader = true;
-                while (true) {
-                    toks = Utils.tokenizePattern(tr, "(<td|<th)",
-                            "(</td|</th)");
-                    if (toks == null) {
-                        break;
-                    }
-                    String td = toks[0].trim();
-                    tr = toks[1];
-                    String colspan = StringUtil.findPattern(td,
-                                         "colspan *= *\"?([0-9]+)\"?");
-                    int inserts = 1;
-                    if (colspan != null) {
-                        inserts = Integer.parseInt(colspan);
-                    }
-
-                    int idx = td.indexOf(">");
-                    if ((attrPattern != null) && (idx >= 0)) {
-                        String attrs = td.substring(0, idx).toLowerCase();
-                        if (attrPattern.matcher(attrs).find()) {
-                            System.out.println("skipping:"
-                                    + td.replaceAll("\n", " "));
-
-                            continue;
-                        }
-                        //                        System.out.println("not skipping:" +td );
-                    }
-                    //              System.err.println("td:" + td);
-                    td = td.substring(idx + 1);
-                    //              System.err.println("after TD:" + td);
-                    td = Utils.stripTags(td);
-                    //              System.err.println("after Strip:" + td);
-                    td = td.replaceAll("\n", " ").replaceAll("  +", "");
-                    td = HtmlUtils.unescapeHtml3(td);
-                    //              System.err.println(td+"  stripped:" + td);
-                    if (removeEntity) {
-                        td = td.replaceAll("&[^;]+;", "");
-                    } else {
-                        td = HtmlUtils.unescapeHtml3(td);
-                    }
-                    if (removePattern != null) {
-                        td = td.replaceAll(removePattern, "");
-                    }
-                    if (removePattern2 != null) {
-                        td = td.replaceAll(removePattern2, "");
-                    }
-                    td = td.replaceAll("&nbsp;", " ");
-                    td = td.replaceAll("&quot;", "\"");
-                    td = td.replaceAll("&lt;", "<");
-                    td = td.replaceAll("&gt;", ">");
-                    td = td.replaceAll("\n", " ");
-                    while (inserts-- > 0) {
-                        row.insert(td.trim());
-                    }
-                    if (debug) {
-                        System.out.println("\t\ttd:" + td);
-                    }
-                }
-                checkHeader = false;
-                if (row.size() > 0) {
-                    rows.add(row);
-                }
-                //              if(rows.size()>2) break;
-            }
-            if (--count <= 0) {
-                break;
-            }
-        }
-
-        return rows;
-
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param cols _more_
-     * @param start _more_
-     * @param end _more_
-     * @param pattern _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Row> tokenizeHtmlPattern(TextReader info,String s, String cols, String start,
-                                         String end, String pattern)
-            throws Exception {
-
-        int         numLines = info.getMaxRows();
-	pattern =convertPattern(pattern);
-        List<Row> rows = new ArrayList<Row>();
-        if (cols.length() > 0) {
-            rows.add(new Row(StringUtil.split(cols, ",")));
-        }
-
-        //      System.err.println(start);
-        if (start.length() != 0) {
-            int index = s.indexOf(start);
-            if (index >= 0) {
-                s = s.substring(index);
-            } else {
-                throw new IllegalArgumentException("Missing start pattern:"
-                        + start);
-            }
-        }
-        //      System.out.println("***** START:"+s);
-        if (end.length() != 0) {
-            int index = s.indexOf(end);
-            if (index >= 0) {
-                s = s.substring(0, index - 1);
-            } else {
-                throw new IllegalArgumentException("Missing end pattern:"
-                        + end);
-            }
-        }
-        //      System.out.println("***** FINAL:"+s);
-        Pattern p = Pattern.compile(pattern);
-	int cnt = 0;
-        while (true) {
-	    long t1 = System.currentTimeMillis();
-            Matcher m = p.matcher(s);
-            if ( !m.find()) {
-                break;
-            }
-            Row row = new Row();
-            rows.add(row);
-            for (int i = 1; i <= m.groupCount(); i++) {
-                String tok = m.group(i);
-		if(tok==null) tok = "";
-                row.add(tok.trim());
-            }
-            String s2 = s.substring(m.end());
-            if (s.length() == s2.length()) {
-                break;
-            }
-            s = s2;
-	    if(numLines>=0 && rows.size()>=numLines) break;
-	    long t2 = System.currentTimeMillis();
-        }
-        return rows;
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param arrayPath _more_
-     * @param objectPath _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Row> tokenizeJson(String s, String arrayPath,
-                                  String objectPath)
-            throws Exception {
-
-        int        xcnt  = 0;
-        List<Row>  rows  = new ArrayList<Row>();
-        JSONArray  array = null;
-        JSONObject root  = null;
-        try {
-            root = new JSONObject(s);
-            if (arrayPath != null) {
-                array = Json.readArray(root, arrayPath);
-            }
-        } catch (Exception exc) {
-	                System.err.println("exc:" + exc);
-        }
-        if (array == null) {
-            array = new JSONArray(s);
-        }
-
-        List<String> objectPathList = null;
-        if (Utils.stringDefined(objectPath)) {
-            objectPathList = StringUtil.split(objectPath, ",", true, true);
-        }
-        List<String> names = null;
-        for (int arrayIdx = 0; arrayIdx < array.length(); arrayIdx++) {
-            if (arrayIdx > 0) {
-                break;
-            }
-            Hashtable       primary   = new Hashtable();
-            List<Hashtable> secondary = new ArrayList<Hashtable>();
-            if (objectPathList != null) {
-                JSONObject jrow = array.getJSONObject(arrayIdx);
-                for (String tok : objectPathList) {
-                    if (tok.equals("*")) {
-                        primary.putAll(Json.getHashtable(jrow, true));
-                    } else if (tok.endsWith("[]")) {
-                        JSONArray a = Json.readArray(jrow,
-                                          tok.substring(0, tok.length() - 2));
-                        for (int j = 0; j < a.length(); j++) {
-                            secondary.add(
-                                Json.getHashtable(a.getJSONObject(j), true));
-                        }
-                    } else {
-                        try {
-                            Object o = Json.readObject(jrow, tok);
-                            if (o != null) {
-                                primary.putAll(Json.getHashtable(o, true));
-                            }
-                        } catch (Exception exc) {
-                            Object o = Json.readArray(jrow, tok);
-                            if (o != null) {
-                                primary.putAll(Json.getHashtable(o, true));
-                            }
-                        }
-                    }
-                }
-            } else {
-                try {
-                    primary.putAll(
-                        Json.getHashtable(
-                            array.getJSONArray(arrayIdx), true));
-                } catch (Exception exc) {
-                    primary.putAll(
-                        Json.getHashtable(
-                            array.getJSONObject(arrayIdx), true));
-                }
-            }
-
-            if (names == null) {
-                if (secondary.size() == 0) {
-                    secondary.add(primary);
-                } else {
-                    for (Hashtable h : secondary) {
-                        h.putAll(primary);
-                    }
-                }
-                names = new ArrayList<String>();
-                Row row = new Row();
-                rows.add(row);
-                for (Enumeration keys = secondary.get(0).keys();
-                        keys.hasMoreElements(); ) {
-                    names.add((String) keys.nextElement());
-                }
-                names = (List<String>) Utils.sort(names);
-                for (String name : names) {
-                    row.add(name);
-                }
-            }
-            /*
-              JSONArray fields = root.optJSONArray("fields");
-              if(fields!=null) {
-              for(int k=0;k<fields.length();k++)
-              row.add(fields.getString(k));
-              } else  {
-              for (int k = 0; k < jarray.length(); k++) {
-              row.add("Index " + k);
-              }
-            ***/
-
-            for (Hashtable h : secondary) {
-                Row row = new Row();
-                rows.add(row);
-                for (String name : names) {
-                    Object value = h.get(name);
-                    if (value == null) {
-                        value = "NULL";
-                    }
-                    row.add(value);
-                }
-            }
-        }
-
-        //      System.out.println(rows.get(0).print(null));
-        //      System.out.println(rows.get(1).print(rows.get(0)));
-        //      System.out.println(rows.get(2).print(rows.get(0)));
-        return rows;
-
-
-
-    }
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param arrayPath _more_
-     * @param objectPath _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Row> tokenizeXml(String s, String arrayPath,
-                                 String objectPath)
-            throws Exception {
-
-        Element   root   = XmlUtil.getRoot(s);
-        List<Row> rows   = new ArrayList<Row>();
-        Row       header = new Row();
-        rows.add(header);
-        List<Element> nodes =
-            (List<Element>) Utils.findDescendantsFromPath(root, arrayPath);
-        int                        cnt    = 0;
-        int                        colCnt = 0;
-        Hashtable<String, Integer> colMap = new Hashtable<String, Integer>();
-        System.err.println("NODES:" + nodes.size());
-        for (Element parent : nodes) {
-            NodeList children = XmlUtil.getElements(parent);
-
-            if (children.getLength() == 0) {
-                //use attrs
-                NamedNodeMap nnm = parent.getAttributes();
-                if (nnm == null) {
-                    continue;
-                }
-                for (int i = 0; i < nnm.getLength(); i++) {
-                    Attr    attr = (Attr) nnm.item(i);
-                    String  name = attr.getNodeName();
-                    Integer idx  = colMap.get(name);
-                    if (idx == null) {
-                        colMap.put(name, colCnt++);
-                        header.add(name);
-                    }
-                }
-
-                continue;
-            }
-            for (int i = 0; i < children.getLength(); i++) {
-                Element  child     = (Element) children.item(i);
-                NodeList gchildren = XmlUtil.getElements(child);
-                //go one level down
-                String tag = child.getTagName();
-                if (gchildren.getLength() > 0) {
-                    for (int gi = 0; gi < gchildren.getLength(); gi++) {
-                        Element gchild = (Element) gchildren.item(gi);
-                        String  gtag   = tag + "." + gchild.getTagName();
-                        Integer idx    = colMap.get(gtag);
-                        if (idx == null) {
-                            colMap.put(gtag, colCnt++);
-                            header.add(gchild.getTagName());
-                        }
-                    }
-                } else {
-                    Integer idx = colMap.get(tag);
-                    if (idx == null) {
-                        colMap.put(child.getTagName(), colCnt++);
-                        header.add(child.getTagName());
-                    }
-                }
-            }
-        }
-
-        for (Element parent : nodes) {
-            NodeList children = XmlUtil.getElements(parent);
-            Row      row      = new Row();
-            rows.add(row);
-            for (int i = 0; i < colCnt; i++) {
-                row.add("");
-            }
-            if (children.getLength() == 0) {
-                NamedNodeMap nnm = parent.getAttributes();
-                if (nnm == null) {
-                    continue;
-                }
-                for (int i = 0; i < nnm.getLength(); i++) {
-                    Attr    attr  = (Attr) nnm.item(i);
-                    String  name  = attr.getNodeName();
-                    String  value = attr.getNodeValue();
-                    Integer idx   = colMap.get(name);
-                    row.set(idx, value);
-                }
-
-                continue;
-            }
-
-            for (int i = 0; i < children.getLength(); i++) {
-                Element  child     = (Element) children.item(i);
-                NodeList gchildren = XmlUtil.getElements(child);
-                //go one level down
-                String tag = child.getTagName();
-                if (gchildren.getLength() > 0) {
-                    for (int gi = 0; gi < gchildren.getLength(); gi++) {
-                        Element gchild = (Element) gchildren.item(gi);
-                        String  gtag   = tag + "." + gchild.getTagName();
-                        Integer idx    = colMap.get(gtag);
-                        String  text   = XmlUtil.getChildText(gchild);
-                        row.set(idx, text);
-                    }
-                } else {
-                    Integer idx  = colMap.get(child.getTagName());
-                    String  text = XmlUtil.getChildText(child);
-                    row.set(idx, text);
-                }
-            }
-            cnt++;
-        }
-
-        return rows;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param header _more_
-     * @param pattern _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public List<Row> tokenizePattern(String file, List<String> header,
-                                     String pattern)
-            throws Exception {
-        String    s    = IO.readContents(file);
-        List<Row> rows = new ArrayList<Row>();
-        rows.add(new Row(header));
-        if (pattern.length() == 0) {
-            return rows;
-        }
-        Pattern p = Pattern.compile(pattern);
-        while (true) {
-            Matcher m = p.matcher(s);
-            if ( !m.find()) {
-                break;
-            }
-            Row row = new Row();
-            rows.add(row);
-            for (int i = 1; i <= m.groupCount(); i++) {
-                row.add(m.group(i));
-            }
-            s = s.substring(m.end());
-            //      System.err.println(s.length());
-        }
-
-        return rows;
-    }
 
 
     /**
@@ -1360,12 +903,12 @@ public class CsvUtil {
      *     @throws Exception _more_
      */
     public void raw(List<String> files, TextReader info) throws Exception {
-        int         numLines = info.getMaxRows();
-        PrintWriter writer   = info.getWriter();
-        String      prepend  = info.getPrepend();
-	int chars = 0;
-	int LINE_LIMIT = 2000;
-	int CHARS_LIMIT = 3000000;
+        int         numLines    = info.getMaxRows();
+        PrintWriter writer      = info.getWriter();
+        String      prepend     = info.getPrepend();
+        int         chars       = 0;
+        int         LINE_LIMIT  = 2000;
+        int         CHARS_LIMIT = 3000000;
         for (String file : files) {
             int                  lineCnt = 0;
             List<BufferedReader> readers = new ArrayList<BufferedReader>();
@@ -1379,29 +922,32 @@ public class CsvUtil {
 
             readers.add(
                 new BufferedReader(
-                    new InputStreamReader(getInputStream(file))));
+                    new InputStreamReader(makeInputStream(file))));
             for (BufferedReader br : readers) {
-                while (lineCnt < numLines && chars<CHARS_LIMIT) {
+                while ((lineCnt < numLines) && (chars < CHARS_LIMIT)) {
                     String line = br.readLine();
                     if (line == null) {
                         break;
                     }
-		    System.err.println("line:"+line.length());
-		    while(line.length()>LINE_LIMIT) {
-			String tmp= line.substring(0,LINE_LIMIT-1);
-			line = line.substring(LINE_LIMIT-1);
-			lineCnt++;
-			writer.println(tmp);
-			chars+=tmp.length();
-			if(chars>CHARS_LIMIT) {
-			    break;
-			}
-		    }
-		    if(chars>CHARS_LIMIT) break;
-		    writer.println(line);
+                    System.err.println("line:" + line.length());
+                    while (line.length() > LINE_LIMIT) {
+                        String tmp = line.substring(0, LINE_LIMIT - 1);
+                        line = line.substring(LINE_LIMIT - 1);
+                        lineCnt++;
+                        writer.println(tmp);
+                        chars += tmp.length();
+                        if (chars > CHARS_LIMIT) {
+                            break;
+                        }
+                    }
+                    if (chars > CHARS_LIMIT) {
+                        break;
+                    }
+                    writer.println(line);
                     lineCnt++;
-		    chars+=line.length();
-		    System.err.println("chars:" + chars +" lines:" + lineCnt+" max lines:" + numLines); 
+                    chars += line.length();
+                    System.err.println("chars:" + chars + " lines:" + lineCnt
+                                       + " max lines:" + numLines);
                 }
                 br.close();
             }
@@ -1484,182 +1030,6 @@ public class CsvUtil {
         }
 
         return value.equals("true");
-    }
-
-    /**
-     * Run through the csv file in the TextReader
-     *
-     * @param textReader Holds input, output, skip, delimiter, etc
-     *
-     * @throws Exception On badness
-     */
-    public void process(TextReader textReader) throws Exception {
-        try {
-            errorDescription = null;
-            processInner(textReader);
-        } catch (Exception exc) {
-            CsvOperator op = (textReader == null)
-                             ? null
-                             : textReader.getCurrentOperator();
-            System.err.println("error:" + op);
-            if (op != null) {
-                errorDescription = "Error processing text with operator: "
-                                   + op.getDescription();
-            }
-
-            throw exc;
-        }
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param textReader _more_
-     *
-     * @throws Exception _more_
-     */
-    private void processInner(TextReader textReader) throws Exception {
-        int       rowCnt   = 0;
-        int       cnt      = 0;
-        List<Row> rows     = textReader.getRows();
-        Row       firstRow = textReader.getFirstRow();
-        textReader.setFirstRow(null);
-        if (firstRow != null) {
-            processRow(textReader, firstRow, "");
-            rowCnt++;
-        }
-        if (rows != null) {
-            for (Row row : rows) {
-                rowCnt++;
-                if (rowCnt <= textReader.getSkip()) {
-                    continue;
-                }
-                if ( !processRow(textReader, row, "")) {
-                    break;
-                }
-            }
-        } else {
-            while (okToRun) {
-                String line = textReader.readLine();
-                if (line == null) {
-                    break;
-                }
-                line = line.replaceAll("\\u000d", " ");
-                if (rawLines > 0) {
-                    textReader.getWriter().println(line);
-                    rawLines--;
-
-                    continue;
-                }
-                if (verbose) {
-                    if (((++cnt) % 1000) == 0) {
-                        System.err.println("processed:" + cnt);
-                    }
-                }
-                theLine = line;
-                if ( !textReader.lineOk(textReader, line)) {
-                    continue;
-                }
-
-                rowCnt++;
-                if (rowCnt <= textReader.getSkip()) {
-                    textReader.addHeaderLine(line);
-
-                    continue;
-                }
-
-                //              System.out.println("\tLine:" + line);
-
-                List<Integer> widths = textReader.getWidths();
-                if ((widths == null) && (textReader.getDelimiter() == null)) {
-                    String delimiter = ",";
-                    //Check for the bad separator
-                    int i1 = line.indexOf(",");
-                    int i2 = line.indexOf("|");
-                    if ((i2 >= 0) && ((i1 < 0) || (i2 < i1))) {
-                        delimiter = "|";
-                    }
-                    //                System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
-                    textReader.setDelimiter(delimiter);
-                }
-
-                if (line.length() == 0) {
-                    continue;
-                }
-                Row row = null;
-                if (widths != null) {
-                    row = new Row(Utils.tokenizeColumns(line, widths));
-                } else if (textReader.getSplitOnSpaces()) {
-                    row = new Row(StringUtil.split(line, " ", true, true));
-                } else {
-                    row = new Row(line, textReader.getDelimiter());
-                }
-                if ( !processRow(textReader, row, line)) {
-                    break;
-                }
-            }
-        }
-
-        if (okToRun) {
-            if (textReader.getProcessor() != null) {
-                textReader.getProcessor().finish(textReader, null);
-            }
-        }
-        textReader.flush();
-        textReader.close();
-    }
-
-    /**
-     * _more_
-     *
-     * @param textReader _more_
-     * @param row _more_
-     * @param line _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private boolean processRow(TextReader textReader, Row row, String line)
-            throws Exception {
-        if ((textReader.getFilter() != null)) {
-            if ( !textReader.getFilter().rowOk(textReader, row, line)) {
-                return true;
-            }
-        }
-
-
-        textReader.initRow(row);
-        if ((textReader.getMaxRows() >= 0)
-                && (textReader.getVisitedRows() > textReader.getMaxRows())) {
-            return false;
-        }
-        if (textReader.getProcessor() != null) {
-            textReader.setCurrentOperator(null);
-            currentRow = row;
-            row = textReader.getProcessor().processRow(textReader, row, line);
-            currentRow = null;
-            if ( !textReader.getOkToRun()) {
-                return false;
-            }
-            if (textReader.getExtraRow() != null) {
-                row = textReader.getProcessor().processRow(textReader,
-                        textReader.getExtraRow(), null);
-                textReader.setExtraRow(null);
-            }
-            if ( !textReader.getOkToRun()) {
-                return false;
-            }
-        } else {
-            textReader.getWriter().println(columnsToString(row.getValues(),
-                    textReader.getOutputDelimiter()));
-            textReader.getWriter().flush();
-        }
-        textReader.incrRow();
-
-
-        return true;
     }
 
 
@@ -2562,54 +1932,26 @@ public class CsvUtil {
      * @param args _more_
      * @param info _more_
      * @param files _more_
-     * @param tokenizedRows _more_
+     * @param providers _more_
      *
      *
      * @return _more_
      * @throws Exception _more_
      */
     public boolean parseArgs(List<String> args, TextReader info,
-                             List<String> files,
-                             List<List<Row>> tokenizedRows)
+                             List<String> files, List<DataProvider> providers)
             throws Exception {
 
-
-        //      System.err.println("ARGS:" + args);
         boolean            addFiles      = files.size() == 0;
         boolean            trim          = false;
         boolean            printFields   = false;
 
         Filter.FilterGroup subFilter     = null;
         Filter.FilterGroup filterToAddTo = null;
-        //info.getFilter();
 
-        boolean      doText          = false;
-        boolean      doText2         = false;	
-        String       textHeader      = null;
-        String       chunkPattern    = null;
-        String       tokenPattern    = null;
-
-        boolean      doArgs          = false;
-        int          doArgsCnt       = 0;
-        int          doArgsIndex     = 1;
-        boolean      doHtml          = false;
-        boolean      doHtml2         = false;
-        String       startPattern    = null;
-        String       endPattern      = null;
-        String       htmlPattern     = null;
-        String       htmlCols        = null;
-        String       htmlSkip        = null;
-        String       htmlProps       = null;
-        boolean      doJson          = false;
-        String       jsonArrayPath   = null,
-                     jsonObjectPath  = null;
-        boolean      doXml           = false;
-        String       xmlArrayPath    = null,
-                     xmlObjectPath   = null;
-
-        boolean      doPattern       = false;
-        List<String> tokenizeHeader  = null;
-        String       tokenizePattern = null;
+        boolean            doArgs        = false;
+        int                doArgsCnt     = 0;
+        int                doArgsIndex   = 1;
         if (comment != null) {
             info.setComment(comment);
         }
@@ -2618,7 +1960,6 @@ public class CsvUtil {
         }
 
         PrintWriter pw        = null;
-
         boolean     seenPrint = false;
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
@@ -2656,10 +1997,9 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
-                    doHtml      = true;
-                    htmlSkip    = args.get(++i);
-                    htmlPattern = args.get(++i);
-                    htmlProps   = args.get(++i);
+                    providers.add(new DataProvider.HtmlDataProvider(this,
+                            args.get(++i), args.get(++i),
+                            parseProps(args.get(++i))));
 
                     continue;
                 }
@@ -2667,11 +2007,10 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 4)) {
                         return false;
                     }
-                    doHtml2      = true;
-                    htmlCols     = args.get(++i);
-                    startPattern = args.get(++i);
-                    endPattern   = args.get(++i);
-                    htmlPattern  = args.get(++i);
+                    providers.add(
+                        new DataProvider.HtmlPatternDataProvider(
+                            this, args.get(++i), args.get(++i),
+                            args.get(++i), args.get(++i)));
 
                     continue;
                 }
@@ -2680,10 +2019,8 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
-                    doText       = true;
-                    textHeader   = args.get(++i);
-                    chunkPattern = args.get(++i);
-                    tokenPattern = args.get(++i);
+                    providers.add(new DataProvider.TextDataProvider(this,
+                            args.get(++i), args.get(++i), args.get(++i)));
 
                     continue;
                 }
@@ -2691,10 +2028,18 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
                     }
-                    doText2       = true;
-                    textHeader   = args.get(++i);
-                    chunkPattern = args.get(++i);
-                    tokenPattern = args.get(++i);
+                    providers.add(new DataProvider.Pattern2DataProvider(this,
+                            args.get(++i), args.get(++i), args.get(++i)));
+
+                    continue;
+                }
+                if (arg.equals("-tokenize")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    providers.add(new DataProvider.PatternDataProvider(this,
+                            StringUtil.split(args.get(++i), ","),
+                            args.get(++i)));
 
                     continue;
                 }
@@ -2703,9 +2048,8 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
                     }
-                    doJson         = true;
-                    jsonArrayPath  = args.get(++i);
-                    jsonObjectPath = args.get(++i);
+                    providers.add(new DataProvider.JsonDataProvider(this,
+                            args.get(++i), args.get(++i)));
 
                     continue;
                 }
@@ -2713,48 +2057,29 @@ public class CsvUtil {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
-                    doXml        = true;
-                    xmlArrayPath = args.get(++i);
-
-                    //                    xmlObjectPath = args.get(++i);
-                    continue;
-                }
-
-                if (arg.equals("-tokenize")) {
-                    if ( !ensureArg(args, i, 2)) {
-                        return false;
-                    }
-                    doPattern      = true;
-                    tokenizeHeader = StringUtil.split(args.get(++i), ",");
-                    tokenizePattern = args.get(++i).replaceAll("_quote_",
-                            "\"");
+                    providers.add(new DataProvider.XmlDataProvider(this,
+                            args.get(++i)));
 
                     continue;
                 }
-
-
                 if (arg.equals("-skip")) {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
                     info.setSkip(Integer.parseInt(args.get(++i)));
-
                     continue;
                 }
-
 
                 if (arg.equals("-skipline")) {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
                     info.setSkipPattern(args.get(++i));
-
                     continue;
                 }
 
                 if (arg.equals("-pass")) {
                     info.getProcessor().addProcessor(new Processor.Pass());
-
                     continue;
                 }
 
@@ -2763,9 +2088,8 @@ public class CsvUtil {
                         return false;
                     }
                     info.setChangeString(args.get(++i), args.get(++i));
-
                     continue;
-                }
+		}
 
                 if (arg.equals("-changeraw")) {
                     if ( !ensureArg(args, i, 2)) {
@@ -2773,7 +2097,6 @@ public class CsvUtil {
                     }
                     changeFrom.add(args.get(++i));
                     changeTo.add(args.get(++i));
-
                     continue;
                 }
 
@@ -2782,7 +2105,6 @@ public class CsvUtil {
                         return false;
                     }
                     info.setMaxRows(Integer.parseInt(args.get(++i)));
-
                     continue;
                 }
 
@@ -2791,16 +2113,8 @@ public class CsvUtil {
                         return false;
                     }
                     info.setPruneBytes(Integer.parseInt(args.get(++i)));
-
                     continue;
                 }
-
-                /*
-                if (arg.equals("-prefix")) {
-                    new PrintWriter(getOutputStream()).println(args.get(++i));
-                    continue;
-                    }*/
-
 
                 if (arg.equals("-start")) {
                     if ( !ensureArg(args, i, 1)) {
@@ -2811,7 +2125,6 @@ public class CsvUtil {
 
                     continue;
                 }
-
 
                 if (arg.equals("-stop")) {
                     if ( !ensureArg(args, i, 1)) {
@@ -2843,8 +2156,6 @@ public class CsvUtil {
                     continue;
                 }
 
-
-
                 if (arg.equals("-decimate")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
@@ -2855,7 +2166,6 @@ public class CsvUtil {
                         info.getProcessor().addProcessor(
                             new Filter.Decimate(start, skip));
                     }
-
                     continue;
                 }
 
@@ -2875,9 +2185,9 @@ public class CsvUtil {
                         new Processor.DbXml(props));
 
                     info.setMaxRows(30);
+
                     continue;
                 }
-
 
                 if (arg.equals("-unfurl")) {
                     if ( !ensureArg(args, i, 5)) {
@@ -2906,9 +2216,6 @@ public class CsvUtil {
                     continue;
                 }
 
-
-
-
                 if (arg.equals("-break")) {
                     if ( !ensureArg(args, i, 3)) {
                         return false;
@@ -2921,7 +2228,6 @@ public class CsvUtil {
 
                     continue;
                 }
-
 
                 if (arg.equals("-sort")) {
                     if ( !ensureArg(args, i, 1)) {
@@ -3087,7 +2393,6 @@ public class CsvUtil {
                         return false;
                     }
                     info.setComment(comment = args.get(++i));
-
                     continue;
                 }
 
@@ -3116,7 +2421,6 @@ public class CsvUtil {
                     continue;
                 }
 
-
                 if (arg.equals("-prop")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
@@ -3128,8 +2432,6 @@ public class CsvUtil {
 
                     continue;
                 }
-
-
 
                 if (arg.equals("-rowop")) {
                     if ( !ensureArg(args, i, 3)) {
@@ -3144,18 +2446,6 @@ public class CsvUtil {
 
                     continue;
                 }
-                /*
-                if (arg.equals("-processor")) {
-                    if ( !ensureArg(args, i, 1)) {
-                        return false;
-                    }
-                    Class c = Misc.findClass(args.get(++i));
-                    info.getProcessor().addProcessor(
-                        (Processor) c.newInstance());
-
-                    continue;
-                }
-                */
 
                 if (arg.equals("-fields")) {
                     printFields = true;
@@ -3163,19 +2453,16 @@ public class CsvUtil {
                     continue;
                 }
 
-
                 if (arg.equals("-output")) {
                     if ( !ensureArg(args, i, 1)) {
                         return false;
                     }
                     String out = args.get(++i);
-                    this.outputStream = new FileOutputStream(out);
+                    this.outputStream = makeOutputStream(out);
                     info.setWriter(new PrintWriter(this.outputStream));
                     info.getProcessor().addProcessor(
                         new Processor.Printer(printFields, trim));
-
                     continue;
-
                 }
 
                 if (arg.equals("-print") || arg.equals("-p")) {
@@ -3188,7 +2475,6 @@ public class CsvUtil {
 
                     continue;
                 }
-
 
                 if (arg.equals("-toxml")) {
                     if ( !ensureArg(args, i, 1)) {
@@ -4440,59 +3726,9 @@ public class CsvUtil {
             return false;
         }
 
-        if (doHtml) {
-            Hashtable<String, String> props = parseProps(htmlProps);
-            tokenizedRows.add(tokenizeHtml(files.get(0), htmlSkip,
-                                           htmlPattern, props));
-        } else if (doHtml2) {
-            String s = null;
-            if (files.size() > 0) {
-                s = IO.readInputStream(getInputStream(files.get(0)));
-            } else if (inputStream != null) {
-                s = IO.readInputStream(inputStream);
-            } else {
-                throw new IllegalArgumentException("No file given");
-            }
-            tokenizedRows.add(tokenizeHtmlPattern(info, s, htmlCols, startPattern,
-                    endPattern, htmlPattern
-));
-        } else if (doText) {
-            tokenizedRows.add(tokenizeText(files.get(0), textHeader,
-                                           chunkPattern, tokenPattern));
-        } else if (doText2) {
-            tokenizedRows.add(tokenizeText2(files.get(0), textHeader,
-                                           chunkPattern, tokenPattern));	    
-        } else if (doJson) {
-            //xxxx
-            String s = null;
-            if (files.size() > 0) {
-                s = IO.readInputStream(getInputStream(files.get(0)));
-            } else if (inputStream != null) {
-                s = IO.readInputStream(inputStream);
-            } else {
-                throw new Exception("Error processing json: no file given");
-            }
-            tokenizedRows.add(tokenizeJson(s, jsonArrayPath, jsonObjectPath));
-        } else if (doXml) {
-            //xxxx
-            String s = null;
-            if (files.size() > 0) {
-                s = IO.readInputStream(getInputStream(files.get(0)));
-                //              System.err.println("xml file:" + files.get(0));
-                //              System.err.println("xml:" + s.substring(0,100));
-            } else if (inputStream != null) {
-                s = IO.readInputStream(inputStream);
-            } else {
-                throw new Exception("Error processing xml: no file given");
-            }
-            tokenizedRows.add(tokenizeXml(s, xmlArrayPath, xmlObjectPath));
-
-        } else if (doPattern) {
-            tokenizedRows.add(tokenizePattern(files.get(0), tokenizeHeader,
-                    tokenizePattern));
-        }
 
         return true;
+
     }
 
 
@@ -4649,6 +3885,23 @@ public class CsvUtil {
     /**
      * _more_
      *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public String convertContents(String s) {
+        for (int i = 0; i < changeFrom.size(); i++) {
+            s = s.replaceAll(changeFrom.get(i), changeTo.get(i));
+        }
+
+        return s;
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param p _more_
      *
      * @return _more_
@@ -4661,10 +3914,10 @@ public class CsvUtil {
                          "\\\\)");
         p = p.replaceAll("_leftbracket_",
                          "\\\\[").replaceAll("_rightbracket_", "\\\\]");
-	String hr =  "<a[^>]*?href *= *\"?([^ <\"]+)";
-	p= p.replaceAll("_href_",hr);
-	//<a href=\"http://foobar\">Label</a>";
-	p= p.replaceAll("_hrefandlabel_",hr+"[^>]*>([^<]+)</a>");
+        String hr = "<a[^>]*?href *= *\"?([^ <\"]+)";
+        p = p.replaceAll("_href_", hr);
+        //<a href=\"http://foobar\">Label</a>";
+        p = p.replaceAll("_hrefandlabel_", hr + "[^>]*>([^<]+)</a>");
         p = p.replaceAll("_dot_", "\\\\.");
         p = p.replaceAll("_dollar_", "\\\\\\$");
         p = p.replaceAll("_dot_", "\\\\.");
@@ -4672,6 +3925,7 @@ public class CsvUtil {
         p = p.replaceAll("_plus_", "\\\\+");
         p = p.replaceAll("_nl_", "\n");
         p = p.replaceAll("_quote_", "\"");
+
         return p;
     }
 
@@ -4684,28 +3938,26 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public static void main(String[] args) throws Exception {
-	if(false) {
-	    String pp  = ".*?Watched.?_hrefandlabel_( *<br> *_hrefandlabel_)?<br>(.*?)</div>";
-	    String  p = convertPattern(pp);
-	    Pattern pattern = Pattern.compile(p);
-	    String s = "hello <a href=\"http://foobar\">Label</a>";
-	    s = "	<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1\">Watched <a href=\"https://www.youtube.com/watch?v=NyKntOXIINI\">Alan Watts ~ Listen &amp; Breathe (Guided Meditation)</a>" +
-		"<br><a href=\"https://www.youtube.com/channel/UCCgCK4HAhzjD3IFw9cdXuOw\">Wiara</a><br>Feb 13, 2021, 6:28:27 PM MST</div>"	+
-		"<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>	<div class=\"content-cell mdl-cell mdl-cell--12-col mdl-typography--caption\"><b>Products:</b><br>&emsp;YouTube<br></div></div></div>	<div class=\"header-cell mdl-cell mdl-cell--12-col\"><p class=\"mdl-typography--title\">YouTube<br></p></div>	<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1\">" +
-"Watched <a href=\"https://www.youtube.com/watch?v=z6Pn9u4-pxE\">Alan Watts - How to melt anxiety</a><br><a href=\"https://www.youtube.com/channel/UCU4A50dYCKa1wpXiHspywSA\">Infinite Wisdom</a><br>Feb 13, 2021, 6:28:16 PM MST</div>	<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>";
-	    s = "   Watched <a href=\"https://www.youtube.com/watch?v=z6Pn9u4-pxE\">Alan Watts - How to melt anxiety</a><br>Feb 13, 2021, 6:28:16 PM MST</div>	<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>";
+        if (false) {
+            String pp =
+                ".*?Watched.?_hrefandlabel_( *<br> *_hrefandlabel_)?<br>(.*?)</div>";
+            String  p       = convertPattern(pp);
+            Pattern pattern = Pattern.compile(p);
+            String  s       = "hello <a href=\"http://foobar\">Label</a>";
+            s = "       <div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1\">Watched <a href=\"https://www.youtube.com/watch?v=NyKntOXIINI\">Alan Watts ~ Listen &amp; Breathe (Guided Meditation)</a>" + "<br><a href=\"https://www.youtube.com/channel/UCCgCK4HAhzjD3IFw9cdXuOw\">Wiara</a><br>Feb 13, 2021, 6:28:27 PM MST</div>" + "<div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>  <div class=\"content-cell mdl-cell mdl-cell--12-col mdl-typography--caption\"><b>Products:</b><br>&emsp;YouTube<br></div></div></div>   <div class=\"header-cell mdl-cell mdl-cell--12-col\"><p class=\"mdl-typography--title\">YouTube<br></p></div>   <div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1\">" + "Watched <a href=\"https://www.youtube.com/watch?v=z6Pn9u4-pxE\">Alan Watts - How to melt anxiety</a><br><a href=\"https://www.youtube.com/channel/UCU4A50dYCKa1wpXiHspywSA\">Infinite Wisdom</a><br>Feb 13, 2021, 6:28:16 PM MST</div> <div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>";
+            s = "   Watched <a href=\"https://www.youtube.com/watch?v=z6Pn9u4-pxE\">Alan Watts - How to melt anxiety</a><br>Feb 13, 2021, 6:28:16 PM MST</div>  <div class=\"content-cell mdl-cell mdl-cell--6-col mdl-typography--body-1 mdl-typography--text-right\"></div>";
 
-	    Matcher matcher = pattern.matcher(s);
-	    System.err.println("p:" + p + "  " + matcher.find() +" x");
-	    for (int i = 0; i < matcher.groupCount(); i++) {
-		System.err.println(i+"="+matcher.group(i + 1));
-	    }
+            Matcher matcher = pattern.matcher(s);
+            System.err.println("p:" + p + "  " + matcher.find() + " x");
+            for (int i = 0; i < matcher.groupCount(); i++) {
+                System.err.println(i + "=" + matcher.group(i + 1));
+            }
 
-	}
+        }
 
-	CsvUtil csvUtil = new CsvUtil(args);
-	csvUtil.run(null);
-	System.exit(0);
+        CsvUtil csvUtil = new CsvUtil(args);
+        csvUtil.run(null);
+        System.exit(0);
     }
 
 

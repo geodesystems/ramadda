@@ -17,6 +17,7 @@
 package org.ramadda.util.text;
 
 
+import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
@@ -68,7 +69,7 @@ public class TextReader implements Cloneable {
     private File destDir = new File(".");
 
     /** _more_ */
-    private InputStream input;
+    private NamedInputStream input;
 
     /** _more_ */
     private String inputFile;
@@ -423,12 +424,11 @@ public class TextReader implements Cloneable {
      *
      * @throws CloneNotSupportedException _more_
      */
-    public TextReader cloneMe(InputStream input, String inputFile,
-                              File outputFile, OutputStream output)
+    public TextReader cloneMe(NamedInputStream input, File outputFile,
+                              OutputStream output)
             throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
         that.input         = input;
-        that.inputFile     = inputFile;
         that.output        = output;
         that.outputFile    = outputFile;
         that.writer        = null;
@@ -959,12 +959,17 @@ public class TextReader implements Cloneable {
 
 
 
+    public void setInput(InputStream value) {
+	this.setInput(new NamedInputStream("input",value));
+    }
+
+
     /**
      * Set the Input property.
      *
      * @param value The new value for Input
      */
-    public void setInput(InputStream value) {
+    public void setInput(NamedInputStream value) {
         input = value;
     }
 
@@ -973,7 +978,7 @@ public class TextReader implements Cloneable {
      *
      * @return The Input
      */
-    public InputStream getInput() {
+    public NamedInputStream getInput() {
         return input;
     }
 
@@ -984,7 +989,8 @@ public class TextReader implements Cloneable {
      */
     public BufferedReader getReader() {
         if (reader == null) {
-            reader = new BufferedReader(new InputStreamReader(getInput()));
+            reader = new BufferedReader(
+                new InputStreamReader(getInput().getInputStream()));
         }
 
         return reader;

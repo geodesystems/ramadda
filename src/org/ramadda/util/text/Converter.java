@@ -134,12 +134,11 @@ public abstract class Converter extends Processor {
         /**
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             if (indices.size() == 0) {
                 return row;
@@ -178,12 +177,10 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
-         *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             if (indices.size() == 0) {
                 debug("processRow- no indices");
@@ -227,10 +224,10 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String suffix;
 
-        /** _more_          */
+        /** _more_ */
         private String imageColumn;
 
-        /** _more_          */
+        /** _more_ */
         private int imageColumnIndex = -1;
 
         /**
@@ -259,12 +256,10 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
-         *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if ((imageColumn != null) && (imageColumnIndex == -1)) {
                 imageColumnIndex = getIndex(imageColumn);
             }
@@ -374,12 +369,10 @@ public abstract class Converter extends Processor {
         /**
          * @param info _more_
          * @param row _more_
-         * @param line _more_
-         *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 add(info, row, "description");
 
@@ -480,12 +473,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             for (int i : indices) {
                 if ((i < 0) || (i >= row.size())) {
@@ -541,12 +533,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             for (int i : indices) {
                 if ((i < 0) || (i >= row.size())) {
@@ -603,12 +594,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             while (row.getValues().size() < count) {
                 row.getValues().add(pad);
             }
@@ -662,12 +652,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 if ( !info.getAllData()) {
                     return row;
@@ -721,12 +710,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 if ( !info.getAllData()) {
                     return row;
@@ -782,12 +770,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             PrintWriter writer    = info.getWriter();
             String      delimiter = info.getDelimiter();
             if (delimiter == null) {
@@ -907,12 +894,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
 
             rowCnt++;
             if (rowCnt > 2) {
@@ -1179,12 +1165,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List          values  = row.getValues();
             double        total   = 0;
             int           cnt     = 0;
@@ -1259,12 +1244,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             int col = getIndex(info);
             if (rowCnt++ == 0) {
                 add(info, row, row.get(col) + " increase");
@@ -1358,12 +1342,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             if (rowCnt++ == 0) {
                 for (int i = 0; i < indices.size(); i++) {
@@ -1507,12 +1490,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             rowCnt++;
             debug("processRow");
             if (rowCnt == 1) {
@@ -1589,12 +1571,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List   values    = row.getValues();
             List   newValues = new ArrayList();
             double total     = 0;
@@ -1687,12 +1668,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 if ( !info.getAllData()) {
@@ -1726,7 +1706,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Cropper extends Converter {
 
@@ -1736,8 +1716,6 @@ public abstract class Converter extends Processor {
         /**
          *
          * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
          * @param patterns _more_
          */
         public Cropper(List<String> cols, List<String> patterns) {
@@ -1751,12 +1729,11 @@ public abstract class Converter extends Processor {
         /**
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 if ( !info.getAllData()) {
@@ -1814,12 +1791,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 if ( !info.getAllData()) {
@@ -1861,19 +1837,13 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 return row;
@@ -1935,19 +1905,13 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             int col = getIndex(info);
             //Don't process the first row
             if (rowCnt++ == 0) {
@@ -2062,11 +2026,10 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 add(info, row, whatLabel);
@@ -2145,12 +2108,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 return row;
@@ -2223,12 +2185,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 return row;
@@ -2310,12 +2271,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 add(info, row, name);
@@ -2381,12 +2341,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             String value = row.get(col).toString();
             if (value.length() > length) {
                 value = value.substring(0, length - 1) + suffix;
@@ -2457,12 +2416,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if ( !rows.contains(rowCnt++)) {
                 if ( !info.getAllData()) {
@@ -2521,12 +2479,11 @@ public abstract class Converter extends Processor {
         /**
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if ( !rows.contains(rowCnt++)) {
                 return row;
             }
@@ -2597,12 +2554,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rows.size() == 0) {
                 return row;
             }
@@ -2679,12 +2635,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 if ( !info.getAllData()) {
@@ -2759,12 +2714,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             //Don't process the first row
             if (rowCnt++ == 0) {
                 if ( !info.getAllData()) {
@@ -2842,12 +2796,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 if (name.length() > 0) {
                     row.getValues().add(name);
@@ -2932,12 +2885,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             int index = getIndex(info);
             int cnt   = 0;
             if (rowCnt++ == 0) {
@@ -3019,12 +2971,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             if (rowCnt++ == 0) {
                 if (name.length() > 0) {
@@ -3277,12 +3228,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List values = row.getValues();
             if ( !doneHeader) {
                 if (writeForDb) {
@@ -3400,12 +3350,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (col < 0) {
                 List<Integer> indices = getIndices(info);
                 col = indices.get(0);
@@ -3515,12 +3464,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List values = row.getValues();
             if ( !doneHeader) {
                 add(info, row, "Population");
@@ -3621,12 +3569,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if ( !doneHeader) {
                 row.add("Region");
                 doneHeader = true;
@@ -3707,12 +3654,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             int  column = getIndex(info);
             List values = row.getValues();
             if ( !doneHeader) {
@@ -3856,12 +3802,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List   values   = row.getValues();
             String newValue = null;
             if (rowCnt++ == 0) {
@@ -3927,12 +3872,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             row = filterValues(info, row);
 
             return row;
@@ -3989,12 +3933,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             for (int index : indices) {
                 if ((index < 0) || (index >= row.size())) {
@@ -4050,12 +3993,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             for (int i = 0; i < indices.size(); i++) {
                 try {
@@ -4111,12 +4053,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             int index = getIndex(info);
             if ((index < 0) || (index >= row.size())) {
                 return row;
@@ -4170,12 +4111,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             StringBuilder sb      = new StringBuilder();
             int           cnt     = 0;
@@ -4235,12 +4175,11 @@ public abstract class Converter extends Processor {
         /**
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 row.getValues().add(name);
 
@@ -4323,12 +4262,11 @@ public abstract class Converter extends Processor {
         /**
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (indices == null) {
                 indices    = getIndices(info);
                 keyindices = getIndices(keys);
@@ -4405,12 +4343,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 row.getValues().add("Latitude");
                 row.getValues().add("Longitude");
@@ -4470,12 +4407,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 if ( !info.getAllData()) {
                     return row;
@@ -4536,12 +4472,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
                 int index = idx.intValue();
@@ -4584,20 +4519,15 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class MD extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         private MessageDigest md;
 
         /**
-         *
-         *
-         *
-         *
          * @param indices _more_
-         * @param action _more_
          * @param type _more_
          *
          * @throws Exception _more_
@@ -4616,12 +4546,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 row.add("MD");
 
@@ -4680,12 +4609,11 @@ public abstract class Converter extends Processor {
         /**
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             int    col = getIndex(info);
             String v   = "";
             if (rowCnt < values.size()) {
@@ -4749,12 +4677,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 add(info, row, label);
 
@@ -4827,12 +4754,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if ((rowCnt++ == 0) && !label.equals("none")) {
                 row.getValues().add(label);
 
@@ -4919,12 +4845,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 header = row;
 
@@ -5048,12 +4973,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if ((rowIdx < 0) || (rowIdx == rowCnt)) {
                 if (col < 0) {
                     row.getValues().add(value);
@@ -5112,12 +5036,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if ((rowIdx < 0) || (rowIdx == rowCnt)) {
                 List newValues = new ArrayList();
                 List values    = row.getValues();
@@ -5188,12 +5111,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             boolean gotRow = false;
             for (int rowIdx : rows) {
                 if (rowCnt == rowIdx) {
@@ -5262,12 +5184,11 @@ public abstract class Converter extends Processor {
         /**
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             String val = row.get(col).toString();
             if ((prefix != null)
                     && (val.matches(pattern)
@@ -5312,12 +5233,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             cnt++;
             if (cnt == 1) {
                 add(info, row, "label");
@@ -5357,7 +5277,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Number extends Converter {
 
@@ -5377,12 +5297,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             cnt++;
             if (cnt == 1) {
                 row.insert(0, "number");
@@ -5422,7 +5341,7 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class UUID extends Converter {
 
@@ -5442,12 +5361,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 row.add("UUID");
             } else {
@@ -5517,12 +5435,11 @@ public abstract class Converter extends Processor {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line) {
+        public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 return row;
             }

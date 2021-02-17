@@ -1,0 +1,1157 @@
+/*
+* Copyright (c) 2008-2019 Geode Systems LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+package org.ramadda.util.text;
+
+
+import org.json.*;
+
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
+import org.ramadda.util.Json;
+import org.ramadda.util.NamedInputStream;
+import org.ramadda.util.Utils;
+
+import org.w3c.dom.*;
+
+import ucar.unidata.util.StringUtil;
+import ucar.unidata.xml.XmlUtil;
+
+import java.io.*;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+
+import java.util.regex.*;
+
+
+/**
+ *
+ * @author Jeff McWhirter
+ */
+
+public abstract class DataProvider {
+
+    /** _more_ */
+    private CsvUtil csvUtil;
+
+    /**
+     * _more_
+     *
+     * @param csvUtil _more_
+     */
+    public DataProvider(CsvUtil csvUtil) {
+        this.csvUtil = csvUtil;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public CsvUtil getCsvUtil() {
+        return csvUtil;
+    }
+
+    /**
+     * _more_
+     *
+     * @param info _more_
+     * @param stream _more_
+     *
+     * @throws Exception _more_
+     */
+    public void initialize(TextReader info, NamedInputStream stream)
+            throws Exception {}
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public abstract Row readRow() throws Exception;
+
+
+    /**
+     * _more_
+     */
+    public void finish() {}
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public abstract static class BulkDataProvider extends DataProvider {
+
+        /** _more_ */
+        private List<Row> rows = new ArrayList<Row>();
+
+        /** _more_ */
+        private int index = 0;
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         */
+        public BulkDataProvider(CsvUtil csvUtil) {
+            super(csvUtil);
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public Row readRow() throws Exception {
+            if (index >= rows.size()) {
+                return null;
+            }
+
+            return rows.get(index++);
+        }
+
+        /**
+         * _more_
+         *
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        protected boolean addRow(Row row) {
+            //      System.err.println("row:" + row);
+            rows.add(row);
+
+            return true;
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        protected List<Row> getRows() {
+            return rows;
+        }
+
+        /**
+         * _more_
+         * @param textReader _more_
+         * @param stream _more_
+         *
+         * @throws Exception _more_
+         */
+        public void initialize(TextReader textReader, NamedInputStream stream)
+                throws Exception {
+            textReader.setInput(stream);
+            String s = getCsvUtil().convertContents(
+                           IO.readInputStream(stream.getInputStream()));
+            tokenize(textReader, s);
+        }
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public abstract void tokenize(TextReader info, String s)
+         throws Exception;
+
+
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public static class HtmlDataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        private int skip;
+
+        /** _more_ */
+        private String pattern;
+
+        /** _more_ */
+        private Hashtable<String, String> props;
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param sSkip _more_
+         * @param htmlPattern _more_
+         * @param props _more_
+         */
+        public HtmlDataProvider(CsvUtil csvUtil, String sSkip,
+                                String htmlPattern,
+                                Hashtable<String, String> props) {
+            super(csvUtil);
+            this.pattern = htmlPattern;
+            this.props   = props;
+            if ((sSkip != null) && (sSkip.trim().length() > 0)) {
+                skip = Integer.parseInt(sSkip.trim());
+            } else {
+                skip = 0;
+            }
+
+        }
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader info, String s) throws Exception {
+
+            int count = Utils.getProperty(props, "count", 1);
+            if ((pattern == null) || (pattern.trim().length() == 0)) {
+                pattern = props.get("pattern");
+            }
+            String skipAttr = props.get("skipAttr");
+            boolean removeEntity = Utils.equals(props.get("removeEntity"),
+                                       "true");
+            String removePattern =
+                getCsvUtil().convertPattern(props.get("removePattern"));
+            String removePattern2 =
+                getCsvUtil().convertPattern(props.get("removePattern2"));
+            Pattern attrPattern = null;
+            if (skipAttr != null) {
+                skipAttr    = skipAttr.replaceAll("_quote_", "\"");
+                attrPattern = Pattern.compile(skipAttr, Pattern.MULTILINE);
+            }
+            boolean debug = false;
+            //        System.err.println("HTML:" + file);
+            //        System.out.println("TABLE:" + s);
+
+            String[] toks;
+            if (Utils.stringDefined(pattern)) {
+                int idx = s.indexOf(pattern);
+                if (idx < 0) {
+                    return;
+                }
+                s = s.substring(idx + pattern.length());
+            }
+
+            while (true) {
+                toks = Utils.tokenizeChunk(s, "<table", "</table");
+                if (toks == null) {
+                    break;
+                }
+                String table = toks[0];
+                s = toks[1];
+                if (skip > 0) {
+                    skip--;
+
+                    continue;
+                }
+                if (debug) {
+                    System.out.println("table");
+                }
+                while (true) {
+                    toks = Utils.tokenizeChunk(table, "<tr", "</tr");
+                    if (toks == null) {
+                        break;
+                    }
+                    String tr = toks[0];
+                    table = toks[1];
+                    if (debug) {
+                        System.out.println("\trow: " + tr);
+                    }
+                    Row     row         = new Row();
+                    boolean checkHeader = true;
+                    while (true) {
+                        toks = Utils.tokenizePattern(tr, "(<td|<th)",
+                                "(</td|</th)");
+                        if (toks == null) {
+                            break;
+                        }
+                        String td = toks[0].trim();
+                        tr = toks[1];
+                        String colspan = StringUtil.findPattern(td,
+                                             "colspan *= *\"?([0-9]+)\"?");
+                        int inserts = 1;
+                        if (colspan != null) {
+                            inserts = Integer.parseInt(colspan);
+                        }
+
+                        int idx = td.indexOf(">");
+                        if ((attrPattern != null) && (idx >= 0)) {
+                            String attrs = td.substring(0, idx).toLowerCase();
+                            if (attrPattern.matcher(attrs).find()) {
+                                System.out.println("skipping:"
+                                        + td.replaceAll("\n", " "));
+
+                                continue;
+                            }
+                            //                        System.out.println("not skipping:" +td );
+                        }
+                        //              System.err.println("td:" + td);
+                        td = td.substring(idx + 1);
+                        //              System.err.println("after TD:" + td);
+                        td = Utils.stripTags(td);
+                        //              System.err.println("after Strip:" + td);
+                        td = td.replaceAll("\n", " ").replaceAll("  +", "");
+                        td = HtmlUtils.unescapeHtml3(td);
+                        //              System.err.println(td+"  stripped:" + td);
+                        if (removeEntity) {
+                            td = td.replaceAll("&[^;]+;", "");
+                        } else {
+                            td = HtmlUtils.unescapeHtml3(td);
+                        }
+                        if (removePattern != null) {
+                            td = td.replaceAll(removePattern, "");
+                        }
+                        if (removePattern2 != null) {
+                            td = td.replaceAll(removePattern2, "");
+                        }
+                        td = td.replaceAll("&nbsp;", " ");
+                        td = td.replaceAll("&quot;", "\"");
+                        td = td.replaceAll("&lt;", "<");
+                        td = td.replaceAll("&gt;", ">");
+                        td = td.replaceAll("\n", " ");
+                        while (inserts-- > 0) {
+                            row.insert(td.trim());
+                        }
+                        if (debug) {
+                            System.out.println("\t\ttd:" + td);
+                        }
+                    }
+                    checkHeader = false;
+                    if (row.size() > 0) {
+                        addRow(row);
+                    }
+                }
+                if (--count <= 0) {
+                    break;
+                }
+            }
+
+
+
+        }
+
+
+
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public static class HtmlPatternDataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        private String cols;
+
+        /** _more_ */
+        private String start;
+
+        /** _more_ */
+        private String end;
+
+        /** _more_ */
+        private String pattern;
+
+
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param cols _more_
+         * @param start _more_
+         * @param end _more_
+         * @param pattern _more_
+         */
+        public HtmlPatternDataProvider(CsvUtil csvUtil, String cols,
+                                       String start, String end,
+                                       String pattern) {
+            super(csvUtil);
+            this.cols    = cols;
+            this.start   = start;
+            this.end     = end;
+            this.pattern = pattern;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader info, String s) throws Exception {
+            int numLines = info.getMaxRows();
+            pattern = getCsvUtil().convertPattern(pattern);
+            if (cols.length() > 0) {
+                addRow(new Row(StringUtil.split(cols, ",")));
+            }
+
+            //      System.err.println(start);
+            if (start.length() != 0) {
+                int index = s.indexOf(start);
+                if (index >= 0) {
+                    s = s.substring(index);
+                } else {
+                    throw new IllegalArgumentException(
+                        "Missing start pattern:" + start);
+                }
+            }
+            //      System.out.println("***** START:"+s);
+            if (end.length() != 0) {
+                int index = s.indexOf(end);
+                if (index >= 0) {
+                    s = s.substring(0, index - 1);
+                } else {
+                    throw new IllegalArgumentException("Missing end pattern:"
+                            + end);
+                }
+            }
+            //      System.out.println("***** FINAL:"+s);
+            Pattern p   = Pattern.compile(pattern);
+            int     cnt = 0;
+            while (true) {
+                long    t1 = System.currentTimeMillis();
+                Matcher m  = p.matcher(s);
+                if ( !m.find()) {
+                    break;
+                }
+                Row row = new Row();
+                addRow(row);
+                for (int i = 1; i <= m.groupCount(); i++) {
+                    String tok = m.group(i);
+                    if (tok == null) {
+                        tok = "";
+                    }
+                    row.add(tok.trim());
+                }
+                String s2 = s.substring(m.end());
+                if (s.length() == s2.length()) {
+                    break;
+                }
+                s = s2;
+                if ((numLines >= 0) && (getRows().size() >= numLines)) {
+                    break;
+                }
+                long t2 = System.currentTimeMillis();
+            }
+        }
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public static class JsonDataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        private String arrayPath;
+
+        /** _more_ */
+        private String objectPath;
+
+
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param arrayPath _more_
+         * @param objectPath _more_
+         */
+        public JsonDataProvider(CsvUtil csvUtil, String arrayPath,
+                                String objectPath) {
+            super(csvUtil);
+            this.arrayPath  = arrayPath;
+            this.objectPath = objectPath;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader info, String s) throws Exception {
+
+            int        xcnt  = 0;
+            JSONArray  array = null;
+            JSONObject root  = null;
+            try {
+                root = new JSONObject(s);
+                if (arrayPath != null) {
+                    array = Json.readArray(root, arrayPath);
+                }
+            } catch (Exception exc) {
+                System.err.println("exc:" + exc);
+            }
+            if (array == null) {
+                array = new JSONArray(s);
+            }
+
+            List<String> objectPathList = null;
+            if (Utils.stringDefined(objectPath)) {
+                objectPathList = StringUtil.split(objectPath, ",", true,
+                        true);
+            }
+            List<String> names = null;
+            for (int arrayIdx = 0; arrayIdx < array.length(); arrayIdx++) {
+                if (arrayIdx > 0) {
+                    break;
+                }
+                Hashtable       primary   = new Hashtable();
+                List<Hashtable> secondary = new ArrayList<Hashtable>();
+                if (objectPathList != null) {
+                    JSONObject jrow = array.getJSONObject(arrayIdx);
+                    for (String tok : objectPathList) {
+                        if (tok.equals("*")) {
+                            primary.putAll(Json.getHashtable(jrow, true));
+                        } else if (tok.endsWith("[]")) {
+                            JSONArray a = Json.readArray(jrow,
+                                              tok.substring(0,
+                                                  tok.length() - 2));
+                            for (int j = 0; j < a.length(); j++) {
+                                secondary.add(
+                                    Json.getHashtable(
+                                        a.getJSONObject(j), true));
+                            }
+                        } else {
+                            try {
+                                Object o = Json.readObject(jrow, tok);
+                                if (o != null) {
+                                    primary.putAll(Json.getHashtable(o,
+                                            true));
+                                }
+                            } catch (Exception exc) {
+                                Object o = Json.readArray(jrow, tok);
+                                if (o != null) {
+                                    primary.putAll(Json.getHashtable(o,
+                                            true));
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    try {
+                        primary.putAll(
+                            Json.getHashtable(
+                                array.getJSONArray(arrayIdx), true));
+                    } catch (Exception exc) {
+                        primary.putAll(
+                            Json.getHashtable(
+                                array.getJSONObject(arrayIdx), true));
+                    }
+                }
+
+                if (names == null) {
+                    if (secondary.size() == 0) {
+                        secondary.add(primary);
+                    } else {
+                        for (Hashtable h : secondary) {
+                            h.putAll(primary);
+                        }
+                    }
+                    names = new ArrayList<String>();
+                    Row row = new Row();
+                    addRow(row);
+                    for (Enumeration keys = secondary.get(0).keys();
+                            keys.hasMoreElements(); ) {
+                        names.add((String) keys.nextElement());
+                    }
+                    names = (List<String>) Utils.sort(names);
+                    for (String name : names) {
+                        row.add(name);
+                    }
+                }
+                /*
+                  JSONArray fields = root.optJSONArray("fields");
+                  if(fields!=null) {
+                  for(int k=0;k<fields.length();k++)
+                  row.add(fields.getString(k));
+                  } else  {
+                  for (int k = 0; k < jarray.length(); k++) {
+                  row.add("Index " + k);
+                  }
+                ***/
+
+                for (Hashtable h : secondary) {
+                    Row row = new Row();
+                    addRow(row);
+                    for (String name : names) {
+                        Object value = h.get(name);
+                        if (value == null) {
+                            value = "NULL";
+                        }
+                        row.add(value);
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public static class XmlDataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        private String arrayPath;
+
+        /** _more_ */
+        private String objectPath;
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param arrayPath _more_
+         */
+        public XmlDataProvider(CsvUtil csvUtil, String arrayPath) {
+            super(csvUtil);
+            this.arrayPath = arrayPath;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader info, String s) throws Exception {
+
+            Element root   = XmlUtil.getRoot(s);
+            Row     header = new Row();
+            addRow(header);
+            List<Element> nodes =
+                (List<Element>) Utils.findDescendantsFromPath(root,
+                    arrayPath);
+            int cnt    = 0;
+            int colCnt = 0;
+            Hashtable<String, Integer> colMap = new Hashtable<String,
+                                                    Integer>();
+            System.err.println("NODES:" + nodes.size());
+            for (Element parent : nodes) {
+                NodeList children = XmlUtil.getElements(parent);
+
+                if (children.getLength() == 0) {
+                    //use attrs
+                    NamedNodeMap nnm = parent.getAttributes();
+                    if (nnm == null) {
+                        continue;
+                    }
+                    for (int i = 0; i < nnm.getLength(); i++) {
+                        Attr    attr = (Attr) nnm.item(i);
+                        String  name = attr.getNodeName();
+                        Integer idx  = colMap.get(name);
+                        if (idx == null) {
+                            colMap.put(name, colCnt++);
+                            header.add(name);
+                        }
+                    }
+
+                    continue;
+                }
+                for (int i = 0; i < children.getLength(); i++) {
+                    Element  child     = (Element) children.item(i);
+                    NodeList gchildren = XmlUtil.getElements(child);
+                    //go one level down
+                    String tag = child.getTagName();
+                    if (gchildren.getLength() > 0) {
+                        for (int gi = 0; gi < gchildren.getLength(); gi++) {
+                            Element gchild = (Element) gchildren.item(gi);
+                            String  gtag   = tag + "." + gchild.getTagName();
+                            Integer idx    = colMap.get(gtag);
+                            if (idx == null) {
+                                colMap.put(gtag, colCnt++);
+                                header.add(gchild.getTagName());
+                            }
+                        }
+                    } else {
+                        Integer idx = colMap.get(tag);
+                        if (idx == null) {
+                            colMap.put(child.getTagName(), colCnt++);
+                            header.add(child.getTagName());
+                        }
+                    }
+                }
+            }
+
+            for (Element parent : nodes) {
+                NodeList children = XmlUtil.getElements(parent);
+                Row      row      = new Row();
+                addRow(row);
+                for (int i = 0; i < colCnt; i++) {
+                    row.add("");
+                }
+                if (children.getLength() == 0) {
+                    NamedNodeMap nnm = parent.getAttributes();
+                    if (nnm == null) {
+                        continue;
+                    }
+                    for (int i = 0; i < nnm.getLength(); i++) {
+                        Attr    attr  = (Attr) nnm.item(i);
+                        String  name  = attr.getNodeName();
+                        String  value = attr.getNodeValue();
+                        Integer idx   = colMap.get(name);
+                        row.set(idx, value);
+                    }
+
+                    continue;
+                }
+
+                for (int i = 0; i < children.getLength(); i++) {
+                    Element  child     = (Element) children.item(i);
+                    NodeList gchildren = XmlUtil.getElements(child);
+                    //go one level down
+                    String tag = child.getTagName();
+                    if (gchildren.getLength() > 0) {
+                        for (int gi = 0; gi < gchildren.getLength(); gi++) {
+                            Element gchild = (Element) gchildren.item(gi);
+                            String  gtag   = tag + "." + gchild.getTagName();
+                            Integer idx    = colMap.get(gtag);
+                            String  text   = XmlUtil.getChildText(gchild);
+                            row.set(idx, text);
+                        }
+                    } else {
+                        Integer idx  = colMap.get(child.getTagName());
+                        String  text = XmlUtil.getChildText(child);
+                        row.set(idx, text);
+                    }
+                }
+                cnt++;
+            }
+
+        }
+
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public static class PatternDataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        private List<String> header;
+
+        /** _more_ */
+        private String pattern;
+
+        /** _more_ */
+        private String objectPath;
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param header _more_
+         * @param pattern _more_
+         */
+        public PatternDataProvider(CsvUtil csvUtil, List<String> header,
+                                   String pattern) {
+            super(csvUtil);
+            this.header  = header;
+            this.pattern = getCsvUtil().convertPattern(pattern);
+        }
+
+
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader info, String s) throws Exception {
+            addRow(new Row(header));
+            if (pattern.length() == 0) {
+                return;
+            }
+            Pattern p = Pattern.compile(pattern);
+            while (true) {
+                Matcher m = p.matcher(s);
+                if ( !m.find()) {
+                    break;
+                }
+                Row row = new Row();
+                addRow(row);
+                for (int i = 1; i <= m.groupCount(); i++) {
+                    row.add(m.group(i));
+                }
+                s = s.substring(m.end());
+                //      System.err.println(s.length());
+            }
+        }
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public static class Pattern2DataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        String header;
+
+        /** _more_ */
+        String chunkPattern;
+
+        /** _more_ */
+        String tokenPattern;
+
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param header _more_
+         * @param chunkPattern _more_
+         * @param tokenPattern _more_
+         */
+        public Pattern2DataProvider(CsvUtil csvUtil, String header,
+                                    String chunkPattern,
+                                    String tokenPattern) {
+            super(csvUtil);
+            this.header       = header;
+            this.chunkPattern = getCsvUtil().convertPattern(chunkPattern);
+            this.tokenPattern = getCsvUtil().convertPattern(tokenPattern);
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader info, String s) throws Exception {
+            Row headerRow = new Row();
+            addRow(headerRow);
+            for (String tok : StringUtil.split(header, ",")) {
+                headerRow.add(tok);
+            }
+            Pattern p1 = Pattern.compile(chunkPattern);
+            Pattern p2 = Pattern.compile(tokenPattern);
+            while (true) {
+                Matcher m1 = p1.matcher(s);
+                if ( !m1.find()) {
+                    //              System.err.println(" no chunk match");
+                    break;
+                }
+                s = s.substring(m1.end());
+                //              System.err.println("REMAINDER:" + s);
+                for (int i1 = 1; i1 <= m1.groupCount(); i1++) {
+                    String chunk = m1.group(i1).trim();
+                    //              System.err.println("CHUNK[" + i1 +"]=" + chunk+"\n**********");
+                    //              System.err.println("CHUNK:");
+                    //              System.exit(0);
+                    int cnt = 1;
+                    while (true) {
+                        Matcher m2 = p2.matcher(chunk);
+                        if ( !m2.find()) {
+                            break;
+                        }
+                        Row row = null;
+                        if (cnt < getRows().size()) {
+                            row = getRows().get(cnt);
+                        } else {
+                            row = new Row();
+                            addRow(row);
+                        }
+                        cnt++;
+                        for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
+                            String tok = m2.group(i2).trim();
+                            //                      System.err.println("\ttok:" + tok);
+                            row.add(tok);
+                        }
+                        chunk = chunk.substring(m2.end());
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public static class TextDataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        String header;
+
+        /** _more_ */
+        String chunkPattern;
+
+        /** _more_ */
+        String tokenPattern;
+
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param header _more_
+         * @param chunkPattern _more_
+         * @param tokenPattern _more_
+         */
+        public TextDataProvider(CsvUtil csvUtil, String header,
+                                String chunkPattern, String tokenPattern) {
+            super(csvUtil);
+            this.header       = header;
+            this.chunkPattern = getCsvUtil().convertPattern(chunkPattern);
+            this.tokenPattern = getCsvUtil().convertPattern(tokenPattern);
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader info, String s) throws Exception {
+            Row headerRow = new Row();
+            addRow(headerRow);
+            for (String tok : StringUtil.split(header, ",")) {
+                headerRow.add(tok);
+            }
+            try {
+                Pattern p1 = Pattern.compile(chunkPattern);
+                Pattern p2 = Pattern.compile(tokenPattern);
+                while (true) {
+                    Matcher m1 = p1.matcher(s);
+                    if ( !m1.find()) {
+                        break;
+                    }
+                    s = s.substring(m1.end());
+                    if (m1.groupCount() > 2) {
+                        throw new IllegalArgumentException(
+                            "There should only be one sub-pattern in the chunk");
+                    }
+                    String  chunk = m1.group(1).trim();
+                    Matcher m2    = p2.matcher(chunk);
+                    if ( !m2.find()) {
+                        break;
+                    }
+                    Row row = new Row();
+                    addRow(row);
+                    for (int i2 = 1; i2 <= m2.groupCount(); i2++) {
+                        String tok = m2.group(i2);
+                        if (tok == null) {
+                            tok = "";
+                        }
+                        //                      System.err.println("\ttok:" + tok);
+                        row.add(tok);
+                    }
+                }
+            } catch (Exception exc) {
+                System.err.println("error: pattern:\"" + chunkPattern
+                                   + "\"  " + exc);
+                exc.printStackTrace();
+
+                throw exc;
+            }
+        }
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
+    public static class CsvDataProvider extends DataProvider {
+
+        /** _more_ */
+        int cnt = 0;
+
+        /** _more_ */
+        int rawLines = 0;
+
+        /** _more_ */
+        TextReader textReader;
+
+        /** _more_ */
+        String theLine;
+
+        /** _more_ */
+        int rowCnt = 0;
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param rawLines _more_
+         */
+        public CsvDataProvider(CsvUtil csvUtil, int rawLines) {
+            super(csvUtil);
+            this.rawLines = rawLines;
+        }
+
+        /**
+         * _more_
+         *
+         * @param textReader _more_
+         * @param stream _more_
+         *
+         * @throws Exception _more_
+         */
+        public void initialize(TextReader textReader, NamedInputStream stream)
+                throws Exception {
+            this.textReader = textReader;
+            this.textReader.setInput(stream);
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public Row readRow() throws Exception {
+            while (true) {
+                String line = textReader.readLine();
+                if (line == null) {
+                    return null;
+                }
+                line = line.replaceAll("\\u000d", " ");
+                if (rawLines > 0) {
+                    textReader.getWriter().println(line);
+                    rawLines--;
+
+                    continue;
+                }
+                if (CsvUtil.verbose) {
+                    if (((++cnt) % 1000) == 0) {
+                        System.err.println("processed:" + cnt);
+                    }
+                }
+                theLine = line;
+                if ( !textReader.lineOk(textReader, line)) {
+                    continue;
+                }
+
+                rowCnt++;
+                if (rowCnt <= textReader.getSkip()) {
+                    textReader.addHeaderLine(line);
+
+                    continue;
+                }
+                List<Integer> widths = textReader.getWidths();
+                if ((widths == null) && (textReader.getDelimiter() == null)) {
+                    String delimiter = ",";
+                    //Check for the bad separator
+                    int i1 = line.indexOf(",");
+                    int i2 = line.indexOf("|");
+                    if ((i2 >= 0) && ((i1 < 0) || (i2 < i1))) {
+                        delimiter = "|";
+                    }
+                    //                System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
+                    textReader.setDelimiter(delimiter);
+                }
+                if (line.length() == 0) {
+                    continue;
+                }
+                Row row = null;
+                if (widths != null) {
+                    row = new Row(Utils.tokenizeColumns(line, widths));
+                } else if (textReader.getSplitOnSpaces()) {
+                    row = new Row(StringUtil.split(line, " ", true, true));
+                } else {
+                    row = new Row(Utils.tokenizeColumns(line,
+                            textReader.getDelimiter()));
+                }
+
+                return row;
+            }
+        }
+
+    }
+
+}

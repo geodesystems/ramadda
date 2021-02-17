@@ -77,7 +77,7 @@ public abstract class CsvOperator {
     /** _more_ */
     protected int rowCnt = 0;
 
-    /** _more_          */
+    /** _more_ */
     public static final int UNDEFINED_INDEX = -1;
 
     /** _more_ */
@@ -222,12 +222,10 @@ public abstract class CsvOperator {
      *
      * @param info _more_
      * @param row _more_
-     * @param line _more_
      *
      * @throws Exception _more_
      */
-    public void processFirstRow(TextReader info, Row row, String line)
-            throws Exception {}
+    public void processFirstRow(TextReader info, Row row) throws Exception {}
 
 
 

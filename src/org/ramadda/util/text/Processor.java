@@ -232,14 +232,12 @@ public abstract class Processor extends CsvOperator {
      *
      * @param info _more_
      * @param row _more_
-     * @param line _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Row processRow(TextReader info, Row row, String line)
-            throws Exception {
+    public Row processRow(TextReader info, Row row) throws Exception {
         info.setCurrentOperator(null);
 
         return row;
@@ -250,17 +248,15 @@ public abstract class Processor extends CsvOperator {
      *
      * @param info _more_
      * @param row _more_
-     * @param line _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public List<Row> processRowReturnList(TextReader info, Row row,
-                                          String line)
+    public List<Row> processRowReturnList(TextReader info, Row row)
             throws Exception {
         List<Row> l = new ArrayList<Row>();
-        Row       r = processRow(info, row, line);
+        Row       r = processRow(info, row);
         if (r != null) {
             l.add(r);
         }
@@ -338,17 +334,8 @@ public abstract class Processor extends CsvOperator {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param info _more_
-         * @param row _more_
-         * @param line _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+
+        /** _more_ */
         int xcnt = 0;
 
         /**
@@ -356,15 +343,13 @@ public abstract class Processor extends CsvOperator {
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             info.setCurrentOperator(this);
             Object  skipTo      = row.getSkipTo();
             boolean sawBufferer = false;
@@ -412,7 +397,7 @@ public abstract class Processor extends CsvOperator {
                 }
                 info.setCurrentOperator(processor);
                 //              System.err.println("calling:" +  processor.getClass().getName() +" with :" + row);
-                row = processor.processRow(info, row, line);
+                row = processor.processRow(info, row);
                 //              System.err.println("got:" +   row);
                 info.setCurrentOperator(this);
                 if (row == null) {
@@ -432,13 +417,12 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
-        private Row processRowInner(TextReader info, Row row, String line)
+        private Row processRowInner(TextReader info, Row row)
                 throws Exception {
             boolean sawBufferer = false;
             if (remainderProcessors == null) {
@@ -472,7 +456,7 @@ rotate -> pass -> pass -> rotate -> pass
                 }
 
                 processor.setHeaderIfNeeded(row);
-                row = processor.processRow(info, row, line);
+                row = processor.processRow(info, row);
                 if (row == null) {
                     return null;
                 }
@@ -523,13 +507,13 @@ rotate -> pass -> pass -> rotate -> pass
                 remainderProcessors = null;
                 firstProcessors     = null;
                 for (Row row : inputRows) {
-                    row = processRowInner(textReader, row, "");
+                    row = processRowInner(textReader, row);
                     if ( !textReader.getOkToRun()) {
                         break;
                     }
                     if (textReader.getExtraRow() != null) {
                         row = processRowInner(textReader,
-                                textReader.getExtraRow(), null);
+                                textReader.getExtraRow());
                         textReader.setExtraRow(null);
                     }
                     if ( !textReader.getOkToRun()) {
@@ -578,13 +562,13 @@ rotate -> pass -> pass -> rotate -> pass
                 remainderProcessors = null;
                 firstProcessors     = null;
                 for (Row row : inputRows) {
-                    row = processRowInner(textReader, row, "");
+                    row = processRowInner(textReader, row);
                     if ( !textReader.getOkToRun()) {
                         break;
                     }
                     if (textReader.getExtraRow() != null) {
                         row = processRowInner(textReader,
-                                textReader.getExtraRow(), null);
+                                textReader.getExtraRow());
                         textReader.setExtraRow(null);
                     }
                     if ( !textReader.getOkToRun()) {
@@ -830,15 +814,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             if (flag == FLAG_POSITION) {
                 info.setPositionStart(value);
             }
@@ -871,15 +853,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             System.err.println("#" + (rowCnt++) + " row:" + row);
 
             return row;
@@ -911,15 +891,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             if (cnt == -1) {
                 cnt = row.size();
 
@@ -997,15 +975,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             rows.add(row);
 
             return row;
@@ -1300,15 +1276,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             debug("processRow");
             if (addPointHeader) {
                 addPointHeader = false;
@@ -1601,15 +1575,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             PrintWriter writer = info.getWriter();
             if (header == null) {
                 header = row;
@@ -1781,15 +1753,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param reader _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader reader, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader reader, Row row) throws Exception {
 
             if (row1 == null) {
                 row1 = row;
@@ -2047,15 +2017,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             boolean first = false;
             if (contains == null) {
                 contains = new ArrayList<HashSet>();
@@ -2181,15 +2149,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             int size = row.size();
 
             if (currentNumCols < 0) {
@@ -2200,10 +2166,9 @@ rotate -> pass -> pass -> rotate -> pass
             if (strict) {
                 if (size != currentNumCols) {
                     if (error) {
-                        throw new IllegalArgumentException("Bad line:"
-                                + line);
+                        throw new IllegalArgumentException("Bad line:" + row);
                     }
-                    System.err.println("skipping:" + line);
+                    System.err.println("skipping:" + row);
 
                     return null;
                 }
@@ -2284,15 +2249,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             total++;
             if (++rowCount >= 1000) {
                 System.err.println("count:" + total);
@@ -2342,15 +2305,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             if (headerValues == null) {
                 headerValues = row.getValues();
 
@@ -2411,22 +2372,10 @@ rotate -> pass -> pass -> rotate -> pass
          */
         public Html() {}
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param info _more_
-         * @param row _more_
-         * @param line _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        /** _more_ */
         int xcnt = 0;
 
-        /** _more_          */
+        /** _more_ */
         int maxCount = 0;
 
         /**
@@ -2434,15 +2383,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          * @return _more_
          *
          * @throws Exception _more_
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             printRow(info, row);
 
             return row;
@@ -2581,13 +2528,13 @@ rotate -> pass -> pass -> rotate -> pass
         /** _more_ */
         private int unfurlIndex = -1;
 
-        /** _more_          */
+        /** _more_ */
         private String unfurlCol;
 
         /** _more_ */
         private int uniqueIndex = -1;
 
-        /** _more_          */
+        /** _more_ */
         private String uniqueCol;
 
         /** _more_ */
@@ -3468,15 +3415,13 @@ rotate -> pass -> pass -> rotate -> pass
          *
          * @param info _more_
          * @param row _more_
-         * @param line _more_
          *
          *
          * @return _more_
          * @throws Exception On badness
          */
         @Override
-        public Row processRow(TextReader info, Row row, String line)
-                throws Exception {
+        public Row processRow(TextReader info, Row row) throws Exception {
             List<Integer> keys2Indices = getIndices(keys2);
             if (headerRow2 == null) {
                 headerRow2 = row;

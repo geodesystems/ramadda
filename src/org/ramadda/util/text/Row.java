@@ -92,6 +92,7 @@ public class Row {
         check();
     }
 
+
     /** _more_ */
     public static int xcnt = 0;
 
@@ -125,15 +126,6 @@ public class Row {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     * @param delimiter _more_
-     */
-    public Row(String line, String delimiter) {
-        this(Utils.tokenizeColumns(line, delimiter));
-    }
 
 
     /**
