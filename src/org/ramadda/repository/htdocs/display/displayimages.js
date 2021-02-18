@@ -427,6 +427,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'numberOfImages',wikiValue:'100'},	
 	{p:'includeBlanks',wikiValue:'true'},
 	{p:'imageWidth',wikiValue:'150'},
+	{p:'imageHeight',wikiValue:'150'},	
 	{p:'imageMargin',wikiValue:'10px'},
 	{p:'decorate',wikiValue:'false'},
 	{p:'doPopup',wikiValue:'false'},
@@ -472,7 +473,10 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let decorate = this.getPropertyDecorate(true);
 	    let columns = +this.getPropertyColumns(0);
 	    let number = +this.getPropertyNumberOfImages(50);
-	    let width = this.getPropertyImageWidth("150");
+	    let colorBy = this.getColorByInfo(records);
+	    let width = this.getPropertyImageWidth();
+	    let height = this.getPropertyImageHeight();	    
+	    if(!width && !height) width="150";
 	    let imageStyle = this.getPropertyImageStyle("");
 	    let contents = "";
 	    let uid = HtmlUtils.getUniqueId();
@@ -492,7 +496,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		style = HU.css("margin",this.getPropertyImageMargin("10px"));
 	    }
 	    if(columns) {
-		if(width.endsWith("%"))
+		if(width && width.endsWith("%"))
 		    style+=HU.css(WIDTH,width);
 	    }
 	    if(this.startIndex<0) this.startIndex=0;
@@ -513,28 +517,39 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    topLabel = this.getRecordHtml(record,fields,topLabelTemplate);
 		}
 		let label = "";
+		let galleryLabel = "";
 		if(bottomLabelTemplate) {
 		    label = this.getRecordHtml(record,fields,bottomLabelTemplate);
-		} else {
-		    labelFields.forEach(l=>{
-			let value  = record.getValue(l.getIndex());
-			if(value.getTime) {
-			    value = this.formatDate(value);
-			} 
-			label += " " + value; 
-		    });
-		}
+		} 
+		labelFields.forEach(l=>{
+		    let value  = record.getValue(l.getIndex());
+		    if(value.getTime) {
+			value = this.formatDate(value);
+		    } 
+		    galleryLabel += " " + value; 
+		});
+		if(galleryLabel=="") galleryLabel=label;
+		else if(label=="") label = galleryLabel;		
 		let tt = "";
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
-		let img = image==""?SPACE1:HU.image(image,[STYLE,imageStyle,"alt",label,ID,base+"image" + rowIdx, WIDTH,width]);
+		let imgAttrs = [STYLE,imageStyle,"alt",galleryLabel,ID,base+"image" + rowIdx];
+		if(width) imgAttrs.push(WIDTH,width);
+		else if(height) imgAttrs.push(HEIGHT,height);		
+		let img = image==""?SPACE1:HU.image(image,imgAttrs);
 		let topLbl = (topLabel!=null?HU.div([CLASS,"display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"display-images-label"], label.trim());
+		if(colorBy.isEnabled()) {
+		    let c = colorBy.getColorFromRecord(record);
+		    style+=HU.css(BACKGROUND,c);
+		}
+
+		style+=HU.css("vertical-align","top");
 		let block = 
 		    HU.div([STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,ID,base+"div"+  rowIdx, CLASS, class1,TITLE,tt],
 			   HU.div([CLASS,class2], topLbl + img + lbl));
 		if(doPopup) {
-		    block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",label]);
+		    block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
 		}
 		if(columns) {
 		    if(++columnCnt>=columns) {
@@ -553,6 +568,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    contents+=HU.td(['align','center'],columnMap[col]);
 		}
 		contents+="</tr></table>";
+	    } else {
 	    }
 
 	    let header = "";
