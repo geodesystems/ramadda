@@ -3883,10 +3883,10 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-
-        String s =
-            "hello {{there template=\\\"foo bar {{ }} \"   }} I am fine";
-        System.err.println(prune(s, "{") + ":");
+        String s ="			<div class=\"fp-section\" data-section-title=\"Pain level <span>1</span>\" data-section-caption=\"1 of 3\">\n				<div class=\"specimen-header\">\n					<h2>Red fire ant</h2>\n					<span><i>Solenopsis invicta</i></span>				</div>";
+	Pattern p =Pattern.compile("(?s)Pain +level *<span>([0-9.]+)</span>.*?<h2>(.*)");
+	Matcher m = p.matcher(s);
+        System.err.println("match:" + m.find());
     }
 
 
