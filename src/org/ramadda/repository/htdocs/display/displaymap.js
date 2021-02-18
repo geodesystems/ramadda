@@ -1944,12 +1944,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length +" bounds:" + bounds.north + " " + bounds.west +" " + bounds.south +" " + bounds.east);
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
+	    let xcnt =0;
 	    groups.values.every((value,idx)=>{
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
+//		if(xcnt++>0) return;
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
-//		$("#test").html(HU.image(img,[WIDTH,"500", STYLE,"border:1px solid blue;"]));
+//		$("#test").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);

@@ -2003,8 +2003,6 @@ var Gfx = {
 		return Math.floor(opts.h*(args.bounds.north-lat)/earthHeight);		
 	    }
 	}
-
-
 	ctx.lineStyle = "#000";
 	if(opts.doHeatmap) {
 	    let cols = Math.floor(opts.w/opts.cellSizeX);
@@ -2415,6 +2413,14 @@ function Glyph(display, scale, fields, records, args, attrs) {
 	this[name] = value;
 //	console.log("attr:" + name+"=" + value);
     });
+
+    if(this.labelBy) {
+	this.labelField=display.getFieldById(fields,this.labelBy);
+	if(!this.labelField) {
+	    console.log("Could not find label field: " + this.labelBy);
+	}
+    }
+
     if(this.type=="image") {
 	this.imageField=display.getFieldById(fields,this.imageField);
 	this.myImage= new Image();
@@ -2455,8 +2461,6 @@ function Glyph(display, scale, fields, records, args, attrs) {
     else if(this.dy=="height2") this.dy=this.height/2;
     else if(this.dy=="-height2") this.dy=-this.height/2;
 
-
-
     this.baseWidth = +this.baseWidth;
     this.width = (+this.width)*scale;
     this.height = (+this.height)*scale;
@@ -2464,7 +2468,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
     this.dy = (+this.dy)*scale;
     if(this.sizeBy) {
 	this.sizeByField=display.getFieldById(fields,this.sizeBy);
-	if(this.sizeByField) {
+	if(!this.sizeByField) {
+	    console.log("Could not find sizeBy field:" + this.sizeBy);
+	} else  {
 	    let props = {
 		Min:this.sizeByMin,
 		Max:this.sizeByMax,
@@ -2475,7 +2481,9 @@ function Glyph(display, scale, fields, records, args, attrs) {
     if(!this.colorByInfo && this.colorBy) {
 	this.colorByField=display.getFieldById(fields,this.colorBy);
 	let ct = this.colorTable?display.getColorTableInner(true, this.colorTable):null;
-	if(this.colorByField) {
+	if(!this.colorByField) {
+	    console.log("Could not find colorBy field:" + this.colorBy);
+	} else {
 	    let props = {
 		Min:this.colorByMin,
 		Max:this.colorByMax,
@@ -2503,7 +2511,6 @@ Glyph.prototype = {
 	    } else if(args.colorValue) {
 		color=  this.colorByInfo.getColor(args.colorValue);
 	    }
-
 	}
 	let lengthPercent = 1.0;
 	if(this.sizeByInfo) {
@@ -2520,15 +2527,26 @@ Glyph.prototype = {
 	ctx.fillStyle =color || this.fillStyle || this.color || "blue";
 	ctx.strokeStyle =this.strokeStyle || this.color || "#000";
 	ctx.lineWidth=this.lineWidth||1;
-
 	if(this.type=="label" || this.label) {
-	    if(!this.label) {
-		console.log("No label specified");
+	    let label = this.labelField?args.record.getValue(this.labelField.getIndex()):this.label;
+	    if(label===null) {
+		console.log("No label value");
 		return;
 	    }
+	    if(typeof label=="number") {
+		if(this.valueScale) {
+		    label = label* +this.valueScale;
+		}
+
+		if(this.decimals)
+		    label = number_format(label,+this.decimals);
+	    }
+	    if(this.template) {
+		label = this.template.replace("${value}",label);
+	    }
 	    ctx.font = this.font || "12pt arial"
-	    ctx.fillStyle = ctx.strokeStyle =    this.color|| "#000";
-	    let text = String(this.label);
+	    ctx.fillStyle = ctx.strokeStyle =    color || this.color|| "#000";
+	    let text = String(label);
 	    if(args.record) {
 		args.record.fields.forEach(f=>{
 		    text = text.replace("\${" + f.getId()+"}",args.record.getValue(f.getIndex()));
@@ -2650,6 +2668,12 @@ Glyph.prototype = {
 	    ctx.stroke();
 //	    this.draw3DRect(canvas,ctx,x+this.dx, canvas.height-y-this.dy,+this.width,height,+this.width);	    
 	} else if(this.type == "vector") {
+	    if(!this.sizeByInfo) {
+		console.log("make Vector: no sizeByInfo");
+		return;
+	    }
+	    let v = args.record.getValue(this.sizeByField.getIndex());
+	    lengthPercent = this.sizeByInfo.getValuePercent(v);
 	    let length = opts.cellSizeH;
 	    if(opts.lengthBy && opts.lengthBy.index>=0) {
 		length = opts.lengthBy.scaleToValue(v);
@@ -3751,6 +3775,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['addAttributes=true','Include the extra attributes of the children'],
 		["sortFields=\"\"","Comma separated list of fields to sort the data on"],
 		["sortAscending=true|false",""],
+		["showSortDirection=true",""],		
 		["sortByFields=\"\"","Show sort by fields in a menu"],
 		['sortHighlight=true','Sort based on highlight from the filters'],
 		['showDisplayFieldsMenu=true'],
@@ -7138,8 +7163,10 @@ a
 	    this.haveCalledUpdateUI = false;
 	    this.callUpdateUI();
 	},
-	callUpdateUI: function() {
+	callUpdateUI: function(force) {
 	    try {
+		if(force)
+		    this.haveCalledUpdateUI = false;
 		this.updateUI();
 	    } catch(err) {
                 this.setContents(this.getMessage(err));
@@ -7471,6 +7498,15 @@ a
 		header2 += HU.span([CLASS,"display-filter"],
 				   this.makeFilterLabel("Sort by: ") + HU.select("",[ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
 	    }
+
+	    if(this.getProperty("showSortDirection")) {
+		var sortAscending = this.getProperty("sortAscending",true);
+		header2 +=HU.select("",[ID,this.getDomId("sortdirection")],[["up", "Sort Up"],["down","Sort Down"]],
+				    sortAscending?"up":"down") + SPACE;
+	    }
+
+
+
 
 	    if(this.sizeByFields.length>0) {
 		let enums = [];
@@ -7813,6 +7849,11 @@ a
 	    });
             this.jq("sortbyselect").change(function(){
 		_this.sortByFieldChanged($(this).val());
+	    });
+	    this.jq("sortdirection").change(function(){
+		let val = $(this).val();
+		_this.setProperty("sortAscending",val=="up");
+		_this.forceUpdateUI();
 	    });
             this.jq("sizebyselect").change(function(){
 		_this.sizeByFieldChanged($(this).val());
@@ -24201,6 +24242,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'numberOfImages',wikiValue:'100'},	
 	{p:'includeBlanks',wikiValue:'true'},
 	{p:'imageWidth',wikiValue:'150'},
+	{p:'imageHeight',wikiValue:'150'},	
 	{p:'imageMargin',wikiValue:'10px'},
 	{p:'decorate',wikiValue:'false'},
 	{p:'doPopup',wikiValue:'false'},
@@ -24246,7 +24288,10 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    let decorate = this.getPropertyDecorate(true);
 	    let columns = +this.getPropertyColumns(0);
 	    let number = +this.getPropertyNumberOfImages(50);
-	    let width = this.getPropertyImageWidth("150");
+	    let colorBy = this.getColorByInfo(records);
+	    let width = this.getPropertyImageWidth();
+	    let height = this.getPropertyImageHeight();	    
+	    if(!width && !height) width="150";
 	    let imageStyle = this.getPropertyImageStyle("");
 	    let contents = "";
 	    let uid = HtmlUtils.getUniqueId();
@@ -24266,7 +24311,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		style = HU.css("margin",this.getPropertyImageMargin("10px"));
 	    }
 	    if(columns) {
-		if(width.endsWith("%"))
+		if(width && width.endsWith("%"))
 		    style+=HU.css(WIDTH,width);
 	    }
 	    if(this.startIndex<0) this.startIndex=0;
@@ -24287,28 +24332,39 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    topLabel = this.getRecordHtml(record,fields,topLabelTemplate);
 		}
 		let label = "";
+		let galleryLabel = "";
 		if(bottomLabelTemplate) {
 		    label = this.getRecordHtml(record,fields,bottomLabelTemplate);
-		} else {
-		    labelFields.forEach(l=>{
-			let value  = record.getValue(l.getIndex());
-			if(value.getTime) {
-			    value = this.formatDate(value);
-			} 
-			label += " " + value; 
-		    });
-		}
+		} 
+		labelFields.forEach(l=>{
+		    let value  = record.getValue(l.getIndex());
+		    if(value.getTime) {
+			value = this.formatDate(value);
+		    } 
+		    galleryLabel += " " + value; 
+		});
+		if(galleryLabel=="") galleryLabel=label;
+		else if(label=="") label = galleryLabel;		
 		let tt = "";
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
-		let img = image==""?SPACE1:HU.image(image,[STYLE,imageStyle,"alt",label,ID,base+"image" + rowIdx, WIDTH,width]);
+		let imgAttrs = [STYLE,imageStyle,"alt",galleryLabel,ID,base+"image" + rowIdx];
+		if(width) imgAttrs.push(WIDTH,width);
+		else if(height) imgAttrs.push(HEIGHT,height);		
+		let img = image==""?SPACE1:HU.image(image,imgAttrs);
 		let topLbl = (topLabel!=null?HU.div([CLASS,"display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"display-images-label"], label.trim());
+		if(colorBy.isEnabled()) {
+		    let c = colorBy.getColorFromRecord(record);
+		    style+=HU.css(BACKGROUND,c);
+		}
+
+		style+=HU.css("vertical-align","top");
 		let block = 
 		    HU.div([STYLE, style, RECORD_ID,record.getId(),RECORD_INDEX,recordIndex++,ID,base+"div"+  rowIdx, CLASS, class1,TITLE,tt],
 			   HU.div([CLASS,class2], topLbl + img + lbl));
 		if(doPopup) {
-		    block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",label]);
+		    block = HU.href(image,block,[CLASS,"popup_image","data-fancybox",base,"data-caption",galleryLabel]);
 		}
 		if(columns) {
 		    if(++columnCnt>=columns) {
@@ -24327,6 +24383,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		    contents+=HU.td(['align','center'],columnMap[col]);
 		}
 		contents+="</tr></table>";
+	    } else {
 	    }
 
 	    let header = "";
@@ -30109,12 +30166,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length +" bounds:" + bounds.north + " " + bounds.west +" " + bounds.south +" " + bounds.east);
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
+	    let xcnt =0;
 	    groups.values.every((value,idx)=>{
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
+//		if(xcnt++>0) return;
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
-//		$("#test").html(HU.image(img,[WIDTH,"500", STYLE,"border:1px solid blue;"]));
+//		$("#test").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
