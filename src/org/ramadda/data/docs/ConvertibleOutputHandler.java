@@ -368,6 +368,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             List<StringBuilder> toks =
                 Utils.parseMultiLineCommandLine(tmp.toString());
 
+	    //	    System.err.println("TOKS:" + toks);
             List<List<String>> llines  = new ArrayList<List<String>>();
             List<String>       current = null;
             for (StringBuilder sb : toks) {
