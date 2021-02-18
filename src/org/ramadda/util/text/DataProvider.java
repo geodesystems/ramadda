@@ -954,6 +954,76 @@ public abstract class DataProvider {
      * @version        $version$, Tue, Feb 16, '21
      * @author         Enter your name here...
      */
+    public static class Pattern3DataProvider extends BulkDataProvider {
+
+        /** _more_ */
+        String header;
+
+
+        /** _more_ */
+        String tokenPattern;
+
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param header _more_
+         * @param chunkPattern _more_
+         * @param tokenPattern _more_
+         */
+        public Pattern3DataProvider(CsvUtil csvUtil, String header,
+                                    String tokenPattern) {
+            super(csvUtil);
+            this.header       = header;
+            this.tokenPattern = getCsvUtil().convertPattern(tokenPattern);
+            System.err.println("after:" + this.tokenPattern);
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        public void tokenize(TextReader info, String s) throws Exception {
+            Row headerRow = new Row();
+            addRow(headerRow);
+            for (String tok : StringUtil.split(header, ",")) {
+                headerRow.add(tok);
+            }
+            Pattern p1 = Pattern.compile(tokenPattern);
+            while (true) {
+                Matcher m1 = p1.matcher(s);
+                if ( !m1.find()) {
+                    //              System.err.println("no match");
+                    break;
+                }
+                //              System.err.println("match");
+                s = s.substring(m1.end());
+                //              System.err.println("REMAINDER:" + s);
+                Row row = new Row();
+                addRow(row);
+                for (int i = 1; i <= m1.groupCount(); i++) {
+                    String tok = m1.group(i).trim();
+                    row.add(tok);
+                }
+            }
+        }
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Tue, Feb 16, '21
+     * @author         Enter your name here...
+     */
     public static class TextDataProvider extends BulkDataProvider {
 
         /** _more_ */

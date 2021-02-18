@@ -56,8 +56,11 @@ import java.util.zip.*;
 
 public class CsvUtil {
 
+    /** _more_          */
     private static boolean debugFiles = false;
-    private static boolean debugArgs= false;    
+
+    /** _more_          */
+    private static boolean debugArgs = false;
 
 
 
@@ -137,11 +140,12 @@ public class CsvUtil {
         for (String arg : args) {
             this.args.add(arg);
         }
-	if(debugArgs) {
-	    System.out.println("Initial args");
-	    for(String arg: this.args) 
-		System.out.println("Arg:" + arg);
-	}
+        if (debugArgs) {
+            System.out.println("Initial args");
+            for (String arg : this.args) {
+                System.out.println("Arg:" + arg);
+            }
+        }
     }
 
     /**
@@ -297,6 +301,7 @@ public class CsvUtil {
             }
             this.outputStream = makeOutputStream(outputFile.toString());
         }
+
         return this.outputStream;
     }
 
@@ -422,36 +427,42 @@ public class CsvUtil {
 
             if (arg.equals("-cat")) {
                 doConcat = true;
+
                 continue;
             }
 
             if (arg.equals("-raw")) {
                 doRaw = true;
+
                 continue;
             }
 
             if (arg.equals("-commentChar")) {
                 textReader.setCommentChar(args.get(++i));
+
                 continue;
             }
 
             if (arg.startsWith("-header")) {
                 textReader.setFirstRow(
                     new Row(StringUtil.split(args.get(++i), ",")));
+
                 continue;
             }
 
             if (arg.startsWith("-iter")) {
                 iterateColumn = args.get(++i);
                 iterateValues = StringUtil.split(args.get(++i), ",");
+
                 continue;
             }
             extra.add(arg);
         }
 
         List<DataProvider> providers = new ArrayList<DataProvider>();
-        if (!parseArgs(extra, textReader, files, providers)) {
+        if ( !parseArgs(extra, textReader, files, providers)) {
             currentArg = null;
+
             return;
         }
         currentArg = null;
@@ -503,10 +514,17 @@ public class CsvUtil {
     }
 
 
-    public void process(TextReader textReader)
-            throws Exception {
-	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(this,0);
-	process(textReader, provider);
+    /**
+     * _more_
+     *
+     * @param textReader _more_
+     *
+     * @throws Exception _more_
+     */
+    public void process(TextReader textReader) throws Exception {
+        DataProvider.CsvDataProvider provider =
+            new DataProvider.CsvDataProvider(this, 0);
+        process(textReader, provider);
     }
 
 
@@ -522,7 +540,7 @@ public class CsvUtil {
             throws Exception {
         try {
             errorDescription = null;
-	    provider.initialize(textReader, textReader.getInput());
+            provider.initialize(textReader, textReader.getInput());
             processInner(textReader, provider);
         } catch (Exception exc) {
             CsvOperator op = (textReader == null)
@@ -637,8 +655,9 @@ public class CsvUtil {
      */
     private List<NamedInputStream> getStreams(List<String> files)
             throws Exception {
-	if(debugFiles)
-	    System.err.println("getStreams:" + files);
+        if (debugFiles) {
+            System.err.println("getStreams:" + files);
+        }
         ArrayList<NamedInputStream> streams =
             new ArrayList<NamedInputStream>();
         for (String file : files) {
@@ -720,37 +739,58 @@ public class CsvUtil {
         return textReader.getFiles();
     }
 
+    /** _more_          */
     private static List<File> okToWriteToDirs = new ArrayList<File>();
+
+    /** _more_          */
     private static List<File> okToReadFromDirs = new ArrayList<File>();
 
 
+    /**
+     * _more_
+     *
+     * @param files _more_
+     */
     public static void setOkToWriteToDirs(List<File> files) {
-	okToWriteToDirs = files;
+        okToWriteToDirs = files;
     }
 
-    public static void setOkToReadFromDirs(List<File> files) {
-	okToReadFromDirs = files;
-    }    
-
-    
     /**
-       Check if this is an OK path to write to
-       TODO:
+     * _more_
+     *
+     * @param files _more_
+     */
+    public static void setOkToReadFromDirs(List<File> files) {
+        okToReadFromDirs = files;
+    }
+
+
+    /**
+     *  Check if this is an OK path to write to
+     *  TODO:
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
      */
     public OutputStream makeOutputStream(String file) throws Exception {
-	File f = new File(file);
-	if(okToWriteToDirs.size()>0) {
-	    boolean ok = false;
-	    for (File dir : okToWriteToDirs) {
-		if (IOUtil.isADescendent(dir, f)) {
-		    ok = true;
-		}
-	    }
-	    if(!ok) {
-		throw new IllegalArgumentException("Cannot write to file:" + file);
-	    }
-	}
-	return new FileOutputStream(file);
+        File f = new File(file);
+        if (okToWriteToDirs.size() > 0) {
+            boolean ok = false;
+            for (File dir : okToWriteToDirs) {
+                if (IOUtil.isADescendent(dir, f)) {
+                    ok = true;
+                }
+            }
+            if ( !ok) {
+                throw new IllegalArgumentException("Cannot write to file:"
+                        + file);
+            }
+        }
+
+        return new FileOutputStream(file);
     }
 
 
@@ -766,23 +806,25 @@ public class CsvUtil {
      * @throws Exception _more_
      */
     public InputStream makeInputStream(String file) throws Exception {
-	File f = new File(file);
-	if(okToReadFromDirs.size()>0) {
-	    boolean ok = false;
-	    for (File dir : okToReadFromDirs) {
-		if (IOUtil.isADescendent(dir, f)) {
-		    ok = true;
-		}
-	    }
-	    if(!ok) {
-		throw new IllegalArgumentException("Cannot read file:" + file);
-	    }
-	}
+        File f = new File(file);
+        if (okToReadFromDirs.size() > 0) {
+            boolean ok = false;
+            for (File dir : okToReadFromDirs) {
+                if (IOUtil.isADescendent(dir, f)) {
+                    ok = true;
+                }
+            }
+            if ( !ok) {
+                throw new IllegalArgumentException("Cannot read file:"
+                        + file);
+            }
+        }
 
 
 
         if (file.endsWith(".xls") || file.endsWith(".xlsx")) {
             String csv = XlsUtil.xlsToCsv(file);
+
             return new BufferedInputStream(
                 new ByteArrayInputStream(csv.getBytes()));
         } else if (file.toLowerCase().endsWith(".zip")) {
@@ -1720,6 +1762,9 @@ public class CsvUtil {
                 new Arg("comma separated header"),
                 new Arg("chunk pattern", "", "type", "pattern"),
                 new Arg("token pattern", "", "type", "pattern")),
+        new Cmd("-text3", "Extract rows from the text",
+                new Arg("comma separated header"),
+                new Arg("token pattern", "", "type", "pattern")),
         new Cmd("-tokenize", "Tokenize the input from the pattern",
                 new Arg("header", "header1,header2..."),
                 new Arg("pattern", "", "type", "pattern")),
@@ -1752,7 +1797,7 @@ public class CsvUtil {
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
         new Cmd("-args", "Generate the CSV file commands"),
-        new Cmd("-args2", "Print out the args"),	
+        new Cmd("-args2", "Print out the args"),
     };
 
 
@@ -1962,7 +2007,7 @@ public class CsvUtil {
         Filter.FilterGroup filterToAddTo = null;
 
         boolean            doArgs        = false;
-        boolean            doArgs2        = false;	
+        boolean            doArgs2       = false;
         int                doArgsCnt     = 0;
         int                doArgsIndex   = 1;
         if (comment != null) {
@@ -1974,24 +2019,26 @@ public class CsvUtil {
 
         PrintWriter pw        = null;
         boolean     seenPrint = false;
-	if(debugArgs) {
-	    System.err.println("ParseArgs");
-	}
+        if (debugArgs) {
+            System.err.println("ParseArgs");
+        }
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-	    if(debugArgs) {
-		System.err.println("\targ[" + i +"]=" + arg);
-	    }
+            if (debugArgs) {
+                System.err.println("\targ[" + i + "]=" + arg);
+            }
             currentArg = arg;
             try {
                 if (arg.equals("-args")) {
                     doArgs = true;
+
                     continue;
                 }
                 if (arg.equals("-args2")) {
                     doArgs2 = true;
+
                     continue;
-                }		
+                }
                 if (doArgs) {
                     if (pw == null) {
                         pw = new PrintWriter(getOutputStream());
@@ -2015,11 +2062,12 @@ public class CsvUtil {
                 if (doArgs2) {
                     if (pw == null) {
                         pw = new PrintWriter(getOutputStream());
-                    } 
-		    if(!arg.equals("-table")) {
-			arg = arg.replaceAll("\"", "\\\\\"");
-			pw.print("\"" + arg+"\",");
-		    }
+                    }
+                    if ( !arg.equals("-table")) {
+                        arg = arg.replaceAll("\"", "\\\\\"");
+                        pw.print("\"" + arg + "\",");
+                    }
+
                     continue;
                 }
 
@@ -2066,6 +2114,15 @@ public class CsvUtil {
 
                     continue;
                 }
+                if (arg.equals("-text3")) {
+                    if ( !ensureArg(args, i, 2)) {
+                        return false;
+                    }
+                    providers.add(new DataProvider.Pattern3DataProvider(this,
+                            args.get(++i), args.get(++i)));
+
+                    continue;
+                }
                 if (arg.equals("-tokenize")) {
                     if ( !ensureArg(args, i, 2)) {
                         return false;
@@ -2100,6 +2157,7 @@ public class CsvUtil {
                         return false;
                     }
                     info.setSkip(Integer.parseInt(args.get(++i)));
+
                     continue;
                 }
 
@@ -2108,11 +2166,13 @@ public class CsvUtil {
                         return false;
                     }
                     info.setSkipPattern(args.get(++i));
+
                     continue;
                 }
 
                 if (arg.equals("-pass")) {
                     info.getProcessor().addProcessor(new Processor.Pass());
+
                     continue;
                 }
 
@@ -2121,8 +2181,9 @@ public class CsvUtil {
                         return false;
                     }
                     info.setChangeString(args.get(++i), args.get(++i));
+
                     continue;
-		}
+                }
 
                 if (arg.equals("-changeraw")) {
                     if ( !ensureArg(args, i, 2)) {
@@ -2130,6 +2191,7 @@ public class CsvUtil {
                     }
                     changeFrom.add(args.get(++i));
                     changeTo.add(args.get(++i));
+
                     continue;
                 }
 
@@ -2138,6 +2200,7 @@ public class CsvUtil {
                         return false;
                     }
                     info.setMaxRows(Integer.parseInt(args.get(++i)));
+
                     continue;
                 }
 
@@ -2146,6 +2209,7 @@ public class CsvUtil {
                         return false;
                     }
                     info.setPruneBytes(Integer.parseInt(args.get(++i)));
+
                     continue;
                 }
 
@@ -2199,6 +2263,7 @@ public class CsvUtil {
                         info.getProcessor().addProcessor(
                             new Filter.Decimate(start, skip));
                     }
+
                     continue;
                 }
 
@@ -2426,6 +2491,7 @@ public class CsvUtil {
                         return false;
                     }
                     info.setComment(comment = args.get(++i));
+
                     continue;
                 }
 
@@ -2495,6 +2561,7 @@ public class CsvUtil {
                     info.setWriter(new PrintWriter(this.outputStream));
                     info.getProcessor().addProcessor(
                         new Processor.Printer(printFields, trim));
+
                     continue;
                 }
 
@@ -2867,6 +2934,7 @@ public class CsvUtil {
                     String       suffix = args.get(++i).trim();
                     info.getProcessor().addProcessor(
                         new Converter.Populator(cols, prefix, suffix));
+
                     continue;
                 }
 
@@ -3078,6 +3146,7 @@ public class CsvUtil {
 
                 if (arg.equals("-debug")) {
                     System.err.println("CsvUtil args:" + this.args);
+
                     continue;
                 }
 
@@ -3737,11 +3806,13 @@ public class CsvUtil {
                             + arg);
                 }
                 if (addFiles) {
-		    if(debugFiles)
-			System.err.println("adding file:" + arg);
+                    if (debugFiles) {
+                        System.err.println("adding file:" + arg);
+                    }
                     files.add(arg);
                 } else {
-                    throw new IllegalArgumentException("Unknown arg:" + arg);
+                    System.err.println("no files");
+                    //                    throw new IllegalArgumentException("Unknown arg:" + arg);
                 }
             } catch (Exception exc) {
                 System.err.println("Error processing arg:" + arg);
@@ -3761,12 +3832,13 @@ public class CsvUtil {
 
         if (doArgs2) {
             if (pw != null) {
-		pw.print("\"-print\"");
+                pw.print("\"-print\"");
                 pw.print("\n");
             }
             pw.close();
+
             return false;
-        }	
+        }
 
 
         return true;
