@@ -962,6 +962,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		['addAttributes=true','Include the extra attributes of the children'],
 		["sortFields=\"\"","Comma separated list of fields to sort the data on"],
 		["sortAscending=true|false",""],
+		["showSortDirection=true",""],		
 		["sortByFields=\"\"","Show sort by fields in a menu"],
 		['sortHighlight=true','Sort based on highlight from the filters'],
 		['showDisplayFieldsMenu=true'],
@@ -4349,8 +4350,10 @@ a
 	    this.haveCalledUpdateUI = false;
 	    this.callUpdateUI();
 	},
-	callUpdateUI: function() {
+	callUpdateUI: function(force) {
 	    try {
+		if(force)
+		    this.haveCalledUpdateUI = false;
 		this.updateUI();
 	    } catch(err) {
                 this.setContents(this.getMessage(err));
@@ -4682,6 +4685,15 @@ a
 		header2 += HU.span([CLASS,"display-filter"],
 				   this.makeFilterLabel("Sort by: ") + HU.select("",[ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
 	    }
+
+	    if(this.getProperty("showSortDirection")) {
+		var sortAscending = this.getProperty("sortAscending",true);
+		header2 +=HU.select("",[ID,this.getDomId("sortdirection")],[["up", "Sort Up"],["down","Sort Down"]],
+				    sortAscending?"up":"down") + SPACE;
+	    }
+
+
+
 
 	    if(this.sizeByFields.length>0) {
 		let enums = [];
@@ -5024,6 +5036,11 @@ a
 	    });
             this.jq("sortbyselect").change(function(){
 		_this.sortByFieldChanged($(this).val());
+	    });
+	    this.jq("sortdirection").change(function(){
+		let val = $(this).val();
+		_this.setProperty("sortAscending",val=="up");
+		_this.forceUpdateUI();
 	    });
             this.jq("sizebyselect").change(function(){
 		_this.sizeByFieldChanged($(this).val());
