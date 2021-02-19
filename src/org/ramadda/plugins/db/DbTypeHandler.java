@@ -2592,7 +2592,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         };
         textReader.setProcessor(myProcessor);
         CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
-	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(csvUtil,0);
+	DataProvider.CsvDataProvider provider = new DataProvider.CsvDataProvider(textReader);
         csvUtil.process(textReader, provider);
 
         if (false) {
