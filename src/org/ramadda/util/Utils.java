@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -443,6 +443,46 @@ public class Utils extends IO {
 
         return toks;
     }
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public static List<Integer> getNumbers(String s) {
+        List<Integer> cols = new ArrayList<Integer>();
+        for (String tok : StringUtil.split(s, ",", true, true)) {
+            if ((tok.indexOf("-") >= 0) && !tok.startsWith("-")) {
+                int from = new Integer(StringUtil.split(tok, "-", true,
+                               true).get(0)).intValue();
+
+                int    step  = 1;
+                String right = StringUtil.split(tok, "-", true, true).get(1);
+                if (right.indexOf(":") >= 0) {
+                    List<String> tmp = StringUtil.split(right, ":", true,
+                                           true);
+                    right = tmp.get(0);
+                    if (tmp.size() > 1) {
+                        step = Integer.parseInt(tmp.get(1));
+                    }
+                }
+                int to = Integer.parseInt(right);
+                for (int i = from; i <= to; i += step) {
+                    cols.add(i);
+                }
+
+                continue;
+            }
+            cols.add(Integer.parseInt(tok));
+        }
+
+        return cols;
+    }
+
+
+
 
     /**
      * _more_
@@ -3601,6 +3641,39 @@ public class Utils extends IO {
     }
 
 
+
+    /**
+     * _more_
+     *
+     * @param p _more_
+     *
+     * @return _more_
+     */
+    public static String convertPattern(String p) {
+        if (p == null) {
+            return null;
+        }
+        p = p.replaceAll("_leftparen_", "\\\\(").replaceAll("_rightparen_",
+                         "\\\\)");
+        p = p.replaceAll("_leftbracket_",
+                         "\\\\[").replaceAll("_rightbracket_", "\\\\]");
+        String hr = "<a[^>]*?href *= *\"?([^ <\"]+)";
+        p = p.replaceAll("_href_", hr);
+        p = p.replaceAll("_hrefandlabel_", hr + "[^>]*>([^<]+)</a>");
+        p = p.replaceAll("_dot_", "\\\\.");
+        p = p.replaceAll("_dollar_", "\\\\\\$");
+        p = p.replaceAll("_dot_", "\\\\.");
+        p = p.replaceAll("_star_", "\\\\*");
+        p = p.replaceAll("_plus_", "\\\\+");
+        p = p.replaceAll("_nl_", "\n");
+        p = p.replaceAll("_quote_", "\"");
+        p = p.replaceAll("_qt_", "\"");
+
+        return p;
+    }
+
+
+
     /**
      * _more_
      *
@@ -3883,9 +3956,11 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String s ="			<div class=\"fp-section\" data-section-title=\"Pain level <span>1</span>\" data-section-caption=\"1 of 3\">\n				<div class=\"specimen-header\">\n					<h2>Red fire ant</h2>\n					<span><i>Solenopsis invicta</i></span>				</div>";
-	Pattern p =Pattern.compile("(?s)Pain +level *<span>([0-9.]+)</span>.*?<h2>(.*)");
-	Matcher m = p.matcher(s);
+        String s =
+            "                     <div class=\"fp-section\" data-section-title=\"Pain level <span>1</span>\" data-section-caption=\"1 of 3\">\n                           <div class=\"specimen-header\">\n                                       <h2>Red fire ant</h2>\n                                 <span><i>Solenopsis invicta</i></span>                          </div>";
+        Pattern p = Pattern.compile(
+                        "(?s)Pain +level *<span>([0-9.]+)</span>.*?<h2>(.*)");
+        Matcher m = p.matcher(s);
         System.err.println("match:" + m.find());
     }
 
