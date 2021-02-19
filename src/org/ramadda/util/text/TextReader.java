@@ -196,6 +196,46 @@ public class TextReader implements Cloneable {
     private CsvOperator currentOperator;
 
 
+    /** _more_ */
+    private boolean debug = false;
+
+    /** _more_ */
+    private StringBuilder debugSB = new StringBuilder();
+
+    /** _more_ */
+    private String lastDebugType;
+
+    /** _more_ */
+    private int debugCnt = 0;
+
+    /** _more_ */
+    private int debugLimit = 6;
+
+    /** _more_ */
+    private boolean printFields = false;
+
+    /** _more_ */
+    private List<DataProvider> providers;
+
+
+    /** _more_ */
+    private Hashtable properties = new Hashtable();
+
+    /** _more_ */
+    private Filter.FilterGroup filterToAddTo;
+
+    /** _more_ */
+    private List<String> changeFrom = new ArrayList<String>();
+
+    /** _more_ */
+    private List<String> changeTo = new ArrayList<String>();
+
+
+    /** _more_ */
+    public boolean verbose = false;
+
+
+
     /**
      * _more_
      */
@@ -227,6 +267,92 @@ public class TextReader implements Cloneable {
     }
 
 
+/**
+Set the Verbose property.
+
+@param value The new value for Verbose
+**/
+public void setVerbose (boolean value) {
+	verbose = value;
+}
+
+/**
+Get the Verbose property.
+
+@return The Verbose
+**/
+public boolean getVerbose () {
+	return verbose;
+}
+
+
+
+    /**
+     * Set the Providers property.
+     *
+     * @param value The new value for Providers
+     */
+    public void setProviders(List<DataProvider> value) {
+        providers = value;
+    }
+
+    /**
+     * Get the Providers property.
+     *
+     * @return The Providers
+     */
+    public List<DataProvider> getProviders() {
+        if (providers == null) {
+            providers = new ArrayList<DataProvider>();
+        }
+
+        return providers;
+    }
+
+
+    /**
+     * Set the Property property.
+     *
+     *
+     * @param key _more_
+     * @param value The new value for Property
+     */
+    public void putProperty(Object key, Object value) {
+        properties.put(key, value);
+    }
+
+    /**
+     * Get the Property property.
+     *
+     *
+     * @param key _more_
+     * @return The Property
+     */
+    public Object getProperty(Object key) {
+        return properties.get(key);
+    }
+
+
+    /**
+     * Set the FilterToAddTo property.
+     *
+     * @param value The new value for FilterToAddTo
+     */
+    public void setFilterToAddTo(Filter.FilterGroup value) {
+        filterToAddTo = value;
+    }
+
+    /**
+     * Get the FilterToAddTo property.
+     *
+     * @return The FilterToAddTo
+     */
+    public Filter.FilterGroup getFilterToAddTo() {
+        return filterToAddTo;
+    }
+
+
+
     /**
      * Set the CurrentOperator property.
      *
@@ -245,6 +371,72 @@ public class TextReader implements Cloneable {
         return currentOperator;
     }
 
+
+    /**
+     * Set the PrintFields property.
+     *
+     * @param value The new value for PrintFields
+     */
+    public void setPrintFields(boolean value) {
+        printFields = value;
+    }
+
+    /**
+     * Get the PrintFields property.
+     *
+     * @return The PrintFields
+     */
+    public boolean getPrintFields() {
+        return printFields;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param from _more_
+     * @param to _more_
+     */
+    public void addChangeFromTo(String from, String to) {
+        changeFrom.add(from);
+        changeTo.add(to);
+    }
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    public String convertContents(String s) {
+        for (int i = 0; i < changeFrom.size(); i++) {
+            s = s.replaceAll(changeFrom.get(i), changeTo.get(i));
+        }
+
+        return s;
+    }
+
+
+    /**
+     * Get the ChangeFrom property.
+     *
+     * @return The ChangeFrom
+     */
+    public List<String> getChangeFrom() {
+        return changeFrom;
+    }
+
+
+    /**
+     * Get the ChangeTo property.
+     *
+     * @return The ChangeTo
+     */
+    public List<String> getChangeTo() {
+        return changeTo;
+    }
 
 
     /**
@@ -428,14 +620,24 @@ public class TextReader implements Cloneable {
                               OutputStream output)
             throws CloneNotSupportedException {
         TextReader that = (TextReader) super.clone();
-        that.input         = input;
-        that.output        = output;
-        that.outputFile    = outputFile;
-        that.writer        = null;
-        that.skipStrings   = skipStrings;
-        that.changeStrings = changeStrings;
+        that.debug      = this.debug;
+        that.input      = input;
+        that.output     = output;
+        that.outputFile = outputFile;
+        that.writer     = null;
+
+        if (debug) {
+            that.debugSB = this.debugSB;
+            if ((that.output != null) && (that.debugSB != null)
+                    && (that.debugSB.length() > 0)) {
+                that.getWriter().print(that.debugSB);
+                that.debugSB = new StringBuilder();
+            }
+        }
+        that.skipStrings   = this.skipStrings;
+        that.changeStrings = this.changeStrings;
         that.setPrepend(this.prepend);
-        this.allData = this.allData;
+        that.allData = this.allData;
         if (that.outputFile != null) {
             that.output = null;
         }
@@ -791,8 +993,69 @@ public class TextReader implements Cloneable {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param type _more_
+     * @param s _more_
+     */
+    public void printDebug(String type, String s) {
+        if ( !debug) {
+            return;
+        }
+        if (Misc.equals(type, lastDebugType)) {
+            debugCnt++;
+            if (debugCnt == debugLimit) {
+                printDebug("\t" + s);
+                printDebug("\t...");
+
+                return;
+            } else if (debugCnt > debugLimit) {
+                return;
+            }
+        } else {
+            lastDebugType = type;
+            debugCnt      = 0;
+            printDebug(type);
+        }
+        printDebug("\t" + s);
+    }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     */
+    public void printDebug(String s) {
+        if ( !debug) {
+            return;
+        }
+        if (writer != null) {
+            writer.println(s);
+        } else {
+            debugSB.append(s);
+            debugSB.append("\n");
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean getDebug() {
+        return debug;
+    }
+
+    /**
+     * _more_
+     *
+     * @param debug _more_
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 
 
     /**
@@ -804,6 +1067,12 @@ public class TextReader implements Cloneable {
         try {
             if (writer == null) {
                 writer = new PrintWriter(this.getOutput());
+                if (getDebug()) {
+                    if (debugSB.length() > 0) {
+                        writer.print(debugSB);
+                        debugSB = new StringBuilder();
+                    }
+                }
             }
 
             return writer;
@@ -959,8 +1228,13 @@ public class TextReader implements Cloneable {
 
 
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setInput(InputStream value) {
-	this.setInput(new NamedInputStream("input",value));
+        this.setInput(new NamedInputStream("input", value));
     }
 
 

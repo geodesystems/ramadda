@@ -55,19 +55,8 @@ public abstract class DataProvider {
      *
      * @param csvUtil _more_
      */
-    public DataProvider(CsvUtil csvUtil) {
-        this.csvUtil = csvUtil;
-    }
+    public DataProvider() {}
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public CsvUtil getCsvUtil() {
-        return csvUtil;
-    }
 
     /**
      * _more_
@@ -115,10 +104,9 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          */
-        public BulkDataProvider(CsvUtil csvUtil) {
-            super(csvUtil);
+        public BulkDataProvider() {
+            super();
         }
 
         /**
@@ -169,7 +157,7 @@ public abstract class DataProvider {
         public void initialize(TextReader textReader, NamedInputStream stream)
                 throws Exception {
             textReader.setInput(stream);
-            String s = getCsvUtil().convertContents(
+            String s = textReader.convertContents(
                            IO.readInputStream(stream.getInputStream()));
             tokenize(textReader, s);
         }
@@ -210,15 +198,13 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param sSkip _more_
          * @param htmlPattern _more_
          * @param props _more_
          */
-        public HtmlDataProvider(CsvUtil csvUtil, String sSkip,
-                                String htmlPattern,
+        public HtmlDataProvider(String sSkip, String htmlPattern,
                                 Hashtable<String, String> props) {
-            super(csvUtil);
+            super();
             this.pattern = htmlPattern;
             this.props   = props;
             if ((sSkip != null) && (sSkip.trim().length() > 0)) {
@@ -247,9 +233,9 @@ public abstract class DataProvider {
             boolean removeEntity = Utils.equals(props.get("removeEntity"),
                                        "true");
             String removePattern =
-                getCsvUtil().convertPattern(props.get("removePattern"));
+                Utils.convertPattern(props.get("removePattern"));
             String removePattern2 =
-                getCsvUtil().convertPattern(props.get("removePattern2"));
+                Utils.convertPattern(props.get("removePattern2"));
             Pattern attrPattern = null;
             if (skipAttr != null) {
                 skipAttr    = skipAttr.replaceAll("_quote_", "\"");
@@ -398,16 +384,14 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param cols _more_
          * @param start _more_
          * @param end _more_
          * @param pattern _more_
          */
-        public HtmlPatternDataProvider(CsvUtil csvUtil, String cols,
-                                       String start, String end,
+        public HtmlPatternDataProvider(String cols, String start, String end,
                                        String pattern) {
-            super(csvUtil);
+            super();
             this.cols    = cols;
             this.start   = start;
             this.end     = end;
@@ -426,7 +410,7 @@ public abstract class DataProvider {
          */
         public void tokenize(TextReader info, String s) throws Exception {
             int numLines = info.getMaxRows();
-            pattern = getCsvUtil().convertPattern(pattern);
+            pattern = Utils.convertPattern(pattern);
             if (cols.length() > 0) {
                 addRow(new Row(StringUtil.split(cols, ",")));
             }
@@ -504,13 +488,11 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param arrayPath _more_
          * @param objectPath _more_
          */
-        public JsonDataProvider(CsvUtil csvUtil, String arrayPath,
-                                String objectPath) {
-            super(csvUtil);
+        public JsonDataProvider(String arrayPath, String objectPath) {
+            super();
             this.arrayPath  = arrayPath;
             this.objectPath = objectPath;
         }
@@ -660,11 +642,10 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param arrayPath _more_
          */
-        public XmlDataProvider(CsvUtil csvUtil, String arrayPath) {
-            super(csvUtil);
+        public XmlDataProvider(String arrayPath) {
+            super();
             this.arrayPath = arrayPath;
         }
 
@@ -807,15 +788,13 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param header _more_
          * @param pattern _more_
          */
-        public PatternDataProvider(CsvUtil csvUtil, List<String> header,
-                                   String pattern) {
-            super(csvUtil);
+        public PatternDataProvider(List<String> header, String pattern) {
+            super();
             this.header  = header;
-            this.pattern = getCsvUtil().convertPattern(pattern);
+            this.pattern = Utils.convertPattern(pattern);
         }
 
 
@@ -875,18 +854,16 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param header _more_
          * @param chunkPattern _more_
          * @param tokenPattern _more_
          */
-        public Pattern2DataProvider(CsvUtil csvUtil, String header,
-                                    String chunkPattern,
+        public Pattern2DataProvider(String header, String chunkPattern,
                                     String tokenPattern) {
-            super(csvUtil);
+            super();
             this.header       = header;
-            this.chunkPattern = getCsvUtil().convertPattern(chunkPattern);
-            this.tokenPattern = getCsvUtil().convertPattern(tokenPattern);
+            this.chunkPattern = Utils.convertPattern(chunkPattern);
+            this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
 
 
@@ -967,17 +944,14 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param header _more_
          * @param chunkPattern _more_
          * @param tokenPattern _more_
          */
-        public Pattern3DataProvider(CsvUtil csvUtil, String header,
-                                    String tokenPattern) {
-            super(csvUtil);
+        public Pattern3DataProvider(String header, String tokenPattern) {
+            super();
             this.header       = header;
-            this.tokenPattern = getCsvUtil().convertPattern(tokenPattern);
-            System.err.println("after:" + this.tokenPattern);
+            this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
 
 
@@ -995,15 +969,26 @@ public abstract class DataProvider {
             for (String tok : StringUtil.split(header, ",")) {
                 headerRow.add(tok);
             }
+            if (info.getDebug()) {
+                info.printDebug("-text3",
+                                "Parsing text input\n\tpattern:"
+                                + tokenPattern);
+            }
             Pattern p1 = Pattern.compile(tokenPattern);
             while (true) {
                 Matcher m1 = p1.matcher(s);
                 if ( !m1.find()) {
+                    info.printDebug("-text3", "no match");
+
                     //              System.err.println("no match");
                     break;
                 }
                 //              System.err.println("match");
                 s = s.substring(m1.end());
+                if (info.getDebug()) {
+                    info.printDebug("-text3",
+                                    "match group count:" + m1.groupCount());
+                }
                 //              System.err.println("REMAINDER:" + s);
                 Row row = new Row();
                 addRow(row);
@@ -1012,7 +997,12 @@ public abstract class DataProvider {
                     row.add(tok);
                 }
             }
+            if (info.getDebug()) {
+                info.printDebug("\tdone parsing input #rows:"
+                                + getRows().size());
+            }
         }
+
     }
 
 
@@ -1039,17 +1029,16 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param header _more_
          * @param chunkPattern _more_
          * @param tokenPattern _more_
          */
-        public TextDataProvider(CsvUtil csvUtil, String header,
-                                String chunkPattern, String tokenPattern) {
-            super(csvUtil);
+        public TextDataProvider(String header, String chunkPattern,
+                                String tokenPattern) {
+            super();
             this.header       = header;
-            this.chunkPattern = getCsvUtil().convertPattern(chunkPattern);
-            this.tokenPattern = getCsvUtil().convertPattern(tokenPattern);
+            this.chunkPattern = Utils.convertPattern(chunkPattern);
+            this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
 
 
@@ -1126,8 +1115,6 @@ public abstract class DataProvider {
         /** _more_ */
         TextReader textReader;
 
-        /** _more_ */
-        String theLine;
 
         /** _more_ */
         int rowCnt = 0;
@@ -1135,13 +1122,17 @@ public abstract class DataProvider {
         /**
          * _more_
          *
-         * @param csvUtil _more_
          * @param rawLines _more_
          */
-        public CsvDataProvider(CsvUtil csvUtil, int rawLines) {
-            super(csvUtil);
+        public CsvDataProvider(int rawLines) {
             this.rawLines = rawLines;
         }
+
+
+        public CsvDataProvider(TextReader ctx) {
+	    this.textReader = ctx;
+	}
+
 
         /**
          * _more_
@@ -1177,12 +1168,11 @@ public abstract class DataProvider {
 
                     continue;
                 }
-                if (CsvUtil.verbose) {
+                if (textReader.getVerbose()) {
                     if (((++cnt) % 1000) == 0) {
                         System.err.println("processed:" + cnt);
                     }
                 }
-                theLine = line;
                 if ( !textReader.lineOk(textReader, line)) {
                     continue;
                 }

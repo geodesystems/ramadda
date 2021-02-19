@@ -370,7 +370,7 @@ public abstract class CsvOperator {
      */
     public int getColumnIndex(String s) {
         List<Integer> indices = new ArrayList<Integer>();
-        getColumnIndex(indices, s);
+        getColumnIndex(null, indices, s);
 
         return indices.get(0);
     }
@@ -379,11 +379,14 @@ public abstract class CsvOperator {
      * _more_
      *
      *
+     *
+     * @param info _more_
      * @param indices _more_
      * @param s _more_
      *
      */
-    public void getColumnIndex(List<Integer> indices, String s) {
+    public void getColumnIndex(TextReader info, List<Integer> indices,
+                               String s) {
         s = s.toLowerCase().trim();
         List<String> toks  = StringUtil.splitUpTo(s, "-", 2);
         int          start = -1;
@@ -479,7 +482,7 @@ public abstract class CsvOperator {
      */
     public List<Integer> getIndices(TextReader info) {
         if (indices == null) {
-            indices = getIndices(sindices);
+            indices = getIndices(info, sindices);
         }
 
         return indices;
@@ -488,18 +491,20 @@ public abstract class CsvOperator {
     /**
      * _more_
      *
+     *
+     * @param info _more_
      * @param cols _more_
      *
      * @return _more_
      */
-    public List<Integer> getIndices(List<String> cols) {
+    public List<Integer> getIndices(TextReader info, List<String> cols) {
         debug("getIndices:" + cols);
         if (cols == null) {
             return null;
         }
         List<Integer> indices = new ArrayList<Integer>();
         for (String s : cols) {
-            getColumnIndex(indices, s);
+            getColumnIndex(info, indices, s);
         }
 
         return indices;
@@ -514,8 +519,26 @@ public abstract class CsvOperator {
      * @return _more_
      */
     public int getIndex(String idx) {
+        return getIndex(null, idx);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param info _more_
+     * @param idx _more_
+     *
+     * @return _more_
+     */
+    public int getIndex(TextReader info, String idx) {
         List<Integer> indices = new ArrayList<Integer>();
-        getColumnIndex(indices, idx);
+        getColumnIndex(info, indices, idx);
+        if (indices.size() == 0) {
+            throw new IllegalArgumentException("Could not find column index:"
+                    + idx);
+
+        }
 
         return indices.get(0);
     }

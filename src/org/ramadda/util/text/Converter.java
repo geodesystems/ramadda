@@ -140,7 +140,12 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row) {
             List<Integer> indices = getIndices(info);
+            boolean       debug   = info.getDebug() && (rowCnt++ == 0);
             if (indices.size() == 0) {
+                if (debug) {
+                    info.printDebug("-columns", "No indices");
+                }
+
                 return row;
             }
             List<String> result = new ArrayList<String>();
@@ -148,6 +153,10 @@ public abstract class Converter extends Processor {
                 if (idx < row.size()) {
                     String s = row.getString(idx);
                     result.add(s);
+                } else {
+                    if (debug) {
+                        info.printDebug("-columns", "Missing index:" + idx);
+                    }
                 }
             }
 
@@ -261,7 +270,7 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row) {
             if ((imageColumn != null) && (imageColumnIndex == -1)) {
-                imageColumnIndex = getIndex(imageColumn);
+                imageColumnIndex = getIndex(info, imageColumn);
             }
             if (rowCnt++ == 0) {
                 if (imageColumnIndex == -1) {
@@ -270,7 +279,6 @@ public abstract class Converter extends Processor {
 
                 return row;
             }
-
 
 
             List<Integer> indices = getIndices(info);
@@ -313,7 +321,12 @@ public abstract class Converter extends Processor {
                         image = value.optString("thumbnailUrl", "");
                         System.err.println("found image:" + s + " image:"
                                            + image);
+                        info.printDebug("-image",
+                                        "value:" + s + " found:" + image);
                         imageMap.put(s, image);
+                    } else {
+                        info.printDebug("-image",
+                                        "value:" + s + " in cache:" + image);
                     }
                     if (imageColumnIndex >= 0) {
                         row.set(imageColumnIndex, image);
@@ -2693,17 +2706,18 @@ public abstract class Converter extends Processor {
          * @param cols _more_
          * @param from _more_
          * @param to _more_
-         *
-         * @throws Exception _more_
          */
-        public DateFormatter(List<String> cols, String from, String to)
-                throws Exception {
+        public DateFormatter(List<String> cols, String from, String to) {
             super(cols);
-            this.from = new SimpleDateFormat(from);
-            if (to.length() == 0) {
-                to = "yyyyMMdd'T'HHmmss Z";
+            try {
+                this.from = new SimpleDateFormat(from);
+                if (to.length() == 0) {
+                    to = "yyyyMMdd'T'HHmmss Z";
+                }
+                this.to = new SimpleDateFormat(to);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
             }
-            this.to = new SimpleDateFormat(to);
         }
 
         /**
@@ -3111,36 +3125,32 @@ public abstract class Converter extends Processor {
          * @param latIndex _more_
          * @param lonIndex _more_
          * @param writeForDb _more_
-         *
-         * @throws Exception _more_
          */
         public Geocoder(String col, String mapFile, int nameIndex,
-                        int latIndex, int lonIndex, boolean writeForDb)
-                throws Exception {
+                        int latIndex, int lonIndex, boolean writeForDb) {
+
             super(col);
             this.nameIndex  = nameIndex;
             this.latIndex   = latIndex;
             this.lonIndex   = lonIndex;
             this.writeForDb = writeForDb;
-            this.map        = makeMap(mapFile);
+            try {
+                this.map = makeMap(mapFile);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
         }
 
 
 
         /**
          *
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param prefix _more_
          * @param suffix _more_
-         *
-         * @throws Exception _more_
          */
-        public Geocoder(List<String> cols, String prefix, String suffix)
-                throws Exception {
+        public Geocoder(List<String> cols, String prefix, String suffix) {
+
             super(cols);
             this.prefix     = prefix;
             this.suffix     = suffix;
@@ -3150,20 +3160,13 @@ public abstract class Converter extends Processor {
 
         /**
          *
-         *
-         *
-         *
-         *
          * @param cols _more_
          * @param prefix _more_
          * @param suffix _more_
          * @param forDb _more_
-         *
-         * @throws Exception _more_
          */
         public Geocoder(List<String> cols, String prefix, String suffix,
-                        boolean forDb)
-                throws Exception {
+                        boolean forDb) {
             super(cols);
             this.prefix     = prefix;
             this.suffix     = suffix;
@@ -3172,15 +3175,9 @@ public abstract class Converter extends Processor {
         }
 
         /**
-         *
-         *
-         *
-         *
-         *
          * @param filename _more_
          *
          * @return _more_
-         *
          * @throws Exception _more_
          */
         private Hashtable<String, double[]> makeMap(String filename)
@@ -3335,10 +3332,8 @@ public abstract class Converter extends Processor {
         /**
          *
          * @param col _more_
-         *
-         * @throws Exception _more_
          */
-        public StateNamer(String col) throws Exception {
+        public StateNamer(String col) {
             super(col);
         }
 
@@ -3428,27 +3423,14 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String suffix;
 
-
-
-        /*
-         * @param cols _more_
-         * @param prefix _more_
-         * @param suffix _more_
-         *
-         * @throws Exception _more_
-         */
-
         /**
          * _more_
          *
          * @param cols _more_
          * @param prefix _more_
          * @param suffix _more_
-         *
-         * @throws Exception _more_
          */
-        public Populator(List<String> cols, String prefix, String suffix)
-                throws Exception {
+        public Populator(List<String> cols, String prefix, String suffix) {
             super(cols);
             this.prefix = prefix;
             this.suffix = suffix;
@@ -3544,9 +3526,8 @@ public abstract class Converter extends Processor {
          *
          *
          * @param cols _more_
-         * @throws Exception _more_
          */
-        public Regionator(List<String> cols) throws Exception {
+        public Regionator(List<String> cols) {
             super(cols);
             props = new Properties();
             try {
@@ -3639,10 +3620,8 @@ public abstract class Converter extends Processor {
          *
          *
          * @param col _more_
-         *
-         * @throws Exception _more_
          */
-        public Genderizer(String col) throws Exception {
+        public Genderizer(String col) {
             super(col);
         }
 
@@ -3749,17 +3728,18 @@ public abstract class Converter extends Processor {
          * @param col _more_
          * @param newName _more_
          * @param mode _more_
-         *
-         * @throws Exception _more_
          */
         public Denormalizer(String mapFile, int col1, int col2, int col,
-                            String newName, String mode)
-                throws Exception {
-            makeMap(mapFile, col1, col2);
-            this.destCol    = col;
-            this.newColName = newName;
-            this.mode       = mode;
-            this.doDelete   = mode.endsWith("delete");
+                            String newName, String mode) {
+            try {
+                makeMap(mapFile, col1, col2);
+                this.destCol    = col;
+                this.newColName = newName;
+                this.mode       = mode;
+                this.doDelete   = mode.endsWith("delete");
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
         }
 
 
@@ -4269,7 +4249,7 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row) {
             if (indices == null) {
                 indices    = getIndices(info);
-                keyindices = getIndices(keys);
+                keyindices = getIndices(info, keys);
             }
             if (rowCnt++ == 0) {
                 for (Integer idx : indices) {
@@ -4529,16 +4509,18 @@ public abstract class Converter extends Processor {
         /**
          * @param indices _more_
          * @param type _more_
-         *
-         * @throws Exception _more_
          */
-        public MD(List<String> indices, String type) throws Exception {
+        public MD(List<String> indices, String type) {
             super(indices);
-            type = type.trim();
-            if (type.length() == 0) {
-                type = "MD5";
+            try {
+                type = type.trim();
+                if (type.length() == 0) {
+                    type = "MD5";
+                }
+                md = MessageDigest.getInstance(type);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
             }
-            md = MessageDigest.getInstance(type);
         }
 
 
@@ -4856,7 +4838,7 @@ public abstract class Converter extends Processor {
                 return null;
             }
             if (keyindices == null) {
-                keyindices = getIndices(keys);
+                keyindices = getIndices(info, keys);
             }
             debug("date latest.processRow");
             String key = "";
@@ -5389,9 +5371,10 @@ public abstract class Converter extends Processor {
         /* */
 
         /** _more_ */
-        private int patternCol;
+        private int patternCol = -1;
 
-        /* */
+        /** _more_ */
+        private String spatternCol;
 
         /** _more_ */
         private String pattern;
@@ -5399,9 +5382,10 @@ public abstract class Converter extends Processor {
         /* */
 
         /** _more_ */
-        private int writeCol;
+        private int writeCol = -1;
 
-        /* */
+        /** _more_ */
+        private String swriteCol;
 
         /** _more_ */
         private String what;
@@ -5419,12 +5403,12 @@ public abstract class Converter extends Processor {
          * @param col2 _more_
          * @param what _more_
          */
-        public ColumnPatternSetter(int col1, String pattern, int col2,
+        public ColumnPatternSetter(String col1, String pattern, String col2,
                                    String what) {
-            this.patternCol = col1;
-            this.pattern    = pattern;
-            this.writeCol   = col2;
-            this.what       = what;
+            this.spatternCol = col1;
+            this.pattern     = pattern;
+            this.swriteCol   = col2;
+            this.what        = what;
         }
 
         /**
@@ -5442,6 +5426,10 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row) {
             if (rowCnt++ == 0) {
                 return row;
+            }
+            if (patternCol == -1) {
+                patternCol = getIndex(info, spatternCol);
+                writeCol   = getIndex(info, swriteCol);
             }
             String v = row.get(patternCol).toString();
             if (v.matches(pattern) || (v.indexOf(pattern) >= 0)) {

@@ -192,7 +192,7 @@ public class Filter extends Processor {
                 return -11;
             }
             ArrayList<Integer> tmp = new ArrayList<Integer>();
-            getColumnIndex(tmp, scol);
+            getColumnIndex(info,tmp, scol);
             col = tmp.get(0);
 
             return col;
@@ -348,7 +348,7 @@ public class Filter extends Processor {
          */
         public void setPattern(String pattern) {
             blank    = pattern.equals("");
-            pattern  = CsvUtil.convertPattern(pattern);
+            pattern  = Utils.convertPattern(pattern);
             spattern = pattern;
             if (pattern.startsWith("!")) {
                 pattern = pattern.substring(1);

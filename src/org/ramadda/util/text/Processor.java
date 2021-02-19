@@ -686,7 +686,7 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> r)
                 throws Exception {
             List          keys         = new ArrayList();
-            List<Integer> valueIndices = getIndices(valueCols);
+            List<Integer> valueIndices = getIndices(info,valueCols);
             List<Row>     rows         = new ArrayList<Row>();
             List<Row>     allRows      = getRows();
             Row           headerRow    = allRows.get(0);
@@ -2390,8 +2390,8 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public Row processRow(TextReader info, Row row) throws Exception {
+	    if(info.getDebug()) return row;
             printRow(info, row);
-
             return row;
         }
 
@@ -2504,9 +2504,12 @@ rotate -> pass -> pass -> rotate -> pass
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
+	    if(info.getDebug()) {
+		info.getWriter().print("");
+		return rows;
+	    }
             info.getWriter().println("</tbody>");
             info.getWriter().print("</table>");
-
             return rows;
         }
 
@@ -2596,7 +2599,7 @@ rotate -> pass -> pass -> rotate -> pass
                 throws Exception {
 
             if (valueIndices == null) {
-                valueIndices     = getIndices(valueCols);
+                valueIndices     = getIndices(info,valueCols);
                 this.unfurlIndex = getIndex(unfurlCol);
                 this.uniqueIndex = getIndex(uniqueCol);
             }
@@ -2930,9 +2933,9 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
             List<Row> newRows = new ArrayList<Row>();
-            int keyIndex = getIndices(StringUtil.split(key, ",", true,
+            int keyIndex = getIndices(info,StringUtil.split(key, ",", true,
                                true)).get(0);
-            int valueIndex = getIndices(StringUtil.split(value, ",", true,
+            int valueIndex = getIndices(info,StringUtil.split(value, ",", true,
                                  true)).get(0);
             List<Row> allRows   = getRows();
             Row       headerRow = allRows.get(0);
@@ -3192,10 +3195,10 @@ rotate -> pass -> pass -> rotate -> pass
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
 
-            uniqueIndices = getIndices(keys);
-            valueIndices  = getIndices(values);
-            valueIndices  = getIndices(values);
-            extraIndices  = getIndices(extra);
+            uniqueIndices = getIndices(info,keys);
+            valueIndices  = getIndices(info,values);
+            valueIndices  = getIndices(info,values);
+            extraIndices  = getIndices(info,extra);
             List<Integer> allIndices = new ArrayList<Integer>();
             allIndices.addAll(uniqueIndices);
             allIndices.addAll(valueIndices);
@@ -3374,8 +3377,8 @@ rotate -> pass -> pass -> rotate -> pass
          * @throws Exception _more_
          */
         private void init() throws Exception {
-            List<Integer> keys1Indices = getIndices(keys1);
-            values1Indices = getIndices(values1);
+            List<Integer> keys1Indices = getIndices(null,keys1);
+            values1Indices = getIndices(null, values1);
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(file)));
@@ -3422,7 +3425,7 @@ rotate -> pass -> pass -> rotate -> pass
          */
         @Override
         public Row processRow(TextReader info, Row row) throws Exception {
-            List<Integer> keys2Indices = getIndices(keys2);
+            List<Integer> keys2Indices = getIndices(info, keys2);
             if (headerRow2 == null) {
                 headerRow2 = row;
                 System.err.println("ROW:" + headerRow1);
