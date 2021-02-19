@@ -2977,7 +2977,7 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 			    fieldMap[s] = field;
 			}
 		    }
-		    if(label)
+		    if(label) 
 			selectors.push([s,label]);
 		});
 	    } else {
@@ -3156,13 +3156,10 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		maxColumnValue = Math.max(maxColumnValue, columnTotal);
 	    });
 
-
-
-
 	    let showRowTotals = this.getProperty("showRowTotals",true);
 	    let showColumnTotals = this.getProperty("showColumnTotals",true);
 	    let width = Math.round(100/cellCount);
-	    let table = HU.open(TABLE,[STYLE,HU.css('font-size', this.getProperty("fontSize",'8pt')),CLASS,'display-colorboxes-table', 'cellpadding',0,'cellspacing',0,  WIDTH,'100%']);
+	    let table = "";
 	    table+=HU.open('tr',['valign','bottom']) + HU.td([],"");
 	    let needToRotate = this.getProperty("slantHeader",false);
 	    let topSpace = 0;
@@ -3244,24 +3241,26 @@ function RamaddaDatatableDisplay(displayManager, id, properties) {
 		table  = HU.div([STYLE,HU.css('margin-top', topSpace+'px')], table);
 	    }
 
-	    let html ="";
-	    let header = HU.open(TABLE,[WIDTH,'100%']) + HU.open(TR);
+	    let html ="";	
+	    let headerRow = HU.open(TR);
 	    if(this.getProperty("showRowSelector",true)) {
-		header+=  HU.td([CLASS,"display-datatable-selector","width","10%"],HU.select("",[ID,this.getDomId("rowSelector")],
+		headerRow+=  HU.td([CLASS,"display-datatable-selector","width","align","center"],HU.select("",[ID,this.getDomId("rowSelector")],
 											     selectors,
-											     rowSelector));
+												rowSelector,15));
 	    }
 	    if(this.getProperty("showColumnSelector",true)) {
-		header+=  HU.td([CLASS,"display-datatable-selector","width","90%","align","center"],  HU.select("",[ID,this.getDomId("columnSelector")],
+		headerRow+=  HU.td(["colspan",columns.length, CLASS,"display-datatable-selector","width","90%","align","center"],  HU.select("",[ID,this.getDomId("columnSelector")],
 														selectors,
 														columnSelector));
 	    }
-	    header+=HU.close(TR,TABLE);
-	    html+=header;
-	    html+=table;
+
+	    let mainTable = HU.open(TABLE,[STYLE,HU.css('font-size', this.getProperty("fontSize",'8pt')),CLASS,'display-colorboxes-table', 'cellpadding',0,'cellspacing',0,  WIDTH,'100%']);
+	    mainTable+=HU.tr([],headerRow);
+	    mainTable+=table;
+//	    html+=header;
+	    html+=mainTable;
+
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
-
-
 
 
 	    let _this = this;
