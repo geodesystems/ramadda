@@ -168,7 +168,7 @@ function DisplayAnimation(display, enabled,attrs) {
 	enabled: enabled,
 	targetDiv:attrs.targetDiv,
 	baseDomId:attrs.baseDomId,
-	labelSize:display.getProperty("animationLabelSize","14pt"),
+	labelSize:display.getProperty("animationLabelSize","12pt"),
 	labelStyle:display.getProperty("animationLabelStyle",""),
         running: false,
         inAnimation: false,
@@ -802,7 +802,7 @@ function DisplayAnimation(display, enabled,attrs) {
             }
 	},
 	makeLabel: function(label) {
-	    return HU.span([STYLE,this.labelStyle+HU.css("font-weidth","bold","font-size",this.labelSize)],label);
+	    return HU.span([STYLE,HU.css("font-size",this.labelSize)+this.labelStyle],label);
 	},
 
 	updateLabels: function() {
