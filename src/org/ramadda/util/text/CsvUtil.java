@@ -839,7 +839,7 @@ public class CsvUtil {
                     if (line == null) {
                         break;
                     }
-                    System.err.println("line:" + line.length());
+		    //                    System.err.println("line:" + line.length());
                     while (line.length() > LINE_LIMIT) {
                         String tmp = line.substring(0, LINE_LIMIT - 1);
                         line = line.substring(LINE_LIMIT - 1);
@@ -856,8 +856,7 @@ public class CsvUtil {
                     writer.println(line);
                     lineCnt++;
                     chars += line.length();
-                    System.err.println("chars:" + chars + " lines:" + lineCnt
-                                       + " max lines:" + numLines);
+		    //                    System.err.println("chars:" + chars + " lines:" + lineCnt + " max lines:" + numLines);
                 }
                 br.close();
             }
