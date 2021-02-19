@@ -293,7 +293,6 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
 		    type:thetaType
 		};
 	    }
-
             this.setDimensions(layout, 2);
             this.makePlot(plotData, layout);
         },
@@ -1597,6 +1596,7 @@ function CombochartDisplay(displayManager, id, properties) {
 		layout[yAxisId] = axis;
 		right = !right;
 	    });
+            this.setDimensions(layout);
             this.makePlot(data, layout);
 	}
     });
