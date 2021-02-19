@@ -28352,6 +28352,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:"fillOpacity",d:0.8},
 	{p:'radius',d:5,tt:"Size of the map points"},
 	{p:'scaleRadius',wikiValue:"true",tt:'Scale the radius based on # points shown'},
+	{p:'radiusScale',wikiValue:"value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12",tt:'Radius scale'},
 	{p:'shape',d:'circle',wikiValue:'star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
 	{p:'markerIcon',wikiValue:"/icons/..."},
 	{p:'justOneMarker',wikiValue:"true"},	
@@ -30483,8 +30484,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    return true;
 		});
-
-		let radiusScale  = [10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12];
+		let radiusScale = this.getPropertyRadiusScale();
+		if(radiusScale)
+		    radiusScale = radiusScale.split(",");
+		else 
+		    radiusScale  = [10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12];
 		radius=radiusScale[1];
 		for(let i=0;i<radiusScale.length;i+=2) {
 		    if(numLocs<+radiusScale[i]) {
