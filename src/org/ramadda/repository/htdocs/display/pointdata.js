@@ -223,12 +223,13 @@ function PointData(name, recordFields, records, url, properties) {
             return this.loadingCnt > 0;
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
+	    //	    console.log("map click:"+ this.url);
             this.lon = lon;
             this.lat = lat;
 	    ///repository/grid/json?entryid=3715ca8e-3c42-4105-96b1-da63e3813b3a&location.latitude=0&location.longitude=179.5
 	    //	    initiallatitude=40&location.latitude=0&location.longitude=179.5
             if (myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
-                this.loadData(myDisplay, true);
+		this.loadData(myDisplay, true);
                 return true;
             }
             return false;
@@ -303,12 +304,13 @@ function PointData(name, recordFields, records, url, properties) {
             root.loadPointJson(jsonUrl, display, reload);
         },
         loadPointJson: function(url, display, reload) {
-	    let debug = displayDebug.loadPointJson;
+	    let debug =  displayDebug.loadPointJson;
             let pointData = this;
             this.startLoading();
             let _this = this;
-	    if(debug)
-		console.log("loadPointJson: "+ display.getId());
+	    if(debug) {
+		console.log("loadPointJson: "+ display.type +" " + display.getId() +" reload:" + reload);
+	    } 
             let cacheObject = pointDataCache[url];
             if (cacheObject == null) {
                 cacheObject = {
@@ -325,18 +327,30 @@ function PointData(name, recordFields, records, url, properties) {
 		if(debug)
                     console.log("\tcreated new obj in cache: " +url);
                 pointDataCache[url] = cacheObject;
-            }
-	    //If we are reloading then clear the data
+            } else {
+		if(cacheObject.pending.indexOf(display)>=0) {
+		    if(debug)
+			console.log("\tcache hit - display in pending list");
+		    return;
+		} else {
+		    if(debug)
+			console.log("\tcache hit - display not in pending list");
+		}
+	    }		
 	    if(cacheObject.displays.indexOf(display)<0) {
 		cacheObject.displays.push(display);
 	    }
-	    if(reload) {
+	    //If we are reloading then clear the data
+	    //Don't do this for now
+	    if(false && reload) {
 		//If its a reload then add all dependent displays to the pending list
 		cacheObject.pointData = null;
 		cacheObject.pending = [];
-//		console.log("reloading adding to pending");
+		if(debug)
+		    console.log("\treloading adding to pending");
 		cacheObject.displays.forEach(d=>{
-//		    console.log("\tdisplay;" + d.type);
+		    if(debug)
+			console.log("\tdisplay:" + d.type +" " + d.getId());
 		    cacheObject.pending.push(d);
 		});
 	    } else {
@@ -392,7 +406,7 @@ function PointData(name, recordFields, records, url, properties) {
 		if(debug)
 		    console.log("\tmaking point data");
 		let t1 = new Date();
-                var newData = makePointData(data, _this.derived, display,url);
+                var newData = makePointData(data, _this.derived, display,_this.url);
 		let t2 = new Date();
 		if(debug)
 		    Utils.displayTimes("makePointData",[t1,t2],true);
@@ -404,7 +418,6 @@ function PointData(name, recordFields, records, url, properties) {
 		if(data.properties) {
 		    display.applyRequestProperties(data.properties);
 		}
-
 		if(debug)
                     console.log("\tpending:" + cacheObject.pending.length);
                 var tmp = cacheObject.pending;
@@ -443,7 +456,8 @@ function PointData(name, recordFields, records, url, properties) {
 		var base = window.location.protocol + "//" + window.location.host;
 		fullUrl = base+fullUrl;
 	    }
-            console.log("load data:" + fullUrl);
+
+	    console.log("loading data:" + url);
             Utils.doFetch(url, success,fail,"text");
             //var jqxhr = $.getJSON(url, success).fail(fail);
         }
