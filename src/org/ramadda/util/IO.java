@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,16 +16,25 @@
 
 package org.ramadda.util;
 
-import ucar.unidata.util.IOUtil;
 
 import org.apache.commons.net.ftp.*;
+
 import org.w3c.dom.*;
+
+import ucar.unidata.util.IOUtil;
+
 import java.awt.Image;
+
 import java.io.*;
+
 import java.net.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
 import javax.imageio.*;
 
 
@@ -45,6 +54,81 @@ public class IO {
         "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
 
 
+    /** _more_ */
+    private static List<File> okToWriteToDirs = new ArrayList<File>();
+
+    /** _more_ */
+    private static List<File> okToReadFromDirs = new ArrayList<File>();
+
+
+    /**
+     * _more_
+     *
+     * @param files _more_
+     */
+    public static void setOkToWriteToDirs(List<File> files) {
+        okToWriteToDirs = files;
+    }
+
+    /**
+     * _more_
+     *
+     * @param files _more_
+     */
+    public static void setOkToReadFromDirs(List<File> files) {
+        okToReadFromDirs = files;
+    }
+
+
+
+    /**
+     *  Check if this is an OK path to write to
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static boolean okToWriteTo(String file) throws Exception {
+        File f = new File(file);
+        if (okToWriteToDirs.size() > 0) {
+            boolean ok = false;
+            for (File dir : okToWriteToDirs) {
+                if (IOUtil.isADescendent(dir, f)) {
+                    ok = true;
+                }
+            }
+
+            return ok;
+        }
+
+        return true;
+    }
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     */
+    public static boolean okToReadFrom(String file) {
+        File f = new File(file);
+        if (okToReadFromDirs.size() > 0) {
+            boolean ok = false;
+            for (File dir : okToReadFromDirs) {
+                if (IOUtil.isADescendent(dir, f)) {
+                    ok = true;
+                }
+            }
+
+            return ok;
+        }
+
+        return true;
+    }
+
 
     /**
      * _more_
@@ -60,6 +144,7 @@ public class IO {
             throws FileNotFoundException, Exception {
         return getInputStream(filename, IO.class);
     }
+
 
 
     /**
@@ -858,6 +943,61 @@ public class IO {
          */
         public void checkFile(String file);
     }
+
+
+
+
+    /**
+     * Merge each row in the given files out. e.g., if file1 has
+     *  1,2,3
+     *  4,5,6
+     * and file2 has
+     * 8,9,10
+     * 11,12,13
+     * the result would be
+     * 1,2,3,8,9,10
+     * 4,5,6,11,12,13
+     * Gotta figure out how to handle different numbers of rows
+     *
+     * @param files files
+     * @param out output
+     *
+     * @throws Exception On badness
+     */
+    public static void concat(List<String> files, OutputStream out)
+            throws Exception {
+        PrintWriter          writer    = new PrintWriter(out);
+        String               delimiter = ",";
+        List<BufferedReader> readers   = new ArrayList<BufferedReader>();
+        for (String file : files) {
+            readers.add(
+                new BufferedReader(
+                    new InputStreamReader(new FileInputStream(file))));
+        }
+        while (true) {
+            int nullCnt = 0;
+            for (int i = 0; i < readers.size(); i++) {
+                BufferedReader br   = readers.get(i);
+                String         line = br.readLine();
+                if (line == null) {
+                    nullCnt++;
+
+                    continue;
+                }
+                if (i > 0) {
+                    writer.print(delimiter);
+                }
+                writer.print(line);
+                writer.flush();
+            }
+            if (nullCnt == readers.size()) {
+                break;
+            }
+            writer.println("");
+        }
+
+    }
+
 
 
 
