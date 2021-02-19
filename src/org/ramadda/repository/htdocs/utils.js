@@ -617,19 +617,19 @@ var Utils =  {
 	return h +space+"AM";
     },
     formatDateMonthDayYear: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown data:";
 	var m = this.monthNames[date.getUTCMonth()];
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
         return m +" " + d +", " + date.getUTCFullYear();
     },
     formatDateYearMonth: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown data:";
 	var m = this.monthNames[date.getUTCMonth()];
         return m +", " + date.getUTCFullYear();
     },    
     formatDateMonthDay: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown data:";
 	var m = this.monthNames[date.getUTCMonth()];
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
@@ -644,14 +644,14 @@ var Utils =  {
     },
 
     formatDateMDY: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
 	var m = this.monthNamesShort[date.getUTCMonth()];
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
         return m +" " + d +", " + date.getUTCFullYear();
     },
     formatDateYYYYMMDD: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
 	var m = (date.getUTCMonth() + 1);
 	if(m<10) m = "0" + m;
 	var d = date.getUTCDate();
@@ -659,7 +659,7 @@ var Utils =  {
         return date.getUTCFullYear() + "-" + m + "-" + d;
     },
     formatDateYYYYMMDDHHMM: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
 	var month = (date.getUTCMonth() + 1);
 	if(month<10) month = "0" + month;
 	var d = date.getUTCDate();
@@ -673,7 +673,7 @@ var Utils =  {
         return date.getUTCFullYear() + "-" + month + "-" + d+" " + hhmm;
     },
     formatDateYYYYMMDDHH: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
 	var m = (date.getUTCMonth() + 1);
 	if(m<10) m = "0" + m;
 	var d = date.getUTCDate();
@@ -683,13 +683,13 @@ var Utils =  {
     },
 
     formatDateYYYYMM: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
 	var m = (date.getUTCMonth() + 1);
 	if(m<10) m = "0" + m;
         return date.getUTCFullYear() + "-" + m;
     },
     formatDateMMDD: function(date, delimiter) {
-	if(isNaN(date.getUTCMonth())) return "Unknown";
+	if(isNaN(date.getUTCMonth())) return "Unknown date:" + date;
 	var m = (date.getUTCMonth() + 1);
 	if(m<10) m = "0" + m;
 	var d = date.getUTCDate();
