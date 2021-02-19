@@ -35,7 +35,7 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_ANIMATION,
     label: "Animation",
-    requiresData: false,
+    requiresData: true,
     category: CATEGORY_CONTROLS
 });
 addGlobalDisplayType({
@@ -99,6 +99,9 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	iconFaster: "fa-plus",
 	iconBegin: "fa-fast-backward",
 	iconEnd: "fa-fast-forward",
+        needsData: function() {
+            return true;
+        },
         deltaIndex: function(i) {
             this.stop();
             this.setIndex(this.index + i);
@@ -126,11 +129,9 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
         },
         applyStep: function(propagate, goToEnd) {
             if (!Utils.isDefined(propagate)) propagate = true;
-            var data = this.displayManager.getDefaultData();
-            if (data == null) return;
-            var records = data.getRecords();
+	    let records = this.currentRecords;
             if (records == null) {
-                $("#" + this.getDomId(ID_TIME)).html("no records");
+                $("#" + this.getDomId(ID_TIME)).html("No data");
                 return;
             }
             if (goToEnd) this.index = records.length - 1;
@@ -149,16 +150,15 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             }
             $("#" + this.getDomId(ID_TIME)).html(label);
             if (propagate) {
-                this.displayManager.propagateEventRecordSelection(this, data, {
-                    index: this.index
-                });
+		this.propagateEventRecordSelection({record: record});
             }
         },
         handleEventRecordSelection: function(source, args) {
 	    if(!args.record) return;
-            var data = this.displayManager.getDefaultData();
-            if (data == null) return;
-	    let records  = data.getRecords();
+	    let records = this.currentRecords;
+	    if(!records) {
+		if(args.record) records = [args.record];
+	    }
 	    records.every((r,idx)=>{
 		if(r.getId() == args.record.getId()) {
 		    this.index = idx;
@@ -188,8 +188,11 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             this.timestamp++;
             $("#" + this.getDomId(ID_START)).html(HtmlUtils.getIconImage(this.iconStart));
         },
-        initDisplay: function() {
-            this.createUI();
+        updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) return;
+	    this.currentRecords = records;
+//            this.createUI();
             this.stop();
 
             var get = this.getGet();
