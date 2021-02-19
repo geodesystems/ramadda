@@ -27,6 +27,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
 
@@ -496,7 +497,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public void addOkToReadFromDirectory(File dir) {
         if ( !okToReadFromDirs.contains(dir)) {
             okToReadFromDirs.add(dir);
-	    org.ramadda.util.text.CsvUtil.setOkToReadFromDirs(okToReadFromDirs);
+	    IO.setOkToReadFromDirs(okToReadFromDirs);
         }
     }
 
@@ -510,7 +511,7 @@ public class StorageManager extends RepositoryManager implements PointFile
     public void addOkToWriteToDirectory(File dir) {
         if ( !okToWriteToDirs.contains(dir)) {
             okToWriteToDirs.add(dir);
-	    org.ramadda.util.text.CsvUtil.setOkToWriteToDirs(okToWriteToDirs);
+	    IO.setOkToWriteToDirs(okToWriteToDirs);
         }
         addOkToReadFromDirectory(dir);
     }
