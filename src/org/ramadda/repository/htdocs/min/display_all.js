@@ -21354,7 +21354,6 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		this.setContents(this.getMessage(this.getNoDataMessage()));
 		return;
 	    }
-//	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),bubbleTestData);
 	    let colors =  this.getColorTable(true);
 	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),data,
 			    {label1:this.getProperty("sizeLabel1"),
