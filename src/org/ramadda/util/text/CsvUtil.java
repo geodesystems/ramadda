@@ -71,7 +71,7 @@ public class CsvUtil {
     private File destDir = new File(".");
 
     /** _more_ */
-    private TextReader textReader;
+    private TextReader myTextReader;
 
     /** _more_ */
     private String currentArg;
@@ -219,8 +219,8 @@ public class CsvUtil {
      */
     public void stopRunning() {
         okToRun = false;
-        if (textReader != null) {
-            textReader.stopRunning();
+        if (myTextReader != null) {
+            myTextReader.stopRunning();
         }
     }
 
@@ -275,9 +275,9 @@ public class CsvUtil {
      */
     public OutputStream getOutputStream() throws Exception {
         if (this.outputStream == null) {
-            if (textReader != null) {
-                textReader.getDestDir();
-                textReader.addFile(outputFile.toString());
+            if (myTextReader != null) {
+                myTextReader.getDestDir();
+                myTextReader.addFile(outputFile.toString());
             }
             this.outputStream = makeOutputStream(outputFile.toString());
         }
@@ -306,9 +306,9 @@ public class CsvUtil {
         try {
             runInner(files);
         } catch (Exception exc) {
-            CsvOperator op = (textReader == null)
+            CsvOperator op = (myTextReader == null)
 		? null
-		: textReader.getCurrentOperator();
+		: myTextReader.getCurrentOperator();
             if (op != null) {
                 errorDescription = "Error processing text with operator: "
 		    + op.getDescription();
@@ -345,7 +345,7 @@ public class CsvUtil {
         List<String> iterateValues = new ArrayList<String>();
 
         String       prepend       = null;
-        textReader = new TextReader(destDir, outputFile, outputStream);
+        myTextReader = new TextReader(destDir, outputFile, outputStream);
 
         boolean      printArgs = false;
         List<String> extra     = new ArrayList<String>();
@@ -388,12 +388,12 @@ public class CsvUtil {
                 return;
             }
             if (arg.equals("-alldata")) {
-                textReader.setAllData(true);
+                myTextReader.setAllData(true);
                 continue;
             }
 
             if (arg.equals("-verbose")) {
-                textReader.setVerbose(true);
+                myTextReader.setVerbose(true);
                 continue;
             }
 
@@ -410,12 +410,12 @@ public class CsvUtil {
             }
 
             if (arg.equals("-commentChar")) {
-                textReader.setCommentChar(args.get(++i));
+                myTextReader.setCommentChar(args.get(++i));
                 continue;
             }
 
             if (arg.startsWith("-header")) {
-                textReader.setFirstRow(
+                myTextReader.setFirstRow(
 				       new Row(StringUtil.split(args.get(++i), ",")));
                 continue;
             }
@@ -430,7 +430,7 @@ public class CsvUtil {
         }
 
 
-        if ( !parseArgs(extra, textReader, files)) {
+        if ( !parseArgs(extra, myTextReader, files)) {
             currentArg = null;
 
             return;
@@ -449,11 +449,11 @@ public class CsvUtil {
         if (doConcat) {
             IO.concat(files, getOutputStream());
         } else if (doHeader) {
-            header(files, textReader, doPoint);
+            header(files, myTextReader, doPoint);
         } else if (doRaw) {
-            raw(files, textReader);
+            raw(files, myTextReader);
         } else {
-	    List<DataProvider> providers = textReader.getProviders();
+	    List<DataProvider> providers = myTextReader.getProviders();
             if (providers.size() == 0) {
                 providers.add(new DataProvider.CsvDataProvider(rawLines));
             }
@@ -462,7 +462,7 @@ public class CsvUtil {
                 iterateValues.add("dummy");
             } else {
                 iteratePattern = new Filter.PatternFilter(iterateColumn, "");
-                textReader.getProcessor().addProcessor(iteratePattern);
+                myTextReader.getProcessor().addProcessor(iteratePattern);
             }
             for (int i = 0; i < iterateValues.size(); i++) {
                 String pattern = iterateValues.get(i);
@@ -471,8 +471,8 @@ public class CsvUtil {
                 }
                 for (DataProvider provider : providers) {
                     for (NamedInputStream input : getStreams(files)) {
-                        textReader.getProcessor().reset();
-                        TextReader clone = textReader.cloneMe(input,
+                        myTextReader.getProcessor().reset();
+                        TextReader clone = myTextReader.cloneMe(input,
 							      outputFile, outputStream);
                         process(clone, provider);
                         input.close();
@@ -553,7 +553,7 @@ public class CsvUtil {
         }
         if (okToRun) {
             if (ctx.getProcessor() != null) {
-                ctx.getProcessor().finish(textReader, null);
+                ctx.getProcessor().finish(ctx, null);
             }
         }
         ctx.flush();
@@ -644,11 +644,11 @@ public class CsvUtil {
      * @return _more_
      */
     public List<String> getNewFiles() {
-        return textReader.getFiles();
+        return myTextReader.getFiles();
     }
 
     public TextReader getContext() {
-	return textReader;
+	return myTextReader;
     }
 
 
@@ -752,7 +752,7 @@ public class CsvUtil {
             }
             List<String> cols = (widths != null)
 		? Utils.tokenizeColumns(line, widths)
-		: textReader.getSplitOnSpaces()
+		: myTextReader.getSplitOnSpaces()
 		? StringUtil.split(line, " ", true, true)
 		: Utils.tokenizeColumns(line, delimiter);
             if (asPoint) {
