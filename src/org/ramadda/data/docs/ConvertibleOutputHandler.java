@@ -629,7 +629,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 return;
             }
             newFiles.addAll(csvUtil.getNewFiles());
-            if (csvUtil.getNukeDb()) {
+            if (Misc.equals("true", csvUtil.getContext().getProperty("nukeDb"))) {
                 request.ensureAdmin();
                 String sql = "drop table db_" + csvUtil.getDbId();
                 try {
@@ -637,7 +637,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 } catch (Exception exc) {}
             }
 
-            if (csvUtil.getInstallPlugin()) {
+            if (Misc.equals("true", csvUtil.getContext().getProperty("installPlugin"))) {
                 request.ensureAdmin();
                 for (String file : csvUtil.getNewFiles()) {
                     if (file.endsWith("db.xml")) {
