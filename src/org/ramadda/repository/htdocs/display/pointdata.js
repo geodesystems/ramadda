@@ -895,11 +895,15 @@ function makePointData(json, derived, source,url) {
     let pointRecords = [];
     let isArray = false;
     let hasGeo = false;
+    let hasDate = false;
+    let setDateFlags = false;
+    let dateIsString = false;
     json.data.forEach((tuple,i)=>{
 	//	if(i>100) return;
 	if(debug && i>0 && (i%10000)==0) console.log("\tprocessed:" + i);
 	if(i==0) {
 	    isArray = Array.isArray(tuple);
+	    hasDate = !(typeof tuple.date === 'undefined');
 	}
 	let values;
 	if(isArray)
@@ -908,10 +912,18 @@ function makePointData(json, derived, source,url) {
             values = tuple.values;
         //lat,lon,alt,time,data values
         let date = null;
-        if (isArray || (typeof tuple.date === 'undefined')) {
+        if (isArray || !hasDate) {
             if (dateIdx >= 0) {
-		date = new Date(0);
-		date.setUTCMilliseconds(values[dateIdx]);
+		if(!setDateFlags) {
+		    dateIsString = (typeof values[dateIdx] == "string");
+		    setDateFlags = true;
+		}
+		if(dateIsString) {
+		    date = new Date(values[dateIdx]);
+		} else {
+		    date = new Date(0);
+		    date.setUTCMilliseconds(values[dateIdx]);
+		}
             }
         } else {
             if (tuple.date != null && tuple.date != 0) {
@@ -1018,6 +1030,7 @@ function makePointData(json, derived, source,url) {
             value = (value + offset.offset1) * offset.scale + offset.offset2;
             values[field.getIndex()] = value;
         }
+
         var record = new PointRecord(fields, tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
     });
