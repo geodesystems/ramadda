@@ -24481,7 +24481,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let tt = "";
 		tooltipFields.forEach(l=>{tt += "\n" + l.getLabel()+": " + row[l.getIndex()]});
 		tt = tt.trim();
-		let imgAttrs = [STYLE,imageStyle,"alt",galleryLabel,ID,base+"image" + rowIdx];
+		let imgAttrs = [STYLE,imageStyle,"alt",galleryLabel,ID,base+"image" + rowIdx,"loading","lazy"];
 		if(width) imgAttrs.push(WIDTH,width);
 		else if(height) imgAttrs.push(HEIGHT,height);		
 		let img = image==""?SPACE1:HU.image(image,imgAttrs);
@@ -34028,15 +34028,18 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 		    _this.tooltipDiv.html(tt)
 			.style("left", (d3.event.pageX + 10) + "px")
 			.style("top", (d3.event.pageY + 20) + "px");
+		    _this.tooltipDiv.style("opacity", 1);
+		    //For now don't transition as it seems to screw up
+		    //subsequent mouse overs
+		    return;
 		    _this.tooltipDiv.transition()
 			.delay(500)
 			.duration(500)
 			.style("opacity", 1);
 		}
 	    });
-
 	    polys.on('mouseout', function (d, i) {
-		_this.tooltipDiv.transition();
+//		_this.tooltipDiv.transition();
 		let poly = d3.select(this);
 		poly.attr("stroke",poly.attr("lastStroke"))
 		    .attr("fill",poly.attr("lastFill"))
@@ -34579,6 +34582,9 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 	{p:'imageField',wikiValue:''},
     ]);
     $.extend(this, {
+        getHeightForStyle: function(dflt) {
+	    return null;
+	},
 	addMacroAttributes:function(macros,row,attrs) {
 	    SUPER.addMacroAttributes.call(this,macros,row,attrs);
 	    if(!this.imageField) return;
