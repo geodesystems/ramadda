@@ -196,14 +196,16 @@ function RepositoryMap(mapId, params) {
         showLatLonPosition: true,
         enableDragPan: true,
         defaultLocation: mapDefaults.location,
-	highlightColor:"blue",
         initialZoom: Utils.isDefined(params.zoomLevel)?params.zoomLevel:mapDefaults.defaultZoomLevel,
         latlonReadout: null,
         map: null,
         showBounds: true,
         defaultMapLayer: map_default_layer,
-        defaultCanSelect: true,
         haveAddedDefaultLayer: false,
+        defaultCanSelect: true,
+	highlightColor:"blue",
+	highlightStrokeWidth:2,
+	highlightOpacity:1,
         layer: null,
         markers: null,
         vectors: null,
@@ -253,12 +255,8 @@ function RepositoryMap(mapId, params) {
         showLocationSearch: false,
     };
 
-
-
     $.extend(this, dflt);
-
     $.extend(this, params);
-
 
     this.defaultStyle = {
         pointRadius: this.pointRadius,
@@ -268,6 +266,14 @@ function RepositoryMap(mapId, params) {
         strokeColor: this.strokeColor,
         strokeWidth: this.strokeWidth,
     };
+
+
+    this.highlightStyle = {
+	strokeColor:this.highlightColor,
+	strokeWidth:this.highlightStrokeWidth,
+	fillColor:this.highlightFillColor,
+	fillOpacity:this.highlightOpacity
+    }
 
 
     this.defaults = {};
@@ -872,7 +878,6 @@ RepositoryMap.prototype = {
 		    if (!Utils.stringDefined(text))  {text = feature.text;}
 		    if (Utils.stringDefined(text)) {
 			text =HtmlUtils.div(["style","padding:2px;"],text);
-
 			this.highlightPopup = new OpenLayers.Popup("popup",
 								   projPoint,
 								   feature.highlightSize,
@@ -906,7 +911,11 @@ RepositoryMap.prototype = {
             feature.originalStyle = feature.style;
             feature.style = null;
 	    //"temporary"
-            layer.drawFeature(feature, {strokeColor:'red'});
+	    let highlightStyle = $.extend({},this.highlightStyle);
+	    if(feature.originalStyle) {
+		highlightStyle.fillColor  = Utils.brighterColor(feature.originalStyle.fillColor||highlightStyle.fillColor,0.4);
+	    }
+            layer.drawFeature(feature, highlightStyle);
             if (this.displayDiv) {
                 this.displayedFeature = feature;
                 var callback = function() {

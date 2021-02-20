@@ -1674,7 +1674,16 @@ var Utils =  {
 	if(!this.foregroundColors[c] && c.startsWith("#")) return this.getContrastYIQ(c);
 	return this.foregroundColors[c] ||"#000";
     },
+    darkerColor: function(c,amt) {
+	if(!c) return c;
+	return this.pSBC(amt||-0.5,c);
+    },
+    brighterColor: function(c,amt) {
+	if(!c) return c;
+	return this.pSBC(amt||0.5,c);
+    },    
     //From  https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
+    //p:percent -1 - 1, co: color to darken/lighten, c1: if given then blend c0 and c1, l: linear blending if true  use linear
     pSBC: function(p,c0,c1,l) {
 	c0 = this.colorToRgb[c0] || c0;
 	c1 = this.colorToRgb[c1] || c1;

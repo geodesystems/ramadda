@@ -5378,8 +5378,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		console.log("end:" +this.endDateObject.toUTCString());
 	    } 
 
-
-
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
 		let date = $("#"+ this.getFilterId(ID_FILTER_DATE)).val();
