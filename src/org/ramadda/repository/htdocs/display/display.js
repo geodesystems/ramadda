@@ -2543,6 +2543,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterHighlight: function() {
 	    return this.getProperty("filterHighlight",false);
 	},
+	getFilterTextMatchers: function() {
+	    let highlight  = [];
+	    if(this.filters) {
+		for(var filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
+		    let filter = this.filters[filterIdx];
+		    if(!filter.field)continue;
+		    var widget =$("#" + this.getDomId("filterby_" + filter.field.getId())); 
+		    if(!widget.val || widget.val()==null) continue;
+		    var value = widget.val()||"";
+		    if(value.trim()=="") continue;
+		    highlight.push(new TextMatcher(value));
+		}
+	    }
+	    return highlight;
+	},
+
+
 	filterData: function(records, fields, args) {
 	    if(this.recordListOverride) return this.recordListOverride;
 	    if(!args) args = {};
@@ -5244,18 +5261,20 @@ a
 		    "ui-tooltip": _this.getProperty("tooltipClass", "display-tooltip")
 		}
 	    };
-	    //A hack to fix really slow tooltip calls when there are lots of elements
-	    selector.mouseenter(function() {
-		let tooltip = $(this).tooltip(tooltipFunc);
-		tooltip.tooltip('open');
-	    });
-	    selector.mouseleave(function() {
-		let tooltip = $(this).tooltip({});
-		tooltip.tooltip('close');
-	    });
-
-	    return;
-	    selector.tooltip(tooltipFunc);
+	    if(selector.length>500) {
+		//A hack to fix really slow tooltip calls when there are lots of elements
+		selector.mouseenter(function() {
+		    console.log("enter");
+		    let tooltip = $(this).tooltip(tooltipFunc);
+		    tooltip.tooltip('open');
+		});
+		selector.mouseleave(function() {
+		    let tooltip = $(this).tooltip({});
+		    tooltip.tooltip('close');
+		});
+	    } else {
+		selector.tooltip(tooltipFunc);
+	    }
 	},
 	makeRecordSelect: function(selector,idToRecords, callback) {
 	    let _this = this;

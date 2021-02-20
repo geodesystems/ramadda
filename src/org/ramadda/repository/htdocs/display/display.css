@@ -2351,3 +2351,46 @@ table.dataTable tfoot td {
 .display-ticks-ticks {
     margin-bottom:2px;
 }
+
+
+.display-glossary-header {
+    text-align:center;
+}
+
+.display-glossary-letter {
+    display:inline-block;
+    padding-left:5px;
+    padding-right:5px;    
+    font-weight:bold;
+    font-size:120%;
+    cursor:pointer;
+}
+
+.display-glossary-letter-highlight {
+    background:#efefef;
+}
+
+.display-glossary-group {
+    font-weight:bold;
+    font-size:130%;
+}
+
+.display-glossary-group-header {
+    margin-top:20px;
+    padding-left:10px;
+    background:#efefef;
+}
+
+.display-glossary-group-inner {
+    margin-left:15px;
+}
+
+
+.display-glossary-entry {
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+.display-glossary-word {
+    font-weight:bold;
+}

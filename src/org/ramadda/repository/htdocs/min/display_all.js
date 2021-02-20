@@ -5356,6 +5356,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getFilterHighlight: function() {
 	    return this.getProperty("filterHighlight",false);
 	},
+	getFilterTextMatchers: function() {
+	    let highlight  = [];
+	    if(this.filters) {
+		for(var filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
+		    let filter = this.filters[filterIdx];
+		    if(!filter.field)continue;
+		    var widget =$("#" + this.getDomId("filterby_" + filter.field.getId())); 
+		    if(!widget.val || widget.val()==null) continue;
+		    var value = widget.val()||"";
+		    if(value.trim()=="") continue;
+		    highlight.push(new TextMatcher(value));
+		}
+	    }
+	    return highlight;
+	},
+
+
 	filterData: function(records, fields, args) {
 	    if(this.recordListOverride) return this.recordListOverride;
 	    if(!args) args = {};
@@ -8057,18 +8074,20 @@ a
 		    "ui-tooltip": _this.getProperty("tooltipClass", "display-tooltip")
 		}
 	    };
-	    //A hack to fix really slow tooltip calls when there are lots of elements
-	    selector.mouseenter(function() {
-		let tooltip = $(this).tooltip(tooltipFunc);
-		tooltip.tooltip('open');
-	    });
-	    selector.mouseleave(function() {
-		let tooltip = $(this).tooltip({});
-		tooltip.tooltip('close');
-	    });
-
-	    return;
-	    selector.tooltip(tooltipFunc);
+	    if(selector.length>500) {
+		//A hack to fix really slow tooltip calls when there are lots of elements
+		selector.mouseenter(function() {
+		    console.log("enter");
+		    let tooltip = $(this).tooltip(tooltipFunc);
+		    tooltip.tooltip('open');
+		});
+		selector.mouseleave(function() {
+		    let tooltip = $(this).tooltip({});
+		    tooltip.tooltip('close');
+		});
+	    } else {
+		selector.tooltip(tooltipFunc);
+	    }
 	},
 	makeRecordSelect: function(selector,idToRecords, callback) {
 	    let _this = this;
@@ -21406,6 +21425,7 @@ const DISPLAY_TEXT = "text";
 const DISPLAY_BLOCKS = "blocks";
 const DISPLAY_TEMPLATE = "template";
 const DISPLAY_TOPFIELDS = "topfields";
+const DISPLAY_GLOSSARY = "glossary";
 
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
@@ -21475,6 +21495,14 @@ addGlobalDisplayType({
     label: "Blocks",
     requiresData: true,
     category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_GLOSSARY,
+    forUser: true,
+    label: "Glossary",
+    requiresData: true,
+    category: CATEGORY_TEXT
 });
 
 
@@ -23590,8 +23618,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 		    if(regexpMaps[f.getId()]) {
 			regexpMaps[f.getId()].map(re=>{
 			    value  = re.highlight(value);
-			}
-						 );
+			});
 		    }
 		    
 		    if(line!="") 
@@ -23838,6 +23865,85 @@ function RamaddaTextDisplay(displayManager, id, properties) {
         }
     });
 }
+
+
+
+
+function RamaddaGlossaryDisplay(displayManager, id, properties) {
+    const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_GLOSSARY, properties);
+    const ID_GLOSSARY_HEADER = "glossary_header";
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:'Glossary Properties'},
+	{p:'wordField',wikiValue:""},
+	{p:'definitionField',wikiValue:""},	
+    ]);
+
+    $.extend(this, {
+        updateUI: function() {
+	    let records = this.filterData();
+	    if(!records) return;
+	    let wordField = this.getFieldById(null,this.getProperty("wordField"));
+	    let definitionField = this.getFieldById(null,this.getProperty("definitionField"));	    
+	    if(!wordField) {
+                this.displayError("No word field specified");
+                return;
+	    }
+	    if(!definitionField) {
+                this.displayError("No definition field specified");
+                return;
+	    }	    
+	    let letters = {};
+	    records.forEach(r=>{
+		let word = String(r.getValue(wordField.getIndex())).trim();
+		let definition = r.getValue(definitionField.getIndex());
+		let letter = word.substring(0,1).toUpperCase();
+		let list = letters[letter] || (letters[letter] = []);
+		list.push({word:word,definition:definition, record:r});
+	    });
+	    let highlight  = this.getFilterTextMatchers();
+	    let header =  HU.div([CLASS,"display-glossary-letter"], "All");
+	    let html = "";
+	    Object.keys(letters).sort().forEach(letter=>{
+		let _letter = letter.trim();
+		_letter = _letter==""?"_":_letter;
+		let clazz = " display-glossary-letter ";
+		if(this.searchLetter == _letter) {
+		    clazz+=" display-glossary-letter-highlight ";
+		}
+		header += HU.div([CLASS,clazz,"letter",_letter], _letter);
+		if(this.searchLetter && this.searchLetter!=_letter) return;
+		let group =  HU.div([CLASS,"display-glossary-group-header"],  _letter) +
+		    HU.openTag(DIV,[CLASS,"display-glossary-group-inner"]);
+		letters[letter].sort((a,b)=>{
+		    return a.word.localeCompare(b.word);
+		}).forEach(info=>{
+		    let def = info.definition;
+		    highlight.forEach(h=>{
+			def  = h.highlight(def);
+		    });
+		    let entry  = HU.div([CLASS,"display-glossary-word"], info.word) + HU.div([CLASS,"display-glossary-definition"], def); 
+		    group+=HU.div([TITLE,"",CLASS,"display-glossary-entry",RECORD_ID,info.record.getId()],entry);
+		});
+		group += HU.closeTag(DIV);
+		html+=group;
+	    });
+
+	    let height = this.getProperty("glossaryHeight","600px");
+	    header = HU.div([ID,this.getDomId(ID_GLOSSARY_HEADER), CLASS,"display-glossary-header"], header);
+	    html = HU.div([STYLE,HU.css("max-height",HU.getDimension(height),"overflow-y","auto")], html);
+	    this.writeHtml(ID_DISPLAY_CONTENTS, header  + html);
+	    let _this = this;
+	    this.jq(ID_GLOSSARY_HEADER).find(".display-glossary-letter").click(function() {
+		_this.searchLetter =  $(this).attr("letter");
+		_this.forceUpdateUI();
+	    });
+	    this.makeTooltips(this.jq(ID_DISPLAY_CONTENTS).find(".display-glossary-entry"),records);
+	},
+    });
+}
+
 
 
 /*
