@@ -94,7 +94,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_MAP, properties);
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
-	{label:'Map Attributes'},
+	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
 	{p:'strokeColor',d:'#000'},
 	{p:"fillColor",d:"blue"},
@@ -121,7 +121,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'boundsAnimation',wikiValue:true,tt:'Animate when map is centered'},
 	{p:'iconField',wikiValue:'""',tt:'Field id for the image icon url'},
 	{p:'iconSize',wikiValue:16},
-	{label:'Other map attributes'},
+
+	{label:'Map Highlight Properties'},
 	{p:'showRecordSelection',wikiValue:'false'},
 	{p:'recordHighlightShape',wikiValue:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
 	{p:'recordHighlightRadius',wikiValue:'20',tt:'Radius to use to show other displays highlighted record'},
@@ -134,6 +135,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'unhighlightStrokeWidth',wikiValue:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
 	{p:'unhighlightStrokeColor',wikiValue:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
 	{p:'unhighlightRadius',wikiValue:'1',tt:'Radius for when records are highlighted with the filters'},
+
+	{label:'Other Map Properties'},
 	{p:'vectorLayerStrokeColor',wikiValue:'#000'},
 	{p:'vectorLayerFillColor',wikiValue:'#ccc'},
 	{p:'vectorLayerFillOpacity',wikiValue:'0.25'},
@@ -157,20 +160,38 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'showZoomOnlyControl',wikiValue:'false'},
 	{p:'showLayers',d:true,wikiValue:'false'},
 	{p:'enableDragPan',wikiValue:'false'},
+
 	{p:'showSegments',wikiValue:'true',tt:'If data has 2 lat/lon locations draw a line'},
+	{p:'isPath',wikiValue:'true',tt:'Make a path from the points'},	
 	{p:'latField1',tt:'Field id for segments'},
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
 	{p:'lonField2',tt:'Field id for segments'},
-	{label:'Heatmap Attributes'},
-	{p:'doHeatmap',wikiValue:'true',tt:'Grid the data into an image'},
-	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
+
+	{label:"Map Label Properties"},
+	{p:"labelFontColor",wikiValue:"#000"},
+	{p:"labelFontSize",wikiValue:"12px"},
+	{p:"labelFontFamily",wikiValue:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
+	{p:"labelFontWeight",wikiValue:"plain"},
+	{p:"labelAlign",wikiValue:"l|c|r t|m|b"},
+	{p:"labelXOffset",wikiValue:"0"},
+	{p:"labelYOffset",wikiValue:"0"},
+	{p:"labelOutlineColor",wikiValue:"#fff"},
+	{p:"labelOutlineWidth",wikiValue:"0"},
+
+
+	{label:'Map Glyphs'},
 	{p:'doGridPoints',wikiValue:'true',tt:'Display a image showing shapes or bars'},
 	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
 	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
 	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
 	{label:'3dbar glyph', p:"glyph1",wikiValue:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
 	{label:'gauge glyph',p:"glyph1",wikiValue:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
+
+
+	{label:'Heatmap Properties'},
+	{p:'doHeatmap',wikiValue:'true',tt:'Grid the data into an image'},
+	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
 	{p:'htmlLayerField'},
 	{p:'htmlLayerWidth',wikiValue:'30'},
 	{p:'htmlLayerHeight',wikiValue:'15'},
@@ -520,7 +541,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
-
 	    for(var markerIdx=1;true;markerIdx++) {
 		let marker = this.getProperty("marker" + markerIdx);
 		if(!marker) break;
@@ -528,7 +548,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(marker.startsWith("base64:")) {
 		    marker = window.atob(marker.substring(7));
 		}
-		console.log(marker);
 		if (marker.indexOf("{") == 0) {
 		    props = JSON.parse(marker);
 		} else {
@@ -2421,6 +2440,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    	highlightSize = new OpenLayers.Size(highlightWidth,highlightHeight);
 	    }
 
+
 	    let addedPoints = [];
 	    let textGetter = this.textGetter = f=>{
 		if(f.record) {
@@ -2776,8 +2796,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     }
 		}
-
-
 
 
                 if (showPoints) {
