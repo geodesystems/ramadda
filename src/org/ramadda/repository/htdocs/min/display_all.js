@@ -28638,19 +28638,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
 	    this.map.addFeatureSelectHandler(feature=>{
 		this.lastFeatureSelectTime = new Date();
-
 		if(feature.collisionInfo)  {
 		    if(this.getPropertyCollisionFixed()) return;
 		    let info = feature.collisionInfo;
 		    info.visible = !info.visible;
 		    this.styleCollisionDot(feature);
 		    feature.layer.drawFeature(feature, feature.style);
+		    //These are the spokes
 		    info.features.forEach(f=>{
 			f.featureVisible = info.visible;
 			this.map.checkFeatureVisible(f,true);
 		    });
 		    info.records.forEach(record=>{
-			let layoutInfo = this.displayInfo[record];
+			let layoutInfo = this.displayInfo[record.getId()];
+			if(!layoutInfo) {
+			    return;
+			}
 			layoutInfo.features.forEach(f=>{
 			    f.featureVisible = info.visible;
 			    this.map.checkFeatureVisible(f,true);
@@ -30718,7 +30721,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    recordLayout.y = record.point.y;
 		}
 	    });
-//	    return
+
 
 	    if(this.getPropertyHandleCollisions()) {
 		//TODO: labels
@@ -30862,8 +30865,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let recordLayout = displayInfo[record.getId()];
 		if(!recordLayout) return;
 		let point  = recordLayout;
-		if(!point)
+		if(!point) {
                     point = new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude());
+		} else {
+		    if(!Utils.isDefined(point.x) || !Utils.isDefined(point.y)) return;
+		}
 
 		if(justOneMarker) {
 		    if(didMarker) return;

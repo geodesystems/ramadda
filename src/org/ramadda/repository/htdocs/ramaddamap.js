@@ -3007,7 +3007,7 @@ RepositoryMap.prototype = {
     transformLLPoint:  function(point) {
         if (!point)
             return null;
-        var llpoint = point.clone();
+        let llpoint = point.clone();
         return llpoint.transform(this.displayProjection, this.sourceProjection);
     },
 
@@ -3602,7 +3602,7 @@ RepositoryMap.prototype = {
 	if(Utils.isDefined(location.x)) {
 	    location = createLonLat(location.x,location.y);
 	}
-        var marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
+        let marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, 0, yoffset, canSelect,attrs);
         this.addMarkers([marker]);
         return marker;
     },
