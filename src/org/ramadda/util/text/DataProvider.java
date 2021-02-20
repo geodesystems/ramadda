@@ -27,6 +27,7 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -1113,11 +1114,24 @@ public abstract class DataProvider {
         int rawLines = 0;
 
         /** _more_ */
-        TextReader textReader;
+        TextReader ctx;
 
 
         /** _more_ */
         int rowCnt = 0;
+
+	boolean deHeader = false;
+
+	public CsvDataProvider(TextReader ctx, int rawLines) {
+	    this.ctx = ctx;
+	    if(this.ctx!=null) {
+		this.deHeader = Misc.equals("true", ctx.getProperty("deheader"));
+	    }
+
+            this.rawLines = rawLines;
+	}
+
+
 
         /**
          * _more_
@@ -1125,27 +1139,27 @@ public abstract class DataProvider {
          * @param rawLines _more_
          */
         public CsvDataProvider(int rawLines) {
-            this.rawLines = rawLines;
+	    this(null, rawLines);
         }
 
 
         public CsvDataProvider(TextReader ctx) {
-	    this.textReader = ctx;
+	    this(ctx,0);
 	}
 
 
         /**
          * _more_
          *
-         * @param textReader _more_
+         * @param ctx _more_
          * @param stream _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(TextReader textReader, NamedInputStream stream)
+        public void initialize(TextReader ctx, NamedInputStream stream)
                 throws Exception {
-            this.textReader = textReader;
-            this.textReader.setInput(stream);
+            this.ctx = ctx;
+            this.ctx.setInput(stream);
         }
 
         /**
@@ -1157,34 +1171,42 @@ public abstract class DataProvider {
          */
         public Row readRow() throws Exception {
             while (true) {
-                String line = textReader.readLine();
+                String line = ctx.readLine();
                 if (line == null) {
                     return null;
                 }
                 line = line.replaceAll("\\u000d", " ");
                 if (rawLines > 0) {
-                    textReader.getWriter().println(line);
+                    ctx.getWriter().println(line);
                     rawLines--;
 
                     continue;
                 }
-                if (textReader.getVerbose()) {
+                if (ctx.getVerbose()) {
                     if (((++cnt) % 1000) == 0) {
                         System.err.println("processed:" + cnt);
                     }
                 }
-                if ( !textReader.lineOk(textReader, line)) {
+		if(deHeader) {
+		    if(line.startsWith("#fields=")) {
+			line = line.substring("#fields=".length());
+			line  = line.replaceAll("\\[.*?\\]","");
+			deHeader = false;
+		    }
+		}
+
+                if ( !ctx.lineOk(ctx, line)) {
                     continue;
                 }
 
                 rowCnt++;
-                if (rowCnt <= textReader.getSkip()) {
-                    textReader.addHeaderLine(line);
+                if (rowCnt <= ctx.getSkip()) {
+                    ctx.addHeaderLine(line);
 
                     continue;
                 }
-                List<Integer> widths = textReader.getWidths();
-                if ((widths == null) && (textReader.getDelimiter() == null)) {
+                List<Integer> widths = ctx.getWidths();
+                if ((widths == null) && (ctx.getDelimiter() == null)) {
                     String delimiter = ",";
                     //Check for the bad separator
                     int i1 = line.indexOf(",");
@@ -1193,7 +1215,7 @@ public abstract class DataProvider {
                         delimiter = "|";
                     }
                     //                System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
-                    textReader.setDelimiter(delimiter);
+                    ctx.setDelimiter(delimiter);
                 }
                 if (line.length() == 0) {
                     continue;
@@ -1201,11 +1223,11 @@ public abstract class DataProvider {
                 Row row = null;
                 if (widths != null) {
                     row = new Row(Utils.tokenizeColumns(line, widths));
-                } else if (textReader.getSplitOnSpaces()) {
+                } else if (ctx.getSplitOnSpaces()) {
                     row = new Row(StringUtil.split(line, " ", true, true));
                 } else {
                     row = new Row(Utils.tokenizeColumns(line,
-                            textReader.getDelimiter()));
+                            ctx.getDelimiter()));
                 }
 
                 return row;

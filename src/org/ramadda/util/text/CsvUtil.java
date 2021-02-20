@@ -455,7 +455,7 @@ public class CsvUtil {
         } else {
 	    List<DataProvider> providers = myTextReader.getProviders();
             if (providers.size() == 0) {
-                providers.add(new DataProvider.CsvDataProvider(rawLines));
+                providers.add(new DataProvider.CsvDataProvider(myTextReader, rawLines));
             }
             Filter.PatternFilter iteratePattern = null;
             if (iterateColumn == null) {
@@ -1644,6 +1644,8 @@ public class CsvUtil {
                 "Add the RAMADDA point properties",
                 new Arg("properties", "name1 value1 ... nameN valueN",
                         "rows", "6")),
+        new Cmd("-deheader", new Label("Remove the  header"),
+		"Strip off the point header"),
         new Cmd(
 		"-db", "Generate the RAMADDA db xml from the header",
 		new Arg(
@@ -2546,6 +2548,11 @@ public class CsvUtil {
 
 	defineFunction("-addheader",1,(ctx,args,i) -> {
 		ctx.getProcessor().addProcessor(new Converter.HeaderMaker(parseProps(args.get(++i))));
+		return i;
+	    });
+
+	defineFunction("-deheader",0,(ctx,args,i) -> {
+		ctx.putProperty("deheader","true");
 		return i;
 	    });
 
