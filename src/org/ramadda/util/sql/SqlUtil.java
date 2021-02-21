@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
-
+import java.util.Properties;
 
 
 import java.util.regex.*;
@@ -54,6 +54,22 @@ import java.util.regex.*;
 public class SqlUtil {
 
     /** _more_ */
+    public static final String DB_MYSQL = "mysql";
+
+    /** _more_ */
+    public static final String DB_H2 = "h2";
+
+    /** _more_ */
+    public static final String DB_DERBY = "derby";
+
+    /** _more_ */
+    public static final String DB_POSTGRES = "postgres";
+
+    /** _more_ */
+    public static final String DB_ORACLE = "oracle";
+
+
+    /** _more_ */
     public static boolean debug = false;
 
     /** _more_ */
@@ -66,6 +82,97 @@ public class SqlUtil {
 
     /** The formatter to use */
     private static SimpleDateFormat sdf;
+
+
+    /**
+     * _more_
+     *
+     * @param jdbcUrl _more_
+     *
+     * @return _more_
+     */
+    public static String getDbType(String jdbcUrl) {
+        if (jdbcUrl.indexOf("mysql") >= 0) {
+            return SqlUtil.DB_MYSQL;
+        }
+        if (jdbcUrl.indexOf("postgres") >= 0) {
+            return SqlUtil.DB_POSTGRES;
+        }
+        if (jdbcUrl.indexOf("oracle") >= 0) {
+            return SqlUtil.DB_ORACLE;
+        }
+        if (jdbcUrl.indexOf("h2") >= 0) {
+            return SqlUtil.DB_H2;
+        }
+        if (jdbcUrl.indexOf("derby") >= 0) {
+            return SqlUtil.DB_DERBY;
+        }
+
+        throw new IllegalArgumentException(
+            "Could not determine database type:" + jdbcUrl);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param jdbcUrl _more_
+     *
+     * @return _more_
+     */
+    public static String getDriverClass(String jdbcUrl) {
+        String db = getDbType(jdbcUrl);
+        if (db.equals(DB_DERBY)) {
+            return "org.apache.derby.jdbc.EmbeddedDriver";
+        }
+        if (db.equals(DB_MYSQL)) {
+            return "com.mysql.jdbc.Driver";
+        }
+        if (db.equals(DB_POSTGRES)) {
+            return "org.postgresql.Driver";
+        }
+        if (db.equals(DB_ORACLE)) {
+            return "org.Oracle.Driver";
+        }
+        if (db.equals(DB_H2)) {
+            return "org.h2.Driver";
+        }
+
+        throw new IllegalArgumentException("Unknown database:" + db);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param connectionUrl _more_
+     * @param user _more_
+     * @param password _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Connection getConnection(String connectionUrl, String user,
+                                           String password)
+            throws Exception {
+        //Load the jdbc driver class
+        String driverClassName = getDriverClass(connectionUrl);
+        Misc.findClass(driverClassName);
+
+        Properties connectionProps = new Properties();
+        if (user != null) {
+            connectionProps.put("user", user);
+        }
+        if (password != null) {
+            connectionProps.put("password", password);
+        }
+
+        Connection conn = DriverManager.getConnection(connectionUrl,
+                              connectionProps);
+
+        return conn;
+    }
 
 
 
@@ -1074,8 +1181,9 @@ public class SqlUtil {
             if (tableClause.length() > 0) {
                 tableClause += ",";
             }
-            tableClause += table;
+            tableClause += sanitize(table);
         }
+        what = sanitize(what);
         String sql = "SELECT " + what + " FROM " + tableClause
                      + sqlBetweenFromAndWhere + ((where.trim().length() > 0)
                 ? WHERE + where
@@ -1318,6 +1426,81 @@ public class SqlUtil {
 
         return actual;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param connection _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static List<String> getTableNames(Connection connection)
+            throws Exception {
+        List<String>     tableNames = new ArrayList<String>();
+        DatabaseMetaData dbmd       = connection.getMetaData();
+        ResultSet        catalogs   = dbmd.getCatalogs();
+        ResultSet tables = dbmd.getTables(null, null, null,
+                                          new String[] { "TABLE" });
+        while (tables.next()) {
+            String tableName = tables.getString("TABLE_NAME");
+            String tableType = tables.getString("TABLE_TYPE");
+            if ((tableType == null) || Misc.equals(tableType, "INDEX")
+                    || tableType.startsWith("SYSTEM")) {
+                continue;
+            }
+            tableNames.add(tableName);
+        }
+
+        return tableNames;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param connection _more_
+     * @param tableName _more_
+     * @param addType _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static List<String> getColumnNames(Connection connection,
+            String tableName, boolean addType)
+            throws Exception {
+        List<String>     colNames = new ArrayList<String>();
+        DatabaseMetaData dbmd     = connection.getMetaData();
+        ResultSet        cols = dbmd.getColumns(null, null, tableName, null);
+        while (cols.next()) {
+            String name = cols.getString("COLUMN_NAME");
+            String type = cols.getString("TYPE_NAME");
+            if (addType) {
+                colNames.add(name + " " + type);
+            } else {
+                colNames.add(name);
+            }
+        }
+        //Try upper
+        if (colNames.size() == 0) {
+            cols = dbmd.getColumns(null, null, tableName.toUpperCase(), null);
+            while (cols.next()) {
+                String name = cols.getString("COLUMN_NAME");
+                String type = cols.getString("TYPE_NAME");
+                if (addType) {
+                    colNames.add(name + " " + type);
+                } else {
+                    colNames.add(name);
+                }
+            }
+        }
+
+        return colNames;
+    }
+
 
 
 
@@ -1876,6 +2059,33 @@ public class SqlUtil {
 
 
     /**
+     * _more_
+     *
+     * @param statement _more_
+     *
+     * @throws SQLException _more_
+     */
+    public static void closeAndReleaseConnection(Statement statement) {
+        if (statement == null) {
+            return;
+        }
+        Connection connection = null;
+        try {
+            connection = statement.getConnection();
+            statement.close();
+        } catch (Throwable ignore) {}
+
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (Throwable ignore) {}
+        }
+    }
+
+
+
+
+    /**
      * Interface description
      *
      *
@@ -1934,7 +2144,8 @@ public class SqlUtil {
             return null;
         }
         //IMPORTANT: if this screws up and we can have sql injection attacks
-        String s = value.toString().replaceAll("[^\\.,\\(\\)a-zA-Z0-9_]", "");
+        String s = value.toString().replaceAll("[^\\*\\.,\\(\\)a-zA-Z0-9_]",
+                       "_X_");
 
         return s;
     }
@@ -1983,6 +2194,8 @@ public class SqlUtil {
 
         return s;
     }
+
+
 
     /**
      * _more_
