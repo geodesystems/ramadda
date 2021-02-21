@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
+
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
@@ -33,7 +36,11 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
+import java.sql.*;
+
 import java.util.ArrayList;
+
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -62,12 +69,15 @@ public abstract class DataProvider {
     /**
      * _more_
      *
+     *
+     * @param csvUtil _more_
      * @param info _more_
      * @param stream _more_
      *
      * @throws Exception _more_
      */
-    public void initialize(TextReader info, NamedInputStream stream)
+    public void initialize(CsvUtil csvUtil, TextReader info,
+                           NamedInputStream stream)
             throws Exception {}
 
 
@@ -150,12 +160,15 @@ public abstract class DataProvider {
 
         /**
          * _more_
+         *
+         * @param csvUtil _more_
          * @param textReader _more_
          * @param stream _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(TextReader textReader, NamedInputStream stream)
+        public void initialize(CsvUtil csvUtil, TextReader textReader,
+                               NamedInputStream stream)
                 throws Exception {
             textReader.setInput(stream);
             String s = textReader.convertContents(
@@ -624,6 +637,200 @@ public abstract class DataProvider {
 
         }
     }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sun, Feb 21, '21
+     * @author         Enter your name here...    
+     */
+    public static class SqlDataProvider extends DataProvider {
+
+        /** _more_          */
+        private String db;
+
+        /** _more_          */
+        private String table;
+
+        /** _more_          */
+        private Hashtable<String, String> props;
+
+        /** _more_          */
+        private Connection connection;
+
+        /** _more_          */
+        private Statement statement;
+
+        /** _more_          */
+        private SqlUtil.Iterator iter;
+
+        /** _more_          */
+        private int columnCount;
+
+        /** _more_          */
+        private Row headerRow;
+
+        /** _more_          */
+        private int rowCnt = 0;
+
+        /** _more_          */
+        private int maxRows;
+
+        /**
+         * _more_
+         *
+         * @param arrayPath _more_
+         * @param objectPath _more_
+         *
+         * @param db _more_
+         * @param table _more_
+         * @param props _more_
+         */
+        public SqlDataProvider(String db, String table,
+                               Hashtable<String, String> props) {
+            this.db    = db;
+            this.table = table;
+            this.props = props;
+        }
+
+        /**
+         * _more_
+         *
+         * @param csvUtil _more_
+         * @param ctx _more_
+         * @param stream _more_
+         *
+         * @throws Exception _more_
+         */
+        public void initialize(CsvUtil csvUtil, TextReader ctx,
+                               NamedInputStream stream)
+                throws Exception {
+            String jdbcUrl = csvUtil.getProperty("csv_" + db + "_url");
+            if (jdbcUrl == null) {
+                String dbs = csvUtil.getProperty("csv_dbs");
+
+                throw new IllegalArgumentException("Unknown database:" + db
+                        + " " + ((dbs == null)
+                                 ? ""
+                                 : "Available databases:" + dbs));
+            }
+
+            String user     = csvUtil.getProperty("csv_" + db + "_user");
+            String password = csvUtil.getProperty("csv_" + db + "_password");
+            this.connection = SqlUtil.getConnection(jdbcUrl, user, password);
+
+            //Check tables whitelist
+            String tables   = csvUtil.getProperty("csv_" + db + "_tables",
+                                  "");
+            List   okTables = Arrays.asList(tables.split(","));
+            if ((okTables.size() == 1) && okTables.get(0).equals("*")) {
+                okTables = SqlUtil.getTableNames(this.connection);
+            }
+
+            if ( !Utils.containsIgnoreCase(okTables, table)) {
+                throw new IllegalArgumentException("Unknown table:" + table
+                        + "\nAvailable tables:\n"
+                        + Utils.wrap(okTables, "\t", "\n"));
+            }
+
+            if (Misc.equals(props.get("help"), "true")) {
+                throw new CsvUtil.MessageException("table:" + table
+                        + "\ncolumns:\n"
+                        + Utils.wrap(SqlUtil.getColumnNames(connection,
+                            table, true), "\t", "\n"));
+            }
+
+
+            String what = props.get("columns");
+            if (what == null) {
+                what = "*";
+            }
+            List<Clause> clauses = new ArrayList<Clause>();
+            String       where   = props.get("where");
+            if (where != null) {
+                for (String tok : where.split(",")) {
+                    String[] toks = tok.split(":");
+                    if (toks.length != 3) {
+                        throw new IllegalArgumentException("Bad where value:"
+                                + tok);
+                    }
+                    String expr  = toks[1].toLowerCase();
+                    String value = toks[2];
+                    if (expr.equals("like")
+                            && !(value.startsWith("%")
+                                 || value.endsWith("%"))) {
+                        value = "%" + value + "%";
+                    }
+                    clauses.add(new Clause(toks[0], expr, value));
+                }
+            }
+            Clause clause = (clauses.size() > 0)
+                            ? Clause.and(clauses)
+                            : null;
+            this.statement = SqlUtil.select(connection, what,
+                                            Utils.makeList(table), clause,
+                                            "");
+            this.iter = SqlUtil.getIterator(this.statement);
+
+            List              values  = new ArrayList();
+            ResultSet         results = this.statement.getResultSet();
+            ResultSetMetaData rsmd    = results.getMetaData();
+            this.columnCount = rsmd.getColumnCount();
+            for (int i = 1; i < this.columnCount + 1; i++) {
+                values.add(rsmd.getColumnName(i).toLowerCase());
+            }
+            headerRow = new Row(values);
+            maxRows   = ctx.getMaxRows();
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param s _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception _more_
+         */
+        public Row readRow() throws Exception {
+
+            rowCnt++;
+            if (rowCnt == 1) {
+                return headerRow;
+            }
+
+            if ((maxRows >= 0) && (rowCnt > maxRows)) {
+                return null;
+            }
+            ResultSet results = this.iter.getNext();
+            if (results == null) {
+                return null;
+            }
+            List values = new ArrayList();
+            for (int i = 0; i < this.columnCount; i++) {
+                values.add(results.getString(i + 1));
+            }
+
+            return new Row(values);
+        }
+
+        /**
+         * _more_
+         */
+        @Override
+        public void finish() {
+            super.finish();
+            SqlUtil.closeAndReleaseConnection(this.statement);
+            this.statement = null;
+        }
+
+
+    }
+
+
 
     /**
      * Class description
@@ -1120,16 +1327,24 @@ public abstract class DataProvider {
         /** _more_ */
         int rowCnt = 0;
 
-	boolean deHeader = false;
+        /** _more_          */
+        boolean deHeader = false;
 
-	public CsvDataProvider(TextReader ctx, int rawLines) {
-	    this.ctx = ctx;
-	    if(this.ctx!=null) {
-		this.deHeader = Misc.equals("true", ctx.getProperty("deheader"));
-	    }
+        /**
+         * _more_
+         *
+         * @param ctx _more_
+         * @param rawLines _more_
+         */
+        public CsvDataProvider(TextReader ctx, int rawLines) {
+            this.ctx = ctx;
+            if (this.ctx != null) {
+                this.deHeader = Misc.equals("true",
+                                            ctx.getProperty("deheader"));
+            }
 
             this.rawLines = rawLines;
-	}
+        }
 
 
 
@@ -1139,24 +1354,32 @@ public abstract class DataProvider {
          * @param rawLines _more_
          */
         public CsvDataProvider(int rawLines) {
-	    this(null, rawLines);
+            this(null, rawLines);
         }
-
-
-        public CsvDataProvider(TextReader ctx) {
-	    this(ctx,0);
-	}
 
 
         /**
          * _more_
          *
          * @param ctx _more_
+         */
+        public CsvDataProvider(TextReader ctx) {
+            this(ctx, 0);
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param csvUtil _more_
+         * @param ctx _more_
          * @param stream _more_
          *
          * @throws Exception _more_
          */
-        public void initialize(TextReader ctx, NamedInputStream stream)
+        public void initialize(CsvUtil csvUtil, TextReader ctx,
+                               NamedInputStream stream)
                 throws Exception {
             this.ctx = ctx;
             this.ctx.setInput(stream);
@@ -1187,13 +1410,13 @@ public abstract class DataProvider {
                         System.err.println("processed:" + cnt);
                     }
                 }
-		if(deHeader) {
-		    if(line.startsWith("#fields=")) {
-			line = line.substring("#fields=".length());
-			line  = line.replaceAll("\\[.*?\\]","");
-			deHeader = false;
-		    }
-		}
+                if (deHeader) {
+                    if (line.startsWith("#fields=")) {
+                        line     = line.substring("#fields=".length());
+                        line     = line.replaceAll("\\[.*?\\]", "");
+                        deHeader = false;
+                    }
+                }
 
                 if ( !ctx.lineOk(ctx, line)) {
                     continue;

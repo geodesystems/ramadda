@@ -21,6 +21,7 @@ import org.json.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
 import org.ramadda.util.NamedInputStream;
+import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 
@@ -55,8 +56,6 @@ public class CsvUtil {
 
     /** _more_          */
     private static boolean debugArgs = false;
-
-
 
     /** _more_ */
     private List<String> args;
@@ -107,6 +106,8 @@ public class CsvUtil {
     private StringBuilder js = new StringBuilder();
 
 
+    private PropertyProvider propertyProvider;
+
     /**
      * _more_
      *
@@ -116,7 +117,6 @@ public class CsvUtil {
      */
     public CsvUtil(String[] args) throws Exception {
         this.args = new ArrayList<String>();
-
         for (String arg : args) {
             this.args.add(arg);
         }
@@ -194,6 +194,38 @@ public class CsvUtil {
         this.comment = csvUtil.comment;
         this.js      = csvUtil.js;
         //        this.delimiter = csvUtil.delimiter;
+    }
+
+    /**
+       Set the PropertyProvider property.
+       @param value The new value for PropertyProvider
+    **/
+    public void setPropertyProvider (PropertyProvider value) {
+	propertyProvider = value;
+    }
+
+    /**
+       Get the PropertyProvider property.
+       @return The PropertyProvider
+    **/
+    public PropertyProvider getPropertyProvider () {
+	return propertyProvider;
+    }
+
+
+    public String getProperty(String name, String dflt) {
+	String v = getProperty(name);
+	if(v==null) return dflt;
+	return v;
+    }
+
+
+    public String getProperty(String name) {
+	if(propertyProvider!=null) {
+	    String value =  propertyProvider.getProperty(name,null);
+	    if(value!=null) return value;
+	}
+	return System.getenv(name);
     }
 
     /**
@@ -474,7 +506,7 @@ public class CsvUtil {
                         myTextReader.getProcessor().reset();
                         TextReader clone = myTextReader.cloneMe(input,
 							      outputFile, outputStream);
-                        process(clone, provider);
+			process(clone, provider);
                         input.close();
                         provider.finish();
                     }
@@ -506,9 +538,9 @@ public class CsvUtil {
      */
     public void process(TextReader ctx, DataProvider provider)
 	throws Exception {
+	provider.initialize(this, ctx, ctx.getInput());
         try {
             errorDescription = null;
-            provider.initialize(ctx, ctx.getInput());
             processInner(ctx, provider);
         } catch (Exception exc) {
             CsvOperator op = (ctx == null)
@@ -519,7 +551,6 @@ public class CsvUtil {
                 errorDescription = "Error processing text with operator: "
 		    + op.getDescription();
             }
-
             throw exc;
         }
     }
@@ -1624,12 +1655,18 @@ public class CsvUtil {
         new Cmd("-tokenize", "Tokenize the input from the pattern",
                 new Arg("header", "header1,header2..."),
                 new Arg("pattern", "", "type", "pattern")),
+
+        new Cmd("-sql", "Connect to the given database",
+                new Arg("db", "The database id (defined in the environment)"),
+		new Arg("table", "The table to select from"),
+		new Arg("properties", "'columns' c1,c2,...  'where' c1,<|>|<>|like|notlike;...")),
         new Cmd("-prune", "Prune out the first N bytes",
                 new Arg("bytes", "Number of leading bytes to remove", "type",
                         "number")),
 
-        /** * Output  * */
-        new Cmd(true, "Output"), new Cmd("-print", "Output the rows"),
+        /*  Output   */
+        new Cmd(true, "Output"), 
+	new Cmd("-print", "Output the rows"),
         new Cmd("-template", "Apply the template to make the output",
                 new Arg("prefix", "", "size", "40"),
                 new Arg("template", "Use ${0},${1}, etc for values", "rows",
@@ -1654,6 +1691,7 @@ public class CsvUtil {
         new Cmd("-toxml", "Generate XML", new Arg("tag")),
         new Cmd("-run", "", "Name of process directory"),
         new Cmd("-cat", "One or more csv files", "*.csv"),
+        new Cmd("-script", "Generate the script to call"),
         new Cmd("-args", "Generate the CSV file commands"),
         new Cmd("-args2", "Print out the args"),
     };
@@ -1841,6 +1879,20 @@ public class CsvUtil {
 	int method(TextReader ctx, List<String> args,int index); 
 
     }
+
+    public static class MessageException extends RuntimeException {
+	String msg;
+	public MessageException(String s) {
+	    super(s);
+	    msg = s;
+	}
+
+	public String getMessage() {
+	    return msg;
+	}
+
+    }
+
 
     private static class CsvFunctionHolder {
 	private CsvUtil csvUtil;
@@ -2438,6 +2490,10 @@ public class CsvUtil {
 	    });
 
 
+
+
+
+
 	defineFunction("-html",3,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.HtmlDataProvider(args.get(++i), args.get(++i),
 									 parseProps(args.get(++i))));
@@ -2478,6 +2534,14 @@ public class CsvUtil {
 
 		return i;
 	    });
+
+	defineFunction("-sql",2,(ctx,args,i) -> {
+		//-sql db table "col1 value col2 value"
+		ctx.getProviders().add(new DataProvider.SqlDataProvider(args.get(++i), args.get(++i),
+									parseProps(args.get(++i))));
+		return i;
+	    });
+
 	defineFunction("-xml",1,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.XmlDataProvider(args.get(++i)));
 
@@ -2975,8 +3039,10 @@ public class CsvUtil {
 		    doArgs2 = true;
 		    continue;
 		}
-
-
+		if (arg.equals("-script")) {
+		    outputScript(args, ctx);
+		    return false;
+		}		
 		if (arg.equals("-debug")) {
 		    ctx.setDebug(true);
 		    ctx.printDebug("arguments: ");
@@ -3051,6 +3117,25 @@ public class CsvUtil {
     }
 
 
+    private void outputScript(List<String> args, TextReader ctx) throws Exception {
+	PrintWriter pw        = new PrintWriter(getOutputStream());
+	pw.println("#!/bin/sh");
+	pw.println("#the CSVUTIL environment variable needs to point to RAMADDA's csv release");
+	pw.println("#");
+	pw.print("sh ${CSVUTIL}/csv.sh ");	
+	for (String arg: args) {
+	    if(arg.equals("-script")) continue;
+	    arg = arg.replaceAll("\\$","\\\\\\$");
+	    pw.print("\"" + arg+"\" ");
+	}
+	pw.println("");
+	pw.println("");
+	pw.println("");
+	pw.close();
+    }
+
+
+
     /**
      * _more_
      *
@@ -3086,7 +3171,7 @@ public class CsvUtil {
      *
      * @return _more_
      */
-    private Hashtable<String, String> parseProps(String s) {
+    public  Hashtable<String, String> parseProps(String s) {
 	s = s.replaceAll("_quote_", "\"");
 	s = s.replaceAll("\n", " ");
 	List<String> toks = Utils.parseCommandLine(s);
