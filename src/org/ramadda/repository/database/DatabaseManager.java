@@ -49,6 +49,7 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
+
 import java.io.File;
 
 import java.lang.reflect.*;
@@ -143,20 +144,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     /** _more_ */
     private String db;
 
-    /** _more_ */
-    private static final String DB_MYSQL = "mysql";
-
-    /** _more_ */
-    private static final String DB_H2 = "h2";
-
-    /** _more_ */
-    private static final String DB_DERBY = "derby";
-
-    /** _more_ */
-    private static final String DB_POSTGRES = "postgres";
-
-    /** _more_ */
-    private static final String DB_ORACLE = "oracle";
 
     /** _more_ */
     private String connectionURL;
@@ -233,7 +220,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
 
         dataSource = doMakeDataSource();
         Statement statement = getConnection().createStatement();
-        if (db.equals(DB_MYSQL)) {
+        if (db.equals(SqlUtil.DB_MYSQL)) {
             statement.execute("set time_zone = '+0:00'");
         }
         closeAndReleaseConnection(statement);
@@ -342,35 +329,6 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param jdbc _more_
-     *
-     * @return _more_
-     */
-    private String getDbType(String jdbc) {
-        if (jdbc.indexOf("mysql") >= 0) {
-            return DB_MYSQL;
-        }
-        if (jdbc.indexOf("postgres") >= 0) {
-            return DB_POSTGRES;
-        }
-        if (jdbc.indexOf("oracle") >= 0) {
-            return DB_ORACLE;
-        }
-        if (jdbc.indexOf("h2") >= 0) {
-            return DB_H2;
-        }
-        if (jdbc.indexOf("derby") >= 0) {
-            return DB_DERBY;
-        }
-
-        throw new IllegalArgumentException(
-            "Could not determine database type:" + jdbc);
-    }
-
     /**
      * _more_
      *
@@ -381,14 +339,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @throws Exception _more_
      */
     private String loadDriver(String connectionUrl) throws Exception {
-        String dbType = getDbType(connectionUrl);
+        String dbType = SqlUtil.getDbType(connectionUrl);
+
         String driverClassPropertyName = PROP_DB_DRIVER.replace("${db}",
                                              dbType);
         String driverClassName =
-            (String) getRepository().getProperty(driverClassPropertyName);
-
+	    (String) getRepository().getProperty(driverClassPropertyName);
         Misc.findClass(driverClassName);
-
         return driverClassName;
     }
 
@@ -2093,8 +2050,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public void setDate(PreparedStatement statement, int col, Date date)
             throws Exception {
-        //        if (!db.equals(DB_MYSQL)) {
-        if (true || !db.equals(DB_MYSQL)) {
+        //        if (!db.equals(SqlUtil.DB_MYSQL)) {
+        if (true || !db.equals(SqlUtil.DB_MYSQL)) {
             setTimestamp(statement, col, date);
         } else {
             if (date == null) {
@@ -2181,8 +2138,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public Date getDate(ResultSet results, int col, boolean makeDflt)
             throws Exception {
-        //        if (!db.equals(DB_MYSQL)) {
-        if (true || !db.equals(DB_MYSQL)) {
+        //        if (!db.equals(SqlUtil.DB_MYSQL)) {
+        if (true || !db.equals(SqlUtil.DB_MYSQL)) {
             return getTimestamp(results, col, makeDflt);
         }
         Date date = results.getTime(col, Repository.calendar);
@@ -2210,8 +2167,8 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public Date getDate(ResultSet results, String col, boolean makeDflt)
             throws Exception {
-        //        if (!db.equals(DB_MYSQL)) {
-        if (true || !db.equals(DB_MYSQL)) {
+        //        if (!db.equals(SqlUtil.DB_MYSQL)) {
+        if (true || !db.equals(SqlUtil.DB_MYSQL)) {
             return getTimestamp(results, col, makeDflt);
         }
         Date date = results.getTime(col, Repository.calendar);
@@ -2335,7 +2292,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public boolean supportsRegexp() {
-        return db.equals(DB_MYSQL) || db.equals(DB_POSTGRES);
+        return db.equals(SqlUtil.DB_MYSQL) || db.equals(SqlUtil.DB_POSTGRES);
     }
 
     /**
@@ -2389,7 +2346,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public boolean isDatabaseDerby() {
-        return (db.equals(DB_DERBY));
+        return (db.equals(SqlUtil.DB_DERBY));
     }
 
     /**
@@ -2398,7 +2355,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public boolean isDatabaseMysql() {
-        return (db.equals(DB_MYSQL));
+        return (db.equals(SqlUtil.DB_MYSQL));
     }
 
     /**
@@ -2407,7 +2364,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public boolean isDatabaseH2() {
-        return (db.equals(DB_H2));
+        return (db.equals(SqlUtil.DB_H2));
     }
 
     /**
@@ -2416,7 +2373,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public boolean isDatabasePostgres() {
-        return (db.equals(DB_POSTGRES));
+        return (db.equals(SqlUtil.DB_POSTGRES));
     }
 
     /**
@@ -2427,33 +2384,33 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public String convertSql(String sql) {
-        if (db.equals(DB_MYSQL)) {
+        if (db.equals(SqlUtil.DB_MYSQL)) {
             sql = sql.replace("ramadda.double", "double");
             sql = sql.replace("ramadda.datetime", "datetime");
             sql = sql.replace("ramadda.clob", "text");
             sql = sql.replace("ramadda.bigclob", "text");
             sql = sql.replace("ramadda.bigint", "bigint");
             //sql = sql.replace("ramadda.datetime", "timestamp");
-        } else if (db.equals(DB_DERBY)) {
+        } else if (db.equals(SqlUtil.DB_DERBY)) {
             sql = sql.replace("ramadda.double", "double");
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "clob(64000)");
             sql = sql.replace("ramadda.bigclob", "clob(256000)");
             sql = sql.replace("ramadda.bigint", "bigint");
-        } else if (db.equals(DB_POSTGRES)) {
+        } else if (db.equals(SqlUtil.DB_POSTGRES)) {
             sql = sql.replace("ramadda.double", "float8");
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "text");
             sql = sql.replace("ramadda.bigclob", "text");
             sql = sql.replace("ramadda.bigint", "bigint");
-        } else if (db.equals(DB_ORACLE)) {
+        } else if (db.equals(SqlUtil.DB_ORACLE)) {
             sql = sql.replace("ramadda.double", "number");
             //            sql = sql.replace("ramadda.datetime", "date");
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "clob");
             sql = sql.replace("ramadda.bigclob", "clob");
             sql = sql.replace("ramadda.bigint", "bigint");
-        } else if (db.equals(DB_H2)) {
+        } else if (db.equals(SqlUtil.DB_H2)) {
             sql = sql.replace("ramadda.double", "float8");
             sql = sql.replace("ramadda.datetime", "timestamp");
             sql = sql.replace("ramadda.clob", "text");
@@ -2473,7 +2430,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public String getExtractYear(String col) {
-        if (db.equals(DB_POSTGRES)) {
+        if (db.equals(SqlUtil.DB_POSTGRES)) {
             return " extract (year from " + col + ") ";
         } else {
             return "year(" + col + ")";
@@ -2555,7 +2512,7 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public String escapeString(String value) {
-        if (db.equals(DB_MYSQL)) {
+        if (db.equals(SqlUtil.DB_MYSQL)) {
             value = value.replace("'", "\\'");
         } else {
             value = value.replace("'", "''");
@@ -2586,22 +2543,22 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      */
     public String convertType(String type, int size) {
         if (type.equals("clob")) {
-            if (db.equals(DB_DERBY)) {
+            if (db.equals(SqlUtil.DB_DERBY)) {
                 return "clob(" + size + ") ";
             }
-            if (db.equals(DB_MYSQL)) {
+            if (db.equals(SqlUtil.DB_MYSQL)) {
                 return "mediumtext";
             }
-            if (db.equals(DB_POSTGRES)) {
+            if (db.equals(SqlUtil.DB_POSTGRES)) {
                 return "text";
             }
         }
         if (type.equals("double")) {
-            if (db.equals(DB_POSTGRES)) {
+            if (db.equals(SqlUtil.DB_POSTGRES)) {
                 return "float8";
             }
         } else if (type.equals("float8")) {
-            if (db.equals(DB_MYSQL) || db.equals(DB_DERBY)) {
+            if (db.equals(SqlUtil.DB_MYSQL) || db.equals(SqlUtil.DB_DERBY)) {
                 return "double";
             }
         }
@@ -2625,14 +2582,14 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         if (max < 0) {
             max = DB_MAX_ROWS;
         }
-        if (db.equals(DB_MYSQL)) {
+        if (db.equals(SqlUtil.DB_MYSQL)) {
             return " LIMIT " + max + " OFFSET " + skip + " ";
-        } else if (db.equals(DB_DERBY)) {
+        } else if (db.equals(SqlUtil.DB_DERBY)) {
             return " OFFSET " + skip + " ROWS ";
-        } else if (db.equals(DB_POSTGRES)) {
+        } else if (db.equals(SqlUtil.DB_POSTGRES)) {
             return " LIMIT " + max + " OFFSET " + skip + " ";
 
-        } else if (db.equals(DB_H2)) {
+        } else if (db.equals(SqlUtil.DB_H2)) {
             return " LIMIT " + max + " OFFSET " + skip + " ";
         }
 
@@ -2645,13 +2602,13 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
      * @return _more_
      */
     public boolean canDoSelectOffset() {
-        if (db.equals(DB_MYSQL)) {
+        if (db.equals(SqlUtil.DB_MYSQL)) {
             return true;
-        } else if (db.equals(DB_DERBY)) {
+        } else if (db.equals(SqlUtil.DB_DERBY)) {
             return true;
-        } else if (db.equals(DB_POSTGRES)) {
+        } else if (db.equals(SqlUtil.DB_POSTGRES)) {
             return true;
-        } else if (db.equals(DB_H2)) {
+        } else if (db.equals(SqlUtil.DB_H2)) {
             return true;
         }
 
