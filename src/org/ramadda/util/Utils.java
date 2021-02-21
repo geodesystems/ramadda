@@ -17,7 +17,7 @@
 package org.ramadda.util;
 
 
-import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.lang3.text.StrTokenizer;
 
 import org.w3c.dom.*;
 
@@ -3805,6 +3805,24 @@ public class Utils extends IO {
      * _more_
      *
      * @param l _more_
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    public static boolean containsIgnoreCase(List<String> l, String value) {
+        for (String s : l) {
+            if (s.equalsIgnoreCase(value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * _more_
+     *
+     * @param l _more_
      * @param delim _more_
      * @param inverse _more_
      *
@@ -3826,6 +3844,26 @@ public class Utils extends IO {
 
         return sb.toString();
 
+    }
+
+    /**
+     * _more_
+     *
+     * @param l _more_
+     * @param prefix _more_
+     * @param suffix _more_
+     *
+     * @return _more_
+     */
+    public static String wrap(List l, String prefix, String suffix) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < l.size(); i++) {
+            sb.append(prefix);
+            sb.append(l.get(i));
+            sb.append(suffix);
+        }
+
+        return sb.toString();
     }
 
 
