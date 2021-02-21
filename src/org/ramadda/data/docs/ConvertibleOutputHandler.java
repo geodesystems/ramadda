@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -329,7 +329,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
         boolean process   = request.get("process", false);
         boolean save      = request.get("save", false);
         String  lastInput = request.getString("lastinput", (String) null);
-        if (save && lastInput != null) {
+        if (save && (lastInput != null)) {
             getSessionManager().putSessionProperty(request,
                     "csv.lastinput." + entry.getId(), lastInput);
             if (getAccessManager().canEditEntry(request, entry)
@@ -348,11 +348,13 @@ public class ConvertibleOutputHandler extends OutputHandler {
             String processEntryId =
                 getStorageManager().getProcessDirEntryId(destDir.getName());
 
-            List<String>  newFiles      = new ArrayList<String>();
-            Entry         theEntry      = entry;
-            String        commandString = request.getString("commands", "");
+            List<String> newFiles      = new ArrayList<String>();
+            Entry        theEntry      = entry;
+            String       commandString = request.getString("commands", "");
+            //A hack because the Request changes any incoming "script" to "_script_"
+            commandString = commandString.replaceAll("_script_", "script");
 
-            StringBuilder tmp           = new StringBuilder();
+            StringBuilder tmp = new StringBuilder();
             //      System.err.println("commandString:" + commandString);
             for (String line : StringUtil.split(commandString, "\n")) {
                 String tline = line.trim();
@@ -368,7 +370,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             List<StringBuilder> toks =
                 Utils.parseMultiLineCommandLine(tmp.toString());
 
-	    //	    System.err.println("TOKS:" + toks);
+            //      System.err.println("TOKS:" + toks);
             List<List<String>> llines  = new ArrayList<List<String>>();
             List<String>       current = null;
             for (StringBuilder sb : toks) {
@@ -397,6 +399,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
             }
             CsvUtil prevCsvUtil = null;
 
+
+
             for (int i = 0; i < llines.size(); i++) {
                 List<String> args1        = llines.get(i);
                 String       runDirPrefix = request.getString("rundir",
@@ -424,7 +428,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     }
                     args.add(arg);
                 }
-                if ( !args.contains("-print") && !args.contains("-p") && !args.contains("-explode")
+                if ( !args.contains("-print") && !args.contains("-p")
+                        && !args.contains("-explode")
+                        && !args.contains("-script")
                         && !args.contains("-toxml")
                         && !args.contains("-printheader")
                         && !args.contains("-template")
@@ -435,10 +441,10 @@ public class ConvertibleOutputHandler extends OutputHandler {
                     args.add("-print");
                 }
                 currentArgs = args;
-		//		for(String arg: args)
-		//		    System.err.println("arg:" + arg+":");
+                //              for(String arg: args)
+                //                  System.err.println("arg:" + arg+":");
 
-		//		System.err.println("args:" + args);
+                //              System.err.println("args:" + args);
                 File runDir = null;
                 for (int j = 0; true; j++) {
                     runDir = new File(IOUtil.joinDir(destDir, ((j == 0)
@@ -463,15 +469,16 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 }
                 newFiles = new ArrayList<String>();
                 csvUtil  = new CsvUtil(args, runDir);
+                csvUtil.setPropertyProvider(getRepository());
                 if (prevCsvUtil != null) {
                     csvUtil.initWith(prevCsvUtil);
                 }
                 prevCsvUtil = csvUtil;
                 getSessionManager().putSessionProperty(request, "csvutil",
                         csvUtil);
-		//		System.err.println("RUN:");
+                //              System.err.println("RUN:");
                 for (Entry e : entries) {
-		    //		    System.err.println("\tentry:" + e);
+                    //              System.err.println("\tentry:" + e);
                     outputConvertProcessInner(request, process, e, csvUtil,
                             destDir, runDir, args, newFiles);
                     if ( !csvUtil.getOkToRun()) {
@@ -573,6 +580,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             Throwable inner = LogUtil.getInnerException(exc);
             String    s     = inner.getMessage();
             //Better messaging
+            boolean printStack = true;
             if (inner instanceof NumberFormatException) {
                 s = "Number format error " + s.replace("For", "for");
             }
@@ -585,7 +593,15 @@ public class ConvertibleOutputHandler extends OutputHandler {
             }
             s = new String(Utils.encodeBase64(s));
             s = Json.mapAndQuote("error", s);
-            inner.printStackTrace();
+            if (inner instanceof CsvUtil.MessageException) {
+                s          = ((CsvUtil.MessageException) inner).getMessage();
+                printStack = false;
+                s          = new String(Utils.encodeBase64(s));
+                s          = Json.mapAndQuote("message", s);
+            }
+            if (printStack) {
+                inner.printStackTrace();
+            }
 
             return new Result(s, "application/json");
 
@@ -623,13 +639,14 @@ public class ConvertibleOutputHandler extends OutputHandler {
                                  entry.getResource().getPath())) + ".csv");
 
             csvUtil.setOutputFile(f);
-	    //	    System.err.println("\tcalling csvUtil.run");
+            //      System.err.println("\tcalling csvUtil.run");
             csvUtil.run(files);
             if ( !csvUtil.getOkToRun()) {
                 return;
             }
             newFiles.addAll(csvUtil.getNewFiles());
-            if (Misc.equals("true", csvUtil.getContext().getProperty("nukeDb"))) {
+            if (Misc.equals("true",
+                            csvUtil.getContext().getProperty("nukeDb"))) {
                 request.ensureAdmin();
                 String sql = "drop table db_" + csvUtil.getDbId();
                 try {
@@ -637,7 +654,9 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 } catch (Exception exc) {}
             }
 
-            if (Misc.equals("true", csvUtil.getContext().getProperty("installPlugin"))) {
+            if (Misc.equals(
+                    "true",
+                    csvUtil.getContext().getProperty("installPlugin"))) {
                 request.ensureAdmin();
                 for (String file : csvUtil.getNewFiles()) {
                     if (file.endsWith("db.xml")) {
