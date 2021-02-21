@@ -522,6 +522,8 @@ var Csv = {
             cleanCmds+=line+"\n";
 	}
 	cmds = cleanCmds;
+	var isScript  = cmds.trim().startsWith("-script");
+	let debug = cmds.match("-debug");
 	var rawInput = Csv.getInput();
 	if((!args.process && !doExplode) || args.html) {
             if (Csv.maxRows != "") {
@@ -533,10 +535,11 @@ var Csv = {
 	if(!doExplode &&  cmds.indexOf("-count")<0  && cmds.indexOf("-db") <0 && !haveOutput)  
             args.csvoutput = "-print";
 
+
 	var raw = args.csvoutput=="-raw";
+	var csv = args.csvoutput=="-print";	
 	var showHtml = args.csvoutput == "-table";
 	var printHeader = args.csvoutput == "-printheader";
-
 	var url = Csv.getUrl(cmds,rawInput);
 
 	if(args.process)
@@ -555,12 +558,17 @@ var Csv = {
 	if(Csv.applyToSiblings) 
             url += "&applysiblings=true";
 
-	//    console.log(url);
+	
 	var jqxhr = $.getJSON( url, function(data) {
             if(data.error!=null) {
 		Csv.output(HtmlUtil.tag("pre",[],"Error:" + window.atob(data.error)));
 		return;
             }
+            if(data.message!=null) {
+		Csv.output(HtmlUtil.tag("pre",[],window.atob(data.message)));
+		return;
+            }
+	    
             if(Utils.isDefined(args.func)) {
 		//                args.func(data);
 		//                return;
@@ -581,10 +589,24 @@ var Csv = {
 		Csv.output(data.url);
 		return;
             } 
+
             if(Utils.isDefined(data.result)) {
 		let result = window.atob(data.result);
+		if(isScript) {
+		    Utils.makeDownloadFile("script.sh",result);
+		    return;
+		}
 		if(result.match(".*<(table|row|div).*")) showHtml = true;
-		if(!raw && showHtml) {
+		
+		if(debug) {
+		    result = result.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+		    result = "<pre>" + result+"</pre>";
+                    $("#convertcsv_output").html(result);
+		} else if(csv) {
+		    result = result.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+		    result = "<pre>" + result+"</pre>";
+                    $("#convertcsv_output").html(result);
+		} else if(!raw && showHtml) {
   		    let newresult = result.replace(/(<th>.*?)(#[0-9]+)(.*?<.*?>)([^<>]*?)(<.*?)<\/th>/g,"$1<a href='#' index='$2' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$2</a>$3<a href='#' label='$4' style='color:blue;' class=csv_header_field field='table' onclick=noop()  title='Add to input'>$4</a>$5</th>");
 		    result = newresult;
                     $("#convertcsv_output").html(result);
