@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -386,6 +386,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private Date startTime = new Date();
 
+
+    /** _more_ */
+    private HashSet blacklist;
 
     /** _more_ */
     private Hashtable<String, TypeHandler> typeHandlersMap =
@@ -1025,6 +1028,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Call this here to load initial properties
         initAttributes();
 
+
+        File blacklistFile = new File(getStorageManager().getRepositoryDir()
+                                      + "/ipblacklist.txt");
+        if (blacklistFile.exists()) {
+            try {
+                blacklist = new HashSet();
+                for (String ip :
+                        StringUtil.split(IOUtil.readContents(blacklistFile),
+                                         "\n", true, true)) {
+                    getLogManager().logInfoAndPrint(
+                        "RAMADDA: Add blacklist ip:" + ip);
+                    blacklist.add(ip);
+                }
+            } catch (Exception exc) {
+                System.err.println("Error reading blacklist file:" + exc);
+            }
+        }
+
+
+
+
         //This depends on the html templates which depends on the 
         getMetadataManager().loadMetadataHandlers(getPluginManager());
         clearAllCaches();
@@ -1040,6 +1064,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         statusMsg.append("  Java version: "
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
         getLogManager().logInfoAndPrint(statusMsg.toString());
+
+
 
         if (getProperty("ramadda.beep", false)) {
             Toolkit.getDefaultToolkit().beep();
@@ -3330,6 +3356,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+        if (blacklist != null) {
+            String ip = request.getIpRaw();
+            if ((ip != null) && blacklist.contains(ip)) {
+                return makeBlockedResult(request);
+            }
+        }
+
+        String requestPath = request.getRequestPath().replaceAll("//", "/");
+        //Check for scanners
+        if (requestPath.endsWith(".php")) {
+            return makeBlockedResult(request);
+        }
+
+
+
         if (debug) {
             getLogManager().debug("user:" + request.getUser() + " -- "
                                   + request.toString());
@@ -3537,6 +3578,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         return sb.toString();
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     */
+    public Result makeBlockedResult(Request request) {
+        getLogManager().logRequest(request, Result.RESPONSE_BLOCKED);
+        Misc.sleepSeconds(10);
+        Result r = new Result("", new StringBuilder());
+        r.setResponseCode(Result.RESPONSE_NOTFOUND);
+
+        return r;
+    }
+
 
     /**
      * _more_
@@ -3978,16 +4037,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getHtdocsFile(Request request) throws Exception {
 
-        String path = request.getRequestPath().replaceAll("//", "/");
-        //Check for scanners
-        if (path.endsWith(".php")) {
-            Misc.sleepSeconds(60);
-            Result r = new Result("", new StringBuilder());
-            r.setResponseCode(Result.RESPONSE_NOTFOUND);
-
-            return r;
-        }
-
+        String path       = request.getRequestPath().replaceAll("//", "/");
         String urlBase    = getUrlBase();
         String htdocsBase = getPageHandler().makeHtdocsUrl("");
         if (path.startsWith(urlBase)) {
@@ -4168,31 +4218,34 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (alias.endsWith("/")) {
                 alias = alias.substring(0, alias.length() - 1);
             }
-	    if (Utils.stringDefined(alias)) {
-		String       childPath = null;
-		List<String> toks      = StringUtil.splitUpTo(alias, "/", 2);
-		if(toks.size()>0) {
-		    Entry entry = getEntryManager().getEntryFromAlias(request,
-								      toks.get(0));
-		    if ((toks.size() == 2) && (entry != null)) {
-			entry = getEntryManager().findEntryFromName(request,
-								    entry.getFullName() + Entry.PATHDELIMITER
-								    + toks.get(1), request.getUser(), false);
-		    }
-		    if (entry == null) {
-			if ( !tryingOnePathAsAlias) {
-			    Result result = getRepository().makeErrorResult(request,
-									    "Could not find aliased entry:"
-									    + HtmlUtils.sanitizeString(alias));
-			    result.setResponseCode(Result.RESPONSE_NOTFOUND);
-			    return result;
-			} else {
-			    return null;
-			}
-		    }
-		    request.put(ARG_ENTRYID, entry.getId());
-		}
-	    }
+            if (Utils.stringDefined(alias)) {
+                String       childPath = null;
+                List<String> toks      = StringUtil.splitUpTo(alias, "/", 2);
+                if (toks.size() > 0) {
+                    Entry entry =
+                        getEntryManager().getEntryFromAlias(request,
+                            toks.get(0));
+                    if ((toks.size() == 2) && (entry != null)) {
+                        entry = getEntryManager().findEntryFromName(request,
+                                entry.getFullName() + Entry.PATHDELIMITER
+                                + toks.get(1), request.getUser(), false);
+                    }
+                    if (entry == null) {
+                        if ( !tryingOnePathAsAlias) {
+                            Result result =
+                                getRepository().makeErrorResult(request,
+                                    "Could not find aliased entry:"
+                                    + HtmlUtils.sanitizeString(alias));
+                            result.setResponseCode(Result.RESPONSE_NOTFOUND);
+
+                            return result;
+                        } else {
+                            return null;
+                        }
+                    }
+                    request.put(ARG_ENTRYID, entry.getId());
+                }
+            }
 
 
             //For now, don't redirect
