@@ -3356,25 +3356,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-
-	//A hack (should put this in a user-agent blacklist file sometime
-        String userAgent = request.getUserAgent();
-	if(userAgent!=null) {
-	    System.err.println("checking:" + userAgent);
-	    if(userAgent.indexOf("OpenVAS")>=0) {
-		System.err.println("blocked");
-		return makeBlockedResult(request);
-	    }
-	}
-	
-
-
         if (blacklist != null) {
             String ip = request.getIpRaw();
             if ((ip != null) && blacklist.contains(ip)) {
                 return makeBlockedResult(request);
             }
         }
+
+	//A hack (should put this in a user-agent blacklist file sometime
+        String userAgent = request.getUserAgent();
+	if(userAgent!=null) {
+	    if(userAgent.indexOf("OpenVAS")>=0) {
+		return makeBlockedResult(request);
+	    }
+	}
+
 
         String requestPath = request.getRequestPath().replaceAll("//", "/");
         //Check for scanners
