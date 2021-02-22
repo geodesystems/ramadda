@@ -1613,6 +1613,11 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataView(Request request) throws Exception {
         long           t1           = System.currentTimeMillis();
         Entry          entry        = getEntryManager().getEntry(request);
+	if(entry==null) {
+	    Result result = getRepository().makeErrorResult(request, "No entry");
+	    result.setResponseCode(Result.RESPONSE_NOTFOUND);
+	    return result;
+	}
         List<Metadata> metadataList = getMetadata(entry);
         Metadata metadata = findMetadata(request, entry,
                                          request.getString(ARG_METADATA_ID,
