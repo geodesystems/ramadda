@@ -2144,7 +2144,7 @@ public class SqlUtil {
             return null;
         }
         //IMPORTANT: if this screws up and we can have sql injection attacks
-        String s = value.toString().replaceAll("[^\\*\\.,\\(\\)a-zA-Z0-9_]",
+        String s = value.toString().replaceAll("[^\\s\\*\\.,\\(\\)a-zA-Z0-9_]",
                        "_X_");
 
         return s;
@@ -2254,9 +2254,11 @@ public class SqlUtil {
             String what, List tables, Clause clause,
             String sqlBetweenFromAndWhere, String suffixSql)
             throws Exception {
+	String stmt = getSelectStatement(what, tables,
+					 clause, sqlBetweenFromAndWhere, suffixSql);
+	//	System.err.println("stmt:" + stmt);
         PreparedStatement statement =
-            connection.prepareStatement(getSelectStatement(what, tables,
-                clause, sqlBetweenFromAndWhere, suffixSql));
+            connection.prepareStatement(stmt);
         if (connectionManager != null) {
             connectionManager.initSelectStatement(statement);
         }
