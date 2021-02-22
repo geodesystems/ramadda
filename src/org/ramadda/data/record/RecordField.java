@@ -462,7 +462,6 @@ public class RecordField {
         }
 
         if (isGroup) {
-            System.err.println("isGroup");
             items.add("isGroup");
             items.add("true");
         }
