@@ -102,10 +102,9 @@ public class BlobTypeHandler extends GenericTypeHandler {
         Hashtable properties = null;
         if (properties == null) {
             Object[] values = getEntryValues(entry);
-            if ((values != null) && (values.length > 0)
-                    && (values[getValuesIndex()] != null)) {
-                properties = (Hashtable) Repository.decodeObject(
-                    (String) values[getValuesIndex()]);
+	    int index = getValuesIndex();
+	    if (values != null && index>=0 && index<values.length && values[index] != null) {
+		properties = (Hashtable) Repository.decodeObject((String) values[index]);
             }
             if (properties == null) {
                 properties = new Hashtable();

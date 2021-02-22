@@ -331,7 +331,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     @Override
     public int getValuesIndex() {
-        return PointTypeHandler.IDX_LAST + 1;
+        return RecordTypeHandler.IDX_PROPERTIES;
     }
 
 
