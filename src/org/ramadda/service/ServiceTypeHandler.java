@@ -51,14 +51,17 @@ public class ServiceTypeHandler extends OrderedGroupTypeHandler {
     /** _more_ */
     public static final String TYPE_SERVICE = "type_service";
 
-    /** _more_ */
-    public static final int IDX_SORT_ORDER = 0;
+    private static int IDX = 0;
+
 
     /** _more_ */
-    public static final int IDX_PARAMETERS = 1;
+    public static final int IDX_SORT_ORDER = IDX++;
 
     /** _more_ */
-    public static final int IDX_LAST = 1;
+    public static final int IDX_PARAMETERS = IDX++;
+
+    /** _more_ */
+    public static final int IDX_LAST = IDX_PARAMETERS;
 
 
     /** _more_ */

@@ -48,7 +48,9 @@ import java.util.List;
 public class ServiceContainerTypeHandler extends ServiceTypeHandler {
 
     /** _more_ */
-    public static final int IDX_SERIAL = IDX_LAST + 1;
+    private  static int IDX = ServiceTypeHandler.IDX_LAST + 1;
+
+    public static final int IDX_SERIAL = IDX++;
 
     /**
      * _more_

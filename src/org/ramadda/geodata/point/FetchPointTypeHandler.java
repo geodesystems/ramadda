@@ -48,9 +48,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
     private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssX";
 
     /** _more_ */
-    private static int IDX =
-        org.ramadda.data.services.RecordTypeHandler.IDX_LAST + 1;
-
+    private static int IDX = PointTypeHandler.IDX_LAST + 1;
 
     /** _more_ */
     public static final int IDX_SOURCE_URL = IDX++;

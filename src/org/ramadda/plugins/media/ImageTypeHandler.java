@@ -37,9 +37,10 @@ import java.util.Hashtable;
 public class ImageTypeHandler extends GenericTypeHandler {
 
 
-    public static final int IDX_PROXY = 0;
-    public static final int IDX_FILENAME = 1;
-    public static final int IDX_LAST = 1;    
+    public static int IDX=0;
+    public static final int IDX_PROXY = IDX++;
+    public static final int IDX_FILENAME = IDX++;
+    public static final int IDX_LAST = IDX_FILENAME;    
     
 
     /**

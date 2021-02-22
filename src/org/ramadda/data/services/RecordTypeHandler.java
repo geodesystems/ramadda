@@ -81,7 +81,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public static final int IDX_PROPERTIES = IDX++;
 
     /** _more_ */
-    public static final int IDX_LAST = IDX;
+    public static final int IDX_LAST = IDX_PROPERTIES;
 
     /** _more_ */
     private RecordFileFactory recordFileFactory;

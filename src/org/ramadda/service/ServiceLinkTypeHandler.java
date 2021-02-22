@@ -53,7 +53,10 @@ import java.util.List;
 public class ServiceLinkTypeHandler extends ServiceTypeHandler {
 
     /** _more_ */
-    public static final int IDX_LINK_ID = IDX_LAST + 1;
+    private  static int IDX = ServiceTypeHandler.IDX_LAST + 1;
+
+    public static final int IDX_LINK_ID = IDX++;
+
 
     /**
      * _more_

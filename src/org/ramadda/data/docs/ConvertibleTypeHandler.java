@@ -51,7 +51,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
 
 
     /** _more_ */
-    private static int IDX = 0;  //PointTypeHandler.IDX_LAST;
+    private static int IDX = 0;  
 
     //Have these here so we can act like a point entry type
 
@@ -61,14 +61,11 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
     /** _more_          */
     public static final int IDX_PROPERTIES = IDX++;
 
-
     /** _more_ */
     public static final int IDX_COMMANDS = IDX++;
 
-
     /** _more_ */
-    public static final int IDX_LAST = IDX;
-
+    public static final int IDX_LAST = IDX_COMMANDS;
 
 
     /**

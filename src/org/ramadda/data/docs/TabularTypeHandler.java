@@ -66,7 +66,7 @@ public class TabularTypeHandler extends MsDocTypeHandler {
 
 
     /** _more_ */
-    private static int IDX = MsDocTypeHandler.IDX_LAST;
+    private static int IDX = MsDocTypeHandler.IDX_LAST+1;
 
     /** _more_ */
     public static final int IDX_SHOWTABLE = IDX++;
@@ -108,7 +108,7 @@ public class TabularTypeHandler extends MsDocTypeHandler {
     public static final int IDX_CONVERT = IDX++;
 
     /** _more_ */
-    public static final int IDX_LAST = IDX;
+    public static final int IDX_LAST = IDX_CONVERT;
 
 
 
