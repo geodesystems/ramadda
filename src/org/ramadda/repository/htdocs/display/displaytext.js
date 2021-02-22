@@ -98,14 +98,14 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
-        processText: function(cnt) {
+        processText: function(cnt,fields) {
             let records = this.filterData();
             if (!records) {
                 return null;
             }
             var fieldInfo = {};
             var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
+            fields = fields || this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
             var strings = this.getFieldsByType(fields, "string");
@@ -198,22 +198,22 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
+    this.defineProperties([
+	{label:"Wordcloud Properties"},
+	{p:'termField'},
+	{p:'fields'},	
+	{p:'tableFields'},
+	{p:'countField'},
+	{p:'tokenize',wikiValue:true},
+	{p:'handleClick',wikiValue:true},
+	{p:'showFieldLabel',wikiValue:true},
+	{p:'showRecords'},
+	{p:'combined'},
+	{p:'shape',wikiValue:'rectangular'},
+	{p:'stopWords',wikiValue:'word1,word2'},
+	{p:'showFieldLabel',wikiValue:'false'}	
+    ]);
     $.extend(this, {
-	getWikiEditorTags: function() {
-	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
-				    [
-					"label:Wordlcloud Attributes",
-					'termField=',
-					'tokenize=true',
-					'handleClick="true"',
-					'showFieldLabel="true"',
-					'tokenize="true"',
-					'tableFields=',
-					'showRecords="true"',
-					'combined="false"',
-					'shape="rectangle"'
-				    ])},
-
         getContentsStyle: function() {
             return "";
         },
@@ -223,11 +223,11 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
         updateUI: function() {
 	    if(!this.loadedJq) {
 		this.loadedJq = true;
-		var includes = "<link rel='stylesheet' href='" + ramaddaBaseUrl + "/lib/jqcloud.min.css'>";
+		let includes = "<link rel='stylesheet' href='" + ramaddaBaseUrl + "/lib/jqcloud.min.css'>";
 		includes += "<script src='" + ramaddaBaseUrl + "/lib/jqcloud.min.js'></script>";
 		this.writeHtml(ID_DISPLAY_TOP, includes);
 		let _this = this;
-		var func = function() {
+		let func = function() {
                     _this.updateUIInner();
 		};
 		setTimeout(func, 10);
@@ -238,10 +238,10 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
         updateUIInner: function() {
             let records = this.filterData();
 	    if(records == null) return;
-            var options = {
+            let options = {
                 autoResize: true,
             };
-            var colors = this.getColorTable(true);
+            let colors = this.getColorTable(true);
             if (colors) {
                 options.colors = colors,
                 options.classPattern = null;
@@ -256,9 +256,9 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 	    let countField = this.getFieldById(null, this.getProperty("countField"));
 	    let termField = this.getFieldById(null, this.getProperty("termField"));
 	    if(countField && termField) {
-		var minLength = parseInt(this.getProperty("minLength", 0));
-		var maxLength = parseInt(this.getProperty("maxLength", 100));
-		var stopWords = this.getProperty("stopWords");
+		let minLength = parseInt(this.getProperty("minLength", 0));
+		let maxLength = parseInt(this.getProperty("maxLength", 100));
+		let stopWords = this.getProperty("stopWords");
 		if (stopWords) {
                     if (stopWords == "default") {
 			stopWords = Utils.stopWords;
@@ -283,8 +283,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 if (this.getProperty("handleClick", true)) {
                     handlers = {
                         click: function(w) {
-                            var word = w.target.innerText;
-                            _this.showRows(records, null, word);
+                            let word = w.target.innerText;
+                            _this.showRows(records, null, word, fields);
                         }
                     }
                 };
@@ -303,35 +303,35 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 $("#" + this.getDomId("words")).jQCloud(info, options);
 		return
 	    }
-            var fieldInfo = this.processText();
+            let allFields = this.getData().getRecordFields();
+            let fields = termField?[termField]:this.getSelectedFields(allFields);
+            let fieldInfo = this.processText(null,fields);
             if (fieldInfo == null) return;
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            var strings = this.getFieldsByType(fields, "string");
+            let strings = this.getFieldsByType(fields, "string");
             let _this = this;
-            var divs = "";
-            var words = [];
-            var maxWords = parseInt(this.getProperty("maxWords", -1));
-            var minCount = parseInt(this.getProperty("minCount", 0));
-            var width = (100 * 1 / strings.length) + "%;";
+            let divs = "";
+            let words = [];
+            let maxWords = parseInt(this.getProperty("maxWords", -1));
+            let minCount = parseInt(this.getProperty("minCount", 0));
+            let width = (100 * 1 / strings.length) + "%;";
             for (a in fieldInfo) {
-                var fi = fieldInfo[a];
+                let fi = fieldInfo[a];
                 let field = fi.field;
-                var handlers = null;
+                let handlers = null;
                 if (this.getProperty("handleClick", true)) {
                     handlers = {
                         click: function(w) {
-                            var word = w.target.innerText;
-                            _this.showRows(records, field, word);
+                            let word = w.target.innerText;
+                            _this.showRows(records, field, word, fields);
                         }
                     }
                 };
 
-                var counts = [];
+                let counts = [];
                 for (word in fi.counts) {
-                    var count = fi.counts[word];
+                    let count = fi.counts[word];
                     counts.push({
                         word: word,
                         count: count
@@ -343,31 +343,31 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     return 0;
                 });
                 if (minCount > 0) {
-                    var tmp = [];
-                    for (var i = 0; i < counts.length; i++) {
+                    let tmp = [];
+                    for (let i = 0; i < counts.length; i++) {
                         if (counts[i].count >= minCount)
                             tmp.push(counts[i]);
                     }
                     counts = tmp;
                 }
                 if (maxWords > 0) {
-                    var tmp = [];
-                    for (var i = 0; i <= maxWords && i < counts.length; i++) {
+                    let tmp = [];
+                    for (let i = 0; i <= maxWords && i < counts.length; i++) {
                         if (counts[i].count >= minCount)
                             tmp.push(counts[i]);
                     }
                     counts = tmp;
                 }
 
-                for (var wordIdx = 0; wordIdx < counts.length; wordIdx++) {
-                    var word = counts[wordIdx];
-                    var obj1 = {
+                for (let wordIdx = 0; wordIdx < counts.length; wordIdx++) {
+                    let word = counts[wordIdx];
+                    let obj1 = {
                         weight: word.count,
 			html:{style:"cursor:pointer;"},
                         handlers: handlers,
                         text: word.word,
                     };
-                    var obj2 = {
+                    let obj2 = {
                         weight: word.count,
 			html:{style:"cursor:pointer;"},
                         handlers: handlers,
@@ -376,7 +376,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     fi.words.push(obj1);
                     words.push(obj2);
                 }
-                var label = "";
+                let label = "";
                 if (this.getProperty("showFieldLabel", true))
                     label = HU.b(fi.field.getLabel());
 
@@ -391,44 +391,44 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             } else {
                 this.writeHtml(ID_DISPLAY_CONTENTS, divs);
                 for (a in fieldInfo) {
-                    var fi = fieldInfo[a];
+                    let fi = fieldInfo[a];
                     $("#" + fi.divId).jQCloud(fi.words, options);
                 }
             }
         },
-        showRows: function(records, field, word) {
+        showRows: function(records, field, word, stringFields) {
 	    if(!field)
 		field = this.getFieldById(null, this.getProperty("termField"));
-            var tokenize = this.getProperty("tokenize", false);
-            if (fields && word.startsWith(field.getLabel() + ":")) {
+            let tokenize = this.getProperty("tokenize", false);
+            if (stringFields && word.startsWith(field.getLabel() + ":")) {
                 word = word.replace(field.getLabel() + ":", "");
             }
-            var tableFields;
+            let tableFields;
             if (this.getProperty("tableFields")) {
                 tableFields = {};
-                var list = this.getProperty("tableFields").split(",");
+                let list = this.getProperty("tableFields").split(",");
                 for (a in list) {
                     tableFields[list[a]] = true;
                 }
             }
-            var fields = this.getData().getRecordFields();
-            var html = "";
-            var data = [];
-            var header = [];
+            let fields = this.getData().getRecordFields();
+            let html = "";
+            let data = [];
+            let header = [];
             data.push(header);
-            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                var f = fields[fieldIdx];
+            for (let fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                let f = fields[fieldIdx];
                 if (tableFields && !tableFields[f.getId()]) continue;
                 header.push(fields[fieldIdx].getLabel());
             }
-            var showRecords = this.getProperty("showRecords", false);
+            let showRecords = this.getProperty("showRecords", false);
             if (showRecords) {
                 html += "<br>";
             }
-            var re = new RegExp("(\\b" + word + "\\b)", 'i');
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var row = this.getDataValues(records[rowIdx]);
-                var value =  row[field.getIndex()];
+            let re = new RegExp("(\\b" + word + "\\b)", 'i');
+            for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                let row = this.getDataValues(records[rowIdx]);
+                let value =  row[field.getIndex()];
                 if (tokenize) {
                     if (!value.match(re)) {
                         continue;
@@ -438,12 +438,12 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                         continue;
                     }
                 }
-                var tuple = [];
+                let tuple = [];
                 data.push(tuple);
-                for (var col = 0; col < fields.length; col++) {
-                    var f = fields[col];
+                for (let col = 0; col < fields.length; col++) {
+                    let f = fields[col];
                     if (tableFields && !tableFields[f.getId()]) continue;
-                    var v = row[f.getIndex()];
+                    let v = row[f.getIndex()];
 		    if(v.getTime) {
 			v = {v:v,f:this.formatDate(v)};
 		    } else {
@@ -465,12 +465,12 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             if (showRecords) {
                 this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(html));
             } else {
-                var prefix = "";
+                let prefix = "";
                 if (!tokenize) {
                     prefix = (field?field.getLabel():"Word") + "=" + word
                 }
                 this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(prefix + HU.div([ID, this.getDomId("table"), STYLE, HU.css('height','300px')], "")));
-                var dataTable = google.visualization.arrayToDataTable(data);
+                let dataTable = google.visualization.arrayToDataTable(data);
                 this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
                 this.chart.draw(dataTable, {
                     allowHtml: true
