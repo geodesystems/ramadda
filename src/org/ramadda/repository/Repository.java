@@ -4164,31 +4164,34 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
-        if (alias != null) {
+        if (Utils.stringDefined(alias)) {
             if (alias.endsWith("/")) {
                 alias = alias.substring(0, alias.length() - 1);
             }
-            String       childPath = null;
-            List<String> toks      = StringUtil.splitUpTo(alias, "/", 2);
-            Entry entry = getEntryManager().getEntryFromAlias(request,
-                              toks.get(0));
-            if ((toks.size() == 2) && (entry != null)) {
-                entry = getEntryManager().findEntryFromName(request,
-                        entry.getFullName() + Entry.PATHDELIMITER
-                        + toks.get(1), request.getUser(), false);
-            }
-            if (entry == null) {
-                if ( !tryingOnePathAsAlias) {
-                    throw new RepositoryUtil.MissingEntryException(
-                        "Could not find aliased entry:"
-                        + HtmlUtils.sanitizeString(alias));
-                } else {
-                    return null;
-                }
+	    if (Utils.stringDefined(alias)) {
+		String       childPath = null;
+		List<String> toks      = StringUtil.splitUpTo(alias, "/", 2);
+		if(toks.size()>0) {
+		    Entry entry = getEntryManager().getEntryFromAlias(request,
+								      toks.get(0));
+		    if ((toks.size() == 2) && (entry != null)) {
+			entry = getEntryManager().findEntryFromName(request,
+								    entry.getFullName() + Entry.PATHDELIMITER
+								    + toks.get(1), request.getUser(), false);
+		    }
+		    if (entry == null) {
+			if ( !tryingOnePathAsAlias) {
+			    throw new RepositoryUtil.MissingEntryException(
+									   "Could not find aliased entry:"
+									   + HtmlUtils.sanitizeString(alias));
+			} else {
+			    return null;
+			}
+		    }
+		    request.put(ARG_ENTRYID, entry.getId());
+		}
+	    }
 
-            }
-
-            request.put(ARG_ENTRYID, entry.getId());
 
             //For now, don't redirect
             return getEntryManager().processEntryShow(request);
