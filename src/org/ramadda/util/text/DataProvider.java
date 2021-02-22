@@ -807,10 +807,11 @@ public abstract class DataProvider {
             if (results == null) {
                 return null;
             }
-            ResultSetMetaData rsmd    = results.getMetaData();
+	    //            ResultSetMetaData rsmd    = results.getMetaData();
             List values = new ArrayList();
             for (int i = 0; i < this.columnCount; i++) {
-                values.add(results.getString(i + 1) +" name:" + rsmd.getColumnName(i+1));
+                values.add(results.getString(i + 1));
+		//                values.add(results.getString(i + 1) +" name:" + rsmd.getColumnName(i+1));
             }
 
             return new Row(values);
