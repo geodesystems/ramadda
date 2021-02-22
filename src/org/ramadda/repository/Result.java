@@ -49,6 +49,8 @@ public class Result {
     /** Internal error response code */
     public static final int RESPONSE_INTERNALERROR = 500;
 
+    public static final int RESPONSE_BLOCKED = 777;    
+
     /** HTML mime type */
     public static String TYPE_HTML = "text/html";
 
