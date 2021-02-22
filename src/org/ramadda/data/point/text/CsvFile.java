@@ -169,6 +169,11 @@ public class CsvFile extends TextFile {
 		    commands.add("-print");
                 CsvUtil csvUtil = new CsvUtil(commands,
                                       new BufferedOutputStream(fos), null);
+
+
+		RecordFileContext ctx = getRecordFileContext();
+		if(ctx!=null)
+		    csvUtil.setPropertyProvider(ctx.getPropertyProvider());
 		runCsvUtil(csvUtil, buffered);
                 fos.flush();
                 fos.close();

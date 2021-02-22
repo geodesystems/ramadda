@@ -38,6 +38,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.grid.LatLonGrid;
@@ -144,6 +145,11 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
         return null;
     }
+
+    public PropertyProvider getPropertyProvider() {
+	return getRepository();
+    }
+
 
     /**
      * _more_

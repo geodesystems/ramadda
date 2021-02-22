@@ -20,6 +20,7 @@ package org.ramadda.data.record;
 import org.ramadda.data.record.filter.*;
 
 
+import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.Utils;
 
 
@@ -59,4 +60,6 @@ public interface RecordFileContext {
      * @return _more_
      */
     public String getFieldProperty(String field, String key);
+
+    public PropertyProvider getPropertyProvider();
 }

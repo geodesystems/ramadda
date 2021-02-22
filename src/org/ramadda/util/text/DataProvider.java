@@ -706,10 +706,8 @@ public abstract class DataProvider {
         public void initialize(CsvUtil csvUtil, TextReader ctx,
                                NamedInputStream stream)
                 throws Exception {
-	    System.err.println("db:" + db+":");
             String jdbcUrl = csvUtil.getProperty("csv_" + db + "_url");
             if (jdbcUrl == null) {
-		System.err.println("no jdbc url:" + csvUtil.getProperty("csv_sakila_url"));
                 String dbs = csvUtil.getProperty("csv_dbs");
                 throw new IllegalArgumentException("Unknown database:" + db
                         + " " + ((dbs == null)

@@ -223,7 +223,9 @@ public class CsvUtil {
     public String getProperty(String name) {
 	if(propertyProvider!=null) {
 	    String value =  propertyProvider.getProperty(name,null);
-	    if(value!=null) return value;
+	    if(value!=null) return value; 
+	} else {
+	    System.err.println("CsvUtil.getProperty: no PropertyProvider set");
 	}
 	return System.getenv(name);
     }

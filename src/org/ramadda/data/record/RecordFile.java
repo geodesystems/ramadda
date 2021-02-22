@@ -193,6 +193,10 @@ public abstract class RecordFile {
         this.context    = context;
     }
 
+    public RecordFileContext getRecordFileContext() {
+	return context;
+    }
+
     /**
      * Set the CacheFile property.
      *
