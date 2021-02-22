@@ -3366,7 +3366,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	//A hack (should put this in a user-agent blacklist file sometime
         String userAgent = request.getUserAgent();
 	if(userAgent!=null) {
-	    if(userAgent.indexOf("OpenVAS")>=0) {
+	    if(userAgent.indexOf("OpenVAS")>=0 || userAgent.indexOf("GBN")>=0) {
 		return makeBlockedResult(request);
 	    }
 	}
