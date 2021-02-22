@@ -174,6 +174,8 @@ public class CsvFile extends TextFile {
 		RecordFileContext ctx = getRecordFileContext();
 		if(ctx!=null)
 		    csvUtil.setPropertyProvider(ctx.getPropertyProvider());
+		else
+		    System.err.println("No RecordFileContext set");
 		runCsvUtil(csvUtil, buffered);
                 fos.flush();
                 fos.close();

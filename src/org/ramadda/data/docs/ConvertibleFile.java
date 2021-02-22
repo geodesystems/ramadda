@@ -65,10 +65,10 @@ public class ConvertibleFile extends CsvFile {
      *
      * @throws IOException on badness
      */
-    public ConvertibleFile(Entry entry, List<String> commands,
+    public ConvertibleFile(ConvertibleTypeHandler cth, Entry entry, List<String> commands,
                            String filename)
             throws IOException {
-        super(filename);
+        super(filename,cth,null);
         this.entry    = entry;
         this.commands = commands;
     }

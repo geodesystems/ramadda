@@ -126,7 +126,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
         commands = Utils.join(args, " ", false);
         String path = getPathForRecordEntry(entry, commands,
                                             requestProperties);
-        ConvertibleFile file = new ConvertibleFile(entry, args, path);
+        ConvertibleFile file = new ConvertibleFile(this, entry, args, path);
 
         return file;
     }
