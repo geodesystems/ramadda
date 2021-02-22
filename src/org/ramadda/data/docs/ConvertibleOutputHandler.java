@@ -22,7 +22,6 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.service.*;
 import org.ramadda.util.FileInfo;
-import org.ramadda.util.GoogleChart;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
@@ -255,6 +254,18 @@ public class ConvertibleOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.href(url, f.getName(), "target=_output"));
     }
 
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public ConvertibleTypeHandler getTypeHandler(Entry entry) {
+        return (ConvertibleTypeHandler) entry.getTypeHandler();
+    }
+
     /**
      * _more_
      *
@@ -353,22 +364,8 @@ public class ConvertibleOutputHandler extends OutputHandler {
             String       commandString = request.getString("commands", "");
             //A hack because the Request changes any incoming "script" to "_script_"
             commandString = commandString.replaceAll("_script_", "script");
-
-            StringBuilder tmp = new StringBuilder();
-            //      System.err.println("commandString:" + commandString);
-            for (String line : StringUtil.split(commandString, "\n")) {
-                String tline = line.trim();
-                if (tline.startsWith("-quit")) {
-                    break;
-                }
-                if ( !tline.startsWith("#")) {
-                    tmp.append(line);
-                    tmp.append("\n");
-                }
-            }
-
             List<StringBuilder> toks =
-                Utils.parseMultiLineCommandLine(tmp.toString());
+                getTypeHandler(entry).tokenizeCommands(commandString);
 
             //      System.err.println("TOKS:" + toks);
             List<List<String>> llines  = new ArrayList<List<String>>();
@@ -398,8 +395,6 @@ public class ConvertibleOutputHandler extends OutputHandler {
                            - 1).add(request.getString("csvoutput"));
             }
             CsvUtil prevCsvUtil = null;
-
-
 
             for (int i = 0; i < llines.size(); i++) {
                 List<String> args1        = llines.get(i);

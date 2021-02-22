@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -82,8 +82,6 @@ public class TabularTypeHandler extends MsDocTypeHandler {
 
     /** _more_ */
     public static final int IDX_SKIPCOLUMNS = IDX++;
-
-
 
     /** _more_ */
     public static final int IDX_USEFIRSTROW = IDX++;

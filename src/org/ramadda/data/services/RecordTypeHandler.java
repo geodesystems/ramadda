@@ -72,14 +72,16 @@ import java.util.List;
 public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants,
         RecordFileContext {
 
-    /** _more_ */
-    public static final int IDX_RECORD_COUNT = 0;
+    private  static int IDX = 0;
 
     /** _more_ */
-    public static final int IDX_PROPERTIES = 1;
+    public static final int IDX_RECORD_COUNT = IDX++;
 
     /** _more_ */
-    public static final int IDX_LAST = IDX_PROPERTIES;
+    public static final int IDX_PROPERTIES = IDX++;
+
+    /** _more_ */
+    public static final int IDX_LAST = IDX;
 
     /** _more_ */
     private RecordFileFactory recordFileFactory;
@@ -249,6 +251,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                      List<String> tabTitles,
                                      List<String> tabContents) {
         //        super.addToInformationTabs(request, entry, tabTitles, tabContents);
+	if(!shouldProcessResource(request, entry)) return;
+
         try {
             RecordOutputHandler outputHandler = getRecordOutputHandler();
             if (outputHandler != null) {
@@ -612,7 +616,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    private RecordFile doMakeRecordFile(Entry entry, String className,
+    public RecordFile doMakeRecordFile(Entry entry, String className,
                                         Hashtable properties,
                                         Hashtable requestProperties)
             throws Exception {
@@ -743,6 +747,12 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                 List<ServiceInfo> services) {
         super.getServiceInfos(request, entry, services);
         getRecordOutputHandler().getServiceInfos(request, entry, services);
+    }
+
+
+
+      public boolean shouldProcessResource(Request request, Entry entry) {
+	return entry.getResource().hasResource();
     }
 
 

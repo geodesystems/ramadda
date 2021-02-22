@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.ramadda.util.GoogleChart;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Json;
+import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 import org.ramadda.util.text.CsvUtil;
@@ -42,7 +43,6 @@ import org.ramadda.util.text.Filter;
 import org.ramadda.util.text.Processor;
 import org.ramadda.util.text.SearchField;
 import org.ramadda.util.text.TextReader;
-import org.ramadda.util.NamedInputStream;
 
 import org.w3c.dom.*;
 
@@ -62,12 +62,13 @@ import java.io.*;
 
 import java.net.*;
 
-import java.util.zip.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+
+import java.util.zip.*;
 
 
 
@@ -606,35 +607,38 @@ public class TabularOutputHandler extends OutputHandler {
         String      suffix      = "";
 
         if ((file != null) && file.exists()) {
-	    if (file.toString().toLowerCase().endsWith(".zip")) {
-		InputStream    fis = IO.getInputStream(file.toString());
-		ZipInputStream zin = new ZipInputStream(fis);
-		ZipEntry       ze  = null;
-		while ((ze = zin.getNextEntry()) != null) {
-		    if (ze.isDirectory()) {
-			continue;
-		    }
-		    String p = ze.getName().toLowerCase();
-		    if (p.endsWith(".csv") || p.endsWith(".tsv")) {
-			inputStream =  zin;
-			suffix="csv";
-			break;
-		    }
-		    //Apple health
-		    if (p.equals("export.xml")) {
-			inputStream =  zin;
-			suffix="xml";
-			break;
-		    }
-		}
-	    }
+            if (file.toString().toLowerCase().endsWith(".zip")) {
+                InputStream    fis = IO.getInputStream(file.toString());
+                ZipInputStream zin = new ZipInputStream(fis);
+                ZipEntry       ze  = null;
+                while ((ze = zin.getNextEntry()) != null) {
+                    if (ze.isDirectory()) {
+                        continue;
+                    }
+                    String p = ze.getName().toLowerCase();
+                    if (p.endsWith(".csv") || p.endsWith(".tsv")) {
+                        inputStream = zin;
+                        suffix      = "csv";
+
+                        break;
+                    }
+                    //Apple health
+                    if (p.equals("export.xml")) {
+                        inputStream = zin;
+                        suffix      = "xml";
+
+                        break;
+                    }
+                }
+            }
 
 
-	    if(inputStream==null) {
-		inputStream = new BufferedInputStream(
-						      getStorageManager().getFileInputStream(file));
-		suffix = IOUtil.getFileExtension(file.toString()).toLowerCase();
-	    }
+            if (inputStream == null) {
+                inputStream = new BufferedInputStream(
+                    getStorageManager().getFileInputStream(file));
+                suffix =
+                    IOUtil.getFileExtension(file.toString()).toLowerCase();
+            }
             if (suffix.equals(".xlsx") || suffix.equals(".xls")) {
                 if (file.length() > 10 * 1000000) {
                     throw new IllegalArgumentException("File too big");
@@ -685,7 +689,8 @@ public class TabularOutputHandler extends OutputHandler {
 
         ByteArrayOutputStream    bos  = new ByteArrayOutputStream();
 
-        textReader.setInput(new NamedInputStream("input",new BufferedInputStream(inputStream)));
+        textReader.setInput(new NamedInputStream("input",
+                new BufferedInputStream(inputStream)));
         textReader.setOutput(bos);
         textReader.getProcessor().addProcessor(new Processor() {
             @Override
@@ -710,8 +715,8 @@ public class TabularOutputHandler extends OutputHandler {
                         int column = Integer.parseInt(
                                          searchField.getName().substring(
                                              "column".length()).trim()) - 1;
-			List<String> cols = new ArrayList<String>();
-			cols.add(column+"");
+                        List<String> cols = new ArrayList<String>();
+                        cols.add(column + "");
                         String s = request.getString(id, "");
                         s = s.trim();
                         //                        System.err.println("column:" + column + " s:" + s);
@@ -745,7 +750,7 @@ public class TabularOutputHandler extends OutputHandler {
             textReader.getFilter().addFilter(new Filter.PatternFilter(-1,
                     "(?i:.*" + searchText + ".*)"));
         }
-	CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
+        CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
         csvUtil.process(textReader);
         visitor.visit(textReader, entry.getName(), rows);
     }
@@ -877,6 +882,10 @@ public class TabularOutputHandler extends OutputHandler {
     public String getHtmlDisplay(Request request, Hashtable requestProps,
                                  Entry entry)
             throws Exception {
+        String wikiTemplate = getWikiText(request, entry);
+        if (wikiTemplate!=null) {
+            return null;
+        }
 
         if (isTabular(entry)) {
             TabularTypeHandler handler =
@@ -892,6 +901,7 @@ public class TabularOutputHandler extends OutputHandler {
                                            true);
         boolean showChart = entry.getValue(TabularTypeHandler.IDX_SHOWCHART,
                                            true);
+
 
         boolean useFirstRowAsHeader =
             Misc.equals("true",

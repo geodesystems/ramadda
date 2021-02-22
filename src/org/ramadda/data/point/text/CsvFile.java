@@ -19,6 +19,7 @@ package org.ramadda.data.point.text;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
+import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvUtil;
 
 import ucar.unidata.util.Misc;
@@ -90,6 +91,40 @@ public class CsvFile extends TextFile {
     /** _more_ */
     private static Hashtable filesBeingWritten = new Hashtable();
 
+    public List<String> getCsvCommands() {
+	List<String> args = new ArrayList<String>();
+        StringBuilder commands  = new StringBuilder();
+        int           appendCnt = 0;
+        String csvCommands = getProperty("csvcommands",
+                                         getProperty("point.csvcommands",
+                                             (String) null));
+        if (Utils.stringDefined(csvCommands)) {
+            commands.append(csvCommands);
+            appendCnt++;
+        }
+        int commandCnt = 1;
+        while (true) {
+            String c = getProperty("csvcommands" + (commandCnt++),
+                                   (String) null);
+            if (!Utils.stringDefined(c)) {
+                break;
+            }
+            if (appendCnt > 0) {
+		if(commands.length()>0)
+		    commands.append(",");
+            }
+            commands.append(c);
+            appendCnt++;
+        }
+	if(appendCnt==0) return args;
+	csvCommands = commands.toString().trim().replaceAll("\\\\,", "_comma_");
+	for(String arg:  StringUtil.split(csvCommands, ",")) {
+	    args.add(arg.replaceAll("_comma_", ","));
+	}
+	return args;
+    }	
+
+
     /**
      * _more_
      *
@@ -100,31 +135,11 @@ public class CsvFile extends TextFile {
      * @throws Exception _more_
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
-        StringBuilder commands  = new StringBuilder();
-        int           appendCnt = 0;
-        String csvCommands = getProperty("csvcommands",
-                                         getProperty("point.csvcommands",
-                                             (String) null));
-        if (csvCommands != null) {
-            commands.append(csvCommands);
-            appendCnt++;
-        }
-        int commandCnt = 1;
-        while (true) {
-            String c = getProperty("csvcommands" + (commandCnt++),
-                                   (String) null);
-            if (c == null) {
-                break;
-            }
-            if (appendCnt > 0) {
-                commands.append(",");
-            }
-            commands.append(c);
-            appendCnt++;
-        }
-        if (commands.length() == 0) {
+	List<String>  commands = getCsvCommands();
+        if (commands.size() == 0) {
             return super.doMakeInputStream(buffered);
         }
+
         File file = getCacheFile();
         if (file != null) {
             //      System.err.println("file:" +file +" " + file.exists()  +" " + file.length() +" being written:" + (filesBeingWritten.get(file)!=null) );
@@ -150,21 +165,11 @@ public class CsvFile extends TextFile {
                 } else {
                     fos = bos = new ByteArrayOutputStream();
                 }
-                csvCommands = commands.toString().trim();
-                if ( !csvCommands.endsWith("-p")) {
-                    csvCommands += ",-p";
-                }
-                csvCommands = csvCommands.replaceAll("\\\\,", "_comma_");
-                String[] args = StringUtil.listToStringArray(
-                                    StringUtil.split(csvCommands, ","));
-                for (int i = 0; i < args.length; i++) {
-                    args[i] = args[i].replaceAll("_comma_", ",");
-                    //              System.err.println("arg:" + args[i]);
-                }
-                CsvUtil csvUtil = new CsvUtil(args,
+		if(!commands.get(commands.size()-1).equals("-print"))
+		    commands.add("-print");
+                CsvUtil csvUtil = new CsvUtil(commands,
                                       new BufferedOutputStream(fos), null);
-                csvUtil.setInputStream(super.doMakeInputStream(buffered));
-                csvUtil.run(null);
+		runCsvUtil(csvUtil, buffered);
                 fos.flush();
                 fos.close();
                 if (file == null) {
@@ -180,6 +185,12 @@ public class CsvFile extends TextFile {
 
         return new BufferedInputStream(new FileInputStream(file));
     }
+
+    public void	runCsvUtil(CsvUtil csvUtil, boolean buffered) throws Exception {
+	csvUtil.setInputStream(super.doMakeInputStream(buffered));
+	csvUtil.run(null);
+    }
+
 
 
     /**
