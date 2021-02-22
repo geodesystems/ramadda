@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -1252,10 +1252,11 @@ public class Request implements Constants, Cloneable {
                 parameters.put(key, newList);
             }
         } else {
-	    if(value==null)
-		parameters.remove(key);
-	    else
-		parameters.put(key, value);
+            if (value == null) {
+                parameters.remove(key);
+            } else {
+                parameters.put(key, value);
+            }
         }
     }
 
@@ -2375,6 +2376,16 @@ public class Request implements Constants, Cloneable {
 
         return ip;
     }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getIpRaw() {
+        return ip;
+    }
+
 
     /**
      * _more_
