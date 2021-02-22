@@ -32,8 +32,6 @@ import org.w3c.dom.*;
 
 import ucar.nc2.NetcdfFile;
 
-import ucar.unidata.util.DateUtil;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;

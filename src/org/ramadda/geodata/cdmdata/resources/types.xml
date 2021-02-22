@@ -158,7 +158,7 @@ ${charts}
 +col-md-4
 <center>
 </center>
-{{display type="map" showTitle="false" showMenu="false"}}
+{{display type="map" showTitle="false" showMenu="false" justOneMarker=true}}
 :p
 {{display type="text" showTitle="false" showMenu="false"}}
 -col

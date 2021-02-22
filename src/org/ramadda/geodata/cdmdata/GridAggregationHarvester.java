@@ -31,7 +31,6 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HttpServer;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;

@@ -366,7 +366,6 @@ public class NcssTypeHandler extends PointTypeHandler {
         url = Utils.normalizeTemplateUrl(url);
         //subst the location
         url = super.getPathForRecordEntry(entry, url, requestProperties);
-
 	//	System.err.println("URL" + url);
         return url;
     }

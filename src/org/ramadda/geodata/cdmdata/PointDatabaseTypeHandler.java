@@ -95,7 +95,6 @@ import ucar.unidata.data.point.PointObFactory;
 
 import ucar.unidata.data.point.TextPointDataSource;
 import ucar.unidata.ui.ImageUtils;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
