@@ -3119,7 +3119,7 @@ public class TypeHandler extends RepositoryManager {
                     img    = HtmlUtils.img(imgUrl, "", "width=" + width);
                 } else if (entry.getResource().isUrl()) {
                     try {
-                        imgUrl = getPathForEntry(request, entry);
+                        imgUrl = typeHandler.getPathForEntry(request, entry);
                         img    = HtmlUtils.img(imgUrl, "", "width=" + width);
                     } catch (Exception exc) {
                         sb.append("Error getting path:" + entry.getResource()
@@ -3154,7 +3154,7 @@ public class TypeHandler extends RepositoryManager {
             if (resourceLink.length() > 0) {
                 if (entry.getResource().isUrl()) {
                     try {
-                        resourceLink = getPathForEntry(request, entry);
+                        resourceLink = typeHandler.getPathForEntry(request, entry);
                         resourceLink = HtmlUtils.href(resourceLink,
                                 resourceLink);
                     } catch (Exception exc) {
