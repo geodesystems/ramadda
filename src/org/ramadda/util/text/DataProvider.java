@@ -776,7 +776,7 @@ public abstract class DataProvider {
             ResultSet         results = this.statement.getResultSet();
             ResultSetMetaData rsmd    = results.getMetaData();
             this.columnCount = rsmd.getColumnCount();
-	    System.err.println("header cnt:" + this.columnCount);
+	    //	    System.err.println("header cnt:" + this.columnCount);
             for (int i = 0; i < this.columnCount; i++) {
                 values.add(rsmd.getColumnName(i+1).toLowerCase());
             }
@@ -809,10 +809,11 @@ public abstract class DataProvider {
             }
 	    //            ResultSetMetaData rsmd    = results.getMetaData();
             List values = new ArrayList();
-	    System.err.println("row:" + rowCnt);
+	    //	    System.err.println("row:" + rowCnt);
             for (int i = 0; i < this.columnCount; i++) {
 		String v = results.getString(i + 1);
-		System.err.println("\tcol:" + i +" v:" +v);
+		if(v==null) v = "";
+		//		System.err.println("\tcol:" + i +" v:" +v);
                 values.add(v);
 		//                values.add(results.getString(i + 1) +" name:" + rsmd.getColumnName(i+1));
             }
