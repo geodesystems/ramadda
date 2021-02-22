@@ -619,6 +619,71 @@ public class OutputHandler extends RepositoryManager {
     }
 
 
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getWikiText(Request request, Entry entry) throws Exception {
+        String wikiText = getWikiTextInner(request, entry);
+        if (wikiText != null) {
+            wikiText = entry.getTypeHandler().preProcessWikiText(request,
+                    entry, wikiText);
+        }
+
+        return wikiText;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getWikiTextInner(Request request, Entry entry)
+            throws Exception {
+        String description = entry.getDescription();
+        String wikiInner   = null;
+        //If it begins with <wiki> then it overrides anything else
+        if (TypeHandler.isWikiText(description)) {
+            if (description.startsWith("<wiki_inner>")) {
+                wikiInner = description;
+            } else {
+                return description;
+            }
+        }
+
+        String wikiTemplate = entry.getTypeHandler().getWikiTemplate(request,
+								     entry);
+        if (wikiTemplate == null) {
+            PageStyle pageStyle = request.getPageStyle(entry);
+            wikiTemplate = pageStyle.getWikiTemplate(entry);
+        }
+
+        if (wikiInner != null) {
+            if (wikiTemplate == null) {
+                return wikiInner;
+            }
+            wikiTemplate = wikiTemplate.replace("${innercontent}", wikiInner);
+        }
+
+        return wikiTemplate;
+    }
+
+
+
+
     /**
      * Get the services
      *
