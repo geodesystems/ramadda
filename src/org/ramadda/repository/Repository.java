@@ -4181,9 +4181,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    }
 		    if (entry == null) {
 			if ( !tryingOnePathAsAlias) {
-			    throw new RepositoryUtil.MissingEntryException(
-									   "Could not find aliased entry:"
-									   + HtmlUtils.sanitizeString(alias));
+			    Result result = getRepository().makeErrorResult(request,
+									    "Could not find aliased entry:"
+									    + HtmlUtils.sanitizeString(alias));
+			    result.setResponseCode(Result.RESPONSE_NOTFOUND);
+			    return result;
 			} else {
 			    return null;
 			}
