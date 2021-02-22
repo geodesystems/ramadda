@@ -3356,6 +3356,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+
+	//A hack (should put this in a user-agent blacklist file sometime
+        String userAgent = request.getUserAgent();
+	if(userAgent!=null) {
+	    System.err.println("checking:" + userAgent);
+	    if(userAgent.indexOf("OpenVAS")>=0) {
+		System.err.println("blocked");
+		return makeBlockedResult(request);
+	    }
+	}
+	
+
+
         if (blacklist != null) {
             String ip = request.getIpRaw();
             if ((ip != null) && blacklist.contains(ip)) {
@@ -3368,6 +3381,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (requestPath.endsWith(".php")) {
             return makeBlockedResult(request);
         }
+
 
 
 
@@ -3589,7 +3603,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result makeBlockedResult(Request request) {
         getLogManager().logRequest(request, Result.RESPONSE_BLOCKED);
-        Misc.sleepSeconds(10);
+        Misc.sleepSeconds(20);
         Result r = new Result("", new StringBuilder());
         r.setResponseCode(Result.RESPONSE_NOTFOUND);
 
