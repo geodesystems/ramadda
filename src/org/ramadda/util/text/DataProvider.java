@@ -809,8 +809,11 @@ public abstract class DataProvider {
             }
 	    //            ResultSetMetaData rsmd    = results.getMetaData();
             List values = new ArrayList();
+	    System.err.println("row:" + rowCnt);
             for (int i = 0; i < this.columnCount; i++) {
-                values.add(results.getString(i + 1));
+		String v = results.getString(i + 1);
+		System.err.println("\tcol:" + i +" v:" +v);
+                values.add(v);
 		//                values.add(results.getString(i + 1) +" name:" + rsmd.getColumnName(i+1));
             }
 
