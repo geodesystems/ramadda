@@ -776,8 +776,9 @@ public abstract class DataProvider {
             ResultSet         results = this.statement.getResultSet();
             ResultSetMetaData rsmd    = results.getMetaData();
             this.columnCount = rsmd.getColumnCount();
-            for (int i = 1; i < this.columnCount + 1; i++) {
-                values.add(rsmd.getColumnName(i).toLowerCase());
+	    System.err.println("header cnt:" + this.columnCount);
+            for (int i = 0; i < this.columnCount; i++) {
+                values.add(rsmd.getColumnName(i+1).toLowerCase());
             }
             headerRow = new Row(values);
             maxRows   = ctx.getMaxRows();
@@ -795,12 +796,10 @@ public abstract class DataProvider {
          * @throws Exception _more_
          */
         public Row readRow() throws Exception {
-
             rowCnt++;
             if (rowCnt == 1) {
                 return headerRow;
             }
-
             if ((maxRows >= 0) && (rowCnt > maxRows)) {
                 return null;
             }
@@ -808,9 +807,10 @@ public abstract class DataProvider {
             if (results == null) {
                 return null;
             }
+            ResultSetMetaData rsmd    = results.getMetaData();
             List values = new ArrayList();
             for (int i = 0; i < this.columnCount; i++) {
-                values.add(results.getString(i + 1));
+                values.add(results.getString(i + 1) +" name:" + rsmd.getColumnName(i+1));
             }
 
             return new Row(values);
