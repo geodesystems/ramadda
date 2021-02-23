@@ -747,7 +747,7 @@ var Utils =  {
             return Utils.formatDateHHMM(date);
 	} else {
 	    //Use the new date formatter
-	    return date.format(fmt);
+	    return String(date.format(fmt));
 	    if(returnNullIfNotFound) {
 		return null;
 	    }
