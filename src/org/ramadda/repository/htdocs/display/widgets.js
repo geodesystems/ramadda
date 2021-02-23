@@ -1769,17 +1769,24 @@ SizeBy.prototype = {
 
 function Annotations(display,records) {
     this.display = display;
-    if(!records) records = display.filterData();
+    if(!records) records = this.display.filterData();
     let pointData = this.display.getPointData();
     let fields = pointData.getRecordFields();
     this.labelField = this.display.getFieldById(null,this.display.getProperty("annotationLabelField"));
     this.fields = this.display.getFieldsByIds(null,this.display.getProperty("annotationFields"));
     let prop = this.display.getProperty("annotations");
     if(prop) this.fields = [];
-    this.indexToAnnotation = null;
+    this.map = {}
+    let add = (record,index,annotation)=>{
+	annotation.record = record;
+	if(!this.map[index])
+	    this.map[index] = [];
+	this.map[index].push(annotation);
+	if(!this.map[record.getId()])
+	    this.map[record.getId()] = [];
+	this.map[record.getId()].push(annotation);	
+    }
     if(prop) {
-	this.indexToAnnotation = {};
-	this.recordToAnnotation = {};
 	this.annotations=[];
 	this.legend = "";
 	let labelCnt = 0;
@@ -1798,8 +1805,7 @@ function Annotations(display,records) {
 	    let desc = toks2.length<2?"":toks2[2];
 	    let url = toks2.length<3?null:toks2[3];
 	    let isDate = false;
-	    let dateLabel ="";
-	    let annotation = {label: label,description: desc,toString:function() {return this.description;}   };
+	    let annotation = {label: label,description: desc,toString:function() {return this.label+" " + this.description;}   };
 	    this.annotations.push(annotation);
 	    if(index.match(/^[0-9]+$/)) {
 		index = parseFloat(index);
@@ -1826,7 +1832,6 @@ function Annotations(display,records) {
 		    annotation.index2 = index2.getTime();
 		}
 		isDate = true;
-		dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
 	    }
 	    annotation.index = isDate?index.getTime():index;
 	    let legendLabel = desc;
@@ -1856,8 +1861,7 @@ function Annotations(display,records) {
 			distance = Math.min(Math.abs(annotation.index-index),Math.abs(annotation.index2-index));
 		    }
 		    if(distance==0) {
-			this.indexToAnnotation[rowIdx] = annotation;
-			this.recordToAnnotation[record] = annotation;
+			add(record,rowIdx,annotation);
 		    }
 		} else {
 		    distance = Math.abs(annotation.index-index);
@@ -1875,8 +1879,7 @@ function Annotations(display,records) {
 		}
 	    }
 	    if(minIndex!=null) {
-		this.indexToAnnotation[minIndex] = annotation;
-		this.recordToAnnotation[minRecord] = annotation;
+		add(minRecord,minIndex,annotation);
 
 	    }
 	}
@@ -1890,10 +1893,9 @@ Annotations.prototype = {
     getAnnotations: function() {
 	return this.annotations;
     },
-    getAnnotation: function(rowIdx) {
-	if(this.recordToAnnotation[rowIdx])
-	    return this.recordToAnnotation[rowIdx];
-	return this.indexToAnnotation?this.indexToAnnotation[rowIdx]:null;
+
+    getAnnotationsFor: function(rowIdx) {
+	return this.map[rowIdx];
     },
     getAnnotationFromDate: function(date) {
 	let distance =  Number.MAX_VALUE;

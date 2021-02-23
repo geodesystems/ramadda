@@ -1769,17 +1769,24 @@ SizeBy.prototype = {
 
 function Annotations(display,records) {
     this.display = display;
-    if(!records) records = display.filterData();
+    if(!records) records = this.display.filterData();
     let pointData = this.display.getPointData();
     let fields = pointData.getRecordFields();
     this.labelField = this.display.getFieldById(null,this.display.getProperty("annotationLabelField"));
     this.fields = this.display.getFieldsByIds(null,this.display.getProperty("annotationFields"));
     let prop = this.display.getProperty("annotations");
     if(prop) this.fields = [];
-    this.indexToAnnotation = null;
+    this.map = {}
+    let add = (record,index,annotation)=>{
+	annotation.record = record;
+	if(!this.map[index])
+	    this.map[index] = [];
+	this.map[index].push(annotation);
+	if(!this.map[record.getId()])
+	    this.map[record.getId()] = [];
+	this.map[record.getId()].push(annotation);	
+    }
     if(prop) {
-	this.indexToAnnotation = {};
-	this.recordToAnnotation = {};
 	this.annotations=[];
 	this.legend = "";
 	let labelCnt = 0;
@@ -1798,8 +1805,7 @@ function Annotations(display,records) {
 	    let desc = toks2.length<2?"":toks2[2];
 	    let url = toks2.length<3?null:toks2[3];
 	    let isDate = false;
-	    let dateLabel ="";
-	    let annotation = {label: label,description: desc,toString:function() {return this.description;}   };
+	    let annotation = {label: label,description: desc,toString:function() {return this.label+" " + this.description;}   };
 	    this.annotations.push(annotation);
 	    if(index.match(/^[0-9]+$/)) {
 		index = parseFloat(index);
@@ -1826,7 +1832,6 @@ function Annotations(display,records) {
 		    annotation.index2 = index2.getTime();
 		}
 		isDate = true;
-		dateLabel = Utils.formatDateYYYYMMDD(index)+": ";
 	    }
 	    annotation.index = isDate?index.getTime():index;
 	    let legendLabel = desc;
@@ -1856,8 +1861,7 @@ function Annotations(display,records) {
 			distance = Math.min(Math.abs(annotation.index-index),Math.abs(annotation.index2-index));
 		    }
 		    if(distance==0) {
-			this.indexToAnnotation[rowIdx] = annotation;
-			this.recordToAnnotation[record] = annotation;
+			add(record,rowIdx,annotation);
 		    }
 		} else {
 		    distance = Math.abs(annotation.index-index);
@@ -1875,8 +1879,7 @@ function Annotations(display,records) {
 		}
 	    }
 	    if(minIndex!=null) {
-		this.indexToAnnotation[minIndex] = annotation;
-		this.recordToAnnotation[minRecord] = annotation;
+		add(minRecord,minIndex,annotation);
 
 	    }
 	}
@@ -1890,10 +1893,9 @@ Annotations.prototype = {
     getAnnotations: function() {
 	return this.annotations;
     },
-    getAnnotation: function(rowIdx) {
-	if(this.recordToAnnotation[rowIdx])
-	    return this.recordToAnnotation[rowIdx];
-	return this.indexToAnnotation?this.indexToAnnotation[rowIdx]:null;
+
+    getAnnotationsFor: function(rowIdx) {
+	return this.map[rowIdx];
     },
     getAnnotationFromDate: function(date) {
 	let distance =  Number.MAX_VALUE;
@@ -5388,11 +5390,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let endDate = this.getProperty("endDate");
 	    if(startDate) {
 		this.startDateObject = Utils.createDate(startDate,+this.getProperty("timeZoneOffset",0));
-//		console.log("start:" +this.startDateObject.toUTCString());
+		if(debug)
+		    console.log(this.type +" start date:" + startDate + " dttm:" + this.startDateObject.toUTCString());
 	    } 
 	    if(endDate) {
 		this.endDateObject = Utils.createDate(endDate,+this.getProperty("timeZoneOffset",0));
-//		console.log("end:" +this.endDateObject.toUTCString());
+		if(debug)
+		    console.log(this.type +"end date:" +this.endDateObject.toUTCString());
 	    } 
 
 	    let filterDate = this.getProperty("filterDate");
@@ -8445,24 +8449,6 @@ a
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
             }
         },
-        getDateFormatter: function() {
-            var date_formatter = null;
-            if (this.isGoogleLoaded()) {
-                var df = this.getProperty("dateFormat", null);
-                if (df) {
-                    var tz = 0;
-                    this.timezone = this.getProperty("timezone");
-                    if (Utils.isDefined(this.timezone)) {
-                        tz = parseFloat(this.timezone);
-                    }
-                    date_formatter = new google.visualization.DateFormat({
-                        pattern: df,
-                        timeZone: tz
-                    });
-                }
-            }
-            return date_formatter;
-        },
         getHasDate: function(records) {
             var lastDate = null;
             this.hasDate = false;
@@ -8731,7 +8717,7 @@ a
 
             //Check if there are dates and if they are different
             this.hasDate = this.getHasDate(records);
-            let date_formatter = this.getDateFormatter();
+            let date_formatter = null;
             let rowCnt = -1;
             let indexField = this.getFieldById(null,this.getProperty("indexField"));
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
@@ -8753,7 +8739,6 @@ a
                         indexName = indexField.getLabel();
                     } else {
                         if (this.hasDate) {
-                            //                                console.log(this.getDateValue(date, date_formatter));
                             values.push(this.getDateValue(date, date_formatter));
                             indexName = "Date";
                         } else {
@@ -9029,7 +9014,7 @@ a
             });
             return true;
         },
-        getDateValue: function(arg, formatter) {
+        getDateValue: function(arg) {
             if (!this.initDateFormats()) {
                 return arg;
             }
@@ -9044,16 +9029,10 @@ a
 		let diff = Math.round((now.getTime()-date.getTime())/1000/60/60/24);
 		return {v:date,f:diff+" days ago"};
 	    }
-            if (!formatter) {
-                formatter = this.fmt_yyyymmddhhmm;
-            }
-
-            var s = formatter.formatValue(date);
-            date = {
+            return  {
                 v: date,
-                f: s
+                f: this.formatDate(date)
             };
-            return date;
         },
         applyFilters: function(record, values) {
             for (var i = 0; i < this.filters.length; i++) {
@@ -17137,7 +17116,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
 	    let dateType = this.getProperty("dateType","date");
-	    let debug =displayDebug.makeDataTable;
+	    let debug = displayDebug.makeDataTable;
 	    let debugRows = 4;
 	    if(debug) console.log(this.type+" makeDataTable #records" + dataList.length);
 	    if(debug) console.log("\tfields:" + selectedFields);
@@ -17232,21 +17211,21 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		return dataTable;
 	    }
 
-            var justData = [];
-            var tooltipFields = this.getFieldsByIds(null,this.getProperty("tooltipFields", ""));
+            let justData = [];
+            let tooltipFields = this.getFieldsByIds(null,this.getProperty("tooltipFields", ""));
 	    //	    addTooltip=false;
-            var dataTable = new google.visualization.DataTable();
-            var header = this.getDataValues(dataList[0]);
-            var sample = this.getDataValues(dataList[1]);
-	    var fixedValueS = this.getProperty("fixedValue");
-	    var fixedValueN;
+            let dataTable = new google.visualization.DataTable();
+            let header = this.getDataValues(dataList[0]);
+            let sample = this.getDataValues(dataList[1]);
+	    let fixedValueS = this.getProperty("fixedValue");
+	    let fixedValueN;
 	    if(fixedValueS) fixedValueN = parseFloat(fixedValueS);
 	    let fIdx = 0;
 	    let forceStrings = this.getProperty("forceStrings",false);
 	    let maxHeaderLength = this.getProperty("maxHeaderLength",-1);
 	    let maxHeaderWidth = this.getProperty("maxHeaderWidth",-1);
 	    let headerStyle= this.getProperty("headerStyle");
-            for (var j = 0; j < header.length; j++) {
+            for (let j = 0; j < header.length; j++) {
 		let field=null;
 		if(j>0 || !props.includeIndex) {
 		    field = selectedFields[fIdx++];
@@ -17358,7 +17337,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 	    }
 
-
 	    if(this.annotations && this.annotations.isEnabled()) {
 		if(this.annotations.getShowLegend()) {
 		    //Pad the left to align with  the chart axis
@@ -17383,26 +17361,26 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 
 
-	    var annotationCnt=0;
+	    let annotationCnt=0;
 
-	    var records = [];
+	    let records = [];
             for (var i = 1; i < dataList.length; i++) {
 		records.push(dataList[i].record);
 	    }
-	    var colors =  this.getColorTable(true);
-            var colorBy = this.getColorByInfo(records);
+	    let colors =  this.getColorTable(true);
+            let colorBy = this.getColorByInfo(records);
 	    let valueGetter = this.getDataTableValueGetter(records);
-	    var didColorBy = false;
-	    var tuples = [];
-            for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-		var record =dataList[rowIdx];
-                var row = this.getDataValues(record);
+	    let didColorBy = false;
+	    let tuples = [];
+            for (let rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+		let record =dataList[rowIdx];
+                let row = this.getDataValues(record);
 		//		var index = row[0];
 		//		if(index.v) index  = index.v;
-		var theRecord = record.record;
-		var color = "";
+		let theRecord = record.record;
+		let color = "";
                 if (colorBy.index >= 0) {
-                    var value = theRecord.getData()[colorBy.index];
+                    let value = theRecord.getData()[colorBy.index];
 		    hasColorByValue  = true;
 		    colorByValue = value;
                     didColorBy = true;
@@ -17410,9 +17388,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 }
 
                 row = row.slice(0);
-                var label = "";
+                let label = "";
                 if (theRecord) {
-                    for (var j = 0; j < tooltipFields.length; j++) {
+                    for (let j = 0; j < tooltipFields.length; j++) {
                         label += "<b>" + tooltipFields[j].getLabel() + "</b>: " +
                             theRecord.getValue(tooltipFields[j].getIndex()) + "<br>";
                     }
@@ -17438,7 +17416,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    tooltip += HU.b(label) + ":" + SPACE + value;
                 }
 
-		var tt = this.getProperty("tooltip");
+		let tt = this.getProperty("tooltip");
 		if(tt) {
 		    tt  = this.getRecordHtml(theRecord,null,tt);
 		    tt = tt.replace("${default}",tooltip);
@@ -17450,14 +17428,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    console.log("row:");
 
 		let fIdx=0;
-                for (var j = 0; j < row.length; j++) {
+                for (let colIdx = 0; colIdx < row.length; colIdx++) {
 		    let field = selectedFields[fIdx++];
-                    var value = row[j];
+                    let value = row[colIdx];
 		    if(forceStrings) {
 			if(value.f) value = (value.f).toString().replace(/\n/g, " ");
 		    }
-		    if(j>0 && fixedValueS) {
-			newRow.push(valueGetter(fixedValueN, j, field, theRecord));
+		    if(colIdx>0 && fixedValueS) {
+			newRow.push(valueGetter(fixedValueN, colIdx, field, theRecord));
 			if(debug && rowIdx<debugRows)
 			    console.log("\t fixed:" + fixedValueN);
 		    } else {
@@ -17469,16 +17447,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			}  else if(type=="boolean") {
 			    value = String(value);
 			}
-			if(debug && rowIdx<debugRows)
-			    console.log("\t value: " + j +"="+ value +" " + (typeof value));
+			if(debug && rowIdx<debugRows) {
+			    let v = value.f?("f:" + value.f +" v:" +value.v):value;
+			    console.log("\t value: " + colIdx +"="+ v +" " + (typeof value));
+			}
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";
-			let o = valueGetter(value, j, field, theRecord);
+			let o = valueGetter(value, colIdx, field, theRecord);
 			newRow.push(o);
 		    }
-                    if (j == 0 && props.includeIndex) {
+                    if (colIdx == 0 && props.includeIndex) {
 			/*note to self - an inline comment breaks the minifier 
-			  is the index so don't add a tooltip */
+			  if the index so don't add a tooltip */
                     } else {
 			if(annotationTemplate) {
 			    let v = annotationTemplate.replace("${value}",value.f||value);
@@ -17499,14 +17479,16 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    	console.log("\t tooltip:");
 			}
                     }
-		    if(j>0 && fixedValueS) {
+		    if(colIdx>0 && fixedValueS) {
 			break;
 		    }
-                }
+		}
+
+
 		if(this.annotations && this.annotations.hasFields()) {
                     if (theRecord) {
-			var desc = "";
-			this.annotations.getFields().map(f=>{
+			let desc = "";
+			this.annotations.getFields().forEach(f=>{
 			    let d = ""+theRecord.getValue(f.getIndex());
 			    if(d!="")
 				desc+= (d+"<br>");
@@ -17514,15 +17496,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			desc = desc.trim();
 			desc = desc.replace(/ /g,"&nbsp;");
 			annotationCnt++;
-			var label = null; 
+			let label = null; 
 			if(desc.trim().length>0) {
 			    label =""+( this.annotations.labelField?theRecord.getValue(this.annotations.labelField.getIndex()):(annotationCnt))
 			    if(label.trim().length==0) label = ""+annotationCnt;
 			}
+			debug =true;
 			if(debug && rowIdx<debugRows) {
 			    console.log("\t label:" + label);
 			    console.log("\t desc:" + desc);
 			}
+			debug =false;
+			console.log("A2:" +label);
 			newRow.push(label);
 			newRow.push(desc);
 		    } else {
@@ -17531,14 +17516,26 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		}
 		if(this.annotations &&  this.annotations.isEnabled()) {
-		    let annotation = this.annotations.getAnnotation(rowIdx);
-		    if(annotation) {
+		    let annotations = this.annotations.getAnnotationsFor(rowIdx);
+		    if(annotations) {
 			if(debug && rowIdx<debugRows) {
-			    console.log("\t annotation:" + annotation.label);
-			    console.log("\t desc:" + annotation.description);
+			    console.log("\t annotation:" + annotations);
 			}
-			newRow.push(annotation.label);
-			newRow.push(annotation.description);
+			let label = "";
+			let desc = "";
+			annotations.forEach(a=>{
+			    if(label!="") label+="/";
+			    label+=a.label;
+			    if(desc!="") desc+="<br>";
+			    else {
+				if(a.record && a.record.getDate()) {
+				    desc+=HU.b(this.formatDate(a.record.getDate()))+"<br>";
+				}
+			    }
+			    desc+=a.description;			    
+			});
+			newRow.push(label);
+			newRow.push(desc);
 		    } else {
 			if(debug && rowIdx<debugRows) {
 			    console.log("\t annotation:" + "null");
@@ -17547,8 +17544,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			newRow.push(null);
 			newRow.push(null);
 		    }
+		    debug =false;
 		}
                 justData.push(newRow);
+//		console.log("row:" + newRow);
 		//		if(debug && rowIdx>debugRows) break;
 	    }
 
