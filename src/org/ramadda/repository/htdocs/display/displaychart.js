@@ -2731,8 +2731,8 @@ function TableDisplay(displayManager, id, properties) {
 	{p:'tableWidth=',wikiValue:'100%'},
 	{p:'frozenColumns',wikiValue:'1'},
 	{p:'colorCells',wikiValue:'field1,field2'},
+	{p:'foregroundColor'},
 	{p:'showRowNumber',wikiValue:true},
-	{p:'colorCells',wikiValue:'fields'},
 	{p:'field.colorTable',wikiValue:''},
 	{p:'field.colorByMap',wikiValue:'value1:color1,value2:color2'},
 	{p:'maxHeaderLength',wikiValue:'60'},
@@ -2753,15 +2753,26 @@ function TableDisplay(displayManager, id, properties) {
 	    let colorByMap = {};
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let iconField = this.getFieldById(null,this.getProperty("iconField"));
-
+	    let foreground = this.getProperty("foregroundColor");
+	    let cbs = [];
 	    if(colorCells) {
 		colorCells.split(",").forEach(c=>{
 		    let f = this.getFieldById(null,c);
 		    if(f) {
 			colorByMap[c] = new ColorByInfo(this, null, records, null,c+".colorByMap",null, c, f);
+			cbs.push(colorByMap[c]);
 		    }
 		});
 	    }
+
+	    //Show the bars
+	    let dom = this.jq(ID_COLORTABLE);
+	    cbs.forEach((cb,idx)=>{
+		let id = this.getDomId(ID_COLORTABLE+idx);
+		dom.append(HU.div([ID,id]));
+		cb.displayColorTable(null,true,ID_COLORTABLE+idx);
+	    });
+
 
 	    return  (v,idx, field, record)=>{
 		if(v===null) {
@@ -2802,7 +2813,8 @@ function TableDisplay(displayManager, id, properties) {
 		    let colorBy = colorByMap[field.getId()];
 		    if(colorBy && record) {
 			let color =  colorBy.getColorFromRecord(record);
-			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',Utils.getForegroundColor(color)+" !important")],f)
+			let fg = foreground || Utils.getForegroundColor(color);
+			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',fg+" !important")],f)
 		    }
 		    if(field.getType()=="url") {
 			return {

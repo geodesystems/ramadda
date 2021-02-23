@@ -2899,6 +2899,7 @@ const ID_PAGE_PREV = "pageprev";
 const ID_PAGE_NEXT = "pagenext";
 const ID_FILTER_HIGHLIGHT = "filterhighlight";
 const ID_FILTER_DATE = "filterdate";
+const ID_FILTER_COUNT = "filtercount";
 const ID_ENTRIES_MENU = "entries_menu";
 const ID_ENTRIES_PREV = "entries_prev";
 const ID_ENTRIES_NEXT = "entries_next";
@@ -3814,6 +3815,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterMultiple=\"true\"",
 		"&lt;field&gt;.filterMultipleSize=\"5\"",
 		"filterShowCount=false",
+		"filterShowTotal=true",		
 		"&lt;field&gt;.filterLabel=\"\"",
 		"&lt;field&gt;.showFilterLabel=\"false\"",
 		"&lt;field&gt;.filterVertical=\"true\"",
@@ -5663,6 +5665,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(debug)
 		console.log("filtered:" + records.length);
+	    this.jq(ID_FILTER_COUNT).html("Count: " + records.length);
             return records;
         },
 	getBinnedRecords: function(record) {
@@ -7606,6 +7609,7 @@ a
 	    }
 	    
 
+
             let filterBy = this.getProperty("filterFields","",true).split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let fieldMap = {};
@@ -7626,11 +7630,16 @@ a
 		    searchBar +=widget;
 		});
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
+		if(this.getProperty("showFilterTotal",false)) {
+		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
+		}
 		let filterBar = searchBar+bottom[0];
 		if(filterBar!="") {
 		    header2+=HU.span([CLASS,"display-filter",STYLE,style,ID,this.getDomId(ID_FILTERBAR)],searchBar+bottom);
 		}
 	    }
+
+
 
 	    header2+=HU.div([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,"display-header-span"],"");
 	    this.jq(ID_HEADER2).html(header2);
@@ -18905,8 +18914,8 @@ function TableDisplay(displayManager, id, properties) {
 	{p:'tableWidth=',wikiValue:'100%'},
 	{p:'frozenColumns',wikiValue:'1'},
 	{p:'colorCells',wikiValue:'field1,field2'},
+	{p:'foregroundColor'},
 	{p:'showRowNumber',wikiValue:true},
-	{p:'colorCells',wikiValue:'fields'},
 	{p:'field.colorTable',wikiValue:''},
 	{p:'field.colorByMap',wikiValue:'value1:color1,value2:color2'},
 	{p:'maxHeaderLength',wikiValue:'60'},
@@ -18927,15 +18936,26 @@ function TableDisplay(displayManager, id, properties) {
 	    let colorByMap = {};
 	    let linkField = this.getFieldById(null,this.getProperty("linkField"));
 	    let iconField = this.getFieldById(null,this.getProperty("iconField"));
-
+	    let foreground = this.getProperty("foregroundColor");
+	    let cbs = [];
 	    if(colorCells) {
 		colorCells.split(",").forEach(c=>{
 		    let f = this.getFieldById(null,c);
 		    if(f) {
 			colorByMap[c] = new ColorByInfo(this, null, records, null,c+".colorByMap",null, c, f);
+			cbs.push(colorByMap[c]);
 		    }
 		});
 	    }
+
+	    //Show the bars
+	    let dom = this.jq(ID_COLORTABLE);
+	    cbs.forEach((cb,idx)=>{
+		let id = this.getDomId(ID_COLORTABLE+idx);
+		dom.append(HU.div([ID,id]));
+		cb.displayColorTable(null,true,ID_COLORTABLE+idx);
+	    });
+
 
 	    return  (v,idx, field, record)=>{
 		if(v===null) {
@@ -18976,7 +18996,8 @@ function TableDisplay(displayManager, id, properties) {
 		    let colorBy = colorByMap[field.getId()];
 		    if(colorBy && record) {
 			let color =  colorBy.getColorFromRecord(record);
-			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',Utils.getForegroundColor(color)+" !important")],f)
+			let fg = foreground || Utils.getForegroundColor(color);
+			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',fg+" !important")],f)
 		    }
 		    if(field.getType()=="url") {
 			return {
