@@ -2575,11 +2575,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let endDate = this.getProperty("endDate");
 	    if(startDate) {
 		this.startDateObject = Utils.createDate(startDate,+this.getProperty("timeZoneOffset",0));
-//		console.log("start:" +this.startDateObject.toUTCString());
+		if(debug)
+		    console.log(this.type +" start date:" + startDate + " dttm:" + this.startDateObject.toUTCString());
 	    } 
 	    if(endDate) {
 		this.endDateObject = Utils.createDate(endDate,+this.getProperty("timeZoneOffset",0));
-//		console.log("end:" +this.endDateObject.toUTCString());
+		if(debug)
+		    console.log(this.type +"end date:" +this.endDateObject.toUTCString());
 	    } 
 
 	    let filterDate = this.getProperty("filterDate");
@@ -5632,24 +5634,6 @@ a
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
             }
         },
-        getDateFormatter: function() {
-            var date_formatter = null;
-            if (this.isGoogleLoaded()) {
-                var df = this.getProperty("dateFormat", null);
-                if (df) {
-                    var tz = 0;
-                    this.timezone = this.getProperty("timezone");
-                    if (Utils.isDefined(this.timezone)) {
-                        tz = parseFloat(this.timezone);
-                    }
-                    date_formatter = new google.visualization.DateFormat({
-                        pattern: df,
-                        timeZone: tz
-                    });
-                }
-            }
-            return date_formatter;
-        },
         getHasDate: function(records) {
             var lastDate = null;
             this.hasDate = false;
@@ -5918,7 +5902,7 @@ a
 
             //Check if there are dates and if they are different
             this.hasDate = this.getHasDate(records);
-            let date_formatter = this.getDateFormatter();
+            let date_formatter = null;
             let rowCnt = -1;
             let indexField = this.getFieldById(null,this.getProperty("indexField"));
             for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
@@ -5940,7 +5924,6 @@ a
                         indexName = indexField.getLabel();
                     } else {
                         if (this.hasDate) {
-                            //                                console.log(this.getDateValue(date, date_formatter));
                             values.push(this.getDateValue(date, date_formatter));
                             indexName = "Date";
                         } else {
@@ -6216,7 +6199,7 @@ a
             });
             return true;
         },
-        getDateValue: function(arg, formatter) {
+        getDateValue: function(arg) {
             if (!this.initDateFormats()) {
                 return arg;
             }
@@ -6231,16 +6214,10 @@ a
 		let diff = Math.round((now.getTime()-date.getTime())/1000/60/60/24);
 		return {v:date,f:diff+" days ago"};
 	    }
-            if (!formatter) {
-                formatter = this.fmt_yyyymmddhhmm;
-            }
-
-            var s = formatter.formatValue(date);
-            date = {
+            return  {
                 v: date,
-                f: s
+                f: this.formatDate(date)
             };
-            return date;
         },
         applyFilters: function(record, values) {
             for (var i = 0; i < this.filters.length; i++) {
