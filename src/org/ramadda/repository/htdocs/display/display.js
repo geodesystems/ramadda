@@ -84,6 +84,7 @@ const ID_PAGE_PREV = "pageprev";
 const ID_PAGE_NEXT = "pagenext";
 const ID_FILTER_HIGHLIGHT = "filterhighlight";
 const ID_FILTER_DATE = "filterdate";
+const ID_FILTER_COUNT = "filtercount";
 const ID_ENTRIES_MENU = "entries_menu";
 const ID_ENTRIES_PREV = "entries_prev";
 const ID_ENTRIES_NEXT = "entries_next";
@@ -999,6 +1000,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		"&lt;field&gt;.filterMultiple=\"true\"",
 		"&lt;field&gt;.filterMultipleSize=\"5\"",
 		"filterShowCount=false",
+		"filterShowTotal=true",		
 		"&lt;field&gt;.filterLabel=\"\"",
 		"&lt;field&gt;.showFilterLabel=\"false\"",
 		"&lt;field&gt;.filterVertical=\"true\"",
@@ -2848,6 +2850,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	    if(debug)
 		console.log("filtered:" + records.length);
+	    this.jq(ID_FILTER_COUNT).html("Count: " + records.length);
             return records;
         },
 	getBinnedRecords: function(record) {
@@ -4791,6 +4794,7 @@ a
 	    }
 	    
 
+
             let filterBy = this.getProperty("filterFields","",true).split(","); 
 	    let hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
 	    let fieldMap = {};
@@ -4811,11 +4815,16 @@ a
 		    searchBar +=widget;
 		});
 		style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
+		if(this.getProperty("showFilterTotal",false)) {
+		    searchBar+= HU.span([CLASS,"display-filter-label",ID,this.getDomId(ID_FILTER_COUNT)],"");
+		}
 		let filterBar = searchBar+bottom[0];
 		if(filterBar!="") {
 		    header2+=HU.span([CLASS,"display-filter",STYLE,style,ID,this.getDomId(ID_FILTERBAR)],searchBar+bottom);
 		}
 	    }
+
+
 
 	    header2+=HU.div([ID,this.getDomId(ID_HEADER2_SUFFIX),CLASS,"display-header-span"],"");
 	    this.jq(ID_HEADER2).html(header2);
