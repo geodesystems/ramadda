@@ -1675,6 +1675,7 @@ var Utils =  {
 	return (yiq >= 128) ? 'black' : 'white';
     },
     getForegroundColor: function(c) {
+	if(!c) return null;
 	if(c.match("rgb")) c = Utils.rgbToHex(c);
 	if(!c) return "#000";
 	if(!this.foregroundColors[c] && c.startsWith("#")) return this.getContrastYIQ(c);
