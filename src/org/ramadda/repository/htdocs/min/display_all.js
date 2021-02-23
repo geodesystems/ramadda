@@ -3198,7 +3198,8 @@ function DisplayThing(argId, argProperties) {
 	    if(this.dateFormat) {
 		let dttm = Utils.formatDateWithFormat(date,this.dateFormat,true);
 		if(dttm) {
-		    return dttm;
+		    //Force a toString
+		    return dttm+"";
 		}
 	    }
             if (!date.toLocaleDateString) {
@@ -6886,6 +6887,9 @@ a
         getMainDiv: function() {
 	    return $("#" + this.getProperty(PROP_DIVID));
 	},
+        getGroupDiv: function() {
+	    return $("#" + this.getProperty("groupDiv"));
+	},	
         createUI: function() {
             var divid = this.getProperty(PROP_DIVID);
             if (divid != null) {
@@ -9086,7 +9090,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 			 this.columns,
 			 "showMenu",
 			 "false",
-			 "divid",
+			 "groupDiv",			 
 			 "$entryid_maindiv"
 			];
             let wiki = "";
@@ -9370,7 +9374,12 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 	    } else {
 		$("#" + this.getId()).show();
 	    }
-            this.writeHtml(ID_DISPLAYS, html);
+	    let div = this.getGroupDiv();
+	    if(div.length>0) {
+		div.html(html);
+	    } else {
+		this.writeHtml(ID_DISPLAYS, html);
+	    }
             if (this.layout == LAYOUT_TABS) {
                 $("#" + tabId).tabs({activate: HtmlUtil.tabLoaded});
             }
