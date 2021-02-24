@@ -118,6 +118,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'linkGroup',wikiValue:'some_name',tt:"Map groups to link with"},
 	{p:'highlight',wikiValue:'true',tt:"Show mouse over highlights"},
 	{p:'showRegionSelector',wikiValue:true},
+	{p:'regionSelectorLabel'},	
 	{p:'centerOnFilterChange',wikiValue:true,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',wikiValue:true,tt:'Center map when a record is highlighted'},
 	{p:'boundsAnimation',wikiValue:true,tt:'Animate when map is centered'},
@@ -1768,8 +1769,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			ramaddaMapRegions=data;
 		    });
 		}		    
-		let img = HU.getIconImage("fa-globe-americas");
-		let button = HU.div([STYLE,HU.css("display","inline-block","cursor","pointer","padding","1px","border","1px solid rgba(0,0,0,0)"), TITLE,"Select region", ID,this.getDomId("selectregion")],HU.getIconImage("fa-globe-americas"))+SPACE2;
+		let label = this.getProperty("regionSelectorLabel") || HU.getIconImage("fa-globe-americas");
+		let button = HU.div([CLASS,"ramadda-menu-item", STYLE,
+				     HU.css("display","inline-block","cursor","pointer","padding","1px","border","1px solid rgba(0,0,0,0)"), TITLE,"Select region", ID,this.getDomId("selectregion")],label)+SPACE2;
 		this.writeHeader(ID_HEADER2_PREPREFIX, button);
 		this.jq("selectregion").click(function() {
 		    let id = _this.getDomId(ID_REGION_SELECTOR);
