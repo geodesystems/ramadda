@@ -788,8 +788,10 @@ public class Filter extends Processor {
                     continue;
                 }
                 try {
-                    String v     = row.getString(idx);
+                    String v     = row.getString(idx).trim();
+		    if(v.length()==0) return false;
                     double value = Double.parseDouble(v);
+		    if(Double.isNaN(value)) return false;
                     if (op == OP_LT) {
                         if ( !(value < this.value)) {
                             return false;
@@ -819,7 +821,9 @@ public class Filter extends Processor {
                             return false;
                         }
                     }
-                } catch (Exception exc) {}
+                } catch (Exception exc) {
+		    return false;
+		}		    
             }
 
             return true;
