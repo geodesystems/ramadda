@@ -67,6 +67,18 @@ public class MapRegion {
         this.east  = east;
     }
 
+    public MapRegion(String id, String name, String group, double lat, double lon) {
+        this.id    = id;
+        this.name  = name;
+        this.group = group;
+	double pad = 0.5;
+        this.north = lat+pad;
+        this.west  = lon-pad;
+        this.south = lat-pad;
+        this.east  = lon+pad;
+    }
+
+
 
 
     /**
