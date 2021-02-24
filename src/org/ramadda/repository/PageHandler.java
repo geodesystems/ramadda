@@ -1413,6 +1413,7 @@ public class PageHandler extends RepositoryManager {
 
         String dir = getStorageManager().getSystemResourcePath() + "/geo";
         List<String> listing = getRepository().getListing(dir, getClass());
+	System.err.println("listing:" + listing);
         for (String f : listing) {
             if (f.endsWith("regions.csv")) {
                 mapRegionFiles.add(f);
