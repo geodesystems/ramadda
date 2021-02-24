@@ -117,6 +117,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'linked',wikiValue:true,tt:"Link location with other maps"},
 	{p:'linkGroup',wikiValue:'some_name',tt:"Map groups to link with"},
 	{p:'highlight',wikiValue:'true',tt:"Show mouse over highlights"},
+	{p:'showRegionSelector',wikiValue:true},
 	{p:'centerOnFilterChange',wikiValue:true,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',wikiValue:true,tt:'Center map when a record is highlighted'},
 	{p:'boundsAnimation',wikiValue:true,tt:'Animate when map is centered'},
@@ -1755,7 +1756,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
 
-	    if(this.getProperty("showRegionSelector",true)) {
+	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
 		    var jqxhr = $.getJSON(ramaddaBaseUrl +"/regions.json", data=> {

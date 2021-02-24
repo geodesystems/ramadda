@@ -1411,15 +1411,12 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-        String dir = getStorageManager().getSystemResourcePath() + "/geo";
-        List<String> listing = getRepository().getListing(dir, getClass());
-
-	System.err.println("listing:" + listing);
-        for (String f : listing) {
-            if (f.endsWith("regions.csv")) {
-                mapRegionFiles.add(f);
-            }
-        }
+	//Have to hard code these 
+	String pre = "/org/ramadda/repository/resources/geo/";
+	mapRegionFiles.addAll(Utils.makeList(pre+"mapregions.csv",
+					     pre+"countrymapregions.csv",
+					     pre+"statesmapregions.csv",
+					     pre+"citiesmapregions.csv"));
 
         HashSet seen = new HashSet();
         for (String path : mapRegionFiles) {
@@ -3055,7 +3052,6 @@ public class PageHandler extends RepositoryManager {
      */
     public void loadResources() throws Exception {
         loadLanguagePacks();
-	System.err.println("calling loadMapRegions");
         loadMapRegions();
     }
 
