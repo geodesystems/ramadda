@@ -75,7 +75,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 
     this.defineProperties([
 	{label:'Entry Search Properties'},
-	{p:'providers',wikiValue:'',tt:'List of search providers'},
+	{p:'providers',ex:'',tt:'List of search providers'},
     ]);
 
 

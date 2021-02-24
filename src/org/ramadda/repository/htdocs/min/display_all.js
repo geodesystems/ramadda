@@ -3710,6 +3710,207 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
 
+    this._wikiTags  = [];
+    
+    this.defineProperties = function(props) {
+	let tagList = [];
+	props.forEach(prop=>{
+	    if(!prop.p && prop.label) {
+		tagList.push('label:' + prop.label);
+		return;
+	    }
+	    if(!prop.p && prop.inlineLabel) {
+		tagList.push('inlinelabel:' + prop.inlineLabel);
+		return;
+	    }		
+	    if(!prop.p) {
+		console.log("Malformed property:" + JSON.stringify(prop));
+		return;
+	    }
+
+	    if(prop.p.indexOf("&")<0) {
+		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
+		    let funcName =  'getProperty' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
+		    this[funcName] = (dflt)=>{
+			if(!Utils.isDefined(dflt)) dflt = prop.d;
+			return this.getProperty(prop.p,dflt);
+		    };
+		}
+	    }
+
+
+	    let tag = "";
+	    tag +=prop.p+'="';
+	    tag += (prop.ex?prop.ex:prop.wikiValue?prop.wikiValue:prop.d?prop.d:"")+'"';
+	    let w = [];
+	    let tt = prop.tt||"";
+	    if(prop.label) {
+		w.push(prop.label);
+		w.push(tag);
+	    } else {
+		w.push(tag);
+	    }
+	    w.push(prop.tt);
+	    tagList.push(w);
+	});
+	this._wikiTags  = Utils.mergeLists(tagList,this._wikiTags);
+    }
+
+
+    
+    this.defineProperties([
+	{label:'Display Attributes'},
+	{p:'fields',ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
+	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
+	{p:"showMenu",ex:true},	      
+	{p:"showTitle",ex:true},
+	{p:"showEntryIcon",ex:true},
+	{p:"layoutHere",ex:true},
+	{p:"width",ex:"100%"},
+	{p:"height",ex:"400"},
+	{p:"tooltip",ex:"${default}"},
+	{p:"tooltipPositionMy",ex:"left top"},
+	{p:"tooltipPositionAt",ex:"left bottom+2"},		
+	{p:"displayStyle",ex:"css styles",tt:"Specify styles for display"},
+	{p:"title",ex:""},
+	{p:"titleBackground",ex:"color"},
+	{p:"linkField",ex:""},
+	{p:"titleField",ex:""},
+	{p:"descriptionField",ex:""},
+	{p:"textColor",ex:"color"},
+	{p:"backgroundImage",ex:"",tt:"Image url to display in background"},
+	{p:"background",ex:"color"},
+	{p:"showProgress",ex:true},
+	{p:"doEntries",ex:true,tt:"Make the children entries be data"},
+	{p:"addAttributes",ex:true,tt:"Include the extra attributes of the children"},
+	{p:"sortFields",tt:"Comma separated list of fields to sort the data on"},
+	{p:"sortAscending",ex:"true|false"},
+	{p:"showSortDirection",ex:true},		
+	{p:"sortByFields",ex:"",tt:"Show sort by fields in a menu"},
+	{p:"sortHighlight",ex:true,tt:"Sort based on highlight from the filters"},
+	{p:"showDisplayFieldsMenu",ex:true},
+	{p:"displayFieldsMenuMultiple",ex:true},
+	{p:"displayFieldsMenuSide",ex:"left"},
+	{p:"acceptEventDisplayFieldsChange",ex:true},
+	{label:"Formatting"},
+	{p:"dateFormat",ex:"yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm"},
+	{p:"dateFormatDaysAgo",ex:true},
+	{p:"doFormatNumber",ex:false},
+ 	{p:"formatNumberDecimals",ex:0},
+	{p:"formatNumberScale",ex:100},
+	{p:"numberTemplate",ex:"${number}%"},
+	{p:"&lt;field_id&gt;.&lt;format&gt;",ex:"..."},
+	{label:"Filter Data"},
+	{p:"fieldsNumeric",ex:true,tt:"Only get numeric fields"},
+	{p:"filterFields",ex:""},
+	{p:"filterFieldsToPropagate"},
+	{p:"hideFilterWidget",ex:true},
+	{p:"filterHighlight",ex:true,tt:"Highlight the records"},
+	{p:"showFilterHighlight",ex:false,tt:"show/hide the filter highlight widget"},
+	{p:"acceptEventFilter",ex:false},
+	{p:"propagateEventRecordHighlight",ex:true},
+	{p:"acceptEventRecordHighlight",ex:true},		
+	{p:"propagateEventRecordList",ex:true},
+	{p:"acceptEventRecordList",ex:true},
+	{p:"filterSliderImmediate",ex:true,tt:"Apply the change while sliding"},
+	{p:"filterLogic",ex:"and|or",tt:"Specify logic to apply filters"},		
+	{p:"&lt;field&gt;.filterValue"},
+	{p:"&lt;field&gt;.filterValueMin"},
+	{p:"&lt;field&gt;.filterValueMax"},
+	{p:"&lt;field&gt;.filterValues"},
+	{p:"&lt;field&gt;.filterMultiple",ex:true},
+	{p:"&lt;field&gt;.filterMultipleSize",ex:5},
+	{p:"filterShowCount",ex:false},
+	{p:"filterShowTotal",ex:true},		
+	{p:"&lt;field&gt;.filterLabel"},
+	{p:"&lt;field&gt;.showFilterLabel"},
+	{p:"&lt;field&gt;.filterVertical",ex:true},
+	{p:"filterVertical",ex:true},				
+	{p:"&lt;field&gt;.filterByStyle",ex:"background:white;"},
+	{p:"&lt;field&gt;.includeAll",ex:false},
+	{p:"&lt;field&gt;.filterSort",ex:false},
+	{p:"&lt;field&gt;.filterSortCount",ex:false},		
+	{p:"&lt;field&gt;.filterStartsWith",ex:true},
+	{p:"&lt;field&gt;.filterDisplay",ex:"menu|tab|button|image"},
+	{p:"&lt;field&gt;.filterOps",ex:"<,5000000,label1;>,5000000",tt:"Add menu with fixed filters"},
+	{p:"excludeUndefined",ex:true,tt:"Exclude any records with an undefined value"},
+	{p:"excludeZero",ex:true,tt:"Exclude any records with a 0 value"},
+	{p:"recordSelectFilterFields",tt:"Set the value of other displays filter fields"},
+	{p:"selectFields",ex:"prop:label:field1,...fieldN;prop:...."},
+	{p:"match value", ex:"dataFilters=\"match(field=field,value=value,label=,enabled=);\"",tt:"Only show records that match"}, 		
+	{p:"not match value",ex:"dataFilters=\"notmatch(field=field,value=value,label=,enabled=);\"",tt:"Only show records that dont match"},
+	{p:"no missing values",ex:"dataFilters=\"nomissing(field=field,label=,enabled=);\"",tt:"Dont show missing values"},
+	{p:"less than",ex:"dataFilters=\"lessthan(field=field,value=value,label=,enabled=);\""},
+	{p:"greater than",ex:"dataFilters=\"greaterthan(field=field,value=value,label=,enabled=);\""},
+	{p:"equals",ex:"dataFilters=\"equals(field=field,value=value,label=,enabled=);\""},
+	{p:"not equals",ex:"dataFilters=\"notequals(field=field,value=value,label=,enabled=);\""},
+	{p:"filterLatest",ex:"fields",tt:"Only show the latest records grouped by fields"},		
+	{p:"filterDate",ex:"year",tt:"Show a simple pull down menu to select a year to display"},
+	{p:"filterDateIncludeAll",ex:true,tt:"Include all years"},
+	{p:"startDate",ex:"yyyy,MM,dd,hh,mm,ss",tt:"Filter data on date"},
+	{p:"endDate",ex:"yyyy,MM,dd,hh,mm,ss",tt:"Filter data on date"},
+	{inlineLabel:"Convert Data"},
+	{p:"binDate",ex:"day|month|year",tt:"Bin the dates"},
+	{p:"binType",ex:"count|average|total"},
+	{p:"groupBy",ex:"field",tt:"Group the data"},
+	{p:'convertData', label:"derived data", ex:"derived(field=new_field_id, function=foo*bar);",tt:"Add derived field"},
+	{p:'convertData',label:"merge rows",ex:"mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);",tt:"Merge rows together"},
+	{p:'convertData',lagel:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
+	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
+	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
+	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=,uniqueField=,valueFields=);",tt:"Unfurl"},
+	{label:"Color Attributes"},
+	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
+	{p:"colorBy",ex:"",tt:"Field id to color by"},
+	{p:"colorByFields",ex:"",tt:"Show color by fields in a menu"},
+	{p:"colorByLog",ex:"true",tt:"Use a log scale for the color by"},
+	{p:"colorByMap",ex:"value1:color1,...,valueN:colorN",tt:"Specify colors for color by text values"},
+	{p:"colorByInverse",ex:true,tt:"Inverse the values"},
+	{p:"colorTableAlpha",ex:0.5,tt:"Set transparency on color table values"},
+	{p:"colorTableInverse",ex:true,tt:"Inverse the color table"},
+	{p:"colorTablePruneLeft",ex:"N",tt:"Prune first N colors"},
+	{p:"colorTablePruneRight",ex:"N",tt:"Prune last N colors"},
+	{p:"colorByMin",ex:"value",tt:"Min scale value"},
+	{p:"colorByMax",ex:"value",tt:"Max scale value"},
+	{p:"showColorTable",ex:"false",tt:"Display the color table"},
+	{p:"showColorTableDots",ex:true},
+	{p:"colorTableDotsDecimals",ex:"0"},
+	{p:"colorTableSide",ex:"bottom|right|left|top"},
+	{p:"showColorTableStride",ex:1,tt:"How many colors should be shown"},
+	{p:"colorByAllRecords",ex:true,tt:"use all records for color range"},
+	{p:"convertColorIntensity",ex:true},
+	{p:"intensitySourceMin",ex:"0"},
+	{p:"intensitySourceMax",ex:100},
+	{p:"intensityTargetMin",ex:1},
+	{p:"intensityTargetMax",ex:0},
+	{p:"convertColorAlpha",ex:true},
+	{p:"alphaSourceMin",ex:0},
+	{p:"alphaSourceMax",ex:100},
+	{p:"alphaTargetMin",ex:0},
+	{p:"alphaTargetMax",ex:1},
+	{label:"Animation Attributes"},
+	{p:"doAnimation",ex:true},
+	{p:"animationHighlightRecord",ex:true},
+	{p:"animationHighlightRecordList",ex:true},
+	{p:"acceptEventAnimationChange",ex:false},
+	{p:"acceptDateRangeChange",ex:true},
+	{p:"animationDateFormat",ex:"yyyy"},
+	{p:"animationLabelSize",ex:"12pt"},
+	{p:"animationStyle"},				
+	{p:"animationTooltipShow",ex:"true"},
+	{p:"animationTooltipDateFormat",ex:"yyyymmddhhmm"},		
+	{p:"animationWindow",ex:"decade|halfdecade|year|month|week|day|hour|minute"},
+	{p:"animationMode",ex:"sliding|frame|cumulative"},
+	{p:"animationSpeed",ex:500},
+	{p:"animationLoop",ex:true},
+	{p:"animationDwell",ex:1000},
+	{p:"animationShowButtons",ex:false},
+	{p:"animationShowSlider",ex:false},
+	{p:"animationWidgetShort",ex:true}
+    ]);
+
+
+
     
     RamaddaUtil.defineMembers(this, {
         displayReady: Utils.getPageLoaded(),
@@ -3721,203 +3922,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         entries: [],
         wikiAttrs: [TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
 	_properties:[],
-	_wikiTags:[],
-	defineProperties:function(props) {
-	    props.forEach(p=>{
-		if(!p.p && p.label) {
-		    this._wikiTags.push('label:' + p.label);
-		    return;
-		}
-		if(!p.p && p.inlineLabel) {
-		    this._wikiTags.push('inlinelabel:' + p.inlineLabel);
-		    return;
-		}		
-		let tag=p.p+'="' + (p.wikiValue?p.wikiValue:p.d?p.d:"")+'"'
-		let w = [];
-		let tt = p.tt||"";
-		if(p.label) {
-		    w.push(p.label);
-		    w.push(tag);
-		} else {
-		    w.push(tag);
-		}
-		w.push(p.tt);
-		this._wikiTags.push(w);
-		if(!Utils.isDefined(p.doGetter) || p.doGetter) {
-		    let funcName =  'getProperty' + p.p.substring(0, 1).toUpperCase() + p.p.substring(1);
-		    this[funcName] = (dflt)=>{
-			if(!Utils.isDefined(dflt)) dflt = p.d;
-			return this.getProperty(p.p,dflt);
-		    };
-		}
-	    });
-	},
 	getWikiEditorTags: function() {
-	    let l =   [
-		"label:Display Attributes",
-		['fields=""','comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'],
-		['notFields="regexp"','regexp to not include fields'],		
-		"showMenu=\"true\"",	      
-		"showTitle=\"true\"",
-		"showEntryIcon=true",
-		"layoutHere=\"true\"",
-		"width=\"100%\"",
-		"height=\"400\"",
-		'tooltip=${default}',
-		'tooltipPositionMy="left top"',
-		'tooltipPositionAt="left bottom+2"',		
-		['displayStyle="css styles"',"Specify styles for display"],
-		"title=\"\"",
-		"titleBackground=\"color\"",
-		"linkField=",
-		"titleField=",
-		"descriptionField=",
-		"textColor=\"color\"",
-		["backgroundImage=\"\"","Image url to display in background"],
-		"background=\"color\"",
-		'showProgress=true',
-		['doEntries=true','Make the children entries be data'],
-		['addAttributes=true','Include the extra attributes of the children'],
-		["sortFields=\"\"","Comma separated list of fields to sort the data on"],
-		["sortAscending=true|false",""],
-		["showSortDirection=true",""],		
-		["sortByFields=\"\"","Show sort by fields in a menu"],
-		['sortHighlight=true','Sort based on highlight from the filters'],
-		['showDisplayFieldsMenu=true'],
-		['displayFieldsMenuMultiple=true'],
-		['displayFieldsMenuSide=left'],
-		['acceptEventDisplayFieldsChange=true'],
-		'inlinelabel:Formatting',
-		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
-		'dateFormatDaysAgo=true',
-		'doFormatNumber=false',
- 		'formatNumberDecimals=0',
-		'formatNumberScale=100',
-		'numberTemplate="${number}%"',
-		'&lt;field_id&gt;.&lt;format&gt;="..."',
-		"label:Filter Data",
-		['fieldsNumeric=true','Only get numeric fields'],
-		"filterFields=\"\"",
-		'filterFieldsToPropagate=""',
-		"hideFilterWidget=true",
-		['filterHighlight=true',"Highlight the records"],
-		['showFilterHighlight=false',"show/hide the filter highlight widget"],
-		"acceptEventFilter=false",
-		"propagateEventRecordHighlight=true",
-		"acceptEventRecordHighlight=true",		
-		"propagateEventRecordList=true",
-		"acceptEventRecordList=true",
-		['filterSliderImmediate=true',"Apply the change while sliding"],
-		['filterLogic=and|or',"Specify logic to apply filters"],		
-		"&lt;field&gt;.filterValue=\"\"",
-		"&lt;field&gt;.filterValueMin=\"\"",
-		"&lt;field&gt;.filterValueMax=\"\"",
-		"&lt;field&gt;.filterValues=\"\"",
-		"&lt;field&gt;.filterMultiple=\"true\"",
-		"&lt;field&gt;.filterMultipleSize=\"5\"",
-		"filterShowCount=false",
-		"filterShowTotal=true",		
-		"&lt;field&gt;.filterLabel=\"\"",
-		"&lt;field&gt;.showFilterLabel=\"false\"",
-		"&lt;field&gt;.filterVertical=\"true\"",
-		"filterVertical=\"true\"",				
-		"&lt;field&gt;.filterByStyle=\"background:white;\"",
-		"&lt;field&gt;.includeAll=false",
-		"&lt;field&gt;.filterSort=false",
-		"&lt;field&gt;.filterSortCount=false",		
-		"&lt;field&gt;.filterStartsWith=\"true\"",
-		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		['&lt;field&gt;.filterOps="<,5000000,label1;>,5000000"','Add menu with fixed filters'],
-		['excludeUndefined=true','Exclude any records with an undefined value'],
-		['excludeZero=true','Exclude any records with a 0 value'],
-		['recordSelectFilterFields=""','Set the value of other displays filter fields'],
-		'selectFields=prop:label:field1,...fieldN;prop:....',
-		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
-		['not match value','dataFilters="notmatch(field=field,value=value,label=,enabled=);"','Only show records that dont match'],
-		['no missing values','dataFilters="nomissing(field=field,label=,enabled=);"','Dont show missing values'],
-		['less than','dataFilters="lessthan(field=field,value=value,label=,enabled=);"',''],
-		['greater than','dataFilters="greaterthan(field=field,value=value,label=,enabled=);"',''],
-		['equals','dataFilters="equals(field=field,value=value,label=,enabled=);"',''],
-		['not equals','dataFilters="notequals(field=field,value=value,label=,enabled=); "',''],
-		['filterLatest=fields','Only show the latest records grouped by fields'],		
-		['filterDate=year',"Show a simple pull down menu to select a year to display"],
-		['filterDateIncludeAll=true',"Include all years"],
-		['startDate="yyyy,MM,dd,hh,mm,ss"',"Filter data on date"],
-		['endDate="yyyy,MM,dd,hh,mm,ss"',"Filter data on date"],
-		"inlinelabel:Convert Data",
-		['binDate="day|month|year"',"Bin the dates"],
-		'binType="count|average|total"',
-		['groupBy=field','Group the data'],
-		['derived data', 'convertData="derived(field=new_field_id, function=foo*bar);"','Add derived field'],
-		['merge rows','convertData="mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);"',"Merge rows together"],
-		["rotate data", 'convertData="rotateData(includeFields=true,includeDate=true,flipColumns=true);"',"Rotate data"],
-		["add percent", 'convertData="addPercentIncrease(replaceValues=false);"',"Add percent increase"],
-		['doubling rate','convertData="doublingRate(fields=f1\\\\,f2, keyFields=f3);"',"Calculate # days to double"],
-		["unfurl", 'convertData="unfurl(headerField=,uniqueField=,valueFields=);"',"Unfurl"],
-		"label:Color Attributes",
-		["colors=\"color1,...,colorN\"","Comma separated array of colors"],
-		["colorBy=\"\"","Field id to color by"],
-		["colorByFields=\"\"","Show color by fields in a menu"],
-		["colorByLog=\"true\"","Use a log scale for the color by"],
-		["colorByMap=\"value1:color1,...,valueN:colorN\"","Specify colors for color by text values"],
-		['colorByInverse=true','Inverse the values'],
-		["colorTableAlpha=\"0.5\"","Set transparency on color table values"],
-		['colorTableInverse=true',"Inverse the color table"],
-		['colorTablePruneLeft=N',"Prune first N colors"],
-		['colorTablePruneRight=N',"Prune last N colors"],
-		["colorByMin=\"value\"","Min scale value"],
-		["colorByMax=\"value\"","Max scale value"],
-		['showColorTable=false',"Display the color table"],
-		'showColorTableDots=true',
-		'colorTableDotsDecimals=0',
-		'colorTableSide=bottom|right|left|top',
-		['showColorTableStride=1','How many colors should be shown'],
-		['colorByAllRecords=true',"use all records for color range"],
-		'convertColorIntensity=true',
-		'intensitySourceMin=0',
-		'intensitySourceMax=100',
-		'intensityTargetMin=1',
-		'intensityTargetMax=0',
-		'convertColorAlpha=true',
-		'alphaSourceMin=0',
-		'alphaSourceMax=100',
-		'alphaTargetMin=0',
-		'alphaTargetMax=1',
-		"inlinelabel:Animation Attributes",
-		"doAnimation=true",
-		"animationHighlightRecord=true",
-		"animationHighlightRecordList=true",
-		"acceptEventAnimationChange=false",
-		"acceptDateRangeChange=true",
-		"animationDateFormat=\"yyyy\"",
-		"animationLabelSize=\"12pt\"",
-		"animationStyle=\"\"",				
-		"animationTooltipShow=\"true\"",
-		"animationTooltipDateFormat=\"yyyymmddhhmm\"",		
-		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
-		"animationMode=\"sliding|frame|cumulative\"",
-		"animationSpeed=\"500\"",
-		"animationLoop=\"true\"",
-		'animationDwell=1000',
-		"animationShowButtons=\"false\"",
-		"animationShowSlider=\"false\"",
-		"animationWidgetShort=\"true\""
-	    ];
-//	    return  Utils.mergeLists(l,this._wikiTags);
-	    return  Utils.mergeLists(this._wikiTags,l);	    
-        },
+	    return this._wikiTags;
+	},
 
 	defineSizeByProperties: function() {
 	    this.defineProperties([
 		{inlineLabel:'Size By'},
-	    	{p:'sizeBy',wikiValue:'field',tt:'Field to size points by'},
-		{p:'sizeByLog',wikiValue:true,tt:'Use log scale for size by'},
-		{p:'sizeByMap', wikiValue:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
-		{p:'sizeByRadiusMin',wikiValue:'2',tt:'Scale size by'},
-		{p:'sizeByRadiusMax',wikiValue:'20',tt:'Scale size by'},
-		{p:'sizeByLegendSide',wikiValue:'bottom|top|left|right'},,
+	    	{p:'sizeBy',ex:'field',tt:'Field to size points by'},
+		{p:'sizeByLog',ex:true,tt:'Use log scale for size by'},
+		{p:'sizeByMap', ex:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
+		{p:'sizeByRadiusMin',ex:'2',tt:'Scale size by'},
+		{p:'sizeByRadiusMax',ex:'20',tt:'Scale size by'},
+		{p:'sizeByLegendSide',ex:'bottom|top|left|right'},,
 		{p:'sizeByLegendStyle'},
-		{p:'sizeBySteps',wikiValue:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
+		{p:'sizeBySteps',ex:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
 	    ]);
 	},
 
@@ -13253,10 +13272,10 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Download Properties'},
-	{p:'csvLabel',wikiValue:'Download'},
-	{p:'useIcon',d:'false',wikiValue:'false'},
-	{p:'fileName',d:'download',wikiValue:'download'},
-	{p:'askFields',d:'false',wikiValue:'true'},		
+	{p:'csvLabel',ex:'Download'},
+	{p:'useIcon',d:'false',ex:'false'},
+	{p:'fileName',d:'download',ex:'download'},
+	{p:'askFields',d:'false',ex:'true'},		
     ]);
     $.extend(this, {
 	fieldOn:{},
@@ -13357,9 +13376,9 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Reloader Properties'},
-	{p:'interval',wikiValue:'30',d:30,label:"Interval"},
-	{p:'showCheckbox',wikiValue:'false',d:true,label:"Show Checkbox"},
-	{p:'showCountdown',wikiValue:'false',d:true,label:"Show Countdown"},
+	{p:'interval',ex:'30',d:30,label:"Interval"},
+	{p:'showCheckbox',ex:'false',d:true,label:"Show Checkbox"},
+	{p:'showCountdown',ex:'false',d:true,label:"Show Countdown"},
     ]);
 
     $.extend(this, {
@@ -13452,8 +13471,8 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 
     this.defineProperties([
 	{label:'Time Ticks Properties'},
-	{p:'animationHeight',wikiValue:'30px'},
-	{p:'showYears',wikiValue:'true'},
+	{p:'animationHeight',ex:'30px'},
+	{p:'showYears',ex:'true'},
     ]);
 
     $.extend(this, {
@@ -16330,7 +16349,6 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_CHARTS,
-    wiki: "#fields=label,x,y,color,size",
 });
 addGlobalDisplayType({
     type: DISPLAY_PIECHART,
@@ -16422,49 +16440,49 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
     this.defineProperties([
 	{label:'Chart Highlight'},
-	{p:'highlightFields',d:null,wikiValue:'fields'},
-	{p:'highlightShowFields',d:null,wikiValue:'true'},
-	{p:'highlightShowFieldsSize',d:"4",wikiValue:'4'},
-	{p:"acceptHighlightFieldsEvent",d:true,wikiValue:'true'},
-	{p:'highlightDim',d:'true',wikiValue:'true',tt:'Dim the non highlight lines'},
-	{p:'lineDashStyle',d:null,wikiValue:'2,2,20,2,20'},
-	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},
-	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},	
-	{p:'some_field.lineDashStyle',d:'2,2,20,2,20',wikiValue:'2,2,20,2,20'},
+	{p:'highlightFields',d:null,ex:'fields'},
+	{p:'highlightShowFields',d:null,ex:'true'},
+	{p:'highlightShowFieldsSize',d:"4",ex:'4'},
+	{p:"acceptHighlightFieldsEvent",d:true,ex:'true'},
+	{p:'highlightDim',d:'true',ex:'true',tt:'Dim the non highlight lines'},
+	{p:'lineDashStyle',d:null,ex:'2,2,20,2,20'},
+	{p:'highlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
+	{p:'nohighlight.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},	
+	{p:'some_field.lineDashStyle',d:'2,2,20,2,20',ex:'2,2,20,2,20'},
 
-	{p:'labelInLegend',d:null,wikiValue:'label'},
-	{p:'highlight.labelInLegend',d:null,wikiValue:'label'},
-	{p:'nohighlight.labelInLegend',d:null,wikiValue:'label'},	
-	{p:'some_field.labelInLegend',d:null,wikiValue:'label'},
+	{p:'labelInLegend',d:null,ex:'label'},
+	{p:'highlight.labelInLegend',d:null,ex:'label'},
+	{p:'nohighlight.labelInLegend',d:null,ex:'label'},	
+	{p:'some_field.labelInLegend',d:null,ex:'label'},
 
-	{p:'seriesType',d:null,wikiValue:'line|area|bars'},
-	{p:'highlight.seriesType',d:null,wikiValue:'line|area|bars'},
-	{p:'nohighlight.seriesType',d:null,wikiValue:'line|area|bars'},	
-	{p:'some_field.seriesType',d:null,wikiValue:'line|area|bars'},	
+	{p:'seriesType',d:null,ex:'line|area|bars'},
+	{p:'highlight.seriesType',d:null,ex:'line|area|bars'},
+	{p:'nohighlight.seriesType',d:null,ex:'line|area|bars'},	
+	{p:'some_field.seriesType',d:null,ex:'line|area|bars'},	
 
-	{p:'pointSize',d:null,wikiValue:'0'},
-	{p:'highlight.pointSize',d:'0',wikiValue:'4'},
-	{p:'nohighlight.pointSize',d:'0',wikiValue:'4'},	
-	{p:'some_field.pointSize',d:'4',wikiValue:'4'},
-	{p:'lineWidth',d:null,wikiValue:null},
-	{p:'highlight.lineWidth',d:null,wikiValue:'2'},
-	{p:'nohighlight.lineWidth',d:null,wikiValue:'2'},	
-	{p:'some_field.lineWidth',d:'2',wikiValue:'2'},
-	{p:'highlight.color',d:null,wikiValue:null},
-	{p:'nohighlight.color',d:null,wikiValue:null},
-	{p:'some_field.color',d:null,wikiValue:null},
-	{p:'pointShape',d:null,wikiValue:null},
-	{p:'highlight.pointShape',d:null,wikiValue:null},
-	{p:'nohighlight.pointShape',d:null,wikiValue:null},	
-	{p:'some_field.pointShape',d:null,wikiValue:null},
+	{p:'pointSize',d:null,ex:'0'},
+	{p:'highlight.pointSize',d:'0',ex:'4'},
+	{p:'nohighlight.pointSize',d:'0',ex:'4'},	
+	{p:'some_field.pointSize',d:'4',ex:'4'},
+	{p:'lineWidth',d:null,ex:null},
+	{p:'highlight.lineWidth',d:null,ex:'2'},
+	{p:'nohighlight.lineWidth',d:null,ex:'2'},	
+	{p:'some_field.lineWidth',d:'2',ex:'2'},
+	{p:'highlight.color',d:null,ex:null},
+	{p:'nohighlight.color',d:null,ex:null},
+	{p:'some_field.color',d:null,ex:null},
+	{p:'pointShape',d:null,ex:null},
+	{p:'highlight.pointShape',d:null,ex:null},
+	{p:'nohighlight.pointShape',d:null,ex:null},	
+	{p:'some_field.pointShape',d:null,ex:null},
 
 	{label:'Trendlines'},
-	{p:'showTrendline',d:null,wikiValue:"true"},
-	{p:"trendlineType",wikiValue:"exponential"},
-	{p:"trendlineVisibleInLegend",wikiValue:"true"},
-	{p:"trendlineColor",wikiValue:""},
-	{p:"trendlineLineWidth",wikiValue:"true"},
-	{p:"trendlineOpacity",wikiValue:"0.3"}		    		    		    
+	{p:'showTrendline',d:null,ex:"true"},
+	{p:"trendlineType",ex:"exponential"},
+	{p:"trendlineVisibleInLegend",ex:"true"},
+	{p:"trendlineColor",ex:""},
+	{p:"trendlineLineWidth",ex:"true"},
+	{p:"trendlineOpacity",ex:"0.3"}		    		    		    
     ]);
 
 
@@ -18933,16 +18951,16 @@ function TableDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Table Properties'},
-	{p:'imageField',wikiValue:''},
-	{p:'tableWidth=',wikiValue:'100%'},
-	{p:'frozenColumns',wikiValue:'1'},
-	{p:'colorCells',wikiValue:'field1,field2'},
+	{p:'imageField',ex:''},
+	{p:'tableWidth=',ex:'100%'},
+	{p:'frozenColumns',ex:'1'},
+	{p:'colorCells',ex:'field1,field2'},
 	{p:'foregroundColor'},
-	{p:'showRowNumber',wikiValue:true},
-	{p:'field.colorTable',wikiValue:''},
-	{p:'field.colorByMap',wikiValue:'value1:color1,value2:color2'},
-	{p:'maxHeaderLength',wikiValue:'60'},
-	{p:'maxHeaderWidth',wikiValue:'60'},
+	{p:'showRowNumber',ex:true},
+	{p:'field.colorTable',ex:''},
+	{p:'field.colorByMap',ex:'value1:color1,value2:color2'},
+	{p:'maxHeaderLength',ex:'60'},
+	{p:'maxHeaderWidth',ex:'60'},
 	{p:'headerStyle'}]);
 
     $.extend(this, {
@@ -19657,14 +19675,14 @@ function CalendarDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Calendar Properties'},
-	{p:'cellSize',d:15,wikiValue:"15"},
-	{p:'missingValue',wikiValue:""},	
-	{p:'strokeColor',d: '#76a7fa', wikiValue:'#76a7fa'},
-	{p:'strokeWidth',wikiValue:'1'},
-	{p:'strokeOpacity',d:0.5,wikiValue:'0.5'},	    		
-	{p:'noDataBackground',wikiValue:'green'},
-	{p:'noDataColor',wikiValue:'red'},
-	{p:'colorAxis',wikiValue:'red,blue'},	
+	{p:'cellSize',d:15,ex:"15"},
+	{p:'missingValue',ex:""},	
+	{p:'strokeColor',d: '#76a7fa', ex:'#76a7fa'},
+	{p:'strokeWidth',ex:'1'},
+	{p:'strokeOpacity',d:0.5,ex:'0.5'},	    		
+	{p:'noDataBackground',ex:'green'},
+	{p:'noDataColor',ex:'red'},
+	{p:'colorAxis',ex:'red,blue'},	
 
 	 
     ]);
@@ -20967,8 +20985,8 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Minidots Properties'},
-	{p:'dateField',wikiValue:''},
-	{p:'valueField',wikiValue:''},
+	{p:'dateField',ex:''},
+	{p:'valueField',ex:''},
     ]);
 
     $.extend(this, {
@@ -21669,14 +21687,14 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 	{p:'fields'},	
 	{p:'tableFields'},
 	{p:'countField'},
-	{p:'tokenize',wikiValue:true},
-	{p:'handleClick',wikiValue:true},
-	{p:'showFieldLabel',wikiValue:true},
+	{p:'tokenize',ex:true},
+	{p:'handleClick',ex:true},
+	{p:'showFieldLabel',ex:true},
 	{p:'showRecords'},
 	{p:'combined'},
-	{p:'shape',wikiValue:'rectangular'},
-	{p:'stopWords',wikiValue:'word1,word2'},
-	{p:'showFieldLabel',wikiValue:'false'}	
+	{p:'shape',ex:'rectangular'},
+	{p:'stopWords',ex:'word1,word2'},
+	{p:'showFieldLabel',ex:'false'}	
     ]);
     $.extend(this, {
         getContentsStyle: function() {
@@ -21958,25 +21976,25 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     this.defineProperties([
 	{label:"Template Attributes"},
 	{p: "template"},
-	{p:"headerTemplate",wikiValue:"... ${totalCount} ... ${selectedCount}"},
-	{p:"footerTemplate",wikiValue:"... ${totalCount} ... ${selectedCount}"},
+	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
+	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"emptyMessage"},
-	{p:"select",wikiValue:"max|min|<|>|=|<=|>=|contains"},
+	{p:"select",ex:"max|min|<|>|=|<=|>=|contains"},
 	{p:"selectField"},
 	{p:"selectValue"},
-	{p:'onlyShowSelected',wikiValue:'true'},
-	{p:'showFirst',wikiValue:'false'},	
-	{p:'selectHighlight',wikiValue:'true'},	
+	{p:'onlyShowSelected',ex:'true'},
+	{p:'showFirst',ex:'false'},	
+	{p:'selectHighlight',ex:'true'},	
 	{p:'handleSelectOnClick'},
 	{p:"groupByField"},
-	{p:"groupDelimiter",wikiValue:"<br>"},	
+	{p:"groupDelimiter",ex:"<br>"},	
 	{p:"groupTemplate",wikivalue:"<b>${group}</b><ul>${contents}</ul>"},
 	{p:"sortGroups",wikivalue:"true"},
 	{p:'${&lt;field&gt;_total}'},
 	{p:'${&lt;field&gt;_max}'},
 	{p:'${&lt;field&gt;_min}'},
 	{p:'${&lt;field&gt;_average}'},
-	{p:'highlightOnScroll',wikiValue:'true'}]);
+	{p:'highlightOnScroll',ex:'true'}]);
 
     $.extend(this, {
 	dataFilterChanged: function() {
@@ -22662,13 +22680,13 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Block Properties'},
-	{p:'animStep',d:1000,wikiValue:"1000",tt:'Delay'},
-	{p:'doSum',d:true,wikiValue:"false",tt:''},
-	{p:'header',d:true,wikiValue:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
+	{p:'animStep',d:1000,ex:"1000",tt:'Delay'},
+	{p:'doSum',d:true,ex:"false",tt:''},
+	{p:'header',d:true,ex:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
 
-//	{p:'counts',d:100,wikiValue:"100",tt:''},	
-	{p:'blockIcon',d:null,wikiValue:"fa-male",tt:'Use an icon'},
-//	{p:'',d:"",wikiValue:"",tt:''},
+//	{p:'counts',d:100,ex:"100",tt:''},	
+	{p:'blockIcon',d:null,ex:"fa-male",tt:'Use an icon'},
+//	{p:'',d:"",ex:"",tt:''},
     ]);
 
     $.extend(this, {
@@ -23841,9 +23859,9 @@ function RamaddaTextDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Text Display Attributes'},
-	{p:'recordTemplate',wikiValue:''},
-	{p:'showDefault',d:true,wikiValue:"false"},
-	{p:'message',d:null,wikiValue:""},
+	{p:'recordTemplate',ex:''},
+	{p:'showDefault',d:true,ex:"false"},
+	{p:'message',d:null,ex:""},
     ]);
     if(!this.getPropertyRecordTemplate()) {
 	this.setProperty("recordTemplate","${default}");
@@ -23928,8 +23946,8 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Glossary Properties'},
-	{p:'wordField',wikiValue:""},
-	{p:'definitionField',wikiValue:""},	
+	{p:'wordField',ex:""},
+	{p:'definitionField',ex:""},	
     ]);
 
     $.extend(this, {
@@ -24419,22 +24437,22 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Image Gallery Properties'},
-	{p:'imageField',wikiValue:''},
-	{p:'labelFields',wikiValue:''},
-	{p:'topLabelTemplate',wikiValue:''},	
-	{p:'bottomLabelTemplate',wikiValue:''},	
-	{p:'tooltipFields',wikiValue:''},
-	{p:'numberOfImages',wikiValue:'100'},	
-	{p:'includeBlanks',wikiValue:'true'},
-	{p:'imageWidth',wikiValue:'150'},
-	{p:'imageHeight',wikiValue:'150'},	
-	{p:'imageMargin',wikiValue:'10px'},
-	{p:'decorate',wikiValue:'false'},
-	{p:'doPopup',wikiValue:'false'},
-	{p:'imageStyle',wikiValue:''},			
-	{p:'minHeightGallery',wikiValue:150},
-	{p:'maxHeightGallery',wikiValue:150},	
-	{p:'columns',wikiValue:'5'},
+	{p:'imageField',ex:''},
+	{p:'labelFields',ex:''},
+	{p:'topLabelTemplate',ex:''},	
+	{p:'bottomLabelTemplate',ex:''},	
+	{p:'tooltipFields',ex:''},
+	{p:'numberOfImages',ex:'100'},	
+	{p:'includeBlanks',ex:'true'},
+	{p:'imageWidth',ex:'150'},
+	{p:'imageHeight',ex:'150'},	
+	{p:'imageMargin',ex:'10px'},
+	{p:'decorate',ex:'false'},
+	{p:'doPopup',ex:'false'},
+	{p:'imageStyle',ex:''},			
+	{p:'minHeightGallery',ex:150},
+	{p:'maxHeightGallery',ex:150},	
+	{p:'columns',ex:'5'},
     ]);
     $.extend(this, {
 	startIndex:0,
@@ -24640,8 +24658,8 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	{label:"Image Zoom Attributes"},
 	{p:'labelFields'},
 	{p:'thumbField'},
-	{p:'thumbWidth',wikiValue:'100'},
-	{p:'imageWidth',wikiValue:'150'},
+	{p:'thumbWidth',ex:'100'},
+	{p:'imageWidth',ex:'150'},
 	{p:'urlField'},
 	{p:'popupWidth'},
 	{p:'popupHeight'},	
@@ -25031,7 +25049,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 
     this.defineProperties([
 	{label:'Entry Search Properties'},
-	{p:'providers',wikiValue:'',tt:'List of search providers'},
+	{p:'providers',ex:'',tt:'List of search providers'},
     ]);
 
 
@@ -28487,6 +28505,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
     const ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
     const ID_REGION_SELECTOR = "regionselector";
+    const ID_HTMLLAYER = "htmllayer";
 
     RamaddaUtil.defineMembers(this, {
         showBoxes: true,
@@ -28501,6 +28520,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_MAP, properties);
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
+    this.defineSizeByProperties();
     this.defineProperties([
 	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
@@ -28508,128 +28528,140 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:"fillColor",d:"blue"},
 	{p:"fillOpacity",d:0.8},
 	{p:'radius',d:5,tt:"Size of the map points"},
-	{p:'scaleRadius',wikiValue:"true",tt:'Scale the radius based on # points shown'},
-	{p:'radiusScale',wikiValue:"value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12",tt:'Radius scale'},
-	{p:'shape',d:'circle',wikiValue:'star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
-	{p:'markerIcon',wikiValue:"/icons/..."},
-	{p:'justOneMarker',wikiValue:"true"},	
-	{p:'bounds',wikiValue:'north,west,south,east',tt:'initial bounds'},
-	{p:'mapCenter',wikiValue:'lat,lon',tt:"initial position"},
-	{p:'zoomLevel',wikiValue:4,tt:"initial zoom"},
-	{p:'zoomTimeout',wikiValue:1000,tt:"initial zoom timeout delay"},
-	{p:'fixedPosition',wikiValue:true,tt:'Keep the initial position'},
-	{p:'initialLocation', wikiValue:'lat,lon',tt:"initial location"},
-	{p:'defaultMapLayer',wikiValue:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
-	{p:'doPopup', wikiValue:'false',tt:"Don't show popups"},
-	{p:'linked',wikiValue:true,tt:"Link location with other maps"},
-	{p:'linkGroup',wikiValue:'some_name',tt:"Map groups to link with"},
-	{p:'highlight',wikiValue:'true',tt:"Show mouse over highlights"},
-	{p:'showRegionSelector',wikiValue:true},
+	{p:'scaleRadius',ex:"true",tt:'Scale the radius based on # points shown'},
+	{p:'radiusScale',ex:"value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12",tt:'Radius scale'},
+	{p:'shape',d:'circle',ex:'star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
+	{p:'markerIcon',ex:"/icons/..."},
+	{p:'iconSize',ex:16},
+	{p:'justOneMarker',ex:"true",tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
+	{p:'bounds',ex:'north,west,south,east',tt:'initial bounds'},
+	{p:'gridBounds',ex:'north,west,south,east'},	
+	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
+	{p:'zoomLevel',ex:4,tt:"initial zoom"},
+	{p:'zoomTimeout',ex:1000,tt:"initial zoom timeout delay"},
+	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
+	{p:'linked',ex:true,tt:"Link location with other maps"},
+	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
+
+	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
+	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
+	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
+	{p:'doPopup', ex:'false',tt:"Don't show popups"},
+	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
-	{p:'centerOnFilterChange',wikiValue:true,tt:'Center map when the data filters change'},
-	{p:'centerOnHighlight',wikiValue:true,tt:'Center map when a record is highlighted'},
-	{p:'boundsAnimation',wikiValue:true,tt:'Animate when map is centered'},
-	{p:'iconField',wikiValue:'""',tt:'Field id for the image icon url'},
-	{p:'iconSize',wikiValue:16},
+	{p:'centerOnFilterChange',ex:true,tt:'Center map when the data filters change'},
+	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
+	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
+	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
 
-	{label:'Map Highlight Properties'},
-	{p:'showRecordSelection',wikiValue:'false'},
-	{p:'recordHighlightShape',wikiValue:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
-	{p:'recordHighlightRadius',wikiValue:'20',tt:'Radius to use to show other displays highlighted record'},
-	{p:'recordHighlightStrokeWidth',wikiValue:'2',tt:'Stroke to use to show other displays highlighted record'},
-	{p:'recordHighlightStrokeColor',wikiValue:'red',tt:'Color to use to show other displays highlighted record'},
-	{p:'recordHighlightFillColor',wikiValue:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
-	{p:'recordHighlightFillOpacity',wikiValue:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
+	{label:"Map GUI"},
+	{p:'showMarkersToggle',ex:'true',tt:'Show the toggle checkbox for the marker layer'},
+	{p:'showMarkersToggleLabel',ex:'label',tt:'Label to use for checkbox'},
+	{p:'showClipToBounds',ex:'true',tt:'Show the clip bounds checkbox'},
+	{p:'showMarkers',ex:'false',tt: 'Hide the markers'},
+	{p:'showLocationSearch',ex:'true'},
+	{p:'showLatLonPosition',ex:'false'},
+	{p:'showLayerSwitcher',ex:'false'},
+	{p:'showScaleLine',ex:'true'},
+	{p:'showZoomPanControl',ex:'true'},
+	{p:'showZoomOnlyControl',ex:'false'},
+	{p:'enableDragPan',ex:'false'},
+	{p:'showLayers',d:true,ex:'false'},
+
+
+
+	{label:'Map Highlight'},
+	{p:'showRecordSelection',ex:'false'},
+	{p:'highlight',ex:'true',tt:"Show mouse over highlights"},
+	{p:'recordHighlightShape',ex:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
+	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeColor',ex:'red',tt:'Color to use to show other displays highlighted record'},
+	{p:'recordHighlightFillColor',ex:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
+	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
 	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
-	{p:'unhighlightColor',wikiValue:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
-	{p:'unhighlightStrokeWidth',wikiValue:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
-	{p:'unhighlightStrokeColor',wikiValue:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
-	{p:'unhighlightRadius',wikiValue:'1',tt:'Radius for when records are highlighted with the filters'},
+	{p:'highlightColor',ex:'#ccc',tt:''},
+	{p:'unhighlightColor',ex:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
+	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
+	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
+	{p:'unhighlightRadius',ex:'1',tt:'Radius for when records are highlighted with the filters'},
 
-	{label:'Other Map Properties'},
-	{p:'vectorLayerStrokeColor',wikiValue:'#000'},
-	{p:'vectorLayerFillColor',wikiValue:'#ccc'},
-	{p:'vectorLayerFillOpacity',wikiValue:'0.25'},
-	{p:'vectorLayerStrokeWidth',wikiValue:'1'},
-	{p:'handleCollisions',wikiValue:'true',tt:"Handle point collisions"},
-	{p:'collisionFixed',d:true,wikiValue:'false',tt:"Always show markers"},
-	{p:'collisionMinPixels',d:16,wikiValue:'16',tt:"How spread out"},
-	{p:'collisionDotColor',wikiValue:'red',tt:"Color of dot drawn at center"},
-	{p:'collisionDotRadius',wikiValue:'3',tt:"Radius of dot drawn at center"},
-	{p:'collisionScaleDots',wikiValue:'false',d:true,tt:"Scale the group dots"},					
-	{p:'collisionLineColor',wikiValue:'red',tt:"Color of line drawn at center"},
-	{p:'showMarkersToggle',wikiValue:'true',tt:'Show the toggle checkbox for the marker layer'},
-	{p:'showMarkersToggleLabel',wikiValue:'label',tt:'Label to use for checkbox'},
-	{p:'showClipToBounds',wikiValue:'true',tt:'Show the clip bounds checkbox'},
-	{p:'showMarkers',wikiValue:'false',tt: 'Hide the markers'},
-	{p:'showLocationSearch',wikiValue:'true'},
-	{p:'showLatLonPosition',wikiValue:'false'},
-	{p:'showLayerSwitcher',wikiValue:'false'},
-	{p:'showScaleLine',wikiValue:'true'},
-	{p:'showZoomPanControl',wikiValue:'true'},
-	{p:'showZoomOnlyControl',wikiValue:'false'},
-	{p:'showLayers',d:true,wikiValue:'false'},
-	{p:'enableDragPan',wikiValue:'false'},
+	{label:'Map Vectors'},
+	{p:'vectorLayerStrokeColor',ex:'#000'},
+	{p:'vectorLayerFillColor',ex:'#ccc'},
+	{p:'vectorLayerFillOpacity',ex:'0.25'},
+	{p:'vectorLayerStrokeWidth',ex:'1'},
 
-	{p:'showSegments',wikiValue:'true',tt:'If data has 2 lat/lon locations draw a line'},
-	{p:'isPath',wikiValue:'true',tt:'Make a path from the points'},	
+	{label:"Map Collisions"},
+	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
+	{p:'collisionFixed',d:true,ex:'false',tt:"Always show markers"},
+	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out"},
+	{p:'collisionDotColor',ex:'red',tt:"Color of dot drawn at center"},
+	{p:'collisionDotRadius',ex:'3',tt:"Radius of dot drawn at center"},
+	{p:'collisionScaleDots',ex:'false',d:true,tt:"Scale the group dots"},					
+	{p:'collisionLineColor',ex:'red',tt:"Color of line drawn at center"},
+
+
+	{label:"Map Lines"},
+	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
+	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
 	{p:'latField1',tt:'Field id for segments'},
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
 	{p:'lonField2',tt:'Field id for segments'},
 
 	{label:"Map Label Properties"},
-	{p:"labelFontColor",wikiValue:"#000"},
-	{p:"labelFontSize",wikiValue:"12px"},
-	{p:"labelFontFamily",wikiValue:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
-	{p:"labelFontWeight",wikiValue:"plain"},
-	{p:"labelAlign",wikiValue:"l|c|r t|m|b"},
-	{p:"labelXOffset",wikiValue:"0"},
-	{p:"labelYOffset",wikiValue:"0"},
-	{p:"labelOutlineColor",wikiValue:"#fff"},
-	{p:"labelOutlineWidth",wikiValue:"0"},
+	{p:"labelFontColor",ex:"#000"},
+	{p:"labelFontSize",ex:"12px"},
+	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
+	{p:"labelFontWeight",ex:"plain"},
+	{p:"labelAlign",ex:"l|c|r t|m|b"},
+	{p:"labelXOffset",ex:"0"},
+	{p:"labelYOffset",ex:"0"},
+	{p:"labelOutlineColor",ex:"#fff"},
+	{p:"labelOutlineWidth",ex:"0"},
 
 
 	{label:'Map Glyphs'},
-	{p:'doGridPoints',wikiValue:'true',tt:'Display a image showing shapes or bars'},
-	{p:'gridWidth',wikiValue:'800',tt:'Width of the canvas'},
-	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
-	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
-	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
-	{label:'3dbar glyph', p:"glyph1",wikiValue:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
-	{label:'gauge glyph',p:"glyph1",wikiValue:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
-
+	{p:'doGridPoints',ex:'true',tt:'Display a image showing shapes or bars'},
+	{p:'gridWidth',ex:'800',tt:'Width of the canvas'},
+	{label:'label glyph',p:"glyph1",ex:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
+	{label:'rect glyph', p:"glyph1",ex:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
+	{label:'circle glyph',p:"glyph1",ex:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
+	{label:'3dbar glyph', p:"glyph1",ex:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
+	{label:'gauge glyph',p:"glyph1",ex:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
 
 	{label:'Heatmap Properties'},
-	{p:'doHeatmap',wikiValue:'true',tt:'Grid the data into an image'},
-	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
+	{p:'doHeatmap',ex:'true',tt:'Grid the data into an image'},
+	{p:'hm.showPoints',ex:'true',tt:'Also show the map points'},
 	{p:'htmlLayerField'},
-	{p:'htmlLayerWidth',wikiValue:'30'},
-	{p:'htmlLayerHeight',wikiValue:'15'},
-	{p:'htmlLayerStyle',wikiValue:'css style'},
-	{p:'htmlLayerScale',wikiValue:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
-	{p:'cellShape',wikiValue:'rect|3dbar|circle|vector'},
-	{p:'cellColor',wikiValue:'color'},
-	{p:'cellFilled',wikiValue:true},
-	{p:'cellSize',wikiValue:'8'},
-	{p:'cellSizeH',wikiValue:'20',tt:'Base value to scale by to get height'},
-	{p:'cellSizeHBase',wikiValue:'0',tt:'Extra height value'},
-	{p:'angleBy',wikiValue:'field',tt:'field for angle of vectors'},
-	{p:'hm.operator',wikiValue:'count|average|min|max'},
-	{p:'hm.animationSleep',wikiValue:'1000'},
-	{p:'hm.reloadOnZoom',wikiValue:'true'},
-	{p:'hm.groupByDate',wikiValue:'true|day|month|year|decade',tt:'Group heatmap images by date'}, 
-	{p:'hm.groupBy',wikiValue:'field id',tt:'Field to group heatmap images'}, 
+	{p:'htmlLayerShape',ex:'barchart|piechart'},	
+	{p:'htmlLayerWidth',ex:'30'},
+	{p:'htmlLayerHeight',ex:'15'},
+	{p:'htmlLayerStyle',ex:'css style'},
+	{p:'htmlLayerScale',ex:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
+	{p:'cellShape',ex:'rect|3dbar|circle|vector'},
+	{p:'cellColor',ex:'color'},
+	{p:'cellFilled',ex:true},
+	{p:'cellSize',ex:'8'},
+	{p:'cellSizeH',ex:'20',tt:'Base value to scale by to get height'},
+	{p:'cellSizeHBase',ex:'0',tt:'Extra height value'},
+	{p:'angleBy',ex:'field',tt:'field for angle of vectors'},
+	{p:'hm.operator',ex:'count|average|min|max'},
+	{p:'hm.animationSleep',ex:'1000'},
+	{p:'hm.reloadOnZoom',ex:'true'},
+	{p:'hm.groupByDate',ex:'true|day|month|year|decade',tt:'Group heatmap images by date'}, 
+	{p:'hm.groupBy',ex:'field id',tt:'Field to group heatmap images'}, 
 	{p:'hm.labelPrefix'},
 	{p:'hm.showToggle'},
 	{p:'hm.toggleLabel'},
-	{p:'boundsScale',wikiValue:'0.1',tt:'Scale up the map bounds'},
-	{p:'hm.filter',wikiValue:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
-	{p:'hm.filterPasses',wikiValue:'1'},
-	{p:'hm.filterThreshold',wikiValue:'1'},
-	{p:'hm.countThreshold',wikiValue:'1'},
+	{p:'boundsScale',ex:'0.1',tt:'Scale up the map bounds'},
+	{p:'hm.filter',ex:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
+	{p:'hm.filterPasses',ex:'1'},
+	{p:'hm.filterThreshold',ex:'1'},
+	{p:'hm.countThreshold',ex:'1'},
     ]);
-    this.defineSizeByProperties();
+
     RamaddaUtil.defineMembers(this, {
         mapBoundsSet: false,
         features: [],
@@ -28723,13 +28755,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let _this = this;
             var params = {
                 defaultMapLayer: this.getPropertyDefaultMapLayer(map_default_layer),
-		showLayerSwitcher: this.getProperty("showLayerSwitcher", true),
-		showScaleLine: this.getProperty("showScaleLine",false),
-		showLatLonPosition: this.getProperty("showLatLonPosition",true),
-		showZoomPanControl: this.getProperty("showZoomPanControl",false),
-		showZoomOnlyControl: this.getProperty("showZoomOnlyControl",true),
-		enableDragPan: this.getProperty("enableDragPan",true),
-		highlightColor: this.getProperty("highlightColor","blue")
+		showLayerSwitcher: this.getPropertyShowLayerSwitcher(true),
+		showScaleLine: this.getPropertyShowScaleLine(false),
+		showLatLonPosition: this.getPropertyShowLatLonPosition(true),
+		showZoomPanControl: this.getPropertyShowZoomPanControl(false),
+		showZoomOnlyControl: this.getPropertyShowZoomOnlyControl(true),
+		enableDragPan: this.getPropertyEnableDragPan(true),
+		highlightColor: this.getPropertyHighlightColor("blue")
             };
 	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
@@ -28737,16 +28769,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 params.displayDiv = displayDiv;
 		params.displayDivSticky = this.getProperty("displayDivSticky", false);
             }
-            if (!this.getProperty("showLocationSearch", true)) {
+            if (!this.getPropertyShowLocationSearch(true)) {
                 params.showLocationSearch = false;
             }
-            var mapLayers = this.getProperty("mapLayers", null);
+            var mapLayers = this.getPropertyMapLayers(null);
             if (mapLayers) {
                 params.mapLayers = [mapLayers];
             }
 
-	    params.linked = this.getProperty("linked", false);
-	    params.linkGroup = this.getProperty("linkGroup", null);
+	    params.linked = this.getPropertyLinked(false);
+	    params.linkGroup = this.getPropertyLinkGroup(null);
 
 	    this.hadInitialPosition = false;
             if (this.getProperty("latitude")) {
@@ -28754,26 +28786,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 params.initialLocation = {lon:+this.getProperty("longitude", -105),
 					  lat:+this.getProperty("latitude", 40)};
 	    }
-	    if(this.getProperty("mapCenter")) {
+	    if(this.getPropertyMapCenter()) {
 		this.hadInitialPosition = true;
-		[lat,lon] =  this.getProperty("mapCenter").split(",");
+		[lat,lon] =  this.getPropertyMapCenter().split(",");
                 params.initialLocation = {lon:lon,lat:lat};
 	    }
 
-	    if(this.getProperty("zoomLevel")) {
+	    if(this.getPropertyZoomLevel()) {
 		this.hadInitialPosition = true;
-                params.initialZoom = +this.getProperty("zoomLevel");
-		params.initialZoomTimeout = this.getProperty("zoomTimeout");
+                params.initialZoom = +this.getPropertyZoomLevel();
+		params.initialZoomTimeout = this.getPropertyZoomTimeout();
 	    }
-	    
-
 
             this.map = this.getProperty("theMap", null);
             if (this.map) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             } else {
-		if(this.getProperty("initialLocation")) {
-		    let toks = this.getProperty("initialLocation").split(",");
+		if(this.getPropertyInitialLocation()) {
+		    let toks = this.getPropertyInitialLocation().split(",");
 		    params.initialLocation = {
 			lat:+toks[0],
 			lon:+toks[1]
@@ -28787,7 +28817,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.lastWidth = this.jq(ID_MAP).width();
             }
 
-	    if(!this.getProperty("showMarkers", this.getProperty("markersVisibility", true))) {
+	    if(!this.getPropertyShowMarkers(this.getProperty("markersVisibility", true))) {
 		this.map.getMarkersLayer().setVisibility(false);
 	    }
 
@@ -28882,17 +28912,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
             });
 	    this.createTime = new Date();
-	    this.xcnt = 0;
             this.map.getMap().events.register("moveend", "", ()=> {
                 _this.mapBoundsChanged();
 		_this.checkHeatmapReload();
             });
 
-	    let hasLoc = Utils.isDefined(this.getProperty("zoomLevel"))   ||
-		Utils.isDefined(this.getProperty("mapCenter"));
-            if (!hasLoc && (this.getProperty("bounds") ||this.getProperty("gridBounds")) ) {
+	    let hasLoc = Utils.isDefined(this.getPropertyZoomLevel())   ||
+		Utils.isDefined(this.getPropertyMapCenter());
+            if (!hasLoc && (this.getPropertyBounds() ||this.getPropertyGridBounds()) ) {
 		this.hadInitialPosition = true;
-                var toks = this.getProperty("bounds", this.getProperty("gridBounds","")).split(",");
+                var toks = this.getPropertyBounds(this.getPropertyGridBounds("")).split(",");
                 if (toks.length == 4) {
                     if (this.getProperty("showBounds", false)) {
                         var attrs = {};
@@ -30065,7 +30094,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    return html;
 	},
-	xcnt:0,
 	initHeader2:function() {
 	    let _this = this;
 	    this.jq("showMarkersToggle").change(function() {
@@ -30164,7 +30192,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
 
-	    if(this.getProperty("showRegionSelector",true)) {
+	    if(this.getProperty("showRegionSelector")) {
 		//Fetch the regions
 		if(!ramaddaMapRegions) {
 		    var jqxhr = $.getJSON(ramaddaBaseUrl +"/regions.json", data=> {
@@ -30445,12 +30473,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
-	    let xcnt =0;
 	    groups.values.every((value,idx)=>{
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
-//		if(xcnt++>0) return;
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
 		$("#testimg").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
@@ -30532,7 +30558,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	updateHtmlLayer:function() {
 	    if(!this.htmlLayer) return;
 	    if(!this.htmlLayerId) {
-		this.htmlLayerId =this.getUniqueId("htmllayer");
+		this.htmlLayerId =this.getUniqueId(ID_HTMLLAYER);
 		let vp  = this.map.getMap().getViewport();
 		vp = $(vp).children()[0];
 		$(vp).css("display","relative");
@@ -30541,20 +30567,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    $("#"+ this.htmlLayerId).html(this.htmlLayer);
 	},
         createHtmlLayer: function(records, fields) {
-	    let htmlLayerField = this.getFieldById(fields,this.getProperty("htmlLayerField"));
+	    let htmlLayerField = this.getFieldById(fields,this.getPropertyHtmlLayerField());
 	    this.htmlLayerInfo = {
 		records:records,
 		fields:fields,
 	    };
 	    this.htmlLayer = "";
-	    let w = this.getProperty("htmlLayerWidth",30);
-	    let h = this.getProperty("htmlLayerHeight",15);
-	    let shape = this.getProperty("htmlLayerShape","barchart");
+	    let w = this.getPropertyHtmlLayerWidth(30);
+	    let h = this.getPropertyHtmlLayerHeight(15);
+	    let shape = this.getPropertyHtmlLayerShape("barchart");
 	    if(shape=="barchart")
 		this.setProperty("colorBy",htmlLayerField.getId());
-	    if(this.getProperty("htmlLayerScale")) {
+	    if(this.getPropertyHtmlLayerScale()) {
 		let zooms = [];		
-		this.getProperty("htmlLayerScale").split(",").forEach(t=>{
+		this.getPropertyHtmlLayerScale().split(",").forEach(t=>{
 		    zooms.push(t.split(":"));
 		});
 		//3:0.5,4:1,5:2
@@ -30573,7 +30599,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		w*=scale;h*=scale;
 	    }
-	    let style = this.getProperty("htmlLayerStyle","")
+	    let style = this.getPropertyHtmlLayerStyle("");
 	    let infos = [];
 	    let allData = this.getColumnValues(records, htmlLayerField);
 	    let groups = RecordUtil.groupBy(records, this, false,"latlon");
@@ -30609,7 +30635,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.updateHtmlLayer();
             let colorBy = this.getColorByInfo(records);
 	    infos.forEach((info,idx)=>{
-		if(shape == "pie") {
+		if(shape == "pie" || shape == "piechart") {
 		    [0,1].forEach((cid,idx)=>{
 			let id = HU.getUniqueId("pie");
 			let cw = idx==0?w:hoverW;
@@ -30675,7 +30701,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.createHeatmap(records, fields, bounds);
 		return;
 	    }
-	    if(this.getProperty("htmlLayerField")) {
+	    if(this.getPropertyHtmlLayerField()) {
 		this.createHtmlLayer(records, fields);
 		return;
 	    }
@@ -33970,16 +33996,16 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, SUPER);
     this.defineProperties([
 	{label:'Base map properties'},
-	{p:'regionField',wikiValue:''},
-	{p:'valueField',wikiValue:''},
-	{p:'mapFile',wikiValue:'',d:ramaddaBaseUrl+"/display/resources/usmap.json"},
-	{p:'skipRegions',wikiValue:'Alaska,Hawaii'},
-	{p:'pruneMissing',wikiValue:'true'},				
-	{p:'mapBackground',wikiValue:'transparent'},
-	{p:'transforms',wikiValue:"Alaska,0.4,30,-40;Hawaii,2,50,5;Region,scale,offsetX,offsetY"},
-	{p:'prunes',wikiValue:'Alaska,100;Region,maxCount'},
-	{p:'mapWidth',wikiValue:''},
-	{p:'mapHeight',wikiValue:''},
+	{p:'regionField',ex:''},
+	{p:'valueField',ex:''},
+	{p:'mapFile',ex:'',d:ramaddaBaseUrl+"/display/resources/usmap.json"},
+	{p:'skipRegions',ex:'Alaska,Hawaii'},
+	{p:'pruneMissing',ex:'true'},				
+	{p:'mapBackground',ex:'transparent'},
+	{p:'transforms',ex:"Alaska,0.4,30,-40;Hawaii,2,50,5;Region,scale,offsetX,offsetY"},
+	{p:'prunes',ex:'Alaska,100;Region,maxCount'},
+	{p:'mapWidth',ex:''},
+	{p:'mapHeight',ex:''},
 	{p:'maxLon'},
 	{p:'minLon'},
 	{p:'maxLat'},
@@ -34341,15 +34367,15 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
 	{label:'Map chart Properties'},
-	{p:'maxLayers',wikiValue:'10'},
-	{p:'translateX',wikiValue:'0'},
-	{p:'translateY',wikiValue:'0'},	
-	{p:'skewX',wikiValue:'-10'},
-	{p:'skewY',wikiValue:'0'},	
-	{p:'rotate',wikiValue:'10'},
-	{p:'scale',wikiValue:'0'},
-	{p:'fillColor',wikiValue:'red'},
-	{p:'blur',wikiValue:'4'},			
+	{p:'maxLayers',ex:'10'},
+	{p:'translateX',ex:'0'},
+	{p:'translateY',ex:'0'},	
+	{p:'skewX',ex:'-10'},
+	{p:'skewY',ex:'0'},	
+	{p:'rotate',ex:'10'},
+	{p:'scale',ex:'0'},
+	{p:'fillColor',ex:'red'},
+	{p:'blur',ex:'4'},			
     ]);
 
     $.extend(this, {
@@ -34462,10 +34488,10 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
 	{label:'Map array properties'},
-	{p:'blockWidth',wikiValue:''},
-	{p:'sortByValue',wikiValue:'true'},
-	{p:'fillColor',wikiValue:'red'},
-	{p:'showValue',wikiValue:'true'},	
+	{p:'blockWidth',ex:''},
+	{p:'sortByValue',ex:'true'},
+	{p:'fillColor',ex:'red'},
+	{p:'showValue',ex:'true'},	
 	
     ]);
 
@@ -34697,7 +34723,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
 	{label:'Map images Properties'},
-	{p:'imageField',wikiValue:''},
+	{p:'imageField',ex:''},
     ]);
     $.extend(this, {
         getHeightForStyle: function(dflt) {
@@ -35360,22 +35386,22 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     
     this.defineProperties([
 	{label:'Timeline Properties'},
-	{p:'titleField',wikiValue:''},
-	{p:'imageField',wikiValue:''},
-	{p:'textTemplate',wikiValue:''},
-	{p:'startDateField',wikiValue:''},
-	{p:'endDateField',wikiValue:''},
-	{p:'startAtSlide',wikiValue:'0'},
-	{p:'startAtEnd',wikiValue:'true'},
-	{p:'scaleFactor',wikiValue:'10'},
-	{p:'initialZoom',wikiValue:'10'},	
-	{p:'navHeight',wikiValue:'150'},
-	{p:'backgroundColor',wikiValue:'#ccc'},
-	{p:'groupField',wikiValue:''},
-	{p:'urlField',wikiValue:''},
-	{p:'timeTo',wikiValue:'year|day|hour|second'},
+	{p:'titleField',ex:''},
+	{p:'imageField',ex:''},
+	{p:'textTemplate',ex:''},
+	{p:'startDateField',ex:''},
+	{p:'endDateField',ex:''},
+	{p:'startAtSlide',ex:'0'},
+	{p:'startAtEnd',ex:'true'},
+	{p:'scaleFactor',ex:'10'},
+	{p:'initialZoom',ex:'10'},	
+	{p:'navHeight',ex:'150'},
+	{p:'backgroundColor',ex:'#ccc'},
+	{p:'groupField',ex:''},
+	{p:'urlField',ex:''},
+	{p:'timeTo',ex:'year|day|hour|second'},
 	{p:'justTimeline',wikiVaklue:"true"},
-	{p:'hideBanner',wikiValue:"true"},
+	{p:'hideBanner',ex:"true"},
     ]);
 
     Utils.importJS(ramaddaBaseUrl+"/lib/timeline3/timeline.js");
@@ -35556,12 +35582,12 @@ function RamaddaHoursDisplay(displayManager, id, properties) {
     
     this.defineProperties([
 	{label:'Hours Properties'},
-	{p:'dateField',wikiValue:''},
-	{p:'boxWidth',wikiValue:''},
-	{p:'boxColor',wikiValue:'blue'},	
-	{p:'rowBackground',wikiValue:''},
-	{p:'dayLabelStyle',wikiValue:''},
-	{p:'fillHours',wikiValue:'false'},			
+	{p:'dateField',ex:''},
+	{p:'boxWidth',ex:''},
+	{p:'boxColor',ex:'blue'},	
+	{p:'rowBackground',ex:''},
+	{p:'dayLabelStyle',ex:''},
+	{p:'fillHours',ex:'false'},			
     ]);
 
     $.extend(this, {
@@ -38132,27 +38158,27 @@ function RamaddaSparklineDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Sparkline Properties'},
-	{p:'showDate',wikiValue:'true'},
-	{p:'showMin',wikiValue:'true'},
-	{p:'showMax',wikiValue:'true'},
-	{p:'labelStyle',wikiValue:''},			
+	{p:'showDate',ex:'true'},
+	{p:'showMin',ex:'true'},
+	{p:'showMax',ex:'true'},
+	{p:'labelStyle',ex:''},			
 	{p:'sparklineWidth',d:60},
 	{p:'sparklineHeight',d:20},
-	{p:'sparklineLineColor',wikiValue:'#000'},
-	{p:'sparklineBarColor',wikiValue:'MediumSeaGreen'},
-	{p:'sparklineCircleColor',wikiValue:'#000'},
-	{p:'sparklineCircleRadius',wikiValue:'1'},
-	{p:'sparklineLineWidth',wikiValue:'1'},
-	{p:'sparklineShowLines',wikiValue:'true'},
-	{p:'sparklineShowBars',wikiValue:'true'},
-	{p:'sparklineShowCircles',wikiValue:'true'},
-	{p:'sparklineShowEndPoints',wikiValue:'true'},
-	{p:'sparklineEndPointRadius',wikiValue:'2'},
-	{p:'sparklineEndPoint1Color',wikiValue:''},
-	{p:'sparklineEndPoint1Color',wikiValue:'steelblue'},
-	{p:'sparklineEndPointRadius',wikiValue:'2'},
-	{p:'sparklineEndPoint2Color',wikiValue:''},
-	{p:'sparklineEndPoint2Color',wikiValue:'tomato'},
+	{p:'sparklineLineColor',ex:'#000'},
+	{p:'sparklineBarColor',ex:'MediumSeaGreen'},
+	{p:'sparklineCircleColor',ex:'#000'},
+	{p:'sparklineCircleRadius',ex:'1'},
+	{p:'sparklineLineWidth',ex:'1'},
+	{p:'sparklineShowLines',ex:'true'},
+	{p:'sparklineShowBars',ex:'true'},
+	{p:'sparklineShowCircles',ex:'true'},
+	{p:'sparklineShowEndPoints',ex:'true'},
+	{p:'sparklineEndPointRadius',ex:'2'},
+	{p:'sparklineEndPoint1Color',ex:''},
+	{p:'sparklineEndPoint1Color',ex:'steelblue'},
+	{p:'sparklineEndPointRadius',ex:'2'},
+	{p:'sparklineEndPoint2Color',ex:''},
+	{p:'sparklineEndPoint2Color',ex:'tomato'},
     ]);
 
     $.extend(this, {
@@ -38344,21 +38370,21 @@ function RamaddaCanvasDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Canvas Properties'},
-	{p:'canvasWidth',d:100,wikiValue:"100",tt:'Canvas width'},
-	{p:'canvasHeight',d:100,wikiValue:"100",tt:'Canvas height'},
-	{p:'canvasStyle',d:"",wikiValue:"",tt:'Canvas CSS style'},
+	{p:'canvasWidth',d:100,ex:"100",tt:'Canvas width'},
+	{p:'canvasHeight',d:100,ex:"100",tt:'Canvas height'},
+	{p:'canvasStyle',d:"",ex:"",tt:'Canvas CSS style'},
 	{p:'titleTemplate',tt:'Template to show as title'},
 	{p:'topTitleTemplate',tt:'Template to show as top title'},	
 	{p:'urlField',tt:'Url Field'},
 	{p:'iconField',tt:'Icon Field'},
 	{p:'highlightStyle',tt:'Highlight Style'},
 	{p:'unHighlightStyle',tt:'Unhighlight Style'},	
-	{p:'canvasOrigin',d:"sw",wikiValue:"center",tt:'Origin point for drawing glyphs'},
-	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
-	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
-	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
-	{label:'3dbar glyph', p:"glyph1",wikiValue:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
-	{label:'gauge glyph',p:"glyph1",wikiValue:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
+	{p:'canvasOrigin',d:"sw",ex:"center",tt:'Origin point for drawing glyphs'},
+	{label:'label glyph',p:"glyph1",ex:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
+	{label:'rect glyph', p:"glyph1",ex:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
+	{label:'circle glyph',p:"glyph1",ex:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
+	{label:'3dbar glyph', p:"glyph1",ex:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
+	{label:'gauge glyph',p:"glyph1",ex:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
     ]);
     $.extend(this, {
         needsData: function() {
@@ -40491,26 +40517,26 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Profile Properties'},
-	{p:'indexField',d:null,wikiValue:''},
-	{p:'fields',d:null,wikiValue:''},
-	{p:'profileMode',d:'lines',wikiValue:'lines|markers|lines+markers'},
-	{p:'yAxisTitle',d:'Pressure- Digiquartz',wikiValue:''},
-	{p:'yAxisShowLine',d:'true',wikiValue:'false'},
-	{p:'yAxisShowGrid',d:'true',wikiValue:'false'},
-	{p:'xAxisTitle',d:'',wikiValue:''},
-	{p:'xAxisShowGrid',d:'true',wikiValue:'false'},
-	{p:'xAxisShowLine',d:'true',wikiValue:'false'},
-	{p:'yAxisReverse',d:false,wikiValue:'true'},
-	{p:'marginLeft',d:'60',wikiValue:'60'},
-	{p:'marginRight',d:'100',wikiValue:'100'},
-	{p:'marginBottom',d:'50',wikiValue:'50'},
-	{p:'marginTop',d:'100',wikiValue:'100'},
-	{p:'showLegend',d:'true',wikiValue:'false'},
-	{p:'legendYAnchor',d:null,wikiValue:'top|middle|bottom'},
-	{p:'legendXAnchor',d:null,wikiValue:'right|center|left'},
-	{p:'chart.fill',d:'rgb(254, 247, 234)',wikiValue:'color'},
-	{p:'chartArea.fill',d:'rgb(254, 247, 234)',wikiValue:'color'},
-	{p:'xAxis2Title',d:'Conductivity',wikiValue:''},
+	{p:'indexField',d:null,ex:''},
+	{p:'fields',d:null,ex:''},
+	{p:'profileMode',d:'lines',ex:'lines|markers|lines+markers'},
+	{p:'yAxisTitle',d:'Pressure- Digiquartz',ex:''},
+	{p:'yAxisShowLine',d:'true',ex:'false'},
+	{p:'yAxisShowGrid',d:'true',ex:'false'},
+	{p:'xAxisTitle',d:'',ex:''},
+	{p:'xAxisShowGrid',d:'true',ex:'false'},
+	{p:'xAxisShowLine',d:'true',ex:'false'},
+	{p:'yAxisReverse',d:false,ex:'true'},
+	{p:'marginLeft',d:'60',ex:'60'},
+	{p:'marginRight',d:'100',ex:'100'},
+	{p:'marginBottom',d:'50',ex:'50'},
+	{p:'marginTop',d:'100',ex:'100'},
+	{p:'showLegend',d:'true',ex:'false'},
+	{p:'legendYAnchor',d:null,ex:'top|middle|bottom'},
+	{p:'legendXAnchor',d:null,ex:'right|center|left'},
+	{p:'chart.fill',d:'rgb(254, 247, 234)',ex:'color'},
+	{p:'chartArea.fill',d:'rgb(254, 247, 234)',ex:'color'},
+	{p:'xAxis2Title',d:'Conductivity',ex:''},
     ]);
 
     RamaddaUtil.defineMembers(this, {

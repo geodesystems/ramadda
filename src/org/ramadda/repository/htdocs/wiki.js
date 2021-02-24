@@ -495,7 +495,7 @@ function wikiInitEditor(info) {
 	    if(dmenu=="") return;
 	    toggleLabel = HU.div([CLASS,"wiki-editor-popup-header"], toggleLabel);
 	    blockCnt++;
-	    if(blockCnt>3) {
+	    if(blockCnt>5) {
 		menu += HU.close('div');
 		menu += HU.open('div',[CLASS,'wiki-editor-popup-section']);
 		blockCnt=0;
@@ -590,7 +590,7 @@ function wikiInitEditor(info) {
 		}
 
 		if(wikiAttributes[tag]) {
-		    wikiAttributes[tag].map(a=>tags.push(a));
+		    wikiAttributes[tag].forEach(a=>tags.push(a));
 		}
 
 		let processTag =(tag)=>{
@@ -600,8 +600,8 @@ function wikiInitEditor(info) {
 			let a = tag;
 			if(tag.length==3) {
 			    label = a[0];
-			    tt = a[2];
 			    tag = a[1];
+			    tt = a[2];
 			} else {
 			    tt = a[1];
 			    tag = a[0];
@@ -638,7 +638,7 @@ function wikiInitEditor(info) {
 		    tag = HtmlUtils.span(["title",tt2],tag);
 		    if(label)
 			label = HtmlUtils.span(["title",tt2],label);
-		    dmenu+=HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",label || tag)+"<br>\n";
+		    dmenu+=HU.div([CLASS,"ramadda-menu-item"], HtmlUtils.onClick("insertText('" + info.id +"','"+t+"')",label || tag));
 		};
 		
 		if(tags.length>0) {
@@ -663,7 +663,7 @@ function wikiInitEditor(info) {
 	}
 
 	popupObject = getTooltip();
-	popupObject.html(menu);
+	popupObject.html(HU.div([STYLE,HU.css("margin","5px")], menu));
 	popupObject.show();
 	popupObject.position({
 	    of: $(window),

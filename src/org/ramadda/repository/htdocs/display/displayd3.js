@@ -952,8 +952,8 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Minidots Properties'},
-	{p:'dateField',wikiValue:''},
-	{p:'valueField',wikiValue:''},
+	{p:'dateField',ex:''},
+	{p:'valueField',ex:''},
     ]);
 
     $.extend(this, {

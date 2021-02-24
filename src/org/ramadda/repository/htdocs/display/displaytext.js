@@ -204,14 +204,14 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 	{p:'fields'},	
 	{p:'tableFields'},
 	{p:'countField'},
-	{p:'tokenize',wikiValue:true},
-	{p:'handleClick',wikiValue:true},
-	{p:'showFieldLabel',wikiValue:true},
+	{p:'tokenize',ex:true},
+	{p:'handleClick',ex:true},
+	{p:'showFieldLabel',ex:true},
 	{p:'showRecords'},
 	{p:'combined'},
-	{p:'shape',wikiValue:'rectangular'},
-	{p:'stopWords',wikiValue:'word1,word2'},
-	{p:'showFieldLabel',wikiValue:'false'}	
+	{p:'shape',ex:'rectangular'},
+	{p:'stopWords',ex:'word1,word2'},
+	{p:'showFieldLabel',ex:'false'}	
     ]);
     $.extend(this, {
         getContentsStyle: function() {
@@ -493,25 +493,25 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     this.defineProperties([
 	{label:"Template Attributes"},
 	{p: "template"},
-	{p:"headerTemplate",wikiValue:"... ${totalCount} ... ${selectedCount}"},
-	{p:"footerTemplate",wikiValue:"... ${totalCount} ... ${selectedCount}"},
+	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
+	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
 	{p:"emptyMessage"},
-	{p:"select",wikiValue:"max|min|<|>|=|<=|>=|contains"},
+	{p:"select",ex:"max|min|<|>|=|<=|>=|contains"},
 	{p:"selectField"},
 	{p:"selectValue"},
-	{p:'onlyShowSelected',wikiValue:'true'},
-	{p:'showFirst',wikiValue:'false'},	
-	{p:'selectHighlight',wikiValue:'true'},	
+	{p:'onlyShowSelected',ex:'true'},
+	{p:'showFirst',ex:'false'},	
+	{p:'selectHighlight',ex:'true'},	
 	{p:'handleSelectOnClick'},
 	{p:"groupByField"},
-	{p:"groupDelimiter",wikiValue:"<br>"},	
+	{p:"groupDelimiter",ex:"<br>"},	
 	{p:"groupTemplate",wikivalue:"<b>${group}</b><ul>${contents}</ul>"},
 	{p:"sortGroups",wikivalue:"true"},
 	{p:'${&lt;field&gt;_total}'},
 	{p:'${&lt;field&gt;_max}'},
 	{p:'${&lt;field&gt;_min}'},
 	{p:'${&lt;field&gt;_average}'},
-	{p:'highlightOnScroll',wikiValue:'true'}]);
+	{p:'highlightOnScroll',ex:'true'}]);
 
     $.extend(this, {
 	dataFilterChanged: function() {
@@ -1197,13 +1197,13 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Block Properties'},
-	{p:'animStep',d:1000,wikiValue:"1000",tt:'Delay'},
-	{p:'doSum',d:true,wikiValue:"false",tt:''},
-	{p:'header',d:true,wikiValue:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
+	{p:'animStep',d:1000,ex:"1000",tt:'Delay'},
+	{p:'doSum',d:true,ex:"false",tt:''},
+	{p:'header',d:true,ex:"Each block represents ${blockValue} ... There were a total of ${total} ...",tt:''},
 
-//	{p:'counts',d:100,wikiValue:"100",tt:''},	
-	{p:'blockIcon',d:null,wikiValue:"fa-male",tt:'Use an icon'},
-//	{p:'',d:"",wikiValue:"",tt:''},
+//	{p:'counts',d:100,ex:"100",tt:''},	
+	{p:'blockIcon',d:null,ex:"fa-male",tt:'Use an icon'},
+//	{p:'',d:"",ex:"",tt:''},
     ]);
 
     $.extend(this, {
@@ -2376,9 +2376,9 @@ function RamaddaTextDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Text Display Attributes'},
-	{p:'recordTemplate',wikiValue:''},
-	{p:'showDefault',d:true,wikiValue:"false"},
-	{p:'message',d:null,wikiValue:""},
+	{p:'recordTemplate',ex:''},
+	{p:'showDefault',d:true,ex:"false"},
+	{p:'message',d:null,ex:""},
     ]);
     if(!this.getPropertyRecordTemplate()) {
 	this.setProperty("recordTemplate","${default}");
@@ -2463,8 +2463,8 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Glossary Properties'},
-	{p:'wordField',wikiValue:""},
-	{p:'definitionField',wikiValue:""},	
+	{p:'wordField',ex:""},
+	{p:'definitionField',ex:""},	
     ]);
 
     $.extend(this, {

@@ -895,6 +895,207 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
     const SUPER  = new DisplayThing(argId, argProperties);
     RamaddaUtil.inherit(this, SUPER);
 
+    this._wikiTags  = [];
+    
+    this.defineProperties = function(props) {
+	let tagList = [];
+	props.forEach(prop=>{
+	    if(!prop.p && prop.label) {
+		tagList.push('label:' + prop.label);
+		return;
+	    }
+	    if(!prop.p && prop.inlineLabel) {
+		tagList.push('inlinelabel:' + prop.inlineLabel);
+		return;
+	    }		
+	    if(!prop.p) {
+		console.log("Malformed property:" + JSON.stringify(prop));
+		return;
+	    }
+
+	    if(prop.p.indexOf("&")<0) {
+		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
+		    let funcName =  'getProperty' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
+		    this[funcName] = (dflt)=>{
+			if(!Utils.isDefined(dflt)) dflt = prop.d;
+			return this.getProperty(prop.p,dflt);
+		    };
+		}
+	    }
+
+
+	    let tag = "";
+	    tag +=prop.p+'="';
+	    tag += (prop.ex?prop.ex:prop.wikiValue?prop.wikiValue:prop.d?prop.d:"")+'"';
+	    let w = [];
+	    let tt = prop.tt||"";
+	    if(prop.label) {
+		w.push(prop.label);
+		w.push(tag);
+	    } else {
+		w.push(tag);
+	    }
+	    w.push(prop.tt);
+	    tagList.push(w);
+	});
+	this._wikiTags  = Utils.mergeLists(tagList,this._wikiTags);
+    }
+
+
+    
+    this.defineProperties([
+	{label:'Display Attributes'},
+	{p:'fields',ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
+	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
+	{p:"showMenu",ex:true},	      
+	{p:"showTitle",ex:true},
+	{p:"showEntryIcon",ex:true},
+	{p:"layoutHere",ex:true},
+	{p:"width",ex:"100%"},
+	{p:"height",ex:"400"},
+	{p:"tooltip",ex:"${default}"},
+	{p:"tooltipPositionMy",ex:"left top"},
+	{p:"tooltipPositionAt",ex:"left bottom+2"},		
+	{p:"displayStyle",ex:"css styles",tt:"Specify styles for display"},
+	{p:"title",ex:""},
+	{p:"titleBackground",ex:"color"},
+	{p:"linkField",ex:""},
+	{p:"titleField",ex:""},
+	{p:"descriptionField",ex:""},
+	{p:"textColor",ex:"color"},
+	{p:"backgroundImage",ex:"",tt:"Image url to display in background"},
+	{p:"background",ex:"color"},
+	{p:"showProgress",ex:true},
+	{p:"doEntries",ex:true,tt:"Make the children entries be data"},
+	{p:"addAttributes",ex:true,tt:"Include the extra attributes of the children"},
+	{p:"sortFields",tt:"Comma separated list of fields to sort the data on"},
+	{p:"sortAscending",ex:"true|false"},
+	{p:"showSortDirection",ex:true},		
+	{p:"sortByFields",ex:"",tt:"Show sort by fields in a menu"},
+	{p:"sortHighlight",ex:true,tt:"Sort based on highlight from the filters"},
+	{p:"showDisplayFieldsMenu",ex:true},
+	{p:"displayFieldsMenuMultiple",ex:true},
+	{p:"displayFieldsMenuSide",ex:"left"},
+	{p:"acceptEventDisplayFieldsChange",ex:true},
+	{label:"Formatting"},
+	{p:"dateFormat",ex:"yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm"},
+	{p:"dateFormatDaysAgo",ex:true},
+	{p:"doFormatNumber",ex:false},
+ 	{p:"formatNumberDecimals",ex:0},
+	{p:"formatNumberScale",ex:100},
+	{p:"numberTemplate",ex:"${number}%"},
+	{p:"&lt;field_id&gt;.&lt;format&gt;",ex:"..."},
+	{label:"Filter Data"},
+	{p:"fieldsNumeric",ex:true,tt:"Only get numeric fields"},
+	{p:"filterFields",ex:""},
+	{p:"filterFieldsToPropagate"},
+	{p:"hideFilterWidget",ex:true},
+	{p:"filterHighlight",ex:true,tt:"Highlight the records"},
+	{p:"showFilterHighlight",ex:false,tt:"show/hide the filter highlight widget"},
+	{p:"acceptEventFilter",ex:false},
+	{p:"propagateEventRecordHighlight",ex:true},
+	{p:"acceptEventRecordHighlight",ex:true},		
+	{p:"propagateEventRecordList",ex:true},
+	{p:"acceptEventRecordList",ex:true},
+	{p:"filterSliderImmediate",ex:true,tt:"Apply the change while sliding"},
+	{p:"filterLogic",ex:"and|or",tt:"Specify logic to apply filters"},		
+	{p:"&lt;field&gt;.filterValue"},
+	{p:"&lt;field&gt;.filterValueMin"},
+	{p:"&lt;field&gt;.filterValueMax"},
+	{p:"&lt;field&gt;.filterValues"},
+	{p:"&lt;field&gt;.filterMultiple",ex:true},
+	{p:"&lt;field&gt;.filterMultipleSize",ex:5},
+	{p:"filterShowCount",ex:false},
+	{p:"filterShowTotal",ex:true},		
+	{p:"&lt;field&gt;.filterLabel"},
+	{p:"&lt;field&gt;.showFilterLabel"},
+	{p:"&lt;field&gt;.filterVertical",ex:true},
+	{p:"filterVertical",ex:true},				
+	{p:"&lt;field&gt;.filterByStyle",ex:"background:white;"},
+	{p:"&lt;field&gt;.includeAll",ex:false},
+	{p:"&lt;field&gt;.filterSort",ex:false},
+	{p:"&lt;field&gt;.filterSortCount",ex:false},		
+	{p:"&lt;field&gt;.filterStartsWith",ex:true},
+	{p:"&lt;field&gt;.filterDisplay",ex:"menu|tab|button|image"},
+	{p:"&lt;field&gt;.filterOps",ex:"<,5000000,label1;>,5000000",tt:"Add menu with fixed filters"},
+	{p:"excludeUndefined",ex:true,tt:"Exclude any records with an undefined value"},
+	{p:"excludeZero",ex:true,tt:"Exclude any records with a 0 value"},
+	{p:"recordSelectFilterFields",tt:"Set the value of other displays filter fields"},
+	{p:"selectFields",ex:"prop:label:field1,...fieldN;prop:...."},
+	{p:"match value", ex:"dataFilters=\"match(field=field,value=value,label=,enabled=);\"",tt:"Only show records that match"}, 		
+	{p:"not match value",ex:"dataFilters=\"notmatch(field=field,value=value,label=,enabled=);\"",tt:"Only show records that dont match"},
+	{p:"no missing values",ex:"dataFilters=\"nomissing(field=field,label=,enabled=);\"",tt:"Dont show missing values"},
+	{p:"less than",ex:"dataFilters=\"lessthan(field=field,value=value,label=,enabled=);\""},
+	{p:"greater than",ex:"dataFilters=\"greaterthan(field=field,value=value,label=,enabled=);\""},
+	{p:"equals",ex:"dataFilters=\"equals(field=field,value=value,label=,enabled=);\""},
+	{p:"not equals",ex:"dataFilters=\"notequals(field=field,value=value,label=,enabled=);\""},
+	{p:"filterLatest",ex:"fields",tt:"Only show the latest records grouped by fields"},		
+	{p:"filterDate",ex:"year",tt:"Show a simple pull down menu to select a year to display"},
+	{p:"filterDateIncludeAll",ex:true,tt:"Include all years"},
+	{p:"startDate",ex:"yyyy,MM,dd,hh,mm,ss",tt:"Filter data on date"},
+	{p:"endDate",ex:"yyyy,MM,dd,hh,mm,ss",tt:"Filter data on date"},
+	{inlineLabel:"Convert Data"},
+	{p:"binDate",ex:"day|month|year",tt:"Bin the dates"},
+	{p:"binType",ex:"count|average|total"},
+	{p:"groupBy",ex:"field",tt:"Group the data"},
+	{p:'convertData', label:"derived data", ex:"derived(field=new_field_id, function=foo*bar);",tt:"Add derived field"},
+	{p:'convertData',label:"merge rows",ex:"mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);",tt:"Merge rows together"},
+	{p:'convertData',lagel:"rotate data", ex:"rotateData(includeFields=true,includeDate=true,flipColumns=true);",tt:"Rotate data"},
+	{p:'convertData',label:"percent increase",ex:"addPercentIncrease(replaceValues=false);",tt:"Add percent increase"},
+	{p:'convertData',label:"doubling rate",ex:"doublingRate(fields=f1\\\\,f2, keyFields=f3);",tt:"Calculate # days to double"},
+	{p:'convertData',label:"unfurl",ex:"unfurl(headerField=,uniqueField=,valueFields=);",tt:"Unfurl"},
+	{label:"Color Attributes"},
+	{p:"colors",ex:"color1},...,colorN",tt:"Comma separated array of colors"},
+	{p:"colorBy",ex:"",tt:"Field id to color by"},
+	{p:"colorByFields",ex:"",tt:"Show color by fields in a menu"},
+	{p:"colorByLog",ex:"true",tt:"Use a log scale for the color by"},
+	{p:"colorByMap",ex:"value1:color1,...,valueN:colorN",tt:"Specify colors for color by text values"},
+	{p:"colorByInverse",ex:true,tt:"Inverse the values"},
+	{p:"colorTableAlpha",ex:0.5,tt:"Set transparency on color table values"},
+	{p:"colorTableInverse",ex:true,tt:"Inverse the color table"},
+	{p:"colorTablePruneLeft",ex:"N",tt:"Prune first N colors"},
+	{p:"colorTablePruneRight",ex:"N",tt:"Prune last N colors"},
+	{p:"colorByMin",ex:"value",tt:"Min scale value"},
+	{p:"colorByMax",ex:"value",tt:"Max scale value"},
+	{p:"showColorTable",ex:"false",tt:"Display the color table"},
+	{p:"showColorTableDots",ex:true},
+	{p:"colorTableDotsDecimals",ex:"0"},
+	{p:"colorTableSide",ex:"bottom|right|left|top"},
+	{p:"showColorTableStride",ex:1,tt:"How many colors should be shown"},
+	{p:"colorByAllRecords",ex:true,tt:"use all records for color range"},
+	{p:"convertColorIntensity",ex:true},
+	{p:"intensitySourceMin",ex:"0"},
+	{p:"intensitySourceMax",ex:100},
+	{p:"intensityTargetMin",ex:1},
+	{p:"intensityTargetMax",ex:0},
+	{p:"convertColorAlpha",ex:true},
+	{p:"alphaSourceMin",ex:0},
+	{p:"alphaSourceMax",ex:100},
+	{p:"alphaTargetMin",ex:0},
+	{p:"alphaTargetMax",ex:1},
+	{label:"Animation Attributes"},
+	{p:"doAnimation",ex:true},
+	{p:"animationHighlightRecord",ex:true},
+	{p:"animationHighlightRecordList",ex:true},
+	{p:"acceptEventAnimationChange",ex:false},
+	{p:"acceptDateRangeChange",ex:true},
+	{p:"animationDateFormat",ex:"yyyy"},
+	{p:"animationLabelSize",ex:"12pt"},
+	{p:"animationStyle"},				
+	{p:"animationTooltipShow",ex:"true"},
+	{p:"animationTooltipDateFormat",ex:"yyyymmddhhmm"},		
+	{p:"animationWindow",ex:"decade|halfdecade|year|month|week|day|hour|minute"},
+	{p:"animationMode",ex:"sliding|frame|cumulative"},
+	{p:"animationSpeed",ex:500},
+	{p:"animationLoop",ex:true},
+	{p:"animationDwell",ex:1000},
+	{p:"animationShowButtons",ex:false},
+	{p:"animationShowSlider",ex:false},
+	{p:"animationWidgetShort",ex:true}
+    ]);
+
+
+
     
     RamaddaUtil.defineMembers(this, {
         displayReady: Utils.getPageLoaded(),
@@ -906,203 +1107,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         entries: [],
         wikiAttrs: [TITLE, "showTitle", "showDetails", "minDate", "maxDate"],
 	_properties:[],
-	_wikiTags:[],
-	defineProperties:function(props) {
-	    props.forEach(p=>{
-		if(!p.p && p.label) {
-		    this._wikiTags.push('label:' + p.label);
-		    return;
-		}
-		if(!p.p && p.inlineLabel) {
-		    this._wikiTags.push('inlinelabel:' + p.inlineLabel);
-		    return;
-		}		
-		let tag=p.p+'="' + (p.wikiValue?p.wikiValue:p.d?p.d:"")+'"'
-		let w = [];
-		let tt = p.tt||"";
-		if(p.label) {
-		    w.push(p.label);
-		    w.push(tag);
-		} else {
-		    w.push(tag);
-		}
-		w.push(p.tt);
-		this._wikiTags.push(w);
-		if(!Utils.isDefined(p.doGetter) || p.doGetter) {
-		    let funcName =  'getProperty' + p.p.substring(0, 1).toUpperCase() + p.p.substring(1);
-		    this[funcName] = (dflt)=>{
-			if(!Utils.isDefined(dflt)) dflt = p.d;
-			return this.getProperty(p.p,dflt);
-		    };
-		}
-	    });
-	},
 	getWikiEditorTags: function() {
-	    let l =   [
-		"label:Display Attributes",
-		['fields=""','comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'],
-		['notFields="regexp"','regexp to not include fields'],		
-		"showMenu=\"true\"",	      
-		"showTitle=\"true\"",
-		"showEntryIcon=true",
-		"layoutHere=\"true\"",
-		"width=\"100%\"",
-		"height=\"400\"",
-		'tooltip=${default}',
-		'tooltipPositionMy="left top"',
-		'tooltipPositionAt="left bottom+2"',		
-		['displayStyle="css styles"',"Specify styles for display"],
-		"title=\"\"",
-		"titleBackground=\"color\"",
-		"linkField=",
-		"titleField=",
-		"descriptionField=",
-		"textColor=\"color\"",
-		["backgroundImage=\"\"","Image url to display in background"],
-		"background=\"color\"",
-		'showProgress=true',
-		['doEntries=true','Make the children entries be data'],
-		['addAttributes=true','Include the extra attributes of the children'],
-		["sortFields=\"\"","Comma separated list of fields to sort the data on"],
-		["sortAscending=true|false",""],
-		["showSortDirection=true",""],		
-		["sortByFields=\"\"","Show sort by fields in a menu"],
-		['sortHighlight=true','Sort based on highlight from the filters'],
-		['showDisplayFieldsMenu=true'],
-		['displayFieldsMenuMultiple=true'],
-		['displayFieldsMenuSide=left'],
-		['acceptEventDisplayFieldsChange=true'],
-		'inlinelabel:Formatting',
-		'dateFormat=yyyy|yyyymmdd|yyyymmddhh|yyyymmddhhmm|yyyymm|yearmonth|monthdayyear|monthday|mon_day|mdy|hhmm',
-		'dateFormatDaysAgo=true',
-		'doFormatNumber=false',
- 		'formatNumberDecimals=0',
-		'formatNumberScale=100',
-		'numberTemplate="${number}%"',
-		'&lt;field_id&gt;.&lt;format&gt;="..."',
-		"label:Filter Data",
-		['fieldsNumeric=true','Only get numeric fields'],
-		"filterFields=\"\"",
-		'filterFieldsToPropagate=""',
-		"hideFilterWidget=true",
-		['filterHighlight=true',"Highlight the records"],
-		['showFilterHighlight=false',"show/hide the filter highlight widget"],
-		"acceptEventFilter=false",
-		"propagateEventRecordHighlight=true",
-		"acceptEventRecordHighlight=true",		
-		"propagateEventRecordList=true",
-		"acceptEventRecordList=true",
-		['filterSliderImmediate=true',"Apply the change while sliding"],
-		['filterLogic=and|or',"Specify logic to apply filters"],		
-		"&lt;field&gt;.filterValue=\"\"",
-		"&lt;field&gt;.filterValueMin=\"\"",
-		"&lt;field&gt;.filterValueMax=\"\"",
-		"&lt;field&gt;.filterValues=\"\"",
-		"&lt;field&gt;.filterMultiple=\"true\"",
-		"&lt;field&gt;.filterMultipleSize=\"5\"",
-		"filterShowCount=false",
-		"filterShowTotal=true",		
-		"&lt;field&gt;.filterLabel=\"\"",
-		"&lt;field&gt;.showFilterLabel=\"false\"",
-		"&lt;field&gt;.filterVertical=\"true\"",
-		"filterVertical=\"true\"",				
-		"&lt;field&gt;.filterByStyle=\"background:white;\"",
-		"&lt;field&gt;.includeAll=false",
-		"&lt;field&gt;.filterSort=false",
-		"&lt;field&gt;.filterSortCount=false",		
-		"&lt;field&gt;.filterStartsWith=\"true\"",
-		"&lt;field&gt;.filterDisplay=\"menu|tab|button|image\"",
-		['&lt;field&gt;.filterOps="<,5000000,label1;>,5000000"','Add menu with fixed filters'],
-		['excludeUndefined=true','Exclude any records with an undefined value'],
-		['excludeZero=true','Exclude any records with a 0 value'],
-		['recordSelectFilterFields=""','Set the value of other displays filter fields'],
-		'selectFields=prop:label:field1,...fieldN;prop:....',
-		['match value', 'dataFilters="match(field=field,value=value,label=,enabled=);"','Only show records that match'], 		
-		['not match value','dataFilters="notmatch(field=field,value=value,label=,enabled=);"','Only show records that dont match'],
-		['no missing values','dataFilters="nomissing(field=field,label=,enabled=);"','Dont show missing values'],
-		['less than','dataFilters="lessthan(field=field,value=value,label=,enabled=);"',''],
-		['greater than','dataFilters="greaterthan(field=field,value=value,label=,enabled=);"',''],
-		['equals','dataFilters="equals(field=field,value=value,label=,enabled=);"',''],
-		['not equals','dataFilters="notequals(field=field,value=value,label=,enabled=); "',''],
-		['filterLatest=fields','Only show the latest records grouped by fields'],		
-		['filterDate=year',"Show a simple pull down menu to select a year to display"],
-		['filterDateIncludeAll=true',"Include all years"],
-		['startDate="yyyy,MM,dd,hh,mm,ss"',"Filter data on date"],
-		['endDate="yyyy,MM,dd,hh,mm,ss"',"Filter data on date"],
-		"inlinelabel:Convert Data",
-		['binDate="day|month|year"',"Bin the dates"],
-		'binType="count|average|total"',
-		['groupBy=field','Group the data'],
-		['derived data', 'convertData="derived(field=new_field_id, function=foo*bar);"','Add derived field'],
-		['merge rows','convertData="mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);"',"Merge rows together"],
-		["rotate data", 'convertData="rotateData(includeFields=true,includeDate=true,flipColumns=true);"',"Rotate data"],
-		["add percent", 'convertData="addPercentIncrease(replaceValues=false);"',"Add percent increase"],
-		['doubling rate','convertData="doublingRate(fields=f1\\\\,f2, keyFields=f3);"',"Calculate # days to double"],
-		["unfurl", 'convertData="unfurl(headerField=,uniqueField=,valueFields=);"',"Unfurl"],
-		"label:Color Attributes",
-		["colors=\"color1,...,colorN\"","Comma separated array of colors"],
-		["colorBy=\"\"","Field id to color by"],
-		["colorByFields=\"\"","Show color by fields in a menu"],
-		["colorByLog=\"true\"","Use a log scale for the color by"],
-		["colorByMap=\"value1:color1,...,valueN:colorN\"","Specify colors for color by text values"],
-		['colorByInverse=true','Inverse the values'],
-		["colorTableAlpha=\"0.5\"","Set transparency on color table values"],
-		['colorTableInverse=true',"Inverse the color table"],
-		['colorTablePruneLeft=N',"Prune first N colors"],
-		['colorTablePruneRight=N',"Prune last N colors"],
-		["colorByMin=\"value\"","Min scale value"],
-		["colorByMax=\"value\"","Max scale value"],
-		['showColorTable=false',"Display the color table"],
-		'showColorTableDots=true',
-		'colorTableDotsDecimals=0',
-		'colorTableSide=bottom|right|left|top',
-		['showColorTableStride=1','How many colors should be shown'],
-		['colorByAllRecords=true',"use all records for color range"],
-		'convertColorIntensity=true',
-		'intensitySourceMin=0',
-		'intensitySourceMax=100',
-		'intensityTargetMin=1',
-		'intensityTargetMax=0',
-		'convertColorAlpha=true',
-		'alphaSourceMin=0',
-		'alphaSourceMax=100',
-		'alphaTargetMin=0',
-		'alphaTargetMax=1',
-		"inlinelabel:Animation Attributes",
-		"doAnimation=true",
-		"animationHighlightRecord=true",
-		"animationHighlightRecordList=true",
-		"acceptEventAnimationChange=false",
-		"acceptDateRangeChange=true",
-		"animationDateFormat=\"yyyy\"",
-		"animationLabelSize=\"12pt\"",
-		"animationStyle=\"\"",				
-		"animationTooltipShow=\"true\"",
-		"animationTooltipDateFormat=\"yyyymmddhhmm\"",		
-		"animationWindow=\"decade|halfdecade|year|month|week|day|hour|minute\"",
-		"animationMode=\"sliding|frame|cumulative\"",
-		"animationSpeed=\"500\"",
-		"animationLoop=\"true\"",
-		'animationDwell=1000',
-		"animationShowButtons=\"false\"",
-		"animationShowSlider=\"false\"",
-		"animationWidgetShort=\"true\""
-	    ];
-//	    return  Utils.mergeLists(l,this._wikiTags);
-	    return  Utils.mergeLists(this._wikiTags,l);	    
-        },
+	    return this._wikiTags;
+	},
 
 	defineSizeByProperties: function() {
 	    this.defineProperties([
 		{inlineLabel:'Size By'},
-	    	{p:'sizeBy',wikiValue:'field',tt:'Field to size points by'},
-		{p:'sizeByLog',wikiValue:true,tt:'Use log scale for size by'},
-		{p:'sizeByMap', wikiValue:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
-		{p:'sizeByRadiusMin',wikiValue:'2',tt:'Scale size by'},
-		{p:'sizeByRadiusMax',wikiValue:'20',tt:'Scale size by'},
-		{p:'sizeByLegendSide',wikiValue:'bottom|top|left|right'},,
+	    	{p:'sizeBy',ex:'field',tt:'Field to size points by'},
+		{p:'sizeByLog',ex:true,tt:'Use log scale for size by'},
+		{p:'sizeByMap', ex:'value1:size,...,valueN:size',tt:'Define sizes if sizeBy is text'},
+		{p:'sizeByRadiusMin',ex:'2',tt:'Scale size by'},
+		{p:'sizeByRadiusMax',ex:'20',tt:'Scale size by'},
+		{p:'sizeByLegendSide',ex:'bottom|top|left|right'},,
 		{p:'sizeByLegendStyle'},
-		{p:'sizeBySteps',wikiValue:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
+		{p:'sizeBySteps',ex:'value1:size1,v2:s2,...',tt:'Use steps for sizes'},
 	    ]);
 	},
 

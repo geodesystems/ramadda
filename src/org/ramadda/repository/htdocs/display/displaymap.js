@@ -80,6 +80,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
     const ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
     const ID_REGION_SELECTOR = "regionselector";
+    const ID_HTMLLAYER = "htmllayer";
 
     RamaddaUtil.defineMembers(this, {
         showBoxes: true,
@@ -94,6 +95,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_MAP, properties);
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
+    this.defineSizeByProperties();
     this.defineProperties([
 	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
@@ -101,128 +103,140 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:"fillColor",d:"blue"},
 	{p:"fillOpacity",d:0.8},
 	{p:'radius',d:5,tt:"Size of the map points"},
-	{p:'scaleRadius',wikiValue:"true",tt:'Scale the radius based on # points shown'},
-	{p:'radiusScale',wikiValue:"value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12",tt:'Radius scale'},
-	{p:'shape',d:'circle',wikiValue:'star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
-	{p:'markerIcon',wikiValue:"/icons/..."},
-	{p:'justOneMarker',wikiValue:"true"},	
-	{p:'bounds',wikiValue:'north,west,south,east',tt:'initial bounds'},
-	{p:'mapCenter',wikiValue:'lat,lon',tt:"initial position"},
-	{p:'zoomLevel',wikiValue:4,tt:"initial zoom"},
-	{p:'zoomTimeout',wikiValue:1000,tt:"initial zoom timeout delay"},
-	{p:'fixedPosition',wikiValue:true,tt:'Keep the initial position'},
-	{p:'initialLocation', wikiValue:'lat,lon',tt:"initial location"},
-	{p:'defaultMapLayer',wikiValue:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
-	{p:'doPopup', wikiValue:'false',tt:"Don't show popups"},
-	{p:'linked',wikiValue:true,tt:"Link location with other maps"},
-	{p:'linkGroup',wikiValue:'some_name',tt:"Map groups to link with"},
-	{p:'highlight',wikiValue:'true',tt:"Show mouse over highlights"},
-	{p:'showRegionSelector',wikiValue:true},
+	{p:'scaleRadius',ex:"true",tt:'Scale the radius based on # points shown'},
+	{p:'radiusScale',ex:"value,size,value,size e.g.: 10000,1,8000,2,5000,3,2000,3,1000,5,500,6,250,8,100,10,50,12",tt:'Radius scale'},
+	{p:'shape',d:'circle',ex:'star|cross|x|square|triangle|circle|lightning|church',tt:'Use shape'},
+	{p:'markerIcon',ex:"/icons/..."},
+	{p:'iconSize',ex:16},
+	{p:'justOneMarker',ex:"true",tt:'This is for data that is all at one point and you want to support selecting points for other displays'},	
+	{p:'bounds',ex:'north,west,south,east',tt:'initial bounds'},
+	{p:'gridBounds',ex:'north,west,south,east'},	
+	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
+	{p:'zoomLevel',ex:4,tt:"initial zoom"},
+	{p:'zoomTimeout',ex:1000,tt:"initial zoom timeout delay"},
+	{p:'fixedPosition',ex:true,tt:'Keep the initial position'},
+	{p:'linked',ex:true,tt:"Link location with other maps"},
+	{p:'linkGroup',ex:'some_name',tt:"Map groups to link with"},
+
+	{p:'initialLocation', ex:'lat,lon',tt:"initial location"},
+	{p:'defaultMapLayer',ex:'ol.openstreetmap|esri.topo|esri.street|esri.worldimagery|esri.lightgray|esri.physical|opentopo|usgs.topo|usgs.imagery|usgs.relief|osm.toner|osm.toner.lite|watercolor'},
+	{p:'mapLayers',ex:'ol.openstreetmap,esri.topo,esri.street,esri.worldimagery,esri.lightgray,esri.physical,opentopo,usgs.topo,usgs.imagery,usgs.relief,osm.toner,osm.toner.lite,watercolor'},
+	{p:'doPopup', ex:'false',tt:"Don't show popups"},
+	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
-	{p:'centerOnFilterChange',wikiValue:true,tt:'Center map when the data filters change'},
-	{p:'centerOnHighlight',wikiValue:true,tt:'Center map when a record is highlighted'},
-	{p:'boundsAnimation',wikiValue:true,tt:'Animate when map is centered'},
-	{p:'iconField',wikiValue:'""',tt:'Field id for the image icon url'},
-	{p:'iconSize',wikiValue:16},
+	{p:'centerOnFilterChange',ex:true,tt:'Center map when the data filters change'},
+	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
+	{p:'boundsAnimation',ex:true,tt:'Animate when map is centered'},
+	{p:'iconField',ex:'""',tt:'Field id for the image icon url'},
 
-	{label:'Map Highlight Properties'},
-	{p:'showRecordSelection',wikiValue:'false'},
-	{p:'recordHighlightShape',wikiValue:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
-	{p:'recordHighlightRadius',wikiValue:'20',tt:'Radius to use to show other displays highlighted record'},
-	{p:'recordHighlightStrokeWidth',wikiValue:'2',tt:'Stroke to use to show other displays highlighted record'},
-	{p:'recordHighlightStrokeColor',wikiValue:'red',tt:'Color to use to show other displays highlighted record'},
-	{p:'recordHighlightFillColor',wikiValue:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
-	{p:'recordHighlightFillOpacity',wikiValue:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
+	{label:"Map GUI"},
+	{p:'showMarkersToggle',ex:'true',tt:'Show the toggle checkbox for the marker layer'},
+	{p:'showMarkersToggleLabel',ex:'label',tt:'Label to use for checkbox'},
+	{p:'showClipToBounds',ex:'true',tt:'Show the clip bounds checkbox'},
+	{p:'showMarkers',ex:'false',tt: 'Hide the markers'},
+	{p:'showLocationSearch',ex:'true'},
+	{p:'showLatLonPosition',ex:'false'},
+	{p:'showLayerSwitcher',ex:'false'},
+	{p:'showScaleLine',ex:'true'},
+	{p:'showZoomPanControl',ex:'true'},
+	{p:'showZoomOnlyControl',ex:'false'},
+	{p:'enableDragPan',ex:'false'},
+	{p:'showLayers',d:true,ex:'false'},
+
+
+
+	{label:'Map Highlight'},
+	{p:'showRecordSelection',ex:'false'},
+	{p:'highlight',ex:'true',tt:"Show mouse over highlights"},
+	{p:'recordHighlightShape',ex:'circle|star|cross|x|square|triangle|circle|lightning|rectangle'},
+	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
+	{p:'recordHighlightStrokeColor',ex:'red',tt:'Color to use to show other displays highlighted record'},
+	{p:'recordHighlightFillColor',ex:'rgba(0,0,0,0)',tt:'Fill color to use to show other displays highlighted record'},
+	{p:'recordHighlightFillOpacity',ex:'0.5',tt:'Fill opacity to use to show other displays highlighted record'},
 	{p:'recordHighlightVerticalLine',tt:'Draw a vertical line at the location of the selected record'},
-	{p:'unhighlightColor',wikiValue:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
-	{p:'unhighlightStrokeWidth',wikiValue:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
-	{p:'unhighlightStrokeColor',wikiValue:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
-	{p:'unhighlightRadius',wikiValue:'1',tt:'Radius for when records are highlighted with the filters'},
+	{p:'highlightColor',ex:'#ccc',tt:''},
+	{p:'unhighlightColor',ex:'#ccc',tt:'Fill color when records are unhighlighted with the filters'},
+	{p:'unhighlightStrokeWidth',ex:'1',tt:'Stroke width for when records are unhighlighted with the filters'},
+	{p:'unhighlightStrokeColor',ex:'#aaa',tt:'Stroke color for when records are unhighlighted with the filters'},
+	{p:'unhighlightRadius',ex:'1',tt:'Radius for when records are highlighted with the filters'},
 
-	{label:'Other Map Properties'},
-	{p:'vectorLayerStrokeColor',wikiValue:'#000'},
-	{p:'vectorLayerFillColor',wikiValue:'#ccc'},
-	{p:'vectorLayerFillOpacity',wikiValue:'0.25'},
-	{p:'vectorLayerStrokeWidth',wikiValue:'1'},
-	{p:'handleCollisions',wikiValue:'true',tt:"Handle point collisions"},
-	{p:'collisionFixed',d:true,wikiValue:'false',tt:"Always show markers"},
-	{p:'collisionMinPixels',d:16,wikiValue:'16',tt:"How spread out"},
-	{p:'collisionDotColor',wikiValue:'red',tt:"Color of dot drawn at center"},
-	{p:'collisionDotRadius',wikiValue:'3',tt:"Radius of dot drawn at center"},
-	{p:'collisionScaleDots',wikiValue:'false',d:true,tt:"Scale the group dots"},					
-	{p:'collisionLineColor',wikiValue:'red',tt:"Color of line drawn at center"},
-	{p:'showMarkersToggle',wikiValue:'true',tt:'Show the toggle checkbox for the marker layer'},
-	{p:'showMarkersToggleLabel',wikiValue:'label',tt:'Label to use for checkbox'},
-	{p:'showClipToBounds',wikiValue:'true',tt:'Show the clip bounds checkbox'},
-	{p:'showMarkers',wikiValue:'false',tt: 'Hide the markers'},
-	{p:'showLocationSearch',wikiValue:'true'},
-	{p:'showLatLonPosition',wikiValue:'false'},
-	{p:'showLayerSwitcher',wikiValue:'false'},
-	{p:'showScaleLine',wikiValue:'true'},
-	{p:'showZoomPanControl',wikiValue:'true'},
-	{p:'showZoomOnlyControl',wikiValue:'false'},
-	{p:'showLayers',d:true,wikiValue:'false'},
-	{p:'enableDragPan',wikiValue:'false'},
+	{label:'Map Vectors'},
+	{p:'vectorLayerStrokeColor',ex:'#000'},
+	{p:'vectorLayerFillColor',ex:'#ccc'},
+	{p:'vectorLayerFillOpacity',ex:'0.25'},
+	{p:'vectorLayerStrokeWidth',ex:'1'},
 
-	{p:'showSegments',wikiValue:'true',tt:'If data has 2 lat/lon locations draw a line'},
-	{p:'isPath',wikiValue:'true',tt:'Make a path from the points'},	
+	{label:"Map Collisions"},
+	{p:'handleCollisions',ex:'true',tt:"Handle point collisions"},
+	{p:'collisionFixed',d:true,ex:'false',tt:"Always show markers"},
+	{p:'collisionMinPixels',d:16,ex:'16',tt:"How spread out"},
+	{p:'collisionDotColor',ex:'red',tt:"Color of dot drawn at center"},
+	{p:'collisionDotRadius',ex:'3',tt:"Radius of dot drawn at center"},
+	{p:'collisionScaleDots',ex:'false',d:true,tt:"Scale the group dots"},					
+	{p:'collisionLineColor',ex:'red',tt:"Color of line drawn at center"},
+
+
+	{label:"Map Lines"},
+	{p:'showSegments',ex:'true',tt:'If data has 2 lat/lon locations draw a line'},
+	{p:'isPath',ex:'true',tt:'Make a path from the points'},	
 	{p:'latField1',tt:'Field id for segments'},
 	{p:'lonField1',tt:'Field id for segments'},
 	{p:'latField2',tt:'Field id for segments'},
 	{p:'lonField2',tt:'Field id for segments'},
 
 	{label:"Map Label Properties"},
-	{p:"labelFontColor",wikiValue:"#000"},
-	{p:"labelFontSize",wikiValue:"12px"},
-	{p:"labelFontFamily",wikiValue:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
-	{p:"labelFontWeight",wikiValue:"plain"},
-	{p:"labelAlign",wikiValue:"l|c|r t|m|b"},
-	{p:"labelXOffset",wikiValue:"0"},
-	{p:"labelYOffset",wikiValue:"0"},
-	{p:"labelOutlineColor",wikiValue:"#fff"},
-	{p:"labelOutlineWidth",wikiValue:"0"},
+	{p:"labelFontColor",ex:"#000"},
+	{p:"labelFontSize",ex:"12px"},
+	{p:"labelFontFamily",ex:"'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"},
+	{p:"labelFontWeight",ex:"plain"},
+	{p:"labelAlign",ex:"l|c|r t|m|b"},
+	{p:"labelXOffset",ex:"0"},
+	{p:"labelYOffset",ex:"0"},
+	{p:"labelOutlineColor",ex:"#fff"},
+	{p:"labelOutlineWidth",ex:"0"},
 
 
 	{label:'Map Glyphs'},
-	{p:'doGridPoints',wikiValue:'true',tt:'Display a image showing shapes or bars'},
-	{p:'gridWidth',wikiValue:'800',tt:'Width of the canvas'},
-	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
-	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
-	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
-	{label:'3dbar glyph', p:"glyph1",wikiValue:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
-	{label:'gauge glyph',p:"glyph1",wikiValue:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
-
+	{p:'doGridPoints',ex:'true',tt:'Display a image showing shapes or bars'},
+	{p:'gridWidth',ex:'800',tt:'Width of the canvas'},
+	{label:'label glyph',p:"glyph1",ex:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
+	{label:'rect glyph', p:"glyph1",ex:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
+	{label:'circle glyph',p:"glyph1",ex:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
+	{label:'3dbar glyph', p:"glyph1",ex:"type:3dbar,pos:sw,dx:10,dy:-10,height:30,width:8,baseHeight:5,sizeBy:field"},
+	{label:'gauge glyph',p:"glyph1",ex:"type:gauge,color:#000,pos:sw,width:50,height:50,dx:10,dy:-10,sizeBy:field,sizeByMin:0"},
 
 	{label:'Heatmap Properties'},
-	{p:'doHeatmap',wikiValue:'true',tt:'Grid the data into an image'},
-	{p:'hm.showPoints',wikiValue:'true',tt:'Also show the map points'},
+	{p:'doHeatmap',ex:'true',tt:'Grid the data into an image'},
+	{p:'hm.showPoints',ex:'true',tt:'Also show the map points'},
 	{p:'htmlLayerField'},
-	{p:'htmlLayerWidth',wikiValue:'30'},
-	{p:'htmlLayerHeight',wikiValue:'15'},
-	{p:'htmlLayerStyle',wikiValue:'css style'},
-	{p:'htmlLayerScale',wikiValue:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
-	{p:'cellShape',wikiValue:'rect|3dbar|circle|vector'},
-	{p:'cellColor',wikiValue:'color'},
-	{p:'cellFilled',wikiValue:true},
-	{p:'cellSize',wikiValue:'8'},
-	{p:'cellSizeH',wikiValue:'20',tt:'Base value to scale by to get height'},
-	{p:'cellSizeHBase',wikiValue:'0',tt:'Extra height value'},
-	{p:'angleBy',wikiValue:'field',tt:'field for angle of vectors'},
-	{p:'hm.operator',wikiValue:'count|average|min|max'},
-	{p:'hm.animationSleep',wikiValue:'1000'},
-	{p:'hm.reloadOnZoom',wikiValue:'true'},
-	{p:'hm.groupByDate',wikiValue:'true|day|month|year|decade',tt:'Group heatmap images by date'}, 
-	{p:'hm.groupBy',wikiValue:'field id',tt:'Field to group heatmap images'}, 
+	{p:'htmlLayerShape',ex:'barchart|piechart'},	
+	{p:'htmlLayerWidth',ex:'30'},
+	{p:'htmlLayerHeight',ex:'15'},
+	{p:'htmlLayerStyle',ex:'css style'},
+	{p:'htmlLayerScale',ex:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
+	{p:'cellShape',ex:'rect|3dbar|circle|vector'},
+	{p:'cellColor',ex:'color'},
+	{p:'cellFilled',ex:true},
+	{p:'cellSize',ex:'8'},
+	{p:'cellSizeH',ex:'20',tt:'Base value to scale by to get height'},
+	{p:'cellSizeHBase',ex:'0',tt:'Extra height value'},
+	{p:'angleBy',ex:'field',tt:'field for angle of vectors'},
+	{p:'hm.operator',ex:'count|average|min|max'},
+	{p:'hm.animationSleep',ex:'1000'},
+	{p:'hm.reloadOnZoom',ex:'true'},
+	{p:'hm.groupByDate',ex:'true|day|month|year|decade',tt:'Group heatmap images by date'}, 
+	{p:'hm.groupBy',ex:'field id',tt:'Field to group heatmap images'}, 
 	{p:'hm.labelPrefix'},
 	{p:'hm.showToggle'},
 	{p:'hm.toggleLabel'},
-	{p:'boundsScale',wikiValue:'0.1',tt:'Scale up the map bounds'},
-	{p:'hm.filter',wikiValue:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
-	{p:'hm.filterPasses',wikiValue:'1'},
-	{p:'hm.filterThreshold',wikiValue:'1'},
-	{p:'hm.countThreshold',wikiValue:'1'},
+	{p:'boundsScale',ex:'0.1',tt:'Scale up the map bounds'},
+	{p:'hm.filter',ex:'average5|average9|average25|gauss9|gauss25',tt:'Apply filter to image'},
+	{p:'hm.filterPasses',ex:'1'},
+	{p:'hm.filterThreshold',ex:'1'},
+	{p:'hm.countThreshold',ex:'1'},
     ]);
-    this.defineSizeByProperties();
+
     RamaddaUtil.defineMembers(this, {
         mapBoundsSet: false,
         features: [],
@@ -316,13 +330,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let _this = this;
             var params = {
                 defaultMapLayer: this.getPropertyDefaultMapLayer(map_default_layer),
-		showLayerSwitcher: this.getProperty("showLayerSwitcher", true),
-		showScaleLine: this.getProperty("showScaleLine",false),
-		showLatLonPosition: this.getProperty("showLatLonPosition",true),
-		showZoomPanControl: this.getProperty("showZoomPanControl",false),
-		showZoomOnlyControl: this.getProperty("showZoomOnlyControl",true),
-		enableDragPan: this.getProperty("enableDragPan",true),
-		highlightColor: this.getProperty("highlightColor","blue")
+		showLayerSwitcher: this.getPropertyShowLayerSwitcher(true),
+		showScaleLine: this.getPropertyShowScaleLine(false),
+		showLatLonPosition: this.getPropertyShowLatLonPosition(true),
+		showZoomPanControl: this.getPropertyShowZoomPanControl(false),
+		showZoomOnlyControl: this.getPropertyShowZoomOnlyControl(true),
+		enableDragPan: this.getPropertyEnableDragPan(true),
+		highlightColor: this.getPropertyHighlightColor("blue")
             };
 	    this.mapParams = params;
             var displayDiv = this.getProperty("displayDiv", null);
@@ -330,16 +344,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 params.displayDiv = displayDiv;
 		params.displayDivSticky = this.getProperty("displayDivSticky", false);
             }
-            if (!this.getProperty("showLocationSearch", true)) {
+            if (!this.getPropertyShowLocationSearch(true)) {
                 params.showLocationSearch = false;
             }
-            var mapLayers = this.getProperty("mapLayers", null);
+            var mapLayers = this.getPropertyMapLayers(null);
             if (mapLayers) {
                 params.mapLayers = [mapLayers];
             }
 
-	    params.linked = this.getProperty("linked", false);
-	    params.linkGroup = this.getProperty("linkGroup", null);
+	    params.linked = this.getPropertyLinked(false);
+	    params.linkGroup = this.getPropertyLinkGroup(null);
 
 	    this.hadInitialPosition = false;
             if (this.getProperty("latitude")) {
@@ -347,26 +361,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 params.initialLocation = {lon:+this.getProperty("longitude", -105),
 					  lat:+this.getProperty("latitude", 40)};
 	    }
-	    if(this.getProperty("mapCenter")) {
+	    if(this.getPropertyMapCenter()) {
 		this.hadInitialPosition = true;
-		[lat,lon] =  this.getProperty("mapCenter").split(",");
+		[lat,lon] =  this.getPropertyMapCenter().split(",");
                 params.initialLocation = {lon:lon,lat:lat};
 	    }
 
-	    if(this.getProperty("zoomLevel")) {
+	    if(this.getPropertyZoomLevel()) {
 		this.hadInitialPosition = true;
-                params.initialZoom = +this.getProperty("zoomLevel");
-		params.initialZoomTimeout = this.getProperty("zoomTimeout");
+                params.initialZoom = +this.getPropertyZoomLevel();
+		params.initialZoomTimeout = this.getPropertyZoomTimeout();
 	    }
-	    
-
 
             this.map = this.getProperty("theMap", null);
             if (this.map) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));
             } else {
-		if(this.getProperty("initialLocation")) {
-		    let toks = this.getProperty("initialLocation").split(",");
+		if(this.getPropertyInitialLocation()) {
+		    let toks = this.getPropertyInitialLocation().split(",");
 		    params.initialLocation = {
 			lat:+toks[0],
 			lon:+toks[1]
@@ -380,7 +392,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.lastWidth = this.jq(ID_MAP).width();
             }
 
-	    if(!this.getProperty("showMarkers", this.getProperty("markersVisibility", true))) {
+	    if(!this.getPropertyShowMarkers(this.getProperty("markersVisibility", true))) {
 		this.map.getMarkersLayer().setVisibility(false);
 	    }
 
@@ -475,17 +487,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
             });
 	    this.createTime = new Date();
-	    this.xcnt = 0;
             this.map.getMap().events.register("moveend", "", ()=> {
                 _this.mapBoundsChanged();
 		_this.checkHeatmapReload();
             });
 
-	    let hasLoc = Utils.isDefined(this.getProperty("zoomLevel"))   ||
-		Utils.isDefined(this.getProperty("mapCenter"));
-            if (!hasLoc && (this.getProperty("bounds") ||this.getProperty("gridBounds")) ) {
+	    let hasLoc = Utils.isDefined(this.getPropertyZoomLevel())   ||
+		Utils.isDefined(this.getPropertyMapCenter());
+            if (!hasLoc && (this.getPropertyBounds() ||this.getPropertyGridBounds()) ) {
 		this.hadInitialPosition = true;
-                var toks = this.getProperty("bounds", this.getProperty("gridBounds","")).split(",");
+                var toks = this.getPropertyBounds(this.getPropertyGridBounds("")).split(",");
                 if (toks.length == 4) {
                     if (this.getProperty("showBounds", false)) {
                         var attrs = {};
@@ -1658,7 +1669,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    return html;
 	},
-	xcnt:0,
 	initHeader2:function() {
 	    let _this = this;
 	    this.jq("showMarkersToggle").change(function() {
@@ -2038,12 +2048,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
-	    let xcnt =0;
 	    groups.values.every((value,idx)=>{
 		let recordsAtTime = groups.map[value];
 		if(debug)
 		    console.log("group:" + value +" #:" + groups.map[value].length);
-//		if(xcnt++>0) return;
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
 		$("#testimg").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
@@ -2125,7 +2133,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	updateHtmlLayer:function() {
 	    if(!this.htmlLayer) return;
 	    if(!this.htmlLayerId) {
-		this.htmlLayerId =this.getUniqueId("htmllayer");
+		this.htmlLayerId =this.getUniqueId(ID_HTMLLAYER);
 		let vp  = this.map.getMap().getViewport();
 		vp = $(vp).children()[0];
 		$(vp).css("display","relative");
@@ -2134,20 +2142,20 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    $("#"+ this.htmlLayerId).html(this.htmlLayer);
 	},
         createHtmlLayer: function(records, fields) {
-	    let htmlLayerField = this.getFieldById(fields,this.getProperty("htmlLayerField"));
+	    let htmlLayerField = this.getFieldById(fields,this.getPropertyHtmlLayerField());
 	    this.htmlLayerInfo = {
 		records:records,
 		fields:fields,
 	    };
 	    this.htmlLayer = "";
-	    let w = this.getProperty("htmlLayerWidth",30);
-	    let h = this.getProperty("htmlLayerHeight",15);
-	    let shape = this.getProperty("htmlLayerShape","barchart");
+	    let w = this.getPropertyHtmlLayerWidth(30);
+	    let h = this.getPropertyHtmlLayerHeight(15);
+	    let shape = this.getPropertyHtmlLayerShape("barchart");
 	    if(shape=="barchart")
 		this.setProperty("colorBy",htmlLayerField.getId());
-	    if(this.getProperty("htmlLayerScale")) {
+	    if(this.getPropertyHtmlLayerScale()) {
 		let zooms = [];		
-		this.getProperty("htmlLayerScale").split(",").forEach(t=>{
+		this.getPropertyHtmlLayerScale().split(",").forEach(t=>{
 		    zooms.push(t.split(":"));
 		});
 		//3:0.5,4:1,5:2
@@ -2166,7 +2174,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 		w*=scale;h*=scale;
 	    }
-	    let style = this.getProperty("htmlLayerStyle","")
+	    let style = this.getPropertyHtmlLayerStyle("");
 	    let infos = [];
 	    let allData = this.getColumnValues(records, htmlLayerField);
 	    let groups = RecordUtil.groupBy(records, this, false,"latlon");
@@ -2202,7 +2210,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.updateHtmlLayer();
             let colorBy = this.getColorByInfo(records);
 	    infos.forEach((info,idx)=>{
-		if(shape == "pie") {
+		if(shape == "pie" || shape == "piechart") {
 		    [0,1].forEach((cid,idx)=>{
 			let id = HU.getUniqueId("pie");
 			let cw = idx==0?w:hoverW;
@@ -2268,7 +2276,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.createHeatmap(records, fields, bounds);
 		return;
 	    }
-	    if(this.getProperty("htmlLayerField")) {
+	    if(this.getPropertyHtmlLayerField()) {
 		this.createHtmlLayer(records, fields);
 		return;
 	    }
@@ -5563,16 +5571,16 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, SUPER);
     this.defineProperties([
 	{label:'Base map properties'},
-	{p:'regionField',wikiValue:''},
-	{p:'valueField',wikiValue:''},
-	{p:'mapFile',wikiValue:'',d:ramaddaBaseUrl+"/display/resources/usmap.json"},
-	{p:'skipRegions',wikiValue:'Alaska,Hawaii'},
-	{p:'pruneMissing',wikiValue:'true'},				
-	{p:'mapBackground',wikiValue:'transparent'},
-	{p:'transforms',wikiValue:"Alaska,0.4,30,-40;Hawaii,2,50,5;Region,scale,offsetX,offsetY"},
-	{p:'prunes',wikiValue:'Alaska,100;Region,maxCount'},
-	{p:'mapWidth',wikiValue:''},
-	{p:'mapHeight',wikiValue:''},
+	{p:'regionField',ex:''},
+	{p:'valueField',ex:''},
+	{p:'mapFile',ex:'',d:ramaddaBaseUrl+"/display/resources/usmap.json"},
+	{p:'skipRegions',ex:'Alaska,Hawaii'},
+	{p:'pruneMissing',ex:'true'},				
+	{p:'mapBackground',ex:'transparent'},
+	{p:'transforms',ex:"Alaska,0.4,30,-40;Hawaii,2,50,5;Region,scale,offsetX,offsetY"},
+	{p:'prunes',ex:'Alaska,100;Region,maxCount'},
+	{p:'mapWidth',ex:''},
+	{p:'mapHeight',ex:''},
 	{p:'maxLon'},
 	{p:'minLon'},
 	{p:'maxLat'},
@@ -5934,15 +5942,15 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
 	{label:'Map chart Properties'},
-	{p:'maxLayers',wikiValue:'10'},
-	{p:'translateX',wikiValue:'0'},
-	{p:'translateY',wikiValue:'0'},	
-	{p:'skewX',wikiValue:'-10'},
-	{p:'skewY',wikiValue:'0'},	
-	{p:'rotate',wikiValue:'10'},
-	{p:'scale',wikiValue:'0'},
-	{p:'fillColor',wikiValue:'red'},
-	{p:'blur',wikiValue:'4'},			
+	{p:'maxLayers',ex:'10'},
+	{p:'translateX',ex:'0'},
+	{p:'translateY',ex:'0'},	
+	{p:'skewX',ex:'-10'},
+	{p:'skewY',ex:'0'},	
+	{p:'rotate',ex:'10'},
+	{p:'scale',ex:'0'},
+	{p:'fillColor',ex:'red'},
+	{p:'blur',ex:'4'},			
     ]);
 
     $.extend(this, {
@@ -6055,10 +6063,10 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
 	{label:'Map array properties'},
-	{p:'blockWidth',wikiValue:''},
-	{p:'sortByValue',wikiValue:'true'},
-	{p:'fillColor',wikiValue:'red'},
-	{p:'showValue',wikiValue:'true'},	
+	{p:'blockWidth',ex:''},
+	{p:'sortByValue',ex:'true'},
+	{p:'fillColor',ex:'red'},
+	{p:'showValue',ex:'true'},	
 	
     ]);
 
@@ -6290,7 +6298,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
     addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
     this.defineProperties([
 	{label:'Map images Properties'},
-	{p:'imageField',wikiValue:''},
+	{p:'imageField',ex:''},
     ]);
     $.extend(this, {
         getHeightForStyle: function(dflt) {

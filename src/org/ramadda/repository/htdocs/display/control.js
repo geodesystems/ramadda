@@ -360,10 +360,10 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Download Properties'},
-	{p:'csvLabel',wikiValue:'Download'},
-	{p:'useIcon',d:'false',wikiValue:'false'},
-	{p:'fileName',d:'download',wikiValue:'download'},
-	{p:'askFields',d:'false',wikiValue:'true'},		
+	{p:'csvLabel',ex:'Download'},
+	{p:'useIcon',d:'false',ex:'false'},
+	{p:'fileName',d:'download',ex:'download'},
+	{p:'askFields',d:'false',ex:'true'},		
     ]);
     $.extend(this, {
 	fieldOn:{},
@@ -464,9 +464,9 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.defineProperties([
 	{label:'Reloader Properties'},
-	{p:'interval',wikiValue:'30',d:30,label:"Interval"},
-	{p:'showCheckbox',wikiValue:'false',d:true,label:"Show Checkbox"},
-	{p:'showCountdown',wikiValue:'false',d:true,label:"Show Countdown"},
+	{p:'interval',ex:'30',d:30,label:"Interval"},
+	{p:'showCheckbox',ex:'false',d:true,label:"Show Checkbox"},
+	{p:'showCountdown',ex:'false',d:true,label:"Show Countdown"},
     ]);
 
     $.extend(this, {
@@ -559,8 +559,8 @@ function RamaddaTicksDisplay(displayManager, id, properties) {
 
     this.defineProperties([
 	{label:'Time Ticks Properties'},
-	{p:'animationHeight',wikiValue:'30px'},
-	{p:'showYears',wikiValue:'true'},
+	{p:'animationHeight',ex:'30px'},
+	{p:'showYears',ex:'true'},
     ]);
 
     $.extend(this, {
