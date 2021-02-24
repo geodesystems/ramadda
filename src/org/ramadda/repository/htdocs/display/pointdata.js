@@ -1905,9 +1905,6 @@ var ArrayUtil = {
 }
 
 var RecordUtil = {
-
-
-
     groupBy:function(records, display, dateBin, field) {
 	let debug = displayDebug.groupBy;
 	if(debug) console.log("groupBy");
@@ -1969,18 +1966,16 @@ var RecordUtil = {
 	return groups;
     },
     expandBounds: function(bounds, perc) {
-	return {
-	    east: Math.min(180,bounds.east +(bounds.east-bounds.west)*perc),
-	    west: Math.max(-180, bounds.west -(bounds.east-bounds.west)*perc),
-	    north: Math.min(90,bounds.north +(bounds.north-bounds.south)*perc),
-	    south: Math.max(-90,bounds.south -(bounds.north-bounds.south)*perc),
-	}
+	return new RamaddaBounds(
+	    Math.min(90,bounds.north +(bounds.north-bounds.south)*perc),
+	    Math.max(-180, bounds.west -(bounds.east-bounds.west)*perc),
+	    Math.max(-90,bounds.south -(bounds.north-bounds.south)*perc),
+	    Math.min(180,bounds.east +(bounds.east-bounds.west)*perc)
+	);
     },
     convertBounds: function(bounds) {
 	if(!bounds) return null;
-	if(Utils.isDefined(bounds.top)) 
-	    return  {north:bounds.top,west:bounds.left,south:bounds.bottom,east:bounds.right};
-	return bounds;
+	return new RamaddaBounds(bounds);
     },
     subset:function(records,bounds) {
 	bounds = RecordUtil.convertBounds(bounds);
@@ -2102,7 +2097,7 @@ var RecordUtil = {
         bounds.west = west;
         bounds.south = south;
         bounds.east = east;
-        return bounds;
+        return new RamaddaBounds(bounds);
     },
 
     findClosest: function(records, lon, lat, indexObj) {
@@ -3260,3 +3255,29 @@ RequestMacro.prototype = {
 
 
 
+function RamaddaBounds(north,west,south,east) {
+    if(Utils.isDefined(north.north)) {
+	let b = north;
+	this.north = b.north;
+	this.west  = b.west;
+	this.south  =b.south;
+	this.east = b.east;
+    } else if(Utils.isDefined(north.top)) {
+	let b = north;
+	this.north = b.top;
+	this.west  = b.left;
+	this.south  =b.bottom;
+	this.east = b.right
+    }  else { 
+	this.north = north;
+	this.west  = west;
+	this.south  =south;
+	this.east = east;
+    }
+    $.extend(this,{
+	toString: function() {
+	    return "N:" + this.north +" W:" + this.west +" S:" + this.south +" E:" + this.east;
+	}
+    });
+	      
+}
