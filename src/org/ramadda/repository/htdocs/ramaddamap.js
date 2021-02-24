@@ -5,6 +5,7 @@
 var debugBounds = false;
 var getMapDebug = false;
 
+var ramaddaMapRegions = null;
 
 const map_esri_topo = "esri.topo";
 const map_esri_street = "esri.street";
@@ -690,7 +691,7 @@ RepositoryMap.prototype = {
 	    this.getMap().setCenter(projBounds.getCenterLonLat());
         } else {
 	    //	    console.log(bounds.getCenterLonLat());
-	    //	    this.getMap().setCenter(projBounds.getCenterLonLat());
+	    this.getMap().setCenter(projBounds.getCenterLonLat());
             this.zoomToExtent(projBounds);
         }
     },
@@ -3000,6 +3001,8 @@ RepositoryMap.prototype = {
     transformLLBounds:  function(bounds) {
         if (!bounds)
             return;
+	if(Utils.isDefined(bounds.north))
+            bounds= createBounds(bounds.west,bounds.south, bounds.east,bounds.north);
         var llbounds = bounds.clone();
         return llbounds.transform(this.displayProjection, this.sourceProjection);
     },
