@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
 
 package org.ramadda.repository;
 
@@ -75,7 +74,7 @@ import java.util.TimeZone;
 public class PageHandler extends RepositoryManager {
 
 
-    /** _more_          */
+    /** _more_ */
     private static boolean debugTemplates = false;
 
     /** _more_ */
@@ -166,6 +165,7 @@ public class PageHandler extends RepositoryManager {
     public static final String MACRO_CONTENT = "content";
 
 
+    /** _more_          */
     private String webImports;
 
     /** _more_ */
@@ -303,32 +303,46 @@ public class PageHandler extends RepositoryManager {
         cacheTemplates =
             getRepository().getProperty("ramadda.cachetemplates", true);
 
-	initWebResources();
+        initWebResources();
     }
 
 
+    /**
+     * _more_
+     */
     private void initWebResources() {
-	try {
-	    webImports = "";
-	    String       cssImports          = "";
-	    List<String> cssFiles = StringUtil.split(getStorageManager().readSystemResource(
-										       "/org/ramadda/repository/resources/web/cssimports.html"),"\n",true,true);
-	    String       jsImports          = "";
-	    List<String> jsFiles = StringUtil.split(getStorageManager().readSystemResource(
-											   "/org/ramadda/repository/resources/web/jsimports.html"),"\n",true,true);
+        try {
+            webImports = "";
+            String cssImports = "";
+            List<String> cssFiles =
+                StringUtil.split(
+                    getStorageManager().readSystemResource(
+                        "/org/ramadda/repository/resources/web/cssimports.html"), "\n", true, true);
+            String jsImports = "";
+            List<String> jsFiles =
+                StringUtil.split(
+                    getStorageManager().readSystemResource(
+                        "/org/ramadda/repository/resources/web/jsimports.html"), "\n", true, true);
 
-	    for(String file: cssFiles) {
-		if(file.startsWith("#")) continue;
-		cssImports +=HtmlUtils.cssLink("${root}" + file).trim()+"\n";
-	    }
-	    for(String file: jsFiles) {
-		if(file.startsWith("#")) continue;
-		jsImports +=HtmlUtils.importJS("${root}" + file).trim() +"\n";
-	    }
-	    webImports =applyBaseMacros(cssImports.trim()  +"\n" + jsImports.trim() +"\n");
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+            for (String file : cssFiles) {
+                if (file.startsWith("#")) {
+                    continue;
+                }
+                cssImports += HtmlUtils.cssLink("${root}" + file).trim()
+                              + "\n";
+            }
+            for (String file : jsFiles) {
+                if (file.startsWith("#")) {
+                    continue;
+                }
+                jsImports += HtmlUtils.importJS("${root}" + file).trim()
+                             + "\n";
+            }
+            webImports = applyBaseMacros(cssImports.trim() + "\n"
+                                         + jsImports.trim() + "\n");
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 
@@ -663,6 +677,7 @@ public class PageHandler extends RepositoryManager {
             logoImage = "${root}/images/logo.png";
         }
         logoImage = applyBaseMacros(logoImage);
+
         return logoImage;
     }
 
@@ -1037,20 +1052,33 @@ public class PageHandler extends RepositoryManager {
                + RepositoryUtil.getHtdocsVersion() + url;
     }
 
+    /**
+     * _more_
+     *
+     * @param files _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private String concatFiles(List<String> files) throws Exception {
-	StringBuilder sb = new StringBuilder();
-	String prefix = "/org/ramadda/repository/htdocs";
-	for(String path: files) {
-	    if(path.startsWith("#")) continue;
-	    path = applyBaseMacros(path);
-	    System.err.println("file:" + path);
-	    String css = getStorageManager().readSystemResource(prefix + path);
-	    sb.append("/* from " + path +"*/\n");
-	    css = applyBaseMacros(css);
-	    sb.append(css);
-	    sb.append("\n\n");
-	}
-	return sb.toString();
+        StringBuilder sb     = new StringBuilder();
+        String        prefix = "/org/ramadda/repository/htdocs";
+        for (String path : files) {
+            if (path.startsWith("#")) {
+                continue;
+            }
+            path = applyBaseMacros(path);
+            System.err.println("file:" + path);
+            String css = getStorageManager().readSystemResource(prefix
+                             + path);
+            sb.append("/* from " + path + "*/\n");
+            css = applyBaseMacros(css);
+            sb.append(css);
+            sb.append("\n\n");
+        }
+
+        return sb.toString();
     }
 
 
@@ -1061,17 +1089,26 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public synchronized List<HtmlTemplate> getTemplates() {
-	try {
-	    return getTemplatesInner();
-	}  catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+        try {
+            return getTemplatesInner();
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
-    private synchronized List<HtmlTemplate> getTemplatesInner() throws Exception {
-	List<HtmlTemplate> theTemplates = htmlTemplates;
-	if ( !cacheTemplates || (theTemplates == null)) {
-	    String mobileId =
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private synchronized List<HtmlTemplate> getTemplatesInner()
+            throws Exception {
+
+        List<HtmlTemplate> theTemplates = htmlTemplates;
+        if ( !cacheTemplates || (theTemplates == null)) {
+            String mobileId =
                 getRepository().getProperty("ramadda.template.mobile",
                                             (String) null);
             HtmlTemplate theMobileTemplate = null;
@@ -1205,6 +1242,7 @@ public class PageHandler extends RepositoryManager {
         }
 
         return theTemplates;
+
 
 
     }
@@ -1381,6 +1419,7 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
+        HashSet seen = new HashSet();
         for (String path : mapRegionFiles) {
             String contents =
                 getStorageManager().readUncheckedSystemResource(path,
@@ -1399,19 +1438,28 @@ public class PageHandler extends RepositoryManager {
             lines.remove(0);
             for (String line : lines) {
                 List<String> toks = StringUtil.split(line, ",");
-                if (toks.size() != 6) {
+                if ((toks.size() != 6) && (toks.size() != 4)) {
                     throw new IllegalArgumentException("Bad map region line:"
                             + line + "\nFile:" + path);
                 }
 
 
-                mapRegions.add(
-                    new MapRegion(
-                        toks.get(1), toks.get(0), group,
-                        Utils.decodeLatLon(toks.get(2)),
-                        Utils.decodeLatLon(toks.get(3)),
-                        Utils.decodeLatLon(toks.get(4)),
-                        Utils.decodeLatLon(toks.get(5))));
+                String name = toks.get(0);
+                if (seen.contains(name)) {
+                    continue;
+                }
+                seen.add(name);
+                if (toks.size() == 4) {
+                    mapRegions.add(new MapRegion(toks.get(1), name, group,
+                            Utils.decodeLatLon(toks.get(2)),
+                            Utils.decodeLatLon(toks.get(3))));
+                } else {
+                    mapRegions.add(new MapRegion(toks.get(1), name, group,
+                            Utils.decodeLatLon(toks.get(2)),
+                            Utils.decodeLatLon(toks.get(3)),
+                            Utils.decodeLatLon(toks.get(4)),
+                            Utils.decodeLatLon(toks.get(5))));
+                }
             }
 
         }
@@ -2991,8 +3039,7 @@ public class PageHandler extends RepositoryManager {
             HtmlUtils.tag(sb, "li", "", crumb.toString());
         }
         sb.append("</ul></div></div></div>");
-        HtmlUtils.script(sb,
-                         "HtmlUtils.makeBreadcrumbsInit('" + id           + "');");
+        HtmlUtils.script(sb, "HtmlUtils.makeBreadcrumbsInit('" + id + "');");
     }
 
     /** _more_ */
@@ -3760,15 +3807,17 @@ Time:14625 cnt:7000
                    + RepositoryUtil.getHtdocsVersion();
         }
 
-	String root = getRepository().getUrlBase() +"/" + RepositoryUtil.getHtdocsVersion();
+        String root = getRepository().getUrlBase() + "/"
+                      + RepositoryUtil.getHtdocsVersion();
         String htdocsBase = makeHtdocsUrl("");
 
-	s  =  s.replace("${ramadda.bootstrap.version}",
-			getRepository().getProperty(
-						    "ramadda.bootstrap.version", "bootstrap-3.3"));
+        s = s.replace(
+            "${ramadda.bootstrap.version}",
+            getRepository().getProperty(
+                "ramadda.bootstrap.version", "bootstrap-3.3"));
+
         return s.replace("${htdocs}", htdocsBase).replace(
-            "${cdnpath}", path).replace(
-            "${root}", root).replace(
+            "${cdnpath}", path).replace("${root}", root).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
     }
