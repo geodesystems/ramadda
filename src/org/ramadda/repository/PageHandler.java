@@ -1413,6 +1413,7 @@ public class PageHandler extends RepositoryManager {
 
         String dir = getStorageManager().getSystemResourcePath() + "/geo";
         List<String> listing = getRepository().getListing(dir, getClass());
+
 	System.err.println("listing:" + listing);
         for (String f : listing) {
             if (f.endsWith("regions.csv")) {
@@ -3054,6 +3055,7 @@ public class PageHandler extends RepositoryManager {
      */
     public void loadResources() throws Exception {
         loadLanguagePacks();
+	System.err.println("calling loadMapRegions");
         loadMapRegions();
     }
 
