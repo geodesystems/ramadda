@@ -48,6 +48,7 @@ const ID_HEADER1 = "header1";
 const ID_HEADER2 = "header2";
 const ID_HEADER2_PREFIX = "header2prefix";
 const ID_HEADER2_PREPREFIX = "header2preprefix";
+const ID_HEADER2_PREPREPREFIX = "header2prepreprefix";
 const ID_HEADER2_SUFFIX = "header2suffix";
 const ID_FILTERBAR = "filterbar";
 const ID_TITLE = ATTR_TITLE;
@@ -4612,6 +4613,7 @@ a
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
+	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),CLASS,"display-header-span"],"");
 	    header2 +=  this.getHeader2();
