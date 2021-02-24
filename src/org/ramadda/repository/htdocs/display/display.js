@@ -413,6 +413,9 @@ function DisplayThing(argId, argProperties) {
         toString: function() {
             return "DisplayThing:" + this.getId();
         },
+        domId: function(suffix) {
+	    return this.getDomId(suffix);
+	},
         getDomId: function(suffix) {
             return this.getId() + "_" + suffix;
         },
@@ -915,11 +918,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    if(prop.p.indexOf("&")<0) {
 		if(!Utils.isDefined(prop.doGetter) || prop.doGetter) {
-		    let funcName =  'getProperty' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
-		    this[funcName] = (dflt)=>{
+		    let getFunc = (dflt,debug)=>{
 			if(!Utils.isDefined(dflt)) dflt = prop.d;
 			return this.getProperty(prop.p,dflt);
 		    };
+		    let funcName =  'getProperty' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
+		    this[funcName] = getFunc;
+		    funcName =  'get' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
+		    this[funcName] = getFunc;
 		}
 	    }
 

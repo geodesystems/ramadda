@@ -1974,7 +1974,9 @@ var Gfx = {
 	let canvas = document.getElementById(id);
 	var ctx = canvas.getContext("2d");
 	//	ctx.strokeStyle= "#000";
-	//	ctx.strokeRect(0,0,canvas.width,canvas.height);
+//	ctx.fillStyle= "rgba(255,0,0,0.25)";	
+//	ctx.fillRect(0,0,canvas.width,canvas.height);
+
 	let cnt = 0;
 	let earthWidth = args.bounds.east-args.bounds.west;
 	let earthHeight= args.bounds.north-args.bounds.south;
@@ -1993,7 +1995,7 @@ var Gfx = {
 	    var s1 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,-85));
 	    var n2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.north));
 	    var s2 = opts.display.map.transformLLPoint(createLonLat(opts.bounds.east,opts.bounds.south));
-	    //	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
+//	    console.log("n1:" + n1 +" s2:" + s1 +" n2:" + n2 +" s2:" + s2 +" bounds:" + JSON.stringify(opts.bounds));
 	    scaleY = (lat,lon)=> {
 		var pt = opts.display.map.transformLLPoint(createLonLat(lon,lat));
 		var dy = n2.lat-pt.lat;
@@ -2049,7 +2051,7 @@ var Gfx = {
 		opts.colorBy.index=0;
 	    }
 
-	    let countThreshold = opts.display.getProperty("hm.countThreshold",opts.operator=="count"?1:0);
+	    let countThreshold = opts.display.getProperty("hmCountThreshold",opts.operator=="count"?1:0);
 	    let glyph = new Glyph(opts.display,
 				  scale,
 				  fields,
@@ -2094,8 +2096,6 @@ var Gfx = {
 		    canvasHeight: canvas.height
 		},attr));
 	    }
-
-
 	    glyphs.forEach(glyph=>{
 		records.map((record,idx)=>{
 		    let lat = record.getLatitude();
@@ -2316,11 +2316,11 @@ var Gfx = {
 
 	let copy = this.cloneGrid(grid,v=>v.v);
 	let filtered = copy;
-	let filterPasses = opts.display.getProperty("hm.filterPasses",1);
+	let filterPasses = opts.display.getProperty("hmFilterPasses",1);
 	for(var i=0;i<filterPasses;i++) {
 	    filtered = this.blurGrid(opts.filter,filtered);
 	}
-	let filterThreshold = opts.display.getProperty("hm.filterThreshold",-999);
+	let filterThreshold = opts.display.getProperty("hmFilterThreshold",-999);
 	for(var rowIdx=0;rowIdx<grid.length;rowIdx++)  {
 	    let row = grid[rowIdx];
 	    for(var colIdx=0;colIdx<row.length;colIdx++)  {
