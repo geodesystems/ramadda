@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
 import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
-import org.ramadda.repository.Result;    
+import org.ramadda.repository.Result;
 import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
@@ -37,6 +37,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
+import org.ramadda.util.MapRegion;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.geoloc.Bearing;
@@ -46,8 +47,9 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-import java.io.InputStream;
 import java.awt.geom.Rectangle2D;
+
+import java.io.InputStream;
 
 import java.util.ArrayList;
 
@@ -269,11 +271,48 @@ public class MapManager extends RepositoryManager implements WikiConstants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processWms(Request request) throws Exception {
-	String layer = request.getString("layers","white");
-	InputStream inputStream = IOUtil.getInputStream("/org/ramadda/repository/htdocs/images/"  + layer +".png",
-							getClass());
-	return getRepository().makeResult(request, "/wms/white", inputStream,"image",true);
+        String layer = request.getString("layers", "white");
+        InputStream inputStream =
+            IOUtil.getInputStream("/org/ramadda/repository/htdocs/images/"
+                                  + layer + ".png", getClass());
+
+        return getRepository().makeResult(request, "/wms/white", inputStream,
+                                          "image", true);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processRegions(Request request) throws Exception {
+        List<String> regions = new ArrayList<String>();
+        for (MapRegion region : getPageHandler().getMapRegions()) {
+            List<String> values = new ArrayList<String>();
+            regions.add(Json.map(new String[] {
+                "name", Json.quote(region.getName()), "group",
+                Json.quote(region.getGroup()), "north",
+                region.getNorth() + "", "west", region.getWest() + "",
+                "south", region.getSouth() + "", "east", region.getEast() + ""
+            }));
+        }
+
+        return new Result(Json.list(regions), Result.TYPE_JSON);
     }
 
 
@@ -1170,9 +1209,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(request, entry,
                               wikiTemplate, true, null, null,
-						       new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
-								      WikiConstants.WIKI_TAG_MAP, 
-								      WikiConstants.WIKI_TAG_EARTH});
+                              new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
+                                             WikiConstants.WIKI_TAG_MAP,
+                                             WikiConstants.WIKI_TAG_EARTH });
             info.append(wiki);
         } else {
             HtmlUtils.sectionHeader(
@@ -1184,7 +1223,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             info.append("<table class=\"formtable\">");
             info.append(entry.getTypeHandler().getInnerEntryContent(entry,
                     request, null, OutputHandler.OUTPUT_HTML, true, false,
-								    false,null));
+                    false, null));
 
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request, entry, urls);
@@ -1279,17 +1318,23 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             map.getMapProps().putAll(mapProps);
         }
         map.getMapProps().put("showSearch", "" + search);
-        map.getMapProps().put("linked", Utils.getProperty(props, "linked", "false"));
-	String linkGroup = Utils.getProperty(props, "linkGroup", (String)null);
-	if(linkGroup!=null) {
-	    map.getMapProps().put("linkGroup", HtmlUtils.quote(linkGroup));
-	}
-	if(props.get("zoomLevel")!=null)
-	    map.getMapProps().put("zoomLevel",props.get("zoomLevel"));
-	if(props.get("doMouseOver")!=null)
-	    map.getMapProps().put("doMouseOver",props.get("doMouseOver"));
-	if(props.get("mapCenter")!=null)
-	    map.getMapProps().put("mapCenter",Json.quote((String)props.get("mapCenter")));
+        map.getMapProps().put("linked",
+                              Utils.getProperty(props, "linked", "false"));
+        String linkGroup = Utils.getProperty(props, "linkGroup",
+                                             (String) null);
+        if (linkGroup != null) {
+            map.getMapProps().put("linkGroup", HtmlUtils.quote(linkGroup));
+        }
+        if (props.get("zoomLevel") != null) {
+            map.getMapProps().put("zoomLevel", props.get("zoomLevel"));
+        }
+        if (props.get("doMouseOver") != null) {
+            map.getMapProps().put("doMouseOver", props.get("doMouseOver"));
+        }
+        if (props.get("mapCenter") != null) {
+            map.getMapProps().put(
+                "mapCenter", Json.quote((String) props.get("mapCenter")));
+        }
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
@@ -1474,7 +1519,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                                      false);
 
         boolean showLines = Utils.getProperty(props, "showLines", false);
-	//            map.addLines(entry, "", polyLine, null);
+        //            map.addLines(entry, "", polyLine, null);
 
         if ((entriesToUse.size() == 1) && detailed) {
             List<Metadata> metadataList =
@@ -1507,19 +1552,19 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
         screenBigRects = false;
         int cnt = 0;
-	if(showLines) {
-	    for (Entry entry : entriesToUse) {
-		List<Metadata> metadataList =
-		    getMetadataManager().findMetadata(request, entry,
-						      MetadataHandler.TYPE_SPATIAL_POLYGON, true);
+        if (showLines) {
+            for (Entry entry : entriesToUse) {
+                List<Metadata> metadataList =
+                    getMetadataManager().findMetadata(request, entry,
+                        MetadataHandler.TYPE_SPATIAL_POLYGON, true);
 
-		if ((metadataList == null) || (metadataList.size() == 0)) {
-		    continue;
-		}
-		map.addSpatialMetadata(entry,metadataList,true);
+                if ((metadataList == null) || (metadataList.size() == 0)) {
+                    continue;
+                }
+                map.addSpatialMetadata(entry, metadataList, true);
 
-	    }
-	}
+            }
+        }
 
         for (Entry entry : entriesToUse) {
             if (entry.hasAreaDefined()) {
