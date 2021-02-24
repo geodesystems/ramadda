@@ -2863,6 +2863,7 @@ const ID_HEADER1 = "header1";
 const ID_HEADER2 = "header2";
 const ID_HEADER2_PREFIX = "header2prefix";
 const ID_HEADER2_PREPREFIX = "header2preprefix";
+const ID_HEADER2_PREPREPREFIX = "header2prepreprefix";
 const ID_HEADER2_SUFFIX = "header2suffix";
 const ID_FILTERBAR = "filterbar";
 const ID_TITLE = ATTR_TITLE;
@@ -7427,6 +7428,7 @@ a
 	    if(this.getProperty("showProgress",false)) {
 		header2 += HU.div([ID,this.getDomId(ID_DISPLAY_PROGRESS), STYLE,HU.css("display","inline-block","margin-right","4px","min-width","20px")]);
 	    }
+	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),CLASS,"display-header-span"],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),CLASS,"display-header-span"],"");
 	    header2 +=  this.getHeader2();
@@ -11513,9 +11515,6 @@ var ArrayUtil = {
 }
 
 var RecordUtil = {
-
-
-
     groupBy:function(records, display, dateBin, field) {
 	let debug = displayDebug.groupBy;
 	if(debug) console.log("groupBy");
@@ -11577,18 +11576,16 @@ var RecordUtil = {
 	return groups;
     },
     expandBounds: function(bounds, perc) {
-	return {
-	    east: Math.min(180,bounds.east +(bounds.east-bounds.west)*perc),
-	    west: Math.max(-180, bounds.west -(bounds.east-bounds.west)*perc),
-	    north: Math.min(90,bounds.north +(bounds.north-bounds.south)*perc),
-	    south: Math.max(-90,bounds.south -(bounds.north-bounds.south)*perc),
-	}
+	return new RamaddaBounds(
+	    Math.min(90,bounds.north +(bounds.north-bounds.south)*perc),
+	    Math.max(-180, bounds.west -(bounds.east-bounds.west)*perc),
+	    Math.max(-90,bounds.south -(bounds.north-bounds.south)*perc),
+	    Math.min(180,bounds.east +(bounds.east-bounds.west)*perc)
+	);
     },
     convertBounds: function(bounds) {
 	if(!bounds) return null;
-	if(Utils.isDefined(bounds.top)) 
-	    return  {north:bounds.top,west:bounds.left,south:bounds.bottom,east:bounds.right};
-	return bounds;
+	return new RamaddaBounds(bounds);
     },
     subset:function(records,bounds) {
 	bounds = RecordUtil.convertBounds(bounds);
@@ -11710,7 +11707,7 @@ var RecordUtil = {
         bounds.west = west;
         bounds.south = south;
         bounds.east = east;
-        return bounds;
+        return new RamaddaBounds(bounds);
     },
 
     findClosest: function(records, lon, lat, indexObj) {
@@ -12868,6 +12865,32 @@ RequestMacro.prototype = {
 
 
 
+function RamaddaBounds(north,west,south,east) {
+    if(Utils.isDefined(north.north)) {
+	let b = north;
+	this.north = b.north;
+	this.west  = b.west;
+	this.south  =b.south;
+	this.east = b.east;
+    } else if(Utils.isDefined(north.top)) {
+	let b = north;
+	this.north = b.top;
+	this.west  = b.left;
+	this.south  =b.bottom;
+	this.east = b.right
+    }  else { 
+	this.north = north;
+	this.west  = west;
+	this.south  =south;
+	this.east = east;
+    }
+    $.extend(this,{
+	toString: function() {
+	    return "N:" + this.north +" W:" + this.west +" S:" + this.south +" E:" + this.east;
+	}
+    });
+	      
+}
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -28463,6 +28486,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_HEATMAP_ANIM_LIST = "heatmapanimlist";
     const ID_HEATMAP_ANIM_PLAY = "heatmapanimplay";
     const ID_HEATMAP_ANIM_STEP = "heatmapanimstep";
+    const ID_REGION_SELECTOR = "regionselector";
 
     RamaddaUtil.defineMembers(this, {
         showBoxes: true,
@@ -28566,6 +28590,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Glyphs'},
 	{p:'doGridPoints',wikiValue:'true',tt:'Display a image showing shapes or bars'},
+	{p:'gridWidth',wikiValue:'800',tt:'Width of the canvas'},
 	{label:'label glyph',p:"glyph1",wikiValue:"type:label,pos:sw,dx:10,dy:-10,label:field_colon_ ${field}_nl_field2_colon_ ${field2}"},
 	{label:'rect glyph', p:"glyph1",wikiValue:"type:rect,pos:sw,dx:10,dy:0,colorBy:field,width:150,height:100"},
 	{label:'circle glyph',p:"glyph1",wikiValue:"type:circle,pos:n,dx:10,dy:-10,fill:true,colorBy:field,width:20,baseWidth:5,sizeBy:field"},
@@ -30024,7 +30049,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let html = SUPER.getHeader2.call(this);
 	    if(this.getProperty("showClipToBounds")) {
 		this.clipToView=false;
-		html =  HU.div([STYLE,HU.css("display","inline-block","cursor","pointer","padding","1px","border","1px solid rgba(0,0,0,0)"), TITLE,"Clip to view", ID,this.getDomId("clip")],HU.getIconImage("fa-globe-americas"))+SPACE2+ html;
+		html =  HU.div([STYLE,HU.css("display","inline-block","cursor","pointer","padding","1px","border","1px solid rgba(0,0,0,0)"), TITLE,"Clip to view", ID,this.getDomId("clip")],HU.getIconImage("fa-map"))+SPACE2+ html;
 	    }
 	    if(this.getProperty("showMarkersToggle")) {
 		let dflt = this.getProperty("markersVisibility", true);
@@ -30129,12 +30154,64 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	},
 	updateUIInner: function(args, pointData, records, debug) {
+	    let _this = this;
 	    var t1= new Date();
 	    debug = debug || displayDebug.displayMapUpdateUI;
 	    if(debug) console.log("displaymap.updateUIInner:" + records.length);
 	    this.haveCalledUpdateUI = true;
             let pointBounds = {};
             let points = RecordUtil.getPoints(records, pointBounds);
+
+	    if(this.getProperty("showRegionSelector",true)) {
+		//Fetch the regions
+		if(!ramaddaMapRegions) {
+		    var jqxhr = $.getJSON(ramaddaBaseUrl +"/regions.json", data=> {
+			if (GuiUtils.isJsonError(data)) {
+			    console.log("Error fetching regions");
+			    ramaddaMapRegions=[];
+			    return;
+			}
+			ramaddaMapRegions=data;
+		    });
+		}		    
+		let img = HU.getIconImage("fa-globe-americas");
+		let button = HU.div([STYLE,HU.css("display","inline-block","cursor","pointer","padding","1px","border","1px solid rgba(0,0,0,0)"), TITLE,"Select region", ID,this.getDomId("selectregion")],HU.getIconImage("fa-globe-americas"))+SPACE2;
+		this.writeHeader(ID_HEADER2_PREPREFIX, button);
+		this.jq("selectregion").click(function() {
+		    let id = _this.getDomId(ID_REGION_SELECTOR);
+		    let groups = {};
+		    ramaddaMapRegions.forEach((r,idx)=>{
+			//skip world as its a dup
+			if(r.name == "World") return
+			let group = r.group;
+			if(group.toLowerCase()=="model regions") group="Regions";
+			let name = r.name.replace(/ /g,"&nbsp;");
+			let item = HU.div([CLASS,"ramadda-menu-item", "idx",idx],name);
+			if(!groups[group]) groups[group] = "";
+			groups[group] +=item;});
+		    let html = "<table width=100%><tr valign=top>";
+		    Object.keys(groups).forEach(group=>{
+			html+= HU.td([STYLE,HU.css()], HU.div([STYLE,HU.css("font-weight","bold","border-bottom","1px solid #ccc","margin-right","5px")], Utils.camelCase(group))+HU.div([STYLE,HU.css("max-height","200px","overflow-y","auto", "margin-right","10px")], groups[group]));
+		    });
+		    html+="</tr></table>"
+		    //set the global 
+		    popupObject = getTooltip();
+		    html = HU.div([ID,id],html);
+		    popupObject.html(HU.div([CLASS, "ramadda-popup-inner"], html));
+		    popupObject.show();
+		    popupObject.position({
+			of: $(this),
+			my: "left top",
+			at: "left bottom",
+		    });
+		    _this.jq(ID_REGION_SELECTOR).find(".ramadda-menu-item").click(function() {
+			let region = ramaddaMapRegions[+$(this).attr("idx")];
+			popupObject.hide();
+			_this.map.setViewToBounds(new RamaddaBounds(region.north, region.west, region.south, region.east));
+		    });
+		});
+	    }
+
 
 	    if(this.clipBounds) {
 		this.clipBounds = false;
@@ -30261,8 +30338,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	},
 	checkHeatmapReload:function() {
-	    return
-	    if(!this.getProperty("hm.reloadOnZoom", this.getProperty("reloadOnZoom"))) return;
+//	    return
+	    if(!this.getProperty("hm.reloadOnZoom", this.getProperty("reloadOnZoom",true))) return;
 	    let now = new Date ();
 	    //Don't do this the first couple of seconds after we've been created
 	    if(now.getTime()-this.createTime.getTime()<3000) return;
@@ -30296,7 +30373,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!angleBy.isEnabled()) angleBy = colorBy;
 	    if(!lengthBy.isEnabled()) lengthBy=null;
 	    records = records || this.filterData();
+	    if(this.getProperty("hm.bounds")) {
+		let toks = this.getProperty("hm.bounds").split(",");
+		bounds = new RamaddaBounds(+toks[0],+toks[1], +toks[2],+toks[3]);
+	    }
+	    let mapBounds = this.map.getBounds();
+
 	    bounds = bounds ||  RecordUtil.getBounds(records);
+	    bounds = RecordUtil.convertBounds(mapBounds);
+
  	    if(this.heatmapLayers) {
 		try {
 		    this.heatmapLayers.every(layer=>{
@@ -30315,9 +30400,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    if(this.reloadHeatmap) {
 		this.reloadHeatmap = false;
-		bounds = RecordUtil.convertBounds(this.map.transformProjBounds(this.map.getMap().getExtent()));
-//TODO		records = RecordUtil.subset(records, bounds);
-		bounds =  RecordUtil.getBounds(records);
+		bounds = new RamaddaBounds(this.map.getBounds());
+		records = RecordUtil.subset(records, bounds);
+//		bounds =  RecordUtil.getBounds(records);
 	    }
 	    bounds = RecordUtil.expandBounds(bounds,this.getProperty("boundsScale",0.05));
 
@@ -30352,8 +30437,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let args =$.extend({colorBy:colorBy,angleBy:angleBy,lengthBy:lengthBy,w:w,h:h,bounds:bounds,forMercator:true},
 			       dfltArgs);
-	    if(debug)
-		console.log("dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length +" bounds:" + bounds.north + " " + bounds.west +" " + bounds.south +" " + bounds.east);
+	    if(true || debug) {
+		console.log("#records:" + records.length+" dim:" + w +" " +h + " #records:" + records.length +" cell:" + dfltArgs.cellSizeX + " #records:" + records.length +" bounds:" + bounds);
+	    }
 	    let labels = [];
 	    let labelPrefix = this.getProperty("hm.labelPrefix","${field}-");
 	    let xcnt =0;
@@ -30363,10 +30449,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    console.log("group:" + value +" #:" + groups.map[value].length);
 //		if(xcnt++>0) return;
 		let img = Gfx.gridData(this.getId(),fields, recordsAtTime,args);
-//		$("#test").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
+		$("#testimg").html(HU.image(img,[WIDTH,"100%", STYLE,"border:1px solid blue;"]));
 		let label = value=="none"?"Heatmap": labelPrefix +" " +groups.labels[idx];
 		label = label.replace("${field}",colorBy.field?colorBy.field.getLabel():"");
 		labels.push(label);
+		console.log("B:" + bounds);
 		let layer = this.map.addImageLayer("heatmap"+(this.heatmapCnt++), label, "", img, idx==0, bounds.north, bounds.west, bounds.south, bounds.east,w,h, { 
 		    isBaseLayer: false,
 		});
@@ -30379,7 +30466,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.heatmapLayers.push(layer);
 		return true;
 	    });
-	    let _this = this;
 	    if(this.getProperty("hm.showGroups",true) && this.heatmapLayers.length>1 && !this.getAnimationEnabled()) {
 		this.heatmapPlayingAnimation = false;
 		let controls =  "";
@@ -30415,7 +30501,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.setMapLabel(labels[0]);
 	    }
 	    this.showColorTable(colorBy);
-	    if(this.getProperty("hm.showToggle",false)) {
+	    if(this.getProperty("hm.showToggle",false) || this.getProperty("hm.showReload")) {
 		let cbx = this.jq("heatmaptoggle");
 		let reload =  HU.getIconImage("fa-sync",[CLASS,"display-anim-button",TITLE,"Reload heatmap", ID,this.getDomId("heatmapreload")])+SPACE2;
 		this.writeHeader(ID_HEADER2_PREFIX, reload + HU.checkbox("",[ID,this.getDomId("heatmaptoggle")],cbx.length==0 ||cbx.is(':checked')) +SPACE +
