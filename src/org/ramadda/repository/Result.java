@@ -63,6 +63,9 @@ public class Result {
     /** CSV mime type */
     public static String TYPE_CSV = "text/csv";
 
+    /** CSV mime type */
+    public static String TYPE_JSON = "text/json";    
+
     /** content bytes */
     private byte[] byteContent;
 
