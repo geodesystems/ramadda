@@ -3832,6 +3832,11 @@ RepositoryMap.prototype = {
 	return this.circles;
     },
 
+    setPointsVisibility: function(visible) {
+	if(this.circles) 
+	    this.circles.setVisibility(visible);
+    },
+
     removePoint:  function(point) {
         if (this.circles)
             this.circles.removeFeatures([point]);
