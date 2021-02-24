@@ -45,7 +45,8 @@
 
 
   <group handler="mapmanager">
-      <api request="/wms"             method="processWms"/>
+    <api request="/wms"             method="processWms"/>
+    <api request="/regions.json"    method="processRegions"/>    
   </group>
 
   <group handler="wikimanager">
