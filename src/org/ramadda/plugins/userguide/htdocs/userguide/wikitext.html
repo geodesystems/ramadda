@@ -44,6 +44,10 @@ as well as special  RAMADDA wiki tags that allow for page payout, displaying map
 </a>
 <li> <a href='#frames'><a href="#frames">Frames</a>
 </a>
+<li> <a href='#embedding'><a href="#embedding">Embedding Media</a>
+</a>
+<li> <a href='#vega'><a href="#vega">Embedding Vega Charts</a>
+</a>
 <li> <a href='#gridboxes'><a href="#gridboxes">Grid Boxes</a>
 </a>
 <li> <a href='#tables'><a href="#tables">Scrollable Tables</a>
@@ -339,6 +343,7 @@ You can change the background color with:
 Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">https://geodesystems.com/repository/alias/wikiexamples</a>.
 <p>
 
+
 <a name="sections"></a>
 <div class="ramadda-help-subsubheading"><a href="#sections">Sections</a>
 </div> 
@@ -480,6 +485,76 @@ Add a shadow effect with
 content
 -frame
 </pre>
+
+<a name="embedding"></a>
+<div class="ramadda-help-subsubheading"><a href="#embedding">Embedding Media</a>
+</div> 
+You can embed Twitter, YouTube, Vimeo and other media as:
+<pre>
+@(https://twitter.com/Interior/status/463440424141459456)
+
+@(https://vimeo.com/515404225k)
+
+@(https://www.youtube.com/watch?v=BGaCjM2hal4)
+
+@(https://www.facebook.com/don.murray.121/posts/10219628323639292)
+</pre>
+
+Set dimensions on videos:
+<pre>
+@(https://vimeo.com/515404225 width=300 height=200)
+
+@(https://www.youtube.com/watch?v=BGaCjM2hal4 width=300 height=200)
+</pre>
+
+
+Add a style to the embed:
+<pre>
+ @(https://vimeo.com/515404225 width=300 height=200 link=true label="Click here" style="display:block;background:red;margin:20px;")
+</pre>
+
+Add a link to the embed:
+<pre>
+  @(https://www.youtube.com/watch?v=BGaCjM2hal4 width=300 height=200 start=600  link=true label="Click here")
+</pre>
+
+
+<a name="vega"></a>
+<div class="ramadda-help-subsubheading"><a href="#vega">Embedding Vega Charts</a>
+</div> 
+You can embed charts defined in the vega-lite schema directly into a wiki page.
+More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
+
+The format is:
+<pre>
+```vega-lite
+You vega-lite schema here
+```
+</pre>
+
+e.g.:
+<pre>
+```vega-lite
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+  "description": "A simple bar chart with embedded data. An example vega-lite file.",
+  "width": 360,
+  "height":200,
+  "data": {
+    "values": [
+      {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
+      {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
+      {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
+    ]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "a", "type": "ordinal"},
+    "y": {"field": "b", "type": "quantitative"}
+  }
+}
+```
+
 
 <a name="gridboxes"></a>
 <div class="ramadda-help-subsubheading"><a href="#gridboxes">Grid Boxes</a>
