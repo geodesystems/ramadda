@@ -430,6 +430,28 @@ Add a link to the embed:
 </pre>
 
 
+[ug::subsubheading {Embedding Code} codeembed]
+To embed code do the following:
+<pre>
+ ```&lt;option language&gt;
+ code
+ here
+```
+</pre>
+Currently only javascript is formatted.
+For example:
+<pre>
+```javascript
+let l = []; 
+for(let i=0;i<l.length;i++) {
+    console.log(l\[i\]);
+}
+var x = {}
+```
+</pre>
+
+
+
 [ug::subsubheading {Embedding Vega Charts} vega]
 You can embed charts defined in the vega-lite schema directly into a wiki page.
 More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>

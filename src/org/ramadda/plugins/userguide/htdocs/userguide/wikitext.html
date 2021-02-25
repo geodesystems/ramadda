@@ -46,6 +46,8 @@ as well as special  RAMADDA wiki tags that allow for page payout, displaying map
 </a>
 <li> <a href='#embedding'><a href="#embedding">Embedding Media</a>
 </a>
+<li> <a href='#codeembed'><a href="#codeembed">Embedding Code</a>
+</a>
 <li> <a href='#vega'><a href="#vega">Embedding Vega Charts</a>
 </a>
 <li> <a href='#gridboxes'><a href="#gridboxes">Grid Boxes</a>
@@ -517,6 +519,30 @@ Add a link to the embed:
 <pre>
   @(https://www.youtube.com/watch?v=BGaCjM2hal4 width=300 height=200 start=600  link=true label="Click here")
 </pre>
+
+
+<a name="codeembed"></a>
+<div class="ramadda-help-subsubheading"><a href="#codeembed">Embedding Code</a>
+</div> 
+To embed code do the following:
+<pre>
+ ```&lt;option language&gt;
+ code
+ here
+```
+</pre>
+Currently only javascript is formatted.
+For example:
+<pre>
+```javascript
+let l = ; 
+for(let i=0;i<l.length;i++) {
+    console.log(l[i]);
+}
+var x = {}
+```
+</pre>
+
 
 
 <a name="vega"></a>
