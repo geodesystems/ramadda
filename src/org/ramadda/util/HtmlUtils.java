@@ -1495,6 +1495,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+
     /**
      * _more_
      *
@@ -1693,7 +1694,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @throws Exception _more_
      */
-    public static void pre(Appendable sb, String content) throws Exception {
+    public static void pre(Appendable sb, String content) throws IOException {
         tag(sb, TAG_PRE, "", content);
     }
 
