@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.ramadda.util;
 
 
+import org.json.*;
+
+
 import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.Misc;
@@ -24,12 +27,15 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 
+import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.regex.*;
 import java.util.regex.*;
 
@@ -81,7 +87,7 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable wikiProperties = new Hashtable();
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable wikiAttributes = new Hashtable();
 
     /** _more_ */
@@ -112,6 +118,10 @@ public class WikiUtil {
 
     /** _more_ */
     private String user;
+
+    /** _more_ */
+    private String[] notTags;
+
 
     /**
      * _more_
@@ -309,62 +319,6 @@ public class WikiUtil {
     }
 
     /**
-     * WikiPageHandler _more_
-     *
-     *
-     * @author IDV Development Team
-     * @version $Revision: 1.3 $
-     */
-    public static interface WikiPageHandler {
-
-        /**
-         * _more_
-         *
-         * @param path _more_
-         *
-         * @return _more_
-         */
-        public String getHtdocsUrl(String path);
-
-        /**
-         * _more_
-         *
-         * @param wikiUtil _more_
-         * @param name _more_
-         * @param label _more_
-         *
-         * @return _more_
-         */
-        public String getWikiLink(WikiUtil wikiUtil, String name,
-                                  String label);
-
-
-        /**
-         * _more_
-         *
-         * @param wikiUtil _more_
-         * @param image _more_
-         * @param props _more_
-         *
-         * @return _more_
-         */
-        public String getWikiImageUrl(WikiUtil wikiUtil, String image,
-                                      Hashtable props);
-
-        /**
-         * _more_
-         *
-         * @param wikiUtil _more_
-         * @param property _more_
-         * @param notTags _more_
-         *
-         * @return _more_
-         */
-        public String getWikiPropertyValue(WikiUtil wikiUtil,
-                                           String property, String[] notTags);
-    }
-
-    /**
      * _more_
      *
      * @param property _more_
@@ -424,12 +378,8 @@ public class WikiUtil {
         String div = HtmlUtils.makeShowHideBlock(title, sb.toString(), true,
                          HtmlUtils.cssClass("wiki-infobox-title"),
                          HtmlUtils.cssClass("wiki-infobox"));
-        div = wikify(div, null);
-        floatBoxes.add(div);
-
+        floatBoxes.add(wikify(div, null));
         return "";
-        //        return "<table class=\"wiki-toc-wrapper\" align=\"right\" width=\"30%\"><tr><td>"
-        //                + div + "</td></tr></table><br clear=right>";
     }
 
     /**
@@ -447,39 +397,6 @@ public class WikiUtil {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    private static List<String> splitOnNoWiki(String s) {
-        List<String> content    = new ArrayList<String>();
-        int          idx        = s.indexOf("<nowiki>");
-        int          tagLength1 = "<nowiki>".length();
-        int          tagLength2 = "</nowiki>".length();
-
-        //.... <nowiki>.....</nowiki> ....
-        while ((idx >= 0) && (s.length() > 0)) {
-            content.add(s.substring(0, idx));
-            s = s.substring(idx + tagLength1);
-            int idx2 = s.indexOf("</nowiki>");
-            if (idx2 < 0) {
-                content.add(s);
-                s = "";
-
-                break;
-            }
-            String nowiki = s.substring(0, idx2);
-            content.add(nowiki);
-            s   = s.substring(idx2 + tagLength2);
-            idx = s.indexOf("<nowiki>");
-        }
-        content.add(s);
-
-        return content;
-    }
 
 
     /**
@@ -495,17 +412,6 @@ public class WikiUtil {
         return wikify(text, handler, null);
     }
 
-    /** _more_ */
-    private String[] notTags;
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String[] getNotTags() {
-        return notTags;
-    }
 
     /**
      * _more_
@@ -550,25 +456,6 @@ public class WikiUtil {
     /**
      * _more_
      *
-     * @param s _more_
-     *
-     * @return _more_
-     */
-    private String getSize(String s) {
-        if (s == null) {
-            return null;
-        }
-        if (s.endsWith("%") || s.endsWith("px")) {
-            return s;
-        }
-
-        return s + "px";
-    }
-
-
-    /**
-     * _more_
-     *
      * @param mainBuffer _more_
      * @param text _more_
      * @param handler _more_
@@ -582,76 +469,45 @@ public class WikiUtil {
         if (text.startsWith("<wiki>")) {
             text = text.substring("<wiki>".length());
         }
-        List<String> toks   = splitOnNoWiki(text);
-        boolean      isText = true;
-        for (String s : toks) {
-            if ( !isText) {
-                isText = true;
-                mainBuffer.append(s);
-
-                continue;
-            }
-            isText = false;
-            s      = wikifyInner(s, handler, notTags);
-            mainBuffer.append(s);
-        }
+        List<Chunk> chunks = Chunk.splitText(text);
+        String      s      = wikifyInner(chunks, handler, notTags);
+        mainBuffer.append(s);
     }
 
-    /**
-     * _more_
-     *
-     * @param tline _more_
-     *
-     * @return _more_
-     */
-    private Hashtable lineToProps(String tline) {
-        List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-        Hashtable    props = HtmlUtils.parseHtmlProperties((toks.size() > 1)
-                ? toks.get(1)
-                : "");
 
-        return props;
-    }
 
 
     /**
      * _more_
      *
-     * @param s _more_
      * @param handler _more_
-     * @param notTags _more_
+     * @param headings _more_
+     * @param s _more_
      *
      * @return _more_
      *
      * @throws IOException _more_
      */
-    private String wikifyInner(String s, WikiPageHandler handler,
-                               String[] notTags)
+    private String applyPatterns(WikiPageHandler handler, List headings,
+                                 String s)
             throws IOException {
-
-        s = s.replace("\\\\[", "_BRACKETOPEN_");
         if (getReplaceNewlineWithP()) {
             s = s.replaceAll("\r\n\r\n", "\n<p></p>\n");
             s = s.replaceAll("\r\r", "\n<p></p>\n");
         }
-        /*
-        s = s.replaceAll("''''([^']+?)''''", "<b><i>$1</i></b>");
-        s = s.replaceAll("'''([^']+?)'''", "<b>$1</b>");
-        s = s.replaceAll("''([^']+?)''", "<i>$1</i>");
-        */
+
+        s = s.replace("\\\\[", "_BRACKETOPEN_");
         s = s.replaceAll("''''(.*?)''''", "<b><i>$1</i></b>");
         s = s.replaceAll("'''(.*?)'''", "<b>$1</b>");
         s = s.replaceAll("''(.*?)''", "<i>$1</i>");
-        Pattern pattern;
-        Matcher matcher;
-        //<nowiki>
-        pattern = Pattern.compile("\\[\\[([^\\]|]+)\\|?([^\\]]*)\\]\\]");
-        matcher = pattern.matcher(s);
-        while (matcher.find()) {
-            String name  = matcher.group(1);
-            String label = matcher.group(2);
-            int    start = matcher.start(0);
-            int    end   = matcher.end(0);
+        Pattern pattern1 =
+            Pattern.compile("\\[\\[([^\\]|]+)\\|?([^\\]]*)\\]\\]");
+        Matcher matcher1 = pattern1.matcher(s);
+        while (matcher1.find()) {
+            String name  = matcher1.group(1);
+            String label = matcher1.group(2);
+            int    start = matcher1.start(0);
+            int    end   = matcher1.end(0);
             String link;
             if (handler == null) {
                 if (label.trim().length() == 0) {
@@ -661,18 +517,18 @@ public class WikiUtil {
             } else {
                 link = handler.getWikiLink(this, name, label);
             }
-            s       = s.substring(0, start) + link + s.substring(end);
-            matcher = pattern.matcher(s);
+            s        = s.substring(0, start) + link + s.substring(end);
+            matcher1 = pattern1.matcher(s);
         }
 
-        int cnt = 0;
-        pattern = Pattern.compile("\\[([^\\]]+)\\]");
-        matcher = pattern.matcher(s);
-        while (matcher.find()) {
-            String name  = matcher.group(1).trim();
+        int     cnt      = 0;
+        Pattern pattern2 = Pattern.compile("\\[([^\\]]+)\\]");
+        Matcher matcher2 = pattern2.matcher(s);
+        while (matcher2.find()) {
+            String name  = matcher2.group(1).trim();
             int    idx   = name.indexOf(" ");
-            int    start = matcher.start(0);
-            int    end   = matcher.end(0);
+            int    start = matcher2.start(0);
+            int    end   = matcher2.end(0);
             if (idx > 0) {
                 String label = name.substring(idx);
                 name = name.substring(0, idx);
@@ -691,19 +547,18 @@ public class WikiUtil {
                 s = s.substring(0, start) + ahref + "_BRACKETOPEN_" + cnt
                     + "_BRACKETCLOSE_</a>" + s.substring(end);
             }
-            matcher = pattern.matcher(s);
+            matcher2 = pattern2.matcher(s);
         }
 
 
-        List headings = new ArrayList();
-        pattern = Pattern.compile("(?m)^\\s*(==+)([^=]+)(==+)\\s*$");
-        matcher = pattern.matcher(s);
-        while (matcher.find()) {
-            String prefix = matcher.group(1).trim();
-            String label  = matcher.group(2).trim();
+        Pattern pattern3 = Pattern.compile("(?m)^\\s*(==+)([^=]+)(==+)\\s*$");
+        Matcher matcher3 = pattern3.matcher(s);
+        while (matcher3.find()) {
+            String prefix = matcher3.group(1).trim();
+            String label  = matcher3.group(2).trim();
             //            System.err.println("MATCH " + prefix + ":" + label);
-            int    start = matcher.start(0);
-            int    end   = matcher.end(0);
+            int    start = matcher3.start(0);
+            int    end   = matcher3.end(0);
             int    level = prefix.length();
             String value;
 
@@ -717,12 +572,33 @@ public class WikiUtil {
                 //                value = value+"<hr class=\"wiki-hr\">";
                 headings.add(new Object[] { new Integer(level), label });
             }
-            s       = s.substring(0, start) + value + s.substring(end);
-            matcher = pattern.matcher(s);
+            s        = s.substring(0, start) + value + s.substring(end);
+            matcher3 = pattern3.matcher(s);
         }
 
-        //      s = parseProperties(s, handler, notTags);
+        s = s.replaceAll("\r", "");
 
+        return s;
+    }
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @param chunks _more_
+     * @param handler _more_
+     * @param notTags _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
+    private String wikifyInner(List<Chunk> chunks, WikiPageHandler handler,
+                               String[] notTags)
+            throws IOException {
+
+        List                 headings        = new ArrayList();
         boolean              closeTheTag     = false;
         int                  ulCnt           = 0;
         int                  olCnt           = 0;
@@ -734,1649 +610,1636 @@ public class WikiUtil {
         List<AccordionState> accordionStates =
             new ArrayList<AccordionState>();
 
-        List<TableState> tableStates     = new ArrayList<TableState>();
-        String           currentVar      = null;
-        StringBuilder    currentVarValue = null;
-        boolean          inCss           = false;
-        boolean          inPre           = false;
-        boolean          inScroll        = false;
-        String           afterId         = null;
-        String           afterPause      = null;
-        String           afterFade       = null;
-        boolean          inPropertyTag   = false;
-        String           dragId          = null;
-        boolean dragToggle  = false;
-        boolean dragToggleVisible  = false;	
-        //      System.err.println("S:"+ s+":");
-        s = s.replaceAll("\r", "");
-        for (String line :
-                (List<String>) StringUtil.split(s, "\n", false, false)) {
-            if ((line.indexOf("${") >= 0)
-                    && (hasSet || (globalProperties != null))) {
-                if (myVars != null) {
-                    for (java.util.Enumeration keys = myVars.keys();
-                            keys.hasMoreElements(); ) {
-                        Object key   = keys.nextElement();
-                        Object value = myVars.get(key);
-                        line = line.replace("${" + key + "}",
-                                            value.toString());
-                    }
-                }
-                if (globalProperties != null) {
-                    for (java.util.Enumeration keys = globalProperties.keys();
-                            keys.hasMoreElements(); ) {
-                        Object key   = keys.nextElement();
-                        Object value = globalProperties.get(key);
-                        line = line.replace("${" + key + "}",
-                                            value.toString());
-                    }
-                }
+        List<TableState> tableStates       = new ArrayList<TableState>();
+        String           currentVar        = null;
+        StringBuilder    currentVarValue   = null;
+        boolean          inScroll          = false;
+        String           afterId           = null;
+        String           afterPause        = null;
+        String           afterFade         = null;
+        boolean          inPropertyTag     = false;
+        String           dragId            = null;
+        boolean          dragToggle        = false;
+        boolean          dragToggleVisible = false;
+
+        for (Chunk chunk : chunks) {
+            if (chunk.type == chunk.TYPE_CODE) {
+                handleCode(buff, chunk, handler);
+                continue;
             }
-
-            String tline = line.trim();
-            //      System.err.println("Line:"+ line+":");
-
-            if (tline.startsWith("{{")) {
-                buff.append(tline);
-                buff.append("\n");
-                if (tline.indexOf("}}") < 0) {
-                    inPropertyTag = true;
-                }
-
+            if (chunk.type == chunk.TYPE_NOWIKI) {
+                buff.append(chunk.chunk);
                 continue;
             }
 
-            if (inPropertyTag && tline.endsWith("}}")) {
-                buff.append(tline);
-                buff.append("\n");
-                inPropertyTag = false;
-
-                continue;
-            }
-
-            if (inPropertyTag) {
-                buff.append(tline);
-                buff.append("\n");
-
-                continue;
-            }
-
-
-            if (tline.equals("+pre")) {
-                inPre = true;
-                buff.append("<pre>\n");
-                continue;
-            }
-
-            if (tline.equals("-pre")) {
-                inPre = false;
-                buff.append("</pre>\n");
-                continue;
-            }
-
-            if (tline.startsWith("<pre")) {
-                inPre = true;
-                buff.append(tline);
-                buff.append("\n");
-
-                continue;
-            }
-            if (tline.startsWith("</pre>")) {
-                inPre = false;
-                buff.append(tline);
-                buff.append("\n");
-
-                continue;
-            }
-
-            if (inPre) {
-                line = line.replaceAll("//(.*)", "//<i>$1</i>");
-                buff.append(line);
-                buff.append("\n");
-
-                continue;
-            }
-
-            if (tline.equals("+css")) {
-                inCss = true;
+            if (chunk.type == chunk.TYPE_CSS) {
                 buff.append("<style type='text/css'>\n");
-
-                continue;
-            }
-            if (tline.equals("-css")) {
-                inCss = false;
+                buff.append(chunk.chunk);
                 buff.append("</style>\n");
-
                 continue;
             }
-            if (inCss) {
-                buff.append(tline);
-                buff.append("\n");
-
+            if (chunk.type == chunk.TYPE_JS) {
+                buff.append("\n<script type='text/JavaScript'>\n");
+                buff.append(chunk.chunk);
+                buff.append("\n</script>\n");
                 continue;
             }
-
-
-            if (tline.startsWith(":macro")) {
-                hasSet = true;
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
-                String       var   = ((toks.size() > 1)
-                                      ? toks.get(1)
-                                      : "");
-                String       value = ((toks.size() > 2)
-                                      ? toks.get(2)
-                                      : "");
-                myVars.put(var.trim(), value.trim());
-
+            if (chunk.type == chunk.TYPE_PRE) {
+                buff.append("\n<pre>");
+                buff.append(chunk.chunk);
+                buff.append("\n</pre>\n");
                 continue;
             }
+            String text = chunk.chunk.toString();
+            text = applyPatterns(handler, headings, text);
 
-
-            if (tline.startsWith("+macro")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 3);
-                currentVar      = ((toks.size() > 1)
-                                   ? toks.get(1)
-                                   : "");
-                currentVarValue = new StringBuilder();
-
-                continue;
-            }
-
-            if (tline.startsWith("-macro")) {
-                myVars.put(currentVar, currentVarValue.toString());
-                currentVar      = null;
-                currentVarValue = null;
-
-                continue;
-            }
-
-
-            if (currentVar != null) {
-                currentVarValue.append(tline);
-
-                continue;
-            }
-
-            if (tline.startsWith("+table")) {
-                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
-                String       width     = "100%";
-                String       height    = null;
-                String       ordering  = null;
-                String       paging    = null;
-                String       xclazz    = null;
-                String       searching = "false";
-                String       clazz     = "ramadda-table";
-                if (toks.size() == 2) {
-                    Hashtable props =
-                        HtmlUtils.parseHtmlProperties(toks.get(1));
-                    width     = Utils.getProperty(props, "width", width);
-                    height    = Utils.getProperty(props, "height", height);
-                    ordering  = Utils.getProperty(props, "ordering",
-                            ordering);
-                    paging    = Utils.getProperty(props, "paging", paging);
-                    searching = Utils.getProperty(props, "searching", height);
-
-                    if (Misc.equals(Utils.getProperty(props, "rowborder",
-                            null), "true")) {
-                        clazz = "row-border " + clazz;
+            for (String line : text.split("\n")) {
+                if ((line.indexOf("${") >= 0)
+                        && (hasSet || (globalProperties != null))) {
+                    if (myVars != null) {
+                        for (java.util.Enumeration keys = myVars.keys();
+                                keys.hasMoreElements(); ) {
+                            Object key   = keys.nextElement();
+                            Object value = myVars.get(key);
+                            line = line.replace("${" + key + "}",
+                                    value.toString());
+                        }
                     }
-                    if (Misc.equals(Utils.getProperty(props, "cellborder",
-                            null), "true")) {
-                        clazz = "cell-border " + clazz;
-                    }
-                    if (Misc.equals(Utils.getProperty(props, "stripe", null),
-                                    "true")) {
-                        clazz = "stripe " + clazz;
-                    }
-                    if (Misc.equals(Utils.getProperty(props, "hover", null),
-                                    "true")) {
-                        clazz = "hover " + clazz;
-                    }
-                }
-
-                buff.append("<table class='" + clazz + "' width=" + width
-                            + " table-searching=" + searching + " "
-                            + ((height != null)
-                               ? " table-height=" + height
-                               : "") + ((ordering != null)
-                                        ? " table-ordering=" + ordering
-                                        : "") + ((paging != null)
-                        ? " table-paging=" + paging
-                        : "") + "><thead>");
-                tableStates.add(new TableState());
-
-                continue;
-            }
-            if (tline.equals("-table")) {
-                TableState state = (tableStates.size() > 0)
-                                   ? tableStates.get(tableStates.size() - 1)
-                                   : null;
-                if (state == null) {
-                    buff.append("Not in a table");
-
-                    continue;
-                }
-                if (state.inTd) {
-                    buff.append("</td>");
-                }
-                if (state.inTr) {
-                    buff.append("</tr>");
-                }
-                if (state.inHead) {
-                    buff.append("</thead>");
-                }
-                if (state.inBody) {
-                    buff.append("</tbody>");
-                }
-                buff.append("</table>");
-                tableStates.remove(tableStates.size() - 1);
-
-                continue;
-            }
-
-
-
-            if (tline.startsWith(":tr")) {
-                TableState state = (tableStates.size() > 0)
-                                   ? tableStates.get(tableStates.size() - 1)
-                                   : null;
-                if (state == null) {
-                    buff.append("Not in a table");
-
-                    continue;
-                }
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append("<tr valign=top>");
-                if (toks.size() == 2) {
-                    for (String td : Utils.parseCommandLine(toks.get(1))) {
-                        if (state.inHead) {
-                            buff.append(HtmlUtils.th(td));
-                        } else {
-                            buff.append(HtmlUtils.td(td));
+                    if (globalProperties != null) {
+                        for (java.util.Enumeration keys =
+                                globalProperties.keys();
+                                keys.hasMoreElements(); ) {
+                            Object key   = keys.nextElement();
+                            Object value = globalProperties.get(key);
+                            line = line.replace("${" + key + "}",
+                                    value.toString());
                         }
                     }
                 }
-                if (state.inHead) {
-                    buff.append("</thead>");
-                    buff.append("<tbody>");
-                    state.inHead = false;
-                    state.inBody = true;
-                }
 
-                continue;
-            }
-            if (tline.startsWith("+tr")) {
-                TableState state = (tableStates.size() > 0)
-                                   ? tableStates.get(tableStates.size() - 1)
-                                   : null;
-                if (state == null) {
-                    buff.append("Not in a table");
-
-                    continue;
-                }
-                buff.append("<tr valign=top>");
-
-                continue;
-            }
-            if (tline.startsWith("-tr")) {
-                TableState state = (tableStates.size() > 0)
-                                   ? tableStates.get(tableStates.size() - 1)
-                                   : null;
-                if (state == null) {
-                    buff.append("Not in a table");
-
-                    continue;
-                }
-                buff.append("</tr>");
-                if (state.inHead) {
-                    buff.append("</thead>");
-                    buff.append("<tbody>");
-                    state.inHead = false;
-                    state.inBody = true;
-                }
-
-                continue;
-            }
-
-            if (tline.startsWith("+td")) {
-                TableState state = (tableStates.size() > 0)
-                                   ? tableStates.get(tableStates.size() - 1)
-                                   : null;
-                if (state == null) {
-                    buff.append("Not in a table");
-
-                    continue;
-                }
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String       width = null;
-                if (toks.size() == 2) {
-                    Hashtable props =
-                        HtmlUtils.parseHtmlProperties(toks.get(1));
-                    width = Utils.getProperty(props, "width", width);
-                }
-
-                if (state.inHead) {
-                    buff.append("<th " + ((width != null)
-                                          ? " width=" + width
-                                          : "") + ">");
-                } else {
-                    buff.append("<td valign=top " + ((width != null)
-                            ? " width=" + width
-                            : "") + ">");
-                }
-
-                continue;
-            }
-            if (tline.startsWith("-td")) {
-                TableState state = (tableStates.size() > 0)
-                                   ? tableStates.get(tableStates.size() - 1)
-                                   : null;
-                if (state == null) {
-                    buff.append("Not in a table");
-
-                    continue;
-                }
-                if (state.inHead) {
-                    buff.append("</th>");
-                } else {
-                    buff.append("</td>");
-                }
-
-                continue;
-            }
-            if (tline.startsWith(":td")) {
-                TableState state = (tableStates.size() > 0)
-                                   ? tableStates.get(tableStates.size() - 1)
-                                   : null;
-                if (state == null) {
-                    buff.append("Not in a table");
-
-                    continue;
-                }
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                String       td   = (toks.size() == 2)
-                                    ? toks.get(1)
-                                    : "";
-                if (state.inHead) {
-                    buff.append(HtmlUtils.th(td));
-                } else {
-                    buff.append(HtmlUtils.td(td, "valign=top"));
-                }
-
-                continue;
-            }
+                String tline = line.trim();
 
 
-            if (tline.startsWith("+tabs")) {
-                TabState     tabInfo  = new TabState();
-                List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
-                String       divClass = "";
-                if (toks.size() == 2) {
-                    Hashtable props =
-                        HtmlUtils.parseHtmlProperties(toks.get(1));
-                    if (props.get("min") != null) {
-                        divClass = "ramadda-tabs-min";
-                    } else if (props.get("center") != null) {
-                        divClass = "ramadda-tabs-center";
-                    } else if (props.get("minarrow") != null) {
-                        divClass = "ramadda-tabs-min ramadda-tabs-minarrow";
-                    }
-                    if (props.get("transparent") != null) {
-                        divClass += " ramadda-tabs-transparent ";
-                    }
-
-                    tabInfo.minHeight = (String) props.get("minHeight");
-                    if (tabInfo.minHeight != null) {
-                        tabInfo.minHeight = getSize(tabInfo.minHeight);
-                    }
-                }
-                tabStates.add(tabInfo);
-                allTabStates.add(tabInfo);
-                buff.append("\n");
-                HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "class", divClass);
-                HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "id", tabInfo.id,
-                               "class", "ui-tabs");
-                buff.append("\n");
-                HtmlUtils.open(tabInfo.title, HtmlUtils.TAG_UL);
-                tabInfo.title.append("\n");
-                buff.append("\n");
-                buff.append("${" + tabInfo.id + "}");
-                buff.append("\n");
-
-                continue;
-            }
-            if (tline.equals("+tab") || tline.startsWith("+tab ")) {
-                if (tabStates.size() == 0) {
-                    buff.append("No +tabs tag");
-
-                    continue;
-                }
-                List<String> toks    = StringUtil.splitUpTo(tline, " ", 2);
-                String       title   = (toks.size() > 1)
-                                       ? toks.get(1)
-                                       : "";
-                TabState     tabInfo = tabStates.get(tabStates.size() - 1);
-                tabInfo.cnt++;
-                tabInfo.title.append("<li><a href=\"#" + tabInfo.id + "-"
-                                     + (tabInfo.cnt) + "\">" + title
-                                     + "</a></li>\n");
-                String style = "";
-                if (tabInfo.minHeight != null) {
-                    style = " style=min-height:" + tabInfo.minHeight + ";";
-                }
-                buff.append(
-                    HtmlUtils.open(
-                        "div",
-                        style
-                        + HtmlUtils.id(tabInfo.id + "-" + (tabInfo.cnt))
-                        + HtmlUtils.cssClass("ui-tabs-hide")));
-                buff.append("\n");
-
-                continue;
-            }
-            if (tabStates.size() > 0) {
-                if (tline.equals("-tab")) {
-                    TabState tabInfo = tabStates.get(tabStates.size() - 1);
-                    buff.append(HtmlUtils.close("div"));
+                if (tline.startsWith("{{")) {
+                    buff.append(tline);
                     buff.append("\n");
-                    js.append(
-                        "jQuery(function(){\njQuery('#" + tabInfo.id
-                        + "').tabs({activate: HtmlUtil.tabLoaded})});\n");
-
-                    continue;
-                }
-                if (tline.equals("-tabs")) {
-                    TabState tabInfo = tabStates.get(tabStates.size() - 1);
-                    tabInfo.title.append("\n");
-                    tabInfo.title.append("</ul>");
-                    tabInfo.title.append("\n");
-                    tabStates.remove(tabStates.size() - 1);
-                    buff.append(HtmlUtils.close("div"));
-                    buff.append(HtmlUtils.close("div"));
-
+                    if (tline.indexOf("}}") < 0) {
+                        inPropertyTag = true;
+                    }
                     continue;
                 }
 
-
-            }
-
-            if (tline.startsWith("+accordian")
-                    || tline.startsWith("+accordion")) {
-                AccordionState accordionState = new AccordionState();
-                accordionStates.add(accordionState);
-                List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
-                String       divClass = "";
-                if (toks.size() == 2) {
-                    Hashtable props =
-                        HtmlUtils.parseHtmlProperties(toks.get(1));
-                    accordionState.activeSegment = Misc.getProperty(props,
-                            "activeSegment", 0);
-                    accordionState.animate = Misc.getProperty(props,
-                            "animate", accordionState.animate);
-                    accordionState.heightStyle = Misc.getProperty(props,
-                            "heightStyle", accordionState.heightStyle);
-                    accordionState.collapsible = Misc.getProperty(props,
-                            "collapsible", accordionState.collapsible);
-                    accordionState.decorate = Misc.getProperty(props,
-                            "decorate", accordionState.decorate);
-                }
-
-                buff.append("\n");
-                buff.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.cssClass(
-                            " ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
-                            accordionState.id)));
-                buff.append("\n");
-
-                continue;
-            }
-
-            if (tline.startsWith("-accordian")
-                    || tline.startsWith("-accordion")) {
-                if (accordionStates.size() == 0) {
-                    buff.append("No open accordion tag");
-
+                if (inPropertyTag && tline.endsWith("}}")) {
+                    buff.append(tline);
+                    buff.append("\n");
+                    inPropertyTag = false;
                     continue;
                 }
-                buff.append("\n");
-                buff.append("</div>");
-                buff.append("\n");
-                AccordionState accordionState =
-                    accordionStates.get(accordionStates.size() - 1);
-                accordionStates.remove(accordionStates.size() - 1);
-                String args = "{heightStyle: \"" + accordionState.heightStyle
-                              + "\"" + ", collapsible: "
-                              + accordionState.collapsible + ", active: "
-                              + accordionState.activeSegment + ", decorate: "
-                              + accordionState.decorate + ", animate:"
-                              + accordionState.animate + "}";
-                js.append("HtmlUtil.makeAccordion(\"#" + accordionState.id
-                          + "\" " + "," + args + ");\n");
-                buff.append("\n");
 
-                continue;
-            }
-
-            if (tline.startsWith("+segment")) {
-                if (accordionStates.size() == 0) {
-                    buff.append("No open accordion tag");
-
+                if (inPropertyTag) {
+                    buff.append(tline);
+                    buff.append("\n");
                     continue;
                 }
-                AccordionState accordionState =
-                    accordionStates.get(accordionStates.size() - 1);
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String       title = (toks.size() > 1)
-                                     ? toks.get(1)
-                                     : "";
-                buff.append("\n");
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_H3,
-                        HtmlUtils.cssClass(" ui-accordion-header ui-helper-reset ui-corner-top")
-                        + (accordionState.decorate
-                           ? ""
-                           : " style=\"border:0px;background:none;\" ")));
-                buff.append("\n");
-                buff.append("<a href=\"#\">");
-                buff.append(title);
-                buff.append("</a></h3>");
-                buff.append("\n");
-                String contentsId =
-                    HtmlUtils.getUniqueId("accordion_contents_");
-                buff.append(
-                    HtmlUtils.open(
-                        "div",
-                        HtmlUtils.id(contentsId)
-                        + HtmlUtils.cssClass("ramadda-accordion-contents")));
-                buff.append("\n");
-                accordionState.segmentId++;
 
-                continue;
-            }
-
-            if (tline.startsWith("-segment")) {
-                buff.append("\n");
-                buff.append("</div>");
-                buff.append("\n");
-
-                continue;
-            }
-
-            if (tline.equals("-div")) {
-                buff.append("</div>");
-
-                continue;
-            }
-            if (tline.startsWith("+pagehead")) {
-                String weight = StringUtil.findPattern(tline, "-([0-9]+)");
-                if (weight == null) {
-                    weight = "8";
+                if (tline.startsWith("@(")) {
+                    handleEmbed(buff, tline);
+                    continue;
                 }
-                buff.append("<div class=\"row\">");
-                buff.append("<div class=\"col-md-" + weight
-                            + "  ramadda-col\">");
-                buff.append("<div class=\"jumbotron\">");
 
-                continue;
-            }
-            if (tline.startsWith("-pagehead")) {
-                buff.append("</div></div></div>");
 
-                continue;
-            }
-            if (tline.equals("+jumbo")) {
-                buff.append("<div class=\"jumbotron\">");
+                if (tline.startsWith(":macro")) {
+                    hasSet = true;
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                    String       var   = ((toks.size() > 1)
+                                          ? toks.get(1)
+                                          : "");
+                    String       value = ((toks.size() > 2)
+                                          ? toks.get(2)
+                                          : "");
+                    myVars.put(var.trim(), value.trim());
+                    continue;
+                }
 
-                continue;
-            }
-            if (tline.equals("-jumbo")) {
-                buff.append("</div>");
+                if (tline.startsWith("+macro")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 3);
+                    currentVar      = ((toks.size() > 1)
+                                       ? toks.get(1)
+                                       : "");
+                    currentVarValue = new StringBuilder();
+                    continue;
+                }
 
-                continue;
-            }
+                if (tline.startsWith("-macro")) {
+                    myVars.put(currentVar, currentVarValue.toString());
+                    currentVar      = null;
+                    currentVarValue = null;
+                    continue;
+                }
 
-            if (tline.startsWith("+inset")) {
-                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
-                StringBuilder extra = new StringBuilder();
-                if (toks.size() > 1) {
-                    StringBuilder styles = new StringBuilder();
-                    for (String side : new String[] { "top", "left", "bottom",
-                            "right" }) {
-                        String v = getAttribute(tline, side);
-                        if (v != null) {
-                            v = getSize(v);
-                            styles.append("margin-" + side + ":" + v + ";");
+
+                if (currentVar != null) {
+                    currentVarValue.append(tline);
+                    continue;
+                }
+
+                if (tline.startsWith("+table")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    String       width     = "100%";
+                    String       height    = null;
+                    String       ordering  = null;
+                    String       paging    = null;
+                    String       xclazz    = null;
+                    String       searching = "false";
+                    String       clazz     = "ramadda-table";
+                    if (toks.size() == 2) {
+                        Hashtable props =
+                            HtmlUtils.parseHtmlProperties(toks.get(1));
+                        width  = Utils.getProperty(props, "width", width);
+                        height = Utils.getProperty(props, "height", height);
+                        ordering = Utils.getProperty(props, "ordering",
+                                ordering);
+                        paging = Utils.getProperty(props, "paging", paging);
+                        searching = Utils.getProperty(props, "searching",
+                                height);
+
+                        if (Misc.equals(Utils.getProperty(props, "rowborder",
+                                null), "true")) {
+                            clazz = "row-border " + clazz;
+                        }
+                        if (Misc.equals(Utils.getProperty(props,
+                                "cellborder", null), "true")) {
+                            clazz = "cell-border " + clazz;
+                        }
+                        if (Misc.equals(Utils.getProperty(props, "stripe",
+                                null), "true")) {
+                            clazz = "stripe " + clazz;
+                        }
+                        if (Misc.equals(Utils.getProperty(props, "hover",
+                                null), "true")) {
+                            clazz = "hover " + clazz;
                         }
                     }
 
-                    if (styles.length() > 0) {
-                        extra.append(HtmlUtils.style(styles.toString()));
+                    buff.append("<table class='" + clazz + "' width=" + width
+                                + " table-searching=" + searching + " "
+                                + ((height != null)
+                                   ? " table-height=" + height
+                                   : "") + ((ordering != null)
+                                            ? " table-ordering=" + ordering
+                                            : "") + ((paging != null)
+                            ? " table-paging=" + paging
+                            : "") + "><thead>");
+                    tableStates.add(new TableState());
+                    continue;
+                }
+                if (tline.equals("-table")) {
+                    TableState state = (tableStates.size() > 0)
+                                       ? tableStates.get(tableStates.size()
+                                           - 1)
+                                       : null;
+                    if (state == null) {
+                        buff.append("Not in a table");
+                        continue;
                     }
+                    if (state.inTd) {
+                        buff.append("</td>");
+                    }
+                    if (state.inTr) {
+                        buff.append("</tr>");
+                    }
+                    if (state.inHead) {
+                        buff.append("</thead>");
+                    }
+                    if (state.inBody) {
+                        buff.append("</tbody>");
+                    }
+                    buff.append("</table>");
+                    tableStates.remove(tableStates.size() - 1);
+                    continue;
                 }
 
-                buff.append(HtmlUtils.open("div",
-                                           HtmlUtils.cssClass("inset")
-                                           + extra));
 
-                continue;
-            }
-            if (tline.equals("-inset")) {
-                buff.append("</div>");
 
-                continue;
-            }
-
-            if (tline.startsWith("+div")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String       style = "";
-                String       clazz = "";
-                if (toks.size() == 2) {
-                    Hashtable props =
-                        HtmlUtils.parseHtmlProperties(toks.get(1));
-                    String tmp = (String) props.get("class");
-                    if (tmp != null) {
-                        clazz = tmp;
+                if (tline.startsWith(":tr")) {
+                    TableState state = (tableStates.size() > 0)
+                                       ? tableStates.get(tableStates.size()
+                                           - 1)
+                                       : null;
+                    if (state == null) {
+                        buff.append("Not in a table");
+                        continue;
                     }
-                    style = (String) props.get("style");
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    buff.append("<tr valign=top>");
+                    if (toks.size() == 2) {
+                        for (String td :
+                                Utils.parseCommandLine(toks.get(1))) {
+                            if (state.inHead) {
+                                buff.append(HtmlUtils.th(td));
+                            } else {
+                                buff.append(HtmlUtils.td(td));
+                            }
+                        }
+                    }
+                    if (state.inHead) {
+                        buff.append("</thead>");
+                        buff.append("<tbody>");
+                        state.inHead = false;
+                        state.inBody = true;
+                    }
+                    continue;
+                }
+                if (tline.startsWith("+tr")) {
+                    TableState state = (tableStates.size() > 0)
+                                       ? tableStates.get(tableStates.size()
+                                           - 1)
+                                       : null;
+                    if (state == null) {
+                        buff.append("Not in a table");
+                        continue;
+                    }
+                    buff.append("<tr valign=top>");
+                    continue;
+                }
+                if (tline.startsWith("-tr")) {
+                    TableState state = (tableStates.size() > 0)
+                                       ? tableStates.get(tableStates.size()
+                                           - 1)
+                                       : null;
+                    if (state == null) {
+			buff.append("Not in a table");
+                        continue;
+                    }
+                    buff.append("</tr>");
+                    if (state.inHead) {
+                        buff.append("</thead>");
+                        buff.append("<tbody>");
+                        state.inHead = false;
+                        state.inBody = true;
+                    }
+                    continue;
+                }
+
+                if (tline.startsWith("+td")) {
+                    TableState state = (tableStates.size() > 0)
+                                       ? tableStates.get(tableStates.size()
+                                           - 1)
+                                       : null;
+                    if (state == null) {
+                        buff.append("Not in a table");
+                        continue;
+                    }
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    String       width = null;
+                    if (toks.size() == 2) {
+                        Hashtable props =
+                            HtmlUtils.parseHtmlProperties(toks.get(1));
+                        width = Utils.getProperty(props, "width", width);
+                    }
+
+                    if (state.inHead) {
+                        buff.append("<th " + ((width != null)
+                                ? " width=" + width
+                                : "") + ">");
+                    } else {
+                        buff.append("<td valign=top " + ((width != null)
+                                ? " width=" + width
+                                : "") + ">");
+                    }
+                    continue;
+                }
+                if (tline.startsWith("-td")) {
+                    TableState state = (tableStates.size() > 0)
+                                       ? tableStates.get(tableStates.size()
+                                           - 1)
+                                       : null;
+                    if (state == null) {
+                        buff.append("Not in a table");
+                        continue;
+                    }
+                    if (state.inHead) {
+                        buff.append("</th>");
+                    } else {
+                        buff.append("</td>");
+                    }
+                    continue;
+                }
+                if (tline.startsWith(":td")) {
+                    TableState state = (tableStates.size() > 0)
+                                       ? tableStates.get(tableStates.size()
+                                           - 1)
+                                       : null;
+                    if (state == null) {
+                        buff.append("Not in a table");
+                        continue;
+                    }
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    String       td   = (toks.size() == 2)
+                                        ? toks.get(1)
+                                        : "";
+                    if (state.inHead) {
+                        buff.append(HtmlUtils.th(td));
+                    } else {
+                        buff.append(HtmlUtils.td(td, "valign=top"));
+                    }
+                    continue;
+                }
+
+
+                if (tline.startsWith("+tabs")) {
+                    TabState     tabInfo  = new TabState();
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    String       divClass = "";
+                    if (toks.size() == 2) {
+                        Hashtable props =
+                            HtmlUtils.parseHtmlProperties(toks.get(1));
+                        if (props.get("min") != null) {
+                            divClass = "ramadda-tabs-min";
+                        } else if (props.get("center") != null) {
+                            divClass = "ramadda-tabs-center";
+                        } else if (props.get("minarrow") != null) {
+                            divClass =
+                                "ramadda-tabs-min ramadda-tabs-minarrow";
+                        }
+                        if (props.get("transparent") != null) {
+                            divClass += " ramadda-tabs-transparent ";
+                        }
+
+                        tabInfo.minHeight = (String) props.get("minHeight");
+                        if (tabInfo.minHeight != null) {
+                            tabInfo.minHeight = getSize(tabInfo.minHeight);
+                        }
+                    }
+                    tabStates.add(tabInfo);
+                    allTabStates.add(tabInfo);
+                    buff.append("\n");
+                    HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "class",
+                                   divClass);
+                    HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "id", tabInfo.id,
+                                   "class", "ui-tabs");
+                    buff.append("\n");
+                    HtmlUtils.open(tabInfo.title, HtmlUtils.TAG_UL);
+                    tabInfo.title.append("\n");
+                    buff.append("\n");
+                    buff.append("${" + tabInfo.id + "}");
+                    buff.append("\n");
+                    continue;
+                }
+                if (tline.equals("+tab") || tline.startsWith("+tab ")) {
+                    if (tabStates.size() == 0) {
+                        buff.append("No +tabs tag");
+                        continue;
+                    }
+                    List<String> toks    = StringUtil.splitUpTo(tline, " ",
+                                               2);
+                    String       title   = (toks.size() > 1)
+                                           ? toks.get(1)
+                                           : "";
+                    TabState     tabInfo = tabStates.get(tabStates.size()
+                                               - 1);
+                    tabInfo.cnt++;
+                    tabInfo.title.append("<li><a href=\"#" + tabInfo.id + "-"
+                                         + (tabInfo.cnt) + "\">" + title
+                                         + "</a></li>\n");
+                    String style = "";
+                    if (tabInfo.minHeight != null) {
+                        style = " style=min-height:" + tabInfo.minHeight
+                                + ";";
+                    }
+                    buff.append(HtmlUtils.open("div",
+                            style
+                            + HtmlUtils.id(tabInfo.id + "-" + (tabInfo.cnt))
+                            + HtmlUtils.cssClass("ui-tabs-hide")));
+                    buff.append("\n");
+                    continue;
+                }
+                if (tabStates.size() > 0) {
+                    if (tline.equals("-tab")) {
+                        TabState tabInfo = tabStates.get(tabStates.size()
+                                               - 1);
+                        buff.append(HtmlUtils.close("div"));
+                        buff.append("\n");
+                        js.append(
+                            "jQuery(function(){\njQuery('#" + tabInfo.id
+                            + "').tabs({activate: HtmlUtil.tabLoaded})});\n");
+                        continue;
+                    }
+                    if (tline.equals("-tabs")) {
+                        TabState tabInfo = tabStates.get(tabStates.size()
+                                               - 1);
+                        tabInfo.title.append("\n");
+                        tabInfo.title.append("</ul>");
+                        tabInfo.title.append("\n");
+                        tabStates.remove(tabStates.size() - 1);
+                        buff.append(HtmlUtils.close("div"));
+                        buff.append(HtmlUtils.close("div"));
+                        continue;
+                    }
+
+
+                }
+
+                if (tline.startsWith("+accordian")
+                        || tline.startsWith("+accordion")) {
+                    AccordionState accordionState = new AccordionState();
+                    accordionStates.add(accordionState);
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    String       divClass = "";
+                    if (toks.size() == 2) {
+                        Hashtable props =
+                            HtmlUtils.parseHtmlProperties(toks.get(1));
+                        accordionState.activeSegment =
+                            Misc.getProperty(props, "activeSegment", 0);
+                        accordionState.animate = Misc.getProperty(props,
+                                "animate", accordionState.animate);
+                        accordionState.heightStyle = Misc.getProperty(props,
+                                "heightStyle", accordionState.heightStyle);
+                        accordionState.collapsible = Misc.getProperty(props,
+                                "collapsible", accordionState.collapsible);
+                        accordionState.decorate = Misc.getProperty(props,
+                                "decorate", accordionState.decorate);
+                    }
+
+                    buff.append("\n");
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass(" ui-accordion ui-widget ui-helper-reset")
+                            + HtmlUtils.id(accordionState.id)));
+                    buff.append("\n");
+                    continue;
+                }
+
+                if (tline.startsWith("-accordian")
+                        || tline.startsWith("-accordion")) {
+                    if (accordionStates.size() == 0) {
+                        buff.append("No open accordion tag");
+                        continue;
+                    }
+                    buff.append("\n");
+                    buff.append("</div>");
+                    buff.append("\n");
+                    AccordionState accordionState =
+                        accordionStates.get(accordionStates.size() - 1);
+                    accordionStates.remove(accordionStates.size() - 1);
+                    String args = "{heightStyle: \""
+                                  + accordionState.heightStyle + "\""
+                                  + ", collapsible: "
+                                  + accordionState.collapsible + ", active: "
+                                  + accordionState.activeSegment
+                                  + ", decorate: " + accordionState.decorate
+                                  + ", animate:" + accordionState.animate
+                                  + "}";
+                    js.append("HtmlUtil.makeAccordion(\"#"
+                              + accordionState.id + "\" " + "," + args
+                              + ");\n");
+                    buff.append("\n");
+
+                    continue;
+                }
+
+                if (tline.startsWith("+segment")) {
+                    if (accordionStates.size() == 0) {
+                        buff.append("No open accordion tag");
+
+                        continue;
+                    }
+                    AccordionState accordionState =
+                        accordionStates.get(accordionStates.size() - 1);
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    String       title = (toks.size() > 1)
+                                         ? toks.get(1)
+                                         : "";
+                    buff.append("\n");
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_H3,
+                            HtmlUtils.cssClass(" ui-accordion-header ui-helper-reset ui-corner-top")
+                            + (accordionState.decorate
+                               ? ""
+                               : " style=\"border:0px;background:none;\" ")));
+                    buff.append("\n");
+                    buff.append("<a href=\"#\">");
+                    buff.append(title);
+                    buff.append("</a></h3>");
+                    buff.append("\n");
+                    String contentsId =
+                        HtmlUtils.getUniqueId("accordion_contents_");
+                    buff.append(
+                        HtmlUtils.open(
+                            "div",
+                            HtmlUtils.id(contentsId)
+                            + HtmlUtils.cssClass(
+                                "ramadda-accordion-contents")));
+                    buff.append("\n");
+                    accordionState.segmentId++;
+
+                    continue;
+                }
+
+                if (tline.startsWith("-segment")) {
+                    buff.append("\n");
+                    buff.append("</div>");
+                    buff.append("\n");
+
+                    continue;
+                }
+
+                if (tline.equals("-div")) {
+                    buff.append("</div>");
+
+                    continue;
+                }
+                if (tline.startsWith("+pagehead")) {
+                    String weight = StringUtil.findPattern(tline,
+                                        "-([0-9]+)");
+                    if (weight == null) {
+                        weight = "8";
+                    }
+                    buff.append("<div class=\"row\">");
+                    buff.append("<div class=\"col-md-" + weight
+                                + "  ramadda-col\">");
+                    buff.append("<div class=\"jumbotron\">");
+
+                    continue;
+                }
+                if (tline.startsWith("-pagehead")) {
+                    buff.append("</div></div></div>");
+
+                    continue;
+                }
+                if (tline.equals("+jumbo")) {
+                    buff.append("<div class=\"jumbotron\">");
+
+                    continue;
+                }
+                if (tline.equals("-jumbo")) {
+                    buff.append("</div>");
+
+                    continue;
+                }
+
+                if (tline.startsWith("+inset")) {
+                    List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    StringBuilder extra = new StringBuilder();
+                    if (toks.size() > 1) {
+                        StringBuilder styles = new StringBuilder();
+                        for (String side : new String[] { "top", "left",
+                                "bottom", "right" }) {
+                            String v = getAttribute(tline, side);
+                            if (v != null) {
+                                v = getSize(v);
+                                styles.append("margin-" + side + ":" + v
+                                        + ";");
+                            }
+                        }
+
+                        if (styles.length() > 0) {
+                            extra.append(HtmlUtils.style(styles.toString()));
+                        }
+                    }
+
+                    buff.append(HtmlUtils.open("div",
+                            HtmlUtils.cssClass("inset") + extra));
+
+                    continue;
+                }
+                if (tline.equals("-inset")) {
+                    buff.append("</div>");
+
+                    continue;
+                }
+
+                if (tline.startsWith("+div")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    String       style = "";
+                    String       clazz = "";
+                    if (toks.size() == 2) {
+                        Hashtable props =
+                            HtmlUtils.parseHtmlProperties(toks.get(1));
+                        String tmp = (String) props.get("class");
+                        if (tmp != null) {
+                            clazz = tmp;
+                        }
+                        style = (String) props.get("style");
+                        if (style == null) {
+                            style = "";
+                        }
+                        String image = (String) props.get("image");
+                        if (image != null) {
+                            String attach = (String) props.get("attach");
+                            if (attach == null) {
+                                attach = "fixed";
+                            }
+                            tmp = handler.getWikiImageUrl(this, image, props);
+                            if (tmp != null) {
+                                image = tmp;
+                            }
+                            style +=
+                                " background-repeat: repeat-y;background-attachment:"
+                                + attach
+                                + ";background-size:100% auto; background-image: url('"
+                                + image + "'); ";
+                        }
+                        String bg = (String) props.get("background");
+                        if (bg != null) {
+                            style += " background: " + bg + "; ";
+                        }
+                    }
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass(clazz)
+                            + HtmlUtils.style(style)));
+
+                    continue;
+                }
+                if (tline.startsWith("-div")) {
+                    buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
+                    continue;
+                }
+
+                if (tline.startsWith("+gridboxes")) {
+                    tline = tline.substring(1);
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    List<String> toks2 = StringUtil.splitUpTo(toks.get(0),
+                                             "-", 2);
+                    String clazz = "";
+                    if (toks2.size() > 1) {
+                        clazz = "ramadda-gridboxes-" + toks2.get(1);
+                    }
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass("ramadda-gridboxes "
+                                + clazz)));
+
+                    continue;
+                }
+
+
+                if (tline.startsWith("-gridboxes")) {
+                    buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
+                    continue;
+                }
+
+                if (tline.startsWith("+gridbox")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass("ramadda-gridbox")));
+                    if (toks.size() > 1) {
+                        buff.append(HtmlUtils.tag(HtmlUtils.TAG_DIV,
+                                HtmlUtils.cssClass("ramadda-gridbox-header"),
+                                toks.get(1)));
+                    }
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass("ramadda-gridbox-contents")));
+
+                    continue;
+                }
+
+
+                if (tline.startsWith("-gridbox")) {
+                    buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                    buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
+                    continue;
+                }
+
+                if (tline.startsWith("+after")) {
+                    afterId = HtmlUtils.getUniqueId("after");
+                    Hashtable props = lineToProps(tline);
+                    afterPause = (String) props.get("pause");
+                    if (afterPause == null) {
+                        afterPause = "0";
+                    }
+                    afterFade = (String) props.get("afterFade");
+                    if (afterFade == null) {
+                        afterPause = "3000";
+                    }
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.style("opacity:0;")
+                            + HtmlUtils.id(afterId)));
+
+                    continue;
+                }
+
+                if (tline.startsWith("-after")) {
+                    HtmlUtils.close(buff, HtmlUtils.TAG_DIV);
+                    HtmlUtils.script(buff,
+                                     "HtmlUtils.callWhenScrolled('" + afterId
+                                     + "',()=>{$('#" + afterId + "').fadeTo("
+                                     + afterFade + ",1.0);}," + afterPause
+                                     + ");");
+
+                    continue;
+                }
+
+
+                if (tline.startsWith("+draggable")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    Hashtable props =
+                        HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+                    dragId = HtmlUtils.getUniqueId("draggable");
+
+                    dragToggle = Utils.getProperty(props, "toggle", false);
+                    dragToggleVisible = Utils.getProperty(props,
+                            "toggleVisible", true);
+                    String style  = (String) props.get("style");
+                    String header = (String) props.get("header");
+                    String clazz  = "ramadda-draggable";
+                    if (Misc.equals("true", props.get("framed"))) {
+                        clazz = "ramadda-draggable-frame";
+                    }
                     if (style == null) {
                         style = "";
                     }
-                    String image = (String) props.get("image");
-                    if (image != null) {
-                        String attach = (String) props.get("attach");
-                        if (attach == null) {
-                            attach = "fixed";
+                    HtmlUtils.open(buff, "div", "id", dragId, "style",
+                                   "display:inline-block;z-index:1000;"
+                                   + style);
+                    if (header != null) {
+                        if (dragToggle) {
+                            header = HtmlUtils.image("", "id",
+                                    dragId + "_img") + " " + header;
                         }
-                        tmp = handler.getWikiImageUrl(this, image, props);
-                        if (tmp != null) {
-                            image = tmp;
+                        HtmlUtils.div(buff, header,
+                                      HtmlUtils.attrs("class",
+                                          "ramadda-draggable-header"));
+                    }
+                    HtmlUtils.open(buff, "div", "class", clazz, "id",
+                                   dragId + "_frame");
+                    if (dragToggle) {
+                        HtmlUtils.script(buff,
+                                         "HtmlUtils.makeToggle('" + dragId
+                                         + "_img','" + dragId + "_frame',"
+                                         + dragToggleVisible + ");");
+                    }
+
+                    continue;
+                }
+
+                if (tline.startsWith("-draggable")) {
+                    if (dragId != null) {
+                        HtmlUtils.close(buff, "div");
+                        HtmlUtils.close(buff, "div");
+                        //              HtmlUtils.script(buff, "$('#" + dragId +"').draggable();\n");
+                        HtmlUtils.script(buff,
+                                         "HtmlUtils.makeDraggable('#"
+                                         + dragId + "');\n");
+                    }
+
+                    continue;
+                }
+
+                if (tline.startsWith("+expandable")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    Hashtable props =
+                        HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+                    dragId = HtmlUtils.getUniqueId("expandable");
+                    String  header = (String) props.get("header");
+                    String  clazz  = "ramadda-expandable";
+                    String  clazz2 = "";
+                    boolean expand = Misc.equals(props.get("expand"), "true");
+                    if (expand) {
+                        clazz2 += " ramadda-expand-now";
+                    }
+                    if (Misc.equals("true", props.get("framed"))) {
+                        clazz = "ramadda-expandable-frame";
+                    }
+                    HtmlUtils.open(buff, "div", "id", dragId, "style",
+                                   "position:relative;", "class", clazz2);
+                    if (header != null) {
+                        HtmlUtils.div(buff, header,
+                                      HtmlUtils.attrs("class",
+                                          "ramadda-expandable-header"));
+                    }
+                    HtmlUtils.open(buff, "div", "class", clazz);
+
+                    continue;
+                }
+
+                if (tline.startsWith("-expandable")) {
+                    if (dragId != null) {
+                        HtmlUtils.close(buff, "div");
+                        HtmlUtils.close(buff, "div");
+                        //              HtmlUtils.script(buff, "$('#" + dragId +"').expandable();\n");
+                        HtmlUtils.script(buff,
+                                         "HtmlUtils.makeExpandable('#"
+                                         + dragId + "');\n");
+                    }
+
+                    continue;
+                }
+
+                if (tline.startsWith("+section")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    Hashtable props =
+                        HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+
+                    String       tag       = toks.get(0).substring(1);
+                    List<String> toks2     = StringUtil.splitUpTo(tag, "-",
+                                                 2);
+                    String       remainder = ((toks2.size() > 1)
+                            ? toks2.get(1)
+                            : "");
+
+                    String       baseClass = "ramadda-section";
+                    if (remainder.length() > 0) {
+                        baseClass = baseClass + "-" + remainder;
+                    }
+
+                    String  label       = (String) props.get("label");
+                    String  heading     = (String) props.get("heading");
+                    String  title       = (String) props.get("title");
+                    String  subTitle    = (String) props.get("subTitle");
+                    String  classArg    = (String) props.get("class");
+                    String  style       = (String) props.get("style");
+                    String  titleStyle  = (String) props.get("titleStyle");
+                    String  headerStyle = (String) props.get("headerStyle");
+                    boolean doBorderTop = tline.indexOf("----") >= 0;
+                    boolean doEvenOdd   = tline.indexOf("#") >= 0;
+                    String  extraClass  = "";
+                    if (doBorderTop) {
+                        if (style == null) {
+                            style =
+                                "border-top:1px rgb(224, 224, 224) solid;";
+                        } else {
+                            style +=
+                                "border-top:1px rgb(224, 224, 224) solid;";
                         }
-                        style +=
-                            " background-repeat: repeat-y;background-attachment:"
-                            + attach
-                            + ";background-size:100% auto; background-image: url('"
-                            + image + "'); ";
                     }
-                    String bg = (String) props.get("background");
-                    if (bg != null) {
-                        style += " background: " + bg + "; ";
+                    String extraAttr = ((style == null)
+                                        ? ""
+                                        : " style=\"" + style + "\" ");
+
+                    if (doEvenOdd) {
+                        Integer scnt  = (Integer) getProperty("section-cnt");
+                        boolean first = false;
+                        if (scnt == null) {
+                            scnt  = new Integer(-1);
+                            first = true;
+                        }
+                        int newCnt = scnt.intValue() + 1;
+                        if (((float) newCnt / 2.0)
+                                == (int) ((float) newCnt / 2.0)) {
+                            extraClass = "ramadda-section-even";
+                        } else {
+                            extraClass = "ramadda-section-odd";
+                        }
+                        if (first) {
+                            extraClass = "ramadda-section-first";
+                        }
+                        putProperty("section-cnt", new Integer(newCnt));
                     }
+                    if (classArg != null) {
+                        extraClass += " " + classArg + " ";
+                    }
+
+                    String full = (String) props.get("full");
+                    if ((full != null) && ( !full.equals("false"))) {
+                        extraClass += " ramadda-section-full ";
+                    }
+                    String clazz = baseClass + " " + extraClass;
+                    buff.append("<div class=\"");
+                    buff.append(clazz);
+                    buff.append("\"   " + extraAttr + ">");
+                    //                System.err.println("s:" + clazz +" " + extraAttr);
+                    if (label == null) {
+                        label = heading;
+                    }
+                    if (label != null) {
+                        buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                HtmlUtils.cssClass("ramadda-heading-outer")));
+                        buff.append(HtmlUtils.div(label,
+                                HtmlUtils.cssClass("ramadda-heading")));
+                        buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                    }
+                    if (title != null) {
+                        String sub = "";
+                        if (subTitle != null) {
+                            sub = HtmlUtils.div(subTitle,
+                                    HtmlUtils.clazz("ramadda-page-subtitle"));
+                        }
+                        buff.append(
+                            HtmlUtils.div(
+                                getTitle(title, titleStyle) + sub,
+                                HtmlUtils.cssClass("ramadda-page-title")
+                                + ((headerStyle == null)
+                                   ? ""
+                                   : HtmlUtils.style(headerStyle))));
+                    }
+
+                    continue;
                 }
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.cssClass(clazz)
-                                           + HtmlUtils.style(style)));
+                if (tline.startsWith("-section")) {
+                    buff.append("</div>");
 
-                continue;
-            }
-            if (tline.startsWith("-div")) {
-                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-
-                continue;
-            }
-
-            if (tline.startsWith("+gridboxes")) {
-                tline = tline.substring(1);
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                List<String> toks2 = StringUtil.splitUpTo(toks.get(0), "-",
-                                         2);
-                String clazz = "";
-                if (toks2.size() > 1) {
-                    clazz = "ramadda-gridboxes-" + toks2.get(1);
+                    continue;
                 }
-                buff.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.cssClass("ramadda-gridboxes " + clazz)));
 
-                continue;
-            }
+                if (tline.startsWith("+scroll")) {
+                    buff.append("\n");
+                    HtmlUtils.cssLink(
+                        buff,
+                        handler.getHtdocsUrl("/lib/scrollify/scrollify.css"));
+                    HtmlUtils.importJS(
+                        buff,
+                        handler.getHtdocsUrl(
+                            "/lib/scrollify/jquery.scrollify.js"));
 
-
-            if (tline.startsWith("-gridboxes")) {
-                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-
-                continue;
-            }
-
-            if (tline.startsWith("+gridbox")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.cssClass("ramadda-gridbox")));
-                if (toks.size() > 1) {
-                    buff.append(HtmlUtils.tag(HtmlUtils.TAG_DIV,
-                            HtmlUtils.cssClass("ramadda-gridbox-header"),
-                            toks.get(1)));
+                    continue;
                 }
-                buff.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.cssClass("ramadda-gridbox-contents")));
 
-                continue;
-            }
+                if (tline.startsWith("-scroll")) {
+                    buff.append("\n");
+                    inScroll = false;
+                    HtmlUtils.importJS(
+                        buff,
+                        handler.getHtdocsUrl("/lib/scrollify/template.js"));
 
-
-            if (tline.startsWith("-gridbox")) {
-                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-
-                continue;
-            }
-
-            if (tline.startsWith("+after")) {
-                afterId = HtmlUtils.getUniqueId("after");
-                Hashtable props = lineToProps(tline);
-                afterPause = (String) props.get("pause");
-                if (afterPause == null) {
-                    afterPause = "0";
+                    continue;
                 }
-                afterFade = (String) props.get("afterFade");
-                if (afterFade == null) {
-                    afterPause = "3000";
+
+                if (tline.startsWith(":wikip")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                    String       page  = toks.get(1).trim();
+                    String       label = (toks.size() > 2)
+                                         ? toks.get(2).trim()
+                                         : Utils.makeLabel(page);
+                    HtmlUtils.href(buff,
+                                   "https://en.wikipedia.org/wiki/" + page,
+                                   label);
+
+                    continue;
                 }
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.style("opacity:0;")
-                                           + HtmlUtils.id(afterId)));
 
-                continue;
-            }
+                if (tline.startsWith(":reload")) {
+                    String       id   = HtmlUtils.getUniqueId("reload");
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    Hashtable props =
+                        HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+                    String time = Utils.getProperty(props, "seconds", "60");
+                    boolean showCbx = Utils.getProperty(props,
+                                          "showCheckbox", true);
+                    boolean showLabel = Utils.getProperty(props, "showLabel",
+                                            true);
+                    if (showCbx) {
+                        HtmlUtils.checkbox(buff, "", "true", true,
+                                           HtmlUtils.id(id));
+                        buff.append(" ");
+                    }
+                    HtmlUtils.span(buff, showLabel
+                                         ? ""
+                                         : "Reload", HtmlUtils.id(id
+                                         + "_label"));
+                    //                if (showLabel) {
+                    //                    buff.append(" ");
+                    //                    HtmlUtils.span(buff, "", HtmlUtils.id(id + "_label"));
+                    //                }
+                    buff.append(HtmlUtils.script("Utils.initPageReload("
+                            + time + ",'" + id + "'," + showLabel + ");"));
 
-            if (tline.startsWith("-after")) {
-                HtmlUtils.close(buff, HtmlUtils.TAG_DIV);
-                HtmlUtils.script(buff,
-                                 "HtmlUtils.callWhenScrolled('" + afterId
-                                 + "',()=>{$('#" + afterId + "').fadeTo("
-                                 + afterFade + ",1.0);}," + afterPause
-                                 + ");");
-
-                continue;
-            }
-
-
-            if (tline.startsWith("+draggable")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
-                                      > 1)
-                        ? toks.get(1)
-                        : "");
-                dragId = HtmlUtils.getUniqueId("draggable");
-
-                dragToggle = Utils.getProperty(props, "toggle",false);
-                dragToggleVisible = Utils.getProperty(props,"toggleVisible",true);
-                String  style = (String) props.get("style");
-                String header = (String) props.get("header");
-                String clazz  = "ramadda-draggable";
-                if (Misc.equals("true", props.get("framed"))) {
-                    clazz = "ramadda-draggable-frame";
+                    continue;
                 }
-		if(style==null) style="";
-                HtmlUtils.open(buff, "div", "id", dragId,"style","display:inline-block;z-index:1000;"+style);
-                if (header != null) {
-		    if(dragToggle) {
-			header = HtmlUtils.image("","id",dragId+"_img") +" " + header;
-		    }
-                    HtmlUtils.div(buff, header,
-                                  HtmlUtils.attrs("class",
-						  "ramadda-draggable-header"));
-                }
-                HtmlUtils.open(buff, "div", "class", clazz,"id",dragId+"_frame");
-		if(dragToggle) {
-		    HtmlUtils.script(buff, "HtmlUtils.makeToggle('" + dragId+"_img','" + dragId+"_frame'," + dragToggleVisible+");");
-		}
-                continue;
-            }
 
-            if (tline.startsWith("-draggable")) {
-		if (dragId != null) {
+                if (tline.startsWith(":script")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    HtmlUtils.importJS(buff, toks.get(1));
+
+                    continue;
+                }
+
+                if (tline.startsWith("+panel")) {
+                    buff.append("\n");
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    Hashtable props =
+                        HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+                    String name  = (String) props.get("name");
+                    String style = (String) props.get("style");
+                    String color = (String) props.get("color");
+                    String extra = "";
+                    String clazz = "panel ";
+                    if (name != null) {
+                        extra += " data-section-name=\"" + name + "\"  ";
+                    }
+                    if (style != null) {
+                        extra += HtmlUtils.style(style);
+                    }
+                    if ( !inScroll) {
+                        clazz += " panel-first ";
+                    }
+                    if (color != null) {
+                        clazz += " panel-" + color + " ";
+                    }
+                    buff.append("<section class=\"" + clazz + "\" " + extra
+                                + ">\n");
+                    buff.append("<div class=\"panel-inner\">");
+                    inScroll = true;
+
+                    continue;
+                }
+
+                if (tline.startsWith("-panel")) {
+                    buff.append("\n");
+                    buff.append("</div></section>");
+
+                    continue;
+                }
+
+                if (tline.equals("+info-text")) {
+                    buff.append("<div class=\"info-text\">");
+
+                    continue;
+                }
+                if (tline.equals("-info-text")) {
+                    buff.append("</div>");
+
+                    continue;
+                }
+
+                if (tline.startsWith(":title")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    if (toks.size() > 1) {
+                        buff.append(HtmlUtils.div(getTitle(toks.get(1)),
+                                HtmlUtils.cssClass("ramadda-page-title")));
+                    }
+
+                    continue;
+                }
+
+
+                if (tline.startsWith("+frame")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    Hashtable props =
+                        HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+                    String outerClazz = "ramadda-frame-outer";
+                    String innerStyle = (String) props.get("innerStyle");
+                    if (innerStyle == null) {
+                        innerStyle = "";
+                    }
+                    String frameStyle = "";
+                    if (props.get("shadow") != null) {
+                        outerClazz += " ramadda-frame-shadow ";
+                    }
+                    String frameSize = (String) props.get("frameSize");
+                    if (frameSize != null) {
+                        frameStyle += " padding:" + getSize(frameSize) + ";";
+                    }
+                    String frameColor = (String) props.get("frameColor");
+                    if (frameColor != null) {
+                        frameStyle += " background:" + frameColor + ";";
+                    }
+
+                    String background = (String) props.get("background");
+                    if (background != null) {
+                        innerStyle += " background:" + background + ";";
+                    }
+                    String title = (String) props.get("title");
+                    HtmlUtils.open(buff, "div",
+                                   HtmlUtils.cssClass(outerClazz)
+                                   + HtmlUtils.style(frameStyle));
+                    if (title != null) {
+                        String titleBackground =
+                            (String) props.get("titleBackground");
+                        String titleColor = (String) props.get("titleColor");
+                        String titleStyle = Misc.getProperty(props,
+                                                "titleStyle", "");
+                        if (titleBackground != null) {
+                            titleStyle += "background:" + titleBackground
+                                          + ";";
+                        }
+                        if (titleColor != null) {
+                            titleStyle += "color:" + titleColor + ";";
+                        }
+                        //              String url = getTitleUrl(false);
+                        //              if(url!=null) 
+                        //                  title = HtmlUtils.href(url, title);
+                        HtmlUtils.div(buff, title,
+                                      HtmlUtils.clazz("ramadda-frame-title")
+                                      + HtmlUtils.style(titleStyle));
+                    }
+                    HtmlUtils.open(buff, "div",
+                                   HtmlUtils.cssClass("ramadda-frame-inner")
+                                   + HtmlUtils.style(innerStyle));
+
+                    continue;
+                }
+
+
+                if (tline.startsWith("-frame")) {
                     HtmlUtils.close(buff, "div");
                     HtmlUtils.close(buff, "div");
-                    //              HtmlUtils.script(buff, "$('#" + dragId +"').draggable();\n");
-                    HtmlUtils.script(buff,
-                                     "HtmlUtils.makeDraggable('#" + dragId
-                                     + "');\n");
+
+                    continue;
                 }
 
-                continue;
-            }
+                if (tline.startsWith("+title")) {
+                    StringBuilder extra = new StringBuilder();
+                    List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    HtmlUtils.open(buff, "div",
+                                   HtmlUtils.cssClass("ramadda-page-title"));
+                    String url = getTitleUrl(true);
+                    if (url != null) {
+                        closeTheTag = true;
+                        HtmlUtils.open(buff, "a", "href=\"" + url + "\"");
+                    }
 
-            if (tline.startsWith("+expandable")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
-                                      > 1)
-                        ? toks.get(1)
-                        : "");
-                dragId = HtmlUtils.getUniqueId("expandable");
-                String  header = (String) props.get("header");
-                String  clazz  = "ramadda-expandable";
-                String  clazz2 = "";
-                boolean expand = Misc.equals(props.get("expand"), "true");
-                if (expand) {
-                    clazz2 += " ramadda-expand-now";
-                }
-                if (Misc.equals("true", props.get("framed"))) {
-                    clazz = "ramadda-expandable-frame";
-                }
-                HtmlUtils.open(buff, "div", "id", dragId, "style",
-                               "position:relative;", "class", clazz2);
-                if (header != null) {
-                    HtmlUtils.div(buff, header,
-                                  HtmlUtils.attrs("class",
-                                      "ramadda-expandable-header"));
-                }
-                HtmlUtils.open(buff, "div", "class", clazz);
-
-                continue;
-            }
-
-            if (tline.startsWith("-expandable")) {
-                if (dragId != null) {
-                    HtmlUtils.close(buff, "div");
-                    HtmlUtils.close(buff, "div");
-                    //              HtmlUtils.script(buff, "$('#" + dragId +"').expandable();\n");
-                    HtmlUtils.script(buff,
-                                     "HtmlUtils.makeExpandable('#" + dragId
-                                     + "');\n");
+                    continue;
                 }
 
-                continue;
-            }
+                if (tline.startsWith("-title")) {
+                    if (closeTheTag) {
+                        buff.append("</a>");
+                        closeTheTag = false;
+                    }
+                    buff.append("</div>");
+
+                    continue;
+                }
 
 
 
-            if (tline.startsWith("+section")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
-                                      > 1)
-                        ? toks.get(1)
-                        : "");
-
-                String       tag       = toks.get(0).substring(1);
-                List<String> toks2     = StringUtil.splitUpTo(tag, "-", 2);
-                String       remainder = ((toks2.size() > 1)
+                if (tline.startsWith(":button")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                    String       tag   = toks.get(0).substring(1);
+                    String       url   = ((toks.size() > 1)
+                                          ? toks.get(1)
+                                          : "");
+                    String       label = ((toks.size() > 2)
+                                          ? toks.get(2)
+                                          : url);
+                    List<String> toks2 = StringUtil.splitUpTo(tag, "-", 2);
+                    String       clazz = ((toks2.size() > 1)
                                           ? toks2.get(1)
                                           : "");
+                    if (clazz.length() > 0) {
+                        clazz = "ramadda-button-" + clazz;
+                    }
+                    HtmlUtils.href(buff, url, label,
+                                   " class='ramadda-button " + clazz
+                                   + "' role='button' ");
 
-                String       baseClass = "ramadda-section";
-                if (remainder.length() > 0) {
-                    baseClass = baseClass + "-" + remainder;
+                    continue;
                 }
 
-                String  label       = (String) props.get("label");
-                String  heading     = (String) props.get("heading");
-                String  title       = (String) props.get("title");
-                String  subTitle    = (String) props.get("subTitle");
-                String  classArg    = (String) props.get("class");
-                String  style       = (String) props.get("style");
-                String  titleStyle  = (String) props.get("titleStyle");
-                String  headerStyle = (String) props.get("headerStyle");
-                boolean doBorderTop = tline.indexOf("----") >= 0;
-                boolean doEvenOdd   = tline.indexOf("#") >= 0;
-                String  extraClass  = "";
-                if (doBorderTop) {
+                if (tline.startsWith("+vertical-center")) {
+                    buff.append("\n<div class=\"vertical-center\">\n");
+
+                    continue;
+                }
+
+                if (tline.startsWith("-vertical-center")) {
+                    buff.append("\n</div>\n");
+
+                    continue;
+                }
+
+                if (tline.startsWith("+absolute")) {
+                    Hashtable props = lineToProps(tline);
+                    String    style = (String) props.get("style");
                     if (style == null) {
-                        style = "border-top:1px rgb(224, 224, 224) solid;";
-                    } else {
-                        style += "border-top:1px rgb(224, 224, 224) solid;";
+                        style = "";
                     }
-                }
-                String extraAttr = ((style == null)
-                                    ? ""
-                                    : " style=\"" + style + "\" ");
-
-                if (doEvenOdd) {
-                    Integer scnt  = (Integer) getProperty("section-cnt");
-                    boolean first = false;
-                    if (scnt == null) {
-                        scnt  = new Integer(-1);
-                        first = true;
-                    }
-                    int newCnt = scnt.intValue() + 1;
-                    if (((float) newCnt / 2.0)
-                            == (int) ((float) newCnt / 2.0)) {
-                        extraClass = "ramadda-section-even";
-                    } else {
-                        extraClass = "ramadda-section-odd";
-                    }
-                    if (first) {
-                        extraClass = "ramadda-section-first";
-                    }
-                    putProperty("section-cnt", new Integer(newCnt));
-                }
-                if (classArg != null) {
-                    extraClass += " " + classArg + " ";
-                }
-
-                String full = (String) props.get("full");
-                if ((full != null) && ( !full.equals("false"))) {
-                    extraClass += " ramadda-section-full ";
-                }
-                String clazz = baseClass + " " + extraClass;
-                buff.append("<div class=\"");
-                buff.append(clazz);
-                buff.append("\"   " + extraAttr + ">");
-                //                System.err.println("s:" + clazz +" " + extraAttr);
-                if (label == null) {
-                    label = heading;
-                }
-                if (label != null) {
-                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                            HtmlUtils.cssClass("ramadda-heading-outer")));
-                    buff.append(HtmlUtils.div(label,
-                            HtmlUtils.cssClass("ramadda-heading")));
-                    buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-                }
-                if (title != null) {
-                    String sub = "";
-                    if (subTitle != null) {
-                        sub = HtmlUtils.div(
-                            subTitle,
-                            HtmlUtils.clazz("ramadda-page-subtitle"));
-                    }
-                    buff.append(HtmlUtils.div(getTitle(title, titleStyle)
-                            + sub, HtmlUtils.cssClass("ramadda-page-title")
-                                   + ((headerStyle == null)
-                                      ? ""
-                                      : HtmlUtils.style(headerStyle))));
-                }
-
-                continue;
-            }
-            if (tline.startsWith("-section")) {
-                buff.append("</div>");
-
-                continue;
-            }
-
-            if (tline.startsWith("+scroll")) {
-                buff.append("\n");
-                HtmlUtils.cssLink(
-                    buff,
-                    handler.getHtdocsUrl("/lib/scrollify/scrollify.css"));
-                HtmlUtils.importJS(
-                    buff,
-                    handler.getHtdocsUrl(
-                        "/lib/scrollify/jquery.scrollify.js"));
-                continue;
-            }
-
-            if (tline.startsWith("-scroll")) {
-                buff.append("\n");
-                inScroll = false;
-                HtmlUtils.importJS(
-                    buff, handler.getHtdocsUrl("/lib/scrollify/template.js"));
-                continue;
-            }
-
-            if (tline.startsWith(":wikip")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 3);
-		String page = toks.get(1).trim();
-		String label = toks.size()>2?toks.get(2).trim():Utils.makeLabel(page);
-		HtmlUtils.href(buff, "https://en.wikipedia.org/wiki/" + page, label);
-		continue;
-	    }
-
-            if (tline.startsWith(":reload")) {
-                String       id   = HtmlUtils.getUniqueId("reload");
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
-                                      > 1)
-                        ? toks.get(1)
-                        : "");
-                String time = Utils.getProperty(props, "seconds", "60");
-                boolean showCbx = Utils.getProperty(props, "showCheckbox",
-                                      true);
-                boolean showLabel = Utils.getProperty(props, "showLabel",
-                                        true);
-                if (showCbx) {
-                    HtmlUtils.checkbox(buff, "", "true", true,
-                                       HtmlUtils.id(id));
-                    buff.append(" ");
-                }
-                HtmlUtils.span(buff, showLabel
-                                     ? ""
-                                     : "Reload", HtmlUtils.id(id + "_label"));
-                //                if (showLabel) {
-                //                    buff.append(" ");
-                //                    HtmlUtils.span(buff, "", HtmlUtils.id(id + "_label"));
-                //                }
-                buff.append(HtmlUtils.script("Utils.initPageReload(" + time
-                                             + ",'" + id + "'," + showLabel
-                                             + ");"));
-
-                continue;
-            }
-
-            if (tline.startsWith(":script")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                HtmlUtils.importJS(buff, toks.get(1));
-
-                continue;
-            }
-
-            if (tline.startsWith("+panel")) {
-                buff.append("\n");
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
-                                      > 1)
-                        ? toks.get(1)
-                        : "");
-                String name  = (String) props.get("name");
-                String style = (String) props.get("style");
-                String color = (String) props.get("color");
-                String extra = "";
-                String clazz = "panel ";
-                if (name != null) {
-                    extra += " data-section-name=\"" + name + "\"  ";
-                }
-                if (style != null) {
-                    extra += HtmlUtils.style(style);
-                }
-                if ( !inScroll) {
-                    clazz += " panel-first ";
-                }
-                if (color != null) {
-                    clazz += " panel-" + color + " ";
-                }
-                buff.append("<section class=\"" + clazz + "\" " + extra
-                            + ">\n");
-                buff.append("<div class=\"panel-inner\">");
-                inScroll = true;
-
-                continue;
-            }
-
-            if (tline.startsWith("-panel")) {
-                buff.append("\n");
-                buff.append("</div></section>");
-
-                continue;
-            }
-
-            if (tline.equals("+info-text")) {
-                buff.append("<div class=\"info-text\">");
-
-                continue;
-            }
-            if (tline.equals("-info-text")) {
-                buff.append("</div>");
-
-                continue;
-            }
-
-            if (tline.startsWith(":title")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                if (toks.size() > 1) {
-                    buff.append(HtmlUtils.div(getTitle(toks.get(1)),
-                            HtmlUtils.cssClass("ramadda-page-title")));
-                }
-
-                continue;
-            }
-
-
-
-            if (tline.startsWith("+frame")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
-                                      > 1)
-                        ? toks.get(1)
-                        : "");
-                String outerClazz = "ramadda-frame-outer";
-                String innerStyle = (String) props.get("innerStyle");
-                if (innerStyle == null) {
-                    innerStyle = "";
-                }
-                String frameStyle = "";
-                if (props.get("shadow") != null) {
-                    outerClazz += " ramadda-frame-shadow ";
-                }
-                String frameSize = (String) props.get("frameSize");
-                if (frameSize != null) {
-                    frameStyle += " padding:" + getSize(frameSize) + ";";
-                }
-                String frameColor = (String) props.get("frameColor");
-                if (frameColor != null) {
-                    frameStyle += " background:" + frameColor + ";";
-                }
-
-                String background = (String) props.get("background");
-                if (background != null) {
-                    innerStyle += " background:" + background + ";";
-                }
-                String title = (String) props.get("title");
-                HtmlUtils.open(buff, "div",
-                               HtmlUtils.cssClass(outerClazz)
-                               + HtmlUtils.style(frameStyle));
-                if (title != null) {
-                    String titleBackground =
-                        (String) props.get("titleBackground");
-                    String titleColor = (String) props.get("titleColor");
-                    String titleStyle = Misc.getProperty(props, "titleStyle",
-                                            "");
-                    if (titleBackground != null) {
-                        titleStyle += "background:" + titleBackground + ";";
-                    }
-                    if (titleColor != null) {
-                        titleStyle += "color:" + titleColor + ";";
-                    }
-                    //              String url = getTitleUrl(false);
-                    //              if(url!=null) 
-                    //                  title = HtmlUtils.href(url, title);
-                    HtmlUtils.div(buff, title,
-                                  HtmlUtils.clazz("ramadda-frame-title")
-                                  + HtmlUtils.style(titleStyle));
-                }
-                HtmlUtils.open(buff, "div",
-                               HtmlUtils.cssClass("ramadda-frame-inner")
-                               + HtmlUtils.style(innerStyle));
-
-                continue;
-            }
-
-
-            if (tline.startsWith("-frame")) {
-                HtmlUtils.close(buff, "div");
-                HtmlUtils.close(buff, "div");
-
-                continue;
-            }
-
-
-
-
-            if (tline.startsWith("+title")) {
-                StringBuilder extra = new StringBuilder();
-                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
-                HtmlUtils.open(buff, "div",
-                               HtmlUtils.cssClass("ramadda-page-title"));
-                String url = getTitleUrl(true);
-                if (url != null) {
-                    closeTheTag = true;
-                    HtmlUtils.open(buff, "a", "href=\"" + url + "\"");
-                }
-
-                continue;
-            }
-
-            if (tline.startsWith("-title")) {
-                if (closeTheTag) {
-                    buff.append("</a>");
-                    closeTheTag = false;
-                }
-                buff.append("</div>");
-
-                continue;
-            }
-
-
-
-            if (tline.startsWith(":button")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
-                String       tag   = toks.get(0).substring(1);
-                String       url   = ((toks.size() > 1)
-                                      ? toks.get(1)
-                                      : "");
-                String       label = ((toks.size() > 2)
-                                      ? toks.get(2)
-                                      : url);
-                List<String> toks2 = StringUtil.splitUpTo(tag, "-", 2);
-                String       clazz = ((toks2.size() > 1)
-                                      ? toks2.get(1)
-                                      : "");
-                if (clazz.length() > 0) {
-                    clazz = "ramadda-button-" + clazz;
-                }
-                HtmlUtils.href(buff, url, label,
-                               " class='ramadda-button " + clazz
-                               + "' role='button' ");
-
-                continue;
-            }
-
-
-
-            if (tline.startsWith("+vertical-center")) {
-                buff.append("\n<div class=\"vertical-center\">\n");
-
-                continue;
-            }
-
-            if (tline.startsWith("-vertical-center")) {
-                buff.append("\n</div>\n");
-
-                continue;
-            }
-
-            if (tline.startsWith("+absolute")) {
-                Hashtable props = lineToProps(tline);
-                String    style = (String) props.get("style");
-                if (style == null) {
-                    style = "";
-                }
-                style += "position:absolute;";
-                for (String side : new String[] { "top", "left", "bottom",
-                        "right" }) {
-                    String sv = (String) props.get(side);
-                    if (sv != null) {
-                        sv = getSize(sv);
-                        if ( !sv.endsWith(";")) {
-                            sv += ";";
+                    style += "position:absolute;";
+                    for (String side : new String[] { "top", "left", "bottom",
+                            "right" }) {
+                        String sv = (String) props.get(side);
+                        if (sv != null) {
+                            sv = getSize(sv);
+                            if ( !sv.endsWith(";")) {
+                                sv += ";";
+                            }
+                            style += side + ":" + sv;
                         }
-                        style += side + ":" + sv;
                     }
+                    HtmlUtils.open(buff, "div", HtmlUtils.style(style));
+
+                    continue;
                 }
-                HtmlUtils.open(buff, "div", HtmlUtils.style(style));
+                if (tline.equals("-absolute")) {
+                    buff.append("</div>\n");
 
-                continue;
-            }
-            if (tline.equals("-absolute")) {
-                buff.append("</div>\n");
+                    continue;
+                }
 
-                continue;
-            }
+                if (tline.equals("+relative")) {
+                    buff.append("<div style=\"position:relative;\">\n");
 
-            if (tline.equals("+relative")) {
-                buff.append("<div style=\"position:relative;\">\n");
+                    continue;
+                }
+                if (tline.equals("-relative")) {
+                    buff.append("</div>\n");
 
-                continue;
-            }
-            if (tline.equals("-relative")) {
-                buff.append("</div>\n");
+                    continue;
+                }
 
-                continue;
-            }
+                if (tline.equals("+centerdiv")) {
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.style("text-align:center;")));
+                    buff.append(
+                        HtmlUtils.open(
+                            HtmlUtils.TAG_DIV,
+                            HtmlUtils.style(
+                                "display:inline-block;text-align:left;")));
 
-            if (tline.equals("+centerdiv")) {
-                buff.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.style("text-align:center;")));
-                buff.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.style(
-                            "display:inline-block;text-align:left;")));
+                    continue;
+                }
 
-                continue;
-            }
+                if (tline.equals("-centerdiv")) {
+                    buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                    buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
-            if (tline.equals("-centerdiv")) {
-                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-
-                continue;
-            }
+                    continue;
+                }
 
 
-            if (tline.equals("+center")) {
-                buff.append("<center>");
+                if (tline.equals("+center")) {
+                    buff.append("<center>");
 
-                continue;
-            }
+                    continue;
+                }
 
-            if (tline.equals("-center")) {
-                buff.append("</center>");
+                if (tline.equals("-center")) {
+                    buff.append("</center>");
 
-                continue;
-            }
+                    continue;
+                }
 
-            if (tline.equals(":br")) {
-                buff.append("<br>");
+                if (tline.equals(":br")) {
+                    buff.append("<br>");
 
-                continue;
-            }
-            if (tline.equals(":p")) {
-                buff.append("<p></p>");
+                    continue;
+                }
+                if (tline.equals(":p")) {
+                    buff.append("<p></p>");
 
-                continue;
-            }
+                    continue;
+                }
 
-            if (tline.startsWith(":b ")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.b((toks.size() > 1)
-                                        ? toks.get(1)
-                                        : ""));
+                if (tline.startsWith(":b ")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    buff.append(HtmlUtils.b((toks.size() > 1)
+                                            ? toks.get(1)
+                                            : ""));
 
-                continue;
-            }
+                    continue;
+                }
 
-            if (tline.startsWith(":h1")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.h1((toks.size() > 1)
-                                         ? toks.get(1)
-                                         : ""));
-
-                continue;
-            }
-
-            if (tline.startsWith(":h2")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.h2((toks.size() > 1)
-                                         ? toks.get(1)
-                                         : ""));
-
-                continue;
-            }
-
-
-
-            if (tline.startsWith(":h3")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.h3((toks.size() > 1)
-                                         ? toks.get(1)
-                                         : ""));
-
-                continue;
-            }
-
-            if (tline.startsWith(":center")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.center((toks.size() > 1)
+                if (tline.startsWith(":h1")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    buff.append(HtmlUtils.h1((toks.size() > 1)
                                              ? toks.get(1)
                                              : ""));
 
-                continue;
-            }
-
-
-            if (tline.startsWith(":link")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
-                String       label = (toks.size() > 2)
-                                     ? toks.get(2)
-                                     : "link";
-                buff.append(HtmlUtils.href(toks.get(1), label));
-
-                continue;
-            }
-
-            if (tline.startsWith(":draft")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-		String label = toks.size()>1?toks.get(1):"Draft";
-		buff.append("<div class=ramadda-draft-container><div class=ramadda-draft>" + label+"</div></div>\n");
-		continue;
-	    }
-
-            if (tline.startsWith(":heading") || tline.startsWith(":block")
-                    || tline.startsWith(":credit")
-                    || tline.startsWith(":note") || tline.startsWith(":box")
-                    || tline.startsWith(":blurb")
-                    || tline.startsWith(":callout")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String       what  = toks.get(0).substring(1);
-                List<String> toks2 = StringUtil.splitUpTo(what, "-", 2);
-                what = toks2.get(0);
-                String clazz = toks.get(0).trim().substring(1);
-                String text  = (toks.size() > 1)
-                               ? toks.get(1)
-                               : "";
-                if ( !clazz.equals(what)) {
-                    clazz = "ramadda-" + what + "  ramadda-" + clazz;
-                } else {
-                    clazz = "ramadda-" + what;
+                    continue;
                 }
-                buff.append(
-                    HtmlUtils.div(
-                        HtmlUtils.div(text, HtmlUtils.cssClass(clazz)),
-                        HtmlUtils.cssClass("ramadda-" + what + "-outer")));
 
-                continue;
-            }
-
-            if (tline.startsWith("+flow")) {
-                buff.append(
-                    HtmlUtils.open(
-                        HtmlUtils.TAG_DIV,
-                        HtmlUtils.style(
-                            "display:inline-block;vertical-align:top;")));
-
-                continue;
-            }
-
-            if (tline.startsWith("-flow")) {
-                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-
-                continue;
-            }
-
-            if (tline.startsWith("+mini") || tline.startsWith("+block")
-                    || tline.startsWith("+note") || tline.startsWith("+box")
-                    || tline.startsWith("+heading")
-                    || tline.startsWith("+blurb")
-                    || tline.startsWith("+callout")) {
-                List<String>  toks      = StringUtil.splitUpTo(tline, " ", 2);
-                String        tag       = toks.get(0).substring(1);
-                //box-green
-
-                List<String>  toks2     = StringUtil.splitUpTo(tag, "-", 2);
-                String        what      = toks2.get(0);
-                //box
-
-                String        remainder = ((toks2.size() > 1)
-                                           ? toks2.get(1)
-                                           : "");
-                //green
-
-                StringBuilder extra     = new StringBuilder();
-                String        style     = getAttribute(tline, "style");
-                if (style != null) {
-                    extra.append(HtmlUtils.style(style));
-                }
-                extra.append(" class=\"ramadda-block ramadda-");
-                extra.append(what);
-                extra.append(" ");
-                if (remainder.length() > 0) {
-                    extra.append("ramadda-");
-                    extra.append(tag);
-                    extra.append(" ");
-                }
-                extra.append(getAttribute(tline, "class", ""));
-                extra.append(" \" ");
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.cssClass("ramadda-"
-                                               + what + "-outer")));
-                buff.append(HtmlUtils.open("div", extra.toString()));
-
-                continue;
-            }
-
-            if (tline.startsWith("-mini") || tline.startsWith("-block")
-                    || tline.startsWith("-heading")
-                    || tline.startsWith("-note") || tline.startsWith("-box")
-                    || tline.startsWith("-blurb")
-                    || tline.startsWith("-callout")) {
-                buff.append("</div></div>");
-
-                continue;
-            }
-
-
-            if (tline.startsWith("+row")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
-                                      > 1)
-                        ? toks.get(1)
-                        : "");
-                rowStates.add(new RowState(buff, props));
-
-                continue;
-            }
-            if (tline.equals("-row")) {
-                if (rowStates.size() == 0) {
-                    wikiError(buff, "Error: unopened row");
+                if (tline.startsWith(":h2")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    buff.append(HtmlUtils.h2((toks.size() > 1)
+                                             ? toks.get(1)
+                                             : ""));
 
                     continue;
                 }
-                RowState rowState = rowStates.get(rowStates.size() - 1);
-                rowState.closeRow(buff);
-                rowStates.remove(rowStates.size() - 1);
 
-                continue;
-            }
 
-            if (tline.startsWith(":comment")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                if (toks.size() > 1) {
-                    HtmlUtils.comment(buff, toks.get(1));
+
+                if (tline.startsWith(":h3")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    buff.append(HtmlUtils.h3((toks.size() > 1)
+                                             ? toks.get(1)
+                                             : ""));
+
+                    continue;
                 }
 
-                continue;
-            }
+                if (tline.startsWith(":center")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    buff.append(HtmlUtils.center((toks.size() > 1)
+                            ? toks.get(1)
+                            : ""));
 
-            if (tline.startsWith(":rem")) {
-                continue;
-            }
-
-            if (tline.startsWith(":pad")) {
-                List<String> toks   = StringUtil.splitUpTo(tline, " ", 2);
-                String       height = "100px";
-                if (toks.size() > 1) {
-                    height = toks.get(1);
-                }
-                HtmlUtils.div(buff, "", HtmlUtils.style("height:" + height));
-
-                continue;
-            }
-            if (tline.startsWith(":col-")) {
-                RowState rowState = null;
-                if (rowStates.size() == 0) {
-                    //Add a row if we're not in one
-                    rowStates.add(rowState = new RowState(buff, null));
-                } else {
-                    rowState = rowStates.get(rowStates.size() - 1);
+                    continue;
                 }
 
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String       clazz = toks.get(0).substring(1);
-                if (clazz.matches("col-[0-9]+")) {
-                    clazz = clazz.replace("col-", "col-md-");
-                }
-                String contents = "";
-                if (toks.size() > 1) {
-                    contents = toks.get(1);
-                }
-                rowState.openColumn(buff,
-                                    HtmlUtils.cssClass(clazz
-                                        + " ramadda-col wiki-col"));
-                buff.append(contents);
-                rowState.closeColumn(buff);
 
-                continue;
-            }
+                if (tline.startsWith(":link")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                    String       label = (toks.size() > 2)
+                                         ? toks.get(2)
+                                         : "link";
+                    buff.append(HtmlUtils.href(toks.get(1), label));
 
-            if (tline.startsWith("+col-")) {
-                RowState rowState = null;
-                if (rowStates.size() == 0) {
-                    //Add a row if we're not in one
-                    rowStates.add(rowState = new RowState(buff, null));
-                } else {
-                    rowState = rowStates.get(rowStates.size() - 1);
+                    continue;
                 }
-                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
-                StringBuilder extra = new StringBuilder();
-                String        clazz = toks.get(0).substring(1);
-                if (toks.size() > 1) {
-                    String attrs = toks.get(1);
-                    String style = getAttribute(attrs, "style");
+
+                if (tline.startsWith(":draft")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    String       label = (toks.size() > 1)
+                                         ? toks.get(1)
+                                         : "Draft";
+                    buff.append(
+                        "<div class=ramadda-draft-container><div class=ramadda-draft>"
+                        + label + "</div></div>\n");
+
+                    continue;
+                }
+
+                if (tline.startsWith(":heading")
+                        || tline.startsWith(":block")
+                        || tline.startsWith(":credit")
+                        || tline.startsWith(":note")
+                        || tline.startsWith(":box")
+                        || tline.startsWith(":blurb")
+                        || tline.startsWith(":callout")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    String       what  = toks.get(0).substring(1);
+                    List<String> toks2 = StringUtil.splitUpTo(what, "-", 2);
+                    what = toks2.get(0);
+                    String clazz = toks.get(0).trim().substring(1);
+                    String blob  = (toks.size() > 1)
+                                   ? toks.get(1)
+                                   : "";
+                    if ( !clazz.equals(what)) {
+                        clazz = "ramadda-" + what + "  ramadda-" + clazz;
+                    } else {
+                        clazz = "ramadda-" + what;
+                    }
+                    buff.append(
+                        HtmlUtils.div(
+                            HtmlUtils.div(blob, HtmlUtils.cssClass(clazz)),
+                            HtmlUtils.cssClass(
+                                "ramadda-" + what + "-outer")));
+
+                    continue;
+                }
+
+                if (tline.startsWith("+flow")) {
+                    buff.append(
+                        HtmlUtils.open(
+                            HtmlUtils.TAG_DIV,
+                            HtmlUtils.style(
+                                "display:inline-block;vertical-align:top;")));
+
+                    continue;
+                }
+
+                if (tline.startsWith("-flow")) {
+                    buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
+                    continue;
+                }
+
+                if (tline.startsWith("+mini") || tline.startsWith("+block")
+                        || tline.startsWith("+note")
+                        || tline.startsWith("+box")
+                        || tline.startsWith("+heading")
+                        || tline.startsWith("+blurb")
+                        || tline.startsWith("+callout")) {
+                    List<String>  toks = StringUtil.splitUpTo(tline, " ", 2);
+                    String        tag       = toks.get(0).substring(1);
+                    //box-green
+
+                    List<String>  toks2 = StringUtil.splitUpTo(tag, "-", 2);
+                    String        what      = toks2.get(0);
+                    //box
+
+                    String        remainder = ((toks2.size() > 1)
+                            ? toks2.get(1)
+                            : "");
+                    //green
+
+                    StringBuilder extra     = new StringBuilder();
+                    String        style     = getAttribute(tline, "style");
                     if (style != null) {
                         extra.append(HtmlUtils.style(style));
                     }
-                    clazz = clazz + " " + getAttribute(attrs, "class", "");
-                }
-                if (clazz.matches("col-[0-9]+")) {
-                    clazz = clazz.replace("col-", "col-md-");
-                }
-                rowState.openColumn(buff,
-                                    HtmlUtils.cssClass(clazz
-                                        + " ramadda-col wiki-col") + extra);
-
-                continue;
-            }
-
-            if (tline.startsWith("-col")) {
-                if (rowStates.size() == 0) {
-                    wikiError(buff, "Error: unopened column");
+                    extra.append(" class=\"ramadda-block ramadda-");
+                    extra.append(what);
+                    extra.append(" ");
+                    if (remainder.length() > 0) {
+                        extra.append("ramadda-");
+                        extra.append(tag);
+                        extra.append(" ");
+                    }
+                    extra.append(getAttribute(tline, "class", ""));
+                    extra.append(" \" ");
+                    buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass("ramadda-" + what
+                                + "-outer")));
+                    buff.append(HtmlUtils.open("div", extra.toString()));
 
                     continue;
                 }
-                rowStates.get(rowStates.size() - 1).closeColumn(buff);
 
-                continue;
-            }
+                if (tline.startsWith("-mini") || tline.startsWith("-block")
+                        || tline.startsWith("-heading")
+                        || tline.startsWith("-note")
+                        || tline.startsWith("-box")
+                        || tline.startsWith("-blurb")
+                        || tline.startsWith("-callout")) {
+                    buff.append("</div></div>");
 
-            if (tline.equals("----")) {
-                buff.append("<hr class=\"ramadda-hr\">\n");
-
-                continue;
-            }
-
-
-            int starCnt = 0;
-            while (tline.startsWith("*")) {
-                tline = tline.substring(1);
-                starCnt++;
-            }
-            if (starCnt > 0) {
-                if (starCnt > ulCnt) {
-                    while (starCnt > ulCnt) {
-                        buff.append("<ul>\n");
-                        ulCnt++;
-                    }
-                } else {
-                    while ((starCnt < ulCnt) && (ulCnt > 0)) {
-                        buff.append("</ul>\n");
-                        ulCnt--;
-                    }
+                    continue;
                 }
-                buff.append("<li> ");
-                buff.append(tline);
-                buff.append("</li> ");
-                buff.append("\n");
 
-                continue;
-            }
-            while (ulCnt > 0) {
-                buff.append("</ul>\n");
-                ulCnt--;
-            }
 
-            int hashCnt = 0;
-            //Check if this is a commented attribute inside a tag
-            while (tline.startsWith("#") && (tline.indexOf("=") < 0)) {
-                tline = tline.substring(1);
-                hashCnt++;
-            }
-            if (hashCnt > 0) {
-                if (hashCnt > olCnt) {
-                    while (hashCnt > olCnt) {
-                        buff.append("<ol>\n");
-                        olCnt++;
-                    }
-                } else {
-                    while ((hashCnt < olCnt) && (olCnt > 0)) {
-                        buff.append("</ol>\n");
-                        olCnt--;
-                    }
+                if (tline.startsWith("+row")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    Hashtable props =
+                        HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+                    rowStates.add(new RowState(buff, props));
+
+                    continue;
                 }
-                buff.append("<li> ");
-                buff.append(tline);
+                if (tline.equals("-row")) {
+                    if (rowStates.size() == 0) {
+                        wikiError(buff, "Error: unopened row");
+
+                        continue;
+                    }
+                    RowState rowState = rowStates.get(rowStates.size() - 1);
+                    rowState.closeRow(buff);
+                    rowStates.remove(rowStates.size() - 1);
+
+                    continue;
+                }
+
+                if (tline.startsWith(":comment")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    if (toks.size() > 1) {
+                        HtmlUtils.comment(buff, toks.get(1));
+                    }
+
+                    continue;
+                }
+
+                if (tline.startsWith(":rem")) {
+                    continue;
+                }
+
+                if (tline.startsWith(":pad")) {
+                    List<String> toks   = StringUtil.splitUpTo(tline, " ", 2);
+                    String       height = "100px";
+                    if (toks.size() > 1) {
+                        height = toks.get(1);
+                    }
+                    HtmlUtils.div(buff, "",
+                                  HtmlUtils.style("height:" + height));
+
+                    continue;
+                }
+                if (tline.startsWith(":col-")) {
+                    RowState rowState = null;
+                    if (rowStates.size() == 0) {
+                        //Add a row if we're not in one
+                        rowStates.add(rowState = new RowState(buff, null));
+                    } else {
+                        rowState = rowStates.get(rowStates.size() - 1);
+                    }
+
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    String       clazz = toks.get(0).substring(1);
+                    if (clazz.matches("col-[0-9]+")) {
+                        clazz = clazz.replace("col-", "col-md-");
+                    }
+                    String contents = "";
+                    if (toks.size() > 1) {
+                        contents = toks.get(1);
+                    }
+                    rowState.openColumn(buff,
+                                        HtmlUtils.cssClass(clazz
+                                            + " ramadda-col wiki-col"));
+                    buff.append(contents);
+                    rowState.closeColumn(buff);
+
+                    continue;
+                }
+
+                if (tline.startsWith("+col-")) {
+                    RowState rowState = null;
+                    if (rowStates.size() == 0) {
+                        //Add a row if we're not in one
+                        rowStates.add(rowState = new RowState(buff, null));
+                    } else {
+                        rowState = rowStates.get(rowStates.size() - 1);
+                    }
+                    List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    StringBuilder extra = new StringBuilder();
+                    String        clazz = toks.get(0).substring(1);
+                    if (toks.size() > 1) {
+                        String attrs = toks.get(1);
+                        String style = getAttribute(attrs, "style");
+                        if (style != null) {
+                            extra.append(HtmlUtils.style(style));
+                        }
+                        clazz = clazz + " "
+                                + getAttribute(attrs, "class", "");
+                    }
+                    if (clazz.matches("col-[0-9]+")) {
+                        clazz = clazz.replace("col-", "col-md-");
+                    }
+                    rowState.openColumn(buff, HtmlUtils.cssClass(clazz
+                            + " ramadda-col wiki-col") + extra);
+
+                    continue;
+                }
+
+                if (tline.startsWith("-col")) {
+                    if (rowStates.size() == 0) {
+                        wikiError(buff, "Error: unopened column");
+
+                        continue;
+                    }
+                    rowStates.get(rowStates.size() - 1).closeColumn(buff);
+
+                    continue;
+                }
+
+                if (tline.equals("----")) {
+                    buff.append("<hr class=\"ramadda-hr\">\n");
+
+                    continue;
+                }
+
+
+                int starCnt = 0;
+                while (tline.startsWith("*")) {
+                    tline = tline.substring(1);
+                    starCnt++;
+                }
+                if (starCnt > 0) {
+                    if (starCnt > ulCnt) {
+                        while (starCnt > ulCnt) {
+                            buff.append("<ul>\n");
+                            ulCnt++;
+                        }
+                    } else {
+                        while ((starCnt < ulCnt) && (ulCnt > 0)) {
+                            buff.append("</ul>\n");
+                            ulCnt--;
+                        }
+                    }
+                    buff.append("<li> ");
+                    buff.append(tline);
+                    buff.append("</li> ");
+                    buff.append("\n");
+
+                    continue;
+                }
+                while (ulCnt > 0) {
+                    buff.append("</ul>\n");
+                    ulCnt--;
+                }
+
+                int hashCnt = 0;
+                //Check if this is a commented attribute inside a tag
+                while (tline.startsWith("#") && (tline.indexOf("=") < 0)) {
+                    tline = tline.substring(1);
+                    hashCnt++;
+                }
+                if (hashCnt > 0) {
+                    if (hashCnt > olCnt) {
+                        while (hashCnt > olCnt) {
+                            buff.append("<ol>\n");
+                            olCnt++;
+                        }
+                    } else {
+                        while ((hashCnt < olCnt) && (olCnt > 0)) {
+                            buff.append("</ol>\n");
+                            olCnt--;
+                        }
+                    }
+                    buff.append("<li> ");
+                    buff.append(tline);
+                    buff.append("\n");
+
+                    continue;
+                }
+
+                while (olCnt > 0) {
+                    buff.append("</ol>\n");
+                    olCnt--;
+                }
+
+                buff.append(line);
                 buff.append("\n");
-
-                continue;
             }
-
-            while (olCnt > 0) {
-                buff.append("</ol>\n");
-                olCnt--;
-            }
-
-            buff.append(line);
-            buff.append("\n");
         }
 
 
+
+        //end of processing
         while (ulCnt > 0) {
             buff.append("</ul>\n");
             ulCnt--;
@@ -2388,7 +2251,8 @@ public class WikiUtil {
         if (js.length() > 0) {
             HtmlUtils.script(buff, js.toString());
         }
-        s = buff.toString();
+
+        String s = buff.toString();
         for (int i = 0; i < allTabStates.size(); i++) {
             TabState tabInfo = allTabStates.get(i);
             s = s.replace("${" + tabInfo.id + "}", tabInfo.title.toString());
@@ -2426,11 +2290,14 @@ public class WikiUtil {
             } else if (property.equals(PROP_NOP)) {
                 replaceNewlineWithP = false;
             } else if (property.startsWith("wikip ")) {
-		//the wikipedia link
-                List<String> toks = StringUtil.splitUpTo(property, " ", 3);
-		String page = toks.get(1).trim();
-		String label = toks.size()>2?toks.get(2).trim():Utils.makeLabel(page);
-		HtmlUtils.href(sb, "https://en.wikipedia.org/wiki/" + page, label);
+                //the wikipedia link
+                List<String> toks  = StringUtil.splitUpTo(property, " ", 3);
+                String       page  = toks.get(1).trim();
+                String       label = (toks.size() > 2)
+                                     ? toks.get(2).trim()
+                                     : Utils.makeLabel(page);
+                HtmlUtils.href(sb, "https://en.wikipedia.org/wiki/" + page,
+                               label);
             } else if (property.equals(PROP_DOP)) {
                 replaceNewlineWithP = true;
             } else {
@@ -2599,6 +2466,17 @@ public class WikiUtil {
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public String[] getNotTags() {
+        return notTags;
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param label _more_
      *
      * @return _more_
@@ -2654,6 +2532,238 @@ public class WikiUtil {
     /**
      * _more_
      *
+     * @param buff _more_
+     * @param tline _more_
+     */
+    private void handleEmbed(Appendable buff, String tline) {
+        try {
+            handleEmbedInner(buff, tline);
+        } catch (Exception exc) {
+            wikiError(buff, "Error handling embed:" + tline + "<br>" + exc);
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param buff _more_
+     * @param tline _more_
+     *
+     * @throws Exception _more_
+     */
+    private void handleEmbedInner(Appendable buff, String tline)
+            throws Exception {
+
+        tline = tline.substring(2);
+        if ( !tline.endsWith(")")) {
+            HtmlUtils.div(buff, "Could not process embed line:" + tline, "");
+
+            return;
+        }
+        tline = tline.substring(0, tline.length() - 1).trim();
+        Hashtable props = lineToProps(tline);
+        int       index = tline.indexOf(" ");
+        if (index >= 0) {
+            tline = tline.substring(0, index);
+        }
+        String        url    = tline;
+        boolean       link   = Utils.getProperty(props, "link", false);
+        String        label  = Utils.getProperty(props, "label", null);
+        String        width  = Utils.getProperty(props, "width", "640");
+        String        height = Utils.getProperty(props, "height", "390");
+        String        style  = Utils.getProperty(props, "style", null);
+        StringBuilder sb     = new StringBuilder();
+        if (tline.indexOf("youtube") >= 0) {
+            String id = Utils.getYoutubeID(url);
+            if (id == null) {
+                HtmlUtils.div(buff, "Could not extract ID:" + tline, "");
+
+                return;
+            }
+            String playerId = "video_" + (HtmlUtils.blockCnt++);
+            String embedUrl = "//www.youtube.com/embed/" + id;
+            embedUrl += "?enablejsapi=1";
+            String start = Utils.getProperty(props, "start", null);
+            if (start != null) {
+                embedUrl += "&start=" + start;
+            }
+            String end = Utils.getProperty(props, "end", null);
+            if (end != null) {
+                embedUrl += "&end=" + end;
+            }
+            //      embedUrl += "&autoplay=" + (autoPlay                                        ? 1                                     : 0);
+            embedUrl += "&playerapiid=" + playerId;
+
+
+            HtmlUtils.tag(sb, "iframe",
+                          HtmlUtils.attrs("src", embedUrl, "id", "ytplayer",
+                                          "type", "text/html", "frameborder",
+                                          "0", "width", width, "height",
+                                          height), "");
+        } else if (url.indexOf("vimeo.com") >= 0) {
+            //https://vimeo.com/515404225
+            String vimeoId = StringUtil.findPattern(url, "vimeo.com/(\\d+)");
+            if (vimeoId != null) {
+                HtmlUtils.tag(
+                    sb, "iframe",
+                    HtmlUtils.attrs(
+                        "src", "https://player.vimeo.com/video/" + vimeoId,
+                        "width", width, "height",
+                        height) + " frameborder='0' allow='autoplay; fullscreen; picture-in-picture' allowfullscreen", "");
+            } else {
+                sb.append("Bad vimeo url:" + url);
+            }
+        } else if (Pattern.matches("https://twitter.com/.*/status/\\d+",
+                                   url)) {
+            String json =
+                IO.readUrl(new URL("https://publish.twitter.com/oembed?url="
+                                   + url));
+            JSONObject obj = new JSONObject(new JSONTokener(json));
+            if ( !obj.has("html")) {
+                buff.append("Bad Twitter return" + HtmlUtils.pre(json));
+
+                return;
+            }
+            String html = obj.getString("html");
+            buff.append(html);
+        } else if (Pattern.matches("https://www.facebook.com/.*/posts/\\d+",
+                                   url)) {
+            if (getProperty("embedfacebook") == null) {
+                putProperty("embedfacebook", "true");
+                //This is the RAMADDA app id
+                buff.append(
+                    "<div id='fb-root'></div><script async defer crossorigin='anonymous' src='https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0&appId=53108697449' nonce='bNyUnLLe'></script>");
+            }
+            width = Utils.getProperty(props, "width", "500");
+            buff.append("<div class='fb-post' data-href='" + url
+                        + "' data-width='" + width
+                        + "' data-show-text='true'></div>");
+        } else {
+            buff.append(HtmlUtils.href(url, (label != null)
+                                            ? label
+                                            : url));
+
+            return;
+        }
+        if ( !link && (label != null)) {
+            sb = new StringBuilder(HtmlUtils.div(link + "<br>" + sb,
+                    "style=display-inline:block;"));
+        }
+        if (link) {
+            sb = new StringBuilder(HtmlUtils.div(sb + "<br>"
+                    + HtmlUtils.href(url, (label != null)
+                                          ? label
+                                          : url), "style=display:inline-block;"));
+        }
+        if (style != null) {
+            sb = new StringBuilder(HtmlUtils.div(sb.toString(),
+                    HtmlUtils.style("display:inline-block;" + style)));
+        }
+        buff.append(sb);
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param chunk _more_
+     * @param handler _more_
+     *
+     * @throws IOException _more_
+     */
+    public void handleVega(Appendable sb, Chunk chunk,
+                           WikiPageHandler handler)
+            throws IOException {
+        if (getProperty("vegaimport") == null) {
+            putProperty("vegaimport", "true");
+            sb.append("\n");
+            sb.append(
+                "<script src='https://cdn.jsdelivr.net/npm/vega@5'></script>\n");
+            sb.append(
+                "<script src='https://cdn.jsdelivr.net/npm/vega-lite@4'></script>\n");
+            sb.append(
+                "<script src='https://cdn.jsdelivr.net/npm/vega-embed@6'></script>\n");
+        }
+        String id     = "vegablock_" + HtmlUtils.blockCnt++;
+        String jsonId = "vegaJson" + HtmlUtils.blockCnt++;
+        String viewId = "vegaView" + HtmlUtils.blockCnt++;
+        sb.append("\n");
+        HtmlUtils.div(sb, "", "id=" + id);
+        sb.append("\n");
+        StringBuilder js = new StringBuilder();
+        js.append("\n//Generated vega code\n");
+        js.append("\nvar " + jsonId + "=" + chunk.chunk + "\n");
+        js.append("var " + viewId + ";\n");
+        js.append("vegaEmbed('#" + id + "', " + jsonId + ");\n");
+        js.append("//Done generated vega code\n");
+        HtmlUtils.script(sb, js.toString());
+    }
+
+    /**
+     * _more_
+     *
+     * @param mainBuffer _more_
+     * @param chunk _more_
+     * @param handler _more_
+     *
+     * @throws IOException _more_
+     */
+    public void handleCode(Appendable sb, Chunk chunk,
+                           WikiPageHandler handler)
+            throws IOException {
+        if (chunk.rest.equals("vega-lite")) {
+            handleVega(sb, chunk, handler);
+            return;
+        }
+	if(chunk.rest.equals("javascript")) {
+	    sb.append(HtmlUtils.cssLink(handler.getHtdocsUrl("/lib/prettify/prettify.css")));
+	    sb.append(HtmlUtils.importJS(handler.getHtdocsUrl("/lib/prettify/prettify.js")));
+	    String id = "javascript" + HtmlUtils.blockCnt++;
+	    sb.append("<pre class=\"prettyprint\">\n");
+	    int cnt = 0;
+	    for (String line:chunk.chunk.toString().split("\n")) {
+		cnt++;
+		line = line.replace("\r", "");
+		line = HtmlUtils.entityEncode(line);
+		sb.append("<span class=nocode><a "
+			  + HtmlUtils.attr("name", "line" + cnt)
+			  + "></a><a href=#line" + cnt + ">" + cnt
+			  + "</a></span>" + HtmlUtils.space(1) + line + "<br>");
+	    }
+	    sb.append("</pre>\n");
+	    sb.append(HtmlUtils.script("prettyPrint();"));
+	    return;
+	}
+        HtmlUtils.pre(sb,
+                      "CODE:" + chunk.rest + "\n" + chunk.chunk.toString());
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    private String getSize(String s) {
+        if (s == null) {
+            return null;
+        }
+        if (s.endsWith("%") || s.endsWith("px")) {
+            return s;
+        }
+
+        return s + "px";
+    }
+
+
+    /**
+     * _more_
+     *
      * @param line _more_
      * @param attr _more_
      *
@@ -2696,6 +2806,24 @@ public class WikiUtil {
     public String getWikiVariable(String key) {
         return (String) myVars.get(key);
     }
+
+    /**
+     * _more_
+     *
+     * @param tline _more_
+     *
+     * @return _more_
+     */
+    private Hashtable lineToProps(String tline) {
+        List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+        Hashtable    props = HtmlUtils.parseHtmlProperties((toks.size() > 1)
+                ? toks.get(1)
+                : "");
+
+        return props;
+    }
+
+
 
     /**
      * _more_
@@ -2749,6 +2877,18 @@ public class WikiUtil {
      * @param args _more_
      */
     public static void main(String[] args) {
+        String s =
+            "\nhello there\n```vega\ncode block\nmore code\n```\n<nowiki>NOWIKI1\nNO WIKI2\n</nowiki>\nmore text\nand more text\n```\nmore code\n```\n";
+        System.err.println(Utils.join(Chunk.splitText(s), "", false));
+
+
+
+        //      String  p = "^```.*?\\[^```";   
+        //      String s = "hello [asds] there\n```\n;
+
+        /*
+
+
         String s = "";
         String s1 =
             "hello there how are you ''''contents '''' and how are you";
@@ -2771,7 +2911,7 @@ public class WikiUtil {
         long tt2 = System.currentTimeMillis();
         Utils.printTimes("t2:", tt1, tt2);
 
-
+        */
     }
 
     /**
@@ -3127,5 +3267,249 @@ public class WikiUtil {
 
 
     }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Feb 25, '21
+     * @author         Enter your name here...
+     */
+    private static class Chunk {
+
+        /** _more_ */
+        static int TYPE = 0;
+
+        /** _more_ */
+        static int TYPE_WIKI = TYPE++;
+
+        /** _more_ */
+        static int TYPE_CODE = TYPE++;
+
+        /** _more_ */
+        static int TYPE_NOWIKI = TYPE++;
+
+        /** _more_ */
+        static int TYPE_CSS = TYPE++;
+
+        /** _more_ */
+        static int TYPE_JS = TYPE++;
+
+        /** _more_ */
+        static int TYPE_PRE = TYPE++;
+
+
+        /** _more_ */
+        int type;
+
+        /** _more_ */
+        StringBuilder chunk = new StringBuilder();
+
+        /** _more_ */
+        String rest;
+
+        /**
+         * _more_
+         *
+         * @param type _more_
+         */
+        Chunk(int type) {
+            this.type = type;
+        }
+
+        /**
+         * _more_
+         *
+         * @param type _more_
+         * @param rest _more_
+         */
+        Chunk(int type, String rest) {
+            this(type);
+            this.rest = rest.trim();
+        }
+
+        /**
+         * _more_
+         *
+         * @param line _more_
+         */
+        public void append(String line) {
+            chunk.append(line);
+            chunk.append("\n");
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        private String getCodeName() {
+            if (type == TYPE_WIKI) {
+                return "WIKI";
+            }
+            if (type == TYPE_CODE) {
+                return "CODE";
+            }
+            if (type == TYPE_CSS) {
+                return "CSS";
+            }
+            if (type == TYPE_JS) {
+                return "JS";
+            }
+            if (type == TYPE_PRE) {
+                return "PRE";
+            }
+
+            return "NOWIKI";
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public String toString() {
+            return "chunk:" + getCodeName() + " text:"
+                   + chunk.toString().replaceAll("\n", "_NL_") + "\n";
+        }
+
+        /**
+         * _more_
+         *
+         * @param s _more_
+         *
+         * @return _more_
+         */
+        public static List<Chunk> splitText(String s) {
+            List<Chunk> chunks = new ArrayList<Chunk>();
+            String[]    lines  = s.split("\n");
+            Chunk       chunk  = null;
+            String[] prefixes = new String[] { "<nowiki>", "+css",
+                    "+javascript", "+pre", "<pre>" };
+            String[] suffixes = new String[] { "</nowiki>", "-css",
+                    "-javascript", "-pre", "</pre>" };
+            int[] codes = new int[] { TYPE_NOWIKI, TYPE_CSS, TYPE_JS,
+                                      TYPE_PRE, TYPE_PRE };
+
+            for (String line : lines) {
+                if (line.startsWith("```")) {
+                    if ((chunk == null) || (chunk.type != Chunk.TYPE_CODE)) {
+                        //open
+                        chunks.add(chunk = new Chunk(Chunk.TYPE_CODE,
+                                line.substring(3)));
+                    } else {
+                        //close
+                        chunk = null;
+                    }
+
+                    continue;
+                }
+                boolean matched = false;
+                for (int i = 0; (i < prefixes.length) && !matched; i++) {
+                    if (line.startsWith(prefixes[i])) {
+                        int code = codes[i];
+                        if ((chunk == null) || (chunk.type != code)) {
+                            //open
+                            chunks.add(chunk = new Chunk(code));
+                            String rest =
+                                line.substring(prefixes[i].length()).trim();
+                            if (rest.length() > 0) {
+                                chunk.append(rest);
+                            }
+                        }
+                        matched = true;
+                    }
+                }
+                if (matched) {
+                    continue;
+                }
+                matched = false;
+
+                for (String suffix : suffixes) {
+                    if (line.startsWith(suffix)) {
+                        chunk   = null;
+                        matched = true;
+
+                        break;
+                    }
+                }
+                if (matched) {
+                    continue;
+                }
+
+
+
+                if (chunk == null) {
+                    chunks.add(chunk = new Chunk(Chunk.TYPE_WIKI));
+                }
+                chunk.append(line);
+            }
+
+            return chunks;
+        }
+
+
+
+    }
+
+
+    /**
+     * WikiPageHandler _more_
+     *
+     *
+     * @author IDV Development Team
+     * @version $Revision: 1.3 $
+     */
+    public static interface WikiPageHandler {
+
+        /**
+         * _more_
+         *
+         * @param path _more_
+         *
+         * @return _more_
+         */
+        public String getHtdocsUrl(String path);
+
+        /**
+         * _more_
+         *
+         * @param wikiUtil _more_
+         * @param name _more_
+         * @param label _more_
+         *
+         * @return _more_
+         */
+        public String getWikiLink(WikiUtil wikiUtil, String name,
+                                  String label);
+
+
+        /**
+         * _more_
+         *
+         * @param wikiUtil _more_
+         * @param image _more_
+         * @param props _more_
+         *
+         * @return _more_
+         */
+        public String getWikiImageUrl(WikiUtil wikiUtil, String image,
+                                      Hashtable props);
+
+        /**
+         * _more_
+         *
+         * @param wikiUtil _more_
+         * @param property _more_
+         * @param notTags _more_
+         *
+         * @return _more_
+         */
+        public String getWikiPropertyValue(WikiUtil wikiUtil,
+                                           String property, String[] notTags);
+    }
+
+
 
 }
