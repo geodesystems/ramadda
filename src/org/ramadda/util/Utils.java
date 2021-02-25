@@ -3848,7 +3848,6 @@ public class Utils extends IO {
 
     /**
      * _more_
-     *
      * @param l _more_
      * @param prefix _more_
      * @param suffix _more_
@@ -4066,5 +4065,26 @@ public class Utils extends IO {
 
         return plural(hours, "hour") + " " + plural(rem, "minute");
     }
+
+
+
+    public static String getYoutubeID(String url) {
+	String id = StringUtil.findPattern(url, "v=([^&]+)&");
+        if (id == null) {
+            id = StringUtil.findPattern(url, "v=([^&]+)");
+        }
+        if (id == null) {
+            id = StringUtil.findPattern(url, "youtu.be/([^&]+)");
+        }
+
+        if (id == null) {
+            id = StringUtil.findPattern(url, ".*/watch/([^&/]+)");
+        }
+        if (id == null) {
+            id = StringUtil.findPattern(url, ".*/v/([^&/]+)");
+        }
+	return id;
+    }
+
 
 }
