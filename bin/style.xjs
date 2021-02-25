@@ -2936,7 +2936,7 @@
     <object class="jindent.settings.NumberSetting">
      <string>cpp.blankLinesBeforeContinueStatements</string>
      <void property="value">
-      <int>1</int>
+      <int>0</int>
      </void>
     </object>
    </void>
@@ -5431,7 +5431,7 @@
     <object class="jindent.settings.NumberSetting">
      <string>java.blankLinesBeforeContinueStatements</string>
      <void property="value">
-      <int>1</int>
+      <int>0</int>
      </void>
     </object>
    </void>
