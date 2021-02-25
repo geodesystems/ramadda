@@ -596,6 +596,28 @@ public class IO {
      *
      * @throws Exception _more_
      */
+    public static String readUrl(URL url) throws Exception {
+        String u = url.toString();
+        if ( !u.startsWith("http:") && !u.startsWith("https:")) {
+            throw new IllegalArgumentException("Bad URL:" + u);
+        }
+        InputStream is = getInputStream(url);
+        String      s  = IOUtil.readContents(is);
+        IOUtil.close(is);
+
+        return s;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public static InputStream getInputStream(URL url) throws Exception {
         return getInputStream(url, 0);
     }
