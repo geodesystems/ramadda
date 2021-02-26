@@ -20,6 +20,7 @@ package org.ramadda.util;
 import org.json.*;
 
 
+
 import org.ramadda.util.HtmlUtils;
 
 import ucar.unidata.util.Misc;
@@ -121,6 +122,9 @@ public class WikiUtil {
 
     /** _more_ */
     private String[] notTags;
+
+
+    private WikiPageHandler handler;
 
 
     /**
@@ -409,10 +413,12 @@ public class WikiUtil {
      * @return _more_
      */
     public String wikify(String text, WikiPageHandler handler) {
+	this.handler = handler;
         return wikify(text, handler, null);
     }
 
 
+    
     /**
      * _more_
      *
@@ -427,6 +433,7 @@ public class WikiUtil {
         try {
             this.notTags = notTags;
             StringBuffer mainBuffer = new StringBuffer();
+	    this.handler = handler;
             wikify(mainBuffer, text, handler, notTags);
 
             return mainBuffer.toString();
@@ -435,6 +442,9 @@ public class WikiUtil {
         }
     }
 
+    public WikiPageHandler getHandler() {
+	return handler;
+    }
 
 
     /**
@@ -2673,11 +2683,12 @@ public class WikiUtil {
      *
      * @throws IOException _more_
      */
-    public void handleVega(Appendable sb, Chunk chunk,
+    public void handleVega(Appendable sb, String chunk,
                            WikiPageHandler handler)
             throws IOException {
-        if (getProperty("vegaimport") == null) {
-            putProperty("vegaimport", "true");
+        boolean addResources = getProperty("vegaimport") == null;
+	if(!addResources)     putProperty("vegaimport", "true");
+        if (addResources) {
             sb.append("\n");
             sb.append(
                 "<script src='https://cdn.jsdelivr.net/npm/vega@5'></script>\n");
@@ -2694,7 +2705,7 @@ public class WikiUtil {
         sb.append("\n");
         StringBuilder js = new StringBuilder();
         js.append("\n//Generated vega code\n");
-        js.append("\nvar " + jsonId + "=" + chunk.chunk + "\n");
+        js.append("\nvar " + jsonId + "=" + chunk + "\n");
         js.append("var " + viewId + ";\n");
         js.append("vegaEmbed('#" + id + "', " + jsonId + ");\n");
         js.append("//Done generated vega code\n");
@@ -2714,7 +2725,7 @@ public class WikiUtil {
                            WikiPageHandler handler)
             throws IOException {
         if (chunk.rest.equals("vega-lite")) {
-            handleVega(sb, chunk, handler);
+            handleVega(sb, chunk.chunk.toString(), handler);
             return;
         }
 	if(chunk.rest.equals("javascript")) {
