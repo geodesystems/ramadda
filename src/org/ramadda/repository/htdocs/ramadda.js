@@ -724,7 +724,7 @@ function handleSelect(request, id) {
     var pin = HtmlUtils.getIconImage("fa-thumbtack", ["class","ramadda-popup-pin", "id",pinId]);
     var closeImage = HtmlUtils.getIconImage(icon_close, []);
     var close = "<a href=\"javascript:selectCancel(true);\">" + closeImage+"</a>";
-    var header = HtmlUtils.div(["style","text-align:right;","class","ramadda-popup-header"],pin +" " +close);
+    var header = HtmlUtils.div(["style","text-align:left;","class","ramadda-popup-header"],SPACE+close+SPACE+pin);
     var popup = HtmlUtils.div(["id",id+"-popup"], header + text);
     selector.div.obj.innerHTML = popup;
     $("#" + selector.div.id).draggable();
