@@ -1815,10 +1815,10 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-popup-header {
-   padding:2px;
-   padding-bottom:0px;
-   border-bottom:1px #888 solid; 
-   background-color: #f0f0f0;
+    padding:2px;
+    padding-bottom:0px;
+    border-bottom:1px #888 solid; 
+    background-color: #f0f0f0;
 }
 
 .ramadda-popup-pin {
@@ -4094,7 +4094,7 @@ h3.ui-accordion-header a {
 
 
 .wiki-editor-popup {
-    font-size:80%;
+//    font-size:80%;
     margin:5px;
     vertical-align:top;
 }
