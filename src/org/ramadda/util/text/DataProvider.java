@@ -521,20 +521,32 @@ public abstract class DataProvider {
          * @throws Exception _more_
          */
         public void tokenize(TextReader info, String s) throws Exception {
+	    boolean debug = false;
 
             int        xcnt  = 0;
             JSONArray  array = null;
             JSONObject root  = null;
+	    if(debug) System.err.println("JSON:" + s);
             try {
                 root = new JSONObject(s);
                 if (arrayPath != null) {
                     array = Json.readArray(root, arrayPath);
                 }
+		if(debug) 
+		    System.err.println("array path:" + arrayPath+" a:" + array);
             } catch (Exception exc) {
-                System.err.println("exc:" + exc);
+		if(debug) 
+		    System.err.println("error trying to read JSONObject:" + exc);
             }
+
             if (array == null) {
-                array = new JSONArray(s);
+		try {
+		    array = new JSONArray(s);
+		} catch(Exception exc) {
+		    System.err.println("Error reading array");
+		    if(s.length()>1000) s = s.substring(0,999);
+		    System.err.println("JSON:" + s);
+		}		    
             }
 
             List<String> objectPathList = null;
@@ -544,9 +556,6 @@ public abstract class DataProvider {
             }
             List<String> names = null;
             for (int arrayIdx = 0; arrayIdx < array.length(); arrayIdx++) {
-                if (arrayIdx > 0) {
-                    break;
-                }
                 Hashtable       primary   = new Hashtable();
                 List<Hashtable> secondary = new ArrayList<Hashtable>();
                 if (objectPathList != null) {
@@ -591,14 +600,14 @@ public abstract class DataProvider {
                     }
                 }
 
+		if (secondary.size() == 0) {
+		    secondary.add(primary);
+		} else {
+		    for (Hashtable h : secondary) {
+			h.putAll(primary);
+		    }
+		}
                 if (names == null) {
-                    if (secondary.size() == 0) {
-                        secondary.add(primary);
-                    } else {
-                        for (Hashtable h : secondary) {
-                            h.putAll(primary);
-                        }
-                    }
                     names = new ArrayList<String>();
                     Row row = new Row();
                     addRow(row);
@@ -614,7 +623,7 @@ public abstract class DataProvider {
                 /*
                   JSONArray fields = root.optJSONArray("fields");
                   if(fields!=null) {
-                  for(int k=0;k<fields.length();k++)
+r                  for(int k=0;k<fields.length();k++)
                   row.add(fields.getString(k));
                   } else  {
                   for (int k = 0; k < jarray.length(); k++) {
