@@ -2956,7 +2956,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(args) $.extend(opts,args);
 	let id = HtmlUtils.getUniqueId();
 	let closeImage = HtmlUtils.getIconImage(icon_close, [ID,id+"_close",STYLE,HU.css('cursor','pointer')]);
-	let header = HtmlUtils.div([STYLE,HU.css("text-align","right"),CLASS,"ramadda-popup-header"],closeImage);
+	let header = HtmlUtils.div([STYLE,HU.css("text-align","left"),CLASS,"ramadda-popup-header"],SPACE+closeImage);
 	let html = header +HU.div([STYLE,"margin:8px;"],inner);
 	$(document.body).append(HU.div([ID,id,CLASS,"ramadda-popup"],html));
 	if((typeof target)=="string") {
