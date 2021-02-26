@@ -1995,10 +1995,29 @@ public class Utils extends IO {
     /**
      * _more_
      *
+     * @param sb _more_
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void appendAll(Appendable sb, Object... args)
+            throws Exception {
+        for (Object arg : args) {
+            if (arg != null) {
+                sb.append(arg.toString());
+            }
+        }
+    }
+
+
+    /**
+     * _more_
+     *
      * @param label _more_
      *
      * @return _more_
      */
+
     public static String makeLabel(String label) {
         label = label.replaceAll("_", " ");
         StringBuilder tmpSB             = new StringBuilder();
@@ -4068,8 +4087,15 @@ public class Utils extends IO {
 
 
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     */
     public static String getYoutubeID(String url) {
-	String id = StringUtil.findPattern(url, "v=([^&]+)&");
+        String id = StringUtil.findPattern(url, "v=([^&]+)&");
         if (id == null) {
             id = StringUtil.findPattern(url, "v=([^&]+)");
         }
@@ -4083,7 +4109,8 @@ public class Utils extends IO {
         if (id == null) {
             id = StringUtil.findPattern(url, ".*/v/([^&/]+)");
         }
-	return id;
+
+        return id;
     }
 
 
