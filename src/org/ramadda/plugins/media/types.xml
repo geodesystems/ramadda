@@ -256,4 +256,26 @@
 </type>
 
 
+<type name="type_document_vegalite"  description="Vega-Lite chart file" 
+      handler="org.ramadda.plugins.media.VegaTypeHandler" 
+super="type_document_tabular" >
+     <property name="icon" value="/media/vega.png"/>
+     <wiki><![CDATA[
++section # title="{{name}}"
++accordian decorate=false collapsible=true activeSegment=-1
++segment Information
+{{information showTitle="false" details="true"}}
+-segment
+-accordian
+{{description wikify="true"}}
+:heading Chart
+{{vega.lite}}
+-section
+]]>
+</wiki>
+
+
+</type>
+
+
 </types>
