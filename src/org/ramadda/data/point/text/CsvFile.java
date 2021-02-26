@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -91,8 +91,15 @@ public class CsvFile extends TextFile {
     /** _more_ */
     private static Hashtable filesBeingWritten = new Hashtable();
 
-    public List<String> getCsvCommands() {
-	List<String> args = new ArrayList<String>();
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<String> getCsvCommands() throws Exception {
+        List<String>  args      = new ArrayList<String>();
         StringBuilder commands  = new StringBuilder();
         int           appendCnt = 0;
         String csvCommands = getProperty("csvcommands",
@@ -106,23 +113,28 @@ public class CsvFile extends TextFile {
         while (true) {
             String c = getProperty("csvcommands" + (commandCnt++),
                                    (String) null);
-            if (!Utils.stringDefined(c)) {
+            if ( !Utils.stringDefined(c)) {
                 break;
             }
             if (appendCnt > 0) {
-		if(commands.length()>0)
-		    commands.append(",");
+                if (commands.length() > 0) {
+                    commands.append(",");
+                }
             }
             commands.append(c);
             appendCnt++;
         }
-	if(appendCnt==0) return args;
-	csvCommands = commands.toString().trim().replaceAll("\\\\,", "_comma_");
-	for(String arg:  StringUtil.split(csvCommands, ",")) {
-	    args.add(arg.replaceAll("_comma_", ","));
-	}
-	return args;
-    }	
+        if (appendCnt == 0) {
+            return args;
+        }
+        csvCommands = commands.toString().trim().replaceAll("\\\\,",
+                "_comma_");
+        for (String arg : StringUtil.split(csvCommands, ",")) {
+            args.add(arg.replaceAll("_comma_", ","));
+        }
+
+        return args;
+    }
 
 
     /**
@@ -135,14 +147,13 @@ public class CsvFile extends TextFile {
      * @throws Exception _more_
      */
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
-	List<String>  commands = getCsvCommands();
+        List<String> commands = getCsvCommands();
         if (commands.size() == 0) {
             return super.doMakeInputStream(buffered);
         }
 
         File file = getCacheFile();
         if (file != null) {
-            //      System.err.println("file:" +file +" " + file.exists()  +" " + file.length() +" being written:" + (filesBeingWritten.get(file)!=null) );
             if (file != null) {
                 int cnt = 0;
                 //Wait at most 10 seconds
@@ -157,6 +168,8 @@ public class CsvFile extends TextFile {
 
         if ((file == null) || !file.exists()) {
             try {
+                System.err.println("Creating CSV cached file: " + file
+                                   + "\ncommands:" + commands);
                 ByteArrayOutputStream bos = null;
                 OutputStream          fos;
                 if (file != null) {
@@ -165,22 +178,22 @@ public class CsvFile extends TextFile {
                 } else {
                     fos = bos = new ByteArrayOutputStream();
                 }
-		if(!commands.get(commands.size()-1).equals("-print"))
-		    commands.add("-print");
+                if ( !commands.get(commands.size() - 1).equals("-print")) {
+                    commands.add("-print");
+                }
                 CsvUtil csvUtil = new CsvUtil(commands,
                                       new BufferedOutputStream(fos), null);
 
 
-		RecordFileContext ctx = getRecordFileContext();
-		if(ctx!=null)
-		    csvUtil.setPropertyProvider(ctx.getPropertyProvider());
-		else
-		    System.err.println("No RecordFileContext set");
-		runCsvUtil(csvUtil, buffered);
+                RecordFileContext ctx = getRecordFileContext();
+                if (ctx != null) {
+                    csvUtil.setPropertyProvider(ctx.getPropertyProvider());
+                }
+                //else   System.err.println("No RecordFileContext set");
+                runCsvUtil(csvUtil, buffered);
                 fos.flush();
                 fos.close();
                 if (file == null) {
-                    //                    System.err.println("processed:" +new String(bos.toByteArray()));
                     return new ByteArrayInputStream(bos.toByteArray());
                 }
             } finally {
@@ -193,9 +206,33 @@ public class CsvFile extends TextFile {
         return new BufferedInputStream(new FileInputStream(file));
     }
 
-    public void	runCsvUtil(CsvUtil csvUtil, boolean buffered) throws Exception {
-	csvUtil.setInputStream(super.doMakeInputStream(buffered));
-	csvUtil.run(null);
+    /**
+     * _more_
+     *
+     * @param csvUtil _more_
+     * @param buffered _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public InputStream doMakeInputStream(CsvUtil csvUtil, boolean buffered)
+            throws Exception {
+        return super.doMakeInputStream(buffered);
+    }
+
+    /**
+     * _more_
+     *
+     * @param csvUtil _more_
+     * @param buffered _more_
+     *
+     * @throws Exception _more_
+     */
+    public void runCsvUtil(CsvUtil csvUtil, boolean buffered)
+            throws Exception {
+        csvUtil.setInputStream(doMakeInputStream(csvUtil, buffered));
+        csvUtil.run(null);
     }
 
 
@@ -305,14 +342,15 @@ public class CsvFile extends TextFile {
         }
 
         if (fieldString == null) {
-	    if(!getProperty("fieldsCanBeNull",false)) {
-		if (failureOk) {
-		    return new ArrayList<RecordField>();
-		}
-		throw new IllegalArgumentException("Properties must have a "
-						   + PROP_FIELDS + " value");
-	    }
-	    fieldString="";
+            if ( !getProperty("fieldsCanBeNull", false)) {
+                if (failureOk) {
+                    return new ArrayList<RecordField>();
+                }
+
+                throw new IllegalArgumentException("Properties must have a "
+                        + PROP_FIELDS + " value");
+            }
+            fieldString = "";
         }
 
         return doMakeFields(fieldString);
