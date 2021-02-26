@@ -328,14 +328,14 @@ public class PageHandler extends RepositoryManager {
                 if (file.startsWith("#")) {
                     continue;
                 }
-                cssImports += HtmlUtils.cssLink("${root}" + file).trim()
+                cssImports += HU.cssLink("${root}" + file).trim()
                               + "\n";
             }
             for (String file : jsFiles) {
                 if (file.startsWith("#")) {
                     continue;
                 }
-                jsImports += HtmlUtils.importJS("${root}" + file).trim()
+                jsImports += HU.importJS("${root}" + file).trim()
                              + "\n";
             }
             webImports = applyBaseMacros(cssImports.trim() + "\n"
@@ -415,8 +415,8 @@ public class PageHandler extends RepositoryManager {
         StringBuilder contents = new StringBuilder();
 
         if ((systemMessage != null) && (systemMessage.length() > 0)) {
-            HtmlUtils.div(contents, systemMessage,
-                          HtmlUtils.cssClass("ramadda-system-message"));
+            HU.div(contents, systemMessage,
+                          HU.cssClass("ramadda-system-message"));
         }
 
         String registerMessage = "";
@@ -481,7 +481,7 @@ public class PageHandler extends RepositoryManager {
         String userLinkTemplate =
             "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
         List<String> allLinks = new ArrayList<String>();
-        String searchImg = HtmlUtils.faIcon("fa-search", "title",
+        String searchImg = HU.faIcon("fa-search", "title",
                                             msg("Search"), "class",
                                             "ramadda-user-menu-image", "id",
                                             "searchlink");
@@ -494,26 +494,26 @@ public class PageHandler extends RepositoryManager {
         allLinks.addAll(userLinks);
 
         String popupImage =
-            HtmlUtils.faIcon("fa-cog", "title",
+            HU.faIcon("fa-cog", "title",
                              msg("Login, user settings, help"), "class",
                              "ramadda-user-menu-image");
 
 
         String menuHtml =
-            HtmlUtils.div(StringUtil.join("", allLinks),
-                          HtmlUtils.cssClass("ramadda-user-menu"));
+            HU.div(StringUtil.join("", allLinks),
+                          HU.cssClass("ramadda-user-menu"));
 
 
         if (showSearch) {
             String searchLink =
-                HtmlUtils.mouseClickHref("Utils.searchPopup('searchlink');",
+                HU.mouseClickHref("Utils.searchPopup('searchlink');",
                                          searchImg, "");
             extra.append(searchLink);
-            extra.append(HtmlUtils.space(2));
+            extra.append(HU.space(2));
         }
         extra.append(makePopupLink(popupImage, menuHtml, false, true));
-        menuHtml = HtmlUtils.div(extra.toString(),
-                                 HtmlUtils.clazz("ramadda-user-menu"));
+        menuHtml = HU.div(extra.toString(),
+                                 HU.clazz("ramadda-user-menu"));
         long     t1     = System.currentTimeMillis();
 
         String[] macros = new String[] {
@@ -647,7 +647,7 @@ public class PageHandler extends RepositoryManager {
                                   entryLink.toString());
                 cartLinks.add("<nobr>" + link + "<nobr>");
             }
-            favorites.append(HtmlUtils.br());
+            favorites.append(HU.br());
             favorites.append(cartTemplate.replace("${entries}",
                     StringUtil.join(favoritesSeparator, cartLinks)));
         }
@@ -699,16 +699,16 @@ public class PageHandler extends RepositoryManager {
 
             //j-
             StringBuilder sb = new StringBuilder();
-            HtmlUtils.div(sb, "",
-                          HtmlUtils.attrs("id", "ramadda-popupdiv", "class",
+            HU.div(sb, "",
+                          HU.attrs("id", "ramadda-popupdiv", "class",
                                           "ramadda-popup"));
-            HtmlUtils.div(sb, "",
-                          HtmlUtils.attrs("id", "ramadda-selectdiv", "class",
+            HU.div(sb, "",
+                          HU.attrs("id", "ramadda-selectdiv", "class",
                                           "ramadda-selectdiv"));
-            HtmlUtils.div(sb, "",
-                          HtmlUtils.attrs("id", "ramadda-floatdiv", "class",
+            HU.div(sb, "",
+                          HU.attrs("id", "ramadda-floatdiv", "class",
                                           "ramadda-floatdiv"));
-            sb.append(HtmlUtils.script(js.toString()));
+            sb.append(HU.script(js.toString()));
             //j+
             templateJavascriptContent = sb.toString();
         }
@@ -1272,7 +1272,7 @@ public class PageHandler extends RepositoryManager {
             String include = html.substring(0, idx1);
             include = include.substring("<include".length());
             include = include.replace(">", "");
-            Hashtable props = HtmlUtils.parseHtmlProperties(include);
+            Hashtable props = HU.parseHtmlProperties(include);
             String    url   = (String) props.get("href");
             if (url != null) {
                 String includedContent =
@@ -1664,7 +1664,7 @@ public class PageHandler extends RepositoryManager {
             return msg;
         }
 
-        return Utils.concatString(msg(msg), ":", HtmlUtils.space(1));
+        return Utils.concatString(msg(msg), ":", HU.space(1));
     }
 
     /**
@@ -1675,9 +1675,9 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public static String msgHeader(String h) {
-        return HtmlUtils.div(
+        return HU.div(
             msg(h),
-            HtmlUtils.cssClass(
+            HU.cssClass(
                 "ramadda-page-heading ramadda-page-heading-left" /*CSS_CLASS_HEADING_1*/));
     }
 
@@ -1717,63 +1717,63 @@ public class PageHandler extends RepositoryManager {
         next.setTime(date);
         next.add(cal.MONTH, 1);
 
-        HtmlUtils.open(sb, HtmlUtils.TAG_TABLE, HtmlUtils.ATTR_BORDER, "1",
-                       HtmlUtils.ATTR_CELLSPACING, "0",
-                       HtmlUtils.ATTR_CELLPADDING, "0");
+        HU.open(sb, HU.TAG_TABLE, HU.ATTR_BORDER, "1",
+                       HU.ATTR_CELLSPACING, "0",
+                       HU.ATTR_CELLPADDING, "0");
         String[] dayNames = {
             "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
         };
-        String prevUrl = HtmlUtils.space(1)
-                         + HtmlUtils.href(
+        String prevUrl = HU.space(1)
+                         + HU.href(
                              url + "&"
                              + CalendarOutputHandler.getUrlArgs(
                                  prev), "&lt;");
         String nextUrl =
-            HtmlUtils.href(
+            HU.href(
                 url + "&" + CalendarOutputHandler.getUrlArgs(next),
-                HtmlUtils.ENTITY_GT) + HtmlUtils.space(1);
-        HtmlUtils.open(sb, HtmlUtils.TAG_TR, HtmlUtils.ATTR_VALIGN,
-                       HtmlUtils.VALUE_TOP);
-        HtmlUtils.open(sb, HtmlUtils.TAG_TD, HtmlUtils.ATTR_COLSPAN, "7",
-                       HtmlUtils.ATTR_ALIGN, HtmlUtils.VALUE_CENTER,
-                       HtmlUtils.ATTR_CLASS, "calnavmonthheader");
+                HU.ENTITY_GT) + HU.space(1);
+        HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN,
+                       HU.VALUE_TOP);
+        HU.open(sb, HU.TAG_TD, HU.ATTR_COLSPAN, "7",
+                       HU.ATTR_ALIGN, HU.VALUE_CENTER,
+                       HU.ATTR_CLASS, "calnavmonthheader");
 
-        HtmlUtils.open(sb, HtmlUtils.TAG_TABLE, "class", "calnavtable",
-                       HtmlUtils.ATTR_CELLSPACING, "0",
-                       HtmlUtils.ATTR_CELLPADDING, "0", HtmlUtils.ATTR_WIDTH,
+        HU.open(sb, HU.TAG_TABLE, "class", "calnavtable",
+                       HU.ATTR_CELLSPACING, "0",
+                       HU.ATTR_CELLPADDING, "0", HU.ATTR_WIDTH,
                        "100%");
-        HtmlUtils.open(sb, HtmlUtils.TAG_TR);
-        HtmlUtils.col(sb, prevUrl,
-                      HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
-                                      HtmlUtils.ATTR_CLASS,
+        HU.open(sb, HU.TAG_TR);
+        HU.col(sb, prevUrl,
+                      HU.attrs(HU.ATTR_WIDTH, "1",
+                                      HU.ATTR_CLASS,
                                       "calnavmonthheader"));
-        HtmlUtils.col(
-            sb, DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HtmlUtils.space(1)
-            + theYear, HtmlUtils.attr(
-                HtmlUtils.ATTR_CLASS, "calnavmonthheader"));
+        HU.col(
+            sb, DateUtil.MONTH_NAMES[cal.get(cal.MONTH)] + HU.space(1)
+            + theYear, HU.attr(
+                HU.ATTR_CLASS, "calnavmonthheader"));
 
-        HtmlUtils.col(sb, nextUrl,
-                      HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "1",
-                                      HtmlUtils.ATTR_CLASS,
+        HU.col(sb, nextUrl,
+                      HU.attrs(HU.ATTR_WIDTH, "1",
+                                      HU.ATTR_CLASS,
                                       "calnavmonthheader"));
-        HtmlUtils.close(sb, HtmlUtils.TAG_TABLE);
-        HtmlUtils.close(sb, HtmlUtils.TAG_TR);
-        HtmlUtils.open(sb, HtmlUtils.TAG_TR);
+        HU.close(sb, HU.TAG_TABLE);
+        HU.close(sb, HU.TAG_TR);
+        HU.open(sb, HU.TAG_TR);
         for (int colIdx = 0; colIdx < 7; colIdx++) {
-            HtmlUtils.col(sb, dayNames[colIdx],
-                          HtmlUtils.attrs(HtmlUtils.ATTR_WIDTH, "14%",
-                                          HtmlUtils.ATTR_CLASS,
+            HU.col(sb, dayNames[colIdx],
+                          HU.attrs(HU.ATTR_WIDTH, "14%",
+                                          HU.ATTR_CLASS,
                                           "calnavdayheader"));
         }
-        HtmlUtils.close(sb, HtmlUtils.TAG_TR);
+        HU.close(sb, HU.TAG_TR);
         int startDow = cal.get(cal.DAY_OF_WEEK);
         while (startDow > 1) {
             cal.add(cal.DAY_OF_MONTH, -1);
             startDow--;
         }
         for (int rowIdx = 0; rowIdx < 6; rowIdx++) {
-            HtmlUtils.open(sb, HtmlUtils.TAG_TR, HtmlUtils.ATTR_VALIGN,
-                           HtmlUtils.VALUE_TOP);
+            HU.open(sb, HU.TAG_TR, HU.ATTR_VALIGN,
+                           HU.VALUE_TOP);
             for (int colIdx = 0; colIdx < 7; colIdx++) {
                 int     thisDay    = cal.get(cal.DAY_OF_MONTH);
                 int     thisMonth  = cal.get(cal.MONTH);
@@ -1791,7 +1791,7 @@ public class PageHandler extends RepositoryManager {
                 if (dayLinks != null) {
                     String key = thisYear + "/" + thisMonth + "/" + thisDay;
                     if (dayLinks.get(key) != null) {
-                        content = HtmlUtils.href(url + "&"
+                        content = HU.href(url + "&"
                                 + CalendarOutputHandler.getUrlArgs(cal), ""
                                     + thisDay);
                         if ( !currentDay) {
@@ -1802,13 +1802,13 @@ public class PageHandler extends RepositoryManager {
                         dayClass = "calnavday";
                     }
                 } else {
-                    content = HtmlUtils.href(
+                    content = HU.href(
                         url + "&" + CalendarOutputHandler.getUrlArgs(cal),
                         "" + thisDay);
                 }
 
-                sb.append(HtmlUtils.col(content,
-                                        HtmlUtils.cssClass(dayClass)));
+                sb.append(HU.col(content,
+                                        HU.cssClass(dayClass)));
                 sb.append("\n");
                 cal.add(cal.DAY_OF_MONTH, 1);
             }
@@ -1819,7 +1819,7 @@ public class PageHandler extends RepositoryManager {
                 break;
             }
         }
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        sb.append(HU.close(HU.TAG_TABLE));
 
     }
 
@@ -1910,19 +1910,19 @@ public class PageHandler extends RepositoryManager {
                                 String header) {
         try {
 
-            String compId = "menu_" + HtmlUtils.blockCnt++;
-            String linkId = "menulink_" + HtmlUtils.blockCnt++;
+            String compId = "menu_" + HU.blockCnt++;
+            String linkId = "menulink_" + HU.blockCnt++;
             popup.append(makePopupDiv(menuContents, compId, makeClose,
                                       header));
             String onClick =
-                HtmlUtils.onMouseClick(HtmlUtils.call("showPopup",
-                    HtmlUtils.comma(new String[] { "event",
-                    HtmlUtils.squote(linkId), HtmlUtils.squote(compId),
+                HU.onMouseClick(HU.call("showPopup",
+                    HU.comma(new String[] { "event",
+                    HU.squote(linkId), HU.squote(compId),
                     (alignLeft
                      ? "1"
                      : "0") })));
-            String href = HtmlUtils.href("javascript:noop();", link,
-                                         onClick + HtmlUtils.id(linkId)
+            String href = HU.href("javascript:noop();", link,
+                                         onClick + HU.id(linkId)
                                          + linkAttributes);
 
             return href;
@@ -1947,17 +1947,17 @@ public class PageHandler extends RepositoryManager {
     public String makeStickyPopup(String link, String innerContents,
                                   String initCall) {
         boolean alignLeft = true;
-        String  compId    = "menu_" + HtmlUtils.blockCnt++;
-        String  linkId    = "menulink_" + HtmlUtils.blockCnt++;
+        String  compId    = "menu_" + HU.blockCnt++;
+        String  linkId    = "menulink_" + HU.blockCnt++;
         String  contents  = makeStickyPopupDiv(innerContents, compId);
         String onClick =
-            HtmlUtils.onMouseClick(HtmlUtils.call("showStickyPopup",
-                HtmlUtils.comma(new String[] { "event",
-                HtmlUtils.squote(linkId), HtmlUtils.squote(compId), (alignLeft
+            HU.onMouseClick(HU.call("showStickyPopup",
+                HU.comma(new String[] { "event",
+                HU.squote(linkId), HU.squote(compId), (alignLeft
                 ? "1"
                 : "0") })) + initCall);
-        String href = HtmlUtils.href("javascript:noop();", link,
-                                     onClick + HtmlUtils.id(linkId));
+        String href = HU.href("javascript:noop();", link,
+                                     onClick + HU.id(linkId));
 
         return href + contents;
     }
@@ -1974,18 +1974,18 @@ public class PageHandler extends RepositoryManager {
      */
     public String makeStickyPopupDiv(String contents, String compId) {
         StringBuilder menu = new StringBuilder();
-        String cLink = HtmlUtils.jsLink(
-                           HtmlUtils.onMouseClick(
-                               HtmlUtils.call(
+        String cLink = HU.jsLink(
+                           HU.onMouseClick(
+                               HU.call(
                                    "hideElementById",
-                                   HtmlUtils.squote(compId))), getIconImage(
+                                   HU.squote(compId))), getIconImage(
                                        ICON_CLOSE, "title", "Close", "class",
                                        "ramadda-popup-close"), "");
-        contents = cLink + HtmlUtils.br() + contents;
+        contents = cLink + HU.br() + contents;
 
-        menu.append(HtmlUtils.div(contents,
-                                  HtmlUtils.id(compId)
-                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+        menu.append(HU.div(contents,
+                                  HU.id(compId)
+                                  + HU.cssClass(CSS_CLASS_POPUP)));
 
         return menu.toString();
     }
@@ -2007,23 +2007,23 @@ public class PageHandler extends RepositoryManager {
                                boolean makeClose, String header) {
         StringBuilder menu = new StringBuilder();
         if (makeClose) {
-            String cLink = HtmlUtils.jsLink(
-                               HtmlUtils.onMouseClick("hidePopupObject();"),
+            String cLink = HU.jsLink(
+                               HU.onMouseClick("hidePopupObject();"),
                                getIconImage(
                                    ICON_CLOSE, "title", "Close", "class",
                                    "ramadda-popup-close"), "");
             if (header != null) {
-                contents = HtmlUtils.table(HtmlUtils.row("<td width=5%>"
+                contents = HU.table(HU.row("<td width=5%>"
                         + cLink + "</td><td>" + header + "</td>")) + contents;
             } else {
-                contents = cLink + HtmlUtils.br() + contents;
+                contents =HU.div(cLink,"class=ramadda-popup-header") + contents;
             }
         }
 
-        menu.append(HtmlUtils.div(contents,
-                                  HtmlUtils.id(compId)
-                                  + HtmlUtils.attr("style", "display:none;")
-                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+        menu.append(HU.div(contents,
+                                  HU.id(compId)
+                                  + HU.attr("style", "display:none;")
+                                  + HU.cssClass(CSS_CLASS_POPUP)));
 
 
         return menu.toString();
@@ -2046,12 +2046,12 @@ public class PageHandler extends RepositoryManager {
         StringBuilder fb = new StringBuilder();
         fb.append(request.form(url));
         fb.append(extra);
-        String okButton     = HtmlUtils.submit("OK", okArg);
-        String cancelButton = HtmlUtils.submit("Cancel",
+        String okButton     = HU.submit("OK", okArg);
+        String cancelButton = HU.submit("Cancel",
                                   Constants.ARG_CANCEL);
-        String buttons = HtmlUtils.buttons(okButton, cancelButton);
+        String buttons = HU.buttons(okButton, cancelButton);
         fb.append(buttons);
-        fb.append(HtmlUtils.formClose());
+        fb.append(HU.formClose());
 
         return fb.toString();
     }
@@ -2104,7 +2104,7 @@ public class PageHandler extends RepositoryManager {
                 }
 
                 urls.add(url);
-                labels.add(HtmlUtils.faIcon("fa-sign-in-alt") + " "
+                labels.add(HU.faIcon("fa-sign-in-alt") + " "
                            + msg("Login"));
                 tips.add(msg("Login"));
             }
@@ -2119,11 +2119,11 @@ public class PageHandler extends RepositoryManager {
         } else {
             extras.add("");
             urls.add(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT));
-            labels.add(HtmlUtils.faIcon("fa-sign-out-alt") + " "
+            labels.add(HU.faIcon("fa-sign-out-alt") + " "
                        + msg("Logout"));
             tips.add(msg("Logout"));
             String label = user.getLabel().replace(" ", "&nbsp;");
-            String userIcon = HtmlUtils.faIcon("fa-user", "title",
+            String userIcon = HU.faIcon("fa-user", "title",
                                   "Settings for " + label, "class",
                                   "ramadda-user-menu-image");
 
@@ -2132,10 +2132,10 @@ public class PageHandler extends RepositoryManager {
 
             if (makePopup) {
                 prefix.append(
-                    HtmlUtils.href(
+                    HU.href(
                         settingsUrl, userIcon,
-                        HtmlUtils.cssClass("ramadda-user-settings-link")));
-                prefix.append(HtmlUtils.space(2));
+                        HU.cssClass("ramadda-user-settings-link")));
+                prefix.append(HU.space(2));
             } else {
                 extras.add("");
                 urls.add(settingsUrl);
@@ -2150,7 +2150,7 @@ public class PageHandler extends RepositoryManager {
                         .getPluginManager().getDocUrls().size() > 0)) {
             urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
             extras.add("");
-            labels.add(HtmlUtils.faIcon("fa-question-circle") + " "
+            labels.add(HU.faIcon("fa-question-circle") + " "
                        + msg("Help"));
             tips.add(msg("View Help"));
         }
@@ -2254,24 +2254,24 @@ public class PageHandler extends RepositoryManager {
                 onLabel = label;
                 clazz   = "ramadda-linksheader-on";
             }
-            links.add(HtmlUtils.span(HtmlUtils.href(url, label),
-                                     HtmlUtils.cssClass(clazz)));
+            links.add(HU.span(HU.href(url, label),
+                                     HU.cssClass(clazz)));
             //            }
         }
         StringBuilder header = new StringBuilder();
-        HtmlUtils.div(
+        HU.div(
             header,
             StringUtil.join(
                 "<span class=\".ramadda-separator\">|</span>",
-                links), HtmlUtils.cssClass("ramadda-linksheader-links"));
+                links), HU.cssClass("ramadda-linksheader-links"));
         header.append("\n");
         if (Utils.stringDefined(onLabel)) {
             header.append(
-                HtmlUtils.div(
-                    msg(onLabel), HtmlUtils.cssClass("ramadda-page-title")));
+                HU.div(
+                    msg(onLabel), HU.cssClass("ramadda-page-title")));
         }
-        sb.append(HtmlUtils.tag(HtmlUtils.TAG_DIV,
-                                HtmlUtils.cssClass("ramadda-linksheader"),
+        sb.append(HU.tag(HU.TAG_DIV,
+                                HU.cssClass("ramadda-linksheader"),
                                 header.toString()));
     }
 
@@ -2378,7 +2378,7 @@ public class PageHandler extends RepositoryManager {
     public static String getDialogString(String s) {
         s = s.replaceAll("<pre>", "PREOPEN");
         s = s.replaceAll("</pre>", "PRECLOSE");
-        s = HtmlUtils.entityEncode(s);
+        s = HU.entityEncode(s);
         s = s.replace("&#60;msg&#32;", "<msg ");
         s = s.replace("&#32;msg&#62;", " msg>");
         s = s.replace("&#32;", " ");
@@ -2405,12 +2405,12 @@ public class PageHandler extends RepositoryManager {
         h = h.replaceAll("\n", "<br>");
         h = h.replaceAll("&#10;", "<br>");
         String html = showClose
-                      ? HtmlUtils.jsLink(
-                          HtmlUtils.onMouseClick("hide('messageblock')"),
+                      ? HU.jsLink(
+                          HU.onMouseClick("hide('messageblock')"),
                           getIconImage(Constants.ICON_CLOSE))
                       : "&nbsp;";
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
+        sb.append(HU.open(HU.TAG_DIV, "class",
                                  "ramadda-message", "id", "messageblock"));
         sb.append("<table><tr valign=top>");
         if (icon != null) {
@@ -2427,8 +2427,8 @@ public class PageHandler extends RepositoryManager {
             sb.append("</div></td>");
         }
         sb.append("</tr></table>");
-        HtmlUtils.close(sb, HtmlUtils.TAG_DIV);
-        sb.append(HtmlUtils.br());
+        HU.close(sb, HU.TAG_DIV);
+        sb.append(HU.br());
 
         return sb.toString();
     }
@@ -2548,7 +2548,7 @@ public class PageHandler extends RepositoryManager {
      */
     public String getConfirmBreadCrumbs(Request request, Entry entry)
             throws Exception {
-        return HtmlUtils.img(getIconUrl(request, entry)) + " "
+        return HU.img(getIconUrl(request, entry)) + " "
                + getBreadCrumbs(request, entry);
     }
 
@@ -2636,7 +2636,7 @@ public class PageHandler extends RepositoryManager {
                               ? request.getString(ARG_TARGET, "")
                               : null);
         String  targetAttr = ((target != null)
-                              ? HtmlUtils.attr(HtmlUtils.ATTR_TARGET, target)
+                              ? HU.attr(HU.ATTR_TARGET, target)
                               : "");
 
 
@@ -2657,20 +2657,20 @@ public class PageHandler extends RepositoryManager {
 
             if (target != null) {
                 String url = getEntryManager().getEntryUrl(request, ancestor);
-                breadcrumbs.add(0, HtmlUtils.href(url,
+                breadcrumbs.add(0, HU.href(url,
                 /*request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor), */
                 name, targetAttr));
             } else {
-                String url = HtmlUtils.url(requestUrl.toString(),
+                String url = HU.url(requestUrl.toString(),
                                            ARG_ENTRYID, ancestor.getId());
-                breadcrumbs.add(0, HtmlUtils.href(url, name));
+                breadcrumbs.add(0, HU.href(url, name));
             }
         }
         String lastLink = null;
 
 
         if (target != null) {
-            lastLink = HtmlUtils.href(getEntryManager().getEntryUrl(request,
+            lastLink = HU.href(getEntryManager().getEntryUrl(request,
                     entry), entry.getLabel(), targetAttr);
 
         } else {
@@ -2678,9 +2678,9 @@ public class PageHandler extends RepositoryManager {
                 lastLink = getEntryManager().getTooltipLink(request, entry,
                         entry.getLabel(), null);
             } else {
-                String url = HtmlUtils.url(requestUrl.toString(),
+                String url = HU.url(requestUrl.toString(),
                                            ARG_ENTRYID, entry.getId());
-                lastLink = HtmlUtils.href(url, entry.getLabel());
+                lastLink = HU.href(url, entry.getLabel());
             }
         }
 
@@ -2725,8 +2725,8 @@ public class PageHandler extends RepositoryManager {
         List<Link> linkList = getEntryManager().getEntryLinks(request, entry);
 
         String headerLabel =
-            HtmlUtils.href(getEntryManager().getEntryUrl(request, entry),
-                           HtmlUtils.img(getIconUrl(request, entry)) + " "
+            HU.href(getEntryManager().getEntryUrl(request, entry),
+                           HU.img(getIconUrl(request, entry)) + " "
                            + getEntryDisplayName(entry));
 
         String links = getEntryManager().getEntryActionsTable(request, entry,
@@ -2737,9 +2737,9 @@ public class PageHandler extends RepositoryManager {
 
 
         StringBuilder popup = new StringBuilder();
-        String menuLinkImg = HtmlUtils.div(
+        String menuLinkImg = HU.div(
                                  "",
-                                 HtmlUtils.cssClass(
+                                 HU.cssClass(
                                      "ramadda-breadcrumbs-menu-button"));
         String menuLink = getPageHandler().makePopupLink(menuLinkImg, links,
                               "", true, false, popup, null);
@@ -2767,7 +2767,7 @@ public class PageHandler extends RepositoryManager {
         String  header  = "";
         if (showBreadcrumbs) {
             StringBuilder sb = new StringBuilder();
-            HtmlUtils.open(sb, "div", "class", "ramadda-breadcrumbs");
+            HU.open(sb, "div", "class", "ramadda-breadcrumbs");
             if (doTable) {
                 sb.append(
                     "<table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=center>");
@@ -2776,8 +2776,8 @@ public class PageHandler extends RepositoryManager {
                 if (doTable) {
                     sb.append("<td valign=center width=1%>");
                 }
-                HtmlUtils.div(sb, menuLink,
-                              HtmlUtils.cssClass("ramadda-breadcrumbs-menu"));
+                HU.div(sb, menuLink,
+                              HU.cssClass("ramadda-breadcrumbs-menu"));
                 if (doTable) {
                     sb.append("</td>");
                 }
@@ -2827,7 +2827,7 @@ public class PageHandler extends RepositoryManager {
         StringBuilder sb     = new StringBuilder();
 
         OutputType    output = HtmlOutputHandler.OUTPUT_INFO;
-        String treeLink = HtmlUtils.href(
+        String treeLink = HU.href(
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW, entry,
                                   ARG_OUTPUT,
@@ -2838,10 +2838,10 @@ public class PageHandler extends RepositoryManager {
         sb.append(treeLink);
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_TOOLBAR)) {
-                String href = HtmlUtils.href(link.getUrl(),
+                String href = HU.href(link.getUrl(),
                                              getIconImage(link.getIcon(),
                                                  "title", link.getLabel()));
-                sb.append(HtmlUtils.inset(href, 0, 3, 0, 0));
+                sb.append(HU.inset(href, 0, 3, 0, 0));
             }
         }
 
@@ -2880,18 +2880,18 @@ public class PageHandler extends RepositoryManager {
         String       categoryMenu = null;
         List<String> menuItems    = new ArrayList<String>();
         String sep =
-            HtmlUtils.div("",
-                          HtmlUtils.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
+            HU.div("",
+                          HU.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
 
 
-        String menuClass = HtmlUtils.cssClass(CSS_CLASS_MENUBUTTON);
+        String menuClass = HU.cssClass(CSS_CLASS_MENUBUTTON);
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_OTHER)) {
                 categoryMenu =
                     getEntryManager().getEntryActionsTable(request, entry,
                         OutputType.TYPE_OTHER, links);
                 String categoryName = link.getOutputType().getCategory();
-                //HtmlUtils.span(msg(categoryName), menuClass),
+                //HU.span(msg(categoryName), menuClass),
                 categoryMenu =
                     getPageHandler().makePopupLink(msg(categoryName),
                         categoryMenu.toString(), menuClass, false, true);
@@ -2923,7 +2923,7 @@ public class PageHandler extends RepositoryManager {
             if (entry.isGroup()) {
                 //                menuName="Folder";
             }
-            //HtmlUtils.span(msg(menuName), menuClass), 
+            //HU.span(msg(menuName), menuClass), 
             menuItems.add(getPageHandler().makePopupLink(msg(menuName),
                     entryMenu, menuClass, false, true));
 
@@ -2965,9 +2965,9 @@ public class PageHandler extends RepositoryManager {
         }
 
         String leftTable;
-        leftTable = HtmlUtils.table(
-            HtmlUtils.row(
-                HtmlUtils.cols(Misc.listToStringArray(menuItems)),
+        leftTable = HU.table(
+            HU.row(
+                HU.cols(Misc.listToStringArray(menuItems)),
                 " cellpadding=0 cellspacing=0 border=0 "));
 
         return leftTable;
@@ -3006,7 +3006,7 @@ public class PageHandler extends RepositoryManager {
 
 
             String url  = getEntryManager().getEntryUrl(request, ancestor);
-            String link = HtmlUtils.href(url, linkLabel);
+            String link = HU.href(url, linkLabel);
             breadcrumbs.add(0, link);
         }
 
@@ -3029,16 +3029,16 @@ public class PageHandler extends RepositoryManager {
     public void makeBreadcrumbs(Request request, List<String> breadcrumbs,
                                 Appendable sb)
             throws Exception {
-        String id = HtmlUtils.getUniqueId("crumbs_");
-        HtmlUtils.open(sb, "div", "class", "ramadda-breadcrumbs-list");
-        HtmlUtils.open(sb, "div", "class", "breadCrumbHolder module");
-        HtmlUtils.open(sb, "div", "id", id, "class", "breadCrumb module");
-        HtmlUtils.open(sb, "ul");
+        String id = HU.getUniqueId("crumbs_");
+        HU.open(sb, "div", "class", "ramadda-breadcrumbs-list");
+        HU.open(sb, "div", "class", "breadCrumbHolder module");
+        HU.open(sb, "div", "id", id, "class", "breadCrumb module");
+        HU.open(sb, "ul");
         for (Object crumb : breadcrumbs) {
-            HtmlUtils.tag(sb, "li", "", crumb.toString());
+            HU.tag(sb, "li", "", crumb.toString());
         }
         sb.append("</ul></div></div></div>");
-        HtmlUtils.script(sb, "HtmlUtils.makeBreadcrumbsInit('" + id + "');");
+        HU.script(sb, "HU.makeBreadcrumbsInit('" + id + "');");
     }
 
     /** _more_ */
@@ -3126,7 +3126,7 @@ public class PageHandler extends RepositoryManager {
         StringBuilder sb = new StringBuilder();
 
         String entryUrl =
-            HtmlUtils.url(
+            HU.url(
                 request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
                 ARG_ENTRYID, entry.getId());
 
@@ -3146,7 +3146,7 @@ public class PageHandler extends RepositoryManager {
                                             "Add/View Comments",
                                             OutputType.TYPE_TOOLBAR);
 
-                String href = HtmlUtils.href(link.getUrl(),
+                String href = HU.href(link.getUrl(),
                                              "Comments:(" + comments.size()
                                              + ")"
                                              + getIconImage(link.getIcon(),
@@ -3181,29 +3181,29 @@ public class PageHandler extends RepositoryManager {
         if (doRatings) {
             String link = request.makeUrl(getRepository().URL_COMMENTS_SHOW,
                                           ARG_ENTRYID, entry.getId());
-            String ratings = HtmlUtils.div(
+            String ratings = HU.div(
                                  "",
-                                 HtmlUtils.cssClass("js-kit-rating")
-                                 + HtmlUtils.attr(
-                                     HtmlUtils.ATTR_TITLE,
-                                     entry.getFullName()) + HtmlUtils.attr(
+                                 HU.cssClass("js-kit-rating")
+                                 + HU.attr(
+                                     HU.ATTR_TITLE,
+                                     entry.getFullName()) + HU.attr(
                                          "permalink",
-                                         link)) + HtmlUtils.importJS(
+                                         link)) + HU.importJS(
                                              "http://js-kit.com/ratings.js");
 
             sb.append(
-                HtmlUtils.table(
-                    HtmlUtils.row(
-                        HtmlUtils.col(
+                HU.table(
+                    HU.row(
+                        HU.col(
                             ratings,
-                            HtmlUtils.attr(
-                                HtmlUtils.ATTR_ALIGN,
-                                HtmlUtils.VALUE_RIGHT)), HtmlUtils.attr(
-                                    HtmlUtils.ATTR_VALIGN,
-                                    HtmlUtils.VALUE_TOP)), HtmlUtils.attr(
-                                        HtmlUtils.ATTR_WIDTH, "100%")));
+                            HU.attr(
+                                HU.ATTR_ALIGN,
+                                HU.VALUE_RIGHT)), HU.attr(
+                                    HU.ATTR_VALIGN,
+                                    HU.VALUE_TOP)), HU.attr(
+                                        HU.ATTR_WIDTH, "100%")));
         } else {
-            sb.append(HtmlUtils.p());
+            sb.append(HU.p());
         }
 
 
@@ -3238,7 +3238,7 @@ public class PageHandler extends RepositoryManager {
 
         if (canComment) {
             sb.append(
-                HtmlUtils.href(
+                HU.href(
                     request.entryUrl(
                         getRepository().URL_COMMENTS_ADD,
                         entry), "Add Comment"));
@@ -3252,11 +3252,11 @@ public class PageHandler extends RepositoryManager {
         //        sb.append("<table>");
         int rowNum = 1;
         for (Comment comment : comments) {
-            //            sb.append(HtmlUtils.formEntry(BLANK, HtmlUtils.hr()));
+            //            sb.append(HU.formEntry(BLANK, HU.hr()));
             //TODO: Check for access
             String deleteLink = ( !canEdit
                                   ? ""
-                                  : HtmlUtils.href(request.makeUrl(getRepository().URL_COMMENTS_EDIT,
+                                  : HU.href(request.makeUrl(getRepository().URL_COMMENTS_EDIT,
                                       ARG_DELETE, "true", ARG_ENTRYID,
                                       entry.getId(), ARG_AUTHTOKEN,
                                       getRepository().getAuthToken(request.getSessionId()),
@@ -3264,40 +3264,40 @@ public class PageHandler extends RepositoryManager {
                                       comment.getId()), getIconImage(ICON_DELETE,
                                           "title", msg("Delete comment"))));
             if (canEdit) {
-                //                sb.append(HtmlUtils.formEntry(BLANK, deleteLink));
+                //                sb.append(HU.formEntry(BLANK, deleteLink));
             }
-            //            sb.append(HtmlUtils.formEntry("Subject:", comment.getSubject()));
+            //            sb.append(HU.formEntry("Subject:", comment.getSubject()));
 
 
-            String theClass = HtmlUtils.cssClass("listrow" + rowNum);
-            theClass = HtmlUtils.cssClass(CSS_CLASS_COMMENT_BLOCK);
+            String theClass = HU.cssClass("listrow" + rowNum);
+            theClass = HU.cssClass(CSS_CLASS_COMMENT_BLOCK);
             rowNum++;
             if (rowNum > 2) {
                 rowNum = 1;
             }
             StringBuilder content = new StringBuilder();
-            String byLine = HtmlUtils.span(
+            String byLine = HU.span(
                                 "Posted by " + comment.getUser().getLabel(),
-                                HtmlUtils.cssClass(
+                                HU.cssClass(
                                     CSS_CLASS_COMMENT_COMMENTER)) + " @ "
-                                        + HtmlUtils.span(
+                                        + HU.span(
                                             getDateHandler().formatDate(
                                                 request,
-                                                comment.getDate()), HtmlUtils.cssClass(
-                                                    CSS_CLASS_COMMENT_DATE)) + HtmlUtils.space(
+                                                comment.getDate()), HU.cssClass(
+                                                    CSS_CLASS_COMMENT_DATE)) + HU.space(
                                                         1) + deleteLink;
             content.append(
-                HtmlUtils.open(
-                    HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass(CSS_CLASS_COMMENT_INNER)));
+                HU.open(
+                    HU.TAG_DIV,
+                    HU.cssClass(CSS_CLASS_COMMENT_INNER)));
             content.append(comment.getComment());
-            content.append(HtmlUtils.br());
+            content.append(HU.br());
             content.append(byLine);
-            content.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-            sb.append(HtmlUtils
-                .div(HtmlUtils
-                    .makeShowHideBlock(HtmlUtils
-                        .span(comment.getSubject(), HtmlUtils
+            content.append(HU.close(HU.TAG_DIV));
+            sb.append(HU
+                .div(HU
+                    .makeShowHideBlock(HU
+                        .span(comment.getSubject(), HU
                             .cssClass(CSS_CLASS_COMMENT_SUBJECT)), content
                                 .toString(), true, ""), theClass));
         }
@@ -3395,7 +3395,7 @@ public class PageHandler extends RepositoryManager {
                 }
 
                 sb.append("<td width='25%'>");
-                sb.append(HtmlUtils.b(msg(cat)));
+                sb.append(HU.b(msg(cat)));
                 sb.append(
                     "<div style=\"solid black; max-height: 150px; overflow-y: auto\";>");
                 sb.append("<ul>");
@@ -3471,10 +3471,10 @@ public class PageHandler extends RepositoryManager {
                 titles.add(mapLayer.getLegendLabel());
                 StringBuffer sb = new StringBuffer(mapLayer.getLegendText());
                 if (Utils.stringDefined(mapLayer.getLegendImage())) {
-                    sb.append(HtmlUtils.img(mapLayer.getLegendImage()));
+                    sb.append(HU.img(mapLayer.getLegendImage()));
                 }
-                tabs.add(HtmlUtils.div(sb.toString(),
-                                       HtmlUtils.cssClass("map-legend-div")));
+                tabs.add(HU.div(sb.toString(),
+                                       HU.cssClass("map-legend-div")));
             }
             mapLayer.addToMap(request, mapInfo);
         }
@@ -3485,11 +3485,11 @@ public class PageHandler extends RepositoryManager {
 
         mapInfo.addRightSide(
             getPageHandler().makeStickyPopup(
-                HtmlUtils.img(
+                HU.img(
                     getRepository().getFileUrl(
                         "/icons/map_go.png")), rightSide.toString(), null));
-        //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
-        //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
+        //        mapInfo.addRightSide(HU.makeShowHideBlock("", rightSide.toString(),false));
+        //        mapInfo.addRightSide(HU.makeShowHideBlock("", rightSide.toString(),false));
 
     }
 
@@ -3525,7 +3525,7 @@ public class PageHandler extends RepositoryManager {
                           ? typeHandler.getType()
                           : "";
         if (true) {
-            return HtmlUtils.select(ARG_TYPE, items, selected);
+            return HU.select(ARG_TYPE, items, selected);
         }
 
         return repository.makeTypeSelect(items, request, false, selected,
@@ -3585,9 +3585,9 @@ public class PageHandler extends RepositoryManager {
     public void sectionOpen(Request request, Appendable sb, String title,
                             boolean showLine)
             throws Exception {
-        sb.append(HtmlUtils.sectionOpen(null, showLine));
+        sb.append(HU.sectionOpen(null, showLine));
         if (title != null) {
-            HtmlUtils.sectionTitle(sb, title);
+            HU.sectionTitle(sb, title);
         }
     }
 
@@ -3601,7 +3601,7 @@ public class PageHandler extends RepositoryManager {
      */
     public void sectionClose(Request request, Appendable sb)
             throws Exception {
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
     }
 
 
@@ -3619,24 +3619,24 @@ public class PageHandler extends RepositoryManager {
     public void entrySectionOpen(Request request, Entry entry, Appendable sb,
                                  String title, boolean showLine)
             throws Exception {
-        sb.append(HtmlUtils.sectionOpen(null, showLine));
+        sb.append(HU.sectionOpen(null, showLine));
         if (entry != null) {
             String label = entry.getTypeHandler().getEntryName(entry);
-            label = HtmlUtils.href(getEntryManager().getEntryUrl(request,
+            label = HU.href(getEntryManager().getEntryUrl(request,
                     entry), label);
-            HtmlUtils.sectionTitle(sb, label);
+            HU.sectionTitle(sb, label);
             if (Utils.stringDefined(title)) {
                 sb.append(
-                    HtmlUtils.div(
-                        HtmlUtils.div(
+                    HU.div(
+                        HU.div(
                             msg(title),
-                            HtmlUtils.cssClass(
-                                "ramadda-heading")), HtmlUtils.cssClass(
+                            HU.cssClass(
+                                "ramadda-heading")), HU.cssClass(
                                     "ramadda-heading-outer")));
 
             }
         } else {
-            HtmlUtils.sectionTitle(sb, msg(title));
+            HU.sectionTitle(sb, msg(title));
         }
 
     }
@@ -3652,7 +3652,7 @@ public class PageHandler extends RepositoryManager {
      */
     public void entrySectionClose(Request request, Entry entry, Appendable sb)
             throws Exception {
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
     }
 
 
@@ -3669,7 +3669,7 @@ public class PageHandler extends RepositoryManager {
         if (request.getExtraProperty("googlejsapi") == null) {
             request.putExtraProperty("googlejsapi", "added");
             sb.append(
-                HtmlUtils.importJS(
+                HU.importJS(
                     getRepository().getProperty("ramadda.google.js", "")));
         }
     }
@@ -3854,17 +3854,17 @@ Time:14625 cnt:7000
         String baseSelect = OutputHandler.getGroupSelect(request, selectId);
 
 
-        sb.append(HtmlUtils.hidden(selectId + "_hidden", ((entry != null)
+        sb.append(HU.hidden(selectId + "_hidden", ((entry != null)
                 ? entry.getId()
-                : ""), HtmlUtils.id(selectId + "_hidden")));
-        sb.append(HtmlUtils.formEntry(msgLabel(label),
-                                      HtmlUtils.disabledInput(selectId,
+                : ""), HU.id(selectId + "_hidden")));
+        sb.append(HU.formEntry(msgLabel(label),
+                                      HU.disabledInput(selectId,
                                           ((entry != null)
                                            ? entry.getFullName()
-                                           : ""), HtmlUtils.id(selectId)
-                                           + HtmlUtils.SIZE_60
+                                           : ""), HU.id(selectId)
+                                           + HU.SIZE_60
                                            + ((entry == null)
-                ? HtmlUtils.cssClass(CSS_CLASS_REQUIRED_DISABLED)
+                ? HU.cssClass(CSS_CLASS_REQUIRED_DISABLED)
                 : "")) + baseSelect + extra));
     }
 
@@ -3895,7 +3895,7 @@ Time:14625 cnt:7000
         */
         String url = getEntryManager().getEntryUrl(request, entry);
 
-        return HtmlUtils.href(url, (args.length > 0)
+        return HU.href(url, (args.length > 0)
                                    ? args[0]
                                    : entry.getLabel());
     }
