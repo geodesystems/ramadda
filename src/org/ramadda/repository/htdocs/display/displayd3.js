@@ -191,9 +191,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
     const ID_SKEWT = "skewt";
     const ID_DATE_LABEL = "skewtdate";
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    RamaddaUtil.defineMembers(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         needsData: function() {
             return true;
         },
@@ -463,10 +461,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
 function RamaddaD3Display(displayManager, id, properties) {
     const ID_SVG = "svg";
     const SUPER = new RamaddaDisplay(displayManager, id, "d3", properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-
-    RamaddaUtil.defineMembers(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         initDisplay: function() {
             this.createUI();
             this.setDisplayTitle(properties.graph.title);
@@ -824,9 +819,7 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
 function RamaddaVennDisplay(displayManager, id, properties) {
     const ID_VENN = "venn";
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         getContentsStyle: function() {
             return "";
         },
@@ -948,15 +941,12 @@ function RamaddaVennDisplay(displayManager, id, properties) {
 function RamaddaMinidotsDisplay(displayManager, id, properties) {
     const ID_MINIDOTS = "minidots";
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MINIDOTS, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:'Minidots Properties'},
 	{p:'dateField',ex:''},
 	{p:'valueField',ex:''},
-    ]);
-
-    $.extend(this, {
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         getContentsStyle: function() {
             return "";
         },
@@ -1052,9 +1042,7 @@ function RamaddaMinidotsDisplay(displayManager, id, properties) {
 function RamaddaChernoffDisplay(displayManager, id, properties) {
     const ID_VENN = "venn";
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         getContentsStyle: function() {
             return "";
         },
@@ -1341,17 +1329,14 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
 
 
 
-
 function RamaddaD3bubbleDisplay(displayManager, id, properties) {
     const ID_BUBBLES = "bubbles";
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_D3BUBBLE, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
     if(!window["BubbleChart"]) {
 	Utils.importJS(ramaddaBaseUrl +"/lib/d3/d3-legend.min.js");
 	Utils.importJS(ramaddaBaseUrl +"/lib/d3/bubblechart.js");
     }
-    RamaddaUtil.defineMembers(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         needsData: function() {
             return true;
         },
@@ -1370,6 +1355,9 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 					'showSizeLegend=false'
 				    ])},
 
+        displayData: function() {
+	    this.updateUI();
+	},
         updateUI: function() {
             if(!window["BubbleChart"]) {
 		if(!this.callbackWaiting) {
@@ -1381,17 +1369,19 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		}
                 return;
             }
-	    
+	    //If the width is 0 then there is an error in the d3
+	    if(this.jq(ID_DISPLAY_CONTENTS).width() ==0)  {
+		this.jq(ID_DISPLAY_CONTENTS).html("...");
+		return;
+	    }
+	    let records = this.filterData();
+	    if (!records) {
+                return;
+	    }  
             let colorByField = this.getFieldById(null, this.getProperty("colorBy","category"));
 	    let valueField = this.getFieldById(null, this.getProperty("valueField"));
 	    if(colorByField)
 		this.setProperty("sortFields",colorByField.getId());
-	    var records = this.filterData();
-	    if (!records) {
-                return;
-	    }  
-	    let data =[];
-
 	    let html = HtmlUtil.tag("svg", ["id", this.getDomId(ID_BUBBLES),
 					    "width","100%","height","700", "font-family","sans-serif","font-size","10", "text-anchor","middle"])
 	    this.jq(ID_DISPLAY_CONTENTS).html(html);
@@ -1415,6 +1405,7 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		return
 	    }
 
+	    let data =[];
 	    records.map(r=>{
 		let desc =  descField?r.getValue(descField.getIndex()):this.getRecordHtml(r,null, template);
 		let label = r.getValue(labelField.getIndex());
@@ -1424,7 +1415,6 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		    desc:desc,
 		    cat:"",
 		    value:10,
-
 		}
 		if(colorByField)
 		    obj.cat = r.getValue(colorByField.getIndex());
@@ -1439,12 +1429,12 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 		return;
 	    }
 	    let colors =  this.getColorTable(true);
-	    new BubbleChart("#"+this.getDomId(ID_BUBBLES),data,
-			    {label1:this.getProperty("sizeLabel1"),
-			     label2: this.getProperty("sizeLabel2"), 
-			     colors:colors,
-			     showSizeLegend: this.getProperty("showSizeLegend",valueField!=null)
-			    });
+	    new BubbleChart("#"+this.domId(ID_BUBBLES),data,{
+		label1:this.getProperty("sizeLabel1"),
+		label2: this.getProperty("sizeLabel2"), 
+		colors:colors,
+		showSizeLegend: this.getProperty("showSizeLegend",valueField!=null)
+	    });
 	}
     })
 }

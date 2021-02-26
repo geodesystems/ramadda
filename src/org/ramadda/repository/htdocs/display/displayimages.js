@@ -50,11 +50,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		   (jqxhr, settings, exception) => {
 		       console.log("err");
 		   });
-
-    
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+  
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
@@ -414,10 +411,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
     const ID_PREV = "prev";
     const ID_IMAGES = "images";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
-    
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:'Image Gallery Properties'},
 	{p:'imageField',ex:''},
 	{p:'labelFields',ex:''},
@@ -435,8 +429,9 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'minHeightGallery',ex:150},
 	{p:'maxHeightGallery',ex:150},	
 	{p:'columns',ex:'5'},
-    ]);
-    $.extend(this, {
+    ];
+
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	startIndex:0,
 	dataFilterChanged: function() {
 	    this.startIndex=0;
@@ -634,9 +629,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
     const ID_POPUPIMAGE = "imagepopupimage";
     const ID_RECT = "imagerect";            
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGEZOOM, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:"Image Zoom Attributes"},
 	{p:'labelFields'},
 	{p:'thumbField'},
@@ -646,10 +639,10 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	{p:'popupWidth'},
 	{p:'popupHeight'},	
 	{p:"popupImageWidth"}
-    ]);
+    ];
 
 
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	dataFilterChanged: function() {
 	    this.updateUI();
 	},
@@ -857,9 +850,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
     const ID_NEXT = "next";
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_SLIDES, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
 	slideIndex:0,
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),

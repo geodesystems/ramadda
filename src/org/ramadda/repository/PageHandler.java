@@ -695,7 +695,7 @@ public class PageHandler extends RepositoryManager {
         if (templateJavascriptContent == null) {
             StringBuilder js = new StringBuilder();
             js.append(
-                "$( document ).ready(function() {Utils.initPage(); });");
+		      "$( document ).ready(function() {Utils.initPage(); });");
 
             //j-
             StringBuilder sb = new StringBuilder();

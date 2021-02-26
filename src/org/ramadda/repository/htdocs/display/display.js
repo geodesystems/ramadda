@@ -126,6 +126,7 @@ function getGlobalDisplayProperty(name) {
 function addRamaddaDisplay(display) {
     Utils.addDisplay(display);
     display.displayCount=globalDisplayCount++;
+    return display;
 }
 
 async function ramaddaDisplaySetSelectedEntry(entryId, displays) {
@@ -143,7 +144,11 @@ async function ramaddaDisplaySetSelectedEntry(entryId, displays) {
 function ramaddaDisplayCheckLayout() {
     Utils.displaysList.forEach(d=>{
         if (d.checkLayout) {
+	    let t1= new Date();
+	    console.log("before:" + d.type);
             d.checkLayout();
+	    let t2= new Date();
+	    Utils.displayTimes("after:" + d.type,[t1,t2],true);
         }
     });
 }
@@ -181,6 +186,20 @@ function ramaddaDisplayStepAnimation() {
     });
 }
 
+
+
+function displayDefineMembers(display, props, members) {
+    RamaddaUtil.defineMembers(display, members);
+    if(props && display.defineProperties) display.defineProperties(props);
+    return display;
+}
+
+
+function defineDisplay(display, SUPER, props, members) {
+    RamaddaUtil.inherit(display, SUPER);
+    displayDefineMembers(display, props, members);
+    return display;
+}
 
 
 /**
@@ -234,10 +253,8 @@ function DisplayThing(argId, argProperties) {
     this.ignoreGlobals = argProperties.ignoreGlobals;
 
     this.displayId = null;
-    //IMPORTANT: might breqak a bunch of displays
-    //    $.extend(this, argProperties);
 
-    RamaddaUtil.defineMembers(this, {
+    displayDefineMembers(this,null, {
         objectId: argId,
         properties: argProperties,
         displayParent: null,
@@ -923,9 +940,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			return this.getProperty(prop.p,dflt);
 		    };
 		    let funcName =  'getProperty' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
-		    this[funcName] = getFunc;
+		    if(!this[funcName])
+			this[funcName] = getFunc;
 		    funcName =  'get' + prop.p.substring(0, 1).toUpperCase() + prop.p.substring(1);
-		    this[funcName] = getFunc;
+		    if(!this[funcName])
+			this[funcName] = getFunc;
 		}
 	    }
 
@@ -947,19 +966,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	this._wikiTags  = Utils.mergeLists(tagList,this._wikiTags);
     }
 
-
-    
-    this.defineProperties([
+    let myProps = [
 	{label:'Display Attributes'},
-	{p:'fields',ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
+	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
 	{p:"showMenu",ex:true},	      
 	{p:"showTitle",ex:true},
 	{p:"showEntryIcon",ex:true},
 	{p:"layoutHere",ex:true},
-	{p:"width",ex:"100%"},
-	{p:"height",ex:"400"},
-	{p:"tooltip",ex:"${default}"},
+	{p:"width",doGetter:false,ex:"100%"},
+	{p:"height",doGetter:false,ex:"400"},
+	{p:"tooltip",doGetter:false,ex:"${default}"},
 	{p:"tooltipPositionMy",ex:"left top"},
 	{p:"tooltipPositionAt",ex:"left bottom+2"},		
 	{p:"displayStyle",ex:"css styles",tt:"Specify styles for display"},
@@ -1098,12 +1115,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:"animationShowButtons",ex:false},
 	{p:"animationShowSlider",ex:false},
 	{p:"animationWidgetShort",ex:true}
-    ]);
+    ];
 
-
-
-    
-    RamaddaUtil.defineMembers(this, {
+    displayDefineMembers(this,myProps, {
         displayReady: Utils.getPageLoaded(),
         type: argType,
         displayManager: argDisplayManager,
@@ -1991,13 +2005,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.selectedFields = fields;
             this.addFieldsCheckboxes(fields);
         },
-
         getSelectedFields: function(dfltList) {
 	    let debug = displayDebug.getSelectedFields;
 	    if(debug)
 		console.log(this.type +".getSelectedFields");
-	    if(this.getProperty("binDate")) {
-		var binType = this.getProperty("binType","total");
+	    if(this.getBinDate()) {
+		var binType = this.getBinType("total");
 		var binCount = binType=="count";
 		if(binCount) {
 		    var fields = [];
@@ -2033,7 +2046,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //if (fixedFields) fixedFields.length = 0;
 
             this.setDisplayTitle();
-	    if(this.getProperty("binDate")) {
+	    if(this.getBinDate()) {
 		var binType = this.getProperty("binType","total");
 		let fields = [];
 		this.lastSelectedFields.forEach(field=>{
@@ -2754,7 +2767,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let record = records[0];
 		let map ={};
 		let counts ={};
-		console.log("binDate");
 		this.binRecordToRecords = {};
 		let keyToRecord={};
 		for (var i = 0; i < records.length; i++) {
@@ -4062,7 +4074,8 @@ a
             tabTitles.push("Display"); 
             tabContents.push(form);
         },	
-        checkLayout: function() {},
+        checkLayout: function() {
+	},
         displayData: function() {},
         setDisplayReady: function() {
 	    var callUpdate = !this.displayReady;
@@ -4241,6 +4254,7 @@ a
 //                style += " height:" + height + ";overflow-y:auto;";
                 style += HU.css("max-height", HU.getDimension(maxheight),"overflow-y","auto");
             }	    
+
 	    //            var width = this.getWidthForStyle();
 	    //            if (width) {
 	    //                style += " width:" + width + ";";
@@ -4395,6 +4409,18 @@ a
 	    }
 	    this.jq(header).html(html);
 	},
+
+        //This keeps checking the width of the chart element if its zero
+        //we do this for displaying in tabs
+        checkLayout: function() {
+            let d = this.jq(ID_DISPLAY_CONTENTS);
+	    let w= d.width();
+            if (this.lastWidth != w) {
+		this.lastWidth = w;
+                this.displayData();
+            }
+	},
+
 
         forceUpdateUI: function() {
 	    this.haveCalledUpdateUI = false;
@@ -6748,8 +6774,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
  */
 function RamaddaFieldsDisplay(displayManager, id, type, properties) {
     const SUPER = new RamaddaDisplay(displayManager, id, type, properties);
-    RamaddaUtil.inherit(this, this.RamaddaDisplay = SUPER);
-    RamaddaUtil.defineMembers(this, {
+    defineDisplay(this, SUPER, [], {
         needsData: function() {
             return true;
         },
@@ -6762,14 +6787,6 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         },
         updateUI: function() {
             this.addFieldsCheckboxes();
-        },
-        //This keeps checking the width of the chart element if its zero
-        //we do this for displaying in tabs
-        checkLayout: function() {
-            var d = this.jq(ID_DISPLAY_CONTENTS);
-            if (this.lastWidth != d.width()) {
-                this.displayData();
-            }
         },
         getWikiAttributes: function(attrs) {
             SUPER.getWikiAttributes.call(this, attrs);

@@ -619,19 +619,19 @@ var Utils =  {
 	return h +space+"AM";
     },
     formatDateMonthDayYear: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown data:";
+	if(isNaN(date.getUTCMonth())) return "Unknown date";
 	var m = this.monthNames[date.getUTCMonth()];
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
         return m +" " + d +", " + date.getUTCFullYear();
     },
     formatDateYearMonth: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown data:";
+	if(isNaN(date.getUTCMonth())) return "Unknown date";
 	var m = this.monthNames[date.getUTCMonth()];
         return m +", " + date.getUTCFullYear();
     },    
     formatDateMonthDay: function(date, options, args) {
-	if(isNaN(date.getUTCMonth())) return "Unknown data:";
+	if(isNaN(date.getUTCMonth())) return "Unknown date";
 	var m = this.monthNames[date.getUTCMonth()];
 	var d = date.getUTCDate();
 	if(d<10) d = "0" +d;
@@ -1355,7 +1355,7 @@ var Utils =  {
                     }
 		} else {
                     //Had a resize event during the previous timeout
-                    setTimeout(timeoutFunc.bind(null, redisplayPendingCnt), 1000);
+//                    setTimeout(timeoutFunc.bind(null, redisplayPendingCnt), 1000);
 		}
             }
             redisplayPending = true;
@@ -1373,11 +1373,17 @@ var Utils =  {
 	}
     },
     initDisplays: function() {
+//	console.log("initDisplays");
 	this.displaysList.forEach(d=>{
 	    if(d.pageHasLoaded) {
+		let t1 = new Date();
+//		console.log("\t calling pageHasLoaded:" + d.type); 
 		d.pageHasLoaded();
+		let t2= new Date();
+//		Utils.displayTimes("after pageHasLoaded:" + d.type,[t1,t2],true);
 	    }
 	});
+//	console.timeEnd("initDisplays");
     },
     getPageLoaded: function() {
         return this.pageLoaded;
@@ -1623,9 +1629,6 @@ var Utils =  {
             url = url + "&template=" + template;
 	$('#treeview_view').attr("src", url);
     },
-
-
-
     initPage: function() {
         this.initContent();
         this.pageLoaded = true;
@@ -4055,15 +4058,6 @@ var SU = SvgUtils  = {
  Date.prototype.format = function(mask, utc) {
    return dateFormat(this, mask, utc);
  };
-
-
-
-
-
-
-
-
-
 
 $( document ).ready(function() {
     HU.documentReady = true;

@@ -68,7 +68,6 @@ function MapFeature(source, points) {
 }
 
 
-
 function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_MAP = "map";
     const ID_LATFIELD = "latfield";
@@ -84,7 +83,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     const ID_HTMLLAYER = "htmllayer";
     
 
-    RamaddaUtil.defineMembers(this, {
+    $.extend(this, {
         showBoxes: true,
         showPercent: false,
         percentFields: null,
@@ -96,9 +95,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     });
 
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_MAP, properties);
-    addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
     this.defineSizeByProperties();
-    this.defineProperties([
+    let myProps = [
 	{label:'Map Properties'},
 	{p:'strokeWidth',d:1},
 	{p:'strokeColor',d:'#000'},
@@ -242,9 +242,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'hmFilterPasses',ex:'1'},
 	{p:'hmFilterThreshold',ex:'1'},
 	{p:'hmCountThreshold',ex:'1'},
-    ]);
-
-    RamaddaUtil.defineMembers(this, {
+    ];
+    
+    displayDefineMembers(this, myProps, {
         mapBoundsSet: false,
         features: [],
         myMarkers: {},
@@ -364,6 +364,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    this.hadInitialPosition = false;
             if (this.getProperty("latitude")) {
+		console.log("p1");
 		this.hadInitialPosition = true;
                 params.initialLocation = {lon:+this.getProperty("longitude", -105),
 					  lat:+this.getProperty("latitude", 40)};
@@ -501,7 +502,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let hasLoc = Utils.isDefined(this.getZoomLevel())   ||
 		Utils.isDefined(this.getMapCenter());
-            if (!hasLoc && (this.getBounds() ||this.getGridBounds()) ) {
+            if (!hasLoc && (this.getPropertyBounds() ||this.getPropertyGridBounds()) ) {
 		this.hadInitialPosition = true;
                 var toks = this.getPropertyBounds(this.getGridBounds("")).split(",");
                 if (toks.length == 4) {
@@ -1732,6 +1733,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.setProgress("");
 	},
         updateUI: function(args) {
+//	    console.trace();
 	    if(!args) args={};
 	    let debug = false;
 	    this.lastUpdateTime = null;
@@ -1952,7 +1954,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	checkHeatmapReload:function() {
 //	    return
-	    if(!this.getHmReloadOnZoom(this.getReloadOnZoom(true))) return;
+	    if(!this.getHmReloadOnZoom(this.getReloadOnZoom(false))) return;
 	    let now = new Date ();
 	    //Don't do this the first couple of seconds after we've been created
 	    if(now.getTime()-this.createTime.getTime()<3000) return;
@@ -2150,7 +2152,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    $("#"+ this.htmlLayerId).html(this.htmlLayer);
 	},
         createHtmlLayer: function(records, fields) {
-	    let htmlLayerField = this.getFieldById(fields,this.HtmlLayerField());
+	    let htmlLayerField = this.getFieldById(fields,this.getHtmlLayerField());
 	    this.htmlLayerInfo = {
 		records:records,
 		fields:fields,
@@ -2708,12 +2710,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 		if(justOneMarker) {
+		    debug = false;
 		    if(didMarker) return;
 		    didMarker = true;
                     this.map.removeMarker(this.justOneMarker);
                     if(!isNaN(point.x) && !isNaN(point.y)) {
                         this.justOneMarker= this.map.addMarker(id, [point.x,point.y], null, "", "");
-			if(debug) console.log("\tadding justOneMarker");
+			if(debug) console.log("\tadding justOneMarker had initial position:" + this.hadInitialPosition);
 			if(!this.hadInitialPosition) {
 			    let loc = createLonLat(point.x,point.y);
 			    if(debug) console.log("\tsetting center:" + loc);
@@ -3202,8 +3205,7 @@ function MapEntryInfo(entry) {
 
 function RamaddaMapgridDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_MAPGRID, properties);
-    addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         needsData: function() {
             return true;
         },
@@ -5579,8 +5581,7 @@ function RamaddaMapgridDisplay(displayManager, id, properties) {
 const ID_BASEMAP = "basemap";
 function RamaddaBasemapDisplay(displayManager, id, type, properties) {
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    this.defineProperties([
+    let myProps = [
 	{label:'Base map properties'},
 	{p:'regionField',ex:''},
 	{p:'valueField',ex:''},
@@ -5590,8 +5591,8 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	{p:'mapBackground',ex:'transparent'},
 	{p:'transforms',ex:"Alaska,0.4,30,-40;Hawaii,2,50,5;Region,scale,offsetX,offsetY"},
 	{p:'prunes',ex:'Alaska,100;Region,maxCount'},
-	{p:'mapWidth',ex:''},
-	{p:'mapHeight',ex:''},
+	{p:'mapWidth',ex:'600'},
+	{p:'mapHeight',ex:'400'},
 	{p:'maxLon'},
 	{p:'minLon'},
 	{p:'maxLat'},
@@ -5602,9 +5603,9 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	{p:"highlightStrokeWidth"},
 	{p:"highlightFill"},
 	{p:"missingFill"},			
-    ]);
+    ];
 
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         checkLayout: function() {
             this.updateUI();
         },
@@ -5677,15 +5678,16 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	    return valueMap;
 	},
 	writeMap:function(skipHeight)  {
-	    let width = +this.getProperty("mapWidth",this.getProperty("width",800));
-	    let css = HU.css(BACKGROUND,this.getPropertyMapBackground("transparent"),WIDTH,HU.getDimension(width));
+	    let width = this.getMapWidth(this.getProperty("width",800));
+	    let css = HU.css(BACKGROUND,this.getMapBackground("transparent"),WIDTH,HU.getDimension(width));
 	    let height;
 	    if(!skipHeight) {
-		height = this.getProperty("mapWidth", this.getProperty("height"));
+		height = this.getMapHeight(this.getProperty("height"));
 		let mw = this.mapRange.maxLon-this.mapRange.minLon;
 		let mh = this.mapRange.maxLat-this.mapRange.minLat;
 		if(!height)
 		    height = mh/mw*width;
+		if(isNaN(height)) height=400; 
 		css+=HU.css(HEIGHT,HU.getDimension(height));
 	    }
 	    
@@ -5693,9 +5695,10 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 	    this.mapRange.minLon= this.getPropertyMinLon(this.mapRange.minLon);
 	    this.mapRange.maxLat= this.getPropertyMaxLat(this.mapRange.maxLat);
 	    this.mapRange.minLat= this.getPropertyMinLat(this.mapRange.minLat);	    	    
-
-
 	    this.writeHtml(ID_DISPLAY_CONTENTS, HU.div([ID,this.domId(ID_BASEMAP),STYLE,css]));
+	    if(isNaN(width)) {
+		width = this.jq(ID_DISPLAY_CONTENTS).width();
+	    }
 	    return [width,height];
 
 	},
@@ -5950,8 +5953,7 @@ function RamaddaBasemapDisplay(displayManager, id, type, properties) {
 
 function RamaddaMapchartDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPCHART, properties);
-    addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
-    this.defineProperties([
+    let myProps = [
 	{label:'Map chart Properties'},
 	{p:'maxLayers',ex:'10'},
 	{p:'translateX',ex:'0'},
@@ -5962,9 +5964,9 @@ function RamaddaMapchartDisplay(displayManager, id, properties) {
 	{p:'scale',ex:'0'},
 	{p:'fillColor',ex:'red'},
 	{p:'blur',ex:'4'},			
-    ]);
+    ];
 
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         makeMap: function() {
             let records = this.filterData();
             if (!records) {
@@ -6071,17 +6073,14 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
     const ID_MAPBLOCK = "mapblock";
     const ID_MAPLABEL = "maplabel";        
     const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPARRAY, properties);
-    addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
-    this.defineProperties([
+    let myProps = [
 	{label:'Map array properties'},
 	{p:'blockWidth',ex:''},
 	{p:'sortByValue',ex:'true'},
 	{p:'fillColor',ex:'red'},
 	{p:'showValue',ex:'true'},	
-	
-    ]);
-
-    $.extend(this, {
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         makeMap: function() {
             let records = this.filterData();
             if (!records) {
@@ -6201,12 +6200,11 @@ function RamaddaMaparrayDisplay(displayManager, id, properties) {
 
 function RamaddaMapshrinkDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPSHRINK, properties);
-    addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
-    this.defineProperties([
+    let myProps = [
 	{label:'Map shrink Properties'},
-    ]);
+    ];
 
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         makeMap: function() {
             let records = this.filterData();
             if (!records) {
@@ -6306,12 +6304,11 @@ function RamaddaMapshrinkDisplay(displayManager, id, properties) {
 
 function RamaddaMapimagesDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBasemapDisplay(displayManager, id, DISPLAY_MAPIMAGES, properties);
-    addRamaddaDisplay(RamaddaUtil.inherit(this, SUPER));
-    this.defineProperties([
+    let myProps = [
 	{label:'Map images Properties'},
 	{p:'imageField',ex:''},
-    ]);
-    $.extend(this, {
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getHeightForStyle: function(dflt) {
 	    return null;
 	},

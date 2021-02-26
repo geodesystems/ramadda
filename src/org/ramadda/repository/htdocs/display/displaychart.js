@@ -3,8 +3,6 @@
 */
 
 
-
-
 const DISPLAY_LINECHART = "linechart";
 const DISPLAY_AREACHART = "areachart";
 const DISPLAY_BARCHART = "barchart";
@@ -196,11 +194,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     const ID_COLORS = "colors";
     const ID_HIGHLIGHTFIELDSHOLDER = "highlightfieldsholder";
     const ID_HIGHLIGHTFIELDS = "highlightfields";	    
-
-
     var _this = this;
-
-
     //Init the defaults first
     $.extend(this, {
         indexField: -1,
@@ -209,11 +203,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         showPercent: false,
         percentFields: null,
     });
-    let SUPER = new RamaddaFieldsDisplay(displayManager, id, chartType, properties);
-    RamaddaUtil.inherit(this, SUPER);
-
-
-    this.defineProperties([
+    const SUPER = new RamaddaFieldsDisplay(displayManager, id, chartType, properties);
+    let myProps = [
 	{label:'Chart Highlight'},
 	{p:'highlightFields',d:null,ex:'fields'},
 	{p:'highlightShowFields',d:null,ex:'true'},
@@ -258,10 +249,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:"trendlineColor",ex:""},
 	{p:"trendlineLineWidth",ex:"true"},
 	{p:"trendlineOpacity",ex:"0.3"}		    		    		    
-    ]);
+    ];
 
 
-    RamaddaUtil.defineMembers(this, {
+    defineDisplay(this, SUPER, myProps, {
 	//Override so we don't include the expandable class
 	getContentsClass: function() {
 	    return "display-contents-inner display-" + this.type;
@@ -272,7 +263,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let debug = false;
             SUPER.updateUI.call(this, args);
 	    if(debug)
-		console.log(this.type+" updateUI")
+		console.log(this.type+".updateUI")
             if (!this.getDisplayReady()) {
 		if(debug)
 		    console.log("\tdisplay not ready");
@@ -1862,8 +1853,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 function RamaddaAxisChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    $.extend(this, {
+    defineDisplay(this, SUPER, [], {
 	getWikiEditorTags: function() {
 	    var t = SUPER.getWikiEditorTags();
 	    var myTags = [
@@ -2017,9 +2007,8 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 
 function RamaddaSeriesChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaAxisChart(displayManager, id, chartType, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    $.extend(this, {
+    const SUPER = new RamaddaAxisChart(displayManager, id, chartType, properties);
+    defineDisplay(this, SUPER, [], {
         includeIndexInData: function() {
             return this.getProperty("includeIndex", true);
         },
@@ -2031,9 +2020,8 @@ function RamaddaSeriesChart(displayManager, id, chartType, properties) {
 
 
 function BlankchartDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaSeriesChart(displayManager, id, "blankchart", properties));
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaSeriesChart(displayManager, id, "blankchart", properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             return null;
         },
@@ -2042,9 +2030,8 @@ function BlankchartDisplay(displayManager, id, properties) {
 
 
 function LinechartDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaSeriesChart(displayManager, id, DISPLAY_LINECHART, properties));
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER =  new RamaddaSeriesChart(displayManager, id, DISPLAY_LINECHART, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             return new google.visualization.LineChart(chartDiv);
         },
@@ -2055,10 +2042,8 @@ function LinechartDisplay(displayManager, id, properties) {
 
 
 function AreachartDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_AREACHART, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
@@ -2074,9 +2059,8 @@ function AreachartDisplay(displayManager, id, properties) {
 
 
 function RamaddaBaseBarchart(displayManager, id, type, properties) {
-    let SUPER  = new RamaddaSeriesChart(displayManager, id, type, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    $.extend(this, {
+    const SUPER  = new RamaddaSeriesChart(displayManager, id, type, properties);
+    defineDisplay(this, SUPER, [], {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
@@ -2120,24 +2104,22 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
 
 
 function BarchartDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaBaseBarchart(displayManager, id, DISPLAY_BARCHART, properties));
-    addRamaddaDisplay(this);
+    const SUPER =  new RamaddaBaseBarchart(displayManager, id, DISPLAY_BARCHART, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {});
 }
 
 function BarstackDisplay(displayManager, id, properties) {
     properties = $.extend({
         "isStacked": true
     }, properties);
-    RamaddaUtil.inherit(this, new RamaddaBaseBarchart(displayManager, id, DISPLAY_BARSTACK, properties));
-    addRamaddaDisplay(this);
+    const SUPER =  new RamaddaBaseBarchart(displayManager, id, DISPLAY_BARSTACK, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {});
 }
 
 
 function HistogramDisplay(displayManager, id, properties) {
-    let SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_HISTOGRAM, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    RamaddaUtil.inherit(this, {
+    const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_HISTOGRAM, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    ["label:Histogram Attributes",
@@ -2201,9 +2183,8 @@ function HistogramDisplay(displayManager, id, properties) {
 
 
 function RamaddaTextChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    $.extend(this, {
+    const SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
+    defineDisplay(this, SUPER, [], {
         getFieldsToSelect: function(pointData) {
             return pointData.getNonGeoFields();
         },
@@ -2215,10 +2196,8 @@ function RamaddaTextChart(displayManager, id, chartType, properties) {
 
 function PiechartDisplay(displayManager, id, properties) {
     let ID_PIE_LEGEND = "pielegend";
-    let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_PIECHART, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
 	uniqueValues:[],
 	uniqueValuesMap:{},
         canDoGroupBy: function() {
@@ -2487,9 +2466,8 @@ function SankeyDisplay(displayManager, id, properties) {
     google.charts.load('49', {
         packages: ['sankey']
     });
-    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties));
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_SANKEY, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.height = parseInt(this.getProperty("chartHeight", this.getProperty("height", "400")));
             chartOptions.sankey = {
@@ -2563,9 +2541,8 @@ function SankeyDisplay(displayManager, id, properties) {
 }
 
 function WordtreeDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_WORDTREE, properties));
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_WORDTREE, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         handleEventRecordSelection: function(source, args) {},
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             if (this.getProperty("chartHeight"))
@@ -2721,10 +2698,8 @@ function WordtreeDisplay(displayManager, id, properties) {
 
 
 function TableDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TABLE, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TABLE, properties);
+    let myProps = [
 	{label:'Table Properties'},
 	{p:'imageField',ex:''},
 	{p:'tableWidth=',ex:'100%'},
@@ -2736,9 +2711,9 @@ function TableDisplay(displayManager, id, properties) {
 	{p:'field.colorByMap',ex:'value1:color1,value2:color2'},
 	{p:'maxHeaderLength',ex:'60'},
 	{p:'maxHeaderWidth',ex:'60'},
-	{p:'headerStyle'}]);
+	{p:'headerStyle'}];
 
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         canDoGroupBy: function() {
             return true;
         },
@@ -2922,10 +2897,8 @@ function TableDisplay(displayManager, id, properties) {
 
 
 function BubbleDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_BUBBLE, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_BUBBLE, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
@@ -3119,10 +3092,8 @@ function BubbleDisplay(displayManager, id, properties) {
 
 
 function BartableDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_BARTABLE, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaSeriesChart(displayManager, id, DISPLAY_BARTABLE, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             var height = "";
             if (Utils.isDefined(this.chartHeight)) {
@@ -3198,10 +3169,8 @@ function BartableDisplay(displayManager, id, properties) {
 
 
 function TreemapDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TREEMAP, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TREEMAP, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         handleEventRecordSelection: function(source, args) {},
         getFieldsToSelect: function(pointData) {
             return pointData.getRecordFields();
@@ -3356,9 +3325,8 @@ function TreemapDisplay(displayManager, id, properties) {
 
 
 function TimerangechartDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaTextChart(displayManager, id, DISPLAY_TIMERANGECHART, properties));
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaTextChart(displayManager, id, DISPLAY_TIMERANGECHART, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
             return new google.visualization.Timeline(chartDiv);
         },
@@ -3446,9 +3414,8 @@ function TimerangechartDisplay(displayManager, id, properties) {
 
 
 function CalendarDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_CALENDAR, properties));
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_CALENDAR, properties);
+    let myProps = [
 	{label:'Calendar Properties'},
 	{p:'cellSize',d:15,ex:"15"},
 	{p:'missingValue',ex:""},	
@@ -3459,10 +3426,8 @@ function CalendarDisplay(displayManager, id, properties) {
 	{p:'noDataColor',ex:'red'},
 	{p:'colorAxis',ex:'red,blue'},	
 
-	 
-    ]);
-
-    RamaddaUtil.inherit(this, {
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         doMakeGoogleChart: function(dataList, props, chartDiv, selectedFields, chartOptions) {
 	    let opts = {
 		calendar: {
@@ -3576,9 +3541,8 @@ function CalendarDisplay(displayManager, id, properties) {
 
 
 function GaugeDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_GAUGE, properties));
-    addRamaddaDisplay(this);
-    RamaddaUtil.inherit(this, {
+    const SUPER =  new RamaddaGoogleChart(displayManager, id, DISPLAY_GAUGE, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         getChartHeight: function() {
             return this.getProperty("height", this.getChartWidth());
         },
@@ -3663,10 +3627,8 @@ function GaugeDisplay(displayManager, id, properties) {
 
 
 function ScatterplotDisplay(displayManager, id, properties) {
-    let SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    const SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         trendLineEnabled: function() {
             return true;
         },

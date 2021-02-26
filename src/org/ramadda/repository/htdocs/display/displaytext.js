@@ -96,8 +96,7 @@ addGlobalDisplayType({
 function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
     const ID_TEXTBLOCK = "textblock";
     const SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    $.extend(this, {
+    defineDisplay(this, SUPER, [], {
         processText: function(cnt,fields) {
             let records = this.filterData();
             if (!records) {
@@ -196,9 +195,7 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
 
 function RamaddaWordcloudDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:"Wordcloud Properties"},
 	{p:'termField'},
 	{p:'fields'},	
@@ -212,8 +209,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 	{p:'shape',ex:'rectangular'},
 	{p:'stopWords',ex:'word1,word2'},
 	{p:'showFieldLabel',ex:'false'}	
-    ]);
-    $.extend(this, {
+    ];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getContentsStyle: function() {
             return "";
         },
@@ -488,9 +485,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
     if(!Utils.isDefined(properties.showMenu)) properties.showMenu=false;
     if(!Utils.isDefined(properties.displayStyle)) properties.displayStyle = "background:rgba(0,0,0,0);";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:"Template Attributes"},
 	{p: "template"},
 	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
@@ -511,9 +506,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'${&lt;field&gt;_max}'},
 	{p:'${&lt;field&gt;_min}'},
 	{p:'${&lt;field&gt;_average}'},
-	{p:'highlightOnScroll',ex:'true'}]);
+	{p:'highlightOnScroll',ex:'true'}];
 
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	dataFilterChanged: function() {
 	    if(this.getPropertyOnlyShowSelected() && this.selectedRecord ) {
 		this.selectedRecord = null;
@@ -1054,9 +1049,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 function RamaddaTopfieldsDisplay(displayManager, id, properties) {
     const ID_SLIDE = "slide";
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TOPFIELDS, properties);
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         needsData: function() {
             return true;
         },
@@ -1193,9 +1186,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
     const ID_BLOCKS_HEADER = "blocks_header";
     const ID_BLOCKS = "blocks";
     const ID_BLOCKS_FOOTER = "blocks_footer";
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:'Block Properties'},
 	{p:'animStep',d:1000,ex:"1000",tt:'Delay'},
 	{p:'doSum',d:true,ex:"false",tt:''},
@@ -1204,9 +1195,9 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 //	{p:'counts',d:100,ex:"100",tt:''},	
 	{p:'blockIcon',d:null,ex:"fa-male",tt:'Use an icon'},
 //	{p:'',d:"",ex:"",tt:''},
-    ]);
+    ];
 
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getContentsStyle: function() {
             return "";
         },
@@ -1353,9 +1344,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 
 function RamaddaTextstatsDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTSTATS, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         updateUI: function() {
             var cnt = {};
             var fieldInfo = this.processText(cnt);
@@ -1555,9 +1544,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
 
 function RamaddaFrequencyDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_FREQUENCY, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
@@ -1834,9 +1821,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 
 function RamaddaTextanalysisDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTANALYSIS, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
         checkLayout: function() {
             this.updateUIInner();
         },
@@ -2013,10 +1998,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
     const ID_HIGHLIGHT = "highlight"; 
     const ID_SHRINK = "shrink";
     const SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
-    RamaddaUtil.inherit(this, SUPER);
-    addRamaddaDisplay(this);
-    $.extend(this, {
-	doShrink: this.getProperty("initialShrink",false),
+    defineDisplay(addRamaddaDisplay(this), SUPER, [], {
+	doShrink: properties["initialShrink"],
 	getWikiEditorTags: function() {
 	    return Utils.mergeLists(SUPER.getWikiEditorTags(),
 				    [
@@ -2372,19 +2355,17 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 
 function RamaddaTextDisplay(displayManager, id, properties) {
     const SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties);
-    $.extend(this, SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:'Text Display Attributes'},
 	{p:'recordTemplate',ex:''},
 	{p:'showDefault',d:true,ex:"false"},
 	{p:'message',d:null,ex:""},
-    ]);
-    if(!this.getPropertyRecordTemplate()) {
-	this.setProperty("recordTemplate","${default}");
+    ];
+    if(!properties["recordTemplate"]) {
+	properties["recordTemplate"] = "${default}";
     }
 
-    RamaddaUtil.defineMembers(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         needsData: function() {
             return true;
         },
@@ -2459,15 +2440,13 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 function RamaddaGlossaryDisplay(displayManager, id, properties) {
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_GLOSSARY, properties);
     const ID_GLOSSARY_HEADER = "glossary_header";
-    RamaddaUtil.inherit(this,SUPER);
-    addRamaddaDisplay(this);
-    this.defineProperties([
+    let myProps = [
 	{label:'Glossary Properties'},
 	{p:'wordField',ex:""},
 	{p:'definitionField',ex:""},	
-    ]);
+    ];
 
-    $.extend(this, {
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         updateUI: function() {
 	    let records = this.filterData();
 	    if(!records) return;
