@@ -641,7 +641,6 @@ public class WikiUtil {
                 buff.append(chunk.chunk);
                 continue;
             }
-
             if (chunk.type == chunk.TYPE_CSS) {
                 buff.append("<style type='text/css'>\n");
                 buff.append(chunk.chunk);
@@ -656,7 +655,8 @@ public class WikiUtil {
             }
             if (chunk.type == chunk.TYPE_PRE) {
                 buff.append("\n<pre>");
-                buff.append(chunk.chunk);
+		String s = chunk.chunk.toString().replaceAll("\\{\\{","{<noop>{");
+                buff.append(s);
                 buff.append("\n</pre>\n");
                 continue;
             }
@@ -688,7 +688,6 @@ public class WikiUtil {
                 }
 
                 String tline = line.trim();
-
 
                 if (tline.startsWith("{{")) {
                     buff.append(tline);
@@ -2269,20 +2268,17 @@ public class WikiUtil {
         }
 
 
-
         StringBuffer sb      = new StringBuffer();
         int          baseIdx = 0;
         while (true) {
             int idx1 = s.indexOf(TAG_PREFIX, baseIdx);
             if (idx1 < 0) {
                 sb.append(s.substring(baseIdx));
-
                 break;
             }
             int idx2 = Utils.findNext(s, idx1, TAG_SUFFIX);
             if (idx2 <= idx1) {
                 sb.append(s.substring(baseIdx));
-
                 break;
             }
             sb.append(s.substring(baseIdx, idx1));
@@ -2321,7 +2317,9 @@ public class WikiUtil {
                 }
                 sb.append(value);
             }
-        }
+	}
+
+
         s = sb.toString();
 
 
