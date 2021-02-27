@@ -604,6 +604,11 @@ public class WikiUtil {
         return s;
     }
 
+public interface TriConsumer<T, U, V> {
+     void accept(T t, U u, V v);
+}
+
+
     /**
      * _more_
      *
@@ -626,10 +631,10 @@ public class WikiUtil {
         String headingsNav = null;
 	Hashtable headingsProps=null;
 
-	BiConsumer<StringBuffer,String> defineHeading = (sb,label) ->{
+	TriConsumer<StringBuffer,String,Integer > defineHeading = (sb,label,level) ->{
 	    String id = Utils.makeID(label);
 	    //	    String id = "heading_" + HU.blockCnt++;
-	    headings2.add(new Object[]{id, label});
+	    headings2.add(new Object[]{id, label,level});
 	    sb.append("<a name='" + id +"'></a>");
 	};
 	
@@ -1714,8 +1719,8 @@ public class WikiUtil {
                     if (toks.size() > 1) {
                         buff.append(HU.div(getTitle(toks.get(1)),
 					   HU.cssClass("ramadda-page-title")));
+			defineHeading.accept(buff,toks.get(1),0);
                     }
-
                     continue;
                 }
 
@@ -1942,7 +1947,7 @@ public class WikiUtil {
                 if (tline.startsWith(":h1")) {
                     List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
 		    String label = toks.size() > 1 ? toks.get(1): "";
-		    defineHeading.accept(buff,label);
+		    defineHeading.accept(buff,label,1);
                     buff.append(HU.h1(label));
                     continue;
                 }
@@ -1950,7 +1955,7 @@ public class WikiUtil {
                 if (tline.startsWith(":h2")) {
                     List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
 		    String label = toks.size() > 1 ? toks.get(1): "";
-		    defineHeading.accept(buff,label);
+		    defineHeading.accept(buff,label,2);
                     buff.append(HU.h2(label));
                     continue;
                 }
@@ -1960,7 +1965,7 @@ public class WikiUtil {
                 if (tline.startsWith(":h3")) {
                     List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
 		    String label = toks.size() > 1 ? toks.get(1): "";
-		    defineHeading.accept(buff,label);
+		    defineHeading.accept(buff,label,3);
                     buff.append(HU.h3(label));
                     continue;
                 }
@@ -2000,7 +2005,7 @@ public class WikiUtil {
                 if (tline.startsWith(":anchor")) {
                     List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
 		    String label = toks.size() > 1 ? toks.get(1): "";
-		    defineHeading.accept(buff,label);
+		    defineHeading.accept(buff,label,1);
 		    continue;
 		}
 
@@ -2039,7 +2044,7 @@ public class WikiUtil {
                         clazz = "ramadda-" + what;
                     }
 		    if(what.startsWith("heading")) {
-			defineHeading.accept(buff,blob);
+			defineHeading.accept(buff,blob,1);
 		    }
                     buff.append(
 				HU.div(
@@ -2383,18 +2388,36 @@ public class WikiUtil {
 
 	if(headingsNav!=null && headings2.size()>0) {
 	    StringBuilder hb = new StringBuilder();
+	    boolean hor =  "true".equals(Utils.getProperty(headingsProps,"horizontal","false"));
 	    String delim = Utils.getProperty(headingsProps,"delimiter","&nbsp;|&nbsp;");
+	    if(hor) delim="<br>";
 	    for(Object o: headings2) {
 		Object[] tuple = (Object[])o;
 		String id = (String)tuple[0];
 		String label = (String)tuple[1];		
-		if(hb.length()>0)
+		int level = (int)tuple[2];
+		if(label.indexOf("{{")>=0) {
+		    label = wikify(label, handler);
+		}
+		if(!hor && hb.length()>0)
 		    hb.append(delim);
-		hb.append(HU.mouseClickHref("HtmlUtils.scrollToAnchor('"+ id+"',-50)",label,"class=ramadda-nav-link"));
+		String href = HU.mouseClickHref("HtmlUtils.scrollToAnchor('"+ id+"',-50)",label,"class=ramadda-nav-link");
+		if(hor) {
+		    href= HU.div(HU.space(level*3) + href,"class=ramadda-nav-left-link");
+		}
+		hb.append(href);
 		//		hb.append(HU.href("#" + id, label,"class=ramadda-nav-link"));
 	    }
 	    String style = Utils.getProperty(headingsProps,"style","");
-	    s = s.replace("${" + headingsNav+"}", HU.div(hb.toString(),HU.attrs("class","ramadda-nav","style",style)));
+	    if(hor) {
+		String leftStyle = "";
+		String leftTop = (String) Utils.getProperty(headingsProps,"leftTop",null);
+		if(leftTop!=null) leftStyle+="top:" + leftTop+"px";
+		s = s.replace("${" + headingsNav+"}", "");
+		s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='" + leftStyle+"'>" + hb + "</div><div class=ramadda-nav-right>" + s +"</div></div>";
+	    } else {
+		s = s.replace("${" + headingsNav+"}", HU.div(hb.toString(),HU.attrs("class","ramadda-nav","style",style)));
+	    }
 	}
 
 

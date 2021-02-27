@@ -85,8 +85,34 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     text-decoration:none;
 }    
 
+.ramadda-nav-horizontal {
+//    position:relative;
+}
+
 .ramadda-nav-link:hover {
     background:#eee;
+}
+
+.ramadda-nav-left-link {
+    margin-bottom:10px;
+}
+
+.ramadda-nav-left {
+    padding:20px;
+    width:250px;
+    border-right:1px solid #ccc;
+    background:#FAFAFA;
+    min-height:3000px;
+    height:3000px;
+    position:fixed;
+    top:50px;
+    left:0px;
+}
+
+
+.ramadda-nav-right {
+    left:250px;
+    position:absolute;
 }
 
 
