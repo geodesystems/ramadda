@@ -2704,7 +2704,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     loadKatex: function(callback, error) {
 	if (!window["katex"]) {
-            let imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<link rel='stylesheet' href='static/index.css'><script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
+            let imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
             $(imports).appendTo("head");
 	}
 	HtmlUtils.waitForIt("katex",callback, error);
@@ -2713,7 +2713,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let f = ()=>{
 	    let src = $("#"+ srcId).html();
 	    try {
-		console.log("SRC:" + src);
 		var converter = new showdown.Converter();
 		var html = converter.makeHtml(src);
 		$("#" + targetId).html(html);
@@ -2731,11 +2730,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let f = ()=>{
 	    let src = $("#"+ srcId).html();
 	    try {
-		console.log("before");
 		var html = katex.renderToString(src, {
 		    throwOnError: true
 		});
-		console.log("after");
 		$("#" + targetId).html(html);
 	    } catch(e) {
 		$("#" + targetId).html("Error processing markdown:" + e);
@@ -3202,6 +3199,42 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	contents.animate({
 	    scrollTop: diff+contents.scrollTop()
 	}, 1000);
+    },
+    initNavLinks: function() {
+	let anchors = 	$(".ramadda-nav-anchor");
+	let links =  	$(".ramadda-nav-left-link");	
+	let lastTop = null;
+	$(window).scroll(function(){
+	    let docTop = $(window).scrollTop();
+	    let docBottom = docTop + $(window).height();
+	    let topMost= null;
+	    let top = null;
+	    anchors.each(function() {
+		let elemTop = $(this).offset().top;	
+		let elemBottom = elemTop + $(this).outerHeight(true); 
+		//	console.log("doc:" + docTop + " " + docBottom +"  "+ elemTop +" " + elemBottom);
+		let inView = ((elemTop <= docBottom) && (elemTop >= docTop)) ||
+		    ((elemBottom <= docBottom) && (elemBottom >= docTop)) ||
+		    ((elemBottom >= docBottom) && (elemTop <= docTop));
+		if(!inView) return;
+		if(top==null) {
+		    top = elemTop;
+		    topMost= $(this);
+		} else if(elemTop<top) {
+		    top = elemTop;
+		    topMost= $(this);
+		}
+	    });
+	    if(!topMost) return;
+	    if(lastTop && lastTop.attr("name") == topMost.attr("name")) return;
+	    lastTop = topMost;
+	    links.removeClass("ramadda-nav-link-active");
+	    links.each(function() {
+		if($(this).attr("navlink") == topMost.attr("name")) {
+		    $(this).addClass("ramadda-nav-link-active");
+		}
+	    });
+	});
     },
     setFormValue: function(id, val) {
         $("#" + id).val(val);

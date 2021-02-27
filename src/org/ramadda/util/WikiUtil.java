@@ -635,7 +635,7 @@ public interface TriConsumer<T, U, V> {
 	    String id = Utils.makeID(label);
 	    //	    String id = "heading_" + HU.blockCnt++;
 	    headings2.add(new Object[]{id, label,level});
-	    sb.append("<a name='" + id +"'></a>");
+	    sb.append("<a class=ramadda-nav-anchor name='" + id +"'></a>");
 	};
 	
 
@@ -1717,9 +1717,14 @@ public interface TriConsumer<T, U, V> {
                 if (tline.startsWith(":title")) {
                     List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                     if (toks.size() > 1) {
+			String label = toks.get(1);
+			if(label.indexOf("{{")>=0) {
+			    label = wikify(label, handler);
+			    label = label.replaceAll(".*<.*?>(.*)</.*>.*","$1");
+			}
+			defineHeading.accept(buff,label,0);
                         buff.append(HU.div(getTitle(toks.get(1)),
 					   HU.cssClass("ramadda-page-title")));
-			defineHeading.accept(buff,toks.get(1),0);
                     }
                     continue;
                 }
@@ -2012,10 +2017,14 @@ public interface TriConsumer<T, U, V> {
 
                 if (tline.startsWith(":nav")) {
                     List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+		    String what = toks.get(0).trim();
                     headingsProps = 
                         HU.parseHtmlProperties((toks.size() > 1)
 					       ? toks.get(1)
 					       : "");
+		    if(what.equals(":navleft")) {
+			headingsProps.put("navleft","true");
+		    }
 		    headingsNav = "heading_" + HU.blockCnt++;
 		    buff.append("${" + headingsNav+"}");
 		    continue;
@@ -2388,33 +2397,39 @@ public interface TriConsumer<T, U, V> {
 
 	if(headingsNav!=null && headings2.size()>0) {
 	    StringBuilder hb = new StringBuilder();
-	    boolean hor =  "true".equals(Utils.getProperty(headingsProps,"horizontal","false"));
+	    boolean left =  "true".equals(Utils.getProperty(headingsProps,"navleft","false"));
 	    String delim = Utils.getProperty(headingsProps,"delimiter","&nbsp;|&nbsp;");
-	    if(hor) delim="<br>";
+	    if(left) delim="<br>";
 	    for(Object o: headings2) {
 		Object[] tuple = (Object[])o;
 		String id = (String)tuple[0];
 		String label = (String)tuple[1];		
 		int level = (int)tuple[2];
+		//Handle if this is {{title}} eg.
 		if(label.indexOf("{{")>=0) {
 		    label = wikify(label, handler);
+		    label = label.replaceAll(".*<.*?>(.*)</.*>.*","$1");
 		}
-		if(!hor && hb.length()>0)
+		if(!left && hb.length()>0)
 		    hb.append(delim);
-		String href = HU.mouseClickHref("HtmlUtils.scrollToAnchor('"+ id+"',-50)",label,"class=ramadda-nav-link");
-		if(hor) {
-		    href= HU.div(HU.space(level*3) + href,"class=ramadda-nav-left-link");
+		String clazz=" ramadda-nav-link ";
+		if(left) clazz+= " ramadda-nav-link-" + level;
+		    
+		String href = HU.mouseClickHref("HtmlUtils.scrollToAnchor('"+ id+"',-50)",label,HU.attrs("class", clazz));
+		if(left) {
+		    href= HU.div(href,HU.attrs("class","ramadda-nav-left-link","navlink",id));
 		}
 		hb.append(href);
-		//		hb.append(HU.href("#" + id, label,"class=ramadda-nav-link"));
 	    }
 	    String style = Utils.getProperty(headingsProps,"style","");
-	    if(hor) {
+	    if(left) {
 		String leftStyle = "";
 		String leftTop = (String) Utils.getProperty(headingsProps,"leftTop",null);
 		if(leftTop!=null) leftStyle+="top:" + leftTop+"px";
 		s = s.replace("${" + headingsNav+"}", "");
-		s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='" + leftStyle+"'>" + hb + "</div><div class=ramadda-nav-right>" + s +"</div></div>";
+		
+		s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='" + leftStyle+"'>" + hb + "</div><div class=ramadda-nav-right>" + s +"</div></div>" + HU.script("HtmlUtils.initNavLinks()");
+		
 	    } else {
 		s = s.replace("${" + headingsNav+"}", HU.div(hb.toString(),HU.attrs("class","ramadda-nav","style",style)));
 	    }

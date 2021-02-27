@@ -78,11 +78,33 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 .ramadda-nav {
     text-align: center;
-    font-size:140%;
+    font-size:120%;
 }
 
 .ramadda-nav-link {
     text-decoration:none;
+    color:#364149;
+}
+
+.ramadda-nav-link-active {
+    background:#ddd;
+}
+
+.ramadda-nav-link-0 {
+    font-size:110%;
+    font-weight:bold;
+}    
+
+.ramadda-nav-link-1 {
+    margin-left:10px;
+}    
+
+.ramadda-nav-link-2 {
+    margin-left:20px;
+}    
+
+.ramadda-nav-link-3 {
+    margin-left:30px;
 }    
 
 .ramadda-nav-horizontal {
