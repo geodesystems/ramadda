@@ -76,6 +76,20 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     display:inline-block;
 }
 
+.ramadda-nav {
+    text-align: center;
+    font-size:140%;
+}
+
+.ramadda-nav-link {
+    text-decoration:none;
+}    
+
+.ramadda-nav-link:hover {
+    background:#eee;
+}
+
+
 .ramadda-menubar {
     max-width:100%;
     white-space:nowrap;
