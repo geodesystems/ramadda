@@ -3122,6 +3122,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     attrSelect:function(name,value) {
 	return  "[" + name+"=\"" + value +"\"]";
     },
+    scrollToAnchor:function(aid,offset){
+	var aTag = $("a[name='"+ aid +"']");
+	if(!offset) offset=0;
+	offset = +offset;
+	//Offset a bit
+	$('html,body').animate({scrollTop: aTag.offset().top+offset},'slow');
+	location.hash = aid;
+    },
     scrollVisible: function(contents, child) {
 	if(child.length==0 || contents.length==0)  return;
 	let diff = child.offset().top-contents.offset().top;
