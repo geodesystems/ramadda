@@ -5428,7 +5428,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String textButton = makeButton.apply("Text", text.toString());
         String entriesButton = makeButton.apply("Entries", makeTagsMenu(textAreaId));
-        String displaysButton = HU.href("javascript:noop()", "Displays",
+	String displaysButton = HU.href("javascript:noop()", "Displays",
 					HU.attrs("id",
 						 "displays_button" + textAreaId,
 						 "class", "ramadda-menubar-button")) +
