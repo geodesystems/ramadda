@@ -2681,6 +2681,72 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
 
+    waitForIt: function(what,callback, error, cnt) {
+	if (window[what]) {
+	    callback();
+	    return;
+	}
+	if(!Utils.isDefined(cnt)) cnt = 500;
+	if(cnt===0) {
+	    if(error) error();
+	    return;	    
+	}
+	setTimeout(()=>{
+	    HtmlUtils.waitForIt(what,callback, error, cnt-1);
+	},50);
+    },
+    loadAndWait: function(what,load, callback,error) {
+	if (!window[what]) {
+	    let imports = load;
+            $(imports).appendTo("head");
+	}
+	HtmlUtils.waitForIt(what,callback, error);
+    },
+    loadKatex: function(callback, error) {
+	if (!window["katex"]) {
+            let imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<link rel='stylesheet' href='static/index.css'><script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
+            $(imports).appendTo("head");
+	}
+	HtmlUtils.waitForIt("katex",callback, error);
+    },
+    applyMarkdown:function(srcId,targetId) {
+	let f = ()=>{
+	    let src = $("#"+ srcId).html();
+	    try {
+		console.log("SRC:" + src);
+		var converter = new showdown.Converter();
+		var html = converter.makeHtml(src);
+		$("#" + targetId).html(html);
+	    } catch(e) {
+		$("#" + targetId).html("Error processing markdown:" + e);
+	    }
+	}
+	let e = ()=> {
+	    $("#" + targetId).html("Error loading showdown");
+	};
+	let imports = "<script src='" +ramaddaBaseUrl + "/lib/showdown.min.js'/>";
+	HtmlUtils.loadAndWait("showdown",imports,f,e);
+    },
+    applyLatex:function(srcId,targetId) {
+	let f = ()=>{
+	    let src = $("#"+ srcId).html();
+	    try {
+		console.log("before");
+		var html = katex.renderToString(src, {
+		    throwOnError: true
+		});
+		console.log("after");
+		$("#" + targetId).html(html);
+	    } catch(e) {
+		$("#" + targetId).html("Error processing markdown:" + e);
+	    }
+	}
+	let e = ()=> {
+	    $("#" + targetId).html("Error loading katex");
+	};
+	HtmlUtils.loadKatex(f,e);
+    },
+
     getIconImage: function(url,attrs,attrs2) {
         if(StringUtil.startsWith(url,"fa-")) {
 	    var a = ["class","fa " + url]
