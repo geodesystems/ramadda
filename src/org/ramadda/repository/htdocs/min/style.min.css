@@ -121,22 +121,28 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 .ramadda-nav-left {
     padding:20px;
+    padding-top:80px;
     width:250px;
     border-right:1px solid #ccc;
     background:#FAFAFA;
     min-height:3000px;
     height:3000px;
     position:fixed;
-    top:50px;
+    top:0px;
     left:0px;
+    z-index: 50;
 }
 
 
 .ramadda-nav-right {
-    left:250px;
-    position:absolute;
+    /* the margin here is the same as the width of the ramada-nav-left element */
+    margin-left:250px;
 }
 
+.ramadda-nav-right .ramadda-block {
+    margin-left:20px !important;
+    margin-right:20px !important;    
+}    
 
 .ramadda-menubar {
     max-width:100%;
@@ -2130,10 +2136,12 @@ label {
 
 
 .ramadda-header {
+    z-index:100;
     background-repeat: repeat; 
     background-image:url(${root}/images/background.png);
     padding-bottom: 0px;
     border-bottom : 1px #e0e0e0 solid;
+    position:relative;
 }
 
 .ramadda-header-label {

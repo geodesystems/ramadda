@@ -2423,11 +2423,8 @@ public interface TriConsumer<T, U, V> {
 	    }
 	    String style = Utils.getProperty(headingsProps,"style","");
 	    if(left) {
-		String leftStyle = "";
-		String leftTop = (String) Utils.getProperty(headingsProps,"leftTop",null);
-		if(leftTop!=null) leftStyle+="top:" + leftTop+"px";
+		String leftStyle =  (String) Utils.getProperty(headingsProps,"leftStyle","");
 		s = s.replace("${" + headingsNav+"}", "");
-		
 		s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='" + leftStyle+"'>" + hb + "</div><div class=ramadda-nav-right>" + s +"</div></div>" + HU.script("HtmlUtils.initNavLinks()");
 		
 	    } else {
