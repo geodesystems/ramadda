@@ -2760,6 +2760,24 @@ public class WikiUtil {
             handleVega(sb, chunk.chunk.toString(), handler);
             return;
         }
+        if (chunk.rest.equals("markdown")) {
+	    String srcId = HU.getUniqueId("markdownsrc");
+	    String targetId = HU.getUniqueId("markdownsrc");	    
+	    HU.div(sb,chunk.chunk.toString(),HU.attrs("id",srcId,"style","display:none;"));
+	    HU.div(sb,chunk.chunk.toString(),HU.attrs("id",targetId,"style",""));	    
+	    HU.script(sb,"HtmlUtils.applyMarkdown('" + srcId+"','" + targetId+"');");
+	    return;
+	}
+        if (chunk.rest.equals("latex")) {
+	    String srcId = HU.getUniqueId("latexsrc");
+	    String targetId = HU.getUniqueId("latexsrc");	    
+	    HU.div(sb,chunk.chunk.toString(),HU.attrs("id",srcId,"style","display:none;"));
+	    HU.div(sb,chunk.chunk.toString(),HU.attrs("id",targetId,"style",""));	    
+	    HU.script(sb,"HtmlUtils.applyLatex('" + srcId+"','" + targetId+"');");
+	    return;
+	}
+
+
 	if(chunk.rest.equals("javascript")) {
 	    sb.append(HU.cssLink(handler.getHtdocsUrl("/lib/prettify/prettify.css")));
 	    sb.append(HU.importJS(handler.getHtdocsUrl("/lib/prettify/prettify.js")));
@@ -3301,6 +3319,7 @@ public class WikiUtil {
         static int TYPE_PRE = TYPE++;
 
 
+
         /** _more_ */
         int type;
 
@@ -3361,7 +3380,6 @@ public class WikiUtil {
             if (type == TYPE_PRE) {
                 return "PRE";
             }
-
             return "NOWIKI";
         }
 
