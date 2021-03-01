@@ -384,6 +384,13 @@ public class Utils extends IO {
     }
 
 
+    public static boolean startsWithIgnoreCase(String s, String prefix)   {
+        return s.regionMatches(true, 0, prefix, 0, prefix.length());
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -883,6 +890,32 @@ public class Utils extends IO {
         }
 
         return results;
+    }
+
+    public static List<String[]> findAllPatterns(String s, String regexp) {
+
+	List<String[]> all = new ArrayList<String[]>();
+        Pattern pattern = Pattern.compile(regexp);
+	while(true) {
+	    Matcher matcher = pattern.matcher(s);
+	    if ( !matcher.find()) {
+		break;
+	    }
+	    String[] results = new String[matcher.groupCount()];
+     	    for (int i = 0; i < results.length; i++) {
+     		results[i] = matcher.group(i + 1);
+     	    }
+     	    all.add(results);
+	    s = s.substring(matcher.end());
+	}
+	return all;
+    }
+
+    public static void main(String[] args) throws Exception {
+        String s = "blah blah <h1>Some H1</h1> asdasd <h1>asdasdasd</h1> asdasds";
+	List<String[]>all = findAllPatterns(s,"(<h1>.*?</h1>)");
+        System.err.println(all.size());
+	System.exit(0);
     }
 
     /**
@@ -1980,14 +2013,14 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeID(String label) {
+	label = stripTags(label);
         label = label.trim().toLowerCase().replaceAll(" ",
                 "_").replaceAll("\\.", "_").replaceAll("\n",
                                 "_").replaceAll("\\(", "_").replaceAll("\\)",
-                                    "_");
+								       "_").replaceAll("\\?","_").replaceAll("[\"'`]+","").trim();
 
         label = label.replaceAll("__+", "_");
         label = label.replaceAll("_$", "");
-
         return label;
     }
 
@@ -4003,22 +4036,6 @@ public class Utils extends IO {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        String s =
-            "                     <div class=\"fp-section\" data-section-title=\"Pain level <span>1</span>\" data-section-caption=\"1 of 3\">\n                           <div class=\"specimen-header\">\n                                       <h2>Red fire ant</h2>\n                                 <span><i>Solenopsis invicta</i></span>                          </div>";
-        Pattern p = Pattern.compile(
-                        "(?s)Pain +level *<span>([0-9.]+)</span>.*?<h2>(.*)");
-        Matcher m = p.matcher(s);
-        System.err.println("match:" + m.find());
-    }
 
 
     /**
