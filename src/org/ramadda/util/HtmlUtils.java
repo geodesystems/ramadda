@@ -428,10 +428,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static String hbox(String s1, String s2) {
-        return tag(TAG_TABLE,
-                   attrs(ATTR_CELLSPACING, "0", ATTR_CELLPADDING, "0"),
-                   HtmlUtils.rowTop(HtmlUtils.cols(s1, s2)));
+    public static String hbox(Object ...args) {
+	StringBuilder sb  = new StringBuilder();
+	sb.append("<table><tr valign=top>");
+	for(Object s: args)
+	    sb.append("<td>" + s +"</td>");
+	sb.append("</tr></table>");
+	return sb.toString();
     }
 
     /**
@@ -1773,6 +1776,14 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
+    public static String makeDim(String size, String dflt) {
+	if(size==null) return null;
+	if(!size.matches("^[0-9\\.+-]+$")) return size;
+	if(dflt!=null) return size+dflt;
+	return size+"px";
+    }
+
+
     /**
      * _more_
      *
@@ -2558,6 +2569,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * _more_
      *
      * @param icon _more_
+     * @param attr _more_
+     *
+     * @return _more_
+     */
+    public static String fasIconWithAttr(String icon, String attr) {
+        return span("<i class=\"fas " + icon + "\"></i>", attr);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param icon _more_
      * @param args _more_
      *
      * @return _more_
@@ -2709,6 +2733,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                        ? attr(ATTR_COLS, "" + columns)
                        : style("width:100%");
 
+	value = value.replaceAll("&","&amp;");
         return tag(TAG_TEXTAREA,
                    attrs(ATTR_NAME, name, ATTR_CLASS, CLASS_TEXTAREA)
                    + attrs(ATTR_ROWS, "" + rows) + width + extra, value);
