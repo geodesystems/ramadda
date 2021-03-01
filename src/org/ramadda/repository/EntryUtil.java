@@ -124,6 +124,39 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    public static Entry getPrev(Entry entry, List<Entry> entries) {
+	//	System.err.println("prev:" + entry+" list:" + entries);
+	for(int i=0;i<entries.size();i++) {
+	    Entry e = entries.get(i);
+	    if(e.getId() == entry.getId()) {
+		//		System.err.println("\tgot:" + i +" " + entries.size());
+		if(i>0) {
+		    //		    System.err.println("\tok");
+		    return entries.get(i-1);
+		}
+		return  null;
+	    }
+	}
+	return null;
+    }
+
+    public static Entry getNext(Entry entry, List<Entry> entries) {
+	//	System.err.println("next:" + entry+" list:" + entries);
+	for(int i=0;i<entries.size();i++) {
+	    Entry e = entries.get(i);
+	    if(e.getId() == entry.getId()) {
+		//		System.err.println("\tgot:" + i +" " + entries.size());
+		if(i<=entries.size()-2) {
+		    //		    System.err.println("\tallgood");
+		    return entries.get(i+1);
+		}
+		return  null;
+	    }
+	}
+	return null;
+    }
+
+
     /**
      * _more_
      *
@@ -134,7 +167,7 @@ public class EntryUtil extends RepositoryManager {
      * @return _more_
      */
     public static List<Entry> sortEntriesOnPattern(List<Entry> entries,
-            final boolean descending, String p) {
+						   final boolean descending, String p) {
         p = p.replaceAll("_LEFT_", "[").replaceAll("_RIGHT_", "]");
         final Pattern pattern = Pattern.compile(p);
         //      System.err.println("on pattern:" + pattern+":");
