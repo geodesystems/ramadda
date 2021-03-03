@@ -33,7 +33,7 @@ import java.util.Properties;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.*;
-import java.util.regex.*;
+
 
 
 /**
@@ -123,6 +123,9 @@ public class WikiUtil {
 
 
     private WikiPageHandler handler;
+
+
+    List                 headings2        = new ArrayList();
 
 
     /**
@@ -486,11 +489,14 @@ public class WikiUtil {
      *
      * @throws IOException _more_
      */
+
+
     public void wikify(Appendable mainBuffer, String text,
                        WikiPageHandler handler, String[] notTags)
 	throws IOException {
         if (text.startsWith("<wiki>")) {
             text = text.substring("<wiki>".length());
+	    text =  text.replaceFirst("\\s*\\R?", "");
         }
         List<Chunk> chunks = Chunk.splitText(text);
         String      s      = wikifyInner(chunks, handler, notTags);
@@ -604,9 +610,9 @@ public class WikiUtil {
         return s;
     }
 
-public interface TriConsumer<T, U, V> {
-     void accept(T t, U u, V v);
-}
+    public interface TriConsumer<T, U, V> {
+	void accept(T t, U u, V v);
+    }
 
 
     /**
@@ -625,23 +631,18 @@ public interface TriConsumer<T, U, V> {
     private String wikifyInner(List<Chunk> chunks, WikiPageHandler handler,
                                String[] notTags)
 	throws IOException {
-
         List                 headings        = new ArrayList();
-        List                 headings2        = new ArrayList();
-        String headingsNav = null;
+	String headingsNav = null;
 	Hashtable headingsProps=null;
+
 
 	TriConsumer<StringBuffer,String,Integer > defineHeading = (sb,label,level) ->{
 	    String id = Utils.makeID(label);
+	    label = Utils.stripTags(label);
 	    //	    String id = "heading_" + HU.blockCnt++;
 	    headings2.add(new Object[]{id, label,level});
 	    sb.append("<a class=ramadda-nav-anchor name='" + id +"'></a>");
-	};
-	
-
-
-
-	
+	};	
         boolean              closeTheTag     = false;
         int                  ulCnt           = 0;
         int                  olCnt           = 0;
@@ -667,33 +668,46 @@ public interface TriConsumer<T, U, V> {
 
         for (Chunk chunk : chunks) {
             if (chunk.type == chunk.TYPE_CODE) {
+		buff.append("<nowiki>");
                 handleCode(buff, chunk, handler);
+		buff.append("</nowiki>");
                 continue;
             }
+
             if (chunk.type == chunk.TYPE_NOWIKI) {
-                buff.append(chunk.chunk);
+		buff.append("<nowiki>");
+                buff.append(chunk.buff);
+		buff.append("</nowiki>");
                 continue;
             }
             if (chunk.type == chunk.TYPE_CSS) {
+		buff.append("<nowiki>");
                 buff.append("<style type='text/css'>\n");
-                buff.append(chunk.chunk);
+                buff.append(chunk.buff);
                 buff.append("</style>\n");
+		buff.append("</nowiki>");
                 continue;
             }
             if (chunk.type == chunk.TYPE_JS) {
+		buff.append("<nowiki>");
                 buff.append("\n<script type='text/JavaScript'>\n");
-                buff.append(chunk.chunk);
+                buff.append(chunk.buff);
                 buff.append("\n</script>\n");
+		buff.append("</nowiki>");
                 continue;
             }
             if (chunk.type == chunk.TYPE_PRE) {
+		buff.append("<nowiki>");
                 buff.append("\n<pre>");
-		String s = chunk.chunk.toString().replaceAll("\\{\\{","{<noop>{");
+		String s = chunk.buff.toString().replaceAll("\\{\\{","{<noop>{");
                 buff.append(s);
-                buff.append("\n</pre>\n");
+                buff.append("</pre>\n");
+		buff.append("</nowiki>");
                 continue;
-            }
-            String text = chunk.chunk.toString();
+	    }
+
+
+	    String text = chunk.buff.toString();
             text = applyPatterns(handler, headings, text);
 
             for (String line : text.split("\n")) {
@@ -1556,6 +1570,7 @@ public interface TriConsumer<T, U, V> {
                     buff.append("<div class=\"");
                     buff.append(clazz);
                     buff.append("\"   " + extraAttr + ">");
+
                     //                System.err.println("s:" + clazz +" " + extraAttr);
                     if (label == null) {
                         label = heading;
@@ -1718,6 +1733,7 @@ public interface TriConsumer<T, U, V> {
                     List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                     if (toks.size() > 1) {
 			String label = toks.get(1);
+
 			if(label.indexOf("{{")>=0) {
 			    label = wikify(label, handler);
 			    label = label.replaceAll(".*<.*?>(.*)</.*>.*","$1");
@@ -2382,12 +2398,11 @@ public interface TriConsumer<T, U, V> {
             } else {
                 String value = null;
                 if (handler != null) {
-                    value = handler.getWikiPropertyValue(this, property,
-							 notTags);
+                    value = handler.getWikiPropertyValue(this, property, notTags);
                 }
                 if (value == null) {
                     value = "Unknown property:" + property;
-                }
+                } 
                 sb.append(value);
             }
 	}
@@ -2420,19 +2435,20 @@ public interface TriConsumer<T, U, V> {
 		    href= HU.div(href,HU.attrs("class","ramadda-nav-left-link","navlink",id));
 		}
 		hb.append(href);
+		hb.append("\n");
 	    }
-	    String style = Utils.getProperty(headingsProps,"style","");
 	    if(left) {
 		String leftStyle =  (String) Utils.getProperty(headingsProps,"leftStyle","");
+		String rightStyle =  (String) Utils.getProperty(headingsProps,"rightStyle","");
 		s = s.replace("${" + headingsNav+"}", "");
-		s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='" + leftStyle+"'>" + hb + "</div><div class=ramadda-nav-right>" + s +"</div></div>" + HU.script("HtmlUtils.initNavLinks()");
-		
+		String leftLinks = HU.div(hb.toString(),"class=ramadda-nav-left-links");
+		s = "<div class=ramadda-nav-horizontal><div class=ramadda-nav-left style='" + leftStyle+"'><div id=ramadda-nav-1></div>" + leftLinks + 
+		    "<div id=ramadda-nav-2></div><div id=ramadda-nav-3></div></div><div style='" + rightStyle+"' class=ramadda-nav-right>" + s +"</div></div>" + HU.script("HtmlUtils.initNavLinks()");
 	    } else {
+		String style = Utils.getProperty(headingsProps,"style","");
 		s = s.replace("${" + headingsNav+"}", HU.div(hb.toString(),HU.attrs("class","ramadda-nav","style",style)));
 	    }
 	}
-
-
 
 
         /*
@@ -2534,13 +2550,9 @@ public interface TriConsumer<T, U, V> {
             s = s.substring(idx3 + "</block>".length());
         }
         sb.append(s);
+
         s = sb.toString();
-        s = s.replace("_BRACKETOPEN_", "[");
-        s = s.replace("_BRACKETCLOSE_", "]");
-        //        s = s.replaceAll("(\n\r)+","<br>\n");
-        //        s = s.replaceAll("\n+","<br>\n");
-
-
+        s = s.replace("_BRACKETOPEN_", "[").replace("_BRACKETCLOSE_", "]");
 
         if (getMakeHeadings()) {
             if (headings.size() >= 2) {
@@ -2569,13 +2581,13 @@ public interface TriConsumer<T, U, V> {
         }
 
 
-
         for (java.util.Enumeration keys = myVars.keys();
 	     keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();
             Object value = myVars.get(key);
             s = s.replace("${" + key + "}", value.toString());
         }
+
 
         return s;
     }
@@ -2792,22 +2804,22 @@ public interface TriConsumer<T, U, V> {
                            WikiPageHandler handler)
 	throws IOException {
         if (chunk.rest.equals("vega-lite")) {
-            handleVega(sb, chunk.chunk.toString(), handler);
+            handleVega(sb, chunk.buff.toString(), handler);
             return;
         }
         if (chunk.rest.equals("markdown")) {
 	    String srcId = HU.getUniqueId("markdownsrc");
 	    String targetId = HU.getUniqueId("markdownsrc");	    
-	    HU.div(sb,chunk.chunk.toString(),HU.attrs("id",srcId,"style","display:none;"));
-	    HU.div(sb,chunk.chunk.toString(),HU.attrs("id",targetId,"style",""));	    
+	    HU.div(sb,chunk.buff.toString(),HU.attrs("id",srcId,"style","display:none;"));
+	    HU.div(sb,chunk.buff.toString(),HU.attrs("id",targetId,"style",""));	    
 	    HU.script(sb,"HtmlUtils.applyMarkdown('" + srcId+"','" + targetId+"');");
 	    return;
 	}
         if (chunk.rest.equals("latex")) {
 	    String srcId = HU.getUniqueId("latexsrc");
 	    String targetId = HU.getUniqueId("latexsrc");	    
-	    HU.div(sb,chunk.chunk.toString(),HU.attrs("id",srcId,"style","display:none;"));
-	    HU.div(sb,chunk.chunk.toString(),HU.attrs("id",targetId,"style",""));	    
+	    HU.div(sb,chunk.buff.toString(),HU.attrs("id",srcId,"style","display:none;"));
+	    HU.div(sb,chunk.buff.toString(),HU.attrs("id",targetId,"style",""));	    
 	    HU.script(sb,"HtmlUtils.applyLatex('" + srcId+"','" + targetId+"');");
 	    return;
 	}
@@ -2819,7 +2831,7 @@ public interface TriConsumer<T, U, V> {
 	    String id = "javascript" + HU.blockCnt++;
 	    sb.append("<pre class=\"prettyprint\">\n");
 	    int cnt = 0;
-	    for (String line:chunk.chunk.toString().split("\n")) {
+	    for (String line:chunk.buff.toString().split("\n")) {
 		cnt++;
 		line = line.replace("\r", "");
 		line = HU.entityEncode(line);
@@ -2833,7 +2845,7 @@ public interface TriConsumer<T, U, V> {
 	    return;
 	}
         HU.pre(sb,
-	       "CODE:" + chunk.rest + "\n" + chunk.chunk.toString());
+	       "CODE:" + chunk.rest + "\n" + chunk.buff.toString());
     }
 
 
@@ -3335,6 +3347,9 @@ public interface TriConsumer<T, U, V> {
         /** _more_ */
         static int TYPE = 0;
 
+        static int TYPE_NA = -1;
+
+
         /** _more_ */
         static int TYPE_WIKI = TYPE++;
 
@@ -3359,7 +3374,7 @@ public interface TriConsumer<T, U, V> {
         int type;
 
         /** _more_ */
-        StringBuilder chunk = new StringBuilder();
+        StringBuilder buff = new StringBuilder();
 
         /** _more_ */
         String rest;
@@ -3390,8 +3405,13 @@ public interface TriConsumer<T, U, V> {
          * @param line _more_
          */
         public void append(String line) {
-            chunk.append(line);
-            chunk.append("\n");
+	    append(line, true);
+	}
+
+	public void append(String line, boolean addNewline) {	    
+            buff.append(line);
+	    if(addNewline)
+		buff.append("\n");
         }
 
         /**
@@ -3399,7 +3419,7 @@ public interface TriConsumer<T, U, V> {
          *
          * @return _more_
          */
-        private String getCodeName() {
+        private static String getTypeName(int type) {
             if (type == TYPE_WIKI) {
                 return "WIKI";
             }
@@ -3415,7 +3435,11 @@ public interface TriConsumer<T, U, V> {
             if (type == TYPE_PRE) {
                 return "PRE";
             }
-            return "NOWIKI";
+            if (type == TYPE_NOWIKI) {
+		return "NOWIKI";
+            }	    
+	    return "NA";
+
         }
 
         /**
@@ -3424,8 +3448,11 @@ public interface TriConsumer<T, U, V> {
          * @return _more_
          */
         public String toString() {
-            return "chunk:" + getCodeName() + " text:"
-		+ chunk.toString().replaceAll("\n", "_NL_") + "\n";
+	    //.replaceAll("\n", "_NL_");
+	    String tmp  = this.buff.toString();
+	    tmp = tmp.replaceAll("\n","_NL_");
+	    //	    System.err.println("TMP:" + tmp);
+	    return getTypeName(type) + ":" + tmp;
         }
 
         /**
@@ -3436,70 +3463,106 @@ public interface TriConsumer<T, U, V> {
          * @return _more_
          */
         public static List<Chunk> splitText(String s) {
+	    boolean debug = false;
+	    if(debug)
+		System.err.println("splitText:" + s);
             List<Chunk> chunks = new ArrayList<Chunk>();
+	    //	    s = s.replaceAll("</pre>(^\\R)?","</pre>\n$1");
             String[]    lines  = s.split("\n");
             Chunk       chunk  = null;
             String[] prefixes = new String[] { "<nowiki>", "+css",
-					       "+javascript", "+pre", "<pre>" };
+					       "+javascript", "+pre", "<pre>","```" };
             String[] suffixes = new String[] { "</nowiki>", "-css",
-					       "-javascript", "-pre", "</pre>" };
-            int[] codes = new int[] { TYPE_NOWIKI, TYPE_CSS, TYPE_JS,
-                                      TYPE_PRE, TYPE_PRE };
-
+					       "-javascript", "-pre", "</pre>","```" };
+            int[] types = new int[] { TYPE_NOWIKI, TYPE_CSS, TYPE_JS,
+                                      TYPE_PRE, TYPE_PRE,TYPE_CODE };
+	    String lookingForClose= null;
             for (String line : lines) {
-                if (line.startsWith("```")) {
-                    if ((chunk == null) || (chunk.type != Chunk.TYPE_CODE)) {
-                        //open
-                        chunks.add(chunk = new Chunk(Chunk.TYPE_CODE,
-						     line.substring(3)));
-                    } else {
-                        //close
-                        chunk = null;
-                    }
+		int currentType = chunk!=null?chunk.type:TYPE_NA;
+		if(debug)
+		    System.err.println("code:" + getTypeName(currentType) +" LINE:" + line);
+		boolean gotIt = false;
+		if(currentType == TYPE_PRE) {
+		    int index = line.indexOf("</pre>");
+		    if(index>0) {
+			String preStuff = line.substring(0,index);
+			chunk.append(preStuff, false);
+			chunk = null;
+			line =  line.substring(index+6).trim();
+		    }
+		}
+		if(currentType == TYPE_WIKI || currentType == TYPE_NA) {
+		    for (int i = 0; i < prefixes.length; i++) {
+			String prefix  = prefixes[i];
+			if (Utils.startsWithIgnoreCase(line,prefix)){ 
+			    gotIt = true;
+			    int type = types[i];
+			    String rest =
+				line.substring(prefix.length()).trim();
+			    lookingForClose = suffixes[i];
+			    if(debug)
+				System.err.println("opened:" + getTypeName(type)+ " rest:" + rest +" looking for close:" + lookingForClose);
+			    if(type == TYPE_CODE) {
+				chunks.add(chunk = new Chunk(type, rest));
+			    } else {
+				chunks.add(chunk = new Chunk(type));
+				//Can't handle <pre>...</pre> on one line
+				if(rest.length()>0) {
+				    if(type == TYPE_PRE) {
+					int index = rest.indexOf("</pre>");
+					if(index>=0) {
+					    lookingForClose  = null;
+					    //					    <pre>.....</pre>
+					    String preStuff = rest.substring(0,index);
+					    chunk.append(preStuff, false);
+					    line =  rest.substring(index+6).trim();
+					    chunk  = null;
+					    if(debug)
+						System.err.println("<pre> tag had a close pre. rest of line:" + line);
+					    if(line.length()>0) {
+						if(debug)
+						    System.err.println("setting gotit to false so we continue processing line");
+						gotIt = false;
+					    }
+					    break;
+					}
+				    }
+				    chunk.append(rest);
+				}
+			    }
+			    break;
+			}
+		    }
+		    if(gotIt) continue;
+		}
 
-                    continue;
-                }
-                boolean matched = false;
-                for (int i = 0; (i < prefixes.length) && !matched; i++) {
-                    if (line.startsWith(prefixes[i])) {
-                        int code = codes[i];
-                        if ((chunk == null) || (chunk.type != code)) {
-                            //open
-                            chunks.add(chunk = new Chunk(code));
-                            String rest =
-                                line.substring(prefixes[i].length()).trim();
-                            if (rest.length() > 0) {
-                                chunk.append(rest);
-                            }
-                        }
-                        matched = true;
-                    }
-                }
-                if (matched) {
-                    continue;
-                }
-                matched = false;
-
-                for (String suffix : suffixes) {
-                    if (line.startsWith(suffix)) {
+		if(lookingForClose !=null) {
+		    if(debug)
+			System.err.println("Looking for:" + lookingForClose);
+		    if (Utils.startsWithIgnoreCase(line,lookingForClose)) {
+			//Not quite sure what to do with 
+			String rest =line.substring(lookingForClose.length());
+			line  = null;
+			lookingForClose = null;
+			if(debug)
+			    System.err.println("closed:" + rest);
+			if(rest.length()>0) { 
+			    line = rest;
+			}
                         chunk   = null;
-                        matched = true;
-
-                        break;
-                    }
+		    }
+		    if(line==null) continue;
                 }
-                if (matched) {
-                    continue;
-                }
-
-
-
                 if (chunk == null) {
                     chunks.add(chunk = new Chunk(Chunk.TYPE_WIKI));
                 }
+		if(debug)
+		    System.err.println("appending:" + getTypeName(chunk.type) +" line:" + line);
                 chunk.append(line);
-            }
+	    }
 
+	    if(debug)
+		System.err.println("done:" + chunks);
             return chunks;
         }
 
@@ -3571,41 +3634,9 @@ public interface TriConsumer<T, U, V> {
      * @param args _more_
      */
     public static void main(String[] args) throws Exception {
-        String s =
-            "\nhello there\n```vega\ncode block\nmore code\n```\n<nowiki>NOWIKI1\nNO WIKI2\n</nowiki>\nmore text\nand more text\n```\nmore code\n```\n";
-        System.err.println(Utils.join(Chunk.splitText(s), "", false));
+	String s = "hello\n<pre>prestuff\nand then some</pre>more";
+        System.out.println(Utils.wrap(Chunk.splitText(s),"Chunk:" ,"\n"));
 
-
-
-        //      String  p = "^```.*?\\[^```";   
-        //      String s = "hello [asds] there\n```\n;
-
-        /*
-
-
-	  String s = "";
-	  String s1 =
-	  "hello there how are you ''''contents '''' and how are you";
-	  for (int i = 0; i < 1000; i++) {
-	  s = s + s1;
-	  }
-	  long t1 = System.currentTimeMillis();
-	  for (int i = 0; i < 10000; i++) {
-	  s.replaceAll("'''''([^']+)'''''", "<b><i>$1</i></b>");
-	  }
-	  long t2 = System.currentTimeMillis();
-	  Utils.printTimes("t1:", t1, t2);
-
-	  Pattern p   = Pattern.compile("'''''([^']+)'''''");
-	  long    tt1 = System.currentTimeMillis();
-	  for (int i = 0; i < 10000; i++) {
-	  Matcher m = p.matcher(s);
-	  m.replaceAll("<b><i>$1</i></b>");
-	  }
-	  long tt2 = System.currentTimeMillis();
-	  Utils.printTimes("t2:", tt1, tt2);
-
-        */
     }
 
 
