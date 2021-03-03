@@ -21,12 +21,14 @@ import org.json.*;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.*;
 
 
 
@@ -39,6 +41,8 @@ import java.util.List;
  */
 public class Oembed {
 
+    private Response fixed;
+    
     /** _more_ */
     private static List<Oembed> oembeds;
 
@@ -50,6 +54,11 @@ public class Oembed {
 
     /** _more_ */
     String url;
+
+    public Oembed(Response fixed) {
+	this.fixed = fixed;
+    }
+
 
     /**
      * _more_
@@ -118,6 +127,12 @@ public class Oembed {
      * @throws Exception _more_
      */
     public static Oembed find(String url) throws Exception {
+	//https://gitlab.com/gitlab-org/gitlab-foss/-/snippets/1717978
+	String snippet = StringUtil.findPattern(url,"https://gitlab.com/.*/-/snippets/(.*)");
+	if(snippet!=null) {
+	    
+	    return new Oembed(new Response("\n<script src='https://gitlab.com/-/snippets/" + snippet +".js'></script>\n"));
+	}
         for (Oembed oembed : getOembeds()) {
             if (oembed.match(url)) {
                 return oembed;
@@ -145,10 +160,13 @@ public class Oembed {
             //      System.err.println("no embed found");
             return null;
         }
+	Response fixed = oembed.fixed;
+	if(fixed!=null) return fixed;
         try {
+	    
             String eurl = HtmlUtils.urlEncode(url);
-            String rurl = HtmlUtils.url(oembed.url, "url", url, "maxwidth",
-                                        width, "maxheight", height);
+            String rurl = HtmlUtils.url(oembed.url,new String[]{ "url", eurl, "format","json", "maxwidth",
+								 width, "maxheight", height}, false);
             URL    req  = new URL(rurl);
             String json = IO.readUrl(req);
             if (json.startsWith("<")) {
@@ -249,6 +267,8 @@ public class Oembed {
      */
     public static class Response {
 
+	String fixedHtml;
+	
         /** _more_ */
         public String originalUrl;
 
@@ -272,6 +292,11 @@ public class Oembed {
 
         /** _more_ */
         public String html;
+
+        public Response(String fixedHtml) {
+	    this.fixedHtml = fixedHtml;
+	}
+
 
         /**
          * _more_
@@ -317,6 +342,7 @@ public class Oembed {
          * @return _more_
          */
         public String getHtml() {
+	    if(fixedHtml!=null) return fixedHtml;
             if (type.equals("photo")) {
                 return HtmlUtils.href(originalUrl, HtmlUtils.image(url));
             }
@@ -347,19 +373,24 @@ public class Oembed {
      */
     public static void main(String[] args) throws Exception {
         String[] urls = new String[] {
+	    "https://gitlab.com/-/snippets/2085394",
+	    null,
+	    "https://codepen.io/Coderesting/pen/yLyaJMz",
             "https://vimeo.com/515404225",
             "https://www.youtube.com/watch?v=EL2Y1XHd70c",
-            "http://www.iamcal.com/linklog/1206113631/",
             "http://www.flickr.com/photos/bees/2341623661/",
-            "https://www.facebook.com/don.murray.121/posts/10219628323639292",
-            "https://thebeeswaggle.wordpress.com/2018/04/23/pollinators-support-biodiversity/",
             "https://www.ted.com/talks/marla_spivak_why_bees_are_disappearing?language=en",
             "https://youneedone2.tumblr.com/post/644196242666192896/lotus-by-chishou-nakada",
             "https://www.reddit.com/r/bees/comments/lsyykm/save_the_bees_themed_botanical_bread_floral/"
         };
         for (String url : urls) {
-            System.err.println(url + " response:"
-                               + Oembed.get(url, "500", "300"));
+	    if(url==null) break;
+	    Response response = Oembed.get(url, "500", "300");
+	    if(response==null) {
+		System.err.println("ERROR:" + url);
+	    } else {
+		System.err.println("OK:" + url +" " + response);
+	    }
         }
 
 
