@@ -555,6 +555,8 @@ function folderClick(uid, url, changeImg) {
         originalImages[uid] = jqImage.attr('src');
         jqBlock.show();
         jqImage.attr('src', icon_progress);
+	url +="&orderby=entryorder&ascending=true";
+	console.log(url);
         GuiUtils.loadXML(url, handleFolderList, uid);
     } else {
         if (changeImg) {
