@@ -117,6 +117,27 @@ public class Oembed {
         return name + " " + url + " " + schemes;
     }
 
+    public static String findHtml(String url) throws Exception {
+	String id;
+	id  = StringUtil.findPattern(url,"https://gitlab.com/.*/snippets/(.*)");
+	if(id!=null) {
+	    return "\n<script src='https://gitlab.com/-/snippets/" + id +".js'></script>\n";
+	}
+
+	id  = StringUtil.findPattern(url,"https://gist.github.com/(.*/\\d+$)");
+	if(id!=null) {
+	    return "\n<script src='https://gist.github.com/" + id +".js'></script>\n";
+	}
+
+	id = StringUtil.findPattern(url,"https://jsfiddle.net/(.*macloo/bvwvd0ao)/?");
+	if(id!=null) {
+	    return "\n<script async src='https://jsfiddle.net/" + id +"/embed/js,html,css,result/dark'></script>\n";
+	}	
+	return null;
+
+    }
+
+
     /**
      * _more_
      *
@@ -127,12 +148,10 @@ public class Oembed {
      * @throws Exception _more_
      */
     public static Oembed find(String url) throws Exception {
-	//https://gitlab.com/gitlab-org/gitlab-foss/-/snippets/1717978
-	String snippet = StringUtil.findPattern(url,"https://gitlab.com/.*/-/snippets/(.*)");
-	if(snippet!=null) {
-	    
-	    return new Oembed(new Response("\n<script src='https://gitlab.com/-/snippets/" + snippet +".js'></script>\n"));
-	}
+	String fixed = findHtml(url);
+	if(fixed!=null)
+	    return new Oembed(new Response(fixed));
+
         for (Oembed oembed : getOembeds()) {
             if (oembed.match(url)) {
                 return oembed;
@@ -330,11 +349,11 @@ public class Oembed {
          */
         public String toString() {
             return type + " author:" + author + " title:" + title + " w:"
-                   + width;
+                   + width + " " + fixedHtml;
         }
 
 
-
+	//<script src="https://gist.github.com/dustinmartin/364172.js"></script>
 
         /**
          * _more_
@@ -373,6 +392,10 @@ public class Oembed {
      */
     public static void main(String[] args) throws Exception {
         String[] urls = new String[] {
+	    "https://jsfiddle.net/macloo/bvwvd0ao/",
+	    null,
+	    "https://gist.github.com/dustinmartin/364172",
+	    null,
 	    "https://gitlab.com/-/snippets/2085394",
 	    null,
 	    "https://codepen.io/Coderesting/pen/yLyaJMz",
