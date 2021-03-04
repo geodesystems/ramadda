@@ -417,6 +417,7 @@ function Ramadda(repositoryRoot) {
                 var type = settings.types[i];
                 url += "&type=" + type;
             }
+
             if (settings.parent != null && settings.parent.length > 0)
                 url += "&group=" + settings.parent;
             if (settings.provider != null && settings.provider.length > 0)
@@ -449,12 +450,17 @@ function Ramadda(repositoryRoot) {
             if (!isNaN(settings.getEast()))
                 url += "&maxlongitude=" + settings.getEast();
 
+	    if(settings.entryRoot) 
+		url += "&entryRoot=" + encodeURIComponent(settings.entryRoot);
+
             for (var i = 0; i < settings.metadata.length; i++) {
                 var metadata = settings.metadata[i];
                 url += "&metadata_attr1_" + metadata.type + "=" + metadata.value;
             }
             url += "&max=" + settings.getMax();
             url += "&skip=" + settings.getSkip();
+	    if(settings.rootEntry)
+		url += "&rootEntry=" + encodeURIComponent(settings.rootEntry);
             url += settings.getExtra();
             return url;
         },
