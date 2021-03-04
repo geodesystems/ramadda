@@ -88,7 +88,7 @@ public class EsrlMapPageDecorator extends PageDecorator implements WikiConstants
             argProps.put(ATTR_DETAILS,"true");
             argProps.put(ATTR_LISTENTRIES, Misc.getProperty(props, ATTR_LISTENTRIES, "true"));
             MapInfo map = getMapManager().getMap(request, entry, children, sb,
-                                                 width, height, mapProps, argProps);
+                                                 ""+width, ""+height, mapProps, argProps);
 
             sb.append(HtmlUtils.importJS(getHtdocsUrl("/noaa/psdstations.js")));
 
