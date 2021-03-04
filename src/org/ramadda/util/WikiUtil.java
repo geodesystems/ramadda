@@ -2414,12 +2414,14 @@ public class WikiUtil {
 	    StringBuilder hb = new StringBuilder();
 	    boolean left =  "true".equals(Utils.getProperty(headingsProps,"navleft","false"));
 	    String delim = Utils.getProperty(headingsProps,"delimiter","&nbsp;|&nbsp;");
+	    int maxLevel = Utils.getProperty(headingsProps,"maxLevel",100);
 	    if(left) delim="<br>";
 	    for(Object o: headings2) {
 		Object[] tuple = (Object[])o;
+		int level = (int)tuple[2];
+		if(level>maxLevel) continue;
 		String id = (String)tuple[0];
 		String label = (String)tuple[1];		
-		int level = (int)tuple[2];
 		//Handle if this is {{title}} eg.
 		if(label.indexOf("{{")>=0) {
 		    label = wikify(label, handler);
