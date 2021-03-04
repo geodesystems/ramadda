@@ -951,6 +951,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let tag = "";
 	    tag +=prop.p+'="';
+	    prop.wikiValue = prop.wikiValue||prop.w;
 	    tag += (prop.ex?prop.ex:prop.wikiValue?prop.wikiValue:prop.d?prop.d:"")+'"';
 	    let w = [];
 	    let tt = prop.tt||"";
@@ -3128,17 +3129,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 else html += left;
                 //                    html += "<hr>";
             }
-            var divid = HU.getUniqueId("entry_");
+            let divid = HU.getUniqueId("entry_");
             html += HU.div([ID, divid], "");
-
-            if (false) {
-                var url = this.getRamadda().getRoot() + "/entry/show?entryid=" + entry.getId() + "&decorate=false&output=metadataxml&details=true";
-                //                console.log(url);
-                $("#" + divid).load(url, function() {
-                    alert("Load was performed.");
-                });
-            }
-
             var desc = entry.getDescription();
             if (desc)
                 desc = desc.replace(/\n/g, "<br>");
@@ -4112,13 +4104,14 @@ a
 	    }, this.getProperty("reloadSeconds")*1000);
 	},
         getMainDiv: function() {
-	    return $("#" + this.getProperty(PROP_DIVID));
+	    let divId = this.getProperty("targetDiv",this.getProperty(PROP_DIVID));
+	    return $("#" + divid); 
 	},
         getGroupDiv: function() {
 	    return $("#" + this.getProperty("groupDiv"));
 	},	
         createUI: function() {
-            var divid = this.getProperty(PROP_DIVID);
+            var divid = this.getProperty("targetDiv",this.getProperty(PROP_DIVID));
             if (divid != null) {
                 var html = this.getHtml();
 		let div = $("#" + divid);
@@ -4227,7 +4220,7 @@ a
 
             let html =  HU.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
             let style = this.getProperty("displayStyle", "");
-            html += HU.div([CLASS, "display-contents", STYLE, style],table);
+            html += HU.div([CLASS, "display-contents", STYLE, "display:relative;" + style],table);
             return html;
         },
         getWidthForStyle: function(dflt) {
