@@ -3,27 +3,46 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
-const DISPLAY_ENTRYLIST = "entrylist";
-const DISPLAY_TESTLIST = "testlist";
-const DISPLAY_ENTRYDISPLAY = "entrydisplay";
-const DISPLAY_ENTRY_GALLERY = "entrygallery";
-const DISPLAY_ENTRY_GRID = "entrygrid";
-const DISPLAY_OPERANDS = "operands";
-const DISPLAY_METADATA = "metadata";
-const DISPLAY_ENTRYTIMELINE = "entrytimeline";
-const DISPLAY_REPOSITORIES = "repositories";
-const DISPLAY_ENTRYTITLE = "entrytitle";
-const ID_RESULTS = "results";
-const ID_ENTRIES = "entries";
-const ID_DETAILS_INNER = "detailsinner";
-const ID_PROVIDERS = "providers";
-const ID_SEARCH_SETTINGS = "searchsettings";
-const ID_TREE_LINK = "treelink";
-const ATTR_ENTRYID = "entryid";
+let DISPLAY_ENTRYLIST = "entrylist";
+let DISPLAY_TESTLIST = "testlist";
+let DISPLAY_ENTRYDISPLAY = "entrydisplay";
+let DISPLAY_ENTRY_GALLERY = "entrygallery";
+let DISPLAY_ENTRY_GRID = "entrygrid";
+let DISPLAY_OPERANDS = "operands";
+let DISPLAY_METADATA = "metadata";
+let DISPLAY_ENTRYTIMELINE = "entrytimeline";
+let DISPLAY_REPOSITORIES = "repositories";
+let DISPLAY_ENTRYTITLE = "entrytitle";
+let DISPLAY_SEARCH  = "search";
+let DISPLAY_SIMPLESEARCH  = "simplesearch";
+let ID_RESULTS = "results";
+let ID_ENTRIES = "entries";
+let ID_DETAILS_INNER = "detailsinner";
+let ID_PROVIDERS = "providers";
+let ID_SEARCH_SETTINGS = "searchsettings";
+let ID_TREE_LINK = "treelink";
+let  ATTR_ENTRYID = "entryid";
+
+let ID_SEARCH = "search";
+let ID_FORM = "form";
+let ID_TEXT_FIELD = "textfield";
+let ID_TYPE_FIELD = "typefield";
+let ID_TYPE_DIV = "typediv";
+let ID_TYPEFIELDS = "typefields";
+let ID_METADATA_FIELD = "metadatafield";
+let ID_COLUMN = "column";
+
+
 
 
 addGlobalDisplayType({
     type: DISPLAY_ENTRYLIST,
+    label: "Entry List",
+    requiresData: false,
+    category: CATEGORY_ENTRIES
+});
+addGlobalDisplayType({
+    type: DISPLAY_SEARCH,
     label: "Entry List",
     requiresData: false,
     category: CATEGORY_ENTRIES
@@ -109,7 +128,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             provider: properties.provider,
             text: properties.entryText,
             entryType: properties.entryType,
-            orderBy: properties.orderBy
+            orderBy: properties.orderBy,
+	    entryRoot: properties.entryRoot
         }),
         entryList: properties.entryList,
         entryMap: {},
@@ -144,17 +164,11 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
 
 
 
-function RamaddaSearcher(displayManager, id, type, properties) {
-    var NONE = "-- None --";
-    var ID_TEXT_FIELD = "textfield";
-    var ID_TYPE_FIELD = "typefield";
-    var ID_TYPE_DIV = "typediv";
-    var ID_FIELDS = "typefields";
-    var ID_METADATA_FIELD = "metadatafield";
-    var ID_SEARCH = "search";
-    var ID_FORM = "form";
-    var ID_COLUMN = "column";
 
+
+
+function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
+  let NONE = "-- None --";
 
     RamaddaUtil.initMembers(this, {
         showForm: true,
@@ -180,9 +194,8 @@ function RamaddaSearcher(displayManager, id, type, properties) {
         showDetailsForGroup: false,
     });
 
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, type, properties));
-
+    let SUPER = new RamaddaEntryDisplay(displayManager, id, type, properties);
+    RamaddaUtil.inherit(this, SUPER);
 
     if (this.showMetadata && this.showSearchSettings) {
         var metadataTypesAttr = this.getProperty("metadataTypes", "enum_tag:Tag");
@@ -285,7 +298,6 @@ function RamaddaSearcher(displayManager, id, type, properties) {
         },
         initDisplay: function() {
             var theDisplay = this;
-
 
             this.jq(ID_SEARCH).button().click(function(event) {
                 theDisplay.submitSearchForm();
@@ -397,7 +409,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             settings.text = this.getFieldValue(this.getDomId(ID_TEXT_FIELD), settings.text);
 
             if (this.textRequired && (settings.text == null || settings.text.trim().length == 0)) {
-                this.writeHtml(ID_ENTRIES, "");
+                this.writeEntries("");
                 return;
             }
 
@@ -454,11 +466,12 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 this.entryList = new EntryList(this.getRamadda(), jsonUrl, this, true);
                 this.updateForSearching(jsonUrl);
             }
-
-
         },
+        entryListChanged:function(entryList) {
+	    console.log("results");
+	},
         handleSearchError: function(url, msg) {
-            this.writeHtml(ID_ENTRIES, "");
+            this.writeEntries("");
             this.writeHtml(ID_RESULTS, "");
             console.log("Error performing search:" + msg);
             //alert("There was an error performing the search\n" + msg);
@@ -483,13 +496,13 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 msg = "Searching " + msg;
             }
 
-            //            this.showMessage(msg, HtmlUtils.div([ATTR_STYLE, "margin:20px;"], this.getWaitImage()));
+            //            this.showMessage(msg, HtmlUtils.div([ATTR_STYLE, "margin:20px;"], this.getWairtImage()));
             this.showMessage(this.getWaitImage() + " " + msg, HtmlUtils.div([ATTR_STYLE, "margin:20px;"], ""));
             this.hideEntryDetails();
         },
         showMessage: function(title, inner) {
             this.writeHtml(ID_RESULTS, title);
-            this.writeHtml(ID_ENTRIES, inner);
+            this.writeEntries(inner);
         },
         prepareToLayout: function() {
             SUPER.prepareToLayout.apply(this);
@@ -519,21 +532,6 @@ function RamaddaSearcher(displayManager, id, type, properties) {
         makeSearchForm: function() {
             var form = HtmlUtils.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
             var extra = "";
-            var text = this.getSearchSettings().text;
-            if (text == null) {
-                var args = Utils.getUrlArgs(document.location.search);
-                text = args.text;
-            }
-            if (text == null) {
-                text = this.searchText;
-            }
-
-            var eg = " search text";
-            if (this.eg) {
-                eg = " " + this.eg;
-            }
-
-
 
             var buttonLabel = HtmlUtils.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             var topItems = [];
@@ -633,14 +631,12 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 topItems.push(HtmlUtils.span([ATTR_ID, this.getDomId(ID_TYPE_DIV)], HtmlUtils.span([ATTR_CLASS, "display-loading"], "Loading types...")));
             }
 
-            var textField = HtmlUtils.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, "30", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+	    let text  = this.getFormText();
+            var textField = HU.input("", text, ["placeholder", this.getFormEg(), ATTR_CLASS, "display-simplesearch-input", ATTR_SIZE, this.getProperty("inputSize", "30"), ATTR_ID, this.domId(ID_TEXT_FIELD)]);
 
             if (this.showText) {
                 topItems.push(textField);
             }
-
-
-
 
             var horizontal = this.isLayoutHorizontal();
 
@@ -674,7 +670,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 }
             }
             extra += HtmlUtils.closeTag(TAG_TABLE);
-            extra += HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS)], "");
+            extra += HtmlUtils.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
 
 
             if (this.showSearchSettings) {
@@ -695,6 +691,26 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             return form;
 
         },
+	getEgText:function() {
+            var eg = " search text";
+            if (this.eg) {
+                eg = " " + this.eg;
+            }
+	    return eg;
+	},
+
+	getFormText:function() {
+	    var text = this.getSearchSettings().text;
+            if (text == null) {
+                var args = Utils.getUrlArgs(document.location.search);
+                text = args.text;
+            }
+            if (text == null) {
+                text = this.searchText;
+            }
+	    return text;
+	},
+
         handleEventMapBoundsChanged: function(source, args) {
             if (this.areaWidget) {
                 this.areaWidget.handleEventMapBoundsChanged(source, args);
@@ -913,7 +929,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 extra += HtmlUtils.closeTag(TAG_TABLE);
             }
 
-            this.writeHtml(ID_FIELDS, extra);
+            this.writeHtml(ID_TYPEFIELDS, extra);
 
             $(".display-menu").selectBoxIt({});
 
@@ -953,7 +969,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
     if (theType == null) {
         theType = DISPLAY_ENTRYLIST;
     }
-    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcher(displayManager, id, DISPLAY_ENTRYLIST, properties));
+    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_ENTRYLIST, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         haveDisplayed: false,
@@ -1017,11 +1033,17 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             if (entries.length == 0) {
                 return;
             }
-
-            //xxxx
             var props = {
                 selectedEntries: entries
             };
+
+	    let eg = this.getEgText();
+	    let text  = this.getFormText();
+            var textField = HtmlUtils.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, "30", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+
+
+            //xxxx
+
             this.getDisplayManager().createDisplay(DISPLAY_ENTRY_GALLERY, props);
         },
         handleEventEntrySelection: function(source, args) {
@@ -1065,10 +1087,10 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
                         msg = "Nothing found so far. Still searching " + this.multiSearch.count + " repositories";
                     } else {}
                 }
-                this.writeHtml(ID_ENTRIES, this.getMessage(msg));
                 this.writeHtml(ID_FOOTER_LEFT, "");
                 this.writeHtml(ID_RESULTS, "&nbsp;");
                 this.getDisplayManager().handleEventEntriesChanged(this, []);
+		this.writeMessage(msg);
                 return;
             }
             this.writeHtml(ID_RESULTS, this.getResultsHeader(entries));
@@ -1082,14 +1104,12 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
             //                var entriesHtml  = this.getEntriesTree(entries);
             var entriesHtml = this.makeEntriesDisplay(entries);
-
             var html = "";
             html += HtmlUtils.openTag(TAG_OL, [ATTR_CLASS, this.getClass("list"), ATTR_ID, this.getDomId(ID_LIST)]);
             html += entriesHtml;
             html += HtmlUtils.closeTag(TAG_OL);
-            this.writeHtml(ID_ENTRIES, html);
+            this.writeEntries(html, entries);
             this.addEntrySelect();
-
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
         },
     });
@@ -1990,7 +2010,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
         properties.formOpen = false;
     }
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcher(displayManager, id, DISPLAY_METADATA, properties));
+    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_METADATA, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         haveDisplayed: false,
@@ -2007,7 +2027,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
             this.entryList = entryList;
             var entries = this.entryList.getEntries();
             if (entries.length == 0) {
-                this.writeHtml(ID_ENTRIES, "Nothing found");
+                this.writeEntries("Nothing found");
                 this.writeHtml(ID_RESULTS, "&nbsp;");
                 return;
             }
@@ -2036,9 +2056,6 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                 typeName = type.getLabel();
             }
             this.writeHtml(ID_RESULTS, this.getResultsHeader(entries));
-
-
-
             var mdts = null;
             //Get the metadata types to show from either a property or
             //gather them from all of the entries
@@ -2145,7 +2162,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
             }
             html += "</tbody>"
             html += HtmlUtils.closeTag(TAG_TABLE);
-            this.jq(ID_ENTRIES).html(html);
+            this.writeEntries(html, entries);
             HtmlUtils.formatTable("#" + this.getDomId("table"), {
                 scrollY: 400
             });
@@ -2162,7 +2179,7 @@ function RamaddaEntrytimelineDisplay(displayManager, id, properties) {
         properties.formOpen = false;
     }
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcher(displayManager, id, DISPLAY_ENTRYTIMELINE, properties));
+    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_ENTRYTIMELINE, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         initDisplay: function() {
@@ -2175,7 +2192,7 @@ function RamaddaEntrytimelineDisplay(displayManager, id, properties) {
             var entries = this.entryList.getEntries();
             var html = "";
             if (entries.length == 0) {
-                this.writeHtml(ID_ENTRIES, "Nothing found");
+                this.writeEntries("Nothing found");
                 this.writeHtml(ID_RESULTS, "&nbsp;");
                 return;
             }
@@ -2472,7 +2489,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
             html += HtmlUtils.tag(TAG_DIV, [ATTR_CLASS, "display-button", ATTR_ID, this.getDomId(ID_NEWDISPLAY)], "New Chart");
             html += "<p>";
             html += "</form>";
-            this.writeHtml(ID_ENTRIES, html);
+            this.writeEntries(html);
             var theDisplay = this;
             this.jq(ID_NEWDISPLAY).button().click(function(event) {
                 theDisplay.createDisplay();
@@ -2544,7 +2561,6 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
             this.displayRepositories();
         },
         displayRepositories: function() {
-            //                console.log("displayRepositories " + this.numberWithTypes + " " + this.ramaddas.length);
             if (!this.finishedInitDisplay || this.numberWithTypes != this.ramaddas.length) {
                 return;
             }
@@ -2653,3 +2669,233 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
 
 
 var RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;
+
+function RamaddaSimplesearchDisplay(displayManager, id, properties) {
+    let SUPER;
+    let myProps = [
+	{label:'Simple Search Properties'},
+	{p:'maxHeight',w:300},
+	{p:'maxWidth',w:200},
+	{p:'maxWidth',w:200},		
+	{p:"autoSearch",w:true},
+	{p:"showHeader",w:true},
+    ];
+
+    RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties));
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+        haveDisplayed: false,
+        selectedEntries: [],
+        getSelectedEntries: function() {
+            return this.selectedEntries;
+        },
+        initDisplay: function() {
+            var _this = this;
+            if (this.getIsLayoutFixed() && this.haveDisplayed) {
+                return;
+            }
+            this.haveDisplayed = true;
+            this.createUI();
+            this.setContents(this.getDefaultHtml());
+	    let input = this.jq(ID_TEXT_FIELD);
+	    if(this.getAutoSearch(true)) {
+		input.keyup(function(event) {
+		    if($(this).val().trim()=="") {
+			_this.jq(ID_RESULTS).html("");
+			_this.writeEntries("");			
+			return;
+		    }
+		    _this.submitSearchForm(true);
+		});
+	    }
+
+            this.jq(ID_SEARCH).button().click(function(event) {
+                _this.submitSearchForm();
+                event.preventDefault();
+            });
+            this.jq(ID_FORM).submit(function(event) {
+                _this.submitSearchForm();
+                event.preventDefault();
+            });
+
+
+            this.jq(ID_TEXT_FIELD).autocomplete({
+                source: function(request, callback) {
+                }
+            });
+
+	},
+        getDefaultHtml: function() {
+	    let html = this.makeSearchForm();
+	    let  style="";
+	    let abs = (this.getProperty("resultsPosition","absolute")=="absolute");
+	    if(abs) {
+		style+=HU.css("display","none");
+	    } else {
+		if(this.getMaxHeight(400)) {
+		    //		style+=HU.css("height",HU.getDimension(this.getMaxHeight(400)));
+		    style+=HU.css("max-height",HU.getDimension(this.getMaxHeight(400)));
+		} 
+		if(this.getMaxWidth()) {
+		    style+=HU.css("width",HU.getDimension(this.getMaxWidth(400)));
+		    style+=HU.css("max-width",HU.getDimension(this.getMaxWidth(200)));
+		}
+	    }
+	    let entries = HU.div([ID,this.domId(ID_ENTRIES),CLASS,"display-simplesearch-entries",STYLE,style]);
+            if (this.getShowHeader(true)) {
+		this.results = HtmlUtils.div([ATTR_CLASS, "display-entries-results", ATTR_ID, this.getDomId(ID_RESULTS)]);
+		if(abs) {
+		    $(entries).append(this.results);
+		} else {
+
+		    html+= this.results;
+		}
+	    }
+	    if(abs) {
+		$(document).ready(function(){
+		    $(document.body).append(entries);
+		});
+	    } else {
+		html+=entries;
+	    }
+	    return html;
+	},
+        makeSearchForm: function() {
+            var form = HtmlUtils.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
+	    
+	    let eg = this.getEgText();
+	    let text  = this.getFormText();
+            var textField = HtmlUtils.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, "30", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+
+	    form += textField;
+            form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
+            form += HtmlUtils.closeTag("form");
+	    form+=HU.div([ID,this.domId(ID_FORM)]);
+            return form;
+	},
+	writeMessage:function( msg)  {
+	    this.writeResults(msg);
+	},
+	writeResults: function(msg) {
+	    this.jq(ID_RESULTS).html(msg);
+	},
+	writeEntries: function(msg, entries) {
+	    let abs = this.getProperty("resultsPosition","absolute")=="absolute";
+	    if(!abs) {
+		this.jq(ID_ENTRIES).html(msg);
+		return;
+	    }
+	    if(!Utils.stringDefined(msg)) {
+		this.jq(ID_ENTRIES).fadeOut();
+	    } else {
+		let header = entries?this.getResultsHeader(entries)+"<br>":"";
+		this.jq(ID_ENTRIES).html(header+msg);
+		this.jq(ID_ENTRIES).show();
+                let entriesDiv = 
+		    this.jq(ID_ENTRIES).position({
+			of: this.jq(ID_DISPLAY_CONTENTS),
+			my: "left top",
+			at: "left bottom",
+			collision: "none none"
+                    });	
+		this.jq(ID_ENTRIES).fadeIn();
+	    }
+	},
+	
+        submitSearchForm: function(auto) {
+	    this.jq(ID_RESULTS).html("");
+            this.haveSearched = true;
+            var settings = this.getSearchSettings();
+            settings.text = this.getFieldValue(this.getDomId(ID_TEXT_FIELD), settings.text);
+
+	    settings.entryRoot = null;
+	    if(this.getProperty("entryRoot")) {
+		settings.entryRoot = this.getProperty("entryRoot");
+	    }
+
+            if (this.haveTypes) {
+                settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
+            }
+            var theRepository = this.getRamadda()
+            var jsonUrl = this.makeSearchUrl(this.getRamadda());
+            this.entryList = new EntryList(this.getRamadda(), jsonUrl, this, true);
+	    if(!auto)
+		this.updateForSearching(jsonUrl);
+        },
+
+
+        makeDisplayList: function() {
+            var entries = this.getSelectedEntriesFromTree();
+            if (entries.length == 0) {
+                return;
+            }
+            var props = {
+                selectedEntries: entries,
+                showForm: false,
+                showMenu: true,
+                fixedEntries: true
+            };
+            props.entryList = new EntryList(this.getRamadda(), "", this, false);
+            props.entryList.setEntries(entries);
+            this.getDisplayManager().createDisplay(DISPLAY_ENTRYLIST, props);
+        },
+        handleEventEntrySelection: function(source, args) {
+            this.selectEntry(args.entry, args.selected);
+        },
+        selectEntry: function(entry, selected) {
+            var changed = false;
+            if (selected) {
+                this.jq("entry_" + entry.getIdForDom()).addClass("ui-selected");
+                var index = this.selectedEntries.indexOf(entry);
+                if (index < 0) {
+                    this.selectedEntries.push(entry);
+                    changed = true;
+                }
+            } else {
+                this.jq("entry_" + entry.getIdForDom()).removeClass("ui-selected");
+                var index = this.selectedEntries.indexOf(entry);
+                if (index >= 0) {
+                    this.selectedEntries.splice(index, 1);
+                    changed = true;
+                }
+            }
+        },
+        makeEntriesDisplay: function(entries) {
+            return this.getEntriesTree(entries);
+        },
+
+        entryListChanged: function(entryList) {
+            if (this.multiSearch) {
+                this.multiSearch.count--;
+            }
+            SUPER.entryListChanged.apply(this, [entryList]);
+            var entries = this.entryList.getEntries();
+
+            if (entries.length == 0) {
+                this.getSearchSettings().skip = 0;
+                this.getSearchSettings().max = 50;
+                var msg = "Nothing found";
+                this.writeHtml(ID_FOOTER_LEFT, "");
+                this.writeMessage(msg);
+                this.getDisplayManager().handleEventEntriesChanged(this, []);
+                return;
+            }
+            this.writeHtml(ID_RESULTS, this.getResultsHeader(entries));
+
+            var get = this.getGet();
+            this.writeHtml(ID_FOOTER_LEFT, "");
+            if (this.footerRight != null) {
+                this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
+            }
+	    let html = "";
+	    let inner = "";
+	    entries.forEach((entry,idx) =>{
+		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),entry.getName()));
+	    });
+            this.writeEntries(inner, entries);
+            this.getDisplayManager().handleEventEntriesChanged(this, entries);
+        },
+
+    });
+}
+
+
