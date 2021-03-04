@@ -1103,7 +1103,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         MapInfo map;
         if ( !usePopup) {
             map = getRepository().getMapManager().createMap(request, null,
-                    250, 150, true, null);
+							    "250", "150", true, null);
             String maplayers = getRepository().getProperty(PROP_MAP_LAYERS,
                                    null);
             String defaultMap =
