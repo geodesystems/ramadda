@@ -50,13 +50,14 @@
 <wiki>
 <![CDATA[
 +section
-:title {{name link=true}}
+:title {{name}}
 :navleft style="" 
 {{description wikify=true}}
 {{tree message="" prefix="----_nl_:h3 Children Pages" showIcon=false details=false sort=entryorder,name  showTitle=true decorate=false}}
 {{prev position=fixed iconSize=20 sort=name,entryorder sortAscending=true style="left:initial;right:75px;"  showName=false}}
-{{up   position=fixed iconSize=20 sort=name sort=name,entryorder  sortAscending=true  style="right:initial;right:40px;"  showName=false}}
+{{up   position=fixed iconSize=20 sort=name sort=name,entryorder  sortAscending=true  style="right:initial;right:37px;"  showName=false}}
 {{next position=fixed iconSize=20 sort=name sort=name,entryorder  sortAscending=true  style="right:initial;right:10px;"  showName=false}}
+{{display_simplesearch targetDiv=ramadda-nav-1 entryRoot=ancestor:type_documentation inputSize=20}}
 {{links showTitle=true entry=parent targetDiv=ramadda-nav-2  sort=name,entryorder highlightThis=true contentsStyle="max-height:200px;overflow-y:auto;"}}
 -section
 ]]>
