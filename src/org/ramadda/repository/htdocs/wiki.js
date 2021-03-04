@@ -128,6 +128,9 @@ function insertText(id, value) {
 
 
 function insertAtCursor(id, myField, value) {
+    value = Utils.decodeText(value);    
+
+
     var editor = HtmlUtils.getAceEditor(id);
     if (editor) {
         var cursor = editor.getCursorPosition();
@@ -179,15 +182,8 @@ function insertTags(id, tagOpen, tagClose, sampleText) {
 // use sampleText instead of selection if there is none
 function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
     var selText, isSample = false;
-    tagOpen = tagOpen.replace(/&quote;/gi, '\"');
-    tagClose = tagClose.replace(/&quote;/gi, '\"');
-    tagOpen = tagOpen.replace(/_quote_/gi, '\"');
-    tagClose = tagClose.replace(/_quote_/gi, '\"');    
-
-    tagOpen = tagOpen.replace(/_newline_/gi, '\n');
-    tagOpen = tagOpen.replace(/newline/gi, '\n');
-    tagClose = tagClose.replace(/_newline_/gi, '\n');
-    tagClose = tagClose.replace(/newline/gi, '\n');
+    tagOpen = Utils.decodeText(tagOpen);
+    tagClose = Utils.decodeText(tagClose);    
     var editor = HtmlUtils.getAceEditor(id);
     if (editor) {
         var text = tagOpen + tagClose + " ";
@@ -283,7 +279,10 @@ var wikiAttributes = {
 	["details=true"],
 	["showcategories=true"],
 	["decorate=true"],	
-	["form=true"]],
+	["form=true"],
+	['message=""'],
+	['treePrefix=""'],	
+    ],
 			   groupAttributes),		   
     links: Utils.mergeLists([
 	"label:Links Properties",
@@ -291,6 +290,7 @@ var wikiAttributes = {
 	['includeIcon=true'],
 	['linkresource=true','Link to the resource'],
 	['separator=""','Separator between links'],
+	['horizontal=true','Display horizontallly'],
 	['output=""',"Link to output"],
 	['tagopen="html before link'],
 	['tagclose="html after link'],	
