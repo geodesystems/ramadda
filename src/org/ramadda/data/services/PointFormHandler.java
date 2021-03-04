@@ -1388,7 +1388,7 @@ public class PointFormHandler extends RecordFormHandler {
         boolean showMap = pointEntry.isCapable(PointFile.ACTION_MAPINCHART)
                           && request.get(ARG_MAP_SHOW, true);
         MapInfo map = getRepository().getMapManager().createMap(request,
-                          entry, 500, 300, false, null);
+                          entry, "500", "300", false, null);
         if (showMap) {
             makeMapLines(request, pointEntry, map, 0);
             map.centerOn(entry);
