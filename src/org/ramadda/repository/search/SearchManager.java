@@ -1605,6 +1605,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             }
             doSearch = false;
         }
+	String root = null;
 
         if (doSearch) {
             List<SearchProvider> searchProviders =
