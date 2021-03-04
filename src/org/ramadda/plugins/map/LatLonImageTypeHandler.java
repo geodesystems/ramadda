@@ -221,8 +221,8 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
                 int width  = (int) entry.getValue(0, -1);
                 int height = (int) entry.getValue(1, -1);
                 if ((width > 0) && (height > 0)) {
-                    map.setWidth(width);
-                    map.setHeight(height);
+                    map.setWidth(""+width);
+                    map.setHeight(""+height);
                 }
             }
 
