@@ -376,6 +376,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             */
         },
 
+	getCloser: function() {
+	    return  HtmlUtils.getIconImage(icon_close, [ID,this.domId("close"),STYLE,HU.css("cursor","pointer")]);
+	},
+	initCloser: function(what) {
+	    this.jq("close").click(()=>{
+		this.jq(what||ID_RESULTS).hide();
+	    });
+	},
         getResultsHeader: function(entries) {
             var left = "Showing " + (this.searchSettings.skip + 1) + "-" + (this.searchSettings.skip + Math.min(this.searchSettings.max, entries.length));
             var nextPrev = [];
@@ -395,7 +403,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             var results = "";
             var spacer = "&nbsp;&nbsp;&nbsp;"
-            results = left + spacer +
+            results = this.getCloser() + "&nbsp;" + left + spacer +
                 HtmlUtils.join(nextPrev, "&nbsp;") + spacer +
                 HtmlUtils.join(lessMore, "&nbsp;");
             return results;
@@ -1094,7 +1102,6 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
                 return;
             }
             this.writeHtml(ID_RESULTS, this.getResultsHeader(entries));
-
 
             var get = this.getGet();
             this.writeHtml(ID_FOOTER_LEFT, "");
@@ -2443,7 +2450,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
                 this.entryList = new EntryList(this.getRamadda(), jsonUrl, this);
             }
             var html = "";
-            html += HtmlUtils.div([ATTR_ID, this.getDomId(ID_ENTRIES), ATTR_CLASS, this.getClass("entries")], "");
+            html += HtmlUtils.div([ATTR_ID, this.domId(ID_ENTRIES), ATTR_CLASS, this.getClass("entries")], "");
             this.setContents(html);
         },
         entryListChanged: function(entryList) {
@@ -2786,8 +2793,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    this.jq(ID_RESULTS).html(msg);
 	},
 	handleNoEntries: function() {
-            var msg = "Nothing found";
+            var msg = this.getCloser() +"&nbsp;" + "Nothing found";
 	    this.jq(ID_ENTRIES).html(msg);
+	    this.initCloser(ID_ENTRIES);
             this.getDisplayManager().handleEventEntriesChanged(this, []);
 	},
 	writeEntries: function(msg, entries) {
@@ -2802,6 +2810,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		let header = entries?this.getResultsHeader(entries)+"<br>":"";
 		this.jq(ID_ENTRIES).html(header+msg);
 		this.jq(ID_ENTRIES).show();
+		this.initCloser(ID_ENTRIES);
                 let entriesDiv = 
 		    this.jq(ID_ENTRIES).position({
 			of: this.jq(ID_DISPLAY_CONTENTS),
@@ -2886,6 +2895,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
                 return;
             }
             this.writeHtml(ID_RESULTS, this.getResultsHeader(entries));
+	    this.initCloser(ID_RESULTS);
 
             var get = this.getGet();
             this.writeHtml(ID_FOOTER_LEFT, "");
