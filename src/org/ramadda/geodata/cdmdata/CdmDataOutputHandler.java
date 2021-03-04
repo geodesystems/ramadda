@@ -2016,7 +2016,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         StringBuffer         sb   = new StringBuffer();
 
         MapInfo map = getRepository().getMapManager().createMap(request,
-                          entry, 800, 600, false, null);
+                          entry, "800", "600", false, null);
         List trajectories = tod.getTrajectories();
         //TODO: Use new openlayers map
         for (int i = 0; i < trajectories.size(); i++) {
