@@ -44,7 +44,7 @@
   </type>
 
 
-  <type name="type_documentation"  description="Documentation" 
+  <type name="type_documentation"  description="Documentation"  childtypes="type_documentation"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
      <property name="icon" value="/icons/page.png"/>
 <wiki>
@@ -58,7 +58,7 @@
 {{up   position=fixed iconSize=20 sort=name sort=name,entryorder  sortAscending=true  style="right:initial;right:37px;"  showName=false}}
 {{next position=fixed iconSize=20 sort=name sort=name,entryorder  sortAscending=true  style="right:initial;right:10px;"  showName=false}}
 {{display_simplesearch targetDiv=ramadda-nav-1 entryRoot=ancestor:type_documentation inputSize=20}}
-{{links showTitle=true entry=parent targetDiv=ramadda-nav-2  sort=name,entryorder highlightThis=true contentsStyle="max-height:200px;overflow-y:auto;"}}
+{{links showTitle=true entry=parent targetDiv=ramadda-nav-2  sort=entryorder,name highlightThis=true contentsStyle="max-height:200px;overflow-y:auto;"}}
 -section
 ]]>
 </wiki>
