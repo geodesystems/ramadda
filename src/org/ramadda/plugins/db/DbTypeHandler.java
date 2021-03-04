@@ -4276,8 +4276,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throw new IllegalStateException("No geodata data found");
         }
 
-        int    width        = 0;
-        int    height       = 500;
+        String    width        = "";
+        String    height       = "500";
         String mapDisplayId = "mapDisplay_" + Utils.getGuid();
 
         Hashtable props = Utils.makeHashtable("displayDiv", mapDisplayId,
