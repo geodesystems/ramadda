@@ -315,6 +315,7 @@ public interface WikiConstants {
     public static final String WIKI_TAG_GROUP_OLD = "displaygroup";
 
 
+
     /** _more_ */
     public static final String WIKI_TAG_GROUP = "group";
 
@@ -481,6 +482,11 @@ public interface WikiConstants {
 
     /** wiki import */
     public static final String WIKI_TAG_INFORMATION = "information";
+
+    public static final String WIKI_TAG_PREV = "prev";
+    public static final String WIKI_TAG_UP = "up";    
+    public static final String WIKI_TAG_NEXT = "next";    
+
 
     /** _more_ */
     public static final String WIKI_TAG_DOWNLOAD = "download";
