@@ -51,14 +51,16 @@ import java.util.List;
  */
 public class MapInfo {
 
+    private static final HtmlUtils HU = null;
+
     /** default box color */
     public static final String DFLT_BOX_COLOR = "blue";
 
     /** default map width */
-    public static final int DFLT_WIDTH = 700;
+    public static final String DFLT_WIDTH = "700";
 
     /** default map height */
-    public static final int DFLT_HEIGHT = 500;
+    public static final String DFLT_HEIGHT = "500";
 
     /** The associated repository */
     private Repository repository;
@@ -76,10 +78,10 @@ public class MapInfo {
     private String mapStyle;
 
     /** the width */
-    private int width = DFLT_WIDTH;
+    private String width = DFLT_WIDTH;
 
     /** the height */
-    private int height = DFLT_HEIGHT;
+    private String height = DFLT_HEIGHT;
 
     /** is the map for selection */
     private boolean forSelection = false;
@@ -144,8 +146,8 @@ public class MapInfo {
      * @param width  the width of the map
      * @param height  the height of the map
      */
-    public MapInfo(Request request, Repository repository, int width,
-                   int height) {
+    public MapInfo(Request request, Repository repository, String width,
+                   String height) {
         this(request, repository, width, height, false);
     }
 
@@ -159,8 +161,8 @@ public class MapInfo {
      * @param height  the height of the map
      * @param forSelection  true if for selecting something
      */
-    public MapInfo(Request request, Repository repository, int width,
-                   int height, boolean forSelection) {
+    public MapInfo(Request request, Repository repository, String width,
+                   String height, boolean forSelection) {
         this.request      = request;
         this.repository   = repository;
 
@@ -388,20 +390,25 @@ public class MapInfo {
         if (headerMessage != null) {
             result.append(headerMessage);
         }
-        String swidth = (width == 0)
-                        ? ""
-                        : (" width:" + ((width > 0)
-                                        ? width + "px; "
-                                        : (-width) + "%;"));
+        String swidth;
+	    
+	if(!Utils.stringDefined(width)) {
+	    swidth = "";
+	} else if(width.startsWith("-")) {
+		swidth =  width.substring(1) + "%;";
+	} else {
+	    swidth =  HU.makeDim(width,"px")+";";
+	}
+	
         String styles;
         if (mapHidden) {
             styles = "display:none;";
         } else {
             styles = mapStyle;
             if (styles == null) {
-                styles = "height:" + height + "px; " + swidth;
+                styles = "height:" + HU.makeDim(height, "px")+";" + swidth;
             }
-            styles += " height:" + height + "px; " + swidth;
+            styles += " height:" + HU.makeDim(height,"px")+";"  + swidth;
         }
 
         String footer2 =
@@ -1450,8 +1457,8 @@ public class MapInfo {
      *
      *  @param value The new value for Width
      */
-    public void setWidth(int value) {
-        width = value;
+    public void setWidth(String value) {
+        this.width = value;
     }
 
     /**
@@ -1459,8 +1466,8 @@ public class MapInfo {
      *
      *  @return The Width
      */
-    public int getWidth() {
-        return width;
+    public String getWidth() {
+        return this.width;
     }
 
     /**
@@ -1468,7 +1475,7 @@ public class MapInfo {
      *
      *  @param value The new value for Height
      */
-    public void setHeight(int value) {
+    public void setHeight(String value) {
         height = value;
     }
 
@@ -1477,7 +1484,7 @@ public class MapInfo {
      *
      *  @return The Height
      */
-    public int getHeight() {
+    public String getHeight() {
         return height;
     }
 

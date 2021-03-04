@@ -91,7 +91,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
 
     /** default height for GE plugin */
-    public static int DFLT_EARTH_HEIGHT = 500;
+    public static String DFLT_EARTH_HEIGHT = "500";
 
     /** default width for the entries list */
     public static final int EARTH_ENTRIES_WIDTH = 150;
@@ -262,8 +262,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      *
      * @throws Exception _more_
      */
-    public MapInfo createMap(Request request, Entry entry, int width,
-                             int height, boolean forSelection,
+    public MapInfo createMap(Request request, Entry entry, String width,
+                             String height, boolean forSelection,
                              Hashtable<String, String> props)
             throws Exception {
         return createMap(request, entry, width, height, forSelection, false,
@@ -331,8 +331,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      *
      * @throws Exception _more_
      */
-    public MapInfo createMap(Request request, Entry entry, int width,
-                             int height, boolean forSelection,
+    public MapInfo createMap(Request request, Entry entry, String width,
+                             String height, boolean forSelection,
                              boolean hidden, Hashtable<String, String> props)
             throws Exception {
 
@@ -636,7 +636,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @throws Exception  problem creating the HTML
      */
     public String getGoogleEarthPlugin(Request request, Appendable sb,
-                                       int width, int height, String url)
+                                       String width, String height, String url)
             throws Exception {
 
         String[] keyAndOther = getGoogleMapsKey(request);
@@ -672,10 +672,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
 
         String style = "";
-        if (width > 0) {
+        if (Utils.stringDefined(width)) {
             style += "width:" + width + "px; ";
         }
-        if (height <= 0) {
+        if (!Utils.stringDefined(height)) {
             height = DFLT_EARTH_HEIGHT;
         }
         style += "height:" + height + "px; ";
@@ -753,7 +753,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @throws Exception problem creating the plugin
      */
     public void getGoogleEarth(Request request, List<Entry> entries,
-                               Appendable sb, int width, int height,
+                               Appendable sb, String width, String  height,
                                boolean includeList, boolean justPoints)
             throws Exception {
 
@@ -943,7 +943,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             js.append("\n");
         }
 
-        if (height <= 0) {
+        if (!Utils.stringDefined(height)) {
             height = DFLT_EARTH_HEIGHT;
         }
 
@@ -978,7 +978,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      */
     private void layoutMap(Request request, Appendable sb, MapInfo map,
                            boolean includeList, int numEntries,
-                           String listwidth, int height,
+                           String listwidth, String height,
                            List<String> categories,
                            Hashtable<String, StringBuilder> catMap,
                            String mapHtml, String navTop, String extraNav)
@@ -1259,8 +1259,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @throws Exception  problem creating map
      */
     public MapInfo getMap(Request request, Entry mainEntry,
-                          List<Entry> entriesToUse, Appendable sb, int width,
-                          int height, Hashtable mapProps, Hashtable props)
+                          List<Entry> entriesToUse, Appendable sb, String width,
+                          String height, Hashtable mapProps, Hashtable props)
             throws Exception {
 
         boolean doCategories = Utils.getProperty(props, "doCategories",
