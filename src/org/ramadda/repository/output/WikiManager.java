@@ -537,10 +537,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (entryId.startsWith("alias:")) {
             String alias = entryId.substring("alias:".length());
-
             return getEntryManager().getEntryFromAlias(request, alias);
         }
-
 
         if (entryId.startsWith("child:")) {
             String tok = entryId.substring("child:".length());
@@ -564,6 +562,24 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return null;
         }
+
+	if (entryId.startsWith("ancestor:")) {
+            String type = entryId.substring("ancestor:".length()).trim();
+	    Entry lastEntry = entry;
+	    Entry current = entry;
+	    while(true) {
+		Entry parent = current.getParentEntry();
+		if(parent == null) break;
+		if(parent.getTypeHandler().isType(type)) {
+		    lastEntry = parent;
+		}
+		current = parent;
+	    }
+	    //	    System.err.println("ancestor:" + lastEntry);
+            return lastEntry;
+        }
+		
+
 
 
         if (entryId.equals("link") || entryId.startsWith("link:")) {
