@@ -2602,6 +2602,12 @@ proc gen::parseArgs {} {
 
     for {set i 0} {$i < $argc} {incr i} {
         set arg [lindex $argv $i]
+	puts stderr "ARG:$arg"
+	if {$arg == "-doxml"} {
+	       set ::doXml 1
+	       puts stderr "Writing entries.xml"
+	       continue;
+        }
         set didone 0
         foreach method $flags {
             set flag [string tolower $method]
@@ -3063,4 +3069,5 @@ gen::finish
  if {$::doXml} {
 	append  ::xml "</entries>\n"
 	gen::writeFile ~/entries.xml $::xml
+	puts stderr "Wrote ~/entries.xml"
 }

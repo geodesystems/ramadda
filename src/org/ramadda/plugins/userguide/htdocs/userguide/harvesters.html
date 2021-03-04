@@ -1,33 +1,8 @@
-<html>
-<head>
-<title>Harvesters</title>
-  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
-
-</head>
-
-<body>
-<div class="ramadda-documentation">
-<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
-<a href="entryxml.html"><span title="Previous: Entry Xml Import/Export Format"><i class="fa fa-caret-left "></i></span></a> <a href="page_datafacilities.html"><span title="Next: Data Facilities"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#harvesters.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
-</td>
-<td width=40% align=center>
-<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
-</td>
-<td width=30%>&nbsp;</td>
-</tr></table>
-<div class="ramadda-page-heading">Section 6.4: Harvesters</div>
-
-<style type="text/css">
-pre {
-    margin-left:15px;
-}
-</style>
-
-<div style="margin-left:20px;">
+<link rel='stylesheet' type='text/css' href='/repository/userguide.css'>
 
 
 
-
+<%nochildlist%>
 
 
 If you are a site administrator you can create entry harvesters that will
@@ -50,7 +25,8 @@ The repository is checked so as to not add duplicate files.
 
 
 
-<a name="run"></a><p><div class="ramadda-help-heading">6.4.0 <a href="#run">Run Settings</a></div> 
+<a name="run"></a>
+:h2: <a href="#run">Run Settings</a>
 The form has  settings for running the harvester. When you are first creating a harvester sometimes it
 may takes some time to figure out just what you are harvesting and the name and folder settings for the repository
 entry. So, its good to turn on test mode. This will result in entries not being added to the repository when you run
@@ -67,7 +43,8 @@ to run in &quot;Absolute&quot; mode every 15 minutes. If you had a Web harvester
 you might want to use an &quot;Hourly&quot; setting to get the image at some fixed interval (e.g., 0Z, 6Z, 12Z, 18Z, etc).
 
 
-<a name="files"></a><p><div class="ramadda-help-heading">6.4.1 <a href="#files">Files Settings</a></div> 
+<a name="files"></a>
+:h2: <a href="#files">Files Settings</a>
 Under &quot;Look for files&quot; you specify a directory on the server file system to scan and a regular expression to
 match on the file name.
 The repository will recursively scan the directory tree and any files it finds that matches the pattern it will
@@ -109,7 +86,8 @@ The value for attr2 follows the "_" and is any number of characters except a sla
 
 
 
-<a name="entry"></a><p><div class="ramadda-help-heading">6.4.2 <a href="#entry">Entry Creation</a></div> 
+<a name="entry"></a>
+:h2: <a href="#entry">Entry Creation</a>
 
 
 When creating an entry we need to know the folder to put it under, its name and description.
@@ -204,7 +182,8 @@ to the list of file system directories in the Admin-&gt;Access area</b>
 
 
 
-<a name="web"></a><p><div class="ramadda-help-heading">6.4.3 <a href="#web">Web Harvesters</a></div> 
+<a name="web"></a>
+:h2: <a href="#web">Web Harvesters</a>
 The Web Harvesters work the same way as the File Harvesters but they fetch a URL (e.g., an image) every time they
 run. You can also define more that one URLS to fetch . The basic Run settings, Folder and entry creation mechanisms
 are the same as described above.
@@ -212,14 +191,4 @@ are the same as described above.
 
 
 
-
-</div>
-<p>
-
-<p>&nbsp;<p>
-<a href="entryxml.html"><span title="Previous: Entry Xml Import/Export Format"><i class="fa fa-caret-left "></i></span></a> <a href="page_datafacilities.html"><span title="Next: Data Facilities"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#harvesters.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
-<p>
-</div>
-</body>
-</html>
 

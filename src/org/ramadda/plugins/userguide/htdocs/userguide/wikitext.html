@@ -1,38 +1,15 @@
-<html>
-<head>
-<title>Wiki Text</title>
-  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
-
-</head>
-
-<body>
-<div class="ramadda-documentation">
-<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
-<a href="wiki.html"><span title="Previous: Wikis"><i class="fa fa-caret-left "></i></span></a> <a href="wikidisplay.html"><span title="Next: Wiki Display Components"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikitext.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
-</td>
-<td width=40% align=center>
-<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
-</td>
-<td width=30%>&nbsp;</td>
-</tr></table>
-<div class="ramadda-page-heading">Section 5.1: Wiki Text</div>
-
-<style type="text/css">
-pre {
-    margin-left:15px;
-}
-</style>
-
-<div style="margin-left:20px;">
+<link rel='stylesheet' type='text/css' href='/repository/userguide.css'>
 
 
-
+<%nochildlist%>
 
 The web pages in RAMADDA are created through its  wiki facility. The wiki facility supports both regular wiki markup like Wikipedia uses
 as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc. 
 
 
-<a name="basicmarkup"></a><p><div class="ramadda-help-heading">5.1.0 <a href="#basicmarkup">Basic Markup</a></div> 
+
+:h2 Basic Markup
+
 The RAMADDA Wiki facility generally follows the format that Wikipedia follows. For example:
 <div style="margin:10px;"><pre>
 ==Section Heading 1==
@@ -154,9 +131,9 @@ For example, if you want to include javascript in your text do:
 See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
 
 
-<a name="macros"></a>
-<div class="ramadda-help-subsubheading"><a href="#macros">Macros</a>
-</div> 
+
+:h3  Macros
+
 Macro values can be defined and used later in the wiki page with the :macro and +macro/-macro tags.
 
 To define a macro do:
@@ -203,9 +180,9 @@ ramadda.wiki.macro.blockColor-olivine
 Note: the block tag below has a similar feature with the "var" attribute. The difference is that the block tag can be placed at the bottom of the page after the
 var that it references is used. The macro tags need to be inline before they are used.
 
-<a name="blocks"></a>
-<div class="ramadda-help-subsubheading"><a href="#blocks">Blocks</a>
-</div> 
+
+:h3  Blocks
+
 The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
 based on the user's device.
 
@@ -258,13 +235,15 @@ ${var_name}
 
 
 
-<a name="layout"></a><p><div class="ramadda-help-heading">5.1.1 <a href="#layout">Layout and Display Markup</a></div> 
+
+:h2 Layout and Display Markup
+
 There are a number of layout tags that make it easy to do page layout and display.
 
 
-<a name="titles"></a>
-<div class="ramadda-help-subsubheading"><a href="#titles">Titles and headings</a>
-</div> 
+
+:h3  Titles and headings
+
 There are a number of block display elements - 
 title, heading, blurb, note, and block that can be used as:
 <pre>
@@ -292,9 +271,9 @@ Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">htt
 <p>
 
 
-<a name="sections"></a>
-<div class="ramadda-help-subsubheading"><a href="#sections">Sections</a>
-</div> 
+
+:h3  Sections
+
 
 To make page sections use the +section/-section tags.
 <pre>
@@ -380,9 +359,9 @@ You can also add a CSS style descriptor
 </pre>
 
 
-<a name="inset"></a>
-<div class="ramadda-help-subsubheading"><a href="#inset">Inset</a>
-</div> 
+
+:h3  Inset
+
 The +inset tag supports margins.
 <pre>
 +inset
@@ -400,9 +379,9 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
-<a name="frames"></a>
-<div class="ramadda-help-subsubheading"><a href="#frames">Frames</a>
-</div> 
+
+:h3  Frames
+
 Frame your content like this:
 <div class="userguide-image-centered"><a href="images/frame.png"><img  src="images/frame.png" border=0 alt="images/frame.png" ></a></div>
 
@@ -434,9 +413,9 @@ content
 -frame
 </pre>
 
-<a name="embedding"></a>
-<div class="ramadda-help-subsubheading"><a href="#embedding">Embedding Media</a>
-</div> 
+
+:h3  Embedding Media
+
 You can embed Twitter, YouTube, Vimeo and other media as:
 <pre>
 @(https://twitter.com/Interior/status/463440424141459456)
@@ -467,9 +446,9 @@ Add a link to the embed:
 </pre>
 
 
-<a name="codeembed"></a>
-<div class="ramadda-help-subsubheading"><a href="#codeembed">Embedding Code</a>
-</div> 
+
+:h3  Embedding Code
+
 To embed code do the following:
 <pre>
  ```&lt;option language&gt;
@@ -491,9 +470,9 @@ var x = {}
 
 
 
-<a name="vega"></a>
-<div class="ramadda-help-subsubheading"><a href="#vega">Embedding Vega Charts</a>
-</div> 
+
+:h3  Embedding Vega Charts
+
 You can embed charts defined in the vega-lite schema directly into a wiki page.
 More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
 
@@ -528,9 +507,9 @@ e.g.:
 ```
 
 
-<a name="gridboxes"></a>
-<div class="ramadda-help-subsubheading"><a href="#gridboxes">Grid Boxes</a>
-</div> 
+
+:h3  Grid Boxes
+
 To make a gridded box layout like this use  the +gridboxes/+gridbox tags.
 <div class="userguide-image-centered"><a href="images/gridbox.png"><img  src="images/gridbox.png" border=0 alt="images/gridbox.png" ></a></div>
 
@@ -574,9 +553,9 @@ Line 2
 
 
 
-<a name="tables"></a>
-<div class="ramadda-help-subsubheading"><a href="#tables">Scrollable Tables</a>
-</div> 
+
+:h3  Scrollable Tables
+
 Scrollable HTML tables are supported with the +table/-table  tags. The form is below. 
 Note: any open tr or td tags will be close with the -table tag.
 <pre>
@@ -629,9 +608,9 @@ There are shortcuts available
 
 
 
-<a name="gridlayout"></a>
-<div class="ramadda-help-subsubheading"><a href="#gridlayout">Grid Layout</a>
-</div> 
+
+:h3  Grid Layout
+
 There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-[2,3,4,6,8,9,10,12].
 Basically you can have any number of columns within a row.
 Each column has a width, the sum of which adds up to 12.
@@ -696,9 +675,9 @@ Right column contents
 
 
 
-<a name="tabs"></a>
-<div class="ramadda-help-subsubheading"><a href="#tabs">Tabs</a>
-</div> 
+
+:h3  Tabs
+
 You can create a set of tabs with:
 <pre>
 +tabs
@@ -758,9 +737,9 @@ Center the tabs:
 
 
 <p>
-<a name="accordion"></a>
-<div class="ramadda-help-subsubheading"><a href="#accordion">Accordion</a>
-</div> 
+
+:h3  Accordion
+
 
 You can create an accordion with. The optional arguments allow you to set the properties of the accordion
 as described in the <a href="https://api.jqueryui.com/accordion/">Jquery docs</a>.
@@ -780,9 +759,9 @@ Accordion 2 content
 If decorate=false then no border or background is shown for the headers.
 
 
-<a name="entry"></a>
-<div class="ramadda-help-subsubheading"><a href="#entry">Linking to other entries</a>
-</div> 
+
+:h3  Linking to other entries
+
 Normally in a wiki a link to another page is of the form:
 <div style="margin:10px;"><pre>
 [[Page name]]
@@ -823,9 +802,9 @@ If the entry with the given name does not exist then the link will take one to t
 create entry form.
 
 
-<a name="properties"></a>
-<div class="ramadda-help-subsubheading"><a href="#properties">Wiki Properties</a>
-</div> 
+
+:h3  Wiki Properties
+
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
 <div style="margin:10px;"><pre>{{&lt;property&gt;  &lt;name="value" pairs&gt;}}</pre></div>
@@ -841,9 +820,9 @@ This would give us:
 <div class="userguide-image-centered"><a href="images/wikiinformation.png"><img  src="images/wikiinformation.png" border=0 alt="images/wikiinformation.png" ></a></div>
 
 
-<a name="entry"></a>
-<div class="ramadda-help-subsubheading"><a href="#entry">Specify other entries with the <i>entry</i> attribute</a>
-</div> 
+
+:h3  Specify other entries with the <i>entry</i> attribute
+
 Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry" attribute, e.g:
 <div style="margin:10px;"><pre>{{information <i>entry="some other entry id or name or 'parent' or 'grandparent'"</i>}}</pre></div>
 
@@ -869,9 +848,9 @@ The entry value can be:
 The <i>Add Entry ID</i> menu in the editor toolbar allows you to select the entry to use. As a convenience this
 adds both the ID of the entry as well as its name. 
 
-<a name="property"></a>
-<div class="ramadda-help-subsubheading"><a href="#property">Property tag</a>
-</div> 
+
+:h3  Property tag
+
 The <i>property</i> tag supports defining 
 an attribute property that is shared by all tags in the page. 
 
@@ -882,9 +861,9 @@ For example, if you are creating a wiki page full of charts
 that refer to another point data entry for their data then you use the property like, e.g.:
 <div style="margin:10px;"><pre>{{property <i>name="entry" value="9b2f87fc-91f2-485c-8035-7ef588c35fda"</i>}}</pre></div>
 
-<a name="message"></a>
-<div class="ramadda-help-subsubheading"><a href="#message">Message attribute</a>
-</div> 
+
+:h3  Message attribute
+
 Some of the tags can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
 
 <div style="margin:10px;"><pre>{{someproperty <i>message="some message"</i>}}</pre></div>
@@ -906,9 +885,9 @@ If, however, you specify a blank message then nothing will be shown:
 {{links entry="Links" message=""}}
 </pre></div>
 
-<a name="prefix"></a>
-<div class="ramadda-help-subsubheading"><a href="#prefix">Prefix and suffix attributes</a>
-</div> 
+
+:h3  Prefix and suffix attributes
+
 
 You can specify  prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
 
@@ -918,9 +897,9 @@ You can specify  prefix and suffix attributes that are only used if the tag was 
 
 This would only show when there is a Links sub-folder.
 
-<a name="basic"></a>
-<div class="ramadda-help-subsubheading"><a href="#basic">Basic Wiki Tags</a>
-</div> 
+
+:h3  Basic Wiki Tags
+
 
 The first set of tags show some information for the entry. Note: the attributes are all optional.
 
@@ -1042,9 +1021,9 @@ Show the menu actions in a popup:
 </ul>
 
 
-<a name="entries"></a>
-<div class="ramadda-help-subsubheading"><a href="#entries">Collection Wiki Tags</a>
-</div> 
+
+:h3  Collection Wiki Tags
+
 
 The following tags display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
@@ -1176,9 +1155,9 @@ You can also:
 </ul>
 
 
-<a name="virtual_groups"></a>
-<div class="ramadda-help-subsubheading"><a href="#virtual_groups">Virtual Groups</a>
-</div> 
+
+:h3  Virtual Groups
+
 RAMADDA provides a "Virtual Group" entry type. This acts as a Folder except a set of entry IDs or searches can be specified. There are a number of examples available <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Miscellany/Virtual+Groups?entryid=f5ccdc47-62f7-481a-b67d-bf76e5b34359">here</a>.
 
 The Entry IDs field of the Virtual Group can be a list of specific entries, e.g.:
@@ -1207,9 +1186,9 @@ search
 
 
 
-<a name="collection_tags"></a>
-<div class="ramadda-help-subsubheading"><a href="#collection_tags">Collection Tags</a>
-</div> 
+
+:h3  Collection Tags
+
 <ul>
 
 <li> <a name="tree"></a>Tag: <a href="#tree">tree</a><div class='ramadda-wiki-tag'>{{tree}}</div>
@@ -1402,7 +1381,9 @@ apply.header="${url}"
 
 
 
-<div class="ramadda-help-subsubheading">Importing any page</div> 
+
+:h3  Importing any page
+
 
 You can also import any of the views of an entry, e.g., the map view, 
 the calendar view, etc., with the  
@@ -1418,9 +1399,9 @@ want to include and look at the url for the output=... url argument
 and use that.
 
 
-<a name="snippet"></a>
-<div class="ramadda-help-subsubheading"><a href="#snippet">Snippet</a>
-</div> 
+
+:h3  Snippet
+
 A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:
 <pre>
 Some description here.
@@ -1430,14 +1411,4 @@ More description
 
 
 
-
-</div>
-<p>
-
-<p>&nbsp;<p>
-<a href="wiki.html"><span title="Previous: Wikis"><i class="fa fa-caret-left "></i></span></a> <a href="wikidisplay.html"><span title="Next: Wiki Display Components"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikitext.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
-<p>
-</div>
-</body>
-</html>
 
