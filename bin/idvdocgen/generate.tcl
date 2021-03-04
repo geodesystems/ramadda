@@ -17,8 +17,8 @@ set ::htmlFiles [list]
 set ::handlers [list]
 set ::macros [list]
 
-
-
+set  ::xml "<entries>\n"
+set ::doXml 0
 
 namespace eval html {}
 proc html::page {title body {depth 0} {bodyArgs ""} } {
@@ -81,6 +81,7 @@ proc ht::popup {url label args} {
 
 
 proc ht::subhead {id label {extra {}}} {
+    if ($::doXml) return "h2 $label"
     return "<subhead [ht::attrs id $id] $extra>$label</subhead>"
 }
 
@@ -118,8 +119,8 @@ proc ht::doImage {img class {caption ""} {extra ""}} {
         append html "<br><span class=\"caption\">Image $cnt: $caption</span></div>"
         return $html
     } else {
-	    set img  "<div class=\"$class\">$href1<img  src=\"$img\" $extra alt=\"$img\" >$href2</div>"
-	    return $img
+	   set img  "<div class=\"$class\">$href1<img  src=\"$img\" $extra alt=\"$img\" >$href2</div>"
+	   return $img
     }
 }
 
@@ -135,7 +136,7 @@ proc ht::cimg {img {caption ""} {extra ""}} {
 	}
 	return  "<p>&nbsp;<center><img src=\"$img\" alt=\"$img\"></center>&nbsp;<p>"
     }
-    ht::doImage $img cimg $caption $extra
+    ht::doImage $img ramadda-image-centered $caption $extra
 }
 
 proc ht::img {img {caption ""} {extra ""}} {
@@ -315,6 +316,9 @@ proc displayType {name id desc args {img ""} {url ""} } {
 
 
 proc ug::subheading {label {id ""}  {extra {}}   {intoc false} } {
+    if ($::doXml) {
+	   return "\n:h2 $label\n"
+       }
     set attrs ""
     if {$id!=""} {
             set attrs [ht::attrs id $id]
@@ -323,6 +327,10 @@ proc ug::subheading {label {id ""}  {extra {}}   {intoc false} } {
 }
 
 proc ug::subsubheading {l {href ""}} {
+    if ($::doXml) {
+	   return "\n:h3  $l\n"
+    }
+
     set html "";
     if {$href !=""} {
         set html "<a name=\"$href\"></a>\n";
@@ -679,8 +687,12 @@ proc gen::addSubHead {from content} {
                 append body "<a name=\"$id\"></a>"
                 incr idcnt
             }
-            append body "<p>"
-            append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
+	    if ($::doXml) {
+		   append body "h2: $label"
+	       } else {
+		   append body "<p>"
+		   append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
+	       }
             incr cnt
             if {$intoc != "false"} {set intoc 1} else {set intoc 0}
             #set intoc 1
@@ -937,9 +949,15 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
         return  [list "" "" ""] 
     }
     set content [string trim [gen::getFile $path]]
+    
+
     set ::currentFile $path
     gen::setImageCnt $path 0
     gen::setImageInfo $path [list]
+
+
+
+
 
 
     foreach {pattern func} $::handlers {
@@ -949,13 +967,16 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
         }
     }
 
-    
+
+
+
     if {[gen::getDoTclEvaluation]} {
         set ::currentFile $path
         set ::inpageToc [list]
         if {[catch {set content [subst -novariables $content]} err]} {
             puts "Error evaluating $path\n$::errorInfo"
         }
+
         if {[llength $::inpageToc]!=0} {
                 set s "<ul>"
                 foreach tok $::inpageToc {
@@ -969,6 +990,7 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
     set title ""
     set overview ""
     set body $content
+
 
 ##    set content "hello<title>This is the title</title>Content"
     set idx1 [string first <title> $content]
@@ -995,6 +1017,10 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
 	}
 
     }
+
+
+
+
 ##    if {![regexp -nocase {<title>(.*)</title>(.*)$} $content match title body]} {
 ##        puts "No title found in: $path"
 ##    } 
@@ -1012,6 +1038,7 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
     regexp -nocase {<body>(.*)</body>} $body match body
 
 
+
     if {$overview == ""} {
 ##        puts "No overview found in: $path"
     }
@@ -1019,9 +1046,16 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
     gen::checkForIndexDefinitions $path $title $content
     gen::checkForGlossary   $content
 
+
+
+
     if {$htmlRaw} {
         set body $content
     } 
+
+    
+
+
     return [list [string trim $title] [string trim $overview] $body]
 }
 
@@ -1240,6 +1274,9 @@ proc gen::addInpageToc {item} {
 proc gen::definePage {file actualFilePath parent includeInNav includeInToc {pageType real} {title ""} {overview ""} {dfltBody ""}} {
 
     gen::setDoTemplate $file 1
+    if {$::doXml} {
+	   gen::setDoTemplate $file 0
+     }
 
     if {[gen::getTopFile] == ""} {
         gen::setTopFile $file
@@ -1348,6 +1385,8 @@ proc gen::definePage {file actualFilePath parent includeInNav includeInToc {page
     } elseif {$pageType == "virtual"} {
         set body [gen::addSubHead $file $body ]
     }
+
+
 
     gen::setBody $file $body
     gen::hook::definePage $file
@@ -1730,6 +1769,7 @@ proc gen::processFile {from to fileIdx template} {
     set body [gen::getBody       $from]
 
 
+
     array set A [gen::initMacroArray]
     set body [gen::addGlossary   $from $body ]
     set body [gen::processSlideShow $from $to $body]
@@ -1738,6 +1778,54 @@ proc gen::processFile {from to fileIdx template} {
     set body [gen::processSee    $from $body $depth]
     set body [gen::processNote   $body]
     set A(body)       $body
+
+    set pageType [gen::getPageType $from]
+    set parent [gen::getParent $from]
+
+    set file $from
+
+
+
+    set title [gen::getTitle $from]
+   if {$::doXml && ($pageType == "real" || $pageType=="virtual") } {
+	  regsub -all ".html" $file {} xmlName
+	  append ::xml "<entry type=\"type_documentation\" name=\"$title\" id=\"$file\" "
+	  set entryOrder 0;
+	  set debug [regexp {Version} $title]
+	  set b $body
+	  set debug [regexp {Rose} $b]
+	  if {[regexp wikitext $file]} {
+#		 puts "ANY: $file [regexp :h3 $body]"
+	     }
+
+
+	  regsub -all {\{\{} $b "\{<noop>\{"   b
+	  regsub -all {\}\}} $b "\}<noop>\}"   b
+##  puts [regsub -all {\&} $b {\&amp;}   b]
+	  regsub -all "<%nochildlist%>" $b {} b
+	  regsub -all "<subhead.*?>(.*?)</subhead.*?>" $b "\n:h2 \\1" b
+	  set match [regsub -all { *?<h2 *?>(.*?)</h2>} $b "\n:h2 \\1" b ]
+	  set match [regsub -all { *?<h3 *?>(.*?)</h3>} $b "\n:h3 \\1" b ]	  
+	  regsub -all {<%inpagetoc%>} $b {} b
+	  regsub -all "\n+\n" $b "\n" v
+	  regsub -all "\n *\n" $b {} v
+	  regsub -all "<pre>" $b "\n<pre>" b
+	  regsub -all \"images/ $b \"/userguide/images/ b
+	  regsub -all {<category.*?>} $b {} b
+	  if {$parent!=""} {
+		 append ::xml " parent=\"$parent\" "
+		 set parentsChildren [gen::getChildren $parent]
+		 set entryOrder   [lsearch $parentsChildren $from]
+             }
+	     regsub -all "\n\n+" $b "\n" b
+	     set b [string trim $b]
+	     append ::xml " entryorder=\"$entryOrder\" "
+	     append ::xml ">\n"
+	     append ::xml "<description><!\[CDATA\[$b\]\]></description>\n" 
+	     append ::xml "</entry>\n"
+      }
+
+
 
     array set A [gen::getCommonContent $from]
     array set A [gen::getCommonNav     $from]
@@ -1770,7 +1858,8 @@ proc gen::processFile {from to fileIdx template} {
 
 ##    puts "type: [gen::getPageType $from]"
 
-    if {[gen::getPageType $from] == "link"} {
+
+    if {$pageType == "link"} {
         return
     }
 
@@ -2104,7 +2193,7 @@ proc gen::processFaqInner {faq faqCnt} {
             if {$name!=""} {
                 append catBottom "<a name=\"$name\"></a>\n"
             }
-            append catBottom "<a name=\"$faqid\"></a><div class=\"faq-question\"><h4> ${entry}. $qlabel $q</h4></div>\n"
+            append catBottom "<a name=\"$faqid\"></a><div class=\"faq-question\">\n<h3> ${entry}. $qlabel $q</h3>\n</div>\n"
             append catBottom "</a><div class=\"faq-answer\"><b>$alabel</b> $a</div>\n"
             append catBottom "<p><hr align=\"center\" width=\"10%\"><p>"
             incr cnt
@@ -2975,3 +3064,7 @@ gen::writeFiles
 
 gen::finish
 
+ if {$::doXml} {
+	append  ::xml "</entries>\n"
+	gen::writeFile ~/entries.xml $::xml
+}
