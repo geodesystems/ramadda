@@ -270,8 +270,11 @@ function initEntryListForm(formId) {
 }
 
 
-function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails) {
+function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails,args) {
+    if(!args) args = {
+	showIcon:true};
     this.entryId = entryId;
+    this.showIcon = args.showIcon;
     this.onColor = "#FFFFCC";
     this.overColor = "#f6f6f6";
     this.overColor = "#edf5ff";
@@ -342,6 +345,12 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails) {
         } else {
             url += "&details=false";
         }
+        if (this.showIcon) {
+            url += "&showIcon=true";
+        } else {
+            url += "&showIcon=false";
+        }
+
         GuiUtils.loadXML(url, this.handleTooltip, this);
     }
 
