@@ -20,7 +20,6 @@ function NasaRepository() {
                 searchText = settings.text;
             }
             url += "?search=" + encodeURIComponent(searchText);
-            console.log(url);
             url = GuiUtils.getProxyUrl(url);
             return url;
         },
@@ -68,7 +67,6 @@ function DuckDuckGoRepository() {
                 searchText = settings.text;
             }
             url += "&q=" + encodeURIComponent(searchText);
-            console.log(url);
             return GuiUtils.getProxyUrl(url);
         },
         createEntriesFromJson: function(data) {
