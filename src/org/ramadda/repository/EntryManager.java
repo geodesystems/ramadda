@@ -7566,7 +7566,10 @@ public class EntryManager extends RepositoryManager {
 		all.add(root);
 		for(Entry child: getChildrenAll(request,root,null)) {
 		    all.add(child);
-		    all.addAll(getChildrenAll(request, child,null));
+		    for(Entry grandchild:getChildrenAll(request, child,null)) {
+			all.add(grandchild);
+			all.addAll(getChildrenAll(request, grandchild,null));
+		    }
 		}
 		List<Clause> ors = new ArrayList<Clause>();
 		for(Entry e:all) {
