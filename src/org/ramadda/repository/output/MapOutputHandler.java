@@ -149,7 +149,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         getPageHandler().entrySectionOpen(request, entry, sb, "Map", true);
 
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1,
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, "", "",
                                            true, false);
 
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -163,7 +163,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         props.put(ATTR_DETAILS, "true");
         props.put(ATTR_LISTENTRIES, "false");
         MapInfo map = getMapManager().getMap(request, entry, entriesToUse,
-                                             sb, 700, 500, null, props);
+                                             sb, "700", "500", null, props);
 
         getPageHandler().entrySectionClose(request, entry, sb);
 
@@ -207,7 +207,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
 
         showNext(request, subGroups, entries, sb);
         if (outputType.equals(OUTPUT_GEMAP)) {
-            getMapManager().getGoogleEarth(request, entriesToUse, sb, -1, -1,
+            getMapManager().getGoogleEarth(request, entriesToUse, sb, "", "",
                                            true, false);
 
             getPageHandler().entrySectionClose(request, group, sb);
@@ -222,7 +222,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         props.put(ATTR_DETAILS, "false");
         props.put(ATTR_LISTENTRIES, "true");
         MapInfo map = getMapManager().getMap(request, group, entriesToUse,
-                                             sb, -100, 500, null, props);
+                                             sb, "100%", "500", null, props);
 
         getPageHandler().entrySectionClose(request, group, sb);
 
