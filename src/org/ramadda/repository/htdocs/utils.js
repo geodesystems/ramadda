@@ -134,6 +134,13 @@ var Utils =  {
 	l.sort((a,b)=>{return a.getTime()-b.getTime()});
 	return l;
     },    
+
+    decodeText: function(t) {
+	if(!t) return null;
+	t = String(t);
+	return t.replace(/_dq_/g,"\"\"").replace(/&quote;/gi, '\"').replace(/_quote_/gi, '\"').replace(/_qt_/gi, '\"').replace(/_newline_/gi, '\n').replace(/newline/gi, '\n').replace(/_nl_/g,'\n');
+    },
+
     mergeLists: function(l1,l2,l3,l4,l5) {
 	let l = [];
 	if(l1) l1.map(e=>l.push(e));
@@ -1287,6 +1294,7 @@ var Utils =  {
             html = html.substring(idx + 20);
 	}
     },
+
 
 
     initPageReload:function(time, id, showLabel) {
@@ -2650,7 +2658,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     initOdometer: function(id,value, pause, immediate) {
 	if(!Utils.isDefined(pause)) pause = 0;
-	$(document).ready(function(){
+$(document).ready(function(){	
 	    if(immediate) {
 		$('#' + id).html(value);
 		return;
@@ -3093,6 +3101,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     image: function(path, attrs) {
         return "<img " + this.attrs(["src", path, "border", "0"]) + " " + this.attrs(attrs) + "/>";
+    },
+    swapHtml:function(srcSelector, targetSelector) {
+	$(document).ready(function(){
+	    let src = $(srcSelector); 
+	    let target=$(targetSelector);
+	    src.appendTo(target);
+	});
+
     },
     table: function(attrs, inner) {
 	return HU.tag("table",attrs,inner);
