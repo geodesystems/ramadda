@@ -431,7 +431,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 
         MapInfo map = getRepository().getMapManager().createMap(request,
-                          null, contentsWidth, contentsHeight, true, null);
+                          null, ""+contentsWidth, ""+contentsHeight, true, null);
 
 
         getMapManager().addToMap(request, map, allEntries,
@@ -549,8 +549,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         StringBuffer earthSB = new StringBuffer();
                         getMapManager().getGoogleEarth(
                             request, allEntries, earthSB,
-                            contentsWidth - MapManager.EARTH_ENTRIES_WIDTH,
-                            contentsHeight, true, false);
+                            ""+(contentsWidth - MapManager.EARTH_ENTRIES_WIDTH),
+                            ""+contentsHeight, true, false);
                         tabContents.add(HtmlUtils.div(earthSB.toString(),
                                 HtmlUtils.style("min-width:" + minWidth
                                     + "px")));
