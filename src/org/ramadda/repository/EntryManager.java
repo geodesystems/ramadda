@@ -6537,7 +6537,9 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         return getAjaxLink(request, entry, linkText, url, forTreeNavigation,
                            textBeforeEntryLink,
-                           request.get(ARG_DECORATE, true));
+                           request.get(ARG_DECORATE, true),
+			   request.get("showIcon", true)
+			   );
     }
 
     /**
@@ -6559,7 +6561,8 @@ public class EntryManager extends RepositoryManager {
                                  String linkText, String url,
                                  boolean forTreeNavigation,
                                  String textBeforeEntryLink,
-                                 boolean decorateMetadata)
+                                 boolean decorateMetadata,
+				 boolean showIcon)
             throws Exception {
 
         String  entryShowUrl =
@@ -6592,6 +6595,7 @@ public class EntryManager extends RepositoryManager {
 
         boolean showUrl     = request.get(ARG_DISPLAYLINK, true);
         boolean showDetails = request.get(ARG_DETAILS, true);
+        showIcon    = request.get("showIcon", showIcon);	
         String  entryId     = entry.getId();
         String  uid         = HtmlUtils.getUniqueId("link_");
         String  output      = "inline";
@@ -6605,6 +6609,8 @@ public class EntryManager extends RepositoryManager {
                                         entry.getId(), ARG_OUTPUT, output,
                                         ARG_DETAILS,
                                         Boolean.toString(showDetails),
+						  "showIcon",
+                                        Boolean.toString(showIcon),						  
                                         ARG_DISPLAYLINK,
                                         Boolean.toString(showUrl), forTreeView
                     ? ARG_TREEVIEW
@@ -6712,7 +6718,8 @@ public class EntryManager extends RepositoryManager {
         if (imgUrl != null) {
             img = HtmlUtils.href(imgUrl, img);
         }
-        sb.append(img);
+	if(showIcon)
+	    sb.append(img);
         sb.append(HtmlUtils.space(1));
         if (textBeforeEntryLink != null) {
             sb.append(textBeforeEntryLink);
@@ -7522,9 +7529,10 @@ public class EntryManager extends RepositoryManager {
     public List[] getEntries(Request request, Appendable searchCriteriaSB,
                              List<Clause> extraClauses)
             throws Exception {
+
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         List<Clause> where = typeHandler.assembleWhereClause(request,
-                                 searchCriteriaSB);
+							     searchCriteriaSB);
         if (extraClauses != null) {
             where.addAll(extraClauses);
         }
@@ -7547,6 +7555,36 @@ public class EntryManager extends RepositoryManager {
                                     TypeHandler typeHandler)
             throws Exception {
 
+	String entryRoot = null;
+	//	System.err.println("C: " + clauses);
+
+	if(request.defined("entryRoot")) {
+	    entryRoot = request.getString("entryRoot","");
+	    Entry root = getEntry(request,entryRoot);
+	    if(root!=null) {
+		List<Entry> all = new ArrayList<Entry>();
+		all.add(root);
+		for(Entry child: getChildrenAll(request,root,null)) {
+		    all.add(child);
+		    all.addAll(getChildrenAll(request, child,null));
+		}
+		List<Clause> ors = new ArrayList<Clause>();
+		for(Entry e:all) {
+		    ors.add(Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID,e.getId()));
+		}
+		Clause tree  =Clause.or(ors);
+		if(clauses.size()==1) {
+		    Clause c = clauses.get(0);
+		    clauses = new ArrayList<Clause>();
+		    clauses.add(Clause.and(c,tree));
+		} else {	
+		    clauses.add(tree);
+		}
+	    }
+	    //a	    System.err.println("after: " + clauses);
+	}
+
+
         int skipCnt = request.get(ARG_SKIP, 0);
         SqlUtil.debug = false;
         List<Entry> entries       = new ArrayList<Entry>();
@@ -7556,6 +7594,7 @@ public class EntryManager extends RepositoryManager {
         List<Entry> allEntries    = new ArrayList<Entry>();
 
 	Metadata[] mtd = new Metadata[]{null};
+
 	String order = getQueryOrderAndLimit(request, false, null,  new SelectInfo(),mtd);
         Statement statement = typeHandler.select(request,
                                   Tables.ENTRIES.COLUMNS, clauses,
