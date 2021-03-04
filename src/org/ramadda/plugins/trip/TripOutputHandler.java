@@ -187,7 +187,7 @@ public class TripOutputHandler extends OutputHandler {
             }
             String url = getEntryManager().getAjaxLink(request, entry,
                              entry.getLabel(), null, true, null,
-                             false).toString();
+						       false, true).toString();
 
             sb.append(url);
             StringBuffer desc = new StringBuffer(entry.getDescription());
