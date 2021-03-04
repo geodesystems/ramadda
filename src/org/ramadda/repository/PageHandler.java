@@ -620,8 +620,8 @@ public class PageHandler extends RepositoryManager {
 
                 Entry entry = favorite.getEntry();
                 EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                          entry, entry.getLabel(), null,
-                                          false, null, false);
+								    entry, entry.getLabel(), null,
+								    false, null, false,true);
                 if (entryLink != null) {
                     String link = favoritesWrapper.replace("${link}",
                                       entryLink.toString());
@@ -640,9 +640,8 @@ public class PageHandler extends RepositoryManager {
                     "<b>Cart:<b><br>${entries}");
             List cartLinks = new ArrayList();
             for (Entry entry : cartEntries) {
-                EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                          entry, entry.getLabel(), null,
-                                          false);
+                EntryLink entryLink = getEntryManager().getAjaxLink(request, entry, entry.getLabel(), null,
+								    false,null, true,true);
                 String link = favoritesWrapper.replace("${link}",
                                   entryLink.toString());
                 cartLinks.add("<nobr>" + link + "<nobr>");
