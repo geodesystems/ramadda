@@ -1,14 +1,15 @@
 /*
 try a google font
 */
-@import url(//fonts.googleapis.com/css?family=Open+Sans);
+/*
+@import url(//fonts.googleapis.com/css?family=Open+Sans);*/
 
 
 
 body {
     font-family: 'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
     font-size: 12pt;
-    color: black;
+    color: rgb(51,51,51);
     margin: 0px;
     padding: 0px;
 }
@@ -20,7 +21,11 @@ html, body {
 /*Resets for bootstrap*/
 h1 {font-size: 170%;}
 h2 {font-size:150%;}
-h3 {font-size: 125%;}
+h3 {
+    font-size: 125%;
+    margin-top:8px;
+    margin-bottom:4px;    
+}
 p {margin-top:1.5em;}
 a {color: #000; text-decoration: underline;}
 a.btn:link {color: #000;}
@@ -86,6 +91,14 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     color:#364149;
 }
 
+.ramadda-nav-left-extra {
+//    display:inline-block;
+}
+
+.ramadda-nav-left-extra li {
+    margin:0px;
+}
+
 .ramadda-nav-link-active {
     background:#ddd;
 }
@@ -107,6 +120,14 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     margin-left:30px;
 }    
 
+.ramadda-links-horizontal {
+    display:inline-block;
+}
+
+.ramadda-links-horizontal:hover {
+    background:#eee;
+}
+
 .ramadda-nav-horizontal {
 //    position:relative;
 }
@@ -116,7 +137,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 }
 
 .ramadda-nav-left-link {
-    margin-bottom:10px;
+    margin-bottom:3px;
 }
 
 .ramadda-nav-left {
@@ -125,18 +146,123 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     width:250px;
     border-right:1px solid #ccc;
     background:#FAFAFA;
-    min-height:3000px;
-    height:3000px;
+    min-height:100vh;
+    height:100vh;
     position:fixed;
     top:0px;
     left:0px;
     z-index: 50;
 }
 
+.ramadda-nav-left-links {
+   width:100%;
+   min-height:40vh;
+   max-height:40vh;
+   overflow-y:auto;
+   white-space:nowrap;
+   margin-bottom:10px;
+}
+
+.ramadda-nav-left-extra .ramadda-links {
+   min-height:40vh;
+   max-height:40vh;
+   overflow-y:auto;
+   white-space:nowrap;
+}
+
+
+
+
+.ramadda-links a {
+    color:#000;
+}
+
+
+
+.ramadda-links h3 {
+    text-align:center;
+    font-size:100%;
+    font-weight: bold;
+    padding-bottom:4px;
+    margin-top:1em;
+    margin-bottom:4px;
+    border-bottom: 1px #e8e8e8 solid;
+}
+
+.ramadda-links h3:hover {
+}
+
+
+
+
+.ramadda-nav-left-extra .ramadda-links-highlight {
+    display:block;
+    background:#ddd;
+}
+
+
+.ramadda-links-inner ul {
+    padding-left:15px;
+    margin-bottom:0px;
+}
+
+.ramadda-links-inner {
+    margin-left:5px;
+    overflow-y:auto;
+    line-height:1.5em;
+    overflow-x:auto;
+    max-width:100%;
+ white-space: nowrap;
+}
+
+
 
 .ramadda-nav-right {
     /* the margin here is the same as the width of the ramada-nav-left element */
     margin-left:250px;
+}
+
+.ramadda-nav-arrow {
+    color:rgba(190,190,190,0.90);
+}
+.ramadda-nav-arrow:hover {
+    background:rgb(240,240,240);
+}
+
+
+.ramadda-nav-arrow-disabled {
+    color:rgba(240,240,240,0.90);
+}
+
+.ramadda-nav-arrow-disabled:hover {
+    background:transparent;
+}
+
+.ramadda-nav-page {
+    display:inline-block;
+    vertical-align:top;
+}
+
+.ramadda-nav-page-label {
+    display:inline-block;
+    vertical-align:middle;
+}
+
+.ramadda-nav-page-fixed-prev {
+    left:0px;
+    margin-top:10px;
+    margin-left:10px;
+    position:fixed;
+    top:55px;
+    z-index:200;
+}
+
+.ramadda-nav-page-fixed-next {
+    margin-right:10px;
+    margin-top:10px;
+    position:fixed;
+    right:0%;
+    top:55px;
 }
 
 .ramadda-nav-right .ramadda-block {
@@ -896,6 +1022,14 @@ a.ramadda-menubar-button:hover {
 
 
 
+.ramadda-image-centered {
+    text-align:center;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+
+
 .ramadda-thumbnail-image {
     width: 100px;
 }
@@ -1641,7 +1775,9 @@ td.entry-table-block {
 pre {
     background:#eee;
     padding:4px;
-    border-radius: 3px;
+    border-radius: 4px;
+    margin-bottom:5px;
+    margin-top:5px;
 }
 
 .thin_pre {
@@ -2830,6 +2966,8 @@ snippet-hide {
 .caption {
     text-align:center;
     font-style:italic;
+    margin-bottom:10px;
+    display:inline-block;
 }
 
 .pagetitle {
@@ -2875,42 +3013,9 @@ snippet-hide {
 }
 
 
-.ramadda-links a {
-    color:#000;
-}
-
-
-
-.ramadda-links h3 {
-    text-align:center;
-    font-size:100%;
-    font-weight: bold;
-    padding-bottom:4px;
-    margin-top:1em;
-    margin-bottom:4px;
-    border-bottom: 1px #e8e8e8 solid;
-}
-
-.ramadda-links h3:hover {
-}
-
-
-.ramadda-links-inner ul {
-    padding-left:15px;
-    margin-bottom:0px;
-}
-
-.ramadda-links-inner {
-    margin-left:5px;
-    overflow-y:auto;
-    line-height:1.5em;
-    overflow-x:auto;
-    max-width:100%;
- white-space: nowrap;
-}
 
 nowiki {
-    display: none;
+    display: inline;
 }
 
 .wikicontent {
@@ -4232,5 +4337,52 @@ h3.ui-accordion-header a {
 i.fa {
     color:#aaa;
     font-size:12pt;
+}
+
+
+
+A.faq-category-link {
+    text-decoration: none;
+    color: #8080C0;
+}
+
+A.faq-category-link:hover {
+    text-decoration: underline;
+}
+
+A.faq-question-link {
+    text-decoration: none;
+    color: black;
+}
+
+A.faq-question-link:hover {
+    text-decoration: underline;
+}
+
+.ramadda-wiki-tag {
+    margin-left:20px;
+    font-style:italic;
+}
+
+.faq-category-title {
+    margin-top:10px;
+    color: #8080C0;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+
+.faq-bottom {
+        margin-top:20px;
+}
+
+.faq-bottom .faq-question {
+   font-weight:bold;
+   margin-top:5px;
+}
+.
+u
+faq-category {
+        margin-left:20px;
 }
 
