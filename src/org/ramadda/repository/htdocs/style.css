@@ -9,7 +9,6 @@ try a google font
 body {
     font-family: 'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
     font-size: 12pt;
-    color: rgb(51,51,51);
     margin: 0px;
     padding: 0px;
 }
@@ -2681,6 +2680,26 @@ a.ramadda-entries-link {
 
 
 
+.ramadda-menuitem {
+    margin-left:10px;
+    margin-right:10px;
+    margin-top:3px;
+    margin-bottom:3px;
+    min-width:150px;
+}
+
+
+.ramadda-menuitem-separator {
+    margin:2px;
+    margin-bottom:3px;
+    padding:0px;
+    color:black;
+    margin-right:30px;
+    border-bottom: 1px #ccc solid;
+}
+
+
+
 a.ramadda-menuitem-link:hover {
     text-decoration: underline;
     color:#000;
@@ -2739,23 +2758,6 @@ a.ramadda-menuitem-link {
 }
 
 
-.ramadda-menuitem {
-    margin-left:10px;
-    margin-right:10px;
-    margin-top:3px;
-    margin-bottom:3px;
-    padding-bottom:2px;
-    min-width:150px;
-}
-
-
-.ramadda-menuitem-separator {
-    margin:2px;
-    margin-bottom:3px;
-    padding:0px;
-    color:black;
-    border-bottom: 1px #ccc solid;
-}
 
 
 
