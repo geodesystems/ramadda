@@ -81,7 +81,7 @@ proc ht::popup {url label args} {
 
 
 proc ht::subhead {id label {extra {}}} {
-    if ($::doXml) return "h2 $label"
+    if ($::doXml) return "\n:h2 $label"
     return "<subhead [ht::attrs id $id] $extra>$label</subhead>"
 }
 
@@ -136,7 +136,7 @@ proc ht::cimg {img {caption ""} {extra ""}} {
 	}
 	return  "<p>&nbsp;<center><img src=\"$img\" alt=\"$img\"></center>&nbsp;<p>"
     }
-    ht::doImage $img ramadda-image-centered $caption $extra
+    ht::doImage $img userguide-image-centered $caption $extra
 }
 
 proc ht::img {img {caption ""} {extra ""}} {
@@ -688,7 +688,7 @@ proc gen::addSubHead {from content} {
                 incr idcnt
             }
 	    if ($::doXml) {
-		   append body "h2: $label"
+		   append body "\n:h2: $label"
 	       } else {
 		   append body "<p>"
 		   append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
@@ -1415,9 +1415,13 @@ proc gen::getDotPath {depth} {
 #Return the html links to any of the css files we have
 proc gen::getCss {depth} {
     set html ""
-    foreach cssFile [gen::getCssFiles] {
-        append html  "  <link rel=\"stylesheet\" type=\"text/css\" href=\"[gen::getDotPath $depth][file tail $cssFile]\" title=\"Style\">\n"
-    }
+    if {$::doXml} {
+           append html  "  <link rel=\"stylesheet\" type=\"text/css\" href=\"/repository/userguide.css\" title=\"Style\">\n"
+     } else {
+	   foreach cssFile [gen::getCssFiles] {
+               append html  "  <link rel=\"stylesheet\" type=\"text/css\" href=\"[gen::getDotPath $depth][file tail $cssFile]\" title=\"Style\">\n"
+	   }
+       }
 
 
     if {[gen::getDoJSNav]} {
@@ -1764,41 +1768,37 @@ proc gen::getTranslateLinks {from} {
 
 proc gen::processFile {from to fileIdx template} {
     gen::mkdir [file dirname $to]
-
-    set depth         [gen::getDepth $from]
+    set depth  [gen::getDepth $from]
     set body [gen::getBody       $from]
-
-
-
     array set A [gen::initMacroArray]
+
+
     set body [gen::addGlossary   $from $body ]
     set body [gen::processSlideShow $from $to $body]
     set body [gen::processIfs $from $body]
     set body [gen::processFaq    $body]
     set body [gen::processSee    $from $body $depth]
     set body [gen::processNote   $body]
-    set A(body)       $body
+    if {$::doXml} {
+	   set body  "<link rel='stylesheet' type='text/css' href='/repository/userguide.css'>\n$body";
+     }
 
+    set A(body)       $body
     set pageType [gen::getPageType $from]
     set parent [gen::getParent $from]
-
     set file $from
-
-
-
     set title [gen::getTitle $from]
-   if {$::doXml && ($pageType == "real" || $pageType=="virtual") } {
-	  regsub -all ".html" $file {} xmlName
-	  append ::xml "<entry type=\"type_documentation\" name=\"$title\" id=\"$file\" "
-	  set entryOrder 0;
-	  set debug [regexp {Version} $title]
-	  set b $body
-	  set debug [regexp {Rose} $b]
-	  if {[regexp wikitext $file]} {
-#		 puts "ANY: $file [regexp :h3 $body]"
-	     }
-
-
+    if {$::doXml && ($pageType == "real" || $pageType=="virtual") } {
+	   regsub -all ".html" $file {} xmlName
+	   append ::xml "<entry type=\"type_documentation\" name=\"$title\" id=\"$file\" "
+	   set entryOrder 1
+	   set debug [regexp {Version} $title]
+	   set b $body
+	   set debug [regexp {Rose} $b]
+	   if {[regexp wikitext $file]} {
+		  #		 puts "ANY: $file [regexp :h3 $body]"
+	      }
+	      
 	  regsub -all {\{\{} $b "\{<noop>\{"   b
 	  regsub -all {\}\}} $b "\}<noop>\}"   b
 ##  puts [regsub -all {\&} $b {\&amp;}   b]
@@ -1815,7 +1815,7 @@ proc gen::processFile {from to fileIdx template} {
 	  if {$parent!=""} {
 		 append ::xml " parent=\"$parent\" "
 		 set parentsChildren [gen::getChildren $parent]
-		 set entryOrder   [lsearch $parentsChildren $from]
+		 set entryOrder   [expr [lsearch $parentsChildren $from]+1]
              }
 	     regsub -all "\n\n+" $b "\n" b
 	     set b [string trim $b]
@@ -1879,9 +1879,6 @@ proc gen::processFile {from to fileIdx template} {
         gen::doLinkCheck $from $A(body)
     }
 
-
-
-
     set extraNav [gen::getTranslateLinks $from]
     set A(extranav) $extraNav
 
@@ -1889,7 +1886,8 @@ proc gen::processFile {from to fileIdx template} {
         set template [gen::getTemplateForPage $from $template]
         set html [gen::processTemplate $template A]
     } else {
-        set html $body
+	   set html ""
+          append  html $body
     }
     set html [gen::js::process  $html $from $depth $fileIdx]
     set html [gen::processPopups $from $to $html $depth 0]
@@ -1905,8 +1903,6 @@ proc gen::processFile {from to fileIdx template} {
                 file attributes $to -permissions $permissions
             } err
         }
-
-
 
     set allHtml $A(body)
     if {[gen::getPageType $from] == "virtual"} {
@@ -3040,7 +3036,7 @@ if {[gen::getDoAncillaryFiles]} {
 }
 
 if {[llength [gen::getCssFiles]] == 0} {
-    puts "Adding default.css"
+#    puts "Adding default.css"
     gen::setCssFiles [list default.css]
 }
 

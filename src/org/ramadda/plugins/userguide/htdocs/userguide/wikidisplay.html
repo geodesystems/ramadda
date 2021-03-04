@@ -8,7 +8,7 @@
 <body>
 <div class="ramadda-documentation">
 <table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
-<a href="wikitext.html"><span title="Previous: Wiki Text"><i class="fa fa-caret-left "></i></span></a> <a href="notebook.html"><span title="Next: RAMADDA Notebooks"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikidisplay.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
+<a href="wikitext.html"><span title="Previous: Wiki Text"><i class="fa fa-caret-left "></i></span></a> <a href="wikidisplay2.html"><span title="Next: More Wiki Display Components"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikidisplay.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
 </td>
 <td width=40% align=center>
 <div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
@@ -25,6 +25,8 @@ pre {
 
 <div style="margin-left:20px;">
 
+</head>
+<body>
 
 
 
@@ -34,68 +36,7 @@ There are a number of
 <a href="https://geodesystems.com/repository/entry/show/Home/Content/Miscellany/Example+Charts/World%27s+Oldest+People+Data+is+Beautiful?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&output=html.info">example</a>.
 
 
-<a name="toc"></a><p><div class="ramadda-help-heading">5.2.0 <a href="#toc">Available Displays</a></div> 
-<ul><li> <a href='#entrylist'><a href="#entrylist">Search form</a>
-</a>
-<li> <a href='#entrygrid'><a href="#entrygrid">Entry Grid</a>
-</a>
-<li> <a href='#animation'><a href="#animation">Animation</a>
-</a>
-<li> <a href='#map'><a href="#map">Map</a>
-</a>
-<li> <a href='#linechart'><a href="#linechart"> Line chart</a>
-</a>
-<li> <a href='#barchart'><a href="#barchart">Bar chart</a>
-</a>
-<li> <a href='#barstack'><a href="#barstack">Stacked bar chart</a>
-</a>
-<li> <a href='#areachart'><a href="#areachart">Area chart</a>
-</a>
-<li> <a href='#scatterplot'><a href="#scatterplot"> Scatter Plot</a>
-</a>
-<li> <a href='#histogram'><a href="#histogram"> Histogram</a>
-</a>
-<li> <a href='#bubble'><a href="#bubble">Bubble Chart</a>
-</a>
-<li> <a href='#piechart'><a href="#piechart"> Pie chart</a>
-</a>
-<li> <a href='#radar'><a href="#radar">Radar Display</a>
-</a>
-<li> <a href='#windrose'><a href="#windrose">Wind Rose</a>
-</a>
-<li> <a href='#density'><a href="#density">Density Display</a>
-</a>
-<li> <a href='#3dscatter'><a href="#3dscatter">3D Scatter</a>
-</a>
-<li> <a href='#calendar'><a href="#calendar"> Calendar</a>
-</a>
-<li> <a href='#gauge'><a href="#gauge"> Gauge</a>
-</a>
-<li> <a href='#table'><a href="#table">Table</a>
-</a>
-<li> <a href='#heatmap'><a href="#heatmap">Heatmap</a>
-</a>
-<li> <a href='#correlation'><a href="#correlation"> Correlation</a>
-</a>
-<li> <a href='#text'><a href="#text"> Text Readout</a>
-</a>
-<li> <a href='#stats'><a href="#stats"> Summary Stats</a>
-</a>
-<li> <a href='#template'><a href="#template">Record  Template</a>
-</a>
-<li> <a href='#dotplot'><a href="#dotplot">Dot Plot</a>
-</a>
-<li> <a href='#sankey'><a href="#sankey">Sankey</a>
-</a>
-<li> <a href='#wordcloud'><a href="#wordcloud">Word Cloud</a>
-</a>
-<li> <a href='#wordtree'><a href="#wordtree">Word Tree</a>
-</a>
-<li> <a href='#timelinechart'><a href="#timelinechart">Timeline</a>
-</a>
-</ul>
-
-<a name="basics"></a><p><div class="ramadda-help-heading">5.2.1 <a href="#basics">The Basics</a></div> 
+<a name="basics"></a><p><div class="ramadda-help-heading">5.2.0 <a href="#basics">The Basics</a></div> 
 The charts and information displays follow the RAMADDA wiki tag format:
 
 <pre>{{display  type=&quot;&lt;display type&gt;&quot;  &lt;name=value pairs&gt;}}</pre>
@@ -119,7 +60,7 @@ The full set of color tables can be viewed at
 <a href="${root}/colortables">here</a>.
 
 
-<a name="fields"></a><p><div class="ramadda-help-heading">5.2.2 <a href="#fields">Specifying Fields</a></div> 
+<a name="fields"></a><p><div class="ramadda-help-heading">5.2.1 <a href="#fields">Specifying Fields</a></div> 
 Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
 is based on a series of records (or rows) that are made up of a set of fields (or columns). 
 Each field has  a certain type - double, integer, string,  date.
@@ -138,10 +79,10 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 
 <pre>{{display  type=&quot;linechart&quot; fields=&quot;#5,#6,#7,#8,#9,#10&quot; }}</pre>
 
-<a name="filters"></a><p><div class="ramadda-help-heading">5.2.3 <a href="#filters">Filtering Data</a></div> 
-A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here><>/a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
+<a name="filters"></a><p><div class="ramadda-help-heading">5.2.2 <a href="#filters">Filtering Data</a></div> 
+A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
 
-<a name="image1"></a><div class="ramadda-image-centered"><a href="images/filters.png"><img  src="images/filters.png"  alt="Filtering Data" ></a><br><span class="caption">Image 1: Filtering Data</span></div>
+<a name="image1"></a><div class="userguide-image-centered"><a href="images/filters.png"><img  src="images/filters.png"  alt="Filtering Data" ></a><br><span class="caption">Image 1: Filtering Data</span></div>
 
 Below is the wiki text that creates the above display. The map display defines which fields should be used with the filterFields="..." attribute. The ranking display specifies the same set of filter fields but also has a hideFilterWidget=true which specifies to actually not show the widgets. The filter values the user enters in the map display are then applied to the ranking display.
 <pre>+row
@@ -201,7 +142,7 @@ Specify extra text to wrap the filter value
 
 
 
-<a name="converting"></a><p><div class="ramadda-help-heading">5.2.4 <a href="#converting">Converting Data</a></div> 
+<a name="converting"></a><p><div class="ramadda-help-heading">5.2.3 <a href="#converting">Converting Data</a></div> 
 <pre>
 convertData="command1;command2;...;"
 
@@ -216,7 +157,7 @@ e.g.:
 </pre>
 
 
-<a name="subsetting"></a><p><div class="ramadda-help-heading">5.2.5 <a href="#subsetting">Subsetting Data</a></div> 
+<a name="subsetting"></a><p><div class="ramadda-help-heading">5.2.4 <a href="#subsetting">Subsetting Data</a></div> 
 You can specify various filters applied to the data
 <pre>
 By date:
@@ -264,7 +205,7 @@ uniqueField=&lt;field id&gt;
 
 
 
-<p><div class="ramadda-help-heading">5.2.6 Color</div> 
+<p><div class="ramadda-help-heading">5.2.5 Color</div> 
 RAMADDA provides a large number of built-in color tables.
 When editing the wiki text if you right-lick inside
 of a <i>{{display ...}}</i> tag a context menu will be shown that will list the available color tables.
@@ -288,7 +229,7 @@ colorByFields=&lt;field1,field2,...,fieldN&gt; - specify a number of fields to a
 </pre>
 
 
-<a name="groups"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#groups">Display Groups</a></div>  
+<a name="groups"></a><p><div class="ramadda-help-heading">5.2.6 <a href="#groups">Display Groups</a></div>  
 There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
 The group allows for different displays to communicate with each other 
 (e.g., creating a new chart, map click, animation, etc), the inheritance of
@@ -313,11 +254,11 @@ added automatically.
 If <i>showMenu</i> is set to true for a group then the below menu is displayed. This supports the interactive creation of new charts and displays. The layout of these displays can be changed interactively, their state can be changed and they
 can be deleted. 
 
-<a name="image2"></a><div class="ramadda-image-centered"><a href="images/charts/groupmenu.png"><img  src="images/charts/groupmenu.png"  alt="Group menu" ></a><br><span class="caption">Image 2: Group menu</span></div>
+<a name="image2"></a><div class="userguide-image-centered"><a href="images/charts/groupmenu.png"><img  src="images/charts/groupmenu.png"  alt="Group menu" ></a><br><span class="caption">Image 2: Group menu</span></div>
 
 If the user is logged in then the set of dynamically created displays can be saved (e.g., as a wiki page) 
 through the group menu as seen below:
-<a name="image3"></a><div class="ramadda-image-centered"><a href="images/charts/groupmenu2.png"><img  src="images/charts/groupmenu2.png"  alt="File save menu" ></a><br><span class="caption">Image 3: File save menu</span></div>
+<a name="image3"></a><div class="userguide-image-centered"><a href="images/charts/groupmenu2.png"><img  src="images/charts/groupmenu2.png"  alt="File save menu" ></a><br><span class="caption">Image 3: File save menu</span></div>
 
 <div class="ramadda-help-subsubheading">Display Layout</div> 
 Each child display may be located in a fixed location (using <i>layoutHere=false</i>) in the web page 
@@ -377,7 +318,7 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-<a name="displays"></a><p><div class="ramadda-help-heading">5.2.8 <a href="#displays">The Displays</a></div> 
+<a name="displays"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#displays">The Displays</a></div> 
 
 <a name="entrylist"></a>
 <div class="ramadda-help-subsubheading"><a href="#entrylist">Search form</a>
@@ -401,7 +342,7 @@ showMetadata=&quot;true|false - show the metadata search fields&quot;
 metadataTypes=&quot;comma separated list of metadata types to show&quot;
 formWidth=&quot;width of the search form&quot;
 entriesWidth=&quot;width of the results list&quot;
-provider=&quot;google,arxiv,wolfram,...&quot;}}</pre><a name="image4"></a><div class="ramadda-image-centered"><a href="images/charts/searchform.png"><img  src="images/charts/searchform.png"  alt="Search form" ></a><br><span class="caption">Image 4: Search form</span></div>
+provider=&quot;google,arxiv,wolfram,...&quot;}}</pre><a name="image4"></a><div class="userguide-image-centered"><a href="images/charts/searchform.png"><img  src="images/charts/searchform.png"  alt="Search form" ></a><br><span class="caption">Image 4: Search form</span></div>
 
 The entries displayed in the results list can be interactively displayed. 
 
@@ -414,7 +355,7 @@ The list of available metadata types can be viewed <a href="${root}/search/info#
 <p>
 In the search results list new displays can be created through the pull down menu:
 
-<div class="ramadda-image-centered"><a href="images/charts/entrylist.png"><img  src="images/charts/entrylist.png"  alt="images/charts/entrylist.png" ></a></div>
+<div class="userguide-image-centered"><a href="images/entrylist.png"><img  src="images/entrylist.png"  alt="images/entrylist.png" ></a></div>
 
 
 <a name="entrygrid"></a>
@@ -428,13 +369,13 @@ The entrygrid display shows a set of entries based on their date.
 #yAxisScale=&quot;true&quot;  
 #urlTemplate=&quot;{url}|{entryid}|{resource}&quot;  
 #height=&quot;400&quot;  #width=&quot;100%&quot;  
-#entries=&quot;&quot;}}</pre><a name="image6"></a><div class="ramadda-image-centered"><a href="images/charts/entrygrid.png"><img  src="images/charts/entrygrid.png"  alt="Entry Grid" ></a><br><span class="caption">Image 6: Entry Grid</span></div>
+#entries=&quot;&quot;}}</pre><a name="image6"></a><div class="userguide-image-centered"><a href="images/charts/entrygrid.png"><img  src="images/charts/entrygrid.png"  alt="Entry Grid" ></a><br><span class="caption">Image 6: Entry Grid</span></div>
 
 <a name="animation"></a>
 <div class="ramadda-help-subsubheading"><a href="#animation">Animation</a>
 </div> 
 Controls time or index based animation. Other charts will highlight the record of  the current time.
-<a name="display"></a><pre>{{display type=&quot;animation&quot;}}</pre><a name="image7"></a><div class="ramadda-image-centered"><a href="images/charts/animation.png"><img  src="images/charts/animation.png"  alt="Animation" ></a><br><span class="caption">Image 7: Animation</span></div>
+<a name="display"></a><pre>{{display type=&quot;animation&quot;}}</pre><a name="image7"></a><div class="userguide-image-centered"><a href="images/charts/animation.png"><img  src="images/charts/animation.png"  alt="Animation" ></a><br><span class="caption">Image 7: Animation</span></div>
 
 
 
@@ -476,9 +417,9 @@ colorBy=&quot;total_ballots&quot;
 colorTable=&quot;inversegrayscale&quot;
 colorByMin=&quot;min value&quot;
 colorByMax=&quot;max value&quot;
-displayDiv=&quot;mapDisplay${entryid}&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4'>Example</a><a name="image8"></a><div class="ramadda-image-centered"><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png"  alt="Map" ></a><br><span class="caption">Image 8: Map</span></div>
+displayDiv=&quot;mapDisplay${entryid}&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4'>Example</a><a name="image8"></a><div class="userguide-image-centered"><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png"  alt="Map" ></a><br><span class="caption">Image 8: Map</span></div>
 
-<a name="image9"></a><div class="ramadda-image-centered"><a href="images/charts/map.png"><img  src="images/charts/map.png" width=50% alt="Chloropleth Map" ></a><br><span class="caption">Image 9: Chloropleth Map</span></div>
+<a name="image9"></a><div class="userguide-image-centered"><a href="images/charts/map.png"><img  src="images/charts/map.png" width=50% alt="Chloropleth Map" ></a><br><span class="caption">Image 9: Chloropleth Map</span></div>
 
 
 
@@ -599,7 +540,7 @@ If <i>padRight</i> is set to true than the chart is padded on the right with the
 for two or more charts to be aligned that have one or more fields being displayed.
 <a name="display"></a><pre>{{display type=&quot;linechart&quot; width=&quot;800&quot;  height=&quot;400&quot;  
 fields=&quot;&quot;       
-vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; padRight=&quot;true&quot;}}</pre><a name="image10"></a><div class="ramadda-image-centered"><a href="images/charts/linechart.png"><img  src="images/charts/linechart.png"  alt=" Line chart" ></a><br><span class="caption">Image 10:  Line chart</span></div>
+vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; padRight=&quot;true&quot;}}</pre><a name="image10"></a><div class="userguide-image-centered"><a href="images/charts/linechart.png"><img  src="images/charts/linechart.png"  alt=" Line chart" ></a><br><span class="caption">Image 10:  Line chart</span></div>
 
 
 <a name="colors"></a>
@@ -651,7 +592,7 @@ Where &lt;index&gt; is either a date or a numeric index, e.g;
 <a name="barchart"></a>
 <div class="ramadda-help-subsubheading"><a href="#barchart">Bar chart</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;barchart&quot; fields=&quot;&quot;  padRight=&quot;true&quot;}}</pre><a name="image11"></a><div class="ramadda-image-centered"><a href="images/charts/barchart.png"><img  src="images/charts/barchart.png"  alt="Bar chart" ></a><br><span class="caption">Image 11: Bar chart</span></div>
+<a name="display"></a><pre>{{display type=&quot;barchart&quot; fields=&quot;&quot;  padRight=&quot;true&quot;}}</pre><a name="image11"></a><div class="userguide-image-centered"><a href="images/charts/barchart.png"><img  src="images/charts/barchart.png"  alt="Bar chart" ></a><br><span class="caption">Image 11: Bar chart</span></div>
 
 <a name="barstack"></a>
 <div class="ramadda-help-subsubheading"><a href="#barstack">Stacked bar chart</a>
@@ -668,12 +609,12 @@ Where &lt;index&gt; is either a date or a numeric index, e.g;
 fields=&quot;&quot;  
 vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; 
 padRight=&quot;true&quot;
-isStacked=&quot;true&quot;}}</pre><a name="image12"></a><div class="ramadda-image-centered"><a href="images/charts/areachart.png"><img  src="images/charts/areachart.png"  alt="Area chart" ></a><br><span class="caption">Image 12: Area chart</span></div>
+isStacked=&quot;true&quot;}}</pre><a name="image12"></a><div class="userguide-image-centered"><a href="images/charts/areachart.png"><img  src="images/charts/areachart.png"  alt="Area chart" ></a><br><span class="caption">Image 12: Area chart</span></div>
 
 <a name="scatterplot"></a>
 <div class="ramadda-help-subsubheading"><a href="#scatterplot"> Scatter Plot</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;scatterplot&quot; width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;}}</pre><a name="image13"></a><div class="ramadda-image-centered"><a href="images/charts/scatterplot.png"><img  src="images/charts/scatterplot.png"  alt=" Scatter Plot" ></a><br><span class="caption">Image 13:  Scatter Plot</span></div>
+<a name="display"></a><pre>{{display type=&quot;scatterplot&quot; width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;}}</pre><a name="image13"></a><div class="userguide-image-centered"><a href="images/charts/scatterplot.png"><img  src="images/charts/scatterplot.png"  alt=" Scatter Plot" ></a><br><span class="caption">Image 13:  Scatter Plot</span></div>
 
 <a name="histogram"></a>
 <div class="ramadda-help-subsubheading"><a href="#histogram"> Histogram</a>
@@ -687,7 +628,7 @@ textPosition=&quot;out|in|none&quot;
 isStacked=&quot;false|true|percent|relative&quot;  
 logScale=&quot;true|false&quot;  scaleType=&quot;log|mirrorLog&quot;  
 vAxisMinValue=&quot;&quot;  vAxisMaxValue=&quot;&quot;  
-minValue=&quot;&quot;  maxValue=&quot;&quot;}}</pre><a name="image14"></a><div class="ramadda-image-centered"><a href="images/charts/histogram.png"><img  src="images/charts/histogram.png"  alt=" Histogram" ></a><br><span class="caption">Image 14:  Histogram</span></div>
+minValue=&quot;&quot;  maxValue=&quot;&quot;}}</pre><a name="image14"></a><div class="userguide-image-centered"><a href="images/charts/histogram.png"><img  src="images/charts/histogram.png"  alt=" Histogram" ></a><br><span class="caption">Image 14:  Histogram</span></div>
 
 
 <a name="bubble"></a>
@@ -715,30 +656,30 @@ bins=&quot;bin count&quot;
 binMin=&quot;min&quot;  
 binMax=&quot;max&quot;  
 sliceVisibilityThreshold=&quot;0.01&quot;  
-width=&quot;500&quot;  height=&quot;250&quot;}}</pre><a name="image15"></a><div class="ramadda-image-centered"><a href="images/charts/piechart.png"><img  src="images/charts/piechart.png"  alt=" Pie chart" ></a><br><span class="caption">Image 15:  Pie chart</span></div>
+width=&quot;500&quot;  height=&quot;250&quot;}}</pre><a name="image15"></a><div class="userguide-image-centered"><a href="images/charts/piechart.png"><img  src="images/charts/piechart.png"  alt=" Pie chart" ></a><br><span class="caption">Image 15:  Pie chart</span></div>
 
 <a name="radar"></a>
 <div class="ramadda-help-subsubheading"><a href="#radar">Radar Display</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;radar&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image16"></a><div class="ramadda-image-centered"><a href="images/charts/radar.png"><img  src="images/charts/radar.png"  alt="Radar Display" ></a><br><span class="caption">Image 16: Radar Display</span></div>
+<a name="display"></a><pre>{{display type=&quot;radar&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image16"></a><div class="userguide-image-centered"><a href="images/charts/radar.png"><img  src="images/charts/radar.png"  alt="Radar Display" ></a><br><span class="caption">Image 16: Radar Display</span></div>
 
 <a name="windrose"></a>
 <div class="ramadda-help-subsubheading"><a href="#windrose">Wind Rose</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;windrose&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image17"></a><div class="ramadda-image-centered"><a href="images/charts/windrose.png"><img  src="images/charts/windrose.png"  alt="Wind Rose" ></a><br><span class="caption">Image 17: Wind Rose</span></div>
+<a name="display"></a><pre>{{display type=&quot;windrose&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image17"></a><div class="userguide-image-centered"><a href="images/charts/windrose.png"><img  src="images/charts/windrose.png"  alt="Wind Rose" ></a><br><span class="caption">Image 17: Wind Rose</span></div>
 
 
 <a name="density"></a>
 <div class="ramadda-help-subsubheading"><a href="#density">Density Display</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;density&quot; fields=&quot;tmax,vp&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image18"></a><div class="ramadda-image-centered"><a href="images/charts/density.png"><img  src="images/charts/density.png"  alt="Density Display" ></a><br><span class="caption">Image 18: Density Display</span></div>
+<a name="display"></a><pre>{{display type=&quot;density&quot; fields=&quot;tmax,vp&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image18"></a><div class="userguide-image-centered"><a href="images/charts/density.png"><img  src="images/charts/density.png"  alt="Density Display" ></a><br><span class="caption">Image 18: Density Display</span></div>
 
 
 
 <a name="3dscatter"></a>
 <div class="ramadda-help-subsubheading"><a href="#3dscatter">3D Scatter</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;3dscatter&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image19"></a><div class="ramadda-image-centered"><a href="images/charts/3dscatter.png"><img  src="images/charts/3dscatter.png"  alt="3D Scatter" ></a><br><span class="caption">Image 19: 3D Scatter</span></div>
+<a name="display"></a><pre>{{display type=&quot;3dscatter&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image19"></a><div class="userguide-image-centered"><a href="images/charts/3dscatter.png"><img  src="images/charts/3dscatter.png"  alt="3D Scatter" ></a><br><span class="caption">Image 19: 3D Scatter</span></div>
 
 
 
@@ -755,309 +696,50 @@ width=&quot;500&quot;  height=&quot;250&quot;}}</pre><a name="image15"></a><div 
 Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
 <br>
 If <i>missingValue</i> is specified than any point value with that value won't be shown.
-<a name="display"></a><pre>{{display type=&quot;calendar&quot; fields=&quot;&quot;  cellSize=&quot;15&quot;  missingValue=&quot;0&quot;}}</pre><a name="image20"></a><div class="ramadda-image-centered"><a href="images/charts/calendar.png"><img  src="images/charts/calendar.png"  alt=" Calendar" ></a><br><span class="caption">Image 20:  Calendar</span></div>
+<a name="display"></a><pre>{{display type=&quot;calendar&quot; fields=&quot;&quot;  cellSize=&quot;15&quot;  missingValue=&quot;0&quot;}}</pre><a name="image20"></a><div class="userguide-image-centered"><a href="images/charts/calendar.png"><img  src="images/charts/calendar.png"  alt=" Calendar" ></a><br><span class="caption">Image 20:  Calendar</span></div>
 
 <a name="gauge"></a>
 <div class="ramadda-help-subsubheading"><a href="#gauge"> Gauge</a>
 </div> 
 This shows a single value from a series of point data.
-<a name="display"></a><pre>{{display type=&quot;gauge&quot; fields=&quot;&quot;  gaugeMin=&quot;&quot;  gaugeMax=&quot;&quot;  gaugeLabel=&quot;&quot;}}</pre><a name="image21"></a><div class="ramadda-image-centered"><a href="images/charts/gauge.png"><img  src="images/charts/gauge.png"  alt=" Gauge" ></a><br><span class="caption">Image 21:  Gauge</span></div>
-
-
-<a name="table"></a>
-<div class="ramadda-help-subsubheading"><a href="#table">Table</a>
-</div> 
-Shows tabular data. This is integrated with other charts so clicking on a row highlights the corresponding record in a chart.
-<a name="display"></a><pre>{{display type=&quot;table&quot; height=&quot;400&quot;}}</pre><a name="image22"></a><div class="ramadda-image-centered"><a href="images/charts/table.png"><img  src="images/charts/table.png"  alt="Table" ></a><br><span class="caption">Image 22: Table</span></div>
-
-
-<a name="heatmap"></a>
-<div class="ramadda-help-subsubheading"><a href="#heatmap">Heatmap</a>
-</div> 
-Displays the records, one row per record, with each cell color coded based on the field value and the specified color table.
-<a name="display"></a><pre>{{display type=&quot;heatmap&quot; type=&quot;heatmap&quot;  height=&quot;400&quot;  fields=&quot;&quot;  
-colorTables=&quot;temperature,blues&quot;  
-colorByMins=&quot;-90,0&quot;  colorByMaxes=&quot;45,100&quot;  
-showIndex=&quot;false&quot;  showValue=&quot;true&quot;  
-showBorder=&quot;true&quot;  
-cellHeight=&quot;30&quot;  
-textColor=&quot;white&quot;}}</pre><a name="image23"></a><div class="ramadda-image-centered"><a href="images/charts/heatmap.png"><img  src="images/charts/heatmap.png"  alt="Heatmap" ></a><br><span class="caption">Image 23: Heatmap</span></div>
-
-
-
-<a name="correlation"></a>
-<div class="ramadda-help-subsubheading"><a href="#correlation"> Correlation</a>
-</div> 
-Displays a statistical correlation of a set of fields.
-<a name="display"></a><pre>{{display type=&quot;correlation&quot; fields=&quot;&quot;}}</pre><a name="image24"></a><div class="ramadda-image-centered"><a href="images/charts/correlation.png"><img  src="images/charts/correlation.png"  alt=" Correlation" ></a><br><span class="caption">Image 24:  Correlation</span></div>
-
-
-<a name="text"></a>
-<div class="ramadda-help-subsubheading"><a href="#text"> Text Readout</a>
-</div> 
-Displays the record selected in other charts.
-<a name="display"></a><pre>{{display type=&quot;text&quot;}}</pre><a name="image25"></a><div class="ramadda-image-centered"><a href="images/charts/textreadout.png"><img  src="images/charts/textreadout.png"  alt=" Text Readout" ></a><br><span class="caption">Image 25:  Text Readout</span></div>
-
-<a name="stats"></a>
-<div class="ramadda-help-subsubheading"><a href="#stats"> Summary Stats</a>
-</div> 
-Displays a summary statistics including average, min, max, number of missing, etc. There are a number of values that are shown. To turn all of them off and only set a few set the [ug::attr showDefault] to false.
-<a name="display"></a><pre>{{display type=&quot;stats&quot; loadData=&quot;false&quot;  
-showDefault=&quot;true&quot;  
-#showMin=&quot;true&quot;  
-#showMax=&quot;true&quot;  
-#showAverage=&quot;true&quot;  
-#showStd=&quot;true&quot;  
-#showPercentile=&quot;true&quot;  
-#showCount=&quot;true&quot;  
-#showTotal=&quot;true&quot;  
-#showMissing=&quot;true&quot;  
-#showUnique=&quot;true&quot;    
-#showText=&quot;true&quot;}}</pre><a name="image26"></a><div class="ramadda-image-centered"><a href="images/charts/stats.png"><img  src="images/charts/stats.png"  alt=" Summary Stats" ></a><br><span class="caption">Image 26:  Summary Stats</span></div>
-
-<a name="template"></a>
-<div class="ramadda-help-subsubheading"><a href="#template">Record  Template</a>
-</div> 
-The template display displays text based on a template populated by data. There can be a headerTemplate and footerTemplate specified that are used once. The template= attribute is used to 
-show text for each record in the data. Not all template attributes need to be specified.
-<a name="display"></a><pre>{{display type=&quot;template&quot; template=&quot;...&quot;   //Used for each record
-headerTemplate=&quot;... ${totalCount} ... ${selectedCount}&quot;  //used at the beginning
-footerTemplate=&quot;... ${totalCount} ... ${selectedCount}&quot;  //used at the end
-selectField=&quot;field name to get the value to select on&quot;  //specify a field to select on
-select=&quot;max|min|&lt;|&gt;|=|&gt;=|&gt;=|contains&quot;   //specify an operator
-selectValue=&quot;some value&quot;   //and a value
-emptyMessage=&quot;&quot;   //Message to show if nothing meets the selection criteria}}</pre>
-
-
-<b> Template Macros</b><br>
-Use the below macros in the templates- <br>
-<pre>
-//In the header/footer:
-${totalCount}  - total number of records
-${selectedCount}  - number of filtered records
-
-//In the pre record template -
-${&lt;field name&gt;_min}
-${&lt;field name&gt;_max}
-${&lt;field name&gt;_total}
-${&lt;field name&gt;_average}
-</pre>
-These are the values specified by the user in the <a href="#filters">filter widgets</a> - <br>
-<pre>
-${filter_&lt;field name&gt;_min} //for numeric values
-${filter_&lt;field name&gt;_max}
-${filter_&lt;field name&gt;} //for enumerated and text values
-
-//If the user does not specify a text filter value then just show blank
-//If the user specifies some text filter value then wrap it with the prefix/suffix
-${filter_&lt;field name&gt; prefix='some text prefix' suffix='some text suffix'} 
-
-</pre>
-
-<b>Template Examples</b><br>
-
-The below example (<a href="https://geodesystems.com/repository/alias/14ers">see it here</a>) 
-shows Colorado 14k foot peaks data. The display uses <a href="#filters">filter fields</a>
-to allow the user to filter the data. The filter_... macros in the templates 
-display the values of those filter fields. The prefix/suffix attributes in the macros
-allow one to show a phrase only if a text filter value is selected by the user.
-
-<div class="ramadda-image-centered"><a href="images/charts/template.png"><img  src="images/charts/template.png" width="90%" alt="images/charts/template.png" ></a></div>
-
-The template display is specified as:
-<pre>
- {{display  type="template"  displayStyle="background:rgba(0,0,0,0);"
-headerTemplate="There are a total of ${selectedCount} peaks 
-between ${filter_elev_min} and ${filter_elev_max} feet 
-with elevation gain between ${filter_elev_gain_min} and ${filter_elev_gain_max} feet 
-${filter_class prefix=' of class '} 
-${filter_range prefix=' in the ' suffix=' range'}" 
-filterFields="elev,elev_gain,distance,range,class" hideFilterWidget="true"
-}} 
-</pre>
-
-
-
-The below display (from  <a href="https://geodesystems.com/repository/alias/mass_shootings">here</a>) 
-showing mass shooting data uses two different template displays as defined here.
-
-<a name="image28"></a><div class="ramadda-image-centered"><a href="images/template2.png"><img  src="images/template2.png" width=600 alt="Template Example" ></a><br><span class="caption">Image 28: Template Example</span></div>
-
-<pre>
-{{display  type="template" 
-headerTemplate="There have been a total of ${totalCount} mass shootings with ${fatalities_total} fatalities and ${injured_total} injured"}} 
-{{display  type="template" 
-headerTemplate="Top 3 mass shootings: &lt;br&gt;&lt;table cellpadding=5&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Fatalities&lt;/td&gt;&lt;td&gt;Injured&lt;/td&gt;&lt;/tr&gt;" 
-template="&lt;tr&gt;&lt;td&gt;${title}&lt;/td&gt;&lt;td&gt;${fatalities}&lt;/td&gt;&lt;td&gt;${injured}&lt;/td&gt;&lt;/tr&gt;"
-footerTemplate="&lt;/table&gt;" 
-maxNumber="3" 
-sortFields=fatalities 
-sortAscending=false
-}} 
-</pre>
-
-
-
-<a name="dotplot"></a>
-<div class="ramadda-help-subsubheading"><a href="#dotplot">Dot Plot</a>
-</div> 
-The Dot plot requires a string value field and a numeric field.
-It uses the string values as the Y-axis and shows the value
-field along the X-axis.
-<a name="display"></a><pre>{{display type=&quot;dotplot&quot; fields=&quot;race,years_decimal&quot; 
-xAxisTitle=&quot;Age&quot;  
-marginLeft=&quot;200&quot; 
-width=&quot;100%&quot; height=&quot;300&quot;}}</pre><a name="image29"></a><div class="ramadda-image-centered"><a href="images/charts/dotplot.png"><img  src="images/charts/dotplot.png"  alt="Dot Plot" ></a><br><span class="caption">Image 29: Dot Plot</span></div>
-
-
-
-<a name="sankey"></a>
-<div class="ramadda-help-subsubheading"><a href="#sankey">Sankey</a>
-</div> 
-Displays flow data. The point data needs to have 2 string fields (the from and to) and a numeric value field.
-If [ug::attr doCategories] is set to true then the display requires 2 string fields and a count of the
-unique pair values of the strings are used for the values.
-<a name="display"></a><pre>{{display type=&quot;sankey&quot; doCategories=&quot;true|false&quot;
-height=&quot;400&quot;  
-#fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image30"></a><div class="ramadda-image-centered"><a href="images/charts/sankey.png"><img  src="images/charts/sankey.png"  alt="Sankey" ></a><br><span class="caption">Image 30: Sankey</span></div>
-
-
-
-<a name="wordcloud"></a>
-<div class="ramadda-help-subsubheading"><a href="#wordcloud">Word Cloud</a>
-</div> 
-Shows a word or tag cloud of the text fields of point data. When the user clicks on a word 
-the data that matches the word value is shown in a table. The <i>tableFields</i> attribute define what 
-fields to show in the table. If combined=true then all of the selected fields
-are shown in one word cloud. 
-<a name="display"></a><pre>{{display type=&quot;wordcloud&quot; fields=&quot;sex,race&quot;  
-tableFields=&quot;rank,name,years,birth_place,sex,race&quot; 
-combined=&quot;true|false&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image31"></a><div class="ramadda-image-centered"><a href="images/charts/wordcloud.png"><img  src="images/charts/wordcloud.png"  alt="Word Cloud" ></a><br><span class="caption">Image 31: Word Cloud</span></div>
-
-<a name="wordtree"></a>
-<div class="ramadda-help-subsubheading"><a href="#wordtree">Word Tree</a>
-</div> 
-This creates a tree of the selected fields. Each row in the data is essentially converted to a "sentence", the 
-words of  which are  then displayed  in tree form. If a field is numeric then the data is subvidided
-by the numbero of buckets (the default is 10) and the "word" is the bucket range.  
-This can be overridden with the [ug::attr numBuckets] attribute. For a specific field append the 
-field ID to the attribute. 
-The bucket ranges can be specified with the [ug::attr buckets] attribute. The text label
-to use can be specified with the [ug::attr bucketLabels] attribute.
-The [ug::attr treeRoot] attribute is the text used to start the tree.
-<a name="display"></a><pre>{{display type=&quot;wordtree&quot; treeRoot=&quot;People&quot;
-fields=&quot;years,sex,race,name&quot; 
-
-numBuckets=&quot;number of buckets to use for all numeric fields&quot;
-numBuckets.&lt;field id&gt;=&quot;number of buckets to use for a specific field&quot;
-
-buckets=&quot;100,110,115,120,130&quot; 
-bucketLabels=&quot;Young,Middle,Old,Really old&quot; 
-Or:
-buckets.&lt;field id&gt;=&quot;100,110,115,120,130&quot; 
-bucketLabels.&lt;field id&gt;=&quot;Young,Middle,Old,Really old&quot; 
-
-height=&quot;800px&quot; 
-chartWidth=&quot;900&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=9c5613e6-f9fc-4bed-b402-12d57c5d6f7e'>Example</a><a name="image32"></a><div class="ramadda-image-centered"><a href="images/charts/wordtree.png"><img  src="images/charts/wordtree.png"  alt="Word Tree" ></a><br><span class="caption">Image 32: Word Tree</span></div>
-
-
-<a name="timelinechart"></a>
-<div class="ramadda-help-subsubheading"><a href="#timelinechart">Timeline</a>
-</div> 
-Data that has 2 date fields can be shown in a timeline.
-If [ug::attr showLabel] is true then text is shown inline in the timeline bars. The fields
-that are shown are specified with the [ug::attr labelFields] attribute. The [ug::attr labelFieldsTemplate]
-attribute defines how the label is shown.
-<a name="display"></a><pre>{{display type=&quot;timelinechart&quot; fields=&quot;rank,born,died&quot; 
-width=&quot;100%&quot;  height=&quot;800&quot;   
-showLabel=&quot;true&quot; 
-labelFieldsTemplate=&quot;{name}  Age: {years}  Birth Place: {birth_place}  Race: {race}&quot;
-labelFields=&quot;name,race,birth_place,years&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image33"></a><div class="ramadda-image-centered"><a href="images/charts/timeline.png"><img  src="images/charts/timeline.png"  alt="Timeline" ></a><br><span class="caption">Image 33: Timeline</span></div>
-
-
-<a name="derived"></a><p><div class="ramadda-help-heading">5.2.9 <a href="#derived">Derived Data</a></div> 
-
-Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
-<a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
-one of the displays shows the turnout percentage using the following attributes:
-<pre>function=&quot;total_ballots/active_voters&quot; 
-functionName=&quot;turnout&quot;</pre>
-
-The full wiki text is:
-<pre>{{display  type=&quot;areachart&quot;  column=&quot;0&quot; 
-layoutHere=&quot;true&quot;  showTitle=&quot;true&quot;  title=&quot;Line Chart with Function&quot;  
-vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; padRight=&quot;true&quot;
-function=&quot;total_ballots/active_voters&quot; functionName=&quot;turnout&quot;}}</pre>
-
-Percentage values can be calculated with the <i>showPercent</i> attribute. This sums up the values of all of the specified fields and uses the
-percent value.
-
-
-<a name="scaleoffset"></a><p><div class="ramadda-help-heading">5.2.10 <a href="#scaleoffset">Scaling and offset of data</a></div> 
-The data values and or displayed unit of the point data that is displayed in chart can be modified
-by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
-with the following attributes:
-
-<div style="margin:10p;"><pre>
-{{display type=&quot;linechart&quot; offset1=-&quot;273.15&quot; unit=&quot;C&quot; }}
-</pre></div>
-
-There are also scale and offset2 values supported where the end value is calculated as:
-<div style="margin:10p;"><pre>
-value = (offset1+value)*scale + offset2
-</pre></div>
-
-You can specify values specific for a particular field using:
-
-<div style="margin:10p;"><pre>
-{{display type=&quot;linechart&quot; Temperature_surface.offset1=-&quot;273.15&quot; Temperature_surface.unit=&quot;C&quot;
-}}
-</pre></div>
-
-
-<a name="displayProperty"></a><p><div class="ramadda-help-heading">5.2.11 <a href="#displayProperty">Setting shared properties</a></div> 
-Sometimes there are a number of displays on a single page that share the same set of properties.
-For example, this <a href="https://geodesystems.com/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
-shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
-However, the displays show the data in Celsius and Hectopascals. As described aboce a scale, offset and new unit 
-for the displays showing temperature and pressure data can be specified. However, because there are a number of displays
-that show this data one would have to specify these attributes for every display tag. However, using the <i>displayPropert</i>
-tag global properties can be specified that are applicable to all displays on the page:
-
-<div style="margin:10p;"><pre>
-{{displayProperty name=&quot;Temperature_surface.offset1&quot; value=&quot;-273.15&quot;}}
-{{displayProperty name=&quot;Temperature_surface.unit&quot; value=&quot;C&quot;}}
-{{displayProperty name=&quot;Pressure_surface.scale&quot; value=&quot;0.01&quot;}}
-{{displayProperty name=&quot;Pressure_surface.unit&quot; value=&quot;hPa&quot;}}
-</pre></div>
-
-
-<a name="filtering"></a><p><div class="ramadda-help-heading">5.2.12 <a href="#filtering">Filtering data</a></div> 
-You can filter the data that is shown based on string pattern matching or numeric operators.
-You do this with the attributes:
-<pre>
-patternFilterField="field id" 
-filterPattern="some string"
-numericFilterField="other field id" 
-numericFilterValue="number" 
-numericFilterOperator="&gt;|&gt;=|==|&lt;|&lt;=" 
-</pre>
-e.g.: below would only show data where the 1st matches the string "Texas" and the 3rd needs to be less that 5000.
-<pre>
-{{display  type="sankey" height="800" 
-patternFilterField="#1" filterPattern="Texas"
-numericFilterField="#3" numericFilterValue="5000" numericFilterOperator=">" 
-}}
-</pre>
-
-
-
-
+<a name="display"></a><pre>{{display type=&quot;gauge&quot; fields=&quot;&quot;  gaugeMin=&quot;&quot;  gaugeMax=&quot;&quot;  gaugeLabel=&quot;&quot;}}</pre><a name="image21"></a><div class="userguide-image-centered"><a href="images/charts/gauge.png"><img  src="images/charts/gauge.png"  alt=" Gauge" ></a><br><span class="caption">Image 21:  Gauge</span></div>
 </div>
 <p>
-
+<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.2.0&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#basics" >
+<a href="#basics">The Basics</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.2.1&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#fields" >
+<a href="#fields">Specifying Fields</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.2.2&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#filters" >
+<a href="#filters">Filtering Data</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.2.3&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#converting" >
+<a href="#converting">Converting Data</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.2.4&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#subsetting" >
+<a href="#subsetting">Subsetting Data</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.2.5&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#" >
+Color
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.2.6&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#groups" >
+<a href="#groups">Display Groups</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+5.2.7&nbsp;
+</span></td><td><a  class="childlist-link"  href="wikidisplay.html#displays" >
+<a href="#displays">The Displays</a>
+</a><br></td></tr></table></div>
 <p>&nbsp;<p>
-<a href="wikitext.html"><span title="Previous: Wiki Text"><i class="fa fa-caret-left "></i></span></a> <a href="notebook.html"><span title="Next: RAMADDA Notebooks"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikidisplay.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
+<a href="wikitext.html"><span title="Previous: Wiki Text"><i class="fa fa-caret-left "></i></span></a> <a href="wikidisplay2.html"><span title="Next: More Wiki Display Components"><i class="fa fa-caret-right "></i></span></a>  <a href="toc.html#wikidisplay.html"><span title="Table of contents"><i class="fa fa-list "></i></span></a>
 <p>
 </div>
 </body>

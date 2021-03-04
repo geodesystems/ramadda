@@ -2422,6 +2422,11 @@ table.dataTable tfoot td {
 
 }
 
+.display-simplesearch-entry a {
+    text-decoration:none;
+}
+
+
 .display-simplesearch-input {
   padding-left: 5px;
   border-radius: 5px;

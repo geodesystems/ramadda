@@ -1,0 +1,153 @@
+[ht::head {Wiki Functions}]
+
+
+
+<b> Template Macros</b><br>
+Use the below macros in the templates- <br>
+<pre>
+//In the header/footer:
+${totalCount}  - total number of records
+${selectedCount}  - number of filtered records
+
+//In the pre record template -
+${&lt;field name&gt;_min}
+${&lt;field name&gt;_max}
+${&lt;field name&gt;_total}
+${&lt;field name&gt;_average}
+</pre>
+These are the values specified by the user in the <a href="#filters">filter widgets</a> - <br>
+<pre>
+${filter_&lt;field name&gt;_min} //for numeric values
+${filter_&lt;field name&gt;_max}
+${filter_&lt;field name&gt;} //for enumerated and text values
+
+//If the user does not specify a text filter value then just show blank
+//If the user specifies some text filter value then wrap it with the prefix/suffix
+${filter_&lt;field name&gt; prefix='some text prefix' suffix='some text suffix'} 
+
+</pre>
+
+<b>Template Examples</b><br>
+
+The below example (<a href="https://geodesystems.com/repository/alias/14ers">see it here</a>) 
+shows Colorado 14k foot peaks data. The display uses <a href="#filters">filter fields</a>
+to allow the user to filter the data. The filter_... macros in the templates 
+display the values of those filter fields. The prefix/suffix attributes in the macros
+allow one to show a phrase only if a text filter value is selected by the user.
+
+[ht::cimg images/charts/template.png {} {width="90%"}]
+
+The template display is specified as:
+<pre>
+ {{display  type="template"  displayStyle="background:rgba(0,0,0,0);"
+headerTemplate="There are a total of ${selectedCount} peaks 
+between ${filter_elev_min} and ${filter_elev_max} feet 
+with elevation gain between ${filter_elev_gain_min} and ${filter_elev_gain_max} feet 
+${filter_class prefix=' of class '} 
+${filter_range prefix=' in the ' suffix=' range'}" 
+filterFields="elev,elev_gain,distance,range,class" hideFilterWidget="true"
+}} 
+</pre>
+
+
+
+The below display (from  <a href="https://geodesystems.com/repository/alias/mass_shootings">here</a>) 
+showing mass shooting data uses two different template displays as defined here.
+
+[ht::cimg images/template2.png {Template Example} {width=600}]
+
+<pre>
+{{display  type="template" 
+headerTemplate="There have been a total of ${totalCount} mass shootings with ${fatalities_total} fatalities and ${injured_total} injured"}} 
+{{display  type="template" 
+headerTemplate="Top 3 mass shootings: &lt;br&gt;&lt;table cellpadding=5&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Fatalities&lt;/td&gt;&lt;td&gt;Injured&lt;/td&gt;&lt;/tr&gt;" 
+template="&lt;tr&gt;&lt;td&gt;${title}&lt;/td&gt;&lt;td&gt;${fatalities}&lt;/td&gt;&lt;td&gt;${injured}&lt;/td&gt;&lt;/tr&gt;"
+footerTemplate="&lt;/table&gt;" 
+maxNumber="3" 
+sortFields=fatalities 
+sortAscending=false
+}} 
+</pre>
+
+
+
+
+[ug::subheading {Derived Data} derived]
+
+Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
+<a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
+one of the displays shows the turnout percentage using the following attributes:
+[ht::pre {function="total_ballots/active_voters" 
+functionName="turnout"}]
+
+The full wiki text is:
+[ht::pre {{{display  type="areachart"  column="0" 
+layoutHere="true"  showTitle="true"  title="Line Chart with Function"  
+vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"
+function="total_ballots/active_voters" functionName="turnout"}}}]
+
+Percentage values can be calculated with the <i>showPercent</i> attribute. This sums up the values of all of the specified fields and uses the
+percent value.
+
+
+[ug::subheading {Scaling and offset of data} scaleoffset]
+The data values and or displayed unit of the point data that is displayed in chart can be modified
+by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
+with the following attributes:
+
+[ug::xml {
+{{display type="linechart" offset1=-"273.15" unit="C" }}
+}]
+
+There are also scale and offset2 values supported where the end value is calculated as:
+[ug::xml {
+value = (offset1+value)*scale + offset2
+}]
+
+You can specify values specific for a particular field using:
+
+[ug::xml {
+{{display type="linechart" Temperature_surface.offset1=-"273.15" Temperature_surface.unit="C"
+}}
+}]
+
+
+[ug::subheading {Setting shared properties} displayProperty]
+Sometimes there are a number of displays on a single page that share the same set of properties.
+For example, this <a href="https://geodesystems.com/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
+shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
+However, the displays show the data in Celsius and Hectopascals. As described aboce a scale, offset and new unit 
+for the displays showing temperature and pressure data can be specified. However, because there are a number of displays
+that show this data one would have to specify these attributes for every display tag. However, using the <i>displayPropert</i>
+tag global properties can be specified that are applicable to all displays on the page:
+
+[ug::xml {
+{{displayProperty name="Temperature_surface.offset1" value="-273.15"}}
+{{displayProperty name="Temperature_surface.unit" value="C"}}
+{{displayProperty name="Pressure_surface.scale" value="0.01"}}
+{{displayProperty name="Pressure_surface.unit" value="hPa"}}
+}]
+
+
+[ug::subheading {Filtering data} filtering]
+You can filter the data that is shown based on string pattern matching or numeric operators.
+You do this with the attributes:
+<pre>
+patternFilterField="field id" 
+filterPattern="some string"
+numericFilterField="other field id" 
+numericFilterValue="number" 
+numericFilterOperator="&gt;|&gt;=|==|&lt;|&lt;=" 
+</pre>
+e.g.: below would only show data where the 1st matches the string "Texas" and the 3rd needs to be less that 5000.
+<pre>
+{{display  type="sankey" height="800" 
+patternFilterField="#1" filterPattern="Texas"
+numericFilterField="#3" numericFilterValue="5000" numericFilterOperator=">" 
+}}
+</pre>
+
+
+
+[ht::foot]
+
