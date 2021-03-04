@@ -1697,8 +1697,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         } else if (product.equals(PRODUCT_GEPLUGIN)) {
             url = url.replace(PRODUCT_GEPLUGIN, PRODUCT_KMZ);
             String id = getMapManager().getGoogleEarthPlugin(request, sb,
-                            request.get(ARG_IMAGE_WIDTH, 500),
-                            request.get(ARG_IMAGE_HEIGHT, 500), url);
+                            ""+request.get(ARG_IMAGE_WIDTH, 500),
+                            ""+request.get(ARG_IMAGE_HEIGHT, 500), url);
             //sb.append(HtmlUtils.href(url,
             //                        "Click here to retrieve the KMZ file"));
         }
