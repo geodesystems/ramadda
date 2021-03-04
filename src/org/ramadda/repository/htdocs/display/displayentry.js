@@ -129,7 +129,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
             text: properties.entryText,
             entryType: properties.entryType,
             orderBy: properties.orderBy,
-	    entryRoot: properties.entryRoot
+	    entryRoot: properties.entryRoot,
         }),
         entryList: properties.entryList,
         entryMap: {},
@@ -2679,6 +2679,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'maxWidth',w:200},		
 	{p:"autoSearch",w:true},
 	{p:"showHeader",w:true},
+	{p:"inputSize",w:"30"},
+	{p:"entryType",w:"",tt:"Constrain search to entries of this type"},		
+	{p:"entryRoot",w:"this",tt:"Constrain search to this tree"},		
     ];
 
     RamaddaUtil.inherit(this, SUPER = new RamaddaSearcherDisplay(displayManager, id, DISPLAY_SIMPLESEARCH, properties));
@@ -2698,7 +2701,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             this.setContents(this.getDefaultHtml());
 	    let input = this.jq(ID_TEXT_FIELD);
 	    if(this.getAutoSearch(true)) {
+		//KEY
 		input.keyup(function(event) {
+		    _this.getSearchSettings().skip =0;
+                    _this.getSearchSettings().max = 50;
 		    if($(this).val().trim()=="") {
 			_this.jq(ID_RESULTS).html("");
 			_this.writeEntries("");			
@@ -2764,7 +2770,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    
 	    let eg = this.getEgText();
 	    let text  = this.getFormText();
-            var textField = HtmlUtils.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, "30", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+	    let size = this.getPropertyInputSize("30");
+            var textField = HtmlUtils.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, size, ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 	    form += textField;
             form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
@@ -2777,6 +2784,11 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	},
 	writeResults: function(msg) {
 	    this.jq(ID_RESULTS).html(msg);
+	},
+	handleNoEntries: function() {
+            var msg = "Nothing found";
+	    this.jq(ID_ENTRIES).html(msg);
+            this.getDisplayManager().handleEventEntriesChanged(this, []);
 	},
 	writeEntries: function(msg, entries) {
 	    let abs = this.getProperty("resultsPosition","absolute")=="absolute";
@@ -2806,17 +2818,14 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             this.haveSearched = true;
             var settings = this.getSearchSettings();
             settings.text = this.getFieldValue(this.getDomId(ID_TEXT_FIELD), settings.text);
-
-	    settings.entryRoot = null;
-	    if(this.getProperty("entryRoot")) {
-		settings.entryRoot = this.getProperty("entryRoot");
-	    }
-
+	    settings.entryRoot = this.getProperty("entryRoot");
+	    settings.entryType = this.getProperty("entryType");	    
             if (this.haveTypes) {
                 settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD), settings.entryType);
             }
             var theRepository = this.getRamadda()
             var jsonUrl = this.makeSearchUrl(this.getRamadda());
+//	    console.log(jsonUrl);
             this.entryList = new EntryList(this.getRamadda(), jsonUrl, this, true);
 	    if(!auto)
 		this.updateForSearching(jsonUrl);
@@ -2873,10 +2882,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             if (entries.length == 0) {
                 this.getSearchSettings().skip = 0;
                 this.getSearchSettings().max = 50;
-                var msg = "Nothing found";
-                this.writeHtml(ID_FOOTER_LEFT, "");
-                this.writeMessage(msg);
-                this.getDisplayManager().handleEventEntriesChanged(this, []);
+		this.handleNoEntries();
                 return;
             }
             this.writeHtml(ID_RESULTS, this.getResultsHeader(entries));
@@ -2889,7 +2895,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    let html = "";
 	    let inner = "";
 	    entries.forEach((entry,idx) =>{
-		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),entry.getName()));
+		inner+=HU.div([CLASS,"display-simplesearch-entry"], HU.href(this.getRamadda().getEntryUrl(entry),HU.image(entry.getIconUrl()) +"  "+ entry.getName()));
 	    });
             this.writeEntries(inner, entries);
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
