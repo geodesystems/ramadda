@@ -24,9 +24,6 @@ var icon_menuarrow = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_blank = ramaddaBaseUrl + "/icons/blank.gif";
 var icon_menu = ramaddaBaseUrl + "/icons/menu.png";
 
-if (!window["uniqueCnt"]) {
-    window["uniqueCnt"] = 1;
-}
 
 function noop() {}
 
@@ -2875,6 +2872,9 @@ $(document).ready(function(){
         return "\'" + value + "\'";
     },
     getUniqueId: function() {
+	if (!window["uniqueCnt"]) {
+	    window["uniqueCnt"] = 1;
+	}
         var cnt = window["uniqueCnt"]++;
         return "id_" + cnt;
     },
