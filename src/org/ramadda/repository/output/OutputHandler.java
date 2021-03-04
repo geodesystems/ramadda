@@ -1500,7 +1500,7 @@ public class OutputHandler extends RepositoryManager {
      */
     public void addEntryTableRow(Request request, Entry entry,
                                  Appendable htmlSB, Appendable jsSB,
-                                 boolean showDetails)
+                                 boolean showDetails, boolean showIcon)
             throws Exception {
         String rowId        = HtmlUtils.getUniqueId("entryrow_");
         String cbxId        = HtmlUtils.getUniqueId("entry_");
@@ -1536,9 +1536,8 @@ public class OutputHandler extends RepositoryManager {
         String cbx = HtmlUtils.checkbox(cbxArgId, cbxArgValue, false,
                                         attrSB.toString());
         decorateEntryRow(request, entry, htmlSB,
-                         getEntryManager().getAjaxLink(request, entry,
-                             getEntryDisplayName(entry)), rowId, cbx,
-                                 showDetails);
+                         getEntryManager().getAjaxLink(request, entry, getEntryDisplayName(entry),null, true, null, true, showIcon), rowId, cbx,
+			 showDetails);
 
     }
 
@@ -1573,9 +1572,10 @@ public class OutputHandler extends RepositoryManager {
      */
     public String getEntriesList(Request request, Appendable sb,
                                  List entries, boolean doForm,
-                                 boolean showCrumbs, boolean showDetails)
-            throws Exception {
+                                 boolean showCrumbs, boolean showDetails, boolean...args)
+            throws Exception {	
 
+	boolean showIcon = args.length>0?args[0]:true;
         long   t1          = System.currentTimeMillis();
         String link        = "";
         String base        = "";
@@ -1762,7 +1762,7 @@ public class OutputHandler extends RepositoryManager {
 
 
             EntryLink entryLink = getEntryManager().getAjaxLink(request,
-                                      entry, displayName, null, true, crumbs);
+								entry, displayName, null, true, crumbs,true,showIcon);
 
 
             Appendable buffer = cb.get(doCategories

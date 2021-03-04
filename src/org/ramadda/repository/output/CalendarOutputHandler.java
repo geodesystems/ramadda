@@ -696,7 +696,7 @@ public class CalendarOutputHandler extends OutputHandler {
             }
             String url =
                 HtmlUtils.nobr(getEntryManager().getAjaxLink(request, entry,
-                    label, null, true, null, false).toString());
+							     label, null, true, null, false, true).toString());
 
 
             calEntries.add(new CalendarEntry(entryDate, url, entry));

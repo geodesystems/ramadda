@@ -889,18 +889,19 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(HU.br());
         }
         boolean showDetails = request.get(ARG_DETAILS, true);
+        boolean showIcon = request.get("showIcon", true);	
 
 
         for (Entry subGroup : subGroups) {
             cnt++;
-            addEntryTableRow(request, subGroup, sb, jsSB, showDetails);
+            addEntryTableRow(request, subGroup, sb, jsSB, showDetails, showIcon);
         }
 
 
         if ( !onlyGroups) {
             for (Entry entry : entries) {
                 cnt++;
-                addEntryTableRow(request, entry, sb, jsSB, showDetails);
+                addEntryTableRow(request, entry, sb, jsSB, showDetails, showIcon);
             }
         }
 
