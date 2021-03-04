@@ -7556,8 +7556,6 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
 
 	String entryRoot = null;
-	//	System.err.println("C: " + clauses);
-
 	if(request.defined("entryRoot")) {
 	    entryRoot = request.getString("entryRoot","");
 	    Entry root = getEntry(request,entryRoot);
@@ -7641,7 +7639,32 @@ public class EntryManager extends RepositoryManager {
 	    //	    String pattern = "number:" + mtd[0].getAttr4();
 	}
         //Only split them into groups and non-groups if we aren't doing an orderby
-        if ( !request.exists(ARG_ORDERBY)) {
+
+	//	System.err.println("ob:" + request.getString(ARG_ORDERBY));
+        if (!request.exists(ARG_ORDERBY)) {
+	    String text = request.getString(ARG_TEXT);
+	    //if there was a text search then put the entries whose names
+	    //match ths text up first
+	    //	    System.err.println("text:" + text);
+	    if(text!=null) {
+		List<Entry> first = new ArrayList<Entry>();
+		List<Entry> last = new ArrayList<Entry>();
+		for(Entry entry: allEntries) {
+		    String name = entry.getName();
+		    if(name.regionMatches(true,0,text,0,text.length())) {
+			//			System.err.println("\tmatch:" + name);
+			first.add(entry);
+		    } else {
+			//			System.err.println("\tno match:" + name);
+			last.add(entry);
+		    }
+		}
+		allEntries = new ArrayList<Entry>();
+		allEntries.addAll(first);
+		allEntries.addAll(last);
+	    }
+
+
             for (Entry entry : allEntries) {
                 if (entry.isGroup()) {
                     groups.add(entry);
@@ -10835,5 +10858,14 @@ public class EntryManager extends RepositoryManager {
             throw new RuntimeException(exc);
         }
     }
+
+
+    public static void main(String[]args) {
+	String name = "Admin Settings";
+	String text = "admin";
+	System.err.println(name.regionMatches(true,0,text,0,name.length()));
+	System.err.println(name.regionMatches(true,0,text,0,text.length()));	
+    }
+
 
 }
