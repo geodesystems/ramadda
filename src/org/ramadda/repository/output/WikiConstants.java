@@ -322,9 +322,6 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_WIKITEXT = "wikitext";
 
-    /** _more_ */
-    public static final String WIKI_TAG_JAVASCRIPT = "javascript";
-
 
     /** _more_ */
     public static final String WIKI_TAG_EMBED = "embed";
@@ -393,8 +390,13 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_FRAMES = "frames";
 
+
+    public static final String WIKI_TAG_CAPTION = "caption";
+
+
     /** the table property */
     public static final String WIKI_TAG_TABLE = "table";
+
 
     /** wiki import */
     public static final String WIKI_TAG_COMMENTS = "comments";
@@ -485,7 +487,8 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_PREV = "prev";
     public static final String WIKI_TAG_UP = "up";    
-    public static final String WIKI_TAG_NEXT = "next";    
+    public static final String WIKI_TAG_NEXT = "next";
+    public static final String WIKI_TAG_PREVNEXT = "prevnext";        
 
 
     /** _more_ */
@@ -493,6 +496,9 @@ public interface WikiConstants {
 
     /** wiki import */
     public static final String WIKI_TAG_IMAGE = "image";
+
+    public static final String WIKI_TAG_IMAGE2 = "image2";    
+
 
     /** _more_ */
     public static final String WIKI_TAG_STREETVIEW = "streetview";
