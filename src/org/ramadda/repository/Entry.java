@@ -60,8 +60,11 @@ public class Entry implements Cloneable {
     public static final double NONGEO = -999999;
 
 
+    //New installs will use a clob for the description
+    //    public static final int MAX_DESCRIPTION_LENGTH = Integer.MAX_VALUE;
+
     /** _more_ */
-    public static final int MAX_DESCRIPTION_LENGTH = 30000;
+    public static final int MAX_DESCRIPTION_LENGTH = 32000;
 
     /** _more_ */
     public static final int MAX_NAME_LENGTH = 200;
