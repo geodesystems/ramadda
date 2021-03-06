@@ -46,19 +46,30 @@
 
   <type name="type_documentation"  description="Documentation"  childtypes="type_documentation"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+    <property name="form.description.iswiki" value="true"/>
+
      <property name="icon" value="/icons/page.png"/>
 <wiki>
 <![CDATA[
+<link rel='stylesheet' type='text/css' href='{{root}}/userguide.css'>
 +section
 :title {{name}}
 :navleft style="" 
 {{description wikify=true}}
-{{tree message="" prefix="----_nl_:h3 Children Pages" showIcon=false details=false sort=entryorder,name  showTitle=true decorate=false}}
-{{prev position=fixed iconSize=20 sort=name,entryorder sortAscending=true style="left:initial;right:75px;"  showName=false}}
-{{up   position=fixed iconSize=20 sort=name sort=name,entryorder  sortAscending=true  style="right:initial;right:37px;"  showName=false}}
-{{next position=fixed iconSize=20 sort=name sort=name,entryorder  sortAscending=true  style="right:initial;right:10px;"  showName=false}}
-{{display_simplesearch targetDiv=ramadda-nav-1 entryRoot=ancestor:type_documentation inputSize=20}}
+{{tree message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryorder,name  showTitle=true decorate=false}}
+{{display_simplesearch targetDiv=ramadda-nav-1 entryRoot=ancestor:type_documentation inputSize=20 placeholder="Search docs"}}
 {{links showTitle=true entry=parent targetDiv=ramadda-nav-2  sort=entryorder,name highlightThis=true contentsStyle="max-height:200px;overflow-y:auto;"}}
+:p
++inset left=50 right=50 top=50 bottom=50
++leftright
++left
+{{prev decorate=true showName=true  sortAscending=true sort=entryorder}}
+-left
++right
+{{next decorate=true showName=true sortAscending=true sort=entryorder}}
+-right
+-leftright
+-inset
 -section
 ]]>
 </wiki>
