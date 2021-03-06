@@ -55,6 +55,13 @@ proc ht::pre {c} {
 }
 
 proc ht::menu {args} {
+    if {$::doXml} {
+	   set p ""
+	   foreach arg  $args {
+	       append p " \"$arg\" "
+	       }
+	   return "{{path $p}}"
+    }
     set sep "-&gt;"
     return "<code class=\"menu\">[join $args $sep]</code>"
 }
@@ -81,7 +88,7 @@ proc ht::popup {url label args} {
 
 
 proc ht::subhead {id label {extra {}}} {
-    if ($::doXml) return "\n:h2 $label"
+    if ($::doXml) return "\n:ht2 $label"
     return "<subhead [ht::attrs id $id] $extra>$label</subhead>"
 }
 
@@ -127,6 +134,16 @@ proc ht::doImage {img class {caption ""} {extra ""}} {
 
 
 proc ht::cimg {img {caption ""} {extra ""}} {
+    if {$::doXml} {
+	   set ex " width=\"\" ";
+	   if {[regexp  {width=(.*)} $extra match width]} {
+		  if {[regexp {^\d*$} $width]} {
+			 set width "${width}px"
+		     }
+		     set ex  " width=\"$width\" "
+            }
+	   return "{{image2 src=\"$img\" label=\"$caption\" $ex}}"
+    }
     if {[gen::getDoAll]} {
         if {$caption!=""} {
             gen::getNextImageId $img $caption
@@ -1799,8 +1816,10 @@ proc gen::processFile {from to fileIdx template} {
 		  #		 puts "ANY: $file [regexp :h3 $body]"
 	      }
 	      
-	  regsub -all {\{\{} $b "\{<noop>\{"   b
-	  regsub -all {\}\}} $b "\}<noop>\}"   b
+	      if {!$::doXml} {
+		     regsub -all {\{\{} $b "\{<noop>\{"   b
+		     regsub -all {\}\}} $b "\}<noop>\}"   b
+		     }
 ##  puts [regsub -all {\&} $b {\&amp;}   b]
 	  regsub -all "<%nochildlist%>" $b {} b
 	  regsub -all "<subhead.*?>(.*?)</subhead.*?>" $b "\n:h2 \\1" b
@@ -2295,7 +2314,7 @@ proc  gen::processDetails {from dest content depth {forAll 0}} {
         set destdir [file dirname $dest]
 	if {!$forAll} {
 	    set detailsHtml [html::page "$root details" "<div class=\"ramadda-page-title\">[gen::getTitle $from] Details</div>$detailsHtml"  $depth]
-	    set detailsFile ${root}_details.html
+<	    set detailsFile ${root}_details.html
 	    gen::writeFile [file join $destdir $detailsFile] $detailsHtml
 	} else {
 	    gen::addPopupText $from "Details"  $detailsHtml
@@ -2602,7 +2621,6 @@ proc gen::parseArgs {} {
 
     for {set i 0} {$i < $argc} {incr i} {
         set arg [lindex $argv $i]
-	puts stderr "ARG:$arg"
 	if {$arg == "-doxml"} {
 	       set ::doXml 1
 	       puts stderr "Writing entries.xml"
