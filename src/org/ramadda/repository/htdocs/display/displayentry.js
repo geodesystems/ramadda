@@ -640,7 +640,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
 
 	    let text  = this.getFormText();
-            var textField = HU.input("", text, ["placeholder", this.getFormEg(), ATTR_CLASS, "display-simplesearch-input", ATTR_SIZE, this.getProperty("inputSize", "30"), ATTR_ID, this.domId(ID_TEXT_FIELD)]);
+            var textField = HU.input("", text, ["placeholder", this.getEgText(), ATTR_CLASS, "display-simplesearch-input", ATTR_SIZE, this.getProperty("inputSize", "30"), ATTR_ID, this.domId(ID_TEXT_FIELD)]);
 
             if (this.showText) {
                 topItems.push(textField);
@@ -700,7 +700,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         },
 	getEgText:function() {
-            var eg = " search text";
+            var eg = this.getProperty("placeholder");
             if (this.eg) {
                 eg = " " + this.eg;
             }
