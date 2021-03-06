@@ -74,24 +74,21 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     border:1px #e1b07e solid;
 }
 
-
-
 .ramadda-hflow {
     display:inline-block;
 }
 
-.ramadda-nav {
+.ramadda-nav-top {
     text-align: center;
     font-size:120%;
 }
 
 .ramadda-nav-link {
     text-decoration:none;
-    color:#364149;
+    color:rgb(59, 69, 78);
 }
 
 .ramadda-nav-left-extra {
-//    display:inline-block;
 }
 
 .ramadda-nav-left-extra li {
@@ -99,7 +96,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 }
 
 .ramadda-nav-link-active {
-    background:#ddd;
+    background:#eee;
 }
 
 .ramadda-nav-link-0 {
@@ -118,6 +115,34 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 .ramadda-nav-link-3 {
     margin-left:30px;
 }    
+
+.ramadda-nav-list-link::before{
+   content: '';
+   display: inline-block;
+   width: 8px;
+   height: 8px;
+   -moz-border-radius: 4px;
+   -webkit-border-radius: 4px;
+   border-radius: 4px;
+   background-color: #444;
+   margin-right:4px;
+}
+
+.ramadda-nav-list-link-1 {
+    margin-left:0px;
+    list-style-type: circle;
+}    
+
+.ramadda-nav-list-link-2 {
+    margin-left:30px;
+    list-style-type: circle;
+}    
+
+.ramadda-nav-list-link-3 {
+    margin-left:60px;
+    list-style-type: circle;
+}    
+
 
 .ramadda-links-horizontal {
     display:inline-block;
@@ -173,7 +198,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 
 .ramadda-links a {
-    color:#000;
+    color:rgb(59, 69, 78);
 }
 
 
@@ -186,6 +211,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     margin-top:1em;
     margin-bottom:4px;
     border-bottom: 1px #e8e8e8 solid;
+    color:rgb(59, 69, 78);
 }
 
 .ramadda-links h3:hover {
@@ -197,6 +223,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 .ramadda-nav-left-extra .ramadda-links-highlight {
     display:block;
     background:#ddd;
+    color:rgb(59, 69, 78);
 }
 
 
@@ -211,7 +238,8 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     line-height:1.5em;
     overflow-x:auto;
     max-width:100%;
- white-space: nowrap;
+    white-space: nowrap;
+    color:rgb(59, 69, 78);
 }
 
 
@@ -242,7 +270,28 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     vertical-align:top;
 }
 
+
+.ramadda-nav-page-decorated {
+    min-width:200px;
+    border: 1px solid #eee;
+    padding:10px;
+    padding-bottom:0px;
+    border-radius: 4px;
+    -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 1px 1px 1px #ccc;
+    box-shadow: 1px 1px 1px #ccc;
+}
+
+
+.ramadda-nav-page-decorated:hover {
+    border: 1px solid #aaa;
+}
+
+
 .ramadda-nav-page-label {
+    margin:10px;
+    margin-bottom:4px;    
     display:inline-block;
     vertical-align:middle;
 }
@@ -433,6 +482,54 @@ a.ramadda-menubar-button:hover {
     color: black;
 }
 
+
+.ramadda-callout {
+    border:1px solid #ccc;
+    border-left: 4px solid;
+    padding:10px;
+    border-radius:4px;
+    background:rgb(250,250,250);
+
+}
+
+
+.ramadda-callout-icon {
+    display:inline;
+    margin-right:40px;
+    vertical-align:top;
+}
+
+.ramadda-callout-inner {
+    display:inline-block;
+}
+
+
+.ramadda-callout-info {
+    border-left-color: cornflowerblue;
+}
+
+.ramadda-callout-info .ramadda-callout-icon {
+    color: cornflowerblue;
+}
+
+.ramadda-callout-warning {
+    border-left-color: #C63100;
+}
+
+.ramadda-callout-warning .ramadda-callout-icon {
+    color: #C63100;
+}
+
+.ramadda-callout-question {
+    border-left-color: darkolivegreen;
+}
+
+.ramadda-callout-question .ramadda-callout-icon {
+    color: darkolivegreen;
+}
+
+
+
 .ramadda-block-outer {
 }
 
@@ -476,7 +573,7 @@ a.ramadda-menubar-button:hover {
     margin:10px;
 }
 
-.note,  .ramadda-note, .ramadda-blurb, .ramadda-callout, .ramadda-box, .ramadda-blurb {
+.note,  .ramadda-note, .ramadda-blurb, .ramadda-box, .ramadda-blurb {
     border-radius: 3px;
 }
 
@@ -694,12 +791,6 @@ a.ramadda-menubar-button:hover {
 }
 
 
-.ramadda-callout { 
-    display: inline-block;
-    padding: 5px;
-    border: 1px #eee solid;
-}
-
 
 .baseLayersDiv, .dataLayersDiv {
     max-height:150px;
@@ -836,181 +927,181 @@ a.ramadda-menubar-button:hover {
 
 /** begin colors */
 
-.ramadda-background-dimgray , .ramadda-block-dimgray , .ramadda-heading-dimgray , .ramadda-box-dimgray , .ramadda-note-dimgray , .ramadda-blurb-dimgray , .ramadda-callout-dimgray , .ramadda-section-dimgray  {
+.ramadda-background-dimgray , .ramadda-block-dimgray , .ramadda-heading-dimgray , .ramadda-box-dimgray , .ramadda-note-dimgray , .ramadda-blurb-dimgray  , .ramadda-section-dimgray  {
     background-color: #696d7d;
     border: 1px #fff solid;
 }
 
 
 
-.ramadda-background-metal , .ramadda-block-metal , .ramadda-heading-metal , .ramadda-box-metal , .ramadda-note-metal , .ramadda-blurb-metal , .ramadda-callout-metal , .ramadda-section-metal  {
+.ramadda-background-metal , .ramadda-block-metal , .ramadda-heading-metal , .ramadda-box-metal , .ramadda-note-metal , .ramadda-blurb-metal ,  .ramadda-section-metal  {
     background-color: #6f9283;
 }
 
 
 
-.ramadda-background-artichoke , .ramadda-block-artichoke , .ramadda-heading-artichoke , .ramadda-box-artichoke , .ramadda-note-artichoke , .ramadda-blurb-artichoke , .ramadda-callout-artichoke , .ramadda-section-artichoke  {
+.ramadda-background-artichoke , .ramadda-block-artichoke , .ramadda-heading-artichoke , .ramadda-box-artichoke , .ramadda-note-artichoke , .ramadda-blurb-artichoke ,  .ramadda-section-artichoke  {
     background-color: #8d9f87;
 }
 
 
 
-.ramadda-background-darkvanilla , .ramadda-block-darkvanilla , .ramadda-heading-darkvanilla , .ramadda-box-darkvanilla , .ramadda-note-darkvanilla , .ramadda-blurb-darkvanilla , .ramadda-callout-darkvanilla , .ramadda-section-darkvanilla  {
+.ramadda-background-darkvanilla , .ramadda-block-darkvanilla , .ramadda-heading-darkvanilla , .ramadda-box-darkvanilla , .ramadda-note-darkvanilla , .ramadda-blurb-darkvanilla ,  .ramadda-section-darkvanilla  {
     background-color: #cdc6a5;
 }
 
 
 
-.ramadda-background-almond , .ramadda-block-almond , .ramadda-heading-almond , .ramadda-box-almond , .ramadda-note-almond , .ramadda-blurb-almond , .ramadda-callout-almond , .ramadda-section-almond  {
+.ramadda-background-almond , .ramadda-block-almond , .ramadda-heading-almond , .ramadda-box-almond , .ramadda-note-almond , .ramadda-blurb-almond ,  .ramadda-section-almond  {
     background-color: #f0dcca;
 }
 
 
 
-.ramadda-background-tumbleweed , .ramadda-block-tumbleweed , .ramadda-heading-tumbleweed , .ramadda-box-tumbleweed , .ramadda-note-tumbleweed , .ramadda-blurb-tumbleweed , .ramadda-callout-tumbleweed , .ramadda-section-tumbleweed  {
+.ramadda-background-tumbleweed , .ramadda-block-tumbleweed , .ramadda-heading-tumbleweed , .ramadda-box-tumbleweed , .ramadda-note-tumbleweed , .ramadda-blurb-tumbleweed ,  .ramadda-section-tumbleweed  {
     background-color: #e1b07e;
 }
 
 
 
-.ramadda-background-palegold , .ramadda-block-palegold , .ramadda-heading-palegold , .ramadda-box-palegold , .ramadda-note-palegold , .ramadda-blurb-palegold , .ramadda-callout-palegold , .ramadda-section-palegold  {
+.ramadda-background-palegold , .ramadda-block-palegold , .ramadda-heading-palegold , .ramadda-box-palegold , .ramadda-note-palegold , .ramadda-blurb-palegold ,  .ramadda-section-palegold  {
     background-color: #e5be9e;
 }
 
 
 
-.ramadda-background-turquoise , .ramadda-block-turquoise , .ramadda-heading-turquoise , .ramadda-box-turquoise , .ramadda-note-turquoise , .ramadda-blurb-turquoise , .ramadda-callout-turquoise , .ramadda-section-turquoise  {
+.ramadda-background-turquoise , .ramadda-block-turquoise , .ramadda-heading-turquoise , .ramadda-box-turquoise , .ramadda-note-turquoise , .ramadda-blurb-turquoise ,  .ramadda-section-turquoise  {
     background-color: #a7cdbd;
 }
 
 
 
-.ramadda-background-vermillion , .ramadda-block-vermillion , .ramadda-heading-vermillion , .ramadda-box-vermillion , .ramadda-note-vermillion , .ramadda-blurb-vermillion , .ramadda-callout-vermillion , .ramadda-section-vermillion  {
+.ramadda-background-vermillion , .ramadda-block-vermillion , .ramadda-heading-vermillion , .ramadda-box-vermillion , .ramadda-note-vermillion , .ramadda-blurb-vermillion , .ramadda-section-vermillion  {
     background-color: #d56f3e;
 }
 
 
 
-.ramadda-background-bone , .ramadda-block-bone , .ramadda-heading-bone , .ramadda-box-bone , .ramadda-note-bone , .ramadda-blurb-bone , .ramadda-callout-bone , .ramadda-section-bone  {
+.ramadda-background-bone , .ramadda-block-bone , .ramadda-heading-bone , .ramadda-box-bone , .ramadda-note-bone , .ramadda-blurb-bone , .ramadda-section-bone  {
     background-color: #e2dbbe;
 }
 
 
 
-.ramadda-background-platinum , .ramadda-block-platinum , .ramadda-heading-platinum , .ramadda-box-platinum , .ramadda-note-platinum , .ramadda-blurb-platinum , .ramadda-callout-platinum , .ramadda-section-platinum  {
+.ramadda-background-platinum , .ramadda-block-platinum , .ramadda-heading-platinum , .ramadda-box-platinum , .ramadda-note-platinum , .ramadda-blurb-platinum ,  .ramadda-section-platinum  {
     background-color: #dfe0e2;
 }
 
 
 
-.ramadda-background-olivine , .ramadda-block-olivine , .ramadda-heading-olivine , .ramadda-box-olivine , .ramadda-note-olivine , .ramadda-blurb-olivine , .ramadda-callout-olivine , .ramadda-section-olivine  {
+.ramadda-background-olivine , .ramadda-block-olivine , .ramadda-heading-olivine , .ramadda-box-olivine , .ramadda-note-olivine , .ramadda-blurb-olivine ,  .ramadda-section-olivine  {
     background-color: #9cb380;
 }
 
 
-.ramadda-background-yellow , .ramadda-block-yellow , .ramadda-heading-yellow , .ramadda-box-yellow , .ramadda-note-yellow , .ramadda-blurb-yellow , .ramadda-callout-yellow , .ramadda-section-yellow  {
+.ramadda-background-yellow , .ramadda-block-yellow , .ramadda-heading-yellow , .ramadda-box-yellow , .ramadda-note-yellow , .ramadda-blurb-yellow ,  .ramadda-section-yellow  {
     background-color: #fffeec;
 }
 
 
 
-.ramadda-background-snow , .ramadda-block-snow , .ramadda-heading-snow , .ramadda-box-snow , .ramadda-note-snow , .ramadda-blurb-snow , .ramadda-callout-snow , .ramadda-section-snow  {
+.ramadda-background-snow , .ramadda-block-snow , .ramadda-heading-snow , .ramadda-box-snow , .ramadda-note-snow , .ramadda-blurb-snow , .ramadda-section-snow  {
     background-color: snow;
 }
 
 
 
-.ramadda-background-rose , .ramadda-block-rose , .ramadda-heading-rose , .ramadda-box-rose , .ramadda-note-rose , .ramadda-blurb-rose , .ramadda-callout-rose , .ramadda-section-rose  {
+.ramadda-background-rose , .ramadda-block-rose , .ramadda-heading-rose , .ramadda-box-rose , .ramadda-note-rose , .ramadda-blurb-rose , .ramadda-section-rose  {
     background-color: mistyrose;
 }
 
 
 
-.ramadda-background-mint , .ramadda-block-mint , .ramadda-heading-mint , .ramadda-box-mint , .ramadda-note-mint , .ramadda-blurb-mint , .ramadda-callout-mint , .ramadda-section-mint  {
+.ramadda-background-mint , .ramadda-block-mint , .ramadda-heading-mint , .ramadda-box-mint , .ramadda-note-mint , .ramadda-blurb-mint ,.ramadda-section-mint  {
     background-color: mintcream;
 }
 
 
 
-.ramadda-background-floral , .ramadda-block-floral , .ramadda-heading-floral , .ramadda-box-floral , .ramadda-note-floral , .ramadda-blurb-floral , .ramadda-callout-floral , .ramadda-section-floral  {
+.ramadda-background-floral , .ramadda-block-floral , .ramadda-heading-floral , .ramadda-box-floral , .ramadda-note-floral , .ramadda-blurb-floral , .ramadda-section-floral  {
     background-color: floralwhite;
 }
 
 
 
-.ramadda-background-azure , .ramadda-block-azure , .ramadda-heading-azure , .ramadda-box-azure , .ramadda-note-azure , .ramadda-blurb-azure , .ramadda-callout-azure , .ramadda-section-azure  {
+.ramadda-background-azure , .ramadda-block-azure , .ramadda-heading-azure , .ramadda-box-azure , .ramadda-note-azure , .ramadda-blurb-azure ,  .ramadda-section-azure  {
     background-color: azure;
 }
 
 
 
-.ramadda-background-gold , .ramadda-block-gold , .ramadda-heading-gold , .ramadda-box-gold , .ramadda-note-gold , .ramadda-blurb-gold , .ramadda-callout-gold , .ramadda-section-gold  {
+.ramadda-background-gold , .ramadda-block-gold , .ramadda-heading-gold , .ramadda-box-gold , .ramadda-note-gold , .ramadda-blurb-gold , .ramadda-section-gold  {
     background-color: #fafad2;
 }
 
 
 
-.ramadda-background-pink , .ramadda-block-pink , .ramadda-heading-pink , .ramadda-box-pink , .ramadda-note-pink , .ramadda-blurb-pink , .ramadda-callout-pink , .ramadda-section-pink  {
+.ramadda-background-pink , .ramadda-block-pink , .ramadda-heading-pink , .ramadda-box-pink , .ramadda-note-pink , .ramadda-blurb-pink ,.ramadda-section-pink  {
     background-color: lavenderblush;
 }
 
 
 
-.ramadda-background-blue , .ramadda-block-blue , .ramadda-heading-blue , .ramadda-box-blue , .ramadda-note-blue , .ramadda-blurb-blue , .ramadda-callout-blue , .ramadda-section-blue  {
+.ramadda-background-blue , .ramadda-block-blue , .ramadda-heading-blue , .ramadda-box-blue , .ramadda-note-blue , .ramadda-blurb-blue ,  .ramadda-section-blue  {
     background-color: ghostwhite;
 }
 
 
 
-.ramadda-background-babypowder , .ramadda-block-babypowder , .ramadda-heading-babypowder , .ramadda-box-babypowder , .ramadda-note-babypowder , .ramadda-blurb-babypowder , .ramadda-callout-babypowder , .ramadda-section-babypowder  {
+.ramadda-background-babypowder , .ramadda-block-babypowder , .ramadda-heading-babypowder , .ramadda-box-babypowder , .ramadda-note-babypowder , .ramadda-blurb-babypowder , .ramadda-section-babypowder  {
     background-color: #fcfff7;
 }
 
 
 
-.ramadda-background-cornflower , .ramadda-block-cornflower , .ramadda-heading-cornflower , .ramadda-box-cornflower , .ramadda-note-cornflower , .ramadda-blurb-cornflower , .ramadda-callout-cornflower , .ramadda-section-cornflower  {
+.ramadda-background-cornflower , .ramadda-block-cornflower , .ramadda-heading-cornflower , .ramadda-box-cornflower , .ramadda-note-cornflower , .ramadda-blurb-cornflower , .ramadda-section-cornflower  {
     background-color: #188fa7;
 }
 
 
 
-.ramadda-background-whitesmoke , .ramadda-block-whitesmoke , .ramadda-heading-whitesmoke , .ramadda-box-whitesmoke , .ramadda-note-whitesmoke , .ramadda-blurb-whitesmoke , .ramadda-callout-whitesmoke , .ramadda-section-whitesmoke  {
+.ramadda-background-whitesmoke , .ramadda-block-whitesmoke , .ramadda-heading-whitesmoke , .ramadda-box-whitesmoke , .ramadda-note-whitesmoke , .ramadda-blurb-whitesmoke , .ramadda-section-whitesmoke  {
     background-color: #edf7f6;
 }
 
 
 
-.ramadda-background-cambridgeblue , .ramadda-block-cambridgeblue , .ramadda-heading-cambridgeblue , .ramadda-box-cambridgeblue , .ramadda-note-cambridgeblue , .ramadda-blurb-cambridgeblue , .ramadda-callout-cambridgeblue , .ramadda-section-cambridgeblue  {
+.ramadda-background-cambridgeblue , .ramadda-block-cambridgeblue , .ramadda-heading-cambridgeblue , .ramadda-box-cambridgeblue , .ramadda-note-cambridgeblue , .ramadda-blurb-cambridgeblue , .ramadda-section-cambridgeblue  {
     background-color: #9ec1a3;
 }
 
 
 
-.ramadda-background-white , .ramadda-block-white , .ramadda-heading-white , .ramadda-box-white , .ramadda-note-white , .ramadda-blurb-white , .ramadda-callout-white , .ramadda-section-white  {
+.ramadda-background-white , .ramadda-block-white , .ramadda-heading-white , .ramadda-box-white , .ramadda-note-white , .ramadda-blurb-white , .ramadda-section-white  {
     background-color: white;
 }
 
 
 
-.ramadda-background-gray , .ramadda-block-gray , .ramadda-heading-gray , .ramadda-box-gray , .ramadda-note-gray , .ramadda-blurb-gray , .ramadda-callout-gray , .ramadda-section-gray  {
+.ramadda-background-gray , .ramadda-block-gray , .ramadda-heading-gray , .ramadda-box-gray , .ramadda-note-gray , .ramadda-blurb-gray , .ramadda-section-gray  {
     background-color: #F8F8F8;
 }
 
 
 
-.ramadda-background-green , .ramadda-block-green , .ramadda-heading-green , .ramadda-box-green , .ramadda-note-green , .ramadda-blurb-green , .ramadda-callout-green , .ramadda-section-green  {
+.ramadda-background-green , .ramadda-block-green , .ramadda-heading-green , .ramadda-box-green , .ramadda-note-green , .ramadda-blurb-green , .ramadda-section-green  {
 /*    background-color: honeydew;*/
     background-color: #4C7B65;
     color:white;
 }
 
-.ramadda-background-green a  , .ramadda-block-green a  , .ramadda-heading-green a  , .ramadda-box-green a  , .ramadda-note-green   a, .ramadda-blurb-green a  , .ramadda-callout-green a  , .ramadda-section-green a   {
+.ramadda-background-green a  , .ramadda-block-green a  , .ramadda-heading-green a  , .ramadda-box-green a  , .ramadda-note-green   a, .ramadda-blurb-green a  , .ramadda-section-green a   {
     color:white;
 }
 
 
 
-.ramadda-background-plain , .ramadda-block-plain , .ramadda-heading-plain , .ramadda-box-plain , .ramadda-note-plain , .ramadda-blurb-plain , .ramadda-callout-plain , .ramadda-section-plain  {
+.ramadda-background-plain , .ramadda-block-plain , .ramadda-heading-plain , .ramadda-box-plain , .ramadda-note-plain , .ramadda-blurb-plain , .ramadda-section-plain  {
     background-color: inherit;
 }
 
@@ -2972,6 +3063,12 @@ snippet-hide {
     display:inline-block;
 }
 
+.ramadda-caption {
+    text-align:center;
+    font-style:italic;
+    margin-bottom:10px;
+}
+
 .pagetitle {
     font-size: 130%;
     font-weight: bold;
@@ -3015,6 +3112,15 @@ snippet-hide {
 }
 
 
+.ramadda-code {
+    font-style:italic;
+}
+
+.ramadda-code-path {
+    font-style:italic;
+}
+
+
 
 nowiki {
     display: inline;
@@ -3039,6 +3145,7 @@ nowiki {
 .wiki-image-caption {
     font-style:italic;
 }
+
 
 .wiki-text-raw {
     background-color: #ddd;
