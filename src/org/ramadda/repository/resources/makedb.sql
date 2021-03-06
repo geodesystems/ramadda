@@ -15,7 +15,8 @@
 CREATE TABLE entries (id varchar(200),
                    type varchar(200),
 	           name varchar(200),
-                   description varchar(30000),
+----               description varchar(32000),
+                   description ramadda.bigclob,
                    parent_group_id varchar(200),
    		   user_id varchar(200),
 	           resource varchar(500),	           
@@ -39,15 +40,26 @@ CREATE TABLE entries (id varchar(200),
 ----update the table
 ALTER table entries add column entryorder int;
 
-
 ---- Note: if you change the description length make sure to change in Entry.java:
-----    public static final int MAX_DESCRIPTION_LENGTH = 25000;
+----    public static final int MAX_DESCRIPTION_LENGTH = 32000;
+
 --- for mysql
---- alter table entries modify column resource varchar(500);
+--- alter table entries modify column description varchar(32000);
+
 --- for derby
----alter table entries alter column resource set data type varchar(500);
---- alter table entries modify column description varchar(25000);
---- alter table entries alter column description set data type varchar(25000);
+--- alter table entries alter  description set data type varchar(32000)
+
+--- alter table entries modify column description varchar(32000);
+--- alter table entries alter column description set data type varchar(64000);
+
+-----------------------------------------------------------------
+---derby: sometime we need to change the varchar description to clob for existing dbs
+--- alter table entries add column new_description clob;
+--- update entries set new_description=description;
+--- rename column entries.description to old_description;
+--- rename column entries.new_description to description;
+--- alter table entries drop column old_description;
+-----------------------------------------------------------------
 
 
 
@@ -55,7 +67,6 @@ CREATE INDEX ENTRIES_INDEX_ID ON entries (ID);
 CREATE INDEX ENTRIES_INDEX_RESOURCE ON entries (RESOURCE);
 CREATE INDEX ENTRIES_INDEX_DATATYPE ON entries (DATATYPE);
 CREATE INDEX ENTRIES_INDEX_PARENT_GROUP_ID ON entries (PARENT_GROUP_ID);
---- CREATE INDEX ENTRIES_INDEX_TOP_GROUP_ID ON entries (TOP_GROUP_ID);
 CREATE INDEX ENTRIES_INDEX_TYPE ON entries (TYPE);
 CREATE INDEX ENTRIES_INDEX_USER_ID ON entries (USER_ID);
 CREATE INDEX ENTRIES_INDEX_FROMDATE ON entries (FROMDATE);
