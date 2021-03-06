@@ -2018,7 +2018,7 @@ public class Admin extends RepositoryManager {
         long t1 = System.currentTimeMillis();
 
         request.ensureAuthToken();
-        if (bulkLoad) {
+        if (query.indexOf(";")>0 || bulkLoad) {
             getDatabaseManager().loadSql(query, false, true);
 
             return makeResult(request, msg("SQL"),
