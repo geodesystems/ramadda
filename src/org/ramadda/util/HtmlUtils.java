@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2019 Geode Systems LLC
+* Copyright (c) 2008-2021 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -423,18 +423,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
     /**
      * _more_
      *
-     * @param s1 _more_
-     * @param s2 _more_
+     * @param args _more_
      *
      * @return _more_
      */
-    public static String hbox(Object ...args) {
-	StringBuilder sb  = new StringBuilder();
-	sb.append("<table><tr valign=top>");
-	for(Object s: args)
-	    sb.append("<td>" + s +"</td>");
-	sb.append("</tr></table>");
-	return sb.toString();
+    public static String hbox(Object... args) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table><tr valign=top>");
+        for (Object s : args) {
+            sb.append("<td>" + s + "</td>");
+        }
+        sb.append("</tr></table>");
+
+        return sb.toString();
     }
 
     /**
@@ -1695,7 +1696,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
      * @param sb _more_
      * @param content _more_
      *
-     * @throws Exception _more_
+     * @throws IOException _more_
      */
     public static void pre(Appendable sb, String content) throws IOException {
         tag(sb, TAG_PRE, "", content);
@@ -1776,11 +1777,26 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return sb.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @param size _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public static String makeDim(String size, String dflt) {
-	if(size==null) return null;
-	if(!size.matches("^[0-9\\.+-]+$")) return size;
-	if(dflt!=null) return size+dflt;
-	return size+"px";
+        if (size == null) {
+            return null;
+        }
+        if ( !size.matches("^[0-9\\.+-]+$")) {
+            return size;
+        }
+        if (dflt != null) {
+            return size + dflt;
+        }
+
+        return size + "px";
     }
 
 
@@ -2733,7 +2749,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
                        ? attr(ATTR_COLS, "" + columns)
                        : style("width:100%");
 
-	value = value.replaceAll("&","&amp;");
+        value = value.replaceAll("&", "&amp;");
+
         return tag(TAG_TEXTAREA,
                    attrs(ATTR_NAME, name, ATTR_CLASS, CLASS_TEXTAREA)
                    + attrs(ATTR_ROWS, "" + rows) + width + extra, value);
@@ -3910,6 +3927,9 @@ public class HtmlUtils implements HtmlUtilsConstants {
      */
     public static void attr(Appendable sb, String name, String value) {
         try {
+            if (value == null) {
+                return;
+            }
             sb.append(" ");
             sb.append(name);
             sb.append("=");
