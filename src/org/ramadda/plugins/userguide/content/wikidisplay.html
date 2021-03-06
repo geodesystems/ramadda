@@ -10,7 +10,7 @@ There are a number of
 [ug::subheading {The Basics} basics]
 The charts and information displays follow the RAMADDA wiki tag format:
 
-[ht::pre {{{display  type="&lt;display type&gt;"  &lt;name=value pairs&gt;}}}]
+[ht::pre {{{display_&lt;display type&gt;  &lt;name=value pairs&gt;}}}]
 
 Each of these tags support the following attributes:
 <pre>
@@ -48,7 +48,7 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 (<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
 
 
-[ht::pre {{{display  type="linechart" fields="#5,#6,#7,#8,#9,#10" }}}]
+[ht::pre {{<noop>{display_linechart fields="#5,#6,#7,#8,#9,#10" }}}]
 
 [ug::subheading {Filtering Data} filters]
 A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here<a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
@@ -58,13 +58,13 @@ A display can present a set of widgets that allow the user to filter the data be
 Below is the wiki text that creates the above display. The map display defines which fields should be used with the filterFields="..." attribute. The ranking display specifies the same set of filter fields but also has a hideFilterWidget=true which specifies to actually not show the widgets. The filter values the user enters in the map display are then applied to the ranking display.
 <pre>+row
 +col-3
-{{display  type=&quot;ranking&quot;  
+{<noop>{display  type=&quot;ranking&quot;  
 ...
 filterFields=&quot;elev,elev_gain,distance,range,class&quot; hideFilterWidget=true
  }} 
  -col
  +col-9
-{{display  type=&quot;map&quot;  
+{<noop>{display  type=&quot;map&quot;  
 ...
 filterFields=&quot;elev,elev_gain,distance,class,range&quot;
 }} 
@@ -179,7 +179,7 @@ uniqueField=&lt;field id&gt;
 [ug::subheading {Color} ]
 RAMADDA provides a large number of built-in color tables.
 When editing the wiki text if you right-lick inside
-of a <i>{{display ...}}</i> tag a context menu will be shown that will list the available color tables.
+of a <i>{<noop>{display ...}}</i> tag a context menu will be shown that will list the available color tables.
 Colors are defined and can also be modified the following ways.
 
 <pre>
@@ -212,14 +212,14 @@ added automatically.
 
 
 <pre>
-{{group group 1 ...}}
-{{display display 1}}
-{{display display 2}}
-{{display display 3}}
+{<noop>{group group 1 ...}}
+{<noop>{display display 1}}
+{<noop>{display display 2}}
+{<noop>{display display 3}}
 
-{{group group 2...}}
-{{display display 4}}
-{{display display 5}}
+{<noop>{group group 2...}}
+{<noop>{display display 4}}
+{<noop>{display display 5}}
 </pre>
 
 If [ug::attr  showMenu] is set to true for a group then the below menu is displayed. This supports the interactive creation of new charts and displays. The layout of these displays can be changed interactively, their state can be changed and they
@@ -246,13 +246,13 @@ Using the table layout the number of columns is specified with the <i>layoutColu
 For the <i>columns</i> and <i>rows</i> layout type each child display can specify the <i>column</i> number of
 <i>row</i> number it should be placed in. For example, for the <i>rows</i> layout if you had:
 <pre>
-{{group layoutType="rows"}}
-{{display display1  row="1"}}
-{{display display2  row="1"}}
-{{display display3  row="1"}}
-{{display display4  row="2"}}
-{{display display5  row="2"}}
-{{display display6  row="3"}}
+{<noop>{group layoutType="rows"}}
+{<noop>{display display1  row="1"}}
+{<noop>{display display2  row="1"}}
+{<noop>{display display3  row="1"}}
+{<noop>{display display4  row="2"}}
+{<noop>{display display5  row="2"}}
+{<noop>{display display6  row="3"}}
 </pre>
 
 Would result in (without the border):
@@ -279,9 +279,9 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 </table>
 
 <div id=maindiv></div>
-{{group  layoutType="table"  layoutColumns="1" divid="maindiv"}}
-{{display   type="entrylist"   divid="listdiv" }}
-{{display   type="map"  layoutHere="true" height="250" divid="mapdiv"}}
+{<noop>{group  layoutType="table"  layoutColumns="1" divid="maindiv"}}
+{<noop>{display_entrylist   divid="listdiv" }}
+{<noop>{display_map  layoutHere="true" height="250" divid="mapdiv"}}
 }]
 
 
@@ -378,7 +378,7 @@ use and the <i>colorByMin</i> and <i>colorByMax</i> attributes are option and ar
 a point or map segment as the user mouses over it. The [ug::attr {displayDiv="mapDisplay${entryid}"}] macro
 allows one to specify a unique div id for pages that may have multiple map displays. The div looks like:
 <pre>
-&lt;div id="mapDisplay{{entryid}}" style="max-height:500px;"&gt;&lt;/div&gt;
+&lt;div id="mapDisplay{<noop>{entryid}}" style="max-height:500px;"&gt;&lt;/div&gt;
 </pre>
 There is a full example shown below.
 </ul>
@@ -410,7 +410,7 @@ This is the wiki text used in the above example:
 :heading Map
 +row
 +col-md-6
-{{display  type="map" column="1"  width="-100" height="500"   includeData="false"   showTitle="false" 
+{<noop>{display_map column="1"  width="-100" height="500"   includeData="false"   showTitle="false" 
 title="Colored by total ballots" 
 geojsonLayer="7c8f5e25-e569-4ca9-b389-5bb03cdb138b" 
 geojsonLayerName="Precincts"
@@ -424,7 +424,7 @@ displayDiv="mapDisplay${entryid}"
 +col-6
 <br>
 :heading Map Details
-<div id="mapDisplay{{entryid}}" style="max-height:500px;"></div>
+<div id="mapDisplay{<noop>{entryid}}" style="max-height:500px;"></div>
 -col
 -row
 }]

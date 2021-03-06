@@ -15,20 +15,27 @@ regsub -all {\(} $desc {} desc
 regsub -all {\)} $desc {} desc
 regsub -all {\n} $desc {<br>} desc
 
-set argHtml ""
+    set argHtml ""
+    set argCnt 0
 foreach argt $args {
     foreach {a d} $argt break
-    append argHtml " &lt;$a";
-    if {$d!=""} {
-    append argHtml "($d) ";
+    regsub  -all "\n" $d { } d
+    regsub  -all "<br>" $d { } d    
+    if {$argCnt>0} {
+         append argHtml "\n\t";
     }
-    append argHtml "&gt;";
+    append argHtml " &lt;<i>$a</i>";
+    append argHtml "&gt; ";
+    if {$d!=""} {
+    append argHtml "$d ";
+    }
+    incr argCnt
 }
 
 
 
 append ::etl [ug::subsubheading "$label" $id]
-append ::etl "Usage:<pre>$cmd $argHtml</pre>"
+append ::etl "<pre>$cmd $argHtml</pre>"
 append ::etl $desc
 append ::etl "<p>"
 }]
