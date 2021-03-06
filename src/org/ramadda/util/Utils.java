@@ -384,7 +384,15 @@ public class Utils extends IO {
     }
 
 
-    public static boolean startsWithIgnoreCase(String s, String prefix)   {
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param prefix _more_
+     *
+     * @return _more_
+     */
+    public static boolean startsWithIgnoreCase(String s, String prefix) {
         return s.regionMatches(true, 0, prefix, 0, prefix.length());
     }
 
@@ -892,30 +900,47 @@ public class Utils extends IO {
         return results;
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param regexp _more_
+     *
+     * @return _more_
+     */
     public static List<String[]> findAllPatterns(String s, String regexp) {
 
-	List<String[]> all = new ArrayList<String[]>();
-        Pattern pattern = Pattern.compile(regexp);
-	while(true) {
-	    Matcher matcher = pattern.matcher(s);
-	    if ( !matcher.find()) {
-		break;
-	    }
-	    String[] results = new String[matcher.groupCount()];
-     	    for (int i = 0; i < results.length; i++) {
-     		results[i] = matcher.group(i + 1);
-     	    }
-     	    all.add(results);
-	    s = s.substring(matcher.end());
-	}
-	return all;
+        List<String[]> all     = new ArrayList<String[]>();
+        Pattern        pattern = Pattern.compile(regexp);
+        while (true) {
+            Matcher matcher = pattern.matcher(s);
+            if ( !matcher.find()) {
+                break;
+            }
+            String[] results = new String[matcher.groupCount()];
+            for (int i = 0; i < results.length; i++) {
+                results[i] = matcher.group(i + 1);
+            }
+            all.add(results);
+            s = s.substring(matcher.end());
+        }
+
+        return all;
     }
 
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
     public static void main(String[] args) throws Exception {
-        String s = "blah blah <h1>Some H1</h1> asdasd <h1>asdasdasd</h1> asdasds";
-	List<String[]>all = findAllPatterns(s,"(<h1>.*?</h1>)");
+        String s =
+            "blah blah <h1>Some H1</h1> asdasd <h1>asdasdasd</h1> asdasds";
+        List<String[]> all = findAllPatterns(s, "(<h1>.*?</h1>)");
         System.err.println(all.size());
-	System.exit(0);
+        System.exit(0);
     }
 
     /**
@@ -2013,14 +2038,16 @@ public class Utils extends IO {
      * @return _more_
      */
     public static String makeID(String label) {
-	label = stripTags(label);
+        label = stripTags(label);
         label = label.trim().toLowerCase().replaceAll(" ",
                 "_").replaceAll("\\.", "_").replaceAll("\n",
                                 "_").replaceAll("\\(", "_").replaceAll("\\)",
-								       "_").replaceAll("\\?","_").replaceAll("[\"'`]+","").trim();
+                                    "_").replaceAll("\\?",
+                                        "_").replaceAll("[\"'`]+", "").trim();
 
         label = label.replaceAll("__+", "_");
         label = label.replaceAll("_$", "");
+
         return label;
     }
 
@@ -3876,6 +3903,18 @@ public class Utils extends IO {
      *
      * @param l _more_
      * @param delim _more_
+     *
+     * @return _more_
+     */
+    public static String join(List l, String delim) {
+        return join(l, delim, false);
+    }
+
+    /**
+     * _more_
+     *
+     * @param l _more_
+     * @param delim _more_
      * @param inverse _more_
      *
      * @return _more_
@@ -3884,13 +3923,19 @@ public class Utils extends IO {
         StringBuilder sb = new StringBuilder();
         if (inverse) {
             for (int i = l.size() - 1; i >= 0; i--) {
+                if (sb.length() > 0) {
+                    sb.append(delim);
+                }
                 sb.append(l.get(i));
-                sb.append(delim);
+
             }
         } else {
             for (int i = 0; i < l.size(); i++) {
+                if (sb.length() > 0) {
+                    sb.append(delim);
+                }
                 sb.append(l.get(i));
-                sb.append(delim);
+
             }
         }
 
