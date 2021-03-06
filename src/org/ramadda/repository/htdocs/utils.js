@@ -3201,26 +3201,44 @@ $(document).ready(function(){
     attrSelect:function(name,value) {
 	return  "[" + name+"=\"" + value +"\"]";
     },
-    scrollToAnchor:function(aid,offset){
+    scrollToAnchor:function(aid,offset) {
 	var aTag = $("a[name='"+ aid +"']");
 	if(!offset) offset=0;
 	offset = +offset;
 	//Offset a bit
+	Utils.scrollToAnchorTime = new Date();
 	$('html,body').animate({scrollTop: aTag.offset().top+offset},'slow');
 	location.hash = aid;
     },
-    scrollVisible: function(contents, child) {
+    scrollVisible: function(contents, child, animate) {
 	if(child.length==0 || contents.length==0)  return;
 	let diff = child.offset().top-contents.offset().top;
+	if(!Utils.isDefined(animate)) animate= 1000;
 	contents.animate({
 	    scrollTop: diff+contents.scrollTop()
-	}, 1000);
+	}, animate);
     },
     initNavLinks: function() {
+	let linksContainer = $(".ramadda-nav-left-links");
+	linksContainer.mouseenter(function() {
+	    Utils.linksMouseIn = true;
+	    console.log("in");
+	});
+	linksContainer.mouseleave(function() {
+	    Utils.linksMouseIn = false;
+	    console.log("out");
+	});	
+
 	let anchors = 	$(".ramadda-nav-anchor");
 	let links =  	$(".ramadda-nav-left-link");	
 	let lastTop = null;
 	$(window).scroll(function(){
+	    if(Utils.linksMouseIn) return;
+	    let amScrolling = false;
+	    if(Utils.scrollToAnchorTime) {
+		let now  = new Date();
+		amScrolling = (now.getTime()-Utils.scrollToAnchorTime.getTime())<2000;
+	    }
 	    let docTop = $(window).scrollTop();
 	    let docBottom = docTop + $(window).height();
 	    let topMost= null;
@@ -3245,11 +3263,17 @@ $(document).ready(function(){
 	    if(lastTop && lastTop.attr("name") == topMost.attr("name")) return;
 	    lastTop = topMost;
 	    links.removeClass("ramadda-nav-link-active");
+	    let activeLink = null;
 	    links.each(function() {
 		if($(this).attr("navlink") == topMost.attr("name")) {
 		    $(this).addClass("ramadda-nav-link-active");
+		    activeLink = $(this);
 		}
 	    });
+	    if(!amScrolling && activeLink) {
+		HtmlUtils.scrollVisible(activeLink.parent(), activeLink,100);
+	    }
+
 	});
     },
     setFormValue: function(id, val) {
