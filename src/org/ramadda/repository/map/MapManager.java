@@ -636,7 +636,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @throws Exception  problem creating the HTML
      */
     public String getGoogleEarthPlugin(Request request, Appendable sb,
-                                       String width, String height, String url)
+                                       String width, String height,
+                                       String url)
             throws Exception {
 
         String[] keyAndOther = getGoogleMapsKey(request);
@@ -675,7 +676,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (Utils.stringDefined(width)) {
             style += "width:" + width + "px; ";
         }
-        if (!Utils.stringDefined(height)) {
+        if ( !Utils.stringDefined(height)) {
             height = DFLT_EARTH_HEIGHT;
         }
         style += "height:" + height + "px; ";
@@ -753,7 +754,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @throws Exception problem creating the plugin
      */
     public void getGoogleEarth(Request request, List<Entry> entries,
-                               Appendable sb, String width, String  height,
+                               Appendable sb, String width, String height,
                                boolean includeList, boolean justPoints)
             throws Exception {
 
@@ -943,7 +944,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             js.append("\n");
         }
 
-        if (!Utils.stringDefined(height)) {
+        if ( !Utils.stringDefined(height)) {
             height = DFLT_EARTH_HEIGHT;
         }
 
@@ -1085,8 +1086,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             if ( !fromEntry.startsWith("{")) {
                 fromEntry = getWikiManager().wikifyEntry(request, entry,
                         fromEntry, false, null, null,
-                        new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
-                                       WikiConstants.WIKI_TAG_MAP });
+                        Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
+                                          WikiConstants.WIKI_TAG_MAP));
                 fromEntry = getRepository().translate(request, fromEntry);
             }
 
@@ -1192,8 +1193,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (bubble != null) {
             bubble = getWikiManager().wikifyEntry(request, entry, bubble,
                     false, null, null,
-                    new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
-                                   WikiConstants.WIKI_TAG_MAP });
+                    Utils.makeHashSet(WikiConstants.WIKI_TAG_MAPENTRY,
+                                      WikiConstants.WIKI_TAG_MAP));
 
             return getRepository().translate(request, bubble);
         }
@@ -1207,11 +1208,12 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
 
         if (wikiTemplate != null) {
-            String wiki = getWikiManager().wikifyEntry(request, entry,
-                              wikiTemplate, true, null, null,
-                              new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
-                                             WikiConstants.WIKI_TAG_MAP,
-                                             WikiConstants.WIKI_TAG_EARTH });
+            String wiki = getWikiManager().wikifyEntry(
+                              request, entry, wikiTemplate, true, null, null,
+                              Utils.makeHashSet(
+                                  WikiConstants.WIKI_TAG_MAPENTRY,
+                                  WikiConstants.WIKI_TAG_MAP,
+                                  WikiConstants.WIKI_TAG_EARTH));
             info.append(wiki);
         } else {
             HtmlUtils.sectionHeader(
@@ -1259,8 +1261,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @throws Exception  problem creating map
      */
     public MapInfo getMap(Request request, Entry mainEntry,
-                          List<Entry> entriesToUse, Appendable sb, String width,
-                          String height, Hashtable mapProps, Hashtable props)
+                          List<Entry> entriesToUse, Appendable sb,
+                          String width, String height, Hashtable mapProps,
+                          Hashtable props)
             throws Exception {
 
         boolean doCategories = Utils.getProperty(props, "doCategories",
