@@ -1757,9 +1757,13 @@ public class Entry implements Cloneable {
         }
         Entry that = (Entry) o;
 
-        return Misc.equals(this.id, that.id);
+        return equalsEntry(that);
     }
 
+    public boolean equalsEntry(Entry that) {
+	if(that==null) return false;
+        return Misc.equals(this.id, that.id);
+    }
 
 
     /**
