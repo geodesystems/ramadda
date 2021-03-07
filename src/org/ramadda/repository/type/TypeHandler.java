@@ -3408,7 +3408,7 @@ public class TypeHandler extends RepositoryManager {
         }
 	desc = desc.trim();
         return (desc.startsWith("<wiki_inner>")
-                || desc.startsWith("<wiki>"));
+                || desc.startsWith(WIKI_PREFIX));
     }
 
 
@@ -3748,6 +3748,11 @@ public class TypeHandler extends RepositoryManager {
         }
 
         return false;
+    }
+
+
+    public boolean isDescriptionWiki(Entry entry) {
+	return  getProperty(entry, "form.description.iswiki", false);
     }
 
 
@@ -4429,9 +4434,7 @@ public class TypeHandler extends RepositoryManager {
                                    entry, "form.description.rows",
                                    getRepository().getProperty(
                                        "ramadda.edit.rows", 5));
-                    boolean isWiki = getProperty(entry,
-                                         "form.description.iswiki", false);
-
+                    boolean isWiki = isDescriptionWiki(entry);
                     if (entry != null) {
                         desc = entry.getDescription();
                     }
@@ -4447,8 +4450,8 @@ public class TypeHandler extends RepositoryManager {
                     } else {
                         desc = desc.trim();
                         boolean isTextWiki = isWikiText(desc);
-                        if (desc.startsWith("<wiki>")) {
-                            desc = desc.substring(6).trim();
+                        if (desc.startsWith(WIKI_PREFIX)) {
+                            desc = desc.substring(WIKI_PREFIX.length()).trim();
                         }
                         String        cbxId  = "iswiki";
                         String        textId = ARG_DESCRIPTION;
@@ -4897,8 +4900,10 @@ public class TypeHandler extends RepositoryManager {
                               String hiddenId, String text, String label,
                               boolean readOnly, int length)
             throws Exception {
-	if (text.startsWith("<wiki>")) {
-            text = text.substring(6).trim();
+	if (text.startsWith(WIKI_PREFIX)) {
+	    if(!isDescriptionWiki(entry)) {
+		text = text.substring(WIKI_PREFIX.length()).trim();
+	    }
         }
         String sidebar = "";
         if ( !readOnly) {
