@@ -6763,6 +6763,7 @@ a
                 this.properties.theData.lon = this.getProperty("longitude", "-105");
             }
 
+
             if (this.properties.theData.hasData()) {
                 this.addData(this.properties.theData);
                 return;
@@ -6770,7 +6771,14 @@ a
             this.properties.theData.loadData(this);
         },
         getData: function() {
-            if (!this.hasData()) return null;
+            if (!this.hasData()) {
+		//Inline data
+		if(this.properties.dataSrc) {
+		    this.addData(makeInlineData(this,this.properties.dataSrc));
+		} else {
+		    return null;
+		}
+	    }
             var dataList = this.dataCollection.getList();
             return dataList[0];
         },
@@ -6885,10 +6893,11 @@ a
 	},
         displayData: function() {},
         setDisplayReady: function() {
+//	    console.log("setDisplayReady");
 	    var callUpdate = !this.displayReady;
             this.displayReady = true;
 	    if(callUpdate) {
-		this.callUpdateUI();
+		this.callUpdateUI(true);
 	    }
         },
         getDisplayReady: function() {
@@ -6907,7 +6916,7 @@ a
 		this.getAnimation().makeControls();
             }
             this.checkSearchBar();
-	    this.callUpdateUI();
+	    this.callUpdateUI(true);
 	    if(this.getProperty("reloadSeconds")) {
 		this.runReload();
 	    }
@@ -12926,6 +12935,72 @@ function RamaddaBounds(north,west,south,east) {
     });
 	      
 }
+
+
+function makeInlineData(display, src) {
+    let csv = $("#"+src).html().trim();
+    let lines = csv.split("\n");
+    let fields = [];
+    let samples = lines[1].split(",");
+    let latField  =null, lonField=null,dateField=null;
+    lines[0].split(",").forEach((tok,idx)=>{
+	tok = tok.trim();
+	let id = Utils.makeId(tok);
+	let label = Utils.makeLabel(tok);
+	let type = "string";
+	let sample = samples[idx];
+	if(display.getProperty(id+".type")) {
+	    type =  display.getProperty(id+".type");
+	    if(type=="enum") type = "enumeration";
+	} else {
+	    if(id=="date") {
+		type="date";
+	    } else {
+		if(!isNaN(parseFloat(sample))) type = "double";
+		//check for numeric
+	    }
+	}
+	let field = new RecordField({
+            id:tok,
+	    index:idx,
+            label:label,
+            type:type,
+            chartable:true
+        });
+	fields.push(field);
+	if(field.isFieldLatitude()) latField = field;
+	else if(field.isFieldLongitude()) lonField = field;
+    });
+    let records =[];
+    lines.forEach((line,idx)=>{
+	if(idx==0) return;
+	line = line.trim();
+	if(line.length==0) return;
+	let data =[];
+	let lat = NaN;
+	let lon = NaN;
+	let date = null;
+	line.split(",").forEach((tok,col)=>{
+	    tok  = tok.replace(/_nl_/g,"\n").replace(/_qt_/g,"\"").replace(/_comma_/g,",");
+	    let field = fields[col];
+	    if(latField && latField.getIndex()==col) {
+		lat = tok = parseFloat(tok);
+	    } else  if(lonField && lonField.getIndex()==col) {
+		lon = tok = parseFloat(tok);
+	    } else  if(dateField && dataField.getIndex()==col) {
+		date = tok = new Data(tok);
+	    } else {
+		if(field.isFieldNumeric()) {
+		    tok = parseFloat(tok);
+		}
+	    }
+	    data.push(tok);
+	});
+	//PointRecord(fields,lat, lon, elevation, time, data)
+        records.push(new  PointRecord(fields,lat, lon, NaN, date, data));
+    });
+    return  new PointData(src, fields, records,"#" + src);
+}
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -16513,7 +16588,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    //	    var t1= new Date();
 	    if(debug)
 		console.log("\tcalling displayData");
-            this.displayData(args.reload);
+            this.displayData(args.reload, debug);
 	    //	    var t2= new Date();
 	    //	    Utils.displayTimes("chart.displayData",[t1,t2]);
         },
@@ -16741,8 +16816,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    return fields;
 	},
 
-        displayData: function(reload) {
-	    let debug = false;
+        displayData: function(reload, debug) {
 	    if(debug)
 		console.log(this.type +" displayData " + this.getId() +" " + this.type);
 
@@ -17379,7 +17453,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    if(debug) {
 		for(var i=0;i<dataTable.getNumberOfColumns();i++)
-		    console.log("col:" + i +" " + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
+		    console.log("col[" + i +"]=" + dataTable.getColumnLabel(i) +" " + dataTable.getColumnType(i));
 	    }
 	    if(this.getProperty("annotations") ||  this.getProperty("annotationFields")) {
 		let clonedList = Utils.cloneList(dataList);
@@ -17491,7 +17565,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
                 let newRow = [];
 		if(debug && rowIdx<debugRows)
-		    console.log("row:");
+		    console.log("row[" + rowIdx+"]:");
 
 		let fIdx=0;
                 for (let colIdx = 0; colIdx < row.length; colIdx++) {
@@ -17515,7 +17589,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			}
 			if(debug && rowIdx<debugRows) {
 			    let v = value.f?("f:" + value.f +" v:" +value.v):value;
-			    console.log("\t value: " + colIdx +"="+ v +" " + (typeof value));
+			    console.log("\t value[" + colIdx +"]="+ v +" " + (typeof value));
 			}
 			if(maxWidth>0 && type == "string" && value.length > maxWidth)
 			    value = value.substring(0,maxWidth) +"...";
