@@ -2301,7 +2301,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var html = this.notebook.getEntriesTree(entries, {
                 handlerId: handlerId,
                 showIndex: false,
-                suffix: "_shell_" + (this.uniqueCnt++)
+                suffix: Utils.getUniqueId("_shell_")
             });
             div.set(HtmlUtils.div(["style", "max-height:200px;overflow-y:auto;"], html));
             this.outputUpdated();
@@ -2443,7 +2443,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var html = this.notebook.getEntriesTree(entries, {
                 handlerId: handlerId,
                 showIndex: false,
-                suffix: "_shell_" + (this.uniqueCnt++)
+                suffix: Utils.getUniqueId("_shell_")
             });
             div.set(HtmlUtils.div(["style", "max-height:200px;overflow-y:auto;"], html));
             return div;
