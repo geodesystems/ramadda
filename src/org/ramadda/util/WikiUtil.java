@@ -751,7 +751,8 @@ public class WikiUtil {
         StringBuilder    currentVarValue   = null;
         boolean          inScroll          = false;
         String           slidesId           = null;
-        Hashtable        slidesProps       = null;	
+        Hashtable        slidesProps       = null;
+        List<String> slideTitles=null;
         String           afterId           = null;
         String           afterPause        = null;
         String           afterFade         = null;
@@ -1158,26 +1159,33 @@ public class WikiUtil {
                     List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                     String       divClass = "";
 		    slidesProps = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+		    slideTitles = new ArrayList<String>();
 		    slidesId = HU.getUniqueId("slides_");
 		    buff.append(HU.script("HtmlUtils.loadSlides();"));
 		    slidesProps.remove("bigArrow");
 		    boolean bigArrow  = Utils.getProperty(slidesProps,"bigArrow",true);
+		    HU.div(buff,"",HU.attrs("id",slidesId+"_header","class","ramadda-slides-header"));
 		    HU.open(buff,"div",HU.attrs("id",slidesId,"class"," ramadda-slides " +(bigArrow?"ramadda-slides-bigarrow":"")));
 		    continue;
 		}
 
                 if (tline.startsWith("+slide")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+		    String title = toks.size()>1?toks.get(1):null;
+		    if(slideTitles !=null) {
+			slideTitles.add(title);
+		    }
 		    String style= "margin:10px;padding:10px;" + (slidesProps!=null?Utils.getProperty(slidesProps,"style",""):"");
 		    HU.open(buff,"div",HU.attrs("style",style));
 		    continue;
 		}
-
-                if (tline.equals("-slide")) {
+		if (tline.equals("-slide")) {
 		    buff.append("</div>\n");
 		    continue;
 		}
 
                 if (tline.equals("-slides")) {
+		    //slidesId+"_header","class","ramadda-slides-header"));
 		    HU.close(buff,"div");
 		    if(slidesId==null) {
 			buff.append("No open slides tag");
@@ -1186,6 +1194,23 @@ public class WikiUtil {
 		    slidesProps.remove("style");
 		    List<String> args = Utils.makeStringList(Utils.makeList(slidesProps));
 		    String slidesArgs = Json.mapAndGuessType(args);
+		    boolean anyTitles = false;
+		    for(String title: slideTitles)
+			if(title!=null) anyTitles = true;
+		    if(anyTitles) {
+			StringBuilder header = new StringBuilder();
+			int cnt = 0;
+			for(int i=0;i<slideTitles.size();i++) {
+			    String title  =  slideTitles.get(i);
+			    if(title!=null) {
+				String clazz = " ramadda-slides-header-item ";
+				if(cnt++==0) 
+				    clazz += " ramadda-slides-header-item-selected ";
+				HU.div(header,title,HU.attrs("class",clazz,"slideindex",i+""));
+			    }
+			}
+			HU.div(buff,header.toString(),HU.attrs("id",slidesId+"_headercontents","style","xxdisplay:none;"));
+		    }
 		    buff.append(HU.script(JQuery.ready("HtmlUtils.makeSlides('" + slidesId+"'," + slidesArgs+");")));
 		    continue;
 		}
@@ -1595,8 +1620,9 @@ public class WikiUtil {
                     if (style == null) {
                         style = "";
                     }
+                    HU.open(buff, "div", "style","position:relative;");
                     HU.open(buff, "div", "id", dragId, "style",
-                            "display:inline-block;z-index:1000;" + style);
+                            "display:inline-block;z-index:500;" + style);
                     if (header != null) {
                         if (dragToggle) {
                             header = HU.image("", "id", dragId + "_img")
@@ -1619,6 +1645,7 @@ public class WikiUtil {
 
                 if (tline.startsWith("-draggable")) {
                     if (dragId != null) {
+                        HU.close(buff, "div");
                         HU.close(buff, "div");
                         HU.close(buff, "div");
                         //              HU.script(buff, "$('#" + dragId +"').draggable();\n");
