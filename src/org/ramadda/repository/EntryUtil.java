@@ -140,6 +140,55 @@ public class EntryUtil extends RepositoryManager {
 	return null;
     }
 
+    /*
+     */
+    public Entry getNext(Request request, Entry entry,Entry root,  boolean tree, String sort, boolean ascending) throws Exception {
+	if(entry==null) return null;
+	if(tree && entry.equalsEntry(root)) {
+	    List<Entry> first = sortEntriesOn(getEntryManager().getChildren(request,
+									    entry), sort, !ascending);
+	    return first.size()>0?first.get(0):null;
+	}
+
+
+	Entry parent = entry.getParentEntry();
+	if(parent==null) return null;
+	List<Entry> children = sortEntriesOn(getEntryManager().getChildren(request,
+									   parent), sort, !ascending);
+	Entry next = getNext(entry, children);
+	if(next!=null || !tree)
+	    return next;
+
+	if(tree)  {
+	    if(root!=null && root.equalsEntry(parent)) return null;
+	    return getNext(request, parent, root, tree, sort, ascending);
+	}
+	return null;
+    }
+
+    public Entry getPrev(Request request, Entry entry,Entry root,  boolean tree, String sort, boolean ascending) throws Exception {
+	if(entry==null) return null;
+	if(tree && entry.equalsEntry(root)) {
+	    return null;
+	}
+
+	Entry parent = entry.getParentEntry();
+	if(parent==null) return null;
+	List<Entry> children = sortEntriesOn(getEntryManager().getChildren(request,
+									   parent), sort, !ascending);
+	Entry prev = getPrev(entry, children);
+	if(prev!=null || !tree)
+	    return prev;
+
+	if(tree)  {
+	    if(root!=null && root.equalsEntry(parent)) return null;
+	    return getPrev(request, parent, root, tree, sort, ascending);
+	}
+	return null;
+    }
+
+
+
     public static Entry getNext(Entry entry, List<Entry> entries) {
 	//	System.err.println("next:" + entry+" list:" + entries);
 	for(int i=0;i<entries.size();i++) {
@@ -563,6 +612,12 @@ public class EntryUtil extends RepositoryManager {
                              descending);
     }
 
+
+    public static int indexOf(Entry entry, List<Entry> entries) {
+	for(int i=0;i<entries.size();i++)
+	    if(entry.getId().equals(entries.get(i).getId())) return i;
+	return -1;
+    }
 
     /**
      * _more_
