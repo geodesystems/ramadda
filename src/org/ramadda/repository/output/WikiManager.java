@@ -1422,12 +1422,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                           "entryorder,name");
                 boolean asc = getProperty(wikiUtil, props, "sortAscending",
                                           true);
-                List<Entry> children = getEntryManager().getChildren(request,
-                                           parent);
-                children = getEntryUtil().sortEntriesOn(children, sort, !asc);
-                other    = prev
-                           ? getEntryUtil().getPrev(entry, children)
-                           : getEntryUtil().getNext(entry, children);
+                boolean tree = getProperty(wikiUtil, props, "tree",
+					   false);
+		Entry root = null;
+		String entryRoot = getProperty(wikiUtil, props, "root",null);
+	
+		if(entryRoot!=null) {
+		    root = findEntryFromId(request, entry, wikiUtil,
+                                             entryRoot);
+		}
+		if(next) {
+		    other = getEntryUtil().getNext(request,  entry,  root, tree, sort, asc);
+		} else {
+		    other = getEntryUtil().getPrev(request,  entry,  root, tree, sort, asc);
+		}
+
             } else {
                 other = parent;
             }
@@ -1876,7 +1885,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     Result result =
                         getHtmlOutputHandler().getHtmlResult(request,
                             OutputHandler.OUTPUT_HTML, child);
-                    sb.append(getEntryManager().getEntryLink(request, child));
+                    sb.append(getEntryManager().getEntryLink(request, child,""));
                     sb.append(HU.br());
                     sb.append(new String(result.getContent()));
                     sb.append(HU.p());
@@ -3520,13 +3529,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else {
                 sb.append("<li> ");
             }
-            if (showIcon) {
-                sb.append(
-                    HU.image(
-                        entry.getTypeHandler().getEntryIconUrl(
-                            request, entry)) + "&nbsp;");
-            }
-            sb.append(getEntryManager().getEntryLink(request, entry));
+            sb.append(getEntryManager().getEntryLink(request, entry,showIcon,HU.attrs("class","ramadda-tree-link")));
             sb.append("\n");
         }
         if (depth-- < 0) {
@@ -5351,9 +5354,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         getWikiEditLink(textAreaId, "Note", "+note_nl__nl_",
                                         "-note", ""));
         String[] colors = new String[] {
-            "plain", "gray", "platinum", "yellow", "rose", "mint",
-            "whitesmoke", "azure", "metal", "bone", "darkvanilla",
-            "vermillion", "olivine ", "green", "cornflower", "cambridgeblue"
+            "plain", "gray", "platinum", "yellow", 
+            "azure",  "bone",
+            "green",  "cambridgeblue"
         };
         for (String color : colors) {
             tags3.append(
