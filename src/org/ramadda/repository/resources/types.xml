@@ -63,10 +63,10 @@
 +inset left=50 right=50 top=50 bottom=50
 +leftright
 +left
-{{prev decorate=true showName=true  sortAscending=true sort=entryorder}}
+{{prev decorate=true showName=true  sortAscending=true sort=entryorder  root=ancestor:type_documentation tree=true}}
 -left
 +right
-{{next decorate=true showName=true sortAscending=true sort=entryorder}}
+{{next decorate=true showName=true sortAscending=true sort=entryorder root=ancestor:type_documentation tree=true}}
 -right
 -leftright
 -inset
