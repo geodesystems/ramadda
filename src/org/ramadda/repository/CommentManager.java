@@ -268,7 +268,7 @@ public class CommentManager extends RepositoryManager {
 
 
         sb.append(msgLabel("Add comment for")
-                  + getEntryManager().getEntryLink(request, entry));
+                  + getEntryManager().getEntryLink(request, entry,""));
         //        sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
         sb.append(request.form(getRepository().URL_COMMENTS_ADD, BLANK));
         getRepository().addAuthToken(request, sb);

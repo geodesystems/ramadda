@@ -4140,7 +4140,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                         request.getServerName());
 
                     if ((path.indexOf(".wiki.") >= 0)
-                            || html.startsWith("<wiki>")) {
+                            || html.startsWith(WIKI_PREFIX)) {
                         html = getWikiManager().wikify(request, html);
                     }
                     Result result = new Result(BLANK,
@@ -4190,7 +4190,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 html = getPageHandler().applyBaseMacros(html);
                 html = html.replace("${hostname}", request.getServerName());
                 if ((path.indexOf(".wiki.") >= 0)
-                        || html.startsWith("<wiki>")) {
+                        || html.startsWith(WIKI_PREFIX)) {
                     html = getWikiManager().wikify(request, html);
                 }
 

@@ -2561,25 +2561,7 @@ public class OutputHandler extends RepositoryManager {
      * @return _more_
      */
     public String getEntryLink(Request request, Entry entry) {
-        return getEntryManager().getEntryLink(request, entry);
-    }
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String xxxgetEntryLink(Request request, Entry entry)
-            throws Exception {
-        return getEntryManager().getTooltipLink(request, entry,
-                getEntryDisplayName(entry), null);
+        return getEntryManager().getEntryLink(request, entry,"");
     }
 
 

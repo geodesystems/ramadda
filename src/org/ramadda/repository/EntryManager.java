@@ -2680,7 +2680,7 @@ public class EntryManager extends RepositoryManager {
                         getRepository().URL_ENTRY_SHOW, parentEntry));
             }
 
-            String description = getEntryDescription(request);
+            String description = getEntryDescription(request, entry);
             Date   createDate  = new Date();
             Date[] dateRange = request.getDateRange(ARG_FROMDATE, ARG_TODATE,
                                    createDate);
@@ -2897,7 +2897,7 @@ public class EntryManager extends RepositoryManager {
             String newName = request.getString(ARG_NAME, entry.getLabel());
 
             entry.setName(newName);
-            entry.setDescription(getEntryDescription(request));
+            entry.setDescription(getEntryDescription(request, entry));
 
             if (isAnonymousUpload(entry)) {
                 if (request.get(ARG_PUBLISH, false)) {
@@ -3025,18 +3025,19 @@ public class EntryManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private String getEntryDescription(Request request) throws Exception {
+    private String getEntryDescription(Request request, Entry entry) throws Exception {
         boolean isWiki      = request.get(ARG_ISWIKI, false);
+	boolean isDescriptionWiki= entry==null?false: entry.getTypeHandler().isDescriptionWiki(entry);
         String  description = request.getAnonymousEncodedString(isWiki
                 ? ARG_WIKITEXT
                 : ARG_DESCRIPTION, BLANK).trim();
         if (request.get(ARG_ISWIKI, false)) {
-            if ( !description.startsWith("<wiki>")) {
-                description = "<wiki>\n" + description;
+            if ( !description.startsWith(WIKI_PREFIX)) {
+                description = WIKI_PREFIX+"\n" + description;
             }
         } else {
-            if (description.startsWith("<wiki>")) {
-                description = description.substring(6).trim();
+            if (description.startsWith(WIKI_PREFIX) && !isDescriptionWiki) {
+                description = description.substring(WIKI_PREFIX.length()).trim();
             }
         }
 
@@ -5404,9 +5405,9 @@ public class EntryManager extends RepositoryManager {
                         ? extraDesc
                         : "");
             } else {
-                if (textFromUser.startsWith("<wiki>")) {
-                    textFromUser = Utils.concatString("<wiki>", extraDesc,
-                            textFromUser.substring("<wiki>".length()));
+                if (textFromUser.startsWith(WIKI_PREFIX)) {
+                    textFromUser = Utils.concatString(WIKI_PREFIX, extraDesc,
+                            textFromUser.substring(WIKI_PREFIX.length()));
                 } else {
                     textFromUser = Utils.concatString(extraDesc,
                             textFromUser);
@@ -6412,8 +6413,8 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getEntryLink(Request request, Entry entry, String... args) {
-        return getEntryLink(request, entry, false, args);
+    public String getEntryLink(Request request, Entry entry, String hrefAttrs, String... args) {
+        return getEntryLink(request, entry, false, hrefAttrs, args);
     }
 
     /**
@@ -6426,7 +6427,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getEntryLink(Request request, Entry entry, boolean addIcon,
+    public String getEntryLink(Request request, Entry entry, boolean addIcon, String hrefAttrs,
                                String... args) {
         try {
             String label = (addIcon
@@ -6435,7 +6436,7 @@ public class EntryManager extends RepositoryManager {
                                     request, entry)) + " "
                             : "") + getEntryDisplayName(entry);
 
-            return HtmlUtils.href(getEntryURL(request, entry, args), label);
+            return HtmlUtils.href(getEntryURL(request, entry, args), label, hrefAttrs);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }

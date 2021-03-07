@@ -213,7 +213,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
             long[] values = info.get(entry.getId());
             sb.append("<tr>");
             sb.append(HtmlUtils.col(getEntryManager().getEntryLink(request,
-                    entry)));
+								   entry,"")));
             sb.append(HtmlUtils.col("" + values[0], " align=right "));
             sb.append(
                 HtmlUtils.col(
@@ -365,7 +365,7 @@ public abstract class RecordApiHandler extends SpecialSearch implements RequestH
                             jobInfo.getStartDate())));
                 sb.append(
                     HtmlUtils.col(
-                        getEntryManager().getEntryLink(request, entry)));
+				  getEntryManager().getEntryLink(request, entry,"")));
                 sb.append(HtmlUtils.col(jobInfo.getEmailForDisplay()
                                         + "&nbsp;"));
                 sb.append(HtmlUtils.colRight("" + jobInfo.getNumPoints()));

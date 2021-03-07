@@ -894,7 +894,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             name = name.replace("'", "\\'");
 
             String desc = HtmlUtils.img(getIconUrl)
-                          + getEntryManager().getEntryLink(request, entry);
+		+ getEntryManager().getEntryLink(request, entry,"");
             desc = desc.replace("\r", " ");
             desc = desc.replace("\n", " ");
             desc = desc.replace("\"", "\\\"");

@@ -347,7 +347,7 @@ public class GtfsImportHandler extends ImportHandler {
         for (Entry entry : entries) {
             entry.setUser(request.getUser());
             sb.append("<li> ");
-            sb.append(getEntryManager().getEntryLink(request, entry, true));
+            sb.append(getEntryManager().getEntryLink(request, entry, true,""));
             sb.append("\n");
             if (cnt++ > 100) {
                 sb.append("<p>...<br>");

@@ -834,7 +834,7 @@ public class AssociationManager extends RepositoryManager {
                             : HtmlUtils.b(fromEntry.getLabel());
             } else {
                 fromLabel = getEntryManager().getEntryLink(request,
-                        fromEntry, ARG_SHOW_ASSOCIATIONS, "true");
+							   fromEntry, "", ARG_SHOW_ASSOCIATIONS, "true");
             }
             if (toIsMe) {
                 toLabel = lastToIsMe
@@ -842,7 +842,7 @@ public class AssociationManager extends RepositoryManager {
                           : HtmlUtils.b(toEntry.getLabel());
             } else {
                 toLabel = getEntryManager().getEntryLink(request, toEntry,
-                        ARG_SHOW_ASSOCIATIONS, "true");
+							 "", ARG_SHOW_ASSOCIATIONS, "true");
             }
 
             lastFromIsMe = fromIsMe;
