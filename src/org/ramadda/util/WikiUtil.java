@@ -750,6 +750,8 @@ public class WikiUtil {
         String           currentVar        = null;
         StringBuilder    currentVarValue   = null;
         boolean          inScroll          = false;
+        String           slidesId           = null;
+        Hashtable        slidesProps       = null;	
         String           afterId           = null;
         String           afterPause        = null;
         String           afterFade         = null;
@@ -1151,6 +1153,42 @@ public class WikiUtil {
                     }
                     continue;
                 }
+
+                if (tline.startsWith("+slides")) {
+                    List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                    String       divClass = "";
+		    slidesProps = HU.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+		    slidesId = HU.getUniqueId("slides_");
+		    buff.append(HU.script("HtmlUtils.loadSlides();"));
+		    HU.open(buff,"div",HU.attrs("id",slidesId,"class","ramadda-slides"));
+		    continue;
+		}
+
+                if (tline.startsWith("+slide")) {
+		    String style= slidesProps!=null?Utils.getProperty(slidesProps,"style",""):"";
+		    HU.open(buff,"div",HU.attrs("style",style));
+		    continue;
+		}
+
+                if (tline.equals("-slide")) {
+		    buff.append("</div>\n");
+		    continue;
+		}
+
+                if (tline.equals("-slides")) {
+		    HU.close(buff,"div");
+		    if(slidesId==null) {
+			buff.append("No open slides tag");
+			continue;
+		    }
+		    slidesProps.remove("style");
+		    List<String> args = Utils.makeStringList(Utils.makeList(slidesProps));
+		    String slidesArgs = Json.mapAndGuessType(args);
+		    buff.append(HU.script(JQuery.ready("HtmlUtils.makeSlides('" + slidesId+"'," + slidesArgs+");")));
+		    continue;
+		}
+
+
 
 
                 if (tline.startsWith("+tabs")) {
