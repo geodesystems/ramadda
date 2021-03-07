@@ -2719,6 +2719,21 @@ $(document).ready(function(){
 	if(args) $.extend(opts,args);
 	HtmlUtils.loadSlides();
 	$("#" + id).slick(opts);
+	HtmlUtils.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
+	//Do this later because of the swapHtml
+	setTimeout(()=>{
+	    let header = $("#" + id +"_header");
+	    let items = header.find(".ramadda-slides-header-item");
+	    items.click(function() {
+		let index = +$(this).attr("slideindex");
+		$("#" + id).slick('slickGoTo', index);
+	    });
+	    $("#" + id).on('afterChange', function(event, slick, currentSlide){
+		items.removeClass("ramadda-slides-header-item-selected");
+		header.find(HtmlUtils.attrSelect("slideindex",currentSlide)).addClass("ramadda-slides-header-item-selected");
+	    });
+	});
+
     },
     loadSlides: function() {
 	if(!HtmlUtils.slidesLoaded) {
@@ -3468,7 +3483,7 @@ $(document).ready(function(){
     makeExpandable:function(selector) {
 	let icon =HtmlUtils.getIconImage("fa-expand-arrows-alt");
         let id = HtmlUtils.getUniqueId();
-	let html= HtmlUtils.div(["id",id,"title","Expand", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:10px;top:0px;margin-top:0px;"],icon);
+	let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link", "style","display:none;cursor:pointer;text-align:right;position:absolute;right:10px;top:0px;margin-top:0px;"],icon);
 	$(selector).append(html);
 	let btn = $("#"+id);
 	let expandNow = $(selector).hasClass("ramadda-expand-now");
@@ -3526,12 +3541,24 @@ $(document).ready(function(){
     makeDraggable:function(selector) {
 	$(selector).draggable({
 	    zIndex:1000,
+	    drag: function( event, ui ) {
+		console.log("drag:" + $(this).css("top"));
+		/*
+		$(this).css("left",o.left+"px").css("top",o.top+"px");
+		let oleft = +$(this).attr("oleft");
+		let otop = +$(this).attr("otop");		
+		$(this).css("left",o.left+"px").css("top",o.top+"px");
+		*/
+	    },
 	    start: function( event, ui ) {
 		//Make the draggable be absolute
 		if(!$(this).attr("started")) {
 		    $(this).attr("started",true);
 		    let o = $(this).offset();		    
+		    $(this).attr("oleft",o.left);
+		    $(this).attr("otop",o.top);		    
 		    $(this).css("position","absolute").css("left",o.left+"px").css("top",o.top+"px");
+		    console.log("start:" + o.left + " " + o.top);
 		}
 	    },
 	});
