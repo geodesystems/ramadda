@@ -1175,6 +1175,24 @@ public class Utils extends IO {
     }
 
 
+    public static List makeList(Hashtable properties) {
+	List l = new ArrayList();
+        for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
+	    Object key = keys.nextElement();
+	    l.add(key);
+	    l.add(properties.get(key));
+        }
+	return l;
+    }
+
+
+    public static List<String> makeStringList(List l) {
+	List<String> s = new ArrayList<String>();
+	for(Object o: l)
+	    s.add(o.toString());
+	return s;
+    }
+
     /**
      * _more_
      *
