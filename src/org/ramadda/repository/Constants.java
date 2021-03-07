@@ -30,6 +30,9 @@ public interface Constants {
     public static final String RESOURCE_ALLCSS = "allcss.css";
     public static final String RESOURCE_ALLJS = "alljs.js";    
 
+    public static final String WIKI_PREFIX = "<wiki>";
+
+
     /** _more_ */
     public static final String ICON_ACCESS = "fa-lock";
 
